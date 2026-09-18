@@ -37,13 +37,31 @@
       "operation": "run_evaluated_shadow_v1",
       "nativeSymbol": "run_evaluated_shadow_v1",
       "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "compatibility_only_signed_v2_without_durable_holdout_proof",
       "authority": "none",
       "tests": [],
       "sourcePathExists": true,
       "designOperation": "run_evaluated_shadow_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "run_evaluated_shadow_v2",
+      "nativeSymbol": "run_evaluated_shadow_v2",
+      "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
+      "state": "source_implemented_strict_signed_durable_qualification_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes",
+        "existing_consumer_continues_after_rotation_and_replays_old_run_after_recovery",
+        "invalid_authentication_artifact_or_dataset_never_calls_any_port"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "run_evaluated_shadow_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex_hepta_intelligence_eval::decide_with_signed_durable_evidence_v3"
+      ]
     }
   ],
   "repositoryControlledGaps": [

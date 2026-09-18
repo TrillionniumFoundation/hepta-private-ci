@@ -10,14 +10,19 @@ on:
       - codex-rs/hepta-learning-artifacts/**
       - codex-rs/hepta-bellman-operator/**
       - codex-rs/hepta-intelligence-eval/**
+      - codex-rs/hepta-intelligence/**
       - codex-rs/hepta-shadow-qualification/**
       - docs/lane-e/**
       - qualification/lane-e/**
       - scripts/hepta-lane-e-closure.py
+      - scripts/hepta-lane-e-evidence.py
       - .github/workflows/hepta-lane-e-gap-closure.yml
 
 permissions:
   contents: read
+  id-token: write
+  attestations: write
+  artifact-metadata: write
 
 concurrency:
   group: hepta-lane-e-gap-closure-${{ github.event.pull_request.number || github.ref }}
@@ -25,7 +30,7 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
 
 jobs:
   rust-closure:
@@ -41,13 +46,13 @@ jobs:
       - name: Install repository test runner
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
-          tool: just@1.51.0,nextest@0.9.103
+          tool: just@1.51.0,nextest@0.9.103,cargo-llvm-cov@0.9.0
 
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
-          components: clippy,rustfmt
+          components: clippy,rustfmt,llvm-tools-preview
 
       - name: Bind exact source
         shell: bash
@@ -62,6 +67,7 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta-lane-e-closure.py self-test
           python3 scripts/hepta-lane-e-closure.py verify
+          python3 scripts/hepta-lane-e-evidence.py self-test
 
       - name: Locked all-target compilation
         working-directory: codex-rs
@@ -71,6 +77,7 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
+          -p codex-hepta-intelligence
           -p codex-hepta-shadow-qualification
           --all-targets
 
@@ -82,14 +89,68 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
-
-      - name: Cross-crate causal learning closure
+          -p codex-hepta-intelligence
+      - name: Trusted-only legacy evaluation compatibility regression
         working-directory: codex-rs
         run: >-
-          just test --locked
-          -p codex-hepta-shadow-qualification
-          lane_e_causal_candidate_chain_is_digest_bound_and_deny_all
-          --test-threads=1
+          cargo test --locked
+          -p codex-hepta-intelligence-eval
+          --features trusted-inprocess-eval
+          --test operator_claim
+
+      - name: Trusted-only pre-durable shadow compatibility compile
+        working-directory: codex-rs
+        run: >-
+          cargo check --locked
+          -p codex-hepta-intelligence
+          --features trusted-evaluated-shadow-v1
+          --all-targets
+
+      - name: Lane E learning.eval coverage evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          cd codex-rs
+          cargo llvm-cov --locked \
+            -p codex-hepta-intelligence-eval \
+            --all-targets \
+            --features trusted-inprocess-eval \
+            --lcov \
+            --output-path ../.hepta-evidence/learning-eval.lcov
+          test -s ../.hepta-evidence/learning-eval.lcov
+
+      - name: Lane E learning.eval durable holdout stress audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          : > .hepta-evidence/learning-eval-stress.log
+          for attempt in $(seq 1 8); do
+            printf 'attempt=%s\n' "$attempt" | tee -a .hepta-evidence/learning-eval-stress.log
+            (
+              cd codex-rs
+              cargo test --locked \
+                -p codex-hepta-intelligence-eval \
+                durable_holdout::tests \
+                -- --test-threads=1
+            ) 2>&1 | tee -a .hepta-evidence/learning-eval-stress.log
+          done
+          test -s .hepta-evidence/learning-eval-stress.log
+
+      - name: Cross-crate causal learning closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          (
+            cd codex-rs
+            cargo test --locked \
+              -p codex-hepta-shadow-qualification \
+              lane_e_causal_candidate_chain_is_digest_bound_and_deny_all \
+              -- --test-threads=1
+          ) 2>&1 | tee .hepta-evidence/learning-eval-e2e.log
+          test -s .hepta-evidence/learning-eval-e2e.log
 
       - name: Cross-language wire and fault closure
         working-directory: codex-rs
@@ -107,6 +168,7 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
+          -p codex-hepta-intelligence
           -p codex-hepta-shadow-qualification
           --all-targets -- -D warnings
 
@@ -120,11 +182,52 @@ jobs:
             --package codex-hepta-learning-artifacts \
             --package codex-hepta-bellman-operator \
             --package codex-hepta-intelligence-eval \
+            --package codex-hepta-intelligence \
             --package codex-hepta-shadow-qualification \
             -- --check
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Emit exact-head Lane E qualification evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s .hepta-evidence/learning-eval.lcov
+          test -s .hepta-evidence/learning-eval-stress.log
+          test -s .hepta-evidence/learning-eval-e2e.log
+          SOURCE_TREE="$(git rev-parse "${SOURCE_SHA}^{tree}")"
+          python3 scripts/hepta-lane-e-evidence.py emit \
+            --mode exact-head \
+            --source-sha "${SOURCE_SHA}" \
+            --candidate-sha "${SOURCE_SHA}" \
+            --tree-sha "${SOURCE_TREE}" \
+            --base-sha "${BASE_SHA:-}" \
+            --coverage .hepta-evidence/learning-eval.lcov \
+            --stress .hepta-evidence/learning-eval-stress.log \
+            --e2e .hepta-evidence/learning-eval-e2e.log \
+            --output .hepta-evidence/lane-e-exact-head.json
+          python3 scripts/hepta-lane-e-evidence.py verify \
+            --receipt .hepta-evidence/lane-e-exact-head.json
+
+      - name: Attest exact-head Lane E qualification evidence
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/attest@a1948c3f048ba23858d222213b7c278aabede763
+        with:
+          subject-path: |
+            .hepta-evidence/lane-e-exact-head.json
+            .hepta-evidence/learning-eval.lcov
+            .hepta-evidence/learning-eval-stress.log
+            .hepta-evidence/learning-eval-e2e.log
+      - name: Retain exact-head Lane E qualification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-lane-e-exact-head-${{ env.SOURCE_SHA }}
+          path: .hepta-evidence/
+          include-hidden-files: true
+          if-no-files-found: error
 
   synthetic-merge:
     runs-on: ubuntu-24.04
@@ -139,7 +242,7 @@ jobs:
       - name: Install repository test runner
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
-          tool: just@1.51.0,nextest@0.9.103
+          tool: just@1.51.0,nextest@0.9.103,cargo-llvm-cov@0.9.0
 
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
@@ -191,6 +294,7 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
+          -p codex-hepta-intelligence
           -p codex-hepta-shadow-qualification
           --all-targets
 
@@ -202,14 +306,36 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
-
-      - name: Test merged cross-crate closure
+          -p codex-hepta-intelligence
+      - name: Test merged trusted-only legacy evaluation compatibility
         working-directory: codex-rs
         run: >-
-          just test --locked
-          -p codex-hepta-shadow-qualification
-          lane_e_causal_candidate_chain_is_digest_bound_and_deny_all
-          --test-threads=1
+          cargo test --locked
+          -p codex-hepta-intelligence-eval
+          --features trusted-inprocess-eval
+          --test operator_claim
+
+      - name: Compile merged trusted-only pre-durable shadow compatibility
+        working-directory: codex-rs
+        run: >-
+          cargo check --locked
+          -p codex-hepta-intelligence
+          --features trusted-evaluated-shadow-v1
+          --all-targets
+
+      - name: Test merged cross-crate closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          (
+            cd codex-rs
+            cargo test --locked \
+              -p codex-hepta-shadow-qualification \
+              lane_e_causal_candidate_chain_is_digest_bound_and_deny_all \
+              -- --test-threads=1
+          ) 2>&1 | tee .hepta-evidence/learning-eval-synthetic-e2e.log
+          test -s .hepta-evidence/learning-eval-synthetic-e2e.log
 
       - name: Test merged cross-language wire and fault closure
         working-directory: codex-rs
@@ -228,9 +354,43 @@ jobs:
             --package codex-hepta-learning-artifacts \
             --package codex-hepta-bellman-operator \
             --package codex-hepta-intelligence-eval \
+            --package codex-hepta-intelligence \
             --package codex-hepta-shadow-qualification \
             -- --check
           git diff --cached --check
           git diff --exit-code
           test "$(git write-tree)" = "${MERGE_TREE}"
           test "$(git rev-parse "${MERGE_COMMIT}^{tree}")" = "${MERGE_TREE}"
+
+      - name: Emit synthetic-merge Lane E qualification evidence
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s .hepta-evidence/learning-eval-synthetic-e2e.log
+          python3 scripts/hepta-lane-e-evidence.py emit \
+            --mode synthetic-merge \
+            --source-sha "${SOURCE_SHA}" \
+            --candidate-sha "${MERGE_COMMIT}" \
+            --tree-sha "${MERGE_TREE}" \
+            --base-sha "${BASE_SHA}" \
+            --e2e .hepta-evidence/learning-eval-synthetic-e2e.log \
+            --output .hepta-evidence/lane-e-synthetic-merge.json
+          python3 scripts/hepta-lane-e-evidence.py verify \
+            --receipt .hepta-evidence/lane-e-synthetic-merge.json
+
+      - name: Attest synthetic-merge Lane E qualification evidence
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+        uses: actions/attest@a1948c3f048ba23858d222213b7c278aabede763
+        with:
+          subject-path: |
+            .hepta-evidence/lane-e-synthetic-merge.json
+            .hepta-evidence/learning-eval-synthetic-e2e.log
+      - name: Retain synthetic-merge Lane E qualification evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-lane-e-synthetic-merge-${{ env.SOURCE_SHA }}
+          path: .hepta-evidence/
+          include-hidden-files: true
+          if-no-files-found: error

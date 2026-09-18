@@ -33,6 +33,54 @@ pub struct HoldoutAnchorV1 {
     pub head: Digest32,
 }
 
+/// Type-level proof that a holdout-use receipt was produced by the durable
+/// journal adapter. External callers cannot construct this value directly.
+///
+/// This closes the in-memory-registry bypass for production admission. It does
+/// not turn a local filesystem into a multi-host consensus service: the host
+/// must still provide exclusive storage ownership, rollback protection and,
+/// when multiple hosts can contend, transactional CAS/fencing outside this
+/// adapter.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct DurableHoldoutUseV1 {
+    receipt: crate::HoldoutUseReceiptV1,
+    anchor: HoldoutAnchorV1,
+    storage_binding: Digest32,
+}
+
+impl DurableHoldoutUseV1 {
+    #[must_use]
+    pub fn receipt(&self) -> &crate::HoldoutUseReceiptV1 {
+        &self.receipt
+    }
+
+    pub fn anchor(&self) -> HoldoutAnchorV1 {
+        self.anchor
+    }
+
+    #[must_use]
+    pub fn storage_binding(&self) -> Digest32 {
+        self.storage_binding
+    }
+
+    #[must_use]
+    pub fn proof_digest(&self) -> Digest32 {
+        let mut bytes = b"hepta.intelligence-eval.durable-holdout-proof.v1\0".to_vec();
+        bytes.extend_from_slice(self.storage_binding.as_array());
+        bytes.extend_from_slice(&self.anchor.sequence.to_be_bytes());
+        bytes.extend_from_slice(self.anchor.head.as_array());
+        for digest in [
+            self.receipt.holdout_digest,
+            self.receipt.plan_digest,
+            self.receipt.registry_digest,
+            self.receipt.use_digest,
+        ] {
+            bytes.extend_from_slice(digest.as_array());
+        }
+        Digest32::of_bytes(&bytes)
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum DurableHoldoutError {
     Binding,
@@ -65,6 +113,7 @@ pub struct DurableFinalHoldoutJournalV1 {
     file: File,
     journal: FinalHoldoutJournalV1,
     length: u64,
+    binding: Digest32,
     poisoned: bool,
 }
 impl DurableFinalHoldoutJournalV1 {
@@ -86,6 +135,7 @@ impl DurableFinalHoldoutJournalV1 {
             journal: FinalHoldoutJournalV1::with_record_limit(MAX_RECORDS)
                 .map_err(|_| DurableHoldoutError::Capacity)?,
             length: HEADER as u64,
+            binding,
             poisoned: false,
         })
     }
@@ -169,6 +219,7 @@ impl DurableFinalHoldoutJournalV1 {
             file,
             journal,
             length,
+            binding,
             poisoned: false,
         })
     }
@@ -218,6 +269,24 @@ impl DurableFinalHoldoutJournalV1 {
         self.journal = candidate;
         self.length = length;
         Ok(receipt)
+    }
+
+    /// Consume through the durable adapter and return a non-directly-constructible proof
+    /// suitable for the production signed-admission entrypoints.
+    pub fn consume_proven(
+        &mut self,
+        expected: HoldoutAnchorV1,
+        plan: &CrossFoldPlanReceiptV1,
+    ) -> Result<DurableHoldoutUseV1, DurableHoldoutError> {
+        let journal_receipt = self.consume(expected, plan)?;
+        Ok(DurableHoldoutUseV1 {
+            receipt: journal_receipt.use_receipt,
+            anchor: HoldoutAnchorV1 {
+                sequence: journal_receipt.sequence,
+                head: journal_receipt.record_digest,
+            },
+            storage_binding: self.binding,
+        })
     }
 
     pub fn anchor(&self) -> HoldoutAnchorV1 {

@@ -104,7 +104,7 @@ this is not a physical power-loss or hostile-writer guarantee.
 
 `DurableLearningJournal` is sealed to the actual `DurableLedger` and
 `SegmentedLedger` implementations. The existing
-[`run_evaluated_shadow_v1`](../hepta-intelligence/EVALUATED_SHADOW.md) consumer
+[`run_evaluated_shadow_v2`](../hepta-intelligence/EVALUATED_SHADOW.md) production consumer (the pre-durable V1 surface is available only under `trusted-evaluated-shadow-v1`)
 uses this port without changing its evaluation, signature, eight-stage ordering,
 Decision identity or no-effect semantics. There is no second data owner.
 

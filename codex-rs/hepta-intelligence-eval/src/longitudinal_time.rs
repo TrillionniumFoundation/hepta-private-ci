@@ -5,6 +5,7 @@
 //! observer's attestation, not empirical truth or reliable clocks by themselves.
 use std::collections::BTreeSet;
 
+use crate::DurableHoldoutUseV1;
 use crate::EvaluationClaimScopeV1;
 use crate::IndependentEvaluationBundleV1;
 use crate::MetricRoleContractV2;
@@ -12,11 +13,13 @@ use crate::SignedEvaluationDecisionV1;
 use crate::SignedEvaluationError;
 use crate::SignedEvaluationEvidenceV1;
 use crate::decide_independently_v2;
+use crate::durable_evaluation_signing_payload_v3;
 use crate::evaluation_signing_payload_v2;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::verify_signed_role_separation;
+use codex_hepta_learning_ledger::verify_verified_actor_separation;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
@@ -98,6 +101,100 @@ pub fn longitudinal_evaluation_signing_payload_v3(
     Ok(bytes)
 }
 
+/// Production longitudinal payload. It binds the durable final-holdout proof
+/// in addition to the V3 observed-time evidence.
+pub fn longitudinal_evaluation_signing_payload_v4(
+    bundle: &IndependentEvaluationBundleV1,
+    roles: &[MetricRoleContractV2],
+    durable_holdout: &DurableHoldoutUseV1,
+    timing: &LongitudinalTimeEvidenceV1,
+    minimum_window_micros: u64,
+) -> Result<Vec<u8>, SignedEvaluationError> {
+    let mut bytes = b"hepta.intelligence-eval.signed-request.v4-durable-longitudinal\0".to_vec();
+    bytes.extend_from_slice(&durable_evaluation_signing_payload_v3(
+        bundle,
+        roles,
+        durable_holdout,
+    )?);
+    bytes.extend_from_slice(&future_window_signing_payload_v1(
+        bundle,
+        timing,
+        minimum_window_micros,
+    )?);
+    bytes.extend_from_slice(&timing.observer.signing_bytes());
+    bytes.extend_from_slice(&timing.observer.signature);
+    Ok(bytes)
+}
+
+/// Production longitudinal entrypoint. This is the strict path for external
+/// system-longitudinal claims: signed generator/evaluator evidence, durable
+/// holdout proof and independently signed observed-time windows are all bound.
+pub fn decide_with_signed_durable_longitudinal_evidence_v4(
+    bundle: IndependentEvaluationBundleV1,
+    roles: Vec<MetricRoleContractV2>,
+    durable_holdout: &DurableHoldoutUseV1,
+    evidence: &SignedEvaluationEvidenceV1,
+    timing: &LongitudinalTimeEvidenceV1,
+    minimum_window_micros: u64,
+    verifier: &LearningEvidenceVerifierV1,
+    now_unix_micros: u64,
+) -> Result<SignedEvaluationDecisionV1, SignedEvaluationError> {
+    if bundle.claim_scope != EvaluationClaimScopeV1::SystemLongitudinal {
+        return Err(SignedEvaluationError::Timing("scope_or_bounds"));
+    }
+    let payload = longitudinal_evaluation_signing_payload_v4(
+        &bundle,
+        &roles,
+        durable_holdout,
+        timing,
+        minimum_window_micros,
+    )?;
+    let authentication = crate::signed_evaluation::authenticate(
+        &bundle,
+        evidence,
+        verifier,
+        &payload,
+        now_unix_micros,
+    )?;
+    let observer_payload =
+        future_window_signing_payload_v1(&bundle, timing, minimum_window_micros)?;
+    let observer = verifier.verify(
+        LearningEvidenceRoleV1::Observer,
+        &timing.observer,
+        &observer_payload,
+        now_unix_micros,
+    )?;
+    let generator = verifier.verify(
+        LearningEvidenceRoleV1::Generator,
+        &evidence.generator_plan,
+        bundle.frozen_plan.plan_digest.as_array(),
+        now_unix_micros,
+    )?;
+    let evaluator = verifier.verify(
+        LearningEvidenceRoleV1::Evaluator,
+        &evidence.evaluator_bundle,
+        &payload,
+        now_unix_micros,
+    )?;
+    verify_signed_role_separation(&generator, &observer, now_unix_micros)?;
+    verify_verified_actor_separation(&evaluator, &observer, now_unix_micros)?;
+    validate_observed_windows(
+        &bundle,
+        timing,
+        evidence.generator_plan.issued_at,
+        minimum_window_micros,
+        now_unix_micros,
+    )?;
+    let mut authenticated = authentication.as_array().to_vec();
+    authenticated.extend_from_slice(durable_holdout.proof_digest().as_array());
+    authenticated.extend_from_slice(&timing.observer.signature);
+    Ok(SignedEvaluationDecisionV1 {
+        decision: decide_independently_v2(bundle, roles, now_unix_micros)?,
+        trust_digest: verifier.trust_digest(),
+        authentication_digest: Digest32::of_bytes(&authenticated),
+    })
+}
+
 /// External longitudinal entrypoint. Does not mint a holdout-use anchor,
 /// authenticate a storage namespace, select an artifact, or bypass statistics.
 pub fn decide_with_signed_longitudinal_evidence_v3(
@@ -132,7 +229,14 @@ pub fn decide_with_signed_longitudinal_evidence_v3(
         bundle.frozen_plan.plan_digest.as_array(),
         now_unix_micros,
     )?;
+    let evaluator = verifier.verify(
+        LearningEvidenceRoleV1::Evaluator,
+        &evidence.evaluator_bundle,
+        &payload,
+        now_unix_micros,
+    )?;
     verify_signed_role_separation(&generator, &observer, now_unix_micros)?;
+    verify_verified_actor_separation(&evaluator, &observer, now_unix_micros)?;
     validate_observed_windows(
         &bundle,
         timing,

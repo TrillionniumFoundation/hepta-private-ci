@@ -5,7 +5,7 @@
 
 ## 1. Scope and authority boundary
 
-This document defines the executable separation between experience recording, candidate generation, evaluation, selection and promotion. A policy cannot write its own terminal outcome, issue the sole evaluation receipt or select the artifact it generated. Memory persistence, offline loss and replay accuracy are not longitudinal learning.
+This document defines the executable separation between experience recording, candidate generation, evaluation, selection and promotion. A policy cannot write its own terminal outcome, issue the sole evaluation receipt or select the artifact it generated. Memory persistence, offline loss and replay accuracy are not longitudinal learning. For concrete Rust ingress, `../../codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md` is normative: external Qualification requires signed durable V3; SystemLongitudinal requires signed durable observed-time V4.
 
 `learning.ledger` owns immutable decisions and outcomes, `learning.eval` owns analysis, `learning.artifacts` owns candidate bytes and lineage, and `kernel.evidence` verifies identity separation. All modules retain zero production selection, merge, promotion and release authority.
 

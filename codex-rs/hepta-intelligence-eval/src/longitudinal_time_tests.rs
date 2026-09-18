@@ -58,7 +58,14 @@ impl Fixture {
                 principal: principals[index].clone(),
                 controller_id: principals[index].principal_id.clone(),
                 verifying_key: keys[index].verifying_key().to_bytes(),
-                roles: vec![role],
+                roles: if role == LearningEvidenceRoleV1::Evaluator {
+                    vec![
+                        LearningEvidenceRoleV1::Evaluator,
+                        LearningEvidenceRoleV1::Observer,
+                    ]
+                } else {
+                    vec![role]
+                },
                 revoked_at: None,
             });
         }
@@ -250,4 +257,127 @@ fn time_policy_observer_and_future_collection_cannot_be_substituted() {
     let evidence = fixture.attest();
     fixture.timing.observer.signature[0] ^= 1;
     assert!(fixture.decide(&evidence).is_err());
+}
+
+#[test]
+fn evaluator_cannot_also_attest_as_longitudinal_observer() {
+    let mut fixture = Fixture::new();
+    let file = tempfile::tempfile().expect("durable holdout file");
+    let mut store =
+        DurableFinalHoldoutJournalV1::create(file, digest("longitudinal-collision-store"))
+            .expect("durable holdout store");
+    let durable = store
+        .consume_proven(store.anchor(), &fixture.bundle.frozen_plan)
+        .expect("durable holdout proof");
+    fixture.bundle.holdout_use = durable.receipt().clone();
+
+    let observed = future_window_signing_payload_v1(&fixture.bundle, &fixture.timing, 10)
+        .expect("observer bytes");
+    fixture.timing.observer =
+        fixture.sign(1, LearningEvidenceRoleV1::Observer, &observed, 45);
+    let evaluated = longitudinal_evaluation_signing_payload_v4(
+        &fixture.bundle,
+        &fixture.roles,
+        &durable,
+        &fixture.timing,
+        10,
+    )
+    .expect("evaluator bytes");
+    let evidence = SignedEvaluationEvidenceV1 {
+        generator_plan: fixture.sign(
+            0,
+            LearningEvidenceRoleV1::Generator,
+            fixture.bundle.frozen_plan.plan_digest.as_array(),
+            10,
+        ),
+        evaluator_bundle: fixture.sign(
+            1,
+            LearningEvidenceRoleV1::Evaluator,
+            &evaluated,
+            50,
+        ),
+    };
+
+    assert!(decide_with_signed_durable_longitudinal_evidence_v4(
+        fixture.bundle.clone(),
+        fixture.roles.clone(),
+        &durable,
+        &evidence,
+        &fixture.timing,
+        10,
+        &fixture.verifier,
+        50,
+    )
+    .is_err());
+}
+
+#[test]
+fn production_v4_binds_durable_holdout_and_observed_time_evidence() {
+    let mut fixture = Fixture::new();
+    let file = tempfile::tempfile().expect("durable holdout file");
+    let mut store =
+        DurableFinalHoldoutJournalV1::create(file, digest("longitudinal-production-store"))
+            .expect("durable holdout store");
+    let durable =
+        store.consume_proven(store.anchor(), &fixture.bundle.frozen_plan)
+            .expect("durable holdout proof");
+    fixture.bundle.holdout_use = durable.receipt().clone();
+
+    let observed = future_window_signing_payload_v1(&fixture.bundle, &fixture.timing, 10)
+        .expect("observer bytes");
+    fixture.timing.observer =
+        fixture.sign(2, LearningEvidenceRoleV1::Observer, &observed, 45);
+    let evaluated = longitudinal_evaluation_signing_payload_v4(
+        &fixture.bundle,
+        &fixture.roles,
+        &durable,
+        &fixture.timing,
+        10,
+    )
+    .expect("production longitudinal evaluator bytes");
+    let evidence = SignedEvaluationEvidenceV1 {
+        generator_plan: fixture.sign(
+            0,
+            LearningEvidenceRoleV1::Generator,
+            fixture.bundle.frozen_plan.plan_digest.as_array(),
+            10,
+        ),
+        evaluator_bundle: fixture.sign(
+            1,
+            LearningEvidenceRoleV1::Evaluator,
+            &evaluated,
+            50,
+        ),
+    };
+
+    let result = decide_with_signed_durable_longitudinal_evidence_v4(
+        fixture.bundle.clone(),
+        fixture.roles.clone(),
+        &durable,
+        &evidence,
+        &fixture.timing,
+        10,
+        &fixture.verifier,
+        50,
+    )
+    .expect("valid production longitudinal evidence");
+    assert_eq!(
+        result.decision.disposition,
+        IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+    );
+    assert!(!result.decision.authority.grants_any());
+    assert!(!result.authentication_digest.is_zero());
+
+    let mut mismatched = fixture.bundle.clone();
+    mismatched.candidate_id = id("different-candidate");
+    assert!(matches!(
+        longitudinal_evaluation_signing_payload_v4(
+            &mismatched,
+            &fixture.roles,
+            &durable,
+            &fixture.timing,
+            10,
+        ),
+        Err(SignedEvaluationError::DurableHoldoutBinding)
+    ));
 }

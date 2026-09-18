@@ -14,6 +14,7 @@ mod durable_holdout;
 mod holdout_journal;
 pub use durable_holdout::DurableFinalHoldoutJournalV1;
 pub use durable_holdout::DurableHoldoutError;
+pub use durable_holdout::DurableHoldoutUseV1;
 pub use durable_holdout::HoldoutAnchorV1;
 mod ope;
 mod sequential;
@@ -38,8 +39,14 @@ pub use closure::MetricContractV1;
 pub use closure::MetricGateV1;
 pub use closure::MetricRoleContractV2;
 pub use closure::MetricRoleV2;
+#[cfg(feature = "trusted-inprocess-eval")]
 pub use closure::decide_independently;
+#[cfg(not(feature = "trusted-inprocess-eval"))]
+pub(crate) use closure::decide_independently;
+#[cfg(feature = "trusted-inprocess-eval")]
 pub use closure::decide_independently_v2;
+#[cfg(not(feature = "trusted-inprocess-eval"))]
+pub(crate) use closure::decide_independently_v2;
 pub use closure::freeze_cross_fold_plan;
 pub use closure::freeze_cross_fold_plan_v2;
 pub use holdout_journal::FinalHoldoutJournalError;
@@ -76,8 +83,10 @@ pub use sequential::estimate_sequential;
 pub use signed_evaluation::SignedEvaluationDecisionV1;
 pub use signed_evaluation::SignedEvaluationError;
 pub use signed_evaluation::SignedEvaluationEvidenceV1;
+pub use signed_evaluation::decide_with_signed_durable_evidence_v3;
 pub use signed_evaluation::decide_with_signed_evidence_v1;
 pub use signed_evaluation::decide_with_signed_evidence_v2;
+pub use signed_evaluation::durable_evaluation_signing_payload_v3;
 pub use signed_evaluation::evaluation_signing_payload_v1;
 pub use signed_evaluation::evaluation_signing_payload_v2;
 
@@ -159,7 +168,9 @@ impl fmt::Display for Error {
 }
 impl StdError for Error {}
 
-pub fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Error> {
+pub(crate) fn evaluate_legacy_inprocess(
+    mut request: EvaluationRequest,
+) -> Result<EvaluationReceipt, Error> {
     if request.evaluator_id == request.candidate_producer_id {
         return Err(Error::SelfEvaluation);
     }
@@ -267,6 +278,8 @@ mod tests;
 mod longitudinal_time;
 pub use longitudinal_time::LongitudinalTimeEvidenceV1;
 pub use longitudinal_time::ObservedFutureWindowV1;
+pub use longitudinal_time::decide_with_signed_durable_longitudinal_evidence_v4;
 pub use longitudinal_time::decide_with_signed_longitudinal_evidence_v3;
 pub use longitudinal_time::future_window_signing_payload_v1;
 pub use longitudinal_time::longitudinal_evaluation_signing_payload_v3;
+pub use longitudinal_time::longitudinal_evaluation_signing_payload_v4;

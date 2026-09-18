@@ -10,9 +10,15 @@ mod evaluated_shadow;
 
 pub use evaluated_shadow::EvaluatedShadowError;
 pub use evaluated_shadow::EvaluatedShadowReceiptV1;
+#[cfg(feature = "trusted-evaluated-shadow-v1")]
 pub use evaluated_shadow::EvaluatedShadowRequestV1;
+pub use evaluated_shadow::EvaluatedShadowRequestV2;
+#[cfg(feature = "trusted-evaluated-shadow-v1")]
 pub use evaluated_shadow::evaluated_candidate_signing_payload_v1;
+pub use evaluated_shadow::evaluated_candidate_signing_payload_v2;
+#[cfg(feature = "trusted-evaluated-shadow-v1")]
 pub use evaluated_shadow::run_evaluated_shadow_v1;
+pub use evaluated_shadow::run_evaluated_shadow_v2;
 
 mod capability_snapshot;
 

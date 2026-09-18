@@ -62,9 +62,10 @@ EXPECTED_OPERATIONS = {
     "learning.eval": {
         "estimate_ope",
         "estimate_sequential",
-        "freeze_cross_fold_plan",
-        "FinalHoldoutRegistry::consume",
-        "decide_independently",
+        "freeze_cross_fold_plan_v2",
+        "DurableFinalHoldoutJournalV1::consume_proven",
+        "decide_with_signed_durable_evidence_v3",
+        "decide_with_signed_durable_longitudinal_evidence_v4",
     },
 }
 EXPECTED_CRATES = {
@@ -72,6 +73,7 @@ EXPECTED_CRATES = {
     "codex-hepta-learning-artifacts",
     "codex-hepta-bellman-operator",
     "codex-hepta-intelligence-eval",
+    "codex-hepta-intelligence",
     "codex-hepta-shadow-qualification",
 }
 
@@ -183,7 +185,10 @@ def verify_matrix(
         f"matrix modules must be exactly {sorted(EXPECTED_MODULES)}",
     )
     for module, item in modules.items():
-        for key in ("sourceRoot", "stableGuide", "dossier", "nativeMapping"):
+        required_paths = ["sourceRoot", "stableGuide", "dossier", "nativeMapping"]
+        if module == "learning.eval":
+            required_paths.append("productionContract")
+        for key in required_paths:
             path = relative_path(item.get(key), findings, f"{module}.{key}")
             if path is not None:
                 findings.require(
@@ -540,6 +545,97 @@ def verify_workflow(findings: Findings) -> None:
         ),
         "workflow_gate_missing",
         "workflow is missing the cross-language payload-fault regression",
+    )
+    findings.require(
+        "cargo-llvm-cov@0.9.0" in text
+        and "cargo llvm-cov" in text
+        and "learning-eval.lcov" in text,
+        "workflow_gate_missing",
+        "workflow is missing pinned learning.eval coverage evidence",
+    )
+    findings.require(
+        "Lane E learning.eval durable holdout stress audit" in text
+        and "durable_holdout::tests" in text,
+        "workflow_gate_missing",
+        "workflow is missing the durable holdout stress audit",
+    )
+    findings.require(
+        "decide_with_signed_durable_evidence_v3"
+        in (
+            ROOT / "codex-rs/hepta-shadow-qualification/src/lane_e_closure_tests.rs"
+        ).read_text(encoding="utf-8"),
+        "production_e2e_missing",
+        "cross-crate closure does not use signed durable evaluation admission",
+    )
+    intelligence_lib = (
+        ROOT / "codex-rs/hepta-intelligence/src/lib.rs"
+    ).read_text(encoding="utf-8")
+    intelligence_shadow = (
+        ROOT / "codex-rs/hepta-intelligence/src/evaluated_shadow.rs"
+    ).read_text(encoding="utf-8")
+    findings.require(
+        "run_evaluated_shadow_v2"
+        in (
+            ROOT / "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"
+        ).read_text(encoding="utf-8")
+        and "decide_with_signed_durable_evidence_v3" in intelligence_shadow,
+        "production_consumer_missing",
+        "evaluated-shadow consumer does not use strict signed durable evaluation admission",
+    )
+    findings.require(
+        'trusted-evaluated-shadow-v1' in intelligence_lib
+        and '#[cfg(feature = "trusted-evaluated-shadow-v1")]' in intelligence_shadow
+        and "--features trusted-evaluated-shadow-v1" in text,
+        "compatibility_ingress_exposed",
+        "pre-durable evaluated-shadow compatibility must be feature-gated and explicitly compiled",
+    )
+    findings.require(
+        "--features trusted-inprocess-eval" in text
+        and "--test operator_claim" in text,
+        "workflow_gate_missing",
+        "workflow must run trusted-only compatibility explicitly",
+    )
+    findings.require(
+        "scripts/hepta-lane-e-evidence.py emit" in text
+        and "scripts/hepta-lane-e-evidence.py verify" in text
+        and "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02" in text,
+        "workflow_gate_missing",
+        "workflow is missing exact-candidate provenance artifact generation",
+    )
+    findings.require(
+        "scripts/hepta-lane-e-evidence.py self-test" in text,
+        "workflow_gate_missing",
+        "workflow is missing provenance verifier self-test",
+    )
+    evidence_script = ROOT / "scripts/hepta-lane-e-evidence.py"
+    findings.require(
+        evidence_script.is_file(),
+        "evidence_verifier_missing",
+        "Lane E provenance verifier is missing",
+    )
+    if evidence_script.is_file():
+        evidence_text = evidence_script.read_text(encoding="utf-8")
+        findings.require(
+            'SCHEMA = "hepta.lane-e-ci-evidence.v2"' in evidence_text
+            and "evidence receipt expired" in evidence_text
+            and "output digest mismatch" in evidence_text
+            and "synthetic merge ordered parents mismatch" in evidence_text
+            and 'Path(".github/workflows/hepta-lane-e-gap-closure.yml")' in evidence_text
+            and 'Path("scripts/hepta-lane-e-evidence.py")' in evidence_text,
+            "evidence_verifier_regression",
+            "provenance verifier must enforce freshness, output rehash, merge identity, and self-binding",
+        )
+    findings.require(
+        "id-token: write" in text
+        and "attestations: write" in text
+        and "actions/attest@a1948c3f048ba23858d222213b7c278aabede763" in text,
+        "workflow_gate_missing",
+        "workflow is missing signed Sigstore provenance attestation",
+    )
+    findings.require(
+        "github.event.pull_request.base.sha || github.event.before" in text,
+        "workflow_base_binding_missing",
+        "workflow must bind BASE_SHA for both pull_request and push events",
     )
     findings.require(
         bool(re.search(r"^  synthetic-merge:\s*$", text, re.MULTILINE)),

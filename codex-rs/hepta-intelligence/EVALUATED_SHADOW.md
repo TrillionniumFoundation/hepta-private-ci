@@ -1,13 +1,21 @@
 # Evaluated shadow consumer
 
-`run_evaluated_shadow_v1` is an opt-in library composition entry. It verifies the
-single `DatasetSnapshotReceiptV3` manifest against the complete evaluation
-snapshot-ID set, invokes E's signed V2 evaluation, and requires eligibility
-before invoking any F port. The same registered evaluator must additionally
-sign `evaluated_candidate_signing_payload_v1`: the complete E request commitment,
+`run_evaluated_shadow_v2` is the production-qualified opt-in library composition
+entry. It verifies the single `DatasetSnapshotReceiptV3` manifest against the
+complete evaluation snapshot-ID set, requires the exact `DurableHoldoutUseV1`,
+invokes E's signed durable V3 qualification, and requires eligibility before
+invoking any F port. The same registered evaluator must additionally sign
+`evaluated_candidate_signing_payload_v2`, which binds the durable E request,
 actual candidate byte digest/length and artifact generation. The bytes must match
 the F snapshot's model-artifact digest. These bounded opaque bytes need not be a
 model; their meaning and evaluation provenance remain the signer's responsibility.
+
+`run_evaluated_shadow_v1`, `EvaluatedShadowRequestV1` and
+`evaluated_candidate_signing_payload_v1` remain compatibility surfaces for existing
+trusted callers only behind the explicit `trusted-evaluated-shadow-v1` feature. The
+default public API does not export them. They use signed V2 evaluation without the
+type-level durable holdout proof and are not the production-required learning.eval
+ingress.
 
 The host supplies the first seven `LaneFShadowPortsV1` methods. Its intuition
 result must match a recomputed `decide_calibrated_v2` receipt and disposition for

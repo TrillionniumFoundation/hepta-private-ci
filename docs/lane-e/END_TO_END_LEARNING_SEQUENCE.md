@@ -101,26 +101,33 @@ construct the complete EvaluationPlan before outcomes are inspected
   -> bind claim scope, candidate, baseline, objective, dataset, estimand,
      metric directions and safety floors, multiplicity, folds, final-holdout
      window and final-holdout digest
-  -> freeze two or more cross-fold partitions into one sealed plan receipt
+  -> freeze two or more cross-fold partitions plus preregistered metric roles
+     with freeze_cross_fold_plan_v2
   -> every fold keeps training and holdout principal, episode and window
      lineages disjoint
-  -> FinalHoldoutRegistry consumes that exact sealed plan receipt once
+  -> DurableFinalHoldoutJournalV1::consume_proven durably consumes the exact
+     sealed plan and returns a private-field DurableHoldoutUseV1 proof
   -> fit nuisance model on training folds only
   -> compute OPE/sequential estimates and support diagnostics
   -> compute prespecified cluster intervals and multiplicity-adjusted evidence
   -> collect retention, subgroup, privacy and unlearning receipts
-  -> decide_independently validates both receipt seals and their exact semantic
-     binding, then verifies distinct principal, credential and signing key
+  -> the host verifies distinct signed generator/evaluator principals, keys,
+     credentials and controllers against current trust state
+  -> decide_with_signed_durable_evidence_v3 validates Qualification evidence;
+     SystemLongitudinal uses signed durable observed-time V4
   -> intersect candidate LCB versus baseline UCB, safety floors, support,
      multiplicity, snapshot count, future windows, retention and unlearning
   -> emit EligibleForIndependentSelection, Ineligible or InsufficientEvidence
 ```
 
 An identical retry of the same frozen plan returns an idempotent holdout-use
-receipt. Reusing a plan identity with changed semantics conflicts; a second plan
-cannot reuse either the holdout digest or its final window. The deterministic
-receipt seals detect in-process field mutation but are not signatures and do not
-replace durable single-writer storage or authenticated issuer evidence.
+receipt and the same durable proof digest for that immutable journal record.
+Reusing a plan identity with changed semantics conflicts; a second plan cannot
+reuse either the holdout digest or its final window. Raw `FinalHoldoutRegistry`
+and `decide_independently*` remain semantic/trusted-in-process compatibility
+surfaces only. Production admission requires signed evidence plus the durable
+proof; multi-host deployments additionally require host-provided linearizable
+CAS/fencing and rollback protection.
 
 `EligibleForIndependentSelection` deliberately grants no selection authority.
 The evaluator cannot install, activate, merge, promote or release the artifact.

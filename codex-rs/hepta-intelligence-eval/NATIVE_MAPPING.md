@@ -23,38 +23,49 @@ plan digests. They deliberately do not authenticate caller-supplied identities,
 prove causal exchangeability, select a candidate or establish future-calendar
 efficacy.
 
-## Added implementation closure
+## Production implementation closure
+
+`PRODUCTION_CONTRACT.md` is normative for ingress. The raw semantic engines remain
+available only for explicit trusted compatibility; they are not production
+qualification entrypoints.
 
 | Design operation | Native symbol | Source | Status |
 |---|---|---|---|
-| freeze complete cross-fold lineage | `freeze_cross_fold_plan` | `src/closure.rs` | implemented |
-| record final holdout use | `FinalHoldoutRegistry::consume` | `src/closure.rs` | implemented |
-| issue independent eligibility decision | `decide_independently` | `src/closure.rs` | implemented |
+| freeze preregistered cross-fold lineage + metric roles | `freeze_cross_fold_plan_v2` | `src/metric_roles.rs` | production-required |
+| durably consume final holdout and mint proof | `DurableFinalHoldoutJournalV1::consume_proven` | `src/durable_holdout.rs` | production-required |
+| signed independent qualification | `decide_with_signed_durable_evidence_v3` | `src/signed_evaluation.rs` | production-required for `Qualification` |
+| signed durable observed-time longitudinal qualification | `decide_with_signed_durable_longitudinal_evidence_v4` | `src/longitudinal_time.rs` | production-required for `SystemLongitudinal` |
 
-`freeze_cross_fold_plan` requires two to thirty-two folds. It canonicalizes and
-deduplicates every principal, episode and window set; rejects training/holdout
-leakage within a fold; prevents the final holdout from entering any training
-set; prevents a holdout lineage from appearing in multiple folds; and requires
-the final holdout window to be covered exactly once. The frozen receipt also
-binds claim scope, candidate and baseline identities, objective, dataset,
-estimand, metric direction and safety-floor contract, multiplicity profile,
-final-holdout window and final-holdout bytes. Its deterministic integrity seal
-detects post-freeze field mutation; it is not a signature or issuer credential.
+Compatibility-only semantic operations include `freeze_cross_fold_plan`,
+`FinalHoldoutRegistry::consume`, `decide_independently`,
+`decide_independently_v2`, signed V1/V2 and longitudinal V3. They remain useful
+for deterministic composition/migration tests but cannot satisfy the production
+contract by themselves.
 
-`FinalHoldoutRegistry::consume` accepts only the typed sealed frozen-plan
-receipt. An exact retry of the identical plan is idempotent. Reusing the same
-plan identity with changed semantics conflicts, while a different plan using
-either the same final-holdout digest or the same final-holdout window is
-rejected. The emitted holdout-use receipt binds the complete plan semantics,
-registry state and use digest and carries its own deterministic integrity seal.
-A future persistent host adapter must retain this registry under a single
-writer; the pure type and unkeyed seals alone do not prove durable exclusivity
-or authenticated origin.
+`freeze_cross_fold_plan_v2` requires two to thirty-two folds and preregistered
+metric-role contracts. It canonicalizes and deduplicates every principal,
+episode and window set; rejects training/holdout leakage within a fold; prevents
+the final holdout from entering any training set; prevents a holdout lineage
+from appearing in multiple folds; and requires the final holdout window to be
+covered exactly once. The frozen receipt binds claim scope, candidate and
+baseline identities, objective, dataset, estimand, metric directions, roles,
+margins/safety floors, multiplicity profile, final-holdout window and
+final-holdout bytes. Its deterministic integrity seal detects post-freeze field
+mutation; it is not a signature or issuer credential.
 
-`decide_independently` consumes authenticated generator and evaluator identities
-from `learning.ledger`. It rejects shared principal, credential-chain or
-signing-key identity and validates expiry and authority epoch. It then
-intersects:
+The in-memory `FinalHoldoutRegistry::consume` remains the semantic compatibility
+implementation. Production uses `DurableFinalHoldoutJournalV1::consume_proven`:
+it durably appends/replays the same semantic journal and returns a private-field
+adapter-origin proof that binds the supplied storage namespace, immutable
+journal record and holdout-use receipt. Exact retries are idempotent; semantic
+mutation and holdout reuse are rejected. The host still owns authoritative-file
+selection, independent anchor/currentness, rollback protection and multi-host
+CAS/fencing when applicable.
+
+`decide_independently*` remains the trusted in-process semantic engine. The
+production signed V3/V4 entrypoints authenticate generator/evaluator evidence
+against host-owned trust state, require the durable proof, reject shared
+principal/credential/signing/controller identity, and then intersect:
 
 - an integrity-checked frozen-plan receipt and the exact consumed
   holdout-use receipt bound to it;

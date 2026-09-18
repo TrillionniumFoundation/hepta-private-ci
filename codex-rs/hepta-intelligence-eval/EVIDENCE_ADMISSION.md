@@ -8,26 +8,35 @@ existence is not evidence of a running long-term learner.
 
 ## Authenticated evidence boundary
 
-`AuthenticatedPrincipalV1::validate`, the legacy evaluator and the V1/V2 dataset
-receipt APIs validate supplied structure and digests. They do not authenticate an
-external caller or prove that an estimate was produced by an independent actor.
-They remain available for trusted in-process composition and compatibility.
+`AuthenticatedPrincipalV1::validate`, the raw V1/V2 decision engines and the V1/V2
+dataset receipt APIs validate supplied structure and digests. They do not by
+themselves authenticate an external caller. The raw decision engines are hidden
+from the default public API and exist only behind the `trusted-inprocess-eval`
+compatibility feature. The former lightweight `evaluate()` surface is now
+crate-private as `evaluate_legacy_inprocess`.
 
-Qualification-scoped external evaluation uses `decide_with_signed_evidence_v1`
-or `decide_with_signed_evidence_v2`. A `SystemLongitudinal` request now requires
-`decide_with_signed_longitudinal_evidence_v3`: signed window names alone are
-insufficient. V1/V2 authenticate the submitted bytes, then reject that stronger
-claim with `MissingLongitudinalTiming`. The host constructs `LearningEvidenceVerifierV1`
-from its authority store and distributes the resulting trust digest to signers.
-Never construct that verifier from the same remote request being evaluated.
+The normative production contract is `PRODUCTION_CONTRACT.md`. Qualification-
+scoped external evaluation uses `decide_with_signed_durable_evidence_v3`, which
+binds preregistered metric roles, signature-verified generator/evaluator evidence
+and a non-forgeable `DurableHoldoutUseV1` produced by the durable journal adapter.
+A `SystemLongitudinal` production request uses
+`decide_with_signed_durable_longitudinal_evidence_v4`, which additionally binds
+independently signed observed-time windows. Signed V1/V2 and longitudinal V3
+remain authenticated compatibility surfaces and are not the production-required
+entrypoints. The host constructs `LearningEvidenceVerifierV1` from its authority
+store and distributes the resulting trust digest to signers. Never construct that
+verifier from the same remote request being evaluated.
 
 1. Register scoped Ed25519 public keys, role assignments, controlling authorities,
    credential lifetimes, objective and authority epoch in host-owned trust state.
 2. Persist the frozen evaluation plan before accessing its holdout. The generator
    signs the frozen plan digest. Claimed signature timestamps do not prove the
    order of observations; the host's durable registration establishes that order.
-3. The independent evaluator signs the exact `evaluation_signing_payload_v1/v2`
-   bytes. These bind the entire supplied bundle and V2 metric-role contract.
+3. Production qualification signs the exact `durable_evaluation_signing_payload_v3`
+   bytes; production longitudinal qualification signs
+   `longitudinal_evaluation_signing_payload_v4`. These bind the complete bundle,
+   V2 metric-role contract and durable holdout proof; V4 also binds observed-time
+   evidence and the independent observer signature.
 4. Admission verifies the actual payload digest and signature, issuer assignment,
    role, scope, objective, epoch, lifetime and revocation, and rejects shared
    principal/key/credential/controller identities. A private verified type is
@@ -93,7 +102,16 @@ shape. Hosts retaining a lower limit reopen through
 ## Durable final-holdout owner adapter
 
 `DurableFinalHoldoutJournalV1` wraps the existing semantic journal, not another
-holdout authority. Its actual caller supplies an authorized regular `File`, a
+holdout authority. `consume_proven` returns `DurableHoldoutUseV1`, whose fields are
+private outside the crate and whose digest binds the supplied durable storage
+namespace, immutable consumption record and semantic holdout-use receipt.
+Production signed admission requires this adapter-origin proof, so an in-memory
+`FinalHoldoutRegistry` receipt cannot be presented directly as durable
+qualification evidence. The proof does not authenticate that the supplied file
+is the deployment's authoritative store and does not make a local filesystem a
+distributed consensus service; those are host/storage responsibilities.
+
+Its actual caller supplies an authorized regular `File`, a
 nonzero scope binding and an independently retained `HoldoutAnchorV1`. `create`
 is explicit initialization; `recover` never recreates or trims a damaged file.
 The adapter takes an exclusive file lock, replays bounded frames and checks the
@@ -114,7 +132,11 @@ trust/revocation distribution, directory durability, retention and the productio
 scheduler. Locks exclude cooperating writers, not hostile filesystem mutation.
 Tests in `src/durable_holdout_tests.rs` cover a different loading process,
 idempotent retries, acknowledged-history truncation, corruption, writer collision
-and write uncertainty. They are not production-caller or future-window receipts.
+and write uncertainty. Lane E CI additionally emits commit/tree/input-bound
+coverage, repeated durable-holdout stress and strict cross-crate E2E artifacts;
+same-repository runs sign those subjects through GitHub's Sigstore-backed artifact
+attestation service. These still are not live product-writer or future-calendar
+efficacy receipts.
 
 ## Observed-time longitudinal admission
 
@@ -127,9 +149,11 @@ must follow freezing, not overlap, have nonzero observed counts and distinct
 source cuts, and end before the observer's signed observation and trusted current
 time. The final holdout window must be among those observed windows.
 
-The independent observer signs `future_window_signing_payload_v1`. The evaluator
-signs `longitudinal_evaluation_signing_payload_v3`, including the time evidence,
-observer signature and minimum duration; a changed policy requires new evidence.
+The independent observer signs `future_window_signing_payload_v1` and must be independent from both the generator and evaluator under the verified principal/controller separation rules. Compatibility
+V3 signs `longitudinal_evaluation_signing_payload_v3`; production longitudinal
+admission signs `longitudinal_evaluation_signing_payload_v4`, which additionally
+binds the durable holdout proof. Both include time evidence, observer signature
+and minimum duration; a changed policy requires new evidence.
 Existing trust, role separation, support, intervals, retention and unlearning
 checks still run. The host must authenticate durable preregistration and the
 observer's actual collection/clock provenance; signatures alone do not prove the

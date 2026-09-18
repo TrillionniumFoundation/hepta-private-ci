@@ -253,3 +253,30 @@ fn ambiguous_write_fences_the_handle() {
     );
     assert_eq!(store.anchor(), anchor);
 }
+
+
+#[test]
+fn proven_holdout_use_binds_durable_storage_and_anchor() {
+    let directory = Directory::new();
+    let mut store = directory.create();
+    let proof = store
+        .consume_proven(store.anchor(), &plan("plan-1"))
+        .unwrap();
+
+    assert_eq!(proof.receipt().plan_id, id("plan-1"));
+    assert_eq!(proof.receipt().disposition, HoldoutUseDispositionV1::Recorded);
+    assert_eq!(proof.anchor(), store.anchor());
+    assert_eq!(proof.storage_binding(), digest("binding"));
+    assert!(!proof.proof_digest().is_zero());
+
+    let original_digest = proof.proof_digest();
+    drop(store);
+    let mut recovered =
+        DurableFinalHoldoutJournalV1::recover(directory.file(), digest("binding"), proof.anchor())
+            .unwrap();
+    let replay = recovered
+        .consume_proven(recovered.anchor(), &plan("plan-1"))
+        .unwrap();
+    assert_eq!(replay.receipt().disposition, HoldoutUseDispositionV1::IdempotentReplay);
+    assert_eq!(replay.proof_digest(), original_digest);
+}

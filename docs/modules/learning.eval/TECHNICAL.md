@@ -16,6 +16,8 @@
 
 This stable document is the implementation guide for `learning.eval`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+**Normative production ingress:** `../../../codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md`. New external qualification integrations must use the signed + durable production entrypoints defined there. Raw asserted-identity decision engines are trusted-in-process compatibility only, and the lightweight legacy evaluator is crate-private.
+
 ## 1. Identity, mission and ownership
 
 Perform support-aware causal and longitudinal evaluation independently from the production writer.
