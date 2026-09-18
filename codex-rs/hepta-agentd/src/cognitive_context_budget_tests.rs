@@ -254,12 +254,7 @@ async fn learned_ranker_can_promote_candidate_below_legacy_top_four() {
         .collect();
     let (_directory, store, owner, items) = stored_candidates(contents).await;
     let baseline = read(
-        &store,
-        &owner,
-        /*body_generation*/ 1,
-        "lemon",
-        /*limit*/ 4,
-        /*ranker*/ None,
+        &store, &owner, /*body_generation*/ 1, "lemon", /*limit*/ 4, /*ranker*/ None,
     )
     .await
     .unwrap();
