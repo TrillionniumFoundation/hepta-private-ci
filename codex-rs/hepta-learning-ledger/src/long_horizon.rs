@@ -370,7 +370,7 @@ impl LongHorizonSegmentedLedgerV1 {
         self.length = segment_codec::HEADER as u64;
         self.sealed = false;
         self.poisoned = false;
-        Ok(self.checkpoint()?)
+        self.checkpoint()
     }
 
     pub fn checkpoint(&self) -> Result<LongHorizonLedgerCheckpointV1, LongHorizonLedgerErrorV1> {

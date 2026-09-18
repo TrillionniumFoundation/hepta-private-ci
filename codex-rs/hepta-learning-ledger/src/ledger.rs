@@ -214,14 +214,6 @@ impl LearningLedger {
             .filter(|record| record.event.record_id() == record_id)
     }
 
-    #[must_use]
-    pub(crate) fn historical_record_index(
-        &self,
-        record_id: &StableId,
-    ) -> Option<&HistoricalRecordIndex> {
-        self.record_index.get(record_id)
-    }
-
     /// Current committed sequence without cloning historical records.
     #[must_use]
     pub fn head_sequence(&self) -> Option<LogicalSequence> {
@@ -318,27 +310,8 @@ impl LearningLedger {
     }
 
     #[must_use]
-    pub(crate) const fn archived_through_sequence(&self) -> u64 {
-        self.archived_through_sequence
-    }
-
-    #[must_use]
     pub(crate) fn retained_record_count(&self) -> usize {
         self.records.len()
-    }
-
-    #[must_use]
-    pub(crate) fn retained_records_since(&self, sequence: u64) -> u64 {
-        self.head_sequence()
-            .map_or(0, |head| head.get().saturating_sub(sequence))
-    }
-
-    #[must_use]
-    pub(crate) fn chain_digest_at(&self, sequence: u64) -> Option<Digest32> {
-        if sequence == 0 {
-            return Some(Digest32::ZERO);
-        }
-        self.sequence_digests.get(&sequence).copied()
     }
 
     fn validate_event(&self, event: &LedgerEvent) -> Result<(), LedgerError> {

@@ -426,8 +426,8 @@ impl PersistentHistoricalIndexV1 {
     }
 
     fn cache_insert(&mut self, key: String, value: Vec<u8>) {
-        if self.cache.contains_key(&key) {
-            self.cache.insert(key, value);
+        if let std::collections::btree_map::Entry::Occupied(mut entry) = self.cache.entry(key.clone()) {
+            entry.insert(value);
             return;
         }
         while self.cache.len() >= self.cache_limit {
@@ -557,15 +557,14 @@ impl PersistentIndexedLearningLedgerV1 {
         let record_id = expected.event.record_id();
         let existing = self.history.record(record_id)?;
         let self_indexed = existing.is_some();
-        if let Some(index) = existing {
-            if index.sequence != expected.sequence
+        if let Some(index) = existing
+            && (index.sequence != expected.sequence
                 || index.predecessor_chain_digest != expected.predecessor_chain_digest
                 || index.event_digest != expected.event_digest
                 || index.chain_digest != expected.chain_digest
-                || index.kind != event_kind(&expected.event)
-            {
-                return Err(PersistentIndexErrorV1::Corrupt.into());
-            }
+                || index.kind != event_kind(&expected.event))
+        {
+            return Err(PersistentIndexErrorV1::Corrupt.into());
         }
 
         self.hydrate_for_recovery(&expected.event, self_indexed)?;
