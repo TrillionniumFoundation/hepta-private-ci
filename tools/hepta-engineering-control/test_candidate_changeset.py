@@ -27,6 +27,11 @@ class CandidateChangeSetTests(unittest.TestCase):
         (root / "src").mkdir()
         (root / "src/a.txt").write_text("A\n", encoding="utf-8")
         (root / "src/b.txt").write_text("B\n", encoding="utf-8")
+        (root / "src/inline.rs").write_text(
+            "fn production() -> u32 { 1 }\n"
+            "#[cfg(test)]\nmod tests { #[test] fn oracle() { assert_eq!(1, 1); } }\n",
+            encoding="utf-8",
+        )
         git(root, "add", ".")
         git(root, "commit", "-m", "base")
         return temp, root, git(root, "rev-parse", "HEAD")
@@ -89,6 +94,38 @@ class CandidateChangeSetTests(unittest.TestCase):
         )
         self.assertTrue(receipt.passed)
         self.assertEqual(tested.changed_paths, ("src/b.txt", "src/renamed.txt"))
+
+    def test_inline_oracle_source_is_immutable_even_without_test_filename(self):
+        temp, root, base = self.fixture()
+        self.addCleanup(temp.cleanup)
+        envelope = CandidateEnvelope(
+            "env", base, ("src",), require_network_isolation=False
+        )
+        cases = (
+            Mutation(
+                "replace_text",
+                "src/inline.rs",
+                "production()",
+                "production_changed()",
+            ),
+            Mutation(
+                "add_file",
+                "src/generated.rs",
+                replacement_text="#[test]\nfn generated_oracle() {}\n",
+            ),
+        )
+        for mutation in cases:
+            with self.subTest(operation=mutation.operation):
+                candidate = generate_candidates(envelope, (mutation,))[1]
+                with self.assertRaisesRegex(
+                    ValueError, "candidate_oracle_path"
+                ):
+                    sandbox_candidate(
+                        root,
+                        envelope,
+                        candidate,
+                        ((sys.executable, "-c", "print('should-not-run')"),),
+                    )
 
 
 if __name__ == "__main__":
