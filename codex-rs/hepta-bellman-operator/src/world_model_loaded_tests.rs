@@ -75,17 +75,17 @@ fn pinned_world_model_rejects_payload_tampering_and_stale_pins() {
     let mut altered = bytes.clone();
     let last = altered.len() - 1;
     altered[last] ^= 1;
-    assert_eq!(
+    assert!(matches!(
         LoadedTabularWorldModelV1::from_pinned_payload(&altered, &original),
         Err(WorldModelPayloadError::Binding)
-    );
+    ));
 
     let mut stale = original.clone();
     stale.dataset_digest = digest("other-dataset");
-    assert_eq!(
+    assert!(matches!(
         LoadedTabularWorldModelV1::from_pinned_payload(&bytes, &stale),
         Err(WorldModelPayloadError::Binding)
-    );
+    ));
 
     let mut trailing = bytes;
     trailing.push(0);
@@ -93,10 +93,10 @@ fn pinned_world_model_rejects_payload_tampering_and_stale_pins() {
         payload_digest: Digest32::of_bytes(&trailing),
         ..original
     };
-    assert_eq!(
+    assert!(matches!(
         LoadedTabularWorldModelV1::from_pinned_payload(&trailing, &matching_payload),
         Err(WorldModelPayloadError::Encoding)
-    );
+    ));
 }
 
 #[test]
