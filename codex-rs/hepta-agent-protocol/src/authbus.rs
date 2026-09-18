@@ -68,6 +68,13 @@ pub struct ObjectiveRunAdmission {
     pub idempotent: bool,
 }
 
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
+pub enum ObjectiveStartOutcome {
+    Admitted { receipt: ObjectiveRunAdmission },
+    Conflict { run_id: String, conflict_digest: String },
+}
+
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum AuthBusTextState {
