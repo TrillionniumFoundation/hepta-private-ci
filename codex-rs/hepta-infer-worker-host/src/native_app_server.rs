@@ -686,9 +686,10 @@ impl AppServerModelDriver {
             return Err("kernel.authority final-use binding mismatch at entry".into());
         }
         // Write-ahead dispatch is committed after final-use entry but before
-        // the first App Server turn/start await. A crash before this record is
-        // definitely unsent; a crash after it is reconcile-only.
-        control.dispatch_native(
+        // the first App Server turn/start await. The live process receives a
+        // non-serializable abort token so deadline/cancellation changes during
+        // the fsync can still be proven unsent. Recovery never receives it.
+        let (_, pre_effect_abort) = control.dispatch_native_with_pre_effect_abort(
             request_id,
             NativeDispatch {
                 thread_id: started.thread.id.clone(),
@@ -703,8 +704,23 @@ impl AppServerModelDriver {
                 codex_request_digest: Some(exact_codex_request_digest.to_string()),
             },
         )?;
+        let pre_effect_stop = if cancellation.is_cancelled() {
+            Some("cancelled after durable dispatch but before turn/start".to_string())
+        } else {
+            remaining_before(codex_deadline_ms)
+                .err()
+                .map(|error| error.to_string())
+        };
+        if let Some(reason) = pre_effect_stop {
+            control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err(reason.into());
+        }
+        // Dropping the abort proof is the local point of no return. From this
+        // point onward, any missing acknowledgement is reconcile-only.
+        drop(pre_effect_abort);
         let response = timeout(
-            RPC_TIMEOUT,
+            RPC_TIMEOUT.min(remaining_before(codex_deadline_ms)?),
             send_authorized_turn_start(&mut client, entered_use, turn_start_params),
         )
         .await;
