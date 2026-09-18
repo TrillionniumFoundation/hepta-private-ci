@@ -7,6 +7,7 @@ from dataclasses import asdict, dataclass
 import errno
 import os
 from pathlib import Path
+import stat
 import tempfile
 from threading import BoundedSemaphore, Lock
 
@@ -49,8 +50,6 @@ class SandboxCoordinator:
     def __init__(
         self,
         policy: SandboxExecutionPolicy = SandboxExecutionPolicy(),
-        *,
-        admission_directory: str | Path | None = None,
     ):
         if not isinstance(policy, SandboxExecutionPolicy):
             raise EngineeringError("invalid_sandbox_execution_policy")
@@ -69,16 +68,22 @@ class SandboxCoordinator:
         if _fcntl is None:
             self._admission_directory = None
         else:
+            # This path is intentionally not caller-configurable. All cooperating
+            # processes for one UID must contend on the same eight host slots.
             directory = (
-                Path(admission_directory)
-                if admission_directory is not None
-                else Path(tempfile.gettempdir())
+                Path(tempfile.gettempdir())
                 / f"hepta-engineering-sandbox-slots-{os.getuid()}"
             )
             try:
                 directory.mkdir(mode=0o700, parents=True, exist_ok=True)
-                if directory.is_symlink() or not directory.is_dir():
-                    raise OSError("sandbox admission directory is not a directory")
+                metadata = directory.lstat()
+                if (
+                    directory.is_symlink()
+                    or not stat.S_ISDIR(metadata.st_mode)
+                    or metadata.st_uid != os.getuid()
+                    or stat.S_IMODE(metadata.st_mode) & 0o077
+                ):
+                    raise OSError("sandbox admission directory is not private")
             except OSError:
                 raise EngineeringError("sandbox_host_admission_unavailable") from None
             self._admission_directory = directory
@@ -105,6 +110,16 @@ class SandboxCoordinator:
             path = self._admission_directory / f"slot-{index:02d}.lock"
             try:
                 descriptor = os.open(path, flags, 0o600)
+                metadata = os.fstat(descriptor)
+                if (
+                    not stat.S_ISREG(metadata.st_mode)
+                    or metadata.st_uid != os.getuid()
+                    or stat.S_IMODE(metadata.st_mode) & 0o077
+                ):
+                    os.close(descriptor)
+                    raise EngineeringError("sandbox_host_admission_unavailable")
+            except EngineeringError:
+                raise
             except OSError:
                 raise EngineeringError("sandbox_host_admission_unavailable") from None
             try:
