@@ -245,6 +245,7 @@ impl PromptRegistry {
         Ok(self.receipt(MutationDisposition::Inserted))
     }
 
+    #[cfg(test)]
     pub(crate) fn admit_factor(
         &mut self,
         factor_id: &StableId,
@@ -342,6 +343,7 @@ impl PromptRegistry {
         Ok(self.receipt(MutationDisposition::Transitioned))
     }
 
+    #[cfg(test)]
     pub(crate) fn register_realization(
         &mut self,
         realization: PromptRealization,
@@ -380,6 +382,7 @@ impl PromptRegistry {
         Ok(self.receipt(MutationDisposition::Inserted))
     }
 
+    #[cfg(test)]
     pub(crate) fn retire_factor(&mut self, factor_id: &StableId) -> Result<RegistryReceipt, Error> {
         let Some(factor) = self.factors.get(factor_id) else {
             return Err(Error::FactorNotFound(factor_id.to_string()));
@@ -413,6 +416,7 @@ impl PromptRegistry {
         Ok(self.receipt(MutationDisposition::Transitioned))
     }
 
+    #[cfg(test)]
     pub(crate) fn revoke_factor(&mut self, factor_id: &StableId) -> Result<RegistryReceipt, Error> {
         let Some(factor) = self.factors.get(factor_id) else {
             return Err(Error::FactorNotFound(factor_id.to_string()));
