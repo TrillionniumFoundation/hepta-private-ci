@@ -77,6 +77,13 @@ class ProductionReadinessFacts:
     rollback_rehearsed: bool
     rollback_receipt_digest: str
     authority_delta: bool = False
+    source_receipt_verified: bool = False
+    completion_receipts_verified: bool = False
+    multidimensional_orchestration_verified: bool = False
+    external_audit_anchor_observed: bool = False
+    audit_anchor_receipt_digest: str = ""
+    multi_host_execution: bool = False
+    distributed_coordination_bound: bool = False
 
 
 @dataclass(frozen=True)
@@ -142,6 +149,12 @@ def evaluate_production_readiness(
         implementation.append("product_tests_not_passed")
     if facts.authority_delta is not False:
         implementation.append("authority_delta")
+    if facts.source_receipt_verified is not True:
+        implementation.append("source_receipt_not_verified")
+    if facts.completion_receipts_verified is not True:
+        implementation.append("completion_receipts_not_verified")
+    if facts.multidimensional_orchestration_verified is not True:
+        implementation.append("multidimensional_orchestration_not_verified")
 
     deployment = list(implementation)
 
@@ -177,6 +190,12 @@ def evaluate_production_readiness(
         deployment.append("rollback_not_rehearsed")
     if not _valid_sha256(facts.rollback_receipt_digest):
         deployment.append("rollback_receipt_invalid")
+    if facts.external_audit_anchor_observed is not True:
+        deployment.append("external_audit_anchor_missing")
+    if not _valid_sha256(facts.audit_anchor_receipt_digest):
+        deployment.append("audit_anchor_receipt_invalid")
+    if facts.multi_host_execution is True and facts.distributed_coordination_bound is not True:
+        deployment.append("distributed_coordination_missing")
 
     implementation_blockers = tuple(sorted(set(implementation)))
     deployment_blockers = tuple(sorted(set(deployment)))
