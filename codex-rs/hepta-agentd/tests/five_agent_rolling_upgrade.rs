@@ -149,7 +149,7 @@ async fn five_real_agentd_processes_roll_one_agent_without_stopping_peers() -> R
             .await?;
         peer_tasks.push((control, task.task_id));
     }
-    wait_peer_automation_completed(&peer_tasks).await?;
+    wait_peer_automation_materialized(&peer_tasks).await?;
     timeout(Duration::from_secs(20), async {
         while response_mock.requests().len() != 4 {
             tokio::time::sleep(Duration::from_millis(25)).await;
@@ -233,7 +233,9 @@ async fn five_real_agentd_processes_roll_one_agent_without_stopping_peers() -> R
         let tasks = control.automation_list(32).await?;
         ensure!(
             tasks.iter().any(|task| {
-                task.task_id == *task_id && task.state == AutomationTaskState::Completed
+                task.task_id == *task_id
+                    && task.state == AutomationTaskState::Enabled
+                    && task.next_run_at_ms.is_none()
             }),
             "peer automation state was lost across Agent A release changes"
         );
@@ -338,7 +340,7 @@ async fn six_agent_fleet_lifecycle_keeps_peers_fair_and_isolated() -> Result<()>
             .with_context(|| format!("six-agent peer {index} automation create"))?;
         peer_tasks.push((control, task.task_id));
     }
-    wait_peer_automation_completed(&peer_tasks).await?;
+    wait_peer_automation_materialized(&peer_tasks).await?;
     timeout(Duration::from_secs(20), async {
         while response_mock.requests().len() != 5 {
             tokio::time::sleep(Duration::from_millis(25)).await;
@@ -649,7 +651,7 @@ async fn create_peer_threads(fleet: &FleetHarness, peers: &[AgentFixture]) -> Re
     Ok(thread_ids)
 }
 
-async fn wait_peer_automation_completed(
+async fn wait_peer_automation_materialized(
     tasks: &[(AgentdClient, codex_hepta_automation::AutomationTaskId)],
 ) -> Result<()> {
     timeout(Duration::from_secs(20), async {
@@ -658,7 +660,9 @@ async fn wait_peer_automation_completed(
             for (control, task_id) in tasks {
                 let tasks = control.automation_list(32).await?;
                 complete &= tasks.iter().any(|task| {
-                    task.task_id == *task_id && task.state == AutomationTaskState::Completed
+                    task.task_id == *task_id
+                        && task.state == AutomationTaskState::Enabled
+                        && task.next_run_at_ms.is_none()
                 });
             }
             if complete {
@@ -668,7 +672,7 @@ async fn wait_peer_automation_completed(
         }
     })
     .await
-    .context("peer automation did not complete while Agent A was blocked")??;
+    .context("peer automation was not durably materialized while Agent A was blocked")??;
     Ok(())
 }
 
