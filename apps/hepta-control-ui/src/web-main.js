@@ -453,7 +453,11 @@ export async function startControlPlane({
     lifecycleGeneration += 1;
     stopTimer();
     blockMutations("Page is suspended; mutating controls are disabled.");
-    suspensionPromise = client ? client.close().catch(() => {}) : Promise.resolve();
+    const suspendedWriterLease = writerLease;
+    writerLease = null;
+    suspensionPromise = (client ? client.close().catch(() => {}) : Promise.resolve()).finally(() => {
+      suspendedWriterLease?.lease.release();
+    });
   };
   const onPageShow = (event) => {
     if (disposed) return;
