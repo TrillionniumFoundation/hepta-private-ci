@@ -1,5 +1,6 @@
 //! Connect the canonical SQLite owner to the newer bounded cognitive read port.
 
+use std::future::Future;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -51,6 +52,31 @@ pub(crate) async fn read(
     limit: u16,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
+    read_with_before_revalidate(
+        store,
+        owner,
+        body_generation,
+        query,
+        limit,
+        ranker,
+        || async {},
+    )
+    .await
+}
+
+async fn read_with_before_revalidate<F, Fut>(
+    store: &CognitiveStore,
+    owner: &AgentId,
+    body_generation: u64,
+    query: &str,
+    limit: u16,
+    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    mut before_revalidate: F,
+) -> Result<CognitiveContextSnapshot, CognitiveContextError>
+where
+    F: FnMut() -> Fut,
+    Fut: Future<Output = ()>,
+{
     if query.is_empty() || query.len() > 2048 || !(1..=4).contains(&limit) {
         return Err(CognitiveStoreError::Invalid(
             "context requires a 1..2048 byte query and a 1..4 result limit".to_string(),
@@ -232,6 +258,7 @@ pub(crate) async fn read(
     }
     // A concurrent correction, deletion, changed citation, expiry or restored
     // older database must not leak a stale projection into the response.
+    before_revalidate().await;
     store
         .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
         .await?;
