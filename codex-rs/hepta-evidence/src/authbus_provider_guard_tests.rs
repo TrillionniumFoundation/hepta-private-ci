@@ -135,6 +135,7 @@ async fn provision(
             scope_digest: scope,
             revision: 1,
             effect: PolicyEffect::Allow,
+            max_active_reservations: 4_096,
         })
         .await
         .expect("policy");
