@@ -45,7 +45,11 @@ fn vector() -> LaneCGenerationVectorV1 {
     }
 }
 
-fn envelope_with(vector: LaneCGenerationVectorV1, acquired: u64, expires: u64) -> AuthoritativeSnapshotV1 {
+fn envelope_with(
+    vector: LaneCGenerationVectorV1,
+    acquired: u64,
+    expires: u64,
+) -> AuthoritativeSnapshotV1 {
     let record = MemoryRecord {
         record_id: id("memory:one"),
         revision: revision(1),
@@ -165,7 +169,7 @@ fn delivery_revalidation_rejects_generation_epoch_provider_and_lease_drift() {
         acquisition_request(),
         authoritative_request(),
     )
-    .unwrap();
+    .unwrap_or_else(|error| panic!("authoritative guard: {error}"));
 
     let mut advanced_vector = vector();
     advanced_vector.memory_ledger_frontier += 1;
@@ -194,7 +198,7 @@ fn delivery_revalidation_rejects_generation_epoch_provider_and_lease_drift() {
         9,
         60,
     )
-    .unwrap();
+    .unwrap_or_else(|error| panic!("authoritative snapshot: {error}"));
     assert_eq!(
         guard.revalidate(
             &FixtureProvider {
