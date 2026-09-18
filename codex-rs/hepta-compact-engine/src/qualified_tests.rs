@@ -203,6 +203,23 @@ fn canonical_path_rejects_live_tombstone_live_resurrection() {
 }
 
 #[test]
+fn checkpoint_generation_must_succeed_source_snapshot_generation() {
+    let source_snapshot = snapshot_key();
+    let semantic = semantic_payload(&source_snapshot);
+    assert_eq!(
+        build_qualified_candidate(
+            source_snapshot,
+            generation(3),
+            Some(digest("skipped-predecessor")),
+            &policy(2, Vec::new()),
+            &semantic,
+            vec![input(record("memory:a", 1, None, RecordState::Live), 1)],
+        ),
+        Err(QualifiedCompactionError::CheckpointGenerationMismatch)
+    );
+}
+
+#[test]
 fn candidate_is_order_independent() {
     let inputs = vec![
         input(record("memory:a", 1, None, RecordState::Live), 3),
