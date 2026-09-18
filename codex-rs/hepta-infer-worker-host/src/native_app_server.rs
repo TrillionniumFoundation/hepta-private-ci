@@ -23,6 +23,9 @@ use codex_app_server_protocol::JSONRPCErrorError;
 use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::SandboxMode;
 use codex_app_server_protocol::ServerNotification;
+use codex_app_server_protocol::ThreadItem;
+use codex_app_server_protocol::ThreadReadParams;
+use codex_app_server_protocol::ThreadReadResponse;
 use codex_app_server_protocol::ThreadStartParams;
 use codex_app_server_protocol::ThreadStartResponse;
 use codex_app_server_protocol::ThreadUnsubscribeParams;
@@ -41,9 +44,11 @@ use codex_hepta_codex_adapter::CodexAdapterReceipt;
 use codex_hepta_codex_adapter::CodexOperationIntent;
 use codex_hepta_codex_adapter::TURN_START_METHOD_ID;
 use codex_hepta_codex_adapter::adapt as adapt_codex;
+use codex_hepta_codex_adapter::request_digest as codex_request_digest;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
@@ -202,6 +207,205 @@ impl AppServerModelDriver {
         Ok(Self { config })
     }
 
+    /// Reconcile a previously dispatched request without submitting any new
+    /// model input. This is best-effort: ephemeral thread history can disappear
+    /// with the owning App Server process, in which case the durable record
+    /// remains indeterminate and its slot stays held.
+    pub(super) async fn reconcile_existing(
+        &self,
+        record: &NativeRunRecord,
+    ) -> Result<Option<NativeRunOutput>> {
+        if matches!(
+            record.state,
+            codex_hepta_infer_core::durable_control::native::NativeReservationState::Reserved
+                | codex_hepta_infer_core::durable_control::native::NativeReservationState::Released
+        ) {
+            return Ok(None);
+        }
+        let Some(dispatch) = record.dispatch.as_ref() else {
+            return Ok(None);
+        };
+        let (
+            Some(session_id),
+            Some(deadline_ms),
+            Some(expected_request_digest),
+        ) = (
+            dispatch.codex_session_id.as_deref(),
+            dispatch.codex_deadline_ms,
+            dispatch.codex_request_digest.as_deref(),
+        )
+        else {
+            // Historical dispatches predate exact runtime.codex correlation.
+            return Ok(None);
+        };
+
+        let owner = match AgentdClient::new(
+            self.config.agentd_socket.clone(),
+            self.config.agent_id.clone(),
+            self.config.generation,
+        ) {
+            Ok(owner) => owner,
+            Err(_) => return Ok(None),
+        };
+        let health = match owner.health().await {
+            Ok(health) if health.ready && !health.fenced => health,
+            _ => return Ok(None),
+        };
+        let ingress = match owner.session_ingress().await {
+            Ok(ingress) => ingress,
+            Err(_) => return Ok(None),
+        };
+        let socket_path = match AbsolutePathBuf::from_absolute_path(ingress.socket_path) {
+            Ok(path) => path,
+            Err(_) => return Ok(None),
+        };
+        let mut client = match timeout(
+            RPC_TIMEOUT,
+            RemoteAppServerClient::connect_with_bounded_events(
+                RemoteAppServerConnectArgs {
+                    endpoint: RemoteAppServerEndpoint::UnixSocket { socket_path },
+                    client_name: "hepta-infer-worker-reconcile".to_string(),
+                    client_version: env!("CARGO_PKG_VERSION").to_string(),
+                    experimental_api: true,
+                    mcp_server_openai_form_elicitation: false,
+                    opt_out_notification_methods: Vec::new(),
+                    channel_capacity: 8,
+                },
+                /*event_channel_capacity*/ 32,
+            ),
+        )
+        .await
+        {
+            Ok(Ok(client)) => client,
+            _ => return Ok(None),
+        };
+        if client.codex_home() != health.home_root.to_str() {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Ok(None);
+        }
+
+        let read = timeout(
+            RPC_TIMEOUT,
+            client.request_typed::<ThreadReadResponse>(ClientRequest::ThreadRead {
+                request_id: RequestId::Integer(20),
+                params: ThreadReadParams {
+                    thread_id: dispatch.thread_id.clone(),
+                    include_turns: true,
+                },
+            }),
+        )
+        .await;
+        let response = match read {
+            Ok(Ok(response)) => response,
+            _ => {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Ok(None);
+            }
+        };
+        if response.thread.id != dispatch.thread_id || response.thread.session_id != session_id {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("reconciled App Server thread/session correlation mismatch".into());
+        }
+
+        let mut matching_turns = response.thread.turns.into_iter().filter(|turn| {
+            turn.items.iter().any(|item| {
+                matches!(
+                    item,
+                    ThreadItem::UserMessage {
+                        client_id: Some(client_id),
+                        ..
+                    } if client_id == &record.request.request_id
+                )
+            })
+        });
+        let Some(turn) = matching_turns.next() else {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Ok(None);
+        };
+        if matching_turns.next().is_some() {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("multiple App Server turns share one native request id".into());
+        }
+
+        let intent = codex_intent(
+            &record.request.request_id,
+            session_id,
+            &dispatch.thread_id,
+            &record.request.payload_digest,
+            record.request.worker_generation,
+            deadline_ms,
+        )?;
+        if codex_request_digest(&intent)?.to_string() != expected_request_digest {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("durable runtime.codex request digest mismatch".into());
+        }
+
+        let mut recovered_output = String::new();
+        for item in &turn.items {
+            if let ThreadItem::AgentMessage { text, .. } = item {
+                if text.len() > MAX_OUTPUT_BYTES.saturating_sub(recovered_output.len()) {
+                    let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                    return Err("reconciled output byte limit exceeded".into());
+                }
+                recovered_output.push_str(text);
+            }
+        }
+        let terminal_observed = !matches!(turn.status, TurnStatus::InProgress);
+        let status = match turn.status {
+            TurnStatus::Completed => NativeRunStatus::Completed,
+            TurnStatus::Failed => NativeRunStatus::Failed,
+            TurnStatus::Interrupted => NativeRunStatus::Interrupted,
+            TurnStatus::InProgress => NativeRunStatus::Indeterminate,
+        };
+        let owner_authority = match record
+            .observation
+            .as_ref()
+            .map(|observation| &observation.owner_authority)
+        {
+            Some(NativeOwnerAuthority::Lost { reason }) => NativeOwnerAuthority::Lost {
+                reason: reason.clone(),
+            },
+            _ => NativeOwnerAuthority::Unverified,
+        };
+        let stop_reason = turn
+            .error
+            .as_ref()
+            .map(|error| error.message.chars().take(1024).collect())
+            .or_else(|| {
+                (!terminal_observed)
+                    .then(|| "reconciled exact turn is still in progress".to_string())
+            });
+        let mut output = NativeRunOutput {
+            thread_id: dispatch.thread_id.clone(),
+            turn_id: turn.id.clone(),
+            model: record.request.model.clone(),
+            model_provider: dispatch.model_provider.clone(),
+            status,
+            output: recovered_output,
+            observed_output_tokens: None,
+            terminal_observed,
+            codex_request_digest: None,
+            codex_receipt_digest: None,
+            stop_reason,
+            owner_authority,
+        };
+        let receipt = if terminal_observed {
+            let expected_turn_id = StableId::new(turn.id.clone())?;
+            let completed = codex_app_server_protocol::TurnCompletedNotification {
+                thread_id: dispatch.thread_id.clone(),
+                turn,
+            };
+            let observation =
+                AppServerObservation::from_turn_completed(&intent, &expected_turn_id, &completed)?;
+            adapt_codex(deadline_ms, intent, Some(observation))?
+        } else {
+            adapt_codex(/*now_ms*/ 0, intent, None)?
+        };
+        bind_codex_receipt(&mut output, &receipt);
+        let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+        Ok(Some(output))
+    }
+
     /// Execute once. Transport loss after turn/start remains indeterminate and
     /// must never be automatically replayed as a fresh request.
     async fn run_once(
@@ -309,12 +513,16 @@ impl AppServerModelDriver {
             self.config.generation,
             codex_deadline_ms,
         )?;
+        let exact_codex_request_digest = codex_request_digest(&codex_intent)?;
         control.dispatch_native(
             request_id,
             NativeDispatch {
                 thread_id: started.thread.id.clone(),
                 model_provider: started.model_provider.clone(),
                 context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
+                codex_session_id: Some(started.thread.session_id.clone()),
+                codex_deadline_ms: Some(codex_deadline_ms),
+                codex_request_digest: Some(exact_codex_request_digest.to_string()),
             },
         )?;
         let response = timeout(
