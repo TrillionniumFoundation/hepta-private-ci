@@ -1,36 +1,61 @@
 # `learning.operator` native implementation mapping
 
 This file separates deterministic target construction, applicability admission,
-sensor geometry, Bellman reference evaluation, simplest-sufficient tabular
-learning and world-model estimation. No symbol in this crate is an online
-policy, artifact selector or production writer.
+sensor geometry, Bellman reference evaluation, replay-safe simplest-sufficient
+learning, pinned candidate loading, world-model estimation and statistical
+qualification admission. No symbol in this crate is an online policy, artifact
+selector or production writer.
 
 ## Compatibility and naming
 
-The original public `train(TrainingRequest)` function is retained for source
-compatibility, but it delegates to `build_targets`. Its actual behavior is a
-bounded deterministic Bellman-target builder over caller-supplied continuation
-values. It does not fit a neural network or prove a complete Bellman operator.
+The original public `train(TrainingRequest)` symbol remains only as a deprecated
+source-compatibility alias for `build_targets`. Its actual behavior is bounded
+deterministic Bellman-target construction over caller-supplied continuation
+values. New callers must use `build_targets`; neither symbol fits a neural model
+or proves a complete Bellman operator.
 
 The complete regularity gate uses `OperatorRegularityAssessmentV1`; the legacy
 `RegularityProfile` contains only target-builder diagnostics and must not be
 interpreted as the Hölder/operator qualification profile.
 
-## Design operation to Rust symbol
+## Public design operation to Rust symbol
 
 | Design operation | Native symbol | Source | Status |
 |---|---|---|---|
-| build deterministic Bellman targets | `build_targets` (`train` compatibility alias) | `src/lib.rs` | implemented |
+| build deterministic Bellman targets | `build_targets` | `src/lib.rs` | implemented |
 | admit smooth-axis applicability | `validate_applicability_certificate` | `src/reference.rs` | implemented |
-| build fixed sensor core | `build_sensor_core` | `src/reference.rs` | implemented |
+| build fixed sensor core under explicit exact-work budget | `build_sensor_core` | `src/sensor_bounded.rs` | implemented |
 | execute tabular Bellman reference | `evaluate_bellman_reference` | `src/reference.rs` | implemented |
-| fit complete simplest-sufficient operator | `fit_tabular_operator` | `src/learned.rs` | implemented |
-| predict only a fitted sensor/action cell | `predict_tabular_operator` | `src/learned.rs` | implemented |
+| fit replay-safe complete simplest-sufficient operator | `fit_tabular_operator` | `src/admitted.rs` | implemented |
+| fit strict complete-grid operator | `fit_tabular_operator_strict_v2` | `src/learned_strict.rs` | implemented |
+| load independently pinned tabular payload | `LoadedTabularOperatorV1::from_pinned_payload` | `src/loaded.rs` | implemented |
+| predict from validated tabular payload | `LoadedTabularOperatorV1::predict` | `src/loaded.rs` | implemented |
 | admit rank/gain/shape/OOD/error budget | `admit_operator_regularity` | `src/reference.rs` | implemented |
-| fit action-conditioned tabular dynamics | `fit_transition_model` | `src/world_model.rs` | implemented |
-| predict supported transition distribution | `predict_transition` | `src/world_model.rs` | implemented |
+| fit replay-safe action-conditioned tabular dynamics | `fit_transition_model` | `src/admitted.rs` | implemented |
+| load independently pinned world-model payload | `LoadedWorldModelV1::from_pinned_payload` | `src/world_model_loaded.rs` | implemented |
+| predict from validated world-model payload | `LoadedWorldModelV1::predict` | `src/world_model_loaded.rs` | implemented |
+| admit frozen world-model statistical evidence | `admit_world_model_qualification` | `src/world_model_qualification.rs` | implemented |
 
-## Applicability and sensor core
+`learned.rs::predict_tabular_operator`,
+`learned_strict.rs::predict_tabular_operator_indexed_v2` and
+`world_model.rs::predict_transition` remain crate-internal implementation/test
+helpers. They are deliberately not exported from `lib.rs`; cross-crate callers
+cannot bypass pinned loading by passing a mutable public artifact directly.
+
+## Replay admission and action-domain contract
+
+Evidence identity is the replay boundary. Public fitting rejects a repeated
+`evidence_digest` even when a caller supplies a different `sample_id`.
+`build_targets` applies the same rule to `support_digest`, so relabelling one
+observation cannot raise target-builder counts. The world-model wrapper rejects
+duplicate evidence before transition frequencies or mean outcomes are computed.
+
+The public tabular fitting path also requires at least two registered actions,
+matching the deterministic Bellman-reference action-domain floor. This removes
+the former state in which a fitted artifact could be valid to one path but
+structurally ineligible for the reference path.
+
+## Applicability and bounded sensor core
 
 `OperatorApplicabilityCertificateV1` binds the axis partition, domain, action
 space, Hölder/Lipschitz profiles, ellipticity lower bound, control interval,
@@ -38,33 +63,45 @@ independent evaluator credential, fallback, expiry and decision. Non-positive
 ellipticity, expired certificates and unsupported control intervals fail before
 operator evaluation.
 
-`build_sensor_core` uses deterministic farthest-point insertion over a bounded,
-canonical candidate design. It rejects duplicate identities, duplicate
-coordinates, mixed dimensions and coordinates outside normalized `[0,1]`.
-The manifest records selected points, fill distance, separation radius, mesh
-ratio and a hull digest. A zero separation radius or mesh ratio above the pilot
-bound fails.
+The exact reference sensor algorithm still uses canonical farthest-point
+insertion, pairwise duplicate-coordinate checks and exact selected-point
+geometry. `sensor_bounded::build_sensor_core` now computes a conservative
+coordinate-work estimate before entering that algorithm. The estimate covers
+all-pairs candidate comparison, candidate-to-selected distance updates and
+selected-pair separation work. Work above the source budget fails closed before
+the quadratic/exact loop starts. This is a source work ceiling, not a target-host
+latency measurement; a selected host may impose a lower reviewed profile.
+
+The core rejects duplicate identities, duplicate coordinates, mixed dimensions
+and coordinates outside normalized `[0,1]`. The manifest records selected
+points, fill distance, separation radius, mesh ratio and a hull digest. A zero
+separation radius or mesh ratio above the pilot bound fails.
 
 ## Bellman reference, learned baseline and regularity
 
 `evaluate_bellman_reference` requires the complete Cartesian product of the
 registered sensor and action identities. Missing or duplicate cells fail. It
 computes Q32 targets, deterministic greedy actions and action gaps; ties break by
-canonical action ID. This reference is the oracle for any later learned model.
+canonical action ID. This reference is the oracle for later learned candidates.
 
-`fit_tabular_operator` is the first source-complete trainable operator profile.
-It canonicalizes a frozen sensor-by-action grid, validates every sample and
-requires a configurable positive minimum sample count for every grid cell. The
-artifact stores each cell's mean, minimum, maximum, sample count and evidence
-digest. Caller order cannot change the result. `predict_tabular_operator`
-returns only an explicitly fitted cell; an unknown sensor or action is OOD. Its
-output is marked both learned and synthetic and retains `DENY_ALL` authority.
+`fit_tabular_operator` is the public simplest-sufficient fitting path. It first
+applies replay and action-domain admission and then canonicalizes a frozen
+sensor-by-action grid. Every cell needs a positive configurable sample floor.
+The artifact stores mean, minimum, maximum, sample count and bound evidence
+digest. Caller order cannot change the result.
+
+A candidate is not a runtime object. `encode_tabular_payload_v1` creates bounded
+candidate bytes, while `LoadedTabularOperatorV1::from_pinned_payload` requires an
+independently selected payload pin and validates payload, artifact, objective,
+dataset, sensor, training profile, generation, canonical grid, statistics and
+deny-all authority once. Repeated `predict` calls use private immutable loaded
+state and reject unsupported cells. Predictions remain learned, synthetic and
+`DENY_ALL`.
 
 This profile deliberately implements the simplest sufficient learner. A neural
 or low-rank tensor candidate is not required merely because the architecture
 permits one. Such a candidate needs a new immutable training/runtime profile and
-must independently justify itself against the deterministic and tabular
-baselines.
+must independently justify itself against deterministic and tabular baselines.
 
 `admit_operator_regularity` intersects:
 
@@ -81,26 +118,66 @@ Unmeasured components are not silently omitted. A learned implementation must
 publish every required component under a separately reviewed model/runtime
 profile.
 
-## World-model baseline
+## World-model baseline and pinned loading
 
-`fit_transition_model` builds a deterministic action-conditioned tabular model
-from an immutable dataset. For every supported `(state, action)` it records the
-mean bounded outcome and a branch distribution whose Q32 probabilities sum
-exactly to one. `predict_transition` rejects unsupported pairs rather than
-extrapolating and marks every prediction synthetic with deny-all authority.
+`fit_transition_model` applies replay-safe admission before the deterministic
+action-conditioned tabular estimator. For every supported `(state, action)` it
+records the mean bounded outcome and a branch distribution whose Q32
+probabilities sum exactly to one. The internal raw predictor still rejects
+unsupported pairs and marks predictions synthetic with deny-all authority, but
+it is not a public cross-crate API.
+
+`encode_world_model_payload_v1` emits bounded candidate bytes.
+`LoadedWorldModelV1::from_pinned_payload` checks an independent payload digest
+plus model, dataset and model-identity pins, validates canonical estimate and
+branch ordering, count/probability consistency, bounded values, deny-all
+authority and the model digest, and only then creates private immutable loaded
+state. `LoadedWorldModelV1::predict` is the public prediction surface.
 Synthetic predictions cannot become independent factual outcomes.
+
+## World-model qualification evidence
+
+`admit_world_model_qualification` does not calculate or invent scientific
+evidence. It consumes externally produced frozen measurements under a
+digest-bound profile and fails closed unless all declared floors and bounds are
+met. The source admission currently requires at least:
+
+- effective sample size `200`;
+- held-out sample count `200`;
+- three independently identified snapshots;
+- two future windows;
+- bounded held-out error, temporal calibration error, drift score and confidence
+  half-width under the supplied profile;
+- bound evaluator credential and evidence digests.
+
+A successful result remains `DENY_ALL`. It is only an input to later independent
+qualification; it is not operator acceptance, activation, canary, promotion or
+release. Real future windows, target-device measurements and live-world outcome
+evidence cannot be self-issued by this crate.
+
+## Qualification acceptance package
+
+`docs/modules/CARGO_BINDINGS.json` also binds
+`codex-rs/hepta-operator-acceptance` to `learning.operator`. That package uses
+trusted time, nonce claims, durable watermarks, frozen-evidence revalidation,
+externally pinned trust policy and signed receipts. Its scope is explicitly
+`qualification_evidence_only`, `automatic_transition` is false, and its signed
+declaration grants no Enforce, promotion, outbound or retirement authority.
+It must not be described as production acceptance.
 
 ## Host and external obligations
 
-A production integration must still provide:
+A production integration still has to provide, outside this source library:
 
 1. authenticated applicability and regularity evidence;
 2. immutable dataset and artifact lineage;
-3. actual training code, profile, precision, device and runtime tuple;
+3. selected training/runtime profile, precision, device and runtime tuple;
 4. target-host training and inference measurements;
-5. held-out one-step and multistep calibration, change-point and OOD evidence;
-6. independent future-time evaluation, retention and rollback;
-7. a separate selector and process loader.
+5. real held-out one-step and multistep calibration plus change-point/OOD data;
+6. independent future-time evaluation, retention, unlearning and rollback;
+7. an authenticated product caller, separate selector and selected-process loader;
+8. independent operator acceptance beyond qualification-evidence sealing;
+9. canary, promotion and release decisions.
 
 The simplest qualified implementation wins. A tabular or deterministic
 reference satisfying the objective is preferred over an unnecessary neural
@@ -108,53 +185,24 @@ operator.
 
 ## Qualification mapping
 
-Focused tests live in:
+Focused source tests include:
 
-- `src/lib_tests.rs`;
-- `src/reference_tests.rs`;
-- `src/learned_tests.rs`;
-- `src/world_model_tests.rs`.
+- `src/lib_tests.rs` — target construction and replay admission;
+- `src/admitted.rs` — evidence replay and action-domain admission;
+- `src/reference_tests.rs` — applicability, exact sensor/reference and regularity;
+- `src/sensor_bounded.rs` — exact-work budgeting;
+- `src/learned_tests.rs` — deterministic complete-grid fitting;
+- `src/loaded_tests.rs` — pinned tabular payload validation and process reload;
+- `src/world_model_tests.rs` — deterministic action-conditioned baseline;
+- `src/world_model_loaded.rs` — pinned world-model load/tamper rejection;
+- `src/world_model_qualification.rs` — support/future/drift/confidence admission.
 
-Cross-crate composition is exercised by
-`../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. Exact dossier IDs,
+Cross-crate linkage and owner-store reload/rollback are exercised in
+`hepta-shadow-qualification/tests/lane_e_api_contract.rs` and
+`hepta-shadow-qualification/tests/support/tabular_reload.rs`. Exact dossier IDs,
 test functions and CI jobs are registered in
 `../../qualification/lane-e/TEST_TRACEABILITY.json`.
 
-
-## Persisted tabular candidate loading
-
-`encode_tabular_payload_v1` emits a bounded owner-local `HEPTTB01` payload for the
-existing `learning.artifacts` create-only storage APIs. It does not open another
-store. The format contains model identity, generation, five digests and canonical
-sensor/action cells with sample counts, Q32 means/minima/maxima and evidence.
-All integers are big-endian; counts are bounded before allocation. The payload
-ceiling is 64 MiB, the grid is at most 262,144 cells and the existing sensor,
-action and sample bounds apply. Unknown versions, trailing/truncated bytes,
-noncanonical or incomplete grids and invalid statistics reject.
-
-A host-selected `TabularPayloadPinV1` binds payload, original training-artifact,
-objective, dataset, sensor, training-profile and generation identities.
-`LoadedTabularOperatorV1::from_pinned_payload` checks that independent pin and
-validates once; its private immutable state permits O(log n) repeated prediction.
-The original indexed V2 function validates the public mutable artifact in O(n)
-on every call, before its binary search. These are different cost profiles.
-
-The original training digest includes samples not retained in these sufficient
-statistics; it is retained rather than falsely reconstructed. The artifact owner
-must first establish current selection, compatible manifests and non-revoked
-lineage. A hash computed from received bytes is not independent admission.
-`src/loaded_tests.rs` fits actual tabular targets and observes baseline, changed
-candidate and the same predecessor payload in three separate processes. That is
-an engineering reload/rollback test, not a production learning or future-gain
-claim. Scientific evaluation and actual host wiring remain separate gates.
-
-The existing `hepta-shadow-qualification` durable-learning integration target now
-also composes the strict tabular learner with the existing `learning.artifacts`
-create-only payload/snapshot APIs and `load_pinned_candidate`, then the private
-loaded predictor. `tests/support/tabular_reload.rs` checks separate-process
-baseline/candidate/original-predecessor predictions and refuses both a revoked
-predecessor and its descendant under the current registry witness. The parent
-holds expected payload/manifest/registry pins outside the files being inspected;
-no extra artifact store or production selection is introduced. This is executable
-cross-owner engineering qualification, not an authenticated external operator
-acceptance, future-window efficacy result or live C1 deployment.
+These are source and engineering qualification tests. They are not a substitute
+for real future-calendar efficacy, selected-host resource measurements,
+independent acceptance or production release evidence.

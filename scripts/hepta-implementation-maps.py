@@ -4,6 +4,13 @@
 Maps are source-navigation evidence.  They deliberately distinguish a native
 entrypoint from a composed production caller; an entrypoint never grants
 runtime, effect, acceptance, promotion, or release authority.
+
+Legacy v3 maps used one repository-wide ``sourceBase`` identity and therefore
+could remain internally consistent after module source moved.  Newly generated
+or migrated maps use ``module_source_snapshot`` instead: the verifier proves the
+recorded commit/tree pair and rejects any later change under every resolved or
+Cargo-bound source path.  Legacy maps may migrate incrementally without hiding
+the stronger freshness claim on maps that have already opted in.
 """
 
 from __future__ import annotations
@@ -12,11 +19,13 @@ import argparse
 import json
 import re
 import subprocess
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 from hepta_module_source_roots import resolve_source_roots
 
 ROOT = Path(__file__).resolve().parents[1]
+LEGACY_SOURCE_SCOPE = "legacy_shared_snapshot"
+MODULE_SOURCE_SCOPE = "module_source_snapshot"
 
 
 def current_source_base() -> dict[str, str]:
@@ -41,6 +50,21 @@ def lane_by_module():
         for lane in load("docs/readiness/READINESS.json")["implementationLanes"]
         for m in lane["modules"]
     }
+
+
+def cargo_packages_by_module() -> dict[str, list[str]]:
+    packages: dict[str, list[str]] = {}
+    for binding in load("docs/modules/CARGO_BINDINGS.json")["bindings"]:
+        packages.setdefault(binding["module"], []).append(binding["packagePath"])
+    return {module: sorted(paths) for module, paths in packages.items()}
+
+
+def source_paths_for(module: dict, cargo_packages: dict[str, list[str]]) -> list[str]:
+    """Return all source paths whose post-snapshot drift invalidates a map."""
+    return sorted(
+        set(resolve_source_roots(ROOT, module))
+        | set(cargo_packages.get(module["id"], []))
+    )
 
 
 def parse_entrypoints(module: str):
@@ -69,9 +93,11 @@ def parse_entrypoints(module: str):
     return entries
 
 
-def map_for(module: dict, source_base: dict, lanes: dict):
+def map_for(module: dict, source_base: dict, lanes: dict, cargo_packages: dict):
     mid = module["id"]
     roots = [x["path"] for x in module["rootBindings"]]
+    resolved = resolve_source_roots(ROOT, module)
+    bound_packages = cargo_packages.get(mid, [])
     operations = parse_entrypoints(mid)
     if not operations:
         # Keep the map explicit even where the dossier has not named a native
@@ -91,13 +117,16 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "schema": "hepta.module-implementation-map.v3",
         "schemaVersion": 3,
         "sourceBase": source_base,
+        "sourceBaseScope": MODULE_SOURCE_SCOPE,
+        "sourceTrackedPaths": source_paths_for(module, cargo_packages),
+        "cargoBoundPackages": bound_packages,
         "laneId": lanes[mid],
         "module": mid,
         "owner": module["owner"],
         "deputy": module["deputy"],
         "technicalGuide": module["technicalDocument"],
         "declaredRoots": roots,
-        "resolvedRoots": resolve_source_roots(ROOT, module),
+        "resolvedRoots": resolved,
         "sourceRootPresent": all((ROOT / x).exists() for x in roots),
         "productionImplementation": False,
         "productCallerState": "not_composed",
@@ -116,6 +145,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
             "nativeSourceMappingComplete": all(
                 op["sourcePathExists"] and op["nativeSymbol"] for op in operations
             ),
+            "sourceFreshnessVerified": True,
             "sourceRootPresent": all((ROOT / x).exists() for x in roots),
             "productionImplementation": False,
             "productExecutionProved": False,
@@ -126,13 +156,21 @@ def map_for(module: dict, source_base: dict, lanes: dict):
     }
 
 
-def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict:
-    """Upgrade legacy v1/v2 maps without discarding implementation evidence.
+def migrate_map(
+    row: dict,
+    module: dict,
+    lanes: dict,
+    source_base: dict,
+    cargo_packages: dict[str, list[str]],
+) -> dict:
+    """Upgrade a map and refresh its source snapshot instead of preserving staleness.
 
     v1 used ``sourceRoot`` and canonical operation fields directly; v2 wrapped
     the native anchor in ``ownerEntrypoint`` and called it ``designOperation``.
     v3 keeps every legacy field for compatibility while adding one stable
-    operation vocabulary and top-level status/claim fields.
+    operation vocabulary and top-level status/claim fields.  Migration is also
+    a source re-attestation: it records the current immutable commit/tree and
+    all resolved/Cargo-bound paths that must remain unchanged afterwards.
     """
     roots = [x["path"] for x in module["rootBindings"]]
     declared = row.get("declaredRoots", row.get("sourceRoot", roots))
@@ -181,7 +219,11 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
-            "sourceBase": row.get("sourceBase") or source_base,
+            # Migration must never preserve an obsolete source snapshot.
+            "sourceBase": source_base,
+            "sourceBaseScope": MODULE_SOURCE_SCOPE,
+            "sourceTrackedPaths": source_paths_for(module, cargo_packages),
+            "cargoBoundPackages": cargo_packages.get(module["id"], []),
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -209,6 +251,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             bool(op.get("sourcePathExists") and op.get("nativeSymbol"))
             for op in operations
         ),
+        "sourceFreshnessVerified": True,
         "sourceRootPresent": migrated["sourceRootPresent"],
         "productionImplementation": migrated["productionImplementation"],
         "productExecutionProved": bool(boundary.get("productExecutionProved", False)),
@@ -241,6 +284,7 @@ def migrate():
     modules = load("docs/modules/MODULES.json")["modules"]
     by_id = {m["id"]: m for m in modules}
     lanes = lane_by_module()
+    cargo_packages = cargo_packages_by_module()
     source_base = current_source_base()
     changed = []
     for path in sorted((ROOT / "docs/modules").glob("*/IMPLEMENTATION_MAP.json")):
@@ -248,14 +292,7 @@ def migrate():
         module = by_id.get(row.get("module") or path.parent.name)
         if module is None:
             continue
-        if (
-            row.get("schema") == "hepta.module-implementation-map.v3"
-            and row.get("schemaVersion") == 3
-        ):
-            # Normalize existing v3 operations with compatibility aliases.
-            migrated = migrate_map(row, module, lanes, source_base)
-        else:
-            migrated = migrate_map(row, module, lanes, source_base)
+        migrated = migrate_map(row, module, lanes, source_base, cargo_packages)
         path.write_text(
             json.dumps(migrated, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
         )
@@ -266,16 +303,14 @@ def migrate():
 def generate():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
-    source_base = {
-        "commit": git("rev-parse", "HEAD"),
-        "tree": git("rev-parse", "HEAD^{tree}"),
-    }
+    cargo_packages = cargo_packages_by_module()
+    source_base = current_source_base()
     written = []
     for module in modules:
         path = ROOT / f"docs/modules/{module['id']}/IMPLEMENTATION_MAP.json"
         if path.exists():
             continue
-        value = map_for(module, source_base, lanes)
+        value = map_for(module, source_base, lanes, cargo_packages)
         path.write_text(
             json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
         )
@@ -283,11 +318,56 @@ def generate():
     print(json.dumps({"generated": len(written), "maps": written}, ensure_ascii=False))
 
 
+def valid_repo_path(path: str) -> bool:
+    candidate = PurePosixPath(path)
+    return bool(path) and not candidate.is_absolute() and ".." not in candidate.parts
+
+
+def verify_source_snapshot(
+    mid: str,
+    source_base: dict,
+    tracked_paths: list[str],
+    failures: list[str],
+) -> None:
+    commit = source_base["commit"]
+    tree = source_base["tree"]
+    try:
+        actual_tree = git("show", "-s", "--format=%T", commit)
+    except subprocess.CalledProcessError:
+        failures.append(f"{mid}: source snapshot commit is not resolvable")
+        return
+    if actual_tree != tree:
+        failures.append(f"{mid}: source snapshot commit/tree mismatch")
+        return
+    ancestor = subprocess.run(
+        ["git", "merge-base", "--is-ancestor", commit, "HEAD"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+    )
+    if ancestor.returncode != 0:
+        failures.append(f"{mid}: source snapshot is not an ancestor of HEAD")
+        return
+    if not tracked_paths or any(not valid_repo_path(path) for path in tracked_paths):
+        failures.append(f"{mid}: source tracked paths")
+        return
+    try:
+        changed = git("diff", "--name-only", f"{commit}..HEAD", "--", *tracked_paths)
+    except subprocess.CalledProcessError:
+        failures.append(f"{mid}: source freshness diff failed")
+        return
+    if changed:
+        failures.append(
+            f"{mid}: source changed after mapped snapshot ({', '.join(changed.splitlines()[:8])})"
+        )
+
+
 def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
+    cargo_packages = cargo_packages_by_module()
     failures = []
-    source_bases = set()
+    legacy_source_bases = set()
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -309,14 +389,29 @@ def verify():
         if row.get("laneId") != lanes.get(mid):
             failures.append(f"{mid}: lane")
         source_base = row.get("sourceBase")
-        if (
-            not isinstance(source_base, dict)
-            or not source_base.get("commit")
-            or not source_base.get("tree")
-        ):
+        valid_source_base = (
+            isinstance(source_base, dict)
+            and bool(source_base.get("commit"))
+            and bool(source_base.get("tree"))
+        )
+        if not valid_source_base:
             failures.append(f"{mid}: source base")
-        else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
+        source_scope = row.get("sourceBaseScope", LEGACY_SOURCE_SCOPE)
+        if valid_source_base and source_scope == MODULE_SOURCE_SCOPE:
+            expected_packages = cargo_packages.get(mid, [])
+            if row.get("cargoBoundPackages") != expected_packages:
+                failures.append(f"{mid}: cargo-bound packages")
+            tracked_paths = row.get("sourceTrackedPaths")
+            expected_paths = source_paths_for(module, cargo_packages)
+            if tracked_paths != expected_paths:
+                failures.append(f"{mid}: source tracked paths differ from registry bindings")
+            else:
+                verify_source_snapshot(mid, source_base, tracked_paths, failures)
+        elif valid_source_base and source_scope == LEGACY_SOURCE_SCOPE:
+            legacy_source_bases.add((source_base["commit"], source_base["tree"]))
+        elif source_scope not in {MODULE_SOURCE_SCOPE, LEGACY_SOURCE_SCOPE}:
+            failures.append(f"{mid}: unknown source base scope")
+
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -345,8 +440,12 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+        elif boundary.get("sourceFreshnessVerified") is True and source_scope != MODULE_SOURCE_SCOPE:
+            failures.append(f"{mid}: freshness claim requires module source snapshot")
+    if len(legacy_source_bases) > 1:
+        failures.append(
+            f"maps: legacy shared source base drift ({len(legacy_source_bases)} identities)"
+        )
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
