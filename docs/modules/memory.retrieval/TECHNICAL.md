@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-memory-retrieval/src/v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs); observed identifiers include `RetrievalReceiptV2`, `retrieve_v2`, `binding_digest_v2`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) for the implemented subset and remaining product work.
+The registered root contains the V2 input-binding path in [codex-rs/hepta-memory-retrieval/src/v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs), deterministic cue/union/recall primitives in [generation_bound.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound.rs), the typed channel-generator contract in [generator_contract.rs](../../../codex-rs/hepta-memory-retrieval/src/generator_contract.rs), and the canonical SQLite-owner adapter in [owner_adapter.rs](../../../codex-rs/hepta-memory-retrieval/src/owner_adapter.rs). These are source navigation bindings, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -151,7 +151,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Embed retrieval against an authorized coherent read cut. The current host intersects SQLite search with an admitted bounded prefix and reports omitted_records; it does not promise complete recall outside that prefix. Revalidate source revisions before context delivery; missing support and revoked top results require omission or abstention.
+Embed retrieval against an authorized coherent read cut. The SQLite owner exposes a bounded pre-top-four observation with per-channel pre-fusion ranks, channel saturation and candidate support bindings. Agentd intersects that observation with the admitted Lane-C read cut, lets an explicitly configured learned ranker see the complete admitted bounded set, then revalidates all ranked source bindings in one SQLite read transaction before resolving raw content and applying result/byte limits. The current host still reports `omitted_records` for the Lane-C read prefix and does not promise complete recall outside declared owner/channel bounds. Missing support and revoked results require omission or abstention.
 
 Current operating and state-format references:
 
@@ -164,8 +164,11 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs); named case: `channel_completion_order_cannot_change_union_or_recall`.
+- [codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs); named cases: `channel_completion_order_cannot_change_union_or_recall` and `compiled_cue_is_deterministic_and_generation_bound`.
+- [codex-rs/hepta-memory-retrieval/src/generator_contract_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generator_contract_tests.rs); HNMF product-bound and generation/completeness cases.
+- [codex-rs/hepta-memory-retrieval/src/owner_adapter_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/owner_adapter_tests.rs); physical-channel mapping and owner-rank validation.
 - [codex-rs/hepta-memory-retrieval/src/lib_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/lib_tests.rs); named case: `ranking_is_deterministic_and_explainable`.
+- [codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs); named case: `learned_ranker_can_promote_a_candidate_beyond_legacy_top_four`.
 
 In `codex-rs`, run `just test -p codex-hepta-memory-retrieval`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) separately labels target acceptance designs.
 
