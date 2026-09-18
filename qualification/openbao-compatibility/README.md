@@ -18,6 +18,8 @@ file or source directory alone is never sufficient.
 
 The target is a pinned OpenBao version and deployment profile. API, storage and
 seal compatibility are separate dimensions; a partial API adapter cannot be
-treated as a storage or seal replacement. The current matrix deliberately
-records the narrow HeptaBao KV v2 consumer as `partial` and keeps every other
-OpenBao capability blocked until its implementation and evidence are complete.
+treated as a storage or seal replacement. The current matrix deliberately records both the narrow HeptaBao KV v2
+consumer and the bounded client-side dynamic SecretLease profile as `partial`.
+Neither source slice closes complete OpenBao compatibility: selected real
+provider engines, named product callers and independent operational evidence
+remain required, and all other incomplete capabilities stay blocked.
