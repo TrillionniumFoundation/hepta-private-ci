@@ -4,7 +4,6 @@
 //! structural candidate carries a concrete migration/writer-handoff design
 //! whose digest matches the proposal. They do not execute the handoff.
 
-use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
 
@@ -81,12 +80,13 @@ pub fn verify_topology_writer_handoffs_v1(
     handoffs: &[TopologyWriterHandoffV1],
 ) -> Result<Digest32, TopologyGovernanceErrorV1> {
     verify_topology_proposal_v2(proposal)?;
-    let mut by_module = BTreeMap::new();
     for handoff in handoffs {
         verify_topology_writer_handoff_v1(handoff)?;
-        if by_module
-            .insert(handoff.module_id.clone(), handoff)
-            .is_some()
+    }
+    for (index, handoff) in handoffs.iter().enumerate() {
+        if handoffs[..index]
+            .iter()
+            .any(|existing| existing.handoff_digest == handoff.handoff_digest)
         {
             return Err(TopologyGovernanceErrorV1::DuplicateHandoff(
                 handoff.module_id.to_string(),
@@ -94,6 +94,7 @@ pub fn verify_topology_writer_handoffs_v1(
         }
     }
 
+    let mut used = vec![false; handoffs.len()];
     let mut bound = Vec::new();
     for candidate in proposal
         .candidates
@@ -101,9 +102,27 @@ pub fn verify_topology_writer_handoffs_v1(
         .filter(|candidate| candidate.kind == TopologyCandidateKindV2::Update)
     {
         let change = &candidate.changes[0];
-        let handoff = by_module
-            .remove(&change.module_id)
-            .ok_or_else(|| TopologyGovernanceErrorV1::MissingHandoff(change.module_id.to_string()))?;
+        let matches = handoffs
+            .iter()
+            .enumerate()
+            .filter(|(_, handoff)| handoff.handoff_digest == change.writer_handoff_digest)
+            .collect::<Vec<_>>();
+        let [(index, handoff)] = matches.as_slice() else {
+            return Err(TopologyGovernanceErrorV1::MissingHandoff(
+                change.module_id.to_string(),
+            ));
+        };
+        if used[*index] {
+            return Err(TopologyGovernanceErrorV1::DuplicateHandoff(
+                change.module_id.to_string(),
+            ));
+        }
+        used[*index] = true;
+        if handoff.module_id != change.module_id {
+            return Err(TopologyGovernanceErrorV1::HandoffDigestMismatch(
+                change.module_id.to_string(),
+            ));
+        }
         if handoff.baseline_generation != proposal.baseline_generation
             || handoff.candidate_generation != proposal.candidate_generation
         {
@@ -121,16 +140,15 @@ pub fn verify_topology_writer_handoffs_v1(
                 change.module_id.to_string(),
             ));
         }
-        if handoff.handoff_digest != change.writer_handoff_digest {
-            return Err(TopologyGovernanceErrorV1::HandoffDigestMismatch(
-                change.module_id.to_string(),
-            ));
-        }
         bound.push(handoff.handoff_digest);
     }
-    if let Some(unexpected) = by_module.keys().next() {
+    if let Some((_, unexpected)) = handoffs
+        .iter()
+        .enumerate()
+        .find(|(index, _)| !used[*index])
+    {
         return Err(TopologyGovernanceErrorV1::UnexpectedHandoff(
-            unexpected.to_string(),
+            unexpected.module_id.to_string(),
         ));
     }
     let mut bytes = b"hepta.plasticity.topology-handoff-set.v1\0".to_vec();
@@ -258,5 +276,77 @@ mod tests {
             .expect("typed handoff set");
         assert!(!set_digest.is_zero());
         assert!(!proposal.authority.grants_any());
+    }
+
+    #[test]
+    fn handoffs_are_matched_per_candidate_not_only_per_module() {
+        let selected = digest("artifact:alternatives");
+        let first = bind_topology_writer_handoff_v1(TopologyWriterHandoffV1 {
+            module_id: id("module:a"),
+            source_writer_id: id("writer:old"),
+            destination_writer_id: id("writer:new"),
+            source_domain_digest: digest("domain:old"),
+            destination_domain_digest: digest("domain:new"),
+            baseline_generation: generation(8),
+            candidate_generation: generation(9),
+            migration_digest: digest("migration:replace"),
+            rollback_digest: digest("rollback:replace"),
+            handoff_digest: Digest32::ZERO,
+        })
+        .expect("first handoff");
+        let second = bind_topology_writer_handoff_v1(TopologyWriterHandoffV1 {
+            module_id: id("module:a"),
+            source_writer_id: id("writer:old"),
+            destination_writer_id: id("writer:new"),
+            source_domain_digest: digest("domain:old"),
+            destination_domain_digest: digest("domain:new"),
+            baseline_generation: generation(8),
+            candidate_generation: generation(9),
+            migration_digest: digest("migration:rewire"),
+            rollback_digest: digest("rollback:rewire"),
+            handoff_digest: Digest32::ZERO,
+        })
+        .expect("second handoff");
+        let proposal = propose_topology_v2(TopologyProposalRequestV2 {
+            proposal_id: id("topology:alternatives"),
+            proposer_id: id("generator"),
+            evaluator_id: id("evaluator"),
+            selected_artifact_digest: selected,
+            window: ProposalWindowV2 {
+                window_id: id("window:alternatives"),
+                window_digest: digest("window:alternatives"),
+            },
+            baseline_generation: generation(8),
+            candidate_generation: generation(9),
+            evaluation_digest: digest("evaluation"),
+            rollback_predecessor_digest: selected,
+            changes: vec![
+                TopologyChangeV2 {
+                    module_id: id("module:a"),
+                    operation: TopologyOperationV2::Replace,
+                    predecessor_digest: Some(digest("old")),
+                    candidate_digest: Some(digest("replace")),
+                    migration_digest: first.migration_digest,
+                    rollback_digest: first.rollback_digest,
+                    writer_handoff_digest: first.handoff_digest,
+                    evidence_digest: digest("evidence:replace"),
+                },
+                TopologyChangeV2 {
+                    module_id: id("module:a"),
+                    operation: TopologyOperationV2::Rewire,
+                    predecessor_digest: Some(digest("old")),
+                    candidate_digest: Some(digest("rewire")),
+                    migration_digest: second.migration_digest,
+                    rollback_digest: second.rollback_digest,
+                    writer_handoff_digest: second.handoff_digest,
+                    evidence_digest: digest("evidence:rewire"),
+                },
+            ],
+        })
+        .expect("alternative proposal");
+
+        let set_digest =
+            verify_topology_writer_handoffs_v1(&proposal, &[first, second]).expect("handoffs");
+        assert!(!set_digest.is_zero());
     }
 }
