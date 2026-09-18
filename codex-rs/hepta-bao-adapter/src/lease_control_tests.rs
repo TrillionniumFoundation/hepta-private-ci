@@ -145,7 +145,8 @@ fn journal_recovery_preserves_operation_history_across_later_operations() {
 
     let mut reopened = LeaseRegistry::open(dir.path()).unwrap();
     let issue = request("op:issue:history");
-    let BeginResult::Existing(issue_snapshot) = reopened.begin_issue(&issue, [13; 32]).unwrap() else {
+    let BeginResult::Existing(issue_snapshot) = reopened.begin_issue(&issue, [13; 32]).unwrap()
+    else {
         panic!("original issue operation must remain idempotent");
     };
     assert_eq!(issue_snapshot.local_lease_id, local_id);
