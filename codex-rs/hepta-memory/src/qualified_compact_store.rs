@@ -513,28 +513,68 @@ pub(crate) async fn verify_qualified_compact_store(
     pool: &SqlitePool,
     owner: &codex_hepta_contracts::AgentId,
 ) -> Result<(), CognitiveStoreError> {
-    let expected_objects = [
-        ("cognitive_qualified_compact_checkpoints", "table"),
+    let expected_objects: &[(&str, &str, &[&str])] = &[
+        (
+            "cognitive_qualified_compact_checkpoints",
+            "table",
+            &[
+                "CREATE TABLE cognitive_qualified_compact_checkpoints",
+                "PRIMARY KEY (owner_agent_id, scope_id, purpose_id, generation)",
+                "UNIQUE (owner_agent_id, scope_id, purpose_id, checkpoint_digest)",
+                ") STRICT",
+            ],
+        ),
         (
             "cognitive_qualified_compact_checkpoints_no_update",
             "trigger",
+            &[
+                "BEFORE UPDATE ON cognitive_qualified_compact_checkpoints",
+                "RAISE(ABORT, 'qualified compact checkpoints are immutable')",
+            ],
         ),
         (
             "cognitive_qualified_compact_checkpoints_no_delete",
             "trigger",
+            &[
+                "BEFORE DELETE ON cognitive_qualified_compact_checkpoints",
+                "RAISE(ABORT, 'qualified compact checkpoints are immutable')",
+            ],
         ),
-        ("cognitive_qualified_compact_checkpoints_latest", "index"),
+        (
+            "cognitive_qualified_compact_checkpoints_latest",
+            "index",
+            &[
+                "CREATE INDEX cognitive_qualified_compact_checkpoints_latest",
+                "ON cognitive_qualified_compact_checkpoints(",
+                "owner_agent_id, scope_id, purpose_id, generation DESC",
+            ],
+        ),
     ];
-    for (name, expected_type) in expected_objects {
-        let actual: Option<String> =
-            sqlx::query_scalar("SELECT type FROM sqlite_schema WHERE name = ?")
-                .bind(name)
-                .fetch_optional(pool)
-                .await
-                .map_err(unavailable)?;
-        if actual.as_deref() != Some(expected_type) {
+    for (name, expected_type, required_fragments) in expected_objects {
+        let object = sqlx::query("SELECT type, sql FROM sqlite_schema WHERE name = ?")
+            .bind(name)
+            .fetch_optional(pool)
+            .await
+            .map_err(unavailable)?
+            .ok_or_else(|| {
+                CognitiveStoreError::Corrupt(format!(
+                    "qualified compact schema object {name} is missing"
+                ))
+            })?;
+        let actual_type: String = object.try_get("type").map_err(unavailable)?;
+        let sql: Option<String> = object.try_get("sql").map_err(unavailable)?;
+        let Some(sql) = sql.filter(|value| !value.is_empty()) else {
             return Err(CognitiveStoreError::Corrupt(format!(
-                "qualified compact schema object {name} is missing or has the wrong type"
+                "qualified compact schema object {name} has no SQL definition"
+            )));
+        };
+        if actual_type != *expected_type
+            || required_fragments
+                .iter()
+                .any(|fragment| !sql.contains(fragment))
+        {
+            return Err(CognitiveStoreError::Corrupt(format!(
+                "qualified compact schema object {name} has the wrong definition"
             )));
         }
     }
