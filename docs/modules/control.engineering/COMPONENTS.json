@@ -313,9 +313,10 @@
       "symbols": [
         "ProductionReadinessFacts",
         "ProductionReadinessDecision",
-        "evaluate_production_readiness"
+        "evaluate_production_readiness",
+        "evaluate_authenticated_production_readiness"
       ],
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_path",
       "failureModel": [
         "repository_mismatch",
         "product_caller_missing",
@@ -323,7 +324,9 @@
         "reviewer_identity_collision",
         "strong_sandbox_not_observed",
         "deployment_not_observed",
-        "rollback_not_rehearsed"
+        "rollback_not_rehearsed",
+        "external_audit_anchor_missing",
+        "distributed_fencing_not_verified"
       ],
       "resourceBounds": {
         "ambientAuthority": 0
@@ -347,6 +350,130 @@
         "input_byte_limit_exceeded"
       ],
       "rollback": "retry with corrected input; scheduling retains immutable committed generations"
+    },
+    {
+      "id": "authenticated-product-orchestration",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/orchestration.py",
+      "symbols": [
+        "issue_authenticated_work_envelope",
+        "schedule_engineering_work",
+        "CompletionReceipt",
+        "LeadershipReceipt",
+        "EngineeringPlan"
+      ],
+      "state": "source_implemented_product_path",
+      "failureModel": [
+        "source_receipt_signature",
+        "missing_authenticated_predecessor",
+        "worker_capacity_or_skill",
+        "ci_capacity",
+        "review_capacity",
+        "leadership_receipt_required"
+      ],
+      "resourceBounds": {
+        "maximumWorkers": 256,
+        "maximumPackages": 4096,
+        "maximumCiUnits": 4096
+      },
+      "rollback": "discard the proposal or publish a new generation; no proposal grants write or merge authority"
+    },
+    {
+      "id": "composite-candidate-generator",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/composite_candidate.py",
+      "symbols": [
+        "CompositeCandidate",
+        "generate_composite_candidates",
+        "sandbox_composite_candidate"
+      ],
+      "state": "source_implemented",
+      "failureModel": [
+        "mutation_batch_limit_exceeded",
+        "duplicate_mutation_path",
+        "protected_oracle_path",
+        "sandbox_path_escape"
+      ],
+      "resourceBounds": {
+        "maximumMutationsPerCandidate": 100,
+        "maximumCandidates": 32
+      },
+      "rollback": "discard the composite candidate and retain the exact base"
+    },
+    {
+      "id": "sandbox-admission-controller",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/sandbox_control.py",
+      "symbols": [
+        "sandbox_admission",
+        "run_with_infrastructure_retries"
+      ],
+      "state": "source_implemented",
+      "failureModel": [
+        "sandbox_capacity_exhausted",
+        "invalid_infrastructure_retry_limit"
+      ],
+      "resourceBounds": {
+        "maximumParallelSandboxesPerCoordinator": 8,
+        "maximumInfrastructureRetries": 2
+      },
+      "rollback": "release the local slot; semantic failures are never retried"
+    },
+    {
+      "id": "mutation-testing-controller",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/mutation_testing.py",
+      "symbols": [
+        "MutationTestingReceipt",
+        "run_mutation_testing"
+      ],
+      "state": "source_implemented",
+      "failureModel": [
+        "mutation_probe_required",
+        "invalid_mutation_probe",
+        "mutation_probe_deduplicated"
+      ],
+      "resourceBounds": {
+        "maximumMutationProbes": 31
+      },
+      "rollback": "reject the test claim whenever any admitted mutant survives"
+    },
+    {
+      "id": "external-production-evidence",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/external.py",
+      "symbols": [
+        "ExternalFactReceipt",
+        "AuditAnchorReceipt",
+        "KeyCustodyReceipt",
+        "verify_external_fact_receipts",
+        "verify_audit_anchor",
+        "verify_key_custody"
+      ],
+      "state": "source_implemented_external_evidence_required",
+      "failureModel": [
+        "external_fact_signature",
+        "audit_anchor_signature",
+        "key_custody_signature",
+        "key_custody_role_missing"
+      ],
+      "resourceBounds": {
+        "ambientAuthority": 0
+      },
+      "rollback": "keep deployment readiness false until fresh independently signed receipts arrive"
+    },
+    {
+      "id": "repository-product-caller",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/product_gate.py",
+      "symbols": [
+        "build_product_receipt",
+        "main"
+      ],
+      "state": "source_implemented_product_path_pending_current_ci_receipt",
+      "failureModel": [
+        "repository_identity_mismatch",
+        "workflow_identity_mismatch",
+        "product_orchestration_rejected_bounded_package"
+      ],
+      "resourceBounds": {
+        "ambientAuthority": 0
+      },
+      "rollback": "disable the CI job or keep productionImplementation false; no repository mutation is issued"
     }
   ],
   "externalGates": {
