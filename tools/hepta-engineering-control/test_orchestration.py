@@ -77,7 +77,7 @@ class OrchestrationTests(unittest.TestCase):
             "e" * 64,
             "ci_executor",
             "ci",
-            self.now - 100,
+            self.now,
             self.now + 100,
         )
         return replace(
@@ -274,6 +274,49 @@ class OrchestrationTests(unittest.TestCase):
                         generation_id="g",
                         now_ns=self.now,
                     )
+
+    def test_completion_cannot_predate_or_outlive_its_owner_generation(self):
+        with tempfile.TemporaryDirectory() as temp:
+            with EngineeringStore(Path(temp) / "store.db") as store:
+                store.issue_work_envelope(self.envelope, now_ns=self.now)
+                valid = self.completion(store, "foundation", "src/foundation")
+                for code, changes in (
+                    (
+                        "completion_receipt_before_generation",
+                        {"observed_unix_ns": self.now - 1},
+                    ),
+                    (
+                        "completion_receipt_window_exceeds_envelope",
+                        {"expires_unix_ns": self.envelope.expires_unix_ns + 1},
+                    ),
+                ):
+                    with self.subTest(code=code):
+                        value = replace(valid, signature="", **changes)
+                        value = replace(
+                            value,
+                            signature=self.trust.sign(
+                                value, value.issuer, value.signing_identity
+                            ),
+                        )
+                        with self.assertRaisesRegex(ValueError, code):
+                            plan_engineering_work(
+                                store,
+                                self.envelope,
+                                (
+                                    EngineeringWorkPackage(
+                                        0,
+                                        "feature",
+                                        ("foundation",),
+                                        ("src/feature",),
+                                    ),
+                                ),
+                                (WorkerProfile("worker", (), 1, ("src",)),),
+                                (value,),
+                                self.trust,
+                                EngineeringCapacity(1, ()),
+                                generation_id=f"g-{code}",
+                                now_ns=self.now,
+                            )
 
     def test_signed_completion_requires_real_durable_assignment_generation(self):
         with tempfile.TemporaryDirectory() as temp:
