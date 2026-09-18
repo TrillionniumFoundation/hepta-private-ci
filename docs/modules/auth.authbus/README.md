@@ -8,8 +8,9 @@ Canonical landing page for the AuthBus implementation and its composition bounda
 2. [Current implementation](../../lane-a-foundation/auth.authbus/CURRENT_IMPLEMENTATION.md) — executable source capability at the current candidate.
 3. [Signed admission](../../../codex-rs/hepta-authbus/SIGNED_ADMISSION.md) — signature, durable replay and delivery semantics.
 4. [Implementation dossier](../../../qualification/module-execution-dossiers/detail/auth.authbus.md) — operation/state-machine design and qualification cases.
-5. [Agentd signed text host](../../../codex-rs/hepta-agentd/AUTHBUS_TEXT.md) — the narrow product-composed ingress.
-6. [IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json) and [COMPOSITION.json](COMPOSITION.json) — machine-readable source/composition evidence.
+5. [Trust/key lifecycle](TRUST_LIFECYCLE.md) — enrollment, rotation, revocation, external checkpoint and safe replay-epoch retirement.
+6. [Agentd signed text host](../../../codex-rs/hepta-agentd/AUTHBUS_TEXT.md) — the narrow product-composed ingress.
+7. [IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json) and [COMPOSITION.json](COMPOSITION.json) — machine-readable source/composition evidence.
 
 ## Ownership split
 
