@@ -2,8 +2,8 @@
 
 ## Scope
 
-\`EvidenceExternalCheckpointV1\` is the repository implementation of the
-logical anti-rollback boundary for the target \`qualification_evidence\`
+`EvidenceExternalCheckpointV1` is the repository implementation of the
+logical anti-rollback boundary for the target `qualification_evidence`
 domain. It binds:
 
 - the exact prefix of the applied SQLx migration ledger;
@@ -19,7 +19,7 @@ ordinary backup failure domain.
 
 After a successful qualification mutation:
 
-1. call \`capture_external_checkpoint\`;
+1. call `capture_external_checkpoint`;
 2. durably store the returned JSON in an independently controlled monotonic
    store, HSM-backed record, append-only operator ledger, or equivalent
    external frontier;
@@ -28,12 +28,12 @@ After a successful qualification mutation:
 4. do not advance the retained frontier until the external write has been
    independently acknowledged.
 
-A local file beside \`hepta_evidence_2.sqlite\` is not an external checkpoint.
+A local file beside `hepta_evidence_2.sqlite` is not an external checkpoint.
 
 ## Restore and replacement admission
 
 Before admitting a restored or replacement evidence database, pass the latest
-retained checkpoint to \`open_with_external_checkpoint\`. Store open first runs
+retained checkpoint to `open_with_external_checkpoint`. Store open first runs
 the normal SQLite quick-check, migration checksum, schema and signed-row
 verification. Checkpoint verification then rejects:
 
