@@ -8,8 +8,8 @@
   "headAttestation": {
     "candidateBranch": "fix/memory-federation-v2-hardening-final",
     "baseCommit": "d7af096f28fa9989388939efa0e6600b52a43952",
-    "candidateHead": "c5ca8365001847c0ab8700354af12ea5e5aebde5",
-    "headMeaning": "frozen implementation_test_and_design_documentation_head_before_this_attestation_metadata_commit",
+    "candidateHead": "e654e6dee66180ad1604d98ceeca2e8a521b8ff7",
+    "headMeaning": "frozen implementation_test_and_primary_design_documentation_head_before_this_attestation_metadata_commit",
     "status": "pending_exact_candidate_execution",
     "scope": [
       "remote_response_field_binding",
@@ -37,12 +37,13 @@
       "codex-rs/app-server/src/lib.rs"
     ],
     "evidencePaths": [
+      "docs/modules/memory.federation/TECHNICAL.md",
+      "docs/modules/memory.federation/V2_HARDENING.md",
       "codex-rs/hepta-memory-federation/src/v2.rs",
       "codex-rs/hepta-memory-federation/src/v2_tests.rs",
       "codex-rs/hepta-memory/src/cognitive_runtime.rs",
       "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs",
       "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
-      "docs/modules/memory.federation/V2_HARDENING.md",
       "qualification/module-execution-dossiers/detail/memory.federation.md",
       ".github/workflows/memory-federation-v2-final-verify.yml"
     ],
