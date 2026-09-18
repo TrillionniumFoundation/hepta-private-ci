@@ -239,10 +239,10 @@ impl IterationLedgerV1 {
                 .map(|event| &event.evidence.actor_id)
         };
         let collides = match next {
-            IterationCandidateStateV1::Selected => actor_for(
-                IterationCandidateStateV1::IndependentlyEvaluated,
-            )
-            .is_some_and(|actor| actor == &receipt.actor_id),
+            IterationCandidateStateV1::Selected => {
+                actor_for(IterationCandidateStateV1::IndependentlyEvaluated)
+                    .is_some_and(|actor| actor == &receipt.actor_id)
+            }
             IterationCandidateStateV1::Promoted => [
                 IterationCandidateStateV1::IndependentlyEvaluated,
                 IterationCandidateStateV1::Selected,
@@ -428,14 +428,41 @@ mod tests {
         let mut ledger = IterationLedgerV1::new(envelope()).unwrap();
         ledger.append_candidate(candidate()).unwrap();
         let steps = [
-            (IterationCandidateStateV1::StaticallyValidated, IterationEvidenceKindV1::StaticValidation, "generator", 8),
-            (IterationCandidateStateV1::SandboxTested, IterationEvidenceKindV1::Sandbox, "generator", 9),
-            (IterationCandidateStateV1::IndependentlyEvaluated, IterationEvidenceKindV1::Evaluation, "evaluator", 10),
-            (IterationCandidateStateV1::ReviewRequested, IterationEvidenceKindV1::Review, "reviewer", 11),
-            (IterationCandidateStateV1::AcceptedCandidate, IterationEvidenceKindV1::Decision, "reviewer", 12),
+            (
+                IterationCandidateStateV1::StaticallyValidated,
+                IterationEvidenceKindV1::StaticValidation,
+                "generator",
+                8,
+            ),
+            (
+                IterationCandidateStateV1::SandboxTested,
+                IterationEvidenceKindV1::Sandbox,
+                "generator",
+                9,
+            ),
+            (
+                IterationCandidateStateV1::IndependentlyEvaluated,
+                IterationEvidenceKindV1::Evaluation,
+                "evaluator",
+                10,
+            ),
+            (
+                IterationCandidateStateV1::ReviewRequested,
+                IterationEvidenceKindV1::Review,
+                "reviewer",
+                11,
+            ),
+            (
+                IterationCandidateStateV1::AcceptedCandidate,
+                IterationEvidenceKindV1::Decision,
+                "reviewer",
+                12,
+            ),
         ];
         for (state, kind, actor, n) in steps {
-            ledger.transition(&id("candidate"), state, receipt(kind, actor, n)).unwrap();
+            ledger
+                .transition(&id("candidate"), state, receipt(kind, actor, n))
+                .unwrap();
         }
         assert!(matches!(
             ledger.transition(
@@ -445,11 +472,13 @@ mod tests {
             ),
             Err(IterationLedgerError::IndependentActorConflict(_))
         ));
-        ledger.transition(
-            &id("candidate"),
-            IterationCandidateStateV1::Selected,
-            receipt(IterationEvidenceKindV1::Selection, "selector", 14),
-        ).unwrap();
+        ledger
+            .transition(
+                &id("candidate"),
+                IterationCandidateStateV1::Selected,
+                receipt(IterationEvidenceKindV1::Selection, "selector", 14),
+            )
+            .unwrap();
         assert!(matches!(
             ledger.transition(
                 &id("candidate"),
@@ -458,11 +487,13 @@ mod tests {
             ),
             Err(IterationLedgerError::IndependentActorConflict(_))
         ));
-        ledger.transition(
-            &id("candidate"),
-            IterationCandidateStateV1::Promoted,
-            receipt(IterationEvidenceKindV1::Promotion, "promoter", 16),
-        ).unwrap();
+        ledger
+            .transition(
+                &id("candidate"),
+                IterationCandidateStateV1::Promoted,
+                receipt(IterationEvidenceKindV1::Promotion, "promoter", 16),
+            )
+            .unwrap();
         assert!(matches!(
             ledger.transition(
                 &id("candidate"),
@@ -471,11 +502,13 @@ mod tests {
             ),
             Err(IterationLedgerError::IndependentActorConflict(_))
         ));
-        ledger.transition(
-            &id("candidate"),
-            IterationCandidateStateV1::Released,
-            receipt(IterationEvidenceKindV1::Release, "releaser", 18),
-        ).unwrap();
+        ledger
+            .transition(
+                &id("candidate"),
+                IterationCandidateStateV1::Released,
+                receipt(IterationEvidenceKindV1::Release, "releaser", 18),
+            )
+            .unwrap();
     }
 
     #[test]
