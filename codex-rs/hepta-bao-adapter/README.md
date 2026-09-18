@@ -55,10 +55,11 @@ has issued a lease but the final-use recheck is revoked before consumer entry,
 `DeliveryBlocked` returns the known opaque handle to the trusted host so it
 can revoke or reconcile the credential instead of orphaning it.
 
-Renew and revoke use `PUT /v1/sys/leases/renew` and
-`PUT /v1/sys/leases/revoke`. They consume their final-use token immediately
-before the external mutation. `lookup_secret_lease` uses
-`PUT /v1/sys/leases/lookup` and never replays the mutation. Network failure,
+Renew and revoke use `POST /v1/sys/leases/renew` and
+`POST /v1/sys/leases/revoke`; revoke requests set `sync=true` so a success
+response represents completed revocation. They consume their final-use token
+immediately before the external mutation. `lookup_secret_lease` uses
+`POST /v1/sys/leases/lookup` and never replays the mutation. Network failure,
 server error, or response-body timeout after a mutation may have taken effect
 returns `Indeterminate`; callers must not blind-retry.
 
@@ -122,8 +123,9 @@ five minutes. Signing material remains outside the adapter and normal runtime.
 `FinalUseAuthority::update_revocations` accepts only monotonic trusted host
 updates. Within one epoch, revoked IDs cannot be removed. `open_state_dir`
 requires a Unix owner-only state directory (0700), creates private regular
-files (0600), and holds an operating-system process lock until exit. Claims
-and revocation updates are synced and atomically replaced before success.
+files (0600), and holds an operating-system process lock until exit. Revocation heads are atomically replaced before success. Claims are appended
+and fsynced to `claims.log` before dispatch admission; they no longer rewrite
+the complete authority snapshot.
 The example automatically reopens this state: used nonces remain rejected
 after restart without a manual epoch change. Corrupt, missing previously
 initialized state, unsafe permissions, or a concurrent owner cause denial.
@@ -131,8 +133,9 @@ Storage errors fence that authority instance until recovery. Preserve this
 state across deployments; deleting or restoring it from an old backup is an
 authority reset and requires an independently changed issuer trust/epoch.
 Other platforms fail closed until an equivalent owner ACL store exists.
-The 16,384-entry registry never evicts claims silently; exhaustion rejects new
-dispatch until a trusted epoch transition. A failed/timeout request does not
+The current per-epoch claim ceiling is 1,000,000 and claims are never silently
+evicted. Revoked grant IDs retain a separate 16,384-entry bound. Exhaustion
+rejects new dispatch until a trusted epoch transition. A failed/timeout request does not
 refund its nonce or retry automatically. A new grant requires owner action.
 
 Provider 401/403 is denied; missing data, invalid TLS, timeout, oversize,
