@@ -74,6 +74,7 @@ The current source mapping is enumerated in `../../../docs/modules/learning.arti
 - **Publication:** `ArtifactPublicationTransactionV1` validates the exact successor prefix/bridge/current eligibility and next witness; recovery is explicit `NotCommitted` / `Committed` / conflict.
 - **Iteration:** bounded `IterationCandidateV1` transition model and `IterationLedgerV1` external-evidence ledger remain deny-all.
 - **Capacity/path hardening:** owner histories share the 4096 durable cap; `CreateOnlyArtifactFile::create_in` rejects absolute/parent/symlink-parent escape while documenting the remaining hostile-rename host boundary.
+- **Admin/service:** `inspect_artifact_owner_status_v1` exposes read-only heads, bounded counts and remaining durable capacity with `AuthorityPosture::DENY_ALL`; it cannot discover newest files, mutate state, delete orphans, select, activate, promote or release.
 - **Source tests:** registry, storage/budget/lock, pinned, revocation, closure V2 plus inline admission V3, lifecycle, control-storage, publication and iteration tests.
 
 **Remaining boundary:** product caller and production writer are still not composed. The host owns trusted newest-head discovery, external signature/authentication, target-filesystem directory durability/openat-style hostile-race protection, backup non-resurrection, independently selected process loading, admin orchestration and release gates.
