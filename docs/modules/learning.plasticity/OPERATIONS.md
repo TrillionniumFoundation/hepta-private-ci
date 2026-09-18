@@ -12,7 +12,7 @@ It can construct and persist a proposal only. It has no selection, training,
 installation, runtime-topology, promotion or release authority. `codex-rs/hepta-agentd::propose_agentd_plasticity_v1` is now the source-level host
 callsite. It recomputes the current artifact and durable learning-ledger frontiers
 and requires context-bound owner evidence for dataset, update-rule, modulator,
-modulator-broadcast, eligibility and per-parameter signal digests before invoking the adapter. This source composition is not evidence that a deployed
+modulator-broadcast, eligibility, mutation-policy and per-parameter signal digests before invoking the adapter. This source composition is not evidence that a deployed
 target host executed or accepted it, so product execution remains unproved.
 
 The selected host owns four independent facts: current learning-evidence trust state,
@@ -79,8 +79,7 @@ credentials, dataset records and payload bytes are prohibited from logs.
   rolling 15-minute window or any single proposal ID/slot produces repeated drift.
 - **Authentication:** page on any accepted request whose authenticated Generator,
   Observer and Evaluator do not satisfy pairwise signed-role separation, or whose
-  owner-evidence receipt cannot be resolved against its exact artifact/window/dataset
-  context; the implementation is expected to make these states unreachable.
+  owner-evidence receipt, including the mutation-policy receipt, cannot be resolved against its exact artifact/window/dataset context; the implementation is expected to make these states unreachable.
 - **Latency target:** host p99 for authenticated generation + evidence/evaluation
   admission + durable append + external anchor commit should remain below 2 seconds
   for the bounded profile. Exceeding this for 15 minutes disables new plasticity
