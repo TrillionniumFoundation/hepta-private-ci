@@ -22,7 +22,7 @@ Candidate registration is not selection. A successful read, admission, lifecycle
 
 Own create-only `learning_artifact_registry` and `operator_sensor_core_registry`. The stable V1 registry/payload encoding remain readable. `LearningArtifactManifestV2` binds payload digest/length, all source datasets, complete lineage, multiple predecessors, rollback predecessor, training code, runtime, device, objective, schema, normalization, compatibility, producer, creation time and expiry.
 
-`DatasetWithdrawalRegistry` is an append-only digest chain that persists tombstones and blocks future manifests referencing withdrawn datasets. V3 admission additionally binds `WithdrawalAuthorityDomainV1 { registry_id, scope_digest, authority_id }`; the admitted frontier is a domain-separated digest of that domain and the raw withdrawal head. Identical raw heads in distinct scopes are not interchangeable.
+`DatasetWithdrawalRegistry` is an append-only digest chain that persists tombstones and blocks future manifests referencing withdrawn datasets. V3 admission additionally binds `WithdrawalAuthorityDomainV1 { registry_id, scope_digest, authority_id, authority_epoch }`; the admitted frontier is a domain-separated digest of that domain and the raw withdrawal head. Identical raw heads in distinct scopes or authority epochs are not interchangeable.
 
 `ArtifactLifecycleJournalV2` is predecessor-bound and role-aware. Historical replay validates actor evidence at immutable event time rather than restart time, so credential expiry cannot make valid stored history unrecoverable. New mutation still requires currently valid actor evidence.
 
@@ -50,7 +50,7 @@ The owner rejects mutation before accepting state its canonical durable format c
 - ART-02: crash before authenticated current-head publication classifies `NotCommitted`; crash after exact candidate-head publication classifies `Committed`.
 - ART-03: corrupt/incomplete/mixed-generation payload or control snapshot is refused on reopen.
 - ART-04: rollback to a revoked/incompatible predecessor fails even if an old backup once marked it selected.
-- ART-05: equal raw withdrawal heads from different registry/scope/authority domains are not interchangeable.
+- ART-05: equal raw withdrawal heads from different registry/scope/authority/epoch domains are not interchangeable.
 - ART-06: lifecycle history written while actor evidence was valid reopens after that credential expires, while a new write with the expired credential is rejected.
 - ART-07: a publication candidate that registers and then revokes/quarantines the admitted artifact is not a valid publication bridge.
 - ART-08: rooted create-only placement rejects lexical parent escape and symlinked-parent escape; prepare-before-create creates no final path on deterministic validation failure.
@@ -68,7 +68,7 @@ Use all eighteen dossier receipt fields. Immediate revocation and stop remain ef
 The current source mapping is enumerated in `../../../docs/modules/learning.artifacts/IMPLEMENTATION_MAP.json` and `../../../codex-rs/hepta-learning-artifacts/NATIVE_MAPPING.md`.
 
 - **Registry/payload:** V1 append-only registry, prepare-before-create payload/snapshot/witness APIs, create-only final writes, current-head witness readback and exact pinned loading.
-- **Withdrawal/admission:** persistent withdrawal chain plus V3 registry/scope/authority domain separation and exact-frontier admission.
+- **Withdrawal/admission:** persistent withdrawal chain plus V3 registry/scope/authority/epoch domain separation and exact-frontier admission; domain-aware durable reopen rejects cross-epoch receipts.
 - **Lifecycle:** predecessor-bound role-aware journal; replay uses historical event time while current append uses current credential validity.
 - **Durable control state:** create-only `HEPTAW01` withdrawal and `HEPTAL02` lifecycle snapshots round-trip through real files with independent receipts.
 - **Publication:** `ArtifactPublicationTransactionV1` validates the exact successor prefix/bridge/current eligibility and next witness; recovery is explicit `NotCommitted` / `Committed` / conflict.
