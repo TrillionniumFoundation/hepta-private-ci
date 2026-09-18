@@ -1487,7 +1487,23 @@ mod tests {
         }
     }
 
+    #[test]
+    fn lease_persistence_participates_in_state_digest() {
+        let matrix = MatrixSupervisorSnapshot::default();
+        assert_ne!(
+            control_state_test_digest(matrix.clone(), true),
+            control_state_test_digest(matrix, false)
+        );
+    }
+
     fn matrix_control_digest(matrix: MatrixSupervisorSnapshot) -> ControlStateDigest {
+        control_state_test_digest(matrix, true)
+    }
+
+    fn control_state_test_digest(
+        matrix: MatrixSupervisorSnapshot,
+        runtime_lease_persisted: bool,
+    ) -> ControlStateDigest {
         let temp = tempfile::tempdir().expect("create temporary fleet");
         let fleet_root =
             HeptaFleetRoot::parse(temp.path().join("fleet")).expect("parse temporary fleet root");
@@ -1531,7 +1547,7 @@ mod tests {
             runtime_release: None,
             runtime_incarnation: None,
             runtime_fenced: false,
-            runtime_lease_persisted: true,
+            runtime_lease_persisted,
             release_change: None,
             has_last_command: false,
         };
