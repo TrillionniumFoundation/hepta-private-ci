@@ -27,6 +27,8 @@ for (const [network, prefix] of [
 for (const [network, prefix] of [
   ["::", 128],
   ["::1", 128],
+  ["::ffff:0:0", 96],
+  ["64:ff9b::", 96],
   ["fc00::", 7],
   ["fe80::", 10],
   ["ff00::", 8],
@@ -50,10 +52,14 @@ function privateAddress(address, family) {
 }
 
 async function resolvePinned(hostname, { allowPrivateNetworkForTests }) {
-  const direct = net.isIP(hostname);
+  const normalizedHostname =
+    hostname.startsWith("[") && hostname.endsWith("]")
+      ? hostname.slice(1, -1)
+      : hostname;
+  const direct = net.isIP(normalizedHostname);
   const answers = direct
-    ? [{ address: hostname, family: direct }]
-    : await lookup(hostname, { all: true, verbatim: true });
+    ? [{ address: normalizedHostname, family: direct }]
+    : await lookup(normalizedHostname, { all: true, verbatim: true });
   if (answers.length === 0 || answers.length > MAX_DNS_ANSWERS) {
     throw new Error("DNS answer count is outside the egress bound");
   }
@@ -121,6 +127,7 @@ export class GrantScopedEgressBroker {
   #allowedOrigins;
   #allowPrivateNetworkForTests;
   #server = null;
+  #connections = new Set();
   #observations = [];
 
   constructor({ socketPath, allowedOrigins, allowPrivateNetworkForTests = false }) {
@@ -154,6 +161,10 @@ export class GrantScopedEgressBroker {
       });
     });
     server.maxConnections = MAX_PROXY_CONNECTIONS;
+    server.on("connection", (socket) => {
+      this.#connections.add(socket);
+      socket.once("close", () => this.#connections.delete(socket));
+    });
     server.on("connect", (request, client, head) => {
       this.#handleConnect(request, client, head).catch(() => {
         if (!client.destroyed) {
@@ -178,6 +189,8 @@ export class GrantScopedEgressBroker {
     const server = this.#server;
     this.#server = null;
     if (server) {
+      for (const socket of this.#connections) socket.destroy();
+      this.#connections.clear();
       await new Promise((resolve) => server.close(() => resolve()));
     }
     await unlink(this.#socketPath).catch((error) => {

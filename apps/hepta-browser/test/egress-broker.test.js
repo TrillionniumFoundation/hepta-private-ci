@@ -89,3 +89,24 @@ test("production broker rejects loopback/private DNS targets even when the origi
     await rm(root, { recursive: true, force: true });
   }
 });
+
+
+test("production broker fails closed on IPv4-mapped IPv6 destinations", async () => {
+  const root = await mkdtemp(join(tmpdir(), "hepta-egress-mapped-"));
+  const broker = new GrantScopedEgressBroker({
+    socketPath: join(root, "proxy.sock"),
+    allowedOrigins: ["http://[::ffff:7f00:1]"],
+  });
+  await broker.start();
+  try {
+    const response = await rawProxy(
+      join(root, "proxy.sock"),
+      "GET http://[::ffff:7f00:1]/ HTTP/1.1\r\nHost: [::ffff:7f00:1]\r\nConnection: close\r\n\r\n",
+    );
+    assert.match(response, /502 Bad Gateway|403 Forbidden/);
+    assert.equal(broker.observations.length, 0);
+  } finally {
+    await broker.close();
+    await rm(root, { recursive: true, force: true });
+  }
+});

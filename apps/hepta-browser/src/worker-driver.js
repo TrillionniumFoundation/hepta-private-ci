@@ -846,12 +846,13 @@ export class SubprocessBrowserDriver {
 
   async contain(input) {
     this.#requireSession(input);
-    await this.#egressBroker?.close();
+    const broker = this.#egressBroker;
     this.#egressBroker = null;
     this.#client?.close();
     this.#child?.kill?.("SIGKILL");
     this.#client = null;
     this.#child = null;
+    await broker?.close();
     return { contained: true };
   }
 
