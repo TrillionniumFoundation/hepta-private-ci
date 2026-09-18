@@ -66,7 +66,7 @@ pub struct EvaluatedShadowRequestV1<'a> {
     /// The same evaluator signs `evaluated_candidate_signing_payload_v1`.
     pub candidate_evidence: &'a SignedLearningEvidenceV1,
     /// The generator signs the exact V2 durable decision payload.
-    pub decision_evidence: &'a SignedLearningEvidenceV1,
+    pub decision_evidence: SignedLearningEvidenceV1,
     pub dataset: &'a DatasetSnapshotReceiptV3,
     pub intuition: CalibratedDecisionRequestV1,
     pub episode_id: StableId,
@@ -345,7 +345,7 @@ pub fn run_evaluated_shadow_v1<P: LaneFShadowPortsV1>(
         .verifier()
         .verify(
             LearningEvidenceRoleV1::Generator,
-            request.decision_evidence,
+            &request.decision_evidence,
             &decision_payload,
             now,
         )
@@ -413,7 +413,7 @@ struct DurableDecisionPorts<'a, P> {
     ledger: &'a mut LedgerWriter,
     expected_head: Digest32,
     production_decision: ProductionDecisionV2,
-    decision_evidence: &'a SignedLearningEvidenceV1,
+    decision_evidence: SignedLearningEvidenceV1,
     intuition: CalibratedIntuitionReceiptV1,
     now: u64,
     admission_digest: Digest32,
@@ -469,7 +469,7 @@ impl<P: LaneFShadowPortsV1> LaneFShadowPortsV1 for DurableDecisionPorts<'_, P> {
         match self.ledger.append_decision(
             self.expected_head,
             self.production_decision.clone(),
-            self.decision_evidence,
+            &self.decision_evidence,
             self.now,
         ) {
             Ok(receipt) => {
