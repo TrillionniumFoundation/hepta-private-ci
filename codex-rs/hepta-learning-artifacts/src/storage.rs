@@ -166,14 +166,17 @@ impl From<io::Error> for ArtifactStorageError {
     }
 }
 
-
-fn contained_child(parent: &Path, file_name: &Path) -> Result<std::path::PathBuf, ArtifactStorageError> {
+fn contained_child(
+    parent: &Path,
+    file_name: &Path,
+) -> Result<std::path::PathBuf, ArtifactStorageError> {
     let parent_metadata = fs::symlink_metadata(parent).map_err(ArtifactStorageError::from)?;
     if !parent_metadata.is_dir() || parent_metadata.file_type().is_symlink() {
         return Err(ArtifactStorageError::InvalidPath);
     }
     let mut components = file_name.components();
-    let valid = matches!(components.next(), Some(Component::Normal(_))) && components.next().is_none();
+    let valid =
+        matches!(components.next(), Some(Component::Normal(_))) && components.next().is_none();
     if !valid || file_name.as_os_str().is_empty() {
         return Err(ArtifactStorageError::InvalidPath);
     }
@@ -343,7 +346,6 @@ pub fn read_registry_snapshot(
     }
     Ok(registry)
 }
-
 
 pub fn write_dataset_withdrawal_snapshot(
     file: CreateOnlyArtifactFile,
@@ -658,7 +660,6 @@ fn decode_head_witness(
     })
 }
 
-
 fn encode_withdrawal_snapshot(
     registry: &DatasetWithdrawalRegistry,
     binding: Digest32,
@@ -732,8 +733,7 @@ fn decode_withdrawal_snapshot(
         if observed != expected.domain_digest {
             return Err(ArtifactStorageError::Corrupt);
         }
-        DatasetWithdrawalRegistry::new_scoped(domain)
-            .map_err(|_| ArtifactStorageError::Semantic)?
+        DatasetWithdrawalRegistry::new_scoped(domain).map_err(|_| ArtifactStorageError::Semantic)?
     };
     let count = parse_usize(lines.next().ok_or(ArtifactStorageError::Corrupt)?)?;
     let head = parse_digest(lines.next().ok_or(ArtifactStorageError::Corrupt)?)?;
@@ -959,11 +959,15 @@ fn parse_digest(value: &str) -> Result<Digest32, ArtifactStorageError> {
 }
 
 fn parse_u64(value: &str) -> Result<u64, ArtifactStorageError> {
-    value.parse::<u64>().map_err(|_| ArtifactStorageError::Corrupt)
+    value
+        .parse::<u64>()
+        .map_err(|_| ArtifactStorageError::Corrupt)
 }
 
 fn parse_usize(value: &str) -> Result<usize, ArtifactStorageError> {
-    value.parse::<usize>().map_err(|_| ArtifactStorageError::Corrupt)
+    value
+        .parse::<usize>()
+        .map_err(|_| ArtifactStorageError::Corrupt)
 }
 
 fn encode_snapshot(
