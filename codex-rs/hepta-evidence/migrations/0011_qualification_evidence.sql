@@ -149,6 +149,7 @@ CREATE TABLE qualification_issuer_key_revocations (
     reason_code TEXT NOT NULL,
     authority_principal TEXT NOT NULL,
     authority_key_id TEXT NOT NULL,
+    authority_role TEXT NOT NULL CHECK (authority_role = 'security_reviewer'),
     authority_verifying_key BLOB NOT NULL CHECK (length(authority_verifying_key) = 32),
     payload_json TEXT NOT NULL CHECK (json_valid(payload_json)),
     payload_sha256 TEXT NOT NULL CHECK (
