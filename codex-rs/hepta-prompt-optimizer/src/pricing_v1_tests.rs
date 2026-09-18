@@ -49,6 +49,7 @@ fn candidate_set() -> PromptCandidateSetReceiptV1 {
         realization_id: id("realization:1"),
         role: PromptCandidateRoleV1::DeveloperInstruction,
         payload_digest: digest("payload"),
+        registry_binding_digest: digest("registry-binding"),
         admission_digest: digest("admission"),
         support_digest: digest("registry-support"),
         token_cost: 12,
@@ -57,6 +58,8 @@ fn candidate_set() -> PromptCandidateSetReceiptV1 {
     };
     binding.binding_digest = binding.compute_binding_digest();
     let profile = PromptModelProfileV1 {
+        model_id: id("model:hepta-test"),
+        model_version: "2026-09-18".to_owned(),
         model_digest: digest("model"),
         tokenizer_digest: digest("tokenizer"),
         template_digest: digest("template"),
