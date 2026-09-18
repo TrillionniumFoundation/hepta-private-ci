@@ -1,0 +1,121 @@
+name: Hepta memory retrieval source qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-memory-retrieval/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/hepta-memory-retrieval-qualification.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-memory-retrieval/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/hepta-memory-retrieval-qualification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: memory-retrieval-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+
+jobs:
+  qualify:
+    name: Memory retrieval qualification (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","synthetic-merge"]' || '["source-head"]') }}
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Construct deterministic synthetic merge
+        if: matrix.lane == 'synthetic-merge'
+        id: merge
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta memory retrieval CI
+          author-email: hepta-memory-retrieval-ci@users.noreply.github.com
+          message: Synthetic memory retrieval merge
+
+      - name: Bind exact tested identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${{ matrix.lane }}" = synthetic-merge ]; then
+            test "$(git rev-parse HEAD)" = "${{ steps.merge.outputs.sha }}"
+          else
+            test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          fi
+          git diff --quiet
+          git diff --cached --quiet
+
+      - name: Build and test retrieval engine
+        working-directory: codex-rs
+        env:
+          CARGO_INCREMENTAL: "0"
+          CARGO_PROFILE_RELEASE_DEBUG: "0"
+          CARGO_TARGET_DIR: ${{ runner.temp }}/retrieval-target
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-memory-retrieval
+          cargo build --locked --release -p codex-hepta-memory-retrieval             --example memory_retrieval_qualification
+
+      - name: Measure bounded maximum-profile source candidate
+        env:
+          HEPTA_RETRIEVAL_QUAL_SAMPLES: "40"
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/memory-retrieval-qualification"
+          /usr/bin/time -v             -o "$RUNNER_TEMP/memory-retrieval-qualification/process-time.txt"             "$RUNNER_TEMP/retrieval-target/release/examples/memory_retrieval_qualification"             > "$RUNNER_TEMP/memory-retrieval-qualification/metrics.json"
+          python3 - "$RUNNER_TEMP/memory-retrieval-qualification/metrics.json" <<'PY'
+          import json
+          import sys
+          data = json.load(open(sys.argv[1], encoding="utf-8"))
+          assert data["schema"] == "hepta.memory-retrieval.source-qualification.v1"
+          assert data["sampleCount"] >= 20
+          assert data["candidateCount"] == 512
+          assert data["expandedNodeCount"] == 4096
+          assert data["expandedSynapseCount"] == 32768
+          assert data["returnedCount"] <= 16
+          assert data["recurrentSteps"] == 4
+          assert data["activeUnitsPerPopulation"] == 64
+          assert data["syntheticOraclePassed"] is True
+          assert data["targetHostQualified"] is False
+          PY
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain source-host observations
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-retrieval-qualification-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/memory-retrieval-qualification/*
+          if-no-files-found: error
+          retention-days: 30
