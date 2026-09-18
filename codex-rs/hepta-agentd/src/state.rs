@@ -9,6 +9,7 @@ use codex_hepta_memory::CognitiveStore;
 use crate::AgentdError;
 use crate::AgentdEventKind;
 use crate::AgentdIdentity;
+use crate::AgentdOperationsHost;
 use crate::EventBuffer;
 
 #[path = "state_control.rs"]
@@ -22,6 +23,7 @@ pub(crate) struct AgentdState {
     runtime: Mutex<RuntimeState>,
     events: Mutex<EventBuffer>,
     automation: Mutex<Option<AutomationStore>>,
+    automation_operations: std::sync::OnceLock<Arc<AgentdOperationsHost>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
 }
 
@@ -57,6 +59,7 @@ impl AgentdState {
             registry,
             events: Mutex::new(events),
             automation: Mutex::new(None),
+            automation_operations: std::sync::OnceLock::new(),
             cognitive: Mutex::new(None),
         })
     }
@@ -97,6 +100,25 @@ impl AgentdState {
         }
         *automation = Some(store);
         Ok(())
+    }
+
+    pub(crate) fn attach_automation_operations(
+        &self,
+        host: Arc<AgentdOperationsHost>,
+    ) -> Result<(), AgentdError> {
+        if host.generation().get() != self.identity.spawn_generation {
+            return Err(AgentdError::GenerationFenced(
+                "automation operations host generation does not match agentd process generation"
+                    .to_string(),
+            ));
+        }
+        self.automation_operations.set(host).map_err(|_| {
+            AgentdError::Protocol("automation operations host was attached more than once".to_string())
+        })
+    }
+
+    pub(crate) fn automation_operations(&self) -> Option<Arc<AgentdOperationsHost>> {
+        self.automation_operations.get().cloned()
     }
 
     pub(crate) fn mark_automation_unavailable(&self) -> Result<(), AgentdError> {
