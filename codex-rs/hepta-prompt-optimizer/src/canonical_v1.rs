@@ -72,11 +72,20 @@ impl PromptModelProfileV1 {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum PromptCandidateRoleV1 {
+    SystemInstruction,
+    DeveloperInstruction,
+    UserTemplate,
+    ToolSchemaFragment,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptCandidateBindingV1 {
     pub candidate_id: StableId,
     pub factor_id: StableId,
     pub realization_id: StableId,
+    pub role: PromptCandidateRoleV1,
     pub payload_digest: Digest32,
     pub admission_digest: Digest32,
     pub support_digest: Digest32,
@@ -92,6 +101,7 @@ impl PromptCandidateBindingV1 {
         push_id(&mut bytes, &self.candidate_id);
         push_id(&mut bytes, &self.factor_id);
         push_id(&mut bytes, &self.realization_id);
+        bytes.push(candidate_role_code(self.role));
         for digest in [
             self.payload_digest,
             self.admission_digest,
@@ -389,6 +399,15 @@ pub(super) fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 
 pub(super) fn push_len(bytes: &mut Vec<u8>, value: usize) {
     bytes.extend_from_slice(&u64::try_from(value).unwrap_or(u64::MAX).to_be_bytes());
+}
+
+const fn candidate_role_code(role: PromptCandidateRoleV1) -> u8 {
+    match role {
+        PromptCandidateRoleV1::SystemInstruction => 0,
+        PromptCandidateRoleV1::DeveloperInstruction => 1,
+        PromptCandidateRoleV1::UserTemplate => 2,
+        PromptCandidateRoleV1::ToolSchemaFragment => 3,
+    }
 }
 
 fn push_optional_u64(bytes: &mut Vec<u8>, value: Option<u64>) {
