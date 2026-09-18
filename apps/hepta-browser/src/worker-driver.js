@@ -674,54 +674,46 @@ export class SubprocessBrowserDriver {
     const boundary = new Promise((resolve) => {
       resolveBoundary = resolve;
     });
-    const abortBeforeBoundary = () => {
-      if (!crossed) this.#containBeforeDispatchBoundary();
-    };
-    signal?.addEventListener("abort", abortBeforeBoundary, { once: true });
 
-    try {
-      const response = this.#client.request(
-        "dispatch",
-        input.operationId,
-        input,
-        {
-          signal,
-          onDispatchBoundary: () => {
-            if (crossed) return;
-            crossed = true;
-            resolveBoundary();
-          },
+    const response = this.#client.request(
+      "dispatch",
+      input.operationId,
+      input,
+      {
+        signal,
+        onDispatchBoundary: () => {
+          if (crossed) return;
+          crossed = true;
+          resolveBoundary();
         },
-      );
-      let earlyError = null;
-      const settled = response.then(
-        () => "resolved",
-        (error) => {
-          earlyError = error;
-          return "rejected";
-        },
-      );
-      const first = await Promise.race([
-        boundary.then(() => "boundary"),
-        settled,
-      ]);
-      if (first === "rejected" && !crossed) {
-        if (earlyError?.code !== "BROWSER_WORKER_PRE_DISPATCH_REJECTED") {
-          this.#containBeforeDispatchBoundary();
-        }
-        throw earlyError;
-      }
-      if (first === "resolved" && !crossed) {
+      },
+    );
+    let earlyError = null;
+    const settled = response.then(
+      () => "resolved",
+      (error) => {
+        earlyError = error;
+        return "rejected";
+      },
+    );
+    const first = await Promise.race([
+      boundary.then(() => "boundary"),
+      settled,
+    ]);
+    if (first === "rejected" && !crossed) {
+      if (earlyError?.code !== "BROWSER_WORKER_PRE_DISPATCH_REJECTED") {
         this.#containBeforeDispatchBoundary();
-        throw new TypeError(
-          "browser worker settled dispatch before admission boundary",
-        );
       }
-      response.catch(() => {});
-      return { terminalObserved: false };
-    } finally {
-      signal?.removeEventListener("abort", abortBeforeBoundary);
+      throw earlyError;
     }
+    if (first === "resolved" && !crossed) {
+      this.#containBeforeDispatchBoundary();
+      throw new TypeError(
+        "browser worker settled dispatch before admission boundary",
+      );
+    }
+    response.catch(() => {});
+    return { terminalObserved: false };
   }
   async reconcile(input, { signal } = {}) {
     this.#requireSession(input);
@@ -845,8 +837,12 @@ export class SubprocessBrowserDriver {
   }
 
   #containBeforeDispatchBoundary() {
-    this.#client?.close();
-    this.#child?.kill?.("SIGKILL");
+    const client = this.#client;
+    const child = this.#child;
+    this.#client = null;
+    this.#child = null;
+    client?.close();
+    child?.kill?.("SIGKILL");
   }
 
   async #cleanupProfile() {

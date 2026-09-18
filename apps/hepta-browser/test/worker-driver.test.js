@@ -399,20 +399,20 @@ test("worker response must echo exact request kind and payload digest", async ()
 });
 
 test("subprocess driver containment kills the quarantined worker and still permits cleanup", async () => {
-  const fixture = await subprocessFixture();
-  const driver = fixture.driver;
-  await driver.start(fixture.startInput);
-  const child = fixture.launcher.child;
+  const capture = {};
+  const { driver, started } = await preparedDriver({
+    launcher: fakeLauncher({ capture }),
+  });
   const contained = await driver.contain({
-    profileId: fixture.startInput.profileId,
-    generation: fixture.startInput.generation,
-    processId: `servo.pid.${child.pid}`,
+    profileId: "profile.1",
+    generation: 1,
+    processId: started.processId,
   });
   assert.equal(contained.contained, true);
-  assert.equal(child.killed, true);
+  assert.equal(capture.child.killed, true);
   const stopped = await driver.stop({
-    profileId: fixture.startInput.profileId,
-    generation: fixture.startInput.generation,
+    profileId: "profile.1",
+    generation: 1,
   });
   assert.equal(stopped.stopped, true);
 });

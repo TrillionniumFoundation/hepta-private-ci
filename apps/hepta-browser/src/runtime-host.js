@@ -358,11 +358,7 @@ export class BrowserProfileHost {
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
       const state = this.#profile(input, true);
-      const { operationId, requestSemantics, requestDigest } = admitNewOperation(
-        state,
-        input,
-        this.#clock(),
-      );
+      const operationId = stableId(input.operationId, "operationId");
       let prior = state.operations.get(operationId);
       if (!prior) {
         const durable = await this.#journal.getOperation(
@@ -371,11 +367,21 @@ export class BrowserProfileHost {
           operationId,
         );
         if (durable) {
-          prior = this.#entryFromDurable(durable, requestSemantics);
+          const replaySemantics = this.#requestSemanticsFromDurableInput(
+            state,
+            input,
+            durable,
+          );
+          prior = this.#entryFromDurable(durable, replaySemantics);
         }
       }
       if (prior) {
-        if (prior.requestDigest !== requestDigest) {
+        const replayRequestDigest = reconciliationRequestDigest(
+          state,
+          input,
+          prior.semantics,
+        );
+        if (prior.requestDigest !== replayRequestDigest) {
           throw new TypeError(
             "operation identity was reused with changed semantics",
           );
@@ -384,6 +390,12 @@ export class BrowserProfileHost {
           state.operations.set(operationId, prior);
         }
         return prior.receipt;
+      }
+
+      const admitted = admitNewOperation(state, input, this.#clock());
+      const { requestSemantics, requestDigest } = admitted;
+      if (admitted.operationId !== operationId) {
+        throw new TypeError("admitted operation identity changed");
       }
       if (this.#activeOperationCount(state) >= this.#maxOutstandingOperations) {
         throw new TypeError("profile operation capacity is exhausted");

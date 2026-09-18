@@ -374,8 +374,8 @@ test("worker pre-dispatch rejection is terminal and is never mislabeled as cross
   assert.equal(result.observationReason, "worker_rejected_before_dispatch");
   assert.equal(result.outcomeDigest, D4);
   const durable = await journal.getOperation("profile.1", 1, "operation.1");
-  assert.equal(durable.receipt.status, "failed");
-  assert.equal(durable.receipt.terminalObserved, true);
+  assert.equal(durable.status, "failed");
+  assert.equal(durable.terminalObserved, true);
   assert.equal(fakeDriver.dispatchCalls, 1);
 });
 

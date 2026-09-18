@@ -672,11 +672,7 @@ impl BrowserServoProcessConfig {
         verify_file_digest(&self.service_path, self.service_sha256, MAX_SERVICE_BYTES)?;
         verify_file_digest(&self.worker_path, self.worker_sha256, MAX_WORKER_BYTES)?;
         verify_file_digest(&self.bwrap_path, self.bwrap_sha256, MAX_BWRAP_BYTES)?;
-        verify_file_digest(
-            &self.prlimit_path,
-            self.prlimit_sha256,
-            MAX_PRLIMIT_BYTES,
-        )?;
+        verify_file_digest(&self.prlimit_path, self.prlimit_sha256, MAX_PRLIMIT_BYTES)?;
         Ok(())
     }
 }
