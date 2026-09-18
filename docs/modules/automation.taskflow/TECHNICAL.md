@@ -96,7 +96,7 @@ The compatibility timer API keeps `AutomationTick::Submitted`; its meaning is ex
 
 ## 6. Data authority, persistence and migrations
 
-Schema v8 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables and adds:
+Schema v9 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables and adds:
 
 - `automation_schedule_metadata`: revision, missed-run policy, bounded catch-up state and overlap policy.
 - `automation_occurrence_lifecycle`: deterministic occurrence identity, frozen schedule revision, claim generation/token, TaskFlow run ID, queue/turn identity, recovery phase and terminal receipt.
@@ -106,7 +106,7 @@ Schema v8 retains the original `automation_tasks`, `automation_runs` and dispatc
 
 `taskflow_definitions`, `taskflow_runs` and `taskflow_events` remain the durable TaskFlow ledger. A materialized occurrence freezes its schedule revision until it becomes terminal. Safe generation reclaim preserves occurrence/client identity and allocates a new step attempt; an indeterminate provider outcome does not.
 
-Migrations are additive from v3 through v8. An older binary that only understands automation schema v3 must not be started against a v8 owner store.
+Migrations are additive from v3 through v9. An older binary that only understands automation schema v3 must not be started against a v9 owner store.
 
 ## 7. Runtime, concurrency and transaction model
 
@@ -189,7 +189,7 @@ No second TaskFlow engine or scheduler is admitted by this work package.
 
 The existing Agentd -> App Server automation activity now has a repository source composition path. This does not activate arbitrary external effects: each concrete effect owner/terminal observer still requires its own registered adapter, authority configuration, target-host qualification and acceptance evidence.
 
-Compatibility adapters and the legacy `Submitted` tick can be retired only after all callers move to occurrence-terminal semantics. Historical v8 records remain interpretable during retirement.
+Compatibility adapters and the legacy `Submitted` tick can be retired only after all callers move to occurrence-terminal semantics. Historical causal-chain records remain interpretable during retirement.
 
 ## 15. Definition of module completion
 

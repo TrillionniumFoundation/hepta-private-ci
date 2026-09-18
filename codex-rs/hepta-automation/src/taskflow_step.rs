@@ -1,16 +1,15 @@
-//! Qualification-only durable TaskFlow step outbox.
+//! Durable TaskFlow step intent/outbox ledger.
 //!
 //! The regular TaskFlow ledger records the run projection and its transition
-//! chain.  It intentionally does not claim a provider/effect.  This module
-//! adds the smallest durable seam needed by H3: one append-only, per-step
-//! intent/receipt chain.  A prepared row is an outbox item; claim, observation
-//! and reconciliation append receipts to that same chain.  No method here
-//! invokes a provider, wakes a scheduler, or grants production authority.
+//! chain. This module owns one append-only per-step intent/receipt chain:
+//! prepare, claim, provider observation, and reconciliation append evidence to
+//! the same durable identity. The normal automation schema now creates this
+//! table and the composed automation path calls it directly.
 //!
-//! The table is created lazily by the explicitly opt-in qualification API.
-//! This keeps the default automation schema/version unchanged while making the
-//! qualification state durable across reopen.  Every read and mutation first
-//! verifies the owner, run history, definition binding, event hash chain and
+//! Composition does not grant effect, scheduler, or final-use authority. No
+//! method here invokes a provider or mints authority; provider contact remains
+//! behind the separately verified final-use seam. Every read and mutation
+//! verifies the owner, run history, definition binding, event hash chain, and
 //! exact generation/fence tuple.
 
 #![allow(
@@ -34,10 +33,12 @@ use crate::TaskFlowRun;
 use crate::taskflow::load_taskflow_definition_tx;
 use crate::taskflow::load_taskflow_run_tx;
 
-/// This module is compiled and callable only by an explicit qualification
-/// feature.  These constants are intentionally negative for all authority
-/// surfaces.
+/// Qualification APIs remain available, while the same durable ledger is
+/// now installed by the normal automation schema and used by the composed
+/// automation caller. Composition is intentionally separate from authority.
 pub const TASKFLOW_STEP_OUTBOX_QUALIFICATION_ENABLED: bool = true;
+pub const TASKFLOW_STEP_OUTBOX_DURABLE_SCHEMA_ENABLED: bool = true;
+pub const TASKFLOW_STEP_OUTBOX_COMPOSED_CALLER: bool = true;
 pub const TASKFLOW_STEP_OUTBOX_EFFECTS: bool = false;
 pub const TASKFLOW_STEP_OUTBOX_PRODUCTION_CALLER: bool = false;
 pub const TASKFLOW_STEP_OUTBOX_SCHEDULER_AUTHORITY: bool = false;

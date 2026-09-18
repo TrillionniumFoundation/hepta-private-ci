@@ -76,7 +76,9 @@
         {
           "role": "delegated_callee",
           "path": "codex-rs/hepta-automation/src/store.rs",
-          "symbol": "pub async fn claim_due("
+          "symbol": "pub async fn claim_due(",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
         }
       ],
       "tests": [
@@ -105,12 +107,16 @@
         {
           "role": "delegated_callee",
           "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
-          "symbol": "pub async fn record_taskflow_step("
+          "symbol": "pub async fn record_taskflow_step(",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
         },
         {
           "role": "delegated_callee",
           "path": "codex-rs/hepta-contracts/src/final_use.rs",
-          "symbol": "pub fn with_verified_use"
+          "symbol": "pub fn with_verified_use",
+          "ownerModule": "kernel.authority",
+          "buildTarget": "codex-hepta-contracts"
         }
       ],
       "tests": [

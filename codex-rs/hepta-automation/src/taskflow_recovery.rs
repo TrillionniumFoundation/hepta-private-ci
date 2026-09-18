@@ -162,8 +162,7 @@ impl AutomationStore {
                 TaskFlowError::Corrupt("automation TaskFlow run lost fencing token".to_string())
             })?,
         })
-    }}
-
+    }
 }
 
 fn recovery_fencing_token(occurrence_id: &str, generation: u64) -> String {

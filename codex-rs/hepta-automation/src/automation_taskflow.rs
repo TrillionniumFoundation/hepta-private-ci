@@ -555,8 +555,7 @@ impl AutomationStore {
             generation,
             fencing_token,
         })
-    }}
-
+    }
 }
 
 pub fn admission_receipt_digest(occurrence: &AutomationOccurrence) -> Sha256Digest {

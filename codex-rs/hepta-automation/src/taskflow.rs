@@ -1,11 +1,12 @@
-//! Agent-local, qualification-only TaskFlow definition and run ledger.
+//! Agent-local, authority-free TaskFlow definition and run ledger.
 //!
-//! This module is deliberately small and boring: it gives the H2 compiler and
-//! H3 durable-kernel work a typed seam without creating a second scheduler or
-//! an effect executor.  Definitions and transitions are immutable evidence in
-//! the existing per-Agent automation SQLite database.  The existing
+//! This module is deliberately small and boring: it provides the durable run
+//! projection used by the composed automation path without creating a second
+//! scheduler or effect executor. Definitions and transitions are immutable
+//! evidence in the existing per-Agent automation SQLite database. The existing
 //! `AutomationScheduler` remains the only wakeup owner; callers must provide a
-//! lease/generation fence for every run mutation.
+//! lease/generation fence for every run mutation. Composition here does not
+//! grant external-effect or final-use authority.
 
 #![allow(
     clippy::expect_used,
@@ -33,7 +34,10 @@ use sqlx::Transaction;
 use crate::AutomationStore;
 
 pub const TASKFLOW_SCHEMA_VERSION: u32 = 1;
+// Retained for on-disk compatibility with the original ledger namespace. The
+// namespace string is not an authority or activation claim.
 pub const TASKFLOW_NAMESPACE: &str = "local_qualification_only";
+pub const TASKFLOW_COMPOSED_CALLER: bool = true;
 pub const TASKFLOW_EXTERNAL_EFFECTS: bool = false;
 pub const TASKFLOW_PRODUCTION_CALLER: bool = false;
 pub const TASKFLOW_SCHEDULER_AUTHORITY: bool = false;
