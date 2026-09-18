@@ -1,6 +1,8 @@
 use codex_hepta_cognitive_read::ReadRequest;
 use codex_hepta_cognitive_read::ReadRequestV2;
+use codex_hepta_cognitive_read::SnapshotAcquisitionRequestV1;
 use codex_hepta_cognitive_read::SnapshotProviderError;
+use codex_hepta_cognitive_read::read_authoritative;
 use codex_hepta_cognitive_types::MemoryKind;
 use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
@@ -17,6 +19,7 @@ use crate::CognitiveStore;
 use crate::CognitiveStoreError;
 use crate::DurableCognitiveSnapshot;
 use crate::ForgetMemoryDraft;
+use crate::LaneCAuthoritativeHostContextV1;
 use crate::MemoryDraft;
 use crate::MemoryVerification;
 use crate::cognitive_test_support::agent_id;
@@ -40,6 +43,23 @@ fn vector(cut: &DurableCognitiveSnapshot) -> LaneCGenerationVectorV1 {
         retrieval_profile_digest: digest,
         encoder_preprocessor_digest: digest,
         authority_epoch: 1,
+        model_digest: digest,
+        tokenizer_digest: digest,
+        template_digest: digest,
+        tool_schema_digest: digest,
+    }
+}
+
+
+fn host_context(authority_epoch: u64) -> LaneCAuthoritativeHostContextV1 {
+    let digest = Digest32::of_bytes(b"test authoritative host profile");
+    LaneCAuthoritativeHostContextV1 {
+        purpose_id: StableId::new("read-only-context").unwrap(),
+        compact_checkpoint_generation: Generation::new(1).unwrap(),
+        prompt_registry_revision: Revision::new(1).unwrap(),
+        retrieval_profile_digest: digest,
+        encoder_preprocessor_digest: digest,
+        authority_epoch,
         model_digest: digest,
         tokenizer_digest: digest,
         template_digest: digest,
@@ -355,6 +375,156 @@ async fn retained_cut_detects_old_valid_backup_after_ordinary_reopen() {
     assert!(matches!(
         reopened
             .revalidate_lane_c_cut(&access, &scope, retained_witness.parse().unwrap(), 201)
+            .await,
+        Err(CognitiveStoreError::Conflict(_))
+    ));
+}
+
+
+#[tokio::test]
+async fn authoritative_provider_revalidates_epoch_profile_lease_and_owner_frontiers() {
+    let temp = TempDir::new().unwrap();
+    let owner = agent_id(107);
+    let store = CognitiveStore::open(&layout(&temp, &owner)).await.unwrap();
+    let access = CognitiveAccess::agent_private(owner);
+    let scope = CognitiveScope::AgentPrivate;
+    let citation = store
+        .append_source(&access, &source(scope.clone(), "authoritative-event", "evidence"))
+        .await
+        .unwrap();
+    store
+        .remember_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: "authoritative-memory".to_string(),
+                revision: memory_revision(scope.clone(), "known fact", citation),
+            },
+        )
+        .await
+        .unwrap();
+
+    let host = host_context(7);
+    let provider = store
+        .authoritative_lane_c_snapshot_provider(
+            &access,
+            &scope,
+            host.clone(),
+            200_001,
+            9_999,
+        )
+        .await
+        .unwrap();
+    let envelope = provider.envelope();
+    let vector = &envelope.snapshot_key().vector;
+    let request = SnapshotAcquisitionRequestV1 {
+        request_id: StableId::new("authoritative-request").unwrap(),
+        scope_id: vector.scope_id.clone(),
+        purpose_id: vector.purpose_id.clone(),
+        minimum_memory_frontier: vector.memory_ledger_frontier,
+        minimum_tombstone_frontier: vector.tombstone_frontier,
+        authority_epoch: vector.authority_epoch,
+        deadline_unix_ms: envelope.lease_expires_unix_ms(),
+    };
+    let read = read_authoritative(
+        &provider,
+        200_001,
+        request.clone(),
+        ReadRequestV2 {
+            read_request: ReadRequest {
+                snapshot_digest: envelope.snapshot().snapshot_digest,
+                allowed_kinds: vec![MemoryKind::Fact],
+                maximum_results: 10,
+                include_tombstones: false,
+            },
+            maximum_encoded_bytes: 8192,
+        },
+    )
+    .unwrap();
+
+    store
+        .revalidate_authoritative_lane_c_snapshot(
+            &access,
+            &scope,
+            &provider,
+            &request,
+            &host,
+            &read,
+            200_002,
+        )
+        .await
+        .unwrap();
+
+    let mut changed_epoch = host.clone();
+    changed_epoch.authority_epoch += 1;
+    assert!(matches!(
+        store
+            .revalidate_authoritative_lane_c_snapshot(
+                &access,
+                &scope,
+                &provider,
+                &request,
+                &changed_epoch,
+                &read,
+                200_003,
+            )
+            .await,
+        Err(CognitiveStoreError::Conflict(_))
+    ));
+
+    let mut changed_profile = host.clone();
+    changed_profile.retrieval_profile_digest = Digest32::of_bytes(b"changed profile");
+    assert!(matches!(
+        store
+            .revalidate_authoritative_lane_c_snapshot(
+                &access,
+                &scope,
+                &provider,
+                &request,
+                &changed_profile,
+                &read,
+                200_004,
+            )
+            .await,
+        Err(CognitiveStoreError::Conflict(_))
+    ));
+
+    assert!(matches!(
+        store
+            .revalidate_authoritative_lane_c_snapshot(
+                &access,
+                &scope,
+                &provider,
+                &request,
+                &host,
+                &read,
+                210_000,
+            )
+            .await,
+        Err(CognitiveStoreError::Conflict(_))
+    ));
+
+    store
+        .append_source(
+            &access,
+            &source(
+                scope.clone(),
+                "frontier-advanced",
+                "new unassociated authoritative evidence",
+            ),
+        )
+        .await
+        .unwrap();
+    assert!(matches!(
+        store
+            .revalidate_authoritative_lane_c_snapshot(
+                &access,
+                &scope,
+                &provider,
+                &request,
+                &host,
+                &read,
+                200_005,
+            )
             .await,
         Err(CognitiveStoreError::Conflict(_))
     ));

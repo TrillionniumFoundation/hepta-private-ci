@@ -114,6 +114,13 @@ fn authoritative_read_binds_provider_vector_and_query() {
     result
         .validate()
         .unwrap_or_else(|error| panic!("valid result: {error}"));
+    result
+        .validate_for_use(10, &acquisition_request(), &envelope)
+        .unwrap_or_else(|error| panic!("valid final use: {error}"));
+    assert_eq!(
+        result.validate_for_use(50, &acquisition_request(), &envelope),
+        Err(SnapshotProviderError::DeadlineExpired)
+    );
 }
 
 #[test]

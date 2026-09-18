@@ -120,6 +120,7 @@ impl AgentdState {
                     &store,
                     &self.identity.agent_id,
                     self.identity.spawn_generation,
+                    current_generation,
                     &query,
                     limit,
                     self.cognitive_ranker.get(),
@@ -128,6 +129,12 @@ impl AgentdState {
                 self.refresh_generation()?;
                 {
                     let runtime = self.runtime.lock().map_err(poisoned_state)?;
+                    if runtime.current_generation != current_generation {
+                        return Err(AgentdError::GenerationFenced(
+                            "cognitive read authority epoch changed before response publication"
+                                .to_string(),
+                        ));
+                    }
                     require_cognitive_control_ready(
                         runtime.lifecycle,
                         runtime.app_server_ready,

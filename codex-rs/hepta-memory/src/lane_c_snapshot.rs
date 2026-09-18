@@ -6,9 +6,12 @@
 
 use std::collections::BTreeMap;
 
+use codex_hepta_cognitive_read::AuthoritativeCognitiveSnapshotProvider;
+use codex_hepta_cognitive_read::AuthoritativeReadResultV1;
 use codex_hepta_cognitive_read::AuthoritativeSnapshotV1;
 use codex_hepta_cognitive_read::ReadRequestV2;
 use codex_hepta_cognitive_read::ReadResultV2;
+use codex_hepta_cognitive_read::SnapshotAcquisitionRequestV1;
 use codex_hepta_cognitive_read::SnapshotProviderError;
 use codex_hepta_cognitive_read::read_v2;
 use codex_hepta_cognitive_types::Citation;
@@ -44,6 +47,69 @@ pub struct CognitiveOwnerFrontiers {
     pub tombstone: u64,
     pub knowledge_facts: u64,
     pub knowledge_graph: Generation,
+}
+
+/// Host-owned dimensions that must be frozen alongside one owner cut.
+///
+/// The SQLite owner fills every cognitive-owned frontier itself. The caller may
+/// only supply identities owned by the consuming host. Revalidation requires a
+/// freshly observed host context and rejects any vector drift.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LaneCAuthoritativeHostContextV1 {
+    pub purpose_id: StableId,
+    pub compact_checkpoint_generation: Generation,
+    pub prompt_registry_revision: Revision,
+    pub retrieval_profile_digest: Digest32,
+    pub encoder_preprocessor_digest: Digest32,
+    pub authority_epoch: u64,
+    pub model_digest: Digest32,
+    pub tokenizer_digest: Digest32,
+    pub template_digest: Digest32,
+    pub tool_schema_digest: Digest32,
+}
+
+/// Production adapter from the canonical SQLite owner into the authoritative
+/// cognitive.read provider boundary.
+///
+/// The provider owns one immutable owner-acquired cut and its receipt. Product
+/// callers use read_authoritative rather than reading the underlying snapshot
+/// directly.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LaneCAuthoritativeSnapshotProvider {
+    cut: DurableCognitiveSnapshot,
+    envelope: AuthoritativeSnapshotV1,
+}
+
+impl LaneCAuthoritativeSnapshotProvider {
+    #[must_use]
+    pub const fn envelope(&self) -> &AuthoritativeSnapshotV1 {
+        &self.envelope
+    }
+}
+
+impl AuthoritativeCognitiveSnapshotProvider for LaneCAuthoritativeSnapshotProvider {
+    fn acquire(
+        &self,
+        request: &SnapshotAcquisitionRequestV1,
+    ) -> Result<AuthoritativeSnapshotV1, SnapshotProviderError> {
+        let vector = &self.envelope.snapshot_key().vector;
+        if vector.scope_id != request.scope_id {
+            return Err(SnapshotProviderError::ScopeMismatch);
+        }
+        if vector.purpose_id != request.purpose_id {
+            return Err(SnapshotProviderError::PurposeMismatch);
+        }
+        if vector.authority_epoch != request.authority_epoch {
+            return Err(SnapshotProviderError::AuthorityEpochMismatch);
+        }
+        if vector.memory_ledger_frontier < request.minimum_memory_frontier {
+            return Err(SnapshotProviderError::StaleMemoryFrontier);
+        }
+        if vector.tombstone_frontier < request.minimum_tombstone_frontier {
+            return Err(SnapshotProviderError::StaleTombstoneFrontier);
+        }
+        Ok(self.envelope.clone())
+    }
 }
 
 /// Immutable, digest-only view acquired from the existing physical store.
@@ -90,15 +156,37 @@ impl DurableCognitiveSnapshot {
         Digest32::of_bytes(&bytes)
     }
 
-    /// Consume the new read module against an owner-acquired SQLite cut.
+    /// Lower-level compatibility projection against an already owner-acquired
+    /// SQLite cut. Product context delivery uses the authoritative provider
+    /// path so lease, vector and final-use owner currentness are also checked.
     pub fn read(&self, request: ReadRequestV2) -> Result<ReadResultV2, SnapshotProviderError> {
         read_v2(&self.snapshot, request).map_err(SnapshotProviderError::Read)
     }
 
     /// Attach a host-frozen external context without inventing other owners'
     /// generations. Every cognitive-owned component must match this exact cut.
+    ///
+    /// This compatibility helper uses the scope identity as the provider
+    /// identity. Production composition should acquire a
+    /// LaneCAuthoritativeSnapshotProvider from CognitiveStore so the provider
+    /// identity is bound to the canonical owner.
     pub fn bind_context(
         &self,
+        vector: LaneCGenerationVectorV1,
+        acquired_at_unix_ms: u64,
+        lease_expires_unix_ms: u64,
+    ) -> Result<AuthoritativeSnapshotV1, SnapshotProviderError> {
+        self.bind_context_with_provider(
+            self.scope_id.clone(),
+            vector,
+            acquired_at_unix_ms,
+            lease_expires_unix_ms,
+        )
+    }
+
+    fn bind_context_with_provider(
+        &self,
+        provider_id: StableId,
         vector: LaneCGenerationVectorV1,
         acquired_at_unix_ms: u64,
         lease_expires_unix_ms: u64,
@@ -127,16 +215,119 @@ impl DurableCognitiveSnapshot {
             return Err(SnapshotProviderError::InvalidLeaseWindow);
         }
         AuthoritativeSnapshotV1::new(
-            self.scope_id.clone(),
+            provider_id,
             CognitiveSnapshotKeyV1::new(vector).map_err(SnapshotProviderError::Contract)?,
             self.snapshot.clone(),
             acquired_at_unix_ms,
             lease_expires_unix_ms,
         )
     }
+
+    fn generation_vector(
+        &self,
+        host: &LaneCAuthoritativeHostContextV1,
+    ) -> LaneCGenerationVectorV1 {
+        LaneCGenerationVectorV1 {
+            scope_id: self.scope_id.clone(),
+            purpose_id: host.purpose_id.clone(),
+            memory_ledger_frontier: self.frontiers.memory,
+            knowledge_fact_frontier: self.frontiers.knowledge_facts,
+            tombstone_frontier: self.frontiers.tombstone,
+            source_ledger_frontier: self.frontiers.source,
+            knowledge_graph_generation: self.frontiers.knowledge_graph,
+            compact_checkpoint_generation: host.compact_checkpoint_generation,
+            prompt_registry_revision: host.prompt_registry_revision,
+            retrieval_profile_digest: host.retrieval_profile_digest,
+            encoder_preprocessor_digest: host.encoder_preprocessor_digest,
+            authority_epoch: host.authority_epoch,
+            model_digest: host.model_digest,
+            tokenizer_digest: host.tokenizer_digest,
+            template_digest: host.template_digest,
+            tool_schema_digest: host.tool_schema_digest,
+        }
+    }
 }
 
 impl CognitiveStore {
+    /// Acquire the canonical owner cut and bind it to one frozen host authority
+    /// context. Cognitive-owned frontiers are never accepted from the caller.
+    pub async fn authoritative_lane_c_snapshot_provider(
+        &self,
+        access: &CognitiveAccess,
+        scope: &CognitiveScope,
+        host: LaneCAuthoritativeHostContextV1,
+        acquired_at_unix_ms: u64,
+        lease_duration_ms: u64,
+    ) -> Result<LaneCAuthoritativeSnapshotProvider, CognitiveStoreError> {
+        if lease_duration_ms == 0 || lease_duration_ms > 300_000 {
+            return Err(CognitiveStoreError::Invalid(
+                "authoritative Lane C lease must be 1..=300000 ms".to_string(),
+            ));
+        }
+        let observed_at_unix_seconds = i64::try_from(acquired_at_unix_ms / 1_000)
+            .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+        let cut = self
+            .lane_c_snapshot(access, scope, observed_at_unix_seconds)
+            .await?;
+        let vector = cut.generation_vector(&host);
+        let lease_expires_unix_ms = acquired_at_unix_ms
+            .checked_add(lease_duration_ms)
+            .ok_or_else(|| {
+                CognitiveStoreError::Invalid(
+                    "authoritative Lane C lease expiry overflow".to_string(),
+                )
+            })?;
+        let provider_id = StableId::new(format!(
+            "sqlite-cognitive-owner:{}",
+            self.owner_agent_id.as_str()
+        ))
+        .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+        let envelope = cut
+            .bind_context_with_provider(
+                provider_id,
+                vector,
+                acquired_at_unix_ms,
+                lease_expires_unix_ms,
+            )
+            .map_err(authoritative_invalid)?;
+        Ok(LaneCAuthoritativeSnapshotProvider { cut, envelope })
+    }
+
+    /// Revalidate the complete product read immediately before context
+    /// consumption. This checks immutable read/receipt bindings and lease
+    /// expiry, reacquires the canonical owner cut, and compares the entire
+    /// generation vector against a freshly supplied host authority context.
+    pub async fn revalidate_authoritative_lane_c_snapshot(
+        &self,
+        access: &CognitiveAccess,
+        scope: &CognitiveScope,
+        provider: &LaneCAuthoritativeSnapshotProvider,
+        request: &SnapshotAcquisitionRequestV1,
+        current_host: &LaneCAuthoritativeHostContextV1,
+        read: &AuthoritativeReadResultV1,
+        now_unix_ms: u64,
+    ) -> Result<(), CognitiveStoreError> {
+        read.validate_for_use(now_unix_ms, request, provider.envelope())
+            .map_err(authoritative_conflict)?;
+        let now_unix_seconds = i64::try_from(now_unix_ms / 1_000)
+            .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
+        let current = self
+            .revalidate_lane_c_snapshot(access, scope, &provider.cut, now_unix_seconds)
+            .await?;
+        let current_vector = current.generation_vector(current_host);
+        let current_key = CognitiveSnapshotKeyV1::new(current_vector).map_err(|error| {
+            CognitiveStoreError::Conflict(format!(
+                "authoritative Lane C host vector invalid at final use: {error}"
+            ))
+        })?;
+        if current_key != *provider.envelope().snapshot_key() {
+            return Err(CognitiveStoreError::Conflict(
+                "authoritative Lane C generation vector changed before final use".to_string(),
+            ));
+        }
+        Ok(())
+    }
+
     /// Acquire one scope from the existing owner database. The host supplies
     /// authenticated access and its clock; source content never leaves here.
     /// There is no fallback to the in-memory V2 writer or a second database.
@@ -397,6 +588,14 @@ impl CognitiveStore {
         }
         Ok(current)
     }
+}
+
+fn authoritative_invalid(error: SnapshotProviderError) -> CognitiveStoreError {
+    CognitiveStoreError::Invalid(format!("authoritative Lane C snapshot: {error}"))
+}
+
+fn authoritative_conflict(error: SnapshotProviderError) -> CognitiveStoreError {
+    CognitiveStoreError::Conflict(format!("authoritative Lane C final-use check: {error}"))
 }
 
 fn corrupt(error: impl std::fmt::Display) -> CognitiveStoreError {

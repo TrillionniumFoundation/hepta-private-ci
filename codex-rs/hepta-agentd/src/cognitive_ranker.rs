@@ -35,6 +35,7 @@ pub struct PinnedCognitiveRanker {
     owner: AgentId,
     body_generation: u64,
     model: LoadedTabularOperatorV1,
+    model_digest: Digest32,
     current: Arc<dyn CurrentCognitiveRegistry>,
     cache: Mutex<Option<RevalidatingCandidate>>,
 }
@@ -92,11 +93,17 @@ impl PinnedCognitiveRanker {
             owner,
             body_generation,
             model,
+            model_digest: model_pin.payload_digest,
             current,
             cache: Mutex::new(Some(RevalidatingCandidate::new(candidate))),
         };
         value.revalidate()?;
         Ok(value)
+    }
+
+    #[must_use]
+    pub(crate) const fn model_digest(&self) -> Digest32 {
+        self.model_digest
     }
 
     pub(crate) fn require_identity(&self, owner: &AgentId, generation: u64) -> Result<(), String> {
