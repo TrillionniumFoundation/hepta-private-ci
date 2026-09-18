@@ -4781,23 +4781,9 @@
       "deputy": "learning-platform",
       "sourceMutationAllowed": true,
       "allowedWritePaths": [
-        "codex-rs/hepta-intuition/**",
-        "codex-rs/hepta-intelligence/src/intuition_qualification.rs",
-        "codex-rs/hepta-intelligence/src/lib.rs",
-        "codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs",
-        "codex-rs/hepta-intelligence/tests/intuition_authenticated_fast_gate.rs",
-        "codex-rs/hepta-intelligence/tests/fixtures/intuition-policy/**",
-        "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
-        "codex-rs/hepta-learning-ledger/src/lib.rs",
-        ".github/workflows/hepta-intuition-qualification.yml",
-        "docs/modules/intuition.policy/**",
-        "qualification/module-execution-dossiers/detail/intuition.policy.md"
+        "codex-rs/hepta-intuition/**"
       ],
-      "coOwnerModules": [
-        "intelligence.control",
-        "learning.ledger",
-        "control.engineering"
-      ],
+      "coOwnerModules": [],
       "consumesContracts": [
         "DomainRead::eligibility_trace_checkpointV1",
         "DomainRead::learning_artifact_registryV1",
@@ -4838,9 +4824,9 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 24,
-        "maxCiMinutes": 60,
-        "maxParallelAgents": 3
+        "maxChangedPaths": 8,
+        "maxCiMinutes": 30,
+        "maxParallelAgents": 2
       },
       "rollback": {
         "required": true,
