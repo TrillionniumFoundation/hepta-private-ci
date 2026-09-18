@@ -148,7 +148,8 @@
       "state": "selected_host_surface_implemented_not_runtime_enrolled",
       "authority": "composition_only",
       "tests": [
-        "codex-rs/hepta-agentd/tests/plasticity_host.rs"
+        "codex-rs/hepta-agentd/tests/plasticity_host.rs",
+        "codex-rs/hepta-agentd/tests/plasticity_product_host.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "selected_host_artifact_and_evidence_frontier",
@@ -167,7 +168,8 @@
       "state": "host_anti_rollback_store_implemented_not_deployment_bound",
       "authority": "anchor_and_fence_only",
       "tests": [
-        "codex-rs/hepta-agentd/tests/plasticity_host.rs"
+        "codex-rs/hepta-agentd/tests/plasticity_host.rs",
+        "codex-rs/hepta-agentd/tests/plasticity_product_host.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "external_anchor_and_monotonic_fence",
@@ -181,6 +183,7 @@
       "state": "source_implemented_proposal_only_not_applied",
       "authority": "none",
       "tests": [
+        "codex-rs/hepta-intelligence/src/plasticity_topology_product_tests.rs",
         "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
       ],
       "sourcePathExists": true,
@@ -195,6 +198,7 @@
       "state": "source_implemented_proposal_only_not_applied",
       "authority": "none",
       "tests": [
+        "codex-rs/hepta-intelligence/src/plasticity_topology_product_tests.rs",
         "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
       ],
       "sourcePathExists": true,
@@ -210,6 +214,7 @@
       "authority": "none",
       "tests": [
         "codex-rs/hepta-plasticity/src/topology_governance_v1.rs",
+        "codex-rs/hepta-intelligence/src/plasticity_topology_product_tests.rs",
         "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
       ],
       "sourcePathExists": true,
@@ -224,6 +229,7 @@
       "state": "source_implemented_proposal_registry_not_applied",
       "authority": "proposal_registry_only",
       "tests": [
+        "codex-rs/hepta-intelligence/src/plasticity_topology_product_tests.rs",
         "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
       ],
       "sourcePathExists": true,
@@ -238,6 +244,7 @@
       "state": "source_implemented_authenticated_admission_not_runtime_enrolled",
       "authority": "proposal_append_only",
       "tests": [
+        "codex-rs/hepta-intelligence/src/plasticity_topology_product_tests.rs",
         "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs"
       ],
       "sourcePathExists": true,
