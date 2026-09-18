@@ -23,19 +23,23 @@ pub trait BackendAdapter: Send {
     fn close(&mut self, session: &SessionIncarnation) -> Result<(), ShellError>;
 }
 
-#[derive(Debug, Clone)]
 pub struct LoopbackGatewayBackend {
     address: SocketAddr,
+    bearer_token: String,
 }
 
 impl LoopbackGatewayBackend {
-    pub fn new(address: SocketAddr) -> Result<Self, ShellError> {
+    pub fn new(address: SocketAddr, bearer_token: String) -> Result<Self, ShellError> {
         if !address.ip().is_loopback() || address.port() == 0 {
             return Err(ShellError::Backend(
                 "native gateway must use an explicit non-zero loopback address".to_owned(),
             ));
         }
-        Ok(Self { address })
+        validate_bearer_token(&bearer_token)?;
+        Ok(Self {
+            address,
+            bearer_token,
+        })
     }
 
     fn get_json(&self, path: &str) -> Result<Value, ShellError> {
@@ -48,8 +52,8 @@ impl LoopbackGatewayBackend {
             .set_write_timeout(Some(HTTP_TIMEOUT))
             .map_err(|error| ShellError::Backend(format!("set gateway write timeout: {error}")))?;
         let request = format!(
-            "GET {path} HTTP/1.1\r\nHost: {}\r\nAccept: application/json\r\nConnection: close\r\n\r\n",
-            self.address
+            "GET {path} HTTP/1.1\r\nHost: {}\r\nAccept: application/json\r\nAuthorization: Bearer {}\r\nConnection: close\r\n\r\n",
+            self.address, self.bearer_token
         );
         stream
             .write_all(request.as_bytes())
@@ -81,6 +85,21 @@ impl LoopbackGatewayBackend {
     }
 }
 
+fn validate_bearer_token(value: &str) -> Result<(), ShellError> {
+    if value.len() < 32
+        || value.len() > 256
+        || !value.bytes().all(|byte| {
+            byte.is_ascii_alphanumeric()
+                || matches!(byte, b'-' | b'.' | b'_' | b'~' | b'+' | b'/' | b'=')
+        })
+    {
+        return Err(ShellError::Security(
+            "native gateway bearer capability has invalid syntax or length".to_owned(),
+        ));
+    }
+    Ok(())
+}
+
 impl BackendAdapter for LoopbackGatewayBackend {
     fn connect(&mut self, manifest: &EndpointManifest) -> Result<SessionIncarnation, ShellError> {
         manifest.validate()?;
@@ -96,6 +115,7 @@ impl BackendAdapter for LoopbackGatewayBackend {
         let health = self.get_json("/healthz")?;
         if health.get("product").and_then(Value::as_str) != Some("hepta")
             || health.get("status").and_then(Value::as_str) != Some("ok")
+            || health.get("native_auth").and_then(Value::as_str) != Some("keyring_bearer_v1")
         {
             return Err(ShellError::Backend(
                 "gateway health identity is not the expected Hepta product".to_owned(),
