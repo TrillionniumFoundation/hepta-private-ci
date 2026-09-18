@@ -87,8 +87,8 @@ pub fn read_withdrawal_registry_snapshot(
     }
     let registry_id = parse_id(lines.next().ok_or(ArtifactStorageError::Corrupt)?)?;
     let scope_digest = parse_digest(lines.next().ok_or(ArtifactStorageError::Corrupt)?)?;
-    let binding =
-        WithdrawalRegistryBindingV1::new(registry_id, scope_digest).map_err(|_| ArtifactStorageError::Semantic)?;
+    let binding = WithdrawalRegistryBindingV1::new(registry_id, scope_digest)
+        .map_err(|_| ArtifactStorageError::Semantic)?;
     if binding.binding_digest() != expected.registry_binding_digest {
         return Err(ArtifactStorageError::Corrupt);
     }
@@ -516,11 +516,9 @@ mod tests {
             digest("storage-binding"),
         )
         .expect("write");
-        let reopened = read_withdrawal_registry_snapshot(
-            File::open(&path).expect("open"),
-            receipt,
-        )
-        .expect("reopen");
+        let reopened =
+            read_withdrawal_registry_snapshot(File::open(&path).expect("open"), receipt)
+                .expect("reopen");
         assert_eq!(reopened.snapshot(), registry.snapshot());
         remove_file(path).expect("remove");
     }
