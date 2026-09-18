@@ -14,4 +14,8 @@ doctest = false
 workspace = true
 
 [dependencies]
+codex-hepta-contracts = { workspace = true }
+codex-hepta-infer-core = { path = "../hepta-infer-core" }
+codex-hepta-infer-worker-host = { path = "../hepta-infer-worker-host" }
 codex-hepta-types = { path = "../hepta-types" }
+tokio-util = { workspace = true }
