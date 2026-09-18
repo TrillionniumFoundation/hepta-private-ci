@@ -9,6 +9,7 @@ rule = "Every privileged Hepta boundary has an exact closed set of product call 
 required_boundary_ids = [
   "supervisor_authorized_boot",
   "memory_production_writer_open",
+  "cognitive_store_production_writer_open",
   "agentd_production_writer_host",
   "provider_effect_coordinator",
   "http_provider_effect_adapter",
@@ -103,7 +104,7 @@ symbol = "claim_final_use"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn claim_final_use(", "authority.claim(signed, expected)"]
 product_callers = ["codex-rs/hepta-agentd/src/browser_servo.rs", "codex-rs/hepta-bao-adapter/src/https_consumer.rs"]
-caller_markers = ["claim_final_use", "BrowserServoError", "BaoClientError::Authority"]
+caller_markers = ["FinalUseAuthority", "claim_final_use"]
 
 [[boundary]]
 id = "final_use_claim_raw"
