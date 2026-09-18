@@ -304,6 +304,7 @@ jobs:
         if: always()
         env:
           TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
           PRIOR_STATUS: ${{ job.status }}
         shell: bash
         run: |
