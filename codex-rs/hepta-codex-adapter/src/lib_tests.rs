@@ -23,10 +23,10 @@ fn intent() -> CodexOperationIntent {
     CodexOperationIntent {
         operation_id: id("operation:1"),
         subject_id: id("agent:1"),
-        destination_id: id("agent:1/app-server:7"),
+        destination_id: id("agent:1.app-server:7"),
         thread_id: id("thread:1"),
         client_message_id: "client:1".to_string(),
-        method_id: id("turn/start"),
+        method_id: id(TURN_START_METHOD_ID),
         payload_digest,
         lease_payload_digest: payload_digest,
         input_digest: turn_input_digest(&params()),
