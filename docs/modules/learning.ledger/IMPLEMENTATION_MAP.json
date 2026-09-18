@@ -66,5 +66,49 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-learning-ledger"
-  ]
+  ],
+  "convergenceGuide": "codex-rs/hepta-learning-ledger/CONVERGENCE.md",
+  "statusDimensions": {
+    "packagePlanningState": {
+      "LRN-0-CAUSAL-LEARNING-CONTRACTS": "planned",
+      "LRN-1-DURABLE-EPISODE-LEDGER": "planned"
+    },
+    "sourceImplementationState": "convergence_candidate_present",
+    "productCompositionState": "not_composed",
+    "qualificationState": "pending_exact_candidate_execution",
+    "trustDeploymentState": "pinned_root_mechanism_present_external_root_unbound",
+    "targetHostState": "not_qualified",
+    "activationState": "inactive",
+    "releaseState": "not_released"
+  },
+  "candidateDelta": {
+    "status": "source_candidate_not_yet_exact_head_qualified",
+    "operations": [
+      {
+        "nativeSymbol": "LedgerWriter",
+        "sourcePath": "codex-rs/hepta-learning-ledger/src/writer.rs",
+        "purpose": "authenticated witnessed production write boundary"
+      },
+      {
+        "nativeSymbol": "IndependentLedgerWitness",
+        "sourcePath": "codex-rs/hepta-learning-ledger/src/witness.rs",
+        "purpose": "independent durable acknowledgement frontier"
+      },
+      {
+        "nativeSymbol": "verify_learning_trust_manifest",
+        "sourcePath": "codex-rs/hepta-learning-ledger/src/trust_root.rs",
+        "purpose": "pinned root signer-distribution verification"
+      },
+      {
+        "nativeSymbol": "CanonicalJsonProtocol",
+        "sourcePath": "codex-rs/hepta-learning-ledger/src/protocol_adapters.rs",
+        "purpose": "canonical registry Rust/wire compatibility"
+      },
+      {
+        "nativeSymbol": "generate_index_checkpoint",
+        "sourcePath": "codex-rs/hepta-learning-ledger/src/checkpoint.rs",
+        "purpose": "verifiable rebuildable long-history index checkpoint"
+      }
+    ]
+  }
 }
