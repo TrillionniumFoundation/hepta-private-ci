@@ -46,6 +46,7 @@ pub struct AgentdConfig {
     registry: FleetRegistry,
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
+    objective_admission_profile_file: Option<PathBuf>,
     cognitive_ranker: Option<Arc<crate::PinnedCognitiveRanker>>,
     automation_operations: Option<AutomationOperationsConfig>,
 }
@@ -152,6 +153,7 @@ impl AgentdConfig {
             registry,
             _writer_lock: writer_lock,
             authbus_trust_file: None,
+            objective_admission_profile_file: None,
             cognitive_ranker: None,
             automation_operations: None,
         })
@@ -166,6 +168,23 @@ impl AgentdConfig {
 
     pub(crate) fn authbus_trust_file(&self) -> Option<&Path> {
         self.authbus_trust_file.as_deref()
+    }
+
+    /// Attach the owner-selected Objective admission profile. This never comes
+    /// from an implicit environment default: deployment must explicitly compose
+    /// it together with an AuthBus trust registry.
+    pub fn with_objective_admission_profile_file(mut self, path: PathBuf) -> Result<Self, AgentdError> {
+        if self.objective_admission_profile_file.is_some() {
+            return Err(AgentdError::Invalid(
+                "Objective admission profile already configured".to_string(),
+            ));
+        }
+        self.objective_admission_profile_file = Some(path);
+        Ok(self)
+    }
+
+    pub(crate) fn objective_admission_profile_file(&self) -> Option<&Path> {
+        self.objective_admission_profile_file.as_deref()
     }
 
     /// Attach an explicitly selected, read-only learned consumer. The host must

@@ -37,12 +37,21 @@ enum CompletedRuntimeTask {
     Monitor,
     Automation,
     AuthBus,
+    Objective,
 }
 
 pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {
     let trust_file = config
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
+    let objective_profile_file = config
+        .objective_admission_profile_file()
+        .map(std::path::Path::to_path_buf);
+    if objective_profile_file.is_some() && trust_file.is_none() {
+        return Err(AgentdError::Invalid(
+            "Objective admission requires explicit AuthBus trust configuration".to_string(),
+        ));
+    }
     let ranker = config.cognitive_ranker();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
@@ -72,6 +81,19 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             .authbus
             .set(Arc::new(host))
             .map_err(|_| AgentdError::Protocol("AuthBus host already attached".to_string()))?;
+    }
+    if let Some(profile_file) = objective_profile_file {
+        state.refresh_generation()?;
+        let host = crate::objective_ingress::ObjectiveIngressHost::open(
+            &identity,
+            &profile_file,
+            crate::authbus_ingress::now_ms()?,
+        )?;
+        state.refresh_generation()?;
+        state
+            .objective_ingress
+            .set(Arc::new(host))
+            .map_err(|_| AgentdError::Protocol("Objective ingress host already attached".to_string()))?;
     }
     let cognitive_layout = identity.layout.clone();
     let cognitive_runtime = open_cognitive_runtime_after_generation_fence(&state, || async move {
@@ -137,8 +159,16 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         Arc::clone(&state),
         cancellation.clone(),
     ));
+    let mut objective_task = tokio::spawn(crate::objective_dispatch::run(
+        Arc::clone(&state),
+        cancellation.clone(),
+    ));
 
     let (outcome, completed_task) = tokio::select! {
+        result = &mut objective_task => (
+            joined("Objective durable ingress", result),
+            Some(CompletedRuntimeTask::Objective),
+        ),
         result = &mut authbus_task => (
             joined("AuthBus text relay", result),
             Some(CompletedRuntimeTask::AuthBus),
@@ -168,6 +198,9 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     cancellation.cancel();
     if completed_task != Some(CompletedRuntimeTask::AuthBus) {
         abort_and_join(&mut authbus_task).await;
+    }
+    if completed_task != Some(CompletedRuntimeTask::Objective) {
+        abort_and_join(&mut objective_task).await;
     }
     cleanup_runtime_tasks(
         completed_task,

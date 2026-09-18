@@ -168,6 +168,46 @@ impl AgentdClient {
         }
     }
 
+    /// Submit a structured Objective signed by the explicitly configured
+    /// owner issuer. Queue admission is durable; processing remains asynchronous.
+    pub async fn objective_start(
+        &self,
+        request: crate::AuthBusObjectiveIngress,
+    ) -> Result<crate::AuthBusObjectiveStatus, AgentdError> {
+        match self
+            .send(AgentdRequest::objective_start(
+                self.request_id(),
+                self.spawn_generation,
+                request,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::AuthBusObjectiveStatus(status) => Ok(status),
+            payload => unexpected(payload),
+        }
+    }
+
+    /// Observe durable Objective delivery/processing state without implying
+    /// external-effect completion.
+    pub async fn objective_status(
+        &self,
+        delivery_id: String,
+    ) -> Result<crate::AuthBusObjectiveStatus, AgentdError> {
+        match self
+            .send(AgentdRequest::objective_status(
+                self.request_id(),
+                self.spawn_generation,
+                delivery_id,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::AuthBusObjectiveStatus(status) => Ok(status),
+            payload => unexpected(payload),
+        }
+    }
+
     /// Submit text signed by a separately trusted owner-configured issuer.
     pub async fn submit_authbus_text(
         &self,

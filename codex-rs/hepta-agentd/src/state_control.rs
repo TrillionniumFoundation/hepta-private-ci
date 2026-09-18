@@ -97,6 +97,16 @@ impl AgentdState {
                     })
                 }
             }
+            crate::AgentdMethod::ObjectiveStart { request } => {
+                AgentdPayload::AuthBusObjectiveStatus(
+                    crate::objective_ingress::submit(self, request).await?,
+                )
+            }
+            crate::AgentdMethod::ObjectiveStatus { delivery_id } => {
+                AgentdPayload::AuthBusObjectiveStatus(
+                    crate::objective_ingress::status(self, delivery_id).await?,
+                )
+            }
             crate::AgentdMethod::AuthBusText { request } => AgentdPayload::AuthBusTextStatus(
                 crate::authbus_ingress::submit(self, request).await?,
             ),
