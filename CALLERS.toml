@@ -30,6 +30,30 @@ product_callers = []
 caller_markers = []
 
 [[boundary]]
+id = "memory_cross_owner_operation_apply"
+symbol = "ProductionDurableWriter::apply_cross_owner_operation"
+definition_path = "codex-rs/hepta-memory/src/production_writer.rs"
+definition_markers = ["pub async fn apply_cross_owner_operation", "self.verify_authority().await?", "CrossOwnerOperationApply"]
+product_callers = ["codex-rs/hepta-agentd/src/operations_writer_bridge.rs"]
+caller_markers = ["ProductionDurableWriter::apply_cross_owner_operation", "record_dispatch_started", "ReconciliationRequired"]
+
+[[boundary]]
+id = "memory_cross_owner_operation_observe"
+symbol = "ProductionDurableWriter::observe_cross_owner_operation"
+definition_path = "codex-rs/hepta-memory/src/production_writer.rs"
+definition_markers = ["pub async fn observe_cross_owner_operation", "self.verify_authority().await?", "CrossOwnerOperationReceipt"]
+product_callers = ["codex-rs/hepta-agentd/src/operations_writer_bridge.rs"]
+caller_markers = ["ProductionDurableWriter::observe_cross_owner_operation", "reconcile", "mark_recovered_indeterminate"]
+
+[[boundary]]
+id = "agentd_operation_coordinator"
+symbol = "AgentdOperationCoordinator::from_host"
+definition_path = "codex-rs/hepta-agentd/src/operations_writer_bridge.rs"
+definition_markers = ["pub struct AgentdOperationCoordinator", "pub fn from_host", "DurableOperationStore", "ProductionDurableWriter"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
 id = "provider_effect_coordinator"
 symbol = "ProviderEffectCoordinator::new"
 definition_path = "codex-rs/hepta-contracts/src/provider_effect.rs"
