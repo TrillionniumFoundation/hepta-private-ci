@@ -1,0 +1,40 @@
+{
+  "schema": "hepta.authbus-composition.v1",
+  "module": "auth.authbus",
+  "sourceBaseSemantics": "IMPLEMENTATION_MAP.sourceBase is the repository-wide map migration baseline, not current HEAD",
+  "coreSourceOwner": {
+    "package": "codex-rs/hepta-authbus",
+    "authority": "domain_contracts_and_authentication_only",
+    "doesNotOwn": [
+      "durable_sqlite",
+      "provider_effect",
+      "production_activation"
+    ]
+  },
+  "durableStateOwner": {
+    "package": "codex-rs/hepta-evidence",
+    "owns": [
+      "auth_policy",
+      "quota_registry",
+      "quota_reservation",
+      "authbus_replay",
+      "authbus_outbox",
+      "authbus_trust_head",
+      "authbus_replay_checkpoint"
+    ]
+  },
+  "hostIntegration": {
+    "package": "codex-rs/hepta-agentd",
+    "composition": "signed_text_to_existing_thread_queue",
+    "generalEffectAuthority": false
+  },
+  "qualification": {
+    "package": "codex-rs/hepta-authbus-p1-3-qualification",
+    "provenance": "exact_source_tree_binary_command_runner_execution"
+  },
+  "productionEffectComposition": {
+    "state": "not_activated",
+    "currentSeam": "dispatch_provider_effect_guarded_qualification",
+    "qualificationOnly": true
+  }
+}
