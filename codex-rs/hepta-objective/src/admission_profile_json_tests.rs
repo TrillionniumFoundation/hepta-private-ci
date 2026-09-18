@@ -16,77 +16,107 @@ fn resource(name: &str, class: &str, suffix: usize) -> serde_json::Value {
     })
 }
 
+fn resources() -> serde_json::Value {
+    json!({
+        "timeMicros": resource("time", "task", 1),
+        "tokenCount": resource("tokens", "task", 2),
+        "computeMicros": resource("compute", "environment", 3),
+        "memoryBytes": resource("memory", "environment", 4),
+        "networkBytes": resource("network", "principal", 5),
+        "externalEffectCount": resource("effects", "principal", 6)
+    })
+}
+
+fn risk() -> serde_json::Value {
+    json!({
+        "evidenceSource": "profile.risk",
+        "class": "principal",
+        "riskConstraintId": "risk.class",
+        "riskAxis": "risk.value",
+        "lowValueQ32": 0,
+        "mediumValueQ32": 1,
+        "highValueQ32": 2,
+        "criticalValueQ32": 3,
+        "rollbackConstraintId": "risk.rollback",
+        "rollbackAxis": "risk.rollback.value",
+        "rollbackNoneValueQ32": 0,
+        "rollbackReversibleValueQ32": 1,
+        "rollbackCompensatableValueQ32": 2,
+        "rollbackIrreversibleValueQ32": 3,
+        "compensationConstraintId": "risk.compensation",
+        "compensationAxis": "risk.compensation.value",
+        "compensationFalseValueQ32": 0,
+        "compensationTrueValueQ32": 1,
+        "abstentionConstraintId": "risk.abstention",
+        "abstentionAxis": "risk.abstention.value",
+        "abstentionRules": [{ "sourceRule": "ask", "valueQ32": 1 }]
+    })
+}
+
 fn profile_json() -> Vec<u8> {
-    serde_json::to_vec(&json!({
-        "profileId": "objective.profile.production.v1",
-        "profileRevision": 1,
-        "expectedInputSchemaDigest": digest('1'),
-        "expectedNormalizationProfileDigest": digest('2'),
-        "principalScopeDigest": digest('3'),
-        "principalScope": "principal.production",
-        "allowedLocales": ["en-US"],
-        "maximumSourceAgeMicros": 60000000,
-        "maximumFutureSkewMicros": 1000000,
-        "deadlineRequired": true,
-        "allowedTrustedSourceIdentities": ["issuer.production"],
-        "constraints": [{
+    let mut profile = serde_json::Map::new();
+    profile.insert("profileId".into(), json!("objective.profile.production.v1"));
+    profile.insert("profileRevision".into(), json!(1));
+    profile.insert("expectedInputSchemaDigest".into(), json!(digest('1')));
+    profile.insert(
+        "expectedNormalizationProfileDigest".into(),
+        json!(digest('2')),
+    );
+    profile.insert("principalScopeDigest".into(), json!(digest('3')));
+    profile.insert("principalScope".into(), json!("principal.production"));
+    profile.insert("allowedLocales".into(), json!(["en-US"]));
+    profile.insert("maximumSourceAgeMicros".into(), json!(60_000_000));
+    profile.insert("maximumFutureSkewMicros".into(), json!(1_000_000));
+    profile.insert("deadlineRequired".into(), json!(true));
+    profile.insert(
+        "allowedTrustedSourceIdentities".into(),
+        json!(["issuer.production"]),
+    );
+    profile.insert(
+        "constraints".into(),
+        json!([{
             "sourceConstraintId": "latency.ceiling",
             "expectedUnit": "micros",
             "class": "task",
             "axis": "latency.micros"
-        }],
-        "predicates": [{
+        }]),
+    );
+    profile.insert(
+        "predicates".into(),
+        json!([{
             "sourcePredicateId": "task.success",
             "expectedUnit": "ratio",
             "axis": "task.success.ratio"
-        }],
-        "actions": [{
+        }]),
+    );
+    profile.insert(
+        "actions".into(),
+        json!([{
             "sourceActionClass": "read",
             "actionId": "action.read"
-        }],
-        "softDimensions": [{
+        }]),
+    );
+    profile.insert(
+        "softDimensions".into(),
+        json!([{
             "sourceDimensionId": "quality",
             "expectedUnit": "ratio",
             "expectedDirection": "maximize",
             "dimension": "quality.ratio",
             "baselineWeightQ32": 2147483648_i64
-        }],
-        "evidenceRequirements": [{
+        }]),
+    );
+    profile.insert(
+        "evidenceRequirements".into(),
+        json!([{
             "sourceRequirementId": "evidence.quality",
             "axis": "evidence.confidence"
-        }],
-        "resources": {
-            "timeMicros": resource("time", "task", 1),
-            "tokenCount": resource("tokens", "task", 2),
-            "computeMicros": resource("compute", "environment", 3),
-            "memoryBytes": resource("memory", "environment", 4),
-            "networkBytes": resource("network", "principal", 5),
-            "externalEffectCount": resource("effects", "principal", 6)
-        },
-        "risk": {
-            "evidenceSource": "profile.risk",
-            "class": "principal",
-            "riskConstraintId": "risk.class",
-            "riskAxis": "risk.value",
-            "lowValueQ32": 0,
-            "mediumValueQ32": 1,
-            "highValueQ32": 2,
-            "criticalValueQ32": 3,
-            "rollbackConstraintId": "risk.rollback",
-            "rollbackAxis": "risk.rollback.value",
-            "rollbackNoneValueQ32": 0,
-            "rollbackReversibleValueQ32": 1,
-            "rollbackCompensatableValueQ32": 2,
-            "rollbackIrreversibleValueQ32": 3,
-            "compensationConstraintId": "risk.compensation",
-            "compensationAxis": "risk.compensation.value",
-            "compensationFalseValueQ32": 0,
-            "compensationTrueValueQ32": 1,
-            "abstentionConstraintId": "risk.abstention",
-            "abstentionAxis": "risk.abstention.value",
-            "abstentionRules": [{ "sourceRule": "ask", "valueQ32": 1 }]
-        }
-    })).expect("profile json")
+        }]),
+    );
+    profile.insert("resources".into(), resources());
+    profile.insert("risk".into(), risk());
+
+    serde_json::to_vec(&serde_json::Value::Object(profile)).expect("profile json")
 }
 
 #[test]
