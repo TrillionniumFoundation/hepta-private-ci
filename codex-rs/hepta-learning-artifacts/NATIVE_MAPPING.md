@@ -132,9 +132,9 @@ test functions and CI jobs are registered in
 ## Current source blockers
 
 Source implementation does not close every qualification boundary. Historical
-`ArtifactLifecycleJournalV2::from_snapshot` still reuses the caller's replay
-time when validating actor evidence, so a credential that was valid for the
-historical event can fail a later restart after expiry. Product composition must
-also supply the authenticated writer fence, current-witness service, parent
-directory durability and target-OS containment/power-loss qualification. These
-remain explicit gaps rather than inferred runtime authority.
+lifecycle replay is now separated from current mutation authorization: restart
+validates recorded actor evidence against the event-time credential window, while
+a new append still requires current authorization. Product composition must still
+supply the authenticated writer fence, current-witness service, parent-directory
+durability and target-OS containment/power-loss qualification. These remain
+explicit boundaries rather than inferred runtime authority.
