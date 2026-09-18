@@ -262,3 +262,111 @@ fn push_len(bytes: &mut Vec<u8>, value: usize) -> Result<(), TopologyGovernanceE
     bytes.extend_from_slice(&value.to_be_bytes());
     Ok(())
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        ProposalWindowV2, TopologyChangeV2, TopologyOperationV2, TopologyProposalRequestV2,
+        propose_topology_v2,
+    };
+    use codex_hepta_types::Generation;
+
+    fn id(value: &str) -> StableId {
+        StableId::new(value).expect("id")
+    }
+    fn digest(value: &[u8]) -> Digest32 {
+        Digest32::of_bytes(value)
+    }
+    fn generation(value: u64) -> Generation {
+        Generation::new(value).expect("generation")
+    }
+
+    fn governed() -> GovernedTopologyProposalV1 {
+        let handoff = build_writer_handoff_plan_v1(
+            id("module:adapter"),
+            id("owner:old"),
+            id("owner:new"),
+            7,
+            8,
+            digest(b"source-store"),
+            digest(b"migration"),
+            digest(b"rollback"),
+            digest(b"ack-contract"),
+        )
+        .expect("handoff");
+        let artifact = digest(b"artifact");
+        let proposal = propose_topology_v2(TopologyProposalRequestV2 {
+            proposal_id: id("topology:governed:1"),
+            proposer_id: id("generator:1"),
+            evaluator_id: id("evaluator:1"),
+            selected_artifact_digest: artifact,
+            window: ProposalWindowV2 {
+                window_id: id("window:1"),
+                window_digest: digest(b"window"),
+            },
+            baseline_generation: generation(1),
+            candidate_generation: generation(2),
+            evaluation_digest: digest(b"evaluation"),
+            rollback_predecessor_digest: artifact,
+            changes: vec![TopologyChangeV2 {
+                module_id: id("module:adapter"),
+                operation: TopologyOperationV2::Replace,
+                predecessor_digest: Some(digest(b"old")),
+                candidate_digest: Some(digest(b"new")),
+                migration_digest: handoff.migration_digest,
+                rollback_digest: handoff.rollback_digest,
+                writer_handoff_digest: handoff.plan_digest,
+                evidence_digest: digest(b"evidence"),
+            }],
+        })
+        .expect("proposal");
+        admit_governed_topology_v1(
+            proposal,
+            vec![handoff],
+            digest(b"source-auth"),
+            digest(b"evaluation-auth"),
+        )
+        .expect("governed")
+    }
+
+    #[test]
+    fn governed_topology_binds_exact_writer_handoff() {
+        let value = governed();
+        assert!(!value.admission_digest.is_zero());
+        assert_eq!(value.handoffs.len(), 1);
+    }
+
+    #[test]
+    fn writer_handoff_requires_distinct_owner_and_advancing_fence() {
+        assert!(matches!(
+            build_writer_handoff_plan_v1(
+                id("module:adapter"),
+                id("owner:same"),
+                id("owner:same"),
+                7,
+                8,
+                digest(b"source-store"),
+                digest(b"migration"),
+                digest(b"rollback"),
+                digest(b"ack-contract"),
+            ),
+            Err(TopologyGovernanceErrorV1::OwnerCollision(_))
+        ));
+        assert!(matches!(
+            build_writer_handoff_plan_v1(
+                id("module:adapter"),
+                id("owner:old"),
+                id("owner:new"),
+                8,
+                8,
+                digest(b"source-store"),
+                digest(b"migration"),
+                digest(b"rollback"),
+                digest(b"ack-contract"),
+            ),
+            Err(TopologyGovernanceErrorV1::InvalidFence(_))
+        ));
+    }
+}

@@ -852,3 +852,149 @@ impl<'a> Reader<'a> {
         StableId::new(raw.to_owned()).map_err(|_| DurableTopologyRegistryErrorV1::Corrupt)
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::{
+        ProposalWindowV2, TopologyChangeV2, TopologyOperationV2, TopologyProposalRequestV2,
+        admit_governed_topology_v1, build_writer_handoff_plan_v1, propose_topology_v2,
+    };
+    use std::fs::OpenOptions;
+    use std::path::PathBuf;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    struct TestFile(PathBuf);
+    impl TestFile {
+        fn new() -> Self {
+            let nonce = SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_nanos();
+            Self(std::env::temp_dir().join(format!(
+                "hepta-topology-registry-{}-{nonce}.journal",
+                std::process::id()
+            )))
+        }
+        fn create(&self) -> File {
+            OpenOptions::new()
+                .create_new(true)
+                .read(true)
+                .write(true)
+                .open(&self.0)
+                .expect("create")
+        }
+        fn open(&self) -> File {
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .open(&self.0)
+                .expect("open")
+        }
+    }
+    impl Drop for TestFile {
+        fn drop(&mut self) {
+            let _ = std::fs::remove_file(&self.0);
+        }
+    }
+
+    fn id(value: &str) -> StableId {
+        StableId::new(value).expect("id")
+    }
+    fn digest(value: &str) -> Digest32 {
+        Digest32::of_bytes(value.as_bytes())
+    }
+    fn generation(value: u64) -> Generation {
+        Generation::new(value).expect("generation")
+    }
+
+    fn governed(label: &str) -> GovernedTopologyProposalV1 {
+        let module_id = id(&format!("module:{label}"));
+        let migration = digest(&format!("migration:{label}"));
+        let rollback = digest(&format!("rollback:{label}"));
+        let handoff = build_writer_handoff_plan_v1(
+            module_id.clone(),
+            id("owner:old"),
+            id("owner:new"),
+            10,
+            11,
+            digest(&format!("source:{label}")),
+            migration,
+            rollback,
+            digest(&format!("ack:{label}")),
+        )
+        .expect("handoff");
+        let artifact = digest(&format!("artifact:{label}"));
+        let proposal = propose_topology_v2(TopologyProposalRequestV2 {
+            proposal_id: id(&format!("proposal:{label}")),
+            proposer_id: id("generator:topology"),
+            evaluator_id: id("evaluator:topology"),
+            selected_artifact_digest: artifact,
+            window: ProposalWindowV2 {
+                window_id: id(&format!("window:{label}")),
+                window_digest: digest(&format!("window-digest:{label}")),
+            },
+            baseline_generation: generation(10),
+            candidate_generation: generation(11),
+            evaluation_digest: digest(&format!("evaluation:{label}")),
+            rollback_predecessor_digest: artifact,
+            changes: vec![TopologyChangeV2 {
+                module_id,
+                operation: TopologyOperationV2::Replace,
+                predecessor_digest: Some(digest(&format!("old:{label}"))),
+                candidate_digest: Some(digest(&format!("new:{label}"))),
+                migration_digest: migration,
+                rollback_digest: rollback,
+                writer_handoff_digest: handoff.plan_digest,
+                evidence_digest: digest(&format!("evidence:{label}")),
+            }],
+        })
+        .expect("proposal");
+        admit_governed_topology_v1(
+            proposal,
+            vec![handoff],
+            digest(&format!("source-auth:{label}")),
+            digest(&format!("eval-auth:{label}")),
+        )
+        .expect("governed")
+    }
+
+    #[test]
+    fn topology_registry_reopen_and_old_idempotent_retry_preserve_original_frame() {
+        let file = TestFile::new();
+        let scope = digest("scope");
+        let first = governed("z-first");
+        let second = governed("a-second");
+        let (first_receipt, second_receipt, anchor) = {
+            let mut store =
+                DurableTopologyProposalRegistryV1::bootstrap_empty(file.create(), scope, 21, 8)
+                    .expect("bootstrap");
+            let first_receipt = store
+                .append(Digest32::ZERO, first.clone())
+                .expect("first");
+            let second_receipt = store
+                .append(first_receipt.frame_digest, second.clone())
+                .expect("second");
+            let replay = store
+                .append(second_receipt.frame_digest, first.clone())
+                .expect("replay");
+            assert_eq!(replay.disposition, AppendDisposition::Unchanged);
+            assert_eq!(replay.sequence, first_receipt.sequence);
+            assert_eq!(replay.frame_digest, first_receipt.frame_digest);
+            let anchor = store.current_anchor().expect("anchor").expect("head");
+            (first_receipt, second_receipt, anchor)
+        };
+        assert_eq!(first_receipt.sequence, 1);
+        assert_eq!(second_receipt.sequence, 2);
+        let reopened = DurableTopologyProposalRegistryV1::reopen_anchored(
+            file.open(),
+            scope,
+            21,
+            8,
+            anchor,
+        )
+        .expect("reopen");
+        assert_eq!(reopened.record_count(), Ok(2));
+    }
+}

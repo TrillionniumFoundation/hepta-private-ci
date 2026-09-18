@@ -321,3 +321,185 @@ fn push_optional_digest(bytes: &mut Vec<u8>, value: Option<Digest32>) {
         None => bytes.push(0),
     }
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use codex_hepta_learning_ledger::{
+        AuthenticatedPrincipalV1, LearningEvidenceTrustV1, TrustedLearningSignerV1,
+    };
+    use codex_hepta_plasticity::{
+        TopologyOperationV2, build_writer_handoff_plan_v1,
+    };
+    use ed25519_dalek::{Signer, SigningKey};
+    use tempfile::tempfile;
+
+    fn id(value: &str) -> StableId {
+        StableId::new(value).expect("id")
+    }
+    fn digest(value: &[u8]) -> Digest32 {
+        Digest32::of_bytes(value)
+    }
+    fn generation(value: u64) -> Generation {
+        Generation::new(value).expect("generation")
+    }
+
+    #[test]
+    fn authenticated_topology_path_verifies_three_roles_and_persists_governed_record() {
+        let keys = [
+            SigningKey::from_bytes(&[41; 32]),
+            SigningKey::from_bytes(&[42; 32]),
+            SigningKey::from_bytes(&[43; 32]),
+        ];
+        let objective = digest(b"objective");
+        let scope = digest(b"scope");
+        let principals = keys
+            .iter()
+            .enumerate()
+            .map(|(index, key)| AuthenticatedPrincipalV1 {
+                principal_id: id(&format!("principal:{index}")),
+                credential_chain_digest: digest(format!("credential:{index}").as_bytes()),
+                signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
+                scope_digest: scope,
+                authority_epoch: 3,
+                authenticated_at: 10,
+                expires_at: 100,
+            })
+            .collect::<Vec<_>>();
+        let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+            scope_digest: scope,
+            objective_digest: objective,
+            authority_epoch: 3,
+            signers: principals
+                .iter()
+                .zip(&keys)
+                .enumerate()
+                .map(|(index, (principal, key))| TrustedLearningSignerV1 {
+                    principal: principal.clone(),
+                    controller_id: id(&format!("controller:{index}")),
+                    verifying_key: key.verifying_key().to_bytes(),
+                    roles: vec![match index {
+                        0 => LearningEvidenceRoleV1::Generator,
+                        1 => LearningEvidenceRoleV1::Observer,
+                        _ => LearningEvidenceRoleV1::Evaluator,
+                    }],
+                    revoked_at: None,
+                })
+                .collect(),
+        })
+        .expect("verifier");
+
+        let artifact = digest(b"artifact");
+        let window = ProposalWindowV2 {
+            window_id: id("window:topology"),
+            window_digest: digest(b"window"),
+        };
+        let handoff = build_writer_handoff_plan_v1(
+            id("module:adapter"),
+            id("owner:old"),
+            id("owner:new"),
+            3,
+            4,
+            digest(b"source-store"),
+            digest(b"migration"),
+            digest(b"rollback"),
+            digest(b"ack-contract"),
+        )
+        .expect("handoff");
+        let change = TopologyChangeV2 {
+            module_id: id("module:adapter"),
+            operation: TopologyOperationV2::Replace,
+            predecessor_digest: Some(digest(b"old")),
+            candidate_digest: Some(digest(b"new")),
+            migration_digest: handoff.migration_digest,
+            rollback_digest: handoff.rollback_digest,
+            writer_handoff_digest: handoff.plan_digest,
+            evidence_digest: digest(b"evidence"),
+        };
+
+        let blank = |index: usize, role: LearningEvidenceRoleV1| SignedLearningEvidenceV1 {
+            evidence_id: id(&format!("evidence:{index}")),
+            principal_id: principals[index].principal_id.clone(),
+            role,
+            trust_digest: verifier.trust_digest(),
+            scope_digest: scope,
+            objective_digest: objective,
+            authority_epoch: 3,
+            issued_at: 20,
+            expires_at: 90,
+            payload_digest: digest(b"placeholder"),
+            signature: [0; 64],
+        };
+        let mut request = TopologyPlasticityProductRequestV1 {
+            proposal_id: id("proposal:topology"),
+            proposer_generation_id: principals[0].principal_id.clone(),
+            selected_artifact_digest: artifact,
+            window: window.clone(),
+            baseline_generation: generation(4),
+            candidate_generation: generation(5),
+            rollback_predecessor_digest: artifact,
+            changes: vec![change],
+            handoffs: vec![handoff],
+            admission: TopologyAdmissionEvidenceV1 {
+                baseline_id: id("artifact:baseline"),
+                objective_digest: objective,
+                selected_artifact_digest: artifact,
+                artifact_registry_head_digest: digest(b"artifact-head"),
+                qualification_evidence_head_digest: digest(b"evidence-head"),
+                window,
+                baseline_generation: generation(4),
+                candidate_generation: generation(5),
+                generation_digest: Digest32::ZERO,
+                evaluation_receipt_digest: digest(b"evaluation-receipt"),
+            },
+            generator_attestation: blank(0, LearningEvidenceRoleV1::Generator),
+            observer_attestation: blank(1, LearningEvidenceRoleV1::Observer),
+            evaluator_attestation: blank(2, LearningEvidenceRoleV1::Evaluator),
+            expected_registry_predecessor: Digest32::ZERO,
+        };
+
+        fn sign(
+            mut evidence: SignedLearningEvidenceV1,
+            key: &SigningKey,
+            payload: &[u8],
+        ) -> SignedLearningEvidenceV1 {
+            evidence.payload_digest = Digest32::of_bytes(payload);
+            evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
+            evidence
+        }
+
+        let generation_payload =
+            topology_generation_signing_payload_v1(&request).expect("generation payload");
+        request.admission.generation_digest = Digest32::of_bytes(&generation_payload);
+        request.generator_attestation =
+            sign(request.generator_attestation, &keys[0], &generation_payload);
+        let observer_payload = topology_admission_signing_payload_v1(&request.admission);
+        request.observer_attestation =
+            sign(request.observer_attestation, &keys[1], &observer_payload);
+        let evaluator_payload = topology_evaluation_signing_payload_v1(&request.admission);
+        request.evaluator_attestation =
+            sign(request.evaluator_attestation, &keys[2], &evaluator_payload);
+
+        let mut registry = DurableTopologyProposalRegistryV1::bootstrap_empty(
+            tempfile().expect("registry"),
+            digest(b"registry-scope"),
+            9,
+            8,
+        )
+        .expect("registry");
+        let receipt =
+            propose_authenticated_topology_plasticity_v1(request, &verifier, &mut registry, 50)
+                .expect("topology product");
+        assert_eq!(
+            receipt.governed.proposal.proposer_id,
+            principals[0].principal_id
+        );
+        assert_eq!(
+            receipt.governed.proposal.evaluator_id,
+            principals[2].principal_id
+        );
+        assert_eq!(registry.record_count(), Ok(1));
+        assert!(!receipt.composition_digest.is_zero());
+    }
+}
