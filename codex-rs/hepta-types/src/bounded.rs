@@ -13,7 +13,7 @@ impl<const MAX_BYTES: usize> BoundedText<MAX_BYTES> {
     }
 
     /// Validate borrowed text before allocating the bounded owned value.
-    pub fn from_str(value: &str) -> Result<Self, BoundedValueError> {
+    pub fn try_from_str(value: &str) -> Result<Self, BoundedValueError> {
         validate_text(value, MAX_BYTES)?;
         Ok(Self(value.to_owned()))
     }
@@ -50,7 +50,7 @@ impl<const MAX_BYTES: usize> BoundedBytes<MAX_BYTES> {
     }
 
     /// Validate borrowed bytes before allocating the bounded owned value.
-    pub fn from_slice(value: &[u8]) -> Result<Self, BoundedValueError> {
+    pub fn try_from_slice(value: &[u8]) -> Result<Self, BoundedValueError> {
         validate_length(value.len(), MAX_BYTES)?;
         Ok(Self(value.to_vec()))
     }
