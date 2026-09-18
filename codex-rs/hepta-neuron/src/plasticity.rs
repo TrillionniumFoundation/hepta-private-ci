@@ -114,8 +114,8 @@ pub fn accumulate_plasticity(
     )?;
     let modulator_broadcast_digest = digest_broadcast(&request.modulator_broadcast)?;
 
-    let history_len = i128::try_from(request.signal_history.len())
-        .map_err(|_| PlasticityError::Arithmetic)?;
+    let history_len =
+        i128::try_from(request.signal_history.len()).map_err(|_| PlasticityError::Arithmetic)?;
     let mut groups = Vec::with_capacity(request.eligibility_mapping.len());
     let mut projections = 0_u32;
 
@@ -128,15 +128,13 @@ pub fn accumulate_plasticity(
         let mut accumulated = 0_i128;
         for snapshot in &request.signal_history {
             let mut local = 0_i128;
-            for (index, weight) in mapping
-                .eligibility_indices
-                .iter()
-                .zip(&mapping.weights_q24)
-            {
+            for (index, weight) in mapping.eligibility_indices.iter().zip(&mapping.weights_q24) {
                 let value = snapshot
                     .eligibility_q24
                     .get(usize::try_from(*index).map_err(|_| PlasticityError::Arithmetic)?)
-                    .ok_or_else(|| PlasticityError::InvalidMappingRow(mapping.group_id.to_string()))?;
+                    .ok_or_else(|| {
+                        PlasticityError::InvalidMappingRow(mapping.group_id.to_string())
+                    })?;
                 local = local
                     .checked_add(i128::from(q24_mul(*weight, *value)?))
                     .ok_or(PlasticityError::Arithmetic)?;
@@ -145,8 +143,8 @@ pub fn accumulate_plasticity(
                 .checked_add(local)
                 .ok_or(PlasticityError::Arithmetic)?;
         }
-        let eligibility_q24 = i64::try_from(accumulated / history_len)
-            .map_err(|_| PlasticityError::Arithmetic)?;
+        let eligibility_q24 =
+            i64::try_from(accumulated / history_len).map_err(|_| PlasticityError::Arithmetic)?;
         let mut modulator_q24 = 0_i64;
         for (weight, value) in broadcast
             .weights_q24
@@ -232,10 +230,13 @@ fn validate_request(request: &PlasticityStatisticsRequestV1) -> Result<(), Plast
         if snapshot.eligibility_q24.len() != width {
             return Err(PlasticityError::TraceWidth);
         }
-        let l1 = snapshot.eligibility_q24.iter().try_fold(0_i128, |sum, value| {
-            sum.checked_add(i128::from(*value).abs())
-                .ok_or(PlasticityError::Arithmetic)
-        })?;
+        let l1 = snapshot
+            .eligibility_q24
+            .iter()
+            .try_fold(0_i128, |sum, value| {
+                sum.checked_add(i128::from(*value).abs())
+                    .ok_or(PlasticityError::Arithmetic)
+            })?;
         if l1 > i128::from(Q24_ELIGIBILITY_LIMIT) {
             return Err(PlasticityError::TraceBound);
         }
@@ -289,7 +290,9 @@ fn validate_request(request: &PlasticityStatisticsRequestV1) -> Result<(), Plast
         if row.weights_q24.len() != request.independent_modulator_q24.len()
             || q24_l1(&row.weights_q24)? > i128::from(Q24_ONE)
         {
-            return Err(PlasticityError::InvalidBroadcastRow(row.group_id.to_string()));
+            return Err(PlasticityError::InvalidBroadcastRow(
+                row.group_id.to_string(),
+            ));
         }
     }
     if eligibility_groups != broadcast_groups {

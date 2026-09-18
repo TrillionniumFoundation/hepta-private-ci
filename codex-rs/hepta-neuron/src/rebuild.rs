@@ -120,7 +120,10 @@ pub fn rebuild_after_deletion(
     let mut survivors = Vec::new();
     let mut removed = 0_u32;
     for event in &request.events {
-        if request.revoked_source_digests.contains(&event.source_digest) {
+        if request
+            .revoked_source_digests
+            .contains(&event.source_digest)
+        {
             removed = removed.checked_add(1).ok_or(RebuildError::Arithmetic)?;
             continue;
         }

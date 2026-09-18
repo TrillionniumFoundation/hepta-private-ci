@@ -276,7 +276,6 @@ impl SparseCheckpoint {
     }
 }
 
-
 pub fn segment_seed(
     previous: &SparseCheckpoint,
     config: &SparseConfig,
@@ -460,8 +459,8 @@ pub fn sparse_tick_ablated(
         if ablation.no_homeostasis {
             next.activity[index] = old_rate;
         } else {
-            next.activity[index] =
-                mul(config.activity_decay_q24, old_rate) + mul(Q - config.activity_decay_q24, active);
+            next.activity[index] = mul(config.activity_decay_q24, old_rate)
+                + mul(Q - config.activity_decay_q24, active);
             let raw_theta = next.threshold[index]
                 + mul(
                     config.threshold_rate_q24,

@@ -98,13 +98,15 @@ fn ablation_fixture_executes_full_and_four_lesions() {
 
 #[test]
 fn longitudinal_binding_requires_all_independent_evidence_classes() {
-    assert!(LongitudinalEvidenceBindingV1::new(
-        digest(b"future"),
-        digest(b"retention"),
-        digest(b"unlearning"),
-        digest(b"evaluator"),
-    )
-    .is_ok());
+    assert!(
+        LongitudinalEvidenceBindingV1::new(
+            digest(b"future"),
+            digest(b"retention"),
+            digest(b"unlearning"),
+            digest(b"evaluator"),
+        )
+        .is_ok()
+    );
     assert_eq!(
         LongitudinalEvidenceBindingV1::new(
             Digest32::ZERO,

@@ -141,11 +141,7 @@ fn generation_rollover_seed_preserves_temporal_state() {
     };
 
     let next_config = config(2);
-    let seed = checked(crate::rollover_seed(
-        &old_state,
-        &old_config,
-        &next_config,
-    ));
+    let seed = checked(crate::rollover_seed(&old_state, &old_config, &next_config));
     assert_eq!(seed.sequence(), 0);
     assert_eq!(seed.temporal_q24(), old_state.temporal_q24());
 
@@ -161,7 +157,6 @@ fn generation_rollover_seed_preserves_temporal_state() {
     let receipt = checked(host.commit(seed.digest(), &tick(1, 2)));
     assert_eq!(receipt.checkpoint_before, seed.digest());
 }
-
 
 #[test]
 fn managed_reopen_refuses_committed_journal_when_witness_is_missing() {
@@ -193,11 +188,7 @@ fn managed_reopen_refuses_committed_journal_when_witness_is_missing() {
 #[test]
 fn seeded_journal_reopens_with_seeded_magic_and_witness() {
     let old_config = config(1);
-    let (old_state, _) = checked(sparse_tick(
-        &old_config,
-        &tick(1, 1),
-        None,
-    ));
+    let (old_state, _) = checked(sparse_tick(&old_config, &tick(1, 1), None));
     let next_config = config(2);
     let seed = checked(crate::rollover_seed(&old_state, &old_config, &next_config));
     let fixture = Fixture::new();
@@ -225,7 +216,6 @@ fn seeded_journal_reopens_with_seeded_magic_and_witness() {
         Some(receipt.checkpoint_after)
     );
 }
-
 
 #[test]
 fn reopen_reconciles_complete_journal_suffix_into_witness_before_new_commit() {
@@ -274,10 +264,7 @@ fn managed_old_retry_is_idempotent_after_later_witnesses_exist() {
     let mut host = fixture.open(config(1));
     let first = checked(host.commit(Digest32::ZERO, &tick(1, 1)));
     let second = checked(host.commit(first.checkpoint_after, &tick(2, 1)));
-    assert_eq!(
-        checked(host.commit(Digest32::ZERO, &tick(1, 1))),
-        first
-    );
+    assert_eq!(checked(host.commit(Digest32::ZERO, &tick(1, 1))), first);
     assert_eq!(
         checked(host.acknowledged()),
         Some(JournalAnchor {
@@ -286,7 +273,6 @@ fn managed_old_retry_is_idempotent_after_later_witnesses_exist() {
         })
     );
 }
-
 
 #[test]
 fn same_generation_segment_seed_preserves_global_sequence_and_state() {
@@ -325,8 +311,8 @@ fn same_generation_segment_seed_preserves_global_sequence_and_state() {
         16,
         seed,
     ));
-    let current = checked(reopened.current())
-        .unwrap_or_else(|| panic!("missing reopened segment state"));
+    let current =
+        checked(reopened.current()).unwrap_or_else(|| panic!("missing reopened segment state"));
     assert_eq!(current.sequence(), 3);
     assert_eq!(current.digest(), receipt.checkpoint_after);
 }

@@ -310,25 +310,16 @@ pub fn prepare_tick<M: FrozenNeuronModel>(
         prediction_q24: execution.prediction_q24,
     };
     let (checkpoint, sparse_receipt) = sparse_tick(&sparse_config, &sparse_input, previous)?;
-    let activation_digest = digest_q24(
-        b"hepta.neuron.activation.v1",
-        checkpoint.activation_q24(),
-    )?;
-    let threshold_digest = digest_q24(
-        b"hepta.neuron.threshold.v1",
-        checkpoint.thresholds_q24(),
-    )?;
-    let eligibility_digest = digest_q24(
-        b"hepta.neuron.eligibility.v1",
-        checkpoint.eligibility_q24(),
-    )?;
+    let activation_digest = digest_q24(b"hepta.neuron.activation.v1", checkpoint.activation_q24())?;
+    let threshold_digest = digest_q24(b"hepta.neuron.threshold.v1", checkpoint.thresholds_q24())?;
+    let eligibility_digest =
+        digest_q24(b"hepta.neuron.eligibility.v1", checkpoint.eligibility_q24())?;
     let active_indices = checkpoint
         .activation_q24()
         .iter()
         .enumerate()
         .filter_map(|(index, value)| {
-            (*value > 0)
-                .then(|| u32::try_from(index).map_err(|_| RuntimeError::Arithmetic))
+            (*value > 0).then(|| u32::try_from(index).map_err(|_| RuntimeError::Arithmetic))
         })
         .collect::<Result<Vec<_>, _>>()?;
     let calibrated = calibrate(

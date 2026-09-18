@@ -481,7 +481,8 @@ impl NeuronTickReceiptV1 {
         ] {
             bytes.extend_from_slice(digest.as_array());
         }
-        let len = u32::try_from(self.active_indices.len()).map_err(|_| ProtocolError::Arithmetic)?;
+        let len =
+            u32::try_from(self.active_indices.len()).map_err(|_| ProtocolError::Arithmetic)?;
         bytes.extend_from_slice(&len.to_be_bytes());
         for index in &self.active_indices {
             bytes.extend_from_slice(&index.to_be_bytes());
@@ -492,7 +493,12 @@ impl NeuronTickReceiptV1 {
         bytes.extend_from_slice(&self.ood_ppm.to_be_bytes());
         bytes.push(u8::from(self.abstain));
         bytes.extend_from_slice(&self.resource_receipt.execution_micros.to_be_bytes());
-        bytes.extend_from_slice(&self.resource_receipt.transient_allocation_bytes.to_be_bytes());
+        bytes.extend_from_slice(
+            &self
+                .resource_receipt
+                .transient_allocation_bytes
+                .to_be_bytes(),
+        );
         bytes.extend_from_slice(&self.resource_receipt.checkpoint_bytes.to_be_bytes());
         bytes.extend_from_slice(&self.resource_receipt.saturation_count.to_be_bytes());
         bytes.extend_from_slice(&self.resource_receipt.queue_age_micros.to_be_bytes());

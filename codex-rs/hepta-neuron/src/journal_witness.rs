@@ -155,21 +155,13 @@ impl AnchorWitnessStore {
         for index in 0..complete {
             file.read_exact(&mut frame)?;
             let checksum_start = FRAME - 32;
-            if Digest32::of_bytes(&frame[..checksum_start]).as_array()
-                != &frame[checksum_start..]
-            {
+            if Digest32::of_bytes(&frame[..checksum_start]).as_array() != &frame[checksum_start..] {
                 return Err(WitnessError::Corrupt);
             }
-            let sequence = u64::from_be_bytes(
-                frame[..8]
-                    .try_into()
-                    .map_err(|_| WitnessError::Corrupt)?,
-            );
-            let checkpoint = Digest32::from_array(
-                frame[8..40]
-                    .try_into()
-                    .map_err(|_| WitnessError::Corrupt)?,
-            );
+            let sequence =
+                u64::from_be_bytes(frame[..8].try_into().map_err(|_| WitnessError::Corrupt)?);
+            let checkpoint =
+                Digest32::from_array(frame[8..40].try_into().map_err(|_| WitnessError::Corrupt)?);
             let predecessor = Digest32::from_array(
                 frame[40..72]
                     .try_into()
@@ -179,9 +171,7 @@ impl AnchorWitnessStore {
             let expected_sequence = base_sequence
                 .checked_add(offset)
                 .ok_or(WitnessError::Capacity)?;
-            if sequence != expected_sequence
-                || checkpoint.is_zero()
-                || predecessor != prior_digest
+            if sequence != expected_sequence || checkpoint.is_zero() || predecessor != prior_digest
             {
                 return Err(WitnessError::Corrupt);
             }
@@ -235,8 +225,7 @@ impl AnchorWitnessStore {
                 Err(WitnessError::Conflict)
             };
         }
-        let offset = u64::try_from(self.anchors.len() + 1)
-            .map_err(|_| WitnessError::Capacity)?;
+        let offset = u64::try_from(self.anchors.len() + 1).map_err(|_| WitnessError::Capacity)?;
         let expected_sequence = self
             .base_sequence
             .checked_add(offset)
@@ -302,13 +291,9 @@ impl ManagedSparseJournal {
             return Err(WitnessError::AcknowledgedHistoryMissing);
         }
         let journal = match anchor {
-            Some(value) => SparseJournal::open_anchored(
-                journal_file,
-                config,
-                scope,
-                max_records,
-                value,
-            ),
+            Some(value) => {
+                SparseJournal::open_anchored(journal_file, config, scope, max_records, value)
+            }
             None => SparseJournal::open(journal_file, config, scope, max_records),
         }
         .map_err(WitnessError::Journal)?;
@@ -348,13 +333,7 @@ impl ManagedSparseJournal {
                 seed,
                 value,
             ),
-            None => SparseJournal::open_seeded(
-                journal_file,
-                config,
-                scope,
-                max_records,
-                seed,
-            ),
+            None => SparseJournal::open_seeded(journal_file, config, scope, max_records, seed),
         }
         .map_err(WitnessError::Journal)?;
         reconcile_witness(&journal, &mut witness)?;

@@ -101,7 +101,10 @@ fn tick_requires_zero_predecessor_only_at_sequence_one() {
     };
     assert!(tick.validate().is_ok());
     tick.logical_sequence = 2;
-    assert_eq!(tick.validate(), Err(ProtocolError::InvalidCheckpointBinding));
+    assert_eq!(
+        tick.validate(),
+        Err(ProtocolError::InvalidCheckpointBinding)
+    );
     tick.checkpoint_digest = digest(b"checkpoint");
     assert!(tick.validate().is_ok());
 }

@@ -138,8 +138,8 @@ impl FrozenNeuronModel for FakeModel {
     ) -> Result<FrozenModelExecutionV1, Self::Error> {
         let cfg = config(&[]);
         let runtime_receipt = model_receipt(&cfg);
-        let request_digest =
-            model_request_digest(request).unwrap_or_else(|error| panic!("request digest: {error:?}"));
+        let request_digest = model_request_digest(request)
+            .unwrap_or_else(|error| panic!("request digest: {error:?}"));
         let drive_q24 = request.feature_vector_q24.clone();
         let prediction_q24 = vec![0; drive_q24.len()];
         let output_digest = frozen_model_output_digest(
@@ -236,7 +236,9 @@ fn mismatched_predecessor_fails_before_model_execution() {
             None,
             &calibration(&cfg, runtime_digest),
         ),
-        Err(RuntimeError::Protocol(crate::ProtocolError::InvalidCheckpointBinding))
+        Err(RuntimeError::Protocol(
+            crate::ProtocolError::InvalidCheckpointBinding
+        ))
     ));
 }
 
@@ -274,7 +276,6 @@ fn resource_overrun_is_not_reported_as_success() {
         Err(RuntimeError::ResourceCeiling("execution latency"))
     );
 }
-
 
 #[test]
 fn runtime_health_orders_temporal_fallbacks_without_granting_authority() {

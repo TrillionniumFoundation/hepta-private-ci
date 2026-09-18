@@ -274,9 +274,7 @@ impl SparseJournal {
                 .sequence
                 .checked_sub(base_sequence)
                 .ok_or(JournalError::InvalidAnchor)?;
-            if complete
-                < usize::try_from(relative).map_err(|_| JournalError::InvalidAnchor)?
-            {
+            if complete < usize::try_from(relative).map_err(|_| JournalError::InvalidAnchor)? {
                 return Err(JournalError::AcknowledgedHistoryMissing);
             }
         }

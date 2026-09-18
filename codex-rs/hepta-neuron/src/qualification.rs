@@ -94,7 +94,10 @@ pub fn summarize_resource_samples(
     if samples.len() > MAX_RESOURCE_SAMPLES {
         return Err(QualificationError::SampleLimit);
     }
-    let mut execution: Vec<u64> = samples.iter().map(|sample| sample.execution_micros).collect();
+    let mut execution: Vec<u64> = samples
+        .iter()
+        .map(|sample| sample.execution_micros)
+        .collect();
     execution.sort_unstable();
     let p95 = percentile(&execution, 95)?;
     let p99 = percentile(&execution, 99)?;
@@ -189,15 +192,13 @@ pub fn run_ablation_fixture(
                 .ok_or(QualificationError::Arithmetic)?;
             state = Some(next);
         }
-        let count_i128 =
-            i128::try_from(ticks.len()).map_err(|_| QualificationError::Arithmetic)?;
-        let count_u128 =
-            u128::try_from(ticks.len()).map_err(|_| QualificationError::Arithmetic)?;
+        let count_i128 = i128::try_from(ticks.len()).map_err(|_| QualificationError::Arithmetic)?;
+        let count_u128 = u128::try_from(ticks.len()).map_err(|_| QualificationError::Arithmetic)?;
         let state = state.ok_or(QualificationError::EmptyFixture)?;
         let mean_prediction_error_q24 = i64::try_from(prediction_error_sum / count_i128)
             .map_err(|_| QualificationError::Arithmetic)?;
-        let mean_active_fraction_ppm = u32::try_from(active_sum / count_u128)
-            .map_err(|_| QualificationError::Arithmetic)?;
+        let mean_active_fraction_ppm =
+            u32::try_from(active_sum / count_u128).map_err(|_| QualificationError::Arithmetic)?;
         let final_eligibility_digest = digest_q24(
             b"hepta.neuron.ablation-eligibility.v1",
             state.eligibility_q24(),
