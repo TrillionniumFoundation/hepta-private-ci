@@ -2,6 +2,9 @@ use super::*;
 
 use std::fs;
 use std::fs::OpenOptions;
+use std::io::Seek;
+use std::io::SeekFrom;
+use std::io::Write;
 use std::path::PathBuf;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -419,6 +422,43 @@ fn durable_witness_reopens_exact_acknowledged_anchor() {
         context,
     ));
     assert_eq!(checked(reopened.current_anchor()), Some(anchor));
+}
+
+#[test]
+fn torn_witness_update_preserves_the_previous_durable_anchor() {
+    let fixture = Fixture::new();
+    let context = digest("witness-tear-context");
+    let first = JournalAnchor {
+        sequence: 1,
+        checkpoint_digest: digest("checkpoint-1"),
+    };
+    let second = JournalAnchor {
+        sequence: 2,
+        checkpoint_digest: digest("checkpoint-2"),
+    };
+    {
+        let mut witness = checked(FileRecoveryWitness::open(
+            fixture.file("witness-tear"),
+            context,
+        ));
+        checked(witness.compare_and_store(None, first));
+        checked(witness.compare_and_store(Some(first), second));
+    }
+
+    let path = fixture.root.join("witness-tear");
+    let length = checked(fs::metadata(&path)).len();
+    assert_eq!(length % 2, 0);
+    let mut file = checked(OpenOptions::new().read(true).write(true).open(&path));
+    checked(file.seek(SeekFrom::Start(length / 2)));
+    checked(file.write_all(b"BROKEN"));
+    checked(file.sync_all());
+    drop(file);
+
+    let reopened = checked(FileRecoveryWitness::open(
+        fixture.file("witness-tear"),
+        context,
+    ));
+    assert_eq!(checked(reopened.current_anchor()), Some(second));
 }
 
 #[derive(Clone)]
