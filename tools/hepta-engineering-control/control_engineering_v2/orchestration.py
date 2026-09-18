@@ -235,12 +235,13 @@ def plan_engineering_work(
     completed = verify_work_completion_receipts(
         list(receipt_values),
         trust_store,
-        generation_id=generation_id,
+        generation_id=None,
         source_commit=envelope.source_commit,
         source_tree=envelope.source_tree,
         now_ns=now,
     )
-    active_paths = canonical_paths(active_lease_paths) if tuple(active_lease_paths) else ()
+    raw_active_paths = tuple(active_lease_paths)
+    active_paths = canonical_paths(raw_active_paths) if raw_active_paths else ()
 
     role_slots: dict[str, int] = {}
     for item in bounded_tuple(review_capacity, MAX_REVIEW_ROLES, "review_role_limit_exceeded"):
@@ -361,7 +362,7 @@ def persist_orchestration_generation(
     completed = verify_work_completion_receipts(
         list(completion_receipts),
         trust_store,
-        generation_id=plan.generation_id,
+        generation_id=None,
         source_commit=envelope.source_commit,
         source_tree=envelope.source_tree,
         now_ns=now_ns,
