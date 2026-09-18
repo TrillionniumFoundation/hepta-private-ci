@@ -29,6 +29,7 @@ impl LaneFCompositionReceiptV3 {
         let mut evaluation = None;
         let mut intuition = None;
         let mut context = None;
+        let mut intuition_outcome = None;
         for (index, trace) in self.stages.iter().enumerate() {
             if Some(trace.stage) != expected {
                 return Err(CompositionErrorV3::InvalidReceipt("stage order"));
@@ -40,7 +41,10 @@ impl LaneFCompositionReceiptV3 {
             match trace.stage {
                 LaneFStageV3::UtilityEvaluated => utility = Some(trace.output_digest),
                 LaneFStageV3::EvaluationAdmitted => evaluation = Some(trace.output_digest),
-                LaneFStageV3::IntuitionDecided => intuition = Some(trace.output_digest),
+                LaneFStageV3::IntuitionDecided => {
+                    intuition = Some(trace.output_digest);
+                    intuition_outcome = Some(trace.outcome);
+                },
                 LaneFStageV3::ContextCompiled => context = Some(trace.output_digest),
                 LaneFStageV3::HostEnvelopePrepared
                     if trace.outcome == StageOutcomeV3::Completed =>
@@ -61,7 +65,7 @@ impl LaneFCompositionReceiptV3 {
         if expected.is_some() {
             return Err(CompositionErrorV3::InvalidReceipt("truncated trace"));
         }
-        validate_terminal_shape(self)?;
+        validate_terminal_shape(self, intuition_outcome)?;
         validate_envelope(
             self,
             host_index,
@@ -97,13 +101,49 @@ fn validate_trace_identity(
     if trace.output_digest.is_zero() || trace.evidence_digest.is_zero() {
         return Err(CompositionErrorV3::InvalidReceipt("empty stage digest"));
     }
-    if matches!(trace.outcome, StageOutcomeV3::FallbackUsed(_))
-        && !matches!(
-            trace.stage,
-            LaneFStageV3::NeuralSignalCollected | LaneFStageV3::PromptPortfolioBuilt
-        )
-    {
-        return Err(CompositionErrorV3::InvalidReceipt("invalid fallback"));
+    match trace.outcome {
+        StageOutcomeV3::Completed | StageOutcomeV3::Abstained | StageOutcomeV3::SlowPath => {
+            if trace.evidence_digest != trace.output_digest {
+                return Err(CompositionErrorV3::InvalidReceipt("success evidence digest"));
+            }
+        }
+        StageOutcomeV3::FallbackUsed(class) => {
+            if !matches!(
+                trace.stage,
+                LaneFStageV3::NeuralSignalCollected | LaneFStageV3::PromptPortfolioBuilt
+            ) {
+                return Err(CompositionErrorV3::InvalidReceipt("invalid fallback"));
+            }
+            if trace.output_digest
+                != fallback_digest_v3(
+                    trace.stage,
+                    predecessor,
+                    class,
+                    trace.evidence_digest,
+                )
+            {
+                return Err(CompositionErrorV3::InvalidReceipt("fallback digest"));
+            }
+        }
+        StageOutcomeV3::Failed(class) => {
+            if trace.output_digest
+                != fallback_digest_v3(
+                    trace.stage,
+                    predecessor,
+                    class,
+                    trace.evidence_digest,
+                )
+            {
+                return Err(CompositionErrorV3::InvalidReceipt("failure digest"));
+            }
+        }
+        StageOutcomeV3::Cancelled => {
+            if trace.output_digest
+                != cancellation_digest_v3(trace.stage, predecessor, trace.evidence_digest)
+            {
+                return Err(CompositionErrorV3::InvalidReceipt("cancellation digest"));
+            }
+        }
     }
     Ok(())
 }
@@ -148,7 +188,10 @@ fn next_stage(
     }
 }
 
-fn validate_terminal_shape(receipt: &LaneFCompositionReceiptV3) -> Result<(), CompositionErrorV3> {
+fn validate_terminal_shape(
+    receipt: &LaneFCompositionReceiptV3,
+    intuition_outcome: Option<StageOutcomeV3>,
+) -> Result<(), CompositionErrorV3> {
     let saw_context = receipt
         .stages
         .iter()
@@ -161,10 +204,19 @@ fn validate_terminal_shape(receipt: &LaneFCompositionReceiptV3) -> Result<(), Co
         CompositionDispositionV3::DispatchProposed if !saw_context || !saw_dispatch => {
             Err(CompositionErrorV3::InvalidReceipt("dispatch shape"))
         }
-        CompositionDispositionV3::Abstained | CompositionDispositionV3::SlowPath
-            if saw_context || saw_dispatch =>
+        CompositionDispositionV3::Abstained
+            if saw_context
+                || saw_dispatch
+                || intuition_outcome != Some(StageOutcomeV3::Abstained) =>
         {
-            Err(CompositionErrorV3::InvalidReceipt("advisory shape"))
+            Err(CompositionErrorV3::InvalidReceipt("abstain shape"))
+        }
+        CompositionDispositionV3::SlowPath
+            if saw_context
+                || saw_dispatch
+                || intuition_outcome != Some(StageOutcomeV3::SlowPath) =>
+        {
+            Err(CompositionErrorV3::InvalidReceipt("slow-path shape"))
         }
         CompositionDispositionV3::DispatchProposed
         | CompositionDispositionV3::Abstained
@@ -223,6 +275,32 @@ fn validate_envelope(
         return Err(CompositionErrorV3::InvalidReceipt("host envelope binding"));
     }
     Ok(())
+}
+
+pub(super) fn fallback_digest_v3(
+    stage: LaneFStageV3,
+    predecessor: Digest32,
+    class: PortFailureClassV1,
+    evidence: Digest32,
+) -> Digest32 {
+    let mut bytes = b"hepta.intelligence.v3.fallback\0".to_vec();
+    bytes.push(stage_code_v3(stage));
+    bytes.push(failure_code_v3(class));
+    bytes.extend_from_slice(predecessor.as_array());
+    bytes.extend_from_slice(evidence.as_array());
+    Digest32::of_bytes(&bytes)
+}
+
+pub(super) fn cancellation_digest_v3(
+    stage: LaneFStageV3,
+    predecessor: Digest32,
+    evidence: Digest32,
+) -> Digest32 {
+    let mut bytes = b"hepta.intelligence.v3.cancellation\0".to_vec();
+    bytes.push(stage_code_v3(stage));
+    bytes.extend_from_slice(predecessor.as_array());
+    bytes.extend_from_slice(evidence.as_array());
+    Digest32::of_bytes(&bytes)
 }
 
 pub(super) fn producer_for_stage(stage: LaneFStageV3) -> &'static str {
