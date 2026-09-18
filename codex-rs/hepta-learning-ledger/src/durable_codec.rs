@@ -13,6 +13,7 @@ use crate::LedgerEvent;
 use crate::LedgerRecord;
 use crate::OutcomeFinality;
 use crate::OutcomeObservation;
+use crate::PromptDeliveryObservation;
 use crate::Revocation;
 
 pub(crate) const MAX_EVENT: usize = 32 * 1024;
@@ -96,6 +97,20 @@ pub(crate) fn decode_event(mut input: &[u8]) -> Result<LedgerEvent, DurableLedge
             authority_id: reader.id()?,
             reason_digest: reader.digest()?,
         }),
+        4 => LedgerEvent::PromptDelivery(PromptDeliveryObservation {
+            record_id: reader.id()?,
+            episode_id: reader.id()?,
+            compilation_id: reader.id()?,
+            observer_id: reader.id()?,
+            portfolio_receipt_digest: reader.digest()?,
+            provider_request_digest: reader.digest()?,
+            delivered: reader.boolean()?,
+            rejected_reason_digest: reader.optional_digest()?,
+            observed_token_positions_digest: reader.optional_digest()?,
+            truncation_observed: reader.boolean()?,
+            context_delivery_observation_digest: reader.digest()?,
+            support_digest: reader.digest()?,
+        }),
         _ => return Err(DurableLedgerError::Corrupt),
     };
     if !reader.0.is_empty() {
@@ -134,5 +149,21 @@ impl Reader<'_> {
 
     fn byte(&mut self) -> Result<u8, DurableLedgerError> {
         Ok(self.take::<1>()?[0])
+    }
+
+    fn boolean(&mut self) -> Result<bool, DurableLedgerError> {
+        match self.byte()? {
+            0 => Ok(false),
+            1 => Ok(true),
+            _ => Err(DurableLedgerError::Corrupt),
+        }
+    }
+
+    fn optional_digest(&mut self) -> Result<Option<Digest32>, DurableLedgerError> {
+        match self.byte()? {
+            0 => Ok(None),
+            1 => Ok(Some(self.digest()?)),
+            _ => Err(DurableLedgerError::Corrupt),
+        }
     }
 }
