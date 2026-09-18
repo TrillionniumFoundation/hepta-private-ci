@@ -82,8 +82,12 @@ export async function startControlPlane({
   let refreshingPromise = null;
   let recoveryPromise = null;
   let suspensionPromise = Promise.resolve();
+  let lifecycleGeneration = 0;
   let suspended = false;
   let disposed = false;
+
+  const lifecycleCurrent = (generation) =>
+    generation === lifecycleGeneration && !suspended && !disposed;
 
   const blockMutations = (reason) => {
     root.setAttribute("data-hepta-ready", "false");
@@ -109,7 +113,7 @@ export async function startControlPlane({
       manifestDigest: value.manifestDigest,
     });
 
-  const installRuntime = async (nextConfig) => {
+  const installRuntime = async (nextConfig, expectedGeneration = lifecycleGeneration) => {
     const nextStore = new LocalStoragePendingStore({
       storage,
       key: nextConfig.persistenceKey,
@@ -125,6 +129,14 @@ export async function startControlPlane({
       pendingStore: nextStore,
     });
     await nextClient.connect(connectArgs(nextConfig));
+    if (!lifecycleCurrent(expectedGeneration)) {
+      try {
+        await nextClient.close();
+      } catch {
+        // Stale lifecycle work never becomes current even if close acknowledgement is lost.
+      }
+      return false;
+    }
     const nextApp = new ControlPlaneApp({
       root,
       client: nextClient,
@@ -135,14 +147,28 @@ export async function startControlPlane({
     transport = nextTransport;
     client = nextClient;
     app = nextApp;
+    return true;
   };
 
-  const applyCurrentSnapshot = async () => {
-    const snapshot = await transport.readSnapshot();
-    client.applySnapshot(snapshot);
-    app.setMutationBlock(null);
+  const applyCurrentSnapshot = async (expectedGeneration = lifecycleGeneration) => {
+    const observedTransport = transport;
+    const observedClient = client;
+    const observedApp = app;
+    if (!observedTransport || !observedClient || !observedApp) return null;
+
+    const snapshot = await observedTransport.readSnapshot();
+    if (
+      !lifecycleCurrent(expectedGeneration) ||
+      observedTransport !== transport ||
+      observedClient !== client ||
+      observedApp !== app
+    ) {
+      return null;
+    }
+    observedClient.applySnapshot(snapshot);
+    observedApp.setMutationBlock(null);
     root.setAttribute("data-hepta-ready", "true");
-    return client.readView();
+    return observedClient.readView();
   };
 
   const stopTimer = () => {
@@ -152,16 +178,21 @@ export async function startControlPlane({
 
   const startTimer = () => {
     stopTimer();
-    if (disposed || !config) return;
+    if (disposed || suspended || !config) return;
     timer = window.setInterval(() => void refresh().catch(() => {}), config.snapshotPollMs);
   };
 
   const recoverSession = async (reason = "Runtime session is being re-established.") => {
     if (disposed || suspended) return null;
     if (recoveryPromise) return recoveryPromise;
+
+    stopTimer();
+    const recoveryGeneration = ++lifecycleGeneration;
+    blockMutations(reason);
     recoveryPromise = (async () => {
-      blockMutations(reason);
       const nextConfig = await loadConfig();
+      if (!lifecycleCurrent(recoveryGeneration)) return null;
+
       const samePersistenceDomain =
         config !== null && nextConfig.persistenceKey === config.persistenceKey;
       const sameRuntimeBinding =
@@ -175,26 +206,40 @@ export async function startControlPlane({
       }
 
       if (client && samePersistenceDomain) {
+        const recoveringClient = client;
         try {
-          await client.close();
+          await recoveringClient.close();
         } catch {
           // close is best-effort here; RuntimeClient still clears local session state.
         }
-        await client.connect(connectArgs(nextConfig));
+        if (!lifecycleCurrent(recoveryGeneration)) return null;
+
+        await recoveringClient.connect(connectArgs(nextConfig));
+        if (!lifecycleCurrent(recoveryGeneration)) {
+          try {
+            await recoveringClient.close();
+          } catch {
+            // A suspended/disposed page must not retain the just-opened session.
+          }
+          return null;
+        }
         config = nextConfig;
       } else {
-        if (client) {
+        const previousClient = client;
+        if (previousClient) {
           try {
-            await client.close();
+            await previousClient.close();
           } catch {
             // The old principal/domain mirror remains isolated under its old key.
           }
         }
-        await installRuntime(nextConfig);
+        if (!lifecycleCurrent(recoveryGeneration)) return null;
+        const installed = await installRuntime(nextConfig, recoveryGeneration);
+        if (!installed) return null;
       }
 
-      const view = await applyCurrentSnapshot();
-      startTimer();
+      const view = await applyCurrentSnapshot(recoveryGeneration);
+      if (lifecycleCurrent(recoveryGeneration)) startTimer();
       return view;
     })().finally(() => {
       recoveryPromise = null;
@@ -203,9 +248,11 @@ export async function startControlPlane({
   };
 
   const refreshOnce = async () => {
+    const refreshGeneration = lifecycleGeneration;
     try {
-      return await applyCurrentSnapshot();
+      return await applyCurrentSnapshot(refreshGeneration);
     } catch (error) {
+      if (!lifecycleCurrent(refreshGeneration)) return null;
       blockMutations(
         error?.code === ERROR_CODES.UNAUTHENTICATED
           ? "Authenticated runtime session is unavailable."
@@ -230,11 +277,15 @@ export async function startControlPlane({
     return refreshingPromise;
   }
 
-  await installRuntime(await loadConfig());
-  await applyCurrentSnapshot();
+  const initialGeneration = lifecycleGeneration;
+  const installed = await installRuntime(await loadConfig(), initialGeneration);
+  if (!installed) return null;
+  await applyCurrentSnapshot(initialGeneration);
   startTimer();
 
   const onOffline = () => {
+    stopTimer();
+    lifecycleGeneration += 1;
     blockMutations("Network connectivity is unavailable.");
   };
   const onOnline = () => {
@@ -245,6 +296,7 @@ export async function startControlPlane({
   };
   const onPageHide = () => {
     suspended = true;
+    lifecycleGeneration += 1;
     stopTimer();
     blockMutations("Page is suspended; mutating controls are disabled.");
     suspensionPromise = client ? client.close().catch(() => {}) : Promise.resolve();
@@ -269,6 +321,7 @@ export async function startControlPlane({
     if (disposed) return;
     disposed = true;
     suspended = true;
+    lifecycleGeneration += 1;
     stopTimer();
     window.removeEventListener?.("offline", onOffline);
     window.removeEventListener?.("online", onOnline);
