@@ -46,6 +46,7 @@ or filesystem namespace. Those capabilities remain host-owned.
 | record/replay iteration evidence | `IterationLedgerV1::transition`, `from_snapshot` | `src/iteration_ledger.rs` | implemented |
 | prepare durable writes before final path creation | `prepare_registry_snapshot_v1`, `prepare_candidate_payload_v1`, `prepare_registry_head_witness_v1` | `src/storage.rs` | implemented |
 | root create-only paths under host namespace | `CreateOnlyArtifactFile::create_in` | `src/storage.rs` | implemented |
+| inspect bounded owner service status | `inspect_artifact_owner_status_v1` | `src/service.rs` | implemented |
 
 `LearningArtifactManifestV2` explicitly binds:
 
