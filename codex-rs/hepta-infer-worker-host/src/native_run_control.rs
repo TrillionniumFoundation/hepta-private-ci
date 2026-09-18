@@ -93,6 +93,13 @@ impl AppServerModelDriver {
                 .observation
                 .ok_or_else(|| "missing durable reopened observation".into());
         }
+        if cancellation.is_cancelled() {
+            control.stop_native_before_dispatch(
+                &record.request.request_id,
+                "cancelled before provider dispatch".to_string(),
+            )?;
+            return Err("cancelled before provider dispatch".into());
+        }
         let final_use = final_use.ok_or(
             "kernel final-use authority and an independently signed grant are required before provider dispatch",
         )?;
