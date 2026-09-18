@@ -1241,6 +1241,46 @@ async fn verify_store(pool: &SqlitePool, owner_agent_id: &AgentId) -> Result<(),
     if invalid_outcomes != 0 {
         return Err(AutomationError::Corrupt);
     }
+    let invalid_occurrences: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM automation_runs r
+         JOIN automation_tasks t ON t.task_id = r.task_id
+         WHERE t.owner_agent_id = ?
+           AND (
+               r.schedule_revision <= 0
+               OR r.occurrence_id !=
+                  'hepta.automation.occurrence.v1:' || r.task_id || ':' ||
+                  r.schedule_revision || ':' || r.scheduled_for_ms
+               OR (r.execution_state IN ('succeeded', 'failed', 'cancelled')
+                   AND r.state IN ('pending', 'leased'))
+           )",
+    )
+    .bind(owner_agent_id.as_str())
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if invalid_occurrences != 0 {
+        return Err(AutomationError::Corrupt);
+    }
+    let invalid_bindings: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM automation_occurrence_taskflow b
+         JOIN automation_runs r
+           ON r.task_id = b.task_id AND r.occurrence = b.occurrence
+         JOIN automation_tasks t ON t.task_id = r.task_id
+         WHERE b.owner_agent_id != ?
+            OR t.owner_agent_id != b.owner_agent_id
+            OR b.occurrence_id != r.occurrence_id
+            OR b.taskflow_run_id != r.occurrence_id
+            OR r.execution_state = 'materialized'",
+    )
+    .bind(owner_agent_id.as_str())
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if invalid_bindings != 0 {
+        return Err(AutomationError::Corrupt);
+    }
     verify_taskflow_store(pool, owner_agent_id)
         .await
         .map_err(map_taskflow_verify_error)?;
