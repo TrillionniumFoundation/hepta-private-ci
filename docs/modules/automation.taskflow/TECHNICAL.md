@@ -165,7 +165,11 @@ Use Agentd AutomationScheduler and AutomationStore as the existing durable owner
 Current operating and state-format references:
 
 - [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
+- [codex-rs/hepta-automation/TIMER_LIFECYCLE.md](../../../codex-rs/hepta-automation/TIMER_LIFECYCLE.md).
+- [codex-rs/hepta-automation/src/timer_lifecycle.rs](../../../codex-rs/hepta-automation/src/timer_lifecycle.rs).
 - [codex-rs/hepta-automation/src/effect_executor.rs](../../../codex-rs/hepta-automation/src/effect_executor.rs).
+
+The timer schedule/occurrence owner is schema v5 and uses a monotone durable writer epoch for quiesce, same-schema handoff, resume and retirement. This lifecycle does not retire TaskFlow external-effect/outbox state; those effects retain their own reconciliation obligations.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
