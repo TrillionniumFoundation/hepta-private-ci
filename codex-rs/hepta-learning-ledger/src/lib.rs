@@ -80,6 +80,7 @@ pub use signed_evidence::SignedLearningEvidenceV1;
 pub use signed_evidence::TrustedLearningSignerV1;
 pub use signed_evidence::VerifiedLearningEvidenceV1;
 pub use signed_evidence::verify_signed_role_separation;
+pub use signed_evidence::verify_verified_actor_separation;
 
 #[cfg(test)]
 #[path = "shadow_tests.rs"]
