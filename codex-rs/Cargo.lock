@@ -3663,6 +3663,7 @@ name = "codex-hepta-fleet"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
+ "codex-hepta-memory-federation",
  "codex-hepta-paths",
  "pretty_assertions",
  "serde",
@@ -3916,6 +3917,7 @@ name = "codex-hepta-memory-federation"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "tokio",
 ]
 
 [[package]]
