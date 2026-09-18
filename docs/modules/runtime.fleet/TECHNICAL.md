@@ -262,11 +262,11 @@ This receipt records repository source bindings for the current documentation ca
 
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
-| `admit_host` | `pub fn admit_host(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
-| `allocate` | `pub fn issue(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
-| `renew_or_revoke` | `pub fn renew_or_revoke(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
+| `admit_host` | `pub fn admit_host_with_authority(` | `codex-rs/hepta-fleet/src/placement.rs` | `codex-rs/hepta-fleet/src/placement_tests.rs` |
+| `allocate` | `pub fn commit_placement_with_authority(` | `codex-rs/hepta-fleet/src/placement.rs` | `codex-rs/hepta-fleet/src/allocation_tests.rs`, `placement_tests.rs` |
+| `renew_or_revoke` | `pub fn renew_or_revoke(` | `codex-rs/hepta-fleet/src/allocation_store.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs`, `runtime_use_tests.rs` |
 
-- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
+- Historical provenance remains in `sourceBase`; the latest source-only stacked implementation head is recorded separately as `implementationHead` in `IMPLEMENTATION_MAP.json`.
 - Durable owner storage, placement, final-use-authorized commit, active-grant read, holder reconciliation, and a real supervisor process-boundary consumer are present in source.
 - Physical capacity observations have a native Linux/macOS observer, but exact target-host measurements, runtime deployment qualification, independent acceptance, activation, and release remain false until their separate evidence gates pass.
 

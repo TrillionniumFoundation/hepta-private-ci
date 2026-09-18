@@ -31,25 +31,22 @@ External evidence gates:
 
 ## 3. `runtime.fleet`
 
-Owns coherent host enrollment and allocation-lease records; consumers enforce grants locally.
+Owns durable host observations, allocation grants, lease fences and holder reconciliation under the existing supervisor-owned Fleet state root.
 
-Current-fence reconciliation records the observed holder disposition; pure allocation arithmetic cannot self-attest use.
+Final-use-authorized holder observations establish release/quarantine; expiry or revocation alone never proves physical resources are free.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
-| `admit_host` | `owner_native` | `codex-rs/hepta-fleet/src/lease_ledger.rs` — `pub fn admit_host(` |
-| `allocate` | `owner_native` | `codex-rs/hepta-fleet/src/lease_ledger.rs` — `pub fn issue(` |
-| `renew_or_revoke` | `owner_native` | `codex-rs/hepta-fleet/src/lease_ledger.rs` — `pub fn renew_or_revoke(` |
-
-Remaining repository implementation gaps:
-
-- Connect the in-memory lease component to supervisor-owned durable FleetRegistry grants, fences, and a real capacity observer.
+| `admit_host` | `owner_native` | `codex-rs/hepta-fleet/src/placement.rs` — `pub fn admit_host_with_authority(` |
+| `allocate` | `owner_native` | `codex-rs/hepta-fleet/src/placement.rs` — `pub fn commit_placement_with_authority(` |
+| `renew_or_revoke` | `owner_native` | `codex-rs/hepta-fleet/src/allocation_store.rs` — `pub fn renew_or_revoke(` |
 
 External evidence gates:
 
-- real enrolled host capacity observation
-- non-test local grant enforcement
-- partition and lease-expiry target qualification
+- exact-head and deterministic synthetic-merge CI for the stacked candidate
+- real enrolled-host capacity observation and runtime consumption measurements on the selected target
+- partition, restart and lease-expiry target qualification
+- independent acceptance, activation, promotion and release
 
 ## 4. `runtime.agentd`
 
