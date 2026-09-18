@@ -116,6 +116,7 @@ mod tests {
             registry_id: id("withdrawal-registry"),
             scope_digest: Digest32::of_bytes(scope.as_bytes()),
             authority_id: id("withdrawal-authority"),
+            authority_epoch: 7,
         }
     }
 
