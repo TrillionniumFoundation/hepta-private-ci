@@ -143,6 +143,102 @@
       ],
       "state": "source_implemented",
       "capabilityCeiling": "status projection only; no merge, deployment, promotion or release authority"
+    },
+    {
+      "designOperation": "authenticated_source_admission",
+      "nativeModule": "control_engineering_v2.orchestration",
+      "nativeSymbol": "issue_repository_work_envelope",
+      "ownerSymbol": "issue_repository_work_envelope",
+      "tests": [
+        "OrchestrationTests.test_repository_envelope_binds_real_head_tree_and_remote"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "exact local Git or signed canonical-source admission only"
+    },
+    {
+      "designOperation": "resource_aware_engineering_orchestration",
+      "nativeModule": "control_engineering_v2.orchestration",
+      "nativeSymbol": "plan_engineering_work",
+      "ownerSymbol": "plan_engineering_work",
+      "tests": [
+        "OrchestrationTests.test_authenticated_completion_and_multidimensional_capacity",
+        "OrchestrationTests.test_unsigned_completion_cannot_satisfy_predecessor"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "assignment/integration-order/merge-queue proposals only"
+    },
+    {
+      "designOperation": "atomic_candidate_changeset",
+      "nativeModule": "control_engineering_v2.candidate",
+      "nativeSymbol": "generate_candidates",
+      "ownerSymbol": "generate_candidates",
+      "tests": [
+        "CandidateChangeSetTests.test_atomic_multi_file_candidate_is_one_identity",
+        "CandidateChangeSetTests.test_rename_is_bound_as_two_path_change"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "draft/no-change candidates only"
+    },
+    {
+      "designOperation": "sandbox_execution_control",
+      "nativeModule": "control_engineering_v2.sandbox_control",
+      "nativeSymbol": "SandboxCoordinator",
+      "ownerSymbol": "SandboxCoordinator.execute",
+      "tests": [
+        "SandboxCoordinatorTests.test_infrastructure_failure_retries_at_most_twice",
+        "SandboxCoordinatorTests.test_semantic_failure_is_never_retried",
+        "SandboxCoordinatorTests.test_saturated_admission_fails_without_unbounded_wait"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "bounded qualification execution only"
+    },
+    {
+      "designOperation": "candidate_oracle_immutability",
+      "nativeModule": "control_engineering_v2.candidate",
+      "nativeSymbol": "is_candidate_oracle_path",
+      "ownerSymbol": "generate_candidates",
+      "tests": [
+        "CandidatePolicyTests.test_candidate_can_never_edit_its_own_oracle_paths"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "candidate cannot mutate evaluator-owned oracle paths"
+    },
+    {
+      "designOperation": "mutation_testing",
+      "nativeModule": "control_engineering_v2.mutation_testing",
+      "nativeSymbol": "run_mutation_testing",
+      "ownerSymbol": "run_mutation_testing",
+      "tests": [
+        "MutationTestingTests.test_baseline_passes_and_all_mutants_must_be_killed",
+        "MutationTestingTests.test_surviving_mutant_fails_gate"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "qualification evidence only"
+    },
+    {
+      "designOperation": "production_external_controls",
+      "nativeModule": "control_engineering_v2.external_controls",
+      "nativeSymbol": "verify_production_controls",
+      "ownerSymbol": "verify_production_controls",
+      "tests": [
+        "ExternalControlTests.test_external_fence_binds_local_token_epoch_paths_and_source",
+        "ExternalControlTests.test_audit_anchor_must_match_current_store_head",
+        "ExternalControlTests.test_key_custody_requires_hardware_external_boundary_and_roles"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "admission verification only; no external authority minted"
+    },
+    {
+      "designOperation": "repository_product_caller",
+      "nativeModule": "control_engineering_v2.product_gate",
+      "nativeSymbol": "build_product_receipt",
+      "ownerSymbol": "build_product_receipt",
+      "tests": [
+        "ProductGateTests.test_pull_request_product_caller_composes_v2_orchestrator",
+        "ProductGateTests.test_source_push_requires_exact_head"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "repository CI product execution receipt only"
     }
   ],
   "negativeAuthorityInvariants": [
@@ -163,6 +259,12 @@
     "tools/hepta-engineering-control/test_lane_g_closure.py",
     "tools/hepta-engineering-control/test_lane_g_seal.py",
     "tools/hepta-engineering-control/test_consolidated_engineering.py",
-    "tools/hepta-engineering-control/test_production_readiness.py"
+    "tools/hepta-engineering-control/test_production_readiness.py",
+    "tools/hepta-engineering-control/test_orchestration.py",
+    "tools/hepta-engineering-control/test_candidate_changeset.py",
+    "tools/hepta-engineering-control/test_sandbox_control.py",
+    "tools/hepta-engineering-control/test_mutation_testing.py",
+    "tools/hepta-engineering-control/test_external_controls.py",
+    "tools/hepta-engineering-control/test_product_gate.py"
   ]
 }
