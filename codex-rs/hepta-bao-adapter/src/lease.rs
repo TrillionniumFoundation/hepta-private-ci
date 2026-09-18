@@ -281,7 +281,15 @@ impl BaoClient {
             _ => return Err(BaoClientError::InvalidResponse),
         }
 
-        let body = read_bounded_body(&mut response).await?;
+        let body = match read_bounded_body(&mut response).await {
+            Ok(body) => body,
+            Err(BaoClientError::TimedOut | BaoClientError::TransportUnavailable) => {
+                return Ok(SecretLeaseIssueOutcome::Indeterminate {
+                    operation_sha256,
+                });
+            }
+            Err(error) => return Err(error),
+        };
         let decoded: DynamicLeaseResponse =
             serde_json::from_slice(&body).map_err(|_| BaoClientError::InvalidResponse)?;
         if decoded.lease_id.is_empty() || decoded.lease_duration == 0 {
@@ -403,7 +411,15 @@ impl BaoClient {
             }
             _ => return Err(BaoClientError::InvalidResponse),
         }
-        let body = read_bounded_body(&mut response).await?;
+        let body = match read_bounded_body(&mut response).await {
+            Ok(body) => body,
+            Err(BaoClientError::TimedOut | BaoClientError::TransportUnavailable) => {
+                return Ok(SecretLeaseMutationOutcome::Indeterminate {
+                    operation_sha256,
+                });
+            }
+            Err(error) => return Err(error),
+        };
         let decoded: LeaseRenewResponse =
             serde_json::from_slice(&body).map_err(|_| BaoClientError::InvalidResponse)?;
         if decoded.lease_duration == 0 {
@@ -539,7 +555,15 @@ impl BaoClient {
             }
             _ => return Err(BaoClientError::InvalidResponse),
         }
-        let body = read_bounded_body(&mut response).await?;
+        let body = match read_bounded_body(&mut response).await {
+            Ok(body) => body,
+            Err(BaoClientError::TimedOut | BaoClientError::TransportUnavailable) => {
+                return Ok(SecretLeaseLookupOutcome::Indeterminate {
+                    operation_sha256,
+                });
+            }
+            Err(error) => return Err(error),
+        };
         let decoded: LeaseLookupResponse =
             serde_json::from_slice(&body).map_err(|_| BaoClientError::InvalidResponse)?;
         let observed_at_unix_ms = now_unix_ms()?;
