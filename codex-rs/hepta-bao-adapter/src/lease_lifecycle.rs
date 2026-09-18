@@ -274,7 +274,7 @@ impl BaoClient {
         let mut network = self
             .client
             .get(url)
-            .header("X-Vault-Token", self.token_header()? )
+            .header("X-Vault-Token", self.token_header()?)
             .header("Accept", "application/json");
         if !request.namespace.is_empty() {
             network = network.header("X-Vault-Namespace", &request.namespace);
@@ -533,8 +533,7 @@ impl BaoClient {
         let body = serde_json::json!({"lease_id": request.lease_id});
         let mut response = self
             .post_control("sys/leases/lookup", &request.namespace, &body)
-            .await
-            .map_err(|_| BaoClientError::TransportUnavailable)?;
+            .await?;
         if response.status() == StatusCode::NOT_FOUND {
             let previous = leases
                 .store
@@ -742,6 +741,7 @@ fn lease_control_binding<T: Serialize>(
         client.origin.as_str(),
         namespace,
         operation,
+        request,
     ))?;
     Ok(FinalUseBinding {
         subject_id: subject_id.to_owned(),
@@ -809,6 +809,7 @@ fn validate_metadata(metadata: &BaoLeaseMetadata) -> Result<(), BaoClientError> 
     if !lease_id(&metadata.lease_id)
         || !component(&metadata.consumer_id)
         || metadata.scope_sha256 == [0; 32]
+        || metadata.expires_at_unix_ms == 0
         || metadata.generation == 0
     {
         return Err(BaoClientError::InvalidRequest);
@@ -888,7 +889,6 @@ struct LeaseLookupData {
     ttl: u64,
     renewable: bool,
 }
-
 
 #[cfg(all(test, unix))]
 #[path = "lease_lifecycle_tests.rs"]
