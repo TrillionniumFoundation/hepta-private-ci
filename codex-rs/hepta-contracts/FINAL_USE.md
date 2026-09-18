@@ -8,8 +8,9 @@ projection keep their existing semantics.
 
 ## Ownership and trust
 
-`final_use.rs` owns validation and the non-constructible `VerifiedUseToken`.
-`final_use_store.rs` owns durable nonce/revocation state. The host supplies one
+`final_use.rs` owns validation, the non-constructible `VerifiedUseToken`, and the
+borrowed non-serializable `VerifiedUseWitness` exposed only inside the final live
+revocation fence. `final_use_store.rs` owns durable nonce/revocation state. The host supplies one
 pinned Ed25519 public key, signer identity, initial revocation head and private
 state directory through its protected configuration channel. There is no
 permissive default, signing key in the verifier, or conversion from a boolean,
@@ -122,8 +123,12 @@ turn missing/corrupt state into an empty registry.
    the owner mutex over network awaits, so trusted revocations can progress.
 5. `with_verified_use` checks that token and authority share the same owner,
    validates the binding/time/epoch/revocation again, and invokes the synchronous
-   callback while holding the revocation mutex. A completed revocation cannot
-   slip between this final check and callback entry.
+   callback while holding the revocation mutex. `with_verified_use_witness` uses
+   the same fence but passes a borrowed `VerifiedUseWitness` to effect adapters
+   that must derive durable audit evidence from the already verified grant. The
+   witness has no public constructor, is not cloneable/serializable, and cannot
+   outlive the callback. A completed revocation cannot slip between this final
+   check and callback entry.
 
 The callback must be bounded and must not reenter the authority. Revocation
 waits for an already entered synchronous callback to return; it cannot undo a
@@ -132,8 +137,11 @@ claim. If a process dies after claiming, the new process rejects that nonce.
 If it dies after consumer entry but before recording a receipt, the host must
 treat the effect as uncertain and reconcile it before issuing another grant.
 
-`VerifiedUseToken` has no public constructor and cannot be cloned. Keeping an
-outstanding token also keeps its owner and process lock alive. Mutex poisoning
+`VerifiedUseToken` has no public constructor and cannot be cloned. `VerifiedUseWitness`
+also has no public constructor and exists only for the duration of the fenced
+callback; serializable audit receipts derived from it are evidence, not authority
+objects that can be replayed into another effect. Keeping an outstanding token also
+keeps its owner and process lock alive. Mutex poisoning
 or persistence failure refuses further operations.
 
 ## APIs and failure semantics
@@ -143,7 +151,8 @@ or persistence failure refuses further operations.
 | `open_state_dir` | Pin trust, validate private storage, acquire the process lock and load/initialize state |
 | `update_revocations` | Apply only a newer trusted revision; same-epoch revocations cannot be removed |
 | `claim` | Burn one valid nonce before effect dispatch; never reuse the grant on retry |
-| `with_verified_use` | Consume that token at the final synchronous secret-use boundary |
+| `with_verified_use` | Consume that token at the final synchronous use boundary without exposing grant evidence |
+| `with_verified_use_witness` | Consume the token under the same live fence and expose only a borrowed sealed witness for a synchronous effect adapter/audit derivation |
 | `InvalidGrant`, `InvalidSignature`, `BindingMismatch` | Reject the proposal; do not dispatch |
 | `EpochMismatch`, `Revoked`, `NotYetValid`, `Expired` | Reject stale or currently unauthorized use |
 | `AlreadyClaimed`, `CapacityExceeded` | Require owner reconciliation/new authorization or an epoch transition |
