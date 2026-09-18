@@ -148,7 +148,8 @@ mod tests {
                 decision,
             )
             .expect("selection");
-        let reopened = StrictPlannerJournalV1::reopen(&journal.export_bytes()).expect("strict reopen");
+        let reopened =
+            StrictPlannerJournalV1::reopen(&journal.export_bytes()).expect("strict reopen");
         assert_eq!(reopened.selected_plan_digest(), Some(decision));
     }
 
