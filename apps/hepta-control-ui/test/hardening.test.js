@@ -1181,6 +1181,9 @@ test("failed initial browser runtime install releases its durable writer lease",
   const root = new FakeElement("div", document);
   document.body = new FakeElement("body", document);
   document.querySelector = (selector) => (selector === "#app" ? root : null);
+  document.visibilityState = "visible";
+  document.addEventListener = () => {};
+  document.removeEventListener = () => {};
   const held = new Set();
   const lockManager = {
     async request(name, options, callback) {
@@ -1253,6 +1256,9 @@ test("failed persistence-domain switch keeps the old lease recoverable and relea
   const root = new FakeElement("div", document);
   document.body = new FakeElement("body", document);
   document.querySelector = (selector) => (selector === "#app" ? root : null);
+  document.visibilityState = "visible";
+  document.addEventListener = () => {};
+  document.removeEventListener = () => {};
   const held = new Set();
   const lockManager = {
     async request(name, options, callback) {
