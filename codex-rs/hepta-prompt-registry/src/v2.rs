@@ -217,6 +217,19 @@ impl CompatibleRealizationSetV2 {
         if self.bindings.len() > MAX_COMPATIBLE_REALIZATIONS_V2 {
             return Err(PromptRegistryV2Error::ReadLimitExceeded);
         }
+        if self
+            .required_factor_ids
+            .windows(2)
+            .any(|window| window[0] >= window[1])
+        {
+            return Err(PromptRegistryV2Error::NonCanonicalRequiredFactors);
+        }
+        if self.bindings.windows(2).any(|window| {
+            (window[0].factor_id.clone(), window[0].realization_id.clone())
+                >= (window[1].factor_id.clone(), window[1].realization_id.clone())
+        }) {
+            return Err(PromptRegistryV2Error::NonCanonicalBindings);
+        }
         if self.authority.grants_any() {
             return Err(PromptRegistryV2Error::AuthorityGranted);
         }
@@ -445,6 +458,8 @@ pub enum PromptRegistryV2Error {
     InvalidFrontier,
     ReadLimitExceeded,
     DuplicateFactorFilter(String),
+    NonCanonicalRequiredFactors,
+    NonCanonicalBindings,
     RequiredFactorUnavailable,
     PayloadUnavailable,
     PayloadDigestMismatch,
