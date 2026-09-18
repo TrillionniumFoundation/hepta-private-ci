@@ -10,6 +10,7 @@ use uuid::Uuid;
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
 const MIN_INTERVAL_MS: u64 = 1_000;
 const MAX_INTERVAL_MS: u64 = 366 * 24 * 60 * 60 * 1_000;
+const MAX_CATCH_UP_OCCURRENCES: u16 = 1_024;
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
 #[serde(transparent)]
@@ -85,6 +86,101 @@ impl AutomationSchedule {
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+pub enum AutomationMissedRunPolicy {
+    Skip,
+    BoundedCatchUp { max_occurrences: u16 },
+}
+
+impl Default for AutomationMissedRunPolicy {
+    fn default() -> Self {
+        Self::Skip
+    }
+}
+
+impl AutomationMissedRunPolicy {
+    pub(crate) fn validate(self) -> Result<(), AutomationError> {
+        match self {
+            Self::Skip => Ok(()),
+            Self::BoundedCatchUp { max_occurrences }
+                if (1..=MAX_CATCH_UP_OCCURRENCES).contains(&max_occurrences) =>
+            {
+                Ok(())
+            }
+            Self::BoundedCatchUp { .. } => Err(AutomationError::Invalid),
+        }
+    }
+
+    pub(crate) const fn retained_due_occurrences(self) -> u64 {
+        match self {
+            Self::Skip => 1,
+            Self::BoundedCatchUp { max_occurrences } => max_occurrences as u64,
+        }
+    }
+
+    fn is_default(&self) -> bool {
+        *self == Self::default()
+    }
+}
+
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AutomationOverlapPolicy {
+    #[default]
+    Forbid,
+    Allow,
+}
+
+impl AutomationOverlapPolicy {
+    fn is_default(&self) -> bool {
+        *self == Self::default()
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AutomationOccurrenceState {
+    Materialized,
+    TaskFlowBound,
+    Running,
+    Indeterminate,
+    Succeeded,
+    Failed,
+    Cancelled,
+}
+
+impl AutomationOccurrenceState {
+    pub const fn is_terminal(self) -> bool {
+        matches!(self, Self::Succeeded | Self::Failed | Self::Cancelled)
+    }
+
+    pub(crate) const fn as_str(self) -> &'static str {
+        match self {
+            Self::Materialized => "materialized",
+            Self::TaskFlowBound => "taskflow_bound",
+            Self::Running => "running",
+            Self::Indeterminate => "indeterminate",
+            Self::Succeeded => "succeeded",
+            Self::Failed => "failed",
+            Self::Cancelled => "cancelled",
+        }
+    }
+
+    pub(crate) fn parse(value: &str) -> Result<Self, AutomationError> {
+        match value {
+            "materialized" => Ok(Self::Materialized),
+            "taskflow_bound" => Ok(Self::TaskFlowBound),
+            "running" => Ok(Self::Running),
+            "indeterminate" => Ok(Self::Indeterminate),
+            "succeeded" => Ok(Self::Succeeded),
+            "failed" => Ok(Self::Failed),
+            "cancelled" => Ok(Self::Cancelled),
+            _ => Err(AutomationError::Corrupt),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum AutomationTaskState {
     Enabled,
@@ -121,6 +217,10 @@ pub struct AutomationTaskDraft {
     pub thread_id: String,
     pub prompt: String,
     pub schedule: AutomationSchedule,
+    #[serde(default, skip_serializing_if = "AutomationMissedRunPolicy::is_default")]
+    pub missed_run_policy: AutomationMissedRunPolicy,
+    #[serde(default, skip_serializing_if = "AutomationOverlapPolicy::is_default")]
+    pub overlap_policy: AutomationOverlapPolicy,
     pub first_run_at_ms: u64,
     pub created_at_ms: u64,
 }
@@ -138,13 +238,26 @@ impl AutomationTaskDraft {
             thread_id: thread_id.into(),
             prompt: prompt.into(),
             schedule,
+            missed_run_policy: AutomationMissedRunPolicy::default(),
+            overlap_policy: AutomationOverlapPolicy::default(),
             first_run_at_ms,
             created_at_ms,
         }
     }
 
+    pub fn with_missed_run_policy(mut self, policy: AutomationMissedRunPolicy) -> Self {
+        self.missed_run_policy = policy;
+        self
+    }
+
+    pub fn with_overlap_policy(mut self, policy: AutomationOverlapPolicy) -> Self {
+        self.overlap_policy = policy;
+        self
+    }
+
     pub(crate) fn validate(&self) -> Result<(), AutomationError> {
         self.schedule.validate()?;
+        self.missed_run_policy.validate()?;
         let prompt_len = self.prompt.len();
         if prompt_len == 0 || prompt_len > MAX_PROMPT_BYTES || self.prompt.contains('\0') {
             return Err(AutomationError::Invalid);
@@ -165,6 +278,12 @@ pub struct AutomationTask {
     pub thread_id: String,
     pub prompt: String,
     pub schedule: AutomationSchedule,
+    #[serde(default = "initial_schedule_revision", skip_serializing_if = "is_initial_schedule_revision")]
+    pub schedule_revision: u64,
+    #[serde(default, skip_serializing_if = "AutomationMissedRunPolicy::is_default")]
+    pub missed_run_policy: AutomationMissedRunPolicy,
+    #[serde(default, skip_serializing_if = "AutomationOverlapPolicy::is_default")]
+    pub overlap_policy: AutomationOverlapPolicy,
     pub state: AutomationTaskState,
     pub next_run_at_ms: Option<u64>,
     pub next_occurrence: u64,
@@ -176,6 +295,8 @@ pub struct AutomationTask {
 pub struct AutomationLease {
     pub task: AutomationTask,
     pub occurrence: u64,
+    pub occurrence_id: String,
+    pub schedule_revision: u64,
     pub scheduled_for_ms: u64,
     pub client_user_message_id: String,
     pub lease_generation: u64,
@@ -189,6 +310,8 @@ impl AutomationLease {
             agent_id: self.task.owner_agent_id.clone(),
             task_id: self.task.task_id,
             occurrence: self.occurrence,
+            occurrence_id: self.occurrence_id.clone(),
+            schedule_revision: self.schedule_revision,
             scheduled_for_ms: self.scheduled_for_ms,
             thread_id: self.task.thread_id.clone(),
             prompt: self.task.prompt.clone(),
@@ -202,10 +325,46 @@ pub struct AutomationAdmission {
     pub agent_id: AgentId,
     pub task_id: AutomationTaskId,
     pub occurrence: u64,
+    pub occurrence_id: String,
+    pub schedule_revision: u64,
     pub scheduled_for_ms: u64,
     pub thread_id: String,
     pub prompt: String,
     pub client_user_message_id: String,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AutomationDispatchState {
+    Pending,
+    Leased,
+    Submitted,
+    Cancelled,
+}
+
+impl AutomationDispatchState {
+    pub(crate) fn parse(value: &str) -> Result<Self, AutomationError> {
+        match value {
+            "pending" => Ok(Self::Pending),
+            "leased" => Ok(Self::Leased),
+            "submitted" => Ok(Self::Submitted),
+            "cancelled" => Ok(Self::Cancelled),
+            _ => Err(AutomationError::Corrupt),
+        }
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AutomationOccurrence {
+    pub task_id: AutomationTaskId,
+    pub occurrence: u64,
+    pub occurrence_id: String,
+    pub schedule_revision: u64,
+    pub scheduled_for_ms: u64,
+    pub dispatch_state: AutomationDispatchState,
+    pub execution_state: AutomationOccurrenceState,
+    pub taskflow_run_id: Option<String>,
+    pub terminal_at_ms: Option<u64>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -243,6 +402,24 @@ pub enum AutomationTick {
         task_id: AutomationTaskId,
         occurrence: u64,
     },
+}
+
+pub(crate) fn occurrence_id(
+    task_id: AutomationTaskId,
+    schedule_revision: u64,
+    scheduled_for_ms: u64,
+) -> String {
+    format!(
+        "hepta.automation.occurrence.v1:{task_id}:{schedule_revision}:{scheduled_for_ms}"
+    )
+}
+
+fn initial_schedule_revision() -> u64 {
+    1
+}
+
+fn is_initial_schedule_revision(value: &u64) -> bool {
+    *value == 1
 }
 
 pub(crate) fn client_message_id(
