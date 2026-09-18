@@ -365,7 +365,11 @@ def evidence(output: str):
         json.dumps(
             {
                 "status": "PASS_HEPTA_EXACT_HEAD_IMPLEMENTATION_EVIDENCE",
-                "output": str(destination.relative_to(ROOT)),
+                "output": (
+                    str(destination.relative_to(ROOT))
+                    if destination.is_relative_to(ROOT)
+                    else str(destination)
+                ),
                 "sourceBase": source_base,
                 "modules": len(maps),
                 "tests": len(test_inventory),
