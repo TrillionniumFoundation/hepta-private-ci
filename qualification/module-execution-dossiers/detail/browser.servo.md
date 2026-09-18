@@ -46,7 +46,7 @@ A pipe write alone is not a crossed effect. Only a worker admission ACK proves t
 
 The durable record intentionally omits the complete `typedAction`. `type.text`, credential bytes, upload content/host paths, page HTML and worker stderr do not enter the journal. Durable identity stores the final payload digest and immutable effect semantics required for replay/reconciliation.
 
-Terminal identities may leave the bounded in-memory cache while remaining durable until profile-generation retirement. Persisted indeterminate identities reconcile without rerunning final-use authority or dispatch.
+Terminal identities may leave the bounded in-memory cache while remaining durable until profile-generation retirement. Persisted indeterminate identities never rerun final-use authority or dispatch. They use a separate trusted persisted-reconciliation driver port; the current subprocess driver intentionally returns indeterminate unless a real terminal observer is injected, because a replacement Servo process cannot infer a crashed worker's remote business outcome.
 
 ## 5. Semantic observe -> reason -> act loop
 

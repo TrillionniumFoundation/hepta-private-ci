@@ -111,7 +111,7 @@ The generic owner hard ceiling is 1024 nonterminal operation identities, but the
 
 ## 8. Failure semantics, recovery and rollback
 
-Before worker admission, validation, authority denial, invalid protocol, persistence failure or stale page/action-surface rejection cannot claim a crossed effect. A worker-confirmed pre-dispatch rejection is persisted as terminal failed. After the worker emits `dispatch_boundary`, driver timeout, channel loss, worker crash or unknown response remains `indeterminate` until reconciliation.
+Before worker admission, validation, authority denial, invalid protocol, persistence failure or stale page/action-surface rejection cannot claim a crossed effect. A worker-confirmed pre-dispatch rejection is persisted as terminal failed. After the worker emits `dispatch_boundary`, driver timeout, channel loss, worker crash or unknown response remains `indeterminate` until reconciliation. In-process reconciliation uses the live worker. After Browser-process loss, `reconcile_persisted_operation` uses a distinct trusted driver reconciliation port; the current subprocess driver has no generic remote-business oracle and therefore remains indeterminate unless an explicit trusted persisted reconciler is injected.
 
 Profile close refuses while any live or durable operation is nonterminal. Once all effects are terminal and worker stop is observed, retirement first fsyncs the profile-generation high-water and only then removes the generation's bulky operation records. A crash may therefore leave redundant terminal records but cannot make a clean-retired generation admissible again. If journal retirement fails after worker stop, the host reports `BrowserJournalRetirementError`.
 
