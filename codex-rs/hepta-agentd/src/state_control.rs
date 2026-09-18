@@ -114,12 +114,14 @@ impl AgentdState {
                         cognitive_control_unavailable(),
                     );
                 };
-                // The model and context plan bind to the body that was launched.
-                // Current lifecycle authority remains fenced before and after I/O.
+                // The model/context plan bind to the launched body; the cognitive
+                // authoritative read additionally binds the current fleet lifecycle
+                // generation as its host authority epoch.
                 let result = crate::cognitive_context::read(
                     &store,
                     &self.identity.agent_id,
                     self.identity.spawn_generation,
+                    current_generation,
                     &query,
                     limit,
                     self.cognitive_ranker.get(),
@@ -128,6 +130,12 @@ impl AgentdState {
                 self.refresh_generation()?;
                 {
                     let runtime = self.runtime.lock().map_err(poisoned_state)?;
+                    if runtime.current_generation != current_generation {
+                        return Err(AgentdError::GenerationFenced(format!(
+                            "cognitive authority epoch changed during read: expected {current_generation}, observed {}",
+                            runtime.current_generation
+                        )));
+                    }
                     require_cognitive_control_ready(
                         runtime.lifecycle,
                         runtime.app_server_ready,
