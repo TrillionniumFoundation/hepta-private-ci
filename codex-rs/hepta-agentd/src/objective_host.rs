@@ -26,7 +26,9 @@ pub enum ObjectiveHostError {
 impl fmt::Display for ObjectiveHostError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Envelope(error) => write!(formatter, "invalid intelligence host envelope: {error}"),
+            Self::Envelope(error) => {
+                write!(formatter, "invalid intelligence host envelope: {error}")
+            }
             Self::DeadlineMissing => {
                 formatter.write_str("production objective run requires an admitted deadline")
             }
