@@ -22,10 +22,11 @@ from .control_plane import (
     bounded_tuple,
     checked_id,
     checked_sha256,
+    path_is_within,
     path_sets_overlap,
     semantic_digest,
 )
-from .evidence import CanonicalSourceReceipt, HmacTrustStore
+from .evidence import CanonicalSourceReceipt, SignatureTrustStore
 
 MAX_WORKERS = 256
 MAX_SKILLS = 64
@@ -168,7 +169,7 @@ def issue_signed_work_envelope(
     store: EngineeringStore,
     envelope: WorkEnvelope,
     source: CanonicalSourceReceipt,
-    trust_store: HmacTrustStore,
+    trust_store: SignatureTrustStore,
     *,
     expected_repository: str,
     expected_document_set_digest: str,
@@ -205,7 +206,7 @@ def issue_signed_work_envelope(
 def _verify_completion(
     receipt: CompletionReceipt,
     envelope: WorkEnvelope,
-    trust_store: HmacTrustStore,
+    trust_store: SignatureTrustStore,
     now: int,
 ) -> None:
     checked_id(receipt.package_id, "package_id")
@@ -248,7 +249,7 @@ def plan_engineering_work(
     packages: Iterable[EngineeringWorkPackage],
     workers: Iterable[WorkerProfile],
     completion_receipts: Iterable[CompletionReceipt],
-    trust_store: HmacTrustStore,
+    trust_store: SignatureTrustStore,
     capacity: EngineeringCapacity,
     *,
     generation_id: str,
@@ -280,8 +281,18 @@ def plan_engineering_work(
         checked_id(worker.worker_id, "worker_id")
         if type(worker.capacity_units) is not int or not 0 <= worker.capacity_units <= MAX_CAPACITY_UNITS:
             raise EngineeringError("invalid_worker_capacity")
-        if len(worker.skills) > MAX_SKILLS or len(set(worker.skills)) != len(worker.skills):
+        if (
+            len(worker.skills) > MAX_SKILLS
+            or len(set(worker.skills)) != len(worker.skills)
+            or any(not isinstance(skill, str) or not skill for skill in worker.skills)
+        ):
             raise EngineeringError("invalid_worker_skills")
+        if (
+            not worker.allowed_paths
+            or len(worker.allowed_paths) > 256
+            or any(not isinstance(path, str) or not path for path in worker.allowed_paths)
+        ):
+            raise EngineeringError("invalid_worker_paths")
 
     review_remaining: dict[str, int] = {}
     if len(capacity.review) > MAX_REVIEW_ROLES:
@@ -310,6 +321,8 @@ def plan_engineering_work(
             or package.ci_units < 0
             or len(package.required_skills) > MAX_SKILLS
             or len(package.review_roles) > MAX_REVIEW_ROLES
+            or any(not isinstance(skill, str) or not skill for skill in package.required_skills)
+            or any(not isinstance(role, str) or not role for role in package.review_roles)
         ):
             raise EngineeringError("invalid_package_capacity")
         if package.package_id not in already_completed:
@@ -350,6 +363,11 @@ def plan_engineering_work(
         required = set(package.required_skills)
         for worker in worker_values:
             if not required.issubset(set(worker.skills)):
+                continue
+            if any(
+                not path_is_within(path, worker.allowed_paths)
+                for path in package.write_paths
+            ):
                 continue
             if worker_remaining[worker.worker_id] < package.capacity_units:
                 continue
