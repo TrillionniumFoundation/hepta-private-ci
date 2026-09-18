@@ -39,6 +39,7 @@ Pilot ceilings are design targets, not measurements. Stricter canonical limits p
 - PREG-07: a post-rename directory-fsync failure is indeterminate, poisons the current writer/read view, and requires reopen/reconciliation before further authoritative use.
 - PREG-08: authoritative V1 projections are derived from registry state and fail closed when legacy migration lacks original semantic/model lineage; migration placeholders never become canonical protocol facts.
 - PREG-09: exercise-time selected candidate IDs and exact binding digests remain identical through payload dereference and context compilation; context compilation cannot substitute a different compatible realization.
+- PREG-10: the 128-factor pilot capacity fixture records bounded owner-image bytes and read/commit/reopen timing diagnostics while restore validation rejects orphan payload and lifecycle-state drift; CI-host measurements are not target-host qualification.
 - PREG-10: record and payload ceilings reject atomically without changing the registry image.
 
 These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.

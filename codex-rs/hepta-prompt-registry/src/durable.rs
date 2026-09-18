@@ -1405,6 +1405,7 @@ impl std::error::Error for DurableRegistryError {}
 mod tests {
     use std::collections::BTreeSet;
     use std::os::unix::fs::OpenOptionsExt;
+    use std::time::Instant;
     use std::time::SystemTime;
     use std::time::UNIX_EPOCH;
 
@@ -2257,6 +2258,165 @@ mod tests {
                 .factor(&target.factor_id)
                 .map(|factor| factor.lifecycle),
             Some(Lifecycle::Admitted)
+        );
+    }
+
+    #[test]
+    fn restore_validator_rejects_orphan_payload_and_lifecycle_drift() {
+        let mut registry = PromptRegistry::new(64).expect("registry");
+        let factor = PromptFactor {
+            factor_id: id("factor:restore-invariants"),
+            proposer_id: id("proposer:restore-invariants"),
+            semantic_version: id("v1"),
+            semantic_purpose: "restore invariant fixture".to_owned(),
+            authority_class: "registered_prompt_factor".to_owned(),
+            eligible_objective_dimensions: vec![id("dimension:restore")],
+            content_digest: digest("factor:restore-invariants"),
+            source: FactorSource::GovernedInternal,
+            lifecycle: Lifecycle::Draft,
+        };
+        registry
+            .register_factor(factor.clone())
+            .expect("register factor");
+
+        let mut orphan_payload = registry.clone();
+        orphan_payload.realization_payloads.insert(
+            id("realization:orphan"),
+            b"orphan payload".to_vec(),
+        );
+        assert!(matches!(
+            validate_restored(&orphan_payload),
+            Err(DurableRegistryError::Corrupt)
+        ));
+
+        let mut lifecycle_drift = registry;
+        lifecycle_drift
+            .factors
+            .get_mut(&factor.factor_id)
+            .expect("factor")
+            .lifecycle = Lifecycle::Admitted;
+        assert!(matches!(
+            validate_restored(&lifecycle_drift),
+            Err(DurableRegistryError::Corrupt)
+        ));
+    }
+
+    #[test]
+    fn pilot_capacity_fixture_reports_bounded_owner_costs() {
+        const FACTOR_COUNT: usize = 128;
+        let temporary = tempfile::tempdir().expect("tempdir");
+        let root = temporary.path().join("registry-capacity");
+        let tuple = PromptModelTupleV2 {
+            model_id: id("model:capacity"),
+            model_version: "2026-09-18".to_owned(),
+            model_digest: digest("model:capacity"),
+            tokenizer_digest: digest("tokenizer:capacity"),
+            template_digest: digest("template:capacity"),
+            tool_schema_digest: digest("tool-schema:capacity"),
+            context_profile_digest: digest("context-profile:capacity"),
+            locale_id: id("locale:en-US"),
+        };
+        let mut core = PromptRegistry::new(512).expect("core registry");
+        for index in 0..FACTOR_COUNT {
+            let factor_id = id(&format!("factor:capacity:{index:03}"));
+            let factor = PromptFactor {
+                factor_id: factor_id.clone(),
+                proposer_id: id(&format!("proposer:capacity:{index:03}")),
+                semantic_version: id("v1"),
+                semantic_purpose: format!("capacity fixture factor {index}"),
+                authority_class: "registered_prompt_factor".to_owned(),
+                eligible_objective_dimensions: vec![id("dimension:capacity")],
+                content_digest: Digest32::of_bytes(
+                    format!("factor-content:{index}").as_bytes(),
+                ),
+                source: FactorSource::GovernedInternal,
+                lifecycle: Lifecycle::Draft,
+            };
+            core.register_factor(factor).expect("register factor");
+            core.admit_factor(
+                &factor_id,
+                &id("reviewer:capacity"),
+                digest("evidence:capacity"),
+            )
+            .expect("admit factor");
+            let payload = format!("capacity payload {index:03}").into_bytes();
+            core.register_realization_payload_v2(
+                PromptRealizationBindingV2 {
+                    realization_id: id(&format!("realization:capacity:{index:03}")),
+                    factor_id,
+                    model_id: tuple.model_id.clone(),
+                    model_version: tuple.model_version.clone(),
+                    model_digest: tuple.model_digest,
+                    tokenizer_digest: tuple.tokenizer_digest,
+                    template_digest: tuple.template_digest,
+                    tool_schema_digest: tuple.tool_schema_digest,
+                    context_profile_digest: tuple.context_profile_digest,
+                    locale_id: tuple.locale_id.clone(),
+                    role: PromptRoleV2::DeveloperInstruction,
+                    payload_digest: Digest32::of_bytes(&payload),
+                    token_cost: 16,
+                    expires_unix_ms: None,
+                },
+                payload,
+                None,
+            )
+            .expect("register realization");
+        }
+
+        let mut durable =
+            DurablePromptRegistry::open_state_dir(&root, 512).expect("open durable registry");
+        durable.registry = core;
+        let seed_start = Instant::now();
+        durable
+            .store
+            .persist(&durable.registry)
+            .expect("persist seeded registry");
+        let seed_micros = seed_start.elapsed().as_micros();
+        let seeded_bytes = std::fs::metadata(root.join("registry.json"))
+            .expect("state metadata")
+            .len();
+
+        let vector = digest("generation-vector:capacity");
+        let read_start = Instant::now();
+        let snapshot = durable.snapshot_v2(vector, &tuple).expect("snapshot");
+        let compatible = durable
+            .read_compatible_v2(&snapshot, vector, &tuple, 10, Vec::new(), 128)
+            .expect("compatible read");
+        let read_micros = read_start.elapsed().as_micros();
+        assert_eq!(compatible.bindings.len(), FACTOR_COUNT);
+
+        let commit_start = Instant::now();
+        durable
+            .register_factor(PromptFactor {
+                factor_id: id("factor:capacity:next"),
+                proposer_id: id("proposer:capacity:next"),
+                semantic_version: id("v1"),
+                semantic_purpose: "capacity commit probe".to_owned(),
+                authority_class: "registered_prompt_factor".to_owned(),
+                eligible_objective_dimensions: vec![id("dimension:capacity")],
+                content_digest: digest("factor-content:capacity:next"),
+                source: FactorSource::GovernedInternal,
+                lifecycle: Lifecycle::Draft,
+            })
+            .expect("capacity commit");
+        let commit_micros = commit_start.elapsed().as_micros();
+        let committed_revision = durable.registry().expect("registry").revision();
+        let committed_bytes = std::fs::metadata(root.join("registry.json"))
+            .expect("committed state metadata")
+            .len();
+        drop(durable);
+
+        let reopen_start = Instant::now();
+        let reopened =
+            DurablePromptRegistry::open_state_dir(&root, 512).expect("reopen capacity registry");
+        let reopen_micros = reopen_start.elapsed().as_micros();
+        assert_eq!(
+            reopened.registry().expect("registry").revision(),
+            committed_revision
+        );
+        assert!(committed_bytes <= MAX_STATE_BYTES);
+        eprintln!(
+            "PREG_CAPACITY factors={FACTOR_COUNT} seeded_bytes={seeded_bytes} committed_bytes={committed_bytes} seed_us={seed_micros} read_us={read_micros} commit_us={commit_micros} reopen_us={reopen_micros}"
         );
     }
 

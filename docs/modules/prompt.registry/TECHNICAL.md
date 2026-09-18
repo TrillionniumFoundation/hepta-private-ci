@@ -178,6 +178,8 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.registry.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-prompt-registry/src/lib.rs](../../../codex-rs/hepta-prompt-registry/src/lib.rs) and the linked implementation components.
 
+The source test `pilot_capacity_fixture_reports_bounded_owner_costs` exercises the 128-factor pilot read bound and emits state-size/read/commit/reopen diagnostics on the executing CI host. Those numbers are diagnostics only: they are not target-host p50/p95/p99 qualification and do not change the activation claim boundary.
+
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
@@ -202,7 +204,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-prompt-registry/src/lib_tests.rs](../../../codex-rs/hepta-prompt-registry/src/lib_tests.rs); named cases include `external_material_cannot_admit_itself`, signed admission lineage, expiry-at-use and atomic record-capacity rejection.
 - [codex-rs/hepta-prompt-registry/src/v2_tests.rs](../../../codex-rs/hepta-prompt-registry/src/v2_tests.rs); named cases cover one-revision mutations, exact tuples, required-factor starvation, canonical filter ordering, active-profile conflicts, explicit supersession, exact payload dereference and atomic payload-capacity rejection.
-- [codex-rs/hepta-prompt-registry/src/durable.rs](../../../codex-rs/hepta-prompt-registry/src/durable.rs); unit cases cover schema migration, unresolved legacy canonical-projection rejection, restart/non-resurrection of revocation, post-rename indeterminate-durability poisoning/reopen, final-use nonce replay rejection and authority revocation fencing.
+- [codex-rs/hepta-prompt-registry/src/durable.rs](../../../codex-rs/hepta-prompt-registry/src/durable.rs); unit cases cover schema migration, unresolved legacy canonical-projection rejection, restart/non-resurrection of revocation, post-rename indeterminate-durability poisoning/reopen, restore-invariant corruption rejection, final-use nonce replay rejection, authority revocation fencing and a 128-factor pilot capacity fixture that records owner-state bytes plus read/commit/reopen timing diagnostics.
 - [codex-rs/hepta-prompt-registry/src/protocol.rs](../../../codex-rs/hepta-prompt-registry/src/protocol.rs); unit cases cover canonical JSON round trips and unknown-field rejection.
 - [codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs); cross-crate cases validate optimizer exercise receipts against the authenticated current registry source, bind exact selected realization bytes/admission lineage into `context.compiler`, make the selected portfolio mandatory, and reject registry/model/revocation drift.
 
