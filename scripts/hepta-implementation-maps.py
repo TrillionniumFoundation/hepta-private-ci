@@ -310,6 +310,8 @@ def verify():
         if row.get("laneId") != lanes.get(mid):
             failures.append(f"{mid}: lane")
         source_base = row.get("sourceBase")
+        if row.get("sourceFreshnessPolicy") != "bound_sources_unchanged_since_source_base":
+            failures.append(f"{mid}: source freshness policy")
         if (
             not isinstance(source_base, dict)
             or not source_base.get("commit")
