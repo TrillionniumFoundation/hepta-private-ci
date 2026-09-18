@@ -218,3 +218,184 @@ impl StoredObjectiveFunction {
             success_predicates: self
                 .success_predicates
                 .into_iter()
+
+                .map(StoredSuccessPredicate::into_typed)
+                .collect::<Result<Vec<_>, _>>()?,
+            legal_actions: self
+                .legal_actions
+                .into_iter()
+                .map(StoredAction::into_typed)
+                .collect::<Result<Vec<_>, _>>()?,
+            soft_preferences: self
+                .soft_preferences
+                .into_iter()
+                .map(StoredSoftPreference::into_typed)
+                .collect::<Result<Vec<_>, _>>()?,
+        })
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct StoredConstraint {
+    id: String,
+    class: String,
+    axis: String,
+    relation: String,
+    bound_raw: i64,
+    evidence_source: String,
+}
+
+impl From<&Constraint> for StoredConstraint {
+    fn from(value: &Constraint) -> Self {
+        Self {
+            id: value.id.to_string(),
+            class: match value.class {
+                ConstraintClass::Constitutional => "constitutional",
+                ConstraintClass::Principal => "principal",
+                ConstraintClass::Environment => "environment",
+                ConstraintClass::Task => "task",
+            }
+            .to_string(),
+            axis: value.axis.to_string(),
+            relation: relation_text(value.relation).to_string(),
+            bound_raw: value.bound.raw(),
+            evidence_source: value.evidence_source.to_string(),
+        }
+    }
+}
+
+impl StoredConstraint {
+    fn into_typed(self) -> Result<Constraint, ObjectivePublicationStoreErrorV1> {
+        Ok(Constraint {
+            id: stable_id(self.id)?,
+            class: match self.class.as_str() {
+                "constitutional" => ConstraintClass::Constitutional,
+                "principal" => ConstraintClass::Principal,
+                "environment" => ConstraintClass::Environment,
+                "task" => ConstraintClass::Task,
+                _ => return Err(ObjectivePublicationStoreErrorV1::Corrupt),
+            },
+            axis: stable_id(self.axis)?,
+            relation: relation(&self.relation)?,
+            bound: FixedQ32::from_raw(self.bound_raw),
+            evidence_source: stable_id(self.evidence_source)?,
+        })
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct StoredSuccessPredicate {
+    id: String,
+    axis: String,
+    relation: String,
+    bound_raw: i64,
+    evidence_source: String,
+    terminality: String,
+}
+
+impl From<&SuccessPredicate> for StoredSuccessPredicate {
+    fn from(value: &SuccessPredicate) -> Self {
+        Self {
+            id: value.id.to_string(),
+            axis: value.axis.to_string(),
+            relation: relation_text(value.relation).to_string(),
+            bound_raw: value.bound.raw(),
+            evidence_source: value.evidence_source.to_string(),
+            terminality: match value.terminality {
+                PredicateTerminality::Intermediate => "intermediate",
+                PredicateTerminality::Terminal => "terminal",
+            }
+            .to_string(),
+        }
+    }
+}
+
+impl StoredSuccessPredicate {
+    fn into_typed(self) -> Result<SuccessPredicate, ObjectivePublicationStoreErrorV1> {
+        Ok(SuccessPredicate {
+            id: stable_id(self.id)?,
+            axis: stable_id(self.axis)?,
+            relation: relation(&self.relation)?,
+            bound: FixedQ32::from_raw(self.bound_raw),
+            evidence_source: stable_id(self.evidence_source)?,
+            terminality: match self.terminality.as_str() {
+                "intermediate" => PredicateTerminality::Intermediate,
+                "terminal" => PredicateTerminality::Terminal,
+                _ => return Err(ObjectivePublicationStoreErrorV1::Corrupt),
+            },
+        })
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct StoredAction {
+    id: String,
+    confirmation: String,
+}
+
+impl From<&ActionClass> for StoredAction {
+    fn from(value: &ActionClass) -> Self {
+        Self {
+            id: value.id.to_string(),
+            confirmation: match value.confirmation {
+                ConfirmationPolicy::NotRequired => "not_required",
+                ConfirmationPolicy::Required => "required",
+            }
+            .to_string(),
+        }
+    }
+}
+
+impl StoredAction {
+    fn into_typed(self) -> Result<ActionClass, ObjectivePublicationStoreErrorV1> {
+        Ok(ActionClass {
+            id: stable_id(self.id)?,
+            confirmation: match self.confirmation.as_str() {
+                "not_required" => ConfirmationPolicy::NotRequired,
+                "required" => ConfirmationPolicy::Required,
+                _ => return Err(ObjectivePublicationStoreErrorV1::Corrupt),
+            },
+        })
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct StoredSoftPreference {
+    dimension: String,
+    direction: String,
+    weight_raw: i64,
+}
+
+impl From<&SoftPreference> for StoredSoftPreference {
+    fn from(value: &SoftPreference) -> Self {
+        Self {
+            dimension: value.dimension.to_string(),
+            direction: match value.direction {
+                SoftDirection::Maximize => "maximize",
+                SoftDirection::Minimize => "minimize",
+            }
+            .to_string(),
+            weight_raw: value.weight.raw(),
+        }
+    }
+}
+
+impl StoredSoftPreference {
+    fn into_typed(self) -> Result<SoftPreference, ObjectivePublicationStoreErrorV1> {
+        Ok(SoftPreference {
+            dimension: stable_id(self.dimension)?,
+            direction: match self.direction.as_str() {
+                "maximize" => SoftDirection::Maximize,
+                "minimize" => SoftDirection::Minimize,
+                _ => return Err(ObjectivePublicationStoreErrorV1::Corrupt),
+            },
+            weight: FixedQ32::from_raw(self.weight_raw),
+        })
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
