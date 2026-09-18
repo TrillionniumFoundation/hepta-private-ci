@@ -98,6 +98,14 @@ jobs:
           --features trusted-inprocess-eval
           --test operator_claim
 
+      - name: Trusted-only pre-durable shadow compatibility compile
+        working-directory: codex-rs
+        run: >-
+          cargo check --locked
+          -p codex-hepta-intelligence
+          --features trusted-evaluated-shadow-v1
+          --all-targets
+
       - name: Lane E learning.eval coverage evidence
         shell: bash
         run: |
@@ -306,6 +314,14 @@ jobs:
           -p codex-hepta-intelligence-eval
           --features trusted-inprocess-eval
           --test operator_claim
+
+      - name: Compile merged trusted-only pre-durable shadow compatibility
+        working-directory: codex-rs
+        run: >-
+          cargo check --locked
+          -p codex-hepta-intelligence
+          --features trusted-evaluated-shadow-v1
+          --all-targets
 
       - name: Test merged cross-crate closure
         shell: bash
