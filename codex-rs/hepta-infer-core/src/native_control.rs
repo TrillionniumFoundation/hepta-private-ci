@@ -16,13 +16,51 @@ pub(super) const JOURNAL_PREFIX: &str = "native-v1|";
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
+pub struct NativeQuotaBinding {
+    pub reservation_id: String,
+    pub reservation_digest: String,
+    pub reserved_requests: u64,
+    pub reserved_tokens: u64,
+    pub reserved_concurrency: u32,
+    pub authority_epoch: u64,
+    pub expires_at_unix_seconds: u64,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct NativeResourceBinding {
+    pub resource_id: String,
+    pub resource_digest: String,
+    pub provider_id: String,
+    pub model: String,
+    pub generation: u64,
+    pub expires_at_unix_seconds: u64,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct NativeAdmissionBinding {
+    pub quota: NativeQuotaBinding,
+    pub resource: NativeResourceBinding,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct NativeRequest {
     pub request_id: String,
     pub principal_id: String,
     pub worker_generation: u64,
     pub model: String,
-    /// Binds the prompt, optional query, exact socket and execution timeout.
+    /// Binds the prompt, optional query, exact socket, execution timeout and policy evidence.
     pub payload_digest: String,
+    /// Conservative per-request output-token hold. A later observed count can
+    /// refine it; missing usage keeps the full hold.
+    #[serde(default)]
+    pub maximum_output_tokens: u64,
+    /// Legacy native-v1 records omit this. Production provider dispatch must
+    /// carry a quota/resource binding and a matching final-use witness.
+    #[serde(default)]
+    pub admission: Option<NativeAdmissionBinding>,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -49,6 +87,28 @@ pub enum NativeOwnerAuthority {
     },
 }
 
+/// Final-use authority is independent from Agent health and provider
+/// terminality. A claim is consumed before physical turn dispatch; only a
+/// live revalidation at terminal publication can make a completed run
+/// successful.
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(tag = "state", rename_all = "snake_case", deny_unknown_fields)]
+pub enum NativeFinalUseAuthority {
+    #[default]
+    Unverified,
+    Claimed {
+        grant_id: String,
+        authority_epoch: u64,
+    },
+    VerifiedAtTerminal {
+        grant_id: String,
+        authority_epoch: u64,
+    },
+    Lost {
+        reason: String,
+    },
+}
+
 /// Fields observed by the native client, never a provider billing assertion.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -64,6 +124,8 @@ pub struct NativeRunOutput {
     pub stop_reason: Option<String>,
     #[serde(default)]
     pub owner_authority: NativeOwnerAuthority,
+    #[serde(default)]
+    pub final_use_authority: NativeFinalUseAuthority,
 }
 
 impl NativeRunOutput {
@@ -73,6 +135,10 @@ impl NativeRunOutput {
         self.terminal_observed
             && self.status == NativeRunStatus::Completed
             && self.owner_authority == NativeOwnerAuthority::ObservedReady
+            && matches!(
+                self.final_use_authority,
+                NativeFinalUseAuthority::VerifiedAtTerminal { .. }
+            )
     }
 }
 
@@ -89,11 +155,24 @@ pub enum NativeReservationState {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
+pub struct NativeFinalUseWitness {
+    pub grant_id: String,
+    pub authority_epoch: u64,
+    pub expires_at_unix_ms: u64,
+    pub binding_digest: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct NativeDispatch {
     pub thread_id: String,
     pub model_provider: String,
     /// Exact serialized additional context, including its owner snapshot.
     pub context_digest: String,
+    /// Legacy records omit this. New production dispatches persist the
+    /// independently verified single-use grant before turn/start.
+    #[serde(default)]
+    pub final_use: Option<NativeFinalUseWitness>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -331,6 +410,8 @@ impl NativeJournal {
             {
                 return Err(Error::InvalidIdentity("native worker/model"));
             }
+            validate_admission_binding(&request)?;
+            enforce_quota(&self.records, &request)?;
             if !(1..=256).contains(&maximum_in_flight) {
                 return Err(Error::CapacityExceeded);
             }
@@ -384,6 +465,7 @@ impl NativeJournal {
                 validate_identity(&dispatch.thread_id, "native thread")?;
                 validate_identity(&dispatch.model_provider, "native provider")?;
                 validate_digest(&dispatch.context_digest, "native context")?;
+                validate_dispatch_authority(record, &dispatch)?;
                 record.dispatch = Some(dispatch);
                 record.state = NativeReservationState::Dispatching;
             }
@@ -426,8 +508,207 @@ impl NativeJournal {
     }
 }
 
+fn validate_admission_binding(request: &NativeRequest) -> Result<(), Error> {
+    match &request.admission {
+        None => {
+            if request.maximum_output_tokens != 0 {
+                return Err(Error::InvalidTransition);
+            }
+            Ok(())
+        }
+        Some(binding) => {
+            validate_identity(&binding.quota.reservation_id, "native quota reservation")?;
+            validate_digest(&binding.quota.reservation_digest, "native quota reservation")?;
+            validate_identity(&binding.resource.resource_id, "native resource")?;
+            validate_digest(&binding.resource.resource_digest, "native resource")?;
+            validate_identity(&binding.resource.provider_id, "native provider")?;
+            if request.maximum_output_tokens == 0
+                || binding.quota.reserved_requests == 0
+                || binding.quota.reserved_tokens < request.maximum_output_tokens
+                || binding.quota.reserved_concurrency == 0
+                || binding.quota.authority_epoch == 0
+                || binding.quota.expires_at_unix_seconds == 0
+                || binding.resource.generation == 0
+                || binding.resource.expires_at_unix_seconds == 0
+                || binding.resource.generation != request.worker_generation
+                || binding.resource.model != request.model
+            {
+                return Err(Error::InvalidTransition);
+            }
+            Ok(())
+        }
+    }
+}
+
+fn held_tokens(record: &NativeRunRecord) -> Result<u64, Error> {
+    if record.pre_dispatch_stop.is_some() {
+        return Ok(0);
+    }
+    Ok(record
+        .observation
+        .as_ref()
+        .and_then(|output| output.observed_output_tokens)
+        .unwrap_or(record.request.maximum_output_tokens))
+}
+
+fn enforce_quota(records: &BTreeMap<String, NativeRunRecord>, request: &NativeRequest) -> Result<(), Error> {
+    let Some(binding) = &request.admission else {
+        return Ok(());
+    };
+    let mut requests = 1_u64;
+    let mut active = 1_u64;
+    let mut tokens = request.maximum_output_tokens;
+    for record in records.values() {
+        let Some(existing) = &record.request.admission else {
+            continue;
+        };
+        if existing.quota.reservation_id == binding.quota.reservation_id
+            && existing.quota.reservation_digest != binding.quota.reservation_digest
+        {
+            return Err(Error::Conflict);
+        }
+        if existing.quota.reservation_digest != binding.quota.reservation_digest {
+            continue;
+        }
+        if existing.resource != binding.resource {
+            return Err(Error::Conflict);
+        }
+        requests = requests.checked_add(1).ok_or(Error::ArithmeticOverflow)?;
+        if record.state != NativeReservationState::Released {
+            active = active.checked_add(1).ok_or(Error::ArithmeticOverflow)?;
+        }
+        tokens = tokens
+            .checked_add(held_tokens(record)?)
+            .ok_or(Error::ArithmeticOverflow)?;
+    }
+    if requests > binding.quota.reserved_requests
+        || active > u64::from(binding.quota.reserved_concurrency)
+        || tokens > binding.quota.reserved_tokens
+    {
+        return Err(Error::CapacityExceeded);
+    }
+    Ok(())
+}
+
+fn validate_final_use_witness(witness: &NativeFinalUseWitness) -> Result<(), Error> {
+    validate_identity(&witness.grant_id, "native final-use grant")?;
+    validate_digest(&witness.binding_digest, "native final-use binding")?;
+    if witness.authority_epoch == 0 || witness.expires_at_unix_ms == 0 {
+        return Err(Error::InvalidTransition);
+    }
+    Ok(())
+}
+
+fn validate_dispatch_authority(record: &NativeRunRecord, dispatch: &NativeDispatch) -> Result<(), Error> {
+    match &record.request.admission {
+        None => {
+            if dispatch.final_use.is_some() {
+                return Err(Error::Conflict);
+            }
+        }
+        Some(admission) => {
+            if dispatch.model_provider != admission.resource.provider_id {
+                return Err(Error::AssignmentMismatch);
+            }
+            let witness = dispatch.final_use.as_ref().ok_or(Error::InvalidTransition)?;
+            validate_final_use_witness(witness)?;
+            if witness.authority_epoch != admission.quota.authority_epoch {
+                return Err(Error::AssignmentMismatch);
+            }
+        }
+    }
+    Ok(())
+}
+
+fn final_use_identity(authority: &NativeFinalUseAuthority) -> Option<(&str, u64)> {
+    match authority {
+        NativeFinalUseAuthority::Claimed {
+            grant_id,
+            authority_epoch,
+        }
+        | NativeFinalUseAuthority::VerifiedAtTerminal {
+            grant_id,
+            authority_epoch,
+        } => Some((grant_id.as_str(), *authority_epoch)),
+        NativeFinalUseAuthority::Unverified | NativeFinalUseAuthority::Lost { .. } => None,
+    }
+}
+
+fn validate_final_use_observation(record: &NativeRunRecord, output: &NativeRunOutput) -> Result<(), Error> {
+    if let NativeFinalUseAuthority::Lost { reason } = &output.final_use_authority
+        && (reason.is_empty() || reason.len() > 4096)
+    {
+        return Err(Error::InvalidIdentity("final-use authority loss reason"));
+    }
+    if let Some(admission) = &record.request.admission {
+        let witness = record
+            .dispatch
+            .as_ref()
+            .and_then(|dispatch| dispatch.final_use.as_ref())
+            .ok_or(Error::AssignmentMismatch)?;
+        match &output.final_use_authority {
+            NativeFinalUseAuthority::Claimed { .. }
+            | NativeFinalUseAuthority::VerifiedAtTerminal { .. } => {
+                let (grant_id, authority_epoch) =
+                    final_use_identity(&output.final_use_authority).ok_or(Error::AssignmentMismatch)?;
+                if grant_id != witness.grant_id
+                    || authority_epoch != witness.authority_epoch
+                    || authority_epoch != admission.quota.authority_epoch
+                {
+                    return Err(Error::AssignmentMismatch);
+                }
+            }
+            NativeFinalUseAuthority::Lost { .. } => {}
+            NativeFinalUseAuthority::Unverified => return Err(Error::AssignmentMismatch),
+        }
+        if matches!(
+            output.final_use_authority,
+            NativeFinalUseAuthority::VerifiedAtTerminal { .. }
+        ) && !output.terminal_observed
+        {
+            return Err(Error::TerminalObservationMissing);
+        }
+    }
+
+    if let Some(previous) = &record.observation {
+        match (&previous.final_use_authority, &output.final_use_authority) {
+            (NativeFinalUseAuthority::Lost { .. }, next)
+                if next != &previous.final_use_authority =>
+            {
+                return Err(Error::Conflict);
+            }
+            (NativeFinalUseAuthority::VerifiedAtTerminal { .. }, next)
+                if next != &previous.final_use_authority =>
+            {
+                return Err(Error::Conflict);
+            }
+            (NativeFinalUseAuthority::Unverified, NativeFinalUseAuthority::Unverified) => {}
+            (NativeFinalUseAuthority::Unverified, _) => return Err(Error::Conflict),
+            (
+                NativeFinalUseAuthority::Claimed {
+                    grant_id: previous_id,
+                    authority_epoch: previous_epoch,
+                },
+                NativeFinalUseAuthority::Claimed {
+                    grant_id: next_id,
+                    authority_epoch: next_epoch,
+                }
+                | NativeFinalUseAuthority::VerifiedAtTerminal {
+                    grant_id: next_id,
+                    authority_epoch: next_epoch,
+                },
+            ) if previous_id == next_id && previous_epoch == next_epoch => {}
+            (NativeFinalUseAuthority::Claimed { .. }, NativeFinalUseAuthority::Lost { .. }) => {}
+            (NativeFinalUseAuthority::Claimed { .. }, _) => return Err(Error::Conflict),
+            _ => {}
+        }
+    }
+    Ok(())
+}
+
 fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> Result<(), Error> {
     let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
+    validate_final_use_observation(record, &output)?;
     if output.thread_id != dispatch.thread_id
         || output.model_provider != dispatch.model_provider
         || output.model != record.request.model

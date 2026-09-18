@@ -20,6 +20,9 @@ use codex_app_server_protocol::JSONRPCErrorError;
 use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::SandboxMode;
 use codex_app_server_protocol::ServerNotification;
+use codex_app_server_protocol::ThreadItem;
+use codex_app_server_protocol::ThreadReadParams;
+use codex_app_server_protocol::ThreadReadResponse;
 use codex_app_server_protocol::ThreadStartParams;
 use codex_app_server_protocol::ThreadStartResponse;
 use codex_app_server_protocol::ThreadUnsubscribeParams;
@@ -32,8 +35,10 @@ use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
@@ -42,6 +47,11 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 #[path = "native_run_control.rs"]
 mod control;
 pub use control::NativeAdmission;
+#[path = "native_policy.rs"]
+mod policy;
+pub use policy::FinalUseGrantResolver;
+pub use policy::GrantResolveError;
+pub use policy::NativeExecutionPolicy;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
@@ -62,11 +72,14 @@ pub struct NativeWorkerConfig {
     pub generation: u64,
     pub model: String,
     pub timeout: Duration,
+    pub final_use_authority: FinalUseAuthority,
 }
 
-/// A real provider client. Each new request uses a fresh ephemeral thread
-/// behind the exact Agent identity. The control journal owns dispatch identity,
-/// local slot admission and settlement; duplicate requests never start a turn.
+/// A real provider client. Each new request uses a fresh private durable
+/// thread behind the exact Agent identity so a worker-process crash can
+/// reconcile the original turn without issuing a replacement turn. The
+/// control journal owns dispatch identity, local/economic admission and
+/// settlement.
 pub struct AppServerModelDriver {
     config: NativeWorkerConfig,
 }
@@ -93,7 +106,10 @@ impl AppServerModelDriver {
         request_id: &str,
         prompt: String,
         context_query: Option<String>,
+        maximum_output_tokens: u64,
+        policy: &NativeExecutionPolicy,
         cancellation: &CancellationToken,
+        grant_resolver: &FinalUseGrantResolver<'_>,
     ) -> Result<NativeRunOutput> {
         if prompt.is_empty() || prompt.len() > MAX_PROMPT_BYTES {
             return Err("prompt must contain 1..32768 bytes".into());
@@ -160,7 +176,7 @@ impl AppServerModelDriver {
                     cwd: health.workspace.to_str().map(str::to_string),
                     approval_policy: Some(AskForApproval::Never),
                     sandbox: Some(SandboxMode::ReadOnly),
-                    ephemeral: Some(true),
+                    ephemeral: Some(false),
                     environments: Some(Vec::new()),
                     ..Default::default()
                 },
@@ -177,29 +193,53 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
         }
+        let context_digest = control::digest(&serde_json::to_vec(&additional_context)?);
+        let turn_params = TurnStartParams {
+            thread_id: started.thread.id.clone(),
+            client_user_message_id: Some(request_id.to_string()),
+            input: vec![UserInput::Text {
+                text: prompt,
+                text_elements: Vec::new(),
+            }],
+            additional_context,
+            environments: Some(Vec::new()),
+            ..Default::default()
+        };
+        let exact_turn_payload = serde_json::to_vec(&turn_params)?;
+        let request_payload_digest = control
+            .native_record(request_id)
+            .ok_or("missing durable native request")?
+            .request
+            .payload_digest
+            .clone();
+        let claimed = policy.claim_turn(
+            &self.config.final_use_authority,
+            grant_resolver,
+            &self.config.agent_id.to_string(),
+            self.config.generation,
+            request_id,
+            &started.model,
+            &started.model_provider,
+            &request_payload_digest,
+            &context_digest,
+            maximum_output_tokens,
+            &exact_turn_payload,
+        )?;
+        let claimed_authority = policy::claimed_authority(&claimed.witness);
         control.dispatch_native(
             request_id,
             NativeDispatch {
                 thread_id: started.thread.id.clone(),
                 model_provider: started.model_provider.clone(),
-                context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
+                context_digest,
+                final_use: Some(claimed.witness.clone()),
             },
         )?;
         let response = timeout(
             RPC_TIMEOUT,
             client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {
                 request_id: RequestId::Integer(2),
-                params: TurnStartParams {
-                    thread_id: started.thread.id.clone(),
-                    client_user_message_id: Some(request_id.to_string()),
-                    input: vec![UserInput::Text {
-                        text: prompt,
-                        text_elements: Vec::new(),
-                    }],
-                    additional_context,
-                    environments: Some(Vec::new()),
-                    ..Default::default()
-                },
+                params: turn_params,
             }),
         )
         .await;
@@ -217,6 +257,7 @@ impl AppServerModelDriver {
                     observed_output_tokens: None,
                     terminal_observed: false,
                     owner_authority: NativeOwnerAuthority::Unverified,
+                    final_use_authority: claimed_authority.clone(),
                     stop_reason: Some("turn/start outcome unknown; do not replay".to_string()),
                 });
             }
@@ -231,6 +272,7 @@ impl AppServerModelDriver {
             observed_output_tokens: None,
             terminal_observed: false,
             owner_authority: NativeOwnerAuthority::Unverified,
+            final_use_authority: claimed_authority,
             stop_reason: None,
         };
         if let Err(error) = control.native_started(request_id, output.turn_id.clone()) {
@@ -296,8 +338,138 @@ impl AppServerModelDriver {
             // cannot restore authority lost earlier in the run.
             let _ = verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT)
                 .await;
+            output.final_use_authority =
+                NativeExecutionPolicy::finalize(&self.config.final_use_authority, claimed);
         }
         Ok(output)
+    }
+
+    /// Read-only crash reconciliation. This method never calls turn/start or
+    /// turn/recover. A persisted Completed/Failed turn is sufficient to release
+    /// the local slot; unknown usage remains unknown and final-use authority
+    /// remains only Claimed because the in-memory verification token was lost.
+    async fn reconcile_existing(
+        &self,
+        record: &NativeRunRecord,
+    ) -> Result<Option<NativeRunOutput>> {
+        let dispatch = record.dispatch.as_ref().ok_or("missing durable dispatch")?;
+        let owner = AgentdClient::new(
+            self.config.agentd_socket.clone(),
+            self.config.agent_id.clone(),
+            self.config.generation,
+        )?;
+        let health = owner.health().await?;
+        if !health.ready || health.fenced {
+            return Ok(None);
+        }
+        let ingress = owner.session_ingress().await?;
+        let socket_path = AbsolutePathBuf::from_absolute_path(ingress.socket_path)?;
+        let mut client = timeout(
+            RPC_TIMEOUT,
+            RemoteAppServerClient::connect_with_bounded_events(
+                RemoteAppServerConnectArgs {
+                    endpoint: RemoteAppServerEndpoint::UnixSocket { socket_path },
+                    client_name: "hepta-infer-worker-reconcile".to_string(),
+                    client_version: env!("CARGO_PKG_VERSION").to_string(),
+                    experimental_api: true,
+                    mcp_server_openai_form_elicitation: false,
+                    opt_out_notification_methods: Vec::new(),
+                    channel_capacity: 8,
+                },
+                /*event_channel_capacity*/ 16,
+            ),
+        )
+        .await??;
+        if client.codex_home() != health.home_root.to_str() {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Ok(None);
+        }
+        let read = timeout(
+            RPC_TIMEOUT,
+            client.request_typed::<ThreadReadResponse>(ClientRequest::ThreadRead {
+                request_id: RequestId::Integer(91),
+                params: ThreadReadParams {
+                    thread_id: dispatch.thread_id.clone(),
+                    include_turns: true,
+                },
+            }),
+        )
+        .await;
+        let read = match read {
+            Ok(Ok(read)) => read,
+            _ => {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Ok(None);
+            }
+        };
+        if read.thread.id != dispatch.thread_id
+            || read.thread.model_provider != dispatch.model_provider
+        {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Ok(None);
+        }
+        let turn = if let Some(turn_id) = record.turn_id.as_deref() {
+            read.thread.turns.iter().find(|turn| turn.id == turn_id)
+        } else {
+            read.thread.turns.iter().find(|turn| {
+                turn.items.iter().any(|item| {
+                    matches!(
+                        item,
+                        ThreadItem::UserMessage {
+                            client_id: Some(client_id),
+                            ..
+                        } if client_id == &record.request.request_id
+                    )
+                })
+            })
+        };
+        let Some(turn) = turn else {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Ok(None);
+        };
+        if !matches!(turn.status, TurnStatus::Completed | TurnStatus::Failed) {
+            // Interrupted can be synthesized while normalizing a crashed
+            // in-progress turn, so it is not accepted as provider terminality.
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Ok(None);
+        }
+        let mut output_text = String::new();
+        for item in &turn.items {
+            if let ThreadItem::AgentMessage { text, .. } = item {
+                if text.len() > MAX_OUTPUT_BYTES.saturating_sub(output_text.len()) {
+                    let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                    return Err("reconciled output exceeds byte limit".into());
+                }
+                output_text.push_str(text);
+            }
+        }
+        let mut output = NativeRunOutput {
+            thread_id: dispatch.thread_id.clone(),
+            turn_id: turn.id.clone(),
+            model: record.request.model.clone(),
+            model_provider: dispatch.model_provider.clone(),
+            status: match turn.status {
+                TurnStatus::Completed => NativeRunStatus::Completed,
+                TurnStatus::Failed => NativeRunStatus::Failed,
+                TurnStatus::Interrupted | TurnStatus::InProgress => unreachable!(),
+            },
+            output: output_text,
+            observed_output_tokens: None,
+            terminal_observed: true,
+            stop_reason: turn
+                .error
+                .as_ref()
+                .map(|error| error.message.chars().take(1024).collect()),
+            owner_authority: NativeOwnerAuthority::Unverified,
+            final_use_authority: dispatch
+                .final_use
+                .as_ref()
+                .map(policy::claimed_authority)
+                .unwrap_or_default(),
+        };
+        let _ = verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT).await;
+        let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+        Ok(Some(output))
     }
 
     async fn observe(

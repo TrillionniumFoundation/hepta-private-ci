@@ -363,3 +363,107 @@ fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
     drop(control);
     std::fs::remove_file(path).unwrap();
 }
+
+
+fn authorized_request(id: &str, maximum_output_tokens: u64) -> NativeRequest {
+    NativeRequest {
+        request_id: id.to_string(),
+        principal_id: "agent-1".to_string(),
+        worker_generation: 4,
+        model: "actual-model".to_string(),
+        payload_digest: "c".repeat(64),
+        maximum_output_tokens,
+        admission: Some(NativeAdmissionBinding {
+            quota: NativeQuotaBinding {
+                reservation_id: "quota-1".to_string(),
+                reservation_digest: "d".repeat(64),
+                reserved_requests: 3,
+                reserved_tokens: 15,
+                reserved_concurrency: 1,
+                authority_epoch: 9,
+                expires_at_unix_seconds: u64::MAX,
+            },
+            resource: NativeResourceBinding {
+                resource_id: "resource-1".to_string(),
+                resource_digest: "e".repeat(64),
+                provider_id: "provider".to_string(),
+                model: "actual-model".to_string(),
+                generation: 4,
+                expires_at_unix_seconds: u64::MAX,
+            },
+        }),
+    }
+}
+
+fn authorized_dispatch() -> NativeDispatch {
+    NativeDispatch {
+        thread_id: "thread-1".to_string(),
+        model_provider: "provider".to_string(),
+        context_digest: "b".repeat(64),
+        final_use: Some(NativeFinalUseWitness {
+            grant_id: "grant-1".to_string(),
+            authority_epoch: 9,
+            expires_at_unix_ms: u64::MAX,
+            binding_digest: "f".repeat(64),
+        }),
+    }
+}
+
+#[test]
+fn authorized_quota_blocks_before_dispatch_and_refines_only_from_observed_usage() {
+    let path = path("authorized-quota");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control
+        .reserve_native(authorized_request("r1", 10), 4)
+        .unwrap();
+    assert_eq!(
+        control.reserve_native(authorized_request("r2", 5), 4),
+        Err(Error::CapacityExceeded),
+        "reserved concurrency must block a second active request"
+    );
+    control.dispatch_native("r1", authorized_dispatch()).unwrap();
+    control.native_started("r1", "turn-1".to_string()).unwrap();
+    let mut terminal = output(NativeRunStatus::Completed, Some(4));
+    terminal.final_use_authority = NativeFinalUseAuthority::Claimed {
+        grant_id: "grant-1".to_string(),
+        authority_epoch: 9,
+    };
+    control.settle_native("r1", terminal).unwrap();
+
+    // The exact observed usage (4) replaces the conservative request hold (10),
+    // so another 10-token request fits under the 15-token reservation.
+    control
+        .reserve_native(authorized_request("r2", 10), 4)
+        .unwrap();
+    drop(control);
+
+    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert!(control.native_record("r1").is_some());
+    assert!(control.native_record("r2").is_some());
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn authorized_dispatch_requires_exact_provider_and_final_use_witness() {
+    let path = path("authorized-dispatch");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control
+        .reserve_native(authorized_request("r1", 10), 4)
+        .unwrap();
+    let mut missing = authorized_dispatch();
+    missing.final_use = None;
+    assert_eq!(
+        control.dispatch_native("r1", missing),
+        Err(Error::InvalidTransition)
+    );
+    let mut wrong_provider = authorized_dispatch();
+    wrong_provider.model_provider = "other-provider".to_string();
+    assert_eq!(
+        control.dispatch_native("r1", wrong_provider),
+        Err(Error::AssignmentMismatch)
+    );
+    control.dispatch_native("r1", authorized_dispatch()).unwrap();
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
