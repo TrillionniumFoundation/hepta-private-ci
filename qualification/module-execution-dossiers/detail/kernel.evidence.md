@@ -49,6 +49,7 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
+- **Implemented entrypoints:** `append_receipt` in [codex-rs/hepta-evidence/src/qualification.rs](../../../codex-rs/hepta-evidence/src/qualification.rs); `verify_chain` in [codex-rs/hepta-evidence/src/qualification.rs](../../../codex-rs/hepta-evidence/src/qualification.rs); `query_claim` in [codex-rs/hepta-evidence/src/qualification.rs](../../../codex-rs/hepta-evidence/src/qualification.rs); `append_independent_decision_receipt` in [codex-rs/hepta-evidence/src/qualification.rs](../../../codex-rs/hepta-evidence/src/qualification.rs); `append_issuer_key_revocation` in [codex-rs/hepta-evidence/src/qualification.rs](../../../codex-rs/hepta-evidence/src/qualification.rs); `capture_external_checkpoint` in [codex-rs/hepta-evidence/src/checkpoint.rs](../../../codex-rs/hepta-evidence/src/checkpoint.rs); `verify_external_checkpoint` in [codex-rs/hepta-evidence/src/checkpoint.rs](../../../codex-rs/hepta-evidence/src/checkpoint.rs). Target qualification persistence, verification, revocation and logical checkpoint boundaries are implemented.
 - **Target contract entrypoints:** `HeptaEvidenceStore::append_receipt`,
   `HeptaEvidenceStore::verify_chain` and `HeptaEvidenceStore::query_claim` in
   [codex-rs/hepta-evidence/src/qualification.rs](../../../codex-rs/hepta-evidence/src/qualification.rs).
