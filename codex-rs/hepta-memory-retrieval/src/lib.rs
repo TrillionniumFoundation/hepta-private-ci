@@ -5,6 +5,7 @@
 mod channel_contract;
 mod generation_bound;
 mod hnmf;
+mod qualification;
 mod v2;
 
 use std::collections::BTreeSet;
@@ -54,6 +55,8 @@ pub use hnmf::MAX_RECURRENT_STEPS;
 pub use hnmf::RecallActivationV1;
 pub use hnmf::RecallDynamicsV1;
 pub use hnmf::recall_with_engram;
+pub use qualification::RetrievalLatencySummaryV1;
+pub use qualification::RetrievalStructuralCapacityV1;
 pub use v2::RetrievalReceiptV2;
 pub use v2::retrieve_v2;
 
