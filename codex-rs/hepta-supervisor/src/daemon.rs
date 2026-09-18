@@ -511,6 +511,13 @@ async fn handle_request<D: ProcessDriver>(
             .await
         }
         SupervisordMethod::Upgrade { fence, release_id } => {
+            if state.production_grant_verifier.is_some() {
+                return error_payload(
+                    "production_authority_required",
+                    "production-mode release changes require signed_upgrade",
+                    /*actual*/ None,
+                );
+            }
             let target = match resolve_release_outside_lock(
                 Arc::clone(&state),
                 fence.agent_id.clone(),
@@ -527,6 +534,13 @@ async fn handle_request<D: ProcessDriver>(
             handle_mutation(state, SupervisordMutation::Upgrade, fence, Some(target)).await
         }
         SupervisordMethod::Rollback { fence } => {
+            if state.production_grant_verifier.is_some() {
+                return error_payload(
+                    "production_authority_required",
+                    "production-mode release changes require signed_rollback",
+                    /*actual*/ None,
+                );
+            }
             handle_mutation(
                 state,
                 SupervisordMutation::Rollback,
