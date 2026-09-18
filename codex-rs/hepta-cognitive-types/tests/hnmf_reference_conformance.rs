@@ -48,10 +48,7 @@ fn production_event(
         fixture.span_id,
         production::ModalityKindV1::Text,
         digest(&fixture.asset_sha256),
-        production::SpanRangeV1::ByteRange {
-            start: 0,
-            end: fixture.range_end,
-        },
+        production::SpanRangeV1::byte_range(0, fixture.range_end)?,
         digest(&fixture.preprocessor_sha256),
         None,
         None,
@@ -100,10 +97,8 @@ fn shared_fixture_rejects_modality_range_mismatch_in_production() {
         fixture.span_id,
         production::ModalityKindV1::Image,
         digest(&fixture.asset_sha256),
-        production::SpanRangeV1::ByteRange {
-            start: 0,
-            end: fixture.range_end,
-        },
+        production::SpanRangeV1::byte_range(0, fixture.range_end)
+            .unwrap_or_else(|error| panic!("fixture byte range must be valid: {error}")),
         digest(&fixture.preprocessor_sha256),
         None,
         None,
