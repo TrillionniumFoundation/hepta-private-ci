@@ -49,7 +49,8 @@ fn action(value: &str) -> ActionClass {
 
 fn compile(
     source: ObjectiveSourceEnvelope,
-) -> Result<Result<crate::ObjectiveCompileReceipt, crate::ObjectiveConflictReceipt>, ObjectiveError> {
+) -> Result<Result<crate::ObjectiveCompileReceipt, crate::ObjectiveConflictReceipt>, ObjectiveError>
+{
     compile_admitted(AdmittedObjectiveSource::from_prevalidated_legacy(source))
 }
 
