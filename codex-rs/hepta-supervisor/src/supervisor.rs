@@ -30,6 +30,8 @@ use crate::signed_authority::H7H89ProductionGrant;
 use crate::signed_authority::H7H89ProductionGrantVerifier;
 use crate::signed_authority::H7H89ProductionTransition;
 use crate::signed_authority::ProductionMutationReceipt;
+use crate::signed_authority::ProductionRecoveryDecision;
+use crate::signed_authority::ProductionRecoveryOutcome;
 use crate::signed_intent::SignedIntentStatus;
 use crate::signed_intent::SignedSupervisorIntent;
 use crate::signed_intent::read_intent;
@@ -81,14 +83,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                 supervisor.recover_signed_intent(&agent_id, slot, &record)
             });
             if let Err(error) = result {
-                // A signed lifecycle intent is an externally authorized
-                // mutation.  Recording it as an ordinary per-agent fault
-                // would still bring the daemon up and expose unrelated
-                // mutation RPCs while the outcome is unknown.  Recovery of
-                // this class is therefore a daemon-wide startup failure.
-                if matches!(&error, SupervisorError::SignedIntentRecoveryRequired(_)) {
-                    return Err(error);
-                }
+                // An unresolved signed mutation quarantines only its owning
+                // Agent. The daemon still starts so the read-only status and
+                // independently signed recovery ceremony remain reachable.
                 supervisor.record_fault(&agent_id, &error, &mut report);
             }
         }
@@ -772,6 +769,136 @@ impl<D: ProcessDriver> Supervisor<D> {
         }))
     }
 
+    pub fn resolve_production_recovery(
+        &mut self,
+        agent_id: &AgentId,
+        decision: &ProductionRecoveryDecision,
+        verifier: &H7H89ProductionGrantVerifier,
+        expected_authority_epoch: u64,
+        now_unix_seconds: u64,
+    ) -> Result<ProductionMutationReceipt, SupervisorError> {
+        self.with_slot(agent_id, |supervisor, slot| {
+            let record = supervisor.record(agent_id)?;
+            let intent = read_intent(record.layout.run_root())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+                .ok_or_else(|| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
+            if intent.status != SignedIntentStatus::RecoveryRequired {
+                return Err(SupervisorError::Invalid(
+                    "production recovery requires a recovery_required signed intent".to_string(),
+                ));
+            }
+            let selection = read_release_selection(record.layout.run_root())?
+                .ok_or_else(|| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
+            if selection.grant_sha256 != intent.grant_sha256 {
+                return Err(SupervisorError::SignedIntentRecoveryRequired(
+                    agent_id.clone(),
+                ));
+            }
+            if slot.runtime.as_ref().is_some_and(|runtime| !runtime.fenced) {
+                return Err(SupervisorError::Invalid(
+                    "production recovery requires the ambiguous process to be fenced or absent"
+                        .to_string(),
+                ));
+            }
+
+            let observed_release = record
+                .release_state
+                .current
+                .as_ref()
+                .ok_or_else(|| SupervisorError::Invalid(
+                    "production recovery has no observed release state".to_string(),
+                ))?;
+            let expected_release = match decision.outcome {
+                ProductionRecoveryOutcome::Committed => &intent.target_release,
+                ProductionRecoveryOutcome::RolledBack => &intent.source_release,
+            };
+            if observed_release.as_str() != expected_release {
+                return Err(SupervisorError::Invalid(format!(
+                    "recovery outcome expects release {expected_release} but current release is {observed_release}"
+                )));
+            }
+            let provenance = supervisor
+                .registry
+                .release_provenance(agent_id, observed_release)?;
+            let parse = |value: String, label: &str| {
+                Sha256Digest::parse(value)
+                    .map_err(|_| SupervisorError::Invalid(format!("{label} digest is malformed")))
+            };
+            let observed_manifest = parse(
+                provenance.manifest_sha256,
+                "recovery observed release manifest",
+            )?;
+            let observed_agentd =
+                parse(provenance.agentd_sha256, "recovery observed agentd")?;
+            let observed_matrixd = provenance
+                .matrixd_sha256
+                .map(|value| parse(value, "recovery observed matrixd"))
+                .transpose()?;
+
+            verifier
+                .verify_recovery(
+                    decision,
+                    agent_id,
+                    &intent.grant_sha256,
+                    &intent.intent_sha256,
+                    observed_release.as_str(),
+                    &observed_manifest,
+                    &observed_agentd,
+                    observed_matrixd.as_ref(),
+                    slot.control_revision,
+                    record.lifecycle.generation,
+                    expected_authority_epoch,
+                    now_unix_seconds,
+                )
+                .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
+
+            let terminal_selection_status = match decision.outcome {
+                ProductionRecoveryOutcome::Committed => ReleaseSelectionStatus::Committed,
+                ProductionRecoveryOutcome::RolledBack => ReleaseSelectionStatus::RolledBack,
+            };
+            let terminal_intent_status = match decision.outcome {
+                ProductionRecoveryOutcome::Committed => SignedIntentStatus::Committed,
+                ProductionRecoveryOutcome::RolledBack => SignedIntentStatus::RolledBack,
+            };
+
+            // Publish the selection terminal state before the intent. If the
+            // second write is interrupted, startup will reset the selection
+            // to RecoveryRequired from the still-unresolved intent instead of
+            // guessing a committed outcome.
+            let terminal_selection = selection.with_status(terminal_selection_status)?;
+            write_release_selection(record.layout.run_root(), &terminal_selection)?;
+            let terminal_intent = intent
+                .with_status(terminal_intent_status)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            write_intent(record.layout.run_root(), &terminal_intent)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            slot.signed_intent = Some(terminal_intent.clone());
+            let next_control_revision = supervisor.next_control_revision(agent_id)?;
+            supervisor.set_control_revision(agent_id, next_control_revision)?;
+
+            Ok(ProductionMutationReceipt {
+                grant_sha256: terminal_intent.grant_sha256,
+                agent_id: terminal_intent.agent_id,
+                transition: terminal_intent.transition,
+                source_release: terminal_intent.source_release,
+                target_release: terminal_intent.target_release,
+                control_revision: terminal_selection.control_revision,
+                status: match decision.outcome {
+                    ProductionRecoveryOutcome::Committed => {
+                        crate::ProductionMutationStatus::Committed
+                    }
+                    ProductionRecoveryOutcome::RolledBack => {
+                        crate::ProductionMutationStatus::RolledBack
+                    }
+                },
+                production_authority: true,
+                external_effects: true,
+                operator_acceptance: true,
+                promotion: true,
+            })
+        })
+    }
+
     fn recover_signed_intent(
         &mut self,
         agent_id: &AgentId,
@@ -831,11 +958,8 @@ impl<D: ProcessDriver> Supervisor<D> {
         // Fence and kill any adopted child before surfacing the recovery
         // requirement; normal ticking must not continue an ambiguous
         // external transition.
+        self.mark_signed_intent_recovery_required(agent_id, slot)?;
         if let Some(runtime) = slot.runtime.as_mut() {
-            // A failed fence/kill is still an unresolved signed intent.  Do
-            // not downgrade it to a recoverable driver fault: the caller
-            // must fail closed at daemon startup and require explicit
-            // operator recovery.
             let _ = runtime.process.kill();
             runtime.fenced = true;
             runtime.phase = RuntimePhase::Killing;
