@@ -255,10 +255,6 @@ impl CognitiveStoreOpenGuard {
         Ok(Self { file, _path: path })
     }
 
-    pub(crate) fn downgrade_shared(self) -> Result<Arc<Self>, CognitiveStoreError> {
-        self.file.lock_shared().map_err(unavailable)?;
-        Ok(Arc::new(self))
-    }
 }
 
 impl CognitiveStore {
