@@ -165,7 +165,7 @@ The journal enforces equal-identity/equal-semantics replay, rejects identity dri
 
 `NduProjectionJournalV1::checkpoint` exposes a deterministic record-count/hash-chain-head checkpoint digest suitable for signing or anchoring by an external trusted evidence/store boundary. The journal does not self-sign and the checkpoint is not by itself a trust anchor.
 
-This reference does not claim an activated production writer, operating-system durability, fsync, schema migration, retention or backup qualification. Product composition must bind a selected authoritative store and prove atomic publication, migration, fsync/durability, retention, backup/restore, rollback and trusted checkpoint anchoring independently.
+`NduProjectionStoreV1` is the next source-level durability candidate for Unix hosts. It keeps a kernel exclusive writer lock for the writer lifetime, wraps the bounded journal in a version/checksum-bound store envelope, atomically replaces the complete journal, fsyncs both replacement file and containing directory, restores the prior in-memory journal if persistence fails, validates exact reopen, and supports create-new backup plus restore into a new owner-private root. These source properties do not establish a production writer: the product must name/select this store and independently qualify crash/power-loss behavior on the target filesystem, operational retention, restore drills and trusted checkpoint anchoring.
 
 ## 7. Goodhart and wireheading controls
 
