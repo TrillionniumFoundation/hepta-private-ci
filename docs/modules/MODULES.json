@@ -367,8 +367,9 @@
         "runtime_health_observation"
       ],
       "uses": [
-        "runtime.supervisor",
-        "runtime.codex"
+        "intelligence.control",
+        "runtime.codex",
+        "runtime.supervisor"
       ],
       "owner": "agent-runtime",
       "deputy": "runtime-control",
@@ -1025,13 +1026,14 @@
       "architectureRole": "composition_facade",
       "writes": [],
       "uses": [
-        "objective.compiler",
-        "utility.ndu",
-        "neuron.runtime",
-        "intuition.policy",
-        "prompt.optimizer",
         "context.compiler",
-        "learning.eval"
+        "intuition.policy",
+        "learning.eval",
+        "learning.ledger",
+        "neuron.runtime",
+        "objective.compiler",
+        "prompt.optimizer",
+        "utility.ndu"
       ],
       "owner": "intelligence-platform",
       "deputy": "qualification-plane",
@@ -1410,9 +1412,10 @@
         "learning_unlearning_lineage"
       ],
       "uses": [
-        "platform.types",
         "cognitive.types",
-        "kernel.operations"
+        "kernel.operations",
+        "objective.compiler",
+        "platform.types"
       ],
       "owner": "learning-platform",
       "deputy": "cognitive-platform",
