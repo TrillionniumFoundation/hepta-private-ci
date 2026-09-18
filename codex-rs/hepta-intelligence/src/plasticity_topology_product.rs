@@ -349,7 +349,7 @@ pub fn propose_authenticated_topology_plasticity_v1(
         evaluator_id.get_or_insert(this_evaluator);
         let evaluator_payload =
             evaluation_signing_payload_v2(&evaluation.bundle, &evaluation.metric_roles)
-                .map_err(E::Evaluation)?;
+                .map_err(|error| E::Evaluation(error.into()))?;
         let verified_evaluator = verifier
             .verify(
                 LearningEvidenceRoleV1::Evaluator,
