@@ -170,7 +170,7 @@
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
       "symbol": "pub(super) async fn run_once(",
       "buildTarget": "codex-hepta-infer-worker-host",
-      "semantics": "Sends real v2 thread/start and turn/start requests, requires an independently signed kernel.authority final-use capability for the exact final TurnStartParams binding, persists its witness before effect entry, routes typed turn/start errors and matching TurnCompleted notifications through hepta-codex-adapter, and never replays an unknown turn/start acknowledgement. Target-host issuer/provider qualification remains external evidence."
+      "semantics": "Sends real v2 thread/start and turn/start requests; requires an independently signed kernel.authority final-use capability for the exact final TurnStartParams binding; after authority acquisition rechecks cancellation, deadline, exact Agent generation/readiness and ingress identity; consumes the one-entry token; durably records the witness/request binding before the turn/start network await; routes typed errors and matching TurnCompleted notifications through hepta-codex-adapter; and never replays an unknown acknowledgement. Target-host issuer/provider qualification remains external evidence."
     },
     {
       "role": "final_use_authority_port",
@@ -231,7 +231,8 @@
         "independently signed exact-binding grant",
         "forged grant rejection",
         "explicit authority denial",
-        "revocation-head rollback rejection"
+        "revocation-head rollback rejection",
+        "authority wait is bounded by runtime request deadline and post-authority owner fencing"
       ]
     }
   ]
