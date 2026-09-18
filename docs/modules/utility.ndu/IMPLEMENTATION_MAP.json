@@ -14,7 +14,7 @@
   ],
   "authorityDelta": "none",
   "productCallerState": "source_composed_read_only_candidate",
-  "productionWriterState": "not_established",
+  "productionWriterState": "durable_store_candidate_not_activated",
   "operations": [
     {
       "operation": "evaluate_candidates",
@@ -331,6 +331,51 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourcePathExists": true
+    },
+    {
+      "operation": "NduProjectionStoreV1",
+      "nativeSymbol": "codex_hepta_ndu::NduProjectionStoreV1",
+      "sourcePath": "codex-rs/hepta-ndu/src/projection_store.rs",
+      "inputs": [
+        "owner-private Unix root",
+        "immutable projection/selection/revocation records"
+      ],
+      "outputs": [
+        "atomically replaced fsync-backed store envelope",
+        "schema-checksummed exact reopen",
+        "verified create-new backup",
+        "restored create-new store",
+        "journal checkpoint"
+      ],
+      "state": "source_implemented_durable_store_candidate_not_product_selected",
+      "authority": "none",
+      "nonClaim": "Unix owner-local candidate only; target-filesystem qualification, trusted checkpoint anchoring and named product writer activation remain separate",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "durable_store_reopens_exact_selection_and_checkpoint"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "writer_lock_fails_closed_for_a_second_open"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "failed_persistence_does_not_advance_in_memory_state"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "backup_and_restore_create_a_verified_new_store"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "tampered_store_rejects_on_reopen"
+        }
+      ],
+      "designOperation": "NduProjectionStoreV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     }
   ],
   "canonicalReadinessProtocols": [
@@ -345,9 +390,9 @@
   "completion": {
     "specification": "complete",
     "deterministicKernel": "candidate_hardened",
-    "ownerLocalDurabilityReference": "candidate_hardened_checkpointable_not_production_writer",
+    "ownerLocalDurabilityReference": "durable_store_candidate_implemented_not_product_selected",
     "canonicalExternalV2Admission": "source_local_policy_and_stochastic_evidence_binding_implemented_wire_admission_still_separate",
-    "productionWriter": "not_established",
+    "productionWriter": "durable_store_candidate_present_but_named_product_writer_and_target_host_qualification_not_established",
     "exactHeadQualification": "required_for_this_candidate",
     "independentConvergenceDecision": "native_admission_path_implemented_but_independent_evidence_must_be_issued_by_learning.eval",
     "activation": "not_established",
@@ -377,7 +422,7 @@
   },
   "repositoryControlledGaps": [
     "Run exact-head and deterministic synthetic-merge qualification for this candidate before changing product-execution claims.",
-    "Select and qualify the authoritative production projection store, including migration, fsync/durability, retention, backup/restore and rollback.",
+    "Compose the NDU durable store into the named product owner host and qualify the target filesystem, trusted checkpoint anchor and operational backup/restore before setting productionWriterState to established.",
     "Admit owner-local V2/stochastic bindings into canonical external wire contracts only through their owning registries and consumers."
   ],
   "externalEvidenceGates": [
