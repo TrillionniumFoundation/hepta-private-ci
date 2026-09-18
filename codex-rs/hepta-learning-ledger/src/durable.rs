@@ -88,6 +88,7 @@ impl From<io::Error> for DurableLedgerError {
 pub struct DurableLedger {
     file: LockedFile,
     core: LearningLedger,
+    binding: Digest32,
     max_records: usize,
     durable_length: u64,
     poisoned: bool,
@@ -117,6 +118,7 @@ impl DurableLedger {
         Ok(Self {
             file,
             core: LearningLedger::new(),
+            binding,
             max_records,
             durable_length: HEADER as u64,
             poisoned: false,
@@ -145,6 +147,7 @@ impl DurableLedger {
         Ok(Self {
             file,
             core,
+            binding,
             max_records,
             durable_length: cursor,
             poisoned: false,
@@ -198,6 +201,11 @@ impl DurableLedger {
         self.durable_length = next_length;
         self.poisoned = false;
         Ok(receipt)
+    }
+
+    #[must_use]
+    pub const fn binding_digest(&self) -> Digest32 {
+        self.binding
     }
 
     pub fn records(&self) -> Result<&[LedgerRecord], DurableLedgerError> {
