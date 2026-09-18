@@ -415,3 +415,43 @@ fn zero_binding_leaves_created_file_empty_for_host_reconciliation() {
     );
     assert_eq!(fs::metadata(&file.0).unwrap().len(), 0);
 }
+
+#[test]
+fn rooted_creation_rejects_parent_escape() {
+    let root = TestFile::new();
+    fs::create_dir(&root.0).unwrap();
+
+    assert_eq!(
+        CreateOnlyArtifactFile::create_in(&root.0, "../escape").unwrap_err(),
+        ArtifactStorageError::InvalidPath
+    );
+
+    let created = CreateOnlyArtifactFile::create_in(&root.0, "snapshot").unwrap();
+    write_registry_snapshot(created, &ArtifactRegistry::new(), binding()).unwrap();
+    assert!(root.0.join("snapshot").is_file());
+
+    fs::remove_file(root.0.join("snapshot")).unwrap();
+    fs::remove_dir(&root.0).unwrap();
+}
+
+#[cfg(unix)]
+#[test]
+fn rooted_creation_rejects_symlinked_parent_escape() {
+    use std::os::unix::fs::symlink;
+
+    let root = TestFile::new();
+    let outside = TestFile::new();
+    fs::create_dir(&root.0).unwrap();
+    fs::create_dir(&outside.0).unwrap();
+    symlink(&outside.0, root.0.join("linked")).unwrap();
+
+    assert_eq!(
+        CreateOnlyArtifactFile::create_in(&root.0, "linked/snapshot").unwrap_err(),
+        ArtifactStorageError::PathEscape
+    );
+    assert!(!outside.0.join("snapshot").exists());
+
+    fs::remove_file(root.0.join("linked")).unwrap();
+    fs::remove_dir(&root.0).unwrap();
+    fs::remove_dir(&outside.0).unwrap();
+}
