@@ -348,6 +348,7 @@ fn copy_input<'a>(input: &ModelProviderInvocationInput<'a>) -> ModelProviderInvo
         request_binding_id: input.request_binding_id,
         thread_id: input.thread_id,
         turn_id: input.turn_id,
+        app_server_client_name: input.app_server_client_name,
         request_kind: input.request_kind,
         provider_id: input.provider_id,
         provider_config_sha256: input.provider_config_sha256,

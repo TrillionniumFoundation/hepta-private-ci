@@ -324,6 +324,7 @@ async fn schedule_startup_prewarm_inner(
         turn_store: startup_turn_context.extension_data.as_ref(),
         thread_id: session.thread_id().to_string(),
         turn_id: startup_turn_context.sub_id.clone(),
+        app_server_client_name: startup_turn_context.app_server_client_name.clone(),
         request_kind: ModelProviderRequestKind::Prewarm,
         ephemeral_input_cwd: None,
     };

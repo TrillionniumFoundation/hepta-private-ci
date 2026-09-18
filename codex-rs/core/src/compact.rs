@@ -758,6 +758,7 @@ async fn drain_to_completed(
         turn_store: turn_context.extension_data.as_ref(),
         thread_id: sess.thread_id().to_string(),
         turn_id: turn_context.sub_id.clone(),
+        app_server_client_name: turn_context.app_server_client_name.clone(),
         request_kind: ModelProviderRequestKind::Compaction,
         ephemeral_input_cwd: None,
     };

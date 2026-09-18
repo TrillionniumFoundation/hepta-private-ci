@@ -5,7 +5,7 @@ use std::pin::Pin;
 use crate::ExtensionData;
 
 /// Schema version for [`ModelProviderInvocationInput`].
-pub const MODEL_PROVIDER_POLICY_INPUT_SCHEMA_VERSION: u32 = 1;
+pub const MODEL_PROVIDER_POLICY_INPUT_SCHEMA_VERSION: u32 = 2;
 
 /// Future returned by one model-provider policy callback.
 pub type ModelProviderPolicyFuture<'a, T> =
@@ -96,6 +96,9 @@ pub struct ModelProviderInvocationInput<'a> {
     pub request_binding_id: &'a str,
     pub thread_id: &'a str,
     pub turn_id: &'a str,
+    /// Host-resolved App Server client identity when one exists. This is
+    /// provenance only; it never grants provider authority.
+    pub app_server_client_name: Option<&'a str>,
     pub request_kind: ModelProviderRequestKind,
     pub provider_id: &'a str,
     /// Compatibility-named digest of the host's versioned, secret-free

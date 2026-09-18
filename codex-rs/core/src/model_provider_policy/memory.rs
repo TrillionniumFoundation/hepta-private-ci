@@ -59,6 +59,7 @@ impl MemoryModelProviderPolicyHandle {
             turn_store: self.parent_turn.extension_data.as_ref(),
             thread_id: self.session.thread_id().to_string(),
             turn_id: self.parent_turn.sub_id.clone(),
+            app_server_client_name: self.parent_turn.app_server_client_name.clone(),
             request_kind: ModelProviderRequestKind::Memory,
             ephemeral_input_cwd: None,
         }
