@@ -242,7 +242,12 @@ async fn deadline_monitor_path_persists_cancellation_before_lost_interrupt_ack()
     )
     .expect("dispatch binding");
     let dispatched = state
-        .run_mark_dispatched(now_ms + 2, &snapshot.run_id, attached.revision, dispatch.clone())
+        .run_mark_dispatched(
+            now_ms + 2,
+            &snapshot.run_id,
+            attached.revision,
+            dispatch.clone(),
+        )
         .expect("dispatch");
     let execution = RunExecutionBinding::new(
         snapshot.run_id.clone(),
