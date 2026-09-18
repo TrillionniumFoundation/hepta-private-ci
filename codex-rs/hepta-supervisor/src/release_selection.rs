@@ -443,6 +443,34 @@ mod tests {
     }
 
     #[test]
+    fn recovery_witness_is_digest_bound_and_cleared_when_recovery_reopens() {
+        let base =
+            ReleaseSelectionRecord::prepared(&grant(b"grant-recovery", "v2"), 1, 1)
+                .expect("record")
+                .with_status(ReleaseSelectionStatus::RecoveryRequired)
+                .expect("recovery required");
+        let decision = digest(b"independent-recovery-decision");
+        let terminal = base
+            .with_recovery_status(ReleaseSelectionStatus::Committed, decision.clone())
+            .expect("terminal recovery");
+        assert_eq!(
+            terminal.recovery_decision_sha256.as_ref(),
+            Some(&decision)
+        );
+        terminal.snapshot().validate().expect("valid projection");
+
+        let mut tampered = terminal.clone();
+        tampered.recovery_decision_sha256 = Some(digest(b"different-decision"));
+        assert!(tampered.validate().is_err());
+
+        let reopened = terminal
+            .with_status(ReleaseSelectionStatus::RecoveryRequired)
+            .expect("reopen recovery after interrupted terminal publication");
+        assert!(reopened.recovery_decision_sha256.is_none());
+        reopened.validate().expect("reopened record");
+    }
+
+    #[test]
     fn durable_selection_rejects_tampered_bytes() {
         let temp = tempfile::tempdir().expect("temp");
         let record =
