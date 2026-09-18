@@ -9,6 +9,7 @@ use hepta_native::model::SignedPlatformGrantV1;
 use hepta_native::model::sha256_hex;
 use hepta_native::security::GrantVerifier;
 use hepta_native::security::PlatformGrantContext;
+use hepta_native::security::SignedEndpointManifestV1;
 use hepta_native::security::TrustedKeySet;
 use hepta_native::security::now_unix_ms;
 use hepta_native::updater::SignedUpdateManifestV1;
@@ -219,4 +220,34 @@ fn unconfirmed_activation_rolls_back_to_predecessor() {
     assert!(manager.rollback_unconfirmed().unwrap());
     assert_eq!(digest_file(&target).unwrap(), predecessor_digest);
     assert!(!manager.pending_path().exists());
+}
+
+#[test]
+fn signed_endpoint_manifest_binds_gateway_address_and_keyring_account() {
+    let temp = TempDir::new().unwrap();
+    let (signing, keys, _) = key_fixture(temp.path());
+    let now = now_unix_ms().unwrap();
+    let mut endpoint = SignedEndpointManifestV1 {
+        schema: "hepta.endpoint-manifest.v1".to_owned(),
+        endpoint_id: "runtime.local".to_owned(),
+        address: "127.0.0.1:7373".to_owned(),
+        protocol_version: 1,
+        gateway_credential_account: "gateway.local".to_owned(),
+        issued_unix_ms: now.saturating_sub(1000),
+        expires_unix_ms: now + 60_000,
+        key_id: "release.key".to_owned(),
+        manifest_digest: String::new(),
+        signature_base64: String::new(),
+    };
+    endpoint.manifest_digest = endpoint.computed_manifest_digest();
+    endpoint.signature_base64 =
+        STANDARD.encode(signing.sign(endpoint.signing_message().as_bytes()).to_bytes());
+    let verified = endpoint.verify(&keys).unwrap();
+    assert_eq!(verified.manifest.address, "127.0.0.1:7373");
+    assert_eq!(verified.gateway_credential_account, "gateway.local");
+
+    let mut tampered = endpoint.clone();
+    tampered.address = "127.0.0.1:7374".to_owned();
+    let error = tampered.verify(&keys).unwrap_err();
+    assert!(error.to_string().contains("digest mismatch"));
 }
