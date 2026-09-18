@@ -543,6 +543,7 @@ pub enum CompositionErrorV3 {
     EmptyDigest(&'static str),
     CandidateSet(LegalActionCandidateSetErrorV1),
     CandidateSnapshotMismatch,
+    ObjectiveSnapshotMismatch,
     MissingCapability(&'static str),
     OwnerMismatch(&'static str),
     StageMismatch,
@@ -619,6 +620,9 @@ pub fn prepare_intelligence_run_v3<P: CompositionPortsV3, C: CompositionControlV
         "objective.compiler",
         |input| ports.validate_objective(input)
     );
+    if predecessor != request.snapshot.objective_digest() {
+        return Err(CompositionErrorV3::ObjectiveSnapshotMismatch);
+    }
 
     match guard_stage(&request, control, CompositionStageV3::LegalSetBuilt, predecessor)? {
         GuardV3::Proceed(input, started) => {
@@ -688,7 +692,7 @@ pub fn prepare_intelligence_run_v3<P: CompositionPortsV3, C: CompositionControlV
         |input| ports.evaluate_utility(input)
     );
 
-    predecessor = run_optional_stage(
+    predecessor = match run_optional_stage(
         &request,
         control,
         snapshot_digest,
@@ -698,9 +702,14 @@ pub fn prepare_intelligence_run_v3<P: CompositionPortsV3, C: CompositionControlV
         request.snapshot.bound_owner("neural.signal").is_some(),
         &mut stages,
         |input| ports.collect_neural_signal(input),
-    )?;
+    )? {
+        StageAdvanceV3::Continue(output) => output,
+        StageAdvanceV3::Terminal(disposition) => {
+            return finish_v3(&request, snapshot_digest, disposition, stages, None);
+        }
+    };
 
-    predecessor = run_optional_stage(
+    predecessor = match run_optional_stage(
         &request,
         control,
         snapshot_digest,
@@ -710,7 +719,12 @@ pub fn prepare_intelligence_run_v3<P: CompositionPortsV3, C: CompositionControlV
         request.snapshot.bound_owner("prompt.portfolio").is_some(),
         &mut stages,
         |input| ports.build_prompt_portfolio(input),
-    )?;
+    )? {
+        StageAdvanceV3::Continue(output) => output,
+        StageAdvanceV3::Terminal(disposition) => {
+            return finish_v3(&request, snapshot_digest, disposition, stages, None);
+        }
+    };
 
     let intuition = match run_decision_stage(
         &request,
@@ -995,7 +1009,7 @@ fn run_optional_stage<F, C: CompositionControlV3>(
     present: bool,
     traces: &mut Vec<StageTraceV3>,
     call: F,
-) -> Result<Digest32, CompositionErrorV3>
+) -> Result<StageAdvanceV3, CompositionErrorV3>
 where
     F: FnOnce(&CompositionPortInputV3) -> Result<CompositionPortReceiptV3, PortFailureV1>,
 {
@@ -1003,13 +1017,7 @@ where
         GuardV3::Proceed(input, started) => (input, started),
         GuardV3::Terminal(trace, disposition) => {
             traces.push(trace);
-            return Err(match disposition {
-                CompositionDispositionV3::Cancelled => CompositionErrorV3::InvalidTrace("cancelled"),
-                CompositionDispositionV3::DeadlineExceeded => {
-                    CompositionErrorV3::InvalidTrace("deadline")
-                }
-                _ => CompositionErrorV3::InvalidTrace("optional guard"),
-            });
+            return Ok(StageAdvanceV3::Terminal(disposition));
         }
     };
     let result = if present {
@@ -1024,9 +1032,32 @@ where
     if finished < started {
         return Err(CompositionErrorV3::ClockRegression);
     }
-    if control.is_cancelled() || finished > input.stage_deadline_micros {
-        return Err(CompositionErrorV3::InvalidTrace(
-            "optional stage cancelled or timed out",
+    if control.is_cancelled() {
+        traces.push(control_trace(
+            stage,
+            producer,
+            predecessor,
+            StageOutcomeV3::Cancelled,
+            started,
+            finished,
+            input.stage_deadline_micros,
+        )?);
+        return Ok(StageAdvanceV3::Terminal(
+            CompositionDispositionV3::Cancelled,
+        ));
+    }
+    if finished > input.stage_deadline_micros {
+        traces.push(control_trace(
+            stage,
+            producer,
+            predecessor,
+            StageOutcomeV3::DeadlineExceeded,
+            started,
+            finished,
+            input.stage_deadline_micros,
+        )?);
+        return Ok(StageAdvanceV3::Terminal(
+            CompositionDispositionV3::DeadlineExceeded,
         ));
     }
     match result {
@@ -1046,7 +1077,7 @@ where
                 finished_at_micros: finished,
                 stage_deadline_micros: input.stage_deadline_micros,
             });
-            Ok(receipt.output_digest)
+            Ok(StageAdvanceV3::Continue(receipt.output_digest))
         }
         Err(failure) => {
             validate_failure(&failure)?;
@@ -1062,7 +1093,7 @@ where
                 finished_at_micros: finished,
                 stage_deadline_micros: input.stage_deadline_micros,
             });
-            Ok(output)
+            Ok(StageAdvanceV3::Continue(output))
         }
     }
 }
