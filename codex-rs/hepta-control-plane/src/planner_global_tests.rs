@@ -1,3 +1,5 @@
+use std::fmt::Debug;
+
 use codex_hepta_ndu::AxisDirection;
 use codex_hepta_ndu::AxisValue;
 use codex_hepta_ndu::ContributionSet;
@@ -34,8 +36,15 @@ impl OwnerSummaryAuthenticatorV1 for Authenticator {
     }
 }
 
+fn must<T, E: Debug>(result: Result<T, E>) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("unexpected error: {error:?}"),
+    }
+}
+
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("identifier")
+    must(StableId::new(value))
 }
 
 fn digest(value: &str) -> Digest32 {
@@ -47,7 +56,7 @@ fn q32(value: i64) -> FixedQ32 {
 }
 
 fn input() -> GlobalPlanningInputV1 {
-    let generation = Generation::new(7).expect("generation");
+    let generation = must(Generation::new(7));
     let objective_digest = digest("objective");
     let configuration_digest = digest("configuration");
     let owners = ["owner-a", "owner-b"];
@@ -55,7 +64,7 @@ fn input() -> GlobalPlanningInputV1 {
         .into_iter()
         .map(|owner| OwnerSummaryV1 {
             owner_id: id(owner),
-            revision: Revision::new(3).expect("revision"),
+            revision: must(Revision::new(3)),
             objective_digest,
             body_generation: generation,
             configuration_digest,
@@ -77,7 +86,7 @@ fn input() -> GlobalPlanningInputV1 {
         },
     };
     let ndu_input = NduPlanningInputV1 {
-        policy: legacy_evaluation_policy(&profile).expect("policy"),
+        policy: must(legacy_evaluation_policy(&profile)),
         profile,
         scalarization: None,
         contributions: ContributionSet {
@@ -157,10 +166,8 @@ fn input() -> GlobalPlanningInputV1 {
             plan_id: id("global-plan"),
             now_micros: 1_000,
             deadline_micros: 1_900,
-            evaluation_policy_digest: canonical_ndu_planning_policy_digest(&ndu_input)
-                .expect("NDU binding"),
-            resource_profile_digest: canonical_resource_profile_digest(&reservations)
-                .expect("resource binding"),
+            evaluation_policy_digest: must(canonical_ndu_planning_policy_digest(&ndu_input)),
+            resource_profile_digest: must(canonical_resource_profile_digest(&reservations)),
             candidates,
             resource_reservations: reservations,
         },
@@ -177,8 +184,7 @@ fn authenticated_multi_owner_flow_reaches_deny_all_grant_requests() {
             reject: None,
         },
         input(),
-    )
-    .expect("global plan");
+    ));
     assert_eq!(
         output.evaluation.plan.chosen_candidate_id(),
         Some(&id("work"))
@@ -210,16 +216,14 @@ fn authentication_rejection_and_drift_are_bound_into_planning() {
             reject: None,
         },
         input(),
-    )
-    .expect("first plan");
+    ));
     let changed = evaluate_global_plan_v1(
         &Authenticator {
             salt: "auth-v2",
             reject: None,
         },
         input(),
-    )
-    .expect("changed plan");
+    ));
     assert_ne!(
         first.snapshot.snapshot_digest(),
         changed.snapshot.snapshot_digest()
