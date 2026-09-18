@@ -1,7 +1,7 @@
 # cognitive.types: implementation design
 
 Parent: `docs/modules/cognitive.types/TECHNICAL.md`. Lane: `LANE-C-MEMORY`.
-Status: bounded record/snapshot types and Lane C generation contracts implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: bounded record/snapshot types, Lane C generation contracts and canonical HNMF V1 Rust/JSON contracts implemented; exact-candidate execution, authenticated product composition and independent acceptance remain open as listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -12,7 +12,7 @@ Operation signatures below describe the target contract. Section 8 identifies th
 
 ## 2. Public operations and contract details
 
-`validate_memory_event(event, schema_profile) -> MemoryEventV1`; `validate_span(asset_manifest, modality, range) -> ModalitySpanRefV1`; `compile_snapshot_key(source_frontiers, generations, scope) -> SnapshotKey`. HNMF types cover event, modality span, engram, synapse, cue, recall packet, replay batch and forget reference. Modality-specific ranges are tagged unions, not untyped coordinate arrays.
+`MemoryEventV1::decode_json/validate`, `ModalitySpanRefV1::decode_json/validate` and `CanonicalJsonV1::encode_canonical_json/semantic_digest` are implemented in `codex-rs/hepta-cognitive-types/src/hnmf_v1`; `CognitiveSnapshotKeyV1` remains the typed Lane C generation key. Canonical HNMF types cover event, modality span, cross-modal binding, engram, synapse, cue, recall packet, outcome, replay selection, plasticity, cognitive-topology proposal and forget propagation. Modality-specific ranges are tagged unions, not untyped coordinate arrays.
 
 ## 3. State records and transaction design
 
@@ -45,8 +45,9 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `build_snapshot` in [codex-rs/hepta-cognitive-types/src/lib.rs](../../../codex-rs/hepta-cognitive-types/src/lib.rs); `CognitiveSnapshotKeyV1` in [codex-rs/hepta-cognitive-types/src/lane_c.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c.rs). Bounded record/snapshot types and Lane C generation contracts implemented.
-- **State and recovery:** Stateless types canonicalize record ID/revision order and hash exact bounded records, citations and generation. These values contain no SQL connection or mutation authority; a snapshot digest does not authenticate its source.
-- **Source tests:** [codex-rs/hepta-cognitive-types/src/lib_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lib_tests.rs), [codex-rs/hepta-cognitive-types/src/lane_c_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implemented entrypoints:** `build_snapshot` in [codex-rs/hepta-cognitive-types/src/lib.rs](../../../codex-rs/hepta-cognitive-types/src/lib.rs); `CognitiveSnapshotKeyV1` and Lane C shared structs in [codex-rs/hepta-cognitive-types/src/lane_c.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c.rs); `CanonicalJsonV1` plus HNMF V1 contracts in `codex-rs/hepta-cognitive-types/src/hnmf_v1`.
+- **Canonical wire:** explicit schema/version envelope, strict unknown-field rejection, per-schema encoded-size ceilings, deny-all authority, canonical collection ordering and exact decimal-text representation for 64-bit JSON identities/counters. The pre-existing global `TopologyProposalV1` remains owned by `learning.plasticity`; memory-structure proposals use `CognitiveTopologyProposalV1` to avoid changing an existing V1 protocol in place.
+- **State and recovery:** Stateless types canonicalize bounded values and semantic digests. These values contain no SQL connection or mutation authority; integrity/digest success does not authenticate an external source or prove current revocation state.
+- **Source tests:** [codex-rs/hepta-cognitive-types/src/lib_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lib_tests.rs), [codex-rs/hepta-cognitive-types/src/lane_c_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c_tests.rs), and `codex-rs/hepta-cognitive-types/src/hnmf_v1/tests.rs`. CTYPE-01 through CTYPE-04 are implemented as native tests. These are test identities until exact-candidate execution receipts are current.
 - **Implementation and operating references:** [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md).
-- **Remaining work:** Keep native snapshot/contract versions distinct from admitted cross-owner wire formats and bind every generation component to its actual owner.
+- **Remaining work:** exact-head focused/package/all-target/strict-Clippy/clean-worktree evidence, deterministic synthetic-merge evidence, authenticated product composition and independent acceptance. Production activation/release remain false.
