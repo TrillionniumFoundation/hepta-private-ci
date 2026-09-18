@@ -112,11 +112,8 @@ fn deterministic_feasible_ranking_is_input_order_independent_and_authority_free(
         schedule_request(vec![worker_a.clone(), worker_b.clone(), worker_c.clone()]),
     )
     .expect("feasible assignment");
-    let reordered = schedule(
-        1_000,
-        schedule_request(vec![worker_c, worker_b, worker_a]),
-    )
-    .expect("same feasible assignment");
+    let reordered = schedule(1_000, schedule_request(vec![worker_c, worker_b, worker_a]))
+        .expect("same feasible assignment");
 
     assert_eq!(first, reordered);
     assert_eq!(first.plan.worker_id, id("worker:b"));
@@ -163,8 +160,10 @@ fn eligible_snapshot_and_selection_digest_bind_capacity_and_lease() {
 
     let mut changed_lease = base;
     changed_lease.lease_digest = digest(b"lease:changed");
-    let lease =
-        schedule(1_000, schedule_request(vec![changed_lease])).expect("lease assignment");
-    assert_ne!(first.eligible_snapshot_digest, lease.eligible_snapshot_digest);
+    let lease = schedule(1_000, schedule_request(vec![changed_lease])).expect("lease assignment");
+    assert_ne!(
+        first.eligible_snapshot_digest,
+        lease.eligible_snapshot_digest
+    );
     assert_ne!(first.selection_digest, lease.selection_digest);
 }
