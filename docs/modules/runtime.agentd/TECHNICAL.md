@@ -50,6 +50,12 @@ None.
 
 The registered primary source is [codex-rs/hepta-agentd/src/production_writer_host.rs](../../../codex-rs/hepta-agentd/src/production_writer_host.rs); observed identifiers include `AgentdProductionWriterHost`, `open`, `attach_target`, `dispatch`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md) for the implemented subset and remaining product work.
 
+### Live run-lifecycle control surface
+
+The native daemon now owns one bounded `AgentRunCoordinator` through `AgentdState`; it is no longer a library-only state machine. The local control protocol and `AgentdClient` expose typed `run_start`, `run_attach_context`, `run_mark_dispatched`, `run_cancel`, `run_observe_terminal`, `run_status` and `run_remove_closed` operations. The same `RunSnapshot`, `ContextAttachment`, `RunReceipt`, `RunPhase` and `CancellationDisposition` wire types are consumed by the coordinator, eliminating a second lifecycle contract inside Agentd.
+
+This source implementation does **not** by itself establish a production caller. A caller that starts an actual Codex turn must supply the real frozen request/objective/body/artifact digests and, when attaching context, the real compilation receipt. A synthetic digest or qualification fixture cannot be substituted merely to claim composition.
+
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:
@@ -75,6 +81,7 @@ The bounded components are:
 
 - `bootstrap and configuration loader`
 - `supervision loop`
+- `bounded run-lifecycle coordinator and recoverable metadata ledger`
 - `durable state projection`
 - `readiness and shutdown controller`
 
@@ -110,6 +117,8 @@ Critical protocol schemas:
 
 None.
 
+The Agentd-local control schema remains a bounded strict protocol and advertises optional `run.lifecycle@1.0`, `run.lifecycle.recovery@1.0` and `control.typed-overload@1.0` capabilities. Lifecycle extensions are additive and callers must negotiate rather than infer them from process version. Connection saturation returns a typed `overloaded` error through a separately bounded responder pool when that pool has capacity; if both the work pool and overload responder pool are exhausted, the transport is closed rather than allocating unbounded work.
+
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
 Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
@@ -136,13 +145,21 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md).
+`AgentdState` owns the live run coordinator behind one mutex. New run admission is capped at 256 active runs and 1,024 retained records. Every mutation is revision-checked and persisted transactionally to the fixed owner-local `agentd-run-lifecycle-v1.json` file under the registered Agent run root. The persisted row contains only run identity, digests, generation/deadline metadata, revision, phase and cancellation metadata; prompt, context and artifact bytes remain with their canonical owners. The file is therefore a crash-recovery ledger for daemon lifecycle metadata, not a product-domain source of truth.
+
+`ContextAttachment` binds the complete frozen tuple: request, objective, body and artifact-set digests plus `authority_epoch` and `deadline_ms`. Attachment and dispatch re-check the current deadline rather than relying only on admission-time validation. The runtime monitor also expires admitted/context-attached runs to `Cancelled` and dispatched runs to `Cancelling`; post-dispatch expiry does not fabricate terminality.
+
+On restart, a recovered pre-dispatch run is conservatively closed as `Cancelled`; a dispatched/cancelling run becomes `Indeterminate`. Neither path redispatches an uncertain external effect. The current process generation is rebound only after ledger validation. A terminal observer may later reconcile an `Indeterminate` record using the original run identity and current revision.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Run cancellation carries a bounded explicit reason. Equal-semantic cancellation retries are idempotent; conflicting reuse remains a hard conflict. Cancellation before dispatch is terminal locally. Cancellation after dispatch enters `Cancelling` and requires a terminal observation from the delegated execution owner. An interruption acknowledgement is not promoted to success or terminal completion.
+
+Process shutdown first marks the Agentd runtime draining and closes new lifecycle/session admissions. The embedded Codex App Server uses its own graceful signal drain while Agentd keeps the local control/reconciliation path alive. The wait is bounded to 30 seconds. When the App Server exits or the bound expires, remaining pre-dispatch lifecycle records are cancelled and remaining post-dispatch records are persisted as `Indeterminate` before task teardown.
+
+A source test or restart ledger cannot stand in for an external provider reconciler. Where an effect may have escaped before process loss, later owner evidence must reconcile the original identity; Agentd never automatically redispatches it.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -164,7 +181,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-codex-hepta-agentd starts from AgentdConfig::from_process_environment; the optional --authbus-trust-file is protected host configuration. The supervisor supplies the owner identity/generation and existing memory store. Stop new admissions before owner drain; an App Server interruption acknowledgement alone is not terminal task completion.
+codex-hepta-agentd starts from AgentdConfig::from_process_environment; the optional --authbus-trust-file is protected host configuration. The supervisor supplies the owner identity/generation and existing memory store. SIGINT, SIGTERM and SIGHUP enter the bounded drain path: Agentd closes new lifecycle/session admission, preserves control-plane reconciliation while the embedded App Server drains, and records unresolved post-dispatch work as indeterminate before teardown. An App Server interruption acknowledgement alone is not terminal task completion.
 
 Current operating and state-format references:
 
@@ -179,6 +196,8 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs); covers full frozen-tuple binding, lifecycle deadlines, cancellation idempotency, drain and restart reconciliation.
+- [codex-rs/hepta-agent-protocol/src/lib.rs](../../../codex-rs/hepta-agent-protocol/src/lib.rs); covers strict lifecycle wire round trips and capability negotiation.
 - [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs); named case: `context_reads_real_owner_content_and_removes_committed_tombstones`.
 - [codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs](../../../codex-rs/hepta-agentd/src/authbus_dispatch_tests.rs); named case: `lost_queue_reply_recovers_from_sqlite_using_lookup_only_and_exact_receipt`.
 
@@ -195,7 +214,7 @@ Applicable work packages:
 
 The bootstrap package is `P0.8B-READINESS`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. The run-lifecycle daemon surface is source-implemented, but product composition still requires a named non-test Codex caller that supplies authentic frozen-tuple/context receipts; this document does not convert an exposed API into caller proof. Later planned packages may remain without invalidating documentation closure.
 
 ## 14. Activation, compatibility and retirement
 
