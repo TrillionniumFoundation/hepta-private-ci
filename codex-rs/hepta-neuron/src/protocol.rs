@@ -138,6 +138,7 @@ pub struct NeuronTickInputV1 {
 pub struct RuntimeScopeBindingV1 {
     pub subject_id: StableId,
     pub scope_digest: Digest32,
+    pub objective_digest: Digest32,
     pub body_digest: Digest32,
 }
 
@@ -423,11 +424,15 @@ impl NeuronTickInputV1 {
         if self.subject_id != scope.subject_id {
             return Err(ProtocolError::InvalidInput("subject"));
         }
+        if self.objective_digest != scope.objective_digest {
+            return Err(ProtocolError::InvalidInput("objective scope"));
+        }
         if self.logical_sequence == 0 || self.monotonic_time_micros == 0 {
             return Err(ProtocolError::InvalidInput("sequence/clock"));
         }
         for (name, digest) in [
             ("scope", scope.scope_digest),
+            ("scope objective", scope.objective_digest),
             ("body", scope.body_digest),
             ("feature", self.input_feature_digest),
             ("objective", self.objective_digest),
