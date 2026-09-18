@@ -6,19 +6,17 @@
 
 use std::collections::BTreeMap;
 
+use codex_hepta_cognitive_read::AuthoritativeCognitiveSnapshotProvider;
+use codex_hepta_cognitive_read::AuthoritativeReadGenerationVectorV1;
 use codex_hepta_cognitive_read::AuthoritativeSnapshotV1;
-use codex_hepta_cognitive_read::ReadRequestV2;
-use codex_hepta_cognitive_read::ReadResultV2;
+use codex_hepta_cognitive_read::SnapshotAcquisitionRequestV1;
 use codex_hepta_cognitive_read::SnapshotProviderError;
-use codex_hepta_cognitive_read::read_v2;
 use codex_hepta_cognitive_types::Citation;
 use codex_hepta_cognitive_types::CognitiveSnapshot;
 use codex_hepta_cognitive_types::MemoryKind;
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_cognitive_types::build_snapshot;
-use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
-use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
@@ -90,21 +88,26 @@ impl DurableCognitiveSnapshot {
         Digest32::of_bytes(&bytes)
     }
 
-    /// Consume the new read module against an owner-acquired SQLite cut.
-    pub fn read(&self, request: ReadRequestV2) -> Result<ReadResultV2, SnapshotProviderError> {
-        read_v2(&self.snapshot, request).map_err(SnapshotProviderError::Read)
-    }
-
-    /// Attach a host-frozen external context without inventing other owners'
-    /// generations. Every cognitive-owned component must match this exact cut.
-    pub fn bind_context(
+    /// Bind this immutable owner cut to the exact product read authority.
+    ///
+    /// The adapter validates only fields it owns. The host supplies the purpose,
+    /// consumer profile and lifecycle epoch, and the acquisition request binds
+    /// those values so they cannot be swapped after snapshot acquisition.
+    pub fn authoritative_provider(
         &self,
-        vector: LaneCGenerationVectorV1,
+        vector: AuthoritativeReadGenerationVectorV1,
+        request: &SnapshotAcquisitionRequestV1,
         acquired_at_unix_ms: u64,
         lease_expires_unix_ms: u64,
-    ) -> Result<AuthoritativeSnapshotV1, SnapshotProviderError> {
-        if vector.scope_id != self.scope_id {
+    ) -> Result<LaneCAuthoritativeSnapshotProvider, SnapshotProviderError> {
+        if vector.scope_id != self.scope_id || request.scope_id != self.scope_id {
             return Err(SnapshotProviderError::ScopeMismatch);
+        }
+        if vector.purpose_id != request.purpose_id {
+            return Err(SnapshotProviderError::PurposeMismatch);
+        }
+        if vector.authority_epoch != request.authority_epoch {
+            return Err(SnapshotProviderError::AuthorityEpochMismatch);
         }
         if vector.memory_ledger_frontier != self.frontiers.memory
             || vector.source_ledger_frontier != self.frontiers.source
@@ -126,13 +129,48 @@ impl DurableCognitiveSnapshot {
         {
             return Err(SnapshotProviderError::InvalidLeaseWindow);
         }
-        AuthoritativeSnapshotV1::new(
+        let envelope = AuthoritativeSnapshotV1::new(
             self.scope_id.clone(),
-            CognitiveSnapshotKeyV1::new(vector).map_err(SnapshotProviderError::Contract)?,
+            vector,
             self.snapshot.clone(),
             acquired_at_unix_ms,
             lease_expires_unix_ms,
-        )
+        )?;
+        envelope.validate_for_request(acquired_at_unix_ms, request)?;
+        Ok(LaneCAuthoritativeSnapshotProvider {
+            request_digest: request.digest(),
+            envelope,
+        })
+    }
+}
+
+/// Request-bound production provider over one owner-acquired immutable cut.
+///
+/// Construction is possible only through `DurableCognitiveSnapshot`, which has
+/// already materialized the SQLite state in one transaction. Reusing the
+/// provider with a different acquisition request fails closed.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LaneCAuthoritativeSnapshotProvider {
+    request_digest: Digest32,
+    envelope: AuthoritativeSnapshotV1,
+}
+
+impl LaneCAuthoritativeSnapshotProvider {
+    #[must_use]
+    pub const fn envelope(&self) -> &AuthoritativeSnapshotV1 {
+        &self.envelope
+    }
+}
+
+impl AuthoritativeCognitiveSnapshotProvider for LaneCAuthoritativeSnapshotProvider {
+    fn acquire(
+        &self,
+        request: &SnapshotAcquisitionRequestV1,
+    ) -> Result<AuthoritativeSnapshotV1, SnapshotProviderError> {
+        if request.digest() != self.request_digest {
+            return Err(SnapshotProviderError::RequestBindingMismatch);
+        }
+        Ok(self.envelope.clone())
     }
 }
 
