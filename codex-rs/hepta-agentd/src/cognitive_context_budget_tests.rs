@@ -21,6 +21,7 @@ use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
 use codex_hepta_learning_artifacts::write_candidate_payload;
 use codex_hepta_learning_artifacts::write_registry_snapshot;
 use codex_hepta_memory::RetrievalRequest;
+use codex_hepta_memory::RevalidationStatus;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
@@ -241,6 +242,85 @@ async fn stored_candidates(
     (directory, store, owner, items)
 }
 
+async fn stored_observed_candidates(
+    contents: Vec<String>,
+) -> (
+    tempfile::TempDir,
+    CognitiveStore,
+    AgentId,
+    Vec<CognitiveContextItem>,
+) {
+    let directory = tempfile::tempdir().unwrap();
+    let fleet = directory.path().join("fleet");
+    std::fs::create_dir(&fleet).unwrap();
+    let owner = AgentId::parse("00000000-0000-4000-8000-000000000121").unwrap();
+    let layout = HeptaFleetRoot::parse(fleet).unwrap().layout().agent(&owner);
+    let store = CognitiveStore::open(&layout).await.unwrap();
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let scope = CognitiveScope::AgentPrivate;
+    let citation = store
+        .append_source(
+            &access,
+            &SourceDraft {
+                scope: scope.clone(),
+                kind: LedgerSourceKind::ExplicitMemoryDirective,
+                event_key: "observed-budget-source".to_string(),
+                content: b"fixture lemon observations".to_vec(),
+                observed_at_unix_seconds: 100,
+            },
+        )
+        .await
+        .unwrap();
+    for (index, content) in contents.into_iter().enumerate() {
+        store
+            .remember_memory(
+                &access,
+                &MemoryDraft {
+                    stable_key: format!("observed-record-{index}"),
+                    revision: MemoryRevisionDraft {
+                        scope: scope.clone(),
+                        content,
+                        verification: MemoryVerification::Verified,
+                        lifecycle: MemoryLifecycleState::Active,
+                        valid_from_unix_seconds: 100,
+                        valid_to_unix_seconds: None,
+                        citations: vec![citation.clone()],
+                    },
+                },
+            )
+            .await
+            .unwrap();
+    }
+    let request = RetrievalRequest::new("lemon", /*now_unix_seconds*/ 100);
+    let observation = store
+        .observe_memory_retrieval(&access, &request)
+        .await
+        .unwrap();
+    let bindings = observation
+        .candidates()
+        .iter()
+        .map(|candidate| candidate.revalidation.clone())
+        .collect::<Vec<_>>();
+    let statuses = store
+        .revalidate_memory_candidates(&access, &bindings, /*now_unix_seconds*/ 100)
+        .await
+        .unwrap();
+    let mut items = Vec::new();
+    for status in statuses {
+        let RevalidationStatus::Current(explanation) = status else {
+            panic!("fresh observed candidate must revalidate");
+        };
+        let memory = explanation.memory;
+        items.push(CognitiveContextItem {
+            memory_id: memory.id.memory_id.as_str().to_string(),
+            revision: memory.id.revision,
+            content: memory.content,
+            content_sha256: memory.content_sha256.as_str().to_string(),
+        });
+    }
+    (directory, store, owner, items)
+}
+
 fn escaping_contents() -> Vec<String> {
     (0..4)
         .map(|index| format!("lemon {index} {}", "\\\"".repeat(/*n*/ 1700)))
@@ -348,4 +428,50 @@ async fn byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstenti
     .await
     .unwrap();
     assert_eq!(selected.items, vec![baseline.items[0].clone()]);
+}
+
+
+#[tokio::test]
+async fn learned_ranker_can_promote_owner_observed_candidate_beyond_legacy_top_four() {
+    let contents = (0..6)
+        .map(|index| format!("lemon observed candidate {index}"))
+        .collect::<Vec<_>>();
+    let (_directory, store, owner, observed) = stored_observed_candidates(contents).await;
+    assert_eq!(observed.len(), 6);
+
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let legacy = store
+        .retrieve_memory_candidates(
+            &access,
+            &RetrievalRequest::new("lemon", /*now_unix_seconds*/ 100),
+        )
+        .await
+        .unwrap();
+    let legacy_ids = legacy
+        .candidates
+        .iter()
+        .map(|candidate| candidate.memory.id.memory_id.as_str())
+        .collect::<std::collections::BTreeSet<_>>();
+    let tail = observed
+        .iter()
+        .find(|item| !legacy_ids.contains(item.memory_id.as_str()))
+        .expect("owner observation must expose a candidate beyond legacy top four")
+        .clone();
+
+    let scores = observed
+        .iter()
+        .map(|item| if item.memory_id == tail.memory_id { 100 } else { 0 })
+        .collect::<Vec<_>>();
+    let fixture = fitted_ranker(owner.clone(), &observed, &scores);
+    let selected = read(
+        &store,
+        &owner,
+        /*body_generation*/ 1,
+        "lemon",
+        /*limit*/ 1,
+        Some(&fixture.ranker),
+    )
+    .await
+    .unwrap();
+    assert_eq!(selected.items, vec![tail]);
 }
