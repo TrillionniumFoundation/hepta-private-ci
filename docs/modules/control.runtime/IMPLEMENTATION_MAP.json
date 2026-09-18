@@ -236,7 +236,7 @@
       "tests": [
         {
           "path": "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs",
-          "symbol": "real_ndu_evaluation_is_bound_into_plan"
+          "symbol": "owner_evaluation_composes_into_real_planner_without_self_reported_selection"
         }
       ],
       "designOperation": "evaluate_prepared_plan_with_ndu",
@@ -434,7 +434,7 @@
     "operator acceptance, canary, promotion and release"
   ],
   "implementationHead": {
-    "commit": "a0ecf2b5c92fbb9208c48eb0246485f894825425",
+    "commit": "b848672aa398aa500be04f4922cb68c85e6440a6",
     "note": "control.runtime source closure head before documentation synchronization; exact-head PR qualification remains required"
   }
 }
