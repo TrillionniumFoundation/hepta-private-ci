@@ -57,7 +57,7 @@ digests:
 The authenticated profile transitively binds the learned-scorer contract. The scorer contract
 binds the exact model artifact, feature schema, score semantics, calibration artifact, OOD
 artifact and OOD detector. Calibration/OOD bodies are then independently recomputed and
-authenticated. Completeness and scorer-output envelopes are decision-specific and MUST have a
+authenticated. Completeness, scorer-output and assignment envelopes are decision-specific and MUST have a
 validity interval equal to the decision sequence.
 
 ## Canonical policy profile
@@ -102,7 +102,7 @@ also carry that generation. The existing calibration/OOD checks additionally req
 artifact generation to match the request policy generation.
 
 Sequence validity remains explicit. Long-lived profile/calibration/OOD envelopes may cover a
-bounded sequence interval. Completeness and scorer output are single-decision artifacts and are
+bounded sequence interval. Completeness, scorer output and assignment are single-decision artifacts and are
 required to be valid only at the exact decision sequence.
 
 ## Frozen qualification vertical
