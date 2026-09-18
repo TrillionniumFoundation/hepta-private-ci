@@ -6,6 +6,11 @@ use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_kg::KnowledgePublicationDispositionV2;
+use codex_hepta_kg::KnowledgePublicationReceiptV2;
+use codex_hepta_kg::build_durable_generation_from_snapshot_v2;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -1099,12 +1104,123 @@ async fn verify_current_projection_contents(
             )));
         }
 
-        let expected_output = output_digest(&projection_scope, &expected_nodes, &expected_edges);
+        let expected_output = output_digest(&projection_scope, &expected_nodes, &expected_edges)?;
         let stored_output: String = current.try_get("output_sha256").map_err(unavailable)?;
         if expected_output.as_str() != stored_output {
             return Err(CognitiveStoreError::Corrupt(format!(
                 "KG current projection `{projection_scope}` output digest failed canonical recomputation"
             )));
+        }
+
+        let v2_receipt = sqlx::query(
+            "SELECT source_snapshot_sha256, generation_digest,
+                    predecessor_generation, predecessor_generation_digest,
+                    disposition, publication_digest
+             FROM kg_projection_v2_generation_receipts
+             WHERE projection_scope = ? AND generation = ?",
+        )
+        .bind(&projection_scope)
+        .bind(generation)
+        .fetch_optional(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        if let Some(v2_receipt) = v2_receipt {
+            let generation_value = Generation::new(
+                u64::try_from(generation).map_err(|_| {
+                    CognitiveStoreError::Corrupt("negative KG generation".to_string())
+                })?,
+            )
+            .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+            let source_snapshot = v2_receipt
+                .try_get::<String, _>("source_snapshot_sha256")
+                .map_err(unavailable)?
+                .parse::<Digest32>()
+                .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+            let expected_input_v2 = expected_input
+                .as_str()
+                .parse::<Digest32>()
+                .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+            if source_snapshot != expected_input_v2 {
+                return Err(CognitiveStoreError::Corrupt(format!(
+                    "KG current projection `{projection_scope}` V2 source snapshot differs from the physical input-head digest"
+                )));
+            }
+            let rebuilt = build_durable_generation_from_snapshot_v2(
+                generation_value,
+                &projection_scope,
+                source_snapshot,
+                &expected_nodes,
+                &expected_edges,
+            )
+            .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+            let stored_generation_digest = v2_receipt
+                .try_get::<String, _>("generation_digest")
+                .map_err(unavailable)?
+                .parse::<Digest32>()
+                .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+            if rebuilt.generation_digest != stored_generation_digest {
+                return Err(CognitiveStoreError::Corrupt(format!(
+                    "KG current projection `{projection_scope}` V2 generation digest failed canonical recomputation"
+                )));
+            }
+            let predecessor_generation = v2_receipt
+                .try_get::<Option<i64>, _>("predecessor_generation")
+                .map_err(unavailable)?
+                .map(|value| {
+                    u64::try_from(value)
+                        .map_err(|_| {
+                            CognitiveStoreError::Corrupt(
+                                "negative KG predecessor generation".to_string(),
+                            )
+                        })
+                        .and_then(|value| {
+                            Generation::new(value)
+                                .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))
+                        })
+                })
+                .transpose()?;
+            let predecessor_digest = v2_receipt
+                .try_get::<Option<String>, _>("predecessor_generation_digest")
+                .map_err(unavailable)?
+                .map(|value| {
+                    value
+                        .parse::<Digest32>()
+                        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))
+                })
+                .transpose()?;
+            let publication_digest = v2_receipt
+                .try_get::<String, _>("publication_digest")
+                .map_err(unavailable)?
+                .parse::<Digest32>()
+                .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+            let disposition = match v2_receipt
+                .try_get::<String, _>("disposition")
+                .map_err(unavailable)?
+                .as_str()
+            {
+                "published" => KnowledgePublicationDispositionV2::Published,
+                "unchanged" => KnowledgePublicationDispositionV2::Unchanged,
+                _ => {
+                    return Err(CognitiveStoreError::Corrupt(
+                        "invalid KG V2 publication disposition".to_string(),
+                    ));
+                }
+            };
+            KnowledgePublicationReceiptV2 {
+                generation: generation_value,
+                predecessor_generation,
+                predecessor_digest,
+                generation_digest: stored_generation_digest,
+                disposition,
+                publication_digest,
+                authority: codex_hepta_types::AuthorityPosture::DENY_ALL,
+            }
+            .validate()
+            .map_err(|error| {
+                CognitiveStoreError::Corrupt(format!(
+                    "KG current projection `{projection_scope}` V2 publication receipt failed validation: {error}"
+                ))
+            })?;
         }
     }
     transaction.commit().await.map_err(unavailable)?;

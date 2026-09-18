@@ -18,8 +18,8 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "graph_query_composed_pending_independent_acceptance",
+  "productionWriterState": "v2_generation_store_composed_pending_independent_acceptance",
   "operations": [
     {
       "operation": "build_complete_generation",
@@ -27,7 +27,10 @@
       "sourcePath": "codex-rs/hepta-kg/src/generation.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-kg/src/generation_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "build_complete_generation",
       "mappingClass": "owner_native",
@@ -39,7 +42,10 @@
       "sourcePath": "codex-rs/hepta-kg/src/generation.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-kg/src/generation_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "apply_incremental_delta",
       "mappingClass": "owner_native",
@@ -51,16 +57,55 @@
       "sourcePath": "codex-rs/hepta-kg/src/generation.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-kg/src/generation_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "publish_generation",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "materialize_durable_projection",
+      "nativeSymbol": "durable_projection_digest_v2",
+      "sourcePath": "codex-rs/hepta-kg/src/durable.rs",
+      "state": "source_implemented_product_writer_and_query_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-kg/src/durable_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_retrieval_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "publish_generation",
+      "mappingClass": "owner_native_composed",
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/cognitive_kg_store.rs::refresh_scope_projection_tx"
+      ]
+    },
+    {
+      "operation": "query_relations_product",
+      "designOperation": "query_relations",
+      "nativeSymbol": "query_relations",
+      "sourcePath": "codex-rs/hepta-kg/src/generation.rs",
+      "mappingClass": "owner_native_composed",
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/cognitive_retrieval.rs::graph_channel_tx"
+      ],
+      "tests": [
+        "codex-rs/hepta-kg/src/generation_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_retrieval_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs"
+      ],
+      "state": "source_implemented_product_query_composed",
+      "authority": "none",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Qualify exact-head and deterministic synthetic-merge execution for the V2 SQLite writer/query chain.",
+    "Compose and qualify the remaining prompt-factor projection/registry adapters without granting source-fact mutation authority."
   ],
   "externalEvidenceGates": [
     "independent semantic review",

@@ -3764,6 +3764,7 @@ name = "codex-hepta-kg"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "sha2 0.10.9",
 ]
 
 [[package]]
@@ -3873,6 +3874,7 @@ dependencies = [
  "codex-hepta-cognitive-read",
  "codex-hepta-cognitive-types",
  "codex-hepta-contracts",
+ "codex-hepta-kg",
  "codex-hepta-paths",
  "codex-hepta-types",
  "codex-state",

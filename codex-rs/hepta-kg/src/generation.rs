@@ -25,7 +25,7 @@ const GENERATION_DOMAIN: &[u8] = b"hepta.knowledge-generation.v2";
 const PUBLICATION_DOMAIN: &[u8] = b"hepta.knowledge-publication.v2";
 const QUERY_DOMAIN: &[u8] = b"hepta.knowledge-query-result.v2";
 
-#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum KnowledgeRelationKindV2 {
     Supports,
     Contradicts,
@@ -37,6 +37,9 @@ pub enum KnowledgeRelationKindV2 {
     PromptComplements,
     PromptSubstitutes,
     PromptConflicts,
+    /// Lossless product predicate identity for relation vocabularies that are
+    /// not one of the closed symbolic relation classes above.
+    CustomPredicate(StableId),
 }
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -185,6 +188,76 @@ pub fn build_complete_generation(
         input.nodes,
         input.edges,
     )
+}
+
+/// Derives the minimal canonical delta that transforms an exact predecessor
+/// into an already-built complete candidate. Applying the result must reproduce
+/// the candidate byte-for-byte, including its generation digest.
+pub fn derive_incremental_delta(
+    predecessor: &KnowledgeGenerationV2,
+    candidate: &KnowledgeGenerationV2,
+) -> Result<KnowledgeProjectionDeltaV2, KnowledgeGenerationErrorV2> {
+    predecessor.validate()?;
+    candidate.validate()?;
+    if predecessor.generation.next().ok() != Some(candidate.generation) {
+        return Err(KnowledgeGenerationErrorV2::InvalidPredecessor);
+    }
+    if predecessor.graph_profile_digest != candidate.graph_profile_digest {
+        return Err(KnowledgeGenerationErrorV2::ProfileChangedInDelta);
+    }
+
+    let predecessor_nodes = predecessor
+        .nodes
+        .iter()
+        .map(|node| (node.node_id.clone(), node))
+        .collect::<BTreeMap<_, _>>();
+    let candidate_nodes = candidate
+        .nodes
+        .iter()
+        .map(|node| (node.node_id.clone(), node))
+        .collect::<BTreeMap<_, _>>();
+    let remove_node_ids = predecessor_nodes
+        .keys()
+        .filter(|id| !candidate_nodes.contains_key(*id))
+        .cloned()
+        .collect();
+    let upsert_nodes = candidate_nodes
+        .iter()
+        .filter(|(id, node)| predecessor_nodes.get(*id) != Some(*node))
+        .map(|(_, node)| (*node).clone())
+        .collect();
+
+    let predecessor_edges = predecessor
+        .edges
+        .iter()
+        .map(|edge| (edge.identity.clone(), edge))
+        .collect::<BTreeMap<_, _>>();
+    let candidate_edges = candidate
+        .edges
+        .iter()
+        .map(|edge| (edge.identity.clone(), edge))
+        .collect::<BTreeMap<_, _>>();
+    let remove_edge_identities = predecessor_edges
+        .keys()
+        .filter(|identity| !candidate_edges.contains_key(*identity))
+        .cloned()
+        .collect();
+    let upsert_edges = candidate_edges
+        .iter()
+        .filter(|(identity, edge)| predecessor_edges.get(*identity) != Some(*edge))
+        .map(|(_, edge)| (*edge).clone())
+        .collect();
+
+    Ok(KnowledgeProjectionDeltaV2 {
+        expected_predecessor_digest: predecessor.generation_digest,
+        source_snapshot_digest: candidate.source_snapshot_digest,
+        generation_vector_digest: candidate.generation_vector_digest,
+        graph_profile_digest: candidate.graph_profile_digest,
+        remove_node_ids,
+        upsert_nodes,
+        remove_edge_identities,
+        upsert_edges,
+    })
 }
 
 pub fn apply_incremental_delta(
@@ -571,7 +644,7 @@ fn compute_query_result_digest(result: &KnowledgeRelationResultV2) -> Digest32 {
 
 fn push_edge_identity(bytes: &mut Vec<u8>, identity: &KnowledgeEdgeIdentityV2) {
     push_id(bytes, &identity.source_node_id);
-    bytes.push(relation_code(identity.relation));
+    push_relation(bytes, &identity.relation);
     push_id(bytes, &identity.target_node_id);
 }
 
@@ -667,18 +740,22 @@ fn push_u64(bytes: &mut Vec<u8>, value: u64) {
     bytes.extend_from_slice(&value.to_be_bytes());
 }
 
-const fn relation_code(value: KnowledgeRelationKindV2) -> u8 {
+fn push_relation(bytes: &mut Vec<u8>, value: &KnowledgeRelationKindV2) {
     match value {
-        KnowledgeRelationKindV2::Supports => 0,
-        KnowledgeRelationKindV2::Contradicts => 1,
-        KnowledgeRelationKindV2::TemporalBefore => 2,
-        KnowledgeRelationKindV2::TemporalAfter => 3,
-        KnowledgeRelationKindV2::Causes => 4,
-        KnowledgeRelationKindV2::Enables => 5,
-        KnowledgeRelationKindV2::ProcedureStep => 6,
-        KnowledgeRelationKindV2::PromptComplements => 7,
-        KnowledgeRelationKindV2::PromptSubstitutes => 8,
-        KnowledgeRelationKindV2::PromptConflicts => 9,
+        KnowledgeRelationKindV2::Supports => bytes.push(0),
+        KnowledgeRelationKindV2::Contradicts => bytes.push(1),
+        KnowledgeRelationKindV2::TemporalBefore => bytes.push(2),
+        KnowledgeRelationKindV2::TemporalAfter => bytes.push(3),
+        KnowledgeRelationKindV2::Causes => bytes.push(4),
+        KnowledgeRelationKindV2::Enables => bytes.push(5),
+        KnowledgeRelationKindV2::ProcedureStep => bytes.push(6),
+        KnowledgeRelationKindV2::PromptComplements => bytes.push(7),
+        KnowledgeRelationKindV2::PromptSubstitutes => bytes.push(8),
+        KnowledgeRelationKindV2::PromptConflicts => bytes.push(9),
+        KnowledgeRelationKindV2::CustomPredicate(predicate_id) => {
+            bytes.push(10);
+            push_id(bytes, predicate_id);
+        }
     }
 }
 

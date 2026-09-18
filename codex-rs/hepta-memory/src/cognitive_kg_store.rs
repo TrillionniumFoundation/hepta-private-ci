@@ -1,8 +1,19 @@
 use std::collections::BTreeMap;
 
 use codex_hepta_contracts::Sha256Digest;
-use sha2::Digest;
-use sha2::Sha256;
+use codex_hepta_kg::DurableProjectionEdgeV2;
+use codex_hepta_kg::DurableProjectionHeadV2;
+use codex_hepta_kg::DurableProjectionNodeV2;
+use codex_hepta_kg::durable_input_heads_digest_v2;
+use codex_hepta_kg::durable_projection_digest_v2;
+use codex_hepta_kg::build_durable_generation_from_snapshot_v2;
+use codex_hepta_kg::build_durable_generation_v2;
+use codex_hepta_kg::publish_generation;
+use codex_hepta_kg::derive_incremental_delta;
+use codex_hepta_kg::apply_incremental_delta;
+use codex_hepta_kg::KnowledgeGenerationV2;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::Transaction;
@@ -20,51 +31,15 @@ use crate::cognitive_intelligence_writer::canonical_relation_id;
 use crate::cognitive_intelligence_writer::occurrence_edge_id;
 use crate::cognitive_intelligence_writer::occurrence_node_id;
 use crate::cognitive_store::unavailable;
-use crate::framing::frame_part;
 
 pub(crate) const MAX_SCOPE_HEADS: usize = 10_000;
 pub(crate) const MAX_SCOPE_NODES: usize = 10_000;
 pub(crate) const MAX_SCOPE_EDGES: usize = 50_000;
 pub(crate) const MAX_PROJECTION_SCOPES: usize = 10_000;
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct ProjectionHead {
-    pub(crate) memory_id: String,
-    pub(crate) revision: i64,
-    pub(crate) content_sha256: String,
-    pub(crate) verification: String,
-    pub(crate) lifecycle: String,
-    pub(crate) fact_set_sha256: String,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct ProjectionNode {
-    pub(crate) node_id: String,
-    pub(crate) canonical_entity_id: String,
-    pub(crate) entity_type: String,
-    pub(crate) label: String,
-    pub(crate) valid_from: i64,
-    pub(crate) valid_to: Option<i64>,
-    pub(crate) memory_id: String,
-    pub(crate) memory_revision: i64,
-    pub(crate) source_id: String,
-    pub(crate) source_revision: i64,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub(crate) struct ProjectionEdge {
-    pub(crate) edge_id: String,
-    pub(crate) canonical_relation_id: String,
-    pub(crate) from_node_id: String,
-    pub(crate) to_node_id: String,
-    pub(crate) relation: String,
-    pub(crate) valid_from: i64,
-    pub(crate) valid_to: Option<i64>,
-    pub(crate) memory_id: String,
-    pub(crate) memory_revision: i64,
-    pub(crate) source_id: String,
-    pub(crate) source_revision: i64,
-}
+pub(crate) type ProjectionHead = DurableProjectionHeadV2;
+pub(crate) type ProjectionNode = DurableProjectionNodeV2;
+pub(crate) type ProjectionEdge = DurableProjectionEdgeV2;
 
 impl CognitiveStore {
     /// Materializes a complete exact-scope projection inside the product
@@ -308,7 +283,7 @@ impl CognitiveStore {
                 source_revision: row.try_get("source_revision").map_err(unavailable)?,
             });
         }
-        let output_sha256 = output_digest(&projection_scope, &nodes, &edges);
+        let output_sha256 = output_digest(&projection_scope, &nodes, &edges)?;
 
         sqlx::query(
             "INSERT INTO kg_projection (projection_scope, generation)
@@ -327,6 +302,45 @@ impl CognitiveStore {
         let next = current
             .checked_add(1)
             .ok_or_else(|| CognitiveStoreError::Corrupt("KG generation overflow".to_string()))?;
+        let next_generation = Generation::new(
+            u64::try_from(next)
+                .map_err(|_| CognitiveStoreError::Corrupt("negative KG generation".to_string()))?,
+        )
+        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+        let predecessor = if current == 0 {
+            None
+        } else {
+            Some(
+                self.load_durable_generation_tx(
+                    transaction,
+                    scope,
+                    &projection_scope,
+                    current,
+                )
+                .await?,
+            )
+        };
+        let v2_generation = build_durable_generation_v2(
+            next_generation,
+            &projection_scope,
+            &heads,
+            &nodes,
+            &edges,
+        )
+        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+        if let Some(predecessor) = predecessor.as_ref() {
+            let delta = derive_incremental_delta(predecessor, &v2_generation)
+                .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+            let incremental = apply_incremental_delta(predecessor, next_generation, delta)
+                .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+            if incremental != v2_generation {
+                return Err(CognitiveStoreError::Corrupt(
+                    "full and incremental KG V2 generation paths diverged".to_string(),
+                ));
+            }
+        }
+        let publication = publish_generation(predecessor.as_ref(), &v2_generation)
+            .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
         sqlx::query(
             "INSERT INTO kg_projection_generation_receipts (
                 projection_scope, generation, trigger_memory_id,
@@ -346,6 +360,27 @@ impl CognitiveStore {
         .bind(to_i64_len(trigger_facts.relations.len(), "relation count")?)
         .bind(to_i64_len(nodes.len(), "projection node count")?)
         .bind(to_i64_len(edges.len(), "projection edge count")?)
+        .execute(&mut **transaction)
+        .await
+        .map_err(unavailable)?;
+        sqlx::query(
+            "INSERT INTO kg_projection_v2_generation_receipts (
+                projection_scope, generation, source_snapshot_sha256,
+                generation_digest, predecessor_generation,
+                predecessor_generation_digest, disposition, publication_digest
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        )
+        .bind(&projection_scope)
+        .bind(next)
+        .bind(v2_generation.source_snapshot_digest.to_string())
+        .bind(v2_generation.generation_digest.to_string())
+        .bind(publication.predecessor_generation.map(|value| value.get()).map(|value| i64::try_from(value).unwrap_or(i64::MAX)))
+        .bind(publication.predecessor_digest.map(|value| value.to_string()))
+        .bind(match publication.disposition {
+            codex_hepta_kg::KnowledgePublicationDispositionV2::Published => "published",
+            codex_hepta_kg::KnowledgePublicationDispositionV2::Unchanged => "unchanged",
+        })
+        .bind(publication.publication_digest.to_string())
         .execute(&mut **transaction)
         .await
         .map_err(unavailable)?;
@@ -457,79 +492,177 @@ impl CognitiveStore {
             edge_count: u64::try_from(edges.len()).unwrap_or(u64::MAX),
         })
     }
+
+    pub(crate) async fn load_durable_generation_tx(
+        &self,
+        transaction: &mut Transaction<'_, Sqlite>,
+        scope: &CognitiveScope,
+        projection_scope: &str,
+        generation: i64,
+    ) -> Result<KnowledgeGenerationV2, CognitiveStoreError> {
+        let source_snapshot: String = sqlx::query_scalar(
+            "SELECT input_heads_sha256
+             FROM kg_projection_generation_receipts
+             WHERE projection_scope = ? AND generation = ?",
+        )
+        .bind(projection_scope)
+        .bind(generation)
+        .fetch_one(&mut **transaction)
+        .await
+        .map_err(unavailable)?;
+        let source_snapshot = source_snapshot
+            .parse::<Digest32>()
+            .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+
+        let node_rows = sqlx::query(
+            "SELECT n.node_id, i.canonical_entity_id, n.entity_type, n.label,
+                    n.valid_from_unix_seconds, n.valid_to_unix_seconds,
+                    n.memory_id, n.memory_revision, n.source_id, n.source_revision
+             FROM kg_nodes n
+             JOIN kg_projection_node_entities i
+               ON i.projection_scope = n.projection_scope
+              AND i.generation = n.generation
+              AND i.node_id = n.node_id
+             WHERE n.projection_scope = ? AND n.generation = ?
+             ORDER BY n.node_id LIMIT ?",
+        )
+        .bind(projection_scope)
+        .bind(generation)
+        .bind(limit_plus_one(MAX_SCOPE_NODES)?)
+        .fetch_all(&mut **transaction)
+        .await
+        .map_err(unavailable)?;
+        if node_rows.len() > MAX_SCOPE_NODES {
+            return Err(CognitiveStoreError::Corrupt(
+                "persisted KG predecessor exceeds the node limit".to_string(),
+            ));
+        }
+        let nodes = node_rows
+            .into_iter()
+            .map(|row| {
+                Ok(ProjectionNode {
+                    node_id: row.try_get("node_id").map_err(unavailable)?,
+                    canonical_entity_id: row.try_get("canonical_entity_id").map_err(unavailable)?,
+                    entity_type: row.try_get("entity_type").map_err(unavailable)?,
+                    label: row.try_get("label").map_err(unavailable)?,
+                    valid_from: row.try_get("valid_from_unix_seconds").map_err(unavailable)?,
+                    valid_to: row.try_get("valid_to_unix_seconds").map_err(unavailable)?,
+                    memory_id: row.try_get("memory_id").map_err(unavailable)?,
+                    memory_revision: row.try_get("memory_revision").map_err(unavailable)?,
+                    source_id: row.try_get("source_id").map_err(unavailable)?,
+                    source_revision: row.try_get("source_revision").map_err(unavailable)?,
+                })
+            })
+            .collect::<Result<Vec<_>, CognitiveStoreError>>()?;
+
+        let edge_rows = sqlx::query(
+            "SELECT e.edge_id, e.from_node_id, e.to_node_id, e.relation,
+                    e.valid_from_unix_seconds, e.valid_to_unix_seconds,
+                    e.memory_id, e.memory_revision, e.source_id, e.source_revision,
+                    fi.canonical_entity_id AS from_canonical_entity_id,
+                    ti.canonical_entity_id AS to_canonical_entity_id
+             FROM kg_edges e
+             JOIN kg_projection_node_entities fi
+               ON fi.projection_scope = e.projection_scope
+              AND fi.generation = e.generation
+              AND fi.node_id = e.from_node_id
+             JOIN kg_projection_node_entities ti
+               ON ti.projection_scope = e.projection_scope
+              AND ti.generation = e.generation
+              AND ti.node_id = e.to_node_id
+             WHERE e.projection_scope = ? AND e.generation = ?
+             ORDER BY e.edge_id LIMIT ?",
+        )
+        .bind(projection_scope)
+        .bind(generation)
+        .bind(limit_plus_one(MAX_SCOPE_EDGES)?)
+        .fetch_all(&mut **transaction)
+        .await
+        .map_err(unavailable)?;
+        if edge_rows.len() > MAX_SCOPE_EDGES {
+            return Err(CognitiveStoreError::Corrupt(
+                "persisted KG predecessor exceeds the edge limit".to_string(),
+            ));
+        }
+        let mut edges = Vec::with_capacity(edge_rows.len());
+        for row in edge_rows {
+            let relation: String = row.try_get("relation").map_err(unavailable)?;
+            let from_canonical_entity_id: String =
+                row.try_get("from_canonical_entity_id").map_err(unavailable)?;
+            let to_canonical_entity_id: String =
+                row.try_get("to_canonical_entity_id").map_err(unavailable)?;
+            edges.push(ProjectionEdge {
+                edge_id: row.try_get("edge_id").map_err(unavailable)?,
+                canonical_relation_id: canonical_relation_id(
+                    &self.owner_agent_id,
+                    scope,
+                    &from_canonical_entity_id,
+                    &relation,
+                    &to_canonical_entity_id,
+                ),
+                from_node_id: row.try_get("from_node_id").map_err(unavailable)?,
+                to_node_id: row.try_get("to_node_id").map_err(unavailable)?,
+                relation,
+                valid_from: row.try_get("valid_from_unix_seconds").map_err(unavailable)?,
+                valid_to: row.try_get("valid_to_unix_seconds").map_err(unavailable)?,
+                memory_id: row.try_get("memory_id").map_err(unavailable)?,
+                memory_revision: row.try_get("memory_revision").map_err(unavailable)?,
+                source_id: row.try_get("source_id").map_err(unavailable)?,
+                source_revision: row.try_get("source_revision").map_err(unavailable)?,
+            });
+        }
+
+        let generation = Generation::new(
+            u64::try_from(generation)
+                .map_err(|_| CognitiveStoreError::Corrupt("negative KG generation".to_string()))?,
+        )
+        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+        let rebuilt = build_durable_generation_from_snapshot_v2(
+            generation,
+            projection_scope,
+            source_snapshot,
+            &nodes,
+            &edges,
+        )
+        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+        let persisted_digest: Option<String> = sqlx::query_scalar(
+            "SELECT generation_digest
+             FROM kg_projection_v2_generation_receipts
+             WHERE projection_scope = ? AND generation = ?",
+        )
+        .bind(projection_scope)
+        .bind(i64::try_from(generation.get()).unwrap_or(i64::MAX))
+        .fetch_optional(&mut **transaction)
+        .await
+        .map_err(unavailable)?;
+        if let Some(persisted_digest) = persisted_digest {
+            let persisted_digest = persisted_digest
+                .parse::<Digest32>()
+                .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+            if persisted_digest != rebuilt.generation_digest {
+                return Err(CognitiveStoreError::Corrupt(
+                    "persisted KG V2 generation digest differs from canonical rebuild".to_string(),
+                ));
+            }
+        }
+        Ok(rebuilt)
+    }
+
 }
 
 pub(crate) fn input_heads_digest(scope: &str, heads: &[ProjectionHead]) -> Sha256Digest {
-    let mut hasher = Sha256::new();
-    frame_part(&mut hasher, b"hepta:cognitive:kg-projection-input:v1");
-    frame_part(&mut hasher, scope.as_bytes());
-    frame_part(
-        &mut hasher,
-        &u64::try_from(heads.len()).unwrap_or(u64::MAX).to_be_bytes(),
-    );
-    for head in heads {
-        frame_part(&mut hasher, head.memory_id.as_bytes());
-        frame_part(&mut hasher, &head.revision.to_be_bytes());
-        frame_part(&mut hasher, head.content_sha256.as_bytes());
-        frame_part(&mut hasher, head.verification.as_bytes());
-        frame_part(&mut hasher, head.lifecycle.as_bytes());
-        frame_part(&mut hasher, head.fact_set_sha256.as_bytes());
-    }
-    finish_digest(hasher)
+    Sha256Digest::parse(durable_input_heads_digest_v2(scope, heads).to_string())
+        .expect("hepta-kg durable input digest is canonical sha256")
 }
 
 pub(crate) fn output_digest(
     scope: &str,
     nodes: &[ProjectionNode],
     edges: &[ProjectionEdge],
-) -> Sha256Digest {
-    let mut hasher = Sha256::new();
-    frame_part(&mut hasher, b"hepta:cognitive:kg-projection-output:v1");
-    frame_part(&mut hasher, scope.as_bytes());
-    frame_part(
-        &mut hasher,
-        &u64::try_from(nodes.len()).unwrap_or(u64::MAX).to_be_bytes(),
-    );
-    for node in nodes {
-        frame_part(&mut hasher, node.node_id.as_bytes());
-        frame_part(&mut hasher, node.canonical_entity_id.as_bytes());
-        frame_part(&mut hasher, node.entity_type.as_bytes());
-        frame_part(&mut hasher, node.label.as_bytes());
-        frame_part(&mut hasher, &node.valid_from.to_be_bytes());
-        frame_part(
-            &mut hasher,
-            &node.valid_to.unwrap_or(i64::MIN).to_be_bytes(),
-        );
-        frame_part(&mut hasher, node.memory_id.as_bytes());
-        frame_part(&mut hasher, &node.memory_revision.to_be_bytes());
-        frame_part(&mut hasher, node.source_id.as_bytes());
-        frame_part(&mut hasher, &node.source_revision.to_be_bytes());
-    }
-    frame_part(
-        &mut hasher,
-        &u64::try_from(edges.len()).unwrap_or(u64::MAX).to_be_bytes(),
-    );
-    for edge in edges {
-        frame_part(&mut hasher, edge.edge_id.as_bytes());
-        frame_part(&mut hasher, edge.canonical_relation_id.as_bytes());
-        frame_part(&mut hasher, edge.from_node_id.as_bytes());
-        frame_part(&mut hasher, edge.to_node_id.as_bytes());
-        frame_part(&mut hasher, edge.relation.as_bytes());
-        frame_part(&mut hasher, &edge.valid_from.to_be_bytes());
-        frame_part(
-            &mut hasher,
-            &edge.valid_to.unwrap_or(i64::MIN).to_be_bytes(),
-        );
-        frame_part(&mut hasher, edge.memory_id.as_bytes());
-        frame_part(&mut hasher, &edge.memory_revision.to_be_bytes());
-        frame_part(&mut hasher, edge.source_id.as_bytes());
-        frame_part(&mut hasher, &edge.source_revision.to_be_bytes());
-    }
-    finish_digest(hasher)
-}
-
-fn finish_digest(hasher: Sha256) -> Sha256Digest {
-    Sha256Digest::from_sha256_output(hasher.finalize())
+) -> Result<Sha256Digest, CognitiveStoreError> {
+    let digest = durable_projection_digest_v2(scope, nodes, edges)
+        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+    Sha256Digest::parse(digest.to_string()).map_err(CognitiveStoreError::Corrupt)
 }
 
 fn to_i64(value: u64, label: &str) -> Result<i64, CognitiveStoreError> {
