@@ -419,14 +419,15 @@ fn large_input_remains_deterministic_and_bounded() {
     let right = build(&policy, reversed).expect("order-independent large candidate");
 
     assert_eq!(left, right);
-    assert_eq!(left.loss_report.live_source_heads, SOURCE_RECORDS as u64);
+    let source_records = u64::try_from(SOURCE_RECORDS).expect("bounded source count");
+    assert_eq!(left.loss_report.live_source_heads, source_records);
     assert_eq!(
         left.loss_report.retained_records,
         u64::from(RETAINED_RECORDS)
     );
     assert_eq!(
         left.loss_report.omitted_live_records,
-        SOURCE_RECORDS as u64 - u64::from(RETAINED_RECORDS)
+        source_records - u64::from(RETAINED_RECORDS)
     );
     assert_eq!(
         left.loss_report.retained_bytes,
