@@ -12,6 +12,7 @@ use serde::de::Error as _;
 
 use crate::H7H89ProductionGrant;
 use crate::ProductionMutationReceipt;
+use crate::ProductionRecoveryDecision;
 
 pub const SUPERVISORD_CONTROL_SCHEMA_VERSION: u32 = 2;
 pub const MAX_SUPERVISORD_CONTROL_FRAME_BYTES: u64 = 65_536;
@@ -60,7 +61,8 @@ impl SupervisordRequest {
             | SupervisordMethod::Upgrade { fence, .. }
             | SupervisordMethod::Rollback { fence }
             | SupervisordMethod::SignedUpgrade { fence, .. }
-            | SupervisordMethod::SignedRollback { fence, .. } => fence.validate(),
+            | SupervisordMethod::SignedRollback { fence, .. }
+            | SupervisordMethod::ResolveProductionRecovery { fence, .. } => fence.validate(),
         }
     }
 }
@@ -125,6 +127,10 @@ pub enum SupervisordMethod {
         fence: SupervisordControlFence,
         grant: H7H89ProductionGrant,
         h7_envelope: H7SignedArtifactEnvelope,
+    },
+    ResolveProductionRecovery {
+        fence: SupervisordControlFence,
+        decision: ProductionRecoveryDecision,
     },
 }
 
