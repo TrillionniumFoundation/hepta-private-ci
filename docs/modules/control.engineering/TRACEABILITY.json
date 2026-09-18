@@ -129,10 +129,11 @@
       "nativeSymbol": "main",
       "ownerSymbol": "EngineeringStore and sandbox_candidate",
       "tests": [
-        "test_consolidated_engineering.EngineeringCliTests"
+        "test_consolidated_engineering.EngineeringCliTests",
+        "EngineeringCliTests.test_readiness_cli_cannot_certify_caller_supplied_facts"
       ],
       "state": "source_implemented",
-      "capabilityCeiling": "assignment projection or bounded qualification only"
+      "capabilityCeiling": "local compatibility scheduling/qualification or non-authoritative readiness projection only"
     },
     {
       "designOperation": "evaluate_production_readiness",
@@ -145,7 +146,7 @@
         "ProductionReadinessTests.test_independent_identity_and_live_delivery_gate_deployment"
       ],
       "state": "source_implemented",
-      "capabilityCeiling": "status projection only; no merge, deployment, promotion or release authority"
+      "capabilityCeiling": "already-authenticated-fact projection only; not an authenticator or deployment certificate"
     },
     {
       "designOperation": "authenticated_source_admission",
@@ -198,10 +199,11 @@
       "tests": [
         "SandboxCoordinatorTests.test_infrastructure_failure_retries_at_most_twice",
         "SandboxCoordinatorTests.test_semantic_failure_is_never_retried",
-        "SandboxCoordinatorTests.test_saturated_admission_fails_without_unbounded_wait"
+        "SandboxCoordinatorTests.test_saturated_admission_fails_without_unbounded_wait",
+        "SandboxCoordinatorTests.test_posix_admission_ceiling_is_shared_across_coordinators"
       ],
       "state": "source_implemented",
-      "capabilityCeiling": "bounded qualification execution only"
+      "capabilityCeiling": "bounded host-wide qualification admission on POSIX; multi-host authority remains external"
     },
     {
       "designOperation": "candidate_oracle_immutability",
@@ -232,10 +234,11 @@
       "nativeSymbol": "verify_production_controls",
       "ownerSymbol": "verify_production_controls",
       "tests": [
-        "ExternalControlTests.test_external_fence_binds_local_token_epoch_paths_and_source",
-        "ExternalControlTests.test_audit_anchor_must_match_current_store_head",
-        "ExternalControlTests.test_key_custody_requires_hardware_external_boundary_and_roles",
-        "ExternalControlTests.test_empty_audit_chain_cannot_be_externally_attested_as_valid"
+        "ExternalControlTests.test_external_fence_binds_current_local_and_distributed_frontiers",
+        "ExternalControlTests.test_revocation_frontier_requires_order_freshness_and_signature",
+        "ExternalControlTests.test_audit_anchor_must_match_current_store_head_and_source",
+        "ExternalControlTests.test_empty_audit_chain_cannot_be_externally_attested_as_valid",
+        "ExternalControlTests.test_key_custody_requires_hardware_external_boundary_and_roles"
       ],
       "state": "source_implemented",
       "capabilityCeiling": "admission verification only; no external authority minted"
