@@ -1,7 +1,7 @@
 //! Exact-bound Codex app-server request adapter.
 //!
-//! The adapter translates an already-authorized intent and observes a terminal
-//! app-server outcome. It does not mint model/provider authority.
+//! The adapter translates an already-authorized intent and observes a correlated
+//! terminal app-server outcome. It does not mint model/provider authority.
 
 #![forbid(unsafe_code)]
 
@@ -16,21 +16,35 @@ use codex_hepta_types::StableId;
 pub struct CodexOperationIntent {
     pub operation_id: StableId,
     pub thread_id: StableId,
+    pub turn_id: StableId,
     pub method_id: StableId,
     pub payload_digest: Digest32,
     pub lease_payload_digest: Digest32,
+    pub session_generation: u64,
+    pub protocol_version: u32,
     pub deadline_ms: u64,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum TerminalOutcome {
+    Completed,
+    Failed,
+    Interrupted,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AppServerObservation {
-    pub terminal_observed: bool,
+    pub thread_id: StableId,
+    pub turn_id: StableId,
+    pub outcome: TerminalOutcome,
     pub response_digest: Digest32,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum AdapterStatus {
     Succeeded,
+    Failed,
+    Interrupted,
     Indeterminate,
 }
 
@@ -49,7 +63,10 @@ pub struct CodexAdapterReceipt {
 pub enum Error {
     EmptyDigest(&'static str),
     PayloadBindingMismatch,
+    InvalidSessionGeneration,
+    InvalidProtocolVersion,
     DeadlineExpired,
+    ObservationCorrelationMismatch,
     MissingTerminalResponse,
 }
 
@@ -72,27 +89,46 @@ pub fn adapt(
     if intent.payload_digest != intent.lease_payload_digest {
         return Err(Error::PayloadBindingMismatch);
     }
+    if intent.session_generation == 0 {
+        return Err(Error::InvalidSessionGeneration);
+    }
+    if intent.protocol_version == 0 {
+        return Err(Error::InvalidProtocolVersion);
+    }
     if now_ms >= intent.deadline_ms {
         return Err(Error::DeadlineExpired);
     }
+
     let mut bytes = Vec::new();
-    bytes.extend_from_slice(b"hepta.codex.adapter.request.v1");
+    bytes.extend_from_slice(b"hepta.codex.adapter.request.v2");
     push_id(&mut bytes, &intent.operation_id);
     push_id(&mut bytes, &intent.thread_id);
+    push_id(&mut bytes, &intent.turn_id);
     push_id(&mut bytes, &intent.method_id);
     bytes.extend_from_slice(intent.payload_digest.as_array());
+    bytes.extend_from_slice(&intent.session_generation.to_be_bytes());
+    bytes.extend_from_slice(&intent.protocol_version.to_be_bytes());
     bytes.extend_from_slice(&intent.deadline_ms.to_be_bytes());
     let request_digest = Digest32::of_bytes(&bytes);
+
     let (status, response_digest) = match observation {
         None => (AdapterStatus::Indeterminate, None),
-        Some(value) if !value.terminal_observed => (AdapterStatus::Indeterminate, None),
         Some(value) => {
+            if value.thread_id != intent.thread_id || value.turn_id != intent.turn_id {
+                return Err(Error::ObservationCorrelationMismatch);
+            }
             if value.response_digest.is_zero() {
                 return Err(Error::MissingTerminalResponse);
             }
-            (AdapterStatus::Succeeded, Some(value.response_digest))
+            let status = match value.outcome {
+                TerminalOutcome::Completed => AdapterStatus::Succeeded,
+                TerminalOutcome::Failed => AdapterStatus::Failed,
+                TerminalOutcome::Interrupted => AdapterStatus::Interrupted,
+            };
+            (status, Some(value.response_digest))
         }
     };
+
     Ok(CodexAdapterReceipt {
         operation_id: intent.operation_id,
         request_digest,
