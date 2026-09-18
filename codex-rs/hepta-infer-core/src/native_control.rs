@@ -431,6 +431,9 @@ impl NativeJournal {
                     (Some(client_id), Some(payload_sha256)) => {
                         validate_identity(client_id, "native client message")?;
                         validate_digest(payload_sha256, "native input payload")?;
+                        if client_id != record.request.request_id {
+                            return Err(Error::AssignmentMismatch);
+                        }
                     }
                     (None, None) => {}
                     _ => return Err(Error::InvalidIdentity("native reconciliation binding")),
