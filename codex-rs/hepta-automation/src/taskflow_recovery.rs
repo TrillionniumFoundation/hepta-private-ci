@@ -77,13 +77,16 @@ impl AutomationStore {
             if recovery_generation <= old_generation || recovery_lease_ms == 0 {
                 return Err(TaskFlowError::StaleFence);
             }
-            let fence = TaskFlowFence::new(
-                self.taskflow_owner_agent_id().clone(),
-                format!("automation.scheduler:{}", work.occurrence.task_id),
-                recovery_generation,
-                recovery_generation,
-                recovery_fencing_token(&work.occurrence.occurrence_id, recovery_generation),
-            )?;
+            let fence = TaskFlowFence {
+                owner_agent_id: self.taskflow_owner_agent_id().clone(),
+                owner_id: format!("automation.scheduler:{}", work.occurrence.task_id),
+                owner_epoch: recovery_generation,
+                generation: recovery_generation,
+                fencing_token: recovery_fencing_token(
+                    &work.occurrence.occurrence_id,
+                    recovery_generation,
+                ),
+            };
             let claimed = self
                 .claim_taskflow_run(
                     &work.occurrence.taskflow_run_id,
