@@ -169,6 +169,7 @@ pub struct AutomationOccurrence {
     pub state: AutomationOccurrenceState,
     pub overlap: AutomationOverlapPolicy,
     pub claim_generation: u64,
+    pub claim_token: String,
     pub step_attempt: u32,
     pub taskflow_run_id: String,
     pub queued_submission_id: Option<String>,
@@ -313,7 +314,9 @@ impl AutomationStore {
                 transaction.commit().await.map_err(unavailable)?;
                 return Ok(current);
             }
-            if current.claim_generation != lease.lease_generation {
+            if current.claim_generation != lease.lease_generation
+                || current.claim_token != lease.lease_token
+            {
                 let changed = sqlx::query(
                     "UPDATE automation_occurrence_lifecycle
                      SET claim_generation = ?, claim_token = ?, updated_at_ms = ?
@@ -998,6 +1001,9 @@ fn occurrence_from_row(
             row.try_get("claim_generation")
                 .map_err(|_| AutomationError::Corrupt)?,
         )?,
+        claim_token: row
+            .try_get("claim_token")
+            .map_err(|_| AutomationError::Corrupt)?,
         step_attempt: u32::try_from(
             row.try_get::<i64, _>("step_attempt")
                 .map_err(|_| AutomationError::Corrupt)?,
