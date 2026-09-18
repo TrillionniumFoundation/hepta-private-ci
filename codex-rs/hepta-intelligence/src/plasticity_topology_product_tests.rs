@@ -1,4 +1,5 @@
 use super::*;
+use std::io::Write;
 use codex_hepta_intelligence_eval::*;
 use codex_hepta_learning_ledger::*;
 use codex_hepta_plasticity::*;
@@ -339,6 +340,22 @@ fn writer() -> AnchoredTopologyPlasticityWriterV1 {
         16,
     )
     .expect("topology writer")
+}
+
+#[test]
+fn topology_product_bootstrap_rejects_nonempty_file() {
+    let mut file = tempfile().expect("tempfile");
+    file.write_all(b"not-empty").expect("seed file");
+    let result = AnchoredTopologyPlasticityWriterV1::bootstrap_new(
+        file,
+        digest("topology-registry-scope:nonempty"),
+        37,
+        16,
+    );
+    assert!(matches!(
+        result,
+        Err(DurableTopologyProposalRegistryError::BootstrapRequiresEmptyFile)
+    ));
 }
 
 #[test]
