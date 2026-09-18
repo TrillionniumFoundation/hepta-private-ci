@@ -2,7 +2,7 @@
 
 Current executable behavior, component owners and implementation gaps: [Lane B native host](../../readiness/LANE_B_NATIVE_HOST.md).
 
-The native App Server worker now calls the same durable control owner for explicit local-slot admission, persisted dispatch identity, cancellation intent and actual observed settlement. Optional observed tokens remain unknown when absent; restarting a possibly dispatched request never replays it. This does not close economic quota, local weights/device or trusted post-crash provider-reconciliation gaps. The [native host guide](../../readiness/LANE_B_NATIVE_HOST.md#durable-inference-journal) specifies journal limits, CLI requirements and recovery semantics.
+The native App Server worker now validates cross-bound quota/resource evidence, consumes a signed exact final-use grant, calls the durable inference.control owner before physical dispatch and commits matching observed settlement. Restarting a possibly dispatched request never replays it: the persisted App Server thread is inspected only through read-only exact-thread reconciliation, and a recovered terminal cannot reconstruct the deliberately non-serializable final-use token. This closes the repository readback/replay gap without claiming provider billing, local weights/device capacity, product activation or independent deployment acceptance. The [native host guide](../../readiness/LANE_B_NATIVE_HOST.md#durable-inference-journal) specifies journal limits, policy inputs and recovery semantics.
 
 **Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
 
@@ -135,7 +135,7 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/inference.worker.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.worker.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/inference.worker.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.worker.md). The native hosted path now has a bounded read-only crash reconciler; a source library or fixture still cannot stand in for real provider retention/terminal behavior, physical device observations or independent acceptance.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -157,7 +157,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Build hepta-infer-worker and explicitly select --profile native-app-server. Supply the owning Agentd socket, Agent ID/generation, exact configured model, private journal and stable request ID as documented. Hosted execution uses the owning App Server; it does not establish local model weights, device grants or GPU isolation.
+Build hepta-infer-worker and explicitly select --profile native-app-server. Supply the owning Agentd socket, Agent ID/generation, exact configured model, private journal/stable request ID, request token/economic holds, cross-bound quota/resource evidence and the final-use signer/revocation/grant inputs documented in the native host guide. Hosted execution uses the owning App Server and persists a recovery thread; it does not establish local model weights, physical device grants or GPU isolation.
 
 Current operating and state-format references:
 
@@ -171,6 +171,8 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-infer-worker-host/src/lib_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/lib_tests.rs); named case: `terminal_success_requires_exact_authority_binding`.
 - [codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs); named case: `loads_runs_and_unloads_exact_model_tuple`.
+- [codex-rs/hepta-infer-worker-host/src/native_policy_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_policy_tests.rs); cross-bound quota/resource and economic-budget admission.
+- [codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs); reopen/no-replay and crash reconciliation boundary.
 
 In `codex-rs`, run `just test -p codex-hepta-infer-worker-host`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.worker.md) separately labels target acceptance designs.
 
