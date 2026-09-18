@@ -206,12 +206,14 @@ fn source() -> ObjectiveSourceEnvelopeV1 {
         deadline: Some("2026-09-08T10:05:00Z".to_string()),
         input_schema_digest: digest("schema-v1"),
     };
-    source.intent_digest =
-        canonical_objective_intent_digest_v1(&source).expect("canonical intent");
+    source.intent_digest = canonical_objective_intent_digest_v1(&source).expect("canonical intent");
     source
 }
 
-fn context(profile: &ObjectiveAdmissionProfileV1, source: &ObjectiveSourceEnvelopeV1) -> ObjectiveAdmissionContextV1 {
+fn context(
+    profile: &ObjectiveAdmissionProfileV1,
+    source: &ObjectiveSourceEnvelopeV1,
+) -> ObjectiveAdmissionContextV1 {
     ObjectiveAdmissionContextV1 {
         revision: Revision::new(7).expect("revision"),
         now_unix_micros: NOW_MICROS,
@@ -269,7 +271,10 @@ fn product_objective_is_one_durable_replayable_run_start() {
     receipt.validate().expect("valid product receipt");
     assert_eq!(ledger.records().expect("records").len(), 1);
     let chain_digest = receipt.durable_append.chain_digest;
-    assert_eq!(receipt.durable_append.disposition, AppendDisposition::Appended);
+    assert_eq!(
+        receipt.durable_append.disposition,
+        AppendDisposition::Appended
+    );
     drop(ledger);
 
     let file = OpenOptions::new()
@@ -299,13 +304,15 @@ fn product_objective_is_one_durable_replayable_run_start() {
     );
     assert_eq!(publication.runtime_body_digest, digest("runtime-body"));
     assert_eq!(
-        publication.objective_v1_digest,
-        receipt.objective_v1_digest,
+        publication.objective_v1_digest, receipt.objective_v1_digest,
         "recovered canonical digest must match the product receipt"
     );
     assert_eq!(
         publication.objective_v1_json,
-        receipt.objective_v1.canonical_json().expect("canonical objective"),
+        receipt
+            .objective_v1
+            .canonical_json()
+            .expect("canonical objective"),
         "recovery must preserve exact registered ObjectiveFunctionV1 bytes"
     );
     publication
@@ -340,7 +347,10 @@ fn exact_retry_is_idempotent_and_run_id_drift_conflicts() {
         bindings("run-start-record-1", "run-1", Digest32::ZERO),
     )
     .expect("first");
-    assert!(matches!(first, ProductionObjectiveDispositionV1::Published(_)));
+    assert!(matches!(
+        first,
+        ProductionObjectiveDispositionV1::Published(_)
+    ));
 
     let replay = prepare_intelligence_run_v1(
         &mut ledger,
@@ -353,7 +363,10 @@ fn exact_retry_is_idempotent_and_run_id_drift_conflicts() {
     let ProductionObjectiveDispositionV1::Published(replay) = replay else {
         panic!("expected replayed publication")
     };
-    assert_eq!(replay.durable_append.disposition, AppendDisposition::IdempotentReplay);
+    assert_eq!(
+        replay.durable_append.disposition,
+        AppendDisposition::IdempotentReplay
+    );
     assert_eq!(ledger.records().expect("records").len(), 1);
 
     let conflict = prepare_intelligence_run_v1(
@@ -391,7 +404,8 @@ fn product_objective_named_host_measurement_receipt() {
         .write(true)
         .open(&path)
         .expect("create ledger");
-    let mut ledger = DurableLedger::create(file, digest("measurement-binding"), 128).expect("ledger");
+    let mut ledger =
+        DurableLedger::create(file, digest("measurement-binding"), 128).expect("ledger");
     let profile = profile();
     let source = source();
     let context = context(&profile, &source);
