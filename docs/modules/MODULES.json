@@ -1343,7 +1343,11 @@
       "source_root_present": true,
       "production_implementation": false,
       "sourceEvidenceRoots": [
-        "codex-rs/hepta-kg"
+        "codex-rs/hepta-kg",
+        "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+        "codex-rs/hepta-memory/src/cognitive_kg_store_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+        "codex-rs/hepta-memory/migrations/0011_kg_kernel_generation_digest.sql"
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "MEM-4-KG",
