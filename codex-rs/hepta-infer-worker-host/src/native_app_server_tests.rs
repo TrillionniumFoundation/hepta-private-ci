@@ -38,17 +38,31 @@ fn context_snapshot(
 fn predispatch_context_check_binds_exact_selected_memories() {
     let expected = context_snapshot("memory:a", 1, "alpha", true);
 
-    // A newer owner cut may have different global digests while preserving the
-    // exact selected attachment. That does not invalidate the prepared turn.
+    // A fresh planning receipt may change its observation/expiry identity while
+    // the exact owner cut, evaluated context and selected memories stay current.
     let mut current = expected.clone();
-    current.snapshot_digest = "snapshot-b".to_string();
-    current.read_digest = "read-b".to_string();
-    current.omitted_records = 7;
     if let Some(plan) = current.plan.as_mut() {
-        plan.evaluated_context_digest = "context-b".to_string();
         plan.plan_receipt_digest = "plan-b".to_string();
     }
     assert!(ensure_context_selection_current(&expected, &current).is_ok());
+
+    let mut changed_cut = current.clone();
+    changed_cut.snapshot_digest = "snapshot-b".to_string();
+    assert!(ensure_context_selection_current(&expected, &changed_cut).is_err());
+
+    let mut changed_read = current.clone();
+    changed_read.read_digest = "read-b".to_string();
+    assert!(ensure_context_selection_current(&expected, &changed_read).is_err());
+
+    let mut changed_omission = current.clone();
+    changed_omission.omitted_records = 7;
+    assert!(ensure_context_selection_current(&expected, &changed_omission).is_err());
+
+    let mut changed_evaluation = current.clone();
+    if let Some(plan) = changed_evaluation.plan.as_mut() {
+        plan.evaluated_context_digest = "context-b".to_string();
+    }
+    assert!(ensure_context_selection_current(&expected, &changed_evaluation).is_err());
 
     let mut revised = current.clone();
     revised.items[0].revision = 2;

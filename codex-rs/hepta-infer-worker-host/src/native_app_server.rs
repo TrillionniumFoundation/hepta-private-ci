@@ -115,21 +115,9 @@ impl AppServerModelDriver {
             Some(query) => Some(owner.cognitive_context(query.clone(), /*limit*/ 4).await?),
             None => None,
         };
-        let additional_context = context
+        let mut additional_context = context
             .as_ref()
-            .map(|snapshot| -> Result<_> {
-                let value = serde_json::to_string(&snapshot)?;
-                if value.len() > MAX_MODEL_CONTEXT_BYTES {
-                    return Err("verified context exceeds the model attachment byte limit".into());
-                }
-                Ok(HashMap::from([(
-                    "hepta-cognitive-owner".to_string(),
-                    AdditionalContextEntry {
-                        value,
-                        kind: AdditionalContextKind::Untrusted,
-                    },
-                )]))
-            })
+            .map(context_attachment)
             .transpose()?;
         let ingress = owner.session_ingress().await?;
         let socket_path = AbsolutePathBuf::from_absolute_path(ingress.socket_path)?;
@@ -176,13 +164,14 @@ impl AppServerModelDriver {
         // Recheck the actual generation after acquiring context and connecting.
         owner.session_ingress().await?;
         // The Agentd context response is an observed cut, not a lease. Re-read
-        // the same selection immediately before turn/start and require the
-        // ordered memory identities/revisions/content plus the read decision to
-        // remain identical. Unrelated snapshot/read-digest drift is tolerated;
-        // any change to what would actually be attached fails closed.
+        // it immediately before turn/start and require the coherent owner/read
+        // cut, ordered selected memories and read decision to remain identical.
+        // Then attach the freshly re-read snapshot so planning metadata is not
+        // older than the final currentness check.
         if let (Some(query), Some(expected_context)) = (context_query.as_ref(), context.as_ref()) {
             let current_context = owner.cognitive_context(query.clone(), /*limit*/ 4).await?;
             ensure_context_selection_current(expected_context, &current_context)?;
+            additional_context = Some(context_attachment(&current_context)?);
         }
         if cancellation.is_cancelled() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
@@ -364,6 +353,22 @@ impl AppServerModelDriver {
     }
 }
 
+fn context_attachment(
+    snapshot: &CognitiveContextSnapshot,
+) -> Result<HashMap<String, AdditionalContextEntry>> {
+    let value = serde_json::to_string(snapshot)?;
+    if value.len() > MAX_MODEL_CONTEXT_BYTES {
+        return Err("verified context exceeds the model attachment byte limit".into());
+    }
+    Ok(HashMap::from([(
+        "hepta-cognitive-owner".to_string(),
+        AdditionalContextEntry {
+            value,
+            kind: AdditionalContextKind::Untrusted,
+        },
+    )]))
+}
+
 fn ensure_context_selection_current(
     expected: &CognitiveContextSnapshot,
     current: &CognitiveContextSnapshot,
@@ -379,8 +384,14 @@ fn ensure_context_selection_current(
     {
         return Err("denied cognitive context contains attachable items".into());
     }
-    if expected_plan.read_allowed != current_plan.read_allowed || expected.items != current.items {
-        return Err("cognitive context changed before model dispatch".into());
+    if expected.snapshot_digest != current.snapshot_digest
+        || expected.read_digest != current.read_digest
+        || expected.omitted_records != current.omitted_records
+        || expected.items != current.items
+        || expected_plan.read_allowed != current_plan.read_allowed
+        || expected_plan.evaluated_context_digest != current_plan.evaluated_context_digest
+    {
+        return Err("cognitive context source cut or selection changed before model dispatch".into());
     }
     Ok(())
 }
