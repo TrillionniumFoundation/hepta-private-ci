@@ -130,7 +130,7 @@ fn canonical_field_collection_and_depth_limits_reject() {
     let many_fields: Vec<_> = (0..=MAX_FIELDS_V1)
         .map(|index| {
             let name = Box::leak(format!("f{index}").into_boxed_str());
-            CanonicalFieldV1::new(name, CanonicalValueV1::U64(index as u64))
+            CanonicalFieldV1::new(name, CanonicalValueV1::U64(0))
         })
         .collect();
     assert_eq!(
