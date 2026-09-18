@@ -36,7 +36,7 @@ class EngineeringControlTests(unittest.TestCase):
         self.assertEqual(receipt.assigned, ("A",))
         self.assertEqual(receipt.blocked, (("B", "batch_path_conflict"),))
 
-    def test_integration_eligibility_grants_no_merge_authority(self) -> None:
+    def test_legacy_integration_diagnostics_never_grant_review_eligibility(self) -> None:
         evidence = IntegrationEvidence(
             candidate_head="a" * 40,
             exact_head="a" * 40,
@@ -59,7 +59,8 @@ class EngineeringControlTests(unittest.TestCase):
             authority_delta=False,
         )
         decision = decide_integration(evidence)
-        self.assertTrue(decision.eligible_for_independent_review)
+        self.assertFalse(decision.eligible_for_independent_review)
+        self.assertIn("legacy_unauthenticated_evidence", decision.reasons)
         self.assertFalse(decision.merge_authority)
         self.assertFalse(decision.release_authority)
 
