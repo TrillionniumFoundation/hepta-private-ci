@@ -68,18 +68,25 @@ Terminal source rows can be compacted only after writing an immutable semantic
 tombstone in the same transaction. Tombstones prevent an old operation identity
 from being resurrected after pruning or backup restoration.
 
-Source durability is implemented in this candidate; product activation is not.
-No named production caller, selected target host, operator acceptance, canary,
-promotion or release is claimed by source presence.
+Source durability and one named Agentd source composition are implemented in
+this candidate; product activation is not. When an owner explicitly supplies a
+FinalUseAuthority and independent AutomationGrantProvider through
+`with_automation_operations`, Agentd opens a per-Agent kernel-operations SQLite
+owner, reconciles unsettled Automation operations against the destination-owned
+dedupe receipt, and routes `AutomationCreate` through
+`AgentdOperationsHost::create_automation_task`. No ambient/default grant source,
+selected target host, operator acceptance, canary, promotion or release is
+claimed by source presence.
 
 ## Target-only design
 
-The remaining target-only capabilities are product composition rather than a
-second durability implementation: a named product caller, installation of the
-destination dedupe table in each selected destination owner's own migration
-lineage, a continuously hosted reconciler backed by a trusted terminal observer,
-and selected-host measurements/qualification including real power-loss and
-disk-exhaustion behavior.
+The remaining target-only capabilities are activation/qualification rather than
+a second durability implementation: executable product-composition coverage for
+the configured Agentd path, continuously operated authority/grant provisioning,
+and selected-host measurements including real power-loss and disk-exhaustion
+behavior. Each additional destination must still install its dedupe table in the
+destination owner's own migration lineage and provide a trusted terminal
+observer.
 
 A product adapter must continue consuming a fresh final-use authority token at
 the effect boundary. Destination dedupe must remain destination-owned; source
@@ -123,10 +130,12 @@ success.
 
 ## Integration prerequisites
 
-Before activation, at least one named destination owner must install the dedupe
-schema in its own migration lineage, a named product caller must construct and
-persist `OperationIntentV1`, the host must supply current final-use grants, and a
-trusted terminal observer must settle unknown effects. The selected host must
+Before activation, the configured Agentd Automation composition must pass its
+exact-head and merge-candidate executable coverage; the host must supply current
+final-use authority state and independently issued grants, and a trusted terminal
+observer must settle unknown effects. The Automation destination already commits
+its task mutation and dedupe receipt in one owner transaction. Any additional
+destination must provide the same owner-local atomicity. The selected host must
 also provide commit/fsync, backlog, contention, power-loss and real
 disk-exhaustion qualification evidence.
 

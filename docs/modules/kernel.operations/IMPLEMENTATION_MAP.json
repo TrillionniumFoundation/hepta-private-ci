@@ -18,8 +18,8 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "durable_source_owner_implemented_not_composed",
+  "productCallerState": "source_composed_agentd_not_activated",
+  "productionWriterState": "durable_source_owner_composed_not_activated",
   "operations": [
     {
       "operation": "prepare_intent",
@@ -126,10 +126,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Compose a named authenticated product caller against DurableOperationStore.",
-    "Install destination_operation_dedupe into each selected destination owner's own migration lineage and bind the same owner transaction.",
-    "Bind a trusted product terminal observer and continuously hosted reconciler.",
-    "Run exact-head and deterministic synthetic-merge qualification for the durable candidate."
+    "Add executable Agentd configuration/control coverage proving configured AutomationCreate selects the durable operations host and survives reopen/reconciliation.",
+    "Run exact-head and deterministic synthetic-merge qualification for the composed durable candidate."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -147,5 +145,68 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-operations"
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime.rs",
+      "symbol": "run",
+      "role": "explicit_owner_configuration_opens_and_attaches_durable_automation_operations_host"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
+      "symbol": "AgentdState::response / AutomationCreate",
+      "role": "configured_product_callsite_routes_task_creation_through_kernel_operations"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/operations_host.rs",
+      "symbol": "AgentdOperationsHost::create_automation_task",
+      "role": "intent_outbox_final_use_dispatch_destination_dedupe_and_reconciliation"
+    }
+  ],
+  "productCallerEvidence": [
+    {
+      "path": "codex-rs/hepta-agentd/src/operations_host.rs",
+      "symbol": "AgentdOperationsHost::create_automation_task",
+      "semantics": "prepare durable intent+outbox -> independently supplied final-use grant -> fenced claim/dispatch -> destination-owned dedupe+domain transaction -> terminal reconciliation"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "symbol": "run",
+      "semantics": "only explicit with_automation_operations configuration opens and generation-fences the per-Agent kernel-operations owner; no default authority or grant provider"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-agentd/src/operations_host.rs",
+      "object": "196f1012102f0cb70013659b5abd88eefe2cf633"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "object": "117e16229e17a2bc95f6c77d802e206f509dc843"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "object": "cd6495b4191d7b6bfe88552a37d09a9e5266e270"
+    },
+    {
+      "path": "codex-rs/hepta-operations",
+      "object": "2919b1c221a2ef4ce8e3a94383224f34f32c5e51"
+    },
+    {
+      "path": "codex-rs/hepta-operations/src/destination_dedupe.rs",
+      "object": "6fca5b0c6d2eca16ec8bac9be2f8dd94523de5a7"
+    },
+    {
+      "path": "codex-rs/hepta-operations/src/durable_store.rs",
+      "object": "6316890e1a1d19bb599453ff18c28530af4851cd"
+    },
+    {
+      "path": "codex-rs/hepta-operations/src/ledger.rs",
+      "object": "bd087cd814e5c51b13908f455abd60b165f69569"
+    },
+    {
+      "path": "codex-rs/hepta-operations/src/outbox.rs",
+      "object": "2032888bb832f4f8e6f5085f34677a9fc1688794"
+    }
   ]
 }
