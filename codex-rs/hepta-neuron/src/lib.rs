@@ -20,6 +20,7 @@ mod journal_lock;
 mod journal_witness;
 mod plasticity;
 mod protocol;
+mod rebuild;
 mod runtime;
 mod sparse;
 
@@ -30,6 +31,7 @@ pub use journal::SparseJournal;
 pub use journal_witness::*;
 pub use plasticity::*;
 pub use protocol::*;
+pub use rebuild::*;
 pub use runtime::*;
 pub use sparse::InhibitoryEdge;
 pub use sparse::SparseCheckpoint;
