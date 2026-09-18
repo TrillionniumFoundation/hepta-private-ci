@@ -8,6 +8,9 @@ pub use authbus::AuthBusTextBody;
 pub use authbus::AuthBusTextIngress;
 pub use authbus::AuthBusTextState;
 pub use authbus::AuthBusTextStatus;
+pub use authbus::AuthBusObjectiveBody;
+pub use authbus::AuthBusObjectiveIngress;
+pub use authbus::ObjectiveRunAdmission;
 pub use capabilities::AGENTD_CAPABILITY_SCHEMA_VERSION;
 pub use capabilities::AgentdCapability;
 pub use capabilities::AgentdCapabilitySet;
@@ -135,6 +138,19 @@ impl AgentdRequest {
             request_id,
             spawn_generation,
             method: AgentdMethod::SessionIngress,
+        }
+    }
+
+    pub fn objective_start(
+        request_id: u64,
+        spawn_generation: u64,
+        request: AuthBusObjectiveIngress,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::ObjectiveStart { request },
         }
     }
 
@@ -266,6 +282,9 @@ pub enum AgentdMethod {
     Health,
     Lifecycle,
     SessionIngress,
+    ObjectiveStart {
+        request: AuthBusObjectiveIngress,
+    },
     AuthBusText {
         request: AuthBusTextIngress,
     },
@@ -328,6 +347,11 @@ pub enum AgentdPayload {
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
     SessionIngress(SessionIngress),
+    ObjectiveRun(ObjectiveRunAdmission),
+    ObjectiveConflict {
+        run_id: String,
+        conflict_digest: String,
+    },
     CognitiveContext(CognitiveContextSnapshot),
     AuthBusTextStatus(AuthBusTextStatus),
     Events(EventBatch),
