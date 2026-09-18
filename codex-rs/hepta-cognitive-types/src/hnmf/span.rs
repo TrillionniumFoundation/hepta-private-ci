@@ -20,7 +20,12 @@ use super::validate_bounded;
 use super::validate_text;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(\n    tag = "kind",\n    rename_all = "snake_case",\n    rename_all_fields = "camelCase",\n    deny_unknown_fields\n)]
+#[serde(
+    tag = "kind",
+    rename_all = "snake_case",
+    rename_all_fields = "camelCase",
+    deny_unknown_fields
+)]
 pub enum SpanRangeV1 {
     ByteRange { start: u64, end: u64 },
     PixelRect {
