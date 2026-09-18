@@ -46,7 +46,6 @@ pub struct WorkerAssignment {
     pub selection_digest: Digest32,
 }
 
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct DispatchRequest {
     pub dispatch_id: StableId,
