@@ -206,7 +206,7 @@ impl DurableInferenceControl {
         let lock_file = acquire_writer_lock(&path)?;
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
-        let mut reader = BufReader::new(lock_file.try_clone()?);
+        let mut reader = BufReader::new(file.try_clone()?);
         let mut journal_bytes = 0_u64;
         let mut line = Vec::new();
         loop {
@@ -462,10 +462,22 @@ impl DurableInferenceControl {
             return Err(Error::WriterUnavailable);
         }
         let lock_file = acquire_writer_lock(&self.path)?;
+        // Another process may have compacted by atomically replacing the active
+        // journal since this handle was opened. Reopen the pathname while the
+        // stable sidecar fence is held so replay and the next append target the
+        // same current inode.
+        let mut options = OpenOptions::new();
+        options.create(true).append(true).read(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options.mode(0o600);
+        }
+        let current_file = options.open(&self.path)?;
 
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
-        let mut reader = BufReader::new(lock_file.try_clone()?);
+        let mut reader = BufReader::new(current_file.try_clone()?);
         let mut journal_bytes = 0_u64;
         let mut line = Vec::new();
         loop {
@@ -514,6 +526,7 @@ impl DurableInferenceControl {
         self.records = records;
         self.native = native;
         self.journal_bytes = journal_bytes;
+        self.file = current_file;
         Ok(lock_file)
     }
 
