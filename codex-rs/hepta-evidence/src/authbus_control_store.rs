@@ -284,13 +284,29 @@ impl HeptaEvidenceStore {
         &self,
         decision: &AuthorizationDecision,
         request: &ReservationRequest,
+    ) -> Result<ReservationRecord, AuthBusControlError> {
+        self.reserve_authbus_quota_inner(decision, request, None).await
+    }
+
+    pub(crate) async fn reserve_authbus_quota_at(
+        &self,
+        decision: &AuthorizationDecision,
+        request: &ReservationRequest,
         now_ms: u64,
+    ) -> Result<ReservationRecord, AuthBusControlError> {
+        self.reserve_authbus_quota_inner(decision, request, Some(now_ms))
+            .await
+    }
+
+    async fn reserve_authbus_quota_inner(
+        &self,
+        decision: &AuthorizationDecision,
+        request: &ReservationRequest,
+        test_now_ms: Option<u64>,
     ) -> Result<ReservationRecord, AuthBusControlError> {
         if decision.kind != PolicyDecisionKind::Allowed
             || !request.validate()
             || !decision.permits(request)
-            || now_ms == 0
-            || request.expires_at_ms <= now_ms
         {
             return Err(AuthBusControlError::InvalidRequest(
                 "authorization does not permit this reservation",
@@ -301,6 +317,21 @@ impl HeptaEvidenceStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
+        let now_ms = match test_now_ms {
+            Some(value) if value > 0 => value,
+            Some(_) => {
+                return Err(AuthBusControlError::InvalidRequest(
+                    "test reservation time must be nonzero",
+                ));
+            }
+            None => u64::try_from(now_millis()?)
+                .map_err(|_| AuthBusControlError::InvalidRequest("host clock predates Unix epoch"))?,
+        };
+        if request.expires_at_ms <= now_ms {
+            return Err(AuthBusControlError::InvalidRequest(
+                "reservation is already expired",
+            ));
+        }
         verify_current_policy_for_reservation(&mut tx, decision, request).await?;
         if let Some(existing) = load_reservation(&mut tx, &request.reservation_id).await? {
             let exact = existing.operation_id == request.operation_id
@@ -512,12 +543,28 @@ impl HeptaEvidenceStore {
 
     pub async fn expire_authbus_reservations(
         &self,
+        limit: u32,
+    ) -> Result<u64, AuthBusControlError> {
+        self.expire_authbus_reservations_inner(None, limit).await
+    }
+
+    pub(crate) async fn expire_authbus_reservations_at(
+        &self,
         now_ms: u64,
         limit: u32,
     ) -> Result<u64, AuthBusControlError> {
-        if now_ms == 0 || limit == 0 || limit > 128 {
+        self.expire_authbus_reservations_inner(Some(now_ms), limit)
+            .await
+    }
+
+    async fn expire_authbus_reservations_inner(
+        &self,
+        test_now_ms: Option<u64>,
+        limit: u32,
+    ) -> Result<u64, AuthBusControlError> {
+        if limit == 0 || limit > 128 {
             return Err(AuthBusControlError::InvalidRequest(
-                "expiry scan requires time and limit 1..=128",
+                "expiry scan limit must be 1..=128",
             ));
         }
         let mut tx = self
@@ -525,6 +572,16 @@ impl HeptaEvidenceStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
+        let now_ms = match test_now_ms {
+            Some(value) if value > 0 => value,
+            Some(_) => {
+                return Err(AuthBusControlError::InvalidRequest(
+                    "test expiry time must be nonzero",
+                ));
+            }
+            None => u64::try_from(now_millis()?)
+                .map_err(|_| AuthBusControlError::InvalidRequest("host clock predates Unix epoch"))?,
+        };
         let rows = sqlx::query(
             "SELECT reservation_id, operation_id, quota_key, amount, state, expires_at_ms,
                     policy_digest, authorization_digest, quota_revision_at_reserve, observed_cost, terminal_evidence
