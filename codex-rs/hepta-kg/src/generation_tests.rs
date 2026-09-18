@@ -47,6 +47,7 @@ fn edge(
 ) -> KnowledgeEdgeV2 {
     KnowledgeEdgeV2 {
         identity: KnowledgeEdgeIdentityV2 {
+            edge_id: id(&format!("edge:{support_label}")),
             source_node_id: id(&format!("node:{source}")),
             relation,
             predicate_id: id("predicate:default"),
