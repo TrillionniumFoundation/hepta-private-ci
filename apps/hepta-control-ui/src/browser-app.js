@@ -25,6 +25,14 @@ function text(document, tag, value) {
   return element;
 }
 
+function actionKey(module, action, displayedRevision) {
+  return `action:${module.moduleId}:${module.revision}:${displayedRevision}:${action}`;
+}
+
+function focusKey(module, action) {
+  return `action:${module.moduleId}:${action}`;
+}
+
 export function buildControlViewModel(view) {
   requireRecord(view, "view");
   if (!Array.isArray(view.modules)) {
@@ -48,6 +56,7 @@ export function buildControlViewModel(view) {
     revision: view.revision,
     pending: view.pending ?? 0,
     indeterminate: view.indeterminate ?? 0,
+    recoveryRequired: view.recoveryRequired ?? 0,
     canMutate: !stale && Number.isSafeInteger(view.revision) && view.revision > 0,
     modules,
   });
@@ -62,6 +71,8 @@ export class ControlPlaneApp {
   #stopScopeFactory;
   #status = null;
   #view = null;
+  #busy = new Set();
+  #mutationBlock = null;
 
   constructor({
     root,
@@ -93,10 +104,20 @@ export class ControlPlaneApp {
     this.#stopScopeFactory = stopScopeFactory;
   }
 
-  render() {
+  setMutationBlock(reason = null) {
+    if (reason !== null && (typeof reason !== "string" || reason.length === 0 || reason.length > 512)) {
+      fail(ERROR_CODES.INVALID_INPUT, "mutation block reason must be null or a bounded string");
+    }
+    this.#mutationBlock = reason;
+    return this.render();
+  }
+
+  render({ restoreFocusKey = null } = {}) {
     const view = buildControlViewModel(this.#client.readView());
     this.#view = view;
+    const canMutate = view.canMutate && this.#mutationBlock === null;
     const document = this.#document;
+    const focusTargets = new Map();
     const main = document.createElement("main");
     main.setAttribute("aria-labelledby", "control-title");
 
@@ -107,24 +128,30 @@ export class ControlPlaneApp {
     const status = document.createElement("div");
     status.setAttribute("role", "status");
     status.setAttribute("aria-live", "polite");
-    status.textContent = view.stale
-      ? "Runtime view is stale. Mutating controls are disabled."
-      : `Runtime generation ${view.generation}, revision ${view.revision}.`;
+    status.setAttribute("aria-atomic", "true");
+    status.textContent = this.#mutationBlock !== null
+      ? `${this.#mutationBlock} Mutating controls are disabled.`
+      : view.stale
+        ? "Runtime view is stale. Mutating controls are disabled."
+        : `Runtime generation ${view.generation}, revision ${view.revision}.`;
     main.append(status);
     this.#status = status;
 
     const counters = text(
       document,
       "p",
-      `Pending requests: ${view.pending}; indeterminate requests: ${view.indeterminate}.`,
+      `Pending requests: ${view.pending}; indeterminate requests: ${view.indeterminate}; manual recovery required: ${view.recoveryRequired}.`,
     );
     main.append(counters);
 
     const stop = document.createElement("button");
     stop.setAttribute("type", "button");
+    stop.setAttribute("data-focus-key", "stop");
     stop.textContent = "Request runtime stop";
-    stop.disabled = !view.canMutate;
-    stop.addEventListener("click", () => void this.#requestStop());
+    const stopBusyKey = `stop:${view.revision}`;
+    stop.disabled = !canMutate || this.#busy.has(stopBusyKey);
+    stop.addEventListener("click", () => void this.#requestStop(stop));
+    focusTargets.set("stop", stop);
     main.append(stop);
 
     const table = document.createElement("table");
@@ -151,10 +178,14 @@ export class ControlPlaneApp {
       const actions = document.createElement("td");
       for (const [label, action] of ACTIONS) {
         const button = document.createElement("button");
+        const key = actionKey(module, action, view.revision);
+        const focus = focusKey(module, action);
         button.setAttribute("type", "button");
+        button.setAttribute("data-focus-key", focus);
         button.textContent = `${label} ${module.moduleId}`;
-        button.disabled = !view.canMutate;
-        button.addEventListener("click", () => void this.#requestModuleAction(module, action));
+        button.disabled = !canMutate || this.#busy.has(key);
+        button.addEventListener("click", () => void this.#requestModuleAction(module, action, button));
+        focusTargets.set(focus, button);
         actions.append(button);
       }
       row.append(actions);
@@ -163,65 +194,102 @@ export class ControlPlaneApp {
     table.append(body);
     main.append(table);
     this.#root.replaceChildren(main);
+
+    if (restoreFocusKey !== null) {
+      focusTargets.get(restoreFocusKey)?.focus?.();
+    }
     return view;
   }
 
-  async #requestModuleAction(module, action) {
+  async #requestModuleAction(module, action, button) {
     const view = this.#view;
-    if (!view?.canMutate) {
+    if (!view?.canMutate || this.#mutationBlock !== null) return;
+    const busyKey = actionKey(module, action, view.revision);
+    const restore = focusKey(module, action);
+    if (this.#busy.has(busyKey)) {
+      this.#announce("An identical request is already awaiting confirmation or acknowledgement.");
       return;
     }
-    let request;
+    this.#busy.add(busyKey);
+    if (button) button.disabled = true;
+    this.#setBusyState();
     try {
-      request = Object.freeze({
-        operationId: this.#operationIdFactory(),
-        subjectId: module.moduleId,
-        action,
-        expectedRevision: module.revision,
-        displayedRevision: view.revision,
-      });
-    } catch (error) {
-      this.#announce(
-        `Request construction failed: ${error?.message ?? "unknown error"}`,
-        true,
+      let request;
+      try {
+        request = Object.freeze({
+          operationId: this.#operationIdFactory(),
+          subjectId: module.moduleId,
+          action,
+          expectedRevision: module.revision,
+          displayedRevision: view.revision,
+        });
+      } catch (error) {
+        this.#announce(`Request construction failed: ${error?.message ?? "unknown error"}`, true);
+        return;
+      }
+      await this.#executeConfirmed(
+        "operation",
+        request,
+        () => this.#client.submitRequest(request),
+        restore,
+        () => {
+          this.#busy.delete(busyKey);
+          this.#setBusyState();
+        },
       );
-      return;
+    } finally {
+      this.#busy.delete(busyKey);
+      this.#setBusyState();
+      if (button && this.#view?.canMutate && this.#mutationBlock === null) button.disabled = false;
     }
-    await this.#executeConfirmed("operation", request, () =>
-      this.#client.submitRequest(request),
-    );
   }
 
-  async #requestStop() {
+  async #requestStop(button) {
     const view = this.#view;
-    if (!view?.canMutate) {
+    if (!view?.canMutate || this.#mutationBlock !== null) return;
+    const busyKey = `stop:${view.revision}`;
+    if (this.#busy.has(busyKey)) {
+      this.#announce("A runtime stop request is already awaiting confirmation or acknowledgement.");
       return;
     }
-    let request;
+    this.#busy.add(busyKey);
+    if (button) button.disabled = true;
+    this.#setBusyState();
     try {
-      const rawScope = requireRecord(this.#stopScopeFactory(view), "stop scope");
-      const scope = snapshotCanonical(rawScope, "stop scope");
-      request = Object.freeze({
-        operationId: this.#operationIdFactory(),
-        displayedRevision: view.revision,
-        scope,
-      });
-    } catch (error) {
-      this.#announce(
-        `Request construction failed: ${error?.message ?? "unknown error"}`,
-        true,
+      let request;
+      try {
+        const rawScope = requireRecord(this.#stopScopeFactory(view), "stop scope");
+        const scope = snapshotCanonical(rawScope, "stop scope");
+        request = Object.freeze({
+          operationId: this.#operationIdFactory(),
+          displayedRevision: view.revision,
+          scope,
+        });
+      } catch (error) {
+        this.#announce(`Request construction failed: ${error?.message ?? "unknown error"}`, true);
+        return;
+      }
+      await this.#executeConfirmed(
+        "stop",
+        request,
+        () => this.#client.requestStop(request),
+        "stop",
+        () => {
+          this.#busy.delete(busyKey);
+          this.#setBusyState();
+        },
       );
-      return;
+    } finally {
+      this.#busy.delete(busyKey);
+      this.#setBusyState();
+      if (button && this.#view?.canMutate && this.#mutationBlock === null) button.disabled = false;
     }
-    await this.#executeConfirmed("stop", request, () => this.#client.requestStop(request));
   }
 
-  async #executeConfirmed(kind, request, execute) {
+  async #executeConfirmed(kind, request, execute, restoreFocusKey, beforeRender) {
     let confirmed = false;
     try {
-      confirmed = (await this.#confirmAction(
-        Object.freeze({ kind, request }),
-      )) === true;
+      confirmed = (await this.#confirmAction(Object.freeze({ kind, request }))) === true;
     } catch (error) {
       this.#announce(`Confirmation failed: ${error?.message ?? "unknown error"}`, true);
       return;
@@ -232,23 +300,26 @@ export class ControlPlaneApp {
     }
     try {
       const acknowledgement = await execute();
-      this.render();
+      beforeRender?.();
+      this.render({ restoreFocusKey });
       this.#announce(
         `Request ${acknowledgement.operationId} is ${acknowledgement.status}.`,
-        acknowledgement.status === "indeterminate",
+        acknowledgement.status === "indeterminate" || acknowledgement.recoveryRequired === true,
       );
     } catch (error) {
-      this.#announce(
-        `${error?.code ?? "ERROR"}: ${error?.message ?? "request failed"}`,
-        true,
-      );
+      this.#announce(`${error?.code ?? "ERROR"}: ${error?.message ?? "request failed"}`, true);
+    }
+  }
+
+  #setBusyState() {
+    const busy = this.#busy.size > 0;
+    if (typeof this.#root.setAttribute === "function") {
+      this.#root.setAttribute("aria-busy", busy ? "true" : "false");
     }
   }
 
   #announce(message, alert = false) {
-    if (!this.#status) {
-      return;
-    }
+    if (!this.#status) return;
     this.#status.setAttribute("role", alert ? "alert" : "status");
     this.#status.textContent = message;
   }

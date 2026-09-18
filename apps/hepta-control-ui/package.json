@@ -5,7 +5,8 @@
   "scripts": {
     "test": "node --test test/*.test.js",
     "check": "node --check src/*.js && node --test test/*.test.js",
-    "build": "node scripts/build.mjs && node --check dist/*.js"
+    "build": "node scripts/build.mjs && for f in dist/assets/*.js; do node --check \"$f\"; done",
+    "browser-e2e": "node scripts/browser-e2e.mjs"
   },
   "exports": "./src/index.js"
 }

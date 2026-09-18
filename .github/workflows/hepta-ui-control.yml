@@ -27,7 +27,7 @@ jobs:
   source-head:
     name: Verify ui.control exact source
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -40,8 +40,13 @@ jobs:
         run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
       - name: Check and test ui.control
         run: npm --prefix apps/hepta-control-ui run check
-      - name: Build browser package
+      - name: Build deployable browser artifact
         run: npm --prefix apps/hepta-control-ui run build
+      - name: Verify real Chromium browser flow
+        run: |
+          set -euo pipefail
+          google-chrome --version
+          HEPTA_CHROME="$(command -v google-chrome)" npm --prefix apps/hepta-control-ui run browser-e2e
       - name: Verify clean source
         run: |
           git diff --check
@@ -51,7 +56,7 @@ jobs:
     name: Verify ui.control synthetic merge
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -76,5 +81,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           npm --prefix apps/hepta-control-ui run check
           npm --prefix apps/hepta-control-ui run build
+          google-chrome --version
+          HEPTA_CHROME="$(command -v google-chrome)" npm --prefix apps/hepta-control-ui run browser-e2e
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"

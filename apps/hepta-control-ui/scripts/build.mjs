@@ -1,14 +1,144 @@
-import { copyFile, mkdir, readdir, rm } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { createHash } from "node:crypto";
+import { mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { dirname, extname, join, parse } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const source = join(root, "src");
+const sourceDir = join(root, "src");
+const webDir = join(root, "web");
 const destination = join(root, "dist");
+const assetsDir = join(destination, "assets");
+
+function digest(buffer) {
+  const hash = createHash("sha256").update(buffer).digest();
+  return {
+    hex: hash.toString("hex"),
+    short: hash.toString("hex").slice(0, 12),
+    integrity: `sha256-${hash.toString("base64")}`,
+  };
+}
+
 await rm(destination, { recursive: true, force: true });
-await mkdir(destination, { recursive: true });
-for (const entry of await readdir(source, { withFileTypes: true })) {
-  if (entry.isFile() && entry.name.endsWith(".js")) {
-    await copyFile(join(source, entry.name), join(destination, entry.name));
+await mkdir(assetsDir, { recursive: true });
+
+const sourceFiles = (await readdir(sourceDir, { withFileTypes: true }))
+  .filter((entry) => entry.isFile() && entry.name.endsWith(".js"))
+  .map((entry) => entry.name)
+  .sort();
+const originals = new Map();
+const outputNames = new Map();
+for (const file of sourceFiles) {
+  const content = await readFile(join(sourceDir, file), "utf8");
+  originals.set(file, content);
+  const info = digest(Buffer.from(content));
+  outputNames.set(file, `${parse(file).name}.${info.short}.js`);
+}
+
+const manifestAssets = [];
+for (const file of sourceFiles) {
+  let content = originals.get(file);
+  for (const [dependency, output] of outputNames) {
+    content = content.replaceAll(`"./${dependency}"`, `"./${output}"`);
+    content = content.replaceAll(`'./${dependency}'`, `'./${output}'`);
+  }
+  const output = outputNames.get(file);
+  const bytes = Buffer.from(content);
+  const info = digest(bytes);
+  await writeFile(join(assetsDir, output), bytes);
+  manifestAssets.push({
+    source: `src/${file}`,
+    path: `assets/${output}`,
+    bytes: bytes.byteLength,
+    sha256: info.hex,
+    integrity: info.integrity,
+    mediaType: "text/javascript",
+  });
+}
+
+const cssSource = await readFile(join(webDir, "styles.css"));
+const cssInfo = digest(cssSource);
+const cssName = `styles.${cssInfo.short}.css`;
+await writeFile(join(assetsDir, cssName), cssSource);
+manifestAssets.push({
+  source: "web/styles.css",
+  path: `assets/${cssName}`,
+  bytes: cssSource.byteLength,
+  sha256: cssInfo.hex,
+  integrity: cssInfo.integrity,
+  mediaType: "text/css",
+});
+
+const entryName = outputNames.get("web-main.js");
+const entry = manifestAssets.find((asset) => asset.path === `assets/${entryName}`);
+if (!entry) throw new Error("web-main.js entry asset was not produced");
+
+const csp = [
+  "default-src 'none'",
+  "script-src 'self'",
+  "style-src 'self'",
+  "connect-src 'self'",
+  "img-src 'self' data:",
+  "font-src 'self'",
+  "object-src 'none'",
+  "base-uri 'none'",
+  "form-action 'none'",
+].join("; ");
+const index = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="${csp}">
+  <title>Hepta control plane</title>
+  <link rel="stylesheet" href="./assets/${cssName}" integrity="${cssInfo.integrity}" crossorigin="anonymous">
+</head>
+<body>
+  <div id="app"><p role="status">Connecting to authenticated runtime…</p></div>
+  <noscript>This control plane requires JavaScript.</noscript>
+  <script type="module" src="./assets/${entryName}" integrity="${entry.integrity}" crossorigin="anonymous"></script>
+</body>
+</html>
+`;
+await writeFile(join(destination, "index.html"), index);
+
+const buildManifest = {
+  schema: "hepta.ui-control.web-build.v1",
+  entry: `assets/${entryName}`,
+  stylesheet: `assets/${cssName}`,
+  assets: manifestAssets,
+  securityHeaders: {
+    "Content-Security-Policy": `${csp}; frame-ancestors 'none'`,
+    "Cross-Origin-Opener-Policy": "same-origin",
+    "Cross-Origin-Resource-Policy": "same-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+    "Referrer-Policy": "no-referrer",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+  },
+};
+await writeFile(join(destination, "asset-manifest.json"), `${JSON.stringify(buildManifest, null, 2)}\n`);
+await writeFile(
+  join(destination, "manifest.webmanifest"),
+  `${JSON.stringify({
+    name: "Hepta control plane",
+    short_name: "Hepta Control",
+    start_url: "./",
+    display: "standalone",
+    scope: "./",
+  }, null, 2)}\n`,
+);
+await writeFile(
+  join(destination, "security-headers.json"),
+  `${JSON.stringify(buildManifest.securityHeaders, null, 2)}\n`,
+);
+
+for (const asset of manifestAssets.filter((item) => item.mediaType === "text/javascript")) {
+  const content = await readFile(join(destination, asset.path), "utf8");
+  const imports = [...content.matchAll(/(?:from\s+|import\s*)["']\.\/(.+?\.js)["']/g)].map((match) => match[1]);
+  for (const imported of imports) {
+    if (!manifestAssets.some((candidate) => candidate.path === `assets/${imported}`)) {
+      throw new Error(`${asset.path} imports missing build asset ${imported}`);
+    }
   }
 }

@@ -20,6 +20,8 @@ export const ERROR_CODES = Object.freeze({
   RECONCILIATION_MISMATCH: "RECONCILIATION_MISMATCH",
   CAPACITY_EXHAUSTED: "CAPACITY_EXHAUSTED",
   VIEW_TOO_LARGE: "VIEW_TOO_LARGE",
+  PERSISTENCE_UNAVAILABLE: "PERSISTENCE_UNAVAILABLE",
+  TRANSPORT_SECURITY_VIOLATION: "TRANSPORT_SECURITY_VIOLATION",
 });
 
 export class UiControlError extends TypeError {
@@ -76,6 +78,13 @@ export function requireDigest(value, name, { allowZero = false } = {}) {
 export function positiveInteger(value, name) {
   if (!Number.isSafeInteger(value) || value < 1) {
     fail(ERROR_CODES.INVALID_INPUT, `${name} must be a positive safe integer`);
+  }
+  return value;
+}
+
+export function nonNegativeInteger(value, name) {
+  if (!Number.isSafeInteger(value) || value < 0) {
+    fail(ERROR_CODES.INVALID_INPUT, `${name} must be a non-negative safe integer`);
   }
   return value;
 }
@@ -162,8 +171,6 @@ function snapshotValue(value, name, state, depth) {
     ]);
   }
   state.seen.delete(value);
-  // Object.fromEntries uses data-property creation, so hostile keys such as
-  // `__proto__` remain ordinary own fields instead of invoking inherited setters.
   return Object.freeze(Object.fromEntries(entries));
 }
 
