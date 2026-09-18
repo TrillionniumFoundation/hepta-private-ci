@@ -74,6 +74,27 @@
       ]
     },
     {
+      "protocolId": "hepta.kernel.operations.durable-store.v1",
+      "module": "kernel.operations",
+      "kind": "sqlite_durable_operation_ledger_and_outbox",
+      "source": [
+        "codex-rs/hepta-operations/src/durable.rs",
+        "codex-rs/hepta-operations/migrations/0001_operations.sql",
+        "docs/lane-a-foundation/kernel.operations/DURABLE_STORE_V1.md"
+      ],
+      "invariants": [
+        "operation ledger and source outbox prepare rows commit atomically in one BEGIN IMMEDIATE transaction",
+        "semantic identity binds owner scope payload destination and predecessor while runtime generations remain fences",
+        "claims use bounded expiring leases attempts and monotonically increasing fences",
+        "dispatch start is durable before effect entry and an already-started dispatch is never blindly retried",
+        "transport acknowledgement is not terminal effect success",
+        "owner handoff fences stale workers and converts an unresolved dispatched operation to indeterminate reconciliation",
+        "terminal outbox retention never removes the authoritative operation identity",
+        "final-use authority is consumed immediately around the checked synchronous effect boundary",
+        "the durable source grants no product composition activation promotion or release authority"
+      ]
+    },
+    {
       "protocolId": "hepta.kernel.evidence.sqlite-lineage.v1",
       "module": "kernel.evidence",
       "kind": "append_only_sqlite_evidence_lineage",
