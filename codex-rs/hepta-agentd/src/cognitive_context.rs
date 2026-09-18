@@ -210,7 +210,7 @@ pub(crate) async fn read(
     let mut selected_bindings = Vec::with_capacity(response.items.len());
     for item in &response.items {
         let Some(binding) = candidate_bindings.iter().find(|binding| {
-            binding.memory.memory_id.as_str() == item.memory_id
+            binding.memory.memory_id.as_str() == item.memory_id.as_str()
                 && binding.memory.revision == item.revision
         }) else {
             return Err(CognitiveStoreError::Corrupt(
