@@ -12,6 +12,7 @@ pub struct AuthPolicy {
     pub action: StableId,
     pub resource_digest: Digest32,
     pub scope_digest: Digest32,
+    pub audience: StableId,
     pub quota_key: StableId,
     pub max_reservation: u64,
     pub enabled: bool,
@@ -23,6 +24,7 @@ impl AuthPolicy {
             && self.max_reservation > 0
             && !self.resource_digest.is_zero()
             && !self.scope_digest.is_zero()
+            && !self.payload_digest.is_zero()
     }
 
     pub fn digest(&self) -> Digest32 {
@@ -33,6 +35,7 @@ impl AuthPolicy {
         push_id(&mut bytes, &self.action);
         bytes.extend_from_slice(self.resource_digest.as_array());
         bytes.extend_from_slice(self.scope_digest.as_array());
+        push_id(&mut bytes, &self.audience);
         push_id(&mut bytes, &self.quota_key);
         bytes.extend_from_slice(&self.max_reservation.to_be_bytes());
         bytes.push(u8::from(self.enabled));
@@ -46,6 +49,8 @@ pub struct AuthorizationRequest {
     pub action: StableId,
     pub resource_digest: Digest32,
     pub scope_digest: Digest32,
+    pub payload_digest: Digest32,
+    pub audience: StableId,
     pub policy_id: StableId,
     pub expected_policy_revision: u64,
 }
@@ -63,6 +68,8 @@ impl AuthorizationRequest {
         push_id(&mut bytes, &self.action);
         bytes.extend_from_slice(self.resource_digest.as_array());
         bytes.extend_from_slice(self.scope_digest.as_array());
+        bytes.extend_from_slice(self.payload_digest.as_array());
+        push_id(&mut bytes, &self.audience);
         push_id(&mut bytes, &self.policy_id);
         bytes.extend_from_slice(&self.expected_policy_revision.to_be_bytes());
         Digest32::of_bytes(&bytes)
@@ -84,6 +91,7 @@ pub enum PolicyDenyReason {
     ActionMismatch,
     ResourceMismatch,
     ScopeMismatch,
+    AudienceMismatch,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -130,6 +138,7 @@ impl AuthorizationDecision {
     pub fn permits(&self, reservation: &ReservationRequest) -> bool {
         self.kind == PolicyDecisionKind::Allowed
             && self.policy_digest == Some(reservation.policy_digest)
+            && self.request_digest == reservation.authorization_digest
             && self.quota_key.as_ref() == Some(&reservation.quota_key)
             && self
                 .max_reservation
@@ -184,6 +193,7 @@ pub struct ReservationRequest {
     pub expected_quota_revision: u64,
     pub expires_at_ms: u64,
     pub policy_digest: Digest32,
+    pub authorization_digest: Digest32,
 }
 
 impl ReservationRequest {
@@ -192,6 +202,7 @@ impl ReservationRequest {
             && self.expected_quota_revision > 0
             && self.expires_at_ms > 0
             && !self.policy_digest.is_zero()
+            && !self.authorization_digest.is_zero()
     }
 }
 
@@ -213,6 +224,7 @@ pub struct ReservationRecord {
     pub state: ReservationState,
     pub expires_at_ms: u64,
     pub policy_digest: Digest32,
+    pub authorization_digest: Digest32,
     pub quota_revision_at_reserve: u64,
     pub observed_cost: Option<u64>,
     pub terminal_evidence: Option<Digest32>,
