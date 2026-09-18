@@ -1,3 +1,4 @@
+use std::fmt::Debug;
 use std::time::Instant;
 
 use codex_hepta_types::Digest32;
@@ -10,8 +11,15 @@ use super::*;
 use crate::PlannerJournalKindV1;
 use crate::PlannerJournalV1;
 
+fn must<T, E: Debug>(result: Result<T, E>) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("unexpected error: {error:?}"),
+    }
+}
+
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("identifier")
+    must(StableId::new(value))
 }
 
 fn digest(value: &str) -> Digest32 {
@@ -20,7 +28,7 @@ fn digest(value: &str) -> Digest32 {
 
 fn percentile(values: &mut [u128], percentile: usize) -> u128 {
     values.sort_unstable();
-    let index = ((values.len() - 1) * percentile + 99) / 100;
+    let index = ((values.len() - 1) * percentile).div_ceil(100);
     values[index]
 }
 
@@ -28,7 +36,7 @@ fn percentile(values: &mut [u128], percentile: usize) -> u128 {
 #[ignore = "named-host qualification profile; run explicitly with --ignored"]
 fn planner_named_host_profile() {
     const ITERATIONS: usize = 200;
-    let generation = Generation::new(1).expect("generation");
+    let generation = must(Generation::new(1));
     let owners = (0..MAX_OWNERS)
         .map(|index| id(&format!("owner-{index:02}")))
         .collect::<Vec<_>>();
@@ -36,7 +44,7 @@ fn planner_named_host_profile() {
         .iter()
         .map(|owner| OwnerSummaryV1 {
             owner_id: owner.clone(),
-            revision: Revision::new(1).expect("revision"),
+            revision: must(Revision::new(1)),
             objective_digest: digest("objective"),
             body_generation: generation,
             configuration_digest: digest("configuration"),
@@ -101,8 +109,7 @@ fn planner_named_host_profile() {
         now_micros: 1_000,
         deadline_micros: 9_000,
         evaluation_policy_digest: digest("policy"),
-        resource_profile_digest: canonical_resource_profile_digest(&reservations)
-            .expect("resource profile"),
+        resource_profile_digest: must(canonical_resource_profile_digest(&reservations)),
         candidates,
         resource_reservations: reservations,
     };
@@ -110,9 +117,11 @@ fn planner_named_host_profile() {
     let mut planner_latencies = Vec::with_capacity(ITERATIONS);
     for _ in 0..ITERATIONS {
         let started = Instant::now();
-        let snapshot =
-            collect_snapshot(snapshot_request.clone(), owner_summaries.clone()).expect("snapshot");
-        let prepared = prepare_plan(&snapshot, planning_request.clone()).expect("prepare");
+        let snapshot = must(collect_snapshot(
+            snapshot_request.clone(),
+            owner_summaries.clone(),
+        ));
+        let prepared = must(prepare_plan(&snapshot, planning_request.clone()));
         let chosen = id("candidate-001");
         let evaluation = bind_ndu_plan_evaluation_v1(NduPlanEvaluationInputV1 {
             objective_digest: prepared.objective_digest(),
@@ -129,30 +138,31 @@ fn planner_named_host_profile() {
             advisory_candidate_id: Some(chosen),
             uncertainty_digest: digest("uncertainty"),
             disposition: PlanningEvaluationDispositionV1::UniqueParetoRecommendation,
-        })
-        .expect("evaluation");
-        let receipt = finalize_plan(&snapshot, &prepared, &evaluation, 1_100).expect("finalize");
-        let grants =
-            request_execution_grants(&snapshot, &prepared, &receipt, 1_100).expect("requests");
+        }));
+        let receipt = must(finalize_plan(&snapshot, &prepared, &evaluation, 1_100));
+        let grants = must(request_execution_grants(
+            &snapshot,
+            &prepared,
+            &receipt,
+            1_100,
+        ));
         assert_eq!(grants.requests().len(), 1);
         planner_latencies.push(started.elapsed().as_micros());
     }
 
     let mut journal = PlannerJournalV1::new();
     for index in 0..4096 {
-        journal
-            .append(
-                PlannerJournalKindV1::Snapshot,
-                digest(&format!("identity:{index}")),
-                digest(&format!("payload:{index}")),
-            )
-            .expect("journal entry");
+        must(journal.append(
+            PlannerJournalKindV1::Snapshot,
+            digest(&format!("identity:{index}")),
+            digest(&format!("payload:{index}")),
+        ));
     }
     let journal_bytes = journal.export_bytes();
     let mut reopen_latencies = Vec::with_capacity(50);
     for _ in 0..50 {
         let started = Instant::now();
-        let reopened = PlannerJournalV1::reopen(&journal_bytes).expect("journal reopen");
+        let reopened = must(PlannerJournalV1::reopen(&journal_bytes));
         assert_eq!(reopened.entries().len(), 4096);
         reopen_latencies.push(started.elapsed().as_micros());
     }
