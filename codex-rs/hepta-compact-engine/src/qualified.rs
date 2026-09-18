@@ -304,6 +304,16 @@ impl QualifiedCompactionCandidateV2 {
         if self.checkpoint.source_snapshot != self.source_snapshot {
             return Err(QualifiedCompactionError::SnapshotMismatch);
         }
+        if self
+            .source_snapshot
+            .vector
+            .compact_checkpoint_generation
+            .next()
+            .ok()
+            != Some(self.checkpoint.generation)
+        {
+            return Err(QualifiedCompactionError::CheckpointGenerationMismatch);
+        }
         if self.checkpoint.algorithm_digest != self.policy.algorithm_digest
             || self.checkpoint.compatibility_digest != self.policy.compatibility_digest
         {
@@ -778,6 +788,7 @@ pub enum QualifiedCompactionError {
     TombstoneRetained(String),
     DuplicateRetainedRecord(String),
     SnapshotMismatch,
+    CheckpointGenerationMismatch,
     SemanticSnapshotMismatch,
     TokenizerMismatch,
     PolicyCheckpointMismatch,
