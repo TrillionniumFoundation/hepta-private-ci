@@ -1,7 +1,7 @@
 # platform.wire: implementation design
 
 Parent: `docs/modules/platform.wire/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: HPTA V1 envelope codec implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: HPTA V1 remains frozen; V2 metadata binding, HPTN negotiation, schema admission, streaming decode and a named read-only product source caller are implemented. Remaining evidence and acceptance gates are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -45,8 +45,12 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `WireEnvelope` in [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs). HPTA V1 envelope codec implemented.
-- **State and recovery:** Stateless HPTA binary V1 framing uses big-endian lengths/generation and a payload digest; decode rejects unsupported versions, trailing bytes, invalid IDs and payloads outside 1..1048576 bytes.
-- **Source tests:** [codex-rs/hepta-wire/src/envelope_tests.rs](../../../codex-rs/hepta-wire/src/envelope_tests.rs), [codex-rs/hepta-wire/src/boundary_tests.rs](../../../codex-rs/hepta-wire/src/boundary_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/lane-a-foundation/platform.wire/WIRE_V1.md](../../../docs/lane-a-foundation/platform.wire/WIRE_V1.md).
-- **Remaining work:** The target negotiate operation is not implemented by this fixed-version codec; transport negotiation and production schema admission need their owning integration.
+- **Framing entrypoints:** frozen `WireEnvelope` V1 in `codex-rs/hepta-wire/src/envelope.rs`; metadata-bound `WireEnvelopeV2` in `src/envelope_v2.rs`; explicit multi-version `decode_frame` in `src/frame.rs`.
+- **Negotiation:** `NegotiationOffer`, `WireCapabilities` and `negotiate` in `src/version.rs` implement the bounded HPTN V1 hello and select only an explicitly common locally implemented version. Required capability pinning prevents a caller that requires V2 metadata binding from silently falling back to V1.
+- **Schema admission and typed serialization:** `SchemaRegistry`, `SchemaDescriptor` and `PayloadCodec` in `src/schema.rs` separate framing from product schema validation. Unknown schemas, incompatible wire versions and payload-bound violations reject before typed decode; codecs own required/unknown-field semantics.
+- **Streaming:** `StreamingDecoder` in `src/stream.rs` validates the fixed 54-byte header before accepting the advertised body and caps connection-local buffering at two maximum-size frames.
+- **Integrity:** V1 retains the historical payload-only digest. V2 computes a domain-separated unkeyed SHA-256 over magic, version, lengths, generation, schema, producer and payload. Neither digest is a MAC/signature; authenticated transcript/frame binding remains the transport/session owner's responsibility.
+- **Source composition:** `hepta-runtime::HeptaRuntime::status_wire_v2` encodes the existing read-only status payload, and `hepta-native-gateway` returns it only when the existing runtime route receives `Accept: application/x-hepta-wire; version=2`; the default JSON representation is unchanged and unknown wire media versions return 406.
+- **Verification sources:** V1/V2 boundary and frozen-vector tests, negotiation downgrade tests, schema tests, stream tests, deterministic property tests, a cargo-fuzz target, a raw-binary Rust↔Python HPTN+V2 session test, and gateway content-negotiation tests. These are source/test identities until exact-candidate workflow receipts are current.
+- **Current references:** `docs/lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md`, `WIRE_V1.md`, `WIRE_V2.md`, `NEGOTIATION_V1.md`, `HPTA_V1_CONFORMANCE.json`, `HPTA_V2_CONFORMANCE.json` and `HPTN_V1_CONFORMANCE.json`.
+- **Remaining work/evidence:** authenticate negotiation+frame at the selected untrusted transport/session boundary; register each additional production domain schema/codec; run exact-head plus synthetic-merge qualification and target-host product execution; obtain independent semantic review, operator acceptance, activation, promotion and release. Source composition alone does not grant those states.
