@@ -37,6 +37,7 @@ const RECONCILE_MAX_DELAY_MS = 60_000;
 const RECONCILE_BATCH_SIZE = 8;
 const RECONCILE_AUTO_ATTEMPTS = 64;
 const RECONCILE_RECOVERY_AGE_MS = 24 * 60 * 60 * 1_000;
+const RECONCILE_CLOCK_FUTURE_SKEW_MS = 5 * 60 * 1_000;
 
 function cloneAcknowledgement(entry, status, extra = {}) {
   const acknowledgement = freezeResult({
@@ -844,8 +845,17 @@ export class RuntimeClient {
       if (this.#pending.has(record.operationId)) {
         fail(ERROR_CODES.PERSISTENCE_UNAVAILABLE, "pending operation storage contains duplicate identity");
       }
+      const now = this.#now();
+      const restoredRecoveryRequired =
+        record.recoveryRequired === true ||
+        record.createdAtMs > now + RECONCILE_CLOCK_FUTURE_SKEW_MS ||
+        record.nextReconcileAtMs < record.createdAtMs ||
+        record.nextReconcileAtMs >
+          now + RECONCILE_MAX_DELAY_MS + RECONCILE_CLOCK_FUTURE_SKEW_MS;
       const entry = {
         ...record,
+        nextReconcileAtMs: restoredRecoveryRequired ? now : record.nextReconcileAtMs,
+        recoveryRequired: restoredRecoveryRequired,
         semantics: null,
         acknowledgement: null,
         requestInFlight: false,
