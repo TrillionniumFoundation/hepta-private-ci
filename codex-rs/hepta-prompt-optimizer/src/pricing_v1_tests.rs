@@ -1,5 +1,6 @@
 use super::*;
 use crate::PromptCandidateBindingV1;
+use crate::PromptCandidateRoleV1;
 use crate::PromptCandidateEnumerationRequestV1;
 use crate::PromptCandidateSourceAuthenticatorV1;
 use crate::PromptCandidateSourceV1;
@@ -46,6 +47,7 @@ fn candidate_set() -> PromptCandidateSetReceiptV1 {
         candidate_id: id("candidate:1"),
         factor_id: id("factor:1"),
         realization_id: id("realization:1"),
+        role: PromptCandidateRoleV1::DeveloperInstruction,
         payload_digest: digest("payload"),
         admission_digest: digest("admission"),
         support_digest: digest("registry-support"),
