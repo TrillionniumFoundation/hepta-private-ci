@@ -258,10 +258,10 @@ fn u64_wire_values_remain_exact_above_javascript_safe_integer() {
 
 #[test]
 fn topology_and_plasticity_cannot_self_activate() {
-    let topology = TopologyProposalV1 {
+    let topology = CognitiveTopologyProposalV1 {
         predecessor_generation: 7,
         next_generation: 8,
-        operation: TopologyOperationV1::SplitNode {
+        operation: CognitiveTopologyOperationV1::SplitNode {
             node_id: 3,
             labels: ["door-red".to_string(), "door-blue".to_string()],
         },
@@ -273,7 +273,7 @@ fn topology_and_plasticity_cannot_self_activate() {
     };
     topology.validate().unwrap();
 
-    let invalid = TopologyProposalV1 {
+    let invalid = CognitiveTopologyProposalV1 {
         production_activation_allowed: true,
         ..topology
     };
