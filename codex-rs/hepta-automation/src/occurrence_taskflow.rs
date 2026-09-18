@@ -363,6 +363,18 @@ impl AutomationStore {
         }
 
         if run.lease_expires_at_ms.is_some_and(|expires| expires > now_ms) {
+            // Never let a successor process borrow an unexpired predecessor
+            // fence. The scheduler generation is the owner epoch, so only the
+            // process that created the live lease may reuse it. When the
+            // caller supplied the scheduler lease token, require that exact
+            // token as well.
+            if run.owner_epoch != Some(owner_epoch)
+                || preferred_token
+                    .as_deref()
+                    .is_some_and(|token| run.fencing_token.as_deref() != Some(token))
+            {
+                return Err(AutomationError::AccessDenied);
+            }
             let fence = historical_fence(&run)?;
             return Ok(AutomationTaskFlowLease { run, fence });
         }
