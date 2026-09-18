@@ -100,7 +100,7 @@ impl SelfEvolutionRuntimeV1 {
         self.rollback.is_some()
     }
 
-    pub fn adopt(
+    pub fn adopt_self_evolution(
         &mut self,
         selection: &SelfEvolutionSelectionWitnessV1,
     ) -> Result<SelfEvolutionAdoptionReceiptV1, SelfEvolutionRuntimeError> {
@@ -275,7 +275,7 @@ mod tests {
         )
         .unwrap();
         let selection = witness();
-        let adopted = runtime.adopt(&selection).unwrap();
+        let adopted = runtime.adopt_self_evolution(&selection).unwrap();
         assert_eq!(adopted.candidate_generation, generation(5));
         assert!(runtime.adoption_pending_confirmation());
 
@@ -298,13 +298,13 @@ mod tests {
         let mut selection = witness();
         selection.candidate_generation = generation(6);
         assert_eq!(
-            runtime.adopt(&selection),
+            runtime.adopt_self_evolution(&selection),
             Err(SelfEvolutionRuntimeError::GenerationMismatch)
         );
         selection = witness();
         selection.predecessor_id = id("other-baseline");
         assert_eq!(
-            runtime.adopt(&selection),
+            runtime.adopt_self_evolution(&selection),
             Err(SelfEvolutionRuntimeError::PredecessorMismatch)
         );
     }
@@ -318,7 +318,7 @@ mod tests {
         )
         .unwrap();
         let selection = witness();
-        let receipt = runtime.adopt(&selection).unwrap();
+        let receipt = runtime.adopt_self_evolution(&selection).unwrap();
         assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
         runtime.confirm_adoption(selection.selection_digest).unwrap();
         assert!(!runtime.adoption_pending_confirmation());
