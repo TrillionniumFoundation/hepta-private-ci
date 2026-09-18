@@ -6,7 +6,8 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
 
-use super::compile;
+use super::AdmittedObjectiveSource;
+use super::compile as compile_admitted;
 use crate::ActionClass;
 use crate::CompileDisposition;
 use crate::ConfirmationPolicy;
@@ -44,6 +45,12 @@ fn action(value: &str) -> ActionClass {
         id: id(value),
         confirmation: ConfirmationPolicy::NotRequired,
     }
+}
+
+fn compile(
+    source: ObjectiveSourceEnvelope,
+) -> Result<Result<crate::ObjectiveCompileReceipt, crate::ObjectiveConflictReceipt>, ObjectiveError> {
+    compile_admitted(AdmittedObjectiveSource::from_prevalidated_legacy(source))
 }
 
 fn envelope() -> ObjectiveSourceEnvelope {
