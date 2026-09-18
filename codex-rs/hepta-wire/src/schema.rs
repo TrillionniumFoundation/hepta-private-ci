@@ -313,6 +313,8 @@ impl Error for TypedEncodeError {}
 
 #[cfg(test)]
 mod tests {
+    use std::error::Error;
+
     use codex_hepta_types::Generation;
 
     use super::*;
@@ -327,10 +329,10 @@ mod tests {
     }
 
     impl TinyCodec {
-        fn new() -> Self {
-            Self {
-                schema: StableId::new("wire.tiny.v2").expect("schema"),
-            }
+        fn new() -> Result<Self, Box<dyn Error>> {
+            Ok(Self {
+                schema: StableId::new("wire.tiny.v2")?,
+            })
         }
     }
 
@@ -363,66 +365,57 @@ mod tests {
         }
     }
 
-    fn registry() -> SchemaRegistry {
+    fn registry() -> Result<SchemaRegistry, Box<dyn Error>> {
         let mut registry = SchemaRegistry::new();
-        registry
-            .register(
-                SchemaDefinition::new(
-                    StableId::new("wire.tiny.v2").expect("schema"),
-                    WireVersion::V2,
-                    WireVersion::V2,
-                    2,
-                    validate_tiny,
-                )
-                .expect("definition"),
-            )
-            .expect("register");
-        registry
+        registry.register(SchemaDefinition::new(
+            StableId::new("wire.tiny.v2")?,
+            WireVersion::V2,
+            WireVersion::V2,
+            2,
+            validate_tiny,
+        )?)?;
+        Ok(registry)
     }
 
     #[test]
-    fn registered_schema_admits_and_decodes_typed_payload() {
-        let codec = TinyCodec::new();
+    fn registered_schema_admits_and_decodes_typed_payload() -> Result<(), Box<dyn Error>> {
+        let codec = TinyCodec::new()?;
         let envelope = encode_typed_v2(
             &codec,
-            StableId::new("producer").expect("producer"),
-            Generation::new(1).expect("generation"),
+            StableId::new("producer")?,
+            Generation::new(1)?,
             &TinyMessage { step: 7 },
-        )
-        .expect("encode");
-        let registry = registry();
-        let admitted = registry.admit(&envelope).expect("admit");
-        assert_eq!(
-            admitted.decode_with(&codec).expect("decode"),
-            TinyMessage { step: 7 }
-        );
+        )?;
+        let registry = registry()?;
+        let admitted = registry.admit(&envelope)?;
+        assert_eq!(admitted.decode_with(&codec)?, TinyMessage { step: 7 });
+        Ok(())
     }
 
     #[test]
-    fn unknown_schema_and_unknown_required_field_reject() {
-        let registry = registry();
+    fn unknown_schema_and_unknown_required_field_reject() -> Result<(), Box<dyn Error>> {
+        let registry = registry()?;
         let unknown = WireEnvelopeV2::new(
-            StableId::new("wire.unknown.v2").expect("schema"),
-            StableId::new("producer").expect("producer"),
-            Generation::new(1).expect("generation"),
+            StableId::new("wire.unknown.v2")?,
+            StableId::new("producer")?,
+            Generation::new(1)?,
             vec![1, 7],
-        )
-        .expect("envelope");
+        )?;
         assert!(matches!(
             registry.admit(&unknown),
             Err(SchemaAdmissionError::UnknownSchema(_))
         ));
 
         let malformed = WireEnvelopeV2::new(
-            StableId::new("wire.tiny.v2").expect("schema"),
-            StableId::new("producer").expect("producer"),
-            Generation::new(1).expect("generation"),
+            StableId::new("wire.tiny.v2")?,
+            StableId::new("producer")?,
+            Generation::new(1)?,
             vec![2, 7],
-        )
-        .expect("envelope");
+        )?;
         assert!(matches!(
             registry.admit(&malformed),
             Err(SchemaAdmissionError::Validation(_))
         ));
+        Ok(())
     }
 }
