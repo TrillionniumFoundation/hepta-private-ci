@@ -16,7 +16,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
-const MAX_CANDIDATES: u32 = 128;
+const MAX_CANDIDATES: u32 = 512;
 const MAX_CREDIT_ALLOCATIONS: usize = 256;
 const MAX_DATASET_RECORDS: usize = 1_000_000;
 
