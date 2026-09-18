@@ -17,6 +17,7 @@ import { join, sep } from "node:path";
 
 import {
   LinuxBubblewrapLauncher,
+  PooledSubprocessBrowserDriver,
   SubprocessBrowserDriver,
 } from "../src/worker-driver.js";
 import {
@@ -774,3 +775,58 @@ test(
     await assert.rejects(mismatchedPrlimit.verify(), /prlimit launcher digest mismatch/);
   },
 );
+
+
+test("pooled subprocess driver preserves profile affinity and enforces the process cap", async () => {
+  const root = await mkdtemp(join(tmpdir(), "hepta-worker-pool-"));
+  const workerPath = join(root, "worker.bin");
+  const workerBytes = Buffer.from("fake-qualified-worker", "utf8");
+  await writeFile(workerPath, workerBytes, { mode: 0o700 });
+  const pool = new PooledSubprocessBrowserDriver({
+    workerPath,
+    workerDigest: digest(workerBytes),
+    profileRoot: join(root, "profiles"),
+    launcher: fakeLauncher(),
+    maxProfiles: 2,
+  });
+
+  const first = await pool.start(startInput({ profileId: "profile.1" }));
+  const second = await pool.start(startInput({
+    profileId: "profile.2",
+    principalId: "principal.2",
+  }));
+  assert.notEqual(first.processId, second.processId);
+  assert.equal(pool.maxActiveProfiles, 2);
+  assert.equal(pool.maxOutstandingOperations, 1);
+
+  await assert.rejects(
+    pool.start(startInput({
+      profileId: "profile.3",
+      principalId: "principal.3",
+    })),
+    (error) => error?.code === "BROWSER_PROFILE_CAPACITY",
+  );
+
+  await pool.stop({
+    profileId: "profile.1",
+    processId: first.processId,
+    generation: 1,
+  });
+  const third = await pool.start(startInput({
+    profileId: "profile.3",
+    principalId: "principal.3",
+  }));
+  assert.match(third.processId, /^servo\.pid\./);
+
+  await pool.stop({
+    profileId: "profile.2",
+    processId: second.processId,
+    generation: 1,
+  });
+  await pool.stop({
+    profileId: "profile.3",
+    processId: third.processId,
+    generation: 1,
+  });
+  await rm(root, { recursive: true, force: true });
+});
