@@ -3931,9 +3931,17 @@ name = "codex-hepta-native-gateway"
 version = "0.0.0"
 dependencies = [
  "anyhow",
+ "arboard",
+ "codex-hepta-agentd",
+ "codex-hepta-authbus",
+ "codex-hepta-contracts",
  "codex-hepta-paths",
  "codex-hepta-runtime",
+ "codex-hepta-types",
+ "codex-keyring-store",
+ "ed25519-dalek",
  "pretty_assertions",
+ "serde",
  "serde_json",
  "tokio",
 ]
