@@ -979,7 +979,10 @@ impl<D: ProcessDriver> Supervisor<D> {
             // second write is interrupted, startup will reset the selection
             // to RecoveryRequired from the still-unresolved intent instead of
             // guessing a committed outcome.
-            let terminal_selection = selection.with_status(terminal_selection_status)?;
+            let terminal_selection = selection.with_recovery_status(
+                terminal_selection_status,
+                decision.digest().clone(),
+            )?;
             write_release_selection(record.layout.run_root(), &terminal_selection)?;
             let terminal_intent = intent
                 .with_status(terminal_intent_status)
@@ -996,7 +999,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 transition: terminal_intent.transition,
                 source_release: terminal_intent.source_release,
                 target_release: terminal_intent.target_release,
-                control_revision: terminal_selection.control_revision,
+                control_revision: next_control_revision,
                 status: match decision.outcome {
                     ProductionRecoveryOutcome::Committed => {
                         crate::ProductionMutationStatus::Committed
