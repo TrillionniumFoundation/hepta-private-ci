@@ -206,8 +206,9 @@ impl ContextModelProfileV2 {
 
 /// Upstream admission record bound into a coherent snapshot.
 ///
-/// The host remains responsible for authenticating 'witness_digest' and
-/// 'issuer_digest'; this module verifies item/role/source/content/freshness and
+/// Admission does not change trust role: untrusted evidence remains untrusted
+/// evidence. The host authenticator verifies the snapshot issuer/latest-head
+/// witness; this module then verifies item/role/source/content/freshness and
 /// revocation consistency before producing a typed admission proof.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ContextAdmissionRecordV2 {
@@ -724,30 +725,30 @@ pub struct ContextCompilationRequestV2 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ContextCompilationReceiptV2 {
-    pub compilation_id: StableId,
-    pub objective_digest: Digest32,
-    pub prompt_portfolio_digest: Digest32,
-    pub generation_vector_digest: Digest32,
-    pub model_profile_digest: Digest32,
-    pub admission_issuer_digest: Digest32,
-    pub admission_snapshot_digest: Digest32,
-    pub revocation_frontier_digest: Digest32,
-    pub admission_witness_digest: Digest32,
-    pub admission_verifier_digest: Digest32,
-    pub admission_verification_digest: Digest32,
-    pub admission_observed_unix_ms: u64,
-    pub candidate_set_digest: Digest32,
-    pub mandatory_groups_digest: Digest32,
-    pub selected_binding_digest: Digest32,
-    pub selected_item_ids: Vec<StableId>,
-    pub omitted_item_ids: Vec<StableId>,
-    pub used_tokens: u64,
-    pub token_upper_bound: u64,
-    pub truncation_policy_digest: Digest32,
-    pub context_digest: Digest32,
-    pub selection_engine_receipt_digest: Digest32,
-    pub receipt_digest: Digest32,
-    pub authority: AuthorityPosture,
+    compilation_id: StableId,
+    objective_digest: Digest32,
+    prompt_portfolio_digest: Digest32,
+    generation_vector_digest: Digest32,
+    model_profile_digest: Digest32,
+    admission_issuer_digest: Digest32,
+    admission_snapshot_digest: Digest32,
+    revocation_frontier_digest: Digest32,
+    admission_witness_digest: Digest32,
+    admission_verifier_digest: Digest32,
+    admission_verification_digest: Digest32,
+    admission_observed_unix_ms: u64,
+    candidate_set_digest: Digest32,
+    mandatory_groups_digest: Digest32,
+    selected_binding_digest: Digest32,
+    selected_item_ids: Vec<StableId>,
+    omitted_item_ids: Vec<StableId>,
+    used_tokens: u64,
+    token_upper_bound: u64,
+    truncation_policy_digest: Digest32,
+    context_digest: Digest32,
+    selection_engine_receipt_digest: Digest32,
+    receipt_digest: Digest32,
+    authority: AuthorityPosture,
 }
 
 impl ContextCompilationReceiptV2 {
@@ -793,6 +794,101 @@ impl ContextCompilationReceiptV2 {
     }
 
     #[must_use]
+    pub fn compilation_id(&self) -> &StableId {
+        &self.compilation_id
+    }
+
+    #[must_use]
+    pub const fn objective_digest(&self) -> Digest32 {
+        self.objective_digest
+    }
+
+    #[must_use]
+    pub const fn prompt_portfolio_digest(&self) -> Digest32 {
+        self.prompt_portfolio_digest
+    }
+
+    #[must_use]
+    pub const fn generation_vector_digest(&self) -> Digest32 {
+        self.generation_vector_digest
+    }
+
+    #[must_use]
+    pub const fn model_profile_digest(&self) -> Digest32 {
+        self.model_profile_digest
+    }
+
+    #[must_use]
+    pub const fn admission_snapshot_digest(&self) -> Digest32 {
+        self.admission_snapshot_digest
+    }
+
+    #[must_use]
+    pub const fn revocation_frontier_digest(&self) -> Digest32 {
+        self.revocation_frontier_digest
+    }
+
+    #[must_use]
+    pub const fn admission_verifier_digest(&self) -> Digest32 {
+        self.admission_verifier_digest
+    }
+
+    #[must_use]
+    pub const fn admission_verification_digest(&self) -> Digest32 {
+        self.admission_verification_digest
+    }
+
+    #[must_use]
+    pub const fn mandatory_groups_digest(&self) -> Digest32 {
+        self.mandatory_groups_digest
+    }
+
+    #[must_use]
+    pub const fn candidate_set_digest(&self) -> Digest32 {
+        self.candidate_set_digest
+    }
+
+    #[must_use]
+    pub const fn selected_binding_digest(&self) -> Digest32 {
+        self.selected_binding_digest
+    }
+
+    #[must_use]
+    pub fn selected_item_ids(&self) -> &[StableId] {
+        &self.selected_item_ids
+    }
+
+    #[must_use]
+    pub fn omitted_item_ids(&self) -> &[StableId] {
+        &self.omitted_item_ids
+    }
+
+    #[must_use]
+    pub const fn used_tokens(&self) -> u64 {
+        self.used_tokens
+    }
+
+    #[must_use]
+    pub const fn token_upper_bound(&self) -> u64 {
+        self.token_upper_bound
+    }
+
+    #[must_use]
+    pub const fn context_digest(&self) -> Digest32 {
+        self.context_digest
+    }
+
+    #[must_use]
+    pub const fn receipt_digest(&self) -> Digest32 {
+        self.receipt_digest
+    }
+
+    #[must_use]
+    pub const fn authority(&self) -> AuthorityPosture {
+        self.authority
+    }
+
+    #[must_use]
     pub fn compute_receipt_digest(&self) -> Digest32 {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(COMPILATION_RECEIPT_DOMAIN);
@@ -828,12 +924,27 @@ impl ContextCompilationReceiptV2 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CompiledContextV2 {
-    pub receipt: ContextCompilationReceiptV2,
-    pub selected_candidates: Vec<ContextCandidateV2>,
-    pub model_profile: ContextModelProfileV2,
+    receipt: ContextCompilationReceiptV2,
+    selected_candidates: Vec<ContextCandidateV2>,
+    model_profile: ContextModelProfileV2,
 }
 
 impl CompiledContextV2 {
+    #[must_use]
+    pub const fn receipt(&self) -> &ContextCompilationReceiptV2 {
+        &self.receipt
+    }
+
+    #[must_use]
+    pub fn selected_candidates(&self) -> &[ContextCandidateV2] {
+        &self.selected_candidates
+    }
+
+    #[must_use]
+    pub const fn model_profile(&self) -> &ContextModelProfileV2 {
+        &self.model_profile
+    }
+
     pub fn validate(&self) -> Result<(), ContextCompilerV2Error> {
         self.receipt.validate()?;
         self.model_profile.validate()?;
@@ -1001,17 +1112,17 @@ pub trait ContextSerializerV2 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ContextSerializationReceiptV2 {
-    pub serialization_id: StableId,
-    pub compilation_receipt_digest: Digest32,
-    pub selected_binding_digest: Digest32,
-    pub model_profile_digest: Digest32,
-    pub serializer_digest: Digest32,
-    pub selected_item_ids: Vec<StableId>,
-    pub realization_digest: Digest32,
-    pub payload_digest: Digest32,
-    pub serialized_token_count: u64,
-    pub receipt_digest: Digest32,
-    pub authority: AuthorityPosture,
+    serialization_id: StableId,
+    compilation_receipt_digest: Digest32,
+    selected_binding_digest: Digest32,
+    model_profile_digest: Digest32,
+    serializer_digest: Digest32,
+    selected_item_ids: Vec<StableId>,
+    realization_digest: Digest32,
+    payload_digest: Digest32,
+    serialized_token_count: u64,
+    receipt_digest: Digest32,
+    authority: AuthorityPosture,
 }
 
 impl ContextSerializationReceiptV2 {
@@ -1064,6 +1175,31 @@ impl ContextSerializationReceiptV2 {
             ));
         }
         Ok(())
+    }
+
+    #[must_use]
+    pub fn serialization_id(&self) -> &StableId {
+        &self.serialization_id
+    }
+
+    #[must_use]
+    pub const fn payload_digest(&self) -> Digest32 {
+        self.payload_digest
+    }
+
+    #[must_use]
+    pub const fn serialized_token_count(&self) -> u64 {
+        self.serialized_token_count
+    }
+
+    #[must_use]
+    pub const fn receipt_digest(&self) -> Digest32 {
+        self.receipt_digest
+    }
+
+    #[must_use]
+    pub const fn authority(&self) -> AuthorityPosture {
+        self.authority
     }
 
     #[must_use]
@@ -1722,11 +1858,8 @@ pub enum ContextCompilerV2Error {
     TokenizerMismatch(String),
     ValueOutOfRange(String),
     SecretRejected(String),
-    MissingTrustedAdmission(String),
-    EvidenceRoleConfusion(String),
     DuplicateAdmissionRecord(String),
     AdmissionVerificationFailure(String),
-    AdmissionRoleNotTrusted(String),
     AdmissionMissing(String),
     AdmissionBindingMismatch(String),
     AdmissionRevoked(String),
