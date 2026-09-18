@@ -6,6 +6,13 @@ use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_cognitive_store::AuthoritativeCognitiveStoreOwnerV1;
+use codex_hepta_cognitive_store::CognitiveStoreOwnerDescriptorV1;
+use codex_hepta_cognitive_store::DurableRecoveryProfileV1;
+use codex_hepta_cognitive_store::DurableStoreProfileV1;
+use codex_hepta_cognitive_store::DurableWriterFenceProfileV1;
+use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Digest32;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -183,6 +190,31 @@ pub struct CognitiveStore {
     path: PathBuf,
 }
 
+impl AuthoritativeCognitiveStoreOwnerV1 for CognitiveStore {
+    fn owner_descriptor_v1(&self) -> CognitiveStoreOwnerDescriptorV1 {
+        let mut physical_identity = b"hepta.cognitive-store.physical-owner.v1".to_vec();
+        let owner = self.owner_agent_id.as_str().as_bytes();
+        physical_identity.extend_from_slice(
+            &u64::try_from(owner.len()).unwrap_or(u64::MAX).to_be_bytes(),
+        );
+        physical_identity.extend_from_slice(owner);
+        let path = self.path.as_os_str().as_encoded_bytes();
+        physical_identity.extend_from_slice(
+            &u64::try_from(path.len()).unwrap_or(u64::MAX).to_be_bytes(),
+        );
+        physical_identity.extend_from_slice(path);
+        CognitiveStoreOwnerDescriptorV1 {
+            owner_identity_digest: Digest32::of_bytes(owner),
+            physical_store_digest: Digest32::of_bytes(&physical_identity),
+            schema_version: COGNITIVE_SCHEMA_VERSION,
+            durability: DurableStoreProfileV1::SqliteWalSynchronousFull,
+            writer_fence: DurableWriterFenceProfileV1::ExternalAuthorityGrantProcessLockAndCas,
+            recovery: DurableRecoveryProfileV1::DescriptorSafeWriterUnavailable,
+            authority: AuthorityPosture::DENY_ALL,
+        }
+    }
+}
+
 impl CognitiveStore {
     pub(crate) fn from_read_only_pool(
         pool: SqlitePool,
@@ -234,6 +266,15 @@ impl CognitiveStore {
 
     pub fn owner_agent_id(&self) -> &AgentId {
         &self.owner_agent_id
+    }
+
+    /// Canonical compile-time binding to the cognitive.store physical-owner contract.
+    ///
+    /// The descriptor is authority-free and does not turn ordinary open into
+    /// descriptor-safe recovery. Product writers still verify WAL/FULL and
+    /// their external authority/fencing lease at admission.
+    pub fn authoritative_owner_descriptor_v1(&self) -> CognitiveStoreOwnerDescriptorV1 {
+        self.owner_descriptor_v1()
     }
 
     /// Returns whether two handles refer to the same Agent-local database and
