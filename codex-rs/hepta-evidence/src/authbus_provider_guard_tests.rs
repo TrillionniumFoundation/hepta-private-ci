@@ -190,7 +190,7 @@ async fn guarded_dispatch_reserves_before_adapter_and_holds_completed_cost_until
         lookup_result: ProviderEffectLookup::Ack(completed),
         saw_reserved_before_dispatch: Arc::clone(&observed),
     };
-    let request = admission("operation:guarded-completed", principal, action, quota.clone(), scope, end);
+    let request = admission(intent.key.as_str(), principal, action, quota.clone(), scope, end);
 
     let receipt = store
         .dispatch_provider_effect_guarded_qualification(&adapter, &intent, &request)
@@ -232,7 +232,7 @@ async fn terminal_rejected_ack_releases_reserved_quota_without_consumption() {
         lookup_result: ProviderEffectLookup::Ack(rejected),
         saw_reserved_before_dispatch: Arc::clone(&observed),
     };
-    let request = admission("operation:guarded-rejected", principal, action, quota.clone(), scope, end);
+    let request = admission(intent.key.as_str(), principal, action, quota.clone(), scope, end);
 
     let receipt = store
         .dispatch_provider_effect_guarded_qualification(&adapter, &intent, &request)
@@ -241,5 +241,41 @@ async fn terminal_rejected_ack_releases_reserved_quota_without_consumption() {
     assert!(observed.load(Ordering::SeqCst));
     assert_eq!(receipt.reservation.state, ReservationState::Cancelled);
     let quota = store.quota_snapshot(&quota).await.expect("quota released");
+    assert_eq!((quota.reserved, quota.consumed, quota.available()), (0, 0, 10));
+}
+
+
+#[tokio::test]
+async fn guarded_dispatch_rejects_operation_identity_drift_before_reserving_or_sending() {
+    let temp = TempDir::new().expect("temp");
+    let store = Arc::new(HeptaEvidenceStore::open(&config(&temp)).await.expect("store"));
+    let (principal, action, quota, scope, end) = provision(&store).await;
+    let intent = intent("guarded-identity-drift");
+    let observed = Arc::new(AtomicBool::new(false));
+    let adapter = GuardProbeAdapter {
+        store: Arc::clone(&store),
+        quota_key: quota.clone(),
+        expected_reserved: 10,
+        dispatch_result: ProviderEffectDispatch::Unknown,
+        lookup_result: ProviderEffectLookup::Unknown,
+        saw_reserved_before_dispatch: Arc::clone(&observed),
+    };
+    let request = admission(
+        "operation:different-provider-effect",
+        principal,
+        action,
+        quota.clone(),
+        scope,
+        end,
+    );
+
+    assert!(matches!(
+        store
+            .dispatch_provider_effect_guarded_qualification(&adapter, &intent, &request)
+            .await,
+        Err(crate::AuthBusProviderEffectError::OperationBindingMismatch)
+    ));
+    assert!(!observed.load(Ordering::SeqCst));
+    let quota = store.quota_snapshot(&quota).await.expect("quota unchanged");
     assert_eq!((quota.reserved, quota.consumed, quota.available()), (0, 0, 10));
 }
