@@ -156,7 +156,9 @@ impl DurableCognitiveSnapshot {
         Digest32::of_bytes(&bytes)
     }
 
-    /// Consume the new read module against an owner-acquired SQLite cut.
+    /// Lower-level compatibility projection against an already owner-acquired
+    /// SQLite cut. Product context delivery uses the authoritative provider
+    /// path so lease, vector and final-use owner currentness are also checked.
     pub fn read(&self, request: ReadRequestV2) -> Result<ReadResultV2, SnapshotProviderError> {
         read_v2(&self.snapshot, request).map_err(SnapshotProviderError::Read)
     }
