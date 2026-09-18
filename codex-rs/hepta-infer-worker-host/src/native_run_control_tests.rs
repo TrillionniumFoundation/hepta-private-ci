@@ -1,7 +1,10 @@
 use super::*;
 use crate::native_app_server::NativeWorkerConfig;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_infer_core::durable_control::native::NativeCodexBoundaryReceipt;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+use codex_hepta_infer_core::durable_control::native::NativeDispatchRejection;
+use codex_hepta_infer_core::durable_control::native::NativeDispatchRejectionKind;
 use std::path::PathBuf;
 use std::time::Duration;
 use std::time::SystemTime;
@@ -62,11 +65,11 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
                 thread_id: "thread-1".to_string(),
                 model_provider: "provider".to_string(),
                 context_digest: "a".repeat(64),
-                codex_request_digest: None,
-                codex_connection_digest: None,
-                codex_session_generation: None,
-                codex_protocol_version: None,
-                codex_deadline_ms: None,
+                codex_request_digest: Some("c".repeat(64)),
+                codex_connection_digest: Some("d".repeat(64)),
+                codex_session_generation: Some(1),
+                codex_protocol_version: Some(2),
+                codex_deadline_ms: Some(9_999),
             },
         )
         .unwrap();
@@ -87,6 +90,10 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
     assert_eq!(unknown.status, NativeRunStatus::Indeterminate);
     assert_eq!(unknown.observed_output_tokens, None);
     assert!(!unknown.terminal_observed);
+    let boundary = unknown.codex_boundary.as_ref().unwrap();
+    assert_eq!(boundary.request_digest, "c".repeat(64));
+    assert_eq!(boundary.status, NativeRunStatus::Indeterminate);
+    assert!(boundary.response_digest.is_none());
     assert_eq!(
         control.native_record("r1").unwrap().state,
         NativeReservationState::Indeterminate
@@ -122,6 +129,14 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
         terminal_observed: true,
         observed_output_tokens: Some(17),
         stop_reason: Some("observed terminal failure".to_string()),
+        codex_boundary: Some(NativeCodexBoundaryReceipt {
+            request_digest: "c".repeat(64),
+            response_digest: Some("e".repeat(64)),
+            connection_digest: "d".repeat(64),
+            session_generation: 1,
+            protocol_version: 2,
+            status: NativeRunStatus::Failed,
+        }),
         ..unknown
     };
     control.settle_native("r1", terminal.clone()).unwrap();
@@ -187,4 +202,57 @@ async fn pre_dispatch_cancellation_and_connection_failure_release_without_usage_
         drop(control);
         std::fs::remove_file(path).unwrap();
     }
+}
+
+
+#[tokio::test]
+async fn reopened_proven_overload_rejection_never_contacts_provider() {
+    let (driver, path) = fixture("overload-reopen");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request(&driver), 1).unwrap();
+    control
+        .dispatch_native(
+            "r1",
+            NativeDispatch {
+                thread_id: "thread-1".to_string(),
+                model_provider: "provider".to_string(),
+                context_digest: "a".repeat(64),
+                codex_request_digest: Some("c".repeat(64)),
+                codex_connection_digest: Some("d".repeat(64)),
+                codex_session_generation: Some(1),
+                codex_protocol_version: Some(2),
+                codex_deadline_ms: Some(9_999),
+            },
+        )
+        .unwrap();
+    let rejected = control
+        .reject_native_dispatch(
+            "r1",
+            NativeDispatchRejection {
+                kind: NativeDispatchRejectionKind::Unavailable,
+                code: -32001,
+                reason: "Server overloaded; retry later.".to_string(),
+                response_digest: "e".repeat(64),
+                codex_request_digest: "c".repeat(64),
+            },
+        )
+        .unwrap();
+    assert_eq!(rejected.state, NativeReservationState::Released);
+    drop(control);
+
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let error = driver
+        .run(
+            &mut control,
+            admission(),
+            "prompt".to_string(),
+            None,
+            &CancellationToken::new(),
+        )
+        .await
+        .unwrap_err();
+    assert!(error.to_string().contains("rejected before execution"));
+    assert_eq!(control.native_record("r1"), Some(&rejected));
+    drop(control);
+    std::fs::remove_file(path).unwrap();
 }
