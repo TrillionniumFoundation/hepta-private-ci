@@ -23,6 +23,10 @@ use codex_app_server_protocol::JSONRPCErrorError;
 use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::SandboxMode;
 use codex_app_server_protocol::ServerNotification;
+use codex_app_server_protocol::ThreadQueueReconcileMode;
+use codex_app_server_protocol::ThreadQueueReconcileOutcome;
+use codex_app_server_protocol::ThreadQueueReconcileParams;
+use codex_app_server_protocol::ThreadQueueReconcileResponse;
 use codex_app_server_protocol::ThreadStartParams;
 use codex_app_server_protocol::ThreadStartResponse;
 use codex_app_server_protocol::ThreadUnsubscribeParams;
@@ -51,6 +55,7 @@ pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+use codex_protocol::user_input::user_input_payload_sha256;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
 #[path = "native_run_control.rs"]
@@ -79,9 +84,11 @@ pub struct NativeWorkerConfig {
     pub timeout: Duration,
 }
 
-/// A real provider client. Each new request uses a fresh ephemeral thread
-/// behind the exact Agent identity. The control journal owns dispatch identity,
-/// local slot admission and settlement; duplicate requests never start a turn.
+/// A real provider client. Each new request uses a fresh durable thread behind
+/// the exact Agent identity so a lost turn/start acknowledgement can be joined
+/// back to persisted admission without replay. The control journal owns dispatch
+/// identity, local slot admission and settlement; duplicate requests never start
+/// a second turn.
 pub struct AppServerModelDriver {
     config: NativeWorkerConfig,
 }
@@ -181,7 +188,7 @@ impl AppServerModelDriver {
                     cwd: health.workspace.to_str().map(str::to_string),
                     approval_policy: Some(AskForApproval::Never),
                     sandbox: Some(SandboxMode::ReadOnly),
-                    ephemeral: Some(true),
+                    ephemeral: Some(false),
                     environments: Some(Vec::new()),
                     config: Some(std::collections::HashMap::from([(
                         "features.hepta_codex_effect_fence".to_string(),
@@ -244,26 +251,38 @@ impl AppServerModelDriver {
                 codex_deadline_ms: Some(adapter_deadline_ms),
             },
         )?;
+        let turn_input = vec![UserInput::Text {
+            text: prompt,
+            text_elements: Vec::new(),
+        }];
+        let core_turn_input = turn_input
+            .iter()
+            .cloned()
+            .map(UserInput::into_core)
+            .collect::<Vec<_>>();
+        let queue_payload_sha256 = user_input_payload_sha256(&core_turn_input)?;
+        // The join identity includes the complete runtime.codex request digest,
+        // which itself binds the exact additional-context snapshot.
+        let client_user_message_id =
+            format!("hepta-runtime-codex:{}", pending_boundary.request_digest);
+        let execution_deadline = Instant::now() + self.config.timeout;
         let response = timeout(
             RPC_TIMEOUT,
             client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {
                 request_id: RequestId::Integer(2),
                 params: TurnStartParams {
                     thread_id: started.thread.id.clone(),
-                    client_user_message_id: Some(request_id.to_string()),
-                    input: vec![UserInput::Text {
-                        text: prompt,
-                        text_elements: Vec::new(),
-                    }],
-                    additional_context,
+                    client_user_message_id: Some(client_user_message_id.clone()),
+                    input: turn_input.clone(),
+                    additional_context: additional_context.clone(),
                     environments: Some(Vec::new()),
                     ..Default::default()
                 },
             }),
         )
         .await;
-        let turn = match response {
-            Ok(Ok(response)) => response.turn,
+        let turn_id = match response {
+            Ok(Ok(response)) => response.turn.id,
             Ok(Err(error)) => {
                 if let Some(rejection) =
                     explicit_turn_start_rejection(&error, pending_boundary.request_digest)
@@ -273,43 +292,76 @@ impl AppServerModelDriver {
                     let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                     return Err(format!("turn/start rejected before execution: {reason}").into());
                 }
-                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                return Ok(NativeRunOutput {
-                    thread_id: started.thread.id,
-                    turn_id: String::new(),
-                    model: started.model,
-                    model_provider: started.model_provider,
-                    status: NativeRunStatus::Indeterminate,
-                    output: String::new(),
-                    observed_output_tokens: None,
-                    terminal_observed: false,
-                    owner_authority: NativeOwnerAuthority::Unverified,
-                    stop_reason: Some(format!(
-                        "turn/start response could not prove non-execution: {error}"
-                    )),
-                    codex_boundary: Some(native_boundary_receipt(&pending_boundary)?),
-                });
+                match reconcile_unknown_turn_start(
+                    &mut client,
+                    &started.thread.id,
+                    &turn_input,
+                    &client_user_message_id,
+                    &queue_payload_sha256,
+                    execution_deadline,
+                )
+                .await
+                {
+                    Ok(Some(turn_id)) => turn_id,
+                    Ok(None) => {
+                        let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                        return Ok(indeterminate_turn_start_output(
+                            &started,
+                            &pending_boundary,
+                            format!(
+                                "turn/start response was ambiguous and exact durable reconciliation did not observe admission: {error}"
+                            ),
+                        )?);
+                    }
+                    Err(reconcile_error) => {
+                        let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                        return Ok(indeterminate_turn_start_output(
+                            &started,
+                            &pending_boundary,
+                            format!(
+                                "turn/start response was ambiguous ({error}); durable reconciliation failed closed: {reconcile_error}"
+                            ),
+                        )?);
+                    }
+                }
             }
             Err(_) => {
-                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                return Ok(NativeRunOutput {
-                    thread_id: started.thread.id,
-                    turn_id: String::new(),
-                    model: started.model,
-                    model_provider: started.model_provider,
-                    status: NativeRunStatus::Indeterminate,
-                    output: String::new(),
-                    observed_output_tokens: None,
-                    terminal_observed: false,
-                    owner_authority: NativeOwnerAuthority::Unverified,
-                    stop_reason: Some("turn/start acknowledgement timed out; do not replay".to_string()),
-                    codex_boundary: Some(native_boundary_receipt(&pending_boundary)?),
-                });
+                match reconcile_unknown_turn_start(
+                    &mut client,
+                    &started.thread.id,
+                    &turn_input,
+                    &client_user_message_id,
+                    &queue_payload_sha256,
+                    execution_deadline,
+                )
+                .await
+                {
+                    Ok(Some(turn_id)) => turn_id,
+                    Ok(None) => {
+                        let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                        return Ok(indeterminate_turn_start_output(
+                            &started,
+                            &pending_boundary,
+                            "turn/start acknowledgement timed out and exact durable reconciliation did not observe admission"
+                                .to_string(),
+                        )?);
+                    }
+                    Err(reconcile_error) => {
+                        let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                        return Ok(indeterminate_turn_start_output(
+                            &started,
+                            &pending_boundary,
+                            format!(
+                                "turn/start acknowledgement timed out; durable reconciliation failed closed: {reconcile_error}"
+                            ),
+                        )?);
+                    }
+                }
             }
         };
         let mut output = NativeRunOutput {
             thread_id: started.thread.id,
-            turn_id: turn.id,
+            turn_id,
             model: started.model,
             model_provider: started.model_provider,
             status: NativeRunStatus::Indeterminate,
@@ -325,12 +377,11 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err(error.into());
         }
-        let deadline = Instant::now() + self.config.timeout;
         let result = self
             .observe(
                 &mut client,
                 &mut output,
-                deadline,
+                execution_deadline,
                 cancellation,
                 Some(&owner),
                 &adapter_intent,
@@ -547,6 +598,94 @@ fn observe_notification(
         _ => {}
     }
     Ok(false)
+}
+
+fn indeterminate_turn_start_output(
+    started: &ThreadStartResponse,
+    pending_boundary: &CodexAdapterReceipt,
+    reason: String,
+) -> std::result::Result<NativeRunOutput, String> {
+    Ok(NativeRunOutput {
+        thread_id: started.thread.id.clone(),
+        turn_id: String::new(),
+        model: started.model.clone(),
+        model_provider: started.model_provider.clone(),
+        status: NativeRunStatus::Indeterminate,
+        output: String::new(),
+        observed_output_tokens: None,
+        terminal_observed: false,
+        owner_authority: NativeOwnerAuthority::Unverified,
+        stop_reason: Some(reason),
+        codex_boundary: Some(native_boundary_receipt(pending_boundary)?),
+    })
+}
+
+async fn reconcile_unknown_turn_start(
+    client: &mut RemoteAppServerClient,
+    thread_id: &str,
+    input: &[UserInput],
+    client_user_message_id: &str,
+    expected_payload_sha256: &str,
+    deadline: Instant,
+) -> std::result::Result<Option<String>, String> {
+    let mut request_id = 10_000_i64;
+    loop {
+        let now = Instant::now();
+        if now >= deadline {
+            return Ok(None);
+        }
+        let per_request_deadline = deadline.min(now + RPC_TIMEOUT);
+        let response = timeout_at(
+            per_request_deadline,
+            client.request_typed::<ThreadQueueReconcileResponse>(
+                ClientRequest::ThreadQueueReconcile {
+                    request_id: RequestId::Integer(request_id),
+                    params: ThreadQueueReconcileParams {
+                        thread_id: thread_id.to_string(),
+                        input: input.to_vec(),
+                        client_user_message_id: client_user_message_id.to_string(),
+                        expected_payload_sha256: expected_payload_sha256.to_string(),
+                        mode: ThreadQueueReconcileMode::ReconcileOnly,
+                    },
+                },
+            ),
+        )
+        .await
+        .map_err(|_| "thread/queue/reconcile timed out".to_string())?
+        .map_err(|error| error.to_string())?;
+        if response.client_user_message_id != client_user_message_id
+            || response.payload_sha256 != expected_payload_sha256
+        {
+            return Err("thread/queue/reconcile identity or payload drifted".to_string());
+        }
+        match response.outcome {
+            ThreadQueueReconcileOutcome::Persisted { turn_id } if !turn_id.is_empty() => {
+                return Ok(Some(turn_id));
+            }
+            ThreadQueueReconcileOutcome::Persisted { .. } => {
+                return Err("thread/queue/reconcile returned an empty persisted turn id".to_string());
+            }
+            ThreadQueueReconcileOutcome::Missing => {
+                request_id = request_id
+                    .checked_add(1)
+                    .ok_or_else(|| "reconcile request id overflow".to_string())?;
+                let sleep_until = deadline.min(Instant::now() + Duration::from_millis(100));
+                tokio::time::sleep_until(sleep_until).await;
+            }
+            ThreadQueueReconcileOutcome::Queued { .. } => {
+                return Err(
+                    "reconcile-only unexpectedly observed a queued submission for this runtime.codex identity"
+                        .to_string(),
+                );
+            }
+            ThreadQueueReconcileOutcome::Cancelled => {
+                return Err(
+                    "runtime.codex admission identity was cancelled during reconciliation"
+                        .to_string(),
+                );
+            }
+        }
+    }
 }
 
 fn explicit_turn_start_rejection(
