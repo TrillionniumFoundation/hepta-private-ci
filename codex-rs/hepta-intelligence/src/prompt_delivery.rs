@@ -7,13 +7,17 @@ use std::collections::BTreeMap;
 use std::fmt;
 
 use codex_hepta_context_compiler::CompiledContextV2;
+use codex_hepta_context_compiler::ContextAttachmentV2;
 use codex_hepta_context_compiler::ContextCandidateV2;
 use codex_hepta_context_compiler::ContextCompilationRequestV2;
 use codex_hepta_context_compiler::ContextCompilerV2Error;
 use codex_hepta_context_compiler::ContextModelProfileV2;
 use codex_hepta_context_compiler::ContextRoleV2;
+use codex_hepta_context_compiler::ContextSerializationReceiptV2;
 use codex_hepta_context_compiler::TokenizationReceiptV2;
+use codex_hepta_context_compiler::build_attachment;
 use codex_hepta_context_compiler::compile_v2;
+use codex_hepta_context_compiler::record_serialization;
 use codex_hepta_prompt_registry::CompatibleRealizationSetV2;
 use codex_hepta_prompt_registry::DurablePromptRegistry;
 use codex_hepta_prompt_registry::DurableRegistryError;
@@ -27,10 +31,13 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
 const COMPILED_DELIVERY_DOMAIN: &[u8] = b"hepta.prompt-registry.compiled-context.v2";
+const SERIALIZED_PAYLOAD_DOMAIN: &[u8] = b"hepta.prompt-registry.serialized-context.v2";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptRegistryCompilationRequestV2 {
     pub compilation_id: StableId,
+    pub serialization_id: StableId,
+    pub attachment_id: StableId,
     pub objective_digest: Digest32,
     pub prompt_portfolio_digest: Digest32,
     pub generation_vector_digest: Digest32,
@@ -49,6 +56,9 @@ pub struct PromptRegistryCompiledContextV2 {
     pub compatible: CompatibleRealizationSetV2,
     pub compiled: CompiledContextV2,
     pub selected_deliveries: Vec<RealizationDeliveryV2>,
+    pub serialized_payload: Vec<u8>,
+    pub serialization: ContextSerializationReceiptV2,
+    pub attachment: ContextAttachmentV2,
     pub delivery_set_digest: Digest32,
     pub authority: AuthorityPosture,
 }
@@ -86,6 +96,17 @@ impl PromptRegistryCompiledContextV2 {
                 .map_err(DurableRegistryError::Read)
                 .map_err(PromptRegistryCompilationErrorV2::Registry)?;
         }
+        if self.serialized_payload.is_empty()
+            || Digest32::of_bytes(&self.serialized_payload) != self.serialization.payload_digest
+        {
+            return Err(PromptRegistryCompilationErrorV2::Integrity);
+        }
+        self.serialization
+            .validate_for(&self.compiled)
+            .map_err(PromptRegistryCompilationErrorV2::Context)?;
+        self.attachment
+            .validate(&self.compiled, &self.serialization)
+            .map_err(PromptRegistryCompilationErrorV2::Context)?;
         if self.delivery_set_digest != self.compute_delivery_set_digest() {
             return Err(PromptRegistryCompilationErrorV2::Integrity);
         }
@@ -97,6 +118,8 @@ impl PromptRegistryCompiledContextV2 {
         let mut bytes = COMPILED_DELIVERY_DOMAIN.to_vec();
         bytes.extend_from_slice(self.compatible.set_digest.as_array());
         bytes.extend_from_slice(self.compiled.receipt.receipt_digest.as_array());
+        bytes.extend_from_slice(self.serialization.receipt_digest.as_array());
+        bytes.extend_from_slice(self.attachment.attachment_digest.as_array());
         bytes.extend_from_slice(
             &u64::try_from(self.selected_deliveries.len())
                 .unwrap_or(u64::MAX)
@@ -114,6 +137,8 @@ pub fn compile_prompt_registry_v2(
     request: PromptRegistryCompilationRequestV2,
 ) -> Result<PromptRegistryCompiledContextV2, PromptRegistryCompilationErrorV2> {
     validate_profiles(&request)?;
+    let serialization_id = request.serialization_id.clone();
+    let attachment_id = request.attachment_id.clone();
     let compatible = registry
         .read_compatible_v2(
             &request.expected_registry_snapshot,
@@ -188,16 +213,65 @@ pub fn compile_prompt_registry_v2(
         selected_deliveries.push(delivery);
     }
 
+    let serialized_payload = serialize_selected_deliveries(&selected_deliveries);
+    let serialization = record_serialization(
+        &compiled,
+        serialization_id,
+        Digest32::of_bytes(&serialized_payload),
+    )
+    .map_err(PromptRegistryCompilationErrorV2::Context)?;
+    let attachment = build_attachment(&compiled, &serialization, attachment_id)
+        .map_err(PromptRegistryCompilationErrorV2::Context)?;
+
     let mut output = PromptRegistryCompiledContextV2 {
         compatible,
         compiled,
         selected_deliveries,
+        serialized_payload,
+        serialization,
+        attachment,
         delivery_set_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
     };
     output.delivery_set_digest = output.compute_delivery_set_digest();
     output.validate()?;
     Ok(output)
+}
+
+fn serialize_selected_deliveries(deliveries: &[RealizationDeliveryV2]) -> Vec<u8> {
+    let mut bytes = SERIALIZED_PAYLOAD_DOMAIN.to_vec();
+    bytes.extend_from_slice(
+        &u64::try_from(deliveries.len())
+            .unwrap_or(u64::MAX)
+            .to_be_bytes(),
+    );
+    for delivery in deliveries {
+        let realization_id = delivery.binding.realization_id.as_str().as_bytes();
+        bytes.extend_from_slice(
+            &u64::try_from(realization_id.len())
+                .unwrap_or(u64::MAX)
+                .to_be_bytes(),
+        );
+        bytes.extend_from_slice(realization_id);
+        bytes.push(prompt_role_code(delivery.binding.role));
+        bytes.extend_from_slice(delivery.binding.digest().as_array());
+        bytes.extend_from_slice(
+            &u64::try_from(delivery.payload.len())
+                .unwrap_or(u64::MAX)
+                .to_be_bytes(),
+        );
+        bytes.extend_from_slice(&delivery.payload);
+    }
+    bytes
+}
+
+const fn prompt_role_code(role: PromptRoleV2) -> u8 {
+    match role {
+        PromptRoleV2::SystemInstruction => 0,
+        PromptRoleV2::DeveloperInstruction => 1,
+        PromptRoleV2::UserTemplate => 2,
+        PromptRoleV2::ToolSchemaFragment => 3,
+    }
 }
 
 fn validate_profiles(
