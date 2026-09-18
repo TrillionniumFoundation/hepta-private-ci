@@ -373,7 +373,14 @@
         "completion_generation_unknown",
         "completion_generation_mismatch",
         "completion_package_not_assigned",
-        "completion_frontier_mismatch"
+        "completion_frontier_mismatch",
+        "orchestration_envelope_binding_mismatch",
+        "invalid_engineering_package",
+        "invalid_worker_profile",
+        "invalid_completion_receipt",
+        "invalid_package_capacity",
+        "invalid_worker_paths",
+        "invalid_review_capacity"
       ],
       "resourceBounds": {
         "maximumWorkers": 256,
@@ -433,7 +440,14 @@
       "failureModel": [
         "distributed_fence_binding_mismatch",
         "audit_anchor_binding_mismatch",
-        "key_custody_boundary"
+        "key_custody_boundary",
+        "distributed_fence_store_required",
+        "distributed_fence_local_lease_unknown",
+        "distributed_fence_local_lease_stale",
+        "distributed_fence_window_exceeds_owner",
+        "audit_anchor_empty",
+        "audit_anchor_window_exceeds_envelope",
+        "key_custody_roles"
       ],
       "resourceBounds": {
         "authorityMinted": 0
