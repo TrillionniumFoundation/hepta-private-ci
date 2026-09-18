@@ -8,6 +8,14 @@
 use std::fmt;
 use std::sync::Arc;
 
+use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
+use codex_hepta_compact_engine::CompactionInputRecordV2;
+use codex_hepta_compact_engine::CompactionPolicyV2;
+use codex_hepta_compact_engine::CompactionQualificationV2;
+use codex_hepta_compact_engine::CompactionSemanticPayloadV2;
+use codex_hepta_compact_engine::QualifiedCompactionError;
+use codex_hepta_compact_engine::build_qualified_candidate;
+use codex_hepta_compact_engine::prove_compaction;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::ProductionAuthorityLease;
 use codex_hepta_memory::ProductionAuthorityVerifier;
@@ -17,6 +25,9 @@ use codex_hepta_memory::ProductionOutboxDispatcher;
 use codex_hepta_memory::ProductionOutboxTarget;
 use codex_hepta_memory::ProductionQueuedReceipt;
 use codex_hepta_memory::ProductionWriterError;
+use codex_hepta_memory::QualifiedCompactCheckpointPublication;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 
 use crate::AgentdConfig;
 use crate::AgentdError;
@@ -27,6 +38,25 @@ use crate::AgentdError;
 pub struct AgentdProductionWriterHost {
     writer: Arc<ProductionDurableWriter>,
     dispatcher: Option<ProductionOutboxDispatcher>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AgentdCompactionCheckpointRequest {
+    pub source_snapshot: CognitiveSnapshotKeyV1,
+    pub generation: Generation,
+    pub predecessor_checkpoint_digest: Option<Digest32>,
+    pub policy: CompactionPolicyV2,
+    pub semantic_payload: CompactionSemanticPayloadV2,
+    pub inputs: Vec<CompactionInputRecordV2>,
+    pub qualification: CompactionQualificationV2,
+}
+
+#[derive(Debug, thiserror::Error)]
+pub enum AgentdCompactionCheckpointError {
+    #[error(transparent)]
+    Qualification(#[from] QualifiedCompactionError),
+    #[error(transparent)]
+    Writer(#[from] ProductionWriterError),
 }
 
 impl fmt::Debug for AgentdProductionWriterHost {
@@ -90,6 +120,30 @@ impl AgentdProductionWriterHost {
 
     pub fn writer(&self) -> Arc<ProductionDurableWriter> {
         Arc::clone(&self.writer)
+    }
+
+    /// Product composition point for compact.engine.
+    ///
+    /// The pure engine constructs one canonical candidate/proof pair, then the
+    /// externally-authorized durable writer performs the only persistent
+    /// publication.  There is no legacy checkpoint path or unleased fallback.
+    pub async fn publish_compaction_checkpoint(
+        &self,
+        request: AgentdCompactionCheckpointRequest,
+    ) -> Result<QualifiedCompactCheckpointPublication, AgentdCompactionCheckpointError> {
+        let candidate = build_qualified_candidate(
+            request.source_snapshot,
+            request.generation,
+            request.predecessor_checkpoint_digest,
+            &request.policy,
+            &request.semantic_payload,
+            request.inputs,
+        )?;
+        let proof = prove_compaction(&candidate, request.qualification)?;
+        Ok(self
+            .writer
+            .publish_qualified_compact_checkpoint(&candidate.checkpoint, &proof)
+            .await?)
     }
 
     /// Attach the provider/host target explicitly. Replacing a target is
