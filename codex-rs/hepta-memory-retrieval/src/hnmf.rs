@@ -533,3 +533,7 @@ impl fmt::Display for HnmfRecallErrorV1 {
 }
 
 impl StdError for HnmfRecallErrorV1 {}
+
+#[cfg(test)]
+#[path = "hnmf_tests.rs"]
+mod tests;
