@@ -11,8 +11,8 @@ from .candidate import (
     Mutation,
     MutationSet,
     generate_candidates,
-    sandbox_candidate,
 )
+from .sandbox_control import SandboxCoordinator
 from .control_plane import EngineeringError, EngineeringStore, WorkEnvelope, WorkPackage
 from .production import ProductionReadinessFacts, evaluate_production_readiness
 
@@ -170,8 +170,19 @@ def run(args):
     checks = _read(args.checks)
     if not isinstance(checks, list):
         raise EngineeringError("invalid_check")
-    tested, receipt = sandbox_candidate(args.repository, envelope, candidate, checks)
-    return {"candidate": asdict(tested), "receipt": asdict(receipt)}
+    execution = SandboxCoordinator().execute(
+        args.repository,
+        envelope,
+        candidate,
+        checks,
+    )
+    return {
+        "candidate": asdict(execution.candidate),
+        "receipt": asdict(execution.receipt),
+        "attempts": execution.attempts,
+        "policyDigest": execution.policy_digest,
+        "admissionControlled": True,
+    }
 
 
 def main(argv=None):
