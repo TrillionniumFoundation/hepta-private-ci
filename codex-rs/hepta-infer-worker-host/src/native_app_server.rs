@@ -602,6 +602,9 @@ impl AppServerModelDriver {
             loss_recorded?;
             cancel_recorded?;
         }
+        if output.terminal_observed && output.observed_output_tokens.is_none() {
+            self.drain_usage_replay(client, output).await;
+        }
         if output.terminal_observed {
             let _ = timeout(
                 RPC_TIMEOUT,
