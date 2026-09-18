@@ -90,8 +90,7 @@ impl CreateOnlyArtifactFile {
         let target = canonical_root.join(relative);
         let file_name = target
             .file_name()
-            .ok_or(ArtifactStorageError::InvalidPath)?
-            .to_owned();
+            .ok_or(ArtifactStorageError::InvalidPath)?;
         let parent = target.parent().ok_or(ArtifactStorageError::InvalidPath)?;
         let canonical_parent = parent.canonicalize()?;
         if !canonical_parent.starts_with(&canonical_root) {
