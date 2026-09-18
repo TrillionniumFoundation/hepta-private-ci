@@ -233,6 +233,13 @@ fn canonical_adapter_binds_config_input_and_exact_model_execution() {
         checked(execution.runtime_receipt.digest())
     );
 
+    let mut changed_allocation = execution.clone();
+    changed_allocation.transient_allocation_bytes += 1;
+    assert_ne!(
+        checked(changed_allocation.calculate_output_digest()),
+        execution.output_digest
+    );
+
     let mut changed = execution.clone();
     changed.head_digest = digest("other-head");
     assert!(matches!(
@@ -242,8 +249,18 @@ fn canonical_adapter_binds_config_input_and_exact_model_execution() {
 }
 
 #[test]
+fn exact_runtime_profile_digest_changes_with_native_mechanism_parameters() {
+    let config = config();
+    let first = checked(runtime_profile_digest(&config, &native()));
+    let mut changed = native();
+    changed.temporal_decay_q24 += 1;
+    let second = checked(runtime_profile_digest(&config, &changed));
+    assert_ne!(first, second);
+}
+
+#[test]
 fn calibration_is_fail_closed_and_uses_independently_bound_artifacts() {
-    let config_digest = checked(config().digest());
+    let config_digest = checked(runtime_profile_digest(&config(), &native()));
     let execution = model_execution();
     let identity = checked(execution.model_identity_digest());
     let missing = checked(apply_calibration(
