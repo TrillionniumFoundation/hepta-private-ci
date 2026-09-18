@@ -97,12 +97,6 @@ pub use process_deadline::enforce_process_deadline_v1;
 pub use process_deadline::enforce_process_termination_deadline_v1;
 pub use result_fence::WriterResultFenceErrorV1;
 pub use result_fence::WriterResultFenceV1;
-pub use writer_handoff::DurableWriterHandoffJournalV1;
-pub use writer_handoff::WriterHandoffAdvanceV1;
-pub use writer_handoff::WriterHandoffCheckpointV1;
-pub use writer_handoff::WriterHandoffErrorV1;
-pub use writer_handoff::WriterHandoffPhaseV1;
-pub use writer_handoff::WriterHandoffPlanV1;
 pub use robrix_projection::CORPUS_FILE;
 pub use robrix_projection::GENERATED_CONSTANTS_FILE;
 pub use robrix_projection::MANIFEST_FILE;
@@ -160,6 +154,12 @@ pub use supervisor_qualification::H8H9SupervisorState;
 pub use supervisor_qualification::H8ShadowSupervisor;
 pub use supervisor_qualification::H9ShadowRollbackMachine;
 pub use supervisor_qualification::QualificationSupervisor;
+pub use writer_handoff::DurableWriterHandoffJournalV1;
+pub use writer_handoff::WriterHandoffAdvanceV1;
+pub use writer_handoff::WriterHandoffCheckpointV1;
+pub use writer_handoff::WriterHandoffErrorV1;
+pub use writer_handoff::WriterHandoffPhaseV1;
+pub use writer_handoff::WriterHandoffPlanV1;
 
 #[cfg(unix)]
 pub use unix::UnixManagedProcess;
