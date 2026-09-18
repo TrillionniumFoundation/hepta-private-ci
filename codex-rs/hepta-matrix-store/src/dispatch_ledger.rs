@@ -432,6 +432,45 @@ impl MatrixDurableStore {
         Ok(Some(record))
     }
 
+    /// Reconcile a server event when a replayed /sync response no longer
+    /// carries unsigned.transaction_id. The prior transport response already
+    /// bound this event id to one stable transaction; the terminal transition
+    /// still revalidates room and event identity before committing.
+    pub async fn observe_outbox_server_event_candidate(
+        &self,
+        room_id: &MatrixRoomId,
+        event_id: &MatrixEventId,
+        observation_digest: &Sha256Digest,
+        now_ms: u64,
+    ) -> Result<Option<MatrixDispatchRecord>, MatrixDurableError> {
+        let txn_id = sqlx::query_scalar::<_, String>(
+            "SELECT stable_txn_id
+             FROM matrix_dispatch_ledger
+             WHERE room_id = ? AND transport_event_id = ?
+               AND state IN ('dispatched', 'accepted', 'indeterminate',
+                             'observed_terminal', 'redacted')",
+        )
+        .bind(room_id.as_str())
+        .bind(event_id.as_str())
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(unavailable)?
+        .map(MatrixTransactionId::parse)
+        .transpose()
+        .map_err(|_| MatrixDurableError::Corrupt)?;
+        let Some(txn_id) = txn_id else {
+            return Ok(None);
+        };
+        self.observe_outbox_server_event(
+            &txn_id,
+            room_id,
+            event_id,
+            observation_digest,
+            now_ms,
+        )
+        .await
+    }
+
     /// Preserve redaction evidence without overwriting the original send
     /// observation digest.
     pub async fn observe_outbox_redaction(
