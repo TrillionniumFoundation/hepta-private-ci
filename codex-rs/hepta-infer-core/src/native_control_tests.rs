@@ -401,6 +401,7 @@ fn qualified_output(status: NativeRunStatus) -> NativeRunOutput {
             request_digest: "c".repeat(64),
             context_digest: "b".repeat(64),
             response_digest: terminal.then(|| "e".repeat(64)),
+            observation_source: terminal.then_some(NativeCodexObservationSource::LiveTransport),
             connection_digest: "d".repeat(64),
             session_generation: 4,
             protocol_version: 2,
