@@ -115,6 +115,8 @@ fn durable_registry_payload_is_the_context_compiler_candidate() {
         &registry,
         PromptRegistryCompilationRequestV2 {
             compilation_id: id("compilation:prompt:1"),
+            serialization_id: id("serialization:prompt:1"),
+            attachment_id: id("attachment:prompt:1"),
             objective_digest: digest("objective"),
             prompt_portfolio_digest: digest("portfolio"),
             generation_vector_digest: vector,
@@ -150,6 +152,20 @@ fn durable_registry_payload_is_the_context_compiler_candidate() {
         output.compiled.selected_candidates[0].trusted_admission_digest,
         registry.registry().admission_event_digest(&id("factor:verify"))
     );
+    assert_eq!(
+        Digest32::of_bytes(&output.serialized_payload),
+        output.serialization.payload_digest
+    );
+    assert_eq!(
+        output.attachment.payload_digest,
+        output.serialization.payload_digest
+    );
+    assert!(
+        output
+            .serialized_payload
+            .windows(payload.len())
+            .any(|window| window == payload)
+    );
     output.validate().expect("compiled delivery validates");
 }
 
@@ -164,6 +180,8 @@ fn compiler_rejects_registry_and_context_model_drift() {
         &registry,
         PromptRegistryCompilationRequestV2 {
             compilation_id: id("compilation:prompt:2"),
+            serialization_id: id("serialization:prompt:2"),
+            attachment_id: id("attachment:prompt:2"),
             objective_digest: digest("objective"),
             prompt_portfolio_digest: digest("portfolio"),
             generation_vector_digest: vector,
