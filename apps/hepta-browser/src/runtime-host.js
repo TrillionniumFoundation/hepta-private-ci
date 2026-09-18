@@ -21,6 +21,7 @@ import { callWithDeadline, exclusive } from "./runtime-boundary.js";
 
 const UTF8 = new TextEncoder();
 const MAX_SEMANTIC_OBSERVATION_BYTES = 262_144;
+const DEFAULT_MAX_OPEN_PROFILES = 16;
 
 function boundedSemanticObservation(value, observationBudget) {
   requireRecord(value, "semanticObservation");
@@ -40,9 +41,11 @@ export class BrowserProfileHost {
   #journal;
   #clock;
   #driverCallTimeoutMs;
+  #maxOpenProfiles;
   #profiles = new Map();
   #openingProfiles = new Set();
   #locks = new Map();
+  #capacityLocks = new Map();
 
   constructor({
     driver,
@@ -50,6 +53,7 @@ export class BrowserProfileHost {
     journal,
     clock = () => Date.now(),
     driverCallTimeoutMs = DEFAULT_DRIVER_CALL_TIMEOUT_MS,
+    maxOpenProfiles = DEFAULT_MAX_OPEN_PROFILES,
   }) {
     requireRecord(driver, "driver");
     for (const method of [
@@ -87,11 +91,16 @@ export class BrowserProfileHost {
       throw new TypeError("clock must be a function");
     }
     positiveInteger(driverCallTimeoutMs, "driverCallTimeoutMs");
+    positiveInteger(maxOpenProfiles, "maxOpenProfiles");
+    if (maxOpenProfiles > 1024) {
+      throw new TypeError("maxOpenProfiles exceeds the browser host ceiling");
+    }
     this.#driver = driver;
     this.#authority = authority;
     this.#journal = journal;
     this.#clock = clock;
     this.#driverCallTimeoutMs = driverCallTimeoutMs;
+    this.#maxOpenProfiles = maxOpenProfiles;
   }
 
   async openProfile(input) {
@@ -101,7 +110,18 @@ export class BrowserProfileHost {
       if (this.#profiles.has(profileId) || this.#openingProfiles.has(profileId)) {
         throw new TypeError("profile is already open or opening");
       }
-      this.#openingProfiles.add(profileId);
+      await exclusive(this.#capacityLocks, "profile-capacity", async () => {
+        if (
+          this.#profiles.size + this.#openingProfiles.size >=
+          this.#maxOpenProfiles
+        ) {
+          const error = new Error("browser profile capacity is exhausted");
+          error.name = "BrowserBackpressureError";
+          error.code = "BROWSER_PROFILE_CAPACITY";
+          throw error;
+        }
+        this.#openingProfiles.add(profileId);
+      });
       try {
         const principalId = stableId(input.principalId, "principalId");
         const manifestDigest = digest(input.manifestDigest, "manifestDigest");
@@ -193,7 +213,9 @@ export class BrowserProfileHost {
           effectGrantCount: effectGrants.size,
         });
       } finally {
-        this.#openingProfiles.delete(profileId);
+        await exclusive(this.#capacityLocks, "profile-capacity", async () => {
+          this.#openingProfiles.delete(profileId);
+        });
       }
     });
   }
