@@ -277,7 +277,11 @@ def _validate_completion_receipts(
             or value.source_tree != envelope.source_tree
         ):
             raise EngineeringError("completion_receipt_source_mismatch")
-        if value.issuer not in {"ci_executor", "independent_evaluator", "work_executor"}:
+        if value.issuer not in {
+            "ci_executor",
+            "independent_evaluator",
+            "work_completion_authority",
+        }:
             raise EngineeringError("completion_receipt_issuer_role")
         if not _valid_window(value.observed_unix_ns, value.expires_unix_ns, now_ns):
             raise EngineeringError("completion_receipt_stale")
