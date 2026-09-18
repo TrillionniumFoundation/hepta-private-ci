@@ -1,14 +1,19 @@
 use super::*;
 
-use codex_hepta_prompt_registry::AdmissionAuthority;
-use codex_hepta_prompt_registry::AdmissionBindingV1;
-use codex_hepta_prompt_registry::AdmissionGrantV1;
+use std::collections::BTreeSet;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
+
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseGrant;
+use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_prompt_registry::FactorSource;
 use codex_hepta_prompt_registry::Lifecycle;
 use codex_hepta_prompt_registry::PromptFactor;
 use codex_hepta_prompt_registry::PromptRealizationBindingV2;
 use codex_hepta_prompt_registry::PromptRoleV2;
-use codex_hepta_prompt_registry::SignedAdmissionGrantV1;
+use codex_hepta_prompt_registry::final_use_admission_binding;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
@@ -39,40 +44,50 @@ fn admitted_registry(
         .expect("register factor");
 
     let signing_key = SigningKey::from_bytes(&[23; 32]);
-    let authority = AdmissionAuthority::new(
-        id("review-authority:prompt"),
+    let authority_root = root
+        .parent()
+        .expect("registry root parent")
+        .join("prompt-admission-authority");
+    let authority = FinalUseAuthority::open_state_dir(
+        &authority_root,
+        "review-authority:prompt".to_owned(),
         signing_key.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 1,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
     )
-    .expect("admission authority");
-    let grant = AdmissionGrantV1 {
+    .expect("final-use authority");
+    let reviewer = id("reviewer:1");
+    let scope = digest("scope:prompt");
+    let evidence = digest("evidence:prompt");
+    let binding = final_use_admission_binding(&factor, &reviewer, scope, evidence)
+        .expect("final-use admission binding");
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("clock")
+        .as_millis() as u64;
+    let grant = FinalUseGrant {
         schema_version: 1,
         signer_id: "review-authority:prompt".to_owned(),
+        authority_epoch: 1,
         grant_id: "admission:prompt:1".to_owned(),
-        binding: AdmissionBindingV1 {
-            factor_id: factor.factor_id.to_string(),
-            factor_content_sha256: factor.content_digest.into_array(),
-            reviewer_id: "reviewer:1".to_owned(),
-            reviewed_scope_sha256: digest("scope:prompt").into_array(),
-            evidence_sha256: digest("evidence:prompt").into_array(),
-        },
-        not_before_unix_ms: 10,
-        expires_at_unix_ms: 1_000,
+        nonce: [23; 32],
+        binding,
+        not_before_unix_ms: now.saturating_sub(1_000),
+        expires_at_unix_ms: now + 30_000,
     };
-    let signature = signing_key
-        .sign(&grant.signing_bytes().expect("signing bytes"))
-        .to_bytes()
-        .to_vec();
-    let verified = authority
-        .verify(
-            &SignedAdmissionGrantV1 { grant, signature },
-            &factor,
-            digest("scope:prompt"),
-            20,
-        )
-        .expect("verify admission");
+    let signed = SignedFinalUseGrant {
+        signature: signing_key
+            .sign(&grant.signing_bytes().expect("signing bytes"))
+            .to_bytes()
+            .to_vec(),
+        grant,
+    };
     registry
-        .admit_factor_verified(verified, 20)
-        .expect("admit factor");
+        .admit_factor_final_use(&authority, &signed, &factor.factor_id, scope, evidence)
+        .expect("admit factor through final-use authority");
 
     let tuple = PromptModelTupleV2 {
         model_digest: digest("model"),
