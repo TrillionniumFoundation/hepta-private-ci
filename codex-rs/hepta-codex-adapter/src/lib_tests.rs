@@ -27,8 +27,8 @@ fn intent() -> CodexOperationIntent {
 
 fn observation(outcome: TerminalOutcome) -> TerminalObservation {
     TerminalObservation {
-        thread_id: id("thread:1"),
-        turn_id: id("turn:1"),
+        thread_id: "thread:1".to_string(),
+        turn_id: "turn:1".to_string(),
         outcome,
         protocol_version: 2,
         response_digest: digest(b"response"),
@@ -94,7 +94,7 @@ fn payload_drift_is_rejected() {
 #[test]
 fn mismatched_turn_observation_is_rejected() {
     let mut value = observation(TerminalOutcome::Completed);
-    value.turn_id = id("turn:other");
+    value.turn_id = "turn:other".to_string();
     assert_eq!(
         adapt_observation(1_000, intent(), Some(value)),
         Err(Error::ObservationCorrelationMismatch)
