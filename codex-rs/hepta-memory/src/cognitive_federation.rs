@@ -28,6 +28,9 @@ use crate::cognitive_path::canonical_path_without_redirection;
 use crate::cognitive_store::unavailable;
 use crate::framing::frame_part;
 
+#[path = "cognitive_federation_v2.rs"]
+mod v2_product;
+
 pub const MAX_FEDERATION_CAPABILITIES_PER_STORE: u64 = 128;
 pub const MAX_FEDERATION_CAPABILITY_REVISIONS: u64 = 1024;
 pub const MAX_FEDERATION_GRANT_LIFETIME_SECONDS: i64 = 31 * 24 * 60 * 60;
@@ -224,10 +227,18 @@ pub struct FederatedRetrievalCandidate {
     pub revalidation: FederatedMemoryRevalidationBinding,
 }
 
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Serialize)]
+pub struct FederatedRetrievalCoverage {
+    pub requested_sources: u32,
+    pub completed_sources: u32,
+    pub failed_sources: u32,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct FederatedRetrievalBatch {
     pub query_sha256: Sha256Digest,
     pub candidates: Vec<FederatedRetrievalCandidate>,
+    pub coverage: FederatedRetrievalCoverage,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -626,39 +637,7 @@ impl FederatedMemoryReader {
         access: &FederationConsumerAccess,
         request: &RetrievalRequest,
     ) -> Result<FederatedRetrievalBatch, CognitiveStoreError> {
-        require_authorized(
-            self.validate_capability(access, request.now_unix_seconds())
-                .await?,
-        )?;
-        let owner_access = owner_access(&self.capability);
-        let mut batch = self
-            .owner
-            .retrieve_memory_candidates(&owner_access, request)
-            .await?;
-        batch
-            .candidates
-            .retain(|candidate| candidate.memory.scope == *self.capability.scope.owner_scope());
-        require_authorized(
-            self.validate_capability(access, request.now_unix_seconds())
-                .await?,
-        )?;
-        let candidates = batch
-            .candidates
-            .into_iter()
-            .map(|candidate| FederatedRetrievalCandidate {
-                source_agent_id: self.capability.owner_agent_id.clone(),
-                revalidation: FederatedMemoryRevalidationBinding {
-                    source_agent_id: self.capability.owner_agent_id.clone(),
-                    capability: self.capability.clone(),
-                    memory: candidate.revalidation.clone(),
-                },
-                candidate,
-            })
-            .collect();
-        Ok(FederatedRetrievalBatch {
-            query_sha256: batch.query_sha256,
-            candidates,
-        })
+        self.retrieve_v2_product(access, request).await
     }
 
     pub async fn revalidate(
@@ -832,12 +811,41 @@ impl FederatedRecallSet {
             ));
         }
         let readers = self.current_readers(request.now_unix_seconds()).await;
+        let requested_sources = u32::try_from(readers.len()).map_err(|_| {
+            CognitiveStoreError::Corrupt(
+                "memory federation source count cannot fit u32".to_string(),
+            )
+        })?;
+        let mut completed_sources = 0_u32;
+        let mut failed_sources = 0_u32;
         let mut candidates = Vec::new();
         for reader in &readers {
-            let Ok(batch) = reader.retrieve(access, request).await else {
-                continue;
-            };
-            candidates.extend(batch.candidates);
+            match reader.retrieve(access, request).await {
+                Ok(batch) => {
+                    completed_sources = completed_sources
+                        .checked_add(batch.coverage.completed_sources)
+                        .ok_or_else(|| {
+                            CognitiveStoreError::Corrupt(
+                                "memory federation completed coverage overflow".to_string(),
+                            )
+                        })?;
+                    failed_sources = failed_sources
+                        .checked_add(batch.coverage.failed_sources)
+                        .ok_or_else(|| {
+                            CognitiveStoreError::Corrupt(
+                                "memory federation failed coverage overflow".to_string(),
+                            )
+                        })?;
+                    candidates.extend(batch.candidates);
+                }
+                Err(_) => {
+                    failed_sources = failed_sources.checked_add(1).ok_or_else(|| {
+                        CognitiveStoreError::Corrupt(
+                            "memory federation failed coverage overflow".to_string(),
+                        )
+                    })?;
+                }
+            }
         }
         candidates.sort_by(|left, right| {
             right
@@ -864,6 +872,11 @@ impl FederatedRecallSet {
         Ok(FederatedRetrievalBatch {
             query_sha256: Sha256Digest::for_bytes(request.query().as_bytes()),
             candidates,
+            coverage: FederatedRetrievalCoverage {
+                requested_sources,
+                completed_sources,
+                failed_sources,
+            },
         })
     }
 
