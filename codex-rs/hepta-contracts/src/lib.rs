@@ -277,6 +277,7 @@ pub use secret_lease::MAX_SECRET_LEASE_KEY_BYTES;
 pub use secret_lease::MAX_SECRET_LEASE_PROVIDER_PATH_BYTES;
 pub use secret_lease::SECRET_LEASE_CONTRACT_SCHEMA_VERSION;
 pub use secret_lease::SecretLeaseBindingError;
+pub use secret_lease::SecretLeaseCreateDisposition;
 pub use secret_lease::SecretLeaseFuture;
 pub use secret_lease::SecretLeaseOperation;
 pub use secret_lease::SecretLeaseRecord;
