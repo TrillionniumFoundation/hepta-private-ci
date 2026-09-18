@@ -288,6 +288,39 @@ async fn evid_01_same_principal_cannot_satisfy_independent_roles() {
 }
 
 #[tokio::test]
+async fn independent_decision_requires_reviewer_or_operator_role() {
+    let temp = TempDir::new().expect("temp dir");
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+        .await
+        .expect("open");
+    let now = now_ms();
+    let (key, generator) = issuer(
+        23,
+        "principal:generator-independent",
+        "controller:generator-independent",
+        vec![QualificationEvidenceRoleV1::Generator],
+        now,
+    );
+    let decision = receipt(
+        &key,
+        &generator,
+        "evidence:invalid-independent-role",
+        QualificationClaimClassV1::IndependentDecision,
+        QualificationEvidenceRoleV1::Generator,
+        None,
+        now,
+    );
+
+    assert!(matches!(
+        store
+            .qualification()
+            .append_receipt(&decision, &generator)
+            .await,
+        Err(EvidenceError::InvalidRecord(_))
+    ));
+}
+
+#[tokio::test]
 async fn evid_02_different_tree_is_unavailable() {
     let temp = TempDir::new().expect("temp dir");
     let store = HeptaEvidenceStore::open(&sqlite_config(&temp))

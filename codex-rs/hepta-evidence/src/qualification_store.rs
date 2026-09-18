@@ -456,7 +456,7 @@ impl QualificationEvidenceStore<'_> {
             .map_err(classify_sqlx_error)?;
         validate_links(&mut transaction, envelope).await?;
 
-        let insert = sqlx::query(
+        sqlx::query(
             "INSERT INTO qualification_evidence (
                 evidence_id, candidate_id, source_commit, source_tree,
                 claim_class, protocol_id, issuer_principal_id, issuer_controller_id,
@@ -503,7 +503,6 @@ impl QualificationEvidenceStore<'_> {
                 record_id: envelope.evidence_id.to_string(),
             });
         }
-        let _inserted = insert.rows_affected() == 1;
         transaction.commit().await.map_err(classify_sqlx_error)?;
         Ok(envelope.evidence_id.clone())
     }
@@ -834,6 +833,16 @@ fn validate_envelope_shape(
             "qualification claim class does not match its registered protocol",
         ));
     }
+    if envelope.claim_class == QualificationClaimClassV1::IndependentDecision
+        && !matches!(
+            envelope.issuer_role,
+            QualificationEvidenceRoleV1::Reviewer | QualificationEvidenceRoleV1::Operator
+        )
+    {
+        return Err(invalid(
+            "independent decision evidence requires reviewer or operator role",
+        ));
+    }
     validate_identifier(&envelope.issuer_principal_id, "issuer principal")?;
     validate_identifier(&envelope.issuer_controller_id, "issuer controller")?;
     validate_digest(&envelope.signing_identity_digest, "signing identity digest")?;
@@ -932,7 +941,7 @@ fn verify_predecessor_chain(
         let prior = by_id.get(id).ok_or_else(|| {
             EvidenceError::Corrupt("qualification predecessor is missing from candidate set".into())
         })?;
-        require_same_candidate(&record.envelope, &prior.envelope, "predecessor")?;
+        require_same_stored_candidate(&record.envelope, &prior.envelope, "predecessor")?;
         current = prior.envelope.predecessor_evidence_id.as_ref();
     }
     Ok(())
@@ -1060,7 +1069,7 @@ pub(crate) async fn verify_qualification_evidence_rows(
             let prior = by_id.get(id).ok_or_else(|| {
                 EvidenceError::Corrupt("qualification predecessor is missing".into())
             })?;
-            require_same_candidate(&record.envelope, &prior.envelope, "predecessor")?;
+            require_same_stored_candidate(&record.envelope, &prior.envelope, "predecessor")?;
         }
         for (label, link) in [
             ("revocation target", record.envelope.revokes_evidence_id.as_ref()),
@@ -1073,13 +1082,29 @@ pub(crate) async fn verify_qualification_evidence_rows(
                 let prior = by_id.get(id).ok_or_else(|| {
                     EvidenceError::Corrupt(format!("qualification {label} is missing"))
                 })?;
-                require_same_candidate(&record.envelope, &prior.envelope, label)?;
+                require_same_stored_candidate(&record.envelope, &prior.envelope, label)?;
             }
         }
     }
     let refs = by_id.iter().map(|(id, value)| (id.clone(), value)).collect();
     for record in by_id.values() {
         verify_predecessor_chain(record, &refs)?;
+    }
+    Ok(())
+}
+
+fn require_same_stored_candidate(
+    envelope: &QualificationEvidenceEnvelopeV1,
+    prior: &QualificationEvidenceEnvelopeV1,
+    label: &str,
+) -> Result<(), EvidenceError> {
+    if envelope.candidate_id != prior.candidate_id
+        || envelope.source_commit != prior.source_commit
+        || envelope.source_tree != prior.source_tree
+    {
+        return Err(EvidenceError::Corrupt(format!(
+            "qualification {label} belongs to a different exact candidate"
+        )));
     }
     Ok(())
 }
