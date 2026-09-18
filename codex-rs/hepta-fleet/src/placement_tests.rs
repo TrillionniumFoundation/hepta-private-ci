@@ -1,5 +1,3 @@
-use codex_hepta_contracts::Sha256Digest;
-
 use super::*;
 use crate::FLEET_CAPACITY_OBSERVATION_SCHEMA_VERSION;
 
@@ -15,17 +13,16 @@ fn host(id: &str, domain: &str, turns: u64) -> FleetPlacementHostV1 {
         turn_queue_slots: 256,
     };
     FleetPlacementHostV1 {
-        observation: ObservedFleetCapacityV1 {
-            schema_version: FLEET_CAPACITY_OBSERVATION_SCHEMA_VERSION,
-            host_id: id.to_string(),
-            failure_domain_id: domain.to_string(),
-            host_generation: 1,
-            observation_revision: 1,
-            observed_at_ms: 1,
-            valid_until_ms: 100,
+        observation: ObservedFleetCapacityV1::new(
+            id,
+            domain,
+            1,
+            1,
+            1,
+            100,
             capacity,
-            observation_digest: Sha256Digest::for_bytes(id.as_bytes()),
-        },
+        )
+        .expect("capacity observation"),
         available: capacity,
     }
 }
