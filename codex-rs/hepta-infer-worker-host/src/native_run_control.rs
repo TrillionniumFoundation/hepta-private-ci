@@ -3,6 +3,10 @@
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
+use std::path::PathBuf;
+
+use super::DetachedNativeControl;
+use super::NativeControlPort;
 use sha2::Digest;
 use sha2::Sha256;
 use tokio_util::sync::CancellationToken;
@@ -27,6 +31,36 @@ impl AppServerModelDriver {
     pub async fn run(
         &self,
         control: &mut DurableInferenceControl,
+        admission: NativeAdmission,
+        prompt: String,
+        context_query: Option<String>,
+        cancellation: &CancellationToken,
+    ) -> Result<NativeRunOutput> {
+        self.run_with_control(control, admission, prompt, context_query, cancellation)
+            .await
+    }
+
+    /// Production path: the journal writer lock is held only for durable state
+    /// transitions. Model/provider execution and owner-health observation happen
+    /// with no journal lock held, so one slow request cannot serialize unrelated
+    /// requests in the same budget domain.
+    pub async fn run_detached(
+        &self,
+        journal_path: PathBuf,
+        journal_capacity: usize,
+        admission: NativeAdmission,
+        prompt: String,
+        context_query: Option<String>,
+        cancellation: &CancellationToken,
+    ) -> Result<NativeRunOutput> {
+        let mut control = DetachedNativeControl::new(journal_path, journal_capacity);
+        self.run_with_control(&mut control, admission, prompt, context_query, cancellation)
+            .await
+    }
+
+    async fn run_with_control<C: NativeControlPort>(
+        &self,
+        control: &mut C,
         admission: NativeAdmission,
         prompt: String,
         context_query: Option<String>,
@@ -94,7 +128,8 @@ impl AppServerModelDriver {
             }
             Err(error) => {
                 if control
-                    .native_record(&request_id)
+                    .native_record_owned(&request_id)
+                    .as_ref()
                     .is_some_and(|record| record.state == NativeReservationState::Reserved)
                 {
                     // Only Reserved proves turn/start could not have happened.

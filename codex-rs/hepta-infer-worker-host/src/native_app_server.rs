@@ -5,6 +5,7 @@
 
 use std::collections::HashMap;
 use std::future::Future;
+use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
 
@@ -33,7 +34,10 @@ use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_core::durable_control::Error as DurableControlError;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+use codex_hepta_infer_core::durable_control::native::NativeRequest;
+use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
@@ -54,6 +58,139 @@ const RPC_TIMEOUT: Duration = Duration::from_secs(5);
 const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>>;
+
+trait NativeControlPort {
+    fn reserve_native(
+        &mut self,
+        request: NativeRequest,
+        maximum_in_flight: usize,
+    ) -> std::result::Result<NativeRunRecord, DurableControlError>;
+    fn dispatch_native(
+        &mut self,
+        request_id: &str,
+        dispatch: NativeDispatch,
+    ) -> std::result::Result<NativeRunRecord, DurableControlError>;
+    fn native_started(
+        &mut self,
+        request_id: &str,
+        turn_id: String,
+    ) -> std::result::Result<NativeRunRecord, DurableControlError>;
+    fn cancel_native(
+        &mut self,
+        request_id: &str,
+    ) -> std::result::Result<NativeRunRecord, DurableControlError>;
+    fn stop_native_before_dispatch(
+        &mut self,
+        request_id: &str,
+        reason: String,
+    ) -> std::result::Result<NativeRunRecord, DurableControlError>;
+    fn stop_native_before_turn_start(
+        &mut self,
+        request_id: &str,
+        reason: String,
+    ) -> std::result::Result<NativeRunRecord, DurableControlError>;
+    fn settle_native(
+        &mut self,
+        request_id: &str,
+        output: NativeRunOutput,
+    ) -> std::result::Result<NativeRunRecord, DurableControlError>;
+    fn native_record_owned(&mut self, request_id: &str) -> Option<NativeRunRecord>;
+}
+
+impl NativeControlPort for DurableInferenceControl {
+    fn reserve_native(&mut self, request: NativeRequest, maximum_in_flight: usize) -> std::result::Result<NativeRunRecord, DurableControlError> {
+        DurableInferenceControl::reserve_native(self, request, maximum_in_flight)
+    }
+    fn dispatch_native(&mut self, request_id: &str, dispatch: NativeDispatch) -> std::result::Result<NativeRunRecord, DurableControlError> {
+        DurableInferenceControl::dispatch_native(self, request_id, dispatch)
+    }
+    fn native_started(&mut self, request_id: &str, turn_id: String) -> std::result::Result<NativeRunRecord, DurableControlError> {
+        DurableInferenceControl::native_started(self, request_id, turn_id)
+    }
+    fn cancel_native(&mut self, request_id: &str) -> std::result::Result<NativeRunRecord, DurableControlError> {
+        DurableInferenceControl::cancel_native(self, request_id)
+    }
+    fn stop_native_before_dispatch(&mut self, request_id: &str, reason: String) -> std::result::Result<NativeRunRecord, DurableControlError> {
+        DurableInferenceControl::stop_native_before_dispatch(self, request_id, reason)
+    }
+    fn stop_native_before_turn_start(&mut self, request_id: &str, reason: String) -> std::result::Result<NativeRunRecord, DurableControlError> {
+        DurableInferenceControl::stop_native_before_turn_start(self, request_id, reason)
+    }
+    fn settle_native(&mut self, request_id: &str, output: NativeRunOutput) -> std::result::Result<NativeRunRecord, DurableControlError> {
+        DurableInferenceControl::settle_native(self, request_id, output)
+    }
+    fn native_record_owned(&mut self, request_id: &str) -> Option<NativeRunRecord> {
+        DurableInferenceControl::native_record(self, request_id).cloned()
+    }
+}
+
+/// A short-critical-section control port. Every durable mutation opens, replays,
+/// locks, commits and closes the journal before returning. Provider/network I/O
+/// therefore never owns the journal writer lock.
+struct DetachedNativeControl {
+    path: PathBuf,
+    capacity: usize,
+}
+
+impl DetachedNativeControl {
+    fn new(path: PathBuf, capacity: usize) -> Self {
+        Self { path, capacity }
+    }
+
+    fn with_control<T>(
+        &self,
+        operation: impl FnOnce(&mut DurableInferenceControl) -> std::result::Result<T, DurableControlError>,
+    ) -> std::result::Result<T, DurableControlError> {
+        let deadline = std::time::Instant::now() + Duration::from_millis(500);
+        loop {
+            match DurableInferenceControl::open(&self.path, self.capacity) {
+                Ok(mut control) => return operation(&mut control),
+                Err(DurableControlError::WriterUnavailable) if std::time::Instant::now() < deadline => {
+                    std::thread::sleep(Duration::from_millis(2));
+                }
+                Err(error) => return Err(error),
+            }
+        }
+    }
+
+    fn read_record(&self, request_id: &str) -> Option<NativeRunRecord> {
+        self.with_control(|control| Ok(control.native_record(request_id).cloned()))
+            .ok()
+            .flatten()
+    }
+
+    #[allow(dead_code)]
+    fn path(&self) -> &Path {
+        &self.path
+    }
+}
+
+impl NativeControlPort for DetachedNativeControl {
+    fn reserve_native(&mut self, request: NativeRequest, maximum_in_flight: usize) -> std::result::Result<NativeRunRecord, DurableControlError> {
+        self.with_control(|control| control.reserve_native(request, maximum_in_flight))
+    }
+    fn dispatch_native(&mut self, request_id: &str, dispatch: NativeDispatch) -> std::result::Result<NativeRunRecord, DurableControlError> {
+        self.with_control(|control| control.dispatch_native(request_id, dispatch))
+    }
+    fn native_started(&mut self, request_id: &str, turn_id: String) -> std::result::Result<NativeRunRecord, DurableControlError> {
+        self.with_control(|control| control.native_started(request_id, turn_id))
+    }
+    fn cancel_native(&mut self, request_id: &str) -> std::result::Result<NativeRunRecord, DurableControlError> {
+        self.with_control(|control| control.cancel_native(request_id))
+    }
+    fn stop_native_before_dispatch(&mut self, request_id: &str, reason: String) -> std::result::Result<NativeRunRecord, DurableControlError> {
+        self.with_control(|control| control.stop_native_before_dispatch(request_id, reason))
+    }
+    fn stop_native_before_turn_start(&mut self, request_id: &str, reason: String) -> std::result::Result<NativeRunRecord, DurableControlError> {
+        self.with_control(|control| control.stop_native_before_turn_start(request_id, reason))
+    }
+    fn settle_native(&mut self, request_id: &str, output: NativeRunOutput) -> std::result::Result<NativeRunRecord, DurableControlError> {
+        self.with_control(|control| control.settle_native(request_id, output))
+    }
+    fn native_record_owned(&mut self, request_id: &str) -> Option<NativeRunRecord> {
+        self.read_record(request_id)
+    }
+}
 
 /// Local operator-selected connection, fenced by the existing Agent identity.
 pub struct NativeWorkerConfig {
@@ -87,9 +224,9 @@ impl AppServerModelDriver {
 
     /// Execute once. Transport loss after turn/start remains indeterminate and
     /// must never be automatically replayed as a fresh request.
-    async fn run_once(
+    async fn run_once<C: NativeControlPort>(
         &self,
-        control: &mut DurableInferenceControl,
+        control: &mut C,
         request_id: &str,
         prompt: String,
         context_query: Option<String>,
