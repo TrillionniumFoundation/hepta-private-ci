@@ -31,21 +31,26 @@ and allowed existing thread IDs:
 
 ```json
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "trust_revision": 7,
   "agent_id": "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13",
   "issuer_id": "issuer:operator",
-  "key_epoch": 1,
+  "key_epoch": 3,
   "public_key_hex": "<64 hexadecimal characters from the producer's public key>",
   "revoked": false,
-  "thread_ids": ["<existing thread ID>"]
+  "thread_ids": ["<existing thread ID>"],
+  "replay_checkpoint": {
+    "generation": 12,
+    "replay_digest_hex": "<64 lowercase hexadecimal characters>"
+  }
 }
 ```
 
-One issuer/epoch and at most 16 thread IDs are supported. An empty allowlist
+`trust_revision` is monotonic and must increase for any changed trust projection, including allowlist, key, epoch, revocation or checkpoint changes. Reusing a revision with changed content, rolling revision/epoch backward, substituting a key within one epoch, or clearing revocation within that epoch fails closed. One issuer/epoch and at most 16 distinct thread IDs are supported. An empty allowlist
 permits startup but no text admission; use the normal session ingress to create
-a thread, then install its ID. Replace the complete file atomically while
-preserving its permissions. The daemon reloads it for admission and dispatch
-stages. Keep the private signing key with the independent producer.
+a thread, then install its ID. Replace the complete file atomically while preserving its permissions. The daemon reloads it for admission and every dispatch stage and persists the monotonic trust head in the evidence database. Keep the private signing key with the independent producer; Agentd never generates or stores it.
+
+`replay_checkpoint` is optional for development but required by the production AuthBus profile. It is a projection of an **independently retained** checkpoint previously emitted by the evidence owner. Agentd verifies its generation and deterministic replay-registry digest on every trust refresh. Keeping the only checkpoint copy in the same backup/snapshot as the SQLite database does not provide rollback protection.
 
 Revocation uses `revoked: true`; removing a thread also prevents subsequent
 admission/dispatch to that thread. Neither operation cancels work already
@@ -151,6 +156,4 @@ Injected transport tests alone do not establish the native product result.
 
 Run the scoped suites with
 `just test -p codex-hepta-evidence -p codex-hepta-agentd`, then the repository's
-scoped fix/format workflow. This
-profile supplies no production key hosting, provider quota ledger, cross-backup
-rollback protection, or exactly-once external-effect guarantee.
+scoped fix/format workflow. This profile supplies no private-key hosting or exactly-once external-effect guarantee. The shared evidence owner now provides durable policy/quota/reservation control and replay checkpoint verification, but a production effect adapter and an independently retained checkpoint are still required before those capabilities are activated.
