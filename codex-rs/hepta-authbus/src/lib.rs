@@ -9,7 +9,15 @@
 
 #![forbid(unsafe_code)]
 
+mod control;
 mod signed;
+pub use control::PolicyDecision;
+pub use control::PolicyRevision;
+pub use control::PolicyRule;
+pub use control::QuotaConfig;
+pub use control::Reservation;
+pub use control::ReservationState;
+pub use control::Settlement;
 pub use signed::AuthenticatedMessage;
 pub use signed::IssuerRegistration;
 pub use signed::SignedMessage;
