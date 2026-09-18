@@ -35,7 +35,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         planning_micros.push(micros(started.elapsed()));
         last_plan = Some(plan);
     }
-    let last_plan = last_plan.expect("profile loop is non-empty");
+    let Some(last_plan) = last_plan else {
+        return Err("profile loop produced no plan".into());
+    };
 
     #[cfg(unix)]
     let store_metrics = profile_store(&last_plan.evaluation.plan)?;
