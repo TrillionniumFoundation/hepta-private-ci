@@ -29,14 +29,15 @@ The canonical V2 engine is stateless across attempts. It binds query/lease/remot
 For one V2 attempt:
 
 1. validate the exact bounded query and capability lease;
-2. race one authenticated/read-only transport future against deadline/cancellation control;
-3. verify the terminal remote response shape and recomputed response digest;
-4. verify peer, exact query binding, scope and purpose;
-5. perform a fresh post-I/O authority observation before evidence admission;
-6. reject an observation outside the query, lease or response time horizon;
-7. suppress evidence when authority is revoked or generation-stale;
-8. cap result expiry to `min(response_expiry, lease_expiry, query_deadline)`;
-9. bind the post-I/O authority observation into the final result digest.
+2. obtain a live preflight authority observation and require `Current` before any transport dispatch;
+3. race one authenticated/read-only transport future against cancellation and the `min(query_deadline, lease_expiry)` authority horizon;
+4. verify the terminal remote response shape and recomputed response digest;
+5. verify peer, exact query binding, scope and purpose;
+6. perform a second fresh post-I/O authority observation before evidence admission and reject observation-time regression;
+7. reject an observation outside the query, lease or response time horizon;
+8. suppress evidence when post-I/O authority is revoked or generation-stale;
+9. cap result expiry to `min(response_expiry, lease_expiry, query_deadline)`;
+10. bind the post-I/O authority observation into the final result digest.
 
 There is no blind retry. Dropping the transport future is the in-flight cancellation boundary; a production transport must stop further adapter I/O when that future is dropped. Any separately authorized retry requires a new nonce/attempt identity.
 
@@ -56,11 +57,12 @@ Source tests now include identities for:
 - FED-02: non-terminal transport remains explicit indeterminate and bounded truncation remains partial;
 - FED-03: response-field tampering invalidates the recomputed response digest;
 - FED-04: result expiry cannot exceed response, lease or query horizon;
-- FED-05: post-I/O revoke/generation drift suppresses remote items;
-- FED-06: cancellation/deadline interrupts a pending transport future;
-- FED-07: duplicate remote record identity rejects;
-- FED-08: final result digest binds the post-I/O authority observation;
-- FED-09: product runtime keeps explicit requested/completed/failed/truncated coverage and revalidates an attachment against current owner capability state.
+- FED-05: a revoked/stale live authority observation fails before transport dispatch;
+- FED-06: post-I/O revoke/generation drift suppresses remote items;
+- FED-07: cancellation/deadline or an earlier lease expiry interrupts a pending transport future;
+- FED-08: duplicate remote record identity rejects;
+- FED-09: final result digest binds the post-I/O authority observation;
+- FED-10: product runtime keeps explicit requested/completed/failed/truncated coverage and revalidates an attachment against current owner capability state.
 
 Test source identity is not an execution receipt. Exact-head/merge-candidate outputs determine pass/fail for the candidate revision.
 
@@ -75,7 +77,7 @@ Remote evidence retains provenance and cannot become trusted instructions. No-wr
 ## 8. Current native implementation
 
 - **Canonical entrypoints:** `execute_once` and `observe_cancellation` in [codex-rs/hepta-memory-federation/src/v2.rs](../../../codex-rs/hepta-memory-federation/src/v2.rs).
-- **Canonical contract state:** `FederatedQueryV2`/`FederatedLeaseV2` bind peer, principal, scope, purpose, generation, epoch, nonce and deadline. `RemoteFederatedResponseV2` is query-bound and digest-verified. `FederationAuthorityV2` supplies the post-I/O authority observation. `FederationAttemptControlV2` provides the interruptible deadline/cancellation boundary. Results distinguish valid, stale-generation, revoked and indeterminate outcomes while granting no authority.
+- **Canonical contract state:** `FederatedQueryV2`/`FederatedLeaseV2` bind peer, principal, scope, purpose, generation, epoch, nonce and deadline. `RemoteFederatedResponseV2` is query-bound and digest-verified. `FederationAuthorityV2` supplies both preflight and post-I/O live authority observations; only preflight `Current` may dispatch. `FederationAttemptControlV2` provides the interruptible cancellation and query/lease horizon boundary. Results distinguish valid, stale-generation, revoked and indeterminate outcomes while granting no authority.
 - **Product caller:** `CognitiveRuntime::AvailableFederatedV2` in `codex-rs/hepta-memory/src/cognitive_runtime.rs`, composed by `codex-rs/hepta-agentd/src/runtime.rs` and consumed by `codex-rs/ext/hepta-memory/src/cognitive/federation.rs`.
 - **Owner authority source:** existing `CognitiveStore` federation capability grant/revoke records and `FederatedMemoryReader` read-only owner access; the canonical module does not become a writer of those facts.
 - **Source tests:** [codex-rs/hepta-memory-federation/src/v2_tests.rs](../../../codex-rs/hepta-memory-federation/src/v2_tests.rs), plus product composition tests in `codex-rs/hepta-memory/src/cognitive_runtime_tests.rs`. These remain test identities until current candidate execution receipts pass.
