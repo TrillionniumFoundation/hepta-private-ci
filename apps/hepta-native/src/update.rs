@@ -103,9 +103,7 @@ impl UpdateVerifier {
         } else {
             let store = DefaultKeyringStore;
             match store.load(KEYRING_SERVICE, UPDATE_KEYRING_ACCOUNT) {
-                Ok(Some(value)) => {
-                    Some(serde_json::from_str(&value).map_err(UpdateError::Json)?)
-                }
+                Ok(Some(value)) => Some(serde_json::from_str(&value).map_err(UpdateError::Json)?),
                 Ok(None) | Err(_) => None,
             }
         };

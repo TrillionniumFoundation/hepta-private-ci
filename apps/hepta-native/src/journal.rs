@@ -81,7 +81,8 @@ impl OperationJournal {
             if let Some(record) = records.iter().rev().find(|record| record.key == *key) {
                 if record.resource_digest != resource_digest
                     || record.payload_digest != payload_digest
-                    || record.action != action {
+                    || record.action != action
+                {
                     return Err(JournalError::IdentityReuse);
                 }
                 return Ok(match &record.phase {
@@ -161,8 +162,9 @@ impl OperationJournal {
                 return Ok(None);
             };
             if record.resource_digest != resource_digest
-                    || record.payload_digest != payload_digest
-                    || record.action != action {
+                || record.payload_digest != payload_digest
+                || record.action != action
+            {
                 return Err(JournalError::IdentityReuse);
             }
             Ok(Some(match &record.phase {

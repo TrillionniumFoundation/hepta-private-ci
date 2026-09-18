@@ -198,15 +198,12 @@ impl<B: Backend, P: PlatformAdapter> ShellRuntime<B, P> {
             session_generation: binding.session_generation,
             operation_id: binding.operation_id.clone(),
         };
-        match self
-            .journal
-            .begin_dispatch(
-                &key,
-                action.clone(),
-                &binding.resource_digest,
-                &binding.payload_digest,
-            )?
-        {
+        match self.journal.begin_dispatch(
+            &key,
+            action.clone(),
+            &binding.resource_digest,
+            &binding.payload_digest,
+        )? {
             DispatchDisposition::Terminal(decision) => return Ok(decision),
             DispatchDisposition::Indeterminate => {
                 return self.reconcile_open_operation(
@@ -313,14 +310,13 @@ impl<B: Backend, P: PlatformAdapter> ShellRuntime<B, P> {
         };
         let decision =
             PlatformDecision::new(key, action.clone(), status, true, observed.outcome_digest);
-        self.journal
-            .finish(
-                &decision.key,
-                action,
-                resource_digest,
-                payload_digest,
-                decision.clone(),
-            )?;
+        self.journal.finish(
+            &decision.key,
+            action,
+            resource_digest,
+            payload_digest,
+            decision.clone(),
+        )?;
         Ok(decision)
     }
 
