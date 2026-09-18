@@ -427,6 +427,16 @@ def verify():
             continue
         if "sourceRootPresent" not in row or "productionImplementation" not in row:
             failures.append(f"{mid}: status model")
+        actual_symbols = {op.get("nativeSymbol") for op in ops if op.get("nativeSymbol")}
+        documented_symbols = {
+            op.get("nativeSymbol")
+            for op in parse_entrypoints(mid)
+            if op.get("nativeSymbol")
+        }
+        if policy is not None and not documented_symbols.issubset(actual_symbols):
+            missing = sorted(documented_symbols - actual_symbols)
+            failures.append(f"{mid}: documented entrypoints missing from map {missing}")
+        expected_effective = effective_source_roots(module)
         for op in ops:
             if not op.get("operation"):
                 failures.append(f"{mid}: operation id")
@@ -435,6 +445,16 @@ def verify():
             source = op.get("sourcePath")
             if source and not (ROOT / source).is_file():
                 failures.append(f"{mid}: missing source {source}")
+            if policy is not None:
+                if not isinstance(op.get("tests"), list) or not op.get("tests"):
+                    failures.append(f"{mid}: operation lacks mapped tests {op.get('operation')}")
+                if source and not any(
+                    source == root or source.startswith(root + "/")
+                    for root in expected_effective
+                ):
+                    failures.append(
+                        f"{mid}: operation source outside effective roots {source}"
+                    )
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
