@@ -61,13 +61,16 @@ jobs:
           command -v node
           command -v python3
           command -v bwrap
+          command -v prlimit
           mkdir -p deployment-evidence
           git rev-parse HEAD HEAD^{tree} > deployment-evidence/source-identity.txt
           uname -a > deployment-evidence/uname.txt
           node --version > deployment-evidence/node-version.txt
           python3 --version > deployment-evidence/python-version.txt 2>&1
           bwrap --version > deployment-evidence/bwrap-version.txt
+          prlimit --version > deployment-evidence/prlimit-version.txt
           sha256sum "$(command -v bwrap)" > deployment-evidence/bwrap.sha256
+          sha256sum "$(command -v prlimit)" > deployment-evidence/prlimit.sha256
 
       - name: Download exact worker evidence
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
