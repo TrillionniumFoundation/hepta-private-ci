@@ -577,6 +577,13 @@ pub enum TaskFlowTransition {
     Retry {
         retry_at_ms: u64,
     },
+    /// Re-open the same durable run only after the registered provider owner
+    /// has proved that the previous dispatch identity was never admitted.
+    /// This transition is accepted only through the crate-private automation
+    /// recovery entry point; generic callers cannot use it as a retry escape.
+    RequeueProvenAbsent {
+        proof_digest: Sha256Digest,
+    },
     Cancel {
         reason: String,
     },
@@ -1053,6 +1060,35 @@ impl AutomationStore {
         &self,
         command: &TaskFlowCommand,
     ) -> Result<TaskFlowCommandResult, TaskFlowError> {
+        if matches!(
+            command.transition,
+            TaskFlowTransition::RequeueProvenAbsent { .. }
+        ) {
+            return Err(invalid(
+                "provider-absence requeue is restricted to automation recovery",
+            ));
+        }
+        self.apply_taskflow_command_inner(command, false).await
+    }
+
+    pub(crate) async fn apply_taskflow_requeue_proven_absent(
+        &self,
+        command: &TaskFlowCommand,
+    ) -> Result<TaskFlowCommandResult, TaskFlowError> {
+        if !matches!(
+            command.transition,
+            TaskFlowTransition::RequeueProvenAbsent { .. }
+        ) {
+            return Err(invalid("internal requeue requires provider-absence transition"));
+        }
+        self.apply_taskflow_command_inner(command, true).await
+    }
+
+    async fn apply_taskflow_command_inner(
+        &self,
+        command: &TaskFlowCommand,
+        allow_proven_absence_requeue: bool,
+    ) -> Result<TaskFlowCommandResult, TaskFlowError> {
         validate_text(&command.run_id, "run_id", MAX_ID_BYTES)?;
         validate_text(&command.command_id, "command_id", MAX_ID_BYTES)?;
         self.validate_taskflow_fence(&command.fence)?;
@@ -1130,11 +1166,16 @@ impl AutomationStore {
         }
         let explicit_reconcile = run.state == TaskFlowRunState::Indeterminate
             && matches!(&command.transition, TaskFlowTransition::Reconcile { .. });
-        if explicit_reconcile {
-            // An indeterminate run retains its durable owner tuple, but its
-            // lease may have expired while an external outcome was being
-            // investigated. Reconciliation still requires that exact tuple;
-            // the run is never claimable by a new generation.
+        let proven_absence_requeue = allow_proven_absence_requeue
+            && run.state == TaskFlowRunState::Running
+            && matches!(
+                &command.transition,
+                TaskFlowTransition::RequeueProvenAbsent { .. }
+            );
+        if explicit_reconcile || proven_absence_requeue {
+            // Reconciliation and provider-proven absence may arrive after the
+            // lease deadline. Both retain the exact historical owner tuple;
+            // only the registered recovery entry point may request the latter.
             self.check_run_identity_fence(&run, &command.fence)?;
         } else {
             self.check_run_fence(&run, &command.fence, command.now_ms)?;
@@ -1349,6 +1390,19 @@ fn apply_transition(
             run.state = TaskFlowRunState::RetryBackoff;
             run.retry_at_ms = Some(*retry_at_ms);
         }
+        TaskFlowTransition::RequeueProvenAbsent { proof_digest } => {
+            if run.state != TaskFlowRunState::Running {
+                return Err(invalid_transition(
+                    "provider-absence requeue requires running state",
+                ));
+            }
+            validate_digest(proof_digest, "provider absence proof digest")?;
+            run.state = TaskFlowRunState::Queued;
+            run.wait_token = None;
+            run.retry_at_ms = None;
+            run.terminal_reason = None;
+            clear_lease(run);
+        }
         TaskFlowTransition::Cancel { reason } => {
             if run.state.terminal() {
                 return Err(invalid_transition("terminal run cannot be cancelled"));
@@ -1439,6 +1493,7 @@ fn transition_name(transition: &TaskFlowTransition) -> &'static str {
         TaskFlowTransition::Wait { .. } => "waiting",
         TaskFlowTransition::Resume { .. } => "resumed",
         TaskFlowTransition::Retry { .. } => "retry_scheduled",
+        TaskFlowTransition::RequeueProvenAbsent { .. } => "requeued_proven_absent",
         TaskFlowTransition::Cancel { .. } => "cancelled",
         TaskFlowTransition::Succeed { .. } => "succeeded",
         TaskFlowTransition::Fail { .. } => "failed",
@@ -1959,7 +2014,11 @@ fn verify_taskflow_event_rows(
                 && run.cancel_requested;
             if !(matches!(
                 transition.as_str(),
-                "succeeded" | "failed" | "cancelled" | "reconciled"
+                "succeeded"
+                    | "failed"
+                    | "cancelled"
+                    | "reconciled"
+                    | "requeued_proven_absent"
             ) || index == 0 && transition == "run_created"
                 || sticky_cancel_resume)
             {
