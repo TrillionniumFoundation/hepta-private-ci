@@ -190,7 +190,7 @@ pub struct PromptRegistry {
 }
 
 impl PromptRegistry {
-    pub fn new(maximum_records: usize) -> Result<Self, Error> {
+    pub(crate) fn new(maximum_records: usize) -> Result<Self, Error> {
         if maximum_records == 0 {
             return Err(Error::ZeroCapacity);
         }
@@ -211,7 +211,7 @@ impl PromptRegistry {
         })
     }
 
-    pub fn register_factor(&mut self, factor: PromptFactor) -> Result<RegistryReceipt, Error> {
+    pub(crate) fn register_factor(&mut self, factor: PromptFactor) -> Result<RegistryReceipt, Error> {
         if factor.content_digest.is_zero() {
             return Err(Error::EmptyDigest("factor content"));
         }
@@ -290,7 +290,7 @@ impl PromptRegistry {
         Ok(self.receipt(MutationDisposition::Transitioned))
     }
 
-    pub fn admit_factor_verified(
+    pub(crate) fn admit_factor_verified(
         &mut self,
         admission: VerifiedAdmission,
         now_unix_ms: u64,
@@ -451,7 +451,7 @@ impl PromptRegistry {
         Ok(self.receipt(MutationDisposition::Transitioned))
     }
 
-    pub fn retire_factor_governed(
+    pub(crate) fn retire_factor_governed(
         &mut self,
         factor_id: &StableId,
         actor_id: &StableId,
@@ -490,7 +490,7 @@ impl PromptRegistry {
         Ok(self.receipt(MutationDisposition::Transitioned))
     }
 
-    pub fn revoke_factor_governed(
+    pub(crate) fn revoke_factor_governed(
         &mut self,
         factor_id: &StableId,
         actor_id: &StableId,
