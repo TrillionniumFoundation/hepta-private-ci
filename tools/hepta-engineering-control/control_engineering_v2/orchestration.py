@@ -23,6 +23,7 @@ from .control_plane import (
     bounded_tuple,
     checked_id,
     checked_sha256,
+    canonical_paths,
     path_is_within,
     path_sets_overlap,
     semantic_digest,
@@ -297,6 +298,28 @@ def plan_engineering_work(
     if type(now) is not int or now < 0:
         raise EngineeringError("invalid_time")
     checked_id(generation_id, "generation_id")
+    if not isinstance(envelope, WorkEnvelope):
+        raise EngineeringError("invalid_envelope")
+    persisted = store._get_envelope(envelope.envelope_id, now)
+    persisted_allowed = tuple(
+        json.loads(bytes(persisted["allowed_paths_json"]).decode("utf-8"))
+    )
+    persisted_denied = tuple(
+        json.loads(bytes(persisted["denied_authorities_json"]).decode("utf-8"))
+    )
+    if (
+        str(persisted["source_commit"]) != envelope.source_commit
+        or str(persisted["source_tree"]) != envelope.source_tree
+        or str(persisted["objective_digest"]) != envelope.objective_digest
+        or str(persisted["contract_digest"]) != envelope.contract_digest
+        or str(persisted["owner"]) != envelope.owner
+        or persisted_allowed != canonical_paths(envelope.allowed_paths)
+        or persisted_denied != tuple(sorted(envelope.denied_authorities))
+        or int(persisted["maximum_assignments"]) != envelope.maximum_assignments
+        or int(persisted["expires_unix_ns"]) != envelope.expires_unix_ns
+        or int(persisted["revision"]) != envelope.revision
+    ):
+        raise EngineeringError("orchestration_envelope_binding_mismatch")
     package_values = bounded_tuple(packages, 4096, "package_limit_exceeded")
     worker_values = bounded_tuple(workers, MAX_WORKERS, "worker_limit_exceeded")
     receipt_values = bounded_tuple(
@@ -307,6 +330,13 @@ def plan_engineering_work(
     if type(capacity.ci_units) is not int or not 0 <= capacity.ci_units <= MAX_CAPACITY_UNITS:
         raise EngineeringError("invalid_ci_capacity")
 
+    if any(not isinstance(value, EngineeringWorkPackage) for value in package_values):
+        raise EngineeringError("invalid_engineering_package")
+    if any(not isinstance(value, WorkerProfile) for value in worker_values):
+        raise EngineeringError("invalid_worker_profile")
+    if any(not isinstance(value, CompletionReceipt) for value in receipt_values):
+        raise EngineeringError("invalid_completion_receipt")
+
     package_ids = [value.package_id for value in package_values]
     if len(package_ids) != len(set(package_ids)):
         raise EngineeringError("duplicate_package_identity")
@@ -314,29 +344,39 @@ def plan_engineering_work(
     if len(worker_ids) != len(set(worker_ids)):
         raise EngineeringError("duplicate_worker_identity")
 
+    worker_scopes: dict[str, tuple[str, ...]] = {}
     for worker in worker_values:
         checked_id(worker.worker_id, "worker_id")
         if type(worker.capacity_units) is not int or not 0 <= worker.capacity_units <= MAX_CAPACITY_UNITS:
             raise EngineeringError("invalid_worker_capacity")
         if (
-            len(worker.skills) > MAX_SKILLS
+            not isinstance(worker.skills, tuple)
+            or len(worker.skills) > MAX_SKILLS
             or len(set(worker.skills)) != len(worker.skills)
-            or any(not isinstance(skill, str) or not skill for skill in worker.skills)
         ):
             raise EngineeringError("invalid_worker_skills")
+        for skill in worker.skills:
+            checked_id(skill, "worker_skill")
         if (
-            not worker.allowed_paths
+            not isinstance(worker.allowed_paths, tuple)
+            or not worker.allowed_paths
             or len(worker.allowed_paths) > 256
-            or any(not isinstance(path, str) or not path for path in worker.allowed_paths)
         ):
             raise EngineeringError("invalid_worker_paths")
+        worker_scopes[worker.worker_id] = canonical_paths(worker.allowed_paths)
 
     review_remaining: dict[str, int] = {}
     if len(capacity.review) > MAX_REVIEW_ROLES:
         raise EngineeringError("review_role_limit_exceeded")
     for row in capacity.review:
+        if not isinstance(row, ReviewCapacity):
+            raise EngineeringError("invalid_review_capacity")
         checked_id(row.role, "review_role")
-        if row.role in review_remaining or type(row.slots) is not int or row.slots < 0:
+        if (
+            row.role in review_remaining
+            or type(row.slots) is not int
+            or not 0 <= row.slots <= MAX_CAPACITY_UNITS
+        ):
             raise EngineeringError("invalid_review_capacity")
         review_remaining[row.role] = row.slots
 
@@ -353,15 +393,22 @@ def plan_engineering_work(
         checked_id(package.package_id, "package_id")
         if (
             type(package.capacity_units) is not int
-            or package.capacity_units < 1
+            or not 1 <= package.capacity_units <= MAX_CAPACITY_UNITS
             or type(package.ci_units) is not int
-            or package.ci_units < 0
+            or not 0 <= package.ci_units <= MAX_CAPACITY_UNITS
+            or not isinstance(package.required_skills, tuple)
             or len(package.required_skills) > MAX_SKILLS
+            or len(set(package.required_skills)) != len(package.required_skills)
+            or not isinstance(package.review_roles, tuple)
             or len(package.review_roles) > MAX_REVIEW_ROLES
-            or any(not isinstance(skill, str) or not skill for skill in package.required_skills)
-            or any(not isinstance(role, str) or not role for role in package.review_roles)
+            or len(set(package.review_roles)) != len(package.review_roles)
         ):
             raise EngineeringError("invalid_package_capacity")
+        for skill in package.required_skills:
+            checked_id(skill, "required_skill")
+        for role in package.review_roles:
+            checked_id(role, "required_review_role")
+        _score(package)
         if package.package_id not in already_completed:
             base_packages.append(
                 WorkPackage(
@@ -402,7 +449,7 @@ def plan_engineering_work(
             if not required.issubset(set(worker.skills)):
                 continue
             if any(
-                not path_is_within(path, worker.allowed_paths)
+                not path_is_within(path, worker_scopes[worker.worker_id])
                 for path in package.write_paths
             ):
                 continue
