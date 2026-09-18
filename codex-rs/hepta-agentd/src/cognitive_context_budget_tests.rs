@@ -452,28 +452,29 @@ async fn production_read_fail_closes_when_owner_changes_after_authoritative_acqu
         tokio::task::spawn_blocking(move || entered_rx.recv_timeout(Duration::from_secs(5))).await,
         "join ranker gate wait",
     );
-    must(gate_wait, "wait for ranker gate");
+    if let Err(error) = gate_wait {
+        let _ = release_tx.send(());
+        panic!("wait for ranker gate: {error}");
+    }
 
-    must(
-        store
-            .correct_memory(
-                &access,
-                &memory_id,
-                head.id.revision,
-                &MemoryRevisionDraft {
-                    scope: head.scope.clone(),
-                    content: "lemon authoritative alpha corrected".to_string(),
-                    verification: MemoryVerification::Verified,
-                    lifecycle: MemoryLifecycleState::Active,
-                    valid_from_unix_seconds: head.valid_from_unix_seconds,
-                    valid_to_unix_seconds: head.valid_to_unix_seconds,
-                    citations: head.citations.clone(),
-                },
-            )
-            .await,
-        "advance memory frontier",
-    );
+    let correction = store
+        .correct_memory(
+            &access,
+            &memory_id,
+            head.id.revision,
+            &MemoryRevisionDraft {
+                scope: head.scope.clone(),
+                content: "lemon authoritative alpha corrected".to_string(),
+                verification: MemoryVerification::Verified,
+                lifecycle: MemoryLifecycleState::Active,
+                valid_from_unix_seconds: head.valid_from_unix_seconds,
+                valid_to_unix_seconds: head.valid_to_unix_seconds,
+                citations: head.citations.clone(),
+            },
+        )
+        .await;
     must(release_tx.send(()), "release ranker gate");
+    must(correction, "advance memory frontier");
 
     let result = must(read_task.await, "join cognitive read");
     assert!(matches!(
