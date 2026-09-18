@@ -45,7 +45,7 @@ use crate::framing::workspace_digest;
 
 const FEDERATED_COGNITIVE_SOURCE: &str = "hepta_cognitive_federation_v1";
 const COMBINED_COGNITIVE_SOURCE: &str = "hepta_cognitive_combined_v1";
-const FEDERATED_ATTACHMENT_SCHEMA_VERSION: u32 = 1;
+const FEDERATED_ATTACHMENT_SCHEMA_VERSION: u32 = 2;
 const MAX_AUTO_CITATIONS_PER_MEMORY: usize = 8;
 const MAX_COMBINED_CITATIONS_PER_MEMORY: usize = 1;
 
@@ -56,6 +56,7 @@ struct PreparedFederatedAttachment {
     workspace: std::path::PathBuf,
     query_sha256: Sha256Digest,
     coverage: FederatedRetrievalCoverage,
+    admission_expires_unix_ms: u64,
     bindings: Vec<FederatedMemoryRevalidationBinding>,
     source_binding_sha256: Sha256Digest,
     content_sha256: Sha256Digest,
@@ -116,6 +117,10 @@ impl FederatedCognitiveExtension {
             return None;
         }
         let now = now_unix_seconds()?;
+        let now_unix_ms = u64::try_from(now).ok()?.checked_mul(1_000)?;
+        if now_unix_ms >= prepared.admission_expires_unix_ms {
+            return None;
+        }
         let access = FederationConsumerAccess::new(
             self.federation.consumer_agent_id().clone(),
             workspace_digest(input.cwd),
@@ -141,7 +146,11 @@ impl FederatedCognitiveExtension {
             }
             explanations.push(*explanation);
         }
-        let content = compile_explanations(&explanations, prepared.coverage)?;
+        let content = compile_explanations(
+            &explanations,
+            prepared.coverage,
+            prepared.admission_expires_unix_ms,
+        )?;
         let content_sha256 = Sha256Digest::for_bytes(content.as_bytes());
         let source_binding_sha256 = federation_source_binding(
             input.thread_id,
@@ -149,6 +158,7 @@ impl FederatedCognitiveExtension {
             input.cwd,
             &prepared.query_sha256,
             prepared.coverage,
+            prepared.admission_expires_unix_ms,
             &prepared.bindings,
             &content_sha256,
         )?;
@@ -272,6 +282,18 @@ impl TurnInputContributor for FederatedCognitiveExtension {
             else {
                 return Vec::new();
             };
+            let Some(admission_expires_unix_ms) = batch.admission_expires_unix_ms else {
+                return Vec::new();
+            };
+            let Some(now_unix_ms) = u64::try_from(now)
+                .ok()
+                .and_then(|value| value.checked_mul(1_000))
+            else {
+                return Vec::new();
+            };
+            if now_unix_ms >= admission_expires_unix_ms {
+                return Vec::new();
+            }
             let byte_budget = usize::try_from(
                 thread_state
                     .limits
@@ -293,6 +315,7 @@ impl TurnInputContributor for FederatedCognitiveExtension {
                 workspace.as_path(),
                 &batch.query_sha256,
                 batch.coverage,
+                admission_expires_unix_ms,
                 &bindings,
                 &content_sha256,
             ) else {
@@ -307,6 +330,7 @@ impl TurnInputContributor for FederatedCognitiveExtension {
                 workspace,
                 query_sha256: batch.query_sha256,
                 coverage: batch.coverage,
+                admission_expires_unix_ms,
                 bindings,
                 source_binding_sha256,
                 content_sha256,
@@ -372,6 +396,15 @@ impl EphemeralModelInputContributor for FederatedCognitiveExtension {
             let Some(now) = now_unix_seconds() else {
                 return Ok(None);
             };
+            let Some(now_unix_ms) = u64::try_from(now)
+                .ok()
+                .and_then(|value| value.checked_mul(1_000))
+            else {
+                return Ok(None);
+            };
+            if now_unix_ms >= prepared.admission_expires_unix_ms {
+                return Ok(None);
+            }
             let access = FederationConsumerAccess::new(
                 self.federation.consumer_agent_id().clone(),
                 workspace_digest(input.cwd),
@@ -397,7 +430,11 @@ impl EphemeralModelInputContributor for FederatedCognitiveExtension {
                 }
                 explanations.push(*explanation);
             }
-            let Some(content) = compile_explanations(&explanations, prepared.coverage) else {
+            let Some(content) = compile_explanations(
+            &explanations,
+            prepared.coverage,
+            prepared.admission_expires_unix_ms,
+        ) else {
                 return Ok(None);
             };
             let content_sha256 = Sha256Digest::for_bytes(content.as_bytes());
@@ -444,6 +481,7 @@ struct FederatedAttachment<'a> {
     schema_version: u32,
     source: &'static str,
     coverage: FederatedRetrievalCoverage,
+    admission_expires_unix_ms: u64,
     memories: &'a [FederatedAttachmentMemory],
 }
 
@@ -479,9 +517,12 @@ fn combine_cognitive_materials(
     let federated_memory =
         compact_federated_memory(federated_value.get("memories")?.as_array()?.first()?)?;
     let federation_coverage = federated_value.get("coverage")?.clone();
+    let federation_admission_expiry =
+        federated_value.get("admission_expires_unix_ms")?.clone();
     let content = serde_json::to_string(&json!({
         "s": "verified_cognitive_v1",
         "f": federation_coverage,
+        "x": federation_admission_expiry,
         "m": [local_memory, federated_memory],
     }))
     .ok()?;
@@ -581,6 +622,7 @@ fn compile_retrieval_batch(
     max_bytes: usize,
     max_item_bytes: usize,
 ) -> Option<(Vec<FederatedMemoryRevalidationBinding>, String)> {
+    let admission_expires_unix_ms = batch.admission_expires_unix_ms?;
     let max_bytes = max_bytes
         .min(EPHEMERAL_MODEL_INPUT_MAX_CONTENT_BYTES as usize)
         .min(EPHEMERAL_MODEL_INPUT_MAX_CONTENT_TOKENS as usize);
@@ -602,7 +644,7 @@ fn compile_retrieval_batch(
         );
         let mut proposed = selected_memories.clone();
         proposed.push(record);
-        let Ok(content) = serialize_attachment(&proposed, batch.coverage) else {
+        let Ok(content) = serialize_attachment(&proposed, batch.coverage, admission_expires_unix_ms) else {
             continue;
         };
         if content.len() > max_bytes {
@@ -614,13 +656,19 @@ fn compile_retrieval_batch(
     if selected_bindings.is_empty() {
         return None;
     }
-    let content = serialize_attachment(&selected_memories, batch.coverage).ok()?;
+    let content = serialize_attachment(
+        &selected_memories,
+        batch.coverage,
+        admission_expires_unix_ms,
+    )
+    .ok()?;
     Some((selected_bindings, content))
 }
 
 fn compile_explanations(
     explanations: &[FederatedMemoryExplanation],
     coverage: FederatedRetrievalCoverage,
+    admission_expires_unix_ms: u64,
 ) -> Option<String> {
     let memories = explanations
         .iter()
@@ -656,7 +704,7 @@ fn compile_explanations(
             )
         })
         .collect::<Vec<_>>();
-    serialize_attachment(&memories, coverage).ok()
+    serialize_attachment(&memories, coverage, admission_expires_unix_ms).ok()
 }
 
 fn attachment_record(
@@ -691,11 +739,13 @@ fn attachment_record(
 fn serialize_attachment(
     memories: &[FederatedAttachmentMemory],
     coverage: FederatedRetrievalCoverage,
+    admission_expires_unix_ms: u64,
 ) -> Result<String, serde_json::Error> {
     serde_json::to_string(&FederatedAttachment {
         schema_version: FEDERATED_ATTACHMENT_SCHEMA_VERSION,
         source: "explicit_federated_verified_memory",
         coverage,
+        admission_expires_unix_ms,
         memories,
     })
 }
@@ -706,11 +756,13 @@ fn federation_source_binding(
     workspace: &Path,
     query_sha256: &Sha256Digest,
     coverage: FederatedRetrievalCoverage,
+    admission_expires_unix_ms: u64,
     bindings: &[FederatedMemoryRevalidationBinding],
     content_sha256: &Sha256Digest,
 ) -> Option<Sha256Digest> {
     let serialized = serde_json::to_vec(bindings).ok()?;
     let coverage = serde_json::to_vec(&coverage).ok()?;
+    let admission_expiry = admission_expires_unix_ms.to_be_bytes();
     Some(digest_many(
         b"hepta:cognitive:federated-ephemeral-source-binding:v1",
         &[
@@ -719,6 +771,7 @@ fn federation_source_binding(
             path_identity_bytes(workspace).as_slice(),
             query_sha256.as_str().as_bytes(),
             coverage.as_slice(),
+            admission_expiry.as_slice(),
             serialized.as_slice(),
             content_sha256.as_str().as_bytes(),
         ],
@@ -912,13 +965,14 @@ mod tests {
         padding: usize,
     ) -> CognitiveProposalMaterial {
         let content = serde_json::to_string(&serde_json::json!({
-            "schema_version": 1,
+            "schema_version": 2,
             "source": "explicit_federated_verified_memory",
             "coverage": {
                 "requested_sources": 1,
                 "completed_sources": 1,
                 "failed_sources": 0
             },
+            "admission_expires_unix_ms": 9999999999000_u64,
             "memories": [{
                 "source_agent_id": owner_agent_id,
                 "capability_id": capability_id,
