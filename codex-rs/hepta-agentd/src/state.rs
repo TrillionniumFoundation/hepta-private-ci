@@ -214,6 +214,10 @@ impl AgentdState {
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
         if runtime.lifecycle != AgentLifecycle::Running
             || !runtime.app_server_ready
+            || !runtime.critical_stores_ready
+            || !runtime.revocation_ready
+            || !runtime.required_ports_ready
+            || !runtime.admission_open
             || runtime.fenced
         {
             return Err(AgentdError::GenerationFenced(
