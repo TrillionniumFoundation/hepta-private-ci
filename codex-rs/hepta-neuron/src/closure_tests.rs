@@ -144,7 +144,7 @@ fn calibration_artifact() -> NeuronCalibrationArtifactV1 {
     let execution = model_execution();
     let mut artifact = NeuronCalibrationArtifactV1 {
         artifact_digest: Digest32::ZERO,
-        config_digest: checked(config.digest()),
+        config_digest: checked(runtime_profile_digest(&config, &native())),
         model_identity_digest: checked(execution.model_identity_digest()),
         generation: config.generation,
         valid_from_sequence: 1,
@@ -429,7 +429,7 @@ fn runtime_executes_model_commits_witness_and_rotates_without_state_reset() {
     let fixture = Fixture::new();
     let config = config();
     let scope = scope();
-    let config_digest = checked(config.digest());
+    let config_digest = checked(runtime_profile_digest(&config, &native()));
     let witness = checked(open_file_witness(
         fixture.file("witness"),
         config_digest,
@@ -515,7 +515,7 @@ fn reopen_reconciles_a_durable_suffix_before_accepting_new_ticks() {
     let fixture = Fixture::new();
     let config = config();
     let scope = scope();
-    let config_digest = checked(config.digest());
+    let config_digest = checked(runtime_profile_digest(&config, &native()));
     let witness = checked(open_file_witness(
         fixture.file("witness-reconcile"),
         config_digest,
@@ -598,7 +598,7 @@ fn deletion_rebuild_rechecks_live_lineage_before_model_execution() {
     let fixture = Fixture::new();
     let config = config();
     let scope = scope();
-    let config_digest = checked(config.digest());
+    let config_digest = checked(runtime_profile_digest(&config, &native()));
     let witness = checked(open_file_witness(
         fixture.file("witness"),
         config_digest,
@@ -654,7 +654,7 @@ fn runtime_rejects_revoked_calibration_evidence_before_model_execution() {
     let fixture = Fixture::new();
     let config = config();
     let scope = scope();
-    let config_digest = checked(config.digest());
+    let config_digest = checked(runtime_profile_digest(&config, &native()));
     let witness = checked(open_file_witness(
         fixture.file("witness-calibration-lineage"),
         config_digest,
