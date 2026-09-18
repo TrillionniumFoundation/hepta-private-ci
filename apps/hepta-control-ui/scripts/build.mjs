@@ -25,25 +25,36 @@ const sourceFiles = (await readdir(sourceDir, { withFileTypes: true }))
   .filter((entry) => entry.isFile() && entry.name.endsWith(".js"))
   .map((entry) => entry.name)
   .sort();
+const sourceSet = new Set(sourceFiles);
 const originals = new Map();
-const outputNames = new Map();
 for (const file of sourceFiles) {
-  const content = await readFile(join(sourceDir, file), "utf8");
-  originals.set(file, content);
-  const info = digest(Buffer.from(content));
-  outputNames.set(file, `${parse(file).name}.${info.short}.js`);
+  originals.set(file, await readFile(join(sourceDir, file), "utf8"));
 }
 
+const outputNames = new Map();
 const manifestAssets = [];
-for (const file of sourceFiles) {
+const visiting = new Set();
+
+async function buildModule(file) {
+  if (outputNames.has(file)) return outputNames.get(file);
+  if (!sourceSet.has(file)) throw new Error(`missing source module ${file}`);
+  if (visiting.has(file)) throw new Error(`cyclic browser module graph at ${file}`);
+  visiting.add(file);
+
   let content = originals.get(file);
-  for (const [dependency, output] of outputNames) {
+  const dependencies = [
+    ...content.matchAll(/(?:from\s+|import\s*)["']\.\/(.+?\.js)["']/g),
+  ].map((match) => match[1]);
+  for (const dependency of dependencies) {
+    const output = await buildModule(dependency);
     content = content.replaceAll(`"./${dependency}"`, `"./${output}"`);
     content = content.replaceAll(`'./${dependency}'`, `'./${output}'`);
   }
-  const output = outputNames.get(file);
+
   const bytes = Buffer.from(content);
   const info = digest(bytes);
+  const output = `${parse(file).name}.${info.short}.js`;
+  outputNames.set(file, output);
   await writeFile(join(assetsDir, output), bytes);
   manifestAssets.push({
     source: `src/${file}`,
@@ -53,8 +64,11 @@ for (const file of sourceFiles) {
     integrity: info.integrity,
     mediaType: "text/javascript",
   });
+  visiting.delete(file);
+  return output;
 }
 
+for (const file of sourceFiles) await buildModule(file);
 const cssSource = await readFile(join(webDir, "styles.css"));
 const cssInfo = digest(cssSource);
 const cssName = `styles.${cssInfo.short}.css`;
