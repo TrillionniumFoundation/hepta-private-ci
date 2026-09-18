@@ -18,18 +18,21 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "registered_bao_host_source_composed_no_selected_process",
+  "productionWriterState": "authority_owner_source_implemented_not_activated",
   "operations": [
     {
       "operation": "finaluseauthority",
       "nativeSymbol": "FinalUseAuthority",
       "sourcePath": "codex-rs/hepta-contracts/src/final_use.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_registered_host_not_product_activated",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "codex-rs/hepta-contracts/tests/final_use_linearization.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "finaluseauthority",
+      "designOperation": "claim_deliver_dispatch_external_trust_and_epoch_issuer_rotation",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -37,22 +40,99 @@
       "operation": "store",
       "nativeSymbol": "Store",
       "sourcePath": "codex-rs/hepta-contracts/src/final_use_store.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_not_product_activated",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-contracts/src/final_use_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "store",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "authority_lease_registry",
+      "nativeSymbol": "AuthorityLeaseRegistry / AuthorityLeaseVerifier",
+      "sourcePath": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "state": "source_implemented_least_authority_handles_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-contracts/src/authority_lease.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "put_verify_revoke_prune_epoch_authority_lease",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "final_use_approval_verifier",
+      "nativeSymbol": "FinalUseApprovalVerifier",
+      "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "state": "source_implemented_registered_host_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-contracts/src/final_use_control.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "independent_final_use_approval_with_epoch_key_rotation",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "final_use_revocation_feed_verifier",
+      "nativeSymbol": "FinalUseRevocationFeedVerifier",
+      "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "state": "source_implemented_registered_host_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-contracts/src/final_use_control.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authenticated_fresh_revocation_ingestion_with_epoch_key_rotation",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "authority_external_trust",
+      "nativeSymbol": "AuthorityClock / AuthorityFrontierStore",
+      "sourcePath": "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "state": "source_interface_implemented_external_backend_not_selected",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-contracts/src/authority_lease.rs",
+        "codex-rs/hepta-contracts/src/final_use_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "trusted_time_and_external_anti_rollback_frontier",
+      "mappingClass": "owner_native_interface",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "final_use_revocation_convergence",
+      "nativeSymbol": "FinalUseRevocationConvergenceVerifier",
+      "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "state": "source_implemented_transport_external",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-contracts/src/final_use_control.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verify_enrolled_node_revocation_convergence",
+      "mappingClass": "owner_native_verifier",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Select and qualify a named product-process caller for the registered Bao final-use host before activation.",
+    "Compose each remaining target kernel.authority ModulePort only at its real owner boundary; target-only ports are enumerated in TRACEABILITY.md and must not be inferred from the generic lease type.",
+    "Retain current exact-head and deterministic synthetic-merge execution receipts after the hardened authority changes."
   ],
   "externalEvidenceGates": [
+    "fleet revocation transport and measured convergence/freshness latency qualification; signed per-node convergence protocol is repository-implemented",
+    "protected production AuthorityFrontierStore backend qualification",
+    "attested or otherwise independently protected AuthorityClock qualification",
+    "HSM/KMS key custody, staged rotation and compromise-response ceremony",
     "independent semantic review",
-    "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
@@ -66,5 +146,8 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-contracts"
-  ]
+  ],
+  "traceability": "docs/modules/kernel.authority/TRACEABILITY.md",
+  "trustDecision": "docs/modules/kernel.authority/ADR-0001-LEASE-TRUST-MODEL.md",
+  "linearizationContract": "docs/modules/kernel.authority/LINEARIZATION.md"
 }
