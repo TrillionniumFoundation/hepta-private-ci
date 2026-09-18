@@ -88,4 +88,35 @@ fn definition_body_and_registry_total_are_bounded() {
         ),
         Err(ContractRegistryError::ZeroVersion)
     );
+
+    let full_body = vec![0_u8; MAX_DEFINITION_BYTES_V1];
+    let aggregate_overflow = (0..17)
+        .map(|index| {
+            checked(ContractDefinitionV1::new(
+                ContractDefinitionKindV1::Schema,
+                id(&format!("schema:aggregate-{index}")),
+                1,
+                &full_body,
+            ))
+        })
+        .collect();
+    assert_eq!(
+        ContractRegistryV1::new(aggregate_overflow),
+        Err(ContractRegistryError::TooMuchDefinitionData)
+    );
+
+    let too_many_entries = (0..=MAX_REGISTRY_ENTRIES_V1)
+        .map(|index| {
+            checked(ContractDefinitionV1::new(
+                ContractDefinitionKindV1::Schema,
+                id(&format!("schema:entry-{index}")),
+                1,
+                b"x",
+            ))
+        })
+        .collect();
+    assert_eq!(
+        ContractRegistryV1::new(too_many_entries),
+        Err(ContractRegistryError::TooManyEntries)
+    );
 }
