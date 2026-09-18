@@ -473,7 +473,7 @@ impl NativeJournal {
     }
 
     fn apply(&mut self, event: Event) -> Result<(), Error> {
-        if matches!(event, Event::OutputHistoryRedacted) {
+        if matches!(&event, Event::OutputHistoryRedacted) {
             self.output_history_redacted = true;
             return Ok(());
         }
