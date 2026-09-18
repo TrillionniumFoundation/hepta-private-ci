@@ -44,12 +44,25 @@ impl BackendAdapter for MockBackend {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug)]
 struct PlatformState {
     invoke_calls: usize,
     reconcile_calls: usize,
     invoke_indeterminate: bool,
     reconcile_terminal: bool,
+    permission_allowed: bool,
+}
+
+impl Default for PlatformState {
+    fn default() -> Self {
+        Self {
+            invoke_calls: 0,
+            reconcile_calls: 0,
+            invoke_indeterminate: false,
+            reconcile_terminal: false,
+            permission_allowed: true,
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -60,7 +73,7 @@ struct MockPlatform {
 impl PlatformAdapter for MockPlatform {
     fn permission(&self, _payload: &PlatformPayload) -> Result<PermissionDecision, ShellError> {
         Ok(PermissionDecision {
-            allowed: true,
+            allowed: self.state.lock().unwrap().permission_allowed,
             outcome_digest: D1.to_owned(),
         })
     }
@@ -333,4 +346,36 @@ fn close_does_not_erase_unobserved_effects() {
         .unwrap();
     runtime.close().unwrap();
     assert_eq!(runtime.pending_operations().len(), 1);
+}
+
+#[test]
+fn permission_denial_is_terminal_and_never_invokes_platform() {
+    let temp = TempDir::new().unwrap();
+    let platform_state = Arc::new(Mutex::new(PlatformState {
+        permission_allowed: false,
+        ..Default::default()
+    }));
+    let session = SessionIncarnation {
+        endpoint_id: "runtime.1".to_owned(),
+        session_id: "session.permission".to_owned(),
+        generation: 1,
+    };
+    let mut runtime = runtime_fixture(&temp, vec![session], platform_state.clone());
+    runtime.connect_runtime(&manifest()).unwrap();
+    render(&mut runtime, 1);
+    let session = runtime.session().unwrap().clone();
+    let payload = PlatformPayload::CopyText {
+        text: "denied".to_owned(),
+    };
+    let receipt = runtime
+        .request_platform_capability(PlatformRequest {
+            operation_id: "operation.denied".to_owned(),
+            displayed_revision: 1,
+            grant: grant(&session, "operation.denied", &payload),
+            payload,
+        })
+        .unwrap();
+    assert!(receipt.terminal_observed);
+    assert_eq!(receipt.terminal_status, Some(TerminalStatus::Rejected));
+    assert_eq!(platform_state.lock().unwrap().invoke_calls, 0);
 }
