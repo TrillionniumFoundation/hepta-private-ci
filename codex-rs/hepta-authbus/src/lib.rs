@@ -13,6 +13,7 @@ mod control;
 mod signed;
 pub use control::AUTHBUS_CONTROL_SCHEMA_VERSION;
 pub use control::AUTHBUS_MAX_RESERVATIONS;
+pub use control::AuthBusRollbackCheckpoint;
 pub use control::AuthPolicy;
 pub use control::AuthorizationDecision;
 pub use control::AuthorizationRequest;
