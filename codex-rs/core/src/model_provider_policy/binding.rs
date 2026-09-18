@@ -24,6 +24,9 @@ use super::transport::ProviderRoutingHint;
 /// IDs and the selected local cwd are host-resolved; extension stores remain
 /// borrowed from Codex's single session/thread/turn lifecycle.
 pub(crate) struct ModelProviderPolicyContext<'a> {
+    /// Fail closed when this host advertises Hepta governance but forgot to
+    /// install an active physical provider-policy contributor.
+    pub(crate) require_active_policy: bool,
     pub(crate) registry: &'a ExtensionRegistry<Config>,
     pub(crate) session_store: &'a ExtensionData,
     pub(crate) thread_store: &'a ExtensionData,
