@@ -68,6 +68,7 @@ pub struct FleetEssentialFloorsV1 {
 pub struct FleetOwnerAdmissionV1 {
     owner: AdmittedOwnerSummaryV1,
     resource_reservations: Vec<ResourceReservationV1>,
+    resource_profile_digest: Digest32,
 }
 
 impl FleetOwnerAdmissionV1 {
@@ -82,9 +83,8 @@ impl FleetOwnerAdmissionV1 {
     }
 
     #[must_use]
-    pub fn resource_profile_digest(&self) -> Digest32 {
-        canonical_resource_profile_digest(&self.resource_reservations)
-            .expect("fleet owner admission is constructed only from validated reservations")
+    pub const fn resource_profile_digest(&self) -> Digest32 {
+        self.resource_profile_digest
     }
 }
 
@@ -307,11 +307,12 @@ pub fn admit_fleet_allocation_owner_v1(
             essential_floor: q32_u64(floors.accelerator_millis)?,
         },
     ];
-    canonical_resource_profile_digest(&resource_reservations)?;
+    let resource_profile_digest = canonical_resource_profile_digest(&resource_reservations)?;
 
     Ok(FleetOwnerAdmissionV1 {
         owner,
         resource_reservations,
+        resource_profile_digest,
     })
 }
 
