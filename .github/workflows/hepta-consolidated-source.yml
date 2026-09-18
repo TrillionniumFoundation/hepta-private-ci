@@ -311,8 +311,8 @@ jobs:
 
   engineering-product-gate:
     name: control.engineering product caller
-    needs: [engineering-sandbox, qualification]
-    if: ${{ always() && needs.engineering-sandbox.result == 'success' && needs.qualification.result == 'success' }}
+    needs: [workspace-regression, engineering-sandbox, qualification]
+    if: ${{ always() && needs.workspace-regression.result == 'success' && needs.engineering-sandbox.result == 'success' && needs.qualification.result == 'success' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
