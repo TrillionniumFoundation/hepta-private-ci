@@ -5,6 +5,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
+use crate::AuthenticatedDecisionRecordV2;
 use crate::AuthenticatedOutcomeRecordV2;
 use crate::AuthenticatedOutcomeTerminality;
 use crate::CandidateSetCompleteness;
@@ -106,6 +107,7 @@ pub(crate) fn decode_event(mut input: &[u8]) -> Result<LedgerEvent, DurableLedge
             outcome_id: reader.id()?,
             episode_id: reader.id()?,
             observer_id: reader.id()?,
+            observer_controller_id: reader.id()?,
             observer_credential_chain_digest: reader.digest()?,
             observer_signing_key_digest: reader.digest()?,
             observer_scope_digest: reader.digest()?,
@@ -133,6 +135,7 @@ pub(crate) fn decode_event(mut input: &[u8]) -> Result<LedgerEvent, DurableLedge
             episode_id: reader.id()?,
             outcome_id: reader.id()?,
             allocator_id: reader.id()?,
+            allocator_controller_id: reader.id()?,
             allocator_credential_chain_digest: reader.digest()?,
             allocator_signing_key_digest: reader.digest()?,
             allocator_scope_digest: reader.digest()?,
@@ -164,6 +167,32 @@ pub(crate) fn decode_event(mut input: &[u8]) -> Result<LedgerEvent, DurableLedge
             artifact_id: reader.id()?,
             authority_id: reader.id()?,
             reason_digest: reader.digest()?,
+            authentication_digest: reader.digest()?,
+        }),
+        7 => LedgerEvent::AuthenticatedDecisionV2(AuthenticatedDecisionRecordV2 {
+            record_id: reader.id()?,
+            episode_id: reader.id()?,
+            objective_digest: reader.digest()?,
+            generator_id: reader.id()?,
+            generator_controller_id: reader.id()?,
+            generator_credential_chain_digest: reader.digest()?,
+            generator_signing_key_digest: reader.digest()?,
+            generator_scope_digest: reader.digest()?,
+            generator_authority_epoch: u64::from_be_bytes(reader.take()?),
+            candidate_ids: {
+                let count = u32::from_be_bytes(reader.take()?) as usize;
+                if count > 128 {
+                    return Err(DurableLedgerError::Corrupt);
+                }
+                (0..count)
+                    .map(|_| reader.id())
+                    .collect::<Result<Vec<_>, _>>()?
+            },
+            selected_candidate_id: reader.id()?,
+            selected_propensity: ProbabilityQ32::from_raw(u64::from_be_bytes(reader.take()?))
+                .map_err(|_| DurableLedgerError::Corrupt)?,
+            candidate_completeness_digest: reader.digest()?,
+            support_digest: reader.digest()?,
             authentication_digest: reader.digest()?,
         }),
         _ => return Err(DurableLedgerError::Corrupt),
