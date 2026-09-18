@@ -38,7 +38,6 @@ fn digest_parser_deterministic_fuzz_corpus_is_total_and_strict() {
     }
 }
 
-
 #[test]
 fn uppercase_and_wrong_length_fail_closed() {
     assert_eq!("00".parse::<Digest32>(), Err(DigestParseError::Length(2)));
