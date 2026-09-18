@@ -149,13 +149,14 @@ impl AgentRunCoordinator {
         now_ms: u64,
         snapshot: RunSnapshot,
     ) -> Result<RunReceipt, AgentRunError> {
-        validate_snapshot(now_ms, &snapshot)?;
+        validate_identity(&snapshot.run_id, "run")?;
         if let Some(current) = self.runs.get(&snapshot.run_id) {
             if current.snapshot == snapshot {
                 return Ok(receipt(current, /* idempotent */ true));
             }
             return Err(AgentRunError::Conflict);
         }
+        validate_snapshot(now_ms, &snapshot)?;
         if self.draining {
             return Err(AgentRunError::Draining);
         }
@@ -248,10 +249,7 @@ impl AgentRunCoordinator {
     ) -> Result<(CancellationDisposition, RunReceipt), AgentRunError> {
         validate_identity(run_id, "run")?;
         let reason = normalize_cancel_reason(reason.into())?;
-        let cancellation_ack_deadline_ms = cancellation_ack_deadline(
-            now_ms,
-            self.composition.cancellation_ack_timeout_ms,
-        )?;
+        let cancellation_ack_timeout_ms = self.composition.cancellation_ack_timeout_ms;
         let record = self
             .runs
             .get_mut(run_id)
@@ -278,6 +276,8 @@ impl AgentRunCoordinator {
                 CancellationDisposition::CancelledBeforeDispatch
             }
             RunPhase::Dispatched => {
+                let cancellation_ack_deadline_ms =
+                    cancellation_ack_deadline(now_ms, cancellation_ack_timeout_ms)?;
                 record.phase = RunPhase::Cancelling;
                 record.cancel_reason = Some(reason);
                 record.cancellation_ack_deadline_ms = Some(cancellation_ack_deadline_ms);
