@@ -136,7 +136,7 @@ fn encode_hex(bytes: &[u8]) -> String {
 }
 
 fn decode_hex(value: &str) -> Result<Vec<u8>, String> {
-    if !value.len().is_multiple_of(2) {
+    if value.len() % 2 != 0 {
         return Err("odd hex length".to_owned());
     }
     let mut output = Vec::with_capacity(value.len() / 2);
@@ -269,7 +269,7 @@ fn rust_python_v2_bidirectional_process_boundary_and_metadata_fault_reject() {
     assert_eq!(decoded.generation().get(), generation.get() + 1);
     let mut expected_payload = payload;
     expected_payload.extend_from_slice(b"|python");
-    assert_eq!(decoded.payload(), expected_payload);
+    assert_eq!(decoded.payload(), expected_payload.as_slice());
 
     let mut metadata_tampered = frame;
     metadata_tampered[54] ^= 0x01;
