@@ -41,7 +41,7 @@ fn decision(number: u64) -> LedgerEvent {
         episode_id: id(&format!("episode-{number}")),
         objective_digest: Digest32::of_bytes(b"objective"),
         policy_id: id("policy"),
-        candidate_ids: vec![id("choice"), id("abstain")],
+        candidate_ids: vec![id("abstain"), id("choice")],
         selected_candidate_id: id("choice"),
         selected_propensity: must(ProbabilityQ32::from_raw(1_u64 << 31)),
         completeness: CandidateSetCompleteness::Complete,
