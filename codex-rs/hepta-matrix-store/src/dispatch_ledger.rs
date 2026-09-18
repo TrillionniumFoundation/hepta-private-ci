@@ -543,6 +543,55 @@ pub(super) async fn record_outbox_claim_tx(
     Ok(())
 }
 
+pub(super) async fn record_compat_sent_tx(
+    transaction: &mut Transaction<'_, Sqlite>,
+    record: &OutboxRecord,
+    event_id: &MatrixEventId,
+    now_ms: u64,
+) -> Result<(), MatrixDurableError> {
+    ensure_dispatch_for_claim_tx(transaction, record, record.attempts, now_ms).await?;
+    sqlx::query(
+        "UPDATE matrix_dispatch_ledger
+         SET state = 'observed_terminal',
+             terminal_event_id = ?,
+             terminal_at_ms = COALESCE(terminal_at_ms, ?),
+             updated_at_ms = MAX(updated_at_ms, ?)
+         WHERE stable_txn_id = ?
+           AND state IN ('dispatched', 'accepted', 'indeterminate')",
+    )
+    .bind(event_id.as_str())
+    .bind(to_i64(now_ms)?)
+    .bind(to_i64(now_ms)?)
+    .bind(record.stable_txn_id.as_str())
+    .execute(&mut **transaction)
+    .await
+    .map_err(unavailable)?;
+    Ok(())
+}
+
+pub(super) async fn record_compat_failure_tx(
+    transaction: &mut Transaction<'_, Sqlite>,
+    record: &OutboxRecord,
+    now_ms: u64,
+) -> Result<(), MatrixDurableError> {
+    ensure_dispatch_for_claim_tx(transaction, record, record.attempts, now_ms).await?;
+    sqlx::query(
+        "UPDATE matrix_dispatch_ledger
+         SET state = 'terminal_failure',
+             terminal_at_ms = COALESCE(terminal_at_ms, ?),
+             updated_at_ms = MAX(updated_at_ms, ?)
+         WHERE stable_txn_id = ?
+           AND state IN ('dispatched', 'accepted', 'indeterminate', 'terminal_failure')",
+    )
+    .bind(to_i64(now_ms)?)
+    .bind(to_i64(now_ms)?)
+    .bind(record.stable_txn_id.as_str())
+    .execute(&mut **transaction)
+    .await
+    .map_err(unavailable)?;
+    Ok(())
+}
+
 pub(super) async fn reconcile_terminal_outbox(
     pool: &sqlx::SqlitePool,
 ) -> Result<(), MatrixDurableError> {
