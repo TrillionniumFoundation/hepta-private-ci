@@ -264,8 +264,8 @@ This receipt records repository source bindings for the current documentation ca
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
 | `admit_event` | `pub async fn process_event(` | `codex-rs/hepta-matrixd/src/runtime.rs` | `codex-rs/hepta-matrixd/src/tests.rs` |
-| `prepare_send` | `pub async fn prepare_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrix-store/tests/dispatch_ledger.rs`, `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
-| `observe_send` | `pub async fn observe_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrix-store/tests/dispatch_ledger.rs`, `codex-rs/hepta-matrix-sdk/tests/durable_transport.rs`, `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
+| `prepare_send` | `pub fn prepare_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrix-store/tests/dispatch_ledger.rs`, `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
+| `observe_send` | `pub fn observe_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrix-store/tests/dispatch_ledger.rs`, `codex-rs/hepta-matrix-sdk/tests/durable_transport.rs`, `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
