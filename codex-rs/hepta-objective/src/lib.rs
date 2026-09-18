@@ -86,6 +86,7 @@ pub use publication::ObjectiveRunPublicationError;
 pub use publication::ObjectiveRunPublicationV1;
 pub use publication::RunStartBindingsV1;
 pub use publication::RunStartSnapshotV1;
+pub use publication::objective_run_publication_digest_v1;
 pub use source_envelope_json::MAX_OBJECTIVE_SOURCE_JSON_INPUT_BYTES;
 pub use source_envelope_json::ObjectiveSourceJsonError;
 pub use source_envelope_json::decode_source_envelope_json_v1;
