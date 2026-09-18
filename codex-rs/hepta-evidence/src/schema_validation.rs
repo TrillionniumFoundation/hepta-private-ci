@@ -108,6 +108,60 @@ const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
         ],
     },
     SchemaObjectSpec {
+        name: "secret_lease_records",
+        object_type: "table",
+        table_name: "secret_lease_records",
+        required_sql_fragments: &[
+            "create table",
+            "secret_lease_records",
+            "provider_lease_id",
+            "state text not null",
+            "'requesting', 'active', 'renewing', 'revoke_pending'",
+            "record_sha256",
+            "without rowid",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "secret_lease_records_state",
+        object_type: "index",
+        table_name: "secret_lease_records",
+        required_sql_fragments: &[
+            "create index",
+            "secret_lease_records",
+            "state, updated_at_ms, lease_key",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "secret_lease_records_provider_lease_id",
+        object_type: "index",
+        table_name: "secret_lease_records",
+        required_sql_fragments: &[
+            "create unique index",
+            "secret_lease_records",
+            "provider_lease_id",
+            "where provider_lease_id is not null",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "secret_lease_records_transition",
+        object_type: "trigger",
+        table_name: "secret_lease_records",
+        required_sql_fragments: &[
+            "before update on secret_lease_records",
+            "new.revision != old.revision + 1",
+            "invalid secret lease transition",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "secret_lease_records_no_delete",
+        object_type: "trigger",
+        table_name: "secret_lease_records",
+        required_sql_fragments: &[
+            "before delete on secret_lease_records",
+            "secret lease records preserve lifecycle lineage",
+        ],
+    },
+    SchemaObjectSpec {
         name: "governance_decisions",
         object_type: "table",
         table_name: "governance_decisions",
