@@ -28,6 +28,9 @@ pub const SIGNED_AUTHORITY_NAMESPACE: &str = "hepta:production:authority:v2";
 pub const SIGNED_AUTHORITY_MAX_LIFETIME_SECONDS: u64 = 86_400;
 const SIGNING_DOMAIN: &[u8] = b"hepta-supervisor:production-authority:v2";
 const COMPATIBILITY_DOMAIN: &[u8] = b"hepta-supervisor:release-compatibility:v1";
+pub const PRODUCTION_RECOVERY_SCHEMA_VERSION: u32 = 1;
+pub const PRODUCTION_RECOVERY_NAMESPACE: &str = "hepta:production:recovery:v1";
+const RECOVERY_SIGNING_DOMAIN: &[u8] = b"hepta-supervisor:production-recovery:v1";
 
 /// Derives the numeric CAS epoch that external grant issuers bind to the
 /// daemon's UUID epoch.  A fresh supervisord process gets a fresh UUID, so a
@@ -156,6 +159,105 @@ impl ReleaseSelectionBinding {
         frame(&mut hasher, &self.revocation_frontier.to_be_bytes());
         frame(&mut hasher, &[u8::from(self.compatibility_accepted)]);
         Sha256Digest::from_sha256_output(hasher.finalize())
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ProductionRecoveryOutcome {
+    Committed,
+    RolledBack,
+}
+
+impl ProductionRecoveryOutcome {
+    const fn as_str(self) -> &'static str {
+        match self {
+            Self::Committed => "committed",
+            Self::RolledBack => "rolled_back",
+        }
+    }
+}
+
+/// Independently signed operator decision that resolves one quarantined
+/// production mutation after external reconciliation.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ProductionRecoveryDecision {
+    pub schema_version: u32,
+    pub namespace: String,
+    pub agent_id: String,
+    pub grant_sha256: Sha256Digest,
+    pub intent_sha256: Sha256Digest,
+    pub observed_release: String,
+    pub outcome: ProductionRecoveryOutcome,
+    pub expected_control_revision: u64,
+    pub expected_lifecycle_generation: u64,
+    pub authority_epoch: u64,
+    pub signer_id: String,
+    pub signer_epoch: u64,
+    pub issued_at_unix_seconds: u64,
+    pub expires_at_unix_seconds: u64,
+    pub signature_base64: String,
+    pub decision_sha256: Sha256Digest,
+}
+
+impl ProductionRecoveryDecision {
+    pub fn digest(&self) -> &Sha256Digest {
+        &self.decision_sha256
+    }
+
+    pub fn validate_shape(&self) -> Result<(), ProductionAuthorityError> {
+        if self.schema_version != PRODUCTION_RECOVERY_SCHEMA_VERSION
+            || self.namespace != PRODUCTION_RECOVERY_NAMESPACE
+            || self.expected_lifecycle_generation == 0
+            || self.authority_epoch == 0
+            || self.signer_epoch == 0
+        {
+            return Err(ProductionAuthorityError::RecoveryBinding);
+        }
+        AgentId::parse(self.agent_id.clone())
+            .map_err(|_| ProductionAuthorityError::RecoveryBinding)?;
+        validate_release(&self.observed_release)?;
+        validate_identifier(&self.signer_id, "recovery signer id")?;
+        validate_window(self.issued_at_unix_seconds, self.expires_at_unix_seconds)?;
+        parse_digest(&self.grant_sha256, "recovery grant")?;
+        parse_digest(&self.intent_sha256, "recovery intent")?;
+        parse_digest(&self.decision_sha256, "recovery decision")?;
+        if self.decision_sha256 != self.payload_digest() || self.signature_base64.is_empty() {
+            return Err(ProductionAuthorityError::RecoveryBinding);
+        }
+        Ok(())
+    }
+
+    pub fn payload_digest(&self) -> Sha256Digest {
+        Sha256Digest::from_sha256_output(Sha256::digest(self.signing_bytes()))
+    }
+
+    fn signing_bytes(&self) -> Vec<u8> {
+        let mut hasher = Sha256::new();
+        for value in [
+            RECOVERY_SIGNING_DOMAIN,
+            self.namespace.as_bytes(),
+            self.agent_id.as_bytes(),
+            self.grant_sha256.as_str().as_bytes(),
+            self.intent_sha256.as_str().as_bytes(),
+            self.observed_release.as_bytes(),
+            self.outcome.as_str().as_bytes(),
+            self.signer_id.as_bytes(),
+        ] {
+            frame(&mut hasher, value);
+        }
+        for value in [
+            self.expected_control_revision,
+            self.expected_lifecycle_generation,
+            self.authority_epoch,
+            self.signer_epoch,
+            self.issued_at_unix_seconds,
+            self.expires_at_unix_seconds,
+        ] {
+            frame(&mut hasher, &value.to_be_bytes());
+        }
+        hasher.finalize().to_vec()
     }
 }
 
@@ -314,6 +416,53 @@ impl H7H89ProductionGrantSigner {
         grant.validate_shape(h7_envelope)?;
         Ok(grant)
     }
+
+    #[allow(clippy::too_many_arguments)]
+    pub fn sign_recovery(
+        &self,
+        agent_id: &AgentId,
+        grant_sha256: Sha256Digest,
+        intent_sha256: Sha256Digest,
+        observed_release: impl Into<String>,
+        outcome: ProductionRecoveryOutcome,
+        expected_control_revision: u64,
+        expected_lifecycle_generation: u64,
+        authority_epoch: u64,
+        issued_at_unix_seconds: u64,
+        expires_at_unix_seconds: u64,
+    ) -> Result<ProductionRecoveryDecision, ProductionAuthorityError> {
+        let observed_release = observed_release.into();
+        validate_release(&observed_release)?;
+        if expected_lifecycle_generation == 0 || authority_epoch == 0 {
+            return Err(ProductionAuthorityError::RecoveryBinding);
+        }
+        validate_window(issued_at_unix_seconds, expires_at_unix_seconds)?;
+        parse_digest(&grant_sha256, "recovery grant")?;
+        parse_digest(&intent_sha256, "recovery intent")?;
+        let mut decision = ProductionRecoveryDecision {
+            schema_version: PRODUCTION_RECOVERY_SCHEMA_VERSION,
+            namespace: PRODUCTION_RECOVERY_NAMESPACE.to_string(),
+            agent_id: agent_id.to_string(),
+            grant_sha256,
+            intent_sha256,
+            observed_release,
+            outcome,
+            expected_control_revision,
+            expected_lifecycle_generation,
+            authority_epoch,
+            signer_id: self.signer_id.clone(),
+            signer_epoch: self.signer_epoch,
+            issued_at_unix_seconds,
+            expires_at_unix_seconds,
+            signature_base64: String::new(),
+            decision_sha256: Sha256Digest::for_bytes(b"pending"),
+        };
+        decision.decision_sha256 = decision.payload_digest();
+        decision.signature_base64 =
+            STANDARD.encode(self.signing_key.sign(&decision.signing_bytes()).to_bytes());
+        decision.validate_shape()?;
+        Ok(decision)
+    }
 }
 
 /// A verifier whose trust anchor is supplied out-of-band and pinned by the
@@ -464,6 +613,72 @@ impl H7H89ProductionGrantVerifier {
             .map_err(|_| ProductionAuthorityError::SignatureMalformed)?;
         self.verifying_key
             .verify(&grant.signing_bytes(), &signature)
+            .map_err(|_| ProductionAuthorityError::SignatureInvalid)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub fn verify_recovery(
+        &self,
+        decision: &ProductionRecoveryDecision,
+        agent_id: &AgentId,
+        grant_sha256: &Sha256Digest,
+        intent_sha256: &Sha256Digest,
+        observed_release: &str,
+        expected_control_revision: u64,
+        expected_lifecycle_generation: u64,
+        expected_authority_epoch: u64,
+        now_unix_seconds: u64,
+    ) -> Result<(), ProductionAuthorityError> {
+        decision.validate_shape()?;
+        if decision.agent_id != agent_id.to_string()
+            || &decision.grant_sha256 != grant_sha256
+            || &decision.intent_sha256 != intent_sha256
+            || decision.observed_release != observed_release
+        {
+            return Err(ProductionAuthorityError::RecoveryBinding);
+        }
+        if decision.expected_control_revision != expected_control_revision {
+            return Err(ProductionAuthorityError::ControlRevisionFence {
+                expected: expected_control_revision,
+                actual: decision.expected_control_revision,
+            });
+        }
+        if decision.expected_lifecycle_generation != expected_lifecycle_generation {
+            return Err(ProductionAuthorityError::LifecycleGenerationFence {
+                expected: expected_lifecycle_generation,
+                actual: decision.expected_lifecycle_generation,
+            });
+        }
+        if decision.authority_epoch != expected_authority_epoch {
+            return Err(ProductionAuthorityError::AuthorityEpochFence {
+                expected: expected_authority_epoch,
+                actual: decision.authority_epoch,
+            });
+        }
+        if decision.signer_id != self.signer_id {
+            return Err(ProductionAuthorityError::SignerMismatch);
+        }
+        if decision.signer_epoch != self.signer_epoch {
+            return Err(ProductionAuthorityError::SignerEpochMismatch);
+        }
+        if now_unix_seconds < decision.issued_at_unix_seconds {
+            return Err(ProductionAuthorityError::NotYetValid);
+        }
+        if now_unix_seconds >= decision.expires_at_unix_seconds {
+            return Err(ProductionAuthorityError::Expired);
+        }
+        let signature_bytes = STANDARD
+            .decode(&decision.signature_base64)
+            .map_err(|_| ProductionAuthorityError::SignatureMalformed)?;
+        if signature_bytes.len() != 64
+            || STANDARD.encode(&signature_bytes) != decision.signature_base64
+        {
+            return Err(ProductionAuthorityError::SignatureMalformed);
+        }
+        let signature = Signature::from_slice(&signature_bytes)
+            .map_err(|_| ProductionAuthorityError::SignatureMalformed)?;
+        self.verifying_key
+            .verify(&decision.signing_bytes(), &signature)
             .map_err(|_| ProductionAuthorityError::SignatureInvalid)
     }
 }
@@ -658,6 +873,8 @@ pub enum ProductionAuthorityError {
     Binding,
     #[error("production authority release compatibility or byte provenance mismatch")]
     Compatibility,
+    #[error("production recovery decision binding mismatch")]
+    RecoveryBinding,
     #[error(
         "production authority grant control revision fence mismatch: expected {expected}, actual {actual}"
     )]
