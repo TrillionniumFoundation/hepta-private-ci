@@ -36,7 +36,7 @@ impl IndependentDecisionReceiptV1 {
     }
 
     pub fn semantic_digest(&self) -> Result<Sha256Digest, String> {
-        self.validate_shallow()?;
+        self.validate()?;
         Ok(Sha256Digest::for_bytes(&self.canonical_bytes()?))
     }
 
