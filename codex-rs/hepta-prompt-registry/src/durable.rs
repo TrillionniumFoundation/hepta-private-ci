@@ -86,7 +86,8 @@ impl DurablePromptRegistry {
         self.commit(|registry| registry.register_factor(factor))
     }
 
-    pub fn admit_factor_verified(
+    #[cfg(test)]
+    pub(crate) fn admit_factor_verified(
         &mut self,
         admission: VerifiedAdmission,
         now_unix_ms: u64,
