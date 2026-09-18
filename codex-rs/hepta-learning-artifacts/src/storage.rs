@@ -3,6 +3,7 @@
 
 use std::error::Error;
 use std::fmt;
+use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::fs::TryLockError;
@@ -13,6 +14,7 @@ use std::io::SeekFrom;
 use std::io::Write;
 #[cfg(unix)]
 use std::os::unix::fs::OpenOptionsExt;
+use std::path::Component;
 use std::path::Path;
 use std::str::FromStr;
 
@@ -74,6 +76,19 @@ impl CreateOnlyArtifactFile {
             Err(error) => Err(error.into()),
         }
     }
+
+    /// Create one final component under a host-authorized, non-symlink parent.
+    ///
+    /// This closes lexical traversal and direct parent-symlink mistakes. It does
+    /// not replace target-OS directory-handle/openat2 qualification for hostile
+    /// ancestor replacement.
+    pub fn create_in(
+        parent: impl AsRef<Path>,
+        file_name: impl AsRef<Path>,
+    ) -> Result<Self, ArtifactStorageError> {
+        let path = contained_child(parent.as_ref(), file_name.as_ref())?;
+        Self::create(path)
+    }
 }
 
 /// Exact bytes and history witness. This is not a signature or acceptance.
@@ -122,6 +137,7 @@ pub struct LifecycleJournalSnapshotReceiptV2 {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ArtifactStorageError {
     InvalidBinding,
+    InvalidPath,
     InvalidReceipt,
     InvalidHeadWitness,
     HeadWitnessMismatch,
@@ -133,6 +149,7 @@ pub enum ArtifactStorageError {
     Semantic,
     Unavailable,
     PayloadMismatch,
+    NotOrphan,
     Indeterminate,
     Io(io::ErrorKind),
 }
@@ -147,6 +164,43 @@ impl From<io::Error> for ArtifactStorageError {
     fn from(value: io::Error) -> Self {
         Self::Io(value.kind())
     }
+}
+
+
+fn contained_child(parent: &Path, file_name: &Path) -> Result<std::path::PathBuf, ArtifactStorageError> {
+    let parent_metadata = fs::symlink_metadata(parent).map_err(ArtifactStorageError::from)?;
+    if !parent_metadata.is_dir() || parent_metadata.file_type().is_symlink() {
+        return Err(ArtifactStorageError::InvalidPath);
+    }
+    let mut components = file_name.components();
+    let valid = matches!(components.next(), Some(Component::Normal(_))) && components.next().is_none();
+    if !valid || file_name.as_os_str().is_empty() {
+        return Err(ArtifactStorageError::InvalidPath);
+    }
+    Ok(parent.join(file_name))
+}
+
+/// Remove only a zero-length regular-file orphan under a trusted parent.
+///
+/// The caller must have independently established that no successful receipt
+/// references this path. Non-empty files, symlinks, directories and multi-level
+/// names fail closed.
+pub fn remove_zero_length_orphan_in(
+    parent: impl AsRef<Path>,
+    file_name: impl AsRef<Path>,
+) -> Result<(), ArtifactStorageError> {
+    let path = contained_child(parent.as_ref(), file_name.as_ref())?;
+    let metadata = fs::symlink_metadata(&path).map_err(ArtifactStorageError::from)?;
+    if !metadata.is_file() || metadata.file_type().is_symlink() || metadata.len() != 0 {
+        return Err(ArtifactStorageError::NotOrphan);
+    }
+    let file = OpenOptions::new().read(true).write(true).open(&path)?;
+    let guard = lock(file, LockKind::Exclusive)?;
+    let locked = guard.0.metadata()?;
+    if !locked.is_file() || locked.len() != 0 {
+        return Err(ArtifactStorageError::NotOrphan);
+    }
+    fs::remove_file(&path).map_err(ArtifactStorageError::from)
 }
 
 /// Write a new immutable snapshot; an existing file is never overwritten.
