@@ -181,7 +181,10 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
-            "sourceBase": row.get("sourceBase") or source_base,
+            # Migration is the explicit refresh boundary: every map must
+            # describe the candidate that was actually inspected, not retain a
+            # historical source identity merely because the old field existed.
+            "sourceBase": source_base,
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
