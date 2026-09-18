@@ -10,9 +10,10 @@ use codex_hepta_control_plane::{
     SelfEvolutionRuntimeError, SelfEvolutionRuntimeV1,
 };
 use codex_hepta_intelligence_eval::{
-    IndependentEvaluationBundleV1, MetricRoleContractV2, SelfEvolutionSelectionError,
-    SelfEvolutionSelectionPolicyV1, SelfEvolutionSelectionRequestV1,
-    SignedEvaluationEvidenceV1, select_self_evolution_v1,
+    IndependentEvaluationBundleV1, LongitudinalTimeEvidenceV1, MetricRoleContractV2,
+    SelfEvolutionSelectionError, SelfEvolutionSelectionPolicyV1,
+    SelfEvolutionSelectionRequestV1, SignedEvaluationEvidenceV1,
+    select_self_evolution_v1,
 };
 use codex_hepta_learning_ledger::{
     DatasetSnapshotReceiptV3, LearningEvidenceVerifierV1, LedgerSnapshot,
@@ -77,6 +78,7 @@ impl AgentdSelfEvolutionHostV1 {
         evaluation_bundle: IndependentEvaluationBundleV1,
         metric_roles: Vec<MetricRoleContractV2>,
         evaluation_evidence: &SignedEvaluationEvidenceV1,
+        longitudinal_time: &LongitudinalTimeEvidenceV1,
         dataset_receipt: &DatasetSnapshotReceiptV3,
         ledger_snapshot: &LedgerSnapshot,
         selector_evidence: &SignedLearningEvidenceV1,
@@ -89,6 +91,7 @@ impl AgentdSelfEvolutionHostV1 {
             evaluation_bundle,
             metric_roles,
             evaluation_evidence,
+            longitudinal_time,
             dataset_receipt,
             ledger_snapshot,
             selector_evidence,
