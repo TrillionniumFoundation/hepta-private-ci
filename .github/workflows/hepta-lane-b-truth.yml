@@ -5,12 +5,17 @@ on:
     paths:
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
       - "docs/memory/**"
+      - "docs/modules/inference.worker/**"
       - "docs/modules/**/IMPLEMENTATION_MAP.json"
       - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
       - "qualification/**"
       - "scripts/hepta-lane-b-*.py"
       - "scripts/test_hepta_lane_b_*.py"
+      - "scripts/hepta-inference-worker-readiness.py"
+      - "scripts/test_hepta_inference_worker_readiness.py"
       - ".github/workflows/hepta-lane-b-truth.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   push:
@@ -19,12 +24,17 @@ on:
     paths:
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
       - "docs/memory/**"
+      - "docs/modules/inference.worker/**"
       - "docs/modules/**/IMPLEMENTATION_MAP.json"
       - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
       - "qualification/**"
       - "scripts/hepta-lane-b-*.py"
       - "scripts/test_hepta_lane_b_*.py"
+      - "scripts/hepta-inference-worker-readiness.py"
+      - "scripts/test_hepta_inference_worker_readiness.py"
       - ".github/workflows/hepta-lane-b-truth.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   workflow_dispatch:
@@ -60,6 +70,7 @@ jobs:
           python3 scripts/hepta-lane-b-path-guard.py verify
           python3 scripts/hepta-lane-b-truth.py self-test
           python3 -m unittest scripts/test_hepta_lane_b_truth.py
+          python3 -m unittest scripts/test_hepta_inference_worker_readiness.py
           python3 scripts/hepta-lane-b-truth.py verify
           git diff --check
 
@@ -83,7 +94,9 @@ jobs:
           cargo test -p codex-hepta-supervisor --lib
           cargo test -p codex-hepta-agentd --lib
           cargo test -p codex-hepta-fleet --bin hepta-fleet-leased
+          cargo test -p codex-hepta-infer-core --lib
           cargo test -p codex-hepta-infer-core --bin hepta-infer-control
+          cargo test -p codex-hepta-infer-worker-host --lib
           cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker
           cargo test -p codex-hepta-automation --lib
           cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime
@@ -92,6 +105,29 @@ jobs:
           cargo test -p codex-app-server --test all thread_start
           cargo test -p codex-app-server --test all turn_start
           cargo test -p codex-core executed_tool_calls
+
+      - name: Emit exact tested inference worker receipt
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          python3 scripts/hepta-inference-worker-readiness.py \
+            --expected-sha "$EXPECTED_SHA" \
+            --evidence-class source-head-tested \
+            --passed-check codex-hepta-infer-core-lib \
+            --passed-check codex-hepta-infer-worker-host-lib \
+            --output .hepta-evidence/inference-worker-source-head-tested.json
+
+      - name: Retain tested inference worker receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-worker-source-tested-${{ github.event.pull_request.head.sha || github.sha }}
+          path: .hepta-evidence/inference-worker-source-head-tested.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30
 
       - name: Assert tracked tree remains clean
         run: test -z "$(git status --porcelain --untracked-files=no)"
@@ -130,7 +166,28 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta-lane-b-path-guard.py verify
           python3 scripts/hepta-lane-b-truth.py verify
-          cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
-          cd ..
+          python3 -m unittest scripts/test_hepta_inference_worker_readiness.py
+          (
+            cd codex-rs
+            cargo test -p codex-hepta-infer-core --lib
+            cargo test -p codex-hepta-infer-worker-host --lib
+            cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
+          )
+          mkdir -p .hepta-evidence
+          python3 scripts/hepta-inference-worker-readiness.py \
+            --expected-sha "$EXPECTED_SHA" \
+            --evidence-class merge-candidate-tested \
+            --passed-check codex-hepta-infer-core-lib \
+            --passed-check codex-hepta-infer-worker-host-lib \
+            --output .hepta-evidence/inference-worker-merge-candidate-tested.json
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain tested merge-candidate inference worker receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-worker-merge-tested-${{ steps.merge.outputs.sha }}
+          path: .hepta-evidence/inference-worker-merge-candidate-tested.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 30

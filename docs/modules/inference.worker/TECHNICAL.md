@@ -1,6 +1,6 @@
 # inference.worker technical development guide
 
-Current executable behavior, component owners and implementation gaps: [Lane B native host](../../readiness/LANE_B_NATIVE_HOST.md).
+Current executable behavior, component owners and implementation gaps: [Lane B native host](../../readiness/LANE_B_NATIVE_HOST.md). Production closure and operator gates: [inference.worker production readiness](PRODUCTION_READINESS.md).
 
 The native App Server worker now calls the same durable control owner for explicit local-slot admission, persisted dispatch identity, cancellation intent and actual observed settlement. Optional observed tokens remain unknown when absent; restarting a possibly dispatched request never replays it. This does not close economic quota, local weights/device or trusted post-crash provider-reconciliation gaps. The [native host guide](../../readiness/LANE_B_NATIVE_HOST.md#durable-inference-journal) specifies journal limits, CLI requirements and recovery semantics.
 
@@ -141,6 +141,16 @@ Use the error/recovery path linked by the [current native implementation](../../
 
 ## 9. Security, privacy and threat controls
 
+### ResourceGrant trust boundary
+
+`model_worker::ResourceGrant` is a trusted in-process capability representation, not a self-authenticating wire credential. The worker validates local structure, generation/epoch fields, expiry/revocation state and capacity bounds; this module does not independently authenticate the grant issuer or perform an online authority lookup. Any caller crossing an IPC/network/process boundary must authenticate and validate authoritative grant semantics before constructing this value. Direct construction in unit tests is fixture behavior, not production authority evidence.
+
+If the grant becomes a wire contract, the same change must add explicit worker-side authenticity and replay verification, including issuer, freshness, epoch and revocation semantics. See [PRODUCTION_READINESS.md](PRODUCTION_READINESS.md#2-grant-trust-boundary).
+
+### Isolation guarantee boundary
+
+"Isolated" currently means exact owner/generation fencing, bounded execution state, ephemeral hosted-thread execution and denial of undeclared authority. The hosted App Server profile requests a read-only sandbox. This module alone does not prove a complete OS/device sandbox for local-model execution: cgroup limits, namespaces/users, seccomp-equivalent policy, GPU/device ACLs, device leases and accelerator-memory enforcement must be supplied and proven by the selected launcher/runtime. See [PRODUCTION_READINESS.md](PRODUCTION_READINESS.md#3-isolation-guarantees-and-non-guarantees).
+
 Owned threat entries:
 
 None.
@@ -172,7 +182,7 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-infer-worker-host/src/lib_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/lib_tests.rs); named case: `terminal_success_requires_exact_authority_binding`.
 - [codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs); named case: `loads_runs_and_unloads_exact_model_tuple`.
 
-In `codex-rs`, run `just test -p codex-hepta-infer-worker-host`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.worker.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-infer-worker-host`. The command is a test invocation, not a stored result. CI also runs `scripts/hepta-inference-worker-readiness.py` for source-head and merge-candidate checkouts and retains a machine-readable exact-candidate identity receipt. That receipt binds source/document identity only; it is not hardware, provider-reconciliation, deployment or independent-acceptance evidence. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.worker.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 

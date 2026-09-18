@@ -37,6 +37,8 @@ Pilot ceilings are design targets, not measurements. Stricter canonical limits p
 
 These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
 
+The production qualification matrix, exact evidence identity, rollback triggers and activation checklist are centralized in [docs/modules/inference.worker/PRODUCTION_READINESS.md](../../../docs/modules/inference.worker/PRODUCTION_READINESS.md). These remain requirements, not pass claims, until backed by exact-candidate receipts and target-host evidence.
+
 ## 7. Integration, rollback and capability ceiling
 
 Attach Neuron's encoder only after the real-model qualification gate. The deterministic feature fixture remains available without claiming real-model use. Rollback cannot mix old checkpoints with new encoders; unload/drain precedes compatible reload.
@@ -49,4 +51,6 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 - **State and recovery:** The native run invokes the private Agent/App Server once and commits matching terminal/output/optional-token observations through inference.control. Reopened uncertain runs return indeterminate without provider replay. Model-worker state delegates physical load/unload to an injected driver.
 - **Source tests:** [codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs), [codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [docs/readiness/LANE_B_NATIVE_HOST.md](../../../docs/readiness/LANE_B_NATIVE_HOST.md), [docs/modules/inference.worker/IMPLEMENTATION_MAP.json](../../../docs/modules/inference.worker/IMPLEMENTATION_MAP.json).
+- **Trust/isolation boundary:** `ResourceGrant` is a trusted in-process representation; issuer authenticity is an upstream boundary today. The module proves owner/generation execution isolation but does not by itself prove complete OS/device sandboxing for local-model execution. The production runbook names the required launcher/runtime controls and hardware evidence.
+- **Candidate evidence:** `scripts/hepta-inference-worker-readiness.py` binds the checked commit/tree, worker subtree and relevant document/map hashes while keeping production/activation/release claims false.
 - **Remaining work:** Implement/prove the local weights/device/memory driver before claiming isolated local inference. Trusted provider recovery and missing-usage reconciliation remain open.
