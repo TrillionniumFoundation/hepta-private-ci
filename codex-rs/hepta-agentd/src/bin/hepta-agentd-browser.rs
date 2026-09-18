@@ -45,6 +45,12 @@ struct HostConfig {
     journal_path: PathBuf,
     bwrap_path: PathBuf,
     bwrap_sha256: String,
+    prlimit_path: PathBuf,
+    prlimit_sha256: String,
+    max_address_space_bytes: u64,
+    max_cpu_seconds: u64,
+    max_open_files: u64,
+    max_processes: u64,
     driver_timeout_ms: u64,
 }
 
@@ -117,6 +123,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         journal_path: config.journal_path,
         bwrap_path: config.bwrap_path,
         bwrap_sha256: parse_digest(&config.bwrap_sha256, "bwrap_sha256")?,
+        prlimit_path: config.prlimit_path,
+        prlimit_sha256: parse_digest(&config.prlimit_sha256, "prlimit_sha256")?,
+        max_address_space_bytes: config.max_address_space_bytes,
+        max_cpu_seconds: config.max_cpu_seconds,
+        max_open_files: config.max_open_files,
+        max_processes: config.max_processes,
         driver_timeout_ms: config.driver_timeout_ms,
     };
     let transport = ChildBrowserTransport::spawn(&process)?;

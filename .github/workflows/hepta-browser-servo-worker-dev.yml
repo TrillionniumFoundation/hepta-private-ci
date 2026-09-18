@@ -76,11 +76,13 @@ jobs:
           sudo apt-get install -y --no-install-recommends \
             bubblewrap build-essential cmake curl git libdbus-1-dev \
             libfontconfig1-dev libfreetype6-dev libgl1-mesa-dev libglib2.0-dev \
-            libssl-dev libx11-dev libxcb1-dev libxkbcommon-dev llvm pkg-config python3
+            libssl-dev libx11-dev libxcb1-dev libxkbcommon-dev llvm pkg-config python3 util-linux
           command -v llvm-objdump
           llvm-objdump --version | head -n 1
           command -v bwrap
           bwrap --version
+          command -v prlimit
+          prlimit --version | head -n 1
 
       - name: Resolve or verify exact dependency lock
         shell: bash
@@ -134,6 +136,13 @@ jobs:
           probe = json.loads(pathlib.Path("worker-evidence/linux-sandbox-probe.json").read_text())
           assert probe["parentDeathCleanupObserved"] is True
           assert probe["descendantCleanupObserved"] is True
+          assert probe["resourceLimitsEnforced"] is True
+          assert probe["resourceLimits"] == {
+              "maxAddressSpaceBytes": 8 * 1024 * 1024 * 1024,
+              "maxCpuSeconds": 300,
+              "maxOpenFiles": 4096,
+              "maxProcesses": 256,
+          }
           PY
 
       - name: Build worker twice from the same exact inputs

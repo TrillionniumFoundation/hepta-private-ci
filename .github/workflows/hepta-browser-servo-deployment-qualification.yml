@@ -58,6 +58,7 @@ jobs:
           command -v node
           command -v python3
           command -v bwrap
+          command -v prlimit
           mkdir -p deployment-evidence
           git rev-parse HEAD HEAD^{tree} > deployment-evidence/source-identity.txt
           uname -a > deployment-evidence/uname.txt
@@ -65,6 +66,8 @@ jobs:
           python3 --version > deployment-evidence/python-version.txt 2>&1
           bwrap --version > deployment-evidence/bwrap-version.txt
           sha256sum "$(command -v bwrap)" > deployment-evidence/bwrap.sha256
+          prlimit --version | head -n 1 > deployment-evidence/prlimit-version.txt
+          sha256sum "$(command -v prlimit)" > deployment-evidence/prlimit.sha256
 
       - name: Verify exact worker build run provenance
         shell: bash
@@ -130,6 +133,7 @@ jobs:
           assert receipt['linuxSandboxProbe']['hostSecretHidden'] is True
           assert receipt['linuxSandboxProbe']['parentDeathCleanupObserved'] is True
           assert receipt['linuxSandboxProbe']['descendantCleanupObserved'] is True
+          assert receipt['linuxSandboxProbe']['resourceLimitsEnforced'] is True
           assert receipt['realWorkerSmoke']['currentPinWorkerBooted'] is True
           assert receipt['realWorkerSmoke']['privateProtocolRoundTrip'] is True
           PY
@@ -144,6 +148,11 @@ jobs:
           set -euo pipefail
           node apps/hepta-browser/scripts/linux-sandbox-probe.js \
             | tee deployment-evidence/linux-sandbox-probe.json
+          python3 - <<'PY'
+          import json, pathlib
+          probe = json.loads(pathlib.Path("deployment-evidence/linux-sandbox-probe.json").read_text())
+          assert probe["resourceLimitsEnforced"] is True
+          PY
 
       - name: Re-run real worker in the target sandbox
         shell: bash

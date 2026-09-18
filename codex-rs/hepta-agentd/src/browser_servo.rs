@@ -37,6 +37,7 @@ const MAX_FRAME_BYTES: usize = 1_048_576;
 const MAX_SERVICE_BYTES: usize = 8 * 1024 * 1024;
 const MAX_WORKER_BYTES: usize = 512 * 1024 * 1024;
 const MAX_BWRAP_BYTES: usize = 64 * 1024 * 1024;
+const MAX_PRLIMIT_BYTES: usize = 16 * 1024 * 1024;
 const JS_SAFE_INTEGER: u64 = 9_007_199_254_740_991;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -629,6 +630,12 @@ pub struct BrowserServoProcessConfig {
     pub journal_path: PathBuf,
     pub bwrap_path: PathBuf,
     pub bwrap_sha256: [u8; 32],
+    pub prlimit_path: PathBuf,
+    pub prlimit_sha256: [u8; 32],
+    pub max_address_space_bytes: u64,
+    pub max_cpu_seconds: u64,
+    pub max_open_files: u64,
+    pub max_processes: u64,
     pub driver_timeout_ms: u64,
 }
 
@@ -641,6 +648,7 @@ impl BrowserServoProcessConfig {
             ("Browser profile root", &self.profile_root),
             ("Browser journal", &self.journal_path),
             ("Bubblewrap executable", &self.bwrap_path),
+            ("prlimit executable", &self.prlimit_path),
         ] {
             if !path.is_absolute() {
                 return Err(BrowserServoError::Invalid(format!(
@@ -648,14 +656,23 @@ impl BrowserServoProcessConfig {
                 )));
             }
         }
-        if self.driver_timeout_ms == 0 || self.driver_timeout_ms > JS_SAFE_INTEGER {
-            return Err(BrowserServoError::Invalid(
-                "Browser driver timeout must be a positive safe integer".into(),
-            ));
+        for (value, name) in [
+            (self.max_address_space_bytes, "Browser max address space"),
+            (self.max_cpu_seconds, "Browser max CPU seconds"),
+            (self.max_open_files, "Browser max open files"),
+            (self.max_processes, "Browser max processes"),
+            (self.driver_timeout_ms, "Browser driver timeout"),
+        ] {
+            if value == 0 || value > JS_SAFE_INTEGER {
+                return Err(BrowserServoError::Invalid(format!(
+                    "{name} must be a positive safe integer"
+                )));
+            }
         }
         verify_file_digest(&self.service_path, self.service_sha256, MAX_SERVICE_BYTES)?;
         verify_file_digest(&self.worker_path, self.worker_sha256, MAX_WORKER_BYTES)?;
         verify_file_digest(&self.bwrap_path, self.bwrap_sha256, MAX_BWRAP_BYTES)?;
+        verify_file_digest(&self.prlimit_path, self.prlimit_sha256, MAX_PRLIMIT_BYTES)?;
         Ok(())
     }
 }
@@ -692,6 +709,27 @@ impl ChildBrowserTransport {
             .env(
                 "HEPTA_BROWSER_BWRAP_SHA256",
                 hex_lower(&config.bwrap_sha256),
+            )
+            .env("HEPTA_BROWSER_PRLIMIT_PATH", &config.prlimit_path)
+            .env(
+                "HEPTA_BROWSER_PRLIMIT_SHA256",
+                hex_lower(&config.prlimit_sha256),
+            )
+            .env(
+                "HEPTA_BROWSER_MAX_ADDRESS_SPACE_BYTES",
+                config.max_address_space_bytes.to_string(),
+            )
+            .env(
+                "HEPTA_BROWSER_MAX_CPU_SECONDS",
+                config.max_cpu_seconds.to_string(),
+            )
+            .env(
+                "HEPTA_BROWSER_MAX_OPEN_FILES",
+                config.max_open_files.to_string(),
+            )
+            .env(
+                "HEPTA_BROWSER_MAX_PROCESSES",
+                config.max_processes.to_string(),
             )
             .env(
                 "HEPTA_BROWSER_DRIVER_TIMEOUT_MS",
