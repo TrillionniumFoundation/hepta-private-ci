@@ -85,7 +85,8 @@
         {
           "path": "codex-rs/hepta-types/CANONICAL_V1_CONFORMANCE.json",
           "mustContain": [
-            "d2b04b7011cdef013c9f01053b8ed70a8a924db7632714e9840bcfea17d72736"
+            "d2b04b7011cdef013c9f01053b8ed70a8a924db7632714e9840bcfea17d72736",
+            "4f3da3cd80d24cd86b151388b296773054be8a1a81cbe0a281f057647c655b36"
           ]
         }
       ],
@@ -94,7 +95,8 @@
           "path": "codex-rs/hepta-types/src/canonical_digest_tests.rs",
           "mustContain": [
             "frozen_cross_language_vector_matches_exact_bytes_and_digest",
-            "field_and_map_order_are_canonical_but_array_order_is_semantic"
+            "field_and_map_order_are_canonical_but_array_order_is_semantic",
+            "integer_boundaries_unicode_and_empty_containers_are_frozen"
           ]
         }
       ],
