@@ -1013,6 +1013,27 @@ impl AutomationStore {
             }
             return Ok(run);
         }
+        let unresolved_effects: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*)
+             FROM taskflow_effect_dispatch_attempts a
+             LEFT JOIN taskflow_effect_dispatch_observations o
+               ON o.owner_agent_id = a.owner_agent_id
+              AND o.run_id = a.run_id
+              AND o.step_id = a.step_id
+              AND o.attempt = a.attempt
+             WHERE a.owner_agent_id = ? AND a.run_id = ?
+               AND (o.observation IS NULL OR o.observation != 'proven_absent')",
+        )
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(run_id)
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(|_| TaskFlowError::Unavailable)?;
+        if unresolved_effects != 0 {
+            return Err(TaskFlowError::Conflict(
+                "TaskFlow run has unresolved provider-contact evidence".to_string(),
+            ));
+        }
         if let Some(previous_generation) = run.generation
             && fence.generation <= previous_generation
         {
@@ -1068,7 +1089,8 @@ impl AutomationStore {
                 "provider-absence requeue is restricted to automation recovery",
             ));
         }
-        self.apply_taskflow_command_inner(command, false).await
+        self.apply_taskflow_command_inner(command, false, false)
+            .await
     }
 
     pub(crate) async fn apply_taskflow_requeue_proven_absent(
@@ -1083,13 +1105,28 @@ impl AutomationStore {
                 "internal requeue requires provider-absence transition",
             ));
         }
-        self.apply_taskflow_command_inner(command, true).await
+        self.apply_taskflow_command_inner(command, true, false)
+            .await
+    }
+
+    pub(crate) async fn apply_taskflow_effect_observation_quarantine(
+        &self,
+        command: &TaskFlowCommand,
+    ) -> Result<TaskFlowCommandResult, TaskFlowError> {
+        if !matches!(&command.transition, TaskFlowTransition::Indeterminate { .. }) {
+            return Err(invalid(
+                "effect observation quarantine requires indeterminate transition",
+            ));
+        }
+        self.apply_taskflow_command_inner(command, false, true)
+            .await
     }
 
     async fn apply_taskflow_command_inner(
         &self,
         command: &TaskFlowCommand,
         allow_proven_absence_requeue: bool,
+        allow_effect_observation_quarantine: bool,
     ) -> Result<TaskFlowCommandResult, TaskFlowError> {
         validate_text(&command.run_id, "run_id", MAX_ID_BYTES)?;
         validate_text(&command.command_id, "command_id", MAX_ID_BYTES)?;
@@ -1174,10 +1211,17 @@ impl AutomationStore {
                 &command.transition,
                 TaskFlowTransition::RequeueProvenAbsent { .. }
             );
-        if explicit_reconcile || proven_absence_requeue {
-            // Reconciliation and provider-proven absence may arrive after the
-            // lease deadline. Both retain the exact historical owner tuple;
-            // only the registered recovery entry point may request the latter.
+        let effect_observation_quarantine = allow_effect_observation_quarantine
+            && run.state == TaskFlowRunState::Running
+            && matches!(
+                &command.transition,
+                TaskFlowTransition::Indeterminate { .. }
+            );
+        if explicit_reconcile || proven_absence_requeue || effect_observation_quarantine {
+            // Recovery evidence may arrive after the lease deadline. These
+            // transitions still require the exact historical owner tuple and
+            // are reachable only through their crate-private durable-evidence
+            // entry points (except ordinary explicit reconciliation).
             self.check_run_identity_fence(&run, &command.fence)?;
         } else {
             self.check_run_fence(&run, &command.fence, command.now_ms)?;
