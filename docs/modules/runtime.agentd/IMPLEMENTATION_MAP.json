@@ -14,7 +14,7 @@
   "resolvedRoots": [
     "codex-rs/hepta-agentd"
   ],
-  "stateOwnerDisposition": "Owns only ephemeral run admission, immutable snapshot references, and runtime-health composition state.",
+  "stateOwnerDisposition": "Owns bounded owner-local run admission/reconciliation metadata and runtime-health composition state; canonical objective, prompt, context, artifact and execution facts remain with their registered owners.",
   "terminalObserverDisposition": "Agentd preserves dispatch-boundary uncertainty and accepts terminal state only from the delegated execution/effect owner.",
   "operations": [
     {
