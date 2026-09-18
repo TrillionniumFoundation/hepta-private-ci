@@ -3,7 +3,14 @@ import test from "node:test";
 import { EventEmitter } from "node:events";
 import { PassThrough } from "node:stream";
 import { createHash } from "node:crypto";
-import { mkdtemp, readFile, stat, writeFile } from "node:fs/promises";
+import {
+  chmod,
+  mkdir,
+  mkdtemp,
+  readFile,
+  stat,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -394,5 +401,30 @@ test("subprocess driver rejects launchers without the complete source isolation 
         },
       }),
     /hostFilesystemRestricted/,
+  );
+});
+
+
+test("subprocess driver rejects a pre-existing broad profile root", async (t) => {
+  if (process.platform === "win32") {
+    t.skip("Unix mode bits are not authoritative on Windows");
+    return;
+  }
+  const root = await mkdtemp(join(tmpdir(), "hepta-worker-root-mode-"));
+  const workerPath = join(root, "worker.bin");
+  const workerBytes = Buffer.from("fake-qualified-worker", "utf8");
+  const profileRoot = join(root, "profiles");
+  await writeFile(workerPath, workerBytes, { mode: 0o700 });
+  await mkdir(profileRoot, { mode: 0o700 });
+  await chmod(profileRoot, 0o755);
+  const driver = new SubprocessBrowserDriver({
+    workerPath,
+    workerDigest: digest(workerBytes),
+    profileRoot,
+    launcher: fakeLauncher(),
+  });
+  await assert.rejects(
+    driver.start(startInput()),
+    /profile root permissions are too broad/,
   );
 });

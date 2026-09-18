@@ -1,8 +1,14 @@
 import { spawn } from "node:child_process";
 import { createHash, randomUUID } from "node:crypto";
 import { constants } from "node:fs";
-import { mkdir, open, rm } from "node:fs/promises";
-import { isAbsolute, join } from "node:path";
+import {
+  lstat,
+  mkdir,
+  open,
+  realpath,
+  rm,
+} from "node:fs/promises";
+import { isAbsolute, join, resolve } from "node:path";
 
 import {
   WorkerFrameDecoder,
@@ -52,6 +58,22 @@ function requestId(kind, semanticId) {
     .update(`${kind}\u0000${semanticId}`)
     .digest("hex");
   return `browser.${kind}.${digest.slice(0, 32)}`;
+}
+
+async function ensurePrivateProfileRoot(path) {
+  await mkdir(path, { recursive: true, mode: 0o700 });
+  const metadata = await lstat(path);
+  if (!metadata.isDirectory() || metadata.isSymbolicLink()) {
+    throw new TypeError(
+      "browser profile root must be a regular non-symlink directory",
+    );
+  }
+  if (process.platform !== "win32" && (metadata.mode & 0o077) !== 0) {
+    throw new TypeError("browser profile root permissions are too broad");
+  }
+  if ((await realpath(path)) !== resolve(path)) {
+    throw new TypeError("browser profile root path contains a symlink");
+  }
 }
 
 function abortError(message = "browser worker request aborted") {
@@ -424,7 +446,7 @@ export class SubprocessBrowserDriver {
     const manifestDigest = expectedDigest(input.manifestDigest, "manifestDigest");
     const grantDigest = expectedDigest(input.grantDigest, "grantDigest");
     const verifiedWorkerBytes = await this.#readVerifiedWorkerArtifact();
-    await mkdir(this.#profileRoot, { recursive: true, mode: 0o700 });
+    await ensurePrivateProfileRoot(this.#profileRoot);
     this.#profileDir = join(
       this.#profileRoot,
       `${profileId}.${generation}.${randomUUID()}`,

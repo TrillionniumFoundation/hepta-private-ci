@@ -1,6 +1,13 @@
 import { createHash } from "node:crypto";
 import { constants } from "node:fs";
-import { mkdir, open, realpath, rename, rm } from "node:fs/promises";
+import {
+  lstat,
+  mkdir,
+  open,
+  realpath,
+  rename,
+  rm,
+} from "node:fs/promises";
 import { dirname, isAbsolute, resolve } from "node:path";
 
 const SCHEMA = "hepta.browser.operation-journal.v1";
@@ -194,6 +201,15 @@ function assertGenerationAvailable(retired, profileId, generation) {
 async function ensureCanonicalPrivateParent(path) {
   const parent = dirname(path);
   await mkdir(parent, { recursive: true, mode: 0o700 });
+  const metadata = await lstat(parent);
+  if (!metadata.isDirectory() || metadata.isSymbolicLink()) {
+    throw new TypeError(
+      "browser journal parent must be a regular non-symlink directory",
+    );
+  }
+  if (process.platform !== "win32" && (metadata.mode & 0o077) !== 0) {
+    throw new TypeError("browser journal parent directory permissions are too broad");
+  }
   const actual = await realpath(parent);
   if (actual !== resolve(parent)) {
     throw new TypeError("browser journal parent path contains a symlink");

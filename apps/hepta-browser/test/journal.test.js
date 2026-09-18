@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { mkdtemp, readFile, stat, writeFile } from "node:fs/promises";
+import {
+  chmod,
+  mkdtemp,
+  readFile,
+  stat,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
@@ -144,4 +150,18 @@ test("profile retirement removes records and durably fences generation resurrect
     /already been retired/,
   );
   await reopened.assertProfileGenerationAvailable("profile.1", 2);
+});
+
+
+test("file journal rejects a pre-existing broad parent directory", async (t) => {
+  if (process.platform === "win32") {
+    t.skip("Unix mode bits are not authoritative on Windows");
+    return;
+  }
+  const { root, journal } = await journalFixture();
+  await chmod(root, 0o755);
+  await assert.rejects(
+    journal.recordDispatch(record()),
+    /parent directory permissions are too broad/,
+  );
 });
