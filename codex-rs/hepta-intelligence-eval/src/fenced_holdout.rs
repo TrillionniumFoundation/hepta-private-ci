@@ -72,6 +72,56 @@ impl<S: HoldoutFenceStoreV1> FencedFinalHoldoutOwnerV1<S> {
         self.journal.anchor()
     }
 
+    /// Recover an exact pending reservation after a crash or lost fence
+    /// acknowledgement. The caller must reopen/recover the journal first using
+    /// an independently retained minimum anchor, then supply the exact frozen
+    /// plan whose digest owns the pending reservation.
+    pub fn reconcile_pending(
+        mut journal: DurableFinalHoldoutJournalV1,
+        mut fence: S,
+        plan: &CrossFoldPlanReceiptV1,
+    ) -> Result<Self, DurableHoldoutError> {
+        let reserved = fence.load()?;
+        if reserved.pending_plan_digest != plan.plan_digest || plan.plan_digest.is_zero() {
+            return Err(DurableHoldoutError::Conflict);
+        }
+        let journal_anchor = journal.anchor();
+        let receipt = if journal_anchor == reserved.committed_anchor {
+            journal.preview_consume(reserved.committed_anchor, plan)?
+        } else {
+            let expected_sequence = reserved
+                .committed_anchor
+                .sequence
+                .checked_add(1)
+                .ok_or(DurableHoldoutError::Capacity)?;
+            if journal_anchor.sequence != expected_sequence {
+                return Err(DurableHoldoutError::Indeterminate);
+            }
+            let replay = journal.preview_consume(journal_anchor, plan)?;
+            if replay.disposition != HoldoutUseDispositionV1::IdempotentReplay {
+                return Err(DurableHoldoutError::Indeterminate);
+            }
+            replay
+        };
+
+        if receipt.disposition == HoldoutUseDispositionV1::Recorded {
+            journal.consume(reserved.committed_anchor, plan)?;
+        }
+        let committed_epoch = reserved
+            .epoch
+            .checked_add(1)
+            .ok_or(DurableHoldoutError::Capacity)?;
+        let committed = HoldoutFenceStateV1::committed(committed_epoch, journal.anchor());
+        if !fence.compare_and_swap(reserved, committed)? {
+            return Err(DurableHoldoutError::Indeterminate);
+        }
+        Ok(Self {
+            journal,
+            fence,
+            poisoned: false,
+        })
+    }
+
     pub fn consume(
         &mut self,
         plan: &CrossFoldPlanReceiptV1,
