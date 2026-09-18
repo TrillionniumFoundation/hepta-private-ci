@@ -12,6 +12,8 @@ use ed25519_dalek::Signature;
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 use serde::Serialize;
+use sha2::Digest;
+use sha2::Sha256;
 
 #[path = "final_use_store.rs"]
 mod store;
@@ -118,6 +120,7 @@ impl fmt::Debug for FinalUseAuthority {
 pub struct VerifiedUseToken {
     owner: Arc<Inner>,
     grant: FinalUseGrant,
+    witness_sha256: [u8; 32],
 }
 
 impl fmt::Debug for VerifiedUseToken {
@@ -135,6 +138,7 @@ impl fmt::Debug for VerifiedUseToken {
 pub struct EnteredUseToken {
     _owner: Arc<Inner>,
     binding: FinalUseBinding,
+    witness_sha256: [u8; 32],
 }
 
 impl fmt::Debug for EnteredUseToken {
@@ -146,6 +150,36 @@ impl fmt::Debug for EnteredUseToken {
 impl EnteredUseToken {
     pub fn matches(&self, expected: &FinalUseBinding) -> bool {
         &self.binding == expected
+    }
+
+    pub const fn witness_sha256(&self) -> [u8; 32] {
+        self.witness_sha256
+    }
+}
+
+impl VerifiedUseToken {
+    /// Revalidate this claimed grant at the final asynchronous effect entry.
+    /// This consumes the token so one claim cannot authorize two entries.
+    pub fn enter(self, expected: &FinalUseBinding) -> Result<EnteredUseToken, FinalUseError> {
+        if &self.grant.binding != expected {
+            return Err(FinalUseError::BindingMismatch);
+        }
+        let state = self
+            .owner
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        validate_live(&self.grant, &state.head)?;
+        let entered = EnteredUseToken {
+            _owner: Arc::clone(&self.owner),
+            binding: self.grant.binding,
+            witness_sha256: self.witness_sha256,
+        };
+        drop(state);
+        Ok(entered)
     }
 }
 
@@ -245,9 +279,14 @@ impl FinalUseAuthority {
         // Persistence can outlast a short grant. Never admit a dispatch using
         // the time sampled before that I/O; its nonce stays consumed on expiry.
         validate_live(&signed.grant, &state.head)?;
+        let mut witness = b"hepta.kernel.authority.final-use-witness.v1\0".to_vec();
+        witness.extend_from_slice(&input);
+        witness.extend_from_slice(&signed.signature);
+        let witness_sha256: [u8; 32] = Sha256::digest(&witness).into();
         Ok(VerifiedUseToken {
             owner: Arc::clone(&self.0),
             grant: signed.grant.clone(),
+            witness_sha256,
         })
     }
 
@@ -262,24 +301,10 @@ impl FinalUseAuthority {
         token: VerifiedUseToken,
         expected: &FinalUseBinding,
     ) -> Result<EnteredUseToken, FinalUseError> {
-        if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
+        if !Arc::ptr_eq(&self.0, &token.owner) {
             return Err(FinalUseError::BindingMismatch);
         }
-        let state = self
-            .0
-            .state
-            .lock()
-            .map_err(|_| FinalUseError::Unavailable)?;
-        if state.failed {
-            return Err(FinalUseError::Unavailable);
-        }
-        validate_live(&token.grant, &state.head)?;
-        let entered = EnteredUseToken {
-            _owner: Arc::clone(&self.0),
-            binding: token.grant.binding,
-        };
-        drop(state);
-        Ok(entered)
+        token.enter(expected)
     }
 
     /// Revalidate live authority after asynchronous work and before releasing a
