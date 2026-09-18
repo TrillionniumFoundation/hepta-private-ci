@@ -43,6 +43,7 @@ or filesystem namespace. Those capabilities remain host-owned.
 | persist/reopen lifecycle journal | `write_lifecycle_journal_snapshot`, `read_lifecycle_journal_snapshot` | `src/storage.rs` | implemented |
 | project V3 admission into V1 registry event | `artifact_registry_event_for_admission_v3` | `src/publication.rs` | implemented |
 | prepare/recover publication transaction | `prepare_artifact_publication_v1`, `recover_artifact_publication_v1` | `src/publication.rs` | implemented |
+| reject publication operation reuse with changed semantics | `validate_artifact_publication_retry_v1` | `src/publication.rs` | implemented |
 | governed iteration transition | `validate_iteration_transition` | `src/iteration.rs` | implemented |
 | governed iteration evidence ledger | `IterationLedgerV1::append_candidate`, `IterationLedgerV1::transition`, `IterationLedgerV1::from_snapshot` | `src/iteration_ledger.rs` | implemented |
 | contained create/orphan reconciliation | `CreateOnlyArtifactFile::create_in`, `remove_zero_length_orphan_in` | `src/storage.rs` | implemented |
@@ -68,7 +69,10 @@ multi-dataset or multi-predecessor manifests instead of silently dropping
 revocation or eligibility edges. The V1 event identity remains the exact host
 operation identity. The complete withdrawal-bound admission is instead committed
 by the deterministic publication-contract binding carried by both the durable
-registry snapshot receipt and the current-head witness receipt.
+registry snapshot receipt and the current-head witness receipt. A host must retain
+or reconstruct the prior contract for an operation identity and call
+`validate_artifact_publication_retry_v1` (or enforce an equivalent durable
+operation ledger rule); identical retries pass and changed semantics conflict.
 
 `DatasetWithdrawalRegistry` is append-only, digest-chained and replayable from a
 snapshot. A production V3 registry is scoped by `DatasetWithdrawalDomainV1`;
