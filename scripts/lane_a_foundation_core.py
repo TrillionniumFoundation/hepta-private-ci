@@ -155,8 +155,9 @@ def validate_capability_map(
             or row.get("activation") != state["activation"]
         ):
             raise VerificationError(f"{capability_id}: matrix state mismatch")
-        if row.get("productionCaller") is not None:
-            raise VerificationError(f"{capability_id}: unproven production caller")
+        production_caller = row.get("productionCaller")
+        if production_caller is not None:
+            validate_anchor(f"{capability_id}/productionCaller", production_caller, root)
         if row.get("receiptStatus") != "native_workflow_required":
             raise VerificationError(f"{capability_id}: invalid receipt status")
         symbols = row.get("publicSymbols")
@@ -222,32 +223,82 @@ def validate_native_bindings(root: Path = ROOT) -> dict[str, Any]:
 
 
 def validate_wire_vector(root: Path = ROOT) -> None:
-    value = read_json(
+    v1 = read_json(
         root / "docs/lane-a-foundation/platform.wire/HPTA_V1_CONFORMANCE.json"
     )
     try:
-        frame = bytes.fromhex(value["frameHex"])
-        payload = bytes.fromhex(value["fields"]["payloadHex"])
-        payload_digest = value["fields"]["payloadSha256"]
+        v1_frame = bytes.fromhex(v1["frameHex"])
+        v1_payload = bytes.fromhex(v1["fields"]["payloadHex"])
+        v1_payload_digest = v1["fields"]["payloadSha256"]
     except (KeyError, TypeError, ValueError) as error:
         raise VerificationError(f"invalid HPTA V1 vector: {error}") from error
     if (
-        value.get("schemaVersion") != 1
-        or value.get("protocol") != "HPTA"
-        or value.get("version") != 1
-        or value.get("frameLength") != 59
-        or len(frame) != 59
-        or frame[:6] != b"HPTA\x00\x01"
-        or hashlib.sha256(frame).hexdigest() != value.get("frameSha256")
-        or hashlib.sha256(payload).hexdigest() != payload_digest
+        v1.get("schemaVersion") != 1
+        or v1.get("protocol") != "HPTA"
+        or v1.get("version") != 1
+        or v1.get("frameLength") != 59
+        or len(v1_frame) != 59
+        or v1_frame[:6] != b"HPTA\x00\x01"
+        or hashlib.sha256(v1_frame).hexdigest() != v1.get("frameSha256")
+        or hashlib.sha256(v1_payload).hexdigest() != v1_payload_digest
     ):
         raise VerificationError("HPTA V1 conformance vector mismatch")
+
+    v2 = read_json(
+        root / "docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json"
+    )
+    try:
+        v2_frame = bytes.fromhex(v2["frameHex"])
+        schema = v2["fields"]["schema"].encode()
+        producer = v2["fields"]["producer"].encode()
+        generation = int(v2["fields"]["generation"])
+        payload = bytes.fromhex(v2["fields"]["payloadHex"])
+        expected_digest = v2["fields"]["frameDigest"]
+    except (KeyError, TypeError, ValueError) as error:
+        raise VerificationError(f"invalid HPTA V2 vector: {error}") from error
+    preimage = (
+        b"hepta.platform.wire.hpta.v2.frame-digest\x00"
+        + b"HPTA"
+        + (2).to_bytes(2, "big")
+        + len(schema).to_bytes(2, "big")
+        + len(producer).to_bytes(2, "big")
+        + generation.to_bytes(8, "big")
+        + len(payload).to_bytes(4, "big")
+        + schema
+        + producer
+        + payload
+    )
+    observed_digest = hashlib.sha256(preimage).hexdigest()
+    if (
+        v2.get("schemaVersion") != 1
+        or v2.get("protocol") != "HPTA"
+        or v2.get("version") != 2
+        or v2.get("frameLength") != 59
+        or len(v2_frame) != 59
+        or v2_frame[:6] != b"HPTA\x00\x02"
+        or hashlib.sha256(v2_frame).hexdigest() != v2.get("frameSha256")
+        or observed_digest != expected_digest
+        or v2_frame[18:50].hex() != expected_digest
+    ):
+        raise VerificationError("HPTA V2 conformance vector mismatch")
 
 
 def validate_source_specific(root: Path = ROOT) -> None:
     required = {
         "codex-rs/hepta-types/src/lib.rs": ["pub use identity::IdentityError;"],
         "codex-rs/hepta-wire/src/envelope.rs": ["const WIRE_VERSION: u16 = 1;"],
+        "codex-rs/hepta-wire/src/envelope_v2.rs": [
+            "pub struct WireEnvelopeV2",
+            "FRAME_DIGEST_DOMAIN",
+        ],
+        "codex-rs/hepta-wire/src/version.rs": ["pub fn negotiate("],
+        "codex-rs/hepta-wire/src/framed.rs": ["pub fn read_envelope"],
+        "codex-rs/hepta-wire/src/schema.rs": [
+            "pub struct SchemaRegistry",
+            "pub trait PayloadCodec",
+        ],
+        "codex-rs/hepta-runtime/src/lib.rs": ["pub fn status_wire_v2"],
+        "codex-rs/hepta-native-gateway/src/lib.rs": ["/api/hepta/runtime.hpta"],
         "codex-rs/hepta-operations/src/lib.rs": [
             "In-memory reference model",
             "does not provide durable storage",

@@ -72,27 +72,32 @@
       "profile": "stateless_codec",
       "formalGuide": "docs/modules/platform.wire/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
-      "currentSpecification": "docs/lane-a-foundation/platform.wire/WIRE_V1.md",
+      "currentSpecification": "docs/lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md",
       "currentSpecificationRole": "current_executable_contract",
-      "implementationDetail": "docs/lane-a-foundation/platform.wire/HPTA_V1_CONFORMANCE.json",
+      "implementationDetail": "docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json",
       "states": {
         "source": "implemented",
-        "implementation": "fixed_v1_codec",
+        "implementation": "v1_v2_negotiated_typed_codec",
         "durability": "none",
-        "qualification": "boundary_tests_and_frozen_vector_present",
-        "activation": "library_only",
+        "qualification": "boundary_generated_cross_runtime_and_frozen_vectors_present",
+        "activation": "source_composed_not_activated",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
         "fixed HPTA version-1 envelope encode/decode",
         "bounded identities and one-mebibyte payload",
-        "payload digest verification before owned copy"
+        "payload digest verification before owned copy",
+        "metadata-bound HPTA version-2 envelope encode/decode",
+        "bounded version and capability negotiation with transcript binding",
+        "header-first bounded stream decoding for HPTA V1 and V2",
+        "bounded schema and producer admission with typed payload serialization",
+        "read-only native runtime status composition over HPTA V2"
       ],
       "targetOnlyCapabilities": [
-        "version negotiation",
-        "streaming decoder",
-        "multi-version compatibility adapter",
-        "authenticated complete-envelope digest"
+        "authenticated session or transport binding for frame and negotiation digests",
+        "host-specific async framing and incomplete-frame deadlines",
+        "production domain schema catalog and compatibility policy",
+        "external deployment independent acceptance promotion and release"
       ],
       "sourceAnchors": [
         {
@@ -101,15 +106,52 @@
             "const MAGIC: [u8; 4] = *b\"HPTA\";",
             "const WIRE_VERSION: u16 = 1;",
             "pub const MAX_WIRE_PAYLOAD_BYTES: usize = 1_048_576;",
-            "const MAX_ID_BYTES: usize = 128;",
             "let payload = &encoded[producer_end..payload_end];"
           ]
         },
         {
-          "path": "codex-rs/hepta-wire/src/boundary_tests.rs",
+          "path": "codex-rs/hepta-wire/src/envelope_v2.rs",
           "mustContain": [
-            "every_truncation_rejects_without_reconstructing_an_envelope",
-            "v1_frame_matches_frozen_bytes_not_only_its_own_encoder"
+            "pub struct WireEnvelopeV2",
+            "FRAME_DIGEST_DOMAIN",
+            "compute_frame_digest"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-wire/src/version.rs",
+          "mustContain": [
+            "pub enum WireVersion",
+            "pub enum WireCapability",
+            "pub fn negotiate("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-wire/src/framed.rs",
+          "mustContain": [
+            "pub fn read_envelope",
+            "validate_header_before_allocation"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-wire/src/schema.rs",
+          "mustContain": [
+            "pub struct SchemaRegistry",
+            "pub struct AdmissionPolicy",
+            "pub trait PayloadCodec"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-runtime/src/lib.rs",
+          "mustContain": [
+            "pub fn status_wire_v2",
+            "RUNTIME_STATUS_WIRE_SCHEMA"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-native-gateway/src/lib.rs",
+          "mustContain": [
+            "\"/api/hepta/runtime.hpta\"",
+            "runtime.status_wire_v2()"
           ]
         }
       ]

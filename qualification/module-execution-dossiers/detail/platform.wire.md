@@ -1,7 +1,7 @@
 # platform.wire: implementation design
 
 Parent: `docs/modules/platform.wire/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: HPTA V1 envelope codec implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: HPTA V1/V2 framing, negotiation, bounded streaming, schema admission and typed payload seams are source-implemented; remaining authenticated-transport and independent-acceptance gates are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -45,8 +45,12 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `WireEnvelope` in [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs). HPTA V1 envelope codec implemented.
-- **State and recovery:** Stateless HPTA binary V1 framing uses big-endian lengths/generation and a payload digest; decode rejects unsupported versions, trailing bytes, invalid IDs and payloads outside 1..1048576 bytes.
-- **Source tests:** [codex-rs/hepta-wire/src/envelope_tests.rs](../../../codex-rs/hepta-wire/src/envelope_tests.rs), [codex-rs/hepta-wire/src/boundary_tests.rs](../../../codex-rs/hepta-wire/src/boundary_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/lane-a-foundation/platform.wire/WIRE_V1.md](../../../docs/lane-a-foundation/platform.wire/WIRE_V1.md).
-- **Remaining work:** The target negotiate operation is not implemented by this fixed-version codec; transport negotiation and production schema admission need their owning integration.
+- **Implemented framing:** `WireEnvelope` preserves the frozen HPTA V1 contract and `WireEnvelopeV2` adds a separately versioned metadata-and-payload frame digest. V2 does not reinterpret V1.
+- **Negotiation:** `negotiate` selects the highest explicitly common version satisfying required capabilities. Requiring `MetadataBoundIntegrity` excludes V1. The returned transcript digest is a binding value for an owning authenticated session; it is not authentication by itself.
+- **Bounded decode:** whole-frame decoding remains available and `read_envelope` validates the 54-byte fixed header, version, identity lengths, generation and payload bound before allocating the body.
+- **Schema/typed boundary:** `SchemaRegistry`, `ProducerAdmission`, `AdmissionPolicy` and `PayloadCodec` keep schema admission and typed decoding above the framing layer. Unknown schemas and denied producers fail closed.
+- **Product caller source:** `HeptaRuntime::status_wire_v2` wraps one exact read-only status observation and the loopback native gateway exposes `GET /api/hepta/runtime.hpta`. This proves source composition only; it does not prove deployment or production activation.
+- **Cross-runtime qualification:** `codex-rs/hepta-shadow-qualification/tests/cross_language_wire_v2.rs` performs a bidirectional Rust↔Python V2 exchange with independent Python digest/framing validation and Rust schema/producer admission.
+- **Source tests:** V1 boundary/frozen-vector tests plus `envelope_v2_tests.rs`, `version_tests.rs`, `framed_tests.rs`, `property_tests.rs` and `schema_tests.rs`. These remain source test identities until exact-candidate receipts pass.
+- **Implementation references:** [WIRE_V1.md](../../../docs/lane-a-foundation/platform.wire/WIRE_V1.md), [WIRE_V2.md](../../../docs/lane-a-foundation/platform.wire/WIRE_V2.md) and [CURRENT_IMPLEMENTATION.md](../../../docs/lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md).
+- **Remaining work/gates:** authenticate complete V2 frame and negotiation binding in the selected non-loopback session/transport before active-tamper/downgrade claims; register production domain schemas at their owners; add host-specific async framing/deadline behavior where required; obtain exact-head/synthetic-merge, deployment, independent acceptance, promotion and release evidence.
