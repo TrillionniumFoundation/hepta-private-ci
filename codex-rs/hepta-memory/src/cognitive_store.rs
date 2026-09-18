@@ -1253,7 +1253,7 @@ fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreEr
     let pointer = root.join(COGNITIVE_ACTIVE_DB_POINTER);
 
     #[cfg(unix)]
-    let mut pointer_file = {
+    let pointer_file = {
         use std::os::unix::fs::MetadataExt;
         use std::os::unix::fs::OpenOptionsExt;
 
@@ -1281,7 +1281,7 @@ fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreEr
         file
     };
     #[cfg(not(unix))]
-    let mut pointer_file = match File::open(&pointer) {
+    let pointer_file = match File::open(&pointer) {
         Ok(file) => file,
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
             return Ok(root.join(COGNITIVE_DB_FILENAME));
