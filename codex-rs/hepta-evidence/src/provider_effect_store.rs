@@ -177,7 +177,7 @@ impl HeptaEvidenceStore {
     /// This method is not registered with Agentd, App Server, automation, or a
     /// production caller.  `dispatch_attempted` is only a local observation
     /// of the adapter call and never a provider effect receipt.
-    pub async fn dispatch_provider_effect_qualification<A: ProviderEffectAdapter + ?Sized>(
+    pub(crate) async fn dispatch_provider_effect_qualification<A: ProviderEffectAdapter + ?Sized>(
         &self,
         adapter: &A,
         intent: &ProviderEffectIntent,
