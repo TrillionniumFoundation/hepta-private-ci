@@ -27,6 +27,37 @@ struct ReplayCheckpointProjection {
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
+struct ExternalReplayCheckpointProjection {
+    schema_version: u32,
+    agent_id: String,
+    generation: u64,
+    replay_digest_hex: String,
+}
+
+pub(crate) fn load_external_replay_checkpoint(
+    path: &Path,
+    identity: &AgentdIdentity,
+) -> Result<AuthBusReplayCheckpoint, AgentdError> {
+    let bytes = read_external_checkpoint_file(path, identity)?;
+    let projection: ExternalReplayCheckpointProjection = serde_json::from_slice(&bytes)?;
+    if projection.schema_version != 1
+        || projection.agent_id != identity.agent_id.as_str()
+        || projection.generation == 0
+    {
+        return Err(invalid("external replay checkpoint owner or schema is invalid"));
+    }
+    let replay_digest = Digest32::from_array(hex_bytes::<32>(&projection.replay_digest_hex)?);
+    if replay_digest.is_zero() {
+        return Err(invalid("external replay checkpoint digest is empty"));
+    }
+    Ok(AuthBusReplayCheckpoint {
+        generation: projection.generation,
+        replay_digest,
+    })
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 pub(crate) struct TextTrust {
     schema_version: u32,
     trust_revision: u64,
@@ -208,6 +239,81 @@ fn read_owner_file(path: &Path, identity: &AgentdIdentity) -> Result<Vec<u8>, Ag
         return Err(invalid("trust file changed while reading"));
     }
     Ok(bytes)
+}
+
+#[cfg(unix)]
+fn read_external_checkpoint_file(
+    path: &Path,
+    identity: &AgentdIdentity,
+) -> Result<Vec<u8>, AgentdError> {
+    use std::os::unix::fs::MetadataExt;
+
+    if !path.is_absolute()
+        || path.starts_with(&identity.home_root)
+        || path.starts_with(&identity.run_root)
+        || path.parent().is_none()
+    {
+        return Err(invalid(
+            "external replay checkpoint must be outside the Agent home and run root",
+        ));
+    }
+    let parent = path.parent().ok_or_else(|| invalid("checkpoint parent is missing"))?;
+    if parent.canonicalize()? != parent || path.canonicalize()? != path {
+        return Err(invalid("external replay checkpoint path must be canonical and symlink-free"));
+    }
+    let owner = std::fs::metadata(&identity.home_root)?;
+    let parent_meta = std::fs::metadata(parent)?;
+    let before = std::fs::symlink_metadata(path)?;
+    if !parent_meta.is_dir()
+        || parent_meta.uid() != owner.uid()
+        || parent_meta.mode() & 0o077 != 0
+        || !before.is_file()
+        || before.nlink() != 1
+        || before.uid() != owner.uid()
+        || before.mode() & 0o077 != 0
+        || before.len() > 4_096
+    {
+        return Err(invalid(
+            "external replay checkpoint must be a private owner-controlled regular file",
+        ));
+    }
+    let mut file = File::open(path)?;
+    let opened = file.metadata()?;
+    let file_identity = |m: &std::fs::Metadata| {
+        (
+            m.dev(),
+            m.ino(),
+            m.len(),
+            m.mtime(),
+            m.mtime_nsec(),
+            m.ctime(),
+            m.ctime_nsec(),
+        )
+    };
+    if file_identity(&opened) != file_identity(&before) {
+        return Err(invalid("external replay checkpoint changed while opening"));
+    }
+    let mut bytes = Vec::new();
+    file.by_ref().take(4_097).read_to_end(&mut bytes)?;
+    let after = std::fs::symlink_metadata(path)?;
+    if bytes.len() > 4_096
+        || !after.is_file()
+        || file_identity(&after) != file_identity(&before)
+        || file_identity(&file.metadata()?) != file_identity(&before)
+    {
+        return Err(invalid("external replay checkpoint changed while reading"));
+    }
+    Ok(bytes)
+}
+
+#[cfg(not(unix))]
+fn read_external_checkpoint_file(
+    _path: &Path,
+    _identity: &AgentdIdentity,
+) -> Result<Vec<u8>, AgentdError> {
+    Err(invalid(
+        "the external replay-checkpoint profile currently requires Unix ownership checks",
+    ))
 }
 
 #[cfg(not(unix))]
