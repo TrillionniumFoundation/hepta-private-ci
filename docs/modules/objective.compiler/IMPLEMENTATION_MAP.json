@@ -329,7 +329,22 @@
     {
       "sourcePath": "codex-rs/hepta-intelligence/src/production_objective.rs",
       "symbol": "prepare_intelligence_run_v1",
-      "role": "authenticated_compile_canonical_projection_and_atomic_run_start_publication"
+      "role": "canonical_projection_and_learning_ledger_run_start_publication"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/objective_ingress.rs",
+      "symbol": "submit",
+      "role": "signed_authbus_objective_admission_and_durable_outbox_enqueue"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/objective_ingress.rs",
+      "symbol": "ObjectiveIngressHost::process_delivery",
+      "role": "owner_profile_bound_canonical_publication_and_runtime_admission"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/objective_dispatch.rs",
+      "symbol": "run",
+      "role": "durable_outbox_processing_and_delivery_settlement"
     },
     {
       "sourcePath": "codex-rs/hepta-agentd/src/objective_host.rs",
@@ -339,13 +354,21 @@
     {
       "sourcePath": "codex-rs/hepta-agentd/src/objective_runtime.rs",
       "symbol": "admit_publish_and_start_objective_run_v1",
-      "role": "authenticated_admission_immutable_objective_run_publication_and_bounded_runtime_admission"
+      "role": "qualification_feature_direct_store_compatibility"
     }
   ],
   "sourceObjects": [
     {
+      "path": "codex-rs/hepta-agentd/src/objective_dispatch.rs",
+      "object": "1bcaaae6df9a1869e33097bf9b8c9dbc05dbc7b7"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/objective_host.rs",
-      "object": "93645fe67c92763b31952291861ab664d664460c"
+      "object": "478d3320838dd4b099613348785e4f7ff7b1a145"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_ingress.rs",
+      "object": "d6dc61c6892e464bbd85c45a5ff9122ec47b2a3e"
     },
     {
       "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
@@ -353,11 +376,11 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/production_objective.rs",
-      "object": "bbf5ee005f12938d9ea0152c87091c750f5e8886"
+      "object": "2a7a49ab1c401927345998d2031e255aeb395dd7"
     },
     {
       "path": "codex-rs/hepta-objective",
-      "object": "1af93ebe9a2606b7101bcfee10d9174fbac2f7c1"
+      "object": "8d8e4de2819077b80b1acd22d0ea35debc043602"
     },
     {
       "path": "codex-rs/hepta-objective/src/compiler.rs",
@@ -394,9 +417,14 @@
   ],
   "productCallerEvidence": [
     {
-      "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
-      "symbol": "admit_publish_and_start_objective_run_v1",
-      "semantics": "authenticated admission -> immutable fsync+atomic publication -> bounded AgentRunCoordinator admission"
+      "path": "codex-rs/hepta-agentd/src/objective_ingress.rs",
+      "symbol": "submit / ObjectiveIngressHost::process_delivery",
+      "semantics": "signed AuthBus admission -> durable evidence outbox -> canonical learning-ledger RunStart+witness -> post-fsync generation/issuer revalidation -> bounded runtime admission"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_dispatch.rs",
+      "symbol": "run",
+      "semantics": "lease durable Objective delivery -> process canonical publication -> settle delivered/rejected or release transient failures"
     }
   ],
   "sourceBaseRole": "historical_mapping_baseline_not_exact_head_receipt",

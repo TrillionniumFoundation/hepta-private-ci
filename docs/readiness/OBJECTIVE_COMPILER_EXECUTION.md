@@ -135,7 +135,7 @@ received
 -> canonical projection + durable publication by owning caller
 ```
 
-The current source candidate closes the in-crate admission/feasibility boundary but **does not establish** the production caller, canonical `ObjectiveFunctionV1` wire projection, owner store, atomic `RunStartSnapshotV1` publication or reconciliation loop. The read-only intelligence vertical remains an integration harness, not proof of production persistence. Those items stay qualification/product-composition gaps until a named authenticated consumer and owner store exist.
+The current source candidate establishes the canonical projection and a named, authenticated Agentd source-composition path. `ObjectiveStart` accepts a signed AuthBus envelope only when an owner-selected trust registry and Objective admission profile are explicitly configured; admission is durably queued in the evidence outbox, `objective_dispatch` processes that delivery, and `ObjectiveIngressHost` publishes the canonical `ObjectiveFunctionV1`/`RunStartSnapshotV1` lineage through the learning-ledger owner before bounded runtime admission. The qualification-only direct file-store path remains feature-gated. These are source-composition facts, not deployment activation, target-host qualification, independent acceptance, promotion or release.
 
 A crash before caller publication leaves no selected objective. A crash after durable publication must be reconciled by an identity that includes request, principal scope, source digest, schema digest and selected profile digest. A changed success predicate, hard constraint, legal effect, evidence requirement, resource/risk rule, principal scope or rollback class creates a new objective revision and a new run snapshot.
 
