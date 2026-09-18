@@ -199,6 +199,7 @@ fn percentile(values: &[u64], percentile: usize) -> u64 {
 
 fn fixture(candidate_count: usize) -> (CalibratedDecisionRequestV1, CanonicalPolicyProfileV1) {
     let policy_digest = digest("benchmark-policy");
+    let model_artifact_digest = digest("benchmark-model-artifact");
     let calibration_artifact_digest = digest("benchmark-calibration");
     let ood_artifact_digest = digest("benchmark-ood");
     let candidates = (0..candidate_count)
@@ -275,7 +276,7 @@ fn fixture(candidate_count: usize) -> (CalibratedDecisionRequestV1, CanonicalPol
         maximum_in_domain_score: probability_ppm(250_000),
         risk_rule: CanonicalRiskRuleV1::HighOnlySlowPath,
         scorer: LearnedScorerContractV1 {
-            model_digest: policy_digest,
+            model_digest: model_artifact_digest,
             feature_schema_digest: digest("benchmark-features"),
             output_schema_digest: digest("benchmark-outputs"),
             score_semantics_digest: digest("benchmark-semantics"),
@@ -284,7 +285,12 @@ fn fixture(candidate_count: usize) -> (CalibratedDecisionRequestV1, CanonicalPol
         calibration_dataset_digest: digest("benchmark-calibration-data"),
         ood_dataset_digest: digest("benchmark-ood-data"),
         calibration_artifact_digest,
+        calibration_measured_ece_ppm: 0,
+        calibration_subgroup_audit_digest: digest("benchmark-subgroup"),
         ood_artifact_digest,
+        ood_measured_false_acceptance_ppm: 0,
+        ood_detector_digest: digest("benchmark-detector"),
+        ood_support_digest: digest("benchmark-ood-support"),
     };
     (request, profile)
 }
