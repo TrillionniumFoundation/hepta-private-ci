@@ -12,6 +12,7 @@ mod state;
 mod terminal;
 
 pub use install::install;
+pub use install::install_enforced;
 pub use install::install_with_mode;
 pub use state::GovernanceState;
 
