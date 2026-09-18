@@ -145,6 +145,80 @@ fn runtime_fixture() -> RuntimeFixture {
 }
 
 #[tokio::test]
+async fn readiness_gates_and_drain_ack_close_admission() {
+    let fixture = runtime_fixture();
+    fixture
+        .registry
+        .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)
+        .expect("running generation");
+    fixture.state.refresh_generation().expect("refresh running");
+
+    // App Server liveness alone must not promote readiness.
+    fixture
+        .state
+        .mark_app_server_ready()
+        .expect("mark App Server ready");
+    let health = fixture
+        .state
+        .response(1, 1, AgentdMethod::Health)
+        .await
+        .expect("health");
+    assert!(matches!(
+        health.payload,
+        AgentdPayload::Health(ref snapshot) if !snapshot.ready && !snapshot.fenced
+    ));
+    let readiness = fixture
+        .state
+        .response(2, 1, AgentdMethod::Readiness)
+        .await
+        .expect("readiness");
+    assert!(matches!(
+        readiness.payload,
+        AgentdPayload::Readiness(ref snapshot)
+            if !snapshot.critical_stores_ready
+                && !snapshot.revocation_ready
+                && snapshot.required_ports_ready
+                && !snapshot.admission_open
+    ));
+
+    fixture
+        .state
+        .mark_runtime_prerequisites_ready()
+        .expect("mark prerequisites");
+    let health = fixture
+        .state
+        .response(3, 1, AgentdMethod::Health)
+        .await
+        .expect("ready health");
+    assert!(matches!(
+        health.payload,
+        AgentdPayload::Health(ref snapshot) if snapshot.ready && !snapshot.fenced
+    ));
+
+    let drain = fixture
+        .state
+        .response(4, 1, AgentdMethod::Drain)
+        .await
+        .expect("drain");
+    assert!(matches!(
+        drain.payload,
+        AgentdPayload::Drain(ref snapshot)
+            if snapshot.admission_stopped && snapshot.drain_accepted
+    ));
+    assert!(fixture.state.drain_token().is_cancelled());
+
+    let health = fixture
+        .state
+        .response(5, 1, AgentdMethod::Health)
+        .await
+        .expect("draining health");
+    assert!(matches!(
+        health.payload,
+        AgentdPayload::Health(ref snapshot) if !snapshot.ready
+    ));
+}
+
+#[tokio::test]
 async fn duplicate_automation_attachment_does_not_replace_the_live_store() {
     let fixture = runtime_fixture();
     fixture
