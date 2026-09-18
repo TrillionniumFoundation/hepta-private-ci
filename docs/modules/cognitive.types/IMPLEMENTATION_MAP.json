@@ -4,7 +4,7 @@
   "moduleId": "cognitive.types",
   "lane": "LANE-C-MEMORY",
   "sourceBase": {
-    "observedCommit": "7624a86b25ae6be30ab45ca3d42a321c4add5c81",
+    "observedCommit": "c68ca8dc247227d4b1f2517a11875885adc3185f",
     "declaredRoot": "codex-rs/hepta-cognitive-types",
     "resolvedRoot": "codex-rs/hepta-cognitive-types"
   },
@@ -198,13 +198,25 @@
   "conformance": {
     "productionReferenceFixtureSuite": "qualification/hnmf-conformance",
     "productionPackage": "codex-hepta-cognitive-types",
-    "referencePackage": "hepta-hnmf-contract-reference",
-    "currentFixtures": [
+    "contractReferencePackage": "hepta-hnmf-contract-reference",
+    "deterministicRuntimeOraclePackage": "hepta-hnmf-reference",
+    "contractReferenceFixtures": [
       "valid_agent_text_event",
       "privacy_mismatch",
       "modality_range_mismatch",
       "same_modality_binding"
-    ]
+    ],
+    "runtimeOracleFixtures": [
+      "engram_active_support",
+      "synapse_self_loop",
+      "cue_zero_seed",
+      "outcome_over_ppm",
+      "topology_self_activation",
+      "plasticity_self_activation",
+      "forget_without_rebuild",
+      "replay_over_ppm"
+    ],
+    "explicitCoverageGap": "RecallPacketV1 has production and runtime recall tests but the deterministic runtime oracle exposes no standalone arbitrary-packet validator"
   },
   "downstreamConsumers": [
     {
@@ -230,7 +242,7 @@
   ],
   "repositoryControlledGaps": [
     "bind HNMF V1 contracts to authenticated product consumer callsites before changing composed state",
-    "expand production-reference conformance fixtures beyond event/span into engram/recall/replay/plasticity/forget semantics",
+    "add a first-class runtime-oracle validation surface for arbitrary RecallPacketV1 only if product semantics require recall packets to cross an untrusted boundary",
     "run exact-head CI and independent acceptance before changing qualified or activated state",
     "migrate the legacy MemoryRecord/CognitiveSnapshot public-field compatibility surface to validated constructors in a separately staged caller migration"
   ],
