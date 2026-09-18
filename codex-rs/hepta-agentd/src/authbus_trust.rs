@@ -77,11 +77,35 @@ impl TextTrust {
 
     pub fn trust_head(&self) -> Result<AuthBusTrustHead, AgentdError> {
         let issuer = self.issuer()?;
+        let verifying_key_digest = Digest32::of_bytes(issuer.verifying_key.as_bytes());
+        let mut threads = self.thread_ids.clone();
+        threads.sort();
+        threads.dedup();
+        if threads.len() != self.thread_ids.len() {
+            return Err(invalid("trust registry contains duplicate thread ids"));
+        }
+        let mut bytes = b"hepta.agentd.authbus-trust.v2\0".to_vec();
+        bytes.extend_from_slice(&self.trust_revision.to_be_bytes());
+        push_text(&mut bytes, &self.agent_id);
+        push_text(&mut bytes, &self.issuer_id);
+        bytes.extend_from_slice(&self.key_epoch.to_be_bytes());
+        bytes.extend_from_slice(verifying_key_digest.as_array());
+        bytes.push(u8::from(self.revoked));
+        for thread in threads {
+            push_text(&mut bytes, &thread);
+        }
+        if let Some(checkpoint) = self.replay_checkpoint()? {
+            bytes.extend_from_slice(&checkpoint.generation.to_be_bytes());
+            bytes.extend_from_slice(checkpoint.replay_digest.as_array());
+        } else {
+            bytes.extend_from_slice(&0_u64.to_be_bytes());
+        }
         Ok(AuthBusTrustHead {
             issuer_id: issuer.issuer_id,
             revision: self.trust_revision,
             key_epoch: issuer.key_epoch.get(),
-            verifying_key_digest: Digest32::of_bytes(issuer.verifying_key.as_bytes()),
+            verifying_key_digest,
+            registration_digest: Digest32::of_bytes(&bytes),
             revoked: issuer.revoked,
         })
     }
@@ -109,6 +133,11 @@ impl TextTrust {
     pub fn permits(&self, thread_id: &str) -> bool {
         !self.revoked && self.thread_ids.iter().any(|id| id == thread_id)
     }
+}
+
+fn push_text(bytes: &mut Vec<u8>, value: &str) {
+    bytes.extend_from_slice(&u32::try_from(value.len()).unwrap_or(u32::MAX).to_be_bytes());
+    bytes.extend_from_slice(value.as_bytes());
 }
 
 pub(crate) fn hex_bytes<const N: usize>(value: &str) -> Result<[u8; N], AgentdError> {
