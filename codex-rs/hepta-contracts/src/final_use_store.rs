@@ -1,7 +1,7 @@
 //! Persistent nonce/revocation owner. OS locks are released on process death.
 use super::FinalUseError;
 use super::FinalUseRevocations;
-use super::MAX_CLAIMS;
+use super::MAX_LOCAL_CLAIMS;
 use super::State;
 use super::valid_head;
 use serde::Deserialize;
@@ -146,7 +146,7 @@ impl Store {
                 }
                 _ => return Err(FinalUseError::InvalidTrust),
             };
-            if !valid_head(&state.head) || state.used_nonces.len() > MAX_CLAIMS {
+            if !valid_head(&state.head) || state.used_nonces.len() > MAX_LOCAL_CLAIMS {
                 return Err(FinalUseError::InvalidTrust);
             }
             if allow_startup_head_advance {
