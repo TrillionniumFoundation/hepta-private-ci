@@ -17,6 +17,7 @@ arguments to its Agentd command:
 
 ```text
 --authbus-trust-file /absolute/canonical/agent/home/authbus-trust.json
+--authbus-restore-checkpoint <nonzero-generation>:<64-hex-digest>
 ```
 
 The file must be a direct child of the canonical Agent home. Set the home to
@@ -40,15 +41,23 @@ and allowed existing thread IDs:
   "not_before_ms": null,
   "not_after_ms": null,
   "previous_epochs": [],
-  "restore_checkpoint_generation": 1,
-  "restore_checkpoint_digest_hex": "<64 lowercase/uppercase hexadecimal characters>",
   "thread_ids": ["<existing thread ID>"]
 }
 ```
 
 One issuer identity, one current epoch, at most four explicitly retained previous epochs, and at most 16 thread IDs are supported. Previous epochs may carry independent revocation and optional `not_before_ms` / `not_after_ms` windows; this is intended only for bounded rotation overlap, not indefinite key retention. An empty allowlist
 permits startup but no text admission; use the normal session ingress to create
-a thread, then install its ID. When restore rollback protection is enabled, `restore_checkpoint_generation` and `restore_checkpoint_digest_hex` must be supplied together and retained independently of the SQLite backup lineage. Agentd binds/verifies that checkpoint when the AuthBus host opens; restoring an older database against a newer external checkpoint fails closed. Advance the external checkpoint only with the EvidenceStore checkpoint transition and retain the new value before considering a backup restorable.
+a thread, then install its ID.
+
+The restore checkpoint is deliberately **not** stored in this trust JSON or inferred
+from the EvidenceStore. Whenever AuthBus trust is configured, Agentd also requires
+`--authbus-restore-checkpoint generation:digest`; configuring only one of the two
+fails startup. The supervisor/operator must retain that witness outside the Agent
+home SQLite backup lineage. Agentd binds/verifies it when the AuthBus host opens,
+so restoring an older database against a newer external witness fails closed.
+Advance the EvidenceStore checkpoint first, atomically publish/retain the matching
+external witness, and treat any crash between those steps as fail-closed until an
+operator reconciles the pair.
 
 Replace the complete file atomically while
 preserving its permissions. The daemon reloads it for admission and dispatch

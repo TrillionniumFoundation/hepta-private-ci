@@ -17,7 +17,7 @@ Canonical landing page for AuthBus development and qualification.
 | Surface | Owner / path | Responsibility |
 | --- | --- | --- |
 | Domain core | `auth.authbus` / `codex-rs/hepta-authbus` | signed-message authentication and pure policy/quota/reservation types |
-| Durable state | `kernel.evidence` / `codex-rs/hepta-evidence` | replay, outbox, policy revisions, quota ledger, reservations, settlement, reconciliation and restore-checkpoint binding |
+| Durable state | `kernel.evidence` / `codex-rs/hepta-evidence` | replay/outbox; fixed-window quota; immutable principal/action/scope/effect reservations; EffectStarted fencing; settlement/reconciliation; restore-checkpoint binding |
 | Narrow host | `runtime.agentd` / `codex-rs/hepta-agentd` | signed text ingress into an existing private thread queue |
 | Qualification | `codex-rs/hepta-authbus-p1-3-qualification` + Lane A CI | exact-source execution provenance and negative qualification |
 
@@ -25,4 +25,4 @@ Cross-owner placement is intentional: AuthBus does not create a second SQLite ow
 
 ## Claim boundary
 
-The source candidate implements authorization/quota/reservation primitives, but the only current product composition is the narrow signed-text ingress. A provider, secret, network or filesystem effect caller has not yet been registered through the new control surface. Production implementation, activation, operator acceptance, promotion and release therefore remain separate gates.
+The source candidate implements authorization/quota/reservation primitives and has two candidate compositions: the narrow signed-text ingress and a reservation-aware Bao read wrapper. The Bao wrapper is source-composed but not independently accepted or production-enrolled; other provider/network/filesystem effects are not registered through this control surface. Production implementation, activation, operator acceptance, promotion and release therefore remain separate gates.

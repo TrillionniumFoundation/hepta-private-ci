@@ -88,16 +88,16 @@
       "delegatedCallees": []
     },
     {
-      "operation": "validate_authbus_reservation_for_effect",
-      "nativeSymbol": "validate_authbus_reservation_for_effect",
+      "operation": "begin_authbus_effect",
+      "nativeSymbol": "begin_authbus_effect",
       "sourcePath": "codex-rs/hepta-evidence/src/authbus_control.rs",
       "state": "source_candidate_not_product_composed",
-      "authority": "final_use_validation",
+      "authority": "durable_final_use_transition",
       "tests": [
         "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
       ],
       "sourcePathExists": true,
-      "designOperation": "final-use",
+      "designOperation": "begin-effect",
       "mappingClass": "delegated_durable_owner",
       "delegatedCallees": []
     },
@@ -142,7 +142,7 @@
       "designOperation": "effect_adapter",
       "mappingClass": "delegated_effect_consumer",
       "delegatedCallees": [
-        "validate_authbus_reservation_for_effect",
+        "begin_authbus_effect",
         "settle_authbus_reservation",
         "quarantine_authbus_reservation",
         "cancel_authbus_reservation"
@@ -152,7 +152,7 @@
   "repositoryControlledGaps": [
     "Run exact-head and deterministic synthetic-merge tests for the new policy/quota/reservation candidate.",
     "Run exact-head product tests for the Bao AuthBus effect wrapper and bind receipts to the candidate source.",
-    "Retain and verify independently governed restore checkpoints in the selected production host."
+    "Operate and retain the mandatory external restore-checkpoint witness outside the selected production host SQLite backup lineage."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -193,7 +193,7 @@
       "owner": "secrets.heptabao",
       "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
       "state": "source_candidate_not_accepted",
-      "semantics": "final-use reservation check before HTTPS; definitive observation settles one unit; indeterminate outcome quarantines"
+      "semantics": "exact principal/action/scope/effect binding; durable EffectStarted before HTTPS; definitive observation settles one unit; indeterminate outcome remains held/quarantined"
     }
   }
 }
