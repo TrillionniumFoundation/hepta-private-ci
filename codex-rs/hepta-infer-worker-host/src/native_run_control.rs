@@ -1,5 +1,7 @@
 //! Local durable admission around the actual App Server driver.
 
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
@@ -9,6 +11,7 @@ use tokio_util::sync::CancellationToken;
 
 use super::AppServerModelDriver;
 use super::NativeOwnerAuthority;
+use super::NativeProviderAuthorization;
 use super::NativeRunOutput;
 use super::NativeRunStatus;
 use super::Result;
@@ -33,6 +36,58 @@ impl AppServerModelDriver {
         prompt: String,
         context_query: Option<String>,
         cancellation: &CancellationToken,
+    ) -> Result<NativeRunOutput> {
+        self.run_inner(
+            control,
+            admission,
+            prompt,
+            context_query,
+            cancellation,
+            None,
+        )
+        .await
+    }
+
+    /// Production composition entrypoint. Planning never grants authority:
+    /// the worker claims an independently signed final-use grant only for a
+    /// fresh Reserved request, immediately before the durable dispatch intent
+    /// and provider turn/start boundary.
+    ///
+    /// Dynamic context_query is deliberately unavailable here because the
+    /// final-use issuer must bind the exact provider user input.
+    pub async fn run_authorized(
+        &self,
+        control: &mut DurableInferenceControl,
+        authority: &FinalUseAuthority,
+        signed: &SignedFinalUseGrant,
+        admission: NativeAdmission,
+        prompt: String,
+        cancellation: &CancellationToken,
+    ) -> Result<NativeRunOutput> {
+        let binding = self.provider_final_use_binding(&admission.request_id, &prompt)?;
+        self.run_inner(
+            control,
+            admission,
+            prompt,
+            None,
+            cancellation,
+            Some(NativeProviderAuthorization {
+                authority,
+                signed,
+                binding,
+            }),
+        )
+        .await
+    }
+
+    async fn run_inner(
+        &self,
+        control: &mut DurableInferenceControl,
+        admission: NativeAdmission,
+        prompt: String,
+        context_query: Option<String>,
+        cancellation: &CancellationToken,
+        authorization: Option<NativeProviderAuthorization<'_>>,
     ) -> Result<NativeRunOutput> {
         if prompt.is_empty() || prompt.len() > super::MAX_PROMPT_BYTES {
             return Err("prompt must contain 1..32768 bytes".into());
@@ -127,6 +182,7 @@ impl AppServerModelDriver {
                 prompt.clone(),
                 context_query,
                 cancellation,
+                authorization,
             )
             .await
         {
