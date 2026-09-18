@@ -1,0 +1,42 @@
+[package]
+edition.workspace = true
+license.workspace = true
+name = "codex-hepta-native-app"
+version.workspace = true
+publish = false
+
+[lib]
+name = "codex_hepta_native_app"
+path = "src/lib.rs"
+doctest = false
+
+[[bin]]
+name = "hepta-native"
+path = "src/main.rs"
+
+[[bin]]
+name = "hepta-native-updater"
+path = "src/bin/updater.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+anyhow = { workspace = true }
+arboard = { workspace = true }
+clap = { workspace = true, features = ["derive"] }
+codex-hepta-agentd = { workspace = true }
+codex-hepta-contracts = { workspace = true }
+codex-keyring-store = { workspace = true }
+ed25519-dalek = { workspace = true }
+eframe = { workspace = true }
+notify-rust = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+sys-locale = { workspace = true }
+thiserror = { workspace = true }
+tokio = { workspace = true, features = ["rt-multi-thread", "time"] }
+
+[dev-dependencies]
+tempfile = { workspace = true }
