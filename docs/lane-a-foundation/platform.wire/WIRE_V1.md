@@ -35,12 +35,16 @@ The codec is stateless and library-only. Successful decode is not transport
 acceptance, authorization, dispatch acknowledgement or external terminal
 success.
 
-## Target-only design
+## Versioned evolution
 
-Version negotiation, streaming decode, multi-version adapters and an
-authenticated complete-envelope digest are target-only. A future version must
-use a new version value and frozen vectors; V1 bytes and meanings cannot be
-reinterpreted in place.
+V1 bytes and meanings remain immutable. The repository now provides HPTA V2,
+explicit HPTN version/capability negotiation, multi-version dispatch and a
+bounded streaming decoder without reinterpreting V1. See `WIRE_V2.md`,
+`NEGOTIATION_V1.md` and `CURRENT_IMPLEMENTATION.md`.
+
+Authenticated negotiation/transcript binding remains the owning transport or
+session's responsibility. An unkeyed complete-frame digest is not a substitute
+for a MAC, signature or authenticated secure channel.
 
 ## Known limits and non-claims
 
@@ -57,6 +61,8 @@ independent frozen frame.
 
 ## Integration prerequisites
 
-Producers and consumers must share the exact V1 conformance vector, validate the
-domain payload separately and reject unknown versions. A successful re-encode
+Producers and consumers using V1 must share the exact V1 conformance vector,
+validate the domain payload separately and reject unknown versions. Callers
+that require metadata-bound integrity must negotiate or otherwise bind V2 and
+must not silently downgrade that requirement to V1. A successful re-encode
 must never be treated as effect acknowledgement.
