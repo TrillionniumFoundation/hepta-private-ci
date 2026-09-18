@@ -106,9 +106,9 @@ failed_peers
 truncated_items
 ```
 
-A failed peer is not converted into a successful empty result. Partial coverage remains visible in the prepared federated attachment and is bound into the source-binding digest supplied to the model-input proposal.
+A failed peer is not converted into a successful empty result. Partial coverage remains visible in the prepared federated attachment, in the combined local+federated model-input payload, and in the source-binding digest supplied to the model-input proposal.
 
-Discovery only turns a source into a requested peer after an active capability has been observed. Owner layouts without an active grant are enrollment candidates, not failed requests.
+A successfully observed owner layout with no active grant remains only an enrollment candidate and does not consume a requested-peer slot. If the owner capability store cannot be observed at all, enrollment status is indeterminate rather than equivalent to "no grant": the product caller reserves a bounded failed slot from the same <=16 peer budget. Likewise, a terminal transport whose post-I/O authority becomes revoked or generation-stale contributes failed aggregate coverage even though the transport itself completed.
 
 ## 8. Verification matrix
 
@@ -128,6 +128,9 @@ The focused V2 suite includes adversarial cases for:
 - peer/lease drift;
 - duplicate remote record identity;
 - result digest binding the post-I/O authority observation;
+- owner capability discovery failure remaining explicit bounded failed coverage;
+- revoked/stale terminal attempts contributing failed aggregate coverage;
+- combined local+federated model input preserving the federation coverage vector;
 - cancellation receipts carrying no success assumption.
 
 Required product qualification additionally includes Agentd composition, owner capability grant/revoke behavior, extension attachment coverage binding, exact-head tests, merge-candidate tests and target-host execution evidence.
