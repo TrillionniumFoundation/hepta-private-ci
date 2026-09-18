@@ -29,6 +29,7 @@ use codex_hepta_prompt_registry::PromptRealizationBindingV2;
 use codex_hepta_prompt_registry::PromptRoleV2;
 use codex_hepta_prompt_registry::final_use_admission_binding;
 use codex_hepta_prompt_registry::final_use_realization_binding;
+use codex_hepta_prompt_registry::final_use_revoke_binding;
 use codex_hepta_types::FixedQ32;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
@@ -44,7 +45,13 @@ fn digest(value: &str) -> Digest32 {
 fn admitted_registry(
     root: &std::path::Path,
     payload: &[u8],
-) -> (DurablePromptRegistry, PromptModelTupleV2) {
+) -> (
+    DurablePromptRegistry,
+    PromptModelTupleV2,
+    FinalUseAuthority,
+    SigningKey,
+    u64,
+) {
     let mut registry =
         DurablePromptRegistry::open_state_dir(root, 64).expect("open durable registry");
     let factor = PromptFactor {
@@ -176,7 +183,7 @@ fn admitted_registry(
             None,
         )
         .expect("register actual payload through final-use authority");
-    (registry, tuple)
+    (registry, tuple, authority, signing_key, now)
 }
 
 struct AcceptPricing;
@@ -339,7 +346,8 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
     let temporary = tempfile::tempdir().expect("tempdir");
     let root = temporary.path().join("prompt-registry");
     let payload = b"Inspect evidence before mutation.";
-    let (registry, tuple) = admitted_registry(&root, payload);
+    let (registry, tuple, _authority, _signing_key, _grant_now) =
+        admitted_registry(&root, payload);
     let selected = canonical_selection(&registry, &tuple, 100);
 
     let output = compile_prompt_registry_v2(
@@ -423,17 +431,50 @@ fn exercised_registry_payload_is_the_exact_context_attachment_input() {
 fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() {
     let temporary = tempfile::tempdir().expect("tempdir");
     let root = temporary.path().join("prompt-registry-revocation");
-    let (mut registry, tuple) = admitted_registry(&root, b"Bound instruction");
+    let (mut registry, tuple, authority, signing_key, grant_now) =
+        admitted_registry(&root, b"Bound instruction");
     let selected = canonical_selection(&registry, &tuple, 100);
 
+    let factor = registry
+        .registry()
+        .factor(&id("factor:verify"))
+        .cloned()
+        .expect("admitted factor");
+    let actor = id("revoker:test");
+    let revoke_scope = digest("scope:revoke:test");
+    let reason = digest("reason:revoke");
+    let cutoff = grant_now + 5_000;
+    let revoke_binding =
+        final_use_revoke_binding(&factor, &actor, revoke_scope, reason, cutoff)
+            .expect("revoke binding");
+    let revoke_grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "review-authority:prompt".to_owned(),
+        authority_epoch: 1,
+        grant_id: "revoke:prompt:1".to_owned(),
+        nonce: [25; 32],
+        binding: revoke_binding,
+        not_before_unix_ms: grant_now.saturating_sub(1_000),
+        expires_at_unix_ms: grant_now + 30_000,
+    };
+    let revoke_signed = SignedFinalUseGrant {
+        signature: signing_key
+            .sign(&revoke_grant.signing_bytes().expect("revoke signing bytes"))
+            .to_bytes()
+            .to_vec(),
+        grant: revoke_grant,
+    };
     registry
-        .revoke_factor(
-            &id("factor:verify"),
-            &id("revoker:test"),
-            digest("reason:revoke"),
-            101,
+        .revoke_factor_final_use(
+            &authority,
+            &revoke_signed,
+            &factor.factor_id,
+            &actor,
+            revoke_scope,
+            reason,
+            cutoff,
         )
-        .expect("test revocation");
+        .expect("final-use revocation");
 
     let error = compile_prompt_registry_v2(
         &registry,
@@ -472,7 +513,8 @@ fn revocation_after_exercise_prevents_delivery_of_the_selected_realization() {
 fn compiler_rejects_registry_and_context_model_drift() {
     let temporary = tempfile::tempdir().expect("tempdir");
     let root = temporary.path().join("prompt-registry-model-drift");
-    let (registry, tuple) = admitted_registry(&root, b"Bound instruction");
+    let (registry, tuple, _authority, _signing_key, _grant_now) =
+        admitted_registry(&root, b"Bound instruction");
     let selected = canonical_selection(&registry, &tuple, 100);
 
     let error = compile_prompt_registry_v2(
