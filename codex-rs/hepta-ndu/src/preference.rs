@@ -377,12 +377,8 @@ fn normalize_preference_values(values: &mut [AxisValue]) -> Result<(), NduError>
     }
     values.sort();
     for value in values.iter() {
-        if value.value < FixedQ32::from_raw(-FixedQ32::ONE.raw())
-            || value.value > FixedQ32::ONE
-        {
-            return Err(NduError::PreferenceValueOutOfRange(
-                value.axis.to_string(),
-            ));
+        if value.value < FixedQ32::from_raw(-FixedQ32::ONE.raw()) || value.value > FixedQ32::ONE {
+            return Err(NduError::PreferenceValueOutOfRange(value.axis.to_string()));
         }
     }
     for window in values.windows(2) {
