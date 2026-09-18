@@ -144,7 +144,6 @@ pub fn plan(
     })
 }
 
-
 pub fn schedule(now_ms: u64, request: ScheduleRequest) -> Result<WorkerAssignment, Error> {
     if request.eligible_workers.is_empty()
         || request.eligible_workers.len() > MAX_SCHEDULING_CANDIDATES
@@ -238,7 +237,11 @@ pub fn schedule(now_ms: u64, request: ScheduleRequest) -> Result<WorkerAssignmen
 fn worker_snapshot_digest(workers: &[EligibleWorker]) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(b"hepta.inferd.eligible-workers.v1");
-    bytes.extend_from_slice(&u32::try_from(workers.len()).unwrap_or(u32::MAX).to_be_bytes());
+    bytes.extend_from_slice(
+        &u32::try_from(workers.len())
+            .unwrap_or(u32::MAX)
+            .to_be_bytes(),
+    );
     for worker in workers {
         push_id(&mut bytes, &worker.worker_id);
         bytes.extend_from_slice(&worker.worker_generation.to_be_bytes());
