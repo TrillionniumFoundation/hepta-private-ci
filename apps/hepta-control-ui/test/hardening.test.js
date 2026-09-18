@@ -22,6 +22,16 @@ function frozenTimer() {
   return { unref() {} };
 }
 
+function displayedViewBinding({
+  sessionId = "session.1",
+  connectionGeneration = 1,
+  generation = 7,
+  revision = 9,
+  digest = D2,
+} = {}) {
+  return Object.freeze({ sessionId, connectionGeneration, generation, revision, digest });
+}
+
 async function connectWithSnapshot(client, sessionId = "session.1", generation = 1) {
   await client.connect({ endpointId: "runtime.1", protocolVersion: 1, manifestDigest: D1 });
   client.applySnapshot({
@@ -58,7 +68,7 @@ test("in-flight acknowledgement is verified against immutable request provenance
     subjectId: "runtime.agentd",
     action: "request_retry",
     expectedRevision: 4,
-    displayedRevision: 9,
+    displayedView: displayedViewBinding(),
   });
   const started = await requestStarted;
   await client.close();
@@ -94,7 +104,7 @@ test("durable pending identity survives reload without persisting request payloa
     subjectId: "runtime.agentd",
     action: "request_retry",
     expectedRevision: 4,
-    displayedRevision: 9,
+    displayedView: displayedViewBinding(),
   });
   assert.equal(ack.status, "indeterminate");
   const raw = storage.getItem("hepta.pending.test");
@@ -136,7 +146,7 @@ test("persistence failure before dispatch fails closed and never crosses transpo
   const client = new RuntimeClient({ transport, pendingStore: store, setTimer: frozenTimer, clearTimer: () => {} });
   await connectWithSnapshot(client);
   await assert.rejects(
-    client.submitRequest({ operationId: "operation.no-store", subjectId: "runtime.agentd", action: "request_retry", expectedRevision: 4, displayedRevision: 9 }),
+    client.submitRequest({ operationId: "operation.no-store", subjectId: "runtime.agentd", action: "request_retry", expectedRevision: 4, displayedView: displayedViewBinding() }),
     (error) => error.code === ERROR_CODES.PERSISTENCE_UNAVAILABLE,
   );
   assert.equal(requests, 0);
@@ -724,7 +734,7 @@ test("post-dispatch persistence failure is visible in the returned acknowledgeme
     subjectId: "runtime.agentd",
     action: "request_retry",
     expectedRevision: 4,
-    displayedRevision: 9,
+    displayedView: displayedViewBinding(),
   });
   assert.equal(acknowledgement.status, "indeterminate");
   assert.equal(acknowledgement.recoveryRequired, true);
@@ -836,7 +846,7 @@ test("automated reconciliation preserves persistence failure error truth", async
     subjectId: "runtime.agentd",
     action: "request_retry",
     expectedRevision: 4,
-    displayedRevision: 9,
+    displayedView: displayedViewBinding(),
   });
   assert.equal(acknowledgement.status, "pending");
   terminal = true;
@@ -846,7 +856,7 @@ test("automated reconciliation preserves persistence failure error truth", async
     subjectId: "runtime.agentd",
     action: "request_retry",
     expectedRevision: 4,
-    displayedRevision: 9,
+    displayedView: displayedViewBinding(),
   });
   assert.equal(retry.status, "indeterminate");
   assert.equal(retry.recoveryRequired, true);
