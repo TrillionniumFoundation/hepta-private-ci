@@ -147,6 +147,10 @@ def _canonical_engineering_package(root: Path) -> dict[str, object]:
         "packageDigest": hashlib.sha256(package_bytes).hexdigest(),
         "state": package["state"],
         "authorityDelta": package["authorityDelta"],
+        "owner": package["owner"],
+        "deputy": package["deputy"],
+        "sourceMutationAllowed": package["sourceMutationAllowed"],
+        "allowedWritePaths": package["allowedWritePaths"],
         "developmentAfter": package["developmentAfter"],
         "activationAfter": package["activationAfter"],
     }
