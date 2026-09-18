@@ -213,12 +213,8 @@ pub fn enumerate_factors(
 
     let mut candidates = Vec::with_capacity(compatible.bindings.len());
     for binding in &compatible.bindings {
-        let candidate_id = stable_id(&format!(
-            "prompt:{}:{}",
-            binding.factor_id, binding.realization_id
-        ))?;
         candidates.push(PromptCandidateV1 {
-            candidate_id,
+            candidate_id: binding.realization_id.clone(),
             factor_id: binding.factor_id.clone(),
             realization_id: binding.realization_id.clone(),
             payload_digest: binding.payload_digest,
@@ -667,11 +663,9 @@ fn validate_portfolio_receipt(value: &PromptPortfolioReceiptV1) -> Result<(), Ca
 
 fn ensure_unique_candidates(candidates: &[PromptCandidateV1]) -> Result<(), CanonicalError> {
     let mut ids = BTreeSet::new();
-    let mut factors = BTreeSet::new();
     let mut realizations = BTreeSet::new();
     for candidate in candidates {
         if !ids.insert(candidate.candidate_id.clone())
-            || !factors.insert(candidate.factor_id.clone())
             || !realizations.insert(candidate.realization_id.clone())
         {
             return Err(CanonicalError::DuplicateCandidate(candidate.candidate_id.to_string()));
