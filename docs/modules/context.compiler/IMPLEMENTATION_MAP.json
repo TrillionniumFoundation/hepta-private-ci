@@ -22,6 +22,20 @@
   "productionWriterState": "not_established",
   "operations": [
     {
+      "operation": "verify_admission_snapshot_v2",
+      "nativeSymbol": "verify_admission_snapshot_v2",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/proof_v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/proof_v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revalidate_attachment",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
       "operation": "compile_v2",
       "nativeSymbol": "compile_v2",
       "sourcePath": "codex-rs/hepta-context-compiler/src/proof_v2.rs",
@@ -122,7 +136,7 @@
   ],
   "repositoryControlledGaps": [
     "Compose the proof-closed V2.1 operations into an authenticated product consumer rather than a qualification-only caller.",
-    "Bind ContextAdmissionSnapshotV2 issuer/witness construction to the real current admission and revocation owner.",
+    "Compose ContextAdmissionVerifierV2 with the real current admission/latest-head and revocation owner.",
     "Compose real exact-tokenizer, serializer, and provider-delivery adapters and prove durable provider-attempt acknowledgement semantics.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
