@@ -17,38 +17,81 @@
     "codex-rs/hepta-cognitive-read"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionImplementation": true,
+  "productCallerState": "composed",
+  "productionWriterState": "not_applicable_read_only",
   "operations": [
     {
-      "operation": "read_v2",
-      "nativeSymbol": "read_v2",
-      "sourcePath": "codex-rs/hepta-cognitive-read/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "operation": "read_authoritative",
+      "nativeSymbol": "read_authoritative",
+      "sourcePath": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
+      "state": "production_composed",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "read_v2",
+      "designOperation": "acquire_snapshot_read_revalidate",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot.rs::LaneCAuthoritativeSnapshotProvider",
+        "codex-rs/hepta-agentd/src/cognitive_context.rs::read"
+      ]
     },
     {
-      "operation": "durablecognitivesnapshot",
-      "nativeSymbol": "DurableCognitiveSnapshot",
+      "operation": "lane_c_authoritative_snapshot_provider",
+      "nativeSymbol": "LaneCAuthoritativeSnapshotProvider",
       "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "state": "production_composed",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "durablecognitivesnapshot",
-      "mappingClass": "owner_native",
+      "designOperation": "owner_snapshot_acquisition",
+      "mappingClass": "delegated_owner_adapter",
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot.rs::CognitiveStore::lane_c_snapshot"
+      ]
+    },
+    {
+      "operation": "agentd_cognitive_context",
+      "nativeSymbol": "cognitive_context::read",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "state": "production_composed",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+        "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "product_consume_with_revalidation",
+      "mappingClass": "product_caller",
+      "delegatedCallees": [
+        "codex-rs/hepta-cognitive-read/src/authoritative.rs::read_authoritative",
+        "codex-rs/hepta-cognitive-read/src/authoritative.rs::revalidate_authoritative_read"
+      ]
+    },
+    {
+      "operation": "read_v2_internal_projection",
+      "nativeSymbol": "read_v2",
+      "sourcePath": "codex-rs/hepta-cognitive-read/src/v2.rs",
+      "state": "internal_lower_level_primitive",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "bounded_projection",
+      "mappingClass": "internal_primitive",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Exact-candidate CI and merge-candidate qualification must pass for this branch before product-execution evidence is claimed.",
+    "Any future cognitive backend must materialize one immutable owner cut before constructing an authoritative provider; moving/current-state adapters are not an admissible product boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -58,7 +101,7 @@
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
