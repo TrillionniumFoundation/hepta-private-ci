@@ -129,5 +129,9 @@ pub use writer::outcome_evidence_payload;
 pub use writer::unlearning_evidence_payload;
 
 #[cfg(test)]
+#[path = "convergence_tests.rs"]
+mod convergence_tests;
+
+#[cfg(test)]
 #[path = "shadow_tests.rs"]
 mod shadow_tests;
