@@ -408,6 +408,39 @@ impl SparseJournal {
         self.base_sequence
     }
 
+    /// Return every complete committed anchor after the supplied sequence in canonical order.
+    /// Hosts use this bounded view to reconcile a journal suffix whose durable
+    /// witness update was interrupted after the journal commit.
+    pub fn anchors_after(&self, sequence: u64) -> Result<Vec<JournalAnchor>, JournalError> {
+        if self.poisoned {
+            return Err(JournalError::Poisoned);
+        }
+        let terminal = self
+            .base_sequence
+            .checked_add(self.entries.len() as u64)
+            .ok_or(JournalError::Capacity)?;
+        if sequence < self.base_sequence || sequence > terminal {
+            return Err(JournalError::InvalidAnchor);
+        }
+        let skip = sequence
+            .checked_sub(self.base_sequence)
+            .and_then(|value| usize::try_from(value).ok())
+            .ok_or(JournalError::InvalidAnchor)?;
+        let mut anchors = Vec::with_capacity(self.entries.len().saturating_sub(skip));
+        for (offset, (_, receipt)) in self.entries.iter().enumerate().skip(skip) {
+            let sequence = self
+                .base_sequence
+                .checked_add(offset as u64)
+                .and_then(|value| value.checked_add(1))
+                .ok_or(JournalError::Capacity)?;
+            anchors.push(JournalAnchor {
+                sequence,
+                checkpoint_digest: receipt.checkpoint_after,
+            });
+        }
+        Ok(anchors)
+    }
+
     pub fn remaining_records(&self) -> usize {
         self.max_records.saturating_sub(self.entries.len())
     }
