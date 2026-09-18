@@ -134,4 +134,3 @@ fn rejected_or_unavailable_certificate_is_recordable_without_becoming_accepted()
         assert_eq!(admitted.certificate.decision, decision);
     }
 }
-
