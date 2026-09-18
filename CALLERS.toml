@@ -22,6 +22,14 @@ product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
 caller_markers = ["ProductionDurableWriter::open", "verifier"]
 
 [[boundary]]
+id = "memory_qualified_compact_checkpoint_publish"
+symbol = "ProductionDurableWriter::publish_qualified_compact_checkpoint"
+definition_path = "codex-rs/hepta-memory/src/production_writer.rs"
+definition_markers = ["pub async fn publish_qualified_compact_checkpoint", "QualifiedCompactCheckpointPublication"]
+product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+caller_markers = ["publish_qualified_compact_checkpoint", "build_qualified_candidate", "prove_compaction"]
+
+[[boundary]]
 id = "agentd_production_writer_host"
 symbol = "AgentdProductionWriterHost::open_with_store"
 definition_path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
