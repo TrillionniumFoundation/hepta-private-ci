@@ -20,7 +20,7 @@ impl HeptaEvidenceStore {
         lease_key: &str,
     ) -> Result<Option<SecretLeaseRecord>, SecretLeaseStoreError> {
         let row = sqlx::query(
-            "SELECT lease_key, provider_id, provider_path, request_sha256,
+            "SELECT lease_key, provider_id, provider_namespace, provider_path, request_sha256,
                     provider_lease_id, state, revision, schema_version,
                     record_json, record_sha256, updated_at_ms
              FROM secret_lease_records WHERE lease_key = ?",
@@ -45,14 +45,15 @@ impl HeptaEvidenceStore {
             .map_err(map_sqlx)?;
         let insert = sqlx::query(
             "INSERT INTO secret_lease_records (
-                lease_key, provider_id, provider_path, request_sha256,
+                lease_key, provider_id, provider_namespace, provider_path, request_sha256,
                 provider_lease_id, state, revision, schema_version,
                 record_json, record_sha256, updated_at_ms
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
              ON CONFLICT(lease_key) DO NOTHING",
         )
         .bind(&record.lease_key)
         .bind(&record.provider_id)
+        .bind(&record.provider_namespace)
         .bind(&record.provider_path)
         .bind(record.request_sha256.as_str())
         .bind(record.provider_lease_id.as_deref())
@@ -172,7 +173,7 @@ async fn load_in_transaction(
     lease_key: &str,
 ) -> Result<Option<SecretLeaseRecord>, SecretLeaseStoreError> {
     let row = sqlx::query(
-        "SELECT lease_key, provider_id, provider_path, request_sha256,
+        "SELECT lease_key, provider_id, provider_namespace, provider_path, request_sha256,
                 provider_lease_id, state, revision, schema_version,
                 record_json, record_sha256, updated_at_ms
          FROM secret_lease_records WHERE lease_key = ?",
@@ -199,6 +200,7 @@ fn decode_record(row: &sqlx::sqlite::SqliteRow) -> Result<SecretLeaseRecord, Sec
     let schema_version: i64 = row.get("schema_version");
     if row.get::<String, _>("lease_key") != record.lease_key
         || row.get::<String, _>("provider_id") != record.provider_id
+        || row.get::<String, _>("provider_namespace") != record.provider_namespace
         || row.get::<String, _>("provider_path") != record.provider_path
         || row.get::<String, _>("request_sha256") != record.request_sha256.as_str()
         || row.try_get::<Option<String>, _>("provider_lease_id").map_err(map_sqlx)?
