@@ -234,6 +234,12 @@ const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
         required_sql_fragments: &["before update of", "authbus issuer identity is immutable"],
     },
     SchemaObjectSpec {
+        name: "authbus_issuer_registry_state_transition",
+        object_type: "trigger",
+        table_name: "authbus_issuer_registry",
+        required_sql_fragments: &["before update of state", "invalid authbus issuer state transition"],
+    },
+    SchemaObjectSpec {
         name: "authbus_issuer_registry_no_delete",
         object_type: "trigger",
         table_name: "authbus_issuer_registry",
