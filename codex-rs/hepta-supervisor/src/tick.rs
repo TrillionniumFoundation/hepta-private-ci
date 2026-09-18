@@ -247,9 +247,19 @@ impl<D: ProcessDriver> Supervisor<D> {
         }
         slot.fault_restart_healthy_since = None;
 
-        let generation = self.record(agent_id)?.lifecycle.generation;
+        let lifecycle = self.record(agent_id)?.lifecycle;
         if slot.fault_restart_attempts >= self.config.restart_attempt_budget {
             slot.fault_restart_retry_at = None;
+            let generation = if lifecycle.lifecycle == AgentLifecycle::Failed {
+                self.transition_without_runtime(
+                    agent_id,
+                    slot,
+                    lifecycle.generation,
+                    AgentLifecycle::Stopped,
+                )?
+            } else {
+                lifecycle.generation
+            };
             slot.event(
                 generation,
                 SupervisorEventKind::FaultRestartBudgetExhausted {
@@ -258,6 +268,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             );
             return Ok(());
         }
+        let generation = lifecycle.generation;
 
         slot.fault_restart_attempts = slot.fault_restart_attempts.saturating_add(1);
         let shift = slot.fault_restart_attempts.saturating_sub(1).min(31);

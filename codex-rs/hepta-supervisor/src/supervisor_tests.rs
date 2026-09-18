@@ -763,6 +763,16 @@ fn unexpected_agent_failure_uses_bounded_exponential_restart_budget() -> Result<
         TickReport::default()
     );
     assert_eq!(control.spawn_count(&fleet.first), 4);
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("registered agent")
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Stopped
+    );
     assert!(supervisor
         .snapshot(&fleet.first)
         .unwrap()
