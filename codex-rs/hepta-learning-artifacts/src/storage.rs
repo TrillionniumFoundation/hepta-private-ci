@@ -12,8 +12,12 @@ use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
 #[cfg(unix)]
+use std::os::unix::fs::MetadataExt;
+#[cfg(unix)]
 use std::os::unix::fs::OpenOptionsExt;
+use std::path::Component;
 use std::path::Path;
+use std::path::PathBuf;
 use std::str::FromStr;
 
 use codex_hepta_types::Digest32;
@@ -40,9 +44,21 @@ const HEAD_MAGIC: &str = "HEPTAH01";
 ///
 /// Safe callers cannot construct this capability from an arbitrary `File` or
 /// extract/clone its handle. Creation fails when the final path component already
-/// exists, including when it is empty, truncated, or a symbolic link. Trusted
-/// parent traversal and containing-directory durability remain host obligations.
-pub struct CreateOnlyArtifactFile(File);
+/// exists, including when it is empty, truncated, or a symbolic link.
+///
+/// Until a successful durable write completes, an empty file remains staging
+/// state. Dropping that staging capability removes the same empty inode on Unix
+/// when it can still be identified safely. Partial/nonempty or interfered files
+/// are never blindly removed and remain host reconciliation work.
+pub struct CreateOnlyArtifactFile {
+    file: File,
+    path: PathBuf,
+    committed: bool,
+    #[cfg(unix)]
+    device: u64,
+    #[cfg(unix)]
+    inode: u64,
+}
 
 impl fmt::Debug for CreateOnlyArtifactFile {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -50,19 +66,79 @@ impl fmt::Debug for CreateOnlyArtifactFile {
     }
 }
 
+impl Drop for CreateOnlyArtifactFile {
+    fn drop(&mut self) {
+        if self.committed {
+            return;
+        }
+        cleanup_empty_owned_path(self);
+    }
+}
+
 impl CreateOnlyArtifactFile {
     pub fn create(path: impl AsRef<Path>) -> Result<Self, ArtifactStorageError> {
+        let path = path.as_ref().to_path_buf();
         let mut options = OpenOptions::new();
         options.read(true).write(true).create_new(true);
         #[cfg(unix)]
         options.mode(0o600);
-        match options.open(path) {
-            Ok(file) => Ok(Self(file)),
+        match options.open(&path) {
+            Ok(file) => {
+                #[cfg(unix)]
+                let metadata = file.metadata()?;
+                Ok(Self {
+                    file,
+                    path,
+                    committed: false,
+                    #[cfg(unix)]
+                    device: metadata.dev(),
+                    #[cfg(unix)]
+                    inode: metadata.ino(),
+                })
+            }
             Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {
                 Err(ArtifactStorageError::AlreadyExists)
             }
             Err(error) => Err(error.into()),
         }
+    }
+
+    /// Defense-in-depth creation below an existing trusted root.
+    ///
+    /// Absolute paths, parent traversal and parent symlink escapes are rejected.
+    /// This does not replace an OS-level race-resistant directory capability:
+    /// hosts with adversarial parent mutation must still use an authenticated
+    /// directory handle / sandbox boundary around this call.
+    pub fn create_under(
+        root: impl AsRef<Path>,
+        relative: impl AsRef<Path>,
+    ) -> Result<Self, ArtifactStorageError> {
+        let relative = relative.as_ref();
+        if relative.as_os_str().is_empty()
+            || relative.is_absolute()
+            || relative.components().any(|component| {
+                matches!(
+                    component,
+                    Component::ParentDir | Component::RootDir | Component::Prefix(_)
+                )
+            })
+        {
+            return Err(ArtifactStorageError::InvalidPath);
+        }
+        let root = root.as_ref().canonicalize()?;
+        if !root.is_dir() {
+            return Err(ArtifactStorageError::InvalidPath);
+        }
+        let candidate = root.join(relative);
+        let parent = candidate.parent().ok_or(ArtifactStorageError::InvalidPath)?;
+        let parent = parent.canonicalize()?;
+        if !parent.starts_with(&root) {
+            return Err(ArtifactStorageError::InvalidPath);
+        }
+        let file_name = candidate
+            .file_name()
+            .ok_or(ArtifactStorageError::InvalidPath)?;
+        Self::create(parent.join(file_name))
     }
 }
 
@@ -98,6 +174,7 @@ pub enum ArtifactStorageError {
     HeadWitnessMismatch,
     Busy,
     NotRegular,
+    InvalidPath,
     AlreadyExists,
     Capacity,
     Corrupt,
@@ -329,6 +406,29 @@ impl Drop for LockedFile {
     }
 }
 
+struct BorrowedLock<'a>(&'a File);
+
+impl Drop for BorrowedLock<'_> {
+    fn drop(&mut self) {
+        let _ = self.0.unlock();
+    }
+}
+
+fn lock_ref(file: &File, kind: LockKind) -> Result<BorrowedLock<'_>, ArtifactStorageError> {
+    if !file.metadata()?.is_file() {
+        return Err(ArtifactStorageError::NotRegular);
+    }
+    let result = match kind {
+        LockKind::Shared => file.try_lock_shared(),
+        LockKind::Exclusive => file.try_lock(),
+    };
+    match result {
+        Ok(()) => Ok(BorrowedLock(file)),
+        Err(TryLockError::WouldBlock) => Err(ArtifactStorageError::Busy),
+        Err(TryLockError::Error(error)) => Err(error.into()),
+    }
+}
+
 fn lock(file: File, kind: LockKind) -> Result<LockedFile, ArtifactStorageError> {
     if !file.metadata()?.is_file() {
         return Err(ArtifactStorageError::NotRegular);
@@ -345,21 +445,51 @@ fn lock(file: File, kind: LockKind) -> Result<LockedFile, ArtifactStorageError> 
 }
 
 pub(crate) fn write_new(
-    file: CreateOnlyArtifactFile,
+    mut file: CreateOnlyArtifactFile,
     bytes: &[u8],
 ) -> Result<(), ArtifactStorageError> {
-    let mut guard = lock(file.0, LockKind::Exclusive)?;
-    if guard.0.metadata()?.len() != 0 {
+    let guard = lock_ref(&file.file, LockKind::Exclusive)?;
+    if file.file.metadata()?.len() != 0 {
         // Atomic creation already proved the target did not exist. Bytes appearing
         // before the guarded write are interference, so completion is unknown.
         return Err(ArtifactStorageError::Indeterminate);
     }
-    guard.0.seek(SeekFrom::Start(0))?;
-    guard
-        .0
-        .write_all(bytes)
-        .and_then(|()| guard.0.sync_all())
-        .map_err(|_| ArtifactStorageError::Indeterminate)
+    let mut handle = &file.file;
+    if handle
+        .seek(SeekFrom::Start(0))
+        .and_then(|_| handle.write_all(bytes))
+        .and_then(|()| file.file.sync_all())
+        .is_err()
+    {
+        // Best effort only: if truncation/sync fails, Drop deliberately leaves
+        // a nonempty/indeterminate object for host reconciliation.
+        let _ = file.file.set_len(0);
+        let _ = file.file.sync_all();
+        return Err(ArtifactStorageError::Indeterminate);
+    }
+    drop(guard);
+    file.committed = true;
+    Ok(())
+}
+
+fn cleanup_empty_owned_path(file: &CreateOnlyArtifactFile) {
+    #[cfg(unix)]
+    {
+        let Ok(metadata) = std::fs::metadata(&file.path) else {
+            return;
+        };
+        if metadata.dev() == file.device
+            && metadata.ino() == file.inode
+            && metadata.len() == 0
+        {
+            let _ = std::fs::remove_file(&file.path);
+        }
+    }
+
+    #[cfg(not(unix))]
+    {
+        let _ = file;
+    }
 }
 
 pub(crate) fn read_bounded(
