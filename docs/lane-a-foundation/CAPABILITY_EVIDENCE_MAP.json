@@ -370,6 +370,15 @@
             "pub fn advance_epoch(",
             "AntiRollbackViolation"
           ]
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+          "mustContain": [
+            "pub struct FleetAuthorityPort",
+            "pub fn issue(",
+            ".verify_use(",
+            ".with_verified_use("
+          ]
         }
       ],
       "positiveTests": [
@@ -378,6 +387,12 @@
           "mustContain": [
             "lease_is_durable_verified_and_cas_revoked",
             "epoch_rollover_is_durable_and_clears_bounded_history"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+          "mustContain": [
+            "allocation_issue_consumes_exact_live_kernel_authority_lease"
           ]
         }
       ],
@@ -388,11 +403,18 @@
             "stale_cas_and_binding_drift_fail_closed",
             "external_frontier_detects_old_snapshot_and_missing_store_reset"
           ]
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+          "mustContain": [
+            "allocation_binding_changes_when_owner_mutation_semantics_change",
+            "AuthorityLeaseError::Revoked"
+          ]
         }
       ],
       "durability": "local_fsync_stores_with_host_frontier",
-      "activation": "registered_host_composed_not_product_activated",
-      "productionCaller": null,
+      "activation": "source_composed_runtime_fleet_not_product_activated",
+      "productionCaller": "codex-rs/hepta-fleet/src/authority_port.rs",
       "receiptStatus": "native_workflow_required"
     },
     {
@@ -419,6 +441,15 @@
             "pub struct LeaseVerifiedUseToken",
             "pub fn with_verified_use"
           ]
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+          "mustContain": [
+            "pub struct FleetAuthorityPort",
+            "pub fn issue(",
+            ".verify_use(",
+            ".with_verified_use("
+          ]
         }
       ],
       "positiveTests": [
@@ -433,6 +464,12 @@
           "mustContain": [
             "verified_use_releases_owner_lock_before_consumer_code"
           ]
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+          "mustContain": [
+            "allocation_issue_consumes_exact_live_kernel_authority_lease"
+          ]
         }
       ],
       "negativeTests": [
@@ -441,11 +478,18 @@
           "mustContain": [
             "revocation_after_claim_prevents_delivery_and_cannot_be_rolled_back"
           ]
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+          "mustContain": [
+            "allocation_binding_changes_when_owner_mutation_semantics_change",
+            "AuthorityLeaseError::Revoked"
+          ]
         }
       ],
       "durability": "local_fsync_stores_with_host_frontier",
-      "activation": "registered_host_composed_not_product_activated",
-      "productionCaller": null,
+      "activation": "source_composed_runtime_fleet_not_product_activated",
+      "productionCaller": "codex-rs/hepta-fleet/src/authority_port.rs",
       "receiptStatus": "native_workflow_required"
     },
     {
