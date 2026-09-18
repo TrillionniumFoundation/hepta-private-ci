@@ -39,8 +39,8 @@ class OrchestrationTests(unittest.TestCase):
         )
         self.trust = HmacTrustStore(
             {
-                ("work_completion_authority", "completion-key"): b"completion",
-                ("coordination_authority", "leader-key"): b"leader",
+                ("ci_executor", "completion-key"): b"completion",
+                ("external_coordination_authority", "leader-key"): b"leader",
                 ("source_authority", "source-key"): b"source",
             }
         )
@@ -53,7 +53,7 @@ class OrchestrationTests(unittest.TestCase):
             "previous-generation",
             "3" * 64,
             "completed",
-            "work_completion_authority",
+            "ci_executor",
             "completion-key",
             90,
             1000,
@@ -70,7 +70,7 @@ class OrchestrationTests(unittest.TestCase):
             7,
             self.envelope.source_commit,
             self.envelope.source_tree,
-            "coordination_authority",
+            "external_coordination_authority",
             "leader-key",
             90,
             1000,
