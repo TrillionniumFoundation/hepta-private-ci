@@ -403,8 +403,7 @@ fn validate_prediction_artifact(
         return Err(LearnedOperatorError::InvalidGrid);
     }
     if artifact.cells.windows(2).any(|pair| {
-        (&pair[0].sensor_id, &pair[0].action_id)
-            >= (&pair[1].sensor_id, &pair[1].action_id)
+        (&pair[0].sensor_id, &pair[0].action_id) >= (&pair[1].sensor_id, &pair[1].action_id)
     }) {
         return Err(LearnedOperatorError::InvalidGrid);
     }
