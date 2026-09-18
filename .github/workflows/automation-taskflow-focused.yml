@@ -29,7 +29,9 @@ jobs:
         run: cargo check -p codex-hepta-automation -p codex-hepta-agentd
       - name: Test durable automation causal chain
         run: cargo test -p codex-hepta-automation --test durable_causal_chain
-      - name: Test automation library
-        run: cargo test -p codex-hepta-automation --lib
+      - name: Test automation package
+        run: cargo test -p codex-hepta-automation
+      - name: Test automation qualification profile
+        run: cargo test -p codex-hepta-automation --features taskflow-structural-qualification
       - name: Test Agentd library
         run: cargo test -p codex-hepta-agentd --lib
