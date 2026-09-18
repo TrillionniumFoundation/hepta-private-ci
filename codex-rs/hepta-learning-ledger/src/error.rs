@@ -97,7 +97,9 @@ impl fmt::Display for LedgerError {
                 formatter.write_str("selected propensity must be greater than zero")
             }
             Self::EmptyDigest(kind) => write!(formatter, "{kind} digest must not be zero"),
-            Self::InvalidRunStart(reason) => write!(formatter, "invalid run-start publication: {reason}"),
+            Self::InvalidRunStart(reason) => {
+                write!(formatter, "invalid run-start publication: {reason}")
+            }
             Self::RunAlreadyExists(id) => write!(formatter, "run already exists: {id}"),
             Self::EpisodeAlreadyExists(id) => write!(formatter, "episode already exists: {id}"),
             Self::EpisodeNotFound(id) => write!(formatter, "episode not found: {id}"),
