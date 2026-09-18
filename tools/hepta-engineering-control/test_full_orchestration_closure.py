@@ -1,5 +1,6 @@
 from dataclasses import replace
 from pathlib import Path
+import subprocess
 import tempfile
 import time
 import unittest
@@ -20,6 +21,8 @@ from control_engineering_v2 import (
     WorkCompletionReceipt,
     WorkEnvelope,
     WorkerCapacity,
+    admit_distributed_write_grant,
+    distributed_write_frontier,
     evaluate_mutation_probes,
     export_audit_anchor,
     generate_candidate_bundle,
@@ -27,9 +30,11 @@ from control_engineering_v2 import (
     orchestration_generation,
     persist_orchestration_generation,
     plan_engineering_work,
+    sandbox_candidate_bundle,
     verify_audit_anchor_receipt,
     verify_distributed_write_grant,
     verify_key_custody_receipt,
+    verify_store_audit_anchor,
 )
 from control_engineering_v2.control_plane import DENIED_AUTHORITIES, EngineeringError
 
@@ -234,6 +239,81 @@ class FullOrchestrationClosureTests(unittest.TestCase):
         self.assertEqual(bundle.state, "drafted")
         self.assertFalse(bundle.merge_authority)
 
+    def test_candidate_bundle_sandbox_supports_nested_atomic_files(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory) / "repo"
+            root.mkdir()
+            subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+            subprocess.run(
+                ["git", "config", "user.name", "Lane G Test"],
+                cwd=root,
+                check=True,
+            )
+            subprocess.run(
+                ["git", "config", "user.email", "lane-g@example.invalid"],
+                cwd=root,
+                check=True,
+            )
+            source = root / "src"
+            source.mkdir()
+            (source / "old.py").write_text("old = True\n", encoding="utf-8")
+            subprocess.run(["git", "add", "."], cwd=root, check=True)
+            subprocess.run(["git", "commit", "-qm", "base"], cwd=root, check=True)
+            base = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=root,
+                check=True,
+                capture_output=True,
+                text=True,
+            ).stdout.strip()
+            envelope = CandidateEnvelope(
+                "bundle-env",
+                base,
+                ("src",),
+                require_network_isolation=False,
+            )
+            bundle = generate_candidate_bundle(
+                envelope,
+                (
+                    PatchOperation(
+                        "add_file",
+                        "src/new/a.py",
+                        replacement_text="a = 1\n",
+                    ),
+                    PatchOperation(
+                        "add_file",
+                        "src/new/b.py",
+                        replacement_text="b = 2\n",
+                    ),
+                    PatchOperation(
+                        "rename_file",
+                        "src/old.py",
+                        "src/renamed.py",
+                    ),
+                ),
+            )
+            tested, receipt = sandbox_candidate_bundle(
+                root,
+                envelope,
+                bundle,
+                (
+                    (
+                        "python3",
+                        "-c",
+                        "from pathlib import Path; "
+                        "assert Path('src/new/a.py').read_text() == 'a = 1\\n'; "
+                        "assert Path('src/new/b.py').read_text() == 'b = 2\\n'; "
+                        "assert Path('src/renamed.py').read_text() == 'old = True\\n'; "
+                        "assert not Path('src/old.py').exists()",
+                    ),
+                ),
+            )
+            self.assertEqual(tested.state, "fixture_tested")
+            self.assertTrue(receipt.passed)
+            self.assertTrue((source / "old.py").is_file())
+            self.assertFalse((source / "new").exists())
+            self.assertFalse((source / "renamed.py").exists())
+
     def test_host_sandbox_limiter_caps_parallelism(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             limiter = HostSandboxLimiter(directory, maximum_slots=2)
@@ -262,7 +342,7 @@ class FullOrchestrationClosureTests(unittest.TestCase):
         )
         self.assertTrue(passed.passed)
 
-    def test_external_fencing_audit_anchor_and_key_custody_are_verified(self) -> None:
+    def test_distributed_frontier_rejects_superseded_grants(self) -> None:
         grant = DistributedWriteGrant(
             "coordinator",
             7,
@@ -280,63 +360,153 @@ class FullOrchestrationClosureTests(unittest.TestCase):
             grant,
             signature=self.trust.sign(grant, grant.issuer, grant.signing_identity),
         )
-        verified = verify_distributed_write_grant(
-            grant,
-            self.trust,
-            worker_id="worker",
-            source_commit=self.source_commit,
-            source_tree=self.source_tree,
-            requested_paths=("src/a.py",),
-            minimum_leader_epoch=7,
-            minimum_fencing_token=42,
-            now_ns=self.now + 1,
-        )
-        self.assertEqual(verified.fencing_token, 42)
-
         with tempfile.TemporaryDirectory() as directory:
             with EngineeringStore(Path(directory) / "engineering.sqlite3") as store:
                 store.issue_work_envelope(self.envelope, now_ns=self.now)
-                unsigned = export_audit_anchor(store, database_id="engineering-db")
-            anchor = replace(
-                unsigned,
-                signing_identity="audit",
-                observed_unix_ns=self.now,
-                expires_unix_ns=self.now + 50_000,
-            )
-            anchor = replace(
-                anchor,
-                signature=self.trust.sign(anchor, anchor.issuer, anchor.signing_identity),
-            )
-            self.assertEqual(
-                verify_audit_anchor_receipt(
+                admitted = admit_distributed_write_grant(
+                    store,
+                    grant,
+                    self.trust,
+                    worker_id="worker",
+                    source_commit=self.source_commit,
+                    source_tree=self.source_tree,
+                    requested_paths=("src/a.py",),
+                    now_ns=self.now + 1,
+                )
+                self.assertEqual(admitted.fencing_token, 42)
+
+                newer = replace(
+                    grant,
+                    fencing_token=43,
+                    observed_unix_ns=self.now + 2,
+                    signature="",
+                )
+                newer = replace(
+                    newer,
+                    signature=self.trust.sign(
+                        newer,
+                        newer.issuer,
+                        newer.signing_identity,
+                    ),
+                )
+                admit_distributed_write_grant(
+                    store,
+                    newer,
+                    self.trust,
+                    worker_id="worker",
+                    source_commit=self.source_commit,
+                    source_tree=self.source_tree,
+                    requested_paths=("src/a.py",),
+                    now_ns=self.now + 3,
+                )
+                frontier = distributed_write_frontier(store, "worker")
+                self.assertEqual(frontier["leaderEpoch"], 7)
+                self.assertEqual(frontier["fencingToken"], 43)
+
+                with self.assertRaisesRegex(
+                    EngineeringError,
+                    "distributed_fence_stale",
+                ):
+                    admit_distributed_write_grant(
+                        store,
+                        grant,
+                        self.trust,
+                        worker_id="worker",
+                        source_commit=self.source_commit,
+                        source_tree=self.source_tree,
+                        requested_paths=("src/a.py",),
+                        now_ns=self.now + 4,
+                    )
+
+    def test_audit_anchor_binds_authoritative_store_state(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            with EngineeringStore(Path(directory) / "engineering.sqlite3") as store:
+                store.issue_work_envelope(self.envelope, now_ns=self.now)
+                unsigned = export_audit_anchor(
+                    store,
+                    database_id="engineering-db",
+                )
+                anchor = replace(
+                    unsigned,
+                    signing_identity="audit",
+                    observed_unix_ns=self.now,
+                    expires_unix_ns=self.now + 50_000,
+                )
+                anchor = replace(
+                    anchor,
+                    signature=self.trust.sign(
+                        anchor,
+                        anchor.issuer,
+                        anchor.signing_identity,
+                    ),
+                )
+                verified = verify_store_audit_anchor(
+                    store,
                     anchor,
                     self.trust,
                     expected_database_id="engineering-db",
                     now_ns=self.now + 1,
-                ).sequence,
-                1,
-            )
+                )
+                self.assertEqual(verified.sequence, 1)
 
+                store.connection.execute(
+                    "UPDATE work_envelopes SET owner=? WHERE envelope_id=?",
+                    ("tampered-owner", self.envelope.envelope_id),
+                )
+                with self.assertRaisesRegex(
+                    EngineeringError,
+                    "audit_anchor_store_mismatch",
+                ):
+                    verify_store_audit_anchor(
+                        store,
+                        anchor,
+                        self.trust,
+                        expected_database_id="engineering-db",
+                        now_ns=self.now + 2,
+                    )
+
+    def test_key_custody_binds_subject_key_attestation(self) -> None:
         custody = KeyCustodyReceipt(
-            "hsm-provider",
-            "engineering-verifier-key",
-            "engineering-evidence-verification",
-            True,
-            False,
-            "external_key_custodian",
-            "hsm",
-            self.now,
-            self.now + 50_000,
+            provider="hsm-provider",
+            key_id="engineering-verifier-key",
+            purpose="engineering-evidence-verification",
+            hardware_backed=True,
+            exportable=False,
+            issuer="external_key_custodian",
+            signing_identity="hsm",
+            observed_unix_ns=self.now,
+            expires_unix_ns=self.now + 50_000,
+            subject_signing_identity="engineering-evidence-binder-key",
+            algorithm="ed25519",
+            public_key_digest="7" * 64,
+            attestation_digest="8" * 64,
         )
         custody = replace(
             custody,
-            signature=self.trust.sign(custody, custody.issuer, custody.signing_identity),
+            signature=self.trust.sign(
+                custody,
+                custody.issuer,
+                custody.signing_identity,
+            ),
         )
-        verified_custody = verify_key_custody_receipt(
-            custody, self.trust, now_ns=self.now + 1
+        verified = verify_key_custody_receipt(
+            custody,
+            self.trust,
+            expected_subject_signing_identity="engineering-evidence-binder-key",
+            now_ns=self.now + 1,
         )
-        self.assertTrue(verified_custody.hardware_backed)
-        self.assertFalse(verified_custody.exportable)
+        self.assertTrue(verified.hardware_backed)
+        self.assertFalse(verified.exportable)
+        with self.assertRaisesRegex(
+            EngineeringError,
+            "key_custody_identity_mismatch",
+        ):
+            verify_key_custody_receipt(
+                custody,
+                self.trust,
+                expected_subject_signing_identity="different-key",
+                now_ns=self.now + 1,
+            )
 
 
 if __name__ == "__main__":
