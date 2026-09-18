@@ -136,6 +136,11 @@ impl LeaseLedger {
         } else if self.hosts.len() >= MAX_HOSTS {
             return Err(Error::CapacityExceeded);
         }
+        let committed =
+            self.committed_resources(&observation.host_id, observation.observed_at_ms)?;
+        if !committed.fits(observation.capacity) {
+            return Err(Error::CapacityExceeded);
+        }
         self.hosts.insert(observation.host_id.clone(), observation);
         Ok(())
     }

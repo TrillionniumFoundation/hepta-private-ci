@@ -63,6 +63,25 @@ fn conserves_capacity_and_reuses_identical_grant() {
 }
 
 #[test]
+fn host_capacity_refresh_cannot_drop_below_live_commitments() {
+    let mut ledger = LeaseLedger::new();
+    ledger.admit_host(host()).expect("host");
+    ledger.issue(200, grant("one", 600)).expect("grant");
+    let mut shrunken = host();
+    shrunken.observation_revision = 2;
+    shrunken.observed_at_ms = 300;
+    shrunken.valid_until_ms = 1_100;
+    shrunken.capacity.concurrent_turns = 1;
+    shrunken.capacity.memory_mib = 512;
+    shrunken.semantic_digest = "2".repeat(64);
+    assert_eq!(ledger.admit_host(shrunken), Err(Error::CapacityExceeded));
+    assert_eq!(
+        ledger.host("host.1").expect("original host").observation_revision,
+        1
+    );
+}
+
+#[test]
 fn renewal_and_revocation_are_generation_fenced() {
     let mut ledger = LeaseLedger::new();
     ledger.admit_host(host()).expect("host");
