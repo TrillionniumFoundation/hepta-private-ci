@@ -246,26 +246,24 @@ mod tests {
         Sha256Digest::for_bytes(seed)
     }
 
-    #[test]
-    fn durable_selection_rejects_conflicting_unresolved_grants() {
-        let temp = tempfile::tempdir().expect("temp");
+    fn grant(seed: &[u8], target: &str) -> H7H89ProductionGrant {
         let binding = ReleaseSelectionBinding::new(
             digest(b"sm"),
             digest(b"sa"),
             None,
-            digest(b"tm"),
-            digest(b"ta"),
+            digest(target.as_bytes()),
+            digest([target.as_bytes(), b"-agentd"].concat().as_slice()),
             None,
             digest(b"compatibility-receipt"),
             7,
         )
         .expect("binding");
-        let grant = H7H89ProductionGrant {
+        H7H89ProductionGrant {
             schema_version: crate::SIGNED_AUTHORITY_SCHEMA_VERSION,
             namespace: crate::SIGNED_AUTHORITY_NAMESPACE.to_string(),
             agent_id: "agent".to_string(),
             source_release: "v1".to_string(),
-            target_release: "v2".to_string(),
+            target_release: target.to_string(),
             transition: H7H89ProductionTransition::Upgrade,
             h7_envelope_sha256: digest(b"h7"),
             artifact_sha256: digest(b"artifact"),
@@ -283,15 +281,61 @@ mod tests {
             promotion: true,
             governance_bypass: false,
             signature_base64: "AA==".to_string(),
-            grant_sha256: digest(b"grant"),
-        };
-        // The grant itself is not verified in this unit; the selection owner
-        // only requires the already-verified digest/binding tuple.
-        let record = ReleaseSelectionRecord::prepared(&grant, 1, 1).expect("record");
-        write_release_selection(temp.path(), &record).expect("write");
+            grant_sha256: digest(seed),
+        }
+    }
+
+    #[test]
+    fn durable_selection_rejects_conflicting_unresolved_grants() {
+        let temp = tempfile::tempdir().expect("temp");
+        let first =
+            ReleaseSelectionRecord::prepared(&grant(b"grant-1", "v2"), 1, 1).expect("record");
+        write_release_selection(temp.path(), &first).expect("write first");
+
+        let second =
+            ReleaseSelectionRecord::prepared(&grant(b"grant-2", "v3"), 2, 1).expect("record");
+        let error = write_release_selection(temp.path(), &second)
+            .expect_err("unresolved selection must reject a different grant");
+        assert!(error.to_string().contains("another release selection is unresolved"));
         assert_eq!(
             read_release_selection(temp.path()).expect("read"),
-            Some(record)
+            Some(first)
         );
     }
+
+    #[test]
+    fn terminal_selection_allows_next_independent_grant() {
+        let temp = tempfile::tempdir().expect("temp");
+        let first =
+            ReleaseSelectionRecord::prepared(&grant(b"grant-1", "v2"), 1, 1).expect("record");
+        let committed = first
+            .with_status(ReleaseSelectionStatus::Committed)
+            .expect("committed");
+        write_release_selection(temp.path(), &committed).expect("write committed");
+
+        let second =
+            ReleaseSelectionRecord::prepared(&grant(b"grant-2", "v3"), 2, 2).expect("record");
+        write_release_selection(temp.path(), &second).expect("write next");
+        assert_eq!(
+            read_release_selection(temp.path()).expect("read"),
+            Some(second)
+        );
+    }
+
+    #[test]
+    fn durable_selection_rejects_tampered_bytes() {
+        let temp = tempfile::tempdir().expect("temp");
+        let record =
+            ReleaseSelectionRecord::prepared(&grant(b"grant-1", "v2"), 1, 1).expect("record");
+        write_release_selection(temp.path(), &record).expect("write");
+
+        let path = temp.path().join(RELEASE_SELECTION_FILE);
+        let mut value: serde_json::Value =
+            serde_json::from_slice(&std::fs::read(&path).expect("read bytes")).expect("json");
+        value["target_release"] = serde_json::Value::String("v9".to_string());
+        std::fs::write(&path, serde_json::to_vec(&value).expect("encode")).expect("tamper");
+
+        assert!(read_release_selection(temp.path()).is_err());
+    }
 }
+
