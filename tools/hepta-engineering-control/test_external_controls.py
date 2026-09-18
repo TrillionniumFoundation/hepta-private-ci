@@ -87,6 +87,33 @@ class ExternalControlTests(unittest.TestCase):
                         self.trust,
                         now_ns=self.now,
                     )
+                widened = replace(
+                    receipt,
+                    expires_unix_ns=lease.expires_unix_ns + 1,
+                    signature="",
+                )
+                widened = replace(
+                    widened,
+                    signature=self.trust.sign(
+                        widened, widened.issuer, widened.signing_identity
+                    ),
+                )
+                with self.assertRaisesRegex(
+                    ValueError, "distributed_fence_window_exceeds_owner"
+                ):
+                    verify_distributed_fence(
+                        lease, self.envelope, widened, self.trust, now_ns=self.now
+                    )
+                with self.assertRaisesRegex(
+                    ValueError, "distributed_fence_envelope_mismatch"
+                ):
+                    verify_distributed_fence(
+                        replace(lease, envelope_id="other"),
+                        self.envelope,
+                        receipt,
+                        self.trust,
+                        now_ns=self.now,
+                    )
 
     def test_audit_anchor_must_match_current_store_head(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -121,6 +148,33 @@ class ExternalControlTests(unittest.TestCase):
                     64,
                 )
 
+    def test_empty_audit_chain_cannot_be_externally_attested_as_valid(self):
+        with tempfile.TemporaryDirectory() as temp:
+            with EngineeringStore(Path(temp) / "store.db") as store:
+                receipt = AuditAnchorAttestation(
+                    0,
+                    "0" * 64,
+                    self.envelope.source_commit,
+                    "audit_anchor_service",
+                    "audit-key",
+                    self.now - 1,
+                    self.now + 100,
+                )
+                receipt = replace(
+                    receipt,
+                    signature=self.trust.sign(
+                        receipt, receipt.issuer, receipt.signing_identity
+                    ),
+                )
+                with self.assertRaisesRegex(ValueError, "audit_anchor_empty"):
+                    verify_external_audit_anchor(
+                        store,
+                        self.envelope,
+                        receipt,
+                        self.trust,
+                        now_ns=self.now,
+                    )
+
     def test_key_custody_requires_hardware_external_boundary_and_roles(self):
         receipt = KeyCustodyReceipt(
             "hsm-provider",
@@ -149,6 +203,23 @@ class ExternalControlTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "key_custody_boundary"):
             verify_external_key_custody(
                 replace(receipt, hardware_backed=False),
+                self.trust,
+                now_ns=self.now,
+            )
+        duplicate = replace(
+            receipt,
+            roles=receipt.roles + ("source_authority",),
+            signature="",
+        )
+        duplicate = replace(
+            duplicate,
+            signature=self.trust.sign(
+                duplicate, duplicate.issuer, duplicate.signing_identity
+            ),
+        )
+        with self.assertRaisesRegex(ValueError, "key_custody_roles"):
+            verify_external_key_custody(
+                duplicate,
                 self.trust,
                 now_ns=self.now,
             )
