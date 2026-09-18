@@ -68,6 +68,24 @@ function sessionIdentity(session) {
   });
 }
 
+function normalizeDisplayedView(value) {
+  const fields = readOwnDataFields(
+    value,
+    "displayedView",
+    ["sessionId", "connectionGeneration", "generation", "revision", "digest"],
+  );
+  return Object.freeze({
+    sessionId: stableId(fields.sessionId, "displayedView.sessionId"),
+    connectionGeneration: positiveInteger(
+      fields.connectionGeneration,
+      "displayedView.connectionGeneration",
+    ),
+    generation: positiveInteger(fields.generation, "displayedView.generation"),
+    revision: positiveInteger(fields.revision, "displayedView.revision"),
+    digest: requireDigest(fields.digest, "displayedView.digest"),
+  });
+}
+
 export class RuntimeClient {
   #transport;
   #pendingStore;
@@ -296,10 +314,10 @@ export class RuntimeClient {
   async submitRequest(input) {
     requireRecord(input, "input");
     const proposal = buildOperationProposal(input);
-    const displayedRevision = positiveInteger(input.displayedRevision, "displayedRevision");
+    const displayedView = normalizeDisplayedView(input.displayedView);
     return this.#submit("operation/request", {
       operationId: proposal.operationId,
-      displayedRevision,
+      displayedView,
       payloadName: "intent",
       payload: proposal,
     });
@@ -308,12 +326,12 @@ export class RuntimeClient {
   async requestStop(input) {
     requireRecord(input, "input");
     const operationId = stableId(input.operationId, "operationId");
-    const displayedRevision = positiveInteger(input.displayedRevision, "displayedRevision");
     requireRecord(input.scope, "scope");
     const scope = snapshotCanonical(input.scope, "scope", { maxBytes: MAX_REQUEST_BYTES });
+    const displayedView = normalizeDisplayedView(input.displayedView);
     return this.#submit("runtime/stop", {
       operationId,
-      displayedRevision,
+      displayedView,
       payloadName: "scope",
       payload: scope,
     });
@@ -383,17 +401,27 @@ export class RuntimeClient {
     const capturedSession = this.#captureSession();
     const capturedSnapshot = this.#captureSnapshot();
     const operationId = stableId(input.operationId, "operationId");
-    const displayedRevision = positiveInteger(input.displayedRevision, "displayedRevision");
-    if (displayedRevision !== capturedSnapshot.revision) {
-      fail(ERROR_CODES.STALE_SNAPSHOT, "displayed revision is stale");
+    const displayedView = input.displayedView;
+    if (
+      displayedView.sessionId !== capturedSession.sessionId ||
+      displayedView.connectionGeneration !== capturedSession.connectionGeneration ||
+      displayedView.generation !== capturedSnapshot.generation ||
+      displayedView.revision !== capturedSnapshot.revision ||
+      displayedView.digest !== capturedSnapshot.digest
+    ) {
+      fail(
+        ERROR_CODES.STALE_SNAPSHOT,
+        "displayed view binding does not match the current runtime session and snapshot",
+      );
     }
+    const displayedRevision = displayedView.revision;
 
     const payload = snapshotCanonical(input.payload, input.payloadName, { maxBytes: MAX_REQUEST_BYTES });
     const semantics = Object.freeze({
       schema: REQUEST_SEMANTICS_SCHEMA,
       method,
       operationId,
-      displayedRevision,
+      displayedView,
       payload,
     });
     const semanticDigest = await canonicalSha256(semantics);
@@ -443,6 +471,7 @@ export class RuntimeClient {
       sessionId: entry.originSessionId,
       connectionGeneration: entry.originConnectionGeneration,
       runtimeGeneration: entry.runtimeGeneration,
+      runtimeDigest: displayedView.digest,
       displayedRevision,
       operationId,
       semanticDigest,
