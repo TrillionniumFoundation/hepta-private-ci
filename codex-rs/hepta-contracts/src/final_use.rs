@@ -250,8 +250,10 @@ impl fmt::Debug for VerifiedUseToken {
 
 impl FinalUseAuthority {
     /// Compatibility constructor using the process system clock and no
-    /// external rollback oracle. Product compositions must prefer
-    /// open_state_dir_with_trust.
+    /// external rollback oracle. It is not a production trust composition. A
+    /// production-oriented rotating-issuer host uses
+    /// `open_state_dir_with_issuer_keys` with protected time and frontier
+    /// implementations.
     pub fn open_state_dir(
         directory: &std::path::Path,
         signer_id: String,
@@ -298,9 +300,11 @@ impl FinalUseAuthority {
         })))
     }
 
-    /// Production constructor: trusted time plus an externally durable CAS
-    /// frontier. The external frontier must exactly match local state on open.
-    /// Every mutation advances it before the corresponding local fsync/rename.
+    /// Single-issuer external-trust constructor: protected time plus an
+    /// externally durable CAS frontier. The external frontier must exactly
+    /// match local state on open and every mutation advances it before the
+    /// corresponding local fsync/rename. This preserves the V1 one-key trust
+    /// model; rotating production issuers use `open_state_dir_with_issuer_keys`.
     pub fn open_state_dir_with_trust(
         directory: &std::path::Path,
         signer_id: String,
@@ -336,9 +340,11 @@ impl FinalUseAuthority {
         })))
     }
 
-    /// Production constructor with a bounded issuer key ring. The complete
+    /// Production-oriented constructor with a bounded issuer key ring,
+    /// protected host time and an external anti-rollback frontier. The complete
     /// trust-set digest is pinned in durable store schema V2. V1 single-key
-    /// state is not silently migrated into this trust model.
+    /// state is not silently migrated into this trust model. Deployment still
+    /// must qualify the concrete clock/frontier and private-key custody.
     pub fn open_state_dir_with_issuer_keys(
         directory: &std::path::Path,
         signer_id: String,
