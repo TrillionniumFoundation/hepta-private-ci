@@ -159,6 +159,86 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + MatrixOutboundObs
         if account_terminal(&mut stats, &prepared) {
             continue;
         }
+
+        // If a previous transport call already returned an event id, reconcile
+        // that exact accepted event before permitting another network send.
+        // A lease reclaim may increment the local claim counter, but it must
+        // not turn a known accepted effect into a blind replay.
+        if let Some(accepted_event_id) = prepared.accepted_event_id.as_ref() {
+            let observation = tokio::select! {
+                biased;
+                _ = cancel.cancelled() => {
+                    stats.cancelled = true;
+                    None
+                }
+                result = transport.observe_server_event(&record, accepted_event_id) => {
+                    match result {
+                        Ok(observation) => observation,
+                        Err(MatrixTransportError::Retryable) => None,
+                        Err(MatrixTransportError::Permanent) => {
+                            return Err(OutboxDispatchError::Store);
+                        }
+                    }
+                }
+            };
+            if stats.cancelled {
+                break;
+            }
+            if let Some(observation) = observation {
+                if observation.event_id != *accepted_event_id {
+                    return Err(OutboxDispatchError::Store);
+                }
+                match store
+                    .observe_matrix_server_event(
+                        Some(&record.stable_txn_id),
+                        accepted_event_id,
+                        &record.room_id,
+                        record.binding_revision,
+                        record.generation,
+                        &observation.observation_digest,
+                        now_ms,
+                    )
+                    .await
+                {
+                    Ok(Some(receipt)) if account_terminal(&mut stats, &receipt) => continue,
+                    Ok(Some(_)) | Ok(None) => return Err(OutboxDispatchError::Store),
+                    Err(MatrixDurableError::Conflict) => {
+                        if account_current_terminal(store, &record, &mut stats).await? {
+                            continue;
+                        }
+                        return Err(OutboxDispatchError::Store);
+                    }
+                    Err(error) => return Err(store_error(error)),
+                }
+            }
+
+            let next_attempt_at_ms = now_ms
+                .checked_add(retry_delay_ms(config, record.attempts)?)
+                .ok_or(OutboxDispatchError::Invalid)?;
+            match store
+                .mark_outbox_retry(
+                    &record.stable_txn_id,
+                    record.attempts,
+                    now_ms,
+                    next_attempt_at_ms,
+                )
+                .await
+            {
+                Ok(_) => {
+                    stats.accepted_pending_observation += 1;
+                    stats.retry_scheduled += 1;
+                    continue;
+                }
+                Err(MatrixDurableError::Conflict) => {
+                    if account_current_terminal(store, &record, &mut stats).await? {
+                        continue;
+                    }
+                    return Err(OutboxDispatchError::Store);
+                }
+                Err(error) => return Err(store_error(error)),
+            }
+        }
+
         match store
             .record_matrix_dispatch_attempt(&record.stable_txn_id, record.attempts, now_ms)
             .await
