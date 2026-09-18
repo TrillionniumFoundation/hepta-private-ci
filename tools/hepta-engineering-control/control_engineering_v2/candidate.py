@@ -72,12 +72,45 @@ PROTECTED_PREFIXES = (
     "qa",
 )
 
-ORACLE_PATH_SEGMENTS = frozenset({"test", "tests", "qa", "qualification"})
-ORACLE_FILE_SUFFIXES = ("_test.py", "_tests.py", "_test.rs", "_tests.rs", ".snap")
+ORACLE_PATH_SEGMENTS = frozenset(
+    {
+        "test",
+        "tests",
+        "qa",
+        "qualification",
+        "fixture",
+        "fixtures",
+        "golden",
+        "goldens",
+        "snapshot",
+        "snapshots",
+        "evaluator",
+        "evaluators",
+        "evaluation",
+        "oracle",
+        "oracles",
+    }
+)
+ORACLE_FILE_SUFFIXES = (
+    "_test.py",
+    "_tests.py",
+    "_test.rs",
+    "_tests.rs",
+    ".test.js",
+    ".test.jsx",
+    ".test.ts",
+    ".test.tsx",
+    ".spec.js",
+    ".spec.jsx",
+    ".spec.ts",
+    ".spec.tsx",
+    ".snap",
+    ".golden",
+)
 
 
 def is_immutable_oracle_path(path: str) -> bool:
-    """Return true for test/evaluator paths that a candidate may never edit."""
+    """Return true for tests, fixtures, evaluators and golden/oracle material."""
     canonical = canonical_repo_path(path)
     parts = tuple(part.casefold() for part in canonical.split("/"))
     if any(part in ORACLE_PATH_SEGMENTS for part in parts):
@@ -85,7 +118,7 @@ def is_immutable_oracle_path(path: str) -> bool:
     basename = parts[-1]
     return (
         basename == "conftest.py"
-        or basename.startswith("test_")
+        or basename.startswith(("test_", "spec_"))
         or basename.endswith(ORACLE_FILE_SUFFIXES)
     )
 
