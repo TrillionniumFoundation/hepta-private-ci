@@ -291,6 +291,8 @@ pub enum BaoClientError {
     VersionMismatch,
     SecretDigestMismatch,
     ConsumerIndeterminate,
+    LeaseRegistry(crate::SecretLeaseRegistryError),
+    LeaseRegistryAfterProviderEffect,
 }
 impl fmt::Display for BaoClientError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
