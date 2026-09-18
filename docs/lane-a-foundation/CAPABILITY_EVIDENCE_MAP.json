@@ -824,125 +824,6 @@
       "receiptStatus": "native_workflow_required"
     },
     {
-      "capabilityId": "secrets.heptabao.pinned-kv2-read.v1",
-      "module": "secrets.heptabao",
-      "summary": "pinned-CA HTTPS read of one exact KV-v2 string field",
-      "publicSymbols": [
-        "BaoClient::new",
-        "BaoClient::consume_kv_v2"
-      ],
-      "sourceEvidence": [
-        {
-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
-          "mustContain": [
-            "build_pinned_https_direct",
-            "consume_kv_v2",
-            "MAX_RESPONSE_BYTES"
-          ]
-        }
-      ],
-      "positiveTests": [
-        {
-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
-          "mustContain": [
-            "real_tls_read_uses_headers_exact_version_and_secret_only_consumer"
-          ]
-        }
-      ],
-      "negativeTests": [
-        {
-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
-          "mustContain": [
-            "invalid_signature_and_provider_denial_do_not_release_secret",
-            "untrusted_tls_certificate_fails_before_secret_delivery",
-            "oversized_reply_fails_without_consumer_delivery"
-          ]
-        }
-      ],
-      "durability": "external_authority_plus_local_final_use_state",
-      "activation": "host_composition_required",
-      "productionCaller": null,
-      "receiptStatus": "native_workflow_required"
-    },
-    {
-      "capabilityId": "secrets.heptabao.final-use-binding.v1",
-      "module": "secrets.heptabao",
-      "summary": "final-use grant binding and single-use dispatch",
-      "publicSymbols": [
-        "BaoClient::binding",
-        "FinalUseAuthority::claim"
-      ],
-      "sourceEvidence": [
-        {
-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
-          "mustContain": [
-            "pub fn binding",
-            "let verified = authority",
-            ".claim(grant, &binding)"
-          ]
-        }
-      ],
-      "positiveTests": [
-        {
-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
-          "mustContain": [
-            "real_tls_read_uses_headers_exact_version_and_secret_only_consumer"
-          ]
-        }
-      ],
-      "negativeTests": [
-        {
-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
-          "mustContain": [
-            "revocation_during_network_wait_prevents_consumer_delivery",
-            "timeout_does_not_retry_or_release_a_secret"
-          ]
-        }
-      ],
-      "durability": "external_authority_plus_local_final_use_state",
-      "activation": "host_composition_required",
-      "productionCaller": null,
-      "receiptStatus": "native_workflow_required"
-    },
-    {
-      "capabilityId": "secrets.heptabao.metadata-receipt.v1",
-      "module": "secrets.heptabao",
-      "summary": "metadata-only receipt without raw secret value",
-      "publicSymbols": [
-        "BaoSecretReceipt"
-      ],
-      "sourceEvidence": [
-        {
-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
-          "mustContain": [
-            "pub struct BaoSecretReceipt",
-            "secret_sha256",
-            "secret_bytes"
-          ]
-        }
-      ],
-      "positiveTests": [
-        {
-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
-          "mustContain": [
-            "real_tls_read_uses_headers_exact_version_and_secret_only_consumer"
-          ]
-        }
-      ],
-      "negativeTests": [
-        {
-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
-          "mustContain": [
-            "consumer_failure_after_delivery_is_indeterminate"
-          ]
-        }
-      ],
-      "durability": "external_authority_plus_local_final_use_state",
-      "activation": "host_composition_required",
-      "productionCaller": null,
-      "receiptStatus": "native_workflow_required"
-    },
-    {
       "capabilityId": "auth.authbus.authorization-policy.v1",
       "module": "auth.authbus",
       "summary": "durable versioned authorization policy with exact-revision fail-closed decisions",
@@ -1168,6 +1049,125 @@
       ],
       "durability": "sqlite_policy_quota_reservation_replay_outbox_and_process_local_legacy",
       "activation": "narrow_agentd_composed_general_effect_not_activated",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "secrets.heptabao.pinned-kv2-read.v1",
+      "module": "secrets.heptabao",
+      "summary": "pinned-CA HTTPS read of one exact KV-v2 string field",
+      "publicSymbols": [
+        "BaoClient::new",
+        "BaoClient::consume_kv_v2"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+          "mustContain": [
+            "build_pinned_https_direct",
+            "consume_kv_v2",
+            "MAX_RESPONSE_BYTES"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+          "mustContain": [
+            "real_tls_read_uses_headers_exact_version_and_secret_only_consumer"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+          "mustContain": [
+            "invalid_signature_and_provider_denial_do_not_release_secret",
+            "untrusted_tls_certificate_fails_before_secret_delivery",
+            "oversized_reply_fails_without_consumer_delivery"
+          ]
+        }
+      ],
+      "durability": "external_authority_plus_local_final_use_state",
+      "activation": "host_composition_required",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "secrets.heptabao.final-use-binding.v1",
+      "module": "secrets.heptabao",
+      "summary": "final-use grant binding and single-use dispatch",
+      "publicSymbols": [
+        "BaoClient::binding",
+        "FinalUseAuthority::claim"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+          "mustContain": [
+            "pub fn binding",
+            "let verified = authority",
+            ".claim(grant, &binding)"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+          "mustContain": [
+            "real_tls_read_uses_headers_exact_version_and_secret_only_consumer"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+          "mustContain": [
+            "revocation_during_network_wait_prevents_consumer_delivery",
+            "timeout_does_not_retry_or_release_a_secret"
+          ]
+        }
+      ],
+      "durability": "external_authority_plus_local_final_use_state",
+      "activation": "host_composition_required",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "secrets.heptabao.metadata-receipt.v1",
+      "module": "secrets.heptabao",
+      "summary": "metadata-only receipt without raw secret value",
+      "publicSymbols": [
+        "BaoSecretReceipt"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+          "mustContain": [
+            "pub struct BaoSecretReceipt",
+            "secret_sha256",
+            "secret_bytes"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+          "mustContain": [
+            "real_tls_read_uses_headers_exact_version_and_secret_only_consumer"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+          "mustContain": [
+            "consumer_failure_after_delivery_is_indeterminate"
+          ]
+        }
+      ],
+      "durability": "external_authority_plus_local_final_use_state",
+      "activation": "host_composition_required",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
     }
