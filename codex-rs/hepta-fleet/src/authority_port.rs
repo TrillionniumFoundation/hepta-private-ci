@@ -112,7 +112,7 @@ fn hex(value: u8) -> Result<u8, FleetAuthorityError> {
     }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum FleetAuthorityError {
     InvalidSemanticDigest,
     Authority(AuthorityLeaseError),
