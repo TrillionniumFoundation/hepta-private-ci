@@ -1,5 +1,6 @@
 use super::*;
 use codex_hepta_context_compiler::ContextDeliveryDispositionV2;
+use codex_hepta_context_compiler::TokenizationReceiptV2;
 use codex_hepta_context_compiler::observe_delivery;
 use codex_hepta_prompt_optimizer::PromptAuthenticationErrorV1;
 use codex_hepta_prompt_optimizer::PromptCandidateBindingV1;
@@ -211,6 +212,13 @@ fn fixture() -> Fixture {
             maximum_context_tokens: 1_000,
             token_budget: 100,
             truncation_policy_digest: digest("truncation"),
+            tokenizations: vec![TokenizationReceiptV2::new(
+                id("candidate:001"),
+                digest("payload"),
+                digest("tokenizer"),
+                7,
+            )
+            .expect("tokenization")],
             serialized_payload_digest: digest("serialized-payload"),
         },
     )
