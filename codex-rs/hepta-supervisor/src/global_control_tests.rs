@@ -543,7 +543,7 @@ async fn named_host_profile_emits_exact_runner_measurements() {
             "\"reopen\":{{\"iterations\":{},\"p50_us\":{},\"p95_us\":{},\"max_us\":{}}},",
             "\"faults\":{{\"durable_replay_rejected\":{}}}}}"
         ),
-        std::env::var("GITHUB_SHA").unwrap_or_else(|_| "local".to_string()),
+        std::env::var("HEPTA_PROFILE_SHA").unwrap_or_else(|_| "local".to_string()),
         std::env::var("RUNNER_OS").unwrap_or_else(|_| std::env::consts::OS.to_string()),
         std::env::var("RUNNER_ARCH").unwrap_or_else(|_| std::env::consts::ARCH.to_string()),
         PLAN_ITERATIONS,
