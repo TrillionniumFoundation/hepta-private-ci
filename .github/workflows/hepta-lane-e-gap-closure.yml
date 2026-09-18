@@ -14,6 +14,7 @@ on:
       - docs/lane-e/**
       - qualification/lane-e/**
       - scripts/hepta-lane-e-closure.py
+      - scripts/hepta-lane-e-evidence.py
       - .github/workflows/hepta-lane-e-gap-closure.yml
 
 permissions:
@@ -41,7 +42,7 @@ jobs:
       - name: Install repository test runner
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
-          tool: just@1.51.0,nextest@0.9.103
+          tool: just@1.51.0,nextest@0.9.103,cargo-llvm-cov@0.9.0
 
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
@@ -82,6 +83,45 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
+      - name: Trusted-only legacy evaluation compatibility regression
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-intelligence-eval
+          --features trusted-inprocess-eval
+          --test operator_claim
+
+      - name: Lane E learning.eval coverage evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          cd codex-rs
+          cargo llvm-cov --locked \
+            -p codex-hepta-intelligence-eval \
+            --all-targets \
+            --features trusted-inprocess-eval \
+            --lcov \
+            --output-path ../.hepta-evidence/learning-eval.lcov
+          test -s ../.hepta-evidence/learning-eval.lcov
+
+      - name: Lane E learning.eval durable holdout stress audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence
+          : > .hepta-evidence/learning-eval-stress.log
+          for attempt in $(seq 1 8); do
+            printf 'attempt=%s\n' "$attempt" | tee -a .hepta-evidence/learning-eval-stress.log
+            (
+              cd codex-rs
+              cargo test --locked \
+                -p codex-hepta-intelligence-eval \
+                durable_holdout::tests \
+                -- --test-threads=1
+            ) 2>&1 | tee -a .hepta-evidence/learning-eval-stress.log
+          done
+          test -s .hepta-evidence/learning-eval-stress.log
 
       - name: Cross-crate causal learning closure
         working-directory: codex-rs
@@ -139,7 +179,7 @@ jobs:
       - name: Install repository test runner
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
-          tool: just@1.51.0,nextest@0.9.103
+          tool: just@1.51.0,nextest@0.9.103,cargo-llvm-cov@0.9.0
 
       - name: Install pinned Rust toolchain
         uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
@@ -202,6 +242,13 @@ jobs:
           -p codex-hepta-learning-artifacts
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
+      - name: Test merged trusted-only legacy evaluation compatibility
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-intelligence-eval
+          --features trusted-inprocess-eval
+          --test operator_claim
 
       - name: Test merged cross-crate closure
         working-directory: codex-rs
