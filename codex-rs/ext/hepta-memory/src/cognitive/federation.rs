@@ -635,6 +635,10 @@ fn compile_explanations(explanations: &[FederatedMemoryExplanation]) -> Option<S
                         })
                         .collect(),
                     kg_projection_generation: explanation.explanation.kg_projection_generation,
+                    kg_projection_generation_digest: explanation
+                        .explanation
+                        .kg_projection_generation_digest
+                        .clone(),
                 },
             };
             attachment_record(

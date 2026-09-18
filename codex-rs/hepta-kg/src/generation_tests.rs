@@ -47,8 +47,10 @@ fn edge(
 ) -> KnowledgeEdgeV2 {
     KnowledgeEdgeV2 {
         identity: KnowledgeEdgeIdentityV2 {
+            edge_id: id(&format!("edge:{support_label}")),
             source_node_id: id(&format!("node:{source}")),
             relation,
+            predicate_id: id("predicate:default"),
             target_node_id: id(&format!("node:{target}")),
         },
         confidence: probability(1_u64 << 31),
@@ -201,6 +203,49 @@ fn publication_is_predecessor_bound_and_query_is_generation_bound() {
         Err(KnowledgeGenerationErrorV2::DigestMismatch(
             "query_generation"
         ))
+    );
+}
+
+#[test]
+fn exact_predicates_remain_distinct_for_related_edges() {
+    let mut first = edge("a", "b", KnowledgeRelationKindV2::Related, "related-one");
+    first.identity.predicate_id = id("predicate:one");
+    let mut second = edge("a", "b", KnowledgeRelationKindV2::Related, "related-two");
+    second.identity.edge_id = first.identity.edge_id.clone();
+    second.identity.predicate_id = id("predicate:two");
+
+    let generation = build_complete_generation(
+        generation(1),
+        input(vec![node("a", "a"), node("b", "b")], vec![first, second]),
+    )
+    .unwrap_or_else(|error| panic!("valid exact-predicate graph: {error}"));
+
+    assert_eq!(generation.edges.len(), 2);
+    assert_ne!(
+        generation.edges[0].identity.predicate_id,
+        generation.edges[1].identity.predicate_id
+    );
+}
+
+#[test]
+fn concrete_edge_occurrences_remain_distinct_for_same_predicate() {
+    let first = edge("a", "b", KnowledgeRelationKindV2::Related, "occurrence-one");
+    let second = edge("a", "b", KnowledgeRelationKindV2::Related, "occurrence-two");
+
+    let generation = build_complete_generation(
+        generation(1),
+        input(vec![node("a", "a"), node("b", "b")], vec![first, second]),
+    )
+    .unwrap_or_else(|error| panic!("valid concrete-edge graph: {error}"));
+
+    assert_eq!(generation.edges.len(), 2);
+    assert_ne!(
+        generation.edges[0].identity.edge_id,
+        generation.edges[1].identity.edge_id
+    );
+    assert_eq!(
+        generation.edges[0].identity.predicate_id,
+        generation.edges[1].identity.predicate_id
     );
 }
 

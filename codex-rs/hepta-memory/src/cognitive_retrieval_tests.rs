@@ -453,6 +453,16 @@ async fn shared_canonical_entity_keeps_surviving_support_after_peer_correction_a
         .retrieve_memory_candidates(&access, &RetrievalRequest::new("Shared Beacon", 200))
         .await
         .expect("initial shared retrieval");
+    let initial_digest = initial
+        .candidates
+        .first()
+        .and_then(|candidate| {
+            candidate
+                .revalidation
+                .kg_projection_generation_digest
+                .clone()
+        })
+        .expect("initial retrieval is bound to a V2 generation digest");
     for memory in [&first, &second] {
         let candidate = initial
             .candidates
@@ -461,6 +471,13 @@ async fn shared_canonical_entity_keeps_surviving_support_after_peer_correction_a
             .expect("each provenance occurrence is retrieved");
         assert!(candidate.channels.contains(&RetrievalChannel::EntityFts));
         assert!(candidate.channels.contains(&RetrievalChannel::GraphOneHop));
+        assert_eq!(
+            candidate
+                .revalidation
+                .kg_projection_generation_digest
+                .as_ref(),
+            Some(&initial_digest)
+        );
     }
 
     let corrected_content = "The first support no longer asserts graph facts.";
@@ -490,6 +507,12 @@ async fn shared_canonical_entity_keeps_surviving_support_after_peer_correction_a
         .expect("second support survives peer correction");
     assert!(surviving.channels.contains(&RetrievalChannel::EntityFts));
     assert!(surviving.channels.contains(&RetrievalChannel::GraphOneHop));
+    let corrected_digest = surviving
+        .revalidation
+        .kg_projection_generation_digest
+        .clone()
+        .expect("corrected retrieval is bound to a V2 generation digest");
+    assert_ne!(corrected_digest, initial_digest);
     if let Some(corrected) = after_correction
         .candidates
         .iter()
@@ -530,6 +553,12 @@ async fn shared_canonical_entity_keeps_surviving_support_after_peer_correction_a
         .expect("second support survives peer forget");
     assert!(surviving.channels.contains(&RetrievalChannel::EntityFts));
     assert!(surviving.channels.contains(&RetrievalChannel::GraphOneHop));
+    let forgotten_digest = surviving
+        .revalidation
+        .kg_projection_generation_digest
+        .clone()
+        .expect("post-forget retrieval is bound to a V2 generation digest");
+    assert_ne!(forgotten_digest, corrected_digest);
     assert!(
         after_forget
             .candidates
