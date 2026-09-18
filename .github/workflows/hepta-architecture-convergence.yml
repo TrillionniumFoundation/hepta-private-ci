@@ -204,6 +204,7 @@ jobs:
       - name: Objective and prompt policy convergence
         run: |
           set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/objective-contract.json" --minimum-tests 1 -- python3 -m unittest -v scripts.test_hepta_objective_contracts
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/objective.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-objective
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/prompt.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-prompt-optimizer
       - name: Derived-view drift and unchanged source
