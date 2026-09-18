@@ -5,6 +5,7 @@ mod authbus_outbox_record;
 mod authbus_outbox_worker;
 mod authbus_store;
 mod canonical;
+mod checkpoint;
 mod governance_store;
 mod governance_validation;
 mod historical;
@@ -29,6 +30,8 @@ pub use authbus_outbox_record::AuthBusDeliveryStatus;
 pub use authbus_outbox_record::AuthBusLease;
 pub use authbus_outbox_record::AuthBusOutboxError;
 pub use authbus_store::AuthBusAdmissionError;
+pub use checkpoint::EVIDENCE_EXTERNAL_CHECKPOINT_SCHEMA_VERSION;
+pub use checkpoint::EvidenceExternalCheckpointV1;
 pub use historical::HISTORICAL_EVIDENCE_SCHEMA_VERSION;
 pub use historical::HistoricalEvidenceFamily;
 pub use historical::HistoricalEvidenceRecord;
@@ -79,15 +82,15 @@ pub use summary::ProviderEvidenceSummary;
 
 #[derive(Debug, thiserror::Error)]
 pub enum EvidenceError {
-    #[error("failed to serialize governance evidence: {0}")]
+    #[error("failed to serialize evidence: {0}")]
     Serialization(String),
-    #[error("governance evidence backend is unavailable: {0}")]
+    #[error("evidence backend is unavailable: {0}")]
     Unavailable(String),
-    #[error("governance evidence identity conflict for {record_id}")]
+    #[error("evidence identity conflict for {record_id}")]
     IdempotencyConflict { record_id: String },
-    #[error("invalid governance evidence record: {0}")]
+    #[error("invalid evidence record: {0}")]
     InvalidRecord(String),
-    #[error("governance evidence is corrupt: {0}")]
+    #[error("evidence is corrupt: {0}")]
     Corrupt(String),
 }
 
