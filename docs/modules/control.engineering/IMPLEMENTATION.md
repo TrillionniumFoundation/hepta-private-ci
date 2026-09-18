@@ -164,8 +164,9 @@ See [SANDBOX_SECURITY.md](SANDBOX_SECURITY.md) for platform and mount policy.
 Checks use argument vectors without shell expansion, at most 64 checks, 256 arguments
 per check, 8192 characters per argument and 65536 characters per argument vector.
 One elapsed time budget covers all checks. `SandboxCoordinator` admits at most
-eight process-local sandboxes and retries only the explicitly classified
-infrastructure failures, at most twice; semantic rejection is never retried.
+eight host-wide sandboxes across cooperating POSIX processes (with a process-local
+fallback on non-POSIX fixtures) and retries only explicitly classified infrastructure
+failures, at most twice; semantic rejection is never retried.
 `run_mutation_testing` first requires the no-change/baseline candidate to pass
 the exact evaluator-owned check set and then requires every admitted code mutant
 to fail that same set. Source HEAD/tree/refs/worktree and
