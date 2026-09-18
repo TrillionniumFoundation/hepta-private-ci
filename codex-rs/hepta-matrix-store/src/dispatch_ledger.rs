@@ -83,7 +83,10 @@ impl MatrixDispatchState {
     }
 
     pub fn terminal(self) -> bool {
-        matches!(self, Self::ObservedSucceeded | Self::Rejected | Self::Redacted)
+        matches!(
+            self,
+            Self::ObservedSucceeded | Self::Rejected | Self::Redacted
+        )
     }
 }
 
@@ -155,7 +158,11 @@ impl MatrixDurableStore {
         .ok_or(MatrixDurableError::Conflict)?;
         let room_id: String = outbox.try_get("room_id").map_err(corrupt)?;
         let payload_digest: String = outbox.try_get("payload_sha256").map_err(corrupt)?;
-        let binding_revision = positive_u64(outbox.try_get::<i64, _>("binding_revision").map_err(corrupt)?)?;
+        let binding_revision = positive_u64(
+            outbox
+                .try_get::<i64, _>("binding_revision")
+                .map_err(corrupt)?,
+        )?;
         let generation = positive_u64(outbox.try_get::<i64, _>("generation").map_err(corrupt)?)?;
         if room_id != intent.room_id.as_str()
             || payload_digest != intent.payload_digest
@@ -497,14 +504,13 @@ impl MatrixDurableStore {
             return Err(MatrixDurableError::Conflict);
         }
         let txn_id = current.receipt.stable_txn_id.clone();
-        let outbox = sqlx::query(
-            "SELECT state, sent_event_id FROM outbox_messages WHERE stable_txn_id = ?",
-        )
-        .bind(txn_id.as_str())
-        .fetch_optional(&mut *transaction)
-        .await
-        .map_err(unavailable)?
-        .ok_or(MatrixDurableError::Corrupt)?;
+        let outbox =
+            sqlx::query("SELECT state, sent_event_id FROM outbox_messages WHERE stable_txn_id = ?")
+                .bind(txn_id.as_str())
+                .fetch_optional(&mut *transaction)
+                .await
+                .map_err(unavailable)?
+                .ok_or(MatrixDurableError::Corrupt)?;
         let outbox_state: String = outbox.try_get("state").map_err(corrupt)?;
         let sent_event_id: Option<String> = outbox.try_get("sent_event_id").map_err(corrupt)?;
         if outbox_state == "permanent_failure"
@@ -636,7 +642,9 @@ impl MatrixDurableStore {
         if let Some(current) = load_dispatch(self, txn_id, false).await? {
             return Ok(Some(current.receipt));
         }
-        Ok(load_dispatch(self, txn_id, true).await?.map(|stored| stored.receipt))
+        Ok(load_dispatch(self, txn_id, true)
+            .await?
+            .map(|stored| stored.receipt))
     }
 
     pub async fn unresolved_matrix_dispatch_count(&self) -> Result<usize, MatrixDurableError> {
@@ -782,19 +790,21 @@ async fn load_archive_by_event(
     row.map(|row| stored_from_row(&row, true)).transpose()
 }
 
-fn stored_from_row(row: &sqlx::sqlite::SqliteRow, archived: bool) -> Result<StoredDispatch, MatrixDurableError> {
-    let stable_txn_id = MatrixTransactionId::parse(
-        &row.try_get::<String, _>("stable_txn_id").map_err(corrupt)?,
-    )
-    .map_err(|_| MatrixDurableError::Corrupt)?;
+fn stored_from_row(
+    row: &sqlx::sqlite::SqliteRow,
+    archived: bool,
+) -> Result<StoredDispatch, MatrixDurableError> {
+    let stable_txn_id =
+        MatrixTransactionId::parse(&row.try_get::<String, _>("stable_txn_id").map_err(corrupt)?)
+            .map_err(|_| MatrixDurableError::Corrupt)?;
     let room_id = MatrixRoomId::parse(&row.try_get::<String, _>("room_id").map_err(corrupt)?)
         .map_err(|_| MatrixDurableError::Corrupt)?;
-    let state = MatrixDispatchState::parse(
-        &row.try_get::<String, _>("state").map_err(corrupt)?,
-    )
-    .ok_or(MatrixDurableError::Corrupt)?;
-    let accepted_event_id = parse_optional_event(row.try_get("accepted_event_id").map_err(corrupt)?)?;
-    let observed_event_id = parse_optional_event(row.try_get("observed_event_id").map_err(corrupt)?)?;
+    let state = MatrixDispatchState::parse(&row.try_get::<String, _>("state").map_err(corrupt)?)
+        .ok_or(MatrixDurableError::Corrupt)?;
+    let accepted_event_id =
+        parse_optional_event(row.try_get("accepted_event_id").map_err(corrupt)?)?;
+    let observed_event_id =
+        parse_optional_event(row.try_get("observed_event_id").map_err(corrupt)?)?;
     Ok(StoredDispatch {
         receipt: MatrixDispatchReceipt {
             operation_id: row.try_get("operation_id").map_err(corrupt)?,
@@ -814,7 +824,8 @@ fn stored_from_row(row: &sqlx::sqlite::SqliteRow, archived: bool) -> Result<Stor
         room_id,
         device_id: row.try_get("device_id").map_err(corrupt)?,
         session_generation: positive_u64(
-            row.try_get::<i64, _>("session_generation").map_err(corrupt)?,
+            row.try_get::<i64, _>("session_generation")
+                .map_err(corrupt)?,
         )?,
         binding_revision: positive_u64(
             row.try_get::<i64, _>("binding_revision").map_err(corrupt)?,
@@ -824,16 +835,16 @@ fn stored_from_row(row: &sqlx::sqlite::SqliteRow, archived: bool) -> Result<Stor
             .map_err(corrupt)?
             .map(positive_u64)
             .transpose()?,
-        authority_binding_digest: row
-            .try_get("authority_binding_digest")
-            .map_err(corrupt)?,
+        authority_binding_digest: row.try_get("authority_binding_digest").map_err(corrupt)?,
         grant_id: row.try_get("grant_id").map_err(corrupt)?,
         payload_digest: row.try_get("payload_sha256").map_err(corrupt)?,
         grant_payload_digest: row.try_get("grant_payload_sha256").map_err(corrupt)?,
     })
 }
 
-fn parse_optional_event(value: Option<String>) -> Result<Option<MatrixEventId>, MatrixDurableError> {
+fn parse_optional_event(
+    value: Option<String>,
+) -> Result<Option<MatrixEventId>, MatrixDurableError> {
     value
         .map(|value| MatrixEventId::parse(&value).map_err(|_| MatrixDurableError::Corrupt))
         .transpose()
