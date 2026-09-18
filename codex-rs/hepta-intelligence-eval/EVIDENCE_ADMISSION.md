@@ -32,8 +32,11 @@ verifier from the same remote request being evaluated.
 2. Persist the frozen evaluation plan before accessing its holdout. The generator
    signs the frozen plan digest. Claimed signature timestamps do not prove the
    order of observations; the host's durable registration establishes that order.
-3. The independent evaluator signs the exact `evaluation_signing_payload_v1/v2`
-   bytes. These bind the entire supplied bundle and V2 metric-role contract.
+3. Production qualification signs the exact `durable_evaluation_signing_payload_v3`
+   bytes; production longitudinal qualification signs
+   `longitudinal_evaluation_signing_payload_v4`. These bind the complete bundle,
+   V2 metric-role contract and durable holdout proof; V4 also binds observed-time
+   evidence and the independent observer signature.
 4. Admission verifies the actual payload digest and signature, issuer assignment,
    role, scope, objective, epoch, lifetime and revocation, and rejects shared
    principal/key/credential/controller identities. A private verified type is
@@ -106,7 +109,7 @@ requires this proof, so an in-memory `FinalHoldoutRegistry` receipt cannot be
 presented as durable qualification evidence. This type-level proof still does not
 make a local filesystem a distributed consensus service.
 
- Its actual caller supplies an authorized regular `File`, a
+Its actual caller supplies an authorized regular `File`, a
 nonzero scope binding and an independently retained `HoldoutAnchorV1`. `create`
 is explicit initialization; `recover` never recreates or trims a damaged file.
 The adapter takes an exclusive file lock, replays bounded frames and checks the
@@ -140,9 +143,11 @@ must follow freezing, not overlap, have nonzero observed counts and distinct
 source cuts, and end before the observer's signed observation and trusted current
 time. The final holdout window must be among those observed windows.
 
-The independent observer signs `future_window_signing_payload_v1`. The evaluator
-signs `longitudinal_evaluation_signing_payload_v3`, including the time evidence,
-observer signature and minimum duration; a changed policy requires new evidence.
+The independent observer signs `future_window_signing_payload_v1`. Compatibility
+V3 signs `longitudinal_evaluation_signing_payload_v3`; production longitudinal
+admission signs `longitudinal_evaluation_signing_payload_v4`, which additionally
+binds the durable holdout proof. Both include time evidence, observer signature
+and minimum duration; a changed policy requires new evidence.
 Existing trust, role separation, support, intervals, retention and unlearning
 checks still run. The host must authenticate durable preregistration and the
 observer's actual collection/clock provenance; signatures alone do not prove the
