@@ -596,7 +596,7 @@
       ],
       "guide": "docs/modules/inference.worker/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/inference.worker.md",
-      "implementationState": "repository_source_boundary_closed_external_qualification_open",
+      "implementationState": "specified_not_product_evidence",
       "apiContract": "load_model(verifiedManifest,resourceGrant); run(request,lease,reservation,cancellation); unload(handle,deadline). Pure receipt validation is not model execution.",
       "stateAndEncoding": "Ephemeral model/process generation,read-only model descriptor,KV/cache handles,request handles,usage counters. Artifact/cache owner retains persistent model bytes.",
       "linearizationAndRecovery": "Check exact weights/tokenizer/preprocessor/quantization/license/runtime/device tuple before loading. Release acquired resources on failure. Drain outstanding requests before compatible unload/reload.",
