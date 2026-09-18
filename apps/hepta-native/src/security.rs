@@ -103,11 +103,12 @@ impl GrantVerifier {
             })
         } else {
             let store = DefaultKeyringStore;
-            store
-                .load(KEYRING_SERVICE, PLATFORM_KEYRING_ACCOUNT)
-                .map_err(|_| GrantError::Unavailable)?
-                .map(|value| serde_json::from_str(&value).map_err(|_| GrantError::Invalid))
-                .transpose()?
+            match store.load(KEYRING_SERVICE, PLATFORM_KEYRING_ACCOUNT) {
+                Ok(Some(value)) => {
+                    Some(serde_json::from_str(&value).map_err(|_| GrantError::Invalid)?)
+                }
+                Ok(None) | Err(_) => None,
+            }
         };
         let Some(trust) = trust else {
             return Ok(None);
@@ -178,7 +179,24 @@ impl GrantVerifier {
 pub fn grant_signing_bytes(
     grant: &crate::types::PlatformGrant,
 ) -> Result<Vec<u8>, serde_json::Error> {
-    let mut message = DOMAIN.to_vec();
-    message.extend(serde_json::to_vec(grant)?);
-    Ok(message)
+    let binding = &grant.binding;
+    let message = format!(
+        "schema_version={}\nsigner_id={}\nkey_id={}\ngrant_id={}\nnonce={}\nsession_id={}\nsession_generation={}\noperation_id={}\naction={}\nresource_digest={}\npayload_digest={}\nnot_before_unix_ms={}\nexpires_at_unix_ms={}\n",
+        grant.schema_version,
+        grant.signer_id,
+        grant.key_id,
+        grant.grant_id,
+        grant.nonce,
+        binding.session_id,
+        binding.session_generation,
+        binding.operation_id,
+        binding.action.as_str(),
+        binding.resource_digest,
+        binding.payload_digest,
+        grant.not_before_unix_ms,
+        grant.expires_at_unix_ms,
+    );
+    let mut bytes = DOMAIN.to_vec();
+    bytes.extend(message.as_bytes());
+    Ok(bytes)
 }

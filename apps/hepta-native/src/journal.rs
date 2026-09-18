@@ -204,7 +204,9 @@ impl NonceJournal {
             }
             file.seek(SeekFrom::Start(0))?;
             let mut text = String::new();
-            file.take(MAX_JOURNAL_BYTES + 1).read_to_string(&mut text)?;
+            (&mut file)
+                .take(MAX_JOURNAL_BYTES + 1)
+                .read_to_string(&mut text)?;
             let mut count = 0usize;
             for line in text.lines() {
                 count += 1;

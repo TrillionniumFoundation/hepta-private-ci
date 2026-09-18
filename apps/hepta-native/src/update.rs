@@ -103,11 +103,12 @@ impl UpdateVerifier {
             })
         } else {
             let store = DefaultKeyringStore;
-            store
-                .load(KEYRING_SERVICE, UPDATE_KEYRING_ACCOUNT)
-                .map_err(|_| UpdateError::Unavailable)?
-                .map(|value| serde_json::from_str(&value).map_err(UpdateError::Json))
-                .transpose()?
+            match store.load(KEYRING_SERVICE, UPDATE_KEYRING_ACCOUNT) {
+                Ok(Some(value)) => {
+                    Some(serde_json::from_str(&value).map_err(UpdateError::Json)?)
+                }
+                Ok(None) | Err(_) => None,
+            }
         };
         let Some(trust) = trust else {
             return Ok(None);
@@ -378,9 +379,25 @@ fn retry_rename(source: &Path, destination: &Path, timeout: Duration) -> Result<
 }
 
 pub fn update_signing_bytes(manifest: &UpdateManifest) -> Result<Vec<u8>, UpdateError> {
-    let mut message = UPDATE_DOMAIN.to_vec();
-    message.extend(serde_json::to_vec(manifest)?);
-    Ok(message)
+    let message = format!(
+        "schema_version={}\nkey_id={}\nversion={}\nchannel={}\nplatform={}\narchitecture={}\npackage_sha256={}\npredecessor_sha256={}\nbackend_protocol_version={}\nselected_by={}\ngenerator_principal={}\nissued_at_unix_ms={}\nexpires_at_unix_ms={}\n",
+        manifest.schema_version,
+        manifest.key_id,
+        manifest.version,
+        manifest.channel,
+        manifest.platform,
+        manifest.architecture,
+        manifest.package_sha256,
+        manifest.predecessor_sha256,
+        manifest.backend_protocol_version,
+        manifest.selected_by,
+        manifest.generator_principal,
+        manifest.issued_at_unix_ms,
+        manifest.expires_at_unix_ms,
+    );
+    let mut bytes = UPDATE_DOMAIN.to_vec();
+    bytes.extend(message.as_bytes());
+    Ok(bytes)
 }
 
 pub fn sha256_file(path: &Path) -> Result<String, UpdateError> {
