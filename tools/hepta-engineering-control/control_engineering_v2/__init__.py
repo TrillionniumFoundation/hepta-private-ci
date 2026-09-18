@@ -56,6 +56,7 @@ from .evidence import (
     EvaluatorIndependenceReceipt,
     ExecutionReceipt,
     HmacTrustStore,
+    SignatureTrustStore,
     verify_integration_evidence,
 )
 from .facade import (
@@ -145,6 +146,7 @@ __all__ = [
     "ExecutionReceipt",
     "ExternalManifestCandidate",
     "HmacTrustStore",
+    "SignatureTrustStore",
     "KeyCustodyReceipt",
     "LeaseReceipt",
     "MergeQueueProposal",
