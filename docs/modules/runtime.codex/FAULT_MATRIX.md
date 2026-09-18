@@ -16,7 +16,10 @@ This matrix is source-level acceptance guidance for the composed Codex App Serve
 | Authority endpoint timeout, malformed/oversized response, unsafe socket identity or unsupported schema | reject before `turn/start` | none | release pre-dispatch reservation | external-authority port negative path |
 | Signed grant has wrong binding/signature, is expired/revoked, or reuses a nonce | reject before `turn/start` | none | release pre-dispatch reservation | `FinalUseAuthority` plus external-authority port tests |
 | Authority endpoint attempts revocation-head rollback/removal | reject before `turn/start` | none | release pre-dispatch reservation | monotonic revocation synchronization test |
-| Exact signed grant passes local signature/epoch/revocation/nonce checks and `VerifiedUseToken::enter` | one effect entry only; authority witness persisted before send | never grants blind retry | dispatch journaled before `turn/start` | non-constructible token/entered-token source path |
+| Authority wait consumes the runtime.codex deadline | if the deadline expires while waiting, reject before `turn/start` | none | release pre-dispatch reservation | bounded authority-await path |
+| Agent generation/readiness or App Server ingress changes while authority is pending | reject after grant claim but before `turn/start`; burned nonce is not reused | none | release pre-dispatch reservation | post-authority owner/ingress recheck |
+| Cancellation arrives while authority is pending | reject before final-use entry / `turn/start` | none | release pre-dispatch reservation | post-authority cancellation fence |
+| Exact signed grant passes local signature/epoch/revocation/nonce checks and `VerifiedUseToken::enter` | one capability entry only; authority witness and exact request are durably recorded before the network send | never grants blind retry | write-ahead dispatch journaled before `turn/start` | non-constructible token/entered-token source path |
 | Missing/zero owner generation | reject request | none | no dispatch | adapter negative test |
 | Protocol version other than App Server v2 | reject request | none | no dispatch | adapter negative test |
 | App Server transport overload JSON-RPC `-32001` before handler admission | `Overloaded` | `SafeToRetry` with a new admitted request | release | typed JSON-RPC error from the bounded transport queue |
