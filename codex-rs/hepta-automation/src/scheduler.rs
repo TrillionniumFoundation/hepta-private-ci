@@ -80,6 +80,13 @@ where
         else {
             return Ok(AutomationTick::Idle);
         };
+        // Materialize the semantic occurrence before crossing any external
+        // seam. Its identity is schedule-revision + scheduled instant and it
+        // remains non-terminal after queue admission.
+        self.store
+            .materialize_causal_occurrence(&lease, now_ms)
+            .await?;
+
         // Persist the dispatch intent before crossing the App Server seam.
         // If this process dies after admission (or while the request is still
         // in flight) the successor must observe a durable unknown outcome and
@@ -126,6 +133,9 @@ where
             });
         }
         self.store.mark_submitted(&lease, &receipt, now_ms).await?;
+        self.store
+            .record_causal_queue_admission(&lease, &receipt, now_ms)
+            .await?;
         Ok(AutomationTick::Submitted {
             task_id: lease.task.task_id,
             occurrence: lease.occurrence,
