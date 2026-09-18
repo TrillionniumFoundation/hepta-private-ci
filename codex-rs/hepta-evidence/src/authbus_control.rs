@@ -209,12 +209,12 @@ impl HeptaEvidenceStore {
                 ));
             }
             if quota.window_start_ms == current_start && quota.window_end_ms == current_end {
-                if consumed > quota.endowment {
+                if consumed != 0 {
                     return Err(AuthBusControlError::Invalid(
-                        "new endowment is below consumed quota",
+                        "quota revision cannot change after consumption within a window",
                     ));
                 }
-                (0, consumed)
+                (0, 0)
             } else {
                 if quota.window_start_ms < current_end {
                     return Err(AuthBusControlError::Invalid(

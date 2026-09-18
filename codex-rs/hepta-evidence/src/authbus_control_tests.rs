@@ -550,6 +550,50 @@ async fn quota_window_and_revision_are_enforced_and_rollover_is_bounded() {
 }
 
 #[tokio::test]
+async fn consumed_quota_cannot_be_erased_by_same_window_revision_change() {
+    let temp = TempDir::new().unwrap();
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+    seed(&store, 5).await;
+    let reservation = reserve(&store, "consumed-revision", 2).await.unwrap().1;
+    begin_effect(&store, &reservation, effect("consumed-revision"))
+        .await
+        .unwrap();
+    store
+        .settle_authbus_reservation(
+            &reservation.reservation_id,
+            2,
+            Digest32::of_bytes(b"terminal-consumption"),
+        )
+        .await
+        .unwrap();
+
+    assert!(matches!(
+        store
+            .configure_authbus_quota(&QuotaConfig {
+                quota_key: id("quota:one"),
+                revision: 2,
+                unit_id: id("unit:effect"),
+                window_start_ms: 1,
+                window_end_ms: u64::MAX,
+                endowment: 6,
+            })
+            .await,
+        Err(AuthBusControlError::Invalid(_))
+    ));
+    store
+        .reconcile_authbus_quota(&id("quota:one"))
+        .await
+        .unwrap();
+    let consumed: Vec<u8> =
+        sqlx::query_scalar("SELECT consumed FROM authbus_quota_registry WHERE quota_key=?")
+            .bind("quota:one")
+            .fetch_one(&store.pool)
+            .await
+            .unwrap();
+    assert_eq!(decode_counter(consumed), 2);
+}
+
+#[tokio::test]
 async fn sqlite_triggers_fail_closed_on_binding_transition_and_delete() {
     let temp = TempDir::new().unwrap();
     let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
