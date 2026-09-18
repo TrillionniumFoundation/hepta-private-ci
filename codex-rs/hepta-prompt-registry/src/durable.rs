@@ -1597,6 +1597,146 @@ mod tests {
     }
 
     #[test]
+    fn final_use_revocation_binds_actor_reason_cutoff_and_persists_lineage() {
+        let temporary = tempfile::tempdir().expect("tempdir");
+        let registry_root = temporary.path().join("registry-lifecycle");
+        let authority_root = temporary.path().join("authority-lifecycle");
+        let signing_key = SigningKey::from_bytes(&[51; 32]);
+        let authority = FinalUseAuthority::open_state_dir(
+            &authority_root,
+            "security-owner:lifecycle".to_owned(),
+            signing_key.verifying_key().to_bytes(),
+            FinalUseRevocations {
+                authority_epoch: 9,
+                revision: 1,
+                revoked_grant_ids: BTreeSet::new(),
+            },
+        )
+        .expect("final-use authority");
+
+        let mut durable =
+            DurablePromptRegistry::open_state_dir(&registry_root, 64).expect("registry");
+        let factor = PromptFactor {
+            factor_id: id("factor:lifecycle-final-use"),
+            proposer_id: id("proposer:lifecycle-final-use"),
+            semantic_version: id("v1"),
+            content_digest: digest("factor:lifecycle-final-use"),
+            source: FactorSource::GovernedInternal,
+            lifecycle: Lifecycle::Draft,
+        };
+        durable
+            .register_factor(factor.clone())
+            .expect("register factor");
+
+        let reviewer = id("reviewer:lifecycle-final-use");
+        let admission_scope = digest("scope:admission:lifecycle");
+        let evidence = digest("evidence:admission:lifecycle");
+        let admission_binding =
+            crate::final_use_admission_binding(&factor, &reviewer, admission_scope, evidence)
+                .expect("admission binding");
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("clock")
+            .as_millis() as u64;
+        let admission_grant = FinalUseGrant {
+            schema_version: 1,
+            signer_id: "security-owner:lifecycle".to_owned(),
+            authority_epoch: 9,
+            grant_id: "grant:lifecycle-admit".to_owned(),
+            nonce: [51; 32],
+            binding: admission_binding,
+            not_before_unix_ms: now.saturating_sub(1_000),
+            expires_at_unix_ms: now + 30_000,
+        };
+        let admission_signed = SignedFinalUseGrant {
+            signature: signing_key
+                .sign(&admission_grant.signing_bytes().expect("admission signing bytes"))
+                .to_bytes()
+                .to_vec(),
+            grant: admission_grant,
+        };
+        durable
+            .admit_factor_final_use(
+                &authority,
+                &admission_signed,
+                &factor.factor_id,
+                admission_scope,
+                evidence,
+            )
+            .expect("admit factor");
+
+        let actor = id("revoker:lifecycle-final-use");
+        let revoke_scope = digest("scope:revoke:lifecycle");
+        let reason = digest("reason:revoke:lifecycle");
+        let cutoff = now + 5_000;
+        let admitted_factor = durable
+            .registry()
+            .factor(&factor.factor_id)
+            .cloned()
+            .expect("admitted factor");
+        let revoke_binding =
+            crate::final_use_revoke_binding(&admitted_factor, &actor, revoke_scope, reason, cutoff)
+                .expect("revoke binding");
+        let revoke_grant = FinalUseGrant {
+            schema_version: 1,
+            signer_id: "security-owner:lifecycle".to_owned(),
+            authority_epoch: 9,
+            grant_id: "grant:lifecycle-revoke".to_owned(),
+            nonce: [52; 32],
+            binding: revoke_binding,
+            not_before_unix_ms: now.saturating_sub(1_000),
+            expires_at_unix_ms: now + 30_000,
+        };
+        let revoke_signed = SignedFinalUseGrant {
+            signature: signing_key
+                .sign(&revoke_grant.signing_bytes().expect("revoke signing bytes"))
+                .to_bytes()
+                .to_vec(),
+            grant: revoke_grant,
+        };
+        durable
+            .revoke_factor_final_use(
+                &authority,
+                &revoke_signed,
+                &factor.factor_id,
+                &actor,
+                revoke_scope,
+                reason,
+                cutoff,
+            )
+            .expect("revoke factor through final-use authority");
+
+        let event = durable
+            .registry()
+            .lifecycle_events()
+            .last()
+            .expect("revocation event");
+        assert_eq!(event.kind, LifecycleEventKind::Revoked);
+        assert_eq!(event.actor_id, actor);
+        assert_eq!(event.reason_digest, Some(reason));
+        assert_eq!(event.cutoff_unix_ms, Some(cutoff));
+        drop(durable);
+
+        let reopened =
+            DurablePromptRegistry::open_state_dir(&registry_root, 64).expect("reopen registry");
+        assert_eq!(
+            reopened
+                .registry()
+                .factor(&factor.factor_id)
+                .map(|record| record.lifecycle),
+            Some(Lifecycle::Revoked)
+        );
+        let persisted = reopened
+            .registry()
+            .lifecycle_events()
+            .last()
+            .expect("persisted revocation event");
+        assert_eq!(persisted.actor_id, actor);
+        assert_eq!(persisted.reason_digest, Some(reason));
+        assert_eq!(persisted.cutoff_unix_ms, Some(cutoff));
+    }
+
+    #[test]
     fn reopen_rejects_resource_policy_drift() {
         let temporary = tempfile::tempdir().expect("tempdir");
         let root = temporary.path().join("registry");
