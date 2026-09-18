@@ -46,8 +46,12 @@ The legacy `open` method remains available for bootstrap and explicitly
 unanchored qualification use. It is not an anti-rollback API. A host that has
 acknowledged history must call the anchored method and must never retry a failed
 anchored open through the unanchored method. `NeuronRuntimeHost` and the bounded
-`FileRecoveryWitness` implement this local owner ordering, but the caller still
-owns authentication, directory protection, freshness policy and external scope.
+`FileRecoveryWitness` implement this local owner ordering. The file witness uses
+two independently checksummed alternating slots, so an interrupted overwrite can
+fall back to the previous complete anchor instead of destroying both old and new
+state. Reopen selects the highest valid adjacent sequence and ignores one torn
+slot; if neither slot validates, recovery fails closed. The caller still owns
+authentication, directory protection, freshness policy and external scope.
 
 The host transaction order is: durably commit the journal, durably retain its
 acknowledgement witness, then acknowledge externally. If witness publication is
