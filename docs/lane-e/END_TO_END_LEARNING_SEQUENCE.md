@@ -75,9 +75,13 @@ host reserves a create-only artifact identity
   -> LearningArtifactManifestV2 binds bytes, datasets, complete lineage,
      predecessors, training code, runtime, device, objective, schema,
      normalization, compatibility, expiry and rollback predecessor
-  -> DatasetWithdrawalRegistry is checked before admission
-  -> registry event is staged against the exact predecessor head
-  -> registry snapshot is durably published
+  -> scoped DatasetWithdrawalRegistry identity + head are checked before V3 admission
+  -> admission digest binds the complete V2 manifest, withdrawal scope/head and time
+  -> V1 registry event is staged against the exact predecessor head
+  -> publication transaction binds admission, withdrawal scope/head, event and
+     resulting registry head
+  -> both mutable frontiers are revalidated under the host writer fence
+  -> registry snapshot is durably published with the transaction digest as binding
   -> independent RegistryHeadWitnessV1 binds generation, predecessor head and
      authority epoch
   -> producer is acknowledged only after the witness is durable
@@ -87,12 +91,13 @@ Readers must use a current independently retained head witness. A self-consisten
 old snapshot is not sufficient. Generation rollback, authority-epoch rollback,
 predecessor mismatch and expired witnesses fail closed.
 
-Payload publication and registry publication are a bounded saga rather than an
+Payload publication, sidecar persistence and registry/head publication are a bounded saga rather than an
 assumed distributed transaction. A crash after payload synchronization but
 before registry publication leaves an orphan candidate. It does not create a
 selected artifact. Orphan collection requires a separately fenced retention
-operation and must not delete bytes referenced by any current or historical
-registry head.
+operation and must not delete bytes referenced by any current or retained historical
+receipt. `create_in_directory` rejects lexical leaf escape but trusted ancestor traversal
+and containing-directory durability remain host/platform obligations.
 
 ## 4. Evaluation and independent decision
 
@@ -149,7 +154,9 @@ bounded early state -> quarantined
 
 The producer may record training completion but cannot evaluate, accept or
 select its own candidate. Each state change binds an actor credential, evidence,
-authority epoch and time. Skipping mandatory states fails.
+authority epoch and time. Skipping mandatory states fails. Historical journal
+reopen validates the credential at the immutable event occurrence time; current
+append authorization still uses the current write time.
 
 Selection is consumed by a different supervisor or selector. A new process
 loads an exact manifest and payload against the current registry head and current
@@ -162,8 +169,8 @@ is never an implicit reuse of an expired grant or a stale backup marker.
 ```text
 source owner appends correction or deletion tombstone
   -> learning.ledger advances the correction/revocation cut
-  -> DatasetWithdrawalRegistry durably records the withdrawn dataset digest
-  -> all directly matching artifacts are revoked
+  -> scoped DatasetWithdrawalRegistry durably records the withdrawn dataset digest
+  -> all directly matching stable-V1 artifacts are revoked
   -> lineage eligibility makes descendants unavailable
   -> new artifact admission rejects every withdrawn dataset
   -> caches, indexes and projections invalidate by generation
@@ -175,7 +182,10 @@ source owner appends correction or deletion tombstone
 
 The persistent withdrawal registry closes the admission gap left by a
 snapshot-local revocation batch: a later artifact cannot silently reintroduce an
-already withdrawn dataset. Physical erasure, external caches and backup media
+already withdrawn dataset. The stable V1 publication bridge preserves exact
+`support_digest` dataset lookup only for single-dataset derived V2 manifests and
+fails closed for multi-dataset/multi-predecessor shapes until a versioned durable
+format can represent them without loss. Physical erasure, external caches and backup media
 still require the responsible storage owner and independent evidence.
 
 ## 7. Crash matrix
