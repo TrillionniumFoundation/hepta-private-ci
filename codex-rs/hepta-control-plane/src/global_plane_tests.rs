@@ -1,4 +1,5 @@
 use codex_hepta_authbus::IssuerRegistration;
+use codex_hepta_authbus::ReplayWindow;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_fleet::lease_ledger::AllocationGrant;
@@ -197,8 +198,15 @@ fn authenticated_multi_owner_fleet_plan_runs_real_ndu_and_emits_deny_all_request
 
     let raw_evidence = evidence_owner(objective, generation, configuration);
     let (signed, issuer) = sign_owner(&raw_evidence);
-    let evidence = authenticate_owner_summary_v1(raw_evidence, &signed, &issuer, 1_100)
-        .expect("signed evidence owner admission");
+    let mut replay = ReplayWindow::new(16);
+    let evidence = authenticate_owner_summary_v1(
+        raw_evidence,
+        &signed,
+        &issuer,
+        &mut replay,
+        1_100,
+    )
+    .expect("signed evidence owner admission");
 
     let owners = vec![id("kernel.evidence"), id("runtime.fleet")];
     let candidates = vec![
@@ -291,6 +299,31 @@ fn authenticated_multi_owner_fleet_plan_runs_real_ndu_and_emits_deny_all_request
     assert_eq!(requests.requests().len(), 1);
     assert_eq!(requests.requests()[0].final_payload_digest, digest("effect-payload"));
     assert!(!requests.authority().grants_any());
+}
+
+#[test]
+fn owner_admission_consumes_replay_sequence() {
+    let objective = digest("global-objective");
+    let configuration = digest("global-configuration");
+    let generation = Generation::new(11).expect("generation");
+    let summary = evidence_owner(objective, generation, configuration);
+    let (signed, issuer) = sign_owner(&summary);
+    let mut replay = ReplayWindow::new(16);
+
+    authenticate_owner_summary_v1(
+        summary.clone(),
+        &signed,
+        &issuer,
+        &mut replay,
+        1_100,
+    )
+    .expect("first signed owner admission");
+    assert!(matches!(
+        authenticate_owner_summary_v1(summary, &signed, &issuer, &mut replay, 1_100),
+        Err(GlobalPlaneError::Authentication(
+            codex_hepta_authbus::Error::Replay
+        ))
+    ));
 }
 
 #[test]
