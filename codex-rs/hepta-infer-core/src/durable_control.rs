@@ -195,11 +195,15 @@ impl DurableInferenceControl {
             options.mode(0o600);
         }
         let file = options.open(&path)?;
-        // Lock before replay: two owners must never admit from the same stale cut.
-        file.try_lock().map_err(|_| Error::WriterUnavailable)?;
+        // Lock only while replaying the authoritative cut. Long-running model
+        // execution must never hold the journal writer fence.
+        let lock_file = OpenOptions::new().read(true).write(true).open(&path)?;
+        lock_file
+            .try_lock()
+            .map_err(|_| Error::WriterUnavailable)?;
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
-        let mut reader = BufReader::new(file.try_clone()?);
+        let mut reader = BufReader::new(lock_file.try_clone()?);
         let mut journal_bytes = 0_u64;
         let mut line = Vec::new();
         loop {
@@ -245,6 +249,7 @@ impl DurableInferenceControl {
                 .unwrap_or_else(|| Path::new("."));
             File::open(parent)?.sync_all()?;
         }
+        drop(lock_file);
         Ok(Self {
             path,
             file,
@@ -429,12 +434,70 @@ impl DurableInferenceControl {
         &self.path
     }
 
-    fn commit(&mut self, event: Event) -> Result<ControlReceipt, Error> {
+    /// Acquire the journal writer fence for one short mutation and refresh
+    /// this handle from the latest durable cut. The returned lock must remain
+    /// alive through append + fsync; dropping it releases other workers.
+    fn reload_locked(&mut self) -> Result<File, Error> {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
-        // Reject invalid transitions before durable append; a rejected command
-        // must not poison the next reopen with an invalid journal event.
+        let lock_file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(&self.path)?;
+        lock_file
+            .try_lock()
+            .map_err(|_| Error::WriterUnavailable)?;
+
+        let mut records = BTreeMap::new();
+        let mut native = native::NativeJournal::default();
+        let mut reader = BufReader::new(lock_file.try_clone()?);
+        let mut journal_bytes = 0_u64;
+        let mut line = Vec::new();
+        loop {
+            line.clear();
+            let remaining = MAX_JOURNAL_BYTES.saturating_sub(journal_bytes) + 1;
+            let limit = remaining.min(MAX_JOURNAL_LINE_BYTES as u64 + 1);
+            let count = (&mut reader).take(limit).read_until(b'\n', &mut line)?;
+            if count == 0 {
+                break;
+            }
+            journal_bytes += count as u64;
+            if count > MAX_JOURNAL_LINE_BYTES || journal_bytes > MAX_JOURNAL_BYTES {
+                return Err(Error::CapacityExceeded);
+            }
+            if line.pop() != Some(b'\n') {
+                return Err(Error::CorruptJournal("incomplete line"));
+            }
+            if line.last() == Some(&b'\r') {
+                line.pop();
+            }
+            let line =
+                std::str::from_utf8(&line).map_err(|_| Error::CorruptJournal("utf8"))?;
+            if line.is_empty() {
+                continue;
+            }
+            if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
+                native.replay(json)?;
+            } else {
+                apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
+            }
+            if records.len() + native.records.len() > self.capacity
+                || records.keys().any(|id| native.records.contains_key(id))
+            {
+                return Err(Error::CapacityExceeded);
+            }
+        }
+        self.records = records;
+        self.native = native;
+        self.journal_bytes = journal_bytes;
+        Ok(lock_file)
+    }
+
+    fn commit(&mut self, event: Event) -> Result<ControlReceipt, Error> {
+        let _writer_fence = self.reload_locked()?;
+        // Reject invalid transitions against the latest durable cut before
+        // append; concurrent workers never validate against a stale snapshot.
         let mut next = self.records.clone();
         apply_event(&mut next, &event, /*replay*/ false)?;
         let encoded = format!("{}\n", encode_event(&event));
