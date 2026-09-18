@@ -56,11 +56,33 @@
       "designOperation": "compile_candidate_bound",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "wire_compile",
+      "nativeSymbol": "compile_wire",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/wire.rs",
+      "state": "source_implemented_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/wire_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "wire_compile",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-wire/src/schema.rs",
+          "symbol": "pub struct SchemaRegistry",
+          "buildTarget": "codex-hepta-wire",
+          "ownerModule": "platform.wire"
+        }
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary.",
+    "Bind the source-composed compiler to its selected authenticated product caller before activation."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -78,5 +100,6 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-context-compiler"
-  ]
+  ],
+  "platformWireConsumerState": "source_composed_not_deployed"
 }

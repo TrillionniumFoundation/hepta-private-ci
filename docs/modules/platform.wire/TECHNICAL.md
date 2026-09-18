@@ -16,6 +16,32 @@
 
 This stable document is the implementation guide for `platform.wire`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+## 0. Current implementation status
+
+This table is the shortest authoritative distinction between executable code and
+target/production work. The detailed current contract is
+[`CURRENT_IMPLEMENTATION.md`](../../lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md).
+
+| Capability | Current state | Native source / evidence |
+|---|---|---|
+| Frozen HPTA V1 codec | implemented | `envelope.rs`, V1 frozen vector |
+| HPTA V2 metadata+payload complete-frame digest | implemented | `integrity.rs`, V2 frozen vector |
+| Explicit V1/V2 multi-version decode | implemented | `WireFrame` |
+| Highest-common version negotiation with critical-feature policy | implemented | `negotiation.rs` |
+| Registered schema admission + typed payload codec boundary | implemented | `schema.rs` |
+| Header-first bounded stream reader | implemented | `stream.rs` |
+| Deterministic property/fuzz smoke | implemented as focused tests | `protocol_tests.rs` |
+| Live Rust↔Python V2 loading | qualification evidence present | `cross_language_wire_fault.rs` |
+| Registered product source consumers | source-composed | `runtime.codex::adapt_wire`, `context.compiler::compile_wire` |
+| Authenticated/keyed anti-tamper protection | not owned by codec | transport/authority integration required |
+| Deployed production caller and target-host activation | not established | separate integration/activation gate |
+| Independent acceptance/promotion/release | not granted | external governance gates |
+
+HPTA V2's complete-frame digest is unkeyed SHA-256. It binds metadata and
+payload against undetected mutation but is not a MAC, signature or source
+authentication mechanism. V1 remains byte-frozen and retains its payload-only
+digest semantics.
+
 ## 1. Identity, mission and ownership
 
 Provide bounded, versioned wire representations while remaining transport and domain-runtime neutral.
@@ -46,7 +72,24 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs); observed identifiers include `WireEnvelope`, `WireError`, `MAX_WIRE_PAYLOAD_BYTES`, `encode`, `decode`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) for the implemented subset and remaining product work.
+The registered primary compatibility anchor remains
+[codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs)
+with `WireEnvelope`, `WireError`, `MAX_WIRE_PAYLOAD_BYTES`, `encode` and
+`decode`. The executable protocol surface now also includes:
+
+- `integrity.rs`: `WireEnvelopeV2`, `WireFrame`, complete-frame digest;
+- `negotiation.rs`: `WireOffer`, `NegotiationPolicy`, `negotiate`;
+- `schema.rs`: `SchemaRegistry`, `SchemaAdmission`, `PayloadCodec`;
+- `stream.rs`: header-first bounded `read_frame`.
+
+The registered `runtime.codex` and `context.compiler` consumers now have
+actual Cargo dependencies on `codex-hepta-wire` and source callsites that bind
+negotiated version, producer, generation and schema before domain entry. These
+are source bindings/composition, not production activation. Read the
+[current executable contract](../../lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md)
+and the
+[current native implementation](../../../qualification/module-execution-dossiers/detail/platform.wire.md#8-current-native-implementation)
+alongside this target architecture.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -73,8 +116,10 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 The bounded components are:
 
 - `framing and codec boundary`
-- `version negotiation`
-- `bounded decoder`
+- `V1/V2 integrity and explicit multi-version adapter`
+- `version negotiation and downgrade policy`
+- `schema admission and typed payload codec boundary`
+- `header-first bounded stream decoder`
 - `transport-neutral error mapping`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
@@ -100,7 +145,14 @@ None.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+Wire framing and domain payload semantics remain separate. V1 and V2 have
+independent frozen wire vectors. `SchemaRegistry` admits only registered
+schemas and delegates required/unknown-field policy to the registered
+`SchemaAdmission`; `PayloadCodec` supplies the matching typed encode/decode
+boundary. Tests cover round trips, maximum bounds, missing required fields,
+unknown fields in a strict registered schema, version downgrade rejection,
+digest stability and arbitrary-byte decode smoke. Transport/domain outcome
+mapping remains outside the codec.
 
 ## 6. Data authority, persistence and migrations
 
@@ -148,7 +200,12 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Transport-neutral codec library, embedded by the actual transport owner. Recreate connection-local decoder state after disconnect and renegotiate version; never replay an uncertain owner effect as a codec recovery action. No standalone wire daemon or durable domain store exists.
+Transport-neutral codec library, embedded by the actual transport owner.
+`read_frame` validates the fixed header before allocating the variable body;
+the transport still owns deadlines, cancellation and connection lifecycle.
+Multi-version sessions call `negotiate` again after reconnect. Never replay an
+uncertain owner effect as a codec recovery action. No standalone wire daemon or
+durable domain store exists.
 
 Current operating and state-format references:
 
@@ -160,10 +217,19 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-wire/src/boundary_tests.rs](../../../codex-rs/hepta-wire/src/boundary_tests.rs); named case: `every_truncation_rejects_without_reconstructing_an_envelope`.
-- [codex-rs/hepta-wire/src/envelope_tests.rs](../../../codex-rs/hepta-wire/src/envelope_tests.rs); named case: `envelope_round_trip_is_exact`.
+- [codex-rs/hepta-wire/src/boundary_tests.rs](../../../codex-rs/hepta-wire/src/boundary_tests.rs): V1 truncation, bounds and independent frozen vector.
+- [codex-rs/hepta-wire/src/envelope_tests.rs](../../../codex-rs/hepta-wire/src/envelope_tests.rs): V1 round trip plus explicit metadata-integrity non-claim.
+- [codex-rs/hepta-wire/src/protocol_tests.rs](../../../codex-rs/hepta-wire/src/protocol_tests.rs): V2 complete-frame mutation rejection, negotiation/downgrade policy, strict schema admission, header-first streaming and deterministic fuzz/property smoke.
+- [codex-rs/hepta-shadow-qualification/tests/cross_language_wire_fault.rs](../../../codex-rs/hepta-shadow-qualification/tests/cross_language_wire_fault.rs): live Rust↔Python V1/V2 byte boundary including a Python-generated V2 reply frame.
+- [codex-rs/hepta-codex-adapter/src/wire_tests.rs](../../../codex-rs/hepta-codex-adapter/src/wire_tests.rs): registered `runtime.codex` source consumer, including downgrade/producer/generation/schema rejection.
+- [codex-rs/hepta-context-compiler/src/wire_tests.rs](../../../codex-rs/hepta-context-compiler/src/wire_tests.rs): registered `context.compiler` source consumer entering the existing deterministic compiler only after the same ingress fences.
 
-In `codex-rs`, run `just test -p codex-hepta-wire`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-wire` and the focused
+`codex-hepta-shadow-qualification` cross-language test. Commands are test
+invocations, not stored pass receipts. Inspect the exact-candidate output for
+passes, failures and skips. The
+[module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.wire.md)
+separately labels production and independent-acceptance gates.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -262,8 +328,12 @@ This receipt records repository source bindings for the current documentation ca
 
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
-| `wireenvelope` | `WireEnvelope` | `codex-rs/hepta-wire/src/envelope.rs` | `pending` |
+| `wireenvelope_v1` | `WireEnvelope` | `codex-rs/hepta-wire/src/envelope.rs` | `envelope_tests.rs`, `boundary_tests.rs` |
+| `wireenvelope_v2` | `WireEnvelopeV2`, `WireFrame` | `codex-rs/hepta-wire/src/integrity.rs` | `protocol_tests.rs`, cross-language qualification |
+| `negotiate` | `negotiate` | `codex-rs/hepta-wire/src/negotiation.rs` | `protocol_tests.rs` |
+| `schema_admission` | `SchemaRegistry`, `PayloadCodec` | `codex-rs/hepta-wire/src/schema.rs` | `protocol_tests.rs` |
+| `stream_decode` | `read_frame` | `codex-rs/hepta-wire/src/stream.rs` | `protocol_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
-- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+- The registered `runtime.codex` and `context.compiler` consumers are source-composed; their deployment/authenticated transport state is not claimed.
+- Production activation, independent acceptance, promotion and release remain false until their separate evidence gates pass.

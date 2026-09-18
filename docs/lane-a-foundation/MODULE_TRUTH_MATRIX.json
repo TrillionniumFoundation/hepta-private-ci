@@ -72,27 +72,30 @@
       "profile": "stateless_codec",
       "formalGuide": "docs/modules/platform.wire/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
-      "currentSpecification": "docs/lane-a-foundation/platform.wire/WIRE_V1.md",
+      "currentSpecification": "docs/lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md",
       "currentSpecificationRole": "current_executable_contract",
-      "implementationDetail": "docs/lane-a-foundation/platform.wire/HPTA_V1_CONFORMANCE.json",
+      "implementationDetail": "docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json",
       "states": {
         "source": "implemented",
-        "implementation": "fixed_v1_codec",
+        "implementation": "versioned_v1_v2_protocol_layer",
         "durability": "none",
-        "qualification": "boundary_tests_and_frozen_vector_present",
+        "qualification": "boundary_property_frozen_and_cross_runtime_evidence_present",
         "activation": "library_only",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
         "fixed HPTA version-1 envelope encode/decode",
         "bounded identities and one-mebibyte payload",
-        "payload digest verification before owned copy"
+        "payload digest verification before owned copy",
+        "HPTA version-2 complete-frame digest covering metadata and payload",
+        "fail-closed highest-common version negotiation with critical-feature policy",
+        "registered schema admission and typed payload codec boundary",
+        "bounded streaming frame reader admits fixed header before body allocation"
       ],
       "targetOnlyCapabilities": [
-        "version negotiation",
-        "streaming decoder",
-        "multi-version compatibility adapter",
-        "authenticated complete-envelope digest"
+        "authenticated or keyed transport binding for adversarial tamper resistance",
+        "authenticated deployment of source-composed consumers and target-host activation",
+        "future-version compatibility adapters beyond HPTA V2"
       ],
       "sourceAnchors": [
         {
@@ -106,10 +109,54 @@
           ]
         },
         {
+          "path": "codex-rs/hepta-wire/src/integrity.rs",
+          "mustContain": [
+            "pub const HPTA_V2: u16 = 2;",
+            "pub const FRAME_V2_DIGEST_DOMAIN",
+            "pub struct WireEnvelopeV2",
+            "pub enum WireFrame",
+            "pub fn complete_frame_digest"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-wire/src/negotiation.rs",
+          "mustContain": [
+            "pub fn negotiate(",
+            "pub fn require_complete_frame_digest()",
+            "RequiredFeatureUnavailable"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-wire/src/schema.rs",
+          "mustContain": [
+            "pub struct SchemaRegistry",
+            "pub trait SchemaAdmission",
+            "pub trait PayloadCodec"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-wire/src/stream.rs",
+          "mustContain": [
+            "pub fn read_frame",
+            "let mut header = [0_u8; HEADER_FIXED_BYTES];",
+            "validate_payload_length(payload_length)"
+          ]
+        },
+        {
           "path": "codex-rs/hepta-wire/src/boundary_tests.rs",
           "mustContain": [
             "every_truncation_rejects_without_reconstructing_an_envelope",
             "v1_frame_matches_frozen_bytes_not_only_its_own_encoder"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-wire/src/protocol_tests.rs",
+          "mustContain": [
+            "v2_complete_frame_digest_binds_metadata_and_payload",
+            "negotiation_selects_highest_common_and_prevents_required_feature_downgrade",
+            "schema_registry_enforces_known_schema_required_and_unknown_fields",
+            "streaming_reader_admits_header_before_body_allocation",
+            "deterministic_fuzz_smoke_never_panics_and_valid_v2_roundtrips"
           ]
         }
       ]

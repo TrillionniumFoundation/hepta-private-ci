@@ -37,10 +37,15 @@ success.
 
 ## Target-only design
 
-Version negotiation, streaming decode, multi-version adapters and an
-authenticated complete-envelope digest are target-only. A future version must
-use a new version value and frozen vectors; V1 bytes and meanings cannot be
-reinterpreted in place.
+V1 itself intentionally remains a fixed codec and never negotiates or accepts
+another version. Session negotiation, bounded stream framing and explicit
+multi-version dispatch are implemented as separate library layers so V1 bytes
+and meanings remain frozen. HPTA V2 is a distinct version documented in
+`WIRE_V2.md`.
+
+Authenticated/keyed protection remains outside V1 and outside the unkeyed V2
+digest. Future versions must use a new version value and frozen vectors; V1
+bytes and meanings cannot be reinterpreted in place.
 
 ## Known limits and non-claims
 
@@ -53,10 +58,14 @@ own domain-separated operation or signature digest.
 
 Boundary tests cover every truncation, maximum identities/payload/generation,
 bad headers, malformed identities, trailing bytes, payload corruption and the
-independent frozen frame.
+independent frozen frame. `envelope_tests.rs` also freezes the deliberate V1
+non-claim that a valid payload digest does not authenticate schema metadata;
+changing a valid schema byte can still decode when payload bytes are unchanged.
 
 ## Integration prerequisites
 
 Producers and consumers must share the exact V1 conformance vector, validate the
-domain payload separately and reject unknown versions. A successful re-encode
-must never be treated as effect acknowledgement.
+domain payload separately and reject unknown versions. A multi-version session
+must negotiate outside the V1 codec; callers that require metadata-bound frame
+integrity must require HPTA V2 rather than weakening V1 compatibility. A
+successful re-encode must never be treated as effect acknowledgement.

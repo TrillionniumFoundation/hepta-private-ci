@@ -24,7 +24,7 @@
     {
       "module": "platform.wire",
       "path": "codex-rs/hepta-wire/src/envelope.rs",
-      "blobSha": "00e767ccc12e1703296f8f73ef1f53da6996922a",
+      "blobSha": "cc2092c99277a7a9663cec717fab018c9ddd55dc",
       "exports": [
         "WireEnvelope",
         "WireError",
@@ -140,12 +140,15 @@
     {
       "module": "runtime.codex",
       "path": "codex-rs/hepta-codex-adapter/src/lib.rs",
-      "blobSha": "c81c3ec10dd11a85ed28cf71207ff0f973329c17",
+      "blobSha": "a5576127111a18ecd1359372d4091c9abce9d844",
       "exports": [
         "CodexOperationIntent",
         "AppServerObservation",
         "CodexAdapterReceipt",
-        "adapt"
+        "adapt",
+        "adapt_wire",
+        "decode_wire_intent",
+        "CodexWireIngressPolicy"
       ]
     },
     {
@@ -324,14 +327,17 @@
     {
       "module": "context.compiler",
       "path": "codex-rs/hepta-context-compiler/src/lib.rs",
-      "blobSha": "68723686724b774ef6a5fd27e36c2c6bc2d5ee60",
+      "blobSha": "7256fbaea7418b86bbdf9eca40be88708b988b38",
       "exports": [
         "CompilationRequest",
         "ContextCompilationReceipt",
         "CompilationRequirementsV1",
         "compile",
         "compile_candidate_bound",
-        "compile_with_requirements"
+        "compile_with_requirements",
+        "compile_wire",
+        "decode_wire_request",
+        "ContextWireIngressPolicy"
       ]
     },
     {

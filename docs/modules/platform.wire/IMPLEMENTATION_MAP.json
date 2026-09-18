@@ -18,25 +18,85 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "source_consumers_composed_runtime_codex_and_context_compiler_not_deployed",
   "productionWriterState": "not_established",
   "operations": [
     {
-      "operation": "wireenvelope",
+      "operation": "wireenvelope_v1",
       "nativeSymbol": "WireEnvelope",
       "sourcePath": "codex-rs/hepta-wire/src/envelope.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-wire/src/envelope_tests.rs",
+        "codex-rs/hepta-wire/src/boundary_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "wireenvelope",
+      "designOperation": "decode_envelope/encode_envelope",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "wireenvelope_v2",
+      "nativeSymbol": "WireEnvelopeV2",
+      "sourcePath": "codex-rs/hepta-wire/src/integrity.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/protocol_tests.rs",
+        "codex-rs/hepta-shadow-qualification/tests/cross_language_wire_fault.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "decode_envelope/encode_envelope",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "negotiate",
+      "nativeSymbol": "negotiate",
+      "sourcePath": "codex-rs/hepta-wire/src/negotiation.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/protocol_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "negotiate",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "schema_admission",
+      "nativeSymbol": "SchemaRegistry",
+      "sourcePath": "codex-rs/hepta-wire/src/schema.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/protocol_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "schema_admission",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "stream_decode",
+      "nativeSymbol": "read_frame",
+      "sourcePath": "codex-rs/hepta-wire/src/stream.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/protocol_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "stream_decode",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge tests for the composed wire consumers.",
+    "Bind the composed runtime consumers to their authenticated deployed transports before changing the production claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -54,5 +114,33 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-wire"
+  ],
+  "implementedFeatures": {
+    "fixedV1Codec": true,
+    "v2CompleteFrameDigest": true,
+    "versionNegotiation": true,
+    "schemaAdmission": true,
+    "typedPayloadCodecBoundary": true,
+    "streamingDecode": true,
+    "multiVersionDecode": true,
+    "crossRuntimeLoadingQualification": true,
+    "productionImplementation": false,
+    "productSourceConsumers": true
+  },
+  "sourceConsumers": [
+    {
+      "module": "runtime.codex",
+      "path": "codex-rs/hepta-codex-adapter/src/wire.rs",
+      "entrypoint": "adapt_wire",
+      "schema": "runtime.codex.operation-intent.v1",
+      "state": "source_composed_not_deployed"
+    },
+    {
+      "module": "context.compiler",
+      "path": "codex-rs/hepta-context-compiler/src/wire.rs",
+      "entrypoint": "compile_wire",
+      "schema": "context.compiler.compilation-request.v1",
+      "state": "source_composed_not_deployed"
+    }
   ]
 }

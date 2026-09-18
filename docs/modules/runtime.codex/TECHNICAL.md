@@ -48,7 +48,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-codex-adapter/src/lib.rs](../../../codex-rs/hepta-codex-adapter/src/lib.rs); observed identifiers include `CodexOperationIntent`, `AppServerObservation`, `CodexAdapterReceipt`, `adapt`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.codex.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.codex.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-codex-adapter/src/lib.rs](../../../codex-rs/hepta-codex-adapter/src/lib.rs); observed identifiers include `CodexOperationIntent`, `AppServerObservation`, `CodexAdapterReceipt`, `adapt`, `adapt_wire` and `decode_wire_intent`. The adapter now has an actual Cargo dependency on `codex-hepta-wire`. Its [wire ingress](../../../codex-rs/hepta-codex-adapter/src/wire.rs) binds the negotiated HPTA version, expected producer, generation and registered `runtime.codex.operation-intent.v1` schema before entering the existing `adapt` boundary. This is source composition, not deployment or provider-terminal evidence. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.codex.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.codex.md).
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -174,6 +174,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-codex-adapter/src/deadline_digest_tests.rs](../../../codex-rs/hepta-codex-adapter/src/deadline_digest_tests.rs); named case: `deadline_is_bound_into_the_codex_request_digest`.
 - [codex-rs/hepta-codex-adapter/src/lib_tests.rs](../../../codex-rs/hepta-codex-adapter/src/lib_tests.rs); named case: `exact_terminal_observation_maps_without_authority`.
+- [codex-rs/hepta-codex-adapter/src/wire_tests.rs](../../../codex-rs/hepta-codex-adapter/src/wire_tests.rs); covers negotiated V2 admission into the existing adapter plus downgrade, producer, generation, schema and malformed-payload rejection.
 
 In `codex-rs`, run `just test -p codex-hepta-codex-adapter`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.codex.md) separately labels target acceptance designs.
 

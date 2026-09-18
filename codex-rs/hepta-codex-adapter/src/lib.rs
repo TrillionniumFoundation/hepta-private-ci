@@ -5,12 +5,24 @@
 
 #![forbid(unsafe_code)]
 
+mod wire;
+
 use std::error::Error as StdError;
 use std::fmt;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+
+pub use wire::CODEX_OPERATION_INTENT_SCHEMA;
+pub use wire::CodexOperationIntentWireCodec;
+pub use wire::CodexWireIngressPolicy;
+pub use wire::MAX_CODEX_OPERATION_INTENT_PAYLOAD_BYTES;
+pub use wire::WireAdaptError;
+pub use wire::WireIngressError;
+pub use wire::adapt_wire;
+pub use wire::decode_wire_intent;
+pub use wire::register_wire_schema;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CodexOperationIntent {
@@ -117,3 +129,7 @@ mod tests;
 #[cfg(test)]
 #[path = "deadline_digest_tests.rs"]
 mod deadline_digest_tests;
+
+#[cfg(test)]
+#[path = "wire_tests.rs"]
+mod wire_tests;

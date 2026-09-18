@@ -1,7 +1,7 @@
 # platform.wire: implementation design
 
 Parent: `docs/modules/platform.wire/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: HPTA V1 envelope codec implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: HPTA V1/V2 codecs, explicit negotiation, schema admission and bounded stream reading are source-implemented; production composition and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -12,7 +12,22 @@ Operation signatures below describe the target contract. Section 8 identifies th
 
 ## 2. Public operations and contract details
 
-`decode_envelope(bytes, negotiated_version, limits) -> TypedEnvelope | DecodeError` accepts only the registered transport's framing and canonical payload schema. `encode_envelope(value, version) -> bytes` is the inverse on supported values. `negotiate(local_versions, remote_versions, critical_features) -> CompatibleVersion | Incompatible` selects the highest explicitly common version. It must not invent a new framing format for Codex JSON-RPC or reinterpret unknown critical fields.
+The implemented framing entrypoints are `WireEnvelope::{encode,decode}` for
+frozen HPTA V1 and `WireEnvelopeV2::{encode,decode}` for HPTA V2.
+`WireFrame::decode` is the explicit V1/V2 adapter and rejects every unknown
+version.
+
+`negotiate(local, remote, policy) -> NegotiatedWire | NegotiationError`
+selects the highest explicitly common version satisfying a minimum version and
+all required critical features. Requiring
+`WireFeature::CompleteFrameDigest` also requires V2, so failure rejects rather
+than silently downgrading to V1.
+
+`SchemaRegistry` plus `SchemaAdmission` owns runtime schema admission;
+`PayloadCodec` binds typed encode/decode to exactly one stable schema ID.
+`read_frame(Read)` admits the fixed header and resource bounds before body
+allocation. None of these surfaces invent a new framing format for Codex
+JSON-RPC or reinterpret unknown critical fields.
 
 ## 3. State records and transaction design
 
@@ -30,12 +45,21 @@ Pilot ceilings are design targets, not measurements. Stricter canonical limits p
 
 ## 6. Concrete verification cases
 
-- WIRE-01: truncation at every frame boundary returns incomplete/rejected without domain invocation.
-- WIRE-02: unknown critical version/field rejects; additive optional fields follow the registered compatibility policy.
-- WIRE-03: maximum-size round trip and cross-language golden encodings are exact.
-- WIRE-04: a serialized authority witness never constructs a consumable token.
+- WIRE-01: V1 every-prefix truncation rejects; the stream reader validates the
+  54-byte header, identity lengths, generation and payload bound before body
+  allocation.
+- WIRE-02: unknown wire versions reject; negotiation rejects unsatisfied
+  critical features/minimum versions; a registered strict schema test rejects
+  missing required fields and unknown fields.
+- WIRE-03: V1 and V2 frozen vectors are exact; deterministic property/fuzz smoke
+  round-trips valid V2 frames; the live Rust↔Python test validates Rust V2 bytes,
+  produces a Python V2 reply and requires Rust to load it.
+- WIRE-04: serialized wire values remain data only. Schema admission/typed
+  decoding does not construct a permission-bearing `VerifiedUse` token.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+These are source-backed verification designs. Exact-head workflow results remain
+separate execution receipts and independent acceptance remains separately
+governed.
 
 ## 7. Integration, rollback and capability ceiling
 
@@ -45,8 +69,62 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `WireEnvelope` in [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs). HPTA V1 envelope codec implemented.
-- **State and recovery:** Stateless HPTA binary V1 framing uses big-endian lengths/generation and a payload digest; decode rejects unsupported versions, trailing bytes, invalid IDs and payloads outside 1..1048576 bytes.
-- **Source tests:** [codex-rs/hepta-wire/src/envelope_tests.rs](../../../codex-rs/hepta-wire/src/envelope_tests.rs), [codex-rs/hepta-wire/src/boundary_tests.rs](../../../codex-rs/hepta-wire/src/boundary_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/lane-a-foundation/platform.wire/WIRE_V1.md](../../../docs/lane-a-foundation/platform.wire/WIRE_V1.md).
-- **Remaining work:** The target negotiate operation is not implemented by this fixed-version codec; transport negotiation and production schema admission need their owning integration.
+**Implemented entrypoints:** `WireEnvelope` in [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs), `WireEnvelopeV2` in [codex-rs/hepta-wire/src/integrity.rs](../../../codex-rs/hepta-wire/src/integrity.rs), `negotiate` in [codex-rs/hepta-wire/src/negotiation.rs](../../../codex-rs/hepta-wire/src/negotiation.rs), `SchemaRegistry` in [codex-rs/hepta-wire/src/schema.rs](../../../codex-rs/hepta-wire/src/schema.rs), `read_frame` in [codex-rs/hepta-wire/src/stream.rs](../../../codex-rs/hepta-wire/src/stream.rs).
+
+- **Frozen V1:** `WireEnvelope` in
+  [`codex-rs/hepta-wire/src/envelope.rs`](../../../codex-rs/hepta-wire/src/envelope.rs)
+  retains the original `HPTA/1` byte layout and payload-only digest semantics.
+  The explicit regression
+  `v1_payload_digest_does_not_claim_metadata_integrity` prevents a future
+  documentation/API claim that V1 authenticates metadata.
+- **V2 complete-frame integrity:** `WireEnvelopeV2`,
+  `complete_frame_digest` and `WireFrame` in
+  [`integrity.rs`](../../../codex-rs/hepta-wire/src/integrity.rs) implement
+  `HPTA/2`. The unkeyed SHA-256 digest covers domain separator, magic,
+  version, lengths, generation, schema, producer and payload. Metadata or
+  payload mutation therefore fails with `FrameDigestMismatch` unless an
+  adversary recomputes the unkeyed digest.
+- **Negotiation:** [`negotiation.rs`](../../../codex-rs/hepta-wire/src/negotiation.rs)
+  implements highest-common V1/V2 selection with minimum-version and
+  critical-feature policy. Requiring complete-frame digest cannot silently
+  fall back to V1.
+- **Schema admission and typed serialization:**
+  [`schema.rs`](../../../codex-rs/hepta-wire/src/schema.rs) implements
+  `SchemaRegistry`, pluggable `SchemaAdmission` and schema-bound
+  `PayloadCodec`. The wire layer provides the admission mechanism while
+  domain owners retain field semantics.
+- **Streaming:** [`stream.rs`](../../../codex-rs/hepta-wire/src/stream.rs)
+  reads the fixed header first, validates bounds, then allocates and reads one
+  bounded frame. Transport deadlines and cancellation remain transport-owned.
+- **Focused source tests:**
+  [`protocol_tests.rs`](../../../codex-rs/hepta-wire/src/protocol_tests.rs)
+  adds V2 mutation, downgrade, schema, stream and deterministic fuzz/property
+  coverage; V1 tests remain in `envelope_tests.rs` and `boundary_tests.rs`.
+- **Cross-runtime qualification:**
+  [`cross_language_wire_fault.rs`](../../../codex-rs/hepta-shadow-qualification/tests/cross_language_wire_fault.rs)
+  runs a live Python process that independently validates V1/V2, returns a
+  Python-generated V2 frame and requires Rust to decode it.
+- **Current specifications:**
+  [`CURRENT_IMPLEMENTATION.md`](../../../docs/lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md),
+  [`WIRE_V1.md`](../../../docs/lane-a-foundation/platform.wire/WIRE_V1.md),
+  [`WIRE_V2.md`](../../../docs/lane-a-foundation/platform.wire/WIRE_V2.md) and
+  both conformance JSON vectors.
+
+### Remaining product/external work
+
+The repository now contains the protocol mechanisms that were previously
+target-only: explicit negotiation, multi-version dispatch, schema admission and
+header-first streaming. Both registered output contracts also have concrete
+source consumers: `runtime.codex::adapt_wire` and
+`context.compiler::compile_wire`. The remaining claim boundary is therefore
+narrower:
+
+1. those source-composed consumers are not yet evidence of an authenticated
+   deployed transport or target-host production activation;
+2. the V2 digest is unkeyed and therefore not a substitute for a MAC, signature
+   or authenticated transport;
+3. exact-head/merge-candidate CI, independent semantic acceptance, target-host
+   qualification, canary, promotion and release remain separate evidence gates.
+
+No source document or self-test may promote those external states.
+

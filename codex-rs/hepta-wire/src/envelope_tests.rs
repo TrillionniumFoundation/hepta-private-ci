@@ -80,3 +80,25 @@ fn unknown_version_and_empty_payload_are_rejected() {
     encoded[5] = 2;
     assert_eq!(WireEnvelope::decode(&encoded), Err(WireError::Version(2)));
 }
+
+#[test]
+fn v1_payload_digest_does_not_claim_metadata_integrity() {
+    let envelope = WireEnvelope::new(
+        id("s"),
+        id("p"),
+        generation(),
+        vec![1, 2, 3],
+    );
+    let Ok(envelope) = envelope else {
+        panic!("valid envelope rejected");
+    };
+    let original_digest = envelope.payload_digest();
+    let mut encoded = envelope.encode();
+    encoded[HEADER_FIXED_BYTES] = b't';
+    let decoded = WireEnvelope::decode(&encoded);
+    let Ok(decoded) = decoded else {
+        panic!("V1 metadata mutation unexpectedly rejected");
+    };
+    assert_eq!(decoded.schema().as_str(), "t");
+    assert_eq!(decoded.payload_digest(), original_digest);
+}

@@ -5,13 +5,16 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
-const MAGIC: [u8; 4] = *b"HPTA";
-const WIRE_VERSION: u16 = 1;
-const HEADER_FIXED_BYTES: usize = 4 + 2 + 2 + 2 + 8 + 32 + 4;
+pub(crate) const MAGIC: [u8; 4] = *b"HPTA";
+pub(crate) const WIRE_VERSION: u16 = 1;
+pub(crate) const HEADER_FIXED_BYTES: usize = 4 + 2 + 2 + 2 + 8 + 32 + 4;
 pub const MAX_WIRE_PAYLOAD_BYTES: usize = 1_048_576;
-const MAX_ID_BYTES: usize = 128;
+pub(crate) const MAX_ID_BYTES: usize = 128;
 
-/// One immutable, content-bound module message.
+/// One immutable HPTA V1 module message.
+///
+/// V1's digest intentionally binds only payload bytes. It is a fault-detection
+/// checksum, not an authentication primitive and not a digest of the metadata.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct WireEnvelope {
     schema: StableId,
@@ -59,6 +62,10 @@ impl WireEnvelope {
         &self.payload
     }
 
+    pub const fn version(&self) -> u16 {
+        WIRE_VERSION
+    }
+
     pub fn encode(&self) -> Vec<u8> {
         let schema = self.schema.as_str().as_bytes();
         let producer = self.producer.as_str().as_bytes();
@@ -85,19 +92,15 @@ impl WireEnvelope {
         if encoded[..4] != MAGIC {
             return Err(WireError::Magic);
         }
-        let version = read_u16(encoded, /*start*/ 4)?;
+        let version = read_u16(encoded, 4)?;
         if version != WIRE_VERSION {
             return Err(WireError::Version(version));
         }
-        let schema_length = usize::from(read_u16(encoded, /*start*/ 6)?);
-        let producer_length = usize::from(read_u16(encoded, /*start*/ 8)?);
-        if !(1..=MAX_ID_BYTES).contains(&schema_length)
-            || !(1..=MAX_ID_BYTES).contains(&producer_length)
-        {
-            return Err(WireError::IdentityLength);
-        }
-        let generation =
-            Generation::new(read_u64(encoded, /*start*/ 10)?).map_err(|_| WireError::Generation)?;
+        let schema_length = usize::from(read_u16(encoded, 6)?);
+        let producer_length = usize::from(read_u16(encoded, 8)?);
+        validate_identity_lengths(schema_length, producer_length)?;
+        let generation = Generation::new(read_u64(encoded, 10)?)
+            .map_err(|_| WireError::Generation)?;
         let digest_start = 18;
         let digest_end = digest_start + 32;
         let mut digest = [0; 32];
@@ -105,20 +108,12 @@ impl WireEnvelope {
         let payload_length = usize::try_from(read_u32(encoded, digest_end)?)
             .map_err(|_| WireError::PayloadLength)?;
         validate_payload_length(payload_length)?;
-        let body_start = HEADER_FIXED_BYTES;
-        let schema_end = body_start
-            .checked_add(schema_length)
-            .ok_or(WireError::PayloadLength)?;
-        let producer_end = schema_end
-            .checked_add(producer_length)
-            .ok_or(WireError::PayloadLength)?;
-        let payload_end = producer_end
-            .checked_add(payload_length)
-            .ok_or(WireError::PayloadLength)?;
+        let (schema_end, producer_end, payload_end) =
+            body_offsets(schema_length, producer_length, payload_length)?;
         if payload_end != encoded.len() {
             return Err(WireError::LengthMismatch);
         }
-        let schema = std::str::from_utf8(&encoded[body_start..schema_end])
+        let schema = std::str::from_utf8(&encoded[HEADER_FIXED_BYTES..schema_end])
             .map_err(|_| WireError::IdentityEncoding)
             .and_then(parse_id)?;
         let producer = std::str::from_utf8(&encoded[schema_end..producer_end])
@@ -140,18 +135,47 @@ impl WireEnvelope {
     }
 }
 
-fn parse_id(value: &str) -> Result<StableId, WireError> {
+pub(crate) fn parse_id(value: &str) -> Result<StableId, WireError> {
     StableId::new(value).map_err(|_| WireError::IdentityEncoding)
 }
 
-fn validate_payload_length(length: usize) -> Result<(), WireError> {
+pub(crate) fn validate_identity_lengths(
+    schema_length: usize,
+    producer_length: usize,
+) -> Result<(), WireError> {
+    if !(1..=MAX_ID_BYTES).contains(&schema_length)
+        || !(1..=MAX_ID_BYTES).contains(&producer_length)
+    {
+        return Err(WireError::IdentityLength);
+    }
+    Ok(())
+}
+
+pub(crate) fn validate_payload_length(length: usize) -> Result<(), WireError> {
     if length == 0 || length > MAX_WIRE_PAYLOAD_BYTES {
         return Err(WireError::PayloadLength);
     }
     Ok(())
 }
 
-fn read_u16(bytes: &[u8], start: usize) -> Result<u16, WireError> {
+pub(crate) fn body_offsets(
+    schema_length: usize,
+    producer_length: usize,
+    payload_length: usize,
+) -> Result<(usize, usize, usize), WireError> {
+    let schema_end = HEADER_FIXED_BYTES
+        .checked_add(schema_length)
+        .ok_or(WireError::PayloadLength)?;
+    let producer_end = schema_end
+        .checked_add(producer_length)
+        .ok_or(WireError::PayloadLength)?;
+    let payload_end = producer_end
+        .checked_add(payload_length)
+        .ok_or(WireError::PayloadLength)?;
+    Ok((schema_end, producer_end, payload_end))
+}
+
+pub(crate) fn read_u16(bytes: &[u8], start: usize) -> Result<u16, WireError> {
     let end = start.checked_add(2).ok_or(WireError::Truncated)?;
     let raw: [u8; 2] = bytes
         .get(start..end)
@@ -161,7 +185,7 @@ fn read_u16(bytes: &[u8], start: usize) -> Result<u16, WireError> {
     Ok(u16::from_be_bytes(raw))
 }
 
-fn read_u32(bytes: &[u8], start: usize) -> Result<u32, WireError> {
+pub(crate) fn read_u32(bytes: &[u8], start: usize) -> Result<u32, WireError> {
     let end = start.checked_add(4).ok_or(WireError::Truncated)?;
     let raw: [u8; 4] = bytes
         .get(start..end)
@@ -171,7 +195,7 @@ fn read_u32(bytes: &[u8], start: usize) -> Result<u32, WireError> {
     Ok(u32::from_be_bytes(raw))
 }
 
-fn read_u64(bytes: &[u8], start: usize) -> Result<u64, WireError> {
+pub(crate) fn read_u64(bytes: &[u8], start: usize) -> Result<u64, WireError> {
     let end = start.checked_add(8).ok_or(WireError::Truncated)?;
     let raw: [u8; 8] = bytes
         .get(start..end)
@@ -195,6 +219,10 @@ pub enum WireError {
         expected: Digest32,
         observed: Digest32,
     },
+    FrameDigestMismatch {
+        expected: Digest32,
+        observed: Digest32,
+    },
 }
 
 impl fmt::Display for WireError {
@@ -212,6 +240,12 @@ impl fmt::Display for WireError {
                 write!(
                     formatter,
                     "wire payload digest mismatch: expected {expected}, observed {observed}"
+                )
+            }
+            Self::FrameDigestMismatch { expected, observed } => {
+                write!(
+                    formatter,
+                    "wire complete-frame digest mismatch: expected {expected}, observed {observed}"
                 )
             }
         }

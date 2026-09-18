@@ -16,6 +16,7 @@ use codex_hepta_types::StableId;
 mod candidate_bound;
 mod requirements;
 mod v2;
+mod wire;
 
 pub use candidate_bound::CandidateBoundContextCompilationReceipt;
 pub use candidate_bound::compile_candidate_bound;
@@ -43,6 +44,15 @@ pub use v2::build_attachment;
 pub use v2::compile_v2;
 pub use v2::observe_delivery;
 pub use v2::record_serialization;
+pub use wire::CONTEXT_COMPILATION_REQUEST_SCHEMA;
+pub use wire::ContextCompilationRequestWireCodec;
+pub use wire::ContextWireIngressError;
+pub use wire::ContextWireIngressPolicy;
+pub use wire::MAX_CONTEXT_COMPILATION_REQUEST_PAYLOAD_BYTES;
+pub use wire::WireCompileError;
+pub use wire::compile_wire;
+pub use wire::decode_wire_request;
+pub use wire::register_context_wire_schema;
 
 const MAX_ITEMS: usize = 4_096;
 const MAX_TOKENS: u64 = 1_000_000;
@@ -252,3 +262,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "wire_tests.rs"]
+mod wire_tests;
