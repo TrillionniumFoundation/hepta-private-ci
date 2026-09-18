@@ -224,6 +224,7 @@ test("profile ownership observation must bind the admitted principal and generat
     host.openProfile(input()),
     /profile ownership observation does not bind/,
   );
+  assert.equal(fakeDriver.containCalls, 1);
 });
 
 test("effect owner rejects volatile journals unless a test explicitly opts in", () => {
