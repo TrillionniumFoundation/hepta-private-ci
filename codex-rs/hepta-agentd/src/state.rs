@@ -303,6 +303,7 @@ impl AgentdState {
 
     pub(crate) fn run_cancel(
         &self,
+        now_ms: u64,
         run_id: &str,
         expected_revision: u64,
         reason: String,
@@ -311,7 +312,9 @@ impl AgentdState {
         self.runs
             .lock()
             .map_err(poisoned_state)?
-            .transact(|coordinator| coordinator.cancel_run(run_id, expected_revision, reason))
+            .transact(|coordinator| {
+                coordinator.cancel_run(now_ms, run_id, expected_revision, reason)
+            })
     }
 
     pub(crate) fn run_observe_terminal(
