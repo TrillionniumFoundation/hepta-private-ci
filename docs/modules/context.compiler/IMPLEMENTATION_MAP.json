@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "d7af096f28fa9989388939efa0e6600b52a43952",
+    "tree": "789fa2ea88e8a6e787a0fb838a8dda3cf2e20701"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "context.compiler",
@@ -22,12 +22,70 @@
   "productionWriterState": "not_established",
   "operations": [
     {
+      "operation": "compile_v2",
+      "nativeSymbol": "compile_v2",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/proof_v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/proof_v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compile_context",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "serialize_context_v2",
+      "nativeSymbol": "serialize_context_v2",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/proof_v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/proof_v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compile_context",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "build_attachment",
+      "nativeSymbol": "build_attachment",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/proof_v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/proof_v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revalidate_attachment",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "deliver_attachment",
+      "nativeSymbol": "deliver_attachment",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/proof_v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/proof_v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "delivery_observation",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
       "operation": "compile",
       "nativeSymbol": "compile",
       "sourcePath": "codex-rs/hepta-context-compiler/src/lib.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/lib_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "compile",
       "mappingClass": "owner_native",
@@ -39,7 +97,9 @@
       "sourcePath": "codex-rs/hepta-context-compiler/src/requirements.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/requirements_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "compile_with_requirements",
       "mappingClass": "owner_native",
@@ -51,7 +111,9 @@
       "sourcePath": "codex-rs/hepta-context-compiler/src/candidate_bound.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "compile_candidate_bound",
       "mappingClass": "owner_native",
@@ -59,7 +121,9 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Compose the proof-closed V2.1 operations into an authenticated product consumer rather than a qualification-only caller.",
+    "Bind ContextAdmissionSnapshotV2 issuer/witness construction to the real current admission and revocation owner.",
+    "Compose real exact-tokenizer, serializer, and provider-delivery adapters and prove durable provider-attempt acknowledgement semantics.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
