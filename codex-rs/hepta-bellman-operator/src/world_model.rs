@@ -399,6 +399,20 @@ pub(crate) fn digest_model(
             .to_be_bytes(),
     );
     for estimate in estimates {
+        push_id(&mut bytes, &estimate.state_id);
+        push_id(&mut bytes, &estimate.action_id);
+        bytes.extend_from_slice(&estimate.sample_count.to_be_bytes());
+        bytes.extend_from_slice(&estimate.mean_outcome.raw().to_be_bytes());
+        bytes.extend_from_slice(
+            &u32::try_from(estimate.branches.len())
+                .map_err(|_| WorldModelError::Arithmetic)?
+                .to_be_bytes(),
+        );
+        for branch in &estimate.branches {
+            push_id(&mut bytes, &branch.next_state_id);
+            bytes.extend_from_slice(&branch.count.to_be_bytes());
+            bytes.extend_from_slice(&branch.probability.raw().to_be_bytes());
+        }
         bytes.extend_from_slice(estimate.estimate_digest.as_array());
     }
     Ok(Digest32::of_bytes(&bytes))
