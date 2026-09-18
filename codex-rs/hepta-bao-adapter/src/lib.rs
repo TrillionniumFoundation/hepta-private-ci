@@ -29,6 +29,7 @@ pub use lease_control::BaoLeaseOutcome;
 pub use lease_control::BaoLeaseRenewRequest;
 pub use lease_control::BaoLeaseRevokeRequest;
 pub use lease_control::BeginResult;
+pub use lease_control::DynamicLeaseMethod;
 pub use lease_control::LeaseOperationKind;
 pub use lease_control::LeaseRegistry;
 pub use lease_control::LeaseState;
