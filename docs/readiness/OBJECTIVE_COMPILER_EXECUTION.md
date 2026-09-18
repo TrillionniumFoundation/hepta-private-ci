@@ -120,6 +120,8 @@ emit deny-all admission receipt and compile/conflict outcome
 
 Compilation is a pure function of the authenticated source envelope, selected admission profile and registered schema revisions. Retry with identical inputs yields identical semantic bytes. Reuse of a durable request/revision identity with different semantics is handled by the owning durable caller as conflict; the stateless compiler does not invent persistence.
 
+Determinism applies to semantic compilation, canonical ordering/digests and the feasibility solver for a fixed call budget. The public `check_feasibility_v1` wrapper also accepts a wall-clock availability budget and records measured `elapsed`; near that deadline, host scheduling may change whether the wrapper reports `Exhausted`, and `elapsed` is operational evidence rather than deterministic semantic content. The private scalar compatibility path used by `crate::compiler::compile` supplies `Duration::MAX`, so host load cannot turn an otherwise valid scalar objective into a different semantic result. Time-bounded availability receipts must not be described as byte-for-byte deterministic artifacts.
+
 ## 5. State machine and persistence
 
 The compiler owns no domain-fact store. The owning caller persists the immutable `ObjectiveFunctionV1`, `RunStartSnapshotV1` and admission/compile receipts. Publication occurs only after source, intent, profile, constraint and objective digests agree.
