@@ -215,7 +215,13 @@ export class ControlPlaneApp {
     this.#root.replaceChildren(main);
 
     if (restoreFocusKey !== null) {
-      focusTargets.get(restoreFocusKey)?.focus?.();
+      const target = focusTargets.get(restoreFocusKey);
+      if (target?.focus) {
+        target.focus();
+      } else {
+        status.setAttribute("tabindex", "-1");
+        status.focus?.();
+      }
     }
     return view;
   }
