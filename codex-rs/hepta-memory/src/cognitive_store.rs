@@ -805,7 +805,7 @@ async fn verify_current_projection_contents(
                 v.source_snapshot_digest, v.generation_vector_digest,
                 v.graph_profile_digest, v.predecessor_generation,
                 v.predecessor_digest, v.generation_digest,
-                v.publication_digest
+                v.publication_digest, v.sqlite_output_sha256
          FROM kg_projection p
          JOIN kg_projection_generation_receipts r
            ON r.projection_scope = p.projection_scope
@@ -1179,6 +1179,9 @@ async fn verify_current_projection_contents(
         let stored_publication_digest: String = current
             .try_get("publication_digest")
             .map_err(unavailable)?;
+        let stored_v2_sqlite_output: String = current
+            .try_get("sqlite_output_sha256")
+            .map_err(unavailable)?;
         let stored_predecessor_generation: Option<i64> = current
             .try_get("predecessor_generation")
             .map_err(unavailable)?;
@@ -1196,6 +1199,7 @@ async fn verify_current_projection_contents(
             || stored_graph_profile != current_v2.graph_profile_digest.to_string()
             || stored_generation_digest != current_v2.generation_digest.to_string()
             || stored_publication_digest != publication_v2.publication_digest.to_string()
+            || stored_v2_sqlite_output != expected_output.as_str()
             || stored_predecessor_generation != expected_predecessor_generation
             || stored_predecessor_digest != expected_predecessor_digest
         {
