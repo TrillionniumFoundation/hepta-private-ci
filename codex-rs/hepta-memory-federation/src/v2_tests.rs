@@ -364,9 +364,7 @@ fn response_digest_binds_items_and_completeness() {
     let mut changed_completeness = terminal_response(&query);
     changed_completeness.completeness = FederatedCompletenessV2::Partial;
     let completeness_transport = FixtureTransport {
-        result: Ok(FederationTransportResultV2::Terminal(
-            changed_completeness,
-        )),
+        result: Ok(FederationTransportResultV2::Terminal(changed_completeness)),
     };
     assert_eq!(
         execute(&completeness_transport, query.clone(), &lease(&query)),

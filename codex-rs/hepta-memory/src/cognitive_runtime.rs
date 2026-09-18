@@ -394,10 +394,7 @@ async fn retrieve_federated_product(
                         if readers.len() >= MAX_FEDERATION_SOURCES_PER_AGENT {
                             break;
                         }
-                        if reader
-                            .capability()
-                            .scope()
-                            .consumer_workspace_sha256()
+                        if reader.capability().scope().consumer_workspace_sha256()
                             != access.workspace_sha256()
                         {
                             continue;
@@ -429,9 +426,8 @@ async fn retrieve_federated_product(
     readers.dedup_by(|(_, left), (_, right)| left.capability().id() == right.capability().id());
     readers.truncate(MAX_FEDERATION_SOURCES_PER_AGENT);
 
-    let discovery_failure_slots = discovery_failures.min(
-        MAX_FEDERATION_SOURCES_PER_AGENT.saturating_sub(readers.len()),
-    );
+    let discovery_failure_slots =
+        discovery_failures.min(MAX_FEDERATION_SOURCES_PER_AGENT.saturating_sub(readers.len()));
     let requested_peer_slots = readers.len().saturating_add(discovery_failure_slots);
     let query_sha256 = Sha256Digest::for_bytes(request.query().as_bytes());
     let mut coverage = FederatedCoverageV2 {
@@ -912,11 +908,7 @@ mod product_nonce_tests {
             failed_peers: 0,
             truncated_items: 0,
         };
-        merge_product_coverage(
-            &mut aggregate,
-            &attempt,
-            FederatedValidityV2::Revoked,
-        );
+        merge_product_coverage(&mut aggregate, &attempt, FederatedValidityV2::Revoked);
         assert_eq!(aggregate.completed_peers, 0);
         assert_eq!(aggregate.failed_peers, 1);
     }

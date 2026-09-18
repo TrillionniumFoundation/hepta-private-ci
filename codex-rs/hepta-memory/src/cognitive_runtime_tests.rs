@@ -162,10 +162,8 @@ async fn product_v2_unobservable_owner_is_explicit_failed_discovery_coverage() {
         .expect("consumer store");
     let runtime = CognitiveRuntime::from_open_result(Ok(consumer))
         .with_federation_sources(consumer_id.clone(), vec![owner_layout]);
-    let access = FederationConsumerAccess::new(
-        consumer_id,
-        workspace("runtime-v2-discovery-unavailable"),
-    );
+    let access =
+        FederationConsumerAccess::new(consumer_id, workspace("runtime-v2-discovery-unavailable"));
     let (batch, coverage) = runtime
         .retrieve_federated(&access, &RetrievalRequest::new("anything", 150))
         .await

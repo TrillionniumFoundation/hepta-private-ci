@@ -554,8 +554,7 @@ where
 {
     query.validate(now_unix_ms)?;
     lease.validate_for_query(now_unix_ms, &query)?;
-    let preflight_authority =
-        revalidate_with_control(authority, control, &query, lease).await?;
+    let preflight_authority = revalidate_with_control(authority, control, &query, lease).await?;
     preflight_authority.validate_for(&query, lease)?;
     if preflight_authority.observed_unix_ms < now_unix_ms {
         return Err(FederationV2Error::AuthorityObservationRegressed);
@@ -600,9 +599,7 @@ where
             let authority_observation =
                 revalidate_with_control(authority, control, &query, lease).await?;
             authority_observation.validate_for(&query, lease)?;
-            if authority_observation.observed_unix_ms
-                < preflight_authority.observed_unix_ms
-            {
+            if authority_observation.observed_unix_ms < preflight_authority.observed_unix_ms {
                 return Err(FederationV2Error::AuthorityObservationRegressed);
             }
             ensure_post_io_horizon(
