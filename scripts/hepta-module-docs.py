@@ -114,13 +114,42 @@ def verify_local_links(path, text):
 
 
 def refresh_indexes(check):
-    """Refresh generated module projections and document presentation metrics.
+    """Recompute derived bytes/counts/digests without changing claims or scope."""
+    specs = [
+        ("docs/modules/MODULE_DOCS.json", "modules", True),
+        ("qualification/module-execution-dossiers/DETAILS.json", "rows", False),
+    ]
+    changed = []
+    for relative, key, include_metrics in specs:
+        document = load(relative)
+        for row in document[key]:
+            path = ROOT / row["path"]
+            need(path.is_file(), "index source missing " + row["path"])
+            text = path.read_text(encoding="utf-8")
+            updates = {"sha256": sha(text)}
+            if include_metrics:
+                updates.update(
+                    bytes=len(text.encode("utf-8")),
+                    words=len(re.findall(r"\\b[\\w.-]+\\b", text)),
+                )
+            row.update(updates)
+        rendered = (
+            json.dumps(document, indent=2, ensure_ascii=False)
+            if include_metrics
+            else json.dumps(document, separators=(",", ":"), ensure_ascii=False)
+        ) + "\n"
+        path = ROOT / relative
+        if rendered != path.read_text(encoding="utf-8"):
+            changed.append(relative)
+            if not check:
+                path.write_text(rendered, encoding="utf-8")
+    need(not check or not changed, "derived index drift: " + ", ".join(changed))
+    print(json.dumps({"updatedIndexes": changed, "checkOnly": check}))
+    return 0
 
-    MODULES.json owns duplicated module status/bootstrap/path facts. Contract,
-    protocol, domain, work-package and threat lists are derived from their
-    canonical registries. SOURCE_BINDINGS keeps only its genuinely independent
-    evidence/lifecycle/interpretation fields as human-maintained data.
-    """
+
+def refresh_derived(check):
+    """Generate duplicate module projections from their canonical owners."""
     modules = load("docs/modules/MODULES.json")
     bindings = load("docs/modules/SOURCE_BINDINGS.json")
     docs = load("docs/modules/MODULE_DOCS.json")
@@ -159,9 +188,6 @@ def refresh_indexes(check):
     for row in docs["modules"]:
         module_id = row["module"]
         module = module_map[module_id]
-        doc_path = ROOT / module["technicalDocument"]
-        need(doc_path.is_file(), "index source missing " + module["technicalDocument"])
-        text = doc_path.read_text(encoding="utf-8")
         produced = sorted(c["id"] for c in contracts if c["producer"] == module_id)
         consumed = sorted(c["id"] for c in contracts if module_id in c["consumers"])
         touched = set(produced + consumed)
@@ -171,9 +197,6 @@ def refresh_indexes(check):
             source_root_present=module["source_root_present"],
             production_implementation=module["production_implementation"],
             bootstrapWorkPackage=module["bootstrapWorkPackage"],
-            sha256=sha(text),
-            bytes=len(text.encode("utf-8")),
-            words=len(re.findall(r"\\b[\\w.-]+\\b", text)),
             requiredSections=HEADINGS,
             producedContracts=produced,
             consumedContracts=consumed,
@@ -195,20 +218,8 @@ def refresh_indexes(check):
         if not check:
             docs_path.write_text(rendered_docs, encoding="utf-8")
 
-    details = load("qualification/module-execution-dossiers/DETAILS.json")
-    for row in details["rows"]:
-        detail_path = ROOT / row["path"]
-        need(detail_path.is_file(), "index source missing " + row["path"])
-        row["sha256"] = sha(detail_path.read_text(encoding="utf-8"))
-    rendered_details = json.dumps(details, separators=(",", ":"), ensure_ascii=False) + "\n"
-    details_path = ROOT / "qualification/module-execution-dossiers/DETAILS.json"
-    if rendered_details != details_path.read_text(encoding="utf-8"):
-        changed.append("qualification/module-execution-dossiers/DETAILS.json")
-        if not check:
-            details_path.write_text(rendered_details, encoding="utf-8")
-
     need(not check or not changed, "generated module projection drift: " + ", ".join(changed))
-    print(json.dumps({"updatedIndexes": changed, "checkOnly": check}))
+    print(json.dumps({"updatedDerived": changed, "checkOnly": check}))
     return 0
 
 
@@ -406,13 +417,15 @@ def self_test():
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("command", choices=["verify", "self-test", "refresh-indexes"])
+    p.add_argument("command", choices=["verify", "self-test", "refresh-indexes", "refresh-derived"])
     p.add_argument("--check", action="store_true")
     args = p.parse_args()
     if args.command == "refresh-indexes":
         return refresh_indexes(args.check)
+    if args.command == "refresh-derived":
+        return refresh_derived(args.check)
     if args.check:
-        p.error("--check applies only to refresh-indexes")
+        p.error("--check applies only to refresh-indexes or refresh-derived")
     return verify() if args.command == "verify" else self_test()
 
 
