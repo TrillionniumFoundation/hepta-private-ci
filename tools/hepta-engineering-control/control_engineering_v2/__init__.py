@@ -73,6 +73,7 @@ from .orchestration import (
     ReviewCapacity,
     WorkerCapacity,
     issue_verified_work_envelope,
+    orchestration_generation,
     persist_orchestration_generation,
     plan_engineering_work,
 )
@@ -148,6 +149,7 @@ __all__ = [
     "generate_candidate_bundle",
     "is_immutable_oracle_path",
     "issue_verified_work_envelope",
+    "orchestration_generation",
     "persist_orchestration_generation",
     "plan_engineering_work",
     "sandbox_candidate_bundle",
