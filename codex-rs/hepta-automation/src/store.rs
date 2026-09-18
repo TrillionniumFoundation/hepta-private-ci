@@ -19,6 +19,7 @@ use crate::AutomationTask;
 use crate::AutomationTaskDraft;
 use crate::AutomationTaskId;
 use crate::AutomationTaskState;
+use crate::deterministic_occurrence_id;
 use crate::model::client_message_id;
 use crate::taskflow::TaskFlowError;
 use crate::taskflow::verify_taskflow_store;
@@ -460,6 +461,51 @@ impl AutomationStore {
             .await
             .map_err(unavailable)?;
         let task = task_from_row(&task_row, &self.owner_agent_id)?;
+        let schedule_revision = to_u64(
+            task_row
+                .try_get("schedule_revision")
+                .map_err(unavailable)?,
+        )?;
+        let occurrence_id =
+            deterministic_occurrence_id(task_id, schedule_revision, scheduled_for_ms)?;
+        sqlx::query(
+            "INSERT INTO automation_occurrences (
+                 owner_agent_id, occurrence_id, task_id, schedule_revision, ordinal,
+                 scheduled_for_ms, client_user_message_id, state,
+                 materialized_at_ms, updated_at_ms
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, 'materialized', ?, ?)
+             ON CONFLICT(owner_agent_id, occurrence_id) DO NOTHING",
+        )
+        .bind(self.owner_agent_id.as_str())
+        .bind(&occurrence_id)
+        .bind(task_id.to_string())
+        .bind(to_i64(schedule_revision)?)
+        .bind(to_i64(occurrence)?)
+        .bind(to_i64(scheduled_for_ms)?)
+        .bind(&client_id)
+        .bind(to_i64(now_ms)?)
+        .bind(to_i64(now_ms)?)
+        .execute(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        let causal_row = sqlx::query(
+            "SELECT ordinal, client_user_message_id
+             FROM automation_occurrences
+             WHERE owner_agent_id = ? AND occurrence_id = ?",
+        )
+        .bind(self.owner_agent_id.as_str())
+        .bind(&occurrence_id)
+        .fetch_one(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        if to_u64(causal_row.try_get("ordinal").map_err(unavailable)?)? != occurrence
+            || causal_row
+                .try_get::<String, _>("client_user_message_id")
+                .map_err(unavailable)?
+                != client_id
+        {
+            return Err(AutomationError::Conflict);
+        }
         transaction.commit().await.map_err(unavailable)?;
         Ok(Some(AutomationLease {
             task,
@@ -951,7 +997,8 @@ impl AutomationStore {
 
 const TASK_SELECT_BY_ID: &str =
     "SELECT task_id, owner_agent_id, thread_id, prompt, schedule_kind, interval_ms,
-            state, next_run_at_ms, next_occurrence, created_at_ms, updated_at_ms
+            state, next_run_at_ms, next_occurrence, created_at_ms, updated_at_ms,
+            schedule_revision
      FROM automation_tasks WHERE task_id = ?";
 
 fn task_from_row(
