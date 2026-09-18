@@ -271,7 +271,16 @@ def verify() -> int:
         "maturity module closure",
     )
     for row in maturity["modules"]:
-        for key in ["productCaller", "independentAcceptance", "activation", "release"]:
+        expected_product_caller = (
+            "candidate_composed"
+            if row["module"] == "objective.compiler"
+            else "not_established"
+        )
+        need(
+            row["dimensions"]["productCaller"]["state"] == expected_product_caller,
+            f"truth boundary {row['module']} productCaller",
+        )
+        for key in ["independentAcceptance", "activation", "release"]:
             need(
                 row["dimensions"][key]["state"] == "not_established",
                 f"truth boundary {row['module']} {key}",
