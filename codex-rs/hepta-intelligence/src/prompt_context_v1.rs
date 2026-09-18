@@ -23,6 +23,7 @@ use codex_hepta_context_compiler::build_attachment;
 use codex_hepta_context_compiler::compile_v2;
 use codex_hepta_context_compiler::record_serialization;
 use codex_hepta_prompt_optimizer::PromptCandidateSetReceiptV1;
+use codex_hepta_prompt_optimizer::PromptCandidateSourceAuthenticatorV1;
 use codex_hepta_prompt_optimizer::PromptExerciseDecisionV1;
 use codex_hepta_prompt_optimizer::PromptExerciseDispositionV1;
 use codex_hepta_prompt_optimizer::PromptExerciseRequestV1;
@@ -95,8 +96,12 @@ pub fn prepare_prompt_context_v1(
     portfolio: &PromptPortfolioReceiptV1,
     exercise: &PromptExerciseDecisionV1,
     exercise_request: &PromptExerciseRequestV1,
+    source_authenticator: &A,
     request: PromptContextPreparationRequestV1,
-) -> Result<PromptContextPreparationV1, PromptContextCompositionErrorV1> {
+) -> Result<PromptContextPreparationV1, PromptContextCompositionErrorV1>
+where
+    A: PromptCandidateSourceAuthenticatorV1,
+{
     exercise
         .validate_for(
             candidate_set,
@@ -106,6 +111,13 @@ pub fn prepare_prompt_context_v1(
             exercise_request,
         )
         .map_err(PromptContextCompositionErrorV1::Exercise)?;
+    source_authenticator
+        .authenticate_candidate_source(
+            &exercise_request.current_source,
+            portfolio.objective_digest,
+            exercise_request.now_unix_ms,
+        )
+        .map_err(|_| PromptContextCompositionErrorV1::SourceAuthenticationRejected)?;
     match exercise.disposition {
         PromptExerciseDispositionV1::ExercisePortfolio => {}
         PromptExerciseDispositionV1::NoIntervention => {
@@ -232,6 +244,7 @@ pub enum PromptContextCompositionErrorV1 {
     Invalidated(codex_hepta_prompt_optimizer::PromptExerciseInvalidationV1),
     MissingSelectedBinding(String),
     EmptyDigest,
+    SourceAuthenticationRejected,
     InvalidPreparation,
     DigestMismatch,
     InternalInvariant,
