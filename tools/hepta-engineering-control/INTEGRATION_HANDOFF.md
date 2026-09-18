@@ -14,6 +14,32 @@ Choose one exact reviewed upstream source for a bounded integration candidate. R
 
 Run `python3 tools/hepta-engineering-control/deployment_inventory.py --base FULL_SHA` on the exact candidate. Output is derived solely from committed blobs. It maps all module source roots and Cargo packages to organ roles, canonical schema owners, authoritative writers and readers. HNMF reference is explicitly not a 41st product module. A present crate is NOT a running process. No host, process, physical database, production caller or independent acceptance is invented. The output is an audit artifact, not a new authority registry.
 
+## control.engineering v2 composition boundary
+
+New engineering-control callers must use `control_engineering_v2`; the historical
+`hepta_engineering_control.py` scheduler/boolean integration decision is compatibility
+only and cannot establish product evidence.
+
+Repository-local composition follows this sequence:
+
+1. verify the exact Git source with `issue_repository_work_envelope` or authenticate a
+   `CanonicalSourceReceipt` with `issue_signed_work_envelope`;
+2. consume only fresh signed `CompletionReceipt` objects when satisfying predecessor
+   work;
+3. run `plan_engineering_work` with explicit worker skills/path scope/capacity,
+   CI capacity, review topology, expected value, architecture debt and rollback cost;
+4. acquire the durable local path lease before any worker writes;
+5. for a multi-host production worker, additionally verify a signed
+   `DistributedFenceReceipt` bound to the same local epoch/token/paths/source and
+   a current revocation frontier;
+6. qualify candidate bytes through the strong sandbox controller and mutation-testing
+   gate, then verify exact source/merge/evaluator evidence and a sealed review binding;
+7. externally anchor the current SQLite audit head and prove hardware-backed key
+   custody outside the engineering process before deployment readiness may close.
+
+The resource-aware merge queue is a proposal only. An independently authorized merge
+or deployment controller remains the sole component allowed to act on it.
+
 ## 2. Required deployment binding per module and organ instance
 
 Before runtime attachment, the owning team must supply: organ role and instance; module and exact package; entrypoint and consumer callsite; host/runtime identity; binary/image digest; configuration/body generation; resources and deadline; owned physical store and schema/migration identity; single-writer fence; observer; revocation source; fallback; and exact rollback predecessor. Empty bindings block attachment. A source checkout cannot discover a live host's identity by itself.
