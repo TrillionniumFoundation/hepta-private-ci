@@ -666,6 +666,7 @@ impl H7H89ProductionGrantVerifier {
         expected_control_revision: u64,
         expected_lifecycle_generation: u64,
         expected_authority_epoch: u64,
+        expected_revocation_frontier: u64,
         now_unix_seconds: u64,
     ) -> Result<(), ProductionAuthorityError> {
         decision.validate_shape()?;
@@ -1116,6 +1117,7 @@ mod tests {
                 8,
                 11,
                 3,
+                3,
                 150,
             )
             .expect("verify");
@@ -1157,6 +1159,7 @@ mod tests {
                 5,
                 12,
                 3,
+                7,
                 100,
                 200,
             )
@@ -1174,6 +1177,7 @@ mod tests {
                 5,
                 12,
                 3,
+                7,
                 150,
             )
             .expect("verify recovery");
@@ -1190,6 +1194,7 @@ mod tests {
                 5,
                 12,
                 3,
+                7,
                 150,
             ),
             Err(ProductionAuthorityError::RecoveryBinding)
@@ -1235,6 +1240,7 @@ mod tests {
                 9,
                 11,
                 3,
+                3,
                 150
             ),
             Err(ProductionAuthorityError::ControlRevisionFence {
@@ -1254,6 +1260,7 @@ mod tests {
                 &selection(3),
                 8,
                 11,
+                3,
                 3,
                 150
             ),
