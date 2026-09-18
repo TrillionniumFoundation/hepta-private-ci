@@ -1266,3 +1266,7 @@ fn ambiguity_code(error: BaoClientError) -> &'static str {
         _ => "response_unknown",
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "lease_lifecycle_tests.rs"]
+mod tests;
