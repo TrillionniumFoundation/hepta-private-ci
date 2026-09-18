@@ -80,6 +80,12 @@ jobs:
         run: |
           set -euo pipefail
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/objective-product/clippy.json" -- cargo clippy --locked -p codex-hepta-objective -p codex-hepta-learning-ledger -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets -- -D warnings
+      - name: Record named measurement host
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/objective-product/host.json" -- bash -lc 'rustc --version && cargo --version && uname -a && (command -v lscpu >/dev/null && lscpu | grep -E "^(Architecture|Model name|CPU\(s\)):" || true)'
       - name: Measure authenticated durable run-start path
         working-directory: codex-rs
         env:
@@ -87,7 +93,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/objective-product/measurement.json" -- cargo test --locked -p codex-hepta-intelligence product_objective_named_host_measurement_receipt -- --nocapture
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/objective-product/measurement.json" -- cargo test --release --locked -p codex-hepta-intelligence product_objective_named_host_measurement_receipt -- --nocapture
+      - name: Measure inclusion-minimal conflict path separately
+        working-directory: codex-rs
+        env:
+          HEPTA_OBJECTIVE_CONFLICT_MEASURE: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/objective-product/conflict-measurement.json" -- cargo test --release --locked -p codex-hepta-objective conflict_oracle_named_host_measurement_receipt -- --nocapture
       - name: Clean tracked state
         if: always()
         shell: bash
