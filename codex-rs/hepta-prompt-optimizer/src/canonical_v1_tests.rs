@@ -10,6 +10,8 @@ fn digest(value: &str) -> Digest32 {
 
 fn model_profile() -> PromptModelProfileV1 {
     PromptModelProfileV1 {
+        model_id: id("model:hepta-test"),
+        model_version: "2026-09-18".to_owned(),
         model_digest: digest("model"),
         tokenizer_digest: digest("tokenizer"),
         template_digest: digest("template"),
@@ -26,6 +28,7 @@ fn binding(index: usize) -> PromptCandidateBindingV1 {
         realization_id: id(&format!("realization:{index:03}")),
         role: PromptCandidateRoleV1::DeveloperInstruction,
         payload_digest: digest(&format!("payload:{index}")),
+        registry_binding_digest: digest("registry-binding"),
         admission_digest: digest(&format!("admission:{index}")),
         support_digest: digest(&format!("support:{index}")),
         token_cost: u64::try_from(index + 1).expect("small index"),
