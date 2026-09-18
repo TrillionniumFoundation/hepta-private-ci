@@ -119,13 +119,15 @@ fn art_02_withdrawal_binding_rejects_wrong_authority_and_cross_scope_replay() {
     );
 
     let mut source = withdrawal_registry("scope-a");
-    source.append(notice(dataset)).expect("source withdrawal appends");
+    source
+        .append(notice(dataset))
+        .expect("source withdrawal appends");
     let mut snapshot = source.snapshot();
     snapshot.binding = withdrawal_binding("scope-b");
-    assert_eq!(
+    assert!(matches!(
         DatasetWithdrawalRegistry::from_snapshot(snapshot),
         Err(ArtifactClosureError::WithdrawalSnapshotMismatch)
-    );
+    ));
 }
 
 
