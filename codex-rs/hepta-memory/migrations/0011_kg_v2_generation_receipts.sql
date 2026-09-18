@@ -15,6 +15,7 @@ CREATE TABLE kg_projection_v2_generation_receipts (
     ),
     predecessor_generation INTEGER,
     predecessor_generation_digest TEXT,
+    disposition TEXT NOT NULL CHECK (disposition IN ('published', 'unchanged')),
     publication_digest TEXT NOT NULL CHECK (
         length(publication_digest) = 64 AND
         publication_digest NOT GLOB '*[^0-9a-f]*'
