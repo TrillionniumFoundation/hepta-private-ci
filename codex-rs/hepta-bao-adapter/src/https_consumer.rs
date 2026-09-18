@@ -4,12 +4,16 @@
 use std::collections::BTreeMap;
 use std::fmt;
 use std::time::Duration;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_evidence::HeptaEvidenceStore;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use codex_http_client::HttpClient;
 use codex_http_client::HttpClientBuilder;
 use codex_http_client::HttpError;
@@ -150,6 +154,76 @@ impl BaoClient {
         })
     }
 
+    /// Product composition for AuthBus-controlled Bao reads.
+    ///
+    /// The reservation is revalidated immediately before the existing final-use
+    /// authority/network boundary. This profile defines one quota unit as one
+    /// attempted Bao read. Pre-boundary failures cancel the reservation;
+    /// definitive provider observations settle one unit; timeout/transport or
+    /// consumer-indeterminate outcomes quarantine the reservation and never
+    /// authorize an automatic effect retry.
+    pub async fn consume_kv_v2_with_authbus(
+        &self,
+        authbus: &HeptaEvidenceStore,
+        reservation_id: &StableId,
+        authority: &FinalUseAuthority,
+        grant: &SignedFinalUseGrant,
+        request: &BaoReadRequest,
+        consumer: impl FnOnce(&[u8]) -> Result<(), ()>,
+    ) -> Result<BaoSecretReceipt, BaoClientError> {
+        let reservation = authbus
+            .validate_authbus_reservation_for_effect(reservation_id, now_ms()?)
+            .await
+            .map_err(|_| BaoClientError::AuthBusControl)?;
+        if reservation.amount < 1 {
+            return Err(BaoClientError::AuthBusControl);
+        }
+        let result = self.consume_kv_v2(authority, grant, request, consumer).await;
+        match result {
+            Ok(receipt) => {
+                let evidence = serde_json::to_vec(&receipt)
+                    .map_err(|_| BaoClientError::AuthBusControl)?;
+                authbus
+                    .settle_authbus_reservation(
+                        reservation_id,
+                        1,
+                        Digest32::of_bytes(&evidence),
+                    )
+                    .await
+                    .map_err(|_| BaoClientError::AuthBusControl)?;
+                Ok(receipt)
+            }
+            Err(error @ (BaoClientError::TimedOut
+                | BaoClientError::TransportUnavailable
+                | BaoClientError::ConsumerIndeterminate)) => {
+                authbus
+                    .quarantine_authbus_reservation(reservation_id)
+                    .await
+                    .map_err(|_| BaoClientError::AuthBusControl)?;
+                Err(error)
+            }
+            Err(error @ (BaoClientError::InvalidConfiguration
+                | BaoClientError::InvalidRequest
+                | BaoClientError::Authority(_))) => {
+                authbus
+                    .cancel_authbus_reservation(reservation_id)
+                    .await
+                    .map_err(|_| BaoClientError::AuthBusControl)?;
+                Err(error)
+            }
+            Err(error) => {
+                let evidence = Digest32::of_bytes(
+                    format!("hepta.bao.terminal.v1:{error:?}").as_bytes(),
+                );
+                authbus
+                    .settle_authbus_reservation(reservation_id, 1, evidence)
+                    .await
+                    .map_err(|_| BaoClientError::AuthBusControl)?;
+                Err(error)
+            }
+        }
+    }
+
     /// Claim a kernel permit, fetch exactly one version, then deliver only to
     /// the supplied trusted in-process consumer under a live revocation fence.
     /// No automatic retry occurs. The consumer must not reenter the authority.
@@ -256,6 +330,17 @@ struct KvMetadata {
     version: u64,
 }
 
+
+fn now_ms() -> Result<u64, BaoClientError> {
+    u64::try_from(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_err(|_| BaoClientError::AuthBusControl)?
+            .as_millis(),
+    )
+    .map_err(|_| BaoClientError::AuthBusControl)
+}
+
 fn component(value: &str) -> bool {
     !value.is_empty()
         && value.len() <= 128
@@ -291,6 +376,7 @@ pub enum BaoClientError {
     VersionMismatch,
     SecretDigestMismatch,
     ConsumerIndeterminate,
+    AuthBusControl,
 }
 impl fmt::Display for BaoClientError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
