@@ -195,8 +195,9 @@ pub fn canonical_candidate_identity_digest_v1(
     Ok(Digest32::of_bytes(&bytes))
 }
 
-/// Exact scorer-owned output digest. Assignment probabilities are deliberately
-/// excluded because the scorer is not the random-source owner.
+/// Exact scorer/policy-output digest. Assignment probabilities are included:
+/// they are policy outputs, not randomness. The RandomSource independently
+/// signs the distribution context together with its stream/counter/draw.
 pub fn canonical_scored_candidates_digest_v1(
     candidates: &[CalibratedActionCandidateV1],
 ) -> Result<Digest32, QualifiedCalibratedError> {
@@ -207,6 +208,7 @@ pub fn canonical_scored_candidates_digest_v1(
         bytes.extend_from_slice(&candidate.utility.raw().to_be_bytes());
         bytes.extend_from_slice(&candidate.calibrated_confidence.raw().to_be_bytes());
         bytes.extend_from_slice(&candidate.ood_score.raw().to_be_bytes());
+        bytes.extend_from_slice(&candidate.assignment_probability.raw().to_be_bytes());
         bytes.extend_from_slice(candidate.support_digest.as_array());
     }
     Ok(Digest32::of_bytes(&bytes))
