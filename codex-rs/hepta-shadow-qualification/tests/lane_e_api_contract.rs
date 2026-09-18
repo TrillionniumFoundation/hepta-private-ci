@@ -1,3 +1,8 @@
+//! Compile-time linkage contract for every Lane E operation registered in the
+//! closed-world implementation matrix. The test intentionally performs no
+//! authority-bearing action; it proves that mapped symbols are public and
+//! available to a real cross-crate consumer.
+
 use codex_hepta_intelligence_eval::DurableHoldoutError;
 use codex_hepta_intelligence_eval::HoldoutFenceStateV1;
 use codex_hepta_intelligence_eval::HoldoutFenceStoreV1;
@@ -16,11 +21,6 @@ impl HoldoutFenceStoreV1 for TestFence {
         Err(DurableHoldoutError::Indeterminate)
     }
 }
-
-//! Compile-time linkage contract for every Lane E operation registered in the
-//! closed-world implementation matrix. The test intentionally performs no
-//! authority-bearing action; it proves that mapped symbols are public and
-//! available to a real cross-crate consumer.
 
 #[test]
 fn lane_e_public_operation_surface_is_linkable() {
