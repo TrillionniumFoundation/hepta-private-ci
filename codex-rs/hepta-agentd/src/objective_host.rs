@@ -64,9 +64,14 @@ impl ObjectiveProductRunError {
 impl fmt::Display for ObjectiveProductRunError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Prepare(error) => write!(formatter, "product objective preparation failed: {error}"),
+            Self::Prepare(error) => {
+                write!(formatter, "product objective preparation failed: {error}")
+            }
             Self::Runtime { error, .. } => {
-                write!(formatter, "durable objective could not enter runtime: {error}")
+                write!(
+                    formatter,
+                    "durable objective could not enter runtime: {error}"
+                )
             }
         }
     }
