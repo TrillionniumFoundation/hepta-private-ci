@@ -1,10 +1,10 @@
 use std::fs::File;
-use std::fs::OpenOptions;
 use std::io::Read as _;
 use std::io::Write as _;
 use std::path::Path;
 use std::path::PathBuf;
 
+use atomic_write_file::AtomicWriteFile;
 use serde::Deserialize;
 use serde::Serialize;
 use sha2::Digest as _;
@@ -231,9 +231,7 @@ impl UpdateManager {
                 "native update predecessor backup is unavailable".to_owned(),
             ));
         }
-        let restore_tmp = target.with_extension("rollback.tmp");
-        copy_and_sync(backup, &restore_tmp)?;
-        replace_file(&restore_tmp, target)?;
+        copy_and_sync(backup, target)?;
         self.clear_pending()?;
         Ok(true)
     }
@@ -291,22 +289,15 @@ pub fn activate_staged_update(
     pending.status = PendingUpdateStatus::ActivationStarted;
     persist_json_atomic(pending_path, &pending)?;
 
-    let install_tmp = target_path.with_extension("hepta-update.tmp");
-    copy_and_sync(&pending.staged_package, &install_tmp)?;
-    if let Err(error) = replace_file(&install_tmp, target_path) {
+    if let Err(error) = copy_and_sync(&pending.staged_package, target_path) {
         if backup.is_file() {
-            let rollback_tmp = target_path.with_extension("hepta-rollback.tmp");
-            if copy_and_sync(&backup, &rollback_tmp).is_ok() {
-                let _ = replace_file(&rollback_tmp, target_path);
-            }
+            let _ = copy_and_sync(&backup, target_path);
         }
         return Err(error);
     }
     if digest_file(target_path)? != pending.manifest.package_digest {
-        let rollback_tmp = target_path.with_extension("hepta-rollback.tmp");
         if backup.is_file() {
-            copy_and_sync(&backup, &rollback_tmp)?;
-            replace_file(&rollback_tmp, target_path)?;
+            copy_and_sync(&backup, target_path)?;
         }
         return Err(ShellError::Security(
             "installed native update digest mismatch; predecessor restored".to_owned(),
@@ -358,14 +349,11 @@ fn copy_and_sync(source: &Path, destination: &Path) -> Result<(), ShellError> {
         std::fs::create_dir_all(parent)?;
     }
     let mut source_file = File::open(source)?;
-    let mut destination_file = OpenOptions::new()
-        .create(true)
-        .truncate(true)
-        .write(true)
-        .open(destination)?;
+    let mut destination_file = AtomicWriteFile::open(destination)?;
     std::io::copy(&mut source_file, &mut destination_file)?;
     destination_file.flush()?;
     destination_file.sync_all()?;
+    destination_file.commit()?;
     Ok(())
 }
 
@@ -374,23 +362,10 @@ fn persist_json_atomic(path: &Path, value: &impl Serialize) -> Result<(), ShellE
         std::fs::create_dir_all(parent)?;
     }
     let bytes = serde_json::to_vec(value)?;
-    let tmp = path.with_extension("tmp");
-    let mut file = OpenOptions::new()
-        .create(true)
-        .truncate(true)
-        .write(true)
-        .open(&tmp)?;
+    let mut file = AtomicWriteFile::open(path)?;
     file.write_all(&bytes)?;
     file.sync_all()?;
-    drop(file);
-    replace_file(&tmp, path)
-}
-
-fn replace_file(source: &Path, destination: &Path) -> Result<(), ShellError> {
-    #[cfg(target_os = "windows")]
-    if destination.exists() {
-        std::fs::remove_file(destination)?;
-    }
-    std::fs::rename(source, destination)?;
+    file.commit()?;
     Ok(())
 }
+
