@@ -141,15 +141,23 @@ impl fmt::Display for ObjectiveRunPublicationError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::EmptyDigest(field) => write!(formatter, "empty run publication digest: {field}"),
-            Self::ZeroCounter(field) => write!(formatter, "run publication counter must be non-zero: {field}"),
-            Self::AuthorityEscalation => formatter.write_str("objective admission unexpectedly grants authority"),
+            Self::ZeroCounter(field) => write!(
+                formatter,
+                "run publication counter must be non-zero: {field}"
+            ),
+            Self::AuthorityEscalation => {
+                formatter.write_str("objective admission unexpectedly grants authority")
+            }
         }
     }
 }
 
 impl Error for ObjectiveRunPublicationError {}
 
-fn validate_digest(field: &'static str, digest: Digest32) -> Result<(), ObjectiveRunPublicationError> {
+fn validate_digest(
+    field: &'static str,
+    digest: Digest32,
+) -> Result<(), ObjectiveRunPublicationError> {
     if digest.is_zero() {
         Err(ObjectiveRunPublicationError::EmptyDigest(field))
     } else {
@@ -254,7 +262,11 @@ impl<'a> From<&'a ObjectiveCompileReceipt> for CompileWire<'a> {
                 CompileDisposition::Compiled => "compiled",
                 CompileDisposition::ExplicitAbstain => "explicit_abstain",
             },
-            removed_action_ids: value.removed_action_ids.iter().map(StableId::as_str).collect(),
+            removed_action_ids: value
+                .removed_action_ids
+                .iter()
+                .map(StableId::as_str)
+                .collect(),
             objective: ObjectiveWire::from(value),
         }
     }
@@ -287,10 +299,26 @@ impl<'a> From<&'a ObjectiveCompileReceipt> for ObjectiveWire<'a> {
             schema_digest: objective.schema_digest.to_string(),
             hard_constraint_digest: objective.hard_constraint_digest.to_string(),
             semantic_digest: objective.semantic_digest.to_string(),
-            constraints: objective.constraints.iter().map(ConstraintWire::from).collect(),
-            success_predicates: objective.success_predicates.iter().map(PredicateWire::from).collect(),
-            legal_actions: objective.legal_actions.iter().map(ActionWire::from).collect(),
-            soft_preferences: objective.soft_preferences.iter().map(PreferenceWire::from).collect(),
+            constraints: objective
+                .constraints
+                .iter()
+                .map(ConstraintWire::from)
+                .collect(),
+            success_predicates: objective
+                .success_predicates
+                .iter()
+                .map(PredicateWire::from)
+                .collect(),
+            legal_actions: objective
+                .legal_actions
+                .iter()
+                .map(ActionWire::from)
+                .collect(),
+            soft_preferences: objective
+                .soft_preferences
+                .iter()
+                .map(PreferenceWire::from)
+                .collect(),
         }
     }
 }
