@@ -31,7 +31,7 @@ const CONSTRAINT_DIGEST_DOMAIN: &[u8] = b"hepta.objective.constraints.v1";
 /// `abstain` is an intrinsic, confirmation-free safety action. Callers may
 /// include it explicitly, but cannot forbid it or consume its reserved slot
 /// with another action.
-pub fn compile(
+pub(crate) fn compile(
     mut source: ObjectiveSourceEnvelope,
 ) -> Result<Result<ObjectiveCompileReceipt, ObjectiveConflictReceipt>, ObjectiveError> {
     validate_source(&source)?;
