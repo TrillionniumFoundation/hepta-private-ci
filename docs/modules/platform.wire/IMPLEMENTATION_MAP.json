@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "qualification_cross_runtime_only_not_production_composed",
+  "productCallerState": "source_consumers_composed_runtime_codex_and_context_compiler_not_deployed",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -95,8 +95,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind a named authenticated production consumer through its owning integration package.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the production claim boundary."
+    "Run exact-head and deterministic synthetic-merge tests for the composed wire consumers.",
+    "Bind the composed runtime consumers to their authenticated deployed transports before changing the production claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -124,6 +124,23 @@
     "streamingDecode": true,
     "multiVersionDecode": true,
     "crossRuntimeLoadingQualification": true,
-    "productionImplementation": false
-  }
+    "productionImplementation": false,
+    "productSourceConsumers": true
+  },
+  "sourceConsumers": [
+    {
+      "module": "runtime.codex",
+      "path": "codex-rs/hepta-codex-adapter/src/wire.rs",
+      "entrypoint": "adapt_wire",
+      "schema": "runtime.codex.operation-intent.v1",
+      "state": "source_composed_not_deployed"
+    },
+    {
+      "module": "context.compiler",
+      "path": "codex-rs/hepta-context-compiler/src/wire.rs",
+      "entrypoint": "compile_wire",
+      "schema": "context.compiler.compilation-request.v1",
+      "state": "source_composed_not_deployed"
+    }
+  ]
 }
