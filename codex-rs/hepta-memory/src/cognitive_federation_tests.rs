@@ -145,6 +145,9 @@ async fn explicit_grant_is_owner_written_consumer_read_only_and_scope_exact() {
         .await
         .expect("federated retrieval");
     assert_eq!(batch.candidates.len(), 1);
+    assert_eq!(batch.coverage.requested_sources, 1);
+    assert_eq!(batch.coverage.completed_sources, 1);
+    assert_eq!(batch.coverage.failed_sources, 0);
     assert_eq!(batch.candidates[0].source_agent_id, owner_id);
     assert_eq!(
         batch.candidates[0].candidate.memory.content,
@@ -415,6 +418,9 @@ async fn five_agents_keep_private_stores_and_only_explicit_consumers_federate() 
             .await
             .expect("set retrieval");
         if [1usize, 3usize].contains(&consumer_index) {
+            assert_eq!(batch.coverage.requested_sources, 1);
+            assert_eq!(batch.coverage.completed_sources, 1);
+            assert_eq!(batch.coverage.failed_sources, 0);
             assert_eq!(batch.candidates.len(), 1);
             assert_eq!(batch.candidates[0].source_agent_id, ids[0]);
             assert_eq!(
@@ -422,7 +428,95 @@ async fn five_agents_keep_private_stores_and_only_explicit_consumers_federate() 
                 "private-agent-0-constellation"
             );
         } else {
+            assert_eq!(batch.coverage.requested_sources, 0);
+            assert_eq!(batch.coverage.completed_sources, 0);
+            assert_eq!(batch.coverage.failed_sources, 0);
             assert!(batch.candidates.is_empty());
         }
     }
+}
+
+#[tokio::test]
+async fn revoked_peer_is_explicit_partial_coverage_not_silent_empty() {
+    let temp = TempDir::new().expect("temp dir");
+    let consumer_id = agent_id(90);
+    let consumer_workspace = workspace("partial-consumer");
+    let mut readers = Vec::new();
+    let mut owners = Vec::new();
+
+    for offset in 0..2_u8 {
+        let owner_id = agent_id(91 + offset);
+        let owner_layout = layout(&temp, &owner_id);
+        let owner = CognitiveStore::open(&owner_layout)
+            .await
+            .expect("owner store");
+        let owner_access = CognitiveAccess::agent_private(owner_id.clone());
+        let citation = owner
+            .append_source(
+                &owner_access,
+                &source(
+                    CognitiveScope::AgentPrivate,
+                    &format!("partial-source-{offset}"),
+                    &format!("partial federation evidence {offset}"),
+                ),
+            )
+            .await
+            .expect("source");
+        owner
+            .remember_memory(
+                &owner_access,
+                &MemoryDraft {
+                    stable_key: format!("partial-memory-{offset}"),
+                    revision: memory_revision(
+                        CognitiveScope::AgentPrivate,
+                        &format!("partial federation evidence {offset}"),
+                        citation,
+                    ),
+                },
+            )
+            .await
+            .expect("memory");
+        let capability = owner
+            .grant_federated_recall(
+                &owner_access,
+                &FederationGrantRequest {
+                    consumer_agent_id: consumer_id.clone(),
+                    scope: FederationGrantScope::new(
+                        CognitiveScope::AgentPrivate,
+                        consumer_workspace.clone(),
+                    ),
+                    effective_at_unix_seconds: 100,
+                    expires_at_unix_seconds: 1_000,
+                },
+            )
+            .await
+            .expect("grant");
+        let reader = FederatedMemoryReader::discover(&owner_layout, &consumer_id, 150)
+            .await
+            .expect("discover")
+            .pop()
+            .expect("reader");
+        readers.push(reader);
+        owners.push((owner, owner_access, capability));
+    }
+
+    let set = FederatedRecallSet::new(consumer_id.clone(), readers).expect("recall set");
+    owners[1]
+        .0
+        .revoke_federated_recall(&owners[1].1, &owners[1].2, 151)
+        .await
+        .expect("revoke second peer");
+
+    let batch = set
+        .retrieve(
+            &FederationConsumerAccess::new(consumer_id, consumer_workspace),
+            &RetrievalRequest::new("partial federation", 152),
+        )
+        .await
+        .expect("partial retrieval");
+    assert_eq!(batch.coverage.requested_sources, 2);
+    assert_eq!(batch.coverage.completed_sources, 1);
+    assert_eq!(batch.coverage.failed_sources, 1);
+    assert_eq!(batch.candidates.len(), 1);
+    assert_eq!(batch.candidates[0].source_agent_id, agent_id(91));
 }
