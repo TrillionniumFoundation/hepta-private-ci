@@ -387,11 +387,19 @@ async fn real_agentd_remember_recall_correct_and_forget_revalidate_physical_send
     ensure!(before_restart.node_count == 2);
     ensure!(before_restart.edge_count == 1);
     ensure!(
+        before_restart
+            .kernel_generation_sha256
+            .as_deref()
+            .is_some_and(|digest| digest.len() == 64
+                && digest
+                    .bytes()
+                    .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))),
+        "persisted KG generation omitted the canonical kernel digest"
+    );
+    ensure!(
         before_restart.fact_set_sha256 == remember_projection.fact_set_sha256
             && before_restart.input_heads_sha256 == remember_projection.input_heads_sha256
-            && before_restart.output_sha256 == remember_projection.output_sha256
-            && before_restart.kernel_generation_sha256
-                == remember_projection.kernel_generation_sha256,
+            && before_restart.output_sha256 == remember_projection.output_sha256,
         "physical remember output did not bind the persisted KG receipt digests"
     );
 
@@ -2107,7 +2115,7 @@ struct KgProjectionEvidence {
     fact_set_sha256: String,
     input_heads_sha256: String,
     output_sha256: String,
-    kernel_generation_sha256: String,
+    kernel_generation_sha256: Option<String>,
 }
 
 fn assert_projection_receipt(
@@ -2130,7 +2138,7 @@ fn assert_projection_receipt(
         fact_set_sha256: json_sha256(projection, "fact_set_sha256")?,
         input_heads_sha256: json_sha256(projection, "input_heads_sha256")?,
         output_sha256: json_sha256(projection, "output_sha256")?,
-        kernel_generation_sha256: json_sha256(projection, "kernel_generation_sha256")?,
+        kernel_generation_sha256: None,
     };
     ensure!(
         evidence.generation == generation
@@ -2316,7 +2324,7 @@ async fn read_kg_sqlite_evidence(
         fact_set_sha256,
         input_heads_sha256,
         output_sha256,
-        kernel_generation_sha256,
+        kernel_generation_sha256: Some(kernel_generation_sha256),
     })
 }
 
