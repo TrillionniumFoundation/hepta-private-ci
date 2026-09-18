@@ -1,37 +1,37 @@
 use super::*;
 
-use codex_hepta_neuron::CalibratedSignalV1;
 use codex_hepta_neuron::BoundModelExecutionV1;
+use codex_hepta_neuron::CalibratedSignalV1;
 use codex_hepta_neuron::CalibrationPolicyV1;
 use codex_hepta_neuron::FixedPointRoundingV1;
 use codex_hepta_neuron::FixedPointScaleV1;
 use codex_hepta_neuron::FrozenModelExecutor;
 use codex_hepta_neuron::FrozenModelRequestV1;
 use codex_hepta_neuron::LineagePolicy;
+use codex_hepta_neuron::LocalModelRuntimeReceiptV1;
 use codex_hepta_neuron::NativeSparseProfileV1;
 use codex_hepta_neuron::NeuronEligibilityProfileV1;
 use codex_hepta_neuron::NeuronFixedPointProfileV1;
 use codex_hepta_neuron::NeuronHomeostasisProfileV1;
 use codex_hepta_neuron::NeuronResourceEnvelopeV1;
+use codex_hepta_neuron::NeuronResourceReceiptV1;
 use codex_hepta_neuron::NeuronRuntimeConfigV1;
 use codex_hepta_neuron::NeuronRuntimeHost;
+use codex_hepta_neuron::NeuronSignalReceiptV1;
 use codex_hepta_neuron::NeuronStateDimensionsV1;
 use codex_hepta_neuron::NeuronTickInputV1;
+use codex_hepta_neuron::NeuronTickReceiptV1;
 use codex_hepta_neuron::NeuronTopKPolicyV1;
 use codex_hepta_neuron::RuntimeScopeBindingV1;
 use codex_hepta_neuron::RuntimeTickObservationV1;
+use codex_hepta_neuron::SparseSignalReceipt;
 use codex_hepta_neuron::TopKTieBreakV1;
 use codex_hepta_neuron::inhibition_digest;
 use codex_hepta_neuron::open_file_witness;
 use codex_hepta_neuron::q24_feature_digest;
 use codex_hepta_neuron::runtime_profile_digest;
-use codex_hepta_types::Generation;
-use codex_hepta_neuron::LocalModelRuntimeReceiptV1;
-use codex_hepta_neuron::NeuronResourceReceiptV1;
-use codex_hepta_neuron::NeuronSignalReceiptV1;
-use codex_hepta_neuron::NeuronTickReceiptV1;
-use codex_hepta_neuron::SparseSignalReceipt;
 use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::Generation;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("valid id")
@@ -143,7 +143,6 @@ fn mismatched_tick_or_authority_is_never_normalized_into_success() {
         Err(NeuronConsumerErrorV1::AuthorityViolation)
     );
 }
-
 
 #[derive(Clone)]
 struct ProductExecutor {
