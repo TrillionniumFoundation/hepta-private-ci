@@ -26,7 +26,18 @@ Production construction additionally binds an externally durable CAS frontier
 and a trusted clock. The external frontier must survive rollback or replacement
 of the local authority directory. Each mutation advances the external frontier
 before committing local state; if either side cannot complete consistently, the
-owner fences itself and recovery is explicit.
+owner fences itself and recovery is explicit. The convenience
+`open_state_dir_with_frontier_store` path still uses `SystemAuthorityClock`
+and is therefore rollback-hardened compatibility, not a trusted-time production
+composition; production uses `open_state_dir_with_trust`.
+
+Online pruning removes expired unrevoked lease payloads but retains a compact,
+frontier-covered retired revision for each pruned lease id. Reusing that id in
+the same authority epoch must continue at the retired revision plus one. A
+pruned id can therefore never reset to revision 1 or make a stale
+`(lease_id, revision, binding)` tuple authoritative again. Retired revision
+history is bounded; exhaustion requires authority epoch rollover rather than
+silent eviction.
 
 ## Consequences
 
