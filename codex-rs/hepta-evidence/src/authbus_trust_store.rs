@@ -378,6 +378,19 @@ pub(crate) async fn verify_authbus_trust_rows(
         let issuer_id: String = head.try_get("issuer_id").map_err(classify_sqlx_error)?;
         let epoch = u64_blob(&head, "key_epoch")?;
         let epoch_bytes = epoch.to_be_bytes();
+        let highest: Vec<u8> = sqlx::query_scalar(
+            "SELECT key_epoch FROM authbus_issuer_registry
+             WHERE issuer_id = ? ORDER BY key_epoch DESC LIMIT 1",
+        )
+        .bind(&issuer_id)
+        .fetch_one(pool)
+        .await
+        .map_err(classify_sqlx_error)?;
+        if u64_blob_value(&highest, "highest issuer epoch")? != epoch {
+            return Err(EvidenceError::Corrupt(format!(
+                "AuthBus issuer head is not the highest enrolled epoch for {issuer_id}"
+            )));
+        }
         let count: i64 = sqlx::query_scalar(
             "SELECT COUNT(*) FROM authbus_issuer_registry
              WHERE issuer_id = ? AND key_epoch = ? AND state IN ('active', 'revoked')",
