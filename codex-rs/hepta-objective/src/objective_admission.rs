@@ -441,7 +441,7 @@ pub fn admit_objective_v1(
     envelope: &ObjectiveSourceEnvelopeV1,
     profile: &ObjectiveAdmissionProfileV1,
     context: &ObjectiveAdmissionContextV1,
-) -> Result<ObjectiveAdmissionOutcomeV1, ObjectiveAdmissionError> {
+) -> Result<AdmittedObjectiveV1, ObjectiveAdmissionError> {
     envelope.validate_structure()?;
     let profile_digest = profile.digest()?;
     if context.selected_profile_digest != profile_digest {
