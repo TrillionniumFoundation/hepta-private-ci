@@ -252,6 +252,7 @@ fn transport_selection_context<'a>(
     request_kind: ModelProviderRequestKind,
 ) -> ModelProviderPolicyContext<'a> {
     ModelProviderPolicyContext {
+        require_active_policy: false,
         registry,
         session_store: stores.0,
         thread_store: stores.1,
