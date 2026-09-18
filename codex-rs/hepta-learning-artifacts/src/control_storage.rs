@@ -536,14 +536,14 @@ mod tests {
         )
         .unwrap();
 
-        assert_eq!(
+        assert!(matches!(
             read_dataset_withdrawal_snapshot_for_domain_v1(
                 File::open(&target).unwrap(),
                 receipt,
                 &rotated,
             ),
             Err(ArtifactStorageError::InvalidReceipt)
-        );
+        ));
         let reopened = read_dataset_withdrawal_snapshot_for_domain_v1(
             File::open(&target).unwrap(),
             receipt,
