@@ -480,7 +480,6 @@ fn risk_profile_ordering_is_monotone() {
     );
 }
 
-
 fn measurement_sample_count(default: usize, maximum: usize) -> usize {
     std::env::var("HEPTA_OBJECTIVE_MEASUREMENT_SAMPLES")
         .ok()
