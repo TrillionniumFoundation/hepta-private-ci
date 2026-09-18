@@ -1062,6 +1062,7 @@ mod tests {
             Sha256Digest::for_bytes(b"target-manifest"),
             Sha256Digest::for_bytes(b"target-agentd"),
             None,
+            Sha256Digest::for_bytes(b"compatibility-receipt"),
             frontier,
         )
         .expect("release selection")
