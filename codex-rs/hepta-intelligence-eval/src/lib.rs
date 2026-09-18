@@ -1,6 +1,7 @@
 //! Independent deterministic candidate evaluation. Eligibility is not promotion.
 #![forbid(unsafe_code)]
 
+#[cfg(any(test, feature = "legacy-inprocess-eval"))]
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
@@ -14,7 +15,9 @@ mod durable_holdout;
 mod holdout_journal;
 pub use durable_holdout::DurableFinalHoldoutJournalV1;
 pub use durable_holdout::DurableHoldoutError;
+pub use durable_holdout::FencedFinalHoldoutJournalV2;
 pub use durable_holdout::HoldoutAnchorV1;
+pub use durable_holdout::HoldoutOwnerContextV2;
 mod ope;
 mod sequential;
 mod signed_evaluation;
@@ -93,6 +96,7 @@ pub use temporal_fold::TemporalFoldPlan;
 pub use temporal_fold::TemporalFoldReceipt;
 pub use temporal_fold::fit_temporal_fold;
 
+#[cfg(any(test, feature = "legacy-inprocess-eval"))]
 const MAX_METRICS: usize = 128;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -159,7 +163,11 @@ impl fmt::Display for Error {
 }
 impl StdError for Error {}
 
-pub fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Error> {
+/// Legacy structural comparison retained only for trusted in-process compatibility.
+#[cfg(any(test, feature = "legacy-inprocess-eval"))]
+pub fn evaluate_legacy_inprocess_v1(
+    mut request: EvaluationRequest,
+) -> Result<EvaluationReceipt, Error> {
     if request.evaluator_id == request.candidate_producer_id {
         return Err(Error::SelfEvaluation);
     }
@@ -211,6 +219,7 @@ pub fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Err
     })
 }
 
+#[cfg(any(test, feature = "legacy-inprocess-eval"))]
 fn subtract(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, Error> {
     let raw = i128::from(left.raw()) - i128::from(right.raw());
     Ok(FixedQ32::from_raw(
@@ -218,6 +227,7 @@ fn subtract(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, Error> {
     ))
 }
 
+#[cfg(any(test, feature = "legacy-inprocess-eval"))]
 fn digest(request: &EvaluationRequest, disposition: Disposition, failed: &[StableId]) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(b"hepta.intelligence-eval.v1");
@@ -258,6 +268,14 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     let raw = value.as_str().as_bytes();
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(raw);
+}
+
+#[cfg(feature = "legacy-inprocess-eval")]
+#[deprecated(
+    note = "trusted in-process compatibility only; external/production admission must use decide_with_signed_evidence_v2 or decide_with_signed_longitudinal_evidence_v3"
+)]
+pub fn evaluate(request: EvaluationRequest) -> Result<EvaluationReceipt, Error> {
+    evaluate_legacy_inprocess_v1(request)
 }
 
 #[cfg(test)]

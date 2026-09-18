@@ -42,9 +42,10 @@ count green.
    artifact, revocation and rollback sagas.
 3. `../../qualification/lane-e/TEST_TRACEABILITY.json` — dossier case to native
    test and CI mapping.
-4. Each crate's `NATIVE_MAPPING.md` — exported Rust surface and host obligations.
-5. `../../scripts/hepta-lane-e-closure.py` — read-only closed-world verifier.
-6. Existing normative sources under `docs/modules`, `docs/learning`,
+4. `../../codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md` — normative learning.eval production API, signed-ingress and holdout-owner boundary.
+5. Each crate's `NATIVE_MAPPING.md` — exported Rust surface and host obligations.
+6. `../../scripts/hepta-lane-e-closure.py` — closed-world verifier and commit-addressed qualification-receipt generator/verifier.
+7. Existing normative sources under `docs/modules`, `docs/learning`,
    `docs/readiness` and `qualification/module-execution-dossiers`.
 
 ## Repository-controlled closure criteria
@@ -55,10 +56,13 @@ exact commit and tree:
 - every mapped source and test path exists;
 - every required native symbol is present in its owning crate;
 - every dossier case in the Lane E traceability registry maps to an actual test;
-- the four crates and cross-crate qualification suite compile and pass;
+- the four owner crates and cross-crate qualification suite compile and pass;
+- learning.eval signed evaluated-shadow E2E and durable reopen/replay stress pass;
+- learning.eval LCOV coverage evidence is retained for the exact source head;
 - strict Clippy and rustfmt pass without mutating the tested source;
 - generated dependency metadata is committed;
 - the closed-world Lane E verifier passes;
+- exact-source and PR synthetic-merge qualification receipts are generated, reverified and retained with commit/tree, workflow/build identity, input and contract digests, timestamp/expiry and available coverage digest;
 - all authority-bearing outputs in this slice remain `DENY_ALL` or explicitly
   delegated to an external owner.
 

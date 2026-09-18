@@ -2,7 +2,8 @@
 
 This file maps point, sequential, temporal and independent evaluation design to
 concrete Rust symbols. Estimation, evidence eligibility and artifact selection
-remain separate authorities.
+remain separate authorities. The normative production surface is
+[`PRODUCTION_CONTRACT.md`](PRODUCTION_CONTRACT.md).
 
 ## Existing estimator primitives
 
@@ -27,9 +28,15 @@ efficacy.
 
 | Design operation | Native symbol | Source | Status |
 |---|---|---|---|
-| freeze complete cross-fold lineage | `freeze_cross_fold_plan` | `src/closure.rs` | implemented |
-| record final holdout use | `FinalHoldoutRegistry::consume` | `src/closure.rs` | implemented |
-| issue independent eligibility decision | `decide_independently` | `src/closure.rs` | implemented |
+| freeze preregistered cross-fold lineage and metric roles | `freeze_cross_fold_plan_v2` | `src/metric_roles.rs` | implemented |
+| durable local holdout owner with host writer fence | `FencedFinalHoldoutJournalV2::consume` | `src/durable_holdout.rs` | implemented |
+| signed external qualification | `decide_with_signed_evidence_v2` | `src/signed_evaluation.rs` | implemented |
+| signed observed-time longitudinal qualification | `decide_with_signed_longitudinal_evidence_v3` | `src/longitudinal_time.rs` | implemented |
+
+The older `freeze_cross_fold_plan`, `FinalHoldoutRegistry::consume` and
+`decide_independently*` surfaces remain structural/trusted compatibility or
+qualification primitives. External production admission must use signed V2/V3;
+new durable host composition should use the fence-scoped V2 owner wrapper.
 
 `freeze_cross_fold_plan` requires two to thirty-two folds. It canonicalizes and
 deduplicates every principal, episode and window set; rejects training/holdout
@@ -47,8 +54,11 @@ plan identity with changed semantics conflicts, while a different plan using
 either the same final-holdout digest or the same final-holdout window is
 rejected. The emitted holdout-use receipt binds the complete plan semantics,
 registry state and use digest and carries its own deterministic integrity seal.
-A future persistent host adapter must retain this registry under a single
-writer; the pure type and unkeyed seals alone do not prove durable exclusivity
+`DurableFinalHoldoutJournalV1` persists these semantics for a cooperating local
+owner. `FencedFinalHoldoutJournalV2` additionally binds a host-issued writer
+fence and rejects stale current-context calls before mutation. Multi-host
+current-fence/anchor ownership remains an external transactional boundary; the
+pure registry, local file and unkeyed seals do not prove distributed exclusivity
 or authenticated origin.
 
 `decide_independently` consumes authenticated generator and evaluator identities
