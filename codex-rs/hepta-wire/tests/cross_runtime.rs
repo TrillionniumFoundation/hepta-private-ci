@@ -54,8 +54,9 @@ print(json.dumps({'schema': schema.decode('utf-8'), 'producer': producer.decode(
 "#;
 
 fn run_python_server(frame: &[u8]) -> Result<(bool, String, String), Box<dyn Error>> {
+    let default_python = if cfg!(windows) { "python" } else { "python3" };
     let mut child = Command::new(
-        std::env::var_os("PYTHON").unwrap_or_else(|| "python3".into()),
+        std::env::var_os("PYTHON").unwrap_or_else(|| default_python.into()),
     )
     .args(["-c", PYTHON_V2_SERVER])
     .stdout(Stdio::piped())
