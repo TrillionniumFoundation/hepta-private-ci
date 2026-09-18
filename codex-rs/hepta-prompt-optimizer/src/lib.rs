@@ -20,6 +20,7 @@ mod canonical_v1;
 mod pricing_v1;
 mod relations_v1;
 mod portfolio_v1;
+mod exercise_v1;
 
 pub use canonical_v1::CANONICAL_NO_INTERVENTION_ID_V1;
 pub use canonical_v1::CanonicalPromptErrorV1;
@@ -55,6 +56,13 @@ pub use portfolio_v1::PromptPortfolioErrorV1;
 pub use portfolio_v1::PromptPortfolioReceiptV1;
 pub use portfolio_v1::PromptPortfolioSelectionRequestV1;
 pub use portfolio_v1::select_portfolio_v1;
+pub use exercise_v1::PromptExerciseBoundaryV1;
+pub use exercise_v1::PromptExerciseDecisionV1;
+pub use exercise_v1::PromptExerciseDispositionV1;
+pub use exercise_v1::PromptExerciseErrorV1;
+pub use exercise_v1::PromptExerciseInvalidationV1;
+pub use exercise_v1::PromptExerciseRequestV1;
+pub use exercise_v1::exercise_portfolio_v1;
 
 
 const MAX_CANDIDATES: usize = 4_096;
