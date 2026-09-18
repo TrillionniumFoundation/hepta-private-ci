@@ -34,6 +34,25 @@ jobs:
           python3 scripts/hepta_repository_controls.py \
             --repo "$REPO" --expected-sha "$GITHUB_SHA"
 
+      - name: Prove candidate workflow token cannot push
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          probe="refs/heads/hepta-self-iteration-denial-probe-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          set +e
+          git -c "http.extraheader=AUTHORIZATION: bearer ${GH_TOKEN}" \
+            push --dry-run "https://github.com/${REPO}.git" "HEAD:${probe}" \
+            >"$RUNNER_TEMP/hepta-push-probe.stdout" 2>"$RUNNER_TEMP/hepta-push-probe.stderr"
+          status=$?
+          set -e
+          test "$status" -ne 0
+          # --dry-run never writes even if repository policy regresses. The
+          # expected rejection proves this workflow identity lacks branch-write
+          # capability in addition to the live protected-branch checks above.
+
       - name: Verify source-side independent integration semantics
         shell: bash
         run: |
