@@ -55,17 +55,36 @@ class LaneAFoundationTruthTests(unittest.TestCase):
         with self.assertRaises(verify.VerificationError):
             verify.validate_matrix(value)
 
-    def test_authbus_cannot_claim_policy_quota_or_key_hosting(self) -> None:
+    def test_authbus_source_controls_do_not_self_grant_external_capabilities(self) -> None:
+        authbus = self.matrix["modules"][5]
+        current = set(authbus["currentCapabilities"])
+        self.assertIn(
+            "durable versioned authorization policy with exact-revision fail-closed decisions",
+            current,
+        )
+        self.assertIn(
+            "atomic integer quota registry with conservation-safe reservation accounting",
+            current,
+        )
+        self.assertIn(
+            "reservation effect fencing with settlement cancellation expiry quarantine and reconciliation",
+            current,
+        )
         for capability in (
-            "authorization policy evaluation",
-            "quota reservation and settlement",
-            "host trust provisioning and key lifecycle management",
+            "managed private signing-key custody rotation and revocation ceremony",
+            "independent semantic and security acceptance",
+            "operator canary promotion and release",
         ):
             with self.subTest(capability=capability):
-                value = deepcopy(self.matrix)
-                value["modules"][5]["currentCapabilities"].append(capability)
-                with self.assertRaises(verify.VerificationError):
-                    verify.validate_matrix(value)
+                self.assertIn(capability, authbus["targetOnlyCapabilities"])
+
+        value = deepcopy(self.capability_map)
+        auth_entry = next(
+            entry for entry in value["entries"] if entry["module"] == "auth.authbus"
+        )
+        auth_entry["productionCaller"] = "unproven-product"
+        with self.assertRaises(verify.VerificationError):
+            verify.validate_capability_map(self.matrix, value)
 
     def test_authbus_cannot_claim_all_replay_paths_are_durable(self) -> None:
         value = deepcopy(self.matrix)
