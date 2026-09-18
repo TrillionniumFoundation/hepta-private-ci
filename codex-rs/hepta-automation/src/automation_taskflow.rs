@@ -75,9 +75,9 @@ impl AutomationStore {
                 "automation occurrence and scheduler lease differ".to_string(),
             ));
         }
-        let fence = automation_fence(lease);
+        let current_fence = automation_fence(lease);
         let definition = automation_definition()?;
-        self.register_taskflow_definition(&definition, &fence, now_ms)
+        self.register_taskflow_definition(&definition, &current_fence, now_ms)
             .await?;
         let mut run = self
             .create_taskflow_run(
@@ -89,14 +89,52 @@ impl AutomationStore {
                 now_ms,
             )
             .await?;
-        if run.state == TaskFlowRunState::Queued
-            || (run.state == TaskFlowRunState::Running
-                && run.lease_expires_at_ms.is_none_or(|expires| expires <= now_ms))
-        {
-            run = self
-                .claim_taskflow_run(&run.run_id, &fence, now_ms, lease_duration_ms)
-                .await?;
-        }
+        let fence = match run.state {
+            TaskFlowRunState::Queued => {
+                run = self
+                    .claim_taskflow_run(&run.run_id, &current_fence, now_ms, lease_duration_ms)
+                    .await?;
+                current_fence
+            }
+            TaskFlowRunState::Running
+                if run.generation == Some(lease.lease_generation)
+                    && run.owner_id.as_deref()
+                        == Some(format!("automation.scheduler:{}", lease.task.task_id).as_str())
+                    && run.lease_expires_at_ms.is_some_and(|expires| expires > now_ms) =>
+            {
+                TaskFlowFence {
+                    owner_agent_id: lease.task.owner_agent_id.clone(),
+                    owner_id: run.owner_id.clone().ok_or_else(|| {
+                        TaskFlowError::Corrupt("running automation run lost owner id".to_string())
+                    })?,
+                    owner_epoch: run.owner_epoch.ok_or_else(|| {
+                        TaskFlowError::Corrupt("running automation run lost owner epoch".to_string())
+                    })?,
+                    generation: run.generation.ok_or_else(|| {
+                        TaskFlowError::Corrupt("running automation run lost generation".to_string())
+                    })?,
+                    fencing_token: run.fencing_token.clone().ok_or_else(|| {
+                        TaskFlowError::Corrupt("running automation run lost fencing token".to_string())
+                    })?,
+                }
+            }
+            TaskFlowRunState::Running
+                if run.lease_expires_at_ms.is_none_or(|expires| expires <= now_ms)
+                    && run.generation.is_some_and(|generation| {
+                        lease.lease_generation > generation
+                    }) =>
+            {
+                run = self
+                    .claim_taskflow_run(&run.run_id, &current_fence, now_ms, lease_duration_ms)
+                    .await?;
+                current_fence
+            }
+            _ => {
+                return Err(TaskFlowError::Conflict(
+                    "automation TaskFlow run is not claimable by this scheduler lease".to_string(),
+                ));
+            }
+        };
         if run.state == TaskFlowRunState::Queued {
             let command = TaskFlowCommand::new(
                 run.run_id.clone(),
@@ -522,16 +560,15 @@ fn automation_fence(lease: &AutomationLease) -> TaskFlowFence {
 }
 
 fn automation_definition() -> Result<TaskFlowDefinition, TaskFlowError> {
+    let mut codex_turn = TaskFlowNodeSpec::new(AUTOMATION_STEP_ID, TaskFlowNodeKind::Activity);
+    codex_turn.capability = Some(AUTOMATION_CAPABILITY.to_string());
+    codex_turn.idempotency_template = Some(AUTOMATION_IDEMPOTENCY_TEMPLATE.to_string());
     TaskFlowDefinition::new(
         AUTOMATION_WORKFLOW_ID,
         AUTOMATION_WORKFLOW_VERSION,
         AUTOMATION_STEP_ID,
         vec![
-            TaskFlowNodeSpec::effect(
-                AUTOMATION_STEP_ID,
-                AUTOMATION_CAPABILITY,
-                AUTOMATION_IDEMPOTENCY_TEMPLATE,
-            ),
+            codex_turn,
             TaskFlowNodeSpec::new("terminal_success", TaskFlowNodeKind::TerminalSuccess),
             TaskFlowNodeSpec::new("terminal_failure", TaskFlowNodeKind::TerminalFailure),
         ],
