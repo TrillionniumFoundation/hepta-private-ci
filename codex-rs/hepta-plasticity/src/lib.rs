@@ -17,6 +17,7 @@ mod registry;
 mod topology_v2;
 mod topology_governance;
 mod topology_canary;
+mod topology_registry;
 mod types;
 
 pub use durable_registry::DurableProposalAppendReceiptV1;
@@ -62,6 +63,10 @@ pub use topology_canary::StructuralCanaryObservationV1;
 pub use topology_canary::StructuralCanaryPlanV1;
 pub use topology_canary::StructuralCanaryReceiptV1;
 pub use topology_canary::StructuralCanaryStateV1;
+pub use topology_registry::DurableTopologyAppendReceiptV1;
+pub use topology_registry::DurableTopologyProposalRegistryV1;
+pub use topology_registry::DurableTopologyRegistryAnchorV1;
+pub use topology_registry::DurableTopologyRegistryErrorV1;
 pub use types::AppendDisposition;
 pub use types::CandidateNormMetricsV2;
 pub use types::Error;
