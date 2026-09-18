@@ -4,16 +4,16 @@ use std::path::PathBuf;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use codex_hepta_contracts::AgentId;
-use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_cognitive_store::AuthoritativeCognitiveStoreOwnerV1;
 use codex_hepta_cognitive_store::CognitiveStoreOwnerDescriptorV1;
 use codex_hepta_cognitive_store::DurableRecoveryProfileV1;
 use codex_hepta_cognitive_store::DurableStoreProfileV1;
 use codex_hepta_cognitive_store::DurableWriterFenceProfileV1;
+use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
-use codex_hepta_paths::HeptaAgentLayout;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use sha2::Digest;
@@ -196,14 +196,12 @@ impl AuthoritativeCognitiveStoreOwnerV1 for CognitiveStore {
     fn owner_descriptor_v1(&self) -> CognitiveStoreOwnerDescriptorV1 {
         let mut physical_identity = b"hepta.cognitive-store.physical-owner.v1".to_vec();
         let owner = self.owner_agent_id.as_str().as_bytes();
-        physical_identity.extend_from_slice(
-            &u64::try_from(owner.len()).unwrap_or(u64::MAX).to_be_bytes(),
-        );
+        physical_identity
+            .extend_from_slice(&u64::try_from(owner.len()).unwrap_or(u64::MAX).to_be_bytes());
         physical_identity.extend_from_slice(owner);
         let path = self.path.as_os_str().as_encoded_bytes();
-        physical_identity.extend_from_slice(
-            &u64::try_from(path.len()).unwrap_or(u64::MAX).to_be_bytes(),
-        );
+        physical_identity
+            .extend_from_slice(&u64::try_from(path.len()).unwrap_or(u64::MAX).to_be_bytes());
         physical_identity.extend_from_slice(path);
         CognitiveStoreOwnerDescriptorV1 {
             owner_identity_digest: Digest32::of_bytes(owner),
