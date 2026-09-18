@@ -206,6 +206,16 @@ impl AutomationStore {
             .taskflow_run_id
             .as_deref()
             .ok_or(AutomationError::Conflict)?;
+        if !self
+            .has_terminal_provider_observation(
+                &occurrence_record.occurrence_id,
+                observation.receipt_digest(),
+            )
+            .await?
+        {
+            return Err(AutomationError::Conflict);
+        }
+
         let mut run = self
             .taskflow_run(run_id)
             .await
