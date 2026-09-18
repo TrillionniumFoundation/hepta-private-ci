@@ -8,6 +8,7 @@ use hepta_native::model::PlatformAction;
 use hepta_native::model::SignedPlatformGrantV1;
 use hepta_native::model::sha256_hex;
 use hepta_native::security::GrantVerifier;
+use hepta_native::security::PlatformGrantContext;
 use hepta_native::security::TrustedKeySet;
 use hepta_native::security::now_unix_ms;
 use hepta_native::updater::SignedUpdateManifestV1;
@@ -54,24 +55,28 @@ fn platform_grant_signature_binds_session_operation_and_payload() {
         STANDARD.encode(signing.sign(grant.signing_message().as_bytes()).to_bytes());
     keys.verify_platform_grant(
         &grant,
-        "session.1",
-        9,
-        "operation.1",
-        PlatformAction::CopyText,
-        D1,
-        now,
+        PlatformGrantContext {
+            session_id: "session.1",
+            session_generation: 9,
+            operation_id: "operation.1",
+            action: PlatformAction::CopyText,
+            payload_digest: D1,
+            now_unix_ms: now,
+        },
     )
     .unwrap();
 
     let error = keys
         .verify_platform_grant(
             &grant,
-            "session.2",
-            9,
-            "operation.1",
-            PlatformAction::CopyText,
-            D1,
-            now,
+            PlatformGrantContext {
+                session_id: "session.2",
+                session_generation: 9,
+                operation_id: "operation.1",
+                action: PlatformAction::CopyText,
+                payload_digest: D1,
+                now_unix_ms: now,
+            },
         )
         .unwrap_err();
     assert!(error.to_string().contains("not bound"));
