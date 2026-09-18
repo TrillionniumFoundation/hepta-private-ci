@@ -18,16 +18,20 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "composed_candidate",
   "productionWriterState": "not_established",
   "operations": [
     {
       "operation": "execute_once",
       "nativeSymbol": "execute_once",
       "sourcePath": "codex-rs/hepta-memory-federation/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_composed_candidate",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_federation_tests.rs",
+        "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "execute_once",
       "mappingClass": "owner_native",
@@ -37,9 +41,11 @@
       "operation": "observe_cancellation",
       "nativeSymbol": "observe_cancellation",
       "sourcePath": "codex-rs/hepta-memory-federation/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_composed_candidate",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-federation/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "observe_cancellation",
       "mappingClass": "owner_native",
@@ -47,8 +53,9 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Obtain exact-candidate and deterministic synthetic-merge CI receipts for the composed product caller.",
+    "Complete independent semantic/security review and target-host qualification before activation or release.",
+    "Qualify a genuinely remote authenticated transport profile before claiming cross-host federation; the composed product adapter uses the existing authenticated local owner store boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -66,5 +73,14 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-memory-federation"
-  ]
+  ],
+  "currentHeadAttestation": {
+    "commit": "2248ee6b6f889ffa8b1f9c3fee920a4ae0de933e",
+    "tree": "ca1f257cd71c2906d63be8efe08c4460a3701118",
+    "class": "module_code_candidate",
+    "productCaller": "codex-rs/hepta-memory/src/cognitive_federation.rs::FederatedMemoryReader::retrieve",
+    "productAdapter": "codex-rs/hepta-memory/src/cognitive_federation_v2.rs",
+    "physicalConsumer": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+    "note": "This attests the code candidate immediately before documentation-only updates; global sourceBase remains the shared map-generation baseline."
+  }
 }
