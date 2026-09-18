@@ -31,11 +31,15 @@ fn id_profiles_and_namespaces_are_explicit_and_canonical() {
         Err(IdentityError::UnknownProfile)
     );
 
-    let namespace = IdNamespaceV1::new("platform.types").expect("namespace");
-    assert_eq!(
-        namespace.qualify("receipt-1").expect("qualified").as_str(),
-        "platform.types:receipt-1"
-    );
+    let namespace = IdNamespaceV1::new("platform.types");
+    let Ok(namespace) = namespace else {
+        panic!("module namespace fixture should be valid");
+    };
+    let qualified = namespace.qualify("receipt-1");
+    let Ok(qualified) = qualified else {
+        panic!("namespaced fixture should be valid");
+    };
+    assert_eq!(qualified.as_str(), "platform.types:receipt-1");
     assert!(namespace.qualify("Receipt-1").is_err());
 }
 
