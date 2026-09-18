@@ -769,6 +769,46 @@ mod tests {
     const CONSUMER_ID: &str = "00000000-0000-4000-8000-000000000713";
 
     #[test]
+    fn federation_source_binding_distinguishes_partial_coverage() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let workspace = temp.path().canonicalize().expect("workspace");
+        let query_sha256 = Sha256Digest::for_bytes(b"query");
+        let content_sha256 = Sha256Digest::for_bytes(b"content");
+        let bindings = Vec::new();
+        let complete = codex_hepta_memory::FederatedRetrievalCoverage {
+            requested_sources: 1,
+            completed_sources: 1,
+            failed_sources: 0,
+        };
+        let partial = codex_hepta_memory::FederatedRetrievalCoverage {
+            requested_sources: 1,
+            completed_sources: 0,
+            failed_sources: 1,
+        };
+        let complete_binding = super::federation_source_binding(
+            "thread",
+            "turn",
+            &workspace,
+            &query_sha256,
+            &complete,
+            &bindings,
+            &content_sha256,
+        )
+        .expect("complete binding");
+        let partial_binding = super::federation_source_binding(
+            "thread",
+            "turn",
+            &workspace,
+            &query_sha256,
+            &partial,
+            &bindings,
+            &content_sha256,
+        )
+        .expect("partial binding");
+        assert_ne!(complete_binding, partial_binding);
+    }
+
+    #[test]
     fn combined_proposal_is_exact_bounded_and_owner_capability_sensitive() {
         let temp = tempfile::tempdir().expect("tempdir");
         let workspace = temp.path().canonicalize().expect("workspace");
