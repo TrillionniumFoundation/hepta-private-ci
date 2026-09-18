@@ -14,6 +14,16 @@ const D3 = "3".repeat(64);
 const runtimeSchema = "hepta.ui-control.local-runtime-observation.v1";
 const operationSchema = "hepta.ui-control.local-operation-proposal-input.v1";
 
+function displayedViewBinding({
+  sessionId = "session.1",
+  connectionGeneration = 1,
+  generation = 7,
+  revision = 9,
+  digest = D2,
+} = {}) {
+  return Object.freeze({ sessionId, connectionGeneration, generation, revision, digest });
+}
+
 function canonicalJson(value) {
   return JSON.stringify(
     Object.fromEntries(
@@ -148,7 +158,7 @@ test("runtime request binds target revision independently from displayed view re
     subjectId: "runtime.agentd",
     action: "request_retry",
     expectedRevision: 4,
-    displayedRevision: 9,
+    displayedView: displayedViewBinding(),
   });
 
   assert.equal(sent.method, "operation/request");
@@ -206,7 +216,7 @@ test("unbound backend rejection cannot erase pending work", async () => {
       subjectId: "runtime.agentd",
       action: "request_retry",
       expectedRevision: 1,
-      displayedRevision: 1,
+      displayedView: displayedViewBinding({ generation: 1, revision: 1 }),
     }),
     (error) => error.code === "PROTOCOL_VIOLATION",
   );
