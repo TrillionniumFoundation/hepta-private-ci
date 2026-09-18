@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "6c96d102ee8538c761a292d3b5ca7b3be4b1c53e",
+    "tree": "4c63f3714b21c594c6bab5d916a5dccd5bcb76d2"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -18,20 +18,41 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "partial_composition_agentd_v2",
   "productionWriterState": "not_established",
   "operations": [
+    {
+      "operation": "compile_cue",
+      "nativeSymbol": "compile_cue",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs::compile_cue_validates_and_binds_the_exact_snapshot"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compile_cue",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
     {
       "operation": "retrieve_v2",
       "nativeSymbol": "retrieve_v2",
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_composed_qualification_pending",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/v2_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs::context_reads_real_owner_content_and_removes_committed_tombstones",
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs::revocation_between_ranking_and_publication_fails_closed"
+      ],
       "sourcePathExists": true,
       "designOperation": "retrieve_v2",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "codex-rs/hepta-memory::CognitiveStore::retrieve_memory_candidates_for_ranking",
+        "codex-rs/hepta-agentd::cognitive_context"
+      ]
     },
     {
       "operation": "build_candidate_union",
@@ -39,7 +60,9 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs::channel_completion_order_cannot_change_union_or_recall"
+      ],
       "sourcePathExists": true,
       "designOperation": "build_candidate_union",
       "mappingClass": "owner_native",
@@ -51,7 +74,10 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs::high_risk_contradiction_forces_abstention",
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs::low_ranked_tail_risk_cannot_poison_the_returnable_population"
+      ],
       "sourcePathExists": true,
       "designOperation": "recall",
       "mappingClass": "owner_native",
@@ -59,8 +85,9 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Compose compile_cue/build_candidate_union/recall with the authenticated owner generation vector instead of fabricating missing model/tokenizer/template generations.",
+    "Supply and qualify the remaining native vector, causal and procedural channels plus RET-04 outcome/resource baselines.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the productionImplementation or activation claim."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
