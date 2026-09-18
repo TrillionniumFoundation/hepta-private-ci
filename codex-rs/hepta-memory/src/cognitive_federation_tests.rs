@@ -145,6 +145,9 @@ async fn explicit_grant_is_owner_written_consumer_read_only_and_scope_exact() {
         .await
         .expect("federated retrieval");
     assert_eq!(batch.candidates.len(), 1);
+    assert_eq!(batch.coverage.requested_sources, 1);
+    assert_eq!(batch.coverage.completed_sources, 1);
+    assert_eq!(batch.coverage.failed_sources, 0);
     assert_eq!(batch.candidates[0].source_agent_id, owner_id);
     assert_eq!(
         batch.candidates[0].candidate.memory.content,
@@ -222,6 +225,11 @@ async fn revoke_is_observed_by_the_next_physical_send_revalidation() {
         .pop()
         .expect("reader");
     let access = FederationConsumerAccess::new(consumer_id, consumer_workspace);
+    let recall_set = FederatedRecallSet::new(
+        reader.capability().consumer_agent_id().clone(),
+        vec![reader.clone()],
+    )
+    .expect("recall set");
     let prepared = reader
         .retrieve(&access, &RetrievalRequest::new("physical send", 150))
         .await
@@ -257,6 +265,16 @@ async fn revoke_is_observed_by_the_next_physical_send_revalidation() {
             .expect("physical-send revalidation"),
         FederatedRevalidationStatus::Stale(FederationRevalidationDrift::Revoked)
     );
+
+    let batch = recall_set
+        .retrieve(&access, &RetrievalRequest::new("physical send", 152))
+        .await
+        .expect("partial federated batch");
+    assert!(batch.candidates.is_empty());
+    assert_eq!(batch.coverage.requested_sources, 1);
+    assert_eq!(batch.coverage.completed_sources, 0);
+    assert_eq!(batch.coverage.failed_sources, 1);
+    assert!(batch.coverage.is_partial());
 }
 
 #[tokio::test]
