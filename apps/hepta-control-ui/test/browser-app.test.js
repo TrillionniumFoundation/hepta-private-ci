@@ -46,8 +46,11 @@ function allElements(root) {
 function sampleView({ stale = false } = {}) {
   return Object.freeze({
     stale,
+    sessionId: "session.1",
+    connectionGeneration: 1,
     generation: stale ? null : 7,
     revision: stale ? null : 9,
+    digest: stale ? null : "b".repeat(64),
     pending: 2,
     indeterminate: 1,
     modules: Object.freeze([
@@ -127,7 +130,13 @@ test("confirmed module action binds target revision and displayed revision separ
     subjectId: "runtime.agentd",
     action: "request_retry",
     expectedRevision: 4,
-    displayedRevision: 9,
+    displayedView: {
+      sessionId: "session.1",
+      connectionGeneration: 1,
+      generation: 7,
+      revision: 9,
+      digest: "b".repeat(64),
+    },
   });
 });
 
