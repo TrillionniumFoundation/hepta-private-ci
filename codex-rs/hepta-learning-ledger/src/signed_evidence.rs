@@ -272,6 +272,31 @@ impl LearningEvidenceVerifierV1 {
     }
 }
 
+/// Verifies that two already signature-verified actors are independent under
+/// the same host-owned trust/objective context, regardless of their role labels.
+pub fn verify_verified_actor_separation(
+    left: &VerifiedLearningEvidenceV1,
+    right: &VerifiedLearningEvidenceV1,
+    now: u64,
+) -> Result<(), SignedEvidenceError> {
+    if left.trust_digest != right.trust_digest || left.objective_digest != right.objective_digest {
+        return Err(SignedEvidenceError::ContextMismatch);
+    }
+    for evidence in [left, right] {
+        if now < evidence.issued_at || now > evidence.expires_at {
+            return Err(SignedEvidenceError::ValidityWindow);
+        }
+        if evidence.revoked_at.is_some_and(|at| now >= at) {
+            return Err(SignedEvidenceError::Revoked);
+        }
+    }
+    verify_independent_roles(&left.principal, &right.principal, now)?;
+    if left.controller_id == right.controller_id {
+        return Err(SignedEvidenceError::ControllerCollision);
+    }
+    Ok(())
+}
+
 pub fn verify_signed_role_separation(
     generator: &VerifiedLearningEvidenceV1,
     observer: &VerifiedLearningEvidenceV1,
@@ -282,24 +307,7 @@ pub fn verify_signed_role_separation(
     {
         return Err(SignedEvidenceError::RoleMismatch);
     }
-    if generator.trust_digest != observer.trust_digest
-        || generator.objective_digest != observer.objective_digest
-    {
-        return Err(SignedEvidenceError::ContextMismatch);
-    }
-    for evidence in [generator, observer] {
-        if now < evidence.issued_at || now > evidence.expires_at {
-            return Err(SignedEvidenceError::ValidityWindow);
-        }
-        if evidence.revoked_at.is_some_and(|at| now >= at) {
-            return Err(SignedEvidenceError::Revoked);
-        }
-    }
-    verify_independent_roles(&generator.principal, &observer.principal, now)?;
-    if generator.controller_id == observer.controller_id {
-        return Err(SignedEvidenceError::ControllerCollision);
-    }
-    Ok(())
+    verify_verified_actor_separation(generator, observer, now)
 }
 
 fn push_id(bytes: &mut Vec<u8>, id: &StableId) {
