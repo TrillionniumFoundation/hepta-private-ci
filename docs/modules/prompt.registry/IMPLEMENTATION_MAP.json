@@ -18,16 +18,49 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "source_consumer_composed_runtime_not_activated",
+  "productionWriterState": "durable_owner_source_implemented_runtime_not_bound",
   "operations": [
     {
-      "operation": "promptregistry",
+      "operation": "prompt_registry",
       "nativeSymbol": "PromptRegistry",
-      "sourcePath": "codex-rs/hepta-prompt-registry/src/lib.rs",
-      "state": "source_implemented_not_product_composed",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/registry.rs",
+      "state": "source_implemented_not_product_activated",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/lib_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "promptregistry",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "authenticated_admission",
+      "nativeSymbol": "admit_factor_authorized",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/registry_mutation.rs",
+      "state": "source_implemented_not_product_activated",
+      "authority": "final_use_token_required",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
+        "codex-rs/hepta-prompt-registry/src/store_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "admit_factor",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "kernel.authority"
+      ]
+    },
+    {
+      "operation": "durable_owner",
+      "nativeSymbol": "DurablePromptRegistry",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/store.rs",
+      "state": "source_implemented_owner_local_durability_not_runtime_bound",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/store_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "promptregistry",
       "mappingClass": "owner_native",
@@ -36,31 +69,54 @@
     {
       "operation": "register_realization_v2",
       "nativeSymbol": "register_realization_v2",
-      "sourcePath": "codex-rs/hepta-prompt-registry/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/v2_registry.rs",
+      "state": "source_implemented_not_product_activated",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "register_realization_v2",
+      "designOperation": "register_realization",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
       "operation": "read_compatible_v2",
       "nativeSymbol": "read_compatible_v2",
-      "sourcePath": "codex-rs/hepta-prompt-registry/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/v2_registry.rs",
+      "state": "source_implemented_read_only_consumer_composed_not_activated",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/v2_tests.rs",
+        "codex-rs/hepta-prompt-optimizer/src/registry_source_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "read_compatible_v2",
+      "designOperation": "read_compatible",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "resolve_payload_v2",
+      "nativeSymbol": "resolve_payload_v2",
+      "sourcePath": "codex-rs/hepta-prompt-registry/src/v2_registry.rs",
+      "state": "source_implemented_delivery_chain_tested_not_runtime_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-registry/src/integration_tests.rs",
+        "codex-rs/hepta-intelligence/src/vertical_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "read_compatible",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "context.compiler"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run current exact-head and deterministic synthetic-merge tests for prompt.registry, prompt.optimizer and the intelligence.control composition before advancing any implementation claim.",
+    "Bind DurablePromptRegistry and the read-only intelligence.control composition to a named activated product host; source composition alone is not runtime activation.",
+    "Prove real provider/model terminal payload observation from the exact resolved realization bytes without granting prompt.registry model or effect authority."
   ],
   "externalEvidenceGates": [
     "independent semantic review",

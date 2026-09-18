@@ -15,6 +15,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
 pub mod local_shadow;
+pub mod registry_source;
 
 const MAX_CANDIDATES: usize = 4_096;
 const MAX_SELECTED: usize = 128;

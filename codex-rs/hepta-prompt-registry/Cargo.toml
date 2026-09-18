@@ -14,4 +14,12 @@ doctest = false
 workspace = true
 
 [dependencies]
+codex-hepta-contracts = { path = "../hepta-contracts" }
 codex-hepta-types = { path = "../hepta-types" }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+
+[dev-dependencies]
+codex-hepta-context-compiler = { path = "../hepta-context-compiler" }
+ed25519-dalek = { workspace = true }
+tempfile = { workspace = true }

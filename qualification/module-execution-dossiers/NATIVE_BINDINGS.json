@@ -308,8 +308,8 @@
     },
     {
       "module": "prompt.registry",
-      "path": "codex-rs/hepta-prompt-registry/src/lib.rs",
-      "blobSha": "84905f3149b28c81fa03337636e8ecdc9059f436",
+      "path": "codex-rs/hepta-prompt-registry/src/registry_mutation.rs",
+      "blobSha": "1585f4bbf622d29583e762701450c2c4e2af0a24",
       "exports": [
         "PromptRegistry",
         "PromptFactor",
@@ -317,8 +317,11 @@
         "RegistryReceipt",
         "register_factor",
         "admit_factor",
+        "admit_factor_authorized",
         "register_realization",
-        "revoke_factor"
+        "revoke_factor",
+        "retire_factor_with_reason",
+        "revoke_factor_with_reason"
       ]
     },
     {
@@ -479,11 +482,12 @@
     {
       "module": "intelligence.control",
       "path": "codex-rs/hepta-intelligence/src/vertical.rs",
-      "blobSha": "c9de33c4123e7a235a0b463c0d2c7ece86a3e4fc",
+      "blobSha": "4314e15cd60fa1ea0135be2aff52c8d9cdf2cdb0",
       "exports": [
         "ReadOnlyVerticalRequest",
         "ReadOnlyVerticalReceipt",
         "ReadOnlyVerticalError",
+        "compose_prompt_registry_v2",
         "run_read_only_vertical"
       ]
     },

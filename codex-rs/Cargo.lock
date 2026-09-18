@@ -3728,6 +3728,7 @@ dependencies = [
  "codex-hepta-cognitive-read",
  "codex-hepta-cognitive-types",
  "codex-hepta-context-compiler",
+ "codex-hepta-contracts",
  "codex-hepta-intelligence-eval",
  "codex-hepta-intuition",
  "codex-hepta-learning-ledger",
@@ -3736,6 +3737,7 @@ dependencies = [
  "codex-hepta-objective",
  "codex-hepta-plasticity",
  "codex-hepta-prompt-optimizer",
+ "codex-hepta-prompt-registry",
  "codex-hepta-types",
  "ed25519-dalek",
  "pretty_assertions",
@@ -4008,14 +4010,24 @@ dependencies = [
 name = "codex-hepta-prompt-optimizer"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-contracts",
+ "codex-hepta-prompt-registry",
  "codex-hepta-types",
+ "ed25519-dalek",
+ "tempfile",
 ]
 
 [[package]]
 name = "codex-hepta-prompt-registry"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-context-compiler",
+ "codex-hepta-contracts",
  "codex-hepta-types",
+ "ed25519-dalek",
+ "serde",
+ "serde_json",
+ "tempfile",
 ]
 
 [[package]]

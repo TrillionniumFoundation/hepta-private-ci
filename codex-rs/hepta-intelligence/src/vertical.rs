@@ -5,6 +5,7 @@
 //! release authority. NDU evaluation uses the policy-bound V2 receipt so the
 //! aggregation rules and Pareto tolerances are replayable by downstream stages.
 
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
@@ -17,9 +18,16 @@ use codex_hepta_cognitive_types::CognitiveSnapshot;
 use codex_hepta_cognitive_types::Error as CognitiveSnapshotError;
 use codex_hepta_context_compiler::CompilationRequest;
 use codex_hepta_context_compiler::ContextCompilationReceipt;
+use codex_hepta_context_compiler::CompiledContextV2;
+use codex_hepta_context_compiler::ContextCandidateV2;
+use codex_hepta_context_compiler::ContextCompilationRequestV2;
+use codex_hepta_context_compiler::ContextCompilerV2Error;
 use codex_hepta_context_compiler::ContextRole;
+use codex_hepta_context_compiler::ContextRoleV2 as CompilerContextRoleV2;
 use codex_hepta_context_compiler::Error as ContextCompileError;
+use codex_hepta_context_compiler::TokenizationReceiptV2;
 use codex_hepta_context_compiler::compile;
+use codex_hepta_context_compiler::compile_v2;
 use codex_hepta_ndu::AggregationOperator;
 use codex_hepta_ndu::AxisAggregationRule;
 use codex_hepta_ndu::AxisDirection;
@@ -43,6 +51,15 @@ use codex_hepta_objective::ObjectiveSourceEnvelopeV1;
 use codex_hepta_objective::SoftDirection;
 use codex_hepta_objective::SoftPreference;
 use codex_hepta_objective::admit_and_compile_objective_v1;
+use codex_hepta_prompt_optimizer::PromptPortfolioReceipt;
+use codex_hepta_prompt_optimizer::registry_source::RegistryOptimizationRequest;
+use codex_hepta_prompt_optimizer::registry_source::RegistrySourceError;
+use codex_hepta_prompt_optimizer::registry_source::optimize_registry_snapshot;
+use codex_hepta_prompt_registry::PromptPayloadResolutionV2;
+use codex_hepta_prompt_registry::PromptRegistry;
+use codex_hepta_prompt_registry::PromptRegistrySnapshotV2;
+use codex_hepta_prompt_registry::PromptRegistryV2Error;
+use codex_hepta_prompt_registry::PromptRoleV2;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -100,6 +117,9 @@ pub enum ReadOnlyVerticalError {
     Snapshot(CognitiveSnapshotError),
     CognitiveRead(CognitiveReadError),
     Context(ContextCompileError),
+    ContextV2(ContextCompilerV2Error),
+    PromptRegistry(PromptRegistryV2Error),
+    PromptRegistrySource(RegistrySourceError),
     Ndu(NduError),
     AuthorityEscalation(&'static str),
     DigestMismatch(&'static str),
@@ -124,6 +144,9 @@ impl StdError for ReadOnlyVerticalError {
             Self::Snapshot(error) => Some(error),
             Self::CognitiveRead(error) => Some(error),
             Self::Context(error) => Some(error),
+            Self::ContextV2(error) => Some(error),
+            Self::PromptRegistry(error) => Some(error),
+            Self::PromptRegistrySource(error) => Some(error),
             Self::Ndu(error) => Some(error),
             Self::ObjectiveConflict(_)
             | Self::ObjectiveExplicitAbstain
@@ -136,6 +159,134 @@ impl StdError for ReadOnlyVerticalError {
             | Self::ReadEvidenceOmitted(_)
             | Self::UnknownRecommendation(_) => None,
         }
+    }
+}
+
+impl ReadOnlyVerticalRequest {
+    /// Compose one frozen prompt-registry snapshot through the read-only prompt
+    /// optimizer and Context Compiler V2. Selected registered prompt payloads
+    /// become mandatory trusted/schema candidates and remain bound to the same
+    /// objective, generation and exact model profile.
+    pub fn compose_prompt_registry_v2(
+        &self,
+        registry: &PromptRegistry,
+        snapshot: &PromptRegistrySnapshotV2,
+        optimization: RegistryOptimizationRequest,
+        mut compilation: ContextCompilationRequestV2,
+    ) -> Result<
+        (
+            PromptPortfolioReceipt,
+            CompiledContextV2,
+            Vec<PromptPayloadResolutionV2>,
+        ),
+        ReadOnlyVerticalError,
+    > {
+        let objective_outcome = admit_and_compile_objective_v1(
+            &self.objective_envelope,
+            &self.objective_profile,
+            &self.objective_context,
+        )
+        .map_err(ReadOnlyVerticalError::ObjectiveAdmission)?;
+        ensure_no_authority("prompt objective admission", objective_outcome.receipt.authority)?;
+        let objective = objective_outcome
+            .compile_result
+            .map_err(|conflict| ReadOnlyVerticalError::ObjectiveConflict(conflict.conflict_digest))?;
+        if objective.disposition != CompileDisposition::Compiled {
+            return Err(ReadOnlyVerticalError::ObjectiveExplicitAbstain);
+        }
+        let objective_digest = objective.objective.semantic_digest;
+        ensure_digest("prompt compiled objective", objective_digest)?;
+        if optimization.objective_digest != objective_digest
+            || compilation.objective_digest != objective_digest
+        {
+            return Err(ReadOnlyVerticalError::DigestMismatch(
+                "prompt registry objective",
+            ));
+        }
+        if compilation.generation_vector_digest != optimization.generation_vector_digest {
+            return Err(ReadOnlyVerticalError::DigestMismatch(
+                "prompt registry generation",
+            ));
+        }
+        if compilation.model_profile.model_digest != optimization.model_tuple.model_digest
+            || compilation.model_profile.tokenizer_digest
+                != optimization.model_tuple.tokenizer_digest
+            || compilation.model_profile.template_digest != optimization.model_tuple.template_digest
+            || compilation.model_profile.tool_schema_digest
+                != optimization.model_tuple.tool_schema_digest
+        {
+            return Err(ReadOnlyVerticalError::DigestMismatch(
+                "prompt registry model profile",
+            ));
+        }
+
+        let generation_vector_digest = optimization.generation_vector_digest;
+        let model_tuple = optimization.model_tuple.clone();
+        let now_unix_ms = optimization.now_unix_ms;
+        let score_by_factor = optimization
+            .scores
+            .iter()
+            .map(|score| (score.factor_id.clone(), score.expected_gain))
+            .collect::<BTreeMap<_, _>>();
+        let portfolio = optimize_registry_snapshot(registry, snapshot, optimization)
+            .map_err(ReadOnlyVerticalError::PromptRegistrySource)?;
+        ensure_no_authority("prompt portfolio", portfolio.authority)?;
+        compilation.prompt_portfolio_digest = portfolio.receipt_digest;
+
+        let mut resolutions = Vec::with_capacity(portfolio.selected.len());
+        for realization_id in &portfolio.selected {
+            let binding = registry.realization_binding(realization_id).ok_or_else(|| {
+                ReadOnlyVerticalError::PromptRegistry(
+                    PromptRegistryV2Error::RealizationUnavailable(realization_id.to_string()),
+                )
+            })?;
+            let resolution = registry
+                .resolve_payload_v2(
+                    snapshot,
+                    generation_vector_digest,
+                    &model_tuple,
+                    now_unix_ms,
+                    realization_id,
+                )
+                .map_err(ReadOnlyVerticalError::PromptRegistry)?;
+            let admission = registry.admission(&binding.factor_id).ok_or(
+                ReadOnlyVerticalError::PromptRegistry(PromptRegistryV2Error::RegistryIntegrity),
+            )?;
+            let expected_value = score_by_factor.get(&binding.factor_id).copied().ok_or_else(|| {
+                ReadOnlyVerticalError::PromptRegistrySource(RegistrySourceError::MissingScore(
+                    binding.factor_id.to_string(),
+                ))
+            })?;
+            let role = match binding.role {
+                PromptRoleV2::ToolSchemaFragment => CompilerContextRoleV2::Schema,
+                PromptRoleV2::SystemInstruction
+                | PromptRoleV2::DeveloperInstruction
+                | PromptRoleV2::UserTemplate => CompilerContextRoleV2::TrustedInstruction,
+            };
+            let tokenization = TokenizationReceiptV2::new(
+                binding.realization_id.clone(),
+                resolution.payload_digest,
+                binding.tokenizer_digest,
+                u64::from(binding.token_cost),
+            )
+            .map_err(ReadOnlyVerticalError::ContextV2)?;
+            compilation.candidates.push(ContextCandidateV2 {
+                item_id: binding.realization_id.clone(),
+                role,
+                content_digest: resolution.payload_digest,
+                source_digest: resolution.binding_digest,
+                generation_vector_digest,
+                tokenization,
+                expected_value,
+                trusted_admission_digest: Some(admission.admission_digest),
+                contains_secret: false,
+            });
+            resolutions.push(resolution);
+        }
+
+        let compiled = compile_v2(compilation).map_err(ReadOnlyVerticalError::ContextV2)?;
+        ensure_no_authority("prompt context compilation", compiled.receipt.authority)?;
+        Ok((portfolio, compiled, resolutions))
     }
 }
 
