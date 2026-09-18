@@ -119,17 +119,20 @@ impl ArtifactLifecycleJournalV2 {
         event: ArtifactLifecycleEventV1,
         now: u64,
     ) -> Result<ArtifactLifecycleJournalReceiptV2, ArtifactLifecycleJournalError> {
+        validate_actor_for_current_append(&actor, now)?;
+        validate_actor_event_binding(&actor, &event)?;
+        self.append_validated(expected_head_digest, producer_id, actor, event)
+    }
+
+    fn append_validated(
+        &mut self,
+        expected_head_digest: Digest32,
+        producer_id: &StableId,
+        actor: LifecycleActorEvidenceV2,
+        event: ArtifactLifecycleEventV1,
+    ) -> Result<ArtifactLifecycleJournalReceiptV2, ArtifactLifecycleJournalError> {
         if expected_head_digest != self.head_digest {
             return Err(ArtifactLifecycleJournalError::HeadMismatch);
-        }
-        validate_actor(&actor, now)?;
-        if event.actor_id != actor.actor_id
-            || event.actor_credential_digest != actor.credential_digest
-            || event.authority_epoch != actor.authority_epoch
-            || event.occurred_at < actor.verified_at
-            || event.occurred_at > actor.expires_at
-        {
-            return Err(ArtifactLifecycleJournalError::ActorBindingMismatch);
         }
         let event_digest = validate_artifact_lifecycle_transition(producer_id, &event)?;
         if let Some(existing_digest) = self.event_digests.get(&event.event_id) {
@@ -211,15 +214,18 @@ impl ArtifactLifecycleJournalV2 {
         let expected_head = snapshot.head_digest;
         let mut journal = Self::new();
         for expected in snapshot.records {
-            if expected.predecessor_head_digest != journal.head_digest {
+            if expected.predecessor_head_digest != journal.head_digest
+                || expected.event.occurred_at > now
+            {
                 return Err(ArtifactLifecycleJournalError::SnapshotMismatch);
             }
-            let receipt = journal.append(
+            validate_actor_evidence(&expected.actor)?;
+            validate_actor_event_binding(&expected.actor, &expected.event)?;
+            let receipt = journal.append_validated(
                 journal.head_digest,
                 &expected.producer_id,
                 expected.actor.clone(),
                 expected.event.clone(),
-                now,
             )?;
             let actual = journal
                 .records
@@ -235,19 +241,43 @@ impl ArtifactLifecycleJournalV2 {
         }
         Ok(journal)
     }
+
 }
 
-fn validate_actor(
+fn validate_actor_evidence(
     actor: &LifecycleActorEvidenceV2,
-    now: u64,
 ) -> Result<(), ArtifactLifecycleJournalError> {
     if actor.credential_digest.is_zero()
         || actor.authority_epoch == 0
         || actor.verified_at > actor.expires_at
-        || now < actor.verified_at
-        || now > actor.expires_at
     {
         return Err(ArtifactLifecycleJournalError::InvalidActorEvidence);
+    }
+    Ok(())
+}
+
+fn validate_actor_for_current_append(
+    actor: &LifecycleActorEvidenceV2,
+    now: u64,
+) -> Result<(), ArtifactLifecycleJournalError> {
+    validate_actor_evidence(actor)?;
+    if now < actor.verified_at || now > actor.expires_at {
+        return Err(ArtifactLifecycleJournalError::InvalidActorEvidence);
+    }
+    Ok(())
+}
+
+fn validate_actor_event_binding(
+    actor: &LifecycleActorEvidenceV2,
+    event: &ArtifactLifecycleEventV1,
+) -> Result<(), ArtifactLifecycleJournalError> {
+    if event.actor_id != actor.actor_id
+        || event.actor_credential_digest != actor.credential_digest
+        || event.authority_epoch != actor.authority_epoch
+        || event.occurred_at < actor.verified_at
+        || event.occurred_at > actor.expires_at
+    {
+        return Err(ArtifactLifecycleJournalError::ActorBindingMismatch);
     }
     Ok(())
 }
@@ -501,4 +531,53 @@ mod tests {
         assert_eq!(reopened.head_digest(), journal.head_digest());
         assert_eq!(reopened.records(), journal.records());
     }
+
+    #[test]
+    fn art_06_lifecycle_snapshot_reopens_after_actor_credential_expiry() {
+        let producer_id = id("producer");
+        let artifact_id = id("artifact");
+        let producer = actor("producer", LifecycleActorRoleV2::Producer);
+        let mut journal = ArtifactLifecycleJournalV2::new();
+        journal
+            .append(
+                Digest32::ZERO,
+                &producer_id,
+                producer.clone(),
+                event(
+                    "trained",
+                    &artifact_id,
+                    &producer,
+                    ArtifactLifecycleStateV1::Proposed,
+                    ArtifactLifecycleStateV1::Trained,
+                    20,
+                ),
+                20,
+            )
+            .expect("append succeeds while credential is current");
+
+        let snapshot = journal.snapshot();
+        let mut reopened = ArtifactLifecycleJournalV2::from_snapshot(snapshot, 101)
+            .expect("historically valid snapshot survives credential expiry");
+        assert_eq!(reopened.head_digest(), journal.head_digest());
+        assert_eq!(reopened.records(), journal.records());
+
+        assert_eq!(
+            reopened.append(
+                reopened.head_digest(),
+                &producer_id,
+                producer.clone(),
+                event(
+                    "late",
+                    &artifact_id,
+                    &producer,
+                    ArtifactLifecycleStateV1::Trained,
+                    ArtifactLifecycleStateV1::Evaluated,
+                    21,
+                ),
+                101,
+            ),
+            Err(ArtifactLifecycleJournalError::InvalidActorEvidence)
+        );
+    }
+
 }
