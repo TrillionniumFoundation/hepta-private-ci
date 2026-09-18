@@ -39,7 +39,7 @@ def load(path: Path) -> dict[str, Any]:
     return value
 
 
-def canonical_path(root: Path, value: Any, label: str, *, require_file: bool) -> Path:
+def canonical_path(root: Path, value: Any, label: str, *, require_file: bool | None) -> Path:
     need(
         isinstance(value, str)
         and bool(value)
@@ -63,7 +63,8 @@ def canonical_path(root: Path, value: Any, label: str, *, require_file: bool) ->
         and resolved.relative_to(root).as_posix() == value,
         f"{label}: aliased path {value!r}",
     )
-    need(path.is_file() if require_file else path.is_dir(), f"{label}: missing path {value}")
+    exists = path.is_file() if require_file is True else path.is_dir() if require_file is False else (path.is_file() or path.is_dir())
+    need(exists, f"{label}: missing path {value}")
     return path
 
 
@@ -122,7 +123,7 @@ def verify(root: Path = ROOT) -> int:
             f"{module}: resolved roots",
         )
         for owner_root in resolved_roots:
-            canonical_path(root, owner_root, f"{module}: owner root", require_file=False)
+            canonical_path(root, owner_root, f"{module}: owner root", require_file=None)
         maps[module] = row
         roots[module] = resolved_roots
 
