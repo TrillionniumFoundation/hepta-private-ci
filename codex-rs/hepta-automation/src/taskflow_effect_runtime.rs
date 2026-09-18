@@ -155,7 +155,35 @@ impl AutomationStore {
             ));
         }
 
-        let token = authority.claim(&request.signed_grant, &request.binding)?;
+        let token = match authority.claim(&request.signed_grant, &request.binding) {
+            Ok(token) => token,
+            Err(error) => {
+                // The provider was not called, but the claimed step attempt must
+                // still be durably terminalized. A new grant therefore uses a
+                // new attempt instead of replaying ambiguous bytes.
+                let receipt_digest = Sha256Digest::for_bytes(
+                    format!(
+                        "hepta.automation.final-use-denied.v1\0{}\0{}\0{}\0{error}",
+                        request.run_id, request.step_id, request.operation_id
+                    )
+                    .as_bytes(),
+                );
+                self.record_taskflow_step(
+                    &request.run_id,
+                    &request.step_id,
+                    request.attempt,
+                    &request.fence,
+                    &request.intent_digest,
+                    &request.payload_digest,
+                    &record_command,
+                    &receipt_digest,
+                    TaskFlowStepObservation::Failed,
+                    now_ms,
+                )
+                .await?;
+                return Err(TaskFlowEffectRuntimeError::FinalUse(error));
+            }
+        };
         let provider_request = TaskFlowProviderRequest {
             task_id: request.task_id,
             occurrence: request.occurrence,
