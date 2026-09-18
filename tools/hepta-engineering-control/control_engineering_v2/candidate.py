@@ -73,14 +73,44 @@ PROTECTED_PREFIXES = (
 
 # Candidate-owned code may never rewrite the oracle that judges the same candidate.
 # These repository-shape rules are mandatory and cannot be removed by an envelope.
-_ORACLE_SEGMENTS = frozenset({"test", "tests", "__tests__", "fixtures", "goldens"})
+_ORACLE_SEGMENTS = frozenset(
+    {
+        "test",
+        "tests",
+        "__tests__",
+        "fixtures",
+        "goldens",
+        "__snapshots__",
+        "snapshots",
+        "testdata",
+    }
+)
 _ORACLE_FILE_PREFIXES = ("test_",)
 _ORACLE_FILE_SUFFIXES = (
     "_test.py",
     "_tests.py",
     "_test.rs",
     "_tests.rs",
+    "_test.go",
+    "_spec.rb",
+    "_test.cc",
+    "_test.cpp",
+    ".test.js",
+    ".test.jsx",
+    ".test.mjs",
+    ".test.cjs",
+    ".test.ts",
+    ".test.tsx",
+    ".spec.js",
+    ".spec.jsx",
+    ".spec.mjs",
+    ".spec.cjs",
+    ".spec.ts",
+    ".spec.tsx",
+    ".bats",
+    ".feature",
     ".snap",
+    ".snapshot",
     ".golden",
 )
 _INLINE_ORACLE_MARKERS = (
