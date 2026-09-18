@@ -27,7 +27,14 @@ use codex_hepta_paths::HeptaStateLayout;
 use codex_hepta_paths::HeptaStateRoot;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+use codex_hepta_wire::PayloadCodec;
+use codex_hepta_wire::SchemaCodecError;
+use codex_hepta_wire::SchemaDescriptor;
+use codex_hepta_wire::SchemaRegistry;
 use codex_hepta_wire::WireEnvelopeV2;
+use codex_hepta_wire::WireVersion;
+use codex_hepta_wire::decode_typed;
+use codex_hepta_wire::encode_typed;
 use hmac::Hmac;
 use hmac::Mac;
 use serde::Deserialize;
@@ -47,6 +54,8 @@ const KEY_ID_DOMAIN: &[u8] = b"hepta.memory.durable-integrity.key-id.v1";
 const ROW_MAC_DOMAIN: &[u8] = b"hepta.memory.durable-integrity.row-mac.v1";
 const INTEGRITY_TAG_PREFIX: &str = "hmac-sha256:";
 const MAX_DATABASE_ROWS: usize = 100_000;
+const RUNTIME_STATUS_WIRE_SCHEMA: &str = "hepta.runtime.status.v1";
+const RUNTIME_STATUS_WIRE_MAX_BYTES: usize = 32 * 1024;
 
 type HmacSha256 = Hmac<Sha256>;
 type IntegrityKey = Zeroizing<[u8; 32]>;
@@ -112,11 +121,27 @@ impl HeptaRuntime {
     /// own runtime snapshot version/generation. This method grants no authority
     /// and preserves the existing JSON API as the default representation.
     pub fn status_wire_v2(&self) -> Result<Vec<u8>> {
+        let codec = RuntimeStatusWireCodec::new()?;
+        let mut registry = SchemaRegistry::new();
+        registry.register(codec.descriptor().clone())?;
+
+        // Validate the existing organ output through the registered typed schema
+        // before publication, then re-encode its canonical representation.
+        let source_payload = self.status_json()?;
+        let typed = decode_typed(
+            &registry,
+            WireVersion::V2,
+            codec.descriptor().schema(),
+            &codec,
+            &source_payload,
+        )?;
+        let payload = encode_typed(&registry, WireVersion::V2, &codec, &typed)?;
+
         let envelope = WireEnvelopeV2::new(
-            StableId::new("hepta.runtime.status.v1")?,
+            codec.descriptor().schema().clone(),
             StableId::new("runtime.codex")?,
             Generation::new(1)?,
-            self.status_json()?,
+            payload,
         )
         .context("encode runtime status HPTA V2 envelope")?;
         Ok(envelope.encode())
@@ -142,6 +167,118 @@ pub struct RuntimeStatus {
     pub state_root: String,
     pub state: RuntimeStateStatus,
     pub authority: RuntimeAuthorityStatus,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct RuntimeStatusWire {
+    schema: String,
+    product: String,
+    status: String,
+    state_root: String,
+    state: RuntimeStateStatusWire,
+    authority: RuntimeAuthorityStatusWire,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct RuntimeStateStatusWire {
+    adapter: String,
+    schema_version: i64,
+    outcome_generation: i64,
+    preference_generation: i64,
+    runtime_snapshot_version: u64,
+    runtime_snapshot_generation: u64,
+    integrity_binding_present: bool,
+    integrity_verification: String,
+    open_mode: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct RuntimeAuthorityStatusWire {
+    telegram: bool,
+    outbound: bool,
+    model_invocation: bool,
+    operator_mutation: bool,
+    enforce: bool,
+    promotion: bool,
+    retirement: bool,
+    automatic_transition: bool,
+}
+
+struct RuntimeStatusWireCodec {
+    descriptor: SchemaDescriptor,
+}
+
+impl RuntimeStatusWireCodec {
+    fn new() -> Result<Self> {
+        Ok(Self {
+            descriptor: SchemaDescriptor::new(
+                StableId::new(RUNTIME_STATUS_WIRE_SCHEMA)?,
+                WireVersion::V2,
+                WireVersion::V2,
+                RUNTIME_STATUS_WIRE_MAX_BYTES,
+            )?,
+        })
+    }
+
+    fn validate(value: &RuntimeStatusWire) -> Result<(), SchemaCodecError> {
+        if value.schema != "hepta_vnext_live_runtime_status_v1"
+            || value.product != "hepta"
+            || value.status != "ready"
+        {
+            return Err(SchemaCodecError::Rejected(
+                "runtime status identity fields are invalid",
+            ));
+        }
+        if value.state_root.is_empty()
+            || value.state.adapter.is_empty()
+            || value.state.integrity_verification.is_empty()
+            || value.state.open_mode.is_empty()
+            || value.state.runtime_snapshot_version == 0
+        {
+            return Err(SchemaCodecError::Rejected(
+                "runtime status required state field is invalid",
+            ));
+        }
+        let authority = value.authority;
+        if authority.telegram
+            || authority.outbound
+            || authority.model_invocation
+            || authority.operator_mutation
+            || authority.enforce
+            || authority.promotion
+            || authority.retirement
+            || authority.automatic_transition
+        {
+            return Err(SchemaCodecError::Rejected(
+                "runtime status cannot serialize effect authority",
+            ));
+        }
+        Ok(())
+    }
+}
+
+impl PayloadCodec for RuntimeStatusWireCodec {
+    type Value = RuntimeStatusWire;
+
+    fn descriptor(&self) -> &SchemaDescriptor {
+        &self.descriptor
+    }
+
+    fn encode_value(&self, value: &Self::Value) -> Result<Vec<u8>, SchemaCodecError> {
+        Self::validate(value)?;
+        serde_json::to_vec(value)
+            .map_err(|_| SchemaCodecError::Rejected("runtime status encode failed"))
+    }
+
+    fn decode_value(&self, payload: &[u8]) -> Result<Self::Value, SchemaCodecError> {
+        let value: RuntimeStatusWire = serde_json::from_slice(payload)
+            .map_err(|_| SchemaCodecError::Rejected("runtime status schema rejected"))?;
+        Self::validate(&value)?;
+        Ok(value)
+    }
 }
 
 /// Explicitly closed effects for the internal-test live shell.
