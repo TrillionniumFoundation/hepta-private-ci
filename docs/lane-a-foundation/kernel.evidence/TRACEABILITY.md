@@ -15,10 +15,10 @@ executed successfully.
 | EVID-04 claim-class substitution rejected | `qualification_store.rs` | `evid_04_claim_class_substitution_is_rejected_by_query` | required | pending external execution/acceptance |
 | `IndependentDecisionReceiptV1` producer/domain registry consistency | `QualificationEvidenceEnvelopeV1::independent_decision_receipt` and `TECHNICAL.md` | protocol/document registry verification | required | receipt must originate from an independently authenticated principal |
 | migration and immutable storage | `0011_qualification_evidence.sql`, `schema_validation.rs` | Lane A migration/schema verifier and reopen tests | required | not a substitute for independent semantic review |
-| production caller / writer | qualification façade plus named host integration | integration test must name the real caller | pending until a named authenticated product host executes the API | pending |
+| production caller / writer | qualification façade plus `PRODUCTION_COMPOSITION_HANDOFF.md` | integration test must name the real caller | pending until a named authenticated product host executes the API | pending |
 | terminal outcome observer | provider-effect reconciliation and host-specific observer | provider-effect tests plus product integration | pending per provider/host | pending |
 | external anti-rollback | `ANTI_ROLLBACK_V1.md` | repository can validate format/algorithm only | restore rehearsal receipt required | external checkpoint signer/store required |
-| operator acceptance | `codex-rs/hepta-operator-acceptance` formal signed ceremony | crate tests and formal environment checks | exact candidate/qualification receipt required | pending execution by an independent authorized operator |
+| operator acceptance | `codex-rs/hepta-operator-acceptance` plus `INDEPENDENT_ACCEPTANCE_HANDOFF.md` | crate tests and formal environment checks | exact candidate/qualification receipt required | pending execution by an independent authorized operator |
 | activation / promotion / release | external governance | repository gates | not claimed by this module | not claimed |
 
 ## Required module execution receipt fields

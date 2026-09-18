@@ -190,7 +190,9 @@ Current operating and state-format references:
 
 - [codex-rs/hepta-evidence/src/qualification_store.rs](../../../codex-rs/hepta-evidence/src/qualification_store.rs).
 - [codex-rs/hepta-evidence/src/provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs).
-- [anti-rollback and restore-frontier contract](../../lane-a-foundation/kernel.evidence/ANTI_ROLLBACK_V1.md).
+- [anti-rollback and restore-frontier contract](../../lane-a-foundation/kernel.evidence/ANTI_ROLLBACK_V1.md) and [checkpoint schema](../../lane-a-foundation/kernel.evidence/EXTERNAL_CHECKPOINT_V1.schema.json).
+- [production composition handoff](../../lane-a-foundation/kernel.evidence/PRODUCTION_COMPOSITION_HANDOFF.md).
+- [independent acceptance handoff](../../lane-a-foundation/kernel.evidence/INDEPENDENT_ACCEPTANCE_HANDOFF.md).
 - [qualification traceability matrix](../../lane-a-foundation/kernel.evidence/TRACEABILITY.md).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
