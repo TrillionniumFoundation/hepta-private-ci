@@ -308,18 +308,13 @@ impl MatrixSdkClient {
                 ingress,
                 store,
             }
-            .commit_response(
-                &response,
-                checkpoint.as_ref(),
-                observed_at_ms,
-                |room_id| {
-                    self.client.get_room(room_id).and_then(|room| {
-                        room.clone_info()
-                            .room_version()
-                            .and_then(matrix_sdk::ruma::RoomVersionId::rules)
-                    })
-                },
-            )
+            .commit_response(&response, checkpoint.as_ref(), observed_at_ms, |room_id| {
+                self.client.get_room(room_id).and_then(|room| {
+                    room.clone_info()
+                        .room_version()
+                        .and_then(matrix_sdk::ruma::RoomVersionId::rules)
+                })
+            })
             .await
         }
         .await;
