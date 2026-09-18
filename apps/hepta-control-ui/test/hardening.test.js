@@ -432,3 +432,45 @@ test("bootstrap streaming bound and JSON media type fail closed", async () => {
   );
 });
 
+test("transport POST body rejects accessor-shaped input before CSRF or network I/O", async () => {
+  let getterCalls = 0;
+  let fetchCalls = 0;
+  let csrfCalls = 0;
+  const transport = new SameOriginHttpTransport({
+    origin: "https://control.example",
+    csrfTokenProvider: async () => {
+      csrfCalls += 1;
+      return "csrf-token";
+    },
+    fetchImpl: async () => {
+      fetchCalls += 1;
+      return new Response("{}", {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    },
+  });
+  const request = {
+    sessionId: "session.1",
+    connectionGeneration: 1,
+    runtimeGeneration: 1,
+    displayedRevision: 1,
+    semanticDigest: D1,
+  };
+  Object.defineProperty(request, "operationId", {
+    enumerable: true,
+    get() {
+      getterCalls += 1;
+      return "operation.hostile";
+    },
+  });
+
+  await assert.rejects(
+    transport.request("operation/request", request),
+    (error) => error.code === ERROR_CODES.INVALID_INPUT,
+  );
+  assert.equal(getterCalls, 0);
+  assert.equal(csrfCalls, 0);
+  assert.equal(fetchCalls, 0);
+});
+
