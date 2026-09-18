@@ -159,16 +159,30 @@ impl AppServerModelDriver {
             return Err("provider substituted the requested model".into());
         }
         // Recheck the actual generation after acquiring context and connecting.
-        owner.session_ingress().await?;
+        if let Err(error) = owner.session_ingress().await {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err(error.into());
+        }
         // The Agentd context response is an observed cut, not a lease. Re-read
         // it immediately before turn/start and require the coherent owner/read
         // cut, ordered selected memories and read decision to remain identical.
         // Then attach the freshly re-read snapshot so planning metadata is not
-        // older than the final currentness check.
+        // older than the final currentness check. Any failure after ThreadStart
+        // explicitly shuts the ephemeral provider client before returning.
         if let (Some(query), Some(expected_context)) = (context_query.as_ref(), context.as_ref()) {
-            let current_context = owner.cognitive_context(query.clone(), /*limit*/ 4).await?;
-            ensure_context_selection_current(expected_context, &current_context)?;
-            additional_context = Some(context_attachment(&current_context)?);
+            let refreshed: Result<_> = async {
+                let current_context = owner.cognitive_context(query.clone(), /*limit*/ 4).await?;
+                ensure_context_selection_current(expected_context, &current_context)?;
+                context_attachment(&current_context)
+            }
+            .await;
+            match refreshed {
+                Ok(value) => additional_context = Some(value),
+                Err(error) => {
+                    let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                    return Err(error);
+                }
+            }
         }
         if cancellation.is_cancelled() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
