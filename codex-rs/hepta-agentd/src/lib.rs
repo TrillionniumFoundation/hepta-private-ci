@@ -22,6 +22,7 @@ mod operations_host;
 mod production_writer_host;
 mod qualification_writer;
 mod runtime;
+mod self_evolution_host;
 mod state;
 
 pub use authbus_ingress::authbus_text_claims;
@@ -89,6 +90,9 @@ pub use operations_host::AgentdOperationsHost;
 pub use operations_host::AutomationGrantProvider;
 pub use production_writer_host::AgentdProductionWriterHost;
 pub use runtime::run;
+pub use self_evolution_host::AgentdSelfEvolutionAdoptionV1;
+pub use self_evolution_host::AgentdSelfEvolutionError;
+pub use self_evolution_host::AgentdSelfEvolutionHostV1;
 
 use control::AgentdControlServer;
 use event_buffer::EventBuffer;
