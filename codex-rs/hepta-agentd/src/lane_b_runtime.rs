@@ -150,19 +150,10 @@ impl AgentRunCoordinator {
         if self.composition.agent_id != composition.agent_id {
             return Err(AgentRunError::InvalidIdentity("agent"));
         }
-        if composition.agentd_generation < self.composition.agentd_generation
-            || composition.supervisor_generation < self.composition.supervisor_generation
+        if composition.agentd_generation <= self.composition.agentd_generation
+            || composition.supervisor_generation <= self.composition.supervisor_generation
         {
             return Err(AgentRunError::InvalidGeneration);
-        }
-        if composition.agentd_generation == self.composition.agentd_generation
-            || composition.supervisor_generation == self.composition.supervisor_generation
-        {
-            if composition != self.composition {
-                return Err(AgentRunError::Conflict);
-            }
-            self.draining = false;
-            return Ok(Vec::new());
         }
         let changed = self.mark_unfinished(
             "agentd_restarted_before_dispatch",
