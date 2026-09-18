@@ -414,6 +414,7 @@ fn adapt_node(
     fact_set_sha256: &str,
     failure_class: FailureClass,
 ) -> Result<KnowledgeNodeV2, CognitiveStoreError> {
+    parse_digest(fact_set_sha256, failure_class)?;
     let node_id = stable_id(&node.node_id, "KG node", failure_class)?;
     let node_kind_id = stable_id(
         "kind:cognitive-entity-occurrence-v2",
@@ -462,6 +463,7 @@ fn adapt_edge(
     fact_set_sha256: &str,
     failure_class: FailureClass,
 ) -> Result<KnowledgeEdgeV2, CognitiveStoreError> {
+    parse_digest(fact_set_sha256, failure_class)?;
     let validity_digest = framed_digest(
         EDGE_VALIDITY_DOMAIN,
         &[
