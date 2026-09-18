@@ -111,6 +111,11 @@ const forbidden = await listen((_request, response) => {
 const forbiddenOrigin = `http://127.0.0.1:${forbidden.address().port}`;
 
 const app = await listen((request, response) => {
+  if (request.url === "/redirect-forbidden") {
+    response.writeHead(302, { location: forbiddenOrigin + "/redirect-escape" });
+    response.end();
+    return;
+  }
   if (request.url === "/cookie-set") {
     response.writeHead(200, {
       "content-type": "text/html; charset=utf-8",
@@ -303,6 +308,39 @@ try {
   assert.match(page.semanticObservation.visibleText, /Hepta E2E/);
   await new Promise((resolve) => setTimeout(resolve, 250));
   assert.equal(forbiddenHits, 0, "cross-origin subresource must not escape the grant broker");
+
+  page = await host.observePage({
+    profileId: "profile.e2e",
+    principalId: "principal.e2e",
+    generation: 1,
+    observationBudget: 65_536,
+  });
+  const redirectAction = {
+    kind: "navigate",
+    url: `${origin}/redirect-forbidden`,
+    policyDigest: D1,
+    expectedRevision: 3,
+  };
+  const redirectGrant = grant("navigate", browserActionDigest(redirectAction), origin, "redirect");
+  await host.admitEffectGrant({
+    profileId: "profile.e2e",
+    principalId: "principal.e2e",
+    generation: 1,
+    effectGrant: redirectGrant,
+  });
+  const redirectInput = operation({
+    profileId: "profile.e2e",
+    principalId: "principal.e2e",
+    generation: 1,
+    operationId: "operation.redirect",
+    pageGeneration: page.pageGeneration,
+    typedAction: redirectAction,
+    origin,
+    effectGrant: redirectGrant,
+  });
+  await host.navigateOrAct(redirectInput);
+  await new Promise((resolve) => setTimeout(resolve, 250));
+  assert.equal(forbiddenHits, 0, "redirect target outside the origin grant must not be reached");
 
   const closed = await host.closeProfile({
     profileId: "profile.e2e",
@@ -527,6 +565,7 @@ try {
       openNavigateObserveTypeClickClose: true,
       exactOriginEgressObserved: true,
       crossOriginSubresourceDenied: true,
+      redirectEscapeDenied: true,
       persistedCrashReconciliation: true,
       crossProfileCookieIsolation: true,
       workerSha256: sha(workerBytes),

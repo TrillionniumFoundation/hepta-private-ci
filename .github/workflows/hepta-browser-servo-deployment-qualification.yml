@@ -138,6 +138,7 @@ jobs:
           assert receipt['realWorkerSmoke']['privateProtocolRoundTrip'] is True
           assert receipt['realBrowserE2E']['openNavigateObserveTypeClickClose'] is True
           assert receipt['realBrowserE2E']['crossOriginSubresourceDenied'] is True
+          assert receipt['realBrowserE2E']['redirectEscapeDenied'] is True
           assert receipt['realBrowserE2E']['crossProfileCookieIsolation'] is True
           assert receipt['realBrowserE2E']['persistedCrashReconciliation'] is True
           assert receipt['realBrowserSoak']['cycles'] == 32
@@ -178,6 +179,7 @@ jobs:
           result = json.loads(pathlib.Path("deployment-evidence/real-browser-e2e.json").read_text())
           assert result["openNavigateObserveTypeClickClose"] is True
           assert result["crossOriginSubresourceDenied"] is True
+          assert result["redirectEscapeDenied"] is True
           assert result["crossProfileCookieIsolation"] is True
           assert result["persistedCrashReconciliation"] is True
           PY

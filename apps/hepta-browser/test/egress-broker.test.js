@@ -26,6 +26,43 @@ function rawProxy(socketPath, request) {
   });
 }
 
+function connectTunnel(socketPath, authority, payload = "probe") {
+  return new Promise((resolve, reject) => {
+    const socket = net.createConnection(socketPath);
+    let buffered = Buffer.alloc(0);
+    let tunneled = false;
+    socket.on("connect", () => {
+      socket.write(
+        `CONNECT ${authority} HTTP/1.1\r\nHost: ${authority}\r\nConnection: close\r\n\r\n`,
+      );
+    });
+    socket.on("data", (chunk) => {
+      buffered = Buffer.concat([buffered, chunk]);
+      if (!tunneled) {
+        const split = buffered.indexOf("\r\n\r\n");
+        if (split >= 0) {
+          const header = buffered.subarray(0, split + 4).toString("utf8");
+          if (!header.startsWith("HTTP/1.1 200")) {
+            socket.end();
+            resolve({ header, body: buffered.subarray(split + 4).toString("utf8") });
+            return;
+          }
+          tunneled = true;
+          buffered = buffered.subarray(split + 4);
+          socket.write(payload);
+        }
+      } else if (buffered.toString("utf8").includes(`echo:${payload}`)) {
+        socket.end();
+      }
+    });
+    socket.on("end", () => {
+      const text = buffered.toString("utf8");
+      resolve({ header: tunneled ? "HTTP/1.1 200" : text, body: text });
+    });
+    socket.on("error", reject);
+  });
+}
+
 test("grant-scoped proxy admits only the exact allowed HTTP origin", async () => {
   const root = await mkdtemp(join(tmpdir(), "hepta-egress-"));
   let forbiddenHits = 0;
@@ -107,6 +144,48 @@ test("production broker fails closed on IPv4-mapped IPv6 destinations", async ()
     assert.equal(broker.observations.length, 0);
   } finally {
     await broker.close();
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+
+test("HTTPS CONNECT is bound to the exact granted authority and port", async () => {
+  const root = await mkdtemp(join(tmpdir(), "hepta-egress-connect-"));
+  let allowedHits = 0;
+  let deniedHits = 0;
+  const allowedServer = net.createServer((socket) => {
+    socket.once("data", (chunk) => {
+      allowedHits += 1;
+      socket.end(`echo:${chunk.toString("utf8")}`);
+    });
+  });
+  const deniedServer = net.createServer((socket) => {
+    deniedHits += 1;
+    socket.destroy();
+  });
+  await new Promise((resolve) => allowedServer.listen(0, "127.0.0.1", resolve));
+  await new Promise((resolve) => deniedServer.listen(0, "127.0.0.1", resolve));
+  const allowedAuthority = `127.0.0.1:${allowedServer.address().port}`;
+  const deniedAuthority = `127.0.0.1:${deniedServer.address().port}`;
+  const broker = new GrantScopedEgressBroker({
+    socketPath: join(root, "proxy.sock"),
+    allowedOrigins: [`https://${allowedAuthority}`],
+    allowPrivateNetworkForTests: true,
+  });
+  await broker.start();
+  try {
+    const allowed = await connectTunnel(join(root, "proxy.sock"), allowedAuthority, "tls-bytes");
+    assert.match(allowed.header, /200/);
+    assert.match(allowed.body, /echo:tls-bytes/);
+    assert.equal(allowedHits, 1);
+
+    const denied = await connectTunnel(join(root, "proxy.sock"), deniedAuthority, "blocked");
+    assert.doesNotMatch(denied.header, /200/);
+    assert.equal(deniedHits, 0);
+  } finally {
+    await broker.close();
+    await new Promise((resolve) => allowedServer.close(resolve));
+    await new Promise((resolve) => deniedServer.close(resolve));
     await rm(root, { recursive: true, force: true });
   }
 });
