@@ -46,21 +46,23 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-cognitive-store/src/lib.rs](../../../codex-rs/hepta-cognitive-store/src/lib.rs); observed identifiers include `CognitiveStore`, `append`, `get`, `snapshot_records`, `StoreReceipt`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.store.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-cognitive-store/src/lib.rs](../../../codex-rs/hepta-cognitive-store/src/lib.rs); observed identifiers include `CognitiveStore`, `append`, `get`, `snapshot_records`, `StoreReceipt`. This is a source navigation binding, not an execution receipt. The candidate now also contains the product-facing [`ProductionCognitiveStore`](../../../codex-rs/hepta-cognitive-store/src/production.rs) façade and the named Agentd writer host consumer. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.store.md#8-current-native-implementation) and [production closure](PRODUCTION_CLOSURE.md) for the exact implemented boundary and remaining recovery/qualification work.
 
 ## 3. Boundary, responsibilities and non-goals
 
-Current durable integration: the physical memory/source writer remains the
-existing SQLx `hepta-memory::CognitiveStore`. Its
-`codex-rs/hepta-memory/src/lane_c_snapshot.rs` adapter projects one authorized
-SQLite transaction into the new cognitive snapshot and read types; it does not
-add a second writer or synchronize a second database. The in-memory V2 store in
-this module is not a durable backend. See
-`codex-rs/hepta-memory/LANE_C_SQLITE.md` for exact ID/frontier mapping, bounded
-materialization, correction/deletion propagation, and reopen/rollback-witness
-behavior. The separate descriptor-safe `open_with_recovery` prerequisites
-remain unresolved; an ordinary reopen plus independently retained cut comparison
-must not be reported as full recovery admission.
+Current durable integration uses `cognitive.store` as the product-facing
+authoritative owner and `hepta-memory::CognitiveStore` as its private SQLx
+durability engine. Product startup enters through `ProductionCognitiveStore`;
+Agentd acquires the externally authorized production writer through that façade
+rather than opening a raw durable backend as a competing ownership seam. The
+`lane_c_snapshot` adapter still projects one authorized SQLite transaction into
+read types without creating a second writer or database. The in-memory V1/V2
+stores remain semantic oracles, not the physical backend. See
+[production closure](PRODUCTION_CLOSURE.md) and
+`codex-rs/hepta-memory/LANE_C_SQLITE.md` for exact ownership, cutover and
+frontier semantics. Descriptor-safe `open_with_recovery` remains fail-closed
+until the descriptor-backed SQLite VFS/current-writer-fence prerequisite exists;
+ordinary durable reopen must not be reported as that stronger recovery claim.
 
 Direct dependencies:
 
@@ -169,11 +171,12 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-The physical writer remains hepta-memory::CognitiveStore and cognitive_1.sqlite3. The new crate supplies an in-memory semantic oracle and V2 types, not a replacement durable backend. Use the existing owner snapshot adapter and independent cut witness; descriptor-safe open_with_recovery still requires its unimplemented VFS/currentness prerequisites.
+The durable bytes remain in `cognitive_1.sqlite3`, but the product ownership seam is now `ProductionCognitiveStore`; `hepta-memory::CognitiveStore` is the private durability engine behind that seam. Use the owner façade, existing snapshot adapter and independently retained cut witness. Descriptor-safe `open_with_recovery` still requires its unimplemented VFS/currentness prerequisites.
 
 Current operating and state-format references:
 
 - [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md).
+- [cognitive.store production closure](PRODUCTION_CLOSURE.md).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -183,6 +186,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs); named case: `existing_sqlite_writes_are_readable_by_new_lane_c_after_reopen`.
 - [codex-rs/hepta-cognitive-store/src/lib_tests.rs](../../../codex-rs/hepta-cognitive-store/src/lib_tests.rs); named case: `append_and_correction_are_predecessor_fenced`.
+- [codex-rs/hepta-cognitive-store/src/production_tests.rs](../../../codex-rs/hepta-cognitive-store/src/production_tests.rs); named case: `owner_facade_reopens_the_same_durable_sqlite_cut`.
 
 In `codex-rs`, run `just test -p codex-hepta-memory -p codex-hepta-cognitive-store`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) separately labels target acceptance designs.
 
