@@ -28,6 +28,27 @@ impl MatrixDurableStore {
         dispatch_by_txn_pool(self.sqlite_pool(), txn_id).await
     }
 
+    pub async fn dispatch_record_for_operation(
+        &self,
+        operation_id: &str,
+    ) -> Result<Option<MatrixDispatchRecord>, MatrixDurableError> {
+        validate_local_identity(operation_id)?;
+        sqlx::query(
+            "SELECT operation_id, stable_txn_id, homeserver_id, room_id, device_id,
+                    binding_revision, session_generation, authority_epoch, payload_sha256,
+                    grant_payload_sha256, deadline_ms, state, last_attempt, accepted_event_id,
+                    terminal_event_id, send_observation_sha256, redaction_observation_sha256,
+                    prepared_at_ms, updated_at_ms, terminal_at_ms
+             FROM matrix_dispatch_ledger WHERE operation_id = ?",
+        )
+        .bind(operation_id)
+        .fetch_optional(self.sqlite_pool())
+        .await
+        .map_err(unavailable)?
+        .map(|row| dispatch_from_row(&row))
+        .transpose()
+    }
+
     pub async fn dispatch_observations(
         &self,
         txn_id: &MatrixTransactionId,
