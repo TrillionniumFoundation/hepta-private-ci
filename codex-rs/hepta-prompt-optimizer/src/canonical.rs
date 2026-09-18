@@ -246,6 +246,38 @@ pub fn enumerate_factors(
     Ok(receipt)
 }
 
+#[must_use]
+pub fn candidate_evidence_signing_bytes(evidence: &CandidateEvidenceV1) -> Vec<u8> {
+    let mut bytes = b"hepta.prompt-optimizer.candidate-evidence.v1".to_vec();
+    push_id(&mut bytes, &evidence.candidate_id);
+    for value in [
+        evidence.causal_utility,
+        evidence.token_shadow_cost,
+        evidence.latency_cost,
+        evidence.crowding_cost,
+        evidence.interference_cost,
+        evidence.privacy_cost,
+        evidence.instability_cost,
+        evidence.future_option_cost,
+        evidence.resource_cost,
+    ] {
+        push_i64(&mut bytes, value.raw());
+    }
+    for digest in [
+        evidence.support_digest,
+        evidence.confidence_digest,
+        evidence.applicability_digest,
+    ] {
+        push_digest(&mut bytes, digest);
+    }
+    bytes
+}
+
+#[must_use]
+pub fn candidate_evidence_digest(evidence: &CandidateEvidenceV1) -> Digest32 {
+    Digest32::of_bytes(&candidate_evidence_signing_bytes(evidence))
+}
+
 pub fn price_factors(
     candidates: &PromptCandidateSetReceiptV1,
     mut evidence: Vec<CandidateEvidenceV1>,
