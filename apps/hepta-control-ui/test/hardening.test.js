@@ -527,7 +527,7 @@ test("reconnect reconciliation is capped to one concurrent batch", async () => {
       subjectId: "runtime.agentd",
       action: "request_retry",
       expectedRevision: 4,
-      displayedRevision: 9,
+      displayedView: displayedViewBinding(),
     });
     assert.equal(ack.status, "indeterminate");
   }
