@@ -1167,7 +1167,7 @@
         "OutcomeSignalV1",
         "ReplaySelectionReceiptV1",
         "PlasticityBatchV1",
-        "TopologyProposalV1",
+        "CognitiveTopologyProposalV1",
         "ForgetPropagationReceiptV1"
       ]
     },
@@ -3078,6 +3078,21 @@
         "cognitive.store",
         "knowledge.graph",
         "learning.ledger"
+      ],
+      "transport": "canonical_json_utf8_or_typed_local",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "CognitiveTopologyProposalV1",
+      "version": 1,
+      "kind": "protocol_contract",
+      "producer": "cognitive.types",
+      "consumers": [
+        "learning.ledger",
+        "learning.plasticity"
       ],
       "transport": "canonical_json_utf8_or_typed_local",
       "bounded": true,
