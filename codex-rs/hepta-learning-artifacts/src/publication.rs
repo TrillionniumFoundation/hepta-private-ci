@@ -85,6 +85,7 @@ impl ArtifactPublicationTransactionV1 {
     ) -> Result<(), ArtifactPublicationError> {
         if receipt.binding != self.contract.snapshot_binding
             || receipt.head_digest != self.contract.registry_successor_head_digest
+            || u64::try_from(receipt.records).ok() != Some(self.contract.registry_sequence.get())
             || receipt.file_digest.is_zero()
             || receipt.encoded_bytes == 0
         {
@@ -474,6 +475,13 @@ mod tests {
         assert_eq!(
             snapshot_only.acknowledge_source(),
             Err(ArtifactPublicationError::WitnessNotDurable)
+        );
+
+        let mut wrong_count = snapshot_receipt(binding);
+        wrong_count.records = 2;
+        assert_eq!(
+            recover_artifact_publication_v1(contract.clone(), Some(wrong_count), None),
+            Err(ArtifactPublicationError::SnapshotReceiptMismatch)
         );
 
         let (head, receipt) = witness(binding);
