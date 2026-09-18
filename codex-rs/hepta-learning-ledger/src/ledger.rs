@@ -210,7 +210,9 @@ impl LearningLedger {
             LedgerEvent::Outcome(value) => self.validate_outcome(value),
             LedgerEvent::Credit(value) => self.validate_credit(value),
             LedgerEvent::Revocation(value) => self.validate_revocation(value),
-            LedgerEvent::AuthenticatedDecisionV2(value) => self.validate_authenticated_decision(value),
+            LedgerEvent::AuthenticatedDecisionV2(value) => {
+                self.validate_authenticated_decision(value)
+            }
             LedgerEvent::AuthenticatedOutcomeV2(value) => {
                 self.validate_authenticated_outcome(value)
             }
@@ -275,7 +277,10 @@ impl LearningLedger {
         {
             return Err(LedgerError::MissingAbstainCandidate);
         }
-        if !decision.candidate_ids.contains(&decision.selected_candidate_id) {
+        if !decision
+            .candidate_ids
+            .contains(&decision.selected_candidate_id)
+        {
             return Err(LedgerError::SelectedCandidateMissing(
                 decision.selected_candidate_id.to_string(),
             ));
@@ -417,10 +422,13 @@ impl LearningLedger {
                 ));
             }
         }
-        let allocated = batch.allocations.iter().try_fold(0_i128, |sum, allocation| {
-            sum.checked_add(i128::from(allocation.credit.raw()))
-                .ok_or(LedgerError::Arithmetic)
-        })?;
+        let allocated = batch
+            .allocations
+            .iter()
+            .try_fold(0_i128, |sum, allocation| {
+                sum.checked_add(i128::from(allocation.credit.raw()))
+                    .ok_or(LedgerError::Arithmetic)
+            })?;
         let conserved = allocated
             .checked_add(i128::from(batch.conservation_residual.raw()))
             .ok_or(LedgerError::Arithmetic)?;
@@ -499,7 +507,8 @@ impl LearningLedger {
             .outcomes
             .get(outcome_id)
             .ok_or_else(|| LedgerError::OutcomeNotFound(outcome_id.to_string()))?;
-        if self.revoked.contains(&outcome.record_id) || !self.outcome_is_current(outcome_id, outcome)
+        if self.revoked.contains(&outcome.record_id)
+            || !self.outcome_is_current(outcome_id, outcome)
         {
             return Err(LedgerError::OutcomeRevoked(outcome_id.to_string()));
         }
@@ -611,18 +620,16 @@ impl LearningLedger {
                 self.decisions
                     .get(&outcome.episode_id)
                     .is_some_and(|decision| !self.revoked.contains(&decision.record_id))
-                    && indexed.is_some_and(|value| {
-                        self.outcome_is_current(&outcome.outcome_id, value)
-                    })
+                    && indexed
+                        .is_some_and(|value| self.outcome_is_current(&outcome.outcome_id, value))
             }
             LedgerEvent::AuthenticatedOutcomeV2(outcome) => {
                 let indexed = self.outcomes.get(&outcome.outcome_id);
                 self.decisions
                     .get(&outcome.episode_id)
                     .is_some_and(|decision| !self.revoked.contains(&decision.record_id))
-                    && indexed.is_some_and(|value| {
-                        self.outcome_is_current(&outcome.outcome_id, value)
-                    })
+                    && indexed
+                        .is_some_and(|value| self.outcome_is_current(&outcome.outcome_id, value))
             }
             LedgerEvent::Credit(credit) => {
                 let decision_active = self
@@ -643,13 +650,10 @@ impl LearningLedger {
                     .decisions
                     .get(&batch.episode_id)
                     .is_some_and(|decision| !self.revoked.contains(&decision.record_id));
-                let outcome_active = self
-                    .outcomes
-                    .get(&batch.outcome_id)
-                    .is_some_and(|outcome| {
-                        !self.revoked.contains(&outcome.record_id)
-                            && self.outcome_is_current(&batch.outcome_id, outcome)
-                    });
+                let outcome_active = self.outcomes.get(&batch.outcome_id).is_some_and(|outcome| {
+                    !self.revoked.contains(&outcome.record_id)
+                        && self.outcome_is_current(&batch.outcome_id, outcome)
+                });
                 decision_active && outcome_active
             }
             LedgerEvent::Revocation(_) | LedgerEvent::UnlearningLineageV1(_) => true,
@@ -717,10 +721,16 @@ fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
                 (value.run_snapshot_digest, "run snapshot"),
                 (value.objective_digest, "objective"),
                 (value.policy_digest, "policy"),
-                (value.generator_credential_chain_digest, "generator credential chain"),
+                (
+                    value.generator_credential_chain_digest,
+                    "generator credential chain",
+                ),
                 (value.generator_signing_key_digest, "generator signing key"),
                 (value.generator_scope_digest, "generator scope"),
-                (value.candidate_completeness_digest, "candidate completeness"),
+                (
+                    value.candidate_completeness_digest,
+                    "candidate completeness",
+                ),
                 (value.support_digest, "decision support"),
                 (value.authentication_digest, "decision authentication"),
             ] {
@@ -738,7 +748,10 @@ fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
         }
         LedgerEvent::AuthenticatedOutcomeV2(value) => {
             for (digest, label) in [
-                (value.observer_credential_chain_digest, "observer credential chain"),
+                (
+                    value.observer_credential_chain_digest,
+                    "observer credential chain",
+                ),
                 (value.observer_signing_key_digest, "observer signing key"),
                 (value.observer_scope_digest, "observer scope"),
                 (value.unit_profile_digest, "outcome unit profile"),
@@ -754,7 +767,10 @@ fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
                 return Err(LedgerError::InvalidAuthorityEpoch);
             }
             for (digest, label) in [
-                (value.allocator_credential_chain_digest, "allocator credential chain"),
+                (
+                    value.allocator_credential_chain_digest,
+                    "allocator credential chain",
+                ),
                 (value.allocator_signing_key_digest, "allocator signing key"),
                 (value.allocator_scope_digest, "allocator scope"),
                 (value.support_digest, "credit support"),
@@ -880,10 +896,10 @@ pub(crate) fn encode_event(event: &LedgerEvent) -> Vec<u8> {
         LedgerEvent::Outcome(value) => push_outcome(&mut bytes, value),
         LedgerEvent::Credit(value) => push_credit(&mut bytes, value),
         LedgerEvent::Revocation(value) => push_revocation(&mut bytes, value),
-        LedgerEvent::AuthenticatedDecisionV2(value) => push_authenticated_decision(&mut bytes, value),
-        LedgerEvent::AuthenticatedOutcomeV2(value) => {
-            push_authenticated_outcome(&mut bytes, value)
+        LedgerEvent::AuthenticatedDecisionV2(value) => {
+            push_authenticated_decision(&mut bytes, value)
         }
+        LedgerEvent::AuthenticatedOutcomeV2(value) => push_authenticated_outcome(&mut bytes, value),
         LedgerEvent::CreditBatchV2(value) => push_credit_batch(&mut bytes, value),
         LedgerEvent::UnlearningLineageV1(value) => push_unlearning(&mut bytes, value),
     }

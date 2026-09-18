@@ -94,7 +94,9 @@ impl LedgerError {
             Self::RevocationOfRevocation => "LRN-E009",
             Self::SequenceOverflow | Self::Arithmetic => "LRN-E010",
             Self::SnapshotHeadMismatch | Self::SnapshotRecordMismatch(_) => "LRN-E011",
-            Self::EmptyDigest(_) | Self::InvalidAuthorityEpoch | Self::InternalInvariant => "LRN-E012",
+            Self::EmptyDigest(_) | Self::InvalidAuthorityEpoch | Self::InternalInvariant => {
+                "LRN-E012"
+            }
         }
     }
 }
@@ -143,15 +145,22 @@ impl fmt::Display for LedgerError {
                 formatter.write_str("authenticated outcome state and watermark fields disagree")
             }
             Self::OutcomeLineageRootExists(id) => {
-                write!(formatter, "episode already has an outcome lineage root: {id}")
+                write!(
+                    formatter,
+                    "episode already has an outcome lineage root: {id}"
+                )
             }
             Self::OutcomePredecessorNotFound(id) => {
                 write!(formatter, "correction predecessor not found: {id}")
             }
-            Self::OutcomePredecessorEpisodeMismatch => formatter
-                .write_str("correction predecessor belongs to a different episode"),
+            Self::OutcomePredecessorEpisodeMismatch => {
+                formatter.write_str("correction predecessor belongs to a different episode")
+            }
             Self::OutcomePredecessorNotHead(id) => {
-                write!(formatter, "correction predecessor is not current head: {id}")
+                write!(
+                    formatter,
+                    "correction predecessor is not current head: {id}"
+                )
             }
             Self::PolicySelfLabelsOutcome => {
                 formatter.write_str("evaluated policy cannot label its own outcome")
@@ -165,7 +174,10 @@ impl fmt::Display for LedgerError {
                 write!(formatter, "credit batch identity already exists: {id}")
             }
             Self::CreditBatchAlreadyAssigned(id) => {
-                write!(formatter, "terminal outcome already has committed credit: {id}")
+                write!(
+                    formatter,
+                    "terminal outcome already has committed credit: {id}"
+                )
             }
             Self::CreditBatchEmpty => formatter.write_str("credit batch must not be empty"),
             Self::CreditBatchLimitExceeded => {
@@ -174,8 +186,9 @@ impl fmt::Display for LedgerError {
             Self::DuplicateCreditTarget(id) => {
                 write!(formatter, "duplicate credit target in atomic batch: {id}")
             }
-            Self::CreditConservation => formatter
-                .write_str("credit allocations plus residual must equal terminal outcome"),
+            Self::CreditConservation => {
+                formatter.write_str("credit allocations plus residual must equal terminal outcome")
+            }
             Self::CreditAllocatorNotIndependent => formatter
                 .write_str("credit allocator must be independent from generator and observer"),
             Self::TargetNotFound(id) => write!(formatter, "revocation target not found: {id}"),
@@ -186,12 +199,17 @@ impl fmt::Display for LedgerError {
                 formatter.write_str("revocation records cannot themselves be revoked")
             }
             Self::UnlearningLineageIdentityAlreadyExists(id) => {
-                write!(formatter, "unlearning lineage identity already exists: {id}")
+                write!(
+                    formatter,
+                    "unlearning lineage identity already exists: {id}"
+                )
             }
-            Self::UnlearningLineageAlreadyExists => formatter
-                .write_str("source, dataset and artifact already have unlearning lineage"),
-            Self::UnlearningTargetInvalid => formatter
-                .write_str("unlearning source cannot be a revocation or unlearning record"),
+            Self::UnlearningLineageAlreadyExists => {
+                formatter.write_str("source, dataset and artifact already have unlearning lineage")
+            }
+            Self::UnlearningTargetInvalid => {
+                formatter.write_str("unlearning source cannot be a revocation or unlearning record")
+            }
             Self::IdentityConflict(id) => write!(formatter, "record id reused with drift: {id}"),
             Self::SequenceOverflow => formatter.write_str("ledger sequence overflow"),
             Self::SnapshotHeadMismatch => formatter.write_str("snapshot head digest mismatch"),

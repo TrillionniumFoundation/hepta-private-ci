@@ -214,7 +214,6 @@ fn tampered_snapshot_chain_is_rejected() {
     );
 }
 
-
 fn authenticated_outcome(
     record: &str,
     outcome_id: &str,
@@ -278,17 +277,22 @@ fn atomic_credit_batch(outcome_id: &str, terminal: i64) -> CreditAllocationBatch
 fn authenticated_corrections_form_one_linear_head_without_forks() {
     let mut ledger = LearningLedger::new();
     must(ledger.append(LedgerEvent::Decision(decision())));
-    must(ledger.append(LedgerEvent::AuthenticatedOutcomeV2(
-        authenticated_outcome("record-auth-outcome-1", "auth-outcome-1", None, 100),
-    )));
-    must(ledger.append(LedgerEvent::AuthenticatedOutcomeV2(
-        authenticated_outcome(
+    must(
+        ledger.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
+            "record-auth-outcome-1",
+            "auth-outcome-1",
+            None,
+            100,
+        ))),
+    );
+    must(
+        ledger.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
             "record-auth-outcome-2",
             "auth-outcome-2",
             Some("auth-outcome-1"),
             120,
-        ),
-    )));
+        ))),
+    );
 
     let active_ids: Vec<_> = ledger
         .active_records()
@@ -316,13 +320,21 @@ fn authenticated_corrections_form_one_linear_head_without_forks() {
 fn atomic_credit_batch_enforces_terminal_value_and_conservation() {
     let mut ledger = LearningLedger::new();
     must(ledger.append(LedgerEvent::Decision(decision())));
-    must(ledger.append(LedgerEvent::AuthenticatedOutcomeV2(
-        authenticated_outcome("record-auth-outcome-1", "auth-outcome-1", None, 120),
-    )));
+    must(
+        ledger.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
+            "record-auth-outcome-1",
+            "auth-outcome-1",
+            None,
+            120,
+        ))),
+    );
 
-    let receipt = must(ledger.append(LedgerEvent::CreditBatchV2(
-        atomic_credit_batch("auth-outcome-1", 120),
-    )));
+    let receipt = must(
+        ledger.append(LedgerEvent::CreditBatchV2(atomic_credit_batch(
+            "auth-outcome-1",
+            120,
+        ))),
+    );
     assert_eq!(receipt.disposition, AppendDisposition::Appended);
 
     let mut duplicate = atomic_credit_batch("auth-outcome-1", 120);
@@ -335,9 +347,14 @@ fn atomic_credit_batch_enforces_terminal_value_and_conservation() {
 
     let mut wrong = LearningLedger::new();
     must(wrong.append(LedgerEvent::Decision(decision())));
-    must(wrong.append(LedgerEvent::AuthenticatedOutcomeV2(
-        authenticated_outcome("record-auth-outcome-1", "auth-outcome-1", None, 120),
-    )));
+    must(
+        wrong.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
+            "record-auth-outcome-1",
+            "auth-outcome-1",
+            None,
+            120,
+        ))),
+    );
     let mut nonconserving = atomic_credit_batch("auth-outcome-1", 120);
     nonconserving.conservation_residual = FixedQ32::from_raw(9);
     assert_eq!(
@@ -350,14 +367,22 @@ fn atomic_credit_batch_enforces_terminal_value_and_conservation() {
 fn explicit_unlearning_lineage_revokes_source_and_derived_credit() {
     let mut ledger = LearningLedger::new();
     must(ledger.append(LedgerEvent::Decision(decision())));
-    must(ledger.append(LedgerEvent::AuthenticatedOutcomeV2(
-        authenticated_outcome("record-auth-outcome-1", "auth-outcome-1", None, 120),
-    )));
-    must(ledger.append(LedgerEvent::CreditBatchV2(
-        atomic_credit_batch("auth-outcome-1", 120),
-    )));
-    must(ledger.append(LedgerEvent::UnlearningLineageV1(
-        UnlearningLineageEventV1 {
+    must(
+        ledger.append(LedgerEvent::AuthenticatedOutcomeV2(authenticated_outcome(
+            "record-auth-outcome-1",
+            "auth-outcome-1",
+            None,
+            120,
+        ))),
+    );
+    must(
+        ledger.append(LedgerEvent::CreditBatchV2(atomic_credit_batch(
+            "auth-outcome-1",
+            120,
+        ))),
+    );
+    must(
+        ledger.append(LedgerEvent::UnlearningLineageV1(UnlearningLineageEventV1 {
             record_id: id("record-unlearning-1"),
             lineage_id: id("unlearning-1"),
             source_record_id: id("record-auth-outcome-1"),
@@ -366,18 +391,15 @@ fn explicit_unlearning_lineage_revokes_source_and_derived_credit() {
             authority_id: id("privacy-owner"),
             reason_digest: Digest32::of_bytes(b"withdrawal"),
             authentication_digest: Digest32::of_bytes(b"signed-unlearning-authority"),
-        },
-    )));
+        })),
+    );
 
     let active_ids: Vec<_> = ledger
         .active_records()
         .iter()
         .map(|record| record.event.record_id().to_string())
         .collect();
-    assert_eq!(
-        active_ids,
-        vec!["record-decision-1", "record-unlearning-1"]
-    );
+    assert_eq!(active_ids, vec!["record-decision-1", "record-unlearning-1"]);
 
     let restored = must(LearningLedger::from_snapshot(ledger.snapshot()));
     assert_eq!(restored.active_records().len(), 2);

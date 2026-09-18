@@ -86,8 +86,5 @@ fn checkpoint_revocation_frontier_changes_without_rewriting_history() {
         after.revocation_frontier_digest
     );
     assert_eq!(after.active_record_count, 1);
-    assert!(!after
-        .lookup(&id("decision-record-00000"))
-        .unwrap()
-        .active);
+    assert!(!after.lookup(&id("decision-record-00000")).unwrap().active);
 }
