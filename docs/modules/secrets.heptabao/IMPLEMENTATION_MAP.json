@@ -28,28 +28,76 @@
       "nativeSymbol": "consume_kv_v2",
       "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
       "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "authority": "kernel.final_use",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "consume_kv_v2",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "binding",
-      "nativeSymbol": "binding",
-      "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "operation": "request_secret_lease",
+      "nativeSymbol": "request_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_control.rs",
       "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "authority": "kernel.final_use",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_control_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "binding",
+      "designOperation": "request_secret_lease",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "renew_secret_lease",
+      "nativeSymbol": "renew_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_control.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.final_use",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "renew",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "revoke_secret_lease",
+      "nativeSymbol": "revoke_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_control.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.final_use",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revoke",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "lease_registry",
+      "nativeSymbol": "LeaseRegistry",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_control.rs",
+      "state": "source_implemented_local_single_active",
+      "authority": "metadata_owner",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "secret_lease_state",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Bind every operation to an authenticated production consumer callsite and selected provider engines.",
+    "Qualify provider-specific reconciliation for ambiguous dynamic lease effects.",
+    "Provide a strongly consistent active-active backend before multi-writer HA is enabled.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
