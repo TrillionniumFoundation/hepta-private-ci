@@ -86,14 +86,14 @@ impl Fixture {
                 layer_id: id("layer:1"),
                 baseline_squared_l2_raw_q64: 1_u128 << 64,
             }],
-            mutation_grammar: build_mutation_grammar_manifest_v1(
+            mutation_policy: build_parameter_mutation_policy_v1(
                 id("grammar:product"),
                 selected_artifact_digest,
                 window.clone(),
                 vec![ParameterMutationRuleV1 {
                     parameter_id: id("parameter:1"),
                     layer_id: id("layer:1"),
-                    surface: MutationSurfaceV1::LearnableParameter,
+                    surface: ParameterMutationSurfaceV1::LearnableParameter,
                     minimum_delta: FixedQ32::from_raw(-(1_i64 << 24)),
                     maximum_delta: FixedQ32::from_raw(1_i64 << 24),
                 }],

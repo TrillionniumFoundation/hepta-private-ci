@@ -15,7 +15,7 @@ use crate::ProposalWindowV2;
 const MAX_MUTATION_RULES_V1: usize = 4_096;
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub enum MutationSurfaceV1 {
+pub enum ParameterMutationSurfaceV1 {
     LearnableParameter,
     Authority,
     Evaluator,
@@ -24,7 +24,7 @@ pub enum MutationSurfaceV1 {
     Credential,
 }
 
-impl MutationSurfaceV1 {
+impl ParameterMutationSurfaceV1 {
     const fn tag(self) -> u8 {
         match self {
             Self::LearnableParameter => 0,
@@ -41,13 +41,13 @@ impl MutationSurfaceV1 {
 pub struct ParameterMutationRuleV1 {
     pub parameter_id: StableId,
     pub layer_id: StableId,
-    pub surface: MutationSurfaceV1,
+    pub surface: ParameterMutationSurfaceV1,
     pub minimum_delta: FixedQ32,
     pub maximum_delta: FixedQ32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct MutationGrammarManifestV1 {
+pub struct ParameterMutationPolicyV1 {
     pub manifest_id: StableId,
     pub selected_artifact_digest: Digest32,
     pub window: ProposalWindowV2,
@@ -56,7 +56,7 @@ pub struct MutationGrammarManifestV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum MutationGrammarErrorV1 {
+pub enum ParameterMutationPolicyErrorV1 {
     EmptyArtifact,
     EmptyWindow,
     RuleLimit,
@@ -72,21 +72,21 @@ pub enum MutationGrammarErrorV1 {
     Arithmetic,
 }
 
-impl fmt::Display for MutationGrammarErrorV1 {
+impl fmt::Display for ParameterMutationPolicyErrorV1 {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(formatter, "{self:?}")
     }
 }
-impl StdError for MutationGrammarErrorV1 {}
+impl StdError for ParameterMutationPolicyErrorV1 {}
 
-pub fn build_mutation_grammar_manifest_v1(
+pub fn build_parameter_mutation_policy_v1(
     manifest_id: StableId,
     selected_artifact_digest: Digest32,
     window: ProposalWindowV2,
     mut rules: Vec<ParameterMutationRuleV1>,
-) -> Result<MutationGrammarManifestV1, MutationGrammarErrorV1> {
+) -> Result<ParameterMutationPolicyV1, ParameterMutationPolicyErrorV1> {
     validate_context(selected_artifact_digest, &window, &mut rules)?;
-    let mut manifest = MutationGrammarManifestV1 {
+    let mut manifest = ParameterMutationPolicyV1 {
         manifest_id,
         selected_artifact_digest,
         window,
@@ -97,9 +97,9 @@ pub fn build_mutation_grammar_manifest_v1(
     Ok(manifest)
 }
 
-pub fn verify_mutation_grammar_manifest_v1(
-    manifest: &MutationGrammarManifestV1,
-) -> Result<(), MutationGrammarErrorV1> {
+pub fn verify_parameter_mutation_policy_v1(
+    manifest: &ParameterMutationPolicyV1,
+) -> Result<(), ParameterMutationPolicyErrorV1> {
     let mut rules = manifest.rules.clone();
     validate_context(
         manifest.selected_artifact_digest,
@@ -107,48 +107,48 @@ pub fn verify_mutation_grammar_manifest_v1(
         &mut rules,
     )?;
     if rules != manifest.rules || manifest.manifest_digest.is_zero() {
-        return Err(MutationGrammarErrorV1::DigestMismatch);
+        return Err(ParameterMutationPolicyErrorV1::DigestMismatch);
     }
     if digest_manifest(manifest)? != manifest.manifest_digest {
-        return Err(MutationGrammarErrorV1::DigestMismatch);
+        return Err(ParameterMutationPolicyErrorV1::DigestMismatch);
     }
     Ok(())
 }
 
 pub fn authorize_parameter_mutation_v1(
-    manifest: &MutationGrammarManifestV1,
+    manifest: &ParameterMutationPolicyV1,
     selected_artifact_digest: Digest32,
     window: &ProposalWindowV2,
     layer_id: &StableId,
     parameter_id: &StableId,
     lower_bound: FixedQ32,
     upper_bound: FixedQ32,
-) -> Result<(), MutationGrammarErrorV1> {
-    verify_mutation_grammar_manifest_v1(manifest)?;
+) -> Result<(), ParameterMutationPolicyErrorV1> {
+    verify_parameter_mutation_policy_v1(manifest)?;
     if manifest.selected_artifact_digest != selected_artifact_digest {
-        return Err(MutationGrammarErrorV1::ArtifactMismatch);
+        return Err(ParameterMutationPolicyErrorV1::ArtifactMismatch);
     }
     if &manifest.window != window {
-        return Err(MutationGrammarErrorV1::WindowMismatch);
+        return Err(ParameterMutationPolicyErrorV1::WindowMismatch);
     }
     let rule = manifest
         .rules
         .binary_search_by(|rule| rule.parameter_id.cmp(parameter_id))
         .ok()
         .and_then(|index| manifest.rules.get(index))
-        .ok_or_else(|| MutationGrammarErrorV1::MissingRule(parameter_id.to_string()))?;
+        .ok_or_else(|| ParameterMutationPolicyErrorV1::MissingRule(parameter_id.to_string()))?;
     if &rule.layer_id != layer_id {
-        return Err(MutationGrammarErrorV1::LayerMismatch(
+        return Err(ParameterMutationPolicyErrorV1::LayerMismatch(
             parameter_id.to_string(),
         ));
     }
-    if rule.surface != MutationSurfaceV1::LearnableParameter {
-        return Err(MutationGrammarErrorV1::ProtectedSurface(
+    if rule.surface != ParameterMutationSurfaceV1::LearnableParameter {
+        return Err(ParameterMutationPolicyErrorV1::ProtectedSurface(
             parameter_id.to_string(),
         ));
     }
     if lower_bound < rule.minimum_delta || upper_bound > rule.maximum_delta {
-        return Err(MutationGrammarErrorV1::BoundsEscape(
+        return Err(ParameterMutationPolicyErrorV1::BoundsEscape(
             parameter_id.to_string(),
         ));
     }
@@ -159,26 +159,26 @@ fn validate_context(
     selected_artifact_digest: Digest32,
     window: &ProposalWindowV2,
     rules: &mut Vec<ParameterMutationRuleV1>,
-) -> Result<(), MutationGrammarErrorV1> {
+) -> Result<(), ParameterMutationPolicyErrorV1> {
     if selected_artifact_digest.is_zero() {
-        return Err(MutationGrammarErrorV1::EmptyArtifact);
+        return Err(ParameterMutationPolicyErrorV1::EmptyArtifact);
     }
     if window.window_digest.is_zero() {
-        return Err(MutationGrammarErrorV1::EmptyWindow);
+        return Err(ParameterMutationPolicyErrorV1::EmptyWindow);
     }
     if rules.len() > MAX_MUTATION_RULES_V1 {
-        return Err(MutationGrammarErrorV1::RuleLimit);
+        return Err(ParameterMutationPolicyErrorV1::RuleLimit);
     }
     rules.sort_by(|left, right| left.parameter_id.cmp(&right.parameter_id));
     let mut seen = BTreeSet::new();
     for rule in rules.iter() {
         if !seen.insert(rule.parameter_id.clone()) {
-            return Err(MutationGrammarErrorV1::DuplicateParameter(
+            return Err(ParameterMutationPolicyErrorV1::DuplicateParameter(
                 rule.parameter_id.to_string(),
             ));
         }
         if rule.minimum_delta > rule.maximum_delta {
-            return Err(MutationGrammarErrorV1::InvertedBounds(
+            return Err(ParameterMutationPolicyErrorV1::InvertedBounds(
                 rule.parameter_id.to_string(),
             ));
         }
@@ -187,8 +187,8 @@ fn validate_context(
 }
 
 fn digest_manifest(
-    manifest: &MutationGrammarManifestV1,
-) -> Result<Digest32, MutationGrammarErrorV1> {
+    manifest: &ParameterMutationPolicyV1,
+) -> Result<Digest32, ParameterMutationPolicyErrorV1> {
     let mut bytes = b"hepta.plasticity.mutation-grammar.v1\0".to_vec();
     push_id(&mut bytes, &manifest.manifest_id)?;
     bytes.extend_from_slice(manifest.selected_artifact_digest.as_array());
@@ -205,16 +205,16 @@ fn digest_manifest(
     Ok(Digest32::of_bytes(&bytes))
 }
 
-fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), MutationGrammarErrorV1> {
+fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), ParameterMutationPolicyErrorV1> {
     let raw = value.as_str().as_bytes();
-    let length = u32::try_from(raw.len()).map_err(|_| MutationGrammarErrorV1::Arithmetic)?;
+    let length = u32::try_from(raw.len()).map_err(|_| ParameterMutationPolicyErrorV1::Arithmetic)?;
     bytes.extend_from_slice(&length.to_be_bytes());
     bytes.extend_from_slice(raw);
     Ok(())
 }
 
-fn push_len(bytes: &mut Vec<u8>, value: usize) -> Result<(), MutationGrammarErrorV1> {
-    let value = u32::try_from(value).map_err(|_| MutationGrammarErrorV1::Arithmetic)?;
+fn push_len(bytes: &mut Vec<u8>, value: usize) -> Result<(), ParameterMutationPolicyErrorV1> {
+    let value = u32::try_from(value).map_err(|_| ParameterMutationPolicyErrorV1::Arithmetic)?;
     bytes.extend_from_slice(&value.to_be_bytes());
     Ok(())
 }
@@ -235,7 +235,7 @@ mod tests {
             window_digest: digest(b"window"),
         }
     }
-    fn rule(surface: MutationSurfaceV1) -> ParameterMutationRuleV1 {
+    fn rule(surface: ParameterMutationSurfaceV1) -> ParameterMutationRuleV1 {
         ParameterMutationRuleV1 {
             parameter_id: id("parameter:1"),
             layer_id: id("layer:1"),
@@ -248,11 +248,11 @@ mod tests {
     #[test]
     fn learnable_rule_authorizes_only_exact_context_and_bounds() {
         let artifact = digest(b"artifact");
-        let manifest = build_mutation_grammar_manifest_v1(
+        let manifest = build_parameter_mutation_policy_v1(
             id("grammar:1"),
             artifact,
             window(),
-            vec![rule(MutationSurfaceV1::LearnableParameter)],
+            vec![rule(ParameterMutationSurfaceV1::LearnableParameter)],
         )
         .expect("manifest");
         authorize_parameter_mutation_v1(
@@ -270,11 +270,11 @@ mod tests {
     #[test]
     fn protected_surface_fails_closed() {
         let artifact = digest(b"artifact");
-        let manifest = build_mutation_grammar_manifest_v1(
+        let manifest = build_parameter_mutation_policy_v1(
             id("grammar:1"),
             artifact,
             window(),
-            vec![rule(MutationSurfaceV1::Authority)],
+            vec![rule(ParameterMutationSurfaceV1::Authority)],
         )
         .expect("manifest");
         assert!(matches!(
@@ -287,7 +287,7 @@ mod tests {
                 FixedQ32::ZERO,
                 FixedQ32::ZERO,
             ),
-            Err(MutationGrammarErrorV1::ProtectedSurface(_))
+            Err(ParameterMutationPolicyErrorV1::ProtectedSurface(_))
         ));
     }
 }

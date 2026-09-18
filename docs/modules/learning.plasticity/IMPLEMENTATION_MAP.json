@@ -153,16 +153,16 @@
       "delegatedCallees": []
     },
     {
-      "operation": "mutation_grammar",
-      "nativeSymbol": "verify_mutation_grammar_manifest_v1",
+      "operation": "parameter_mutation_policy",
+      "nativeSymbol": "verify_parameter_mutation_policy_v1",
       "sourcePath": "codex-rs/hepta-plasticity/src/mutation_grammar_v1.rs",
-      "state": "source_implemented_typed_allowlist_protected_surfaces",
+      "state": "source_implemented_authority_free_typed_parameter_allowlist_protected_surfaces",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-plasticity/src/mutation_grammar_v1.rs::tests::protected_surface_fails_closed"
       ],
       "sourcePathExists": true,
-      "designOperation": "mutation_grammar",
+      "designOperation": "parameter_mutation_policy",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },

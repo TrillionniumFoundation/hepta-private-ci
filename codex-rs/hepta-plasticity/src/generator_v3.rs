@@ -12,9 +12,9 @@ use std::fmt;
 use codex_hepta_types::{Digest32, FixedQ32, StableId};
 
 use crate::{
-    LayerNormDenominatorV2, MutationGrammarErrorV1, MutationGrammarManifestV1,
+    LayerNormDenominatorV2, ParameterMutationPolicyErrorV1, ParameterMutationPolicyV1,
     ParameterCandidateKindV2, ParameterCandidateRequestV2, ParameterDeltaV2, ProposalWindowV2,
-    authorize_parameter_mutation_v1, verify_mutation_grammar_manifest_v1,
+    authorize_parameter_mutation_v1, verify_parameter_mutation_policy_v1,
 };
 
 const MAX_V3_CANDIDATES: usize = 32;
@@ -43,7 +43,7 @@ pub struct ParameterGeneratorProfileV3 {
     pub window: ProposalWindowV2,
     pub norm_layers: Vec<LayerNormDenominatorV2>,
     /// Typed allowlist/protected-surface policy bound to this artifact/window.
-    pub mutation_grammar: MutationGrammarManifestV1,
+    pub mutation_policy: ParameterMutationPolicyV1,
     /// Positive deterministic multipliers in `(0, 1]`. Every admitted scale is
     /// evaluated; candidates that collapse to identical deltas are deduplicated.
     pub update_scales: Vec<FixedQ32>,
@@ -74,7 +74,7 @@ pub enum ParameterGeneratorErrorV3 {
     MissingNormLayer(String),
     EmptySignalEvidence(String),
     InvertedBounds(String),
-    MutationGrammar(MutationGrammarErrorV1),
+    MutationPolicy(ParameterMutationPolicyErrorV1),
     Arithmetic,
     CandidateIdentity,
     GeneratorDigestMismatch,
@@ -86,9 +86,9 @@ impl fmt::Display for ParameterGeneratorErrorV3 {
     }
 }
 impl StdError for ParameterGeneratorErrorV3 {}
-impl From<MutationGrammarErrorV1> for ParameterGeneratorErrorV3 {
-    fn from(value: MutationGrammarErrorV1) -> Self {
-        Self::MutationGrammar(value)
+impl From<ParameterMutationPolicyErrorV1> for ParameterGeneratorErrorV3 {
+    fn from(value: ParameterMutationPolicyErrorV1) -> Self {
+        Self::MutationPolicy(value)
     }
 }
 
@@ -223,7 +223,7 @@ fn validate_header(profile: &ParameterGeneratorProfileV3) -> Result<(), Paramete
 fn canonicalize_profile(
     profile: &mut ParameterGeneratorProfileV3,
 ) -> Result<(), ParameterGeneratorErrorV3> {
-    verify_mutation_grammar_manifest_v1(&profile.mutation_grammar)?;
+    verify_parameter_mutation_policy_v1(&profile.mutation_policy)?;
     profile
         .norm_layers
         .sort_by(|left, right| left.layer_id.cmp(&right.layer_id));
@@ -285,7 +285,7 @@ fn canonicalize_profile(
             ));
         }
         authorize_parameter_mutation_v1(
-            &profile.mutation_grammar,
+            &profile.mutation_policy,
             profile.selected_artifact_digest,
             &profile.window,
             &signal.layer_id,
@@ -398,7 +398,7 @@ fn digest_generated_set(
         push_id(&mut bytes, &layer.layer_id)?;
         bytes.extend_from_slice(&layer.baseline_squared_l2_raw_q64.to_be_bytes());
     }
-    bytes.extend_from_slice(profile.mutation_grammar.manifest_digest.as_array());
+    bytes.extend_from_slice(profile.mutation_policy.manifest_digest.as_array());
     push_len(&mut bytes, profile.update_scales.len())?;
     for scale in &profile.update_scales {
         bytes.extend_from_slice(&scale.raw().to_be_bytes());
@@ -467,7 +467,7 @@ fn push_len(bytes: &mut Vec<u8>, value: usize) -> Result<(), ParameterGeneratorE
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{MutationSurfaceV1, ParameterMutationRuleV1, build_mutation_grammar_manifest_v1};
+    use crate::{ParameterMutationSurfaceV1, ParameterMutationRuleV1, build_parameter_mutation_policy_v1};
 
     fn id(value: &str) -> StableId {
         StableId::new(value).unwrap_or_else(|error| panic!("id {value}: {error}"))
@@ -486,7 +486,7 @@ mod tests {
                 layer_id: id("layer:1"),
                 baseline_squared_l2_raw_q64: 1_u128 << 64,
             }],
-            mutation_grammar: build_mutation_grammar_manifest_v1(
+            mutation_policy: build_parameter_mutation_policy_v1(
                 id("grammar:generator-test"),
                 digest(b"artifact"),
                 ProposalWindowV2 {
@@ -496,7 +496,7 @@ mod tests {
                 vec![ParameterMutationRuleV1 {
                     parameter_id: id("parameter:1"),
                     layer_id: id("layer:1"),
-                    surface: MutationSurfaceV1::LearnableParameter,
+                    surface: ParameterMutationSurfaceV1::LearnableParameter,
                     minimum_delta: FixedQ32::from_raw(-(1_i64 << 24)),
                     maximum_delta: FixedQ32::from_raw(1_i64 << 24),
                 }],
