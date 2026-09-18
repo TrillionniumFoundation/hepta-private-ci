@@ -199,6 +199,101 @@ class OrchestrationTests(unittest.TestCase):
                         now_ns=self.now,
                     )
 
+    def test_plan_rejects_envelope_not_identical_to_admitted_owner_state(self):
+        with tempfile.TemporaryDirectory() as temp:
+            with EngineeringStore(Path(temp) / "store.db") as store:
+                store.issue_work_envelope(self.envelope, now_ns=self.now)
+                forged = replace(
+                    self.envelope,
+                    allowed_paths=("src", "other"),
+                    maximum_assignments=7,
+                )
+                with self.assertRaisesRegex(
+                    ValueError, "orchestration_envelope_binding_mismatch"
+                ):
+                    plan_engineering_work(
+                        store,
+                        forged,
+                        (EngineeringWorkPackage(0, "feature", (), ("src/feature",)),),
+                        (WorkerProfile("worker", (), 1, ("src",)),),
+                        (),
+                        self.trust,
+                        EngineeringCapacity(1, ()),
+                        generation_id="g-envelope-mismatch",
+                        now_ns=self.now,
+                    )
+
+    def test_plan_rejects_duplicate_and_unbounded_capacity_dimensions(self):
+        bad_packages = (
+            EngineeringWorkPackage(
+                0,
+                "duplicate-skills",
+                (),
+                ("src/a",),
+                required_skills=("rust", "rust"),
+            ),
+            EngineeringWorkPackage(
+                0,
+                "duplicate-review",
+                (),
+                ("src/b",),
+                review_roles=("architecture", "architecture"),
+            ),
+            EngineeringWorkPackage(
+                0,
+                "huge-capacity",
+                (),
+                ("src/c",),
+                capacity_units=1_000_001,
+            ),
+            EngineeringWorkPackage(
+                0,
+                "huge-ci",
+                (),
+                ("src/d",),
+                ci_units=1_000_001,
+            ),
+        )
+        with tempfile.TemporaryDirectory() as temp:
+            for index, package in enumerate(bad_packages):
+                with self.subTest(package=package.package_id):
+                    database = Path(temp) / f"store-{index}.db"
+                    with EngineeringStore(database) as store:
+                        store.issue_work_envelope(self.envelope, now_ns=self.now)
+                        with self.assertRaisesRegex(
+                            ValueError, "invalid_package_capacity"
+                        ):
+                            plan_engineering_work(
+                                store,
+                                self.envelope,
+                                (package,),
+                                (WorkerProfile("worker", ("rust",), 1, ("src",)),),
+                                (),
+                                self.trust,
+                                EngineeringCapacity(
+                                    1, (ReviewCapacity("architecture", 1),)
+                                ),
+                                generation_id=f"g-bad-{index}",
+                                now_ns=self.now,
+                            )
+
+    def test_worker_scope_is_canonicalized_before_matching(self):
+        with tempfile.TemporaryDirectory() as temp:
+            with EngineeringStore(Path(temp) / "store.db") as store:
+                store.issue_work_envelope(self.envelope, now_ns=self.now)
+                with self.assertRaisesRegex(ValueError, "invalid_path"):
+                    plan_engineering_work(
+                        store,
+                        self.envelope,
+                        (EngineeringWorkPackage(0, "feature", (), ("src/feature",)),),
+                        (WorkerProfile("worker", (), 1, ("src/../src",)),),
+                        (),
+                        self.trust,
+                        EngineeringCapacity(1, ()),
+                        generation_id="g-invalid-worker-scope",
+                        now_ns=self.now,
+                    )
+
     def test_repository_envelope_binds_real_head_tree_and_remote(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp) / "repo"
