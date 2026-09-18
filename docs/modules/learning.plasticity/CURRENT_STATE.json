@@ -56,6 +56,15 @@
       ]
     },
     {
+      "id": "agentd_dataset_receipt_binding",
+      "status": "source_implemented_not_runtime_enrolled",
+      "surface": "DatasetSnapshotReceiptV3 host verification",
+      "source": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/plasticity_product_host.rs"
+      ]
+    },
+    {
       "id": "agentd_owner_evidence_binding",
       "status": "source_implemented_not_deployment_bound",
       "surface": "PlasticityOwnerEvidencePolicyV1",
