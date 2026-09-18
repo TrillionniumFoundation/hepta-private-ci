@@ -31,6 +31,7 @@ from .orchestration import (
     ReviewCapacity,
     WorkerCapacity,
     issue_verified_work_envelope,
+    orchestration_generation,
     persist_orchestration_generation,
     plan_engineering_work,
 )
@@ -227,6 +228,7 @@ def build_product_receipt(
                 now_ns=now,
             )
             frontier = store.assignment_frontier(generation_id)
+            durable_plan = orchestration_generation(store, generation_id)
 
     if persisted.assigned != ("control.engineering.product-composition",):
         raise RuntimeError("product_assignment_not_persisted")
@@ -247,6 +249,7 @@ def build_product_receipt(
         "multidimensionalOrchestration": True,
         "durableGenerationId": generation_id,
         "assignmentFrontierDigest": frontier["frontierDigest"],
+        "orchestrationGenerationDigest": durable_plan["semanticDigest"],
         "assignments": [asdict(item) for item in plan.assignments],
         "integrationOrder": list(plan.integration_order),
         "mergeQueueProposal": [asdict(item) for item in plan.merge_queue],
