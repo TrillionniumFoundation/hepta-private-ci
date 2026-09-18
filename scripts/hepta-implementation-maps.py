@@ -62,14 +62,51 @@ def effective_source_roots(module: dict) -> list[str]:
     return sorted(set(declared) | set(bound_package_roots(module["id"])))
 
 
-def source_base_tracks_paths(source_base: dict, paths: list[str]) -> bool:
+def current_source_root_trees(paths: list[str]) -> dict[str, str]:
+    return {path: git("rev-parse", f"HEAD:{path}") for path in paths}
+
+
+def source_base_tracks_paths(
+    source_base: dict, paths: list[str], root_trees: object
+) -> bool:
+    """Verify current bound roots against immutable Git tree pins.
+
+    Root-tree comparison works in shallow CI checkouts.  When the historical
+    source-base commit is available locally, also verify its commit/tree pair,
+    ancestry, and per-root tree identities.
+    """
     commit = source_base.get("commit")
     tree = source_base.get("tree")
-    if not commit or not tree:
+    if not commit or not tree or not paths or not isinstance(root_trees, dict):
         return False
+    if set(root_trees) != set(paths):
+        return False
+    try:
+        for path in paths:
+            expected = root_trees.get(path)
+            if not isinstance(expected, str) or not expected:
+                return False
+            if git("rev-parse", f"HEAD:{path}") != expected:
+                return False
+    except subprocess.CalledProcessError:
+        return False
+
+    available = subprocess.run(
+        ["git", "cat-file", "-e", f"{commit}^{{commit}}"],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if available.returncode != 0:
+        return True
+
     try:
         if git("rev-parse", f"{commit}^{{tree}}") != tree:
             return False
+        for path in paths:
+            if git("rev-parse", f"{commit}:{path}") != root_trees[path]:
+                return False
     except subprocess.CalledProcessError:
         return False
     ancestor = subprocess.run(
@@ -79,18 +116,7 @@ def source_base_tracks_paths(source_base: dict, paths: list[str]) -> bool:
         capture_output=True,
         check=False,
     )
-    if ancestor.returncode != 0:
-        return False
-    if not paths:
-        return False
-    diff = subprocess.run(
-        ["git", "diff", "--quiet", commit, "HEAD", "--", *paths],
-        cwd=ROOT,
-        text=True,
-        capture_output=True,
-        check=False,
-    )
-    return diff.returncode == 0
+    return ancestor.returncode == 0
 
 
 def parse_entrypoints(module: str):
@@ -151,7 +177,8 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "declaredRoots": roots,
         "boundPackageRoots": bound_roots,
         "effectiveSourceRoots": effective_roots,
-        "sourceFreshnessPolicy": "bound_roots_unchanged_since_source_base",
+        "sourceFreshnessPolicy": "bound_root_tree_pins_match_current_head",
+        "sourceRootTrees": current_source_root_trees(effective_roots),
         "resolvedRoots": resolve_source_roots(ROOT, module),
         "sourceRootPresent": all((ROOT / x).exists() for x in effective_roots),
         "productionImplementation": False,
@@ -257,7 +284,8 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "declaredRoots": declared,
             "boundPackageRoots": bound_roots,
             "effectiveSourceRoots": effective_roots,
-            "sourceFreshnessPolicy": "bound_roots_unchanged_since_source_base",
+            "sourceFreshnessPolicy": "bound_root_tree_pins_match_current_head",
+        "sourceRootTrees": current_source_root_trees(effective_roots),
             "resolvedRoots": resolve_source_roots(ROOT, module),
             "sourceRootPresent": all((ROOT / x).exists() for x in effective_roots),
             "productionImplementation": bool(
@@ -386,12 +414,6 @@ def verify():
             or not source_base.get("tree")
         ):
             failures.append(f"{mid}: source base")
-        else:
-            try:
-                if git("rev-parse", f"{source_base['commit']}^{{tree}}") != source_base["tree"]:
-                    failures.append(f"{mid}: source base commit/tree mismatch")
-            except subprocess.CalledProcessError:
-                failures.append(f"{mid}: source base commit unavailable")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -400,7 +422,7 @@ def verify():
             failures.append(f"{mid}: declared roots")
         policy = row.get("sourceFreshnessPolicy")
         if policy is not None:
-            if policy != "bound_roots_unchanged_since_source_base":
+            if policy != "bound_root_tree_pins_match_current_head":
                 failures.append(f"{mid}: unknown source freshness policy")
             expected_bound = bound_package_roots(mid)
             expected_effective = effective_source_roots(module)
@@ -409,7 +431,7 @@ def verify():
             if row.get("effectiveSourceRoots") != expected_effective:
                 failures.append(f"{mid}: effective source roots")
             if isinstance(source_base, dict) and source_base_tracks_paths(
-                source_base, expected_effective
+                source_base, expected_effective, row.get("sourceRootTrees")
             ):
                 freshness_verified += 1
             else:
