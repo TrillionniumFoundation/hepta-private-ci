@@ -638,9 +638,52 @@ export class BrowserProfileHost {
     return Object.freeze({ ...admitted.requestSemantics, deadlineMs: durable.deadlineMs });
   }
 
-  #withVerifiedUse(request, deadlineMs, consumer) {
+  async #withVerifiedUse(request, deadlineMs, consumer) {
+    let enter;
+    const entered = new Promise((resolve) => { enter = resolve; });
+    let finishConsumer;
+    const consumerFinished = new Promise((resolve) => { finishConsumer = resolve; });
+    let enteredOnce = false;
+
+    const authorityCall = Promise.resolve().then(() =>
+      this.#authority.withVerifiedUse(request, async (verified) => {
+        if (enteredOnce) {
+          throw new TypeError("final-use authority invoked the consumer more than once");
+        }
+        enteredOnce = true;
+        enter();
+        try {
+          return await consumer(verified);
+        } finally {
+          finishConsumer();
+        }
+      }),
+    );
+    // Phase one bounds only authority verification and entry. Once the
+    // verified-use consumer has started, its driver operation owns its own
+    // deadline; racing a second authority timer here can misclassify a driver
+    // timeout as an authority failure.
+    const first = await callWithDeadline({
+      call: () =>
+        Promise.race([
+          authorityCall.then((value) => ({ kind: "completed", value })),
+          entered.then(() => ({ kind: "entered" })),
+        ]),
+      payload: null,
+      now: this.#clock,
+      deadlineMs,
+      timeoutCapMs: this.#driverCallTimeoutMs,
+      abortable: false,
+      timeoutName: "browser authority",
+    });
+    if (first.kind === "completed") return first.value;
+
+    await consumerFinished;
+    // After the local consumer settles, bound only the authority-side
+    // completion/dispatch-boundary acknowledgement. An already-settled
+    // consumer error (including BrowserDriverTimeoutError) wins immediately.
     return callWithDeadline({
-      call: () => this.#authority.withVerifiedUse(request, consumer),
+      call: () => authorityCall,
       payload: null,
       now: this.#clock,
       deadlineMs,
