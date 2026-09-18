@@ -291,7 +291,8 @@ mod tests {
             .rollback(&selection, Digest32::of_bytes(b"observed-regression"))
             .unwrap();
         assert_eq!(rollback.restored_candidate_id, id("baseline"));
-        assert_eq!(runtime.generation(), generation(4));
+        assert_eq!(rollback.restored_generation, generation(6));
+        assert_eq!(runtime.generation(), generation(6));
         assert_eq!(runtime.artifact_digest(), baseline_digest);
     }
 
