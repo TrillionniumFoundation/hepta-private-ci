@@ -12,6 +12,7 @@ use codex_extension_api::ToolPolicyInput;
 use codex_extension_api::ToolPolicyTerminalInput;
 use codex_hepta_contracts::GovernanceMode;
 use codex_hepta_contracts::PolicyPhase;
+use codex_hepta_evidence::EvidenceIssuerAuthorityV1;
 use codex_hepta_evidence::HeptaEvidenceStore;
 use codex_state::StateRuntime;
 
@@ -22,6 +23,7 @@ pub(crate) struct HeptaGovernanceExtension<F> {
     pub(crate) mode: GovernanceMode,
     pub(crate) state_db: Option<Arc<StateRuntime>>,
     pub(crate) evidence: tokio::sync::OnceCell<Arc<HeptaEvidenceStore>>,
+    pub(crate) qualification_authority: Option<Arc<EvidenceIssuerAuthorityV1>>,
 }
 
 impl<F> HeptaGovernanceExtension<F> {
@@ -49,7 +51,15 @@ impl<F> HeptaGovernanceExtension<F> {
                 .cloned(),
             None => Err(Arc::from("Codex state runtime is unavailable")),
         };
-        thread_store.insert(GovernanceState::enabled(self.mode, evidence));
+        let state = match self.qualification_authority.as_ref() {
+            Some(authority) => GovernanceState::enabled_with_qualification_authority(
+                self.mode,
+                evidence,
+                Arc::clone(authority),
+            ),
+            None => GovernanceState::enabled(self.mode, evidence),
+        };
+        thread_store.insert(state);
     }
 }
 
@@ -134,11 +144,34 @@ pub fn install_with_mode<C, F>(
     C: Sync + 'static,
     F: Fn(&C) -> bool + Send + Sync + 'static,
 {
+    install_with_mode_and_qualification_authority(
+        registry,
+        state_db,
+        mode,
+        None,
+        enabled,
+    );
+}
+
+/// Install the governance extension with a host-pinned qualification issuer
+/// authority. The authority comes from the protected product configuration
+/// channel; request payloads cannot select or replace this trust root.
+pub fn install_with_mode_and_qualification_authority<C, F>(
+    registry: &mut ExtensionRegistryBuilder<C>,
+    state_db: Option<Arc<StateRuntime>>,
+    mode: GovernanceMode,
+    qualification_authority: Option<Arc<EvidenceIssuerAuthorityV1>>,
+    enabled: F,
+) where
+    C: Sync + 'static,
+    F: Fn(&C) -> bool + Send + Sync + 'static,
+{
     let extension = Arc::new(HeptaGovernanceExtension {
         enabled,
         mode,
         state_db,
         evidence: tokio::sync::OnceCell::new(),
+        qualification_authority,
     });
     registry.thread_lifecycle_contributor(extension.clone());
     registry.tool_policy_contributor(extension.clone());
