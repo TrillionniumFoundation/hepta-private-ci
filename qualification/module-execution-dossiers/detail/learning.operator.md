@@ -5,7 +5,7 @@ Status: deterministic reference, simplest-sufficient tabular learner and action-
 
 ## 1. Source and work envelope
 
-Roots: `codex-rs/hepta-bellman-operator`.
+Roots: `codex-rs/hepta-bellman-operator`, `codex-rs/hepta-operator-acceptance`.
 Packages: `HBO-0-BELLMAN-OPERATOR-CONTRACTS`, `HBO-1-OPERATOR-SENSOR-CORE`, `HBO-2-BELLMAN-OPERATOR-SHADOW`, `BIO-3-WORLD-MODEL-PREDICTION-ERROR`.
 
 Concrete source mappings are recorded in `../../../codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md` and `../../../docs/lane-e/LANE_E_IMPLEMENTATION_MATRIX.json`. Existing compatible APIs remain available; no operation creates another authority or execution spine.
@@ -53,7 +53,7 @@ Use all eighteen dossier receipt fields. Immediate revocation and stop remain ef
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `build_targets` in [codex-rs/hepta-bellman-operator/src/lib.rs](../../../codex-rs/hepta-bellman-operator/src/lib.rs); `fit_tabular_operator` in [codex-rs/hepta-bellman-operator/src/learned.rs](../../../codex-rs/hepta-bellman-operator/src/learned.rs); `fit_transition_model` in [codex-rs/hepta-bellman-operator/src/world_model.rs](../../../codex-rs/hepta-bellman-operator/src/world_model.rs). Deterministic targets, tabular operator fitting and action-conditioned world-model baseline implemented.
+- **Implemented entrypoints:** `build_targets` in [codex-rs/hepta-bellman-operator/src/lib.rs](../../../codex-rs/hepta-bellman-operator/src/lib.rs); `fit_tabular_operator` and validated/loaded tabular prediction in [codex-rs/hepta-bellman-operator/src/learned.rs](../../../codex-rs/hepta-bellman-operator/src/learned.rs) and [loaded.rs](../../../codex-rs/hepta-bellman-operator/src/loaded.rs); `fit_transition_model` plus pinned loaded world-model admission in [world_model.rs](../../../codex-rs/hepta-bellman-operator/src/world_model.rs); qualification-only acceptance `prepare`, `verify_and_seal`, and `verify_receipt` in [codex-rs/hepta-operator-acceptance/src/lib.rs](../../../codex-rs/hepta-operator-acceptance/src/lib.rs). Deterministic targets, replay-resistant tabular fitting, action-conditioned world-model baseline and qualification ceremony are implemented; none grants promotion or production authority.
 - **State and recovery:** Pure candidate artifacts bind immutable data/profile/sensor identities. encode_tabular_payload_v1 and LoadedTabularOperatorV1 add bounded persisted candidate encoding and independently pinned, once-validated prediction. Storage and selection remain with learning.artifacts and its host. train is a compatibility alias for target construction; the separate tabular learner requires a complete supported sensor/action grid and retains per-cell sample statistics.
 - **Source tests:** [codex-rs/hepta-bellman-operator/src/learned_tests.rs](../../../codex-rs/hepta-bellman-operator/src/learned_tests.rs), [codex-rs/hepta-bellman-operator/src/world_model_tests.rs](../../../codex-rs/hepta-bellman-operator/src/world_model_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md](../../../codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md), [docs/learning/HOLDER_BELLMAN_SPEC.md](../../../docs/learning/HOLDER_BELLMAN_SPEC.md).
