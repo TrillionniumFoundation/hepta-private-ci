@@ -37,6 +37,14 @@ renewability and expiry observed by a trusted provider-specific reconciler.
 issuance or restores an existing lease to `Active` after a proven-not-applied
 renew/revoke.
 
+## Dynamic issuance method
+
+The request binds `DynamicLeaseMethod::Get` or `DynamicLeaseMethod::Post`.
+GET serializes the bounded parameter object as query parameters; POST serializes
+it as JSON. This is explicit because OpenBao dynamic engines commonly mint
+credentials through logical reads while other provider operations may require
+writes. Renew and revoke follow OpenBao's POST lease-management API.
+
 ## Dynamic secret data
 
 The generic adapter accepts bounded JSON request parameters but persists only
