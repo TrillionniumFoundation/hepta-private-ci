@@ -502,9 +502,9 @@ impl LocalModelRuntimeReceiptV1 {
         Ok(())
     }
 
-    pub fn digest(&self) -> Result<Digest32, ProtocolError> {
+    pub fn identity_digest(&self) -> Result<Digest32, ProtocolError> {
         self.validate()?;
-        let mut bytes = b"hepta.neuron.local-model-runtime.v1".to_vec();
+        let mut bytes = b"hepta.neuron.local-model-identity.v1".to_vec();
         push_id(&mut bytes, &self.model_id);
         for digest in [
             self.weights_digest,
@@ -516,6 +516,12 @@ impl LocalModelRuntimeReceiptV1 {
         }
         push_id(&mut bytes, &self.quantization_id);
         push_id(&mut bytes, &self.backend_id);
+        Ok(Digest32::of_bytes(&bytes))
+    }
+
+    pub fn digest(&self) -> Result<Digest32, ProtocolError> {
+        let mut bytes = b"hepta.neuron.local-model-runtime.v1".to_vec();
+        bytes.extend_from_slice(self.identity_digest()?.as_array());
         bytes.extend_from_slice(&self.latency_micros.to_be_bytes());
         bytes.extend_from_slice(&self.resident_bytes.to_be_bytes());
         Ok(Digest32::of_bytes(&bytes))
@@ -548,6 +554,13 @@ impl BoundModelExecutionV1 {
             return Err(ProtocolError::InvalidModelExecution("output digest"));
         }
         Ok(())
+    }
+
+    pub fn model_identity_digest(&self) -> Result<Digest32, ProtocolError> {
+        let mut bytes = b"hepta.neuron.model-identity.v1".to_vec();
+        bytes.extend_from_slice(self.runtime_receipt.identity_digest()?.as_array());
+        bytes.extend_from_slice(self.head_digest.as_array());
+        Ok(Digest32::of_bytes(&bytes))
     }
 
     pub fn model_runtime_digest(&self) -> Result<Digest32, ProtocolError> {
