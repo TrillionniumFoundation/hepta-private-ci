@@ -347,11 +347,7 @@ impl DurableTopologyProposalRegistryV1 {
             receipt.disposition = AppendDisposition::Unchanged;
             return Ok(receipt);
         }
-        let current = self
-            .frame_digests
-            .last()
-            .copied()
-            .unwrap_or(Digest32::ZERO);
+        let current = self.frame_digests.last().copied().unwrap_or(Digest32::ZERO);
         if current != expected_predecessor_frame_digest {
             return Err(DurableTopologyRegistryErrorV1::Conflict);
         }
@@ -361,7 +357,12 @@ impl DurableTopologyProposalRegistryV1 {
 
         let mut candidate_slots = self.by_slot.clone();
         let mut candidate_ids = self.by_id.clone();
-        insert_maps(&mut candidate_slots, &mut candidate_ids, record.clone(), self.maximum_records)?;
+        insert_maps(
+            &mut candidate_slots,
+            &mut candidate_ids,
+            record.clone(),
+            self.maximum_records,
+        )?;
 
         let sequence = self.frame_digests.len() as u64 + 1;
         let (frame, frame_digest) =
@@ -393,7 +394,8 @@ impl DurableTopologyProposalRegistryV1 {
         };
         self.by_slot = candidate_slots;
         self.by_id = candidate_ids;
-        self.receipts.insert(receipt.proposal_id.clone(), receipt.clone());
+        self.receipts
+            .insert(receipt.proposal_id.clone(), receipt.clone());
         self.frame_digests.push(frame_digest);
         self.poisoned = false;
         Ok(receipt)
@@ -405,12 +407,14 @@ impl DurableTopologyProposalRegistryV1 {
         if self.poisoned {
             return Err(DurableTopologyRegistryErrorV1::Poisoned);
         }
-        Ok(self.frame_digests.last().copied().map(|frame_digest| {
-            DurableTopologyRegistryAnchorV1 {
+        Ok(self
+            .frame_digests
+            .last()
+            .copied()
+            .map(|frame_digest| DurableTopologyRegistryAnchorV1 {
                 sequence: self.frame_digests.len() as u64,
                 frame_digest,
-            }
-        }))
+            }))
     }
 
     pub fn record_count(&self) -> Result<usize, DurableTopologyRegistryErrorV1> {
@@ -573,7 +577,9 @@ fn encode_record(
     Ok(w.finish())
 }
 
-fn decode_record(bytes: &[u8]) -> Result<GovernedTopologyProposalV1, DurableTopologyRegistryErrorV1> {
+fn decode_record(
+    bytes: &[u8],
+) -> Result<GovernedTopologyProposalV1, DurableTopologyRegistryErrorV1> {
     let mut r = Reader::new(bytes);
     if r.take(PAYLOAD_MAGIC.len())? != PAYLOAD_MAGIC {
         return Err(DurableTopologyRegistryErrorV1::Corrupt);
@@ -657,7 +663,9 @@ fn encode_proposal(
     Ok(())
 }
 
-fn decode_proposal(r: &mut Reader<'_>) -> Result<TopologyProposalV2, DurableTopologyRegistryErrorV1> {
+fn decode_proposal(
+    r: &mut Reader<'_>,
+) -> Result<TopologyProposalV2, DurableTopologyRegistryErrorV1> {
     let proposal_id = r.id()?;
     let proposer_id = r.id()?;
     let evaluator_id = r.id()?;
@@ -853,7 +861,6 @@ impl<'a> Reader<'a> {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -970,9 +977,7 @@ mod tests {
             let mut store =
                 DurableTopologyProposalRegistryV1::bootstrap_empty(file.create(), scope, 21, 8)
                     .expect("bootstrap");
-            let first_receipt = store
-                .append(Digest32::ZERO, first.clone())
-                .expect("first");
+            let first_receipt = store.append(Digest32::ZERO, first.clone()).expect("first");
             let second_receipt = store
                 .append(first_receipt.frame_digest, second.clone())
                 .expect("second");
@@ -987,14 +992,9 @@ mod tests {
         };
         assert_eq!(first_receipt.sequence, 1);
         assert_eq!(second_receipt.sequence, 2);
-        let reopened = DurableTopologyProposalRegistryV1::reopen_anchored(
-            file.open(),
-            scope,
-            21,
-            8,
-            anchor,
-        )
-        .expect("reopen");
+        let reopened =
+            DurableTopologyProposalRegistryV1::reopen_anchored(file.open(), scope, 21, 8, anchor)
+                .expect("reopen");
         assert_eq!(reopened.record_count(), Ok(2));
     }
 }

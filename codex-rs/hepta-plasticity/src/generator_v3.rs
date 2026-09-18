@@ -150,11 +150,8 @@ pub fn generate_parameter_candidates_v3(
         {
             continue;
         }
-        let candidate_id = content_candidate_id(
-            profile.selected_artifact_digest,
-            &profile.window,
-            &deltas,
-        )?;
+        let candidate_id =
+            content_candidate_id(profile.selected_artifact_digest, &profile.window, &deltas)?;
         if !seen_candidate_ids.insert(candidate_id.clone()) {
             continue;
         }
@@ -360,7 +357,10 @@ fn context_no_change_id(
 ) -> Result<StableId, ParameterGeneratorErrorV3> {
     let mut bytes = b"hepta.plasticity.parameter-candidate.no-change.v3\0".to_vec();
     push_candidate_context(&mut bytes, selected_artifact_digest, window)?;
-    stable_id(&format!("candidate:no-change:{}", Digest32::of_bytes(&bytes)))
+    stable_id(&format!(
+        "candidate:no-change:{}",
+        Digest32::of_bytes(&bytes)
+    ))
 }
 
 fn content_candidate_id(
@@ -467,7 +467,7 @@ fn push_len(bytes: &mut Vec<u8>, value: usize) -> Result<(), ParameterGeneratorE
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{build_mutation_grammar_manifest_v1, MutationSurfaceV1, ParameterMutationRuleV1};
+    use crate::{MutationSurfaceV1, ParameterMutationRuleV1, build_mutation_grammar_manifest_v1};
 
     fn id(value: &str) -> StableId {
         StableId::new(value).unwrap_or_else(|error| panic!("id {value}: {error}"))
@@ -500,7 +500,8 @@ mod tests {
                     minimum_delta: FixedQ32::from_raw(-(1_i64 << 24)),
                     maximum_delta: FixedQ32::from_raw(1_i64 << 24),
                 }],
-            ).expect("grammar"),
+            )
+            .expect("grammar"),
             update_scales: vec![FixedQ32::ONE, FixedQ32::from_raw(1_i64 << 31)],
             signals: vec![ParameterPlasticitySignalV3 {
                 layer_id: id("layer:1"),
@@ -534,7 +535,12 @@ mod tests {
             .iter()
             .filter(|candidate| candidate.kind == ParameterCandidateKindV2::Update)
         {
-            assert!(candidate.candidate_id.as_str().starts_with("candidate:update:"));
+            assert!(
+                candidate
+                    .candidate_id
+                    .as_str()
+                    .starts_with("candidate:update:")
+            );
             assert_eq!(candidate.parameter_deltas.len(), 1);
         }
         verify_generated_parameter_candidates_v3(profile(), &first).expect("verify");

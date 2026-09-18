@@ -11,8 +11,7 @@ use std::fmt;
 use codex_hepta_types::{Digest32, StableId};
 
 use crate::{
-    TopologyCandidateKindV2, TopologyOperationV2, TopologyProposalV2,
-    verify_topology_proposal_v2,
+    TopologyCandidateKindV2, TopologyOperationV2, TopologyProposalV2, verify_topology_proposal_v2,
 };
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -111,7 +110,10 @@ pub fn validate_writer_handoff_plan_v1(
         ("source store", plan.source_store_digest),
         ("migration", plan.migration_digest),
         ("rollback", plan.rollback_digest),
-        ("acknowledgement contract", plan.acknowledgement_contract_digest),
+        (
+            "acknowledgement contract",
+            plan.acknowledgement_contract_digest,
+        ),
     ] {
         if digest.is_zero() {
             return Err(TopologyGovernanceErrorV1::EmptyDigest(name));
@@ -165,17 +167,12 @@ pub fn admit_governed_topology_v1(
         .iter()
         .filter(|candidate| candidate.kind == TopologyCandidateKindV2::Update)
     {
-        let change = candidate
-            .changes
-            .first()
-            .ok_or_else(|| TopologyGovernanceErrorV1::MissingHandoff(
-                candidate.candidate_id.to_string(),
-            ))?;
-        let handoff = by_module
-            .remove(&change.module_id)
-            .ok_or_else(|| TopologyGovernanceErrorV1::MissingHandoff(
-                change.module_id.to_string(),
-            ))?;
+        let change = candidate.changes.first().ok_or_else(|| {
+            TopologyGovernanceErrorV1::MissingHandoff(candidate.candidate_id.to_string())
+        })?;
+        let handoff = by_module.remove(&change.module_id).ok_or_else(|| {
+            TopologyGovernanceErrorV1::MissingHandoff(change.module_id.to_string())
+        })?;
         validate_writer_handoff_plan_v1(handoff, Some(change.writer_handoff_digest))?;
         if handoff.migration_digest != change.migration_digest
             || handoff.rollback_digest != change.rollback_digest
@@ -262,7 +259,6 @@ fn push_len(bytes: &mut Vec<u8>, value: usize) -> Result<(), TopologyGovernanceE
     bytes.extend_from_slice(&value.to_be_bytes());
     Ok(())
 }
-
 
 #[cfg(test)]
 mod tests {

@@ -101,7 +101,11 @@ pub fn verify_mutation_grammar_manifest_v1(
     manifest: &MutationGrammarManifestV1,
 ) -> Result<(), MutationGrammarErrorV1> {
     let mut rules = manifest.rules.clone();
-    validate_context(manifest.selected_artifact_digest, &manifest.window, &mut rules)?;
+    validate_context(
+        manifest.selected_artifact_digest,
+        &manifest.window,
+        &mut rules,
+    )?;
     if rules != manifest.rules || manifest.manifest_digest.is_zero() {
         return Err(MutationGrammarErrorV1::DigestMismatch);
     }
@@ -134,7 +138,9 @@ pub fn authorize_parameter_mutation_v1(
         .and_then(|index| manifest.rules.get(index))
         .ok_or_else(|| MutationGrammarErrorV1::MissingRule(parameter_id.to_string()))?;
     if &rule.layer_id != layer_id {
-        return Err(MutationGrammarErrorV1::LayerMismatch(parameter_id.to_string()));
+        return Err(MutationGrammarErrorV1::LayerMismatch(
+            parameter_id.to_string(),
+        ));
     }
     if rule.surface != MutationSurfaceV1::LearnableParameter {
         return Err(MutationGrammarErrorV1::ProtectedSurface(

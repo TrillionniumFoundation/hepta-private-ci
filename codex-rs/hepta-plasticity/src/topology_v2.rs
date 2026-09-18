@@ -260,7 +260,9 @@ fn validate_header(request: &TopologyProposalRequestV2) -> Result<(), TopologyPr
     Ok(())
 }
 
-fn canonicalize_changes(changes: &mut Vec<TopologyChangeV2>) -> Result<(), TopologyProposalErrorV2> {
+fn canonicalize_changes(
+    changes: &mut Vec<TopologyChangeV2>,
+) -> Result<(), TopologyProposalErrorV2> {
     changes.sort();
     let mut identities = BTreeSet::new();
     for change in changes {
@@ -313,9 +315,7 @@ fn validate_change(change: &TopologyChangeV2) -> Result<(), TopologyProposalErro
             return Err(TopologyProposalErrorV2::EmptyDigest("topology lineage"));
         }
     }
-    if change.predecessor_digest.is_some()
-        && change.predecessor_digest == change.candidate_digest
-    {
+    if change.predecessor_digest.is_some() && change.predecessor_digest == change.candidate_digest {
         return Err(TopologyProposalErrorV2::UnchangedTopology(
             change.module_id.to_string(),
         ));
@@ -329,7 +329,10 @@ fn context_no_change_id(
 ) -> Result<StableId, TopologyProposalErrorV2> {
     let mut bytes = b"hepta.plasticity.topology-candidate.no-change.v2\0".to_vec();
     push_candidate_context(&mut bytes, selected_artifact_digest, window)?;
-    stable_id(&format!("topology:no-change:{}", Digest32::of_bytes(&bytes)))
+    stable_id(&format!(
+        "topology:no-change:{}",
+        Digest32::of_bytes(&bytes)
+    ))
 }
 
 fn content_candidate_id(
@@ -340,10 +343,7 @@ fn content_candidate_id(
     let mut bytes = b"hepta.plasticity.topology-candidate.update.v2\0".to_vec();
     push_candidate_context(&mut bytes, selected_artifact_digest, window)?;
     push_change(&mut bytes, change)?;
-    stable_id(&format!(
-        "topology:update:{}",
-        Digest32::of_bytes(&bytes)
-    ))
+    stable_id(&format!("topology:update:{}", Digest32::of_bytes(&bytes)))
 }
 
 fn push_candidate_context(
