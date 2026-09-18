@@ -68,8 +68,7 @@ impl ArtifactPublicationTransactionV1 {
     pub fn may_acknowledge_source(&self) -> bool {
         matches!(
             self.phase,
-            ArtifactPublicationPhaseV1::WitnessDurable
-                | ArtifactPublicationPhaseV1::Acknowledged
+            ArtifactPublicationPhaseV1::WitnessDurable | ArtifactPublicationPhaseV1::Acknowledged
         )
     }
 
@@ -168,8 +167,7 @@ impl ArtifactPublicationTransactionV1 {
                 Ok(())
             }
             ArtifactPublicationPhaseV1::Acknowledged => Ok(()),
-            ArtifactPublicationPhaseV1::Prepared
-            | ArtifactPublicationPhaseV1::SnapshotDurable => {
+            ArtifactPublicationPhaseV1::Prepared | ArtifactPublicationPhaseV1::SnapshotDurable => {
                 Err(ArtifactPublicationError::WitnessNotDurable)
             }
         }
@@ -414,7 +412,10 @@ mod tests {
             Some((&head, receipt)),
         )
         .expect("recover published");
-        assert_eq!(published.phase(), ArtifactPublicationPhaseV1::WitnessDurable);
+        assert_eq!(
+            published.phase(),
+            ArtifactPublicationPhaseV1::WitnessDurable
+        );
         published.acknowledge_source().expect("ack allowed");
         assert_eq!(published.phase(), ArtifactPublicationPhaseV1::Acknowledged);
     }
