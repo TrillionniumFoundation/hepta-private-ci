@@ -232,21 +232,24 @@
       "implementationDetail": "docs/lane-a-foundation/kernel.evidence/STORE_V1.md",
       "states": {
         "source": "implemented",
-        "implementation": "sqlite_store",
-        "durability": "sqlite_migrations_0001_0010",
-        "qualification": "source_tests_present",
+        "implementation": "sqlite_qualification_store",
+        "durability": "sqlite_migrations_0001_0011",
+        "qualification": "target_contract_source_tests_present",
         "activation": "feature_gated",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
         "governance and historical evidence storage",
         "provider intent terminal and effect evidence storage",
-        "schema migration and integrity validation"
+        "schema migration and integrity validation",
+        "signed exact-candidate qualification receipt append query and chain verification",
+        "independent decision projection with durable receipt and issuer-key revocation",
+        "logical external qualification-prefix checkpoint verification"
       ],
       "targetOnlyCapabilities": [
-        "external monotonic checkpoint",
-        "cryptographic database replacement detection",
-        "signed evaluator-role and independence verification",
+        "whole-database external cryptographic attestation",
+        "distributed evidence replication",
+        "independently retained checkpoint authority",
         "promotion or release authority"
       ],
       "sourceAnchors": [
@@ -284,6 +287,33 @@
           "mustContain": [
             "CREATE TABLE authbus_outbox",
             "authbus_outbox_active_no_delete"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0011_qualification_evidence.sql",
+          "mustContain": [
+            "CREATE TABLE qualification_evidence",
+            "CREATE TABLE independent_decision_receipts",
+            "CREATE TABLE qualification_issuer_key_revocations",
+            "qualification_evidence_no_update"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification.rs",
+          "mustContain": [
+            "pub async fn append_receipt(",
+            "pub async fn verify_chain(",
+            "pub async fn query_claim(",
+            "pub async fn append_independent_decision_receipt(",
+            "pub async fn append_issuer_key_revocation("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/checkpoint.rs",
+          "mustContain": [
+            "pub async fn capture_external_checkpoint(",
+            "pub async fn verify_external_checkpoint(",
+            "pub async fn open_with_external_checkpoint("
           ]
         }
       ]
