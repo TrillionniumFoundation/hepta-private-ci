@@ -102,11 +102,15 @@ The workflow must retain a commit-addressed
 - generation timestamp and expiry;
 - signer identity.
 
-The JSON artifact is keylessly signed with the repository's existing Sigstore
-cosign action and uploaded together with its `.sigstore` bundle. The signature
-proves the GitHub Actions workload identity that produced the artifact; it does
-not convert repository tests into independent scientific or production
-acceptance evidence.
+The test job emits the commit-addressed JSON without OIDC privileges. Pull-request
+code never receives `id-token: write`. After the same workflow's exact-main
+`rust-closure` job succeeds on a trusted `push`, a separate `sign-evidence` job
+checks out that exact SHA, re-verifies the closed world, checks the JSON's
+commit/tree/run binding, then keylessly signs it with the repository's existing
+Sigstore cosign action and uploads the JSON together with its `.sigstore` bundle.
+The signature proves the GitHub Actions workload identity that signed the
+artifact; it does not convert repository tests into independent scientific or
+production acceptance evidence.
 
 ## 6. External gates
 
