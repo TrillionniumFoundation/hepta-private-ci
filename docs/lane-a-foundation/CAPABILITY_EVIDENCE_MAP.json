@@ -622,6 +622,135 @@
       "receiptStatus": "native_workflow_required"
     },
     {
+      "capabilityId": "kernel.evidence.qualification-contract.v1",
+      "module": "kernel.evidence",
+      "summary": "signed exact-candidate qualification receipt append query and chain verification",
+      "publicSymbols": [
+        "HeptaEvidenceStore::append_receipt",
+        "HeptaEvidenceStore::query_claim",
+        "HeptaEvidenceStore::verify_chain"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification.rs",
+          "mustContain": [
+            "pub async fn append_receipt(",
+            "pub async fn query_claim(",
+            "pub async fn verify_chain("
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+          "mustContain": [
+            "target_append_and_query_are_exact_candidate_and_claim_class_bound"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+          "mustContain": [
+            "one_principal_cannot_satisfy_two_independent_roles",
+            "expired_candidate_evidence_is_not_supported",
+            "corrupted_qualification_payload_fails_closed_after_reopen"
+          ]
+        }
+      ],
+      "durability": "sqlite_migrations_0001_0011",
+      "activation": "feature_gated",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "kernel.evidence.independent-decision-revocation.v1",
+      "module": "kernel.evidence",
+      "summary": "independent decision projection with durable receipt and issuer-key revocation",
+      "publicSymbols": [
+        "IndependentDecisionReceiptV1",
+        "HeptaEvidenceStore::append_independent_decision_receipt",
+        "HeptaEvidenceStore::append_issuer_key_revocation"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-contracts/src/independent_decision.rs",
+          "mustContain": [
+            "pub struct IndependentDecisionReceiptV1"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification.rs",
+          "mustContain": [
+            "pub async fn append_independent_decision_receipt(",
+            "pub async fn append_issuer_key_revocation("
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+          "mustContain": [
+            "independent_decision_projection_binds_authenticated_signing_identity"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+          "mustContain": [
+            "durable_key_revocation_invalidates_previous_independent_evidence"
+          ]
+        }
+      ],
+      "durability": "sqlite_migrations_0001_0011",
+      "activation": "feature_gated",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "kernel.evidence.external-checkpoint.v1",
+      "module": "kernel.evidence",
+      "summary": "logical external qualification-prefix checkpoint verification",
+      "publicSymbols": [
+        "EvidenceExternalCheckpointV1",
+        "HeptaEvidenceStore::capture_external_checkpoint",
+        "HeptaEvidenceStore::verify_external_checkpoint",
+        "HeptaEvidenceStore::open_with_external_checkpoint"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-evidence/src/checkpoint.rs",
+          "mustContain": [
+            "pub struct EvidenceExternalCheckpointV1",
+            "pub async fn capture_external_checkpoint(",
+            "pub async fn verify_external_checkpoint(",
+            "pub async fn open_with_external_checkpoint("
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+          "mustContain": [
+            "external_checkpoint_rejects_complete_database_rollback"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+          "mustContain": [
+            "rolled back database must fail the checkpoint"
+          ]
+        }
+      ],
+      "durability": "sqlite_migrations_0001_0011",
+      "activation": "feature_gated",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
       "capabilityId": "auth.authbus.sqlite-replay-admission.v1",
       "module": "auth.authbus",
       "summary": "bounded SQLite replay admission keyed by issuer epoch subject and scope",
@@ -939,135 +1068,6 @@
       ],
       "durability": "external_authority_plus_local_final_use_state",
       "activation": "host_composition_required",
-      "productionCaller": null,
-      "receiptStatus": "native_workflow_required"
-    },
-    {
-      "capabilityId": "kernel.evidence.qualification-contract.v1",
-      "module": "kernel.evidence",
-      "summary": "signed exact-candidate qualification receipt append query and chain verification",
-      "publicSymbols": [
-        "HeptaEvidenceStore::append_receipt",
-        "HeptaEvidenceStore::query_claim",
-        "HeptaEvidenceStore::verify_chain"
-      ],
-      "sourceEvidence": [
-        {
-          "path": "codex-rs/hepta-evidence/src/qualification.rs",
-          "mustContain": [
-            "pub async fn append_receipt(",
-            "pub async fn query_claim(",
-            "pub async fn verify_chain("
-          ]
-        }
-      ],
-      "positiveTests": [
-        {
-          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
-          "mustContain": [
-            "target_append_and_query_are_exact_candidate_and_claim_class_bound"
-          ]
-        }
-      ],
-      "negativeTests": [
-        {
-          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
-          "mustContain": [
-            "one_principal_cannot_satisfy_two_independent_roles",
-            "expired_candidate_evidence_is_not_supported",
-            "corrupted_qualification_payload_fails_closed_after_reopen"
-          ]
-        }
-      ],
-      "durability": "sqlite_migrations_0001_0011",
-      "activation": "feature_gated",
-      "productionCaller": null,
-      "receiptStatus": "native_workflow_required"
-    },
-    {
-      "capabilityId": "kernel.evidence.independent-decision-revocation.v1",
-      "module": "kernel.evidence",
-      "summary": "independent decision projection with durable receipt and issuer-key revocation",
-      "publicSymbols": [
-        "IndependentDecisionReceiptV1",
-        "HeptaEvidenceStore::append_independent_decision_receipt",
-        "HeptaEvidenceStore::append_issuer_key_revocation"
-      ],
-      "sourceEvidence": [
-        {
-          "path": "codex-rs/hepta-contracts/src/independent_decision.rs",
-          "mustContain": [
-            "pub struct IndependentDecisionReceiptV1"
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-evidence/src/qualification.rs",
-          "mustContain": [
-            "pub async fn append_independent_decision_receipt(",
-            "pub async fn append_issuer_key_revocation("
-          ]
-        }
-      ],
-      "positiveTests": [
-        {
-          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
-          "mustContain": [
-            "independent_decision_projection_binds_authenticated_signing_identity"
-          ]
-        }
-      ],
-      "negativeTests": [
-        {
-          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
-          "mustContain": [
-            "durable_key_revocation_invalidates_previous_independent_evidence"
-          ]
-        }
-      ],
-      "durability": "sqlite_migrations_0001_0011",
-      "activation": "feature_gated",
-      "productionCaller": null,
-      "receiptStatus": "native_workflow_required"
-    },
-    {
-      "capabilityId": "kernel.evidence.external-checkpoint.v1",
-      "module": "kernel.evidence",
-      "summary": "logical external qualification-prefix checkpoint verification",
-      "publicSymbols": [
-        "EvidenceExternalCheckpointV1",
-        "HeptaEvidenceStore::capture_external_checkpoint",
-        "HeptaEvidenceStore::verify_external_checkpoint",
-        "HeptaEvidenceStore::open_with_external_checkpoint"
-      ],
-      "sourceEvidence": [
-        {
-          "path": "codex-rs/hepta-evidence/src/checkpoint.rs",
-          "mustContain": [
-            "pub struct EvidenceExternalCheckpointV1",
-            "pub async fn capture_external_checkpoint(",
-            "pub async fn verify_external_checkpoint(",
-            "pub async fn open_with_external_checkpoint("
-          ]
-        }
-      ],
-      "positiveTests": [
-        {
-          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
-          "mustContain": [
-            "external_checkpoint_rejects_complete_database_rollback"
-          ]
-        }
-      ],
-      "negativeTests": [
-        {
-          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
-          "mustContain": [
-            "rolled back database must fail the checkpoint"
-          ]
-        }
-      ],
-      "durability": "sqlite_migrations_0001_0011",
-      "activation": "feature_gated",
       "productionCaller": null,
       "receiptStatus": "native_workflow_required"
     }
