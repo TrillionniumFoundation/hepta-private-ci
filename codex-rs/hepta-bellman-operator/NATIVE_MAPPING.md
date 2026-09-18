@@ -25,10 +25,10 @@ interpreted as the Hölder/operator qualification profile.
 | build fixed sensor core | `build_sensor_core` | `src/reference.rs` | implemented |
 | execute tabular Bellman reference | `evaluate_bellman_reference` | `src/reference.rs` | implemented |
 | fit complete simplest-sufficient operator | `fit_tabular_operator` | `src/learned.rs` | implemented |
-| predict only a fitted sensor/action cell | `predict_tabular_operator` | `src/learned.rs` | implemented |
+| predict only a pinned fitted sensor/action cell | `predict_tabular_operator` / `LoadedTabularOperatorV1::predict` | `src/learned.rs`, `src/loaded.rs` | implemented |
 | admit rank/gain/shape/OOD/error budget | `admit_operator_regularity` | `src/reference.rs` | implemented |
 | fit action-conditioned tabular dynamics | `fit_transition_model` | `src/world_model.rs` | implemented |
-| predict supported transition distribution | `predict_transition` | `src/world_model.rs` | implemented |
+| predict supported pinned transition distribution | `predict_transition` / `LoadedTabularWorldModelV1::predict` | `src/world_model.rs` | implemented |
 
 ## Applicability and sensor core
 
@@ -56,7 +56,7 @@ canonical action ID. This reference is the oracle for any later learned model.
 It canonicalizes a frozen sensor-by-action grid, validates every sample and
 requires a configurable positive minimum sample count for every grid cell. The
 artifact stores each cell's mean, minimum, maximum, sample count and evidence
-digest. Caller order cannot change the result. `predict_tabular_operator`
+digest. Caller order cannot change the result. `predict_tabular_operator` requires an independently supplied artifact pin and
 returns only an explicitly fitted cell; an unknown sensor or action is OOD. Its
 output is marked both learned and synthetic and retains `DENY_ALL` authority.
 
@@ -86,8 +86,8 @@ profile.
 `fit_transition_model` builds a deterministic action-conditioned tabular model
 from an immutable dataset. For every supported `(state, action)` it records the
 mean bounded outcome and a branch distribution whose Q32 probabilities sum
-exactly to one. `predict_transition` rejects unsupported pairs rather than
-extrapolating and marks every prediction synthetic with deny-all authority.
+exactly to one. `predict_transition` requires an independently supplied model/dataset pin, rejects unsupported pairs rather than
+extrapolating and marks every prediction synthetic with deny-all authority. `LoadedTabularWorldModelV1` validates the pinned model once before repeated lookup.
 Synthetic predictions cannot become independent factual outcomes.
 
 ## Host and external obligations
