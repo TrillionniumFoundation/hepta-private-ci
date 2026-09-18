@@ -75,6 +75,14 @@ pub struct UnixManagedProcess {
     handle: UnixProcessHandle,
     logs: Receiver<ProcessLog>,
     health_probe: HealthProbe,
+    drain_request: Option<AgentDrainRequestIdentity>,
+}
+
+#[derive(Clone)]
+struct AgentDrainRequestIdentity {
+    agent_id: AgentId,
+    spawn_generation: u64,
+    control_socket: PathBuf,
 }
 
 enum UnixProcessHandle {
@@ -130,7 +138,10 @@ impl ManagedProcess for UnixManagedProcess {
     }
 
     fn request_drain(&mut self) -> Result<(), ProcessDriverError> {
-        send_signal(self.handle.process_id(), libc::SIGTERM)
+        let Some(identity) = self.drain_request.as_ref() else {
+            return send_signal(self.handle.process_id(), libc::SIGTERM);
+        };
+        request_agent_drain(identity)
     }
 
     fn request_stop(&mut self) -> Result<(), ProcessDriverError> {
@@ -195,6 +206,11 @@ impl ProcessDriver for UnixProcessDriver {
                 handle: UnixProcessHandle::Child(child),
                 logs,
                 health_probe,
+                drain_request: Some(AgentDrainRequestIdentity {
+                    agent_id: spec.agent_id.clone(),
+                    spawn_generation: spec.generation,
+                    control_socket: spec.control_socket.clone(),
+                }),
             },
         })
     }
@@ -214,6 +230,11 @@ impl ProcessDriver for UnixProcessDriver {
                 handle: UnixProcessHandle::Adopted { process_id },
                 logs,
                 health_probe,
+                drain_request: Some(AgentDrainRequestIdentity {
+                    agent_id: spec.agent_id.clone(),
+                    spawn_generation: spec.spawn_generation,
+                    control_socket: spec.control_socket.clone(),
+                }),
             }));
         }
 
@@ -291,6 +312,7 @@ impl ProcessDriver for UnixProcessDriver {
                 handle: UnixProcessHandle::Child(child),
                 logs,
                 health_probe,
+                drain_request: None,
             },
         })
     }
@@ -313,6 +335,7 @@ impl ProcessDriver for UnixProcessDriver {
                 handle: UnixProcessHandle::Adopted { process_id },
                 logs,
                 health_probe,
+                drain_request: None,
             }));
         }
 
@@ -499,6 +522,52 @@ fn query_health_once(
     match identity {
         HealthProbeIdentity::Agentd(identity) => query_agent_health_once(identity, request_id),
         HealthProbeIdentity::Matrixd(identity) => query_matrix_health_once(identity, request_id),
+    }
+}
+
+fn request_agent_drain(identity: &AgentDrainRequestIdentity) -> Result<(), ProcessDriverError> {
+    let request = AgentdRequest::drain(/*request_id*/ 1, identity.spawn_generation);
+    let mut bytes = serde_json::to_vec(&request)?;
+    bytes.push(b'\n');
+    if bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES {
+        return Err(ProcessDriverError::new(
+            "agentd drain request exceeded control frame bound",
+        ));
+    }
+    let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
+    stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
+    stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
+    stream.write_all(&bytes)?;
+    stream.shutdown(Shutdown::Write)?;
+
+    let mut reader = BufReader::new(stream).take(MAX_CONTROL_FRAME_BYTES + 1);
+    let mut response_bytes = Vec::new();
+    let count = reader.read_until(b'\n', &mut response_bytes)?;
+    if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !response_bytes.ends_with(b"\n") {
+        return Err(ProcessDriverError::new(
+            "agentd drain response was not a bounded frame",
+        ));
+    }
+    let response: AgentdResponse = serde_json::from_slice(&response_bytes)?;
+    if response.schema_version != AGENTD_CONTROL_SCHEMA_VERSION
+        || response.request_id != 1
+        || response.agent_id != identity.agent_id
+        || response.spawn_generation != identity.spawn_generation
+    {
+        return Err(ProcessDriverError::new(
+            "agentd drain acknowledgement identity mismatch",
+        ));
+    }
+    match response.payload {
+        AgentdPayload::Drain(snapshot) if snapshot.admission_stopped && snapshot.drain_accepted => {
+            Ok(())
+        }
+        AgentdPayload::Error { code, message } => Err(ProcessDriverError::new(format!(
+            "agentd drain rejected ({code}): {message}"
+        ))),
+        _ => Err(ProcessDriverError::new(
+            "agentd drain response did not acknowledge admission stop",
+        )),
     }
 }
 
