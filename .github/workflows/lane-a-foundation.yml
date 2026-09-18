@@ -64,9 +64,30 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          record="$RUNNER_TEMP/lane-a-authbus-agentd-product.json"
           python3 ../scripts/hepta_ci_exec.py \
-            --output ../.hepta-evidence/lane-a-authbus-agentd-product.json -- \
+            --output "$record" -- \
             cargo test --locked -p codex-hepta-agentd --test authbus_text_product
+          cp "$record" ../.hepta-evidence/lane-a-authbus-agentd-product.json
+
+      - name: Run exact-head AuthBus native qualification runner
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_sha="$(git rev-parse HEAD)"
+          source_tree="$(git rev-parse HEAD^{tree})"
+          command_record="$RUNNER_TEMP/lane-a-authbus-native-qualification-command.json"
+          receipt="$RUNNER_TEMP/lane-a-authbus-native-qualification-receipt.json"
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$command_record" -- \
+            cargo run --locked -p codex-hepta-authbus-p1-3-qualification \
+              --bin authbus-p1-3-native -- \
+              "$source_sha" "$source_tree" \
+              "runner:github:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}:source-head" \
+              "$receipt"
+          cp "$command_record" ../.hepta-evidence/lane-a-authbus-native-qualification-command.json
+          cp "$receipt" ../.hepta-evidence/lane-a-authbus-native-qualification-receipt.json
 
       - name: Write exact-source and native receipts
         env:
@@ -142,6 +163,25 @@ jobs:
           python3 ../scripts/hepta_ci_exec.py \
             --output ../.hepta-evidence/lane-a-authbus-agentd-product.json -- \
             cargo test --locked -p codex-hepta-agentd --test authbus_text_product
+
+      - name: Run merge-candidate AuthBus native qualification runner
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          source_sha="$(git rev-parse HEAD)"
+          source_tree="$(git rev-parse HEAD^{tree})"
+          command_record="$RUNNER_TEMP/lane-a-authbus-native-qualification-command.json"
+          receipt="$RUNNER_TEMP/lane-a-authbus-native-qualification-receipt.json"
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$command_record" -- \
+            cargo run --locked -p codex-hepta-authbus-p1-3-qualification \
+              --bin authbus-p1-3-native -- \
+              "$source_sha" "$source_tree" \
+              "runner:github:${GITHUB_RUN_ID}:${GITHUB_RUN_ATTEMPT}:base-merge" \
+              "$receipt"
+          cp "$command_record" ../.hepta-evidence/lane-a-authbus-native-qualification-command.json
+          cp "$receipt" ../.hepta-evidence/lane-a-authbus-native-qualification-receipt.json
 
       - name: Write synthetic-merge receipts
         env:
