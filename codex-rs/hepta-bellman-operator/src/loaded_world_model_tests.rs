@@ -65,7 +65,8 @@ fn world_model_payload_rejects_tamper_and_stale_pin() {
     let original = pin(&model, &bytes);
 
     let mut altered = bytes.clone();
-    altered[altered.len() - 1] ^= 1;
+    let last = altered.len() - 1;
+    altered[last] ^= 1;
     assert_eq!(
         LoadedWorldModelV1::from_pinned_payload(&altered, &original),
         Err(WorldModelPayloadError::Binding)
