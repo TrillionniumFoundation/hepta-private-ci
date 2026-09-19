@@ -30,6 +30,22 @@ product_callers = []
 caller_markers = []
 
 [[boundary]]
+id = "memory_production_compact_publish"
+symbol = "ProductionDurableWriter::publish_compaction"
+definition_path = "codex-rs/hepta-memory/src/production_compact.rs"
+definition_markers = ["pub async fn publish_compaction", "BEGIN IMMEDIATE", "verify_authority"]
+product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+caller_markers = ["qualify_and_publish_compaction", "publish_compaction(&publication)"]
+
+[[boundary]]
+id = "compact_engine_qualification"
+symbol = "build_qualified_candidate/prove_compaction"
+definition_path = "codex-rs/hepta-compact-engine/src/qualified.rs"
+definition_markers = ["pub fn build_qualified_candidate", "pub fn prove_compaction", "CompactionProofV2"]
+product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
+caller_markers = ["build_qualified_candidate", "prove_compaction", "qualify_and_publish_compaction"]
+
+[[boundary]]
 id = "provider_effect_coordinator"
 symbol = "ProviderEffectCoordinator::new"
 definition_path = "codex-rs/hepta-contracts/src/provider_effect.rs"
@@ -52,7 +68,7 @@ forbidden = ["H7H89ProductionGrantVerifier::default"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
-required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier"]
+required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier", "qualify_and_publish_compaction", "publish_compaction(&publication)"]
 forbidden = ["AllowVerifier", "permit_all"]
 
 [[protected_file]]
