@@ -176,7 +176,13 @@ promotion or release.
   [codex-rs/hepta-contracts/FINAL_USE.md](../../../codex-rs/hepta-contracts/FINAL_USE.md),
   [codex-rs/hepta-contracts/FINAL_USE_CONTROL.md](../../../codex-rs/hepta-contracts/FINAL_USE_CONTROL.md),
   [codex-rs/hepta-supervisor/EXTERNAL_AUTHORITY_SIGNER.md](../../../codex-rs/hepta-supervisor/EXTERNAL_AUTHORITY_SIGNER.md).
-- **Remaining gates:** selected product-process activation, fleet revocation
-  fanout/freshness qualification, external anti-rollback/trusted-time source,
-  key-custody/operator ceremony, equivalent non-Unix storage, independent
-  semantic acceptance, canary, promotion and release.
+- **External evidence admission:** `qualification/kernel-authority/verify.py`
+  fail-closed validates exact-candidate production bundles covering protected
+  time, rollback-independent CAS, deployed revocation convergence scenarios,
+  three-role key custody/rotation/compromise evidence, capacity/fault
+  qualification and independent operator acceptance. Bundle admission is not
+  activation or release.
+- **Remaining gates:** selected product-process activation, real fleet revocation
+  fanout/freshness measurements, concrete rollback-independent frontier and
+  protected-time backends, HSM/KMS custody receipts, equivalent non-Unix storage,
+  independent semantic acceptance, canary, promotion and release.
