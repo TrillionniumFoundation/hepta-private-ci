@@ -7,6 +7,7 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
 use crate::JournalAnchor;
+use crate::JournalError;
 use crate::JournalScope;
 use crate::SparseConfig;
 use crate::SparseJournal;
