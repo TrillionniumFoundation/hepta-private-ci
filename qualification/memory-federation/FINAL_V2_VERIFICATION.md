@@ -2,8 +2,8 @@
 
 - branch: `fix/memory-federation-v2-closure-20260920`
 - base main: `331b81d385a88837e252bd80fda8b8ac35ea4191`
-- candidate implementation head: `f4b4d7977a50f13904ba7d3c40ebcf2e2c1f2152`
-- candidate implementation tree: `1b246673f69a22c2a4e6bc4453467d5dda5a4838`
+- candidate implementation head: `1935de8b536423c85f98eece7b4dd7dbf83a62ff`
+- candidate implementation tree: `ec6dccce6102a73ffa72391bc4254cdfdbd291e4`
 - status: `pending_exact_current_head_execution`
 - claim boundary: source/product-composition candidate only; no activation, release, or product-execution proof is asserted here.
 
@@ -16,3 +16,5 @@ Focused checks cover formatting, the canonical federation contract, product adap
 ## Historical note
 
 The earlier `fix/memory-federation-v2-hardening-final` receipt was a failing development receipt, not acceptance evidence. Its actionable federation-local failures (authority-horizon fixture inconsistency, missing extension test import, and strict Clippy enum-size lint) are repaired in this forward-port before new qualification is evaluated.
+
+The frozen candidate also binds `observed_frontier` to the exact-scope owner memory frontier acquired from the same SQLite snapshot as candidate retrieval; empty scopes may truthfully use frontier zero.
