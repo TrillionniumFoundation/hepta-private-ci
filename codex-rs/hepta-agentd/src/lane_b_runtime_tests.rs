@@ -241,8 +241,12 @@ fn intelligence_envelope_attaches_to_the_named_runtime_run() {
     let d = |value: &str| Digest32::of_bytes(value.as_bytes());
     let envelope = IntelligenceHostEnvelopeV1::new(
         id("run.intelligence.1"),
+        d("request"),
         d("snapshot"),
         d("objective"),
+        7,
+        d("body"),
+        d("artifact-set"),
         d("candidate-set"),
         d("utility"),
         d("evaluation"),
@@ -251,6 +255,7 @@ fn intelligence_envelope_attaches_to_the_named_runtime_run() {
         d("intuition"),
         d("context"),
         d("pre-handoff"),
+        10_000_000,
         10_000,
     )
     .expect("intelligence envelope");
