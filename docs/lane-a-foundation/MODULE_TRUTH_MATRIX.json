@@ -72,44 +72,50 @@
       "profile": "stateless_codec",
       "formalGuide": "docs/modules/platform.wire/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
-      "currentSpecification": "docs/lane-a-foundation/platform.wire/WIRE_V1.md",
+      "currentSpecification": "docs/lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md",
       "currentSpecificationRole": "current_executable_contract",
-      "implementationDetail": "docs/lane-a-foundation/platform.wire/HPTA_V1_CONFORMANCE.json",
+      "implementationDetail": "docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json",
       "states": {
         "source": "implemented",
-        "implementation": "fixed_v1_codec",
+        "implementation": "versioned_v1_v2_codec",
         "durability": "none",
-        "qualification": "boundary_tests_and_frozen_vector_present",
+        "qualification": "boundary_property_cross_runtime_source_evidence",
         "activation": "library_only",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
-        "fixed HPTA version-1 envelope encode/decode",
-        "bounded identities and one-mebibyte payload",
-        "payload digest verification before owned copy"
+        "frozen HPTA V1 and metadata-bound HPTA V2 encode/decode",
+        "explicit HPTN version and capability negotiation with fail-closed pinning",
+        "schema admission, typed payload codec boundary and bounded streaming decode"
       ],
       "targetOnlyCapabilities": [
-        "version negotiation",
-        "streaming decoder",
-        "multi-version compatibility adapter",
-        "authenticated complete-envelope digest"
+        "authenticated negotiation transcript and encoded-frame binding at the selected production transport",
+        "additional product-domain schema codec admission",
+        "independent target-host qualification, activation and external acceptance"
       ],
       "sourceAnchors": [
         {
-          "path": "codex-rs/hepta-wire/src/envelope.rs",
+          "path": "codex-rs/hepta-wire/src/lib.rs",
           "mustContain": [
-            "const MAGIC: [u8; 4] = *b\"HPTA\";",
-            "const WIRE_VERSION: u16 = 1;",
-            "pub const MAX_WIRE_PAYLOAD_BYTES: usize = 1_048_576;",
-            "const MAX_ID_BYTES: usize = 128;",
-            "let payload = &encoded[producer_end..payload_end];"
+            "pub use envelope::WireEnvelope;",
+            "pub use envelope_v2::WireEnvelopeV2;",
+            "pub use version::negotiate;",
+            "pub use schema::SchemaRegistry;",
+            "pub use stream::StreamingDecoder;"
           ]
         },
         {
-          "path": "codex-rs/hepta-wire/src/boundary_tests.rs",
+          "path": "codex-rs/hepta-wire/src/envelope_v2_tests.rs",
           "mustContain": [
-            "every_truncation_rejects_without_reconstructing_an_envelope",
-            "v1_frame_matches_frozen_bytes_not_only_its_own_encoder"
+            "v2_round_trip_and_frozen_bytes_are_exact",
+            "metadata_mutation_is_bound_by_v2_digest"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs",
+          "mustContain": [
+            "rust_python_live_v2_session_negotiates_and_loads_typed_payload",
+            "frame digest mismatch"
           ]
         }
       ]

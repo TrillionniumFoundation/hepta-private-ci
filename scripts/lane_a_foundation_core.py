@@ -222,26 +222,69 @@ def validate_native_bindings(root: Path = ROOT) -> dict[str, Any]:
 
 
 def validate_wire_vector(root: Path = ROOT) -> None:
-    value = read_json(
+    v1 = read_json(
         root / "docs/lane-a-foundation/platform.wire/HPTA_V1_CONFORMANCE.json"
     )
     try:
-        frame = bytes.fromhex(value["frameHex"])
-        payload = bytes.fromhex(value["fields"]["payloadHex"])
-        payload_digest = value["fields"]["payloadSha256"]
+        v1_frame = bytes.fromhex(v1["frameHex"])
+        v1_payload = bytes.fromhex(v1["fields"]["payloadHex"])
+        v1_payload_digest = v1["fields"]["payloadSha256"]
     except (KeyError, TypeError, ValueError) as error:
         raise VerificationError(f"invalid HPTA V1 vector: {error}") from error
     if (
-        value.get("schemaVersion") != 1
-        or value.get("protocol") != "HPTA"
-        or value.get("version") != 1
-        or value.get("frameLength") != 59
-        or len(frame) != 59
-        or frame[:6] != b"HPTA\x00\x01"
-        or hashlib.sha256(frame).hexdigest() != value.get("frameSha256")
-        or hashlib.sha256(payload).hexdigest() != payload_digest
+        v1.get("schemaVersion") != 1
+        or v1.get("protocol") != "HPTA"
+        or v1.get("version") != 1
+        or v1.get("frameLength") != 59
+        or len(v1_frame) != 59
+        or v1_frame[:6] != b"HPTA\x00\x01"
+        or hashlib.sha256(v1_frame).hexdigest() != v1.get("frameSha256")
+        or hashlib.sha256(v1_payload).hexdigest() != v1_payload_digest
     ):
         raise VerificationError("HPTA V1 conformance vector mismatch")
+
+    v2 = read_json(
+        root / "docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json"
+    )
+    try:
+        v2_frame = bytes.fromhex(v2["frameHex"])
+        v2_digest = v2["fields"]["frameDigestSha256"]
+        v2_domain = bytes.fromhex(v2["digestDomainHex"])
+    except (KeyError, TypeError, ValueError) as error:
+        raise VerificationError(f"invalid HPTA V2 vector: {error}") from error
+    if (
+        v2.get("schemaVersion") != 1
+        or v2.get("protocol") != "HPTA"
+        or v2.get("version") != 2
+        or v2.get("frameLength") != 59
+        or len(v2_frame) != 59
+        or v2_frame[:6] != b"HPTA\x00\x02"
+        or hashlib.sha256(v2_frame).hexdigest() != v2.get("frameSha256")
+    ):
+        raise VerificationError("HPTA V2 conformance vector mismatch")
+    v2_preimage = v2_domain + v2_frame[:18] + v2_frame[50:54] + v2_frame[54:]
+    if hashlib.sha256(v2_preimage).hexdigest() != v2_digest:
+        raise VerificationError("HPTA V2 frame-digest vector mismatch")
+
+    hptn = read_json(
+        root / "docs/lane-a-foundation/platform.wire/HPTN_V1_CONFORMANCE.json"
+    )
+    try:
+        hello = bytes.fromhex(hptn["recordHex"])
+    except (KeyError, TypeError, ValueError) as error:
+        raise VerificationError(f"invalid HPTN V1 vector: {error}") from error
+    if (
+        hptn.get("schemaVersion") != 1
+        or hptn.get("protocol") != "HPTN"
+        or hptn.get("formatVersion") != 1
+        or hptn.get("recordLength") != 20
+        or len(hello) != 20
+        or hello[:6] != b"HPTN\x00\x01"
+        or hashlib.sha256(hello).hexdigest() != hptn.get("recordSha256")
+        or hptn.get("wireVersions") != [1, 2]
+        or hptn.get("capabilities", {}).get("currentMask") != 7
+    ):
+        raise VerificationError("HPTN V1 conformance vector mismatch")
 
 
 def validate_source_specific(root: Path = ROOT) -> None:

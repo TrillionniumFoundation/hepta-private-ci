@@ -3583,6 +3583,9 @@ name = "codex-hepta-codex-adapter"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "codex-hepta-wire",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -3626,6 +3629,9 @@ name = "codex-hepta-context-compiler"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "codex-hepta-wire",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -3954,6 +3960,7 @@ dependencies = [
  "anyhow",
  "codex-hepta-paths",
  "codex-hepta-runtime",
+ "codex-hepta-wire",
  "pretty_assertions",
  "serde_json",
  "tokio",
@@ -4053,6 +4060,7 @@ dependencies = [
  "codex-hepta-control-plane",
  "codex-hepta-paths",
  "codex-hepta-types",
+ "codex-hepta-wire",
  "hmac 0.12.1",
  "libc",
  "serde",
