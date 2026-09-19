@@ -1,5 +1,21 @@
 # Authorized HeptaBao HTTPS consumer
 
+## Implemented provider-native SecretLease runtime
+
+The adapter now also implements provider-native dynamic SecretLease issuance,
+renew, synchronous revoke, and reconciliation. These APIs are distinct from the
+legacy metadata-only helpers and from the exact-version KV v2 reader.
+
+See [LEASE_LIFECYCLE.md](LEASE_LIFECYCLE.md) for the executable state machine,
+durable append-only registry, operation-id idempotency, crash/timeout semantics,
+and the explicit stock-OpenBao limitation when an issuance response is lost
+before its provider lease ID is observed.
+
+The dynamic runtime never returns raw provider secret values. Issuance delivers
+declared fields only through a trusted synchronous callback under the existing
+final-use revocation fence. Renew/revoke/lookup operate on the locally retained
+provider lease identity and return metadata-only receipts.
+
 The legacy `resolve` and `assess_secret_boundary_v1` remain metadata-only;
 `PROVIDER_DISPATCH_ENABLED` remains false for that API. A caller-provided
 `Granted` observation cannot enable this separate client.
