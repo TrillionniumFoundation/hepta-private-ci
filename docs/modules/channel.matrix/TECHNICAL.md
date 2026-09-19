@@ -171,7 +171,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use the existing hepta-matrixd, MatrixDurableStore and SDK sender. Keep sync/dedupe and stable send transaction identity in their existing durable owners; send_observer is a reusable state machine, not another sender. Real homeserver, encryption/session and reconnection qualification require the selected host profile.
+Use the existing hepta-matrixd, MatrixDurableStore and SDK sender. Sync/dedupe, stable transaction identity, dispatch state and append-only terminal/redaction observations now share MatrixDurableStore; send_observer is a thin adapter and owns no second ledger. Transport acceptance schedules same-transaction reconciliation and cannot mark terminal success. Real homeserver, encryption/session and reconnection qualification require the selected host profile.
 
 Current operating and state-format references:
 
@@ -186,6 +186,8 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs](../../../codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs); named case: `empty_page_continues_and_exact_target_preserves_page_and_event_order`.
 - [codex-rs/hepta-matrix-sdk/src/sync_tests.rs](../../../codex-rs/hepta-matrix-sdk/src/sync_tests.rs); named case: `v1_redaction_commits_before_replay_and_survives_reopen`.
+- [codex-rs/hepta-matrix-store/tests/dispatch_ledger.rs](../../../codex-rs/hepta-matrix-store/tests/dispatch_ledger.rs) — durable terminal/redaction evidence and authority-payload binding.
+- [codex-rs/hepta-matrix-sdk/tests/durable_transport.rs](../../../codex-rs/hepta-matrix-sdk/tests/durable_transport.rs) — transport acceptance remains non-terminal until observation.
 
 In `codex-rs`, run `just test -p codex-hepta-matrix-sdk -p codex-hepta-matrixd`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/channel.matrix.md) separately labels target acceptance designs.
 
@@ -262,9 +264,9 @@ This receipt records repository source bindings for the current documentation ca
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
 | `admit_event` | `pub async fn process_event(` | `codex-rs/hepta-matrixd/src/runtime.rs` | `codex-rs/hepta-matrixd/src/tests.rs` |
-| `prepare_send` | `pub fn prepare_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
-| `observe_send` | `pub fn observe_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
+| `prepare_send` | `pub async fn prepare_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
+| `observe_send` | `pub async fn observe_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
+- The durable owner is MatrixDurableStore. The remaining repository follow-up is wiring a final-use authority/grant caller into the production outbox path; unbound legacy outbox rows are not evidence of authority.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
