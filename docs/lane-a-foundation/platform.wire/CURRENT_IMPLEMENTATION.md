@@ -37,7 +37,7 @@ V2 and protocol capabilities are implemented in:
 - `codex-rs/hepta-wire/src/negotiation.rs`: `negotiate`,
   `NegotiatedProtocol`, critical capability identifiers.
 - `codex-rs/hepta-wire/src/schema.rs`: `SchemaRegistry`,
-  `SchemaDefinition`, `TypedWirePayload`, `encode_typed`.
+  `SchemaDefinition`, `TypedWirePayload`, `SchemaRegistry::encode_typed`.
 - `codex-rs/hepta-wire/src/stream.rs`: `FramedReader`, `FramedWriter`,
   `VersionedEnvelope`.
 
