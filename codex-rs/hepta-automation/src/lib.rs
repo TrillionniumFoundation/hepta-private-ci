@@ -64,6 +64,7 @@ pub use taskflow::TaskFlowRunState;
 pub use taskflow::TaskFlowTransition;
 pub use taskflow_effect::TASKFLOW_AUTHORIZED_EFFECT_SCHEMA_VERSION;
 pub use taskflow_effect::TaskFlowEffectError;
+pub use taskflow_effect::TaskFlowEffectExecutionResult;
 pub use taskflow_effect::TaskFlowEffectIntent;
 pub use taskflow_effect::TaskFlowEffectProvider;
 pub use taskflow_effect::TaskFlowProviderObservation;
