@@ -219,7 +219,7 @@
       "state": "source_implemented_not_product_composed",
       "authority": "none",
       "tests": [
-        "SealedEvidenceBoundaryTests.test_review_reverifies_seal"
+        "SealedEvidenceBoundaryTests.test_valid_seal_allows_review_but_no_acceptance"
       ],
       "sourcePathExists": true,
       "designOperation": "request_independent_review",
@@ -233,7 +233,8 @@
       "state": "source_implemented_not_product_composed",
       "authority": "none",
       "tests": [
-        "SealedEvidenceBoundaryTests.test_seal_replay_under_new_decision_rejects"
+        "SealedEvidenceBoundaryTests.test_seal_cannot_be_replayed_under_another_decision",
+        "SealedEvidenceBoundaryTests.test_seal_and_candidate_binding_survive_reopen"
       ],
       "sourcePathExists": true,
       "designOperation": "record_integration_decision",
