@@ -59,9 +59,9 @@ impl AgentdState {
                 runtime.fenced,
             )
         };
-        let automation = self.automation.lock().map_err(poisoned_state)?.clone();
-        let automation_operations = self.automation_operations();
-        let cognitive = self.cognitive.lock().map_err(poisoned_state)?.clone();
+        let automation = self.automation_store()?;
+        let automation_operations = self.automation_operations()?;
+        let cognitive = self.cognitive_store()?;
         let payload = match method {
             crate::AgentdMethod::Capabilities => {
                 AgentdPayload::Capabilities(crate::AgentdCapabilitySet::empty())
@@ -558,7 +558,7 @@ impl AgentdState {
     ) -> Result<AgentdResponse, AgentdError> {
         match error {
             CognitiveStoreError::Unavailable(_) | CognitiveStoreError::Corrupt(_) => {
-                self.cognitive.lock().map_err(poisoned_state)?.take();
+                self.mark_cognitive_unavailable()?;
                 self.response_with_payload(
                     request_id,
                     current_generation,
