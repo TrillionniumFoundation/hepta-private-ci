@@ -9,34 +9,16 @@ use codex_hepta_control_plane::RuntimeModuleStateClassV1;
 use codex_hepta_control_plane::RuntimeTopologySnapshotV1;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::RuntimeModuleCatalogV1;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use serde::Deserialize;
-use serde::Serialize;
-
 use crate::AgentdError;
 use crate::AgentdEventKind;
 use crate::AgentdIdentity;
 use crate::AgentdOperationsHost;
 use crate::EventBuffer;
-
-const CANONICAL_MODULE_REGISTRY: &str = include_str!("../../../docs/modules/MODULES.json");
-
-#[derive(Clone, Debug, Deserialize, Serialize)]
-struct CanonicalModuleRuntimeRow {
-    id: String,
-    owner: String,
-    state: String,
-    uses: Vec<String>,
-    writes: Vec<String>,
-}
-
-#[derive(Debug, Deserialize)]
-struct CanonicalModuleRuntimeRegistry {
-    modules: Vec<CanonicalModuleRuntimeRow>,
-}
 
 #[path = "state_control.rs"]
 mod control;
@@ -54,6 +36,7 @@ pub(crate) struct AgentdState {
     automation_operations: std::sync::OnceLock<Arc<AgentdOperationsHost>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
     runtime_modules: Mutex<RuntimeModuleRegistryV1>,
+    runtime_catalog: RuntimeModuleCatalogV1,
 }
 
 struct RuntimeState {
@@ -75,6 +58,9 @@ impl AgentdState {
             lifecycle: AgentLifecycle::Starting,
             generation: identity.spawn_generation,
         });
+        let runtime_catalog = RuntimeModuleCatalogV1::canonical().map_err(|error| {
+            AgentdError::Protocol(format!("canonical runtime module catalog is invalid: {error}"))
+        })?;
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
             objective_ingress: std::sync::OnceLock::new(),
@@ -92,6 +78,7 @@ impl AgentdState {
             automation_operations: std::sync::OnceLock::new(),
             cognitive: Mutex::new(None),
             runtime_modules: Mutex::new(RuntimeModuleRegistryV1::new()),
+            runtime_catalog,
         })
     }
 
@@ -196,13 +183,12 @@ impl AgentdState {
         module_id: &str,
         effect_scope: &[&str],
     ) -> Result<(), AgentdError> {
-        let registry: CanonicalModuleRuntimeRegistry = serde_json::from_str(CANONICAL_MODULE_REGISTRY)
-            .map_err(|error| AgentdError::Protocol(format!("canonical module registry is invalid: {error}")))?;
-        let row = registry
-            .modules
-            .into_iter()
-            .find(|row| row.id == module_id)
-            .ok_or_else(|| AgentdError::Protocol(format!("runtime module {module_id} is absent from canonical registry")))?;
+        let row = self
+            .runtime_catalog
+            .module(module_id)
+            .ok_or_else(|| AgentdError::Protocol(format!(
+                "runtime module {module_id} is absent from canonical catalog"
+            )))?;
         let module_id = StableId::new(&row.id)
             .map_err(|error| AgentdError::Protocol(error.to_string()))?;
         let owner_id = StableId::new(&row.owner)
@@ -210,12 +196,12 @@ impl AgentdState {
         let generation = Generation::new(self.identity.spawn_generation)
             .map_err(|error| AgentdError::Protocol(error.to_string()))?;
         let dependencies = row
-            .uses
+            .dependencies
             .iter()
             .map(|value| StableId::new(value).map_err(|error| AgentdError::Protocol(error.to_string())))
             .collect::<Result<Vec<_>, _>>()?;
         let authoritative_domains = row
-            .writes
+            .authoritative_domains
             .iter()
             .map(|value| StableId::new(value).map_err(|error| AgentdError::Protocol(error.to_string())))
             .collect::<Result<BTreeSet<_>, _>>()?;
@@ -228,17 +214,22 @@ impl AgentdState {
             value if value.contains("stateful") => RuntimeModuleStateClassV1::Stateful,
             _ => RuntimeModuleStateClassV1::Stateless,
         };
-        let implementation_digest = Digest32::of_bytes(
-            format!("hepta.compiled-runtime-module.v1:{}", module_id.as_str()).as_bytes(),
+        // This bootstrap binding intentionally names the reviewed runtime
+        // manifest, not executable provenance. Candidate replacement uses the
+        // independently evaluated implementation/artifact digests carried by
+        // RuntimeModuleAbiV1 and supervisor selection evidence.
+        let manifest_binding = format!(
+            "hepta.runtime-module-manifest.v1:{}:{}",
+            self.runtime_catalog.digest(),
+            row.manifest_digest
         );
-        let manifest_bytes = serde_json::to_vec(&row)
-            .map_err(|error| AgentdError::Protocol(format!("canonical module row cannot encode: {error}")))?;
+        let implementation_digest = Digest32::of_bytes(manifest_binding.as_bytes());
         let abi = RuntimeModuleAbiV1 {
             module_id: module_id.clone(),
             owner_id,
             generation,
             implementation_digest,
-            candidate_artifact_digest: Digest32::of_bytes(&manifest_bytes),
+            candidate_artifact_digest: implementation_digest,
             predecessor_generation: None,
             rollback_predecessor_digest: Digest32::ZERO,
             state_class,
