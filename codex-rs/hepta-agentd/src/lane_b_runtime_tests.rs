@@ -94,9 +94,7 @@ fn cancellation_preserves_dispatch_boundary_and_reason_idempotency() {
     after
         .attach_context(100, 1, attachment())
         .expect("attach context");
-    after
-        .mark_dispatched(100, "run.1", 2)
-        .expect("dispatch");
+    after.mark_dispatched(100, "run.1", 2).expect("dispatch");
     let late = after
         .cancel_run(100, "run.1", 3, "operator_cancel")
         .expect("cancel");
@@ -193,10 +191,12 @@ fn dispatched_deadline_and_drain_require_external_terminality() {
     let changed = coordinator.enforce_deadlines(10_000).expect("deadline");
     assert_eq!(changed[0].phase, RunPhase::Cancelling);
     assert_eq!(coordinator.pending_external_run_count(), 1);
-    assert!(coordinator
-        .begin_drain("agentd_shutdown")
-        .expect("drain")
-        .is_empty());
+    assert!(
+        coordinator
+            .begin_drain("agentd_shutdown")
+            .expect("drain")
+            .is_empty()
+    );
 
     let unknown = coordinator
         .mark_unobserved_external_indeterminate()
@@ -232,12 +232,9 @@ fn recovery_cancels_expired_pre_dispatch_work() {
     let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
     coordinator.start_run(100, snapshot()).expect("admit");
 
-    let restored = AgentRunCoordinator::restore_runtime(
-        composition(),
-        coordinator.recovery_state(),
-        10_000,
-    )
-    .expect("restore");
+    let restored =
+        AgentRunCoordinator::restore_runtime(composition(), coordinator.recovery_state(), 10_000)
+            .expect("restore");
     let receipt = restored.run("run.1").expect("retained");
     assert_eq!(receipt.phase, RunPhase::Cancelled);
     assert_eq!(
@@ -255,9 +252,8 @@ fn newer_generation_cancels_pre_dispatch_recovery_instead_of_reusing_authority()
     let mut next = composition();
     next.supervisor_generation += 1;
     next.agentd_generation += 1;
-    let restored =
-        AgentRunCoordinator::restore_runtime(next, coordinator.recovery_state(), 200)
-            .expect("restore newer generation");
+    let restored = AgentRunCoordinator::restore_runtime(next, coordinator.recovery_state(), 200)
+        .expect("restore newer generation");
     let receipt = restored.run("run.1").expect("retained");
     assert_eq!(receipt.phase, RunPhase::Cancelled);
     assert_eq!(
