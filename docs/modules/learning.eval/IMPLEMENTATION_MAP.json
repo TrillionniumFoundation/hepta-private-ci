@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "bounded_repository_consumer_present_production_not_composed",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -32,11 +32,74 @@
       "designOperation": "evaluate_temporal_holdout",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "evaluate_ndu_conditional_identification_v1",
+      "nativeSymbol": "codex_hepta_intelligence_eval::evaluate_ndu_conditional_identification_v1",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/ndu_conditional_identification.rs",
+      "state": "source_implemented_independent_decision_candidate",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_conditional_identification_tests.rs",
+          "symbol": "independent_supported_identification_can_be_accepted"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_conditional_identification_tests.rs",
+          "symbol": "leakage_or_conditional_mean_failure_rejects"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "evaluate_ndu_conditional_identification_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "evaluate_ndu_well_posedness_v1",
+      "nativeSymbol": "codex_hepta_intelligence_eval::evaluate_ndu_well_posedness_v1",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness.rs",
+      "state": "source_implemented_independent_decision_candidate",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness_tests.rs",
+          "symbol": "supported_independent_assumptions_can_be_accepted"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness_tests.rs",
+          "symbol": "failed_assumption_or_conditional_mean_rejects"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "evaluate_ndu_well_posedness_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "evaluate_ndu_convergence_v1",
+      "nativeSymbol": "codex_hepta_intelligence_eval::evaluate_ndu_convergence_v1",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs",
+      "state": "source_implemented_independent_decision_candidate",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs",
+          "symbol": "independent_supported_evidence_can_be_accepted"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs",
+          "symbol": "self_evaluation_is_rejected_before_certificate_issuance"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "evaluate_ndu_convergence_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Bind the NDU evaluation decisions to authenticated live evidence producers; source-level support digests do not authenticate observations by themselves.",
+    "Qualify the intelligence.control stochastic composition adapter on exact source and synthetic merge before any production-consumer claim."
   ],
   "externalEvidenceGates": [
     "independent semantic review",

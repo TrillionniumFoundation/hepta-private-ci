@@ -5,11 +5,18 @@ on:
     paths:
       - "codex-rs/hepta-ndu/**"
       - "codex-rs/hepta-control-plane/**"
+      - "codex-rs/hepta-intelligence-eval/**"
+      - "codex-rs/hepta-learning-artifacts/**"
+      - "codex-rs/hepta-intelligence/**"
       - "docs/modules/utility.ndu/**"
+      - "docs/modules/learning.eval/**"
+      - "docs/modules/intelligence.control/**"
       - "docs/readiness/LANE_D_MATURITY.json"
       - "docs/readiness/NDU_SYSTEM_EXECUTION.md"
       - "docs/learning/NDU_FBSDE_SPEC.md"
       - "qualification/module-execution-dossiers/detail/utility.ndu.md"
+      - "qualification/module-execution-dossiers/detail/learning.eval.md"
+      - "qualification/module-execution-dossiers/detail/intelligence.control.md"
       - "scripts/verify_cargo_lock.py"
       - "scripts/test_verify_cargo_lock.py"
       - ".github/workflows/hepta-ndu-recursion.yml"
@@ -19,11 +26,18 @@ on:
     paths:
       - "codex-rs/hepta-ndu/**"
       - "codex-rs/hepta-control-plane/**"
+      - "codex-rs/hepta-intelligence-eval/**"
+      - "codex-rs/hepta-learning-artifacts/**"
+      - "codex-rs/hepta-intelligence/**"
       - "docs/modules/utility.ndu/**"
+      - "docs/modules/learning.eval/**"
+      - "docs/modules/intelligence.control/**"
       - "docs/readiness/LANE_D_MATURITY.json"
       - "docs/readiness/NDU_SYSTEM_EXECUTION.md"
       - "docs/learning/NDU_FBSDE_SPEC.md"
       - "qualification/module-execution-dossiers/detail/utility.ndu.md"
+      - "qualification/module-execution-dossiers/detail/learning.eval.md"
+      - "qualification/module-execution-dossiers/detail/intelligence.control.md"
       - "scripts/verify_cargo_lock.py"
       - "scripts/test_verify_cargo_lock.py"
       - ".github/workflows/hepta-ndu-recursion.yml"
@@ -86,11 +100,19 @@ jobs:
 
       - name: Locked all-target compilation
         working-directory: codex-rs
-        run: cargo check --locked -p codex-hepta-ndu --all-targets
+        run: |
+          cargo check --locked -p codex-hepta-ndu --all-targets
+          cargo check --locked -p codex-hepta-intelligence-eval --all-targets
+          cargo check --locked -p codex-hepta-learning-artifacts --all-targets
+          cargo check --locked -p codex-hepta-intelligence --all-targets
 
       - name: Regression tests
         working-directory: codex-rs
-        run: just test --locked -p codex-hepta-ndu
+        run: |
+          just test --locked -p codex-hepta-ndu
+          just test --locked -p codex-hepta-intelligence-eval
+          just test --locked -p codex-hepta-learning-artifacts
+          just test --locked -p codex-hepta-intelligence
 
       - name: Control product-caller regressions
         working-directory: codex-rs
@@ -101,11 +123,19 @@ jobs:
         run: |
           cargo clippy --locked -p codex-hepta-ndu --all-targets -- -D warnings
           cargo clippy --locked -p codex-hepta-control-plane --all-targets -- -D warnings
+          cargo clippy --locked -p codex-hepta-intelligence-eval --all-targets -- -D warnings
+          cargo clippy --locked -p codex-hepta-learning-artifacts --all-targets -- -D warnings
+          cargo clippy --locked -p codex-hepta-intelligence --all-targets -- -D warnings
 
       - name: Formatting check without source mutation
         if: always()
         working-directory: codex-rs
-        run: cargo fmt --package codex-hepta-ndu -- --check
+        run: |
+          cargo fmt --package codex-hepta-ndu -- --check
+          cargo fmt --package codex-hepta-control-plane -- --check
+          cargo fmt --package codex-hepta-intelligence-eval -- --check
+          cargo fmt --package codex-hepta-learning-artifacts -- --check
+          cargo fmt --package codex-hepta-intelligence -- --check
 
       - name: Preserve exact source state
         if: always()

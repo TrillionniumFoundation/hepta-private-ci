@@ -44,11 +44,44 @@
       "designOperation": "run_evaluated_shadow_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "admit_ndu_stochastic_product_candidate_v1",
+      "nativeSymbol": "codex_hepta_intelligence::admit_ndu_stochastic_product_candidate_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/ndu_stochastic.rs",
+      "state": "source_implemented_cross_owner_composition_candidate",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_tests.rs",
+          "symbol": "typed_cross_owner_evidence_admits_only_authority_free_candidate"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_tests.rs",
+          "symbol": "current_dataset_withdrawal_invalidates_prior_artifact_admission"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_tests.rs",
+          "symbol": "coefficient_manifest_must_be_bound_by_artifact_lineage"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_tests.rs",
+          "symbol": "nonaccepted_independent_identification_never_reaches_ndu_admission"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "admit_ndu_stochastic_product_candidate_v1",
+      "mappingClass": "composition_adapter",
+      "delegatedCallees": [
+        "learning.artifacts::validate_artifact_publication_v3",
+        "learning.eval NDU decisions",
+        "utility.ndu::admit_stochastic_evidence_binding_v1"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Compose this source adapter into an authenticated production host only after external evidence authentication, target-host qualification and activation governance exist.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the production claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",

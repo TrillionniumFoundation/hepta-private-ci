@@ -12,7 +12,7 @@ The repository-wide `sourceBase` remains a canonical baseline identity. This clo
 
 The accurate capability description is:
 
-> deterministic NDU / preference-utility source candidate with a crash-bounded durable projection-store candidate and stochastic numerical compatibility building blocks.
+> deterministic NDU / preference-utility source candidate with a crash-bounded durable projection-store candidate, stochastic numerical compatibility, independent source-level evidence gates and an authority-free cross-owner composition candidate.
 
 Current source includes:
 
@@ -23,7 +23,10 @@ Current source includes:
 - semantic projection-journal recovery with objective/subject-scoped revocation;
 - `NduProjectionStoreV1` single-writer, temp-write + file-sync + atomic-rename + parent-directory-sync durability on the Unix qualification profile, poison-on-indeterminate and monotonic backup restore;
 - centered conditional covariance/backward-regression numerical support;
-- admitted original/whitened Z-coordinate conversion and signed Q24 nearest/ties-to-even conversion receipts with `DENY_ALL` authority.
+- admitted original/whitened Z-coordinate conversion and signed Q24 nearest/ties-to-even conversion receipts with `DENY_ALL` authority;
+- owner-only stochastic admission receipts;
+- learning.eval source decisions for conditional identification, well-posedness and convergence;
+- intelligence.control cross-owner composition that revalidates learning.artifacts withdrawal state and coefficient lineage before consuming those decisions.
 
 ## Caller truth
 
@@ -51,16 +54,9 @@ The following gates remain separate and fail closed until evidence exists:
 
 ## Stochastic/FBSDE claim boundary
 
-Whitening/Q24 conversion and covariance regression close numerical convention ambiguity only. They do not establish coefficient provenance, conditional identification, well-posedness, longitudinal efficacy, an independent `NduConvergenceCertificateV1`, or a production stochastic consumer.
+Whitening/Q24 conversion and covariance regression close numerical convention ambiguity. The stacked source candidate additionally binds coefficient-manifest provenance through current learning.artifacts admission and provides learning.eval-owned conditional-identification, well-posedness and convergence decisions. These source gates do not authenticate the underlying real observations by themselves, do not establish longitudinal efficacy, and do not activate a production stochastic consumer.
 
-The next stochastic closure order is therefore:
-
-1. authenticate and bind `NduCoefficientManifestV1` provenance to exact dataset/artifact/profile identities;
-2. establish conditional-identification evidence with pre-boundary features and immutable folds;
-3. consume independently issued `NduWellPosednessCertificateV1`;
-4. bind immutable training/evaluation lineage and future-window outcomes;
-5. require the independent convergence/acceptance certificate;
-6. only then compose a production stochastic consumer.
+The source-level order through coefficient lineage, conditional-identification, well-posedness, convergence and DENY_ALL composition is implemented as a candidate. Remaining closure is to authenticate the live evidence producers/signers, bind immutable training/evaluation and future-window observations, qualify the exact candidate on a selected host, then separately authorize any production stochastic consumer.
 
 ## Qualification truth
 
