@@ -109,12 +109,7 @@ async fn transport_acceptance_is_not_terminal_until_sync_observation() -> TestRe
     let prepared = prepare_send(&store, &claimed, &authority, 10).await?;
     assert_eq!(prepared.state, MatrixDispatchState::Prepared);
     store
-        .mark_matrix_dispatch_dispatched(
-            &claimed.stable_txn_id,
-            claimed.attempts,
-            &digest('1'),
-            11,
-        )
+        .mark_matrix_dispatch_dispatched(&claimed.stable_txn_id, claimed.attempts, &digest('1'), 11)
         .await?;
     let event_id = event("$accepted:example.org")?;
     let accepted = store
@@ -187,7 +182,10 @@ async fn indeterminate_dispatch_survives_reopen_and_reconciles_without_resend() 
         .ok_or("dispatch did not survive reopen")?;
     assert_eq!(pending.state, MatrixDispatchState::Indeterminate);
     assert!(
-        reopened.claim_outbox(u64::MAX / 4, 30, 10).await?.is_empty(),
+        reopened
+            .claim_outbox(u64::MAX / 4, 30, 10)
+            .await?
+            .is_empty(),
         "indeterminate effect must not become a blind retry after restart"
     );
 
