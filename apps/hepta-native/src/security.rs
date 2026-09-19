@@ -9,6 +9,7 @@ use ed25519_dalek::Signature;
 use ed25519_dalek::Verifier as _;
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
+use serde::Serialize;
 
 use crate::error::ShellError;
 use crate::model::EndpointManifest;
@@ -222,7 +223,9 @@ impl GrantVerifier for TrustedKeySet {
         if grant.expires_unix_ms < context.now_unix_ms {
             return Err(ShellError::Security("platform grant expired".to_owned()));
         }
-        if grant.expires_unix_ms.saturating_sub(context.now_unix_ms) > 15 * 60 * 1000 + MAX_CLOCK_SKEW_MS {
+        if grant.expires_unix_ms.saturating_sub(context.now_unix_ms)
+            > 15 * 60 * 1000 + MAX_CLOCK_SKEW_MS
+        {
             return Err(ShellError::Security(
                 "platform grant lifetime exceeds the native short-lived ceiling".to_owned(),
             ));
