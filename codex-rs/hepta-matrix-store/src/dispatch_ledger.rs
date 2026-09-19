@@ -250,37 +250,46 @@ impl MatrixDurableStore {
             tx.commit().await.map_err(unavailable)?;
             return Ok(current);
         }
-        if current.state != MatrixDispatchState::Prepared {
+        let retrying_uncertain = matches!(
+            current.state,
+            MatrixDispatchState::Dispatched | MatrixDispatchState::Indeterminate
+        );
+        if current.state != MatrixDispatchState::Prepared && !retrying_uncertain {
+            return Err(MatrixDurableError::Conflict);
+        }
+        if (retrying_uncertain && expected_attempt <= current.attempt)
+            || (current.state == MatrixDispatchState::Prepared
+                && expected_attempt < current.attempt)
+        {
+            return Err(MatrixDurableError::Conflict);
+        }
+        let outbox_matches: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM outbox_messages
+             WHERE stable_txn_id = ? AND state = 'in_flight' AND attempts = ?",
+        )
+        .bind(txn_id.as_str())
+        .bind(to_i64(expected_attempt)?)
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(unavailable)?;
+        if outbox_matches != 1 {
             return Err(MatrixDurableError::Conflict);
         }
         let updated = sqlx::query(
             "UPDATE matrix_dispatch_ledger
              SET state = 'dispatched', attempt = ?, dispatched_at_ms = ?,
                  accepted_event_id = NULL, accepted_at_ms = NULL
-             WHERE stable_txn_id = ? AND state = 'prepared'",
+             WHERE stable_txn_id = ? AND state = ? AND attempt = ?",
         )
         .bind(to_i64(expected_attempt)?)
         .bind(to_i64(now_ms)?)
         .bind(txn_id.as_str())
+        .bind(current.state.as_str())
+        .bind(to_i64(current.attempt)?)
         .execute(&mut *tx)
         .await
         .map_err(unavailable)?;
         if updated.rows_affected() != 1 {
-            return Err(MatrixDurableError::Conflict);
-        }
-        let parked = sqlx::query(
-            "UPDATE outbox_messages
-             SET lease_until_ms = ?, updated_at_ms = ?
-             WHERE stable_txn_id = ? AND state = 'in_flight' AND attempts = ?",
-        )
-        .bind(PARKED_LEASE_UNTIL_MS)
-        .bind(to_i64(now_ms)?)
-        .bind(txn_id.as_str())
-        .bind(to_i64(expected_attempt)?)
-        .execute(&mut *tx)
-        .await
-        .map_err(unavailable)?;
-        if parked.rows_affected() != 1 {
             return Err(MatrixDurableError::Conflict);
         }
         append_observation_tx(
@@ -354,6 +363,21 @@ impl MatrixDurableStore {
         .execute(&mut *tx)
         .await
         .map_err(unavailable)?;
+        let parked = sqlx::query(
+            "UPDATE outbox_messages
+             SET lease_until_ms = ?, updated_at_ms = ?
+             WHERE stable_txn_id = ? AND state = 'in_flight' AND attempts = ?",
+        )
+        .bind(PARKED_LEASE_UNTIL_MS)
+        .bind(to_i64(now_ms)?)
+        .bind(txn_id.as_str())
+        .bind(to_i64(expected_attempt)?)
+        .execute(&mut *tx)
+        .await
+        .map_err(unavailable)?;
+        if parked.rows_affected() != 1 {
+            return Err(MatrixDurableError::Conflict);
+        }
         append_observation_tx(
             &mut tx,
             txn_id,
