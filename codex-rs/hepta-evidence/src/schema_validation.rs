@@ -143,6 +143,7 @@ const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
             "window_start_ms",
             "window_end_ms",
             "endowment",
+            "max_active_per_principal",
             "reserved",
             "consumed",
             "without rowid",
