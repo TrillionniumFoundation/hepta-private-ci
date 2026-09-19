@@ -1,7 +1,7 @@
 # utility.ndu: implementation design
 
 Parent: `docs/modules/utility.ndu/TECHNICAL.md`. Lane: `LANE-D-OBJECTIVE-VALUE`.
-Status: deterministic source candidate, policy-bound evaluator, protocol adapter and owner-local durability reference implemented; production writer, independent convergence decision and activation remain separate. Common requirements: `../EXECUTION_SEMANTICS.md`, `../TECHNICAL.md`, `docs/readiness/NDU_SYSTEM_EXECUTION.md` and `docs/learning/NDU_FBSDE_SPEC.md`.
+Status: hardened deterministic source candidate, policy-bound evaluator, context-bound protocol adapter, synced anchor-bound owner store, coefficient/Q24 admission evidence and source-level read-only compositions implemented; authenticated product execution, selected production host, external acceptance and activation remain separate. Common requirements: `../EXECUTION_SEMANTICS.md`, `../TECHNICAL.md`, `docs/readiness/NDU_SYSTEM_EXECUTION.md` and `docs/learning/NDU_FBSDE_SPEC.md`.
 
 ## 1. Source and work envelope
 
@@ -17,7 +17,7 @@ Implemented operations include:
 evaluate_candidates(set, profile, scalarization)
 evaluate_candidates_with_policy(set, profile, scalarization, policy)
 canonical_evaluation_policy_digest(profile, policy)
-solve_preference_target(initial, target, eta)
+solve_preference_target(initial, target, eta, iteration_context)
 bind_solver_iteration_receipt_v1(context, local_step)
 evaluate_recursive_utility(path)
 solve_backward_regression(conditional_moments, covariance_profile)
@@ -32,9 +32,9 @@ The legacy evaluator is retained as a compatibility entry with an explicit `lega
 
 They are deliberately not named `NduConvergenceCertificateV1`. That canonical certificate remains owned by `learning.eval` and additionally requires independent evaluator identity, conservation, stability and spectral-radius evidence. A local solver cannot certify itself for activation.
 
-`bind_solver_iteration_receipt_v1` publishes an owner-local canonical-context receipt only after binding subject, objective, body generation, event, coefficient, revision, residual, projection count and state digest. The output carries `AuthorityPosture::DENY_ALL`.
+`solve_preference_target` now receives the immutable iteration context before computation. Each local iteration receipt contains a private context digest, so callers outside the owner crate cannot fabricate a receipt literal and `bind_solver_iteration_receipt_v1` rejects rebinding the step to another subject/objective/generation/event/coefficient tuple. The output carries `AuthorityPosture::DENY_ALL`.
 
-`NduProjectionJournalV1` is a bounded durability reference, not a production writer. It provides append-only hash-chain entries, semantic idempotency, selected-projection reconstruction, exact reopen, truncation/tamper detection and revocation non-resurrection. Production composition still requires a selected store, migration, fsync profile, retention and backup/restore evidence.
+`NduProjectionJournalV1` provides append-only hash-chain entries, semantic idempotency, selected-projection reconstruction, scoped revocation and independent-anchor validation. `NduDurableProjectionStoreV1` adds an opt-in host-authorized regular-file boundary with cooperative exclusive locking, immutable binding, CAS anchors and sync-before-publish append ordering. A separately retained anchor detects lost acknowledged history or a fully rehashed alternate history. Directory fsync, anchor authentication, retention, backup/restore policy, migration to later formats and production host selection remain external obligations.
 
 ## 4. Aggregation, Pareto and solver semantics
 
@@ -51,9 +51,9 @@ Every utility, risk, resource and uncertainty axis has exactly one rule. Unexpec
 
 Pareto dominance uses registered direction and non-negative absolute tolerance for every utility axis. A candidate is strictly better only beyond the tolerance on at least one axis and not worse beyond tolerance on all others. The tolerance vector and aggregation rules are in the evaluation-policy digest.
 
-The deterministic preference solver uses Q32 nearest/ties-even arithmetic, eta in `[1/16,1/4]`, at most 64 iterations, bounded projection and immutable revision advancement. Parent and child hierarchy levels cannot select new artifacts in the same generation.
+The deterministic preference solver uses Q32 nearest/ties-even arithmetic, preference dimension 1–64, values and targets in `[-1,1]`, eta in `[1/16,1/4]` and at most 64 iterations. An already-converged target returns the unchanged state with zero iterations; exhaustion returns unavailable instead of publishing a successor. Hierarchy staging validates explicit subject/parent relationships, so only an actual parent and child are forbidden from selecting new artifacts in one generation while unrelated subjects may advance concurrently.
 
-The stochastic shadow kernel solves `Z C = B` with centered conditional moments and an admitted covariance convention. Singular or ill-conditioned pilot covariance rejects. This numeric kernel is not a production stochastic policy or efficacy claim.
+The stochastic shadow kernel solves `Z C = B` with centered conditional moments and an admitted covariance convention. Singular or ill-conditioned pilot covariance rejects. `admit_ndu_coefficient_profile` binds manifest, normalization, runtime, coordinate, covariance, units, dimensions and expiry; `quantize_z_to_q24` emits signed-Q24 values plus source/output/error evidence and `DENY_ALL`. These are source admission/conversion primitives, not proof of conditional identification, stochastic efficacy, external artifact authenticity or activation.
 
 ## 5. Capacity and performance profile
 
@@ -73,6 +73,13 @@ Runtime cost is deterministic and bounded by the declared dimensions. Dense cova
 - `NDU-DETAIL-08`: local solver termination records terminal and maximum residual separately.
 - `NDU-DETAIL-09`: protocol publication requires complete objective/subject/event/coefficient context.
 - `NDU-DETAIL-10`: projection journal reopens exactly; tampering, truncation and revoked-projection resurrection reject.
+- `NDU-DETAIL-11`: 65-dimensional, empty or out-of-range preference state/target rejects at the public API boundary.
+- `NDU-DETAIL-12`: an already-converged solve is revision-stable; 64-iteration exhaustion is unavailable.
+- `NDU-DETAIL-13`: solver receipts cannot be rebound to another immutable iteration context.
+- `NDU-DETAIL-14`: revoking one objective/subject scope does not revoke the same payload digest in another scope.
+- `NDU-DETAIL-15`: durable recovery requires an independently retained acknowledged anchor.
+- `NDU-DETAIL-16`: utility-profile digest changes when the units/scale/normalization semantic manifest changes.
+- `NDU-DETAIL-17`: coefficient/covariance mismatch, Q24 overflow range and expiry fail closed.
 
 Tests and symbols are recorded in the implementation map. They establish source behavior only, not a production caller, longitudinal utility gain or independent activation certificate.
 
@@ -86,8 +93,8 @@ This candidate grants no model, tool, network, filesystem, secret, Matrix, fleet
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `evaluate_candidates_with_policy` in [codex-rs/hepta-ndu/src/evaluator.rs](../../../codex-rs/hepta-ndu/src/evaluator.rs); `estimate_conditional_moments` in [codex-rs/hepta-ndu/src/conditional_moments.rs](../../../codex-rs/hepta-ndu/src/conditional_moments.rs); `solve_backward_regression` in [codex-rs/hepta-ndu/src/covariance.rs](../../../codex-rs/hepta-ndu/src/covariance.rs). Policy-bound utility evaluation and centered conditional covariance solver implemented.
-- **State and recovery:** The deterministic Q32 evaluator and native f64 shadow regression are distinct profiles. Regression solves centered Z Sigma = B (rate convention Z Q = B/dt) using scaled Cholesky and bounded diagnostics. Projection journal bytes are an owner-local reference, not activated production storage.
+- **Implemented entrypoints:** `evaluate_candidates_with_policy` in [codex-rs/hepta-ndu/src/evaluator.rs](../../../codex-rs/hepta-ndu/src/evaluator.rs); context-bound `solve_preference_target` and explicit hierarchy validation in [codex-rs/hepta-ndu/src/preference.rs](../../../codex-rs/hepta-ndu/src/preference.rs); `estimate_conditional_moments` / `solve_backward_regression`; `NduDurableProjectionStoreV1`; `admit_ndu_coefficient_profile`; and `quantize_z_to_q24`. The compatibility `evaluate_candidates` entry is deprecated and CI rejects new non-compatibility callers.
+- **State and recovery:** The deterministic Q32 evaluator and native f64 shadow regression are distinct profiles. Preference solver evidence is context-bound before publication. Revocations are objective/subject scoped. The durable projection adapter locks and syncs a host-provided regular file and requires an independent minimum anchor for acknowledged recovery; it still does not claim directory durability, backup policy or activated production ownership. Regression solves centered Z Sigma = B (rate convention Z Q = B/dt), then optional owner-local coefficient admission/Q24 conversion binds the numeric transition.
 - **Source tests:** [codex-rs/hepta-ndu/src/covariance_tests.rs](../../../codex-rs/hepta-ndu/src/covariance_tests.rs), [codex-rs/hepta-ndu/src/evaluator_tests.rs](../../../codex-rs/hepta-ndu/src/evaluator_tests.rs), [codex-rs/hepta-ndu/src/projection_journal_tests.rs](../../../codex-rs/hepta-ndu/src/projection_journal_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [codex-rs/hepta-ndu/COVARIANCE_REGRESSION.md](../../../codex-rs/hepta-ndu/COVARIANCE_REGRESSION.md), [docs/readiness/NDU_SYSTEM_EXECUTION.md](../../../docs/readiness/NDU_SYSTEM_EXECUTION.md).
-- **Remaining work:** The conditional numeric solver is already implemented; remaining work is production coefficient/profile and consumer admission, coordinate/Q24 conversion evidence, conditional identification and independent FBSDE/convergence qualification.
+- **Remaining work:** Repository-controlled numeric profile admission and Q24 evidence are implemented. `learning.eval` now contains an independent NDU convergence decision source path, but authenticated external evidence, canonical product consumers, conditional identification, real future-window/perturbation evidence, target-host durability/latency qualification, operator acceptance, activation and release remain outside this source claim.
