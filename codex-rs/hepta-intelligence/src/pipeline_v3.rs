@@ -403,7 +403,7 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
     let mut stages = Vec::with_capacity(MAX_V3_STAGES);
     let mut predecessor = request.request_digest;
 
-    predecessor = required_port_stage(
+    predecessor = match required_port_stage(
         &request,
         snapshot_digest,
         predecessor,
@@ -413,7 +413,19 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
         started,
         control,
         |input| ports.validate_objective(input),
-    )?;
+    )? {
+        StageAdvanceV3::Continue(output) => output,
+        StageAdvanceV3::Terminal(class, output) => {
+            return finish(
+                request.run_id,
+                snapshot_digest,
+                PipelineDispositionV3::Failed(class),
+                stages,
+                output,
+                None,
+            );
+        }
+    };
 
     predecessor = internal_stage(
         &request,
@@ -427,7 +439,7 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
     )?;
     let legal_set_digest = predecessor;
 
-    predecessor = required_port_stage(
+    predecessor = match required_port_stage(
         &request,
         snapshot_digest,
         predecessor,
@@ -437,10 +449,22 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
         started,
         control,
         |input| ports.evaluate_utility(input),
-    )?;
+    )? {
+        StageAdvanceV3::Continue(output) => output,
+        StageAdvanceV3::Terminal(class, output) => {
+            return finish(
+                request.run_id,
+                snapshot_digest,
+                PipelineDispositionV3::Failed(class),
+                stages,
+                output,
+                None,
+            );
+        }
+    };
     let utility_digest = predecessor;
 
-    predecessor = required_port_stage(
+    predecessor = match required_port_stage(
         &request,
         snapshot_digest,
         predecessor,
@@ -450,7 +474,19 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
         started,
         control,
         |input| ports.admit_evaluation(input),
-    )?;
+    )? {
+        StageAdvanceV3::Continue(output) => output,
+        StageAdvanceV3::Terminal(class, output) => {
+            return finish(
+                request.run_id,
+                snapshot_digest,
+                PipelineDispositionV3::Failed(class),
+                stages,
+                output,
+                None,
+            );
+        }
+    };
     let evaluation_digest = predecessor;
 
     predecessor = optional_port_stage(
@@ -536,7 +572,7 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
 
     let mut host_envelope = None;
     if intuition.decision == PortDecisionV3::Continue {
-        predecessor = required_port_stage(
+        predecessor = match required_port_stage(
             &request,
             snapshot_digest,
             predecessor,
@@ -546,7 +582,19 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
             started,
             control,
             |input| ports.compile_context(input),
-        )?;
+        )? {
+            StageAdvanceV3::Continue(output) => output,
+            StageAdvanceV3::Terminal(class, output) => {
+                return finish(
+                    request.run_id,
+                    snapshot_digest,
+                    PipelineDispositionV3::Failed(class),
+                    stages,
+                    output,
+                    None,
+                );
+            }
+        };
         let context_digest = predecessor;
         let prefix = digest_prefix(
             &request.run_id,
@@ -626,7 +674,7 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
         host_envelope = Some(envelope);
     }
 
-    predecessor = required_port_stage(
+    predecessor = match required_port_stage(
         &request,
         snapshot_digest,
         predecessor,
@@ -636,7 +684,19 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
         started,
         control,
         |input| ports.record_learning(input),
-    )?;
+    )? {
+        StageAdvanceV3::Continue(output) => output,
+        StageAdvanceV3::Terminal(class, output) => {
+            return finish(
+                request.run_id,
+                snapshot_digest,
+                PipelineDispositionV3::Failed(class),
+                stages,
+                output,
+                host_envelope.clone(),
+            );
+        }
+    };
 
     finish(
         request.run_id,
