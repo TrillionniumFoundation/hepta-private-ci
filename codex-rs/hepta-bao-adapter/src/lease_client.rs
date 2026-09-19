@@ -536,9 +536,15 @@ impl BaoClient {
         })
     }
 
+    /// Reconcile a lost issuance acknowledgement from a host-authenticated
+    /// terminal observation. This authorizes the observer; it does not pretend
+    /// that arbitrary caller metadata is provider-authenticated evidence.
     pub async fn reconcile_issue_observation(
         &self,
         registry: &LeaseRegistry,
+        authority: &FinalUseAuthority,
+        grant: &SignedFinalUseGrant,
+        observer_subject_id: &str,
         operation_id: &str,
         semantic_sha256: [u8; 32],
         lease: &LeaseMetadata,
@@ -554,8 +560,160 @@ impl BaoClient {
         {
             return Err(SecretLeaseClientError::ReconciliationMismatch);
         }
+        let binding = self.reconciliation_binding(
+            "issue",
+            observer_subject_id,
+            operation_id,
+            semantic_sha256,
+            &lease.lease_id,
+            lease.expires_at_ms,
+            lease.renewable,
+        )?;
+        let verified = authority
+            .claim(grant, &binding)
+            .map_err(SecretLeaseClientError::Authority)?;
+        authority
+            .with_verified_use(verified, &binding, || ())
+            .map_err(SecretLeaseClientError::Authority)?;
         registry.commit_issue(operation_id, lease, now_ms).await?;
         Ok(())
+    }
+
+    /// Reconcile an unknown renewal only from a host-authenticated terminal
+    /// observation. No provider mutation is replayed.
+    pub async fn reconcile_renew_observation(
+        &self,
+        registry: &LeaseRegistry,
+        authority: &FinalUseAuthority,
+        grant: &SignedFinalUseGrant,
+        observer_subject_id: &str,
+        operation_id: &str,
+        semantic_sha256: [u8; 32],
+        lease_id: &str,
+        expires_at_ms: u64,
+        renewable: bool,
+        now_ms: u64,
+    ) -> Result<(), SecretLeaseClientError> {
+        let operation = registry
+            .get_operation(operation_id)
+            .await?
+            .ok_or(SecretLeaseClientError::OperationNotFound)?;
+        if operation.kind != LeaseOperationKind::Renew
+            || operation.lease_id.as_deref() != Some(lease_id)
+            || operation.semantic_sha256 != semantic_sha256
+            || operation.state != LeaseOperationState::Unknown
+        {
+            return Err(SecretLeaseClientError::ReconciliationMismatch);
+        }
+        let binding = self.reconciliation_binding(
+            "renew",
+            observer_subject_id,
+            operation_id,
+            semantic_sha256,
+            lease_id,
+            expires_at_ms,
+            renewable,
+        )?;
+        let verified = authority
+            .claim(grant, &binding)
+            .map_err(SecretLeaseClientError::Authority)?;
+        authority
+            .with_verified_use(verified, &binding, || ())
+            .map_err(SecretLeaseClientError::Authority)?;
+        registry
+            .commit_renew(operation_id, lease_id, expires_at_ms, renewable, now_ms)
+            .await?;
+        Ok(())
+    }
+
+    /// Reconcile an unknown revoke only from a host-authenticated terminal
+    /// observation. The observation must establish provider-side absence or
+    /// equivalent terminal revocation; this method never replays revoke.
+    pub async fn reconcile_revoke_observation(
+        &self,
+        registry: &LeaseRegistry,
+        authority: &FinalUseAuthority,
+        grant: &SignedFinalUseGrant,
+        observer_subject_id: &str,
+        operation_id: &str,
+        semantic_sha256: [u8; 32],
+        lease_id: &str,
+        now_ms: u64,
+    ) -> Result<(), SecretLeaseClientError> {
+        let operation = registry
+            .get_operation(operation_id)
+            .await?
+            .ok_or(SecretLeaseClientError::OperationNotFound)?;
+        if operation.kind != LeaseOperationKind::Revoke
+            || operation.lease_id.as_deref() != Some(lease_id)
+            || operation.semantic_sha256 != semantic_sha256
+            || operation.state != LeaseOperationState::Unknown
+        {
+            return Err(SecretLeaseClientError::ReconciliationMismatch);
+        }
+        let binding = self.reconciliation_binding(
+            "revoke",
+            observer_subject_id,
+            operation_id,
+            semantic_sha256,
+            lease_id,
+            0,
+            false,
+        )?;
+        let verified = authority
+            .claim(grant, &binding)
+            .map_err(SecretLeaseClientError::Authority)?;
+        authority
+            .with_verified_use(verified, &binding, || ())
+            .map_err(SecretLeaseClientError::Authority)?;
+        registry.commit_revoke(operation_id, lease_id, now_ms).await?;
+        Ok(())
+    }
+
+    fn reconciliation_binding(
+        &self,
+        kind: &str,
+        observer_subject_id: &str,
+        operation_id: &str,
+        semantic_sha256: [u8; 32],
+        lease_id: &str,
+        expires_at_ms: u64,
+        renewable: bool,
+    ) -> Result<FinalUseBinding, SecretLeaseClientError> {
+        if !component(observer_subject_id)
+            || !component(operation_id)
+            || lease_id.is_empty()
+            || lease_id.len() > 512
+            || semantic_sha256 == [0; 32]
+        {
+            return Err(SecretLeaseClientError::InvalidRequest);
+        }
+        let request = serde_json::to_vec(&(
+            "hepta.bao.lease.reconciliation.v1",
+            kind,
+            self.origin.as_str(),
+            self.ca_sha256,
+            operation_id,
+            semantic_sha256,
+            lease_id,
+            expires_at_ms,
+            renewable,
+        ))
+        .map_err(|_| SecretLeaseClientError::InvalidRequest)?;
+        let scope = serde_json::to_vec(&(
+            "hepta.bao.lease.reconciliation-scope.v1",
+            self.origin.as_str(),
+            observer_subject_id,
+            kind,
+        ))
+        .map_err(|_| SecretLeaseClientError::InvalidRequest)?;
+        Ok(FinalUseBinding {
+            subject_id: observer_subject_id.to_owned(),
+            destination_id: "provider:heptabao:reconciliation".to_owned(),
+            request_sha256: Digest32::of_bytes(&request).into_array(),
+            scope_sha256: Digest32::of_bytes(&scope).into_array(),
+            payload_sha256: Digest32::of_bytes(&request).into_array(),
+        })
     }
 
     fn issue_binding(
