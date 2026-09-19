@@ -1863,3 +1863,31 @@ test("online queues a fresh recovery after offline invalidates an in-flight reco
   await new Promise((resolve) => setImmediate(resolve));
   assert.equal(held.size, 0);
 });
+
+
+test("HTTP and bootstrap ingress reject duplicate JSON keys before semantic validation", async () => {
+  const transport = new SameOriginHttpTransport({
+    origin: "https://control.example",
+    fetchImpl: async () =>
+      new Response(
+        '{"sessionId":"session.a","session\\u0049d":"session.b"}',
+        { status: 200, headers: { "content-type": "application/json" } },
+      ),
+  });
+  await assert.rejects(
+    transport.readSnapshot(),
+    (error) => error.code === ERROR_CODES.PROTOCOL_VIOLATION,
+  );
+
+  await assert.rejects(
+    loadBrowserBootstrap({
+      origin: "https://control.example",
+      fetchImpl: async () =>
+        new Response(
+          '{"persistenceNamespace":"principal.a","persistence\\u004eamespace":"principal.b","basePath":"/api/ui-control"}',
+          { status: 200, headers: { "content-type": "application/json" } },
+        ),
+    }),
+    (error) => error.code === ERROR_CODES.PROTOCOL_VIOLATION,
+  );
+});
