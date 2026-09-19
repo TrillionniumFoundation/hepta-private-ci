@@ -559,6 +559,102 @@ async fn independent_decision_binds_candidate_principal_key_role_and_evidence_se
 }
 
 #[tokio::test]
+async fn independent_decision_becomes_conflicting_when_candidate_evidence_set_changes() {
+    let temp = TempDir::new().expect("temp");
+    let store = HeptaEvidenceStore::open(&config(&temp))
+        .await
+        .expect("open evidence");
+    let candidate = candidate('b');
+    let observed = now_ms();
+    let expiry = observed.saturating_add(30_000);
+    let (reviewer, key) = issuer("principal:stale-review", 22);
+
+    let source = evidence(
+        "evidence:stale-source",
+        candidate.clone(),
+        EvidenceClaimClassV1::ExactSource,
+        EvidenceIssuerRoleV1::Architecture,
+        observed,
+        None,
+        json!({"exact_head": true}),
+    );
+    append(&store, &reviewer, &key, &source, 1)
+        .await
+        .expect("source");
+    let refs = store
+        .qualification()
+        .query_claim(&candidate, EvidenceClaimClassV1::ExactSource)
+        .await
+        .expect("query source");
+    let decision = IndependentDecisionReceiptV1 {
+        decision_id: "decision:stale-review".to_string(),
+        candidate_id: candidate.candidate_id.clone(),
+        role: IndependentDecisionRoleV1::Architecture,
+        principal_id: reviewer.issuer_id.to_string(),
+        signing_identity_digest: codex_hepta_contracts::Sha256Digest::for_bytes(
+            reviewer.verifying_key.as_bytes(),
+        ),
+        evidence_set_digest: evidence_set_digest(&refs).expect("set digest"),
+        decision: IndependentDecisionV1::Accept,
+        conditions: Vec::new(),
+        expires_unix_ms: expiry,
+    };
+    let decision_envelope = evidence(
+        "decision:stale-review",
+        candidate.clone(),
+        EvidenceClaimClassV1::IndependentDecision,
+        EvidenceIssuerRoleV1::Architecture,
+        observed,
+        Some(expiry),
+        serde_json::to_value(decision).expect("decision value"),
+    );
+    append(&store, &reviewer, &key, &decision_envelope, 2)
+        .await
+        .expect("decision");
+
+    assert!(matches!(
+        store
+            .qualification()
+            .verify_chain(&VerifyChainRequestV1 {
+                candidate: candidate.clone(),
+                claim_class: EvidenceClaimClassV1::IndependentDecision,
+                required_roles: vec![EvidenceIssuerRoleV1::Architecture],
+                now_unix_ms: observed,
+            })
+            .await
+            .expect("initial decision"),
+        EvidenceDispositionV1::Supported { .. }
+    ));
+
+    let registry = evidence(
+        "evidence:stale-registry-change",
+        candidate.clone(),
+        EvidenceClaimClassV1::RegistrySnapshot,
+        EvidenceIssuerRoleV1::Architecture,
+        observed,
+        None,
+        json!({"registry": "changed"}),
+    );
+    append(&store, &reviewer, &key, &registry, 3)
+        .await
+        .expect("registry evidence");
+
+    assert!(matches!(
+        store
+            .qualification()
+            .verify_chain(&VerifyChainRequestV1 {
+                candidate,
+                claim_class: EvidenceClaimClassV1::IndependentDecision,
+                required_roles: vec![EvidenceIssuerRoleV1::Architecture],
+                now_unix_ms: observed,
+            })
+            .await
+            .expect("stale decision"),
+        EvidenceDispositionV1::Conflicting { .. }
+    ));
+}
+
+#[tokio::test]
 async fn exact_authenticated_retry_is_idempotent_but_payload_drift_conflicts() {
     let temp = TempDir::new().expect("temp");
     let store = HeptaEvidenceStore::open(&config(&temp))
