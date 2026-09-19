@@ -461,19 +461,31 @@ pub fn run_composition_v3<P: IntelligenceCompositionPortsV3>(
         predecessor,
         IntelligenceStageV3::IntuitionDecided,
     );
-    let intuition = ports
-        .decide_intuition(&intuition_input)
-        .map_err(|failure| failure_as_pipeline(
-            &mut stages,
-            IntelligenceStageV3::IntuitionDecided,
-            "intuition.policy",
-            predecessor,
-            failure,
-        ))
-        .and_then(|receipt| {
+    let intuition = match ports.decide_intuition(&intuition_input) {
+        Ok(receipt) => {
             validate_receipt(&intuition_input, "intuition.policy", &receipt)?;
-            Ok(receipt)
-        })?;
+            receipt
+        }
+        Err(failure) => {
+            validate_failure(&failure)?;
+            let class = failure.class;
+            let terminal = append_failure(
+                &mut stages,
+                IntelligenceStageV3::IntuitionDecided,
+                "intuition.policy",
+                predecessor,
+                failure,
+            )?;
+            return finish(
+                request.run_id,
+                snapshot_digest,
+                IntelligenceDispositionV3::Failed(class),
+                stages,
+                None,
+                terminal,
+            );
+        }
+    };
     predecessor = intuition.output_digest;
     let disposition = match intuition.decision {
         IntelligencePortDecisionV3::Continue => IntelligenceDispositionV3::HostHandedOff,
@@ -583,20 +595,6 @@ where
             Ok(output)
         }
     }
-}
-
-fn failure_as_pipeline(
-    traces: &mut Vec<IntelligenceStageTraceV3>,
-    stage: IntelligenceStageV3,
-    producer: &str,
-    predecessor: Digest32,
-    failure: IntelligencePortFailureV3,
-) -> IntelligencePipelineErrorV3 {
-    if validate_failure(&failure).is_err() {
-        return IntelligencePipelineErrorV3::InvalidPortFailure;
-    }
-    let _ = append_failure(traces, stage, producer, predecessor, failure);
-    IntelligencePipelineErrorV3::InvalidReceipt("intuition failure")
 }
 
 fn append_failure(
