@@ -11,7 +11,7 @@ fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
 
 fn expected_digest() -> Digest32 {
     checked(
-        "b2dd7cbfbd9b6d6635f32ca616beadb135c7f7c5a62c7b6eea8a12071251394d"
+        "8ef482c0a0cd42aee59638898402103024004fbb0ea189d5673d4d6455c2a53d"
             .parse::<Digest32>(),
     )
 }
@@ -39,10 +39,12 @@ fn frozen_golden_vector_matches_cross_language_digest() {
         CanonicalFieldV1::new("digest", CanonicalValueV1::Digest(digest_bytes)),
         CanonicalFieldV1::new("count", CanonicalValueV1::U64(42)),
         CanonicalFieldV1::new("active", CanonicalValueV1::Bool(true)),
+        CanonicalFieldV1::new("u64_max", CanonicalValueV1::U64(u64::MAX)),
+        CanonicalFieldV1::new("i64_min", CanonicalValueV1::I64(i64::MIN)),
     ];
 
     let encoded = checked(canonical_encode_v1(&type_id, 1, &fields));
-    assert_eq!(encoded.as_slice().len(), 218);
+    assert_eq!(encoded.as_slice().len(), 254);
     assert_eq!(
         &encoded.as_slice()[..26],
         b"HEPTA-CANONICAL-DIGEST-V1\0"
@@ -53,7 +55,7 @@ fn frozen_golden_vector_matches_cross_language_digest() {
     );
 
     let reordered = [
-        fields[5], fields[4], fields[3], fields[2], fields[1], fields[0],
+        fields[7], fields[6], fields[5], fields[4], fields[3], fields[2], fields[1], fields[0],
     ];
     assert_eq!(
         checked(canonical_digest_v1(&type_id, 1, &reordered)),
