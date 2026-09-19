@@ -42,7 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `utility.ndu`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `utility.ndu`, establish an activated or qualified production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Source-level named composition now exists in `control.runtime` and the read-only intelligence vertical; that fact is recorded separately from product-execution proof and activation. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -76,6 +76,8 @@ The bounded components are:
 - `bounded state updater`
 - `recursive utility evaluator`
 - `boundary-condition cache`
+
+Native preference state is non-empty, limited to 64 axes and bounded to `[-1,1]`. The local target solver requires a nonzero canonical iteration-context digest before it can emit receipts. An already-converged state is a true no-op with no revision advance. Reaching the 64-iteration bound returns an unavailable outcome that exposes the predecessor plus evidence, not a selectable candidate state. Staged hierarchy checks bind concrete subject and parent identities; unrelated subjects at different levels may update in one generation, but an actual parent and child may not.
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -122,7 +124,7 @@ Critical protocol schemas:
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+Rust types and canonical JSON represent identical semantics. The owner-local `UtilityProfile` additionally binds an immutable axis-registry digest and normalization/fixed-point-scale manifest digest; changing units, normalization or scale therefore changes the utility-profile digest instead of silently reinterpreting an old evaluation. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
 ## 6. Data authority, persistence and migrations
 
@@ -177,7 +179,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Embed the deterministic evaluator under a frozen objective and versioned policy. The actual request-local context planner is described in the native host guide; it does not activate global adaptive reconfiguration. Projection journals are bounded owner-local references and must not be substituted for an independently selected production writer.
+Embed the deterministic evaluator under a frozen objective and versioned policy. The actual request-local context planner is described in the native host guide; it does not activate global adaptive reconfiguration. Projection journals are bounded owner-local references and must not be substituted for an independently selected production writer. Revocation lookup is scoped by objective plus subject plus projection digest, so reuse of identical payload bytes in another scope cannot cause cross-scope revocation.
 
 Current operating and state-format references:
 
@@ -219,7 +221,7 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Source composition now has named authority-free callers. Qualification still requires current exact-candidate evidence, and production composition additionally requires the selected durable owner store and target-host recovery evidence. Acceptance, selection, promotion and release remain separate externally governed states.
 
 For `utility.ndu`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 

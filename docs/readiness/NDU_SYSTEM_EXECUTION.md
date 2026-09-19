@@ -27,7 +27,7 @@ uncertainty vector
 support digest
 ```
 
-The canonical external contract remains `UtilityContributionV1`; the Rust owner-local type preserves the same core semantics. Each axis has a registered unit and direction. A contribution with an empty support digest, mixed objective, mixed generation, duplicate organ identity, unknown axis or missing required organ is unavailable rather than zero. Every evaluated candidate must also contain a value for every registered uncertainty axis. The candidate support digest is derived from the organ identity, objective, generation, feasibility posture, complete normalized vectors and the upstream support digest, so provenance cannot be detached from contribution semantics.
+The canonical external contract remains `UtilityContributionV1`; the Rust owner-local type preserves the same core semantics. Each axis has a registered unit and direction. The native utility profile binds both the immutable axis-registry digest and the normalization/fixed-point-scale manifest digest, so unit or scale drift invalidates the profile/evaluation identity. A contribution with an empty support digest, mixed objective, mixed generation, duplicate organ identity, unknown axis or missing required organ is unavailable rather than zero. Every evaluated candidate must also contain a value for every registered uncertainty axis. The candidate support digest is derived from the organ identity, objective, generation, feasibility posture, complete normalized vectors and the upstream support digest, so provenance cannot be detached from contribution semantics.
 
 An organ contributes only facts it owns. `utility.ndu` aggregates supported contributions. `control.runtime` consumes a digest-bound projection of the resulting evaluation; it does not reimplement NDU. `learning.ledger` records the complete candidate/contribution set under its own writer rules.
 
@@ -95,7 +95,7 @@ P_next = (1 - eta) * P_k + eta * P_candidate
 U_k = project(instant_utility + discount * continuation_utility)
 ```
 
-`eta` is in `[1/16,1/4]`. The preference target solver emits immutable revisions and at most 64 local iteration receipts. Parent and child artifact updates cannot share one generation.
+`eta` is in `[1/16,1/4]`. Preference state is non-empty, has at most 64 axes and every value is admitted only inside `[-1,1]`. The preference target solver requires a canonical context digest before stepping, emits at most 64 local iteration receipts, leaves an already-converged state unchanged with zero iterations, and returns an unavailable outcome rather than a selectable successor on iteration exhaustion. Concrete subject/parent identities define the hierarchy relation: an actual parent and child cannot update in one generation, while unrelated subjects at different levels may.
 
 ## 5. Convergence, infeasibility and multiple solutions
 
@@ -112,7 +112,7 @@ These local records are not an activation certificate. They deliberately do not 
 
 The canonical `NduConvergenceCertificateV1` remains owned by `learning.eval`. It additionally binds independent evaluator identity, operating region, residuals, resource/risk conservation, perturbation evidence and the spectral-radius upper confidence bound. A certificate with a spectral-radius upper 95% bound `>=0.95`, stale objective, unsupported dimension or missing independent decision cannot activate an adaptive artifact.
 
-`bind_solver_iteration_receipt_v1` converts one local step into an owner-local protocol representation only after binding:
+`bind_solver_iteration_receipt_v1` converts one local step into an owner-local protocol representation only after verifying that the solver step already carries the canonical digest of the same frozen context. Rebinding a step to another subject/objective/generation/event/coefficient context rejects. Publication binds:
 
 - subject ID and class;
 - immutable objective digest;
@@ -157,7 +157,7 @@ Preference and utility projections are append-only revisions owned by `utility.n
 - projection payload digest;
 - predecessor-entry and entry digests.
 
-The journal enforces equal-identity/equal-semantics replay, rejects identity drift, validates exact length and hashes on reopen, rejects truncation/unknown kind/tampering, reconstructs selected projection state and prevents revocation resurrection after restart.
+The journal enforces equal-identity/equal-semantics replay, rejects identity drift, validates exact length and hashes on reopen, rejects truncation/unknown kind/tampering, reconstructs selected projection state and prevents revocation resurrection after restart. Revocation is scoped by objective and subject in addition to projection digest; a revocation in one scope cannot invalidate equal payload bytes in another scope.
 
 This reference does not claim an activated production writer, operating-system durability, fsync, schema migration, retention or backup qualification. Product composition must bind a selected store and prove those properties independently.
 
@@ -234,7 +234,7 @@ Work-package ownership is narrowed by `docs/delivery/LANE_D_WORK_PACKAGE_OVERLAY
 
 The legacy `NDU-2-AGENT-DOMAIN-HIERARCHY` identifier remains in historical DAGs but is superseded for new source mutation by this overlay. No package gains positive authority.
 
-Repository-controlled completion requires the implementation map, source tests, strict lint, semantic checker, exact-head workflows and synthetic merge checks. Product caller, production writer, independent convergence decision, activation and release remain separately governed.
+Repository-controlled completion requires the implementation map, source tests, strict lint, semantic checker, exact-head workflows and synthetic merge checks. Named authority-free source callers are now composed through Control planning and the read-only intelligence vertical. Product execution proof, the selected production writer, independent convergence decision, activation and release remain separately governed.
 
 ## 11. Coding-entry checklist
 
@@ -243,7 +243,9 @@ Repository-controlled completion requires the implementation map, source tests, 
 - candidate support digests bind organ identity and complete normalized contribution semantics;
 - aggregation, Pareto tolerance and optional scalarization profiles are digest-bound;
 - local termination receipts remain distinct from independent convergence certificates;
-- projection reopen, tamper and revocation non-resurrection fixtures pass;
+- projection reopen, tamper, scoped revocation and revocation non-resurrection fixtures pass;
+- preference bounds, no-op, exhaustion-unavailable and context-rebinding negative fixtures pass;
+- no new Rust caller may use the deprecated implicit-policy `evaluate_candidates` compatibility entry;
 - exact-head and synthetic-merge checks pass before source completion is claimed.
 
 ## Appendix A. Closed gap and protocol mapping
