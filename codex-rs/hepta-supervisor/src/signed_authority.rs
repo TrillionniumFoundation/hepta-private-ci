@@ -80,6 +80,8 @@ pub struct H7H89ProductionGrant {
     pub target_release_manifest_sha256: Sha256Digest,
     pub target_agentd_sha256: Sha256Digest,
     pub target_matrixd_sha256: Option<Sha256Digest>,
+    pub compatibility_sha256: Sha256Digest,
+    pub revocation_frontier_sha256: Sha256Digest,
     pub expected_control_revision: u64,
     pub expected_lifecycle_generation: u64,
     pub authority_epoch: u64,
@@ -157,6 +159,8 @@ impl H7H89ProductionGrantSigner {
         target_release_manifest_sha256: Sha256Digest,
         target_agentd_sha256: Sha256Digest,
         target_matrixd_sha256: Option<Sha256Digest>,
+        compatibility_sha256: Sha256Digest,
+        revocation_frontier_sha256: Sha256Digest,
         expected_control_revision: u64,
         expected_lifecycle_generation: u64,
         authority_epoch: u64,
@@ -194,6 +198,8 @@ impl H7H89ProductionGrantSigner {
             target_release_manifest_sha256,
             target_agentd_sha256,
             target_matrixd_sha256,
+            compatibility_sha256,
+            revocation_frontier_sha256,
             expected_control_revision,
             expected_lifecycle_generation,
             authority_epoch,
@@ -439,6 +445,11 @@ impl H7H89ProductionGrant {
         if let Some(digest) = &self.target_matrixd_sha256 {
             parse_digest(digest, "target matrixd")?;
         }
+        parse_digest(&self.compatibility_sha256, "compatibility evidence")?;
+        parse_digest(
+            &self.revocation_frontier_sha256,
+            "revocation frontier",
+        )?;
         parse_digest(&self.grant_sha256, "grant")?;
         if self.grant_sha256 != self.payload_digest() {
             return Err(ProductionAuthorityError::DigestMismatch);
@@ -467,6 +478,8 @@ impl H7H89ProductionGrant {
             self.source_release_manifest_sha256.as_str().as_bytes(),
             self.target_release_manifest_sha256.as_str().as_bytes(),
             self.target_agentd_sha256.as_str().as_bytes(),
+            self.compatibility_sha256.as_str().as_bytes(),
+            self.revocation_frontier_sha256.as_str().as_bytes(),
             self.signer_id.as_bytes(),
         ] {
             frame(&mut hasher, value);
