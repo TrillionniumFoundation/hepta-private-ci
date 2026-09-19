@@ -19,8 +19,6 @@ mod registry;
 mod release;
 
 pub use allocation::calculate_local_allocation_v1;
-pub use authority_port::FleetAuthorityError;
-pub use authority_port::FleetAuthorityPort;
 pub use allocation_model::LOCAL_ALLOCATION_CALCULATOR_VERSION;
 pub use allocation_model::LocalAllocationCalculationV1;
 pub use allocation_model::LocalAllocationCandidateV1;
@@ -35,6 +33,8 @@ pub use allocation_model::LocalResourceVectorV1;
 pub use allocation_model::MAX_LOCAL_ALLOCATION_CANDIDATES;
 pub use allocation_model::MAX_LOCAL_ALLOCATION_WEIGHT;
 pub use allocation_model::MAX_LOCAL_HOST_CANDIDATES;
+pub use authority_port::FleetAuthorityError;
+pub use authority_port::FleetAuthorityPort;
 pub use error::FleetRegistryError;
 pub use model::AGENT_MANIFEST_SCHEMA_VERSION;
 pub use model::AGENT_STATE_SCHEMA_VERSION;
