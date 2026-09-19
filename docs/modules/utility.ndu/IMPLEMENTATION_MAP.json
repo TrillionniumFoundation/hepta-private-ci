@@ -13,8 +13,8 @@
     "codex-rs/hepta-ndu"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_composed",
+  "productCallerState": "source_composed_read_only_control_plane_and_intelligence",
+  "productionWriterState": "not_established",
   "operations": [
     {
       "operation": "evaluate_candidates",
@@ -28,7 +28,7 @@
       "outputs": [
         "NduEvaluationReceipt"
       ],
-      "state": "source_implemented_compatibility_entry",
+      "state": "source_implemented_deprecated_compatibility_entry",
       "authority": "none",
       "semanticProfile": "legacy-sum-max-zero-tolerance-v1",
       "tests": [
@@ -44,7 +44,8 @@
       "designOperation": "evaluate_candidates",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "nonClaim": "compatibility-only; new source callers must use the policy-bound V2 evaluator"
     },
     {
       "operation": "evaluate_candidates_with_policy",
@@ -54,12 +55,13 @@
         "ContributionSet",
         "UtilityProfile",
         "optional ScalarizationProfile",
-        "EvaluationPolicyV1"
+        "EvaluationPolicyV1",
+        "axis_registry_digest-bound UtilityProfile semantics"
       ],
       "outputs": [
         "NduEvaluationReceiptV2"
       ],
-      "state": "source_implemented_owner_local_v2",
+      "state": "source_implemented_source_composed_read_only_v2",
       "authority": "none",
       "tests": [
         {
@@ -85,7 +87,11 @@
       ],
       "designOperation": "evaluate_candidates_with_policy",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        "codex-rs/hepta-control-plane/src/planner_ndu.rs",
+        "codex-rs/hepta-control-plane/src/planner_context.rs",
+        "codex-rs/hepta-intelligence/src/vertical.rs"
+      ],
       "sourcePathExists": true
     },
     {
@@ -119,16 +125,17 @@
       "inputs": [
         "PreferenceState",
         "target AxisValue set",
-        "eta"
+        "eta",
+        "NduIterationContextV1"
       ],
       "outputs": [
         "PreferenceState",
         "NduSolverTerminationReceipt",
         "NduSolverIterationReceipt list"
       ],
-      "state": "source_implemented_local_solver",
+      "state": "source_implemented_bounded_context_bound_local_solver",
       "authority": "none",
-      "nonClaim": "local termination is not NduConvergenceCertificateV1",
+      "nonClaim": "local termination is not NduConvergenceCertificateV1; exhaustion is unavailable",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
@@ -136,7 +143,27 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "parent_and_child_updates_cannot_share_generation"
+          "symbol": "preference_dimension_above_64_rejects_at_genesis"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "out_of_range_genesis_and_target_reject_before_iteration"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "already_converged_solve_is_revision_stable"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "iteration_exhaustion_is_unavailable_not_success"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "related_parent_and_child_updates_cannot_share_generation"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "unrelated_subjects_may_update_in_one_generation"
         }
       ],
       "designOperation": "solve_preference_target",
@@ -155,7 +182,7 @@
       "outputs": [
         "owner-local NduIterationReceiptV1"
       ],
-      "state": "source_implemented_protocol_adapter",
+      "state": "source_implemented_context_provenance_bound_protocol_adapter",
       "authority": "deny_all",
       "tests": [
         {
@@ -165,6 +192,10 @@
         {
           "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
           "symbol": "zero_context_digest_rejects_before_protocol_publication"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "receipt_cannot_be_rebound_to_another_context"
         }
       ],
       "designOperation": "bind_solver_iteration_receipt_v1",
@@ -207,7 +238,7 @@
         "bounded hash-chain journal bytes",
         "selected projection view"
       ],
-      "state": "source_implemented_owner_local_durability_reference",
+      "state": "source_implemented_owner_local_scoped_revocation_durability_reference",
       "authority": "none",
       "nonClaim": "not an activated production writer or fsync profile",
       "tests": [
@@ -218,6 +249,10 @@
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
           "symbol": "revocation_prevents_projection_resurrection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "revocation_is_scoped_by_objective_and_subject"
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
@@ -243,9 +278,9 @@
     "specification": "complete",
     "deterministicKernel": "candidate_implemented",
     "ownerLocalDurabilityReference": "candidate_implemented",
-    "canonicalExternalV2Admission": "not_established",
+    "canonicalExternalV2Admission": "source_composed_read_only_exact_candidate_qualification_pending",
     "productionWriter": "not_established",
-    "exactHeadQualification": "required",
+    "exactHeadQualification": "required_current_candidate",
     "independentConvergenceDecision": "owned_by_learning.eval_not_self_issued",
     "activation": "not_established",
     "release": "not_established"
@@ -273,12 +308,39 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Select and compose the production preference/projection owner store with migration, fsync, retention, backup/restore and crash-recovery semantics.",
+    "Complete production coefficient/profile admission, coordinate/Q24 conversion evidence, conditional identification and identified FBSDE execution.",
+    "Obtain exact-candidate plus deterministic synthetic-merge qualification and independent learning.eval convergence acceptance.",
+    "Retire the deprecated legacy evaluator after the compatibility window and after all external consumers are proven migrated."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
+  ],
+  "implementationState": "candidate_implemented",
+  "compositionState": "source_composed_read_only",
+  "qualificationState": "pending_exact_candidate_and_independent_acceptance",
+  "sourceBaseSemantics": "historical_map_generation_provenance_baseline_not_current_source_proof",
+  "currentSourceTruth": "exact_candidate_and_deterministic_synthetic_merge_receipts",
+  "productCallers": [
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_ndu.rs",
+      "symbol": "evaluate_prepared_plan_with_ndu",
+      "state": "source_composed_read_only",
+      "authority": "none"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_context.rs",
+      "symbol": "plan_observed_context",
+      "state": "source_composed_read_only",
+      "authority": "none"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/vertical.rs",
+      "symbol": "run_read_only_vertical",
+      "state": "source_composed_read_only",
+      "authority": "deny_all"
+    }
   ]
 }
