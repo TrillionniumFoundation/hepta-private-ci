@@ -121,6 +121,77 @@ fn op_02_applicability_rejects_degenerate_diffusion() {
     );
 }
 
+fn actor(principal: &str, chain: &str, key: &str, credential: &str) -> OperatorActorIdentityV1 {
+    OperatorActorIdentityV1 {
+        principal_id: id(principal),
+        credential_chain_id: id(chain),
+        signing_key_id: id(key),
+        credential_digest: digest(credential),
+    }
+}
+
+#[test]
+fn op_02_independent_evaluator_binding_rejects_role_collision() {
+    let certificate = OperatorApplicabilityCertificateV1 {
+        certificate_id: id("certificate-independent"),
+        axis_partition_digest: digest("axis-partition"),
+        domain_digest: digest("domain"),
+        action_space_digest: digest("action-space"),
+        holder_exponents_digest: digest("holder-exponents"),
+        holder_constants_digest: digest("holder-constants"),
+        state_lipschitz_digest: digest("state-lipschitz"),
+        action_lipschitz_digest: digest("action-lipschitz"),
+        ellipticity_nu_lcb: FixedQ32::from_raw(1),
+        control_interval_millis: 100,
+        evaluator_id: id("evaluator-principal"),
+        evaluator_credential_digest: digest("evaluator-credential"),
+        fallback_digest: digest("fallback"),
+        expires_at: 100,
+        decision: ApplicabilityDecisionV1::Pass,
+    };
+    let producer = actor(
+        "producer-principal",
+        "producer-chain",
+        "producer-key",
+        "producer-credential",
+    );
+    let evaluator = actor(
+        "evaluator-principal",
+        "evaluator-chain",
+        "evaluator-key",
+        "evaluator-credential",
+    );
+    let admission = admit_applicability_with_independent_evaluator(
+        &certificate,
+        50,
+        &producer,
+        &evaluator,
+    )
+    .expect("independent evaluator admission");
+    assert!(!admission.certificate_digest.is_zero());
+    assert!(!admission.evaluator_binding_digest.is_zero());
+    assert!(!admission.authority.grants_any());
+
+    let colliding = actor(
+        "other-evaluator",
+        "producer-chain",
+        "other-key",
+        "other-credential",
+    );
+    let mut rebound = certificate;
+    rebound.evaluator_id = colliding.principal_id.clone();
+    rebound.evaluator_credential_digest = colliding.credential_digest;
+    assert_eq!(
+        admit_applicability_with_independent_evaluator(
+            &rebound,
+            50,
+            &producer,
+            &colliding,
+        ),
+        Err(OperatorClosureError::EvaluatorRoleCollision)
+    );
+}
+
 #[test]
 fn op_02_regularity_admission_enforces_gain_shape_ood_and_error_budget() {
     let assessment = OperatorRegularityAssessmentV1 {

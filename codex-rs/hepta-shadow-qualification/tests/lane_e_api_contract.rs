@@ -25,6 +25,10 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_bellman_operator::predict_tabular_operator;
     let _ = codex_hepta_bellman_operator::fit_tabular_operator_strict_v2;
     let _ = codex_hepta_bellman_operator::predict_tabular_operator_indexed_v2;
+    let _ = codex_hepta_bellman_operator::fit_tabular_operator_with_dataset_binding_v3;
+    let _ = codex_hepta_bellman_operator::fit_transition_model_with_dataset_binding;
+    let _ = codex_hepta_bellman_operator::admit_applicability_with_independent_evaluator;
+    let _ = codex_hepta_bellman_operator::admit_operator_regularity_with_independent_evaluator;
 
     let _ = codex_hepta_intelligence_eval::estimate_ope;
     let _ = codex_hepta_intelligence_eval::estimate_cluster_intervals;

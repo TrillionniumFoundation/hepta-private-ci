@@ -29,7 +29,7 @@ EXPECTED_MODULES = {
 }
 EXPECTED_CASES = {
     *(f"LEDGER-{index:02d}" for index in range(1, 5)),
-    *(f"OP-{index:02d}" for index in range(1, 5)),
+    *(f"OP-{index:02d}" for index in range(1, 7)),
     *(f"EVAL-{index:02d}" for index in range(1, 5)),
     *(f"ART-{index:02d}" for index in range(1, 5)),
 }
@@ -58,6 +58,10 @@ EXPECTED_OPERATIONS = {
         "admit_operator_regularity",
         "fit_transition_model",
         "predict_transition",
+        "fit_tabular_operator_with_dataset_binding_v3",
+        "fit_transition_model_with_dataset_binding",
+        "admit_applicability_with_independent_evaluator",
+        "admit_operator_regularity_with_independent_evaluator",
     },
     "learning.eval": {
         "estimate_ope",

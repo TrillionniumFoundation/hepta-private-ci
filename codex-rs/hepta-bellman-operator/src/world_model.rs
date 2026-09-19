@@ -16,6 +16,8 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
+use crate::DatasetEvidenceBindingV1;
+
 const MAX_SAMPLES: usize = 65_536;
 const MAX_STATE_ACTIONS: usize = 16_384;
 const MAX_BRANCHES_PER_STATE_ACTION: usize = 1_024;
@@ -76,6 +78,8 @@ pub enum WorldModelError {
     EmptyDataset,
     SampleLimit,
     DuplicateSample(String),
+    DuplicateEvidence,
+    DatasetBinding,
     InvalidOutcome,
     StateActionLimit,
     BranchLimit,
@@ -97,6 +101,23 @@ struct Group {
     count: u32,
     next_counts: BTreeMap<StableId, u32>,
     evidence_digests: BTreeSet<Digest32>,
+}
+
+pub fn fit_transition_model_with_dataset_binding(
+    model_id: StableId,
+    binding: &DatasetEvidenceBindingV1,
+    samples: Vec<WorldModelSampleV1>,
+) -> Result<TabularWorldModelV1, WorldModelError> {
+    binding
+        .validate()
+        .map_err(|_| WorldModelError::DatasetBinding)?;
+    if samples
+        .iter()
+        .any(|sample| !binding.contains(&sample.evidence_digest))
+    {
+        return Err(WorldModelError::DatasetBinding);
+    }
+    fit_transition_model(model_id, binding.dataset_digest, samples)
 }
 
 pub fn fit_transition_model(
@@ -122,8 +143,12 @@ pub fn fit_transition_model(
     }
 
     let mut groups: BTreeMap<(StableId, StableId), Group> = BTreeMap::new();
+    let mut seen_evidence = BTreeSet::new();
     for sample in &samples {
         require_digest(sample.evidence_digest, "world-model sample evidence")?;
+        if !seen_evidence.insert(sample.evidence_digest) {
+            return Err(WorldModelError::DuplicateEvidence);
+        }
         if !(-FixedQ32::ONE.raw()..=FixedQ32::ONE.raw()).contains(&sample.outcome.raw()) {
             return Err(WorldModelError::InvalidOutcome);
         }

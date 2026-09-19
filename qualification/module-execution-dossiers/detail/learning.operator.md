@@ -12,7 +12,7 @@ Concrete source mappings are recorded in `../../../codex-rs/hepta-bellman-operat
 
 ## 2. Public operations and contract details
 
-`build_sensor_core(design) -> OperatorSensorCoreManifestV1`; `fit_transition_model(dataset) -> TabularWorldModelV1`; `build_targets(dataset, objective) -> BellmanOperatorArtifact`; `fit_tabular_operator(dataset, sensor_core, profile) -> TabularOperatorArtifactV1`; `predict_transition(model, state, legal_action) -> WorldModelPredictionV1`; `predict_tabular_operator(artifact, sensor, legal_action) -> TabularOperatorPredictionV1`; `admit_operator_regularity(assessment) -> OperatorRegularityAdmissionV1`.
+`build_sensor_core(design) -> OperatorSensorCoreManifestV1`; `fit_transition_model(dataset) -> TabularWorldModelV1`; `fit_transition_model_with_dataset_binding(binding, rows) -> TabularWorldModelV1`; `build_targets(dataset, objective) -> BellmanOperatorArtifact`; `fit_tabular_operator(dataset, sensor_core, profile) -> TabularOperatorArtifactV1`; `fit_tabular_operator_with_dataset_binding_v3(plan, binding) -> TabularOperatorArtifactV1`; `predict_transition(model, state, legal_action) -> WorldModelPredictionV1`; `predict_tabular_operator(artifact, sensor, legal_action) -> TabularOperatorPredictionV1`; `admit_operator_regularity(assessment) -> OperatorRegularityAdmissionV1`; independent-review claims use `admit_applicability_with_independent_evaluator` and `admit_operator_regularity_with_independent_evaluator` after host authentication.
 
 The original `train` function remains a compatibility alias for `build_targets`; it is explicitly a target builder, not a neural trainer. Transition/dynamics estimation and continuation-value estimation have separate artifacts and evidence.
 
@@ -20,13 +20,13 @@ The original `train` function remains a compatibility alias for `build_targets`;
 
 There is no production source writer. Training reads immutable ledger-bound datasets and emits deny-all candidate values for `learning.artifacts`. Sensor cores are fixed versioned designs, not replay caches. Artifacts bind axis partition, conditioning snapshot, model and dataset lineage, normalized units, code/runtime/device, error budget, applicability certificate and predecessor through the artifact owner.
 
-The tabular learner requires a complete canonical sensor-by-action grid and a minimum sample count for every cell. It stores per-cell mean, minimum, maximum, sample count and evidence digest. Missing or underfilled cells fail. Predictions outside the fitted grid fail rather than extrapolate.
+The tabular learner requires a complete canonical sensor-by-action grid and a minimum sample count for every cell. Duplicate underlying evidence fails even when callers relabel sample IDs. The dataset-bound V3 surface additionally requires every training evidence digest to belong to one canonical dataset evidence binding supplied by the host. It stores per-cell mean, minimum, maximum, sample count and evidence digest. Missing, detached or underfilled cells fail. Predictions outside the fitted grid fail rather than extrapolate.
 
 ## 4. Deterministic algorithm and scheduling
 
 Partition smooth, jump and hard axes; reject unsupported ellipticity or regularity rather than inject noise into hard state; construct deterministic farthest-point sensors; measure fill distance, separation radius and mesh ratio; run the complete tabular Bellman reference; fit the simplest sufficient tabular candidate; and measure rank, reconstruction, shape, OOD and complete error budget separately.
 
-The action-conditioned world-model baseline groups immutable observed samples by state/action, publishes exact Q32 branch distributions that sum to one and rejects unsupported pairs. Every prediction is marked synthetic. A model prediction cannot become an independent factual outcome.
+The action-conditioned world-model baseline groups immutable observed samples by state/action, rejects duplicate sample IDs and duplicate underlying evidence, publishes exact Q32 branch distributions that sum to one and rejects unsupported pairs. The dataset-bound surface additionally rejects rows whose evidence is not in the host-supplied frozen-dataset evidence binding. Every prediction is marked synthetic. A model prediction cannot become an independent factual outcome.
 
 A later neural or low-rank tensor model must use a separately reviewed training profile and must beat or justify itself against the deterministic/tabular reference. Source presence alone cannot bypass applicability, future calibration, retention or rollback gates.
 
@@ -42,6 +42,8 @@ These are source bounds, not target-host measurements. A coordinate failing assu
 - OP-02: degenerate diffusion, bad mesh ratio or excessive reconstruction gain disables the learned path.
 - OP-03: a high in-sample fit with poor future calibration/retention fails evaluation.
 - OP-04: model-generated rollouts remain synthetic and cannot become independent factual outcome evidence.
+- OP-05: tabular training rejects relabelled duplicate evidence, detached dataset rows, missing cells and unsupported predictions.
+- OP-06: persisted candidates require independent pins, bounded decoding, separate-process reload and revocation-safe rollback.
 
 Every case is mapped to concrete Rust test functions in `../../lane-e/TEST_TRACEABILITY.json`. Additional learned-grid tests verify order independence, complete-cell admission, minimum samples and domain-bounded prediction.
 
@@ -53,11 +55,11 @@ Use all eighteen dossier receipt fields. Immediate revocation and stop remain ef
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `build_targets` in [codex-rs/hepta-bellman-operator/src/lib.rs](../../../codex-rs/hepta-bellman-operator/src/lib.rs); `fit_tabular_operator` in [codex-rs/hepta-bellman-operator/src/learned.rs](../../../codex-rs/hepta-bellman-operator/src/learned.rs); `fit_transition_model` in [codex-rs/hepta-bellman-operator/src/world_model.rs](../../../codex-rs/hepta-bellman-operator/src/world_model.rs). Deterministic targets, tabular operator fitting and action-conditioned world-model baseline implemented.
+- **Implemented entrypoints:** `build_targets` in [codex-rs/hepta-bellman-operator/src/lib.rs](../../../codex-rs/hepta-bellman-operator/src/lib.rs); fail-closed tabular fitting plus dataset-bound V3 admission in [codex-rs/hepta-bellman-operator/src/learned.rs](../../../codex-rs/hepta-bellman-operator/src/learned.rs) and `learned_strict.rs`; action-conditioned world-model fitting plus dataset-bound admission in [codex-rs/hepta-bellman-operator/src/world_model.rs](../../../codex-rs/hepta-bellman-operator/src/world_model.rs); typed independent-evaluator binding in `reference.rs`. Deterministic targets, tabular operator fitting and action-conditioned world-model baseline are implemented.
 - **State and recovery:** Pure candidate artifacts bind immutable data/profile/sensor identities. encode_tabular_payload_v1 and LoadedTabularOperatorV1 add bounded persisted candidate encoding and independently pinned, once-validated prediction. Storage and selection remain with learning.artifacts and its host. train is a compatibility alias for target construction; the separate tabular learner requires a complete supported sensor/action grid and retains per-cell sample statistics.
 - **Source tests:** [codex-rs/hepta-bellman-operator/src/learned_tests.rs](../../../codex-rs/hepta-bellman-operator/src/learned_tests.rs), [codex-rs/hepta-bellman-operator/src/world_model_tests.rs](../../../codex-rs/hepta-bellman-operator/src/world_model_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md](../../../codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md), [docs/learning/HOLDER_BELLMAN_SPEC.md](../../../docs/learning/HOLDER_BELLMAN_SPEC.md).
-- **Remaining work:** A neural/tensor model, device execution, independent mathematical applicability and future calibration/retention require separate evidence; model predictions remain synthetic observations.
+- **Remaining work:** Host authentication must still verify the producer/evaluator identities supplied to the typed independence gates; a digest or typed value is not itself a signature. A neural/tensor model is optional rather than required, but target-device execution, independent mathematical applicability, future calibration/retention and real task benefit remain separate evidence; model predictions remain synthetic observations.
 
 ## 9. Native closure and remaining evidence
 

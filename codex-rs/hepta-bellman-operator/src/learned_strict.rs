@@ -11,11 +11,30 @@ use std::fmt;
 
 use codex_hepta_types::StableId;
 
+use crate::DatasetEvidenceBindingV1;
 use crate::LearnedOperatorError;
 use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorPlanV1;
 use crate::TabularOperatorPredictionV1;
 use crate::fit_tabular_operator;
+
+pub fn fit_tabular_operator_with_dataset_binding_v3(
+    plan: TabularOperatorPlanV1,
+    binding: &DatasetEvidenceBindingV1,
+) -> Result<TabularOperatorArtifactV1, StrictLearnedOperatorError> {
+    binding
+        .validate()
+        .map_err(|_| StrictLearnedOperatorError::DatasetBinding)?;
+    if plan.dataset_digest != binding.dataset_digest
+        || plan
+            .samples
+            .iter()
+            .any(|sample| !binding.contains(&sample.evidence_digest))
+    {
+        return Err(StrictLearnedOperatorError::DatasetBinding);
+    }
+    fit_tabular_operator_strict_v2(plan)
+}
 
 pub fn fit_tabular_operator_strict_v2(
     plan: TabularOperatorPlanV1,
@@ -67,6 +86,7 @@ pub fn predict_tabular_operator_indexed_v2(
 pub enum StrictLearnedOperatorError {
     Learned(LearnedOperatorError),
     DuplicateEvidence,
+    DatasetBinding,
     NonCanonicalArtifact,
     UnsupportedCell,
 }
@@ -81,7 +101,10 @@ impl StdError for StrictLearnedOperatorError {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self {
             Self::Learned(error) => Some(error),
-            Self::DuplicateEvidence | Self::NonCanonicalArtifact | Self::UnsupportedCell => None,
+            Self::DuplicateEvidence
+            | Self::DatasetBinding
+            | Self::NonCanonicalArtifact
+            | Self::UnsupportedCell => None,
         }
     }
 }
@@ -153,6 +176,30 @@ mod tests {
         assert_eq!(
             fit_tabular_operator_strict_v2(duplicate),
             Err(StrictLearnedOperatorError::DuplicateEvidence)
+        );
+    }
+
+    #[test]
+    fn op_05_dataset_binding_rejects_detached_training_rows() {
+        let bound_plan = plan();
+        let mut evidence = bound_plan
+            .samples
+            .iter()
+            .map(|sample| sample.evidence_digest)
+            .collect::<Vec<_>>();
+        evidence.sort_unstable();
+        let binding = DatasetEvidenceBindingV1 {
+            dataset_digest: bound_plan.dataset_digest,
+            source_evidence_digests: evidence,
+        };
+        fit_tabular_operator_with_dataset_binding_v3(bound_plan.clone(), &binding)
+            .expect("bound rows fit");
+
+        let mut detached = bound_plan;
+        detached.samples[0].evidence_digest = digest("detached-evidence");
+        assert_eq!(
+            fit_tabular_operator_with_dataset_binding_v3(detached, &binding),
+            Err(StrictLearnedOperatorError::DatasetBinding)
         );
     }
 

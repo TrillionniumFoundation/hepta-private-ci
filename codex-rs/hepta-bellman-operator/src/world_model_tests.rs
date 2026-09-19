@@ -81,6 +81,55 @@ fn op_04_prediction_is_synthetic_and_unsupported_pairs_abstain() {
 }
 
 #[test]
+fn world_model_dataset_binding_rejects_detached_rows() {
+    let samples = vec![
+        sample("sample-1", "state-b", 10),
+        sample("sample-2", "state-c", 20),
+    ];
+    let mut evidence = samples
+        .iter()
+        .map(|sample| sample.evidence_digest)
+        .collect::<Vec<_>>();
+    evidence.sort_unstable();
+    let binding = DatasetEvidenceBindingV1 {
+        dataset_digest: digest("dataset"),
+        source_evidence_digests: evidence,
+    };
+    fit_transition_model_with_dataset_binding(
+        id("world-model-bound"),
+        &binding,
+        samples.clone(),
+    )
+    .expect("bound rows fit");
+
+    let mut detached = samples;
+    detached[0].evidence_digest = digest("detached-evidence");
+    assert_eq!(
+        fit_transition_model_with_dataset_binding(
+            id("world-model-detached"),
+            &binding,
+            detached,
+        ),
+        Err(WorldModelError::DatasetBinding)
+    );
+}
+
+#[test]
+fn world_model_rejects_relabelled_duplicate_evidence() {
+    let first = sample("sample-1", "state-b", 10);
+    let mut second = sample("sample-2", "state-c", 20);
+    second.evidence_digest = first.evidence_digest;
+    assert_eq!(
+        fit_transition_model(
+            id("world-model-duplicate-evidence"),
+            digest("dataset"),
+            vec![first, second],
+        ),
+        Err(WorldModelError::DuplicateEvidence)
+    );
+}
+
+#[test]
 fn world_model_rejects_duplicate_samples_and_invalid_outcomes() {
     let duplicate = sample("sample-1", "state-b", 10);
     assert_eq!(

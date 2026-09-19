@@ -55,6 +55,22 @@ pub struct OperatorApplicabilityCertificateV1 {
     pub decision: ApplicabilityDecisionV1,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct OperatorActorIdentityV1 {
+    pub principal_id: StableId,
+    pub credential_chain_id: StableId,
+    pub signing_key_id: StableId,
+    pub credential_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct OperatorIndependentApplicabilityAdmissionV1 {
+    pub certificate_id: StableId,
+    pub certificate_digest: Digest32,
+    pub evaluator_binding_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
 pub fn validate_applicability_certificate(
     certificate: &OperatorApplicabilityCertificateV1,
     now: u64,
@@ -114,6 +130,58 @@ pub fn validate_applicability_certificate(
     bytes.extend_from_slice(certificate.fallback_digest.as_array());
     bytes.extend_from_slice(&certificate.expires_at.to_be_bytes());
     bytes.push(certificate.decision.tag());
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+/// Bind a structurally valid certificate to host-authenticated producer and
+/// evaluator identities and enforce principal, credential-chain and signing-key
+/// separation. This function does not verify signatures or provision trust roots;
+/// the host must authenticate both identities before constructing these values.
+pub fn admit_applicability_with_independent_evaluator(
+    certificate: &OperatorApplicabilityCertificateV1,
+    now: u64,
+    producer: &OperatorActorIdentityV1,
+    evaluator: &OperatorActorIdentityV1,
+) -> Result<OperatorIndependentApplicabilityAdmissionV1, OperatorClosureError> {
+    if certificate.evaluator_id != evaluator.principal_id
+        || certificate.evaluator_credential_digest != evaluator.credential_digest
+    {
+        return Err(OperatorClosureError::EvaluatorBindingMismatch);
+    }
+    let certificate_digest = validate_applicability_certificate(certificate, now)?;
+    let evaluator_binding_digest = validate_independent_evaluator_identity(producer, evaluator)?;
+    Ok(OperatorIndependentApplicabilityAdmissionV1 {
+        certificate_id: certificate.certificate_id.clone(),
+        certificate_digest,
+        evaluator_binding_digest,
+        authority: AuthorityPosture::DENY_ALL,
+    })
+}
+
+fn validate_independent_evaluator_identity(
+    producer: &OperatorActorIdentityV1,
+    evaluator: &OperatorActorIdentityV1,
+) -> Result<Digest32, OperatorClosureError> {
+    for (label, digest) in [
+        ("producer credential", producer.credential_digest),
+        ("evaluator credential", evaluator.credential_digest),
+    ] {
+        require_digest(digest, label)?;
+    }
+    if producer.principal_id == evaluator.principal_id
+        || producer.credential_chain_id == evaluator.credential_chain_id
+        || producer.signing_key_id == evaluator.signing_key_id
+    {
+        return Err(OperatorClosureError::EvaluatorRoleCollision);
+    }
+
+    let mut bytes = b"hepta.bellman-operator.independent-evaluator.v1".to_vec();
+    for actor in [producer, evaluator] {
+        push_id(&mut bytes, &actor.principal_id);
+        push_id(&mut bytes, &actor.credential_chain_id);
+        push_id(&mut bytes, &actor.signing_key_id);
+        bytes.extend_from_slice(actor.credential_digest.as_array());
+    }
     Ok(Digest32::of_bytes(&bytes))
 }
 
@@ -483,6 +551,32 @@ pub struct OperatorRegularityAdmissionV1 {
     pub authority: AuthorityPosture,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct OperatorIndependentRegularityAdmissionV1 {
+    pub admission: OperatorRegularityAdmissionV1,
+    pub evaluator_binding_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
+pub fn admit_operator_regularity_with_independent_evaluator(
+    assessment: OperatorRegularityAssessmentV1,
+    producer: &OperatorActorIdentityV1,
+    evaluator: &OperatorActorIdentityV1,
+) -> Result<OperatorIndependentRegularityAdmissionV1, OperatorClosureError> {
+    if assessment.evaluator_id != evaluator.principal_id
+        || assessment.evaluator_credential_digest != evaluator.credential_digest
+    {
+        return Err(OperatorClosureError::EvaluatorBindingMismatch);
+    }
+    let evaluator_binding_digest = validate_independent_evaluator_identity(producer, evaluator)?;
+    let admission = admit_operator_regularity(assessment)?;
+    Ok(OperatorIndependentRegularityAdmissionV1 {
+        admission,
+        evaluator_binding_digest,
+        authority: AuthorityPosture::DENY_ALL,
+    })
+}
+
 pub fn admit_operator_regularity(
     mut assessment: OperatorRegularityAssessmentV1,
 ) -> Result<OperatorRegularityAdmissionV1, OperatorClosureError> {
@@ -593,6 +687,8 @@ pub enum OperatorClosureError {
     EllipticityUnsupported,
     ControlInterval,
     ApplicabilityExpired,
+    EvaluatorBindingMismatch,
+    EvaluatorRoleCollision,
     SensorCount,
     SensorDimension,
     SensorCoordinate,

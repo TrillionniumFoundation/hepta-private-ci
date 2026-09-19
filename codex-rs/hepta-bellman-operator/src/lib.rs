@@ -37,6 +37,7 @@ pub use learned::fit_tabular_operator;
 pub use learned::predict_tabular_operator;
 pub use learned_strict::StrictLearnedOperatorError;
 pub use learned_strict::fit_tabular_operator_strict_v2;
+pub use learned_strict::fit_tabular_operator_with_dataset_binding_v3;
 pub use learned_strict::predict_tabular_operator_indexed_v2;
 pub use reference::ApplicabilityDecisionV1;
 pub use reference::BellmanReferenceCellV1;
@@ -44,7 +45,10 @@ pub use reference::BellmanReferencePlanV1;
 pub use reference::BellmanReferenceReceiptV1;
 pub use reference::BellmanReferenceTargetV1;
 pub use reference::GreedyReferenceActionV1;
+pub use reference::OperatorActorIdentityV1;
 pub use reference::OperatorApplicabilityCertificateV1;
+pub use reference::OperatorIndependentApplicabilityAdmissionV1;
+pub use reference::OperatorIndependentRegularityAdmissionV1;
 pub use reference::OperatorClosureError;
 pub use reference::OperatorErrorComponentV1;
 pub use reference::OperatorRegularityAdmissionV1;
@@ -52,7 +56,9 @@ pub use reference::OperatorRegularityAssessmentV1;
 pub use reference::OperatorSensorCoreManifestV1;
 pub use reference::SensorCoreDesignV1;
 pub use reference::SensorPointV1;
+pub use reference::admit_applicability_with_independent_evaluator;
 pub use reference::admit_operator_regularity;
+pub use reference::admit_operator_regularity_with_independent_evaluator;
 pub use reference::build_sensor_core;
 pub use reference::evaluate_bellman_reference;
 pub use reference::validate_applicability_certificate;
@@ -63,10 +69,70 @@ pub use world_model::WorldModelError;
 pub use world_model::WorldModelPredictionV1;
 pub use world_model::WorldModelSampleV1;
 pub use world_model::fit_transition_model;
+pub use world_model::fit_transition_model_with_dataset_binding;
 pub use world_model::predict_transition;
 
 const MAX_SAMPLES: usize = 16_384;
+const MAX_DATASET_EVIDENCE: usize = 1_000_000;
 const SCALE: i128 = 1_i128 << 32;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct DatasetEvidenceBindingV1 {
+    pub dataset_digest: Digest32,
+    pub source_evidence_digests: Vec<Digest32>,
+}
+
+impl DatasetEvidenceBindingV1 {
+    pub fn validate(&self) -> Result<(), DatasetBindingError> {
+        if self.dataset_digest.is_zero() {
+            return Err(DatasetBindingError::EmptyDatasetDigest);
+        }
+        if self.source_evidence_digests.is_empty()
+            || self.source_evidence_digests.len() > MAX_DATASET_EVIDENCE
+        {
+            return Err(DatasetBindingError::EvidenceLimit);
+        }
+        if self
+            .source_evidence_digests
+            .iter()
+            .any(|digest| digest.is_zero())
+        {
+            return Err(DatasetBindingError::EmptyEvidenceDigest);
+        }
+        if self
+            .source_evidence_digests
+            .windows(2)
+            .any(|adjacent| adjacent[0] >= adjacent[1])
+        {
+            return Err(DatasetBindingError::NonCanonicalEvidence);
+        }
+        Ok(())
+    }
+
+    #[must_use]
+    pub fn contains(&self, digest: &Digest32) -> bool {
+        self.source_evidence_digests.binary_search(digest).is_ok()
+    }
+
+    #[must_use]
+    pub fn binding_digest(&self) -> Digest32 {
+        let mut bytes = b"hepta.bellman-operator.dataset-evidence-binding.v1".to_vec();
+        bytes.extend_from_slice(self.dataset_digest.as_array());
+        bytes.extend_from_slice(&(self.source_evidence_digests.len() as u64).to_be_bytes());
+        for digest in &self.source_evidence_digests {
+            bytes.extend_from_slice(digest.as_array());
+        }
+        Digest32::of_bytes(&bytes)
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum DatasetBindingError {
+    EmptyDatasetDigest,
+    EmptyEvidenceDigest,
+    EvidenceLimit,
+    NonCanonicalEvidence,
+}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Transition {

@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "explicit_read_consumer_composed_default_product_loop_not_wired",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -56,12 +56,81 @@
       "designOperation": "fit_transition_model",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "fit_tabular_operator_strict_v2",
+      "nativeSymbol": "fit_tabular_operator_strict_v2",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
+      "state": "source_implemented_not_default_product_loop",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "fit_tabular_operator_strict_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "fit_tabular_operator_with_dataset_binding_v3",
+      "nativeSymbol": "fit_tabular_operator_with_dataset_binding_v3",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
+      "state": "source_implemented_not_default_product_loop",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "fit_tabular_operator_with_dataset_binding_v3",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "fit_transition_model_with_dataset_binding",
+      "nativeSymbol": "fit_transition_model_with_dataset_binding",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/world_model.rs",
+      "state": "source_implemented_not_default_product_loop",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "fit_transition_model_with_dataset_binding",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "admit_applicability_with_independent_evaluator",
+      "nativeSymbol": "admit_applicability_with_independent_evaluator",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/reference.rs",
+      "state": "source_implemented_not_default_product_loop",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "admit_applicability_with_independent_evaluator",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "admit_operator_regularity_with_independent_evaluator",
+      "nativeSymbol": "admit_operator_regularity_with_independent_evaluator",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/reference.rs",
+      "state": "source_implemented_not_default_product_loop",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "admit_operator_regularity_with_independent_evaluator",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "encode_tabular_payload_v1",
+      "nativeSymbol": "encode_tabular_payload_v1",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/loaded.rs",
+      "state": "source_implemented_not_default_product_loop",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "encode_tabular_payload_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
-  "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
     "independent semantic review",
     "product execution and target-host qualification",
@@ -78,5 +147,9 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-bellman-operator"
+  ],
+  "productCompositionGaps": [
+    "The Agentd cognitive read ranker is an explicit host-attached consumer; the default product training/evaluation/selection loop is not wired.",
+    "A selected candidate still requires external acceptance and governed new-process activation before it can become a production learning loop."
   ]
 }
