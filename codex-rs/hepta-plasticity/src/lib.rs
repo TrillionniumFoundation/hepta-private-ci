@@ -28,6 +28,7 @@ mod types;
 pub use parameter_v2::propose_v2;
 pub use parameter_v2::verify_parameter_proposal_v2;
 pub use topology_v3::propose_topology_v3;
+pub use topology_v3::runtime_topology_candidate_v1;
 pub use topology_v3::verify_topology_proposal_v3;
 pub use registry::ProposalRegistry;
 pub use registry::ProposalRegistrySlotV2;
