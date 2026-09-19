@@ -41,7 +41,7 @@ pub struct NduSolverIterationReceipt {
     pub residual_raw: i64,
     pub projection_count: u32,
     pub state_digest: Digest32,
-    pub(crate) context_digest: Digest32,
+    context_digest: Digest32,
 }
 
 impl NduSolverIterationReceipt {
