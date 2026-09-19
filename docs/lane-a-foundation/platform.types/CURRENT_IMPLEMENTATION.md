@@ -61,7 +61,7 @@ for a filesystem path, URI, SQL identifier or other context. Generic bounded
 values are not secret containers, and their debug representations must not be
 used for credentials.
 
-`ContractRegistryV1` resolves an immutable digest to an exact definition body.
+`ContractRegistryV1` resolves an immutable digest to an exact definition body. Schema definitions require `schema:*` IDs and normalization definitions require `normalization:*` IDs.
 It does not provide network discovery, mutable registration, trust
 distribution, production admission or process-global state.
 
