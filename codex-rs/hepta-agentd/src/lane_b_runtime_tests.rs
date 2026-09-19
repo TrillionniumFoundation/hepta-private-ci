@@ -231,7 +231,6 @@ fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity() {
     assert_eq!(coordinator.run("run.1"), None);
 }
 
-
 #[test]
 fn intelligence_envelope_attaches_to_the_named_runtime_run() {
     use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
