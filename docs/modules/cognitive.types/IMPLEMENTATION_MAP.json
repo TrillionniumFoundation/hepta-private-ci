@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "2b209faf9b6c46746c07c4359be6b13e7a44ee89",
+    "tree": "de17ec74becb8c70390360b3ac8d1640de4d83e8"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.types",
@@ -27,7 +27,9 @@
       "sourcePath": "codex-rs/hepta-cognitive-types/src/lib.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lib_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "build_snapshot",
       "mappingClass": "owner_native",
@@ -39,7 +41,9 @@
       "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "cognitivesnapshotkeyv1",
       "mappingClass": "owner_native",
@@ -62,9 +66,22 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "boundCargoPackagesMapped": true
   },
   "sourceRoot": [
     "codex-rs/hepta-cognitive-types"
-  ]
+  ],
+  "sourceBaseSemantics": "generation_provenance_only_freshness_is_source_fingerprint",
+  "sourceFingerprintPolicy": "git-tracked-content-sha256-v1",
+  "boundCargoPackages": [
+    "codex-rs/hepta-cognitive-types"
+  ],
+  "sourceFingerprints": {
+    "codex-rs/hepta-cognitive-types": {
+      "algorithm": "sha256",
+      "digest": "8c1fcaa6f578ab73d205fb34759469f8ee428488a9a7b003a75f5022efc98b26",
+      "trackedFiles": 6
+    }
+  }
 }
