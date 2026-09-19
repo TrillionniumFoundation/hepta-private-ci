@@ -8,6 +8,7 @@ use hepta_native::model::EndpointManifest;
 use hepta_native::platform::PlatformPolicy;
 use hepta_native::platform::SystemPlatformAdapter;
 use hepta_native::runtime::NativeShellRuntime;
+use hepta_native::security::ReloadingGrantVerifier;
 use hepta_native::security::SignedEndpointManifestV1;
 use hepta_native::security::TrustedKeySet;
 use hepta_native::session_store::GatewayCredentialStore;
@@ -34,6 +35,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let config = AppConfig::parse(&raw_args)?;
     std::fs::create_dir_all(&config.state_dir)?;
     let trusted_keys = TrustedKeySet::from_path(&config.trusted_keys)?;
+    let grant_verifier = ReloadingGrantVerifier::new(config.trusted_keys.clone())?;
     let signed_manifest: SignedEndpointManifestV1 =
         serde_json::from_slice(&std::fs::read(&config.endpoint_manifest)?)?;
     let verified_endpoint = signed_manifest.verify(&trusted_keys)?;
@@ -52,7 +54,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let runtime = NativeShellRuntime::new(
         Box::new(backend),
         Box::new(platform),
-        Arc::new(trusted_keys),
+        Arc::new(grant_verifier),
         journal,
     );
     let app = HeptaNativeApp::new(
