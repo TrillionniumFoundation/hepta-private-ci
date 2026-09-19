@@ -544,7 +544,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             if slot
                 .signed_intent
                 .as_ref()
-                .is_some_and(|intent| !matches!(intent.status, SignedIntentStatus::Committed))
+                .is_some_and(|intent| !intent.status.is_terminal())
             {
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
                     agent_id.clone(),
@@ -589,6 +589,39 @@ impl<D: ProcessDriver> Supervisor<D> {
                 next_control_revision,
             ))
         })
+    }
+
+    pub fn production_mutation_receipt(
+        &self,
+        agent_id: &AgentId,
+    ) -> Result<Option<ProductionMutationReceipt>, SupervisorError> {
+        let slot = self
+            .slots
+            .get(agent_id)
+            .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
+        Ok(slot
+            .signed_intent
+            .as_ref()
+            .map(ProductionMutationReceipt::from_intent))
+    }
+
+    pub(crate) fn finish_signed_intent(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        status: SignedIntentStatus,
+    ) -> Result<(), SupervisorError> {
+        let Some(intent) = slot.signed_intent.clone() else {
+            return Ok(());
+        };
+        let updated = intent
+            .with_status(status)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        let record = self.record(agent_id)?;
+        write_intent(record.layout.run_root(), &updated)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        slot.signed_intent = Some(updated);
+        Ok(())
     }
 
     pub(crate) fn commit_signed_intent_if_target(
