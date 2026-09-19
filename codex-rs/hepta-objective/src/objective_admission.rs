@@ -198,11 +198,19 @@ impl ObjectiveSourceAuthenticationV1 {
     }
 }
 
+/// Preverified library admission context.
+///
+/// This structure does not authenticate an external caller by construction.
+/// A product owner must first verify the external authentication material
+/// against its current trust/revocation state, then bind the resulting
+/// verification receipt digest here. The canonical Agentd product path does so
+/// with an opaque AuthBus `AuthenticatedMessage`.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ObjectiveAdmissionContextV1 {
     pub revision: Revision,
     pub now_unix_micros: u64,
     pub selected_profile_digest: Digest32,
+    pub authentication_receipt_digest: Digest32,
     pub source_authentication: ObjectiveSourceAuthenticationV1,
 }
 
@@ -214,6 +222,7 @@ pub struct ObjectiveAdmissionReceiptV1 {
     pub supplied_source_digest: Digest32,
     pub intent_digest: Digest32,
     pub admitted_source_digest: Digest32,
+    pub authentication_receipt_digest: Digest32,
     pub observed_at_unix_micros: u64,
     pub deadline_unix_micros: Option<u64>,
     pub authority: AuthorityPosture,
@@ -472,6 +481,9 @@ pub fn admit_objective_v1(
     if context.selected_profile_digest != profile_digest {
         return Err(ObjectiveAdmissionError::ProfileDigestMismatch);
     }
+    if context.authentication_receipt_digest.is_zero() {
+        return Err(ObjectiveAdmissionError::SourceAuthenticationMismatch);
+    }
     if envelope.input_schema_digest != profile.expected_input_schema_digest {
         return Err(ObjectiveAdmissionError::InputSchemaMismatch);
     }
@@ -539,8 +551,12 @@ pub fn admit_objective_v1(
         }
     }
 
-    let admitted_source_digest =
-        admitted_source_digest(envelope, profile_digest, &context.source_authentication);
+    let admitted_source_digest = admitted_source_digest(
+        envelope,
+        profile_digest,
+        context.authentication_receipt_digest,
+        &context.source_authentication,
+    );
     let source = adapt_source(envelope, profile, context, admitted_source_digest)?;
     Ok(AdmittedObjectiveV1 {
         source,
@@ -551,6 +567,7 @@ pub fn admit_objective_v1(
             supplied_source_digest,
             intent_digest,
             admitted_source_digest,
+            authentication_receipt_digest: context.authentication_receipt_digest,
             observed_at_unix_micros,
             deadline_unix_micros,
             authority: AuthorityPosture::DENY_ALL,
@@ -1441,10 +1458,12 @@ fn intent_digest_unchecked(envelope: &ObjectiveSourceEnvelopeV1) -> Digest32 {
 fn admitted_source_digest(
     envelope: &ObjectiveSourceEnvelopeV1,
     profile_digest: Digest32,
+    authentication_receipt_digest: Digest32,
     authentication: &ObjectiveSourceAuthenticationV1,
 ) -> Digest32 {
     let mut bytes = b"hepta.objective.admitted-source.v1".to_vec();
     push_digest(&mut bytes, profile_digest);
+    push_digest(&mut bytes, authentication_receipt_digest);
     push_text(&mut bytes, &envelope.request_id);
     push_digest(&mut bytes, envelope.principal_scope_digest);
     push_digest(&mut bytes, envelope.intent_digest);
