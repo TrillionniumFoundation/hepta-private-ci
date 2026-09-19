@@ -178,7 +178,7 @@ impl AppServerModelDriver {
         control: &mut DurableInferenceControl,
         request_id: &str,
         admission: &NativeAdmission,
-        authorization: &NativeExecutionAuthority,
+        authorization: Option<&NativeExecutionAuthority>,
         prompt: String,
         context_query: Option<String>,
         cancellation: &CancellationToken,
@@ -186,6 +186,8 @@ impl AppServerModelDriver {
         if prompt.is_empty() || prompt.len() > MAX_PROMPT_BYTES {
             return Err("prompt must contain 1..32768 bytes".into());
         }
+        let authorization = authorization
+            .ok_or("final-use authority is required before provider contact")?;
         if cancellation.is_cancelled() {
             return Err("cancelled before admission".into());
         }
