@@ -91,7 +91,11 @@ fn envelope(
     }
 }
 
-fn proof(key: &SigningKey, principal: &str, envelope: &QualificationEvidenceEnvelope) -> EvidenceIssuerProof {
+fn proof(
+    key: &SigningKey,
+    principal: &str,
+    envelope: &QualificationEvidenceEnvelope,
+) -> EvidenceIssuerProof {
     let signature = key.sign(&envelope.signing_bytes().expect("signing bytes"));
     EvidenceIssuerProof {
         principal_id: principal.to_string(),
@@ -101,6 +105,17 @@ fn proof(key: &SigningKey, principal: &str, envelope: &QualificationEvidenceEnve
     }
 }
 
+async fn provision(store: &HeptaEvidenceStore, trust: &EvidenceTrustPolicy) {
+    assert!(matches!(
+        store
+            .qualification()
+            .provision_trust_policy(trust)
+            .await
+            .expect("provision trust policy"),
+        AppendDisposition::Inserted | AppendDisposition::AlreadyPresent
+    ));
+}
+
 #[tokio::test]
 async fn qualification_receipt_is_authenticated_idempotent_queryable_and_reopen_safe() {
     let temp = TempDir::new().expect("temp dir");
@@ -108,6 +123,7 @@ async fn qualification_receipt_is_authenticated_idempotent_queryable_and_reopen_
     let store = HeptaEvidenceStore::open(&sqlite).await.expect("open evidence");
     let key = signing_key(1);
     let trust = policy(vec![registration(&key, "reviewer-a", &["evaluator"])]);
+    provision(&store, &trust).await;
     let receipt = envelope(
         "receipt-a",
         "evaluator",
@@ -164,6 +180,7 @@ async fn same_receipt_identity_with_changed_content_conflicts() {
         .expect("open evidence");
     let key = signing_key(2);
     let trust = policy(vec![registration(&key, "reviewer-a", &["evaluator"])]);
+    provision(&store, &trust).await;
     let first = envelope(
         "receipt-conflict",
         "evaluator",
@@ -205,6 +222,7 @@ async fn exact_candidate_tree_and_expiry_are_enforced() {
         .expect("open evidence");
     let key = signing_key(3);
     let trust = policy(vec![registration(&key, "reviewer-a", &["evaluator"])]);
+    provision(&store, &trust).await;
     let receipt = envelope(
         "receipt-expiry",
         "evaluator",
@@ -255,6 +273,7 @@ async fn security_authority_revocation_is_immediate_and_persistent() {
         registration(&evaluator, "reviewer-a", &["evaluator"]),
         registration(&security, "security-a", &["security-authority"]),
     ]);
+    provision(&store, &trust).await;
     let target = envelope(
         "receipt-target",
         "evaluator",
@@ -307,6 +326,7 @@ async fn one_principal_cannot_satisfy_two_independent_roles() {
         "same-human",
         &["generator-review", "evaluator-review"],
     )]);
+    provision(&store, &trust).await;
 
     for (id, role) in [
         ("receipt-generator", "generator-review"),
@@ -349,6 +369,7 @@ async fn independent_decision_is_typed_signed_and_projected_atomically() {
         "independent-reviewer",
         &["independent-review"],
     )]);
+    provision(&store, &trust).await;
     let prepared = store
         .qualification()
         .prepare_independent_decision(
@@ -399,6 +420,86 @@ async fn independent_decision_is_typed_signed_and_projected_atomically() {
 }
 
 #[tokio::test]
+async fn unprovisioned_or_different_trust_policy_cannot_write() {
+    let temp = TempDir::new().expect("temp dir");
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+        .await
+        .expect("open evidence");
+    let key_a = signing_key(8);
+    let trust_a = policy(vec![registration(&key_a, "reviewer-a", &["evaluator"])]);
+    let receipt_a = envelope(
+        "receipt-policy-a",
+        "evaluator",
+        EvidenceClaimClass::ExactSource,
+        b"policy-a",
+    );
+    let issuer_a = trust_a
+        .authenticate(&receipt_a, &proof(&key_a, "reviewer-a", &receipt_a))
+        .expect("issuer a");
+    assert!(matches!(
+        store
+            .qualification()
+            .append_receipt(&receipt_a, &issuer_a)
+            .await,
+        Err(EvidenceError::InvalidRecord(_))
+    ));
+
+    provision(&store, &trust_a).await;
+    assert_eq!(
+        store
+            .qualification()
+            .provision_trust_policy(&trust_a)
+            .await
+            .expect("exact policy replay"),
+        AppendDisposition::AlreadyPresent
+    );
+
+    let key_b = signing_key(9);
+    let trust_b = EvidenceTrustPolicy {
+        schema_version: 1,
+        policy_id: "qualification-policy-v2".to_string(),
+        revision: 2,
+        registrations: vec![registration(&key_b, "reviewer-b", &["evaluator"])],
+        revoked_signing_identity_sha256: Vec::new(),
+    };
+    assert!(matches!(
+        store.qualification().provision_trust_policy(&trust_b).await,
+        Err(EvidenceError::IdempotencyConflict { .. })
+    ));
+    assert!(matches!(
+        store
+            .qualification()
+            .verify_provisioned_trust_policy(&trust_b)
+            .await,
+        Err(EvidenceError::IdempotencyConflict { .. })
+    ));
+
+    let receipt_b = envelope(
+        "receipt-policy-b",
+        "evaluator",
+        EvidenceClaimClass::ExactSource,
+        b"policy-b",
+    );
+    let issuer_b = trust_b
+        .authenticate(&receipt_b, &proof(&key_b, "reviewer-b", &receipt_b))
+        .expect("issuer b");
+    assert!(matches!(
+        store
+            .qualification()
+            .append_receipt(&receipt_b, &issuer_b)
+            .await,
+        Err(EvidenceError::InvalidRecord(_))
+    ));
+
+    let mut bad_proof = proof(&key_a, "reviewer-a", &receipt_a);
+    bad_proof.signature_hex.replace_range(0..2, "00");
+    assert!(matches!(
+        trust_a.authenticate(&receipt_a, &bad_proof),
+        Err(EvidenceError::InvalidRecord(_))
+    ));
+}
+
+#[tokio::test]
 async fn external_checkpoint_detects_database_replacement_and_backward_frontier() {
     let first_temp = TempDir::new().expect("first temp");
     let first_store = HeptaEvidenceStore::open(&sqlite_config(&first_temp))
@@ -409,6 +510,7 @@ async fn external_checkpoint_detects_database_replacement_and_backward_frontier(
         .export_checkpoint()
         .await
         .expect("checkpoint");
+    assert!(checkpoint.trust_policy_sha256.is_none());
 
     let second_temp = TempDir::new().expect("second temp");
     let second_store = HeptaEvidenceStore::open(&sqlite_config(&second_temp))
