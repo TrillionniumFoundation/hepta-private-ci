@@ -25,12 +25,12 @@ use crate::DurableAnchorWitness;
 use crate::DurableLearningJournal;
 use crate::DurableLedgerError;
 use crate::EpisodeDecision;
-use crate::OutcomeTerminalityV1;
 use crate::LearningEvidenceRoleV1;
 use crate::LearningEvidenceVerifierV1;
 use crate::LearningLedger;
 use crate::LedgerAnchor;
 use crate::LedgerEvent;
+use crate::OutcomeTerminalityV1;
 use crate::ProductionAppendPermit;
 use crate::Revocation;
 use crate::SignedEvidenceError;
@@ -213,23 +213,27 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
         self.require_anchor(expected_anchor)?;
         let expected_payload = decision_admission_payload(&decision, completeness)?;
         require_exact_payload(payload, &expected_payload)?;
-        let verified = self
-            .verifier
-            .verify(LearningEvidenceRoleV1::Generator, evidence, payload, now)?;
+        let verified =
+            self.verifier
+                .verify(LearningEvidenceRoleV1::Generator, evidence, payload, now)?;
 
         if completeness.generator_id != verified.principal().principal_id
             || decision.policy_id != verified.principal().principal_id
         {
             return Err(ProductionLedgerError::PrincipalMismatch);
         }
-        if usize::try_from(completeness.candidate_count).ok() != Some(decision.candidate_ids.len()) {
+        if usize::try_from(completeness.candidate_count).ok() != Some(decision.candidate_ids.len())
+        {
             return Err(ProductionLedgerError::CandidateCountMismatch);
         }
         if decision.support_digest != evidence.payload_digest {
             return Err(ProductionLedgerError::SupportDigestMismatch);
         }
 
-        self.append_event(expected_anchor.chain_digest, LedgerEvent::Decision(decision))
+        self.append_event(
+            expected_anchor.chain_digest,
+            LedgerEvent::Decision(decision),
+        )
     }
 
     pub fn append_authenticated_outcome(
@@ -370,8 +374,8 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
         if snapshot.head_digest != expected_anchor.chain_digest {
             return Err(ProductionLedgerError::StaleAnchor);
         }
-        let ledger = LearningLedger::from_snapshot(snapshot)
-            .map_err(DurableLedgerError::Semantic)?;
+        let ledger =
+            LearningLedger::from_snapshot(snapshot).map_err(DurableLedgerError::Semantic)?;
         let source_record_digests = ledger.dataset_source_record_digests();
         let (pending_outcomes, censored_outcomes) = ledger.outcome_state_counts();
         Ok(DatasetFreezeRequestV1 {
@@ -427,11 +431,7 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
         event: LedgerEvent,
     ) -> Result<AppendReceipt, ProductionLedgerError> {
         self.journal
-            .append_production(
-                ProductionAppendPermit::new(),
-                expected_predecessor,
-                event,
-            )
+            .append_production(ProductionAppendPermit::new(), expected_predecessor, event)
             .map_err(Into::into)
     }
 
@@ -443,10 +443,7 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
     }
 }
 
-fn require_exact_payload(
-    actual: &[u8],
-    expected: &[u8],
-) -> Result<(), ProductionLedgerError> {
+fn require_exact_payload(actual: &[u8], expected: &[u8]) -> Result<(), ProductionLedgerError> {
     if actual != expected {
         return Err(ProductionLedgerError::AdmissionPayloadMismatch);
     }
