@@ -513,6 +513,31 @@ fn sync_parent(_root: &Path) -> io::Result<()> {
     ))
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "projection_store_tests.rs"]
 mod tests;
+
+#[cfg(all(test, not(unix)))]
+mod unsupported_platform_tests {
+    use std::fs;
+
+    use super::NduProjectionStoreError;
+    use super::NduProjectionStoreV1;
+
+    #[test]
+    fn durable_writer_v1_fails_closed_on_unsupported_platform() {
+        let root = std::env::temp_dir().join(format!(
+            "hepta-ndu-unsupported-platform-{}",
+            std::process::id()
+        ));
+        let _ = fs::remove_dir_all(&root);
+        fs::create_dir(&root).expect("create unsupported-platform fixture");
+        assert_eq!(
+            NduProjectionStoreV1::open(&root)
+                .err()
+                .expect("non-Unix V1 must reject"),
+            NduProjectionStoreError::UnsupportedPlatform
+        );
+        fs::remove_dir_all(&root).expect("remove unsupported-platform fixture");
+    }
+}
