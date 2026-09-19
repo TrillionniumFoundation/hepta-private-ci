@@ -211,6 +211,57 @@ pub struct RemoteAppServerRequestHandle {
     command_tx: mpsc::Sender<RemoteClientCommand>,
 }
 
+/// A request that has been synchronously admitted to the single-owner remote
+/// transport queue but whose server response is still pending.
+///
+/// Queue admission is the local effect linearization point: after this value is
+/// returned, callers must treat the provider effect as accepted-or-unknown even
+/// if the writer or process fails before a response is observed.
+pub struct RemoteAppServerPendingRequest {
+    method: String,
+    response_rx: oneshot::Receiver<IoResult<RequestResult>>,
+}
+
+impl RemoteAppServerPendingRequest {
+    pub async fn response(self) -> IoResult<RequestResult> {
+        self.response_rx.await.map_err(|_| {
+            IoError::new(
+                ErrorKind::BrokenPipe,
+                "remote app-server pending request response channel is closed",
+            )
+        })?
+    }
+
+    pub async fn response_typed<T>(self) -> Result<T, TypedRequestError>
+    where
+        T: DeserializeOwned,
+    {
+        let Self {
+            method,
+            response_rx,
+        } = self;
+        let response = response_rx
+            .await
+            .map_err(|_| TypedRequestError::Transport {
+                method: method.clone(),
+                source: IoError::new(
+                    ErrorKind::BrokenPipe,
+                    "remote app-server pending request response channel is closed",
+                ),
+            })?
+            .map_err(|source| TypedRequestError::Transport {
+                method: method.clone(),
+                source,
+            })?;
+        let result = response.map_err(|source| TypedRequestError::Server {
+            method: method.clone(),
+            source,
+        })?;
+        serde_json::from_value(result)
+            .map_err(|source| TypedRequestError::Deserialize { method, source })
+    }
+}
+
 impl RemoteAppServerRequestHandle {
     /// Resolves one server-initiated request received on this connection.
     ///
@@ -688,6 +739,16 @@ impl RemoteAppServerClient {
         self.request_handle().request(request).await
     }
 
+    /// Synchronously admits one request to the bounded single-owner transport
+    /// queue without waiting for socket I/O or a server response.
+    ///
+    /// A successful return is the local effect-admission point. Callers that
+    /// require an atomic final-use/revocation fence can invoke this method
+    /// inside that synchronous fence and await the returned handle afterwards.
+    pub fn try_request(&self, request: ClientRequest) -> IoResult<RemoteAppServerPendingRequest> {
+        self.request_handle().try_request(request)
+    }
+
     pub async fn request_typed<T>(&self, request: ClientRequest) -> Result<T, TypedRequestError>
     where
         T: DeserializeOwned,
@@ -826,6 +887,33 @@ impl RemoteAppServerRequestHandle {
     pub async fn request(&self, request: ClientRequest) -> IoResult<RequestResult> {
         self.request_json_rpc(jsonrpc_request_from_client_request(request))
             .await
+    }
+
+    /// Synchronously enqueue one request into this connection's bounded command
+    /// queue. No provider request can be written before this succeeds because
+    /// the remote worker is the only owner of the socket.
+    pub fn try_request(&self, request: ClientRequest) -> IoResult<RemoteAppServerPendingRequest> {
+        let method = request.method_name().to_string();
+        let (response_tx, response_rx) = oneshot::channel();
+        self.command_tx
+            .try_send(RemoteClientCommand::Request {
+                request: Box::new(jsonrpc_request_from_client_request(request)),
+                response_tx,
+            })
+            .map_err(|error| match error {
+                mpsc::error::TrySendError::Full(_) => IoError::new(
+                    ErrorKind::WouldBlock,
+                    "remote app-server request queue is full before effect admission",
+                ),
+                mpsc::error::TrySendError::Closed(_) => IoError::new(
+                    ErrorKind::BrokenPipe,
+                    "remote app-server worker channel is closed before effect admission",
+                ),
+            })?;
+        Ok(RemoteAppServerPendingRequest {
+            method,
+            response_rx,
+        })
     }
 
     pub async fn request_json_rpc(&self, request: JSONRPCRequest) -> IoResult<RequestResult> {
