@@ -10,6 +10,16 @@ from hepta_engineering_control import (
 
 
 class EngineeringControlTests(unittest.TestCase):
+    def test_legacy_scheduler_requires_explicit_fixture_opt_in(self) -> None:
+        with self.assertRaisesRegex(
+            ValueError, "legacy scheduler disabled"
+        ):
+            schedule(
+                [WorkPackage(0, "A", (), ("codex-rs/hepta-a/**",))],
+                completed=(),
+                active_leases=(),
+            )
+
     def test_schedule_is_predecessor_and_path_lease_aware(self) -> None:
         packages = [
             WorkPackage(1, "B", ("A",), ("codex-rs/hepta-b/**",)),
@@ -20,6 +30,7 @@ class EngineeringControlTests(unittest.TestCase):
             packages,
             completed={"A"},
             active_leases=[PathLease("external", ("codex-rs/hepta-b/**",))],
+            compatibility_only=True,
         )
         self.assertEqual(receipt.assigned, ("A",))
         self.assertIn(("B", "active_path_lease"), receipt.blocked)
@@ -32,7 +43,12 @@ class EngineeringControlTests(unittest.TestCase):
             WorkPackage(0, "A", (), ("codex-rs/shared/**",)),
             WorkPackage(1, "B", (), ("codex-rs/shared/subtree/**",)),
         ]
-        receipt = schedule(packages, completed=(), active_leases=())
+        receipt = schedule(
+            packages,
+            completed=(),
+            active_leases=(),
+            compatibility_only=True,
+        )
         self.assertEqual(receipt.assigned, ("A",))
         self.assertEqual(receipt.blocked, (("B", "batch_path_conflict"),))
 
@@ -96,6 +112,7 @@ class EngineeringControlTests(unittest.TestCase):
                 [WorkPackage(0, "A", (), ("../escape/**",))],
                 completed=(),
                 active_leases=(),
+                compatibility_only=True,
             )
 
 
