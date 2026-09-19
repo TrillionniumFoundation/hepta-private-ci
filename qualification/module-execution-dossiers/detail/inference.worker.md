@@ -20,7 +20,7 @@ Hosted provider execution additionally exposes `NativeWorkerPort::final_use_bind
 
 No authoritative fleet or grant state is owned here. Worker-local state contains process/model generation, loaded artifact digests, bounded runtime handles, request handles and observed memory/usage. Persistent model files belong to the artifact/cache owner. `DurableInferenceControl` remains the single persistent native reservation/dispatch/observation writer.
 
-`ResourceGrant` is a process-local resource-capability payload. Public callers must obtain `VerifiedResourceGrant` through `ResourceGrantVerifier`; the trusted-in-process constructor is crate-private. `FinalUseResourceGrantVerifier` is the concrete kernel-backed verifier: it binds every resource-grant field plus exact worker identity/generation into `FinalUseBinding`, checks the current `FinalUseAuthority` epoch/revocation state and durably consumes the signed nonce before one worker generation can be created. This source boundary still does not replace product-host lifecycle fencing or target-host resource authority.
+`ResourceGrant` is a process-local resource-capability payload. Public callers must obtain `VerifiedResourceGrant` through `ResourceGrantVerifier`; the trusted-in-process constructor is crate-private. `FinalUseResourceGrantVerifier` is the concrete kernel-backed verifier: it binds every resource-grant field plus exact worker identity/generation into `FinalUseBinding`, checks the current `FinalUseAuthority` epoch/revocation state and durably consumes the signed nonce before one worker generation can be created. The authenticated worker subject remains in `GrantVerification`, and `InferenceWorker::new` rejects any subject mismatch so the verified capability cannot be transferred to a different worker. This source boundary still does not replace product-host lifecycle fencing or target-host resource authority.
 
 The hosted path persists a dispatch binding containing the dedicated App Server thread, stable `client_user_message_id` and canonical input digest before provider admission. Unknown execution retains capacity and unknown token usage stays `None`.
 
@@ -41,7 +41,7 @@ Target qualification must measure load/unload, peak model/KV memory, CPU/GPU pla
 ## 6. Concrete verification cases
 
 - WORKER-01: changed weights/tokenizer/preprocessor/quantization/runtime/device tuple fails before use.
-- WORKER-02: raw external `ResourceGrant` cannot directly construct a production worker; `FinalUseResourceGrantVerifier` binds the exact worker/resource scope to kernel authority and a durable single-use nonce, while local structure/generation/expiry/capacity checks still run.
+- WORKER-02: raw external `ResourceGrant` cannot directly construct a production worker; `FinalUseResourceGrantVerifier` binds the exact worker/resource scope to kernel authority and a durable single-use nonce, and the authenticated worker subject cannot be reused for another worker identity; local structure/generation/expiry/capacity checks still run.
 - WORKER-03: a real resident child process completes digest-pinned load/run/unload and artifact mutation before spawn is rejected.
 - WORKER-04: observed memory greater than the runtime reservation is rejected; unknown terminal usage is never inferred as zero.
 - WORKER-05: provider dispatch carries stable client-message and payload identities; reopen reconciles without a replacement turn.
