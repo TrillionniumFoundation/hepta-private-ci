@@ -3,6 +3,8 @@ use std::time::Instant;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentRecord;
+use codex_hepta_fleet::FleetAllocationHolderStateV1;
+use codex_hepta_fleet::FleetResourceVectorV1;
 
 use crate::AdoptSpec;
 use crate::Adoption;
@@ -14,6 +16,8 @@ use crate::SpawnSpec;
 use crate::Supervisor;
 use crate::SupervisorError;
 use crate::SupervisorEventKind;
+use crate::lease::FleetAllocationProcessBinding;
+use crate::lease::LEGACY_PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::ProcessLease;
 use crate::lease::read_lease;
@@ -26,6 +30,7 @@ use crate::runtime::RuntimePhase;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
 use crate::runtime::is_live_lifecycle;
+use crate::runtime::unix_ms_now;
 
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn restore_release_state(
@@ -75,6 +80,55 @@ impl<D: ProcessDriver> Supervisor<D> {
         release: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        self.start_release_slot_with_allocation(
+            agent_id,
+            slot,
+            release,
+            None,
+            unix_ms_now()?,
+            now,
+        )
+    }
+
+    pub(crate) fn prepare_fleet_allocation_binding(
+        &self,
+        agent_id: &AgentId,
+        allocation_id: &str,
+        now_unix_ms: u64,
+    ) -> Result<FleetAllocationProcessBinding, SupervisorError> {
+        let store = self.allocation_store.as_ref().ok_or_else(|| {
+            SupervisorError::Invalid(
+                "supervisor has no durable fleet allocation store".to_string(),
+            )
+        })?;
+        let record = self.record(agent_id)?;
+        let required = FleetResourceVectorV1::from(&record.manifest.resources);
+        let grant = store.validate_runtime_grant(
+            allocation_id,
+            agent_id,
+            required,
+            now_unix_ms,
+        )?;
+        Ok(FleetAllocationProcessBinding {
+            allocation_id: grant.allocation_id,
+            lease_generation: grant.lease_generation,
+            authority_epoch: grant.authority_epoch,
+            plan_sha256: grant.plan_sha256,
+        })
+    }
+
+    pub(crate) fn start_release_slot_with_allocation(
+        &mut self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        release: AgentRelease,
+        fleet_allocation: Option<FleetAllocationProcessBinding>,
+        now_unix_ms: u64,
+        now: Instant,
+    ) -> Result<(), SupervisorError> {
+        if let Some(binding) = fleet_allocation.as_ref() {
+            self.validate_fleet_allocation_binding(agent_id, binding, now_unix_ms)?;
+        }
         let health_deadline = deadline(now, self.config.health_timeout)?;
         if slot.runtime.is_some() {
             return Err(SupervisorError::AlreadyActive(agent_id.clone()));
@@ -125,11 +179,16 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
         };
         let lease = ProcessLease {
-            schema_version: PROCESS_LEASE_SCHEMA_VERSION,
+            schema_version: if fleet_allocation.is_some() {
+                PROCESS_LEASE_SCHEMA_VERSION
+            } else {
+                LEGACY_PROCESS_LEASE_SCHEMA_VERSION
+            },
             agent_id: agent_id.clone(),
             spawn_generation: starting.generation,
             release_id: release.release_id().clone(),
             identity: spawned.identity.clone(),
+            fleet_allocation: fleet_allocation.clone(),
         };
         if let Err(error) = write_lease(record.layout.run_root(), &lease) {
             let _ = spawned.process.kill();
@@ -148,6 +207,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             identity: spawned.identity,
             spawn_generation: starting.generation,
             release_id: lease.release_id,
+            fleet_allocation: fleet_allocation.clone(),
             generation: starting.generation,
             phase: RuntimePhase::AwaitingHealth {
                 deadline: health_deadline,
@@ -156,6 +216,19 @@ impl<D: ProcessDriver> Supervisor<D> {
             fenced: false,
         });
         slot.event(starting.generation, SupervisorEventKind::Spawned);
+        if let Some(binding) = fleet_allocation.as_ref() {
+            let store = self.allocation_store.as_ref().ok_or_else(|| {
+                SupervisorError::Invalid(
+                    "allocation-bound runtime lost its durable fleet owner".to_string(),
+                )
+            })?;
+            store.reconcile_holder_current(
+                &binding.allocation_id,
+                binding.lease_generation,
+                FleetAllocationHolderStateV1::Held,
+                now_unix_ms,
+            )?;
+        }
         Ok(())
     }
 
@@ -238,11 +311,13 @@ impl<D: ProcessDriver> Supervisor<D> {
                         RuntimePhase::Killing
                     }
                 };
+                let fleet_allocation = lease.fleet_allocation.clone();
                 slot.runtime = Some(AgentRuntime {
                     process,
                     identity: lease.identity,
                     spawn_generation: lease.spawn_generation,
                     release_id: lease.release_id,
+                    fleet_allocation: fleet_allocation.clone(),
                     generation: record.lifecycle.generation,
                     phase,
                     healthy: false,
@@ -252,6 +327,30 @@ impl<D: ProcessDriver> Supervisor<D> {
                     record.lifecycle.generation,
                     SupervisorEventKind::OrphanAdopted,
                 );
+                if let Some(binding) = fleet_allocation.as_ref() {
+                    if let Err(error) =
+                        self.validate_fleet_allocation_binding(agent_id, binding, unix_ms_now()?)
+                    {
+                        if let Some(runtime) = slot.runtime.as_mut() {
+                            let _ = runtime.process.kill();
+                            runtime.fenced = true;
+                            runtime.phase = RuntimePhase::Killing;
+                        }
+                        return Err(error);
+                    }
+                    let store = self.allocation_store.as_ref().ok_or_else(|| {
+                        SupervisorError::Invalid(
+                            "allocation-bound recovered runtime has no durable fleet owner"
+                                .to_string(),
+                        )
+                    })?;
+                    store.reconcile_holder_current(
+                        &binding.allocation_id,
+                        binding.lease_generation,
+                        FleetAllocationHolderStateV1::Held,
+                        unix_ms_now()?,
+                    )?;
+                }
                 if record.lifecycle.lifecycle == AgentLifecycle::Running {
                     // A daemon can die after committing the Running lifecycle but before
                     // appending the matching release-state revision. The lease and exact
@@ -260,6 +359,19 @@ impl<D: ProcessDriver> Supervisor<D> {
                 }
             }
             Adoption::Missing => {
+                if let Some(binding) = lease.fleet_allocation.as_ref() {
+                    let store = self.allocation_store.as_ref().ok_or_else(|| {
+                        SupervisorError::Invalid(
+                            "allocation-bound missing runtime has no durable fleet owner".to_string(),
+                        )
+                    })?;
+                    store.reconcile_holder_current(
+                        &binding.allocation_id,
+                        binding.lease_generation,
+                        FleetAllocationHolderStateV1::Released,
+                        unix_ms_now()?,
+                    )?;
+                }
                 remove_lease(record.layout.run_root(), &lease)?;
                 let generation = if is_live_lifecycle(record.lifecycle.lifecycle) {
                     self.transition_without_runtime(
@@ -274,6 +386,19 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.event(generation, SupervisorEventKind::OrphanMissing);
             }
             Adoption::Rejected => {
+                if let Some(binding) = lease.fleet_allocation.as_ref() {
+                    let store = self.allocation_store.as_ref().ok_or_else(|| {
+                        SupervisorError::Invalid(
+                            "allocation-bound rejected runtime has no durable fleet owner".to_string(),
+                        )
+                    })?;
+                    store.reconcile_holder_current(
+                        &binding.allocation_id,
+                        binding.lease_generation,
+                        FleetAllocationHolderStateV1::Unknown,
+                        unix_ms_now()?,
+                    )?;
+                }
                 remove_lease(record.layout.run_root(), &lease)?;
                 let generation = if is_live_lifecycle(record.lifecycle.lifecycle) {
                     self.transition_without_runtime(
@@ -289,6 +414,36 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
         }
         self.recover_matrix_companion(agent_id, slot, record, now)?;
+        Ok(())
+    }
+
+    pub(crate) fn validate_fleet_allocation_binding(
+        &self,
+        agent_id: &AgentId,
+        binding: &FleetAllocationProcessBinding,
+        now_unix_ms: u64,
+    ) -> Result<(), SupervisorError> {
+        let store = self.allocation_store.as_ref().ok_or_else(|| {
+            SupervisorError::Invalid(
+                "allocation-bound runtime has no durable fleet owner".to_string(),
+            )
+        })?;
+        let record = self.record(agent_id)?;
+        let required = FleetResourceVectorV1::from(&record.manifest.resources);
+        let grant = store.validate_runtime_grant(
+            &binding.allocation_id,
+            agent_id,
+            required,
+            now_unix_ms,
+        )?;
+        if grant.lease_generation != binding.lease_generation
+            || grant.authority_epoch != binding.authority_epoch
+            || grant.plan_sha256 != binding.plan_sha256
+        {
+            return Err(SupervisorError::Invalid(
+                "runtime fleet allocation fence no longer matches durable grant".to_string(),
+            ));
+        }
         Ok(())
     }
 }
