@@ -244,3 +244,65 @@ test("browser exposes bounded read-only recovery for unresolved operations", asy
   assert.match(alert.textContent, /manual recovery required 1/);
 });
 
+
+
+test("runtime stop lock survives polling rerenders while acknowledgement is in flight", async () => {
+  const document = new FakeDocument();
+  const root = new FakeElement("div", document);
+  let currentView = sampleView();
+  let idCalls = 0;
+  let stopCalls = 0;
+  let releaseStop;
+  let stopStartedResolve;
+  const stopStarted = new Promise((resolve) => { stopStartedResolve = resolve; });
+  const client = {
+    readView: () => currentView,
+    async submitRequest() {
+      assert.fail("module mutation should not run");
+    },
+    async requestStop(request) {
+      stopCalls += 1;
+      stopStartedResolve(request);
+      return new Promise((resolve) => {
+        releaseStop = () => resolve({ operationId: request.operationId, status: "pending" });
+      });
+    },
+  };
+  const app = new ControlPlaneApp({
+    root,
+    client,
+    operationIdFactory: () => `operation.stop.${++idCalls}`,
+    confirmAction: async () => true,
+  });
+
+  app.render();
+  const firstStop = allElements(root).find(
+    (element) => element.tagName === "button" && element.textContent === "Request runtime stop",
+  );
+  firstStop.listeners.get("click")();
+  await stopStarted;
+  assert.equal(stopCalls, 1);
+  assert.equal(idCalls, 1);
+
+  currentView = Object.freeze({
+    ...sampleView(),
+    generation: 8,
+    revision: 10,
+  });
+  app.render();
+  const rerenderedStop = allElements(root).find(
+    (element) => element.tagName === "button" && element.textContent === "Request runtime stop",
+  );
+  assert.equal(rerenderedStop.disabled, true);
+
+  // Direct listener invocation verifies the handler-level lock in addition to
+  // the disabled presentation state.
+  rerenderedStop.listeners.get("click")();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(stopCalls, 1);
+  assert.equal(idCalls, 1);
+
+  releaseStop();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(stopCalls, 1);
+});
