@@ -81,6 +81,7 @@ pub(crate) fn app_server_runtime_options(
         identity,
         cognitive_runtime,
         /*qualification_turn_writer*/ None,
+        /*prompt_runtime_host*/ None,
     )
 }
 
@@ -89,14 +90,24 @@ pub(crate) fn app_server_runtime_options_for_agent(
     state: Arc<AgentdState>,
     cognitive_runtime: CognitiveRuntime,
 ) -> std::io::Result<AppServerRuntimeOptions> {
+    let prompt_runtime_host = state
+        .prompt_runtime_owner()
+        .host()
+        .map_err(std::io::Error::other)?;
     let writer = qualification_turn_writer_host(identity, state, &cognitive_runtime);
-    app_server_runtime_options_with_writer(identity, cognitive_runtime, writer)
+    app_server_runtime_options_with_writer(
+        identity,
+        cognitive_runtime,
+        writer,
+        Some(prompt_runtime_host),
+    )
 }
 
 fn app_server_runtime_options_with_writer(
     identity: &AgentdIdentity,
     cognitive_runtime: CognitiveRuntime,
     qualification_turn_writer: Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
+    prompt_runtime_host: Option<codex_hepta_codex_adapter::PromptRuntimeHost>,
 ) -> std::io::Result<AppServerRuntimeOptions> {
     let turn_queue_capacity = usize::try_from(identity.resources.turn_queue_capacity)
         .map_err(|_| std::io::Error::other("turn queue capacity does not fit this platform"))?;
@@ -123,6 +134,7 @@ fn app_server_runtime_options_with_writer(
         // default and production-facing binaries remain inert.
         hepta_qualification_turn_writer_enabled: COGNITIVE_WRITE_ENABLED,
         hepta_qualification_turn_writer: qualification_turn_writer,
+        hepta_prompt_runtime_host: prompt_runtime_host,
         // This is an embedding-owned capability boundary. It is applied
         // after managed config and per-request overrides, so those layers
         // cannot change the selected profile at runtime. The positive value

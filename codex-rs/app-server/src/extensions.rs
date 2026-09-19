@@ -66,6 +66,10 @@ pub(crate) struct ThreadExtensionDependencies {
     /// inputs.  `None` is the normal and production-facing state.
     pub(crate) hepta_qualification_turn_writer:
         Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
+    /// Optional host-owned source-bound prompt attachment capability. Plain
+    /// Codex keeps this absent; no registry/runtime authority is inferred.
+    pub(crate) hepta_prompt_runtime_host:
+        Option<codex_hepta_codex_adapter::PromptRuntimeHost>,
 }
 
 /// Apply the complete qualification writer gate at the app-server boundary.
@@ -114,6 +118,7 @@ where
         hepta_local_development_policy,
         hepta_qualification_turn_writer_enabled,
         hepta_qualification_turn_writer,
+        hepta_prompt_runtime_host,
     } = dependencies;
     let mut builder = ExtensionRegistryBuilder::<Config>::with_event_sink(Arc::clone(&event_sink));
     if let Some(queue_service) = queue_service {
@@ -145,6 +150,9 @@ where
             .features
             .enabled(codex_features::Feature::HeptaGovernance)
     });
+    if let Some(host) = hepta_prompt_runtime_host {
+        codex_hepta_codex_adapter::install_prompt_runtime(&mut builder, host);
+    }
     codex_hepta_memory_extension::install_with_turn_writer(
         &mut builder,
         state_db,

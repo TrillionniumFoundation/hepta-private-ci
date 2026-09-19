@@ -2130,6 +2130,7 @@ dependencies = [
  "codex-git-utils",
  "codex-goal-extension",
  "codex-guardian-v2",
+ "codex-hepta-codex-adapter",
  "codex-hepta-contracts",
  "codex-hepta-evidence",
  "codex-hepta-governance",
@@ -3475,15 +3476,18 @@ dependencies = [
  "codex-hepta-authbus",
  "codex-hepta-automation",
  "codex-hepta-bellman-operator",
+ "codex-hepta-codex-adapter",
  "codex-hepta-cognitive-read",
  "codex-hepta-contracts",
  "codex-hepta-control-plane",
  "codex-hepta-evidence",
  "codex-hepta-fleet",
+ "codex-hepta-intelligence",
  "codex-hepta-learning-artifacts",
  "codex-hepta-memory",
  "codex-hepta-memory-extension",
  "codex-hepta-paths",
+ "codex-hepta-prompt-registry",
  "codex-hepta-supervisor",
  "codex-hepta-types",
  "codex-protocol",
@@ -3573,7 +3577,10 @@ dependencies = [
 name = "codex-hepta-codex-adapter"
 version = "0.0.0"
 dependencies = [
+ "codex-extension-api",
  "codex-hepta-types",
+ "codex-protocol",
+ "tokio",
 ]
 
 [[package]]

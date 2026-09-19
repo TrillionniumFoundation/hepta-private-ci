@@ -18,6 +18,7 @@ mod error;
 mod event_buffer;
 mod lane_b_runtime;
 mod production_writer_host;
+mod prompt_runtime;
 mod qualification_writer;
 mod runtime;
 mod state;
@@ -75,6 +76,9 @@ pub use lane_b_runtime::RunReceipt;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
 pub use production_writer_host::AgentdProductionWriterHost;
+pub use prompt_runtime::AgentdPromptRuntimeError;
+pub use prompt_runtime::AgentdPromptRuntimeOwner;
+pub use prompt_runtime::PromptRuntimeStageDisposition;
 pub use runtime::run;
 
 use control::AgentdControlServer;
