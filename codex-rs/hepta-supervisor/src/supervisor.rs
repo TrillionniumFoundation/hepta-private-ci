@@ -4,6 +4,7 @@ use std::time::Instant;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentRecord;
+use codex_hepta_fleet::FleetAllocationStore;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ReleaseId;
 use codex_hepta_memory::H7SignedArtifactEnvelope;
@@ -54,6 +55,14 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
     ) -> Result<(Self, TickReport), SupervisorError> {
         config.validate()?;
+        {
+            let store = FleetAllocationStore::open(&registry).map_err(|error| {
+                SupervisorError::Invalid(format!("fleet allocation store unavailable: {error}"))
+            })?;
+            store.load().map_err(|error| {
+                SupervisorError::Invalid(format!("fleet allocation store unavailable: {error}"))
+            })?;
+        }
         let snapshot = registry.load()?;
         let slots = snapshot
             .agents
@@ -84,7 +93,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                     return Err(error);
                 }
                 supervisor.record_fault(&agent_id, &error, &mut report);
+                continue;
             }
+            let runtime_active = supervisor
+                .snapshot(&agent_id)
+                .is_some_and(|snapshot| snapshot.active);
+            supervisor.reconcile_fleet_allocation_after_recovery(&agent_id, runtime_active)?;
         }
         Ok((supervisor, report))
     }
