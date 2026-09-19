@@ -110,13 +110,19 @@ fn signed_update_stages_activates_and_confirms_with_predecessor_backup() {
         key_id: "release.key".to_owned(),
         signature_base64: String::new(),
     };
-    manifest.signature_base64 =
-        STANDARD.encode(signing.sign(manifest.signing_message().as_bytes()).to_bytes());
+    manifest.signature_base64 = STANDARD.encode(
+        signing
+            .sign(manifest.signing_message().as_bytes())
+            .to_bytes(),
+    );
 
     let update_root = temp.path().join("updates");
     let manager = UpdateManager::new(keys, update_root).unwrap();
     let pending = manager.verify_and_stage(manifest, &package, 1).unwrap();
-    assert_eq!(digest_file(&pending.staged_package).unwrap(), package_digest);
+    assert_eq!(
+        digest_file(&pending.staged_package).unwrap(),
+        package_digest
+    );
 
     let keys = TrustedKeySet::from_path(&key_path).unwrap();
     activate_staged_update(&manager.pending_path(), &keys, &target, 1).unwrap();
@@ -240,8 +246,11 @@ fn signed_endpoint_manifest_binds_gateway_address_and_keyring_account() {
         signature_base64: String::new(),
     };
     endpoint.manifest_digest = endpoint.computed_manifest_digest();
-    endpoint.signature_base64 =
-        STANDARD.encode(signing.sign(endpoint.signing_message().as_bytes()).to_bytes());
+    endpoint.signature_base64 = STANDARD.encode(
+        signing
+            .sign(endpoint.signing_message().as_bytes())
+            .to_bytes(),
+    );
     let verified = endpoint.verify(&keys).unwrap();
     assert_eq!(verified.manifest.address, "127.0.0.1:7373");
     assert_eq!(verified.gateway_credential_account, "gateway.local");
