@@ -509,6 +509,76 @@ impl AutomationStore {
         tx.commit().await.map_err(unavailable)
     }
 
+    /// Appends non-terminal reconciliation evidence without changing scheduler
+    /// eligibility. Exact replay of the latest observation is idempotent.
+    pub async fn record_provider_reconciliation_observation(
+        &self,
+        task_id: AutomationTaskId,
+        occurrence: u64,
+        kind: AutomationProviderObservationKind,
+        receipt_digest: &Sha256Digest,
+        observed_at_ms: u64,
+    ) -> Result<(), AutomationError> {
+        if !matches!(
+            kind,
+            AutomationProviderObservationKind::Indeterminate
+                | AutomationProviderObservationKind::ReconciledMissing
+        ) {
+            return Err(AutomationError::Invalid);
+        }
+        validate_sha256(receipt_digest)?;
+        let mut tx = self.pool.begin().await.map_err(unavailable)?;
+        let row = sqlx::query(
+            "SELECT r.queued_submission_id, r.provider_turn_id
+             FROM automation_runs r
+             JOIN automation_tasks t ON t.task_id = r.task_id
+             WHERE r.task_id = ? AND r.occurrence = ? AND t.owner_agent_id = ?
+               AND r.state = 'submitted' AND r.terminal_state IS NULL",
+        )
+        .bind(task_id.to_string())
+        .bind(to_i64(occurrence)?)
+        .bind(self.owner_agent_id.as_str())
+        .fetch_optional(&mut *tx)
+        .await
+        .map_err(unavailable)?
+        .ok_or(AutomationError::Conflict)?;
+        let queued_submission_id: Option<String> =
+            row.try_get("queued_submission_id").map_err(unavailable)?;
+        let provider_turn_id: Option<String> =
+            row.try_get("provider_turn_id").map_err(unavailable)?;
+        let last = sqlx::query(
+            "SELECT observation_kind, receipt_digest
+             FROM automation_provider_observations
+             WHERE task_id = ? AND occurrence = ?
+             ORDER BY observation_seq DESC LIMIT 1",
+        )
+        .bind(task_id.to_string())
+        .bind(to_i64(occurrence)?)
+        .fetch_optional(&mut *tx)
+        .await
+        .map_err(unavailable)?;
+        if let Some(last) = last {
+            let last_kind: String = last.try_get("observation_kind").map_err(unavailable)?;
+            let last_digest: String = last.try_get("receipt_digest").map_err(unavailable)?;
+            if last_kind == kind.as_str() && last_digest == receipt_digest.as_str() {
+                tx.commit().await.map_err(unavailable)?;
+                return Ok(());
+            }
+        }
+        append_provider_observation(
+            &mut tx,
+            task_id,
+            occurrence,
+            kind,
+            queued_submission_id.as_deref(),
+            provider_turn_id.as_deref(),
+            receipt_digest,
+            observed_at_ms,
+        )
+        .await?;
+        tx.commit().await.map_err(unavailable)
+    }
+
     /// Records a trusted terminal provider observation and only then advances
     /// a non-overlapping recurring schedule. Replays of the exact terminal
     /// state are idempotent; conflicting terminal evidence fails closed.
