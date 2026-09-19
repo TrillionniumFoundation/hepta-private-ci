@@ -1743,6 +1743,18 @@ mod takeover_regression_tests {
         AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cfe").expect("agent")
     }
 
+    struct TakeoverAllowVerifier;
+
+    impl ProductionAuthorityVerifier for TakeoverAllowVerifier {
+        fn verify(
+            &self,
+            _authority: &ProductionAuthorityLease,
+            _expected_agent: &AgentId,
+        ) -> Result<(), String> {
+            Ok(())
+        }
+    }
+
     async fn test_store(temp: &TempDir) -> CognitiveStore {
         let fleet_root = temp.path().join("fleet-takeover");
         std::fs::create_dir_all(&fleet_root).expect("fleet root");
@@ -1783,7 +1795,7 @@ mod takeover_regression_tests {
         let old = ProductionDurableWriter::open(
             store.clone(),
             old_authority,
-            &AllowVerifier,
+            &TakeoverAllowVerifier,
             "production:h4:takeover",
             1,
         )
@@ -1810,7 +1822,7 @@ mod takeover_regression_tests {
         let successor = ProductionDurableWriter::open(
             store,
             new_authority,
-            &AllowVerifier,
+            &TakeoverAllowVerifier,
             "production:h4:takeover",
             2,
         )
