@@ -33,7 +33,9 @@ pub use learned::TabularOperatorCellV1;
 pub use learned::TabularOperatorPlanV1;
 pub use learned::TabularOperatorPredictionV1;
 pub use learned::TabularOperatorSampleV1;
+#[allow(deprecated)]
 pub use learned::fit_tabular_operator;
+#[allow(deprecated)]
 pub use learned::predict_tabular_operator;
 pub use learned_strict::StrictLearnedOperatorError;
 pub use learned_strict::fit_tabular_operator_from_dataset_receipt_v3;
