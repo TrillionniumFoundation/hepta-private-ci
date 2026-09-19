@@ -43,7 +43,10 @@ changing the V1 wire meaning:
 - every candidate carries `VerifiedAdmissionV2`, produced only by
   `verify_admission_v2` from an admission record, an authenticated
   `VerifiedAdmissionSnapshotV2` and the configured
-  `ContextAdmissionVerifierV2`;
+  `ContextAdmissionVerifierV2`; item role/content/source/generation plus secret
+  classification are verifier-bound admission facts, and secret-classified
+  admissions are rejected before compilation rather than trusting a candidate
+  boolean;
 - candidate tokenization receipts are produced by
   `TokenizationReceiptV2::from_exact_bytes`, which invokes the exact
   profile-bound tokenizer over the actual candidate bytes;
