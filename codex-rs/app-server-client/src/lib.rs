@@ -66,6 +66,7 @@ pub use crate::path::AppServerPath;
 pub use crate::remote::RemoteAppServerClient;
 pub use crate::remote::RemoteAppServerConnectArgs;
 pub use crate::remote::RemoteAppServerEndpoint;
+pub use crate::remote::RemoteAppServerPendingRequest;
 pub use crate::remote::RemoteAppServerRequestHandle;
 
 /// Transitional access to core-only embedded app-server types.

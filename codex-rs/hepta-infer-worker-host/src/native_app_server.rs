@@ -20,6 +20,15 @@ use codex_app_server_protocol::JSONRPCErrorError;
 use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::SandboxMode;
 use codex_app_server_protocol::ServerNotification;
+use codex_app_server_protocol::ThreadItem;
+use codex_app_server_protocol::ThreadQueueReconcileMode;
+use codex_app_server_protocol::ThreadQueueReconcileOutcome;
+use codex_app_server_protocol::ThreadQueueReconcileParams;
+use codex_app_server_protocol::ThreadQueueReconcileResponse;
+use codex_app_server_protocol::ThreadReadParams;
+use codex_app_server_protocol::ThreadReadResponse;
+use codex_app_server_protocol::ThreadResumeParams;
+use codex_app_server_protocol::ThreadResumeResponse;
 use codex_app_server_protocol::ThreadStartParams;
 use codex_app_server_protocol::ThreadStartResponse;
 use codex_app_server_protocol::ThreadUnsubscribeParams;
@@ -32,16 +41,24 @@ use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
+use codex_hepta_infer_core::durable_control::native::NativeFinalUseAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
+use codex_protocol::user_input::user_input_payload_sha256;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
 #[path = "native_run_control.rs"]
 mod control;
 pub use control::NativeAdmission;
+#[path = "native_policy.rs"]
+mod policy;
+pub use policy::FinalUseGrantResolver;
+pub use policy::GrantResolveError;
+pub use policy::NativeExecutionPolicy;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
@@ -62,11 +79,14 @@ pub struct NativeWorkerConfig {
     pub generation: u64,
     pub model: String,
     pub timeout: Duration,
+    pub final_use_authority: FinalUseAuthority,
 }
 
-/// A real provider client. Each new request uses a fresh ephemeral thread
-/// behind the exact Agent identity. The control journal owns dispatch identity,
-/// local slot admission and settlement; duplicate requests never start a turn.
+/// A real provider client. Each new request uses a fresh persistent, single-use
+/// thread behind the exact Agent identity. Persistence is intentional: the
+/// stable client message identity can be reconciled after worker/App Server
+/// transport loss without submitting a replacement turn. The control journal
+/// owns dispatch identity, local slot admission and settlement.
 pub struct AppServerModelDriver {
     config: NativeWorkerConfig,
 }
@@ -93,7 +113,11 @@ impl AppServerModelDriver {
         request_id: &str,
         prompt: String,
         context_query: Option<String>,
+        maximum_output_tokens: u64,
+        maximum_budget_units: u64,
+        policy: &NativeExecutionPolicy,
         cancellation: &CancellationToken,
+        grant_resolver: &FinalUseGrantResolver<'_>,
     ) -> Result<NativeRunOutput> {
         if prompt.is_empty() || prompt.len() > MAX_PROMPT_BYTES {
             return Err("prompt must contain 1..32768 bytes".into());
@@ -160,7 +184,7 @@ impl AppServerModelDriver {
                     cwd: health.workspace.to_str().map(str::to_string),
                     approval_policy: Some(AskForApproval::Never),
                     sandbox: Some(SandboxMode::ReadOnly),
-                    ephemeral: Some(true),
+                    ephemeral: Some(false),
                     environments: Some(Vec::new()),
                     ..Default::default()
                 },
@@ -177,30 +201,89 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
         }
-        control.dispatch_native(
+        let input = vec![UserInput::Text {
+            text: prompt,
+            text_elements: Vec::new(),
+        }];
+        let input_payload_sha256 = canonical_input_digest(&input)?;
+        let context_digest = control::digest(&serde_json::to_vec(&additional_context)?);
+        let turn_params = TurnStartParams {
+            thread_id: started.thread.id.clone(),
+            client_user_message_id: Some(request_id.to_string()),
+            input,
+            additional_context,
+            environments: Some(Vec::new()),
+            ..Default::default()
+        };
+        let exact_turn_payload = serde_json::to_vec(&turn_params)?;
+        let request_payload_digest = control
+            .native_record(request_id)
+            .ok_or("missing durable native request")?
+            .request
+            .payload_digest
+            .clone();
+        let claimed = policy.claim_turn(
+            &self.config.final_use_authority,
+            grant_resolver,
+            &self.config.agent_id.to_string(),
+            self.config.generation,
             request_id,
-            NativeDispatch {
-                thread_id: started.thread.id.clone(),
-                model_provider: started.model_provider.clone(),
-                context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
+            &started.model,
+            &started.model_provider,
+            &request_payload_digest,
+            &context_digest,
+            maximum_output_tokens,
+            maximum_budget_units,
+            &exact_turn_payload,
+        )?;
+        let durable_witness = claimed.witness.clone();
+        let dispatch = NativeDispatch {
+            thread_id: started.thread.id.clone(),
+            model_provider: started.model_provider.clone(),
+            context_digest,
+            client_user_message_id: Some(request_id.to_string()),
+            input_payload_sha256: Some(input_payload_sha256),
+            final_use: Some(durable_witness.clone()),
+        };
+        let turn_request = ClientRequest::TurnStart {
+            request_id: RequestId::Integer(2),
+            params: turn_params,
+        };
+        let (admission_result, admitted) = NativeExecutionPolicy::admit(
+            &self.config.final_use_authority,
+            claimed,
+            || -> Result<_> {
+                // Both the durable intent and the synchronous bounded transport
+                // queue admission occur under the same revocation fence. Once
+                // try_request succeeds, later transport loss is
+                // accepted-or-unknown and must be reconciled, never replayed.
+                control.dispatch_native(request_id, dispatch)?;
+                Ok(client.try_request(turn_request)?)
             },
         )?;
+        let pending = match admission_result {
+            Ok(pending) => pending,
+            Err(error) => {
+                if control.native_record(request_id).is_some_and(|record| {
+                    record.state
+                        == codex_hepta_infer_core::durable_control::native::NativeReservationState::Dispatching
+                }) {
+                    let reason: String = format!(
+                        "local App Server transport rejected before effect admission: {error}"
+                    )
+                    .chars()
+                    .take(1024)
+                    .collect();
+                    control.reconcile_native_no_admission(request_id, reason)?;
+                }
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err(error);
+            }
+        };
+        let admitted_authority = policy::claimed_authority(&durable_witness);
         let response = timeout(
             RPC_TIMEOUT,
-            client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {
-                request_id: RequestId::Integer(2),
-                params: TurnStartParams {
-                    thread_id: started.thread.id.clone(),
-                    client_user_message_id: Some(request_id.to_string()),
-                    input: vec![UserInput::Text {
-                        text: prompt,
-                        text_elements: Vec::new(),
-                    }],
-                    additional_context,
-                    environments: Some(Vec::new()),
-                    ..Default::default()
-                },
-            }),
+            pending.response_typed::<TurnStartResponse>(),
         )
         .await;
         let turn = match response {
@@ -217,6 +300,7 @@ impl AppServerModelDriver {
                     observed_output_tokens: None,
                     terminal_observed: false,
                     owner_authority: NativeOwnerAuthority::Unverified,
+                    final_use_authority: admitted_authority.clone(),
                     stop_reason: Some("turn/start outcome unknown; do not replay".to_string()),
                 });
             }
@@ -231,6 +315,7 @@ impl AppServerModelDriver {
             observed_output_tokens: None,
             terminal_observed: false,
             owner_authority: NativeOwnerAuthority::Unverified,
+            final_use_authority: admitted_authority,
             stop_reason: None,
         };
         if let Err(error) = control.native_started(request_id, output.turn_id.clone()) {
@@ -296,8 +381,298 @@ impl AppServerModelDriver {
             // cannot restore authority lost earlier in the run.
             let _ = verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT)
                 .await;
+            output.final_use_authority =
+                NativeExecutionPolicy::finalize(&self.config.final_use_authority, admitted);
         }
         Ok(output)
+    }
+
+    /// Reconcile a previously synced dispatch intent against Core's exact
+    /// client-message identity. This never creates a queue row or a new turn.
+    /// A missing/cancelled binding is therefore proof that no durable model
+    /// admission exists for this request; a persisted binding yields the exact
+    /// original turn identity and stored terminal output when available.
+    pub(super) async fn reconcile_once(
+        &self,
+        control: &mut DurableInferenceControl,
+        request_id: &str,
+        prompt: &str,
+        cancellation: &CancellationToken,
+    ) -> Result<Option<NativeRunOutput>> {
+        let record = control
+            .native_record(request_id)
+            .cloned()
+            .ok_or("missing native reconciliation record")?;
+        let dispatch = record
+            .dispatch
+            .clone()
+            .ok_or("missing durable dispatch binding")?;
+        let client_id = dispatch
+            .client_user_message_id
+            .clone()
+            .ok_or("legacy dispatch has no exact client-message reconciliation binding")?;
+        if client_id != request_id {
+            return Err("durable client-message identity drifted from request".into());
+        }
+        let input = vec![UserInput::Text {
+            text: prompt.to_string(),
+            text_elements: Vec::new(),
+        }];
+        let input_payload_sha256 = canonical_input_digest(&input)?;
+        if dispatch.input_payload_sha256.as_deref() != Some(input_payload_sha256.as_str()) {
+            return Err("durable Core input digest does not match retry payload".into());
+        }
+
+        let owner = AgentdClient::new(
+            self.config.agentd_socket.clone(),
+            self.config.agent_id.clone(),
+            self.config.generation,
+        )?;
+        let health = owner.health().await?;
+        if !health.ready || health.fenced {
+            return Err("Agent is not ready for provider reconciliation".into());
+        }
+        let ingress = owner.session_ingress().await?;
+        let socket_path = AbsolutePathBuf::from_absolute_path(ingress.socket_path)?;
+        let mut client = timeout(
+            RPC_TIMEOUT,
+            RemoteAppServerClient::connect_with_bounded_events(
+                RemoteAppServerConnectArgs {
+                    endpoint: RemoteAppServerEndpoint::UnixSocket { socket_path },
+                    client_name: "hepta-infer-worker-reconcile".to_string(),
+                    client_version: env!("CARGO_PKG_VERSION").to_string(),
+                    experimental_api: true,
+                    mcp_server_openai_form_elicitation: false,
+                    opt_out_notification_methods: Vec::new(),
+                    channel_capacity: 32,
+                },
+                /*event_channel_capacity*/ 256,
+            ),
+        )
+        .await??;
+        if client.codex_home() != health.home_root.to_str() {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("App Server home does not match the owning Agent".into());
+        }
+
+        let _: ThreadResumeResponse = timeout(
+            RPC_TIMEOUT,
+            client.request_typed(ClientRequest::ThreadResume {
+                request_id: RequestId::Integer(101),
+                params: ThreadResumeParams {
+                    thread_id: dispatch.thread_id.clone(),
+                    exclude_turns: true,
+                    ..Default::default()
+                },
+            }),
+        )
+        .await??;
+
+        let reconciled: ThreadQueueReconcileResponse = timeout(
+            RPC_TIMEOUT,
+            client.request_typed(ClientRequest::ThreadQueueReconcile {
+                request_id: RequestId::Integer(102),
+                params: ThreadQueueReconcileParams {
+                    thread_id: dispatch.thread_id.clone(),
+                    input,
+                    client_user_message_id: client_id.clone(),
+                    expected_payload_sha256: input_payload_sha256.clone(),
+                    mode: ThreadQueueReconcileMode::ReconcileOnly,
+                },
+            }),
+        )
+        .await??;
+        if reconciled.client_user_message_id != client_id
+            || reconciled.payload_sha256 != input_payload_sha256
+        {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("Core reconciliation returned a mismatched admission identity".into());
+        }
+
+        let turn_id = match reconciled.outcome {
+            ThreadQueueReconcileOutcome::Persisted { turn_id } if !turn_id.is_empty() => turn_id,
+            ThreadQueueReconcileOutcome::Missing | ThreadQueueReconcileOutcome::Cancelled => {
+                let reason =
+                    "Core exact client-message reconciliation proved no durable admission"
+                        .to_string();
+                control.reconcile_native_no_admission(request_id, reason)?;
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Ok(None);
+            }
+            ThreadQueueReconcileOutcome::Persisted { .. } => {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err("Core reconciliation returned an empty turn identity".into());
+            }
+            ThreadQueueReconcileOutcome::Queued { .. } => {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err(
+                    "Core reconciliation found a queued identity for a direct inference turn".into(),
+                );
+            }
+        };
+        control.native_started(request_id, turn_id.clone())?;
+
+        let read: ThreadReadResponse = timeout(
+            RPC_TIMEOUT,
+            client.request_typed(ClientRequest::ThreadRead {
+                request_id: RequestId::Integer(103),
+                params: ThreadReadParams {
+                    thread_id: dispatch.thread_id.clone(),
+                    include_turns: true,
+                },
+            }),
+        )
+        .await??;
+        let persisted_turn = read.thread.turns.iter().find(|turn| turn.id == turn_id);
+
+        let mut output = record.observation.unwrap_or(NativeRunOutput {
+            thread_id: dispatch.thread_id.clone(),
+            turn_id: turn_id.clone(),
+            model: record.request.model.clone(),
+            model_provider: dispatch.model_provider.clone(),
+            status: NativeRunStatus::Indeterminate,
+            output: String::new(),
+            observed_output_tokens: None,
+            terminal_observed: false,
+            owner_authority: NativeOwnerAuthority::Unverified,
+            final_use_authority: dispatch
+                .final_use
+                .as_ref()
+                .map(policy::claimed_authority)
+                .unwrap_or(NativeFinalUseAuthority::Unverified),
+            stop_reason: None,
+        });
+        if output.thread_id != dispatch.thread_id
+            || output.model != record.request.model
+            || output.model_provider != dispatch.model_provider
+            || (!output.turn_id.is_empty() && output.turn_id != turn_id)
+        {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("stored provider observation does not match reconciled assignment".into());
+        }
+        output.turn_id = turn_id.clone();
+
+        if let Some(turn) = persisted_turn {
+            match turn.status {
+                TurnStatus::Completed | TurnStatus::Failed | TurnStatus::Interrupted => {
+                    output.status = match turn.status {
+                        TurnStatus::Completed => NativeRunStatus::Completed,
+                        TurnStatus::Failed => NativeRunStatus::Failed,
+                        TurnStatus::Interrupted => NativeRunStatus::Interrupted,
+                        TurnStatus::InProgress => unreachable!(),
+                    };
+                    if let Some(text) = turn.items.iter().rev().find_map(|item| match item {
+                        ThreadItem::AgentMessage { text, .. } if !text.is_empty() => {
+                            Some(text.clone())
+                        }
+                        _ => None,
+                    }) {
+                        if text.len() > MAX_OUTPUT_BYTES {
+                            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                            return Err("reconciled output byte limit exceeded".into());
+                        }
+                        output.output = text;
+                    }
+                    output.stop_reason = turn
+                        .error
+                        .as_ref()
+                        .map(|error| error.message.chars().take(1024).collect());
+                    output.terminal_observed = true;
+
+                    // thread/resume replays the latest persisted token-usage
+                    // snapshot to this connection. Recovery waits for the exact
+                    // turn's replay under the normal RPC bound instead of using
+                    // a scheduler-sensitive fixed sleep/window. If persisted
+                    // provider history has no authoritative usage for this turn,
+                    // usage remains unknown rather than being coerced to zero.
+                    if output.observed_output_tokens.is_none() {
+                        let _ = self
+                            .reconcile_token_usage_replay(
+                                &mut client,
+                                &mut output,
+                                Instant::now() + RPC_TIMEOUT,
+                            )
+                            .await;
+                    }
+                }
+                TurnStatus::InProgress => {
+                    output.status = NativeRunStatus::Indeterminate;
+                    output.terminal_observed = false;
+                    output.stop_reason =
+                        Some("Core admission reconciled; original turn is still in progress".into());
+                }
+            }
+        } else {
+            output.status = NativeRunStatus::Indeterminate;
+            output.terminal_observed = false;
+            output.stop_reason =
+                Some("Core admission reconciled; persisted turn history is not yet visible".into());
+        }
+
+        if !matches!(output.owner_authority, NativeOwnerAuthority::Lost { .. }) {
+            let _ = verify_owner_health(
+                &mut output,
+                owner.health(),
+                Instant::now() + RPC_TIMEOUT,
+            )
+            .await;
+        }
+        if cancellation.is_cancelled() && !output.terminal_observed {
+            control.cancel_native(request_id)?;
+            interrupt(&mut client, &output).await;
+        }
+        let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+        Ok(Some(output))
+    }
+
+    async fn reconcile_token_usage_replay(
+        &self,
+        client: &mut RemoteAppServerClient,
+        output: &mut NativeRunOutput,
+        deadline: Instant,
+    ) -> std::result::Result<(), String> {
+        if output.observed_output_tokens.is_some() {
+            return Ok(());
+        }
+        loop {
+            let event = timeout_at(deadline, client.next_event())
+                .await
+                .map_err(|_| "persisted token-usage replay timed out".to_string())?
+                .ok_or_else(|| {
+                    "provider event stream ended during usage reconciliation".to_string()
+                })?;
+            match event {
+                AppServerEvent::ServerNotification(notification) => {
+                    observe_notification(output, *notification)?;
+                    if output.observed_output_tokens.is_some() {
+                        return Ok(());
+                    }
+                }
+                AppServerEvent::ServerRequest(request) => {
+                    timeout_at(
+                        deadline,
+                        client.reject_server_request(
+                            request.id().clone(),
+                            JSONRPCErrorError {
+                                code: -32000,
+                                message: "native inference worker does not grant approvals"
+                                    .to_string(),
+                                data: None,
+                            },
+                        ),
+                    )
+                    .await
+                    .map_err(|_| {
+                        "approval rejection timed out during usage reconciliation".to_string()
+                    })?
+                    .map_err(|error| error.to_string())?;
+                }
+                AppServerEvent::Lagged { .. } => {
+                    return Err("provider events lost during usage reconciliation".to_string());
+                }
+                AppServerEvent::Disconnected { message } => return Err(message),
+            }
+        }
     }
 
     async fn observe(
@@ -351,6 +726,15 @@ impl AppServerModelDriver {
             }
         }
     }
+}
+
+fn canonical_input_digest(input: &[UserInput]) -> Result<String> {
+    let core = input
+        .iter()
+        .cloned()
+        .map(UserInput::into_core)
+        .collect::<Vec<_>>();
+    Ok(user_input_payload_sha256(&core)?)
 }
 
 async fn verify_owner_health(

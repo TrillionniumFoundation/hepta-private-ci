@@ -283,3 +283,56 @@ fn startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations() 
         FinalUseError::Revoked
     );
 }
+
+
+#[test]
+fn admitted_effect_receipt_revalidates_without_granting_a_second_effect() {
+    let (authority, signed, _directory) = fixture().unwrap();
+    let binding = signed.grant.binding.clone();
+    let token = authority.claim(&signed, &binding).unwrap();
+    let mut admitted = 0_u32;
+    let (value, receipt) = authority
+        .with_verified_use_receipt(token, &binding, || {
+            admitted += 1;
+            11_u32
+        })
+        .unwrap();
+    assert_eq!(value, 11);
+    assert_eq!(admitted, 1);
+    assert_eq!(authority.revalidate_used(&receipt, &binding), Ok(()));
+
+    authority
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+        })
+        .unwrap();
+    assert_eq!(
+        authority.revalidate_used(&receipt, &binding),
+        Err(FinalUseError::Revoked)
+    );
+    assert_eq!(admitted, 1, "terminal revalidation must not execute the effect again");
+}
+
+#[test]
+fn revoked_before_effect_admission_never_runs_receipt_consumer() {
+    let (authority, signed, _directory) = fixture().unwrap();
+    let binding = signed.grant.binding.clone();
+    let token = authority.claim(&signed, &binding).unwrap();
+    authority
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+        })
+        .unwrap();
+    let mut called = false;
+    assert_eq!(
+        authority
+            .with_verified_use_receipt(token, &binding, || called = true)
+            .map(|(value, _receipt)| value),
+        Err(FinalUseError::Revoked)
+    );
+    assert!(!called);
+}

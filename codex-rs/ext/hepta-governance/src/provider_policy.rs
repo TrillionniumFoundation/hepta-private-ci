@@ -16,6 +16,7 @@ use crate::provider_binding::provider_intent;
 use crate::provider_error::provider_block;
 use crate::provider_error::provider_block_for_error;
 use crate::provider_error::provider_evidence_error;
+use crate::provider_final_use::provider_final_use_requirement;
 use crate::provider_lease::detached_shadow_allow;
 use crate::provider_lease::durable_allow;
 
@@ -23,6 +24,9 @@ impl GovernanceState {
     pub(crate) async fn begin_provider(
         &self,
         input: ModelProviderInvocationInput<'_>,
+        provider_final_use_authorizer: Option<
+            crate::provider_final_use::ProviderFinalUseAuthorizerHost,
+        >,
     ) -> Result<ModelProviderPolicyDecision, ModelProviderPolicyError> {
         match (
             input.ephemeral_input_sha256,
@@ -55,6 +59,8 @@ impl GovernanceState {
             Ok(intent) => intent,
             Err(error) => return Ok(self.provider_failure_or_shadow(error)),
         };
+        let final_use =
+            provider_final_use_requirement(&input, self.mode, provider_final_use_authorizer);
         let evidence = match self.evidence.as_ref() {
             Ok(evidence) => Arc::clone(evidence),
             Err(detail) => {
@@ -68,7 +74,7 @@ impl GovernanceState {
         };
         match self.mode {
             GovernanceMode::Shadow => match evidence.append_provider_intent(&intent).await {
-                Ok(AppendDisposition::Inserted) => Ok(durable_allow(evidence, intent, self.mode)),
+                Ok(AppendDisposition::Inserted) => Ok(durable_allow(evidence, intent, self.mode, final_use)),
                 Ok(AppendDisposition::AlreadyPresent) => {
                     tracing::warn!(
                         attempt_id = intent.attempt_id.as_str(),
@@ -84,7 +90,7 @@ impl GovernanceState {
             },
             GovernanceMode::Enforce => match evidence.claim_provider_intent(&intent).await {
                 Ok(ProviderIntentClaimDisposition::Inserted) => {
-                    Ok(durable_allow(evidence, intent, self.mode))
+                    Ok(durable_allow(evidence, intent, self.mode, final_use))
                 }
                 Ok(ProviderIntentClaimDisposition::ExactReplay) => {
                     let reason_code = match evidence.get_provider_attempt(&intent.attempt_id).await
@@ -173,7 +179,9 @@ where
                     }
                 });
             };
-            state.begin_provider(input).await
+            state
+                .begin_provider(input, self.provider_final_use_authorizer.clone())
+                .await
         })
     }
 }

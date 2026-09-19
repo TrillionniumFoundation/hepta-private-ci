@@ -38,6 +38,14 @@ impl ProviderAttemptOwner {
         Self { commands }
     }
 
+    pub(crate) async fn authorize_dispatch(&self) -> Result<(), ModelProviderPolicyError> {
+        let (acknowledge, acknowledged) = oneshot::channel();
+        self.commands
+            .send(OwnerCommand::AuthorizeDispatch { acknowledge })
+            .map_err(|_| owner_stopped_error())?;
+        acknowledged.await.map_err(|_| owner_stopped_error())?
+    }
+
     pub(crate) async fn finish(
         self,
         terminal: ModelProviderTerminal,
@@ -54,6 +62,9 @@ impl ProviderAttemptOwner {
 }
 
 enum OwnerCommand {
+    AuthorizeDispatch {
+        acknowledge: oneshot::Sender<Result<(), ModelProviderPolicyError>>,
+    },
     Finish {
         terminal: ModelProviderTerminal,
         acknowledge: oneshot::Sender<Result<(), ModelProviderPolicyError>>,
@@ -61,34 +72,51 @@ enum OwnerCommand {
 }
 
 async fn run_owner(
-    lease: Box<dyn ModelProviderAttemptLease>,
+    mut lease: Box<dyn ModelProviderAttemptLease>,
     dispatch_probe: Box<dyn Fn() -> bool + Send + 'static>,
     mut commands: mpsc::UnboundedReceiver<OwnerCommand>,
 ) {
-    match commands.recv().await {
-        Some(OwnerCommand::Finish {
-            terminal,
-            acknowledge,
-        }) => {
-            let _ = acknowledge.send(lease.finish(terminal).await);
-        }
-        None => {
-            let terminal = if dispatch_probe() {
-                ModelProviderTerminal::Indeterminate {
-                    reason_code: OWNER_DROPPED_AFTER_DISPATCH.to_string(),
-                    partial_response_sha256: None,
+    let mut authorization_attempted = false;
+    loop {
+        match commands.recv().await {
+            Some(OwnerCommand::AuthorizeDispatch { acknowledge }) => {
+                let result = if authorization_attempted {
+                    Err(ModelProviderPolicyError::new(
+                        "model_provider_policy_dispatch_already_authorized",
+                        "provider attempt dispatch authorization is single-use",
+                    ))
+                } else {
+                    authorization_attempted = true;
+                    lease.authorize_dispatch().await
+                };
+                let _ = acknowledge.send(result);
+            }
+            Some(OwnerCommand::Finish {
+                terminal,
+                acknowledge,
+            }) => {
+                let _ = acknowledge.send(lease.finish(terminal).await);
+                return;
+            }
+            None => {
+                let terminal = if dispatch_probe() {
+                    ModelProviderTerminal::Indeterminate {
+                        reason_code: OWNER_DROPPED_AFTER_DISPATCH.to_string(),
+                        partial_response_sha256: None,
+                    }
+                } else {
+                    ModelProviderTerminal::NotDispatched {
+                        reason_code: OWNER_DROPPED_BEFORE_DISPATCH.to_string(),
+                    }
+                };
+                if let Err(error) = lease.finish(terminal).await {
+                    tracing::warn!(
+                        reason_code = error.reason_code(),
+                        detail = error.detail(),
+                        "failed to persist provider terminal after owner cancellation"
+                    );
                 }
-            } else {
-                ModelProviderTerminal::NotDispatched {
-                    reason_code: OWNER_DROPPED_BEFORE_DISPATCH.to_string(),
-                }
-            };
-            if let Err(error) = lease.finish(terminal).await {
-                tracing::warn!(
-                    reason_code = error.reason_code(),
-                    detail = error.detail(),
-                    "failed to persist provider terminal after owner cancellation"
-                );
+                return;
             }
         }
     }

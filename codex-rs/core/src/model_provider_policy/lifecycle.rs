@@ -32,11 +32,15 @@ pub(crate) enum ModelProviderPolicyBegin {
 /// Exact policy contributors active before any asynchronous request composition.
 pub(crate) struct ActiveModelProviderPolicies {
     contributors: Vec<Arc<dyn codex_extension_api::ModelProviderPolicyContributor>>,
+    required: bool,
 }
 
 impl ActiveModelProviderPolicies {
-    pub(crate) fn is_empty(&self) -> bool {
-        self.contributors.is_empty()
+    /// Whether this physical provider request must pass through the policy
+    /// lifecycle. A required-but-missing policy still needs the gate so begin
+    /// can fail closed instead of silently taking the ordinary fast path.
+    pub(crate) fn needs_gate(&self) -> bool {
+        self.required || !self.contributors.is_empty()
     }
 }
 
@@ -44,6 +48,7 @@ impl ActiveModelProviderPolicies {
 pub(crate) fn active_model_provider_policies<C: Sync>(
     registry: &ExtensionRegistry<C>,
     thread_store: &ExtensionData,
+    required: bool,
 ) -> ActiveModelProviderPolicies {
     ActiveModelProviderPolicies {
         contributors: registry
@@ -52,6 +57,7 @@ pub(crate) fn active_model_provider_policies<C: Sync>(
             .filter(|contributor| contributor.is_active(thread_store))
             .cloned()
             .collect(),
+        required,
     }
 }
 
@@ -74,8 +80,9 @@ pub(crate) fn has_active_model_provider_policy<C: Sync>(
 pub(crate) async fn begin_model_provider_policy<C: Sync>(
     registry: &ExtensionRegistry<C>,
     input: ModelProviderInvocationInput<'_>,
+    required: bool,
 ) -> Result<ModelProviderPolicyBegin, ModelProviderPolicyError> {
-    let active = active_model_provider_policies(registry, input.thread_store);
+    let active = active_model_provider_policies(registry, input.thread_store, required);
     begin_active_model_provider_policy(active, input).await
 }
 
@@ -86,6 +93,7 @@ pub(crate) async fn begin_active_model_provider_policy(
 ) -> Result<ModelProviderPolicyBegin, ModelProviderPolicyError> {
     let supervisor = LeaseSupervisor::new();
     let mut lease_count = 0usize;
+    let required = active.required;
 
     for contributor in active.contributors {
         match contributor.begin(copy_input(&input)).await {
@@ -147,7 +155,12 @@ pub(crate) async fn begin_active_model_provider_policy(
         }
     }
 
-    if lease_count == 0 {
+    if lease_count == 0 && required {
+        Err(ModelProviderPolicyError::new(
+            "model_provider_policy_required_missing",
+            "Hepta governance requires an active physical provider-policy contributor",
+        ))
+    } else if lease_count == 0 {
         Ok(ModelProviderPolicyBegin::NoPolicy)
     } else {
         Ok(ModelProviderPolicyBegin::Allow {
@@ -161,6 +174,10 @@ struct CompositeModelProviderAttemptLease {
 }
 
 impl ModelProviderAttemptLease for CompositeModelProviderAttemptLease {
+    fn authorize_dispatch(&mut self) -> ModelProviderPolicyFuture<'_, ()> {
+        Box::pin(async move { self.supervisor.authorize_dispatch().await })
+    }
+
     fn finish(
         self: Box<Self>,
         terminal: ModelProviderTerminal,
@@ -195,6 +212,24 @@ impl LeaseSupervisor {
         })
     }
 
+    async fn authorize_dispatch(&self) -> Result<(), ModelProviderPolicyError> {
+        let (acknowledge, acknowledged) = oneshot::channel();
+        self.commands
+            .send(LeaseCommand::AuthorizeDispatch { acknowledge })
+            .map_err(|_| {
+                ModelProviderPolicyError::new(
+                    "model_provider_policy_lease_supervisor_stopped",
+                    "provider policy lease supervisor stopped before dispatch authorization",
+                )
+            })?;
+        acknowledged.await.map_err(|_| {
+            ModelProviderPolicyError::new(
+                "model_provider_policy_lease_supervisor_stopped",
+                "provider policy lease supervisor stopped before acknowledging dispatch authorization",
+            )
+        })?
+    }
+
     async fn finish(
         self,
         terminal: ModelProviderTerminal,
@@ -224,6 +259,9 @@ impl LeaseSupervisor {
 
 enum LeaseCommand {
     Add(Box<dyn ModelProviderAttemptLease>),
+    AuthorizeDispatch {
+        acknowledge: oneshot::Sender<Result<(), ModelProviderPolicyError>>,
+    },
     Finish {
         terminal: ModelProviderTerminal,
         aggregate_reason_code: &'static str,
@@ -236,6 +274,16 @@ async fn run_lease_supervisor(mut commands: mpsc::UnboundedReceiver<LeaseCommand
     while let Some(command) = commands.recv().await {
         match command {
             LeaseCommand::Add(lease) => leases.push(lease),
+            LeaseCommand::AuthorizeDispatch { acknowledge } => {
+                let mut result = Ok(());
+                for lease in &mut leases {
+                    if let Err(error) = lease.authorize_dispatch().await {
+                        result = Err(error);
+                        break;
+                    }
+                }
+                let _ = acknowledge.send(result);
+            }
             LeaseCommand::Finish {
                 terminal,
                 aggregate_reason_code,
@@ -300,6 +348,7 @@ fn copy_input<'a>(input: &ModelProviderInvocationInput<'a>) -> ModelProviderInvo
         request_binding_id: input.request_binding_id,
         thread_id: input.thread_id,
         turn_id: input.turn_id,
+        app_server_client_name: input.app_server_client_name,
         request_kind: input.request_kind,
         provider_id: input.provider_id,
         provider_config_sha256: input.provider_config_sha256,

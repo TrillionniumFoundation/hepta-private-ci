@@ -9,9 +9,15 @@ use std::fs::{self};
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
+
+use codex_hepta_types::Digest32;
 
 #[path = "native_control.rs"]
 pub mod native;
@@ -167,6 +173,14 @@ impl From<std::io::Error> for Error {
     }
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NativeCompactionReceipt {
+    pub before_bytes: u64,
+    pub after_bytes: u64,
+    pub archive_path: PathBuf,
+    pub archive_sha256: String,
+}
+
 #[derive(Debug)]
 pub struct DurableInferenceControl {
     path: PathBuf,
@@ -254,6 +268,140 @@ impl DurableInferenceControl {
             journal_bytes,
             poisoned: false,
         })
+    }
+
+    /// Atomically folds native-v1 history while preserving all legacy lines
+    /// byte-for-byte. The previous complete journal is retained as a private,
+    /// content-addressed archive before replacement.
+    #[cfg(unix)]
+    pub fn compact_native_journal(
+        &mut self,
+        retain_archives: usize,
+    ) -> Result<NativeCompactionReceipt, Error> {
+        if self.poisoned {
+            return Err(Error::WriterUnavailable);
+        }
+        if !(1..=32).contains(&retain_archives) {
+            return Err(Error::CapacityExceeded);
+        }
+        let mut reader = self.file.try_clone()?;
+        reader.seek(SeekFrom::Start(0))?;
+        let mut before = Vec::new();
+        (&mut reader)
+            .take(MAX_JOURNAL_BYTES + 1)
+            .read_to_end(&mut before)?;
+        if before.len() as u64 > MAX_JOURNAL_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
+        if !before.is_empty() && !before.ends_with(b"\n") {
+            return Err(Error::CorruptJournal("incomplete line"));
+        }
+
+        let mut compacted = Vec::new();
+        for line in before.split_inclusive(|byte| *byte == b'\n') {
+            if !line.starts_with(native::JOURNAL_PREFIX.as_bytes()) {
+                compacted.extend_from_slice(line);
+            }
+        }
+        for line in self.native.snapshot_lines()? {
+            compacted.extend_from_slice(line.as_bytes());
+        }
+        if compacted.len() as u64 > MAX_JOURNAL_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
+
+        let parent = self
+            .path
+            .parent()
+            .filter(|parent| !parent.as_os_str().is_empty())
+            .unwrap_or_else(|| Path::new("."));
+        let file_name = self
+            .path
+            .file_name()
+            .and_then(|value| value.to_str())
+            .ok_or(Error::CorruptJournal("journal file name"))?;
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_err(|_| Error::InvalidTime)?
+            .as_nanos();
+        let digest = Digest32::of_bytes(&before);
+        let archive_sha256 = hex_digest(digest);
+        let archive_path = parent.join(format!(
+            "{file_name}.hepta-archive-{nonce}-{archive_sha256}.journal"
+        ));
+        let mut archive_options = OpenOptions::new();
+        archive_options.create_new(true).write(true).read(true);
+        use std::os::unix::fs::OpenOptionsExt;
+        archive_options.mode(0o600);
+        let mut archive = archive_options.open(&archive_path)?;
+        archive.write_all(&before)?;
+        archive.flush()?;
+        archive.sync_all()?;
+
+        let next_path = parent.join(format!("{file_name}.compact-{nonce}.next"));
+        let mut next_options = OpenOptions::new();
+        next_options
+            .create_new(true)
+            .append(true)
+            .read(true)
+            .mode(0o600);
+        let mut next = match next_options.open(&next_path) {
+            Ok(file) => file,
+            Err(error) => {
+                let _ = fs::remove_file(&archive_path);
+                return Err(error.into());
+            }
+        };
+        if next.try_lock().is_err() {
+            let _ = fs::remove_file(&next_path);
+            let _ = fs::remove_file(&archive_path);
+            return Err(Error::WriterUnavailable);
+        }
+        let persisted = next
+            .write_all(&compacted)
+            .and_then(|()| next.flush())
+            .and_then(|()| next.sync_all());
+        if let Err(error) = persisted {
+            let _ = fs::remove_file(&next_path);
+            let _ = fs::remove_file(&archive_path);
+            return Err(error.into());
+        }
+
+        if let Err(error) = fs::rename(&next_path, &self.path) {
+            let _ = fs::remove_file(&next_path);
+            let _ = fs::remove_file(&archive_path);
+            return Err(error.into());
+        }
+
+        // The new inode is already locked before the old lock is dropped, so
+        // another writer never observes an unlocked journal path.
+        self.file = next;
+        self.journal_bytes = compacted.len() as u64;
+        if let Err(error) = File::open(parent).and_then(|directory| directory.sync_all()) {
+            self.poisoned = true;
+            return Err(error.into());
+        }
+        if let Err(error) =
+            prune_native_archives(parent, file_name, retain_archives, &archive_path)
+        {
+            self.poisoned = true;
+            return Err(error);
+        }
+
+        Ok(NativeCompactionReceipt {
+            before_bytes: before.len() as u64,
+            after_bytes: compacted.len() as u64,
+            archive_path,
+            archive_sha256,
+        })
+    }
+
+    #[cfg(not(unix))]
+    pub fn compact_native_journal(
+        &mut self,
+        _retain_archives: usize,
+    ) -> Result<NativeCompactionReceipt, Error> {
+        Err(Error::WriterUnavailable)
     }
 
     pub fn submit(
@@ -697,6 +845,56 @@ fn validate_digest(value: &str, field: &'static str) -> Result<(), Error> {
     {
         return Err(Error::InvalidDigest(field));
     }
+    Ok(())
+}
+
+fn hex_digest(digest: Digest32) -> String {
+    let mut value = String::with_capacity(64);
+    for byte in digest.as_array() {
+        use std::fmt::Write as _;
+        let _ = write!(value, "{byte:02x}");
+    }
+    value
+}
+
+#[cfg(unix)]
+fn prune_native_archives(
+    parent: &Path,
+    file_name: &str,
+    retain_archives: usize,
+    current_archive: &Path,
+) -> Result<(), Error> {
+    let prefix = format!("{file_name}.hepta-archive-");
+    let entries = fs::read_dir(parent)?;
+    let mut archives = Vec::new();
+    for entry in entries {
+        let entry = entry?;
+        let name = entry.file_name();
+        let Some(name) = name.to_str() else {
+            continue;
+        };
+        if !name.starts_with(&prefix) || !name.ends_with(".journal") {
+            continue;
+        }
+        let metadata = entry.metadata()?;
+        let modified = metadata.modified()?;
+        archives.push((modified, entry.path()));
+    }
+    archives.sort_by(|(left_time, left_path), (right_time, right_path)| {
+        left_time
+            .cmp(right_time)
+            .then_with(|| left_path.cmp(right_path))
+    });
+
+    while archives.len() > retain_archives {
+        let index = archives
+            .iter()
+            .position(|(_, path)| path != current_archive)
+            .ok_or(Error::CorruptJournal("native archive retention"))?;
+        let (_, path) = archives.remove(index);
+        fs::remove_file(path)?;
+    }
+    File::open(parent)?.sync_all()?;
     Ok(())
 }
 
