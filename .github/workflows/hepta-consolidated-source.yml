@@ -1,22 +1,13 @@
 name: Hepta consolidated source qualification (read-only)
 
+# Do not path-filter a required gate: an irrelevant edit must report a cheap,
+# successful scope decision rather than leave the required check pending.
 on:
   push:
     branches: [main]
   pull_request:
-    paths:
-      - "codex-rs/**"
-      - "apps/**"
-      - "tools/hepta-engineering-control/**"
-      - "tools/hepta-os-evidence/**"
-      - "scripts/hepta_ci_v8.py"
-      - "scripts/hepta_ci_exec.py"
-      - "scripts/hepta-gap-closure.py"
-      - "scripts/verify_cargo_lock.py"
-      - "justfile"
-      - "codex-rs/justfile"
-      - ".github/workflows/hepta-consolidated-source.yml"
-      - ".github/actions/hepta-synthetic-merge/**"
+  merge_group:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -26,186 +17,27 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
-  TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  HEPTA_CI_LANE: source-head
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
+  TESTED_SHA: ${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha || github.sha }}
 
 jobs:
-  workspace-regression:
-    name: Workspace regression for shared core changes
-    runs-on: ubuntu-24.04-arm
-    timeout-minutes: 60
-    env:
-      CARGO_INCREMENTAL: "0"
-      CARGO_BUILD_JOBS: "2"
-      CARGO_PROFILE_TEST_DEBUG: "0"
-      CARGO_PROFILE_DEV_DEBUG: "0"
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ env.SOURCE_SHA }}
-          fetch-depth: 0
-          persist-credentials: false
-      - name: Determine whether the shared-core regression gate applies
-        id: scope
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          # HEAD alone cannot attest the tracked bytes used by the build.
-          git diff --quiet
-          git diff --cached --quiet
-          # A first push or unavailable old commit has no reliable change set.
-          # Run the full regression rather than failing or incorrectly skipping it.
-          if ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
-            echo 'required=true' >> "$GITHUB_OUTPUT"
-          elif git diff --quiet "$BASE_SHA" "$SOURCE_SHA" -- \
-            codex-rs/core/ codex-rs/common/ codex-rs/protocol/ \
-            codex-rs/Cargo.toml codex-rs/Cargo.lock \
-            ':(glob)codex-rs/**/Cargo.toml' ':(glob)codex-rs/**/build.rs' \
-            .cargo/ codex-rs/.cargo/ rust-toolchain rust-toolchain.toml \
-            codex-rs/rust-toolchain codex-rs/rust-toolchain.toml \
-            justfile codex-rs/justfile scripts/hepta_ci_v8.py scripts/hepta_ci_exec.py \
-            .github/workflows/hepta-consolidated-source.yml; then
-            echo 'required=false' >> "$GITHUB_OUTPUT"
-          else
-            status=$?
-            test "$status" -eq 1
-            echo 'required=true' >> "$GITHUB_OUTPUT"
-          fi
-      - name: Prepare native workspace prerequisites
-        if: steps.scope.outputs.required == 'true'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
-          sudo sysctl -w kernel.unprivileged_userns_clone=1
-          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
-            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-          fi
-      - name: Install DotSlash for shell integration tests
-        if: steps.scope.outputs.required == 'true'
-        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
-      - name: Expose DotSlash at the path used by integration tests
-        if: steps.scope.outputs.required == 'true'
-        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
-      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        if: steps.scope.outputs.required == 'true'
-        with:
-          tool: just@1.51.0,nextest@0.9.103
-      - name: Resolve verified sandboxed V8 artifacts for Cargo
-        if: steps.scope.outputs.required == 'true'
-        env:
-          CODEX_REPO_ROOT: ${{ github.workspace }}
-          PYTHONPATH: scripts
-        run: python3 scripts/hepta_ci_v8.py
-      - name: Run the complete workspace suite after shared core changes
-        if: steps.scope.outputs.required == 'true'
-        working-directory: codex-rs
-        env:
-          CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
-        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/workspace-test.json" -- just test --locked
-      - name: Retain real command records
-        if: always() && steps.scope.outputs.required == 'true'
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-workspace
-          path: ${{ runner.temp }}/hepta-command-records/*.json
-          if-no-files-found: error
-          retention-days: 30
-  engineering-sandbox:
-    name: Engineering strong sandbox
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    env:
-      HEPTA_REQUIRE_STRONG_SANDBOX: "1"
-      PYTHONDONTWRITEBYTECODE: "1"
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          persist-credentials: false
-      - name: Prepare dedicated sandbox runner
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y bubblewrap
-          sudo sysctl -w kernel.unprivileged_userns_clone=1
-          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
-            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
-          fi
-      - name: Exercise real namespace isolation and candidate evaluation
-        run: python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/engineering-test.json" -- python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
-      - name: Retain real command records
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-engineering
-          path: ${{ runner.temp }}/hepta-command-records/*.json
-          if-no-files-found: error
-          retention-days: 30
-  os-evidence:
-    name: OS evidence native executor
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    env:
-      PYTHONDONTWRITEBYTECODE: "1"
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
-        with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          persist-credentials: false
-      - name: Verify native prerequisites and execute RSA and process-lifecycle tests
-        working-directory: tools/hepta-os-evidence
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -x /usr/bin/openssl
-          /usr/bin/openssl version
-          python3 ../../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/os-test.json" -- python3 run_native_tests.py
-      - name: Retain real command records
-        if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        with:
-          name: hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-os
-          path: ${{ runner.temp }}/hepta-command-records/*.json
-          if-no-files-found: error
-          retention-days: 30
   qualification:
     runs-on: ubuntu-24.04-arm
-    timeout-minutes: 45
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
-        # A push already tests the merged source. Only PRs need both identities.
+        # Recompute ownership on each actual tested tree, not just on the source.
         lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
     env:
+      HEPTA_CI_LANE: ${{ matrix.lane }}
       PYTHONDONTWRITEBYTECODE: "1"
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
-      # Explicit owners: testing a dependency does not execute its own tests.
-      PACKAGES: >-
-        codex-hepta-agent-protocol codex-hepta-agentd
-        codex-hepta-authbus codex-hepta-authbus-p1-3-qualification
-        codex-hepta-automation codex-hepta-bao-adapter
-        codex-hepta-bellman-operator codex-hepta-codex-adapter
-        codex-hepta-cognitive-read codex-hepta-cognitive-store
-        codex-hepta-cognitive-types codex-hepta-compact-engine
-        codex-hepta-context-compiler codex-hepta-control-plane
-        codex-hepta-evidence codex-hepta-fleet
-        codex-hepta-infer-core codex-hepta-infer-worker-host
-        codex-hepta-inferd codex-hepta-intelligence
-        codex-hepta-intelligence-eval codex-hepta-intuition
-        codex-hepta-kg codex-hepta-learning-artifacts
-        codex-hepta-learning-ledger codex-hepta-matrixd
-        codex-hepta-memory codex-hepta-memory-federation
-        codex-hepta-memory-retrieval codex-hepta-ndu
-        codex-hepta-plasticity codex-hepta-shadow-qualification
-        codex-state codex-core codex-app-server
-        codex-hepta-matrix-store codex-hepta-memory-extension
-        codex-hepta-neuron codex-hepta-prompt-registry codex-hepta-supervisor
-        codex-hepta-runtime
+      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -213,7 +45,6 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - name: Bind exact source identity
-        shell: bash
         run: test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
       - name: Construct the same synthetic merge as the document gate
         id: synthetic
@@ -226,85 +57,113 @@ jobs:
           author-name: Hepta Docs CI
           author-email: hepta-docs-ci@users.noreply.github.com
           message: Synthetic merge
-      - name: Retain original document and source-owner gates
+      - name: Bind tested identity
         env:
-          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
-          HEPTA_CI_LANE: ${{ matrix.lane }}
-        shell: bash
+          ACTUAL_TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
         run: |
           set -euo pipefail
-          # Global source/merge document and script checks run once in hepta-development-docs.
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/source-owner.json" -- python3 scripts/hepta-gap-closure.py verify
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ui-test.json" -- node --test apps/hepta-browser/test/*.js apps/hepta-native/test/*.js
-      - name: Formatting without source mutation
-        if: always()
-        env:
-          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
-          HEPTA_CI_LANE: ${{ matrix.lane }}
-        working-directory: codex-rs
-        shell: bash
+          test "$(git rev-parse HEAD)" = "$ACTUAL_TESTED_SHA"
+          echo "TESTED_SHA=$ACTUAL_TESTED_SHA" >> "$GITHUB_ENV"
+      - name: Select changed owners and reverse dependencies
+        id: scope
+        run: |
+          python3 scripts/hepta_ci_scope.py             --base "$BASE_SHA" --tested "$TESTED_SHA"             --output "$RUNNER_TEMP/hepta-plan.json"             --github-output "$GITHUB_OUTPUT"
+      - name: Exercise selector, command runner and schema semantics
+        run: |
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_scope.py'
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_run.py'
+          python3 -m unittest discover -v -s scripts -p 'test_hepta_readiness_key_order.py'
+      - name: Check source-owner invariants
+        if: steps.scope.outputs.source_owner == 'true'
+        run: python3 scripts/hepta_ci_run.py --plan "$RUNNER_TEMP/hepta-plan.json" --stage source-owner --records "$RUNNER_TEMP/hepta-command-records"
+      - name: Test affected UI owners
+        if: steps.scope.outputs.ui_browser == 'true' || steps.scope.outputs.ui_native == 'true'
+        run: python3 scripts/hepta_ci_run.py --plan "$RUNNER_TEMP/hepta-plan.json" --stage ui --records "$RUNNER_TEMP/hepta-command-records"
+      - name: Prepare only required native and isolation prerequisites
+        if: steps.scope.outputs.rust_required == 'true' || steps.scope.outputs.engineering == 'true' || steps.scope.outputs.os_evidence == 'true'
         run: |
           set -euo pipefail
-          args=()
-          for package in $PACKAGES; do args+=(--package "$package"); done
-          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/format.json" -- cargo fmt "${args[@]}" -- --check
-      - name: Prepare native owner-test prerequisites
-        run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config openssl
           sudo sysctl -w kernel.unprivileged_userns_clone=1
           if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           fi
-      - name: Install DotSlash for shell integration tests
+      - name: Test engineering isolation when affected
+        if: steps.scope.outputs.engineering == 'true'
+        env:
+          HEPTA_REQUIRE_STRONG_SANDBOX: "1"
+        run: python3 scripts/hepta_ci_run.py --plan "$RUNNER_TEMP/hepta-plan.json" --stage engineering --records "$RUNNER_TEMP/hepta-command-records"
+      - name: Test OS evidence when affected
+        if: steps.scope.outputs.os_evidence == 'true'
+        run: |
+          test -x /usr/bin/openssl
+          /usr/bin/openssl version
+          python3 scripts/hepta_ci_run.py --plan "$RUNNER_TEMP/hepta-plan.json" --stage os --records "$RUNNER_TEMP/hepta-command-records"
+      - name: Install DotSlash for affected native tests
+        if: steps.scope.outputs.rust_required == 'true'
         uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
-      - name: Expose DotSlash at the path used by integration tests
+      - name: Expose DotSlash at the integration-test path
+        if: steps.scope.outputs.rust_required == 'true'
         run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        if: steps.scope.outputs.rust_required == 'true'
         with:
           tool: just@1.51.0,nextest@0.9.103
-      - name: Resolve verified sandboxed V8 artifacts for Cargo
+      - name: Check affected package formatting without mutation
+        if: steps.scope.outputs.rust_required == 'true'
+        run: python3 scripts/hepta_ci_run.py --plan "$RUNNER_TEMP/hepta-plan.json" --stage format --records "$RUNNER_TEMP/hepta-command-records"
+      - name: Resolve verified sandboxed V8 artifacts for native tests
+        if: steps.scope.outputs.rust_required == 'true'
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
-      - name: Compile and test actual imported packages
-        working-directory: codex-rs
-        env:
-          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
-          HEPTA_CI_LANE: ${{ matrix.lane }}
-          CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-native-target
-        shell: bash
-        run: |
-          set -euo pipefail
-          args=()
-          for package in $PACKAGES; do args+=(-p "$package"); done
-          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/owner-test.json" -- just test --locked "${args[@]}"
-          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/clippy.json" -- cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
-      - name: Clean tracked source
+      - name: Run native owner tests and required reverse-dependency regression
+        if: steps.scope.outputs.rust_required == 'true'
+        run: python3 scripts/hepta_ci_run.py --plan "$RUNNER_TEMP/hepta-plan.json" --stage native --records "$RUNNER_TEMP/hepta-command-records"
+      - name: Verify unchanged tracked source and record tested identities
         if: always()
         env:
-          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
           PRIOR_STATUS: ${{ job.status }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
-          {
-            printf 'Source: `%s`\n\n' "$SOURCE_SHA"
-            printf 'Tested commit: `%s`\n\n' "$(git rev-parse HEAD)"
-            printf 'Tested tree: `%s`\n\n' "$(git rev-parse HEAD^{tree})"
-            printf 'Parents: `%s`\n\n' "$(git show -s --format=%P HEAD)"
-            printf 'Prior job status: `%s` (not a deployment qualification)\n\n' "$PRIOR_STATUS"
-            printf 'Targets: `%s`\n' "$PACKAGES"
-          } >> "$GITHUB_STEP_SUMMARY"
           git diff --check
           git diff --exit-code
-          test -z "$(git status --porcelain --untracked-files=no)"
-      - name: Retain real command records
+          git diff --cached --exit-code
+          {
+            printf 'Source: `%s`\n\n' "$SOURCE_SHA"
+            printf 'Tested commit: `%s`\n\n' "$TESTED_SHA"
+            printf 'Tested tree: `%s`\n\n' "$(git rev-parse HEAD^{tree})"
+            printf 'Parents: `%s`\n\n' "$(git show -s --format=%P HEAD)"
+            printf 'Prior job status: `%s`\n\n' "$PRIOR_STATUS"
+            printf 'This is source regression, not deployment or evolution admission.\n'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Retain scope and executed-command records
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-commands-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
-          path: ${{ runner.temp }}/hepta-command-records/*.json
-          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/hepta-plan.json
+            ${{ runner.temp }}/hepta-command-records/*.json
+          if-no-files-found: warn
           retention-days: 30
+  integration-gate:
+    name: Hepta integration gate
+    needs: [qualification]
+    if: always()
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Reject failed, cancelled or unexpectedly skipped lanes
+        env:
+          QUALIFICATION_RESULT: ${{ needs.qualification.result }}
+        run: |
+          python3 - <<'PY'
+          import os
+          result = os.environ['QUALIFICATION_RESULT']
+          if result != 'success':
+              raise SystemExit('required qualification result: ' + result)
+          print('Every applicable exact-source/merge lane completed successfully.')
+          PY
