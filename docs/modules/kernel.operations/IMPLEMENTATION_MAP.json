@@ -19,40 +19,121 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionWriterState": "durable_source_owner_implemented_not_composed",
   "operations": [
     {
-      "operation": "operationledger",
-      "nativeSymbol": "OperationLedger",
-      "sourcePath": "codex-rs/hepta-operations/src/ledger.rs",
+      "operation": "prepare_intent",
+      "nativeSymbol": "DurableOperationStore::prepare_intent",
+      "sourcePath": "codex-rs/hepta-operations/src/durable_store.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-operations/src/durable_store_tests.rs::prepare_is_atomic_and_survives_reopen",
+        "codex-rs/hepta-operations/src/durable_store_tests.rs::exact_multiwriter_prepare_is_idempotent_and_payload_drift_conflicts"
+      ],
       "sourcePathExists": true,
-      "designOperation": "operationledger",
+      "designOperation": "prepare_intent",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "outbox",
-      "nativeSymbol": "Outbox",
-      "sourcePath": "codex-rs/hepta-operations/src/outbox.rs",
+      "operation": "claim_outbox",
+      "nativeSymbol": "DurableOperationStore::claim_next",
+      "sourcePath": "codex-rs/hepta-operations/src/durable_store.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-operations/src/durable_store_tests.rs::expired_safe_lease_can_be_taken_over_by_higher_generation"
+      ],
       "sourcePathExists": true,
-      "designOperation": "outbox",
+      "designOperation": "claim_outbox",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "authorized_dispatch",
+      "nativeSymbol": "DurableOperationStore::authorize_dispatch",
+      "sourcePath": "codex-rs/hepta-operations/src/durable_store.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.authority final-use token consumed at effect entry",
+      "tests": [
+        "codex-rs/hepta-operations/src/durable_store_tests.rs::crash_after_dispatch_admission_recovers_as_indeterminate_not_retryable",
+        "codex-rs/hepta-operations/src/durable_store_tests.rs::proven_not_dispatched_requeues_with_a_new_fence"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authorized_dispatch",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "kernel.authority::FinalUseAuthority"
+      ]
+    },
+    {
+      "operation": "observe_terminal",
+      "nativeSymbol": "DurableOperationStore::observe_terminal",
+      "sourcePath": "codex-rs/hepta-operations/src/durable_store.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "current owner-generation observer evidence",
+      "tests": [
+        "codex-rs/hepta-operations/src/durable_store_tests.rs::acknowledgement_loss_stays_indeterminate_until_terminal_observer"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "observe_terminal",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "destination_dedupe",
+      "nativeSymbol": "DestinationDedupeStore::begin_apply",
+      "sourcePath": "codex-rs/hepta-operations/src/destination_dedupe.rs",
+      "state": "source_implemented_destination_composition_pending",
+      "authority": "destination owner transaction only",
+      "tests": [
+        "codex-rs/hepta-operations/src/destination_dedupe_tests.rs::domain_write_and_dedupe_receipt_commit_atomically",
+        "codex-rs/hepta-operations/src/destination_dedupe_tests.rs::rollback_removes_domain_write_and_dedupe_together"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "destination_dedupe",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "reference_operationledger",
+      "nativeSymbol": "OperationLedger",
+      "sourcePath": "codex-rs/hepta-operations/src/ledger.rs",
+      "state": "reference_oracle_retained",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-operations/src/ledger_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "reference_operationledger",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "reference_outbox",
+      "nativeSymbol": "Outbox",
+      "sourcePath": "codex-rs/hepta-operations/src/outbox.rs",
+      "state": "reference_oracle_retained",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-operations/src/outbox_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "reference_outbox",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Compose a named authenticated product caller against DurableOperationStore.",
+    "Install destination_operation_dedupe into each selected destination owner's own migration lineage and bind the same owner transaction.",
+    "Bind a trusted product terminal observer and continuously hosted reconciler.",
+    "Run exact-head and deterministic synthetic-merge qualification for the durable candidate."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
-    "product execution and target-host qualification",
+    "product execution and selected target-host power-loss/disk-exhaustion qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
