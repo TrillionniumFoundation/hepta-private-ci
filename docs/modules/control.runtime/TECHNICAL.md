@@ -324,7 +324,6 @@ The source candidate is checked by `.github/workflows/hepta-consolidated-source.
 The current source hardens the repository-controlled path without changing the authority ceiling:
 
 - `canonical_resource_profile_digest` hashes the sorted resource axis, endowment and essential-floor tuples; `prepare_plan` rejects a nonzero caller digest that does not match those exact reservations.
-- stale/unavailable masks are hard failures only for the declared required-owner set; optional observations remain visible in the snapshot without silently becoming required.
 - the Agentd measured-context caller uses a process-local `Instant` domain for planner observation and expiry time. Wall-clock Unix time remains limited to storage contracts that explicitly require it.
 - `PlannerJournalV1::reopen` replays kind-specific semantic constraints in addition to sequence and hash-chain integrity. A recomputed hash cannot make a selection valid without a prior decision or after revocation.
 - `PlannerJournalStoreV1` provides a versioned envelope, payload digest, write-to-same-directory temporary file, file `sync_all`, atomic rename on the qualified Unix host, parent-directory sync, raw-v1 migration and restore-time semantic revalidation. It is still owner-local and does not become an external-effect ledger.
