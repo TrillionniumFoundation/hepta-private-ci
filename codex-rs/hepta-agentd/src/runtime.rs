@@ -100,6 +100,10 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     if let Some(store) = automation_store.as_ref() {
         state.attach_automation_store(store.clone())?;
     }
+    // All mandatory owner-local state has now been opened under the current
+    // generation fence. Agentd carries no ambient effect authority, so the
+    // revocation readiness gate is satisfied for this zero-authority baseline.
+    state.mark_runtime_prerequisites_ready()?;
     let cancellation = CancellationToken::new();
     let control = AgentdControlServer::bind(
         identity.control_socket.clone(),
@@ -137,7 +141,6 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         Arc::clone(&state),
         cancellation.clone(),
     ));
-
     let (outcome, completed_task) = tokio::select! {
         result = &mut authbus_task => (
             joined("AuthBus text relay", result),

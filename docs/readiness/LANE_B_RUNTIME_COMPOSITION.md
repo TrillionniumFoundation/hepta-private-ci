@@ -39,7 +39,7 @@ Each admitted run freezes principal, agent, supervisor incarnation, Agentd gener
 
 ## 5. Startup order
 
-Supervisor verifies configuration, lifecycle state, revocation access and rollback predecessor, then creates a new process fence. Agentd validates private roots, socket identity, exact owner ports and bounded queues before starting the App Server. Owner services open and verify their physical state before readiness. Optional advisory inputs may fall back only to a deterministic no-authority-widening state. UI availability never changes backend readiness.
+Supervisor verifies configuration, lifecycle state, the host-pinned production revocation frontier where production release authority is enabled, and the current rollback predecessor provenance before creating a new process fence. Agentd validates private roots, socket identity, exact owner ports and bounded queues before starting the App Server. Agentd readiness now separately gates critical owner-local state, its explicit revocation baseline, required ports and admission; App Server liveness alone cannot promote Running. Owner services open and verify their physical state before readiness. Optional advisory inputs may fall back only to a deterministic no-authority-widening state. UI availability never changes backend readiness.
 
 ## 6. Normal request path
 
@@ -100,11 +100,11 @@ Every ingress has hard payload, queue, concurrency and deadline bounds. Supervis
 
 ## 14. Shutdown and rollback order
 
-Stop new admission; persist drain intent; cancel only provably pre-effect work; reconcile or quarantine dispatched work; flush owner-local state and outboxes; close UI, Matrix, browser, inference and Codex transports in dependency-safe order; stop Agentd and verify exit; release only resources acquired by the current generation; load an independently selected compatible predecessor into a new generation; then replay current revocation/deletion frontiers before readiness.
+Stop new admission; persist drain intent; require the current-generation Agentd Drain acknowledgement; cancel only provably pre-effect work; reconcile or quarantine dispatched work without converting unknown outcomes into success/failure; flush owner-local state and outboxes; close UI, Matrix, browser, inference and Codex transports in dependency-safe order; stop Agentd and verify exit; release only resources acquired by the current generation; re-resolve the independently selected compatible predecessor from the current immutable Fleet catalog, recheck the production frontier, load it into a new generation, then replay current revocation/deletion frontiers before readiness.
 
 ## 15. Source maturity
 
-The truth registry records source-boundary mappings for all 39 operations. Supervisor and Codex are native runtime spines; Fleet, inference, TaskFlow and Matrix include native owner ledgers/adapters; Agentd now owns its own run coordinator; Browser/Web/Native provide bounded driver/client boundaries. The component mappings do not close repository-controlled integration work. Durable owner wiring, actual local model/browser drivers and runtime composition remain implementation tasks in addition to external qualification.
+The truth registry records source-boundary mappings for all 39 operations. Supervisor and Codex are native runtime spines; the supervisor source now includes signed production release admission, exact-byte durable release selection, Agentd drain/readiness gates, bounded durable restart recovery, current-provenance rollback and independently signed ambiguity recovery. Fleet, inference, TaskFlow and Matrix include native owner ledgers/adapters; Agentd owns its run coordinator; Browser/Web/Native provide bounded driver/client boundaries. These source closures do not establish a deployed product caller, live external revocation distributor, target-host measurements, real provider/browser effects or independent acceptance, so the lane-wide target/product/deployment claims remain false.
 
 ## 16. Evidence package required for activation
 

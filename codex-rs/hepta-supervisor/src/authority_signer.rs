@@ -14,6 +14,9 @@ use std::path::Path;
 use crate::signed_authority::H7H89ProductionGrant;
 use crate::signed_authority::H7H89ProductionGrantSigner;
 use crate::signed_authority::H7H89ProductionTransition;
+use crate::signed_authority::ReleaseSelectionBinding;
+use crate::signed_authority::ProductionRecoveryDecision;
+use crate::signed_authority::ProductionRecoveryOutcome;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory::H7Artifact;
@@ -60,9 +63,29 @@ pub enum SignRequest {
         source_release: String,
         target_release: String,
         transition: H7H89ProductionTransition,
+        release_selection: ReleaseSelectionBinding,
         expected_control_revision: u64,
         expected_lifecycle_generation: u64,
         authority_epoch: u64,
+        issued_at_unix_seconds: u64,
+        expires_at_unix_seconds: u64,
+    },
+    ProductionRecovery {
+        signer_id: String,
+        signer_epoch: u64,
+        agent_id: String,
+        grant_sha256: Sha256Digest,
+        intent_sha256: Sha256Digest,
+        observed_release: String,
+        observed_manifest_sha256: Sha256Digest,
+        observed_agentd_sha256: Sha256Digest,
+        #[serde(default)]
+        observed_matrixd_sha256: Option<Sha256Digest>,
+        outcome: ProductionRecoveryOutcome,
+        expected_control_revision: u64,
+        expected_lifecycle_generation: u64,
+        authority_epoch: u64,
+        revocation_frontier: u64,
         issued_at_unix_seconds: u64,
         expires_at_unix_seconds: u64,
     },
@@ -75,6 +98,7 @@ pub enum SignRequest {
 pub enum SignResponse {
     H7Envelope { envelope: H7SignedArtifactEnvelope },
     ProductionGrant { grant: H7H89ProductionGrant },
+    ProductionRecovery { decision: ProductionRecoveryDecision },
 }
 
 #[derive(Debug, Error)]
@@ -235,6 +259,7 @@ pub fn sign_request(
             source_release,
             target_release,
             transition,
+            release_selection,
             expected_control_revision,
             expected_lifecycle_generation,
             authority_epoch,
@@ -256,6 +281,7 @@ pub fn sign_request(
                     target_release.clone(),
                     *transition,
                     h7_envelope,
+                    release_selection.clone(),
                     *expected_control_revision,
                     *expected_lifecycle_generation,
                     *authority_epoch,
@@ -264,6 +290,52 @@ pub fn sign_request(
                 )
                 .map_err(|error| ExternalSignerError::Grant(error.to_string()))?;
             Ok(SignResponse::ProductionGrant { grant })
+        }
+        SignRequest::ProductionRecovery {
+            signer_id,
+            signer_epoch,
+            agent_id,
+            grant_sha256,
+            intent_sha256,
+            observed_release,
+            observed_manifest_sha256,
+            observed_agentd_sha256,
+            observed_matrixd_sha256,
+            outcome,
+            expected_control_revision,
+            expected_lifecycle_generation,
+            authority_epoch,
+            revocation_frontier,
+            issued_at_unix_seconds,
+            expires_at_unix_seconds,
+        } => {
+            let agent = AgentId::parse(agent_id.clone())
+                .map_err(|error| ExternalSignerError::Grant(error.to_string()))?;
+            let signer = H7H89ProductionGrantSigner::new(
+                signer_id.clone(),
+                *signer_epoch,
+                signing_key.clone(),
+            )
+            .map_err(|error| ExternalSignerError::Grant(error.to_string()))?;
+            let decision = signer
+                .sign_recovery(
+                    &agent,
+                    grant_sha256.clone(),
+                    intent_sha256.clone(),
+                    observed_release.clone(),
+                    observed_manifest_sha256.clone(),
+                    observed_agentd_sha256.clone(),
+                    observed_matrixd_sha256.clone(),
+                    *outcome,
+                    *expected_control_revision,
+                    *expected_lifecycle_generation,
+                    *authority_epoch,
+                    *revocation_frontier,
+                    *issued_at_unix_seconds,
+                    *expires_at_unix_seconds,
+                )
+                .map_err(|error| ExternalSignerError::Grant(error.to_string()))?;
+            Ok(SignResponse::ProductionRecovery { decision })
         }
     }
 }
@@ -441,6 +513,17 @@ mod tests {
             source_release: "release-a".to_string(),
             target_release: "release-b".to_string(),
             transition: H7H89ProductionTransition::Upgrade,
+            release_selection: ReleaseSelectionBinding::new(
+                digest(10),
+                digest(11),
+                None,
+                digest(12),
+                digest(13),
+                None,
+                digest(14),
+                8,
+            )
+            .expect("release selection"),
             expected_control_revision: 3,
             expected_lifecycle_generation: 1,
             authority_epoch: 8,
@@ -467,8 +550,20 @@ mod tests {
                 &AgentId::parse("00000000-0000-4000-8000-000000000001").expect("agent"),
                 "release-a",
                 "release-b",
+                &ReleaseSelectionBinding::new(
+                    digest(10),
+                    digest(11),
+                    None,
+                    digest(12),
+                    digest(13),
+                    None,
+                    digest(14),
+                    8,
+                )
+                .expect("release selection"),
                 3,
                 1,
+                8,
                 8,
                 150,
             )

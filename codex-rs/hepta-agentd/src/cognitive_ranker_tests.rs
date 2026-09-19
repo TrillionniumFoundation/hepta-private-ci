@@ -452,6 +452,7 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
     lifecycle
         .compare_and_transition(&owner(), 1, AgentLifecycle::Running)
         .unwrap();
+    state.mark_runtime_prerequisites_ready().unwrap();
     state.mark_app_server_ready().unwrap();
     let cancellation = CancellationToken::new();
     let _cancel_on_drop = cancellation.clone().drop_guard();

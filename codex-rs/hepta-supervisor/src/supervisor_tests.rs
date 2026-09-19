@@ -127,11 +127,26 @@ fn release(identity: &str, program: &str) -> Result<AgentRelease, SupervisorErro
     )
 }
 
+fn release_with_matrixd(
+    identity: &str,
+    agentd_program: &str,
+    matrixd_program: &str,
+) -> Result<AgentRelease, SupervisorError> {
+    AgentRelease::with_matrixd(
+        identity,
+        AgentCommand::new(fake_program(agentd_program), Vec::new())?,
+        AgentCommand::new(fake_program(matrixd_program), Vec::new())?,
+    )
+}
+
 fn config() -> SupervisorConfig {
     SupervisorConfig {
         health_timeout: Duration::from_millis(10),
         drain_timeout: Duration::from_millis(10),
         stop_grace: Duration::from_millis(10),
+        restart_window: Duration::from_millis(100),
+        restart_backoff_base: Duration::from_millis(1),
+        max_restart_attempts: 3,
         event_capacity: 8,
         log_capacity: 3,
         max_log_bytes: 8,
@@ -154,6 +169,9 @@ struct FakeWorld {
     processes: BTreeMap<u64, FakeState>,
     reject_adoption: BTreeSet<AgentId>,
     reject_spawn_programs: BTreeSet<PathBuf>,
+    lease_obstacle_on_spawn: BTreeSet<AgentId>,
+    kill_failures_remaining: BTreeMap<AgentId, usize>,
+    poll_failures_remaining: BTreeMap<AgentId, usize>,
 }
 
 struct FakeState {
@@ -263,6 +281,34 @@ impl FakeControl {
             .insert(program.into());
     }
 
+    fn obstruct_next_agent_lease(&self, agent_id: AgentId) {
+        self.world
+            .lock()
+            .expect("fake world lock")
+            .lease_obstacle_on_spawn
+            .insert(agent_id);
+    }
+
+    fn fail_next_kill(&self, agent_id: AgentId) {
+        *self
+            .world
+            .lock()
+            .expect("fake world lock")
+            .kill_failures_remaining
+            .entry(agent_id)
+            .or_insert(0) += 1;
+    }
+
+    fn fail_next_poll(&self, agent_id: AgentId) {
+        *self
+            .world
+            .lock()
+            .expect("fake world lock")
+            .poll_failures_remaining
+            .entry(agent_id)
+            .or_insert(0) += 1;
+    }
+
     fn counts(&self, agent_id: &AgentId) -> (usize, usize, usize) {
         self.counts_role(agent_id, FakeRole::Agentd)
     }
@@ -337,6 +383,13 @@ impl ProcessDriver for FakeDriver {
                 kill_requests: 0,
             },
         );
+        if world.lease_obstacle_on_spawn.remove(&spec.agent_id) {
+            std::fs::write(
+                spec.run_root.join("supervisor-process.json"),
+                b"lease publication obstacle",
+            )
+            .map_err(|error| ProcessDriverError::new(error.to_string()))?;
+        }
         Ok(SpawnedProcess {
             identity,
             process: FakeProcess {
@@ -425,6 +478,18 @@ impl ProcessDriver for FakeDriver {
 impl ManagedProcess for FakeProcess {
     fn poll(&mut self, max_logs: usize) -> Result<ProcessObservation, ProcessDriverError> {
         let mut world = self.world.lock().expect("fake world lock");
+        let agent_id = world
+            .processes
+            .get(&self.id)
+            .expect("fake process")
+            .agent_id
+            .clone();
+        if let Some(remaining) = world.poll_failures_remaining.get_mut(&agent_id)
+            && *remaining > 0
+        {
+            *remaining -= 1;
+            return Err(ProcessDriverError::new("injected poll failure"));
+        }
         let state = world.processes.get_mut(&self.id).expect("fake process");
         let logs = (0..max_logs)
             .filter_map(|_| state.logs.pop_front())
@@ -465,13 +530,18 @@ impl ManagedProcess for FakeProcess {
     }
 
     fn kill(&mut self) -> Result<(), ProcessDriverError> {
-        self.world
-            .lock()
-            .expect("fake world lock")
-            .processes
-            .get_mut(&self.id)
-            .expect("fake process")
-            .kill_requests += 1;
+        let mut world = self.world.lock().expect("fake world lock");
+        let agent_id = {
+            let state = world.processes.get_mut(&self.id).expect("fake process");
+            state.kill_requests += 1;
+            state.agent_id.clone()
+        };
+        if let Some(remaining) = world.kill_failures_remaining.get_mut(&agent_id)
+            && *remaining > 0
+        {
+            *remaining -= 1;
+            return Err(ProcessDriverError::new("injected kill failure"));
+        }
         Ok(())
     }
 }
@@ -529,13 +599,108 @@ fn hung_agent_is_stopped_and_killed_without_blocking_peer() -> Result<(), Superv
 
     let first = supervisor.snapshot(&fleet.first).expect("first slot");
     let second = supervisor.snapshot(&fleet.second).expect("second slot");
-    assert!(!first.active);
+    assert!(
+        first.active,
+        "health-timeout exit should enter bounded automatic restart"
+    );
+    assert_eq!(first.restart_attempts, 1);
     assert!(second.active);
     assert_eq!((first.logs.len(), second.logs.len()), (3, 3));
     assert!(first.events.len() <= 8);
     assert!(second.events.len() <= 8);
     assert!(first.logs.iter().all(|log| log.bytes.len() <= 8));
     assert!(second.logs.iter().all(|log| log.bytes.len() <= 8));
+    Ok(())
+}
+
+#[test]
+fn automatic_restart_uses_exponential_budget_and_stops_after_three_flaps(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start(&fleet.first, command()?, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    let mut tick = now;
+    for attempt in 1_u8..=3 {
+        control.set_exit(&fleet.first);
+        tick += Duration::from_millis(1);
+        assert_eq!(supervisor.tick(tick), TickReport::default());
+        let scheduled = supervisor.snapshot(&fleet.first).expect("scheduled snapshot");
+        assert!(!scheduled.active);
+        assert_eq!(scheduled.restart_attempts, attempt);
+        assert!(scheduled.automatic_restart);
+        assert!(scheduled.restart_not_before_pending);
+
+        let delay_ms = 1_u64 << u32::from(attempt - 1);
+        tick += Duration::from_millis(delay_ms);
+        assert_eq!(supervisor.tick(tick), TickReport::default());
+        assert_eq!(control.spawn_count(&fleet.first), usize::from(attempt) + 1);
+        control.set_healthy(&fleet.first);
+        assert_eq!(supervisor.tick(tick), TickReport::default());
+        assert_eq!(
+            fleet
+                .registry
+                .load()?
+                .agent(&fleet.first)
+                .expect("agent")
+                .lifecycle
+                .lifecycle,
+            AgentLifecycle::Running
+        );
+    }
+
+    control.set_exit(&fleet.first);
+    tick += Duration::from_millis(1);
+    assert_eq!(supervisor.tick(tick), TickReport::default());
+    let exhausted = supervisor.snapshot(&fleet.first).expect("exhausted snapshot");
+    assert!(!exhausted.active);
+    assert!(!exhausted.restart_pending);
+    assert_eq!(exhausted.restart_attempts, 3);
+    assert!(exhausted.events.iter().any(|event| {
+        matches!(
+            event.kind,
+            SupervisorEventKind::RestartBudgetExhausted { attempts: 3 }
+        )
+    }));
+    assert_eq!(control.spawn_count(&fleet.first), 4);
+    Ok(())
+}
+
+#[test]
+fn restart_budget_survives_supervisor_recovery() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start(&fleet.first, command()?, now)?;
+    control.set_healthy(&fleet.first);
+    supervisor.tick(now);
+
+    control.set_exit(&fleet.first);
+    let crashed_at = now + Duration::from_millis(1);
+    supervisor.tick(crashed_at);
+    let before = supervisor.snapshot(&fleet.first).expect("before recovery");
+    assert_eq!(before.restart_attempts, 1);
+    assert!(before.restart_pending);
+    drop(supervisor);
+
+    let recovery_now = now + Duration::from_millis(20);
+    let (mut recovered, report) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), recovery_now)?;
+    assert_eq!(report, TickReport::default());
+    let restored = recovered.snapshot(&fleet.first).expect("restored snapshot");
+    assert_eq!(restored.restart_attempts, 1);
+    assert!(restored.restart_pending);
+    assert!(restored.automatic_restart);
+
+    recovered.tick(recovery_now + Duration::from_millis(5));
+    assert_eq!(control.spawn_count(&fleet.first), 2);
     Ok(())
 }
 
@@ -719,6 +884,95 @@ fn stale_runtime_is_fenced_without_touching_peer() -> Result<(), SupervisorError
             .lifecycle
             .lifecycle,
         AgentLifecycle::Running
+    );
+    Ok(())
+}
+
+#[test]
+fn upgrade_preflight_allows_matrix_only_release_change() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start_release(
+        &fleet.first,
+        release("release-v1", "shared/hepta-agentd")?,
+        now,
+    )?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    let target = release_with_matrixd(
+        "release-v2",
+        "shared/hepta-agentd",
+        "release-v2/hepta-matrixd",
+    )?;
+    assert!(supervisor.preflight_upgrade(&fleet.first, &target).is_ok());
+    supervisor.upgrade(&fleet.first, target, now)?;
+    assert!(
+        supervisor
+            .snapshot(&fleet.first)
+            .expect("snapshot")
+            .release_change_pending
+    );
+    Ok(())
+}
+
+#[test]
+fn lease_publication_failure_keeps_child_tracked_until_exit() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+
+    control.obstruct_next_agent_lease(fleet.first.clone());
+    control.fail_next_kill(fleet.first.clone());
+    control.fail_next_poll(fleet.first.clone());
+    assert!(matches!(
+        supervisor.start(&fleet.first, command()?, now),
+        Err(SupervisorError::Driver { .. })
+    ));
+    assert!(supervisor.snapshot(&fleet.first).expect("snapshot").active);
+    assert_eq!(control.counts(&fleet.first), (0, 0, 1));
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("agent")
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Starting
+    );
+
+    #[cfg(unix)]
+    assert!(supervisor.preflight_stop_or_kill(&fleet.first).is_ok());
+    supervisor.stop(&fleet.first, now)?;
+    assert_eq!(control.counts(&fleet.first), (0, 0, 2));
+
+    let report = supervisor.tick(now);
+    assert_eq!(report.faults.len(), 1);
+    assert_eq!(report.faults[0].agent_id, fleet.first);
+    assert_eq!(control.counts(&fleet.first), (0, 0, 3));
+    assert!(supervisor.snapshot(&fleet.first).expect("snapshot").active);
+
+    control.set_exit(&fleet.first);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(1)),
+        TickReport::default()
+    );
+    assert!(!supervisor.snapshot(&fleet.first).expect("snapshot").active);
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("agent")
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Stopped
     );
     Ok(())
 }
@@ -1261,28 +1515,267 @@ fn recovery_does_not_infer_signed_commit_from_matching_target_only() -> Result<(
     crate::signed_intent::write_intent(record.layout.run_root(), &intent)
         .expect("persist unresolved intent");
 
-    let error = match Supervisor::recover(
+    let (recovered, report) = Supervisor::recover(
         fleet.registry.clone(),
         FakeControl::default().driver(),
         config(),
         Instant::now(),
-    ) {
-        Ok(_) => panic!("matching target must not infer a signed commit"),
-        Err(error) => error,
-    };
-    assert!(matches!(
-        error,
-        SupervisorError::SignedIntentRecoveryRequired(agent_id) if agent_id == fleet.first
-    ));
+    )?;
+    assert!(
+        report.faults.iter().any(|fault| {
+            fault.agent_id == fleet.first
+                && fault.message.contains("unresolved signed supervisor intent")
+        }),
+        "matching target must be quarantined instead of inferred committed"
+    );
+    assert!(!recovered.snapshot(&fleet.first).expect("snapshot").healthy);
     assert_eq!(
         crate::signed_intent::read_intent(record.layout.run_root())
             .expect("read unresolved intent")
             .expect("intent remains durable")
             .status,
-        crate::signed_intent::SignedIntentStatus::Queued
+        crate::signed_intent::SignedIntentStatus::RecoveryRequired
+    );
+    assert_eq!(
+        fleet
+            .registry
+            .load()?
+            .agent(&fleet.first)
+            .expect("agent")
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Failed
     );
     Ok(())
 }
+
+#[test]
+fn signed_recovery_requires_current_frontier_and_commits_only_observed_release_bytes(
+) -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let source_id = ReleaseId::parse("recovery-source")?;
+    let target_id = ReleaseId::parse("recovery-target")?;
+    let source_program = fleet.write_release_source()?;
+    fleet
+        .registry
+        .install_release(source_id.clone(), &source_program, Vec::new())?;
+    std::fs::write(&source_program, b"#!/bin/sh\necho target\n")?;
+    fleet
+        .registry
+        .install_release(target_id.clone(), &source_program, Vec::new())?;
+    fleet.registry.allow_release(&fleet.first, &source_id)?;
+    fleet.registry.allow_release(&fleet.first, &target_id)?;
+
+    let parse_digest = |value: String| {
+        Sha256Digest::parse(value)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))
+    };
+    let source_provenance = fleet
+        .registry
+        .release_provenance(&fleet.first, &source_id)?;
+    let target_provenance = fleet
+        .registry
+        .release_provenance(&fleet.first, &target_id)?;
+    let binding = crate::ReleaseSelectionBinding::new(
+        parse_digest(source_provenance.manifest_sha256)?,
+        parse_digest(source_provenance.agentd_sha256)?,
+        source_provenance
+            .matrixd_sha256
+            .map(|value| parse_digest(value))
+            .transpose()?,
+        parse_digest(target_provenance.manifest_sha256.clone())?,
+        parse_digest(target_provenance.agentd_sha256.clone())?,
+        target_provenance
+            .matrixd_sha256
+            .clone()
+            .map(|value| parse_digest(value))
+            .transpose()?,
+        Sha256Digest::for_bytes(b"compatibility-receipt"),
+        7,
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+
+    let grant_sha256 = Sha256Digest::for_bytes(b"recovery-grant");
+    let grant = crate::H7H89ProductionGrant {
+        schema_version: crate::SIGNED_AUTHORITY_SCHEMA_VERSION,
+        namespace: crate::SIGNED_AUTHORITY_NAMESPACE.to_string(),
+        agent_id: fleet.first.to_string(),
+        source_release: source_id.to_string(),
+        target_release: target_id.to_string(),
+        transition: crate::H7H89ProductionTransition::Upgrade,
+        h7_envelope_sha256: Sha256Digest::for_bytes(b"recovery-h7"),
+        artifact_sha256: Sha256Digest::for_bytes(b"recovery-artifact"),
+        release_selection: binding,
+        expected_control_revision: 0,
+        expected_lifecycle_generation: 2,
+        authority_epoch: 19,
+        signer_id: "operator".to_string(),
+        signer_epoch: 4,
+        issued_at_unix_seconds: 100,
+        expires_at_unix_seconds: 200,
+        production_authority: true,
+        external_effects: true,
+        operator_acceptance: true,
+        promotion: true,
+        governance_bypass: false,
+        signature_base64: "AA==".to_string(),
+        grant_sha256: grant_sha256.clone(),
+    };
+
+    fleet.registry.compare_and_set_release_state(
+        &fleet.first,
+        0,
+        Some(target_id.clone()),
+        Some(source_id.clone()),
+    )?;
+    let starting =
+        fleet
+            .registry
+            .compare_and_transition(&fleet.first, 0, AgentLifecycle::Starting)?;
+    let running = fleet.registry.compare_and_transition(
+        &fleet.first,
+        starting.generation,
+        AgentLifecycle::Running,
+    )?;
+    let failed = fleet.registry.compare_and_transition(
+        &fleet.first,
+        running.generation,
+        AgentLifecycle::Failed,
+    )?;
+    assert_eq!(failed.generation, 3);
+
+    let record = fleet
+        .registry
+        .load()?
+        .agent(&fleet.first)
+        .cloned()
+        .expect("registered agent");
+    let intent = crate::signed_intent::SignedSupervisorIntent::new(
+        grant_sha256.clone(),
+        fleet.first.to_string(),
+        crate::H7H89ProductionTransition::Upgrade,
+        source_id.to_string(),
+        target_id.to_string(),
+        0,
+        running.generation,
+        19,
+        crate::signed_intent::SignedIntentStatus::RecoveryRequired,
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    crate::signed_intent::write_intent(record.layout.run_root(), &intent)
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    let selection = crate::release_selection::ReleaseSelectionRecord::prepared(
+        &grant,
+        1,
+        running.generation,
+    )?
+    .with_status(crate::release_selection::ReleaseSelectionStatus::RecoveryRequired)?;
+    crate::release_selection::write_release_selection(record.layout.run_root(), &selection)?;
+
+    let (mut recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        FakeControl::default().driver(),
+        config(),
+        Instant::now(),
+    )?;
+    assert!(
+        report
+            .faults
+            .iter()
+            .any(|fault| fault.agent_id == fleet.first),
+        "unresolved production intent remains quarantined until independent recovery"
+    );
+    recovered.set_production_revocation_frontier(7)?;
+
+    let signer = crate::H7H89ProductionGrantSigner::from_seed("operator", 4, [9; 32])
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    let verifier = crate::H7H89ProductionGrantVerifier::new(
+        "operator",
+        4,
+        signer.verifying_key(),
+    )
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    let target_manifest = parse_digest(target_provenance.manifest_sha256)?;
+    let target_agentd = parse_digest(target_provenance.agentd_sha256)?;
+    let target_matrixd = target_provenance
+        .matrixd_sha256
+        .map(|value| parse_digest(value))
+        .transpose()?;
+    let decision = signer
+        .sign_recovery(
+            &fleet.first,
+            grant_sha256,
+            intent.intent_sha256.clone(),
+            target_id.to_string(),
+            target_manifest,
+            target_agentd,
+            target_matrixd,
+            crate::ProductionRecoveryOutcome::Committed,
+            1,
+            failed.generation,
+            23,
+            7,
+            120,
+            180,
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+
+    assert!(matches!(
+        recovered.resolve_production_recovery(
+            &fleet.first,
+            &decision,
+            &verifier,
+            23,
+            8,
+            150,
+        ),
+        Err(SupervisorError::ProductionAuthority(_))
+    ));
+    assert_eq!(
+        recovered
+            .production_mutation_receipt(&fleet.first)?
+            .expect("recovery receipt")
+            .status,
+        crate::ProductionMutationStatus::RecoveryRequired
+    );
+
+    let receipt = recovered.resolve_production_recovery(
+        &fleet.first,
+        &decision,
+        &verifier,
+        23,
+        7,
+        150,
+    )?;
+    assert_eq!(receipt.status, crate::ProductionMutationStatus::Committed);
+    assert_eq!(receipt.target_release, target_id.to_string());
+    assert_eq!(receipt.control_revision, 2);
+    let projection = recovered
+        .release_selection_snapshot(&fleet.first)?
+        .expect("release selection projection");
+    assert_eq!(projection.status, crate::ReleaseSelectionStatus::Committed);
+    assert_eq!(projection.target_release, target_id.to_string());
+    assert_eq!(projection.binding.revocation_frontier, 7);
+    assert_eq!(
+        projection.recovery_decision_sha256.as_ref(),
+        Some(decision.digest())
+    );
+    assert_eq!(
+        crate::signed_intent::read_intent(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+            .expect("terminal intent")
+            .status,
+        crate::signed_intent::SignedIntentStatus::Committed
+    );
+    assert_eq!(
+        crate::release_selection::read_release_selection(record.layout.run_root())?
+            .expect("terminal selection")
+            .status,
+        crate::release_selection::ReleaseSelectionStatus::Committed
+    );
+    Ok(())
+}
+
 
 fn write_matrix_binding(
     registry: &FleetRegistry,

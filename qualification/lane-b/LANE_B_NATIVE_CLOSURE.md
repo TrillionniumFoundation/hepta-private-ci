@@ -12,9 +12,9 @@ The central truth is a closed index. Detailed module roots, ownership, terminal 
 
 ## 2. `runtime.supervisor`
 
-Owns generation-fenced process lifecycle and release transition records; user-task truth remains outside this module.
+Owns generation-fenced process lifecycle, durable bounded restart state, signed release-selection records and release-transition recovery; user-task truth remains outside this module.
 
-The process driver and current-generation health observations establish process terminality, not user-task success.
+The exact process driver, Agentd readiness/drain acknowledgements and current-generation observations establish lifecycle terminality; drain acknowledgement closes admission but never establishes user-task success.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
@@ -25,9 +25,10 @@ The process driver and current-generation health observations establish process 
 
 External evidence gates:
 
-- deployed binary and host identity
-- target-host watchdog/start/drain measurements
-- independent operational acceptance
+- exact deployed hepta-supervisord binary, host identity and production verifier/frontier configuration
+- target-host startup, watchdog, Agentd drain, bounded restart and signed-recovery fault/latency measurements
+- deployed current revocation/compatibility-frontier distribution and rotation procedure
+- independent operational acceptance of signed upgrade, rollback and recovery outcomes
 
 ## 3. `runtime.fleet`
 

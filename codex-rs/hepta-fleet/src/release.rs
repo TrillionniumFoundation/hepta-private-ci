@@ -151,6 +151,20 @@ pub struct RegisteredRelease {
     pub matrixd: Option<RegisteredProgram>,
 }
 
+/// Immutable byte provenance for one allowed release.
+///
+/// The supervisor uses this record when admitting a production release
+/// transition.  It is derived from the same immutable catalog and per-Agent
+/// allowance checks as `resolve_release`; callers must never infer these
+/// digests from a release id alone.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ReleaseProvenance {
+    pub release_id: ReleaseId,
+    pub manifest_sha256: String,
+    pub agentd_sha256: String,
+    pub matrixd_sha256: Option<String>,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct AgentReleaseState {
@@ -360,6 +374,30 @@ impl FleetRegistry {
             )));
         }
         resolve_catalog_release(self.layout().releases_root(), release_id)
+    }
+
+    /// Resolve the exact immutable byte provenance for one release after
+    /// re-checking the current per-Agent allowance and catalog integrity.
+    pub fn release_provenance(
+        &self,
+        agent_id: &AgentId,
+        release_id: &ReleaseId,
+    ) -> Result<ReleaseProvenance, FleetRegistryError> {
+        let release = self.resolve_release(agent_id, release_id)?;
+        let manifest = release_manifest_path(self.layout().releases_root(), release_id);
+        let manifest_sha256 = sha256_file(&manifest)?;
+        let agentd_sha256 = sha256_file(&release.program)?;
+        let matrixd_sha256 = release
+            .matrixd
+            .as_ref()
+            .map(|program| sha256_file(&program.program))
+            .transpose()?;
+        Ok(ReleaseProvenance {
+            release_id: release.release_id,
+            manifest_sha256,
+            agentd_sha256,
+            matrixd_sha256,
+        })
     }
 
     pub fn allowed_releases(

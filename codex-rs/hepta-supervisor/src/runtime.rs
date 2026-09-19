@@ -38,6 +38,9 @@ pub(crate) struct AgentRuntime<P> {
     pub phase: RuntimePhase,
     pub healthy: bool,
     pub fenced: bool,
+    /// True only after the exact process lease is durably published.
+    /// A false value keeps the spawned child quarantined on the hard-kill path.
+    pub lease_persisted: bool,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -141,6 +144,10 @@ pub(crate) struct AgentSlot<P> {
     pub deferred_agent_action: Option<DeferredAgentAction>,
     pub last_command: Option<AgentCommand>,
     pub restart_pending: bool,
+    pub automatic_restart: bool,
+    pub restart_attempts: u8,
+    pub restart_window_started_at: Option<Instant>,
+    pub restart_not_before: Option<Instant>,
     pub active_release: Option<AgentRelease>,
     pub previous_release: Option<AgentRelease>,
     pub release_change: Option<ReleaseChange>,
@@ -161,6 +168,10 @@ impl<P> AgentSlot<P> {
             deferred_agent_action: None,
             last_command: None,
             restart_pending: false,
+            automatic_restart: false,
+            restart_attempts: 0,
+            restart_window_started_at: None,
+            restart_not_before: None,
             active_release: None,
             previous_release: None,
             release_change: None,
