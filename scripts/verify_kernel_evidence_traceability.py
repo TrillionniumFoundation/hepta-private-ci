@@ -195,6 +195,46 @@ def write_receipt(output: Path, expected_sha: str, kind: str) -> None:
     )
 
 
+def write_review_request(receipt_path: Path, output: Path, role: str) -> None:
+    receipt = load_json(receipt_path)
+    if (
+        receipt.get("schema") != "hepta.kernel-evidence-exact-candidate-receipt.v1"
+        or receipt.get("module") != "kernel.evidence"
+        or receipt.get("independentAcceptance") is not False
+    ):
+        raise TraceabilityError("review request requires an unaccepted exact-candidate receipt")
+    candidate_sha = receipt.get("candidateSha")
+    tree = receipt.get("gitTree")
+    if not isinstance(candidate_sha, str) or not isinstance(tree, str):
+        raise TraceabilityError("exact-candidate receipt identity missing")
+    request = {
+        "schema": "hepta.kernel-evidence-independent-review-request.v1",
+        "schemaVersion": 1,
+        "module": "kernel.evidence",
+        "candidate": {
+            "candidateId": f"git:{candidate_sha}:{tree}",
+            "sourceCommit": candidate_sha,
+            "sourceTree": tree,
+        },
+        "requiredRole": role,
+        "evidenceSetDigest": sha256_file(receipt_path),
+        "evidenceReceiptPath": receipt_path.name,
+        "decisionContract": "IndependentDecisionReceiptV1",
+        "allowedDecisions": ["accept", "reject", "conditional", "abstain"],
+        "requiredConditions": [
+            "exact_candidate_only",
+            "no_promotion_authority",
+        ],
+        "signerMustBeIndependentOfGenerator": True,
+        "independentAcceptance": False,
+    }
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(
+        json.dumps(request, sort_keys=True, separators=(",", ":")) + "\n",
+        encoding="utf-8",
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="command", required=True)
@@ -207,6 +247,10 @@ def main() -> int:
         required=True,
     )
     receipt.add_argument("--output", type=Path, required=True)
+    review = sub.add_parser("review-request")
+    review.add_argument("--receipt", type=Path, required=True)
+    review.add_argument("--output", type=Path, required=True)
+    review.add_argument("--role", default="independent-review")
     args = parser.parse_args()
     try:
         if args.command == "verify":
@@ -223,9 +267,12 @@ def main() -> int:
                     sort_keys=True,
                 )
             )
-        else:
+        elif args.command == "receipt":
             write_receipt(args.output, args.expected_sha, args.kind)
             print(f"kernel.evidence exact-candidate receipt: {args.output}")
+        else:
+            write_review_request(args.receipt, args.output, args.role)
+            print(f"kernel.evidence independent review request: {args.output}")
     except (TraceabilityError, subprocess.CalledProcessError) as error:
         print(f"kernel.evidence traceability failed: {error}", file=__import__("sys").stderr)
         return 1
