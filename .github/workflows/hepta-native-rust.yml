@@ -1,0 +1,151 @@
+name: Hepta native Rust shell qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-native-gateway/**"
+      - "codex-rs/cli/src/bin/hepta-native.rs"
+      - "codex-rs/cli/src/bin/hepta-native-updater.rs"
+      - ".github/workflows/hepta-native-rust.yml"
+      - "docs/modules/ui.native/**"
+      - "qualification/ui.native/**"
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/hepta-native-gateway/**"
+      - "codex-rs/cli/src/bin/hepta-native.rs"
+      - "codex-rs/cli/src/bin/hepta-native-updater.rs"
+      - ".github/workflows/hepta-native-rust.yml"
+      - "docs/modules/ui.native/**"
+      - "qualification/ui.native/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-native-rust-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-rust:
+    name: native-rust (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-15, windows-2025]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    defaults:
+      run:
+        working-directory: codex-rs
+        shell: bash
+    steps:
+      - name: Check out exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - uses: ./.github/actions/setup-ci
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: clippy,rustfmt
+
+      - name: Format qualification worktree and retain patch
+        run: |
+          set -euo pipefail
+          cargo fmt --all
+          mkdir -p ../qualification/ui.native/evidence
+          git diff -- . > ../qualification/ui.native/evidence/native-rustfmt-${{ matrix.os }}.patch
+
+      - name: Test native runtime, reconciliation, grants and updater
+        id: native_tests
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          cargo test -p codex-hepta-native-gateway --locked 2>&1 | tee ../qualification/ui.native/evidence/native-test-${{ matrix.os }}.log
+          exit ${PIPESTATUS[0]}
+
+      - name: Compile all-Rust native application shell
+        id: native_check
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          cargo check -p codex-cli --bin hepta-native --locked 2>&1 | tee ../qualification/ui.native/evidence/native-check-${{ matrix.os }}.log
+          exit ${PIPESTATUS[0]}
+
+      - name: Clippy native gateway
+        id: native_clippy_gateway
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          cargo clippy -p codex-hepta-native-gateway --all-targets --locked -- -D warnings 2>&1 | tee ../qualification/ui.native/evidence/native-clippy-gateway-${{ matrix.os }}.log
+          exit ${PIPESTATUS[0]}
+
+      - name: Clippy native application shell
+        id: native_clippy_shell
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          cargo clippy -p codex-cli --bin hepta-native --locked -- -D warnings 2>&1 | tee ../qualification/ui.native/evidence/native-clippy-shell-${{ matrix.os }}.log
+          exit ${PIPESTATUS[0]}
+
+      - name: Record exact-head qualification receipt
+        if: always()
+        env:
+          NATIVE_TESTS: ${{ steps.native_tests.outcome }}
+          NATIVE_CHECK: ${{ steps.native_check.outcome }}
+          NATIVE_CLIPPY_GATEWAY: ${{ steps.native_clippy_gateway.outcome }}
+          NATIVE_CLIPPY_SHELL: ${{ steps.native_clippy_shell.outcome }}
+        run: |
+          set -euo pipefail
+          head="$(git rev-parse HEAD)"
+          tree="$(git rev-parse 'HEAD^{tree}')"
+          python3 - "$head" "$tree" "${{ matrix.os }}" "$NATIVE_TESTS" "$NATIVE_CHECK" "$NATIVE_CLIPPY_GATEWAY" "$NATIVE_CLIPPY_SHELL" > ../qualification/ui.native/evidence/native-rust-${{ matrix.os }}.json <<'PY'
+          import json
+          import sys
+          outcomes = {
+              "gateway_tests": sys.argv[4],
+              "native_shell_check": sys.argv[5],
+              "gateway_clippy": sys.argv[6],
+              "native_shell_clippy": sys.argv[7],
+          }
+          print(json.dumps({
+              "schema": "hepta.ui-native-rust-qualification.v1",
+              "head": sys.argv[1],
+              "tree": sys.argv[2],
+              "runner": sys.argv[3],
+              "outcomes": outcomes,
+              "result": "passed" if all(value == "success" for value in outcomes.values()) else "failed",
+              "authority_delta": "none"
+          }, sort_keys=True, indent=2))
+          PY
+
+      - name: Retain exact-head native receipt, logs and rustfmt patch
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-ui-native-${{ matrix.os }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            qualification/ui.native/evidence/native-rust-${{ matrix.os }}.json
+            qualification/ui.native/evidence/native-rustfmt-${{ matrix.os }}.patch
+            qualification/ui.native/evidence/native-*.log
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Enforce native qualification result
+        if: always()
+        env:
+          NATIVE_TESTS: ${{ steps.native_tests.outcome }}
+          NATIVE_CHECK: ${{ steps.native_check.outcome }}
+          NATIVE_CLIPPY_GATEWAY: ${{ steps.native_clippy_gateway.outcome }}
+          NATIVE_CLIPPY_SHELL: ${{ steps.native_clippy_shell.outcome }}
+        run: |
+          set -euo pipefail
+          for outcome in "$NATIVE_TESTS" "$NATIVE_CHECK" "$NATIVE_CLIPPY_GATEWAY" "$NATIVE_CLIPPY_SHELL"; do
+            test "$outcome" = success || exit 1
+          done
