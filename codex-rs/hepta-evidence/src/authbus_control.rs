@@ -1005,17 +1005,18 @@ fn decode_reservation(row: sqlx::sqlite::SqliteRow) -> Result<Reservation, AuthB
 }
 
 fn canonical_policy_digest(policy: &PolicyRevision) -> Result<Digest32, AuthBusControlError> {
+    let mut identities = BTreeSet::new();
     let mut rows = BTreeSet::new();
     for rule in &policy.rules {
-        let key = (
+        let identity = (
             rule.principal_id.as_str().to_owned(),
             rule.action_id.as_str().to_owned(),
             *rule.scope_digest.as_array(),
-            rule.allow,
         );
-        if !rows.insert(key) {
+        if !identities.insert(identity.clone()) {
             return Err(AuthBusControlError::Invalid("duplicate policy rule"));
         }
+        rows.insert((identity.0, identity.1, identity.2, rule.allow));
     }
     let mut bytes = b"hepta.authbus.policy-revision.v1\0".to_vec();
     push(&mut bytes, policy.policy_id.as_str());
