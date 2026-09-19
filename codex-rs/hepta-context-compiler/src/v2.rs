@@ -168,6 +168,15 @@ impl TokenizationReceiptV2 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ContextAdmissionBindingV2 {
+    pub item_id: StableId,
+    pub role: ContextRoleV2,
+    pub content_digest: Digest32,
+    pub source_digest: Digest32,
+    pub generation_vector_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ContextAdmissionRecordV2 {
     pub admission_id: StableId,
     pub item_id: StableId,
@@ -183,21 +192,17 @@ pub struct ContextAdmissionRecordV2 {
 impl ContextAdmissionRecordV2 {
     pub fn new(
         admission_id: StableId,
-        item_id: StableId,
-        role: ContextRoleV2,
-        content_digest: Digest32,
-        source_digest: Digest32,
-        generation_vector_digest: Digest32,
+        binding: ContextAdmissionBindingV2,
         issued_unix_ms: u64,
         expires_unix_ms: u64,
     ) -> Result<Self, ContextCompilerV2Error> {
         let mut record = Self {
             admission_id,
-            item_id,
-            role,
-            content_digest,
-            source_digest,
-            generation_vector_digest,
+            item_id: binding.item_id,
+            role: binding.role,
+            content_digest: binding.content_digest,
+            source_digest: binding.source_digest,
+            generation_vector_digest: binding.generation_vector_digest,
             issued_unix_ms,
             expires_unix_ms,
             record_digest: Digest32::ZERO,
