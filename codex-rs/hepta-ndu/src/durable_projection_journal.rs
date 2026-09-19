@@ -157,11 +157,24 @@ impl NduProjectionDurableJournalV1 {
 
         let empty_anchor = empty_anchor();
         if let Err(error) = anchor_store.compare_and_set(None, empty_anchor) {
-            let _ = file.set_len(0);
-            let _ = file.sync_all();
-            return Err(NduProjectionDurableError::AnchorUpdateIndeterminate(
-                error,
-            ));
+            match anchor_store
+                .current_anchor()
+                .map_err(NduProjectionDurableError::AnchorStore)?
+            {
+                Some(current) if current == empty_anchor => {}
+                None => {
+                    let _ = file.set_len(0);
+                    let _ = file.sync_all();
+                    return Err(NduProjectionDurableError::AnchorUpdateIndeterminate(
+                        error,
+                    ));
+                }
+                Some(_) => {
+                    return Err(NduProjectionDurableError::AnchorUpdateIndeterminate(
+                        error,
+                    ));
+                }
+            }
         }
 
         Ok(Self {
