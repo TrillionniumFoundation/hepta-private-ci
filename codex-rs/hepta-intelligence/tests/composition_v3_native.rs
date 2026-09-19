@@ -3,12 +3,11 @@ use codex_hepta_context_compiler::{
 };
 use codex_hepta_intelligence::{
     CapabilityBindingV2, CapabilityNecessityV2, CapabilityRequirementV2,
-    CapabilitySnapshotRequestV2, CapabilitySnapshotV2, CompositionBudgetV3,
-    CompositionControlV3, CompositionDispositionV3, CompositionPortDecisionV3,
-    CompositionPortFailureV3, CompositionPortInputV3, CompositionPortReceiptV3,
-    CompositionPortsV3, CompositionRunRequestV3, CompositionStageV3,
-    LegalActionCandidateSetRequestV1, LegalActionCandidateV1, build_legal_candidates,
-    prepare_intelligence_run_v3,
+    CapabilitySnapshotRequestV2, CapabilitySnapshotV2, CompositionBudgetV3, CompositionControlV3,
+    CompositionDispositionV3, CompositionPortDecisionV3, CompositionPortFailureV3,
+    CompositionPortInputV3, CompositionPortReceiptV3, CompositionPortsV3, CompositionRunRequestV3,
+    CompositionStageV3, LegalActionCandidateSetRequestV1, LegalActionCandidateV1,
+    build_legal_candidates, prepare_intelligence_run_v3,
 };
 use codex_hepta_intelligence_eval::{
     Direction as EvalDirection, Disposition as EvalDisposition, EvaluationRequest,
@@ -28,13 +27,12 @@ use codex_hepta_ndu::{
 use codex_hepta_neuron::{SparseConfig, SparseTick, sparse_tick};
 use codex_hepta_objective::{
     ActionClass, CompileDisposition, ConfirmationPolicy, Constraint, ConstraintClass,
-    ConstraintRelation, ObjectiveSourceEnvelope, SoftDirection, SoftPreference, SourceTrust,
-    SuccessPredicate, PredicateTerminality, compile as compile_objective,
+    ConstraintRelation, ObjectiveSourceEnvelope, PredicateTerminality, SoftDirection,
+    SoftPreference, SourceTrust, SuccessPredicate, compile as compile_objective,
 };
 use codex_hepta_prompt_optimizer::PromptCandidate;
 use codex_hepta_prompt_optimizer::local_shadow::{
-    LOCAL_NO_INTERVENTION_ID, LocalNoInterventionBaseline, LocalShadowInput,
-    calculate_local_shadow,
+    LOCAL_NO_INTERVENTION_ID, LocalNoInterventionBaseline, LocalShadowInput, calculate_local_shadow,
 };
 use codex_hepta_types::{
     AuthorityPosture, Digest32, FixedQ32, Generation, ProbabilityQ32, Revision, StableId,
@@ -237,8 +235,7 @@ impl NativeFixtures {
             drive_q24: vec![Q24, Q24 / 2, 0, 0, 0],
             prediction_q24: vec![0; 5],
         };
-        let (_, neuron_receipt) =
-            sparse_tick(&neuron_config, &neuron_tick, None).expect("neuron");
+        let (_, neuron_receipt) = sparse_tick(&neuron_config, &neuron_tick, None).expect("neuron");
         assert!(neuron_receipt.requires_calibration);
 
         let registry_digest = digest("native-v3-prompt-registry");
@@ -471,9 +468,12 @@ impl CompositionPortsV3 for NativeOwnerPorts {
         input: &CompositionPortInputV3,
     ) -> Result<CompositionPortReceiptV3, CompositionPortFailureV3> {
         self.calls.push(input.stage);
-        let (_, receipt) =
-            sparse_tick(&self.fixtures.neuron_config, &self.fixtures.neuron_tick, None)
-                .expect("neuron");
+        let (_, receipt) = sparse_tick(
+            &self.fixtures.neuron_config,
+            &self.fixtures.neuron_tick,
+            None,
+        )
+        .expect("neuron");
         assert!(receipt.requires_calibration);
         assert!(!receipt.authority.grants_any());
         Self::receipt(
@@ -559,13 +559,41 @@ fn v3_composes_real_native_owner_algorithms_in_one_trace() {
         .expect("no conflict");
     let objective_digest = objective_receipt.objective.semantic_digest;
     let capabilities = [
-        ("objective.validation", "objective.compiler", CapabilityNecessityV2::Required),
-        ("utility.evaluation", "utility.ndu", CapabilityNecessityV2::Required),
-        ("evaluation.admission", "learning.eval", CapabilityNecessityV2::Required),
-        ("neural.signal", "neuron.runtime", CapabilityNecessityV2::Optional),
-        ("prompt.portfolio", "prompt.optimizer", CapabilityNecessityV2::Optional),
-        ("intuition.decision", "intuition.policy", CapabilityNecessityV2::Required),
-        ("context.compilation", "context.compiler", CapabilityNecessityV2::Required),
+        (
+            "objective.validation",
+            "objective.compiler",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "utility.evaluation",
+            "utility.ndu",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "evaluation.admission",
+            "learning.eval",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "neural.signal",
+            "neuron.runtime",
+            CapabilityNecessityV2::Optional,
+        ),
+        (
+            "prompt.portfolio",
+            "prompt.optimizer",
+            CapabilityNecessityV2::Optional,
+        ),
+        (
+            "intuition.decision",
+            "intuition.policy",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "context.compilation",
+            "context.compiler",
+            CapabilityNecessityV2::Required,
+        ),
     ];
     let requirements = capabilities
         .iter()
