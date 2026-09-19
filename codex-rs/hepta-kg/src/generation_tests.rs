@@ -225,3 +225,40 @@ fn supports_and_contradicts_remain_distinct_edges() {
     assert_eq!(generation.edges.len(), 2);
     assert_ne!(generation.edges[0].identity, generation.edges[1].identity);
 }
+
+
+#[test]
+fn custom_relation_identities_are_lossless_and_queryable() {
+    let studies = KnowledgeRelationKindV2::Custom(id("relation-kind:studies"));
+    let teaches = KnowledgeRelationKindV2::Custom(id("relation-kind:teaches"));
+    let generation = build_complete_generation(
+        generation(1),
+        input(
+            vec![node("a", "a"), node("b", "b")],
+            vec![
+                edge("a", "b", studies.clone(), "studies-edge"),
+                edge("a", "b", teaches.clone(), "teaches-edge"),
+            ],
+        ),
+    )
+    .unwrap_or_else(|error| panic!("valid custom-relation graph: {error}"));
+    assert_eq!(generation.edges.len(), 2);
+    assert_ne!(generation.edges[0].identity, generation.edges[1].identity);
+
+    let result = query_relations(
+        &generation,
+        KnowledgeRelationQueryV2 {
+            query_id: id("query:custom"),
+            generation_digest: generation.generation_digest,
+            seed_node_ids: vec![id("node:a")],
+            relation_kinds: vec![studies],
+            maximum_edges: 8,
+        },
+    )
+    .unwrap_or_else(|error| panic!("valid custom query: {error}"));
+    assert_eq!(result.edges.len(), 1);
+    assert_eq!(
+        result.edges[0].identity.relation,
+        KnowledgeRelationKindV2::Custom(id("relation-kind:studies"))
+    );
+}
