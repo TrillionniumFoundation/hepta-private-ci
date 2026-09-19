@@ -361,5 +361,8 @@ fn production_writer_closes_signed_decision_outcome_credit_and_dataset_path() {
         .expect("dataset");
     assert_eq!(dataset.snapshot.source_record_digests.len(), 3);
     assert_eq!(dataset.snapshot.eligible_frontier, 3);
-    assert_eq!(dataset.snapshot.ledger_head_digest, credit_receipt.chain_digest);
+    assert_eq!(
+        dataset.snapshot.ledger_head_digest,
+        credit_receipt.chain_digest
+    );
 }
