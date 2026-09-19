@@ -15,11 +15,13 @@ use codex_app_server_protocol::JSONRPCErrorError;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnStatus;
 use codex_hepta_types::AuthorityPosture;
+use codex_hepta_types::BoundedText;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 pub const APP_SERVER_PROTOCOL_V2: u16 = 2;
 pub const TURN_START_METHOD_ID: &str = "turn/start";
+pub type AppServerWireMethod = BoundedText<128>;
 pub const OVERLOADED_ERROR_CODE: i64 = -32001;
 const INVALID_REQUEST_ERROR_CODE: i64 = -32600;
 const METHOD_NOT_FOUND_ERROR_CODE: i64 = -32601;
@@ -30,7 +32,7 @@ pub struct CodexOperationIntent {
     pub operation_id: StableId,
     pub session_id: StableId,
     pub thread_id: StableId,
-    pub method_id: StableId,
+    pub method: AppServerWireMethod,
     pub payload_digest: Digest32,
     pub lease_payload_digest: Digest32,
     pub owner_generation: u64,
@@ -172,9 +174,6 @@ impl AppServerObservation {
         error: &JSONRPCErrorError,
     ) -> Result<Self, Error> {
         let request_digest = request_digest(intent)?;
-        if intent.method_id.as_str() != TURN_START_METHOD_ID {
-            return Err(Error::UnsupportedRequestObservation);
-        }
         let (kind, failure_kind) = if error.code == OVERLOADED_ERROR_CODE {
             (
                 ObservationKind::RequestRejected,
@@ -260,7 +259,7 @@ pub enum Error {
     CorrelationMismatch(&'static str),
     ObservationBindingMismatch,
     NonTerminalCompletion,
-    UnsupportedRequestObservation,
+    UnsupportedMethod,
 }
 
 impl fmt::Display for Error {
@@ -391,7 +390,7 @@ pub fn request_digest(intent: &CodexOperationIntent) -> Result<Digest32, Error> 
     push_id(&mut bytes, &intent.operation_id);
     push_id(&mut bytes, &intent.session_id);
     push_id(&mut bytes, &intent.thread_id);
-    push_id(&mut bytes, &intent.method_id);
+    push_bytes(&mut bytes, intent.method.as_str().as_bytes());
     bytes.extend_from_slice(intent.payload_digest.as_array());
     bytes.extend_from_slice(&intent.owner_generation.to_be_bytes());
     bytes.extend_from_slice(&intent.protocol_version.to_be_bytes());
@@ -411,6 +410,9 @@ fn validate_intent(intent: &CodexOperationIntent) -> Result<(), Error> {
     }
     if intent.protocol_version != APP_SERVER_PROTOCOL_V2 {
         return Err(Error::UnsupportedProtocol(intent.protocol_version));
+    }
+    if intent.method.as_str() != TURN_START_METHOD_ID {
+        return Err(Error::UnsupportedMethod);
     }
     Ok(())
 }
