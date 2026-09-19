@@ -160,7 +160,7 @@ fn exact_retry_is_idempotent_but_run_id_drift_conflicts() {
         record("run-2", b"objective-semantic-second"),
     ));
     let after_second = must(fs::read(fixture.path()));
-    let late_replay = must(journal.append(second.chain_digest, first.clone()));
+    let late_replay = must(journal.append(second.chain_digest, first));
     assert_eq!(
         late_replay.disposition,
         RunStartAppendDisposition::IdempotentReplay
