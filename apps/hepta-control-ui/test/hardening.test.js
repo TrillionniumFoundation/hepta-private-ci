@@ -1931,3 +1931,160 @@ test("bootstrap uses no-referrer request policy", async () => {
   assert.equal(observedOptions.credentials, "same-origin");
   assert.equal(observedOptions.redirect, "error");
 });
+
+
+test("transient backend session recovery retries with bounded backoff", async () => {
+  const document = new FakeDocument();
+  const root = new FakeElement("div", document);
+  document.body = new FakeElement("body", document);
+  document.querySelector = (selector) => (selector === "#app" ? root : null);
+  document.visibilityState = "visible";
+  document.addEventListener = () => {};
+  document.removeEventListener = () => {};
+
+  const held = new Set();
+  const lockManager = {
+    async request(name, options, callback) {
+      assert.deepEqual(options, { mode: "exclusive", ifAvailable: true });
+      if (held.has(name)) return callback(null);
+      held.add(name);
+      try {
+        return await callback({ name, mode: "exclusive" });
+      } finally {
+        held.delete(name);
+      }
+    },
+  };
+
+  let intervalId = 0;
+  let timeoutId = 0;
+  const retryTimers = new Map();
+  const window = {
+    location: { origin: "https://control.example" },
+    setInterval() { intervalId += 1; return intervalId; },
+    clearInterval() {},
+    setTimeout(callback, delay) {
+      timeoutId += 1;
+      retryTimers.set(timeoutId, { callback, delay });
+      return timeoutId;
+    },
+    clearTimeout(id) { retryTimers.delete(id); },
+    addEventListener() {},
+    removeEventListener() {},
+  };
+
+  let connectCalls = 0;
+  let activeSession = null;
+  let activeGeneration = 0;
+  const fetchImpl = async (url) => {
+    const path = new URL(url).pathname;
+    if (path === "/api/ui-control/bootstrap") {
+      return new Response(
+        JSON.stringify({
+          endpointId: "runtime.1",
+          protocolVersion: 1,
+          manifestDigest: D1,
+          basePath: "/api/ui-control",
+          persistenceNamespace: "principal.a",
+          snapshotPollMs: 2_000,
+        }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    }
+    if (path === "/api/ui-control/csrf") {
+      return new Response(JSON.stringify({ token: "csrf" }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    }
+    if (path === "/api/ui-control/connect") {
+      connectCalls += 1;
+      if (connectCalls === 2) {
+        return new Response(JSON.stringify({ error: "temporary" }), {
+          status: 503,
+          headers: { "content-type": "application/json" },
+        });
+      }
+      activeGeneration += 1;
+      activeSession = `session.${activeGeneration}`;
+      return new Response(
+        JSON.stringify({
+          authenticated: true,
+          sessionId: activeSession,
+          connectionGeneration: activeGeneration,
+          protocolVersion: 1,
+        }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    }
+    if (path === "/api/ui-control/snapshot") {
+      return new Response(
+        JSON.stringify({
+          sessionId: activeSession,
+          connectionGeneration: activeGeneration,
+          generation: 10 + activeGeneration,
+          revision: 20 + activeGeneration,
+          digest: D2,
+          modules: [
+            {
+              moduleId: "runtime.agentd",
+              status: "ready",
+              revision: 30 + activeGeneration,
+              digest: D3,
+            },
+          ],
+        }),
+        { status: 200, headers: { "content-type": "application/json" } },
+      );
+    }
+    if (path === "/api/ui-control/close") {
+      return new Response(JSON.stringify({ closed: true }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    }
+    if (path === "/api/ui-control/reconcile") {
+      return new Response("null", {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    }
+    assert.fail(`unexpected retry request ${path}`);
+  };
+
+  const control = await startControlPlane({
+    document,
+    window,
+    storage: new MemoryStorage(),
+    fetchImpl,
+    lockManager,
+  });
+  assert.equal(connectCalls, 1);
+
+  await assert.rejects(
+    control.reconnect("transient recovery"),
+    (error) => error.code === ERROR_CODES.BACKEND_UNAVAILABLE,
+  );
+  assert.equal(connectCalls, 2);
+  assert.equal(retryTimers.size, 1);
+  const [{ callback, delay }] = [...retryTimers.values()];
+  assert.equal(delay, 1_000);
+
+  retryTimers.clear();
+  callback();
+  for (
+    let index = 0;
+    index < 40 &&
+      (connectCalls < 3 || root.attributes.get("data-hepta-ready") !== "true");
+    index += 1
+  ) {
+    await new Promise((resolve) => setImmediate(resolve));
+  }
+  assert.equal(connectCalls, 3);
+  assert.equal(root.attributes.get("data-hepta-ready"), "true");
+  assert.equal(retryTimers.size, 0);
+
+  await control.dispose();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(held.size, 0);
+});
