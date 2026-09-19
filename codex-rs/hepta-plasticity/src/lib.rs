@@ -48,6 +48,7 @@ pub use topology_canary::StructuralCanaryObservationV1;
 pub use topology_canary::StructuralCanaryPlanV1;
 pub use topology_canary::StructuralCanaryReceiptV1;
 pub use topology_canary::StructuralCanaryStateV1;
+pub use topology_canary::build_structural_canary_plan_v1;
 pub use topology_governance::GovernedTopologyProposalV1;
 pub use topology_governance::TopologyGovernanceErrorV1;
 pub use topology_governance::WriterHandoffPlanV1;
