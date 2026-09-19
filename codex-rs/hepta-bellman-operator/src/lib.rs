@@ -17,6 +17,7 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+mod admission;
 mod learned;
 mod loaded;
 pub use loaded::LoadedTabularOperatorV1;
@@ -27,6 +28,11 @@ mod learned_strict;
 mod reference;
 mod world_model;
 
+pub use admission::OperatorAdmissionError;
+pub use admission::admit_operator_regularity_authenticated;
+pub use admission::fit_tabular_operator_from_dataset_receipt;
+pub use admission::fit_transition_model_from_dataset_receipt;
+pub use admission::validate_applicability_certificate_authenticated;
 pub use learned::LearnedOperatorError;
 pub use learned::TabularOperatorArtifactV1;
 pub use learned::TabularOperatorCellV1;
