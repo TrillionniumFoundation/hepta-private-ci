@@ -41,11 +41,7 @@ impl RuntimeModuleAttachments {
         self.entries.contains_key(module_id)
     }
 
-    fn insert<T>(
-        &mut self,
-        module_id: StableId,
-        attachment: Arc<T>,
-    ) -> Result<(), AgentdError>
+    fn insert<T>(&mut self, module_id: StableId, attachment: Arc<T>) -> Result<(), AgentdError>
     where
         T: Any + Send + Sync + 'static,
     {
@@ -233,11 +229,7 @@ impl AgentdState {
                     .to_string(),
             ));
         }
-        self.attach_runtime_module(
-            MODULE_OPERATIONS,
-            &["external_effect_dispatch"],
-            host,
-        )
+        self.attach_runtime_module(MODULE_OPERATIONS, &["external_effect_dispatch"], host)
     }
 
     pub(crate) fn automation_operations(
