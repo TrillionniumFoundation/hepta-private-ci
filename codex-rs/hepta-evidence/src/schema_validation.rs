@@ -186,6 +186,15 @@ const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
         ],
     },
     SchemaObjectSpec {
+        name: "authbus_quota_reservations_expiry",
+        object_type: "index",
+        table_name: "authbus_quota_reservations",
+        required_sql_fragments: &[
+            "create index",
+            "quota_key, state, expires_at_ms, reservation_id",
+        ],
+    },
+    SchemaObjectSpec {
         name: "authbus_quota_reservation_immutable",
         object_type: "trigger",
         table_name: "authbus_quota_reservations",
