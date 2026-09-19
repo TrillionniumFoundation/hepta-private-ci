@@ -1,7 +1,10 @@
 use super::*;
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("valid test id")
+    let Ok(value) = StableId::new(value) else {
+        panic!("valid test id");
+    };
+    value
 }
 
 fn observation() -> PromptDeliveryObservationV1 {
@@ -27,7 +30,7 @@ fn semantic_digest_is_deterministic_and_field_complete() {
     second
         .observed_token_positions
         .as_mut()
-        .expect("positions")
+        .unwrap_or_else(|| panic!("positions"))
         .push(12);
     assert_ne!(
         first.semantic_digest().expect("valid digest"),
@@ -37,16 +40,19 @@ fn semantic_digest_is_deterministic_and_field_complete() {
 
 #[test]
 fn rejection_reason_is_open_but_bounded() {
-    let reason = PromptDeliveryRejectReasonV1::new(id("provider_specific_rejection"))
-        .expect("bounded stable reason");
+    let Ok(reason) = PromptDeliveryRejectReasonV1::new(id("provider_specific_rejection")) else {
+        panic!("bounded stable reason");
+    };
     assert_eq!(reason.as_str(), "provider_specific_rejection");
 }
 
 #[test]
 fn delivered_and_rejected_are_mutually_exclusive() {
     let mut value = observation();
-    value.rejected_reason =
-        Some(PromptDeliveryRejectReasonV1::new(id("provider_rejected")).expect("reason"));
+    let Ok(reason) = PromptDeliveryRejectReasonV1::new(id("provider_rejected")) else {
+        panic!("bounded rejection reason");
+    };
+    value.rejected_reason = Some(reason);
     assert_eq!(
         value.validate(),
         Err(PromptDeliveryErrorV1::InvalidDisposition)
