@@ -156,10 +156,13 @@ this is not a physical power-loss or hostile-writer guarantee.
 ## Segmented V2 persistence behind the existing consumer port
 
 `DurableLearningJournal` is sealed to the actual `DurableLedger` and
-`SegmentedLedger` implementations. The existing
-[`run_evaluated_shadow_v1`](../hepta-intelligence/EVALUATED_SHADOW.md) consumer
-uses this port without changing its evaluation, signature, eight-stage ordering,
-Decision identity or no-effect semantics. There is no second data owner.
+`SegmentedLedger` implementations. Its weak Decision compatibility method exists
+only under `qualification-legacy-write`; default/product builds expose no such
+method. The corresponding
+[`run_evaluated_shadow_v1`](../hepta-intelligence/EVALUATED_SHADOW.md) consumer is
+compiled only under `evaluated-shadow-qualification`, which forwards that ledger
+feature. There is no second data owner and no default product bypass around
+`ProductionLedgerWriter`.
 
 `SegmentedLedger::create(owner_lock, first_segment, binding, limits)` takes only
 host-authorized independent handles. A stable, exclusive owner lock spans all
