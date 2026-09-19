@@ -138,6 +138,23 @@ impl AgentdRequest {
         }
     }
 
+    pub fn cognitive_context_finalize(
+        request_id: u64,
+        spawn_generation: u64,
+        snapshot_digest: String,
+        read_digest: String,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::CognitiveContextFinalize {
+                snapshot_digest,
+                read_digest,
+            },
+        }
+    }
+
     pub fn events(request_id: u64, spawn_generation: u64, after_cursor: u64, limit: u16) -> Self {
         Self {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
@@ -276,6 +293,10 @@ pub enum AgentdMethod {
         query: String,
         limit: u16,
     },
+    CognitiveContextFinalize {
+        snapshot_digest: String,
+        read_digest: String,
+    },
     Events {
         after_cursor: u64,
         limit: u16,
@@ -329,6 +350,10 @@ pub enum AgentdPayload {
     Lifecycle(LifecycleSnapshot),
     SessionIngress(SessionIngress),
     CognitiveContext(CognitiveContextSnapshot),
+    CognitiveContextFinalized {
+        snapshot_digest: String,
+        read_digest: String,
+    },
     AuthBusTextStatus(AuthBusTextStatus),
     Events(EventBatch),
     AutomationTask(AutomationTask),
@@ -668,6 +693,41 @@ mod tests {
             .expect("utf8")
             .replace(&"a".repeat(64), "not-a-digest");
         assert!(serde_json::from_str::<AgentdRequest>(&malformed).is_err());
+    }
+
+    #[test]
+    fn cognitive_context_finalize_wire_round_trip_is_strict_and_bounded() {
+        let request = AgentdRequest::cognitive_context_finalize(
+            8,
+            11,
+            "a".repeat(64),
+            "b".repeat(64),
+        );
+        let request_bytes = serde_json::to_vec(&request).expect("serialize finalize request");
+        assert!(request_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&request_bytes).expect("parse finalize request"),
+            request
+        );
+
+        let response = AgentdResponse {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: 8,
+            agent_id: AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent id"),
+            spawn_generation: 11,
+            current_generation: 12,
+            payload: AgentdPayload::CognitiveContextFinalized {
+                snapshot_digest: "a".repeat(64),
+                read_digest: "b".repeat(64),
+            },
+        };
+        let response_bytes = serde_json::to_vec(&response).expect("serialize finalize response");
+        assert!(response_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdResponse>(&response_bytes)
+                .expect("parse finalize response"),
+            response
+        );
     }
 
     #[test]

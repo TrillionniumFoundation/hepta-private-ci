@@ -254,6 +254,32 @@ impl DurableInferenceControl {
         )
     }
 
+    /// Release a synced dispatch intent only when the trusted host can prove it
+    /// has not sent provider `turn/start` yet. This lets a final authority or
+    /// cognitive-receipt check sit after durable dispatch and immediately before
+    /// the external effect without leaking the local slot on a fail-closed stop.
+    pub fn stop_native_before_turn_start(
+        &mut self,
+        request_id: &str,
+        reason: String,
+    ) -> Result<NativeRunRecord, Error> {
+        let record = self
+            .native
+            .records
+            .get(request_id)
+            .ok_or(Error::RequestNotFound)?;
+        if record.state != NativeReservationState::Dispatching || record.turn_id.is_some() {
+            return Err(Error::InvalidTransition);
+        }
+        self.commit_native(
+            request_id,
+            Event::Stop {
+                request_id: request_id.to_string(),
+                reason,
+            },
+        )
+    }
+
     /// Trusted host port: validates exact assignment and monotonic observations.
     /// Only matching terminal observations release local execution capacity.
     /// Missing usage never becomes zero and unknown execution may later settle.
@@ -405,7 +431,10 @@ impl NativeJournal {
                 record.state = NativeReservationState::Cancelling;
             }
             Event::Stop { reason, .. } => {
-                if record.state != NativeReservationState::Reserved
+                if !matches!(
+                    record.state,
+                    NativeReservationState::Reserved | NativeReservationState::Dispatching
+                ) || record.turn_id.is_some()
                     || reason.is_empty()
                     || reason.len() > 4096
                 {

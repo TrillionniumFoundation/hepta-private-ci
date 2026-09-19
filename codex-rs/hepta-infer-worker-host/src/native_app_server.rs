@@ -115,6 +115,7 @@ impl AppServerModelDriver {
             None => None,
         };
         let additional_context = context
+            .as_ref()
             .map(|snapshot| -> Result<_> {
                 let value = serde_json::to_string(&snapshot)?;
                 if value.len() > MAX_MODEL_CONTEXT_BYTES {
@@ -185,6 +186,31 @@ impl AppServerModelDriver {
                 context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
             },
         )?;
+        // The context receipt is retained as a one-shot authoritative guard by
+        // Agentd. Consume that guard after durable dispatch intent is synced and
+        // immediately before provider TurnStart. Any owner/frontier/epoch/lease/
+        // receipt drift fails closed while the provider effect is still unsent.
+        if let Some(snapshot) = context.as_ref()
+            && let Err(error) = owner.finalize_cognitive_context(snapshot).await
+        {
+            let reason: String = format!("cognitive context finalization failed: {error}")
+                .chars()
+                .take(1024)
+                .collect();
+            let stopped = control.stop_native_before_turn_start(request_id, reason);
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            stopped?;
+            return Err(error.into());
+        }
+        if cancellation.is_cancelled() {
+            let stopped = control.stop_native_before_turn_start(
+                request_id,
+                "cancelled before model dispatch".to_string(),
+            );
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            stopped?;
+            return Err("cancelled before model dispatch".into());
+        }
         let response = timeout(
             RPC_TIMEOUT,
             client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {

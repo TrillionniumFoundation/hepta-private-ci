@@ -32,25 +32,38 @@ not only snapshot generation. Broken ancestry, a nonlatest head, invalid record
 metadata, and tombstone resurrection fail closed. All returned values retain
 `DENY_ALL` effect authority.
 
-`DurableCognitiveSnapshot::read(ReadRequestV2)` runs the new cognitive-read
-implementation against this owner-acquired cut. The caller supplies result and
-encoded-byte bounds. It can intersect these digest-only records with the
-existing scoped retrieval API and fetch matching content through the same
-store. Before delivery, compare each fetched record's exact revision and content
-digest, call `revalidate_lane_c_snapshot`, and recheck host authority/generation.
-Revalidation detects intervening corrections, deletions, newly appended source
-evidence, projection changes, and changes caused by validity time. It rejects
-clock regression. A subsequent concurrent write remains possible: this API
-returns a historical read cut and does not grant a lease over future effects.
+`DurableCognitiveSnapshot` no longer exposes a product read shortcut.
+Instead, `authoritative_provider` binds this exact immutable owner cut to an
+`AuthoritativeReadGenerationVectorV1` and
+`SnapshotAcquisitionRequestV1`. The vector contains only state that this read
+actually consumes and that the owner/host can truthfully revalidate: scope,
+purpose, memory/source/tombstone/knowledge-fact frontiers, knowledge-graph
+generation, consumer-profile digest and host authority epoch.
 
-`bind_context` optionally binds an externally frozen
-`LaneCGenerationVectorV1`. All five cognitive-owned components must exactly
-match the cut. The host must obtain prompt, compact, model, retrieval-profile,
-and authority values from their actual owners; the adapter supplies no defaults.
-Acquisition time must match the observed second, and the lease is bounded to
-five minutes. These are crate-native APIs; this change does not register V2
-types as a cross-module wire format or authorize arbitrary caller-supplied
-generation vectors.
+This read-specific vector is intentionally narrower than
+`LaneCGenerationVectorV1`. Prompt, compact, model, tokenizer, template and
+tool-schema generations remain owned by their respective components and must be
+bound at the boundaries that consume them; this adapter does not invent
+defaults merely to make an authority receipt look complete.
+
+The returned `LaneCAuthoritativeSnapshotProvider` is locked to the acquisition
+request digest and can only return the already acquired snapshot envelope.
+Agentd invokes `read_authoritative`; the lower-level `read_v2` projection is
+not a crate-root product API. Before context return, Agentd fetches matching
+content only when exact revision/content digests were admitted by the frozen
+result, calls `revalidate_lane_c_snapshot`, constructs a fresh envelope from
+the current owner cut, and calls `revalidate_authoritative_read`. The original
+lease, request, provider, generation vector, snapshot, frontiers and receipt
+bindings must all remain valid. StateControl additionally requires the same
+fleet lifecycle authority epoch after asynchronous I/O.
+
+Revalidation detects intervening corrections, deletions, newly appended source
+evidence, projection changes, validity-time changes and host-epoch drift. It
+rejects clock regression and expired leases. A write after the final check is
+still possible: the API returns a historical read cut with bounded validity and
+never grants a lease over future effects. These are crate-native APIs; no new
+cross-module wire format or arbitrary caller-supplied generation vector is
+authorized.
 
 Reopening with existing `CognitiveStore::open` reconstructs the same cut from
 durable rows. `cut_digest` can be retained independently and compared using
@@ -69,6 +82,9 @@ or unbounded lifetime retention. Retention/paging must preserve predecessor
 proofs and deletion frontiers before those limits can be increased safely.
 
 `lane_c_snapshot_tests.rs` exercises actual owner writes, correction ancestry,
-reopen, committed deletions, scope and verification/time filters, context
-binding, and restoration of an older valid SQLite backup. Run with
+reopen, committed deletions, scope and verification/time filters, authoritative
+provider binding, and restoration of an older valid SQLite backup. Agentd's
+`cognitive_context_tests.rs` additionally injects source-frontier and tombstone
+changes after an authoritative result is computed but before final consume-time
+revalidation, proving fail-closed product composition. Run with
 `just test -p codex-hepta-memory`.

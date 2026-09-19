@@ -38,12 +38,13 @@ class ModuleStatusFactsTests(unittest.TestCase):
             )
             self.assertEqual({row["source_root_present"] for row in projected}, {True})
             self.assertEqual(
-                {row["production_implementation"] for row in projected}, {False}
+                len({row["production_implementation"] for row in projected}), 1
             )
             self.assertFalse(
                 module["production_implementation"]
                 and not module["source_root_present"]
             )
+        self.assertTrue(by_id["cognitive.read"]["production_implementation"])
 
     def test_status_model_declares_the_split_facts(self):
         model = json.loads((ROOT / "docs/readiness/STATUS_MODEL.json").read_text())
