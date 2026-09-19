@@ -44,6 +44,7 @@ pub enum CovarianceError {
     MissingDigest,
     ProfileMismatch,
     EstimateMismatch,
+    ManifestMismatch,
     ConditioningMismatch,
     Duration,
     SampleCount,
