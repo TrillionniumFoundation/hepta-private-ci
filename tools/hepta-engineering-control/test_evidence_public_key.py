@@ -9,7 +9,10 @@ import tempfile
 import unittest
 
 from control_engineering_v2 import (
+    EngineeringController,
+    EngineeringError,
     ExecutionReceipt,
+    HmacTrustStore,
     OpenSslTrustStore,
     TrustedPublicKey,
 )
@@ -115,6 +118,40 @@ class OpenSslTrustStoreTests(unittest.TestCase):
                 )
             )
             self.assertFalse(hasattr(store, "sign"))
+
+            database = root / "engineering.db"
+            with EngineeringController(
+                database,
+                root,
+                "TrillionniumFoundation/hepta-private-ci",
+                store,
+                writer_instance_id="github-actions:engineering-control",
+                writer_credential_chain_digest="9" * 64,
+            ) as controller:
+                events = controller.audit_projection()
+                self.assertTrue(
+                    any(event["eventType"] == "engineering_writer_bound" for event in events)
+                )
+
+            with self.assertRaisesRegex(EngineeringError, "writer_binding_conflict"):
+                EngineeringController(
+                    database,
+                    root,
+                    "TrillionniumFoundation/hepta-private-ci",
+                    store,
+                    writer_instance_id="different-writer",
+                    writer_credential_chain_digest="8" * 64,
+                )
+
+            with self.assertRaisesRegex(EngineeringError, "fixture_verifier_forbidden"):
+                EngineeringController(
+                    root / "fixture.db",
+                    root,
+                    "TrillionniumFoundation/hepta-private-ci",
+                    HmacTrustStore({("ci_executor", "fixture"): b"fixture"}),
+                    writer_instance_id="fixture-writer",
+                    writer_credential_chain_digest="7" * 64,
+                )
 
 
 if __name__ == "__main__":
