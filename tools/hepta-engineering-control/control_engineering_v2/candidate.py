@@ -1066,7 +1066,7 @@ def _validate_realized_candidate_footprint(
     realized = tuple(sorted(object_changes))
     if realized != declared_paths:
         raise EngineeringError("sandbox_path_escape")
-    return changed
+    return realized
 
 
 def _changed_byte_budget(
