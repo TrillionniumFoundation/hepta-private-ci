@@ -151,8 +151,6 @@ fn missing_optional_adapters_do_not_call_upstream_or_fabricate_success() {
     assert!(receipt.stages.iter().any(|trace| {
         trace.stage == IntelligenceStageV3::PromptPortfolioBuilt
             && trace.outcome
-                == IntelligenceStageOutcomeV3::FallbackUsed(
-                    IntelligenceFailureClassV3::Unavailable,
-                )
+                == IntelligenceStageOutcomeV3::FallbackUsed(IntelligenceFailureClassV3::Unavailable)
     }));
 }
