@@ -179,6 +179,7 @@ mod tests {
             snapshot_digest: envelope.snapshot_digest,
             predecessor_digest: envelope.envelope_digest,
             budget_micros: 1_000,
+            deadline_unix_micros: 10_000_000,
             stage: LaneFStageV3::HostHandoffAccepted,
         };
         let receipt = host.port_receipt(&input, &envelope).expect("acceptance");
