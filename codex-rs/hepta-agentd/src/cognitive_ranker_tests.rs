@@ -314,14 +314,14 @@ async fn sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deleti
             .unwrap();
     assert_eq!(ranked.items, vec![baseline.items[1].clone()]);
     assert!(ranked.plan.as_ref().unwrap().read_allowed);
-    let retained_cut_digest = ranked.cut_digest.clone();
+    let revalidated = client
+        .revalidate_cognitive_context(&ranked)
+        .await
+        .unwrap();
+    assert_eq!(revalidated.snapshot_digest, ranked.snapshot_digest);
     assert_eq!(
-        client
-            .revalidate_cognitive_context(retained_cut_digest.clone())
-            .await
-            .unwrap()
-            .cut_digest,
-        retained_cut_digest
+        usize::from(revalidated.verified_item_count),
+        ranked.items.len()
     );
     // The read owner, not the learned ranker, remains authoritative on deletion.
     let selected_id = memory_ids
@@ -513,11 +513,8 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
         .await
         .unwrap();
     assert!(
-        client
-            .revalidate_cognitive_context(retained_cut_digest)
-            .await
-            .is_err(),
-        "a committed tombstone must invalidate the final-use cut witness"
+        client.revalidate_cognitive_context(&ranked).await.is_err(),
+        "a committed tombstone must invalidate final-use context bindings"
     );
     assert_eq!(
         client
