@@ -29,6 +29,7 @@ struct CanonicalModuleRuntimeRow {
     id: String,
     owner: String,
     state: String,
+    uses: Vec<String>,
     writes: Vec<String>,
 }
 
@@ -208,6 +209,11 @@ impl AgentdState {
             .map_err(|error| AgentdError::Protocol(error.to_string()))?;
         let generation = Generation::new(self.identity.spawn_generation)
             .map_err(|error| AgentdError::Protocol(error.to_string()))?;
+        let dependencies = row
+            .uses
+            .iter()
+            .map(|value| StableId::new(value).map_err(|error| AgentdError::Protocol(error.to_string())))
+            .collect::<Result<Vec<_>, _>>()?;
         let authoritative_domains = row
             .writes
             .iter()
@@ -236,6 +242,7 @@ impl AgentdState {
             predecessor_generation: None,
             rollback_predecessor_digest: Digest32::ZERO,
             state_class,
+            dependencies,
             input_ports: Vec::new(),
             output_ports: Vec::new(),
             authoritative_domains,
