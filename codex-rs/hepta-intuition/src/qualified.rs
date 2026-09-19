@@ -629,9 +629,7 @@ fn validate_profile_shape(
             "calibration ece",
         ));
     }
-    if profile.ood_measured_false_acceptance_ppm
-        > profile.maximum_ood_false_acceptance_ppm
-    {
+    if profile.ood_measured_false_acceptance_ppm > profile.maximum_ood_false_acceptance_ppm {
         return Err(QualifiedCalibratedError::ProfileQualityInvalid(
             "ood false acceptance",
         ));
