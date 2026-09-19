@@ -1,3 +1,5 @@
+use std::collections::BTreeSet;
+
 use super::*;
 
 fn id(value: &str) -> StableId {
