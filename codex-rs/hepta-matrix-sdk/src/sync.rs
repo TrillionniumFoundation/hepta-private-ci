@@ -213,19 +213,32 @@ impl MatrixSyncComposer<'_> {
                     serde_json::from_str(raw_json).map_err(|_| MatrixSdkError::Sync)?;
                 let digest = Sha256Digest::for_bytes(raw_json.as_bytes()).as_str().to_string();
 
-                if let (Some(transaction), Some(event_id)) = (
-                    value
+                if let Some(event_id) = value
+                    .get("event_id")
+                    .and_then(Value::as_str)
+                    .and_then(|value| MatrixEventId::parse(value).ok())
+                {
+                    let mut observed = false;
+                    if let Some(txn_id) = value
                         .pointer("/unsigned/transaction_id")
-                        .and_then(Value::as_str),
-                    value.get("event_id").and_then(Value::as_str),
-                ) {
-                    if let (Ok(txn_id), Ok(event_id)) = (
-                        MatrixTransactionId::parse(transaction),
-                        MatrixEventId::parse(event_id),
-                    ) {
-                        self.store
+                        .and_then(Value::as_str)
+                        .and_then(|value| MatrixTransactionId::parse(value).ok())
+                    {
+                        observed = self
+                            .store
                             .observe_dispatch_terminal_success_if_known(
                                 &txn_id,
+                                &room_id,
+                                &event_id,
+                                &digest,
+                                observed_at_ms,
+                            )
+                            .await
+                            .map_err(|_| MatrixSdkError::Store)?;
+                    }
+                    if !observed {
+                        self.store
+                            .observe_dispatch_terminal_success_by_event_if_known(
                                 &room_id,
                                 &event_id,
                                 &digest,
