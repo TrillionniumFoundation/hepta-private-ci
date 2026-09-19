@@ -62,8 +62,7 @@ pub fn materialize_q24_coefficient_candidate_v1(
         return Err(CovarianceError::Dimension);
     }
 
-    let mut coefficients_raw =
-        Vec::with_capacity(spec.utility_dimension * spec.driver_dimension);
+    let mut coefficients_raw = Vec::with_capacity(spec.utility_dimension * spec.driver_dimension);
     for value in estimate.z.iter().flatten() {
         if !value.is_finite() {
             return Err(CovarianceError::NonFinite);
@@ -113,9 +112,7 @@ pub fn materialize_q24_coefficient_candidate_v1(
 
 fn quantize_q24_ties_even(value: f64) -> Result<i64, CovarianceError> {
     let scaled = value * Q24_SCALE;
-    if !scaled.is_finite()
-        || !(I64_MIN_INCLUSIVE_F64..I64_MAX_EXCLUSIVE_F64).contains(&scaled)
-    {
+    if !scaled.is_finite() || !(I64_MIN_INCLUSIVE_F64..I64_MAX_EXCLUSIVE_F64).contains(&scaled) {
         return Err(CovarianceError::QuantizationRange);
     }
 
