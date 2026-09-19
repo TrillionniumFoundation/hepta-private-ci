@@ -27,7 +27,7 @@ uncertainty vector
 support digest
 ```
 
-The canonical external contract remains `UtilityContributionV1`; the Rust owner-local type preserves the same core semantics. Each axis has a registered unit and direction. A contribution with an empty support digest, mixed objective, mixed generation, duplicate organ identity, unknown axis or missing required organ is unavailable rather than zero. Every evaluated candidate must also contain a value for every registered uncertainty axis. The candidate support digest is derived from the organ identity, objective, generation, feasibility posture, complete normalized vectors and the upstream support digest, so provenance cannot be detached from contribution semantics.
+The canonical external contract remains `UtilityContributionV1`; the Rust owner-local type preserves the same core semantics. Each axis has a registered unit and direction. `UtilityProfile.axis_registry_digest` is non-zero and canonically binds the immutable registry identity for units, scales and normalization semantics into the utility-profile and evaluation digests. A contribution with an empty support digest, mixed objective, mixed generation, duplicate organ identity, unknown axis or missing required organ is unavailable rather than zero. Every evaluated candidate must also contain a value for every registered uncertainty axis. The candidate support digest is derived from the organ identity, objective, generation, feasibility posture, complete normalized vectors and the upstream support digest, so provenance cannot be detached from contribution semantics.
 
 An organ contributes only facts it owns. `utility.ndu` aggregates supported contributions. `control.runtime` consumes a digest-bound projection of the resulting evaluation; it does not reimplement NDU. `learning.ledger` records the complete candidate/contribution set under its own writer rules.
 
@@ -95,11 +95,11 @@ P_next = (1 - eta) * P_k + eta * P_candidate
 U_k = project(instant_utility + discount * continuation_utility)
 ```
 
-`eta` is in `[1/16,1/4]`. The preference target solver emits immutable revisions and at most 64 local iteration receipts. Parent and child artifact updates cannot share one generation.
+`eta` is in `[1/16,1/4]`. Preference admission enforces at most 64 axes and values in `[-1,1]`. The target solver emits at most 64 local iteration receipts, but an already-converged state emits zero receipts and preserves its revision. Exhaustion is unavailable. Each emitted solver receipt carries the canonical exact iteration-context digest. Only concrete parent/child subjects from the digest-bound hierarchy graph are forbidden from sharing one update generation; unrelated subjects are not rejected merely because their `SubjectClass` values differ.
 
 ## 5. Convergence, infeasibility and multiple solutions
 
-`NduSolverIterationReceipt` records one owner-local numerical step. `NduSolverTerminationReceipt` records:
+`NduSolverIterationReceipt` records one owner-local numerical step and the canonical digest of the exact subject/objective/generation/event/coefficient context supplied when the step was created. Its fields are not public construction inputs. `NduSolverTerminationReceipt` records:
 
 - disposition;
 - iteration count;
@@ -157,7 +157,7 @@ Preference and utility projections are append-only revisions owned by `utility.n
 - projection payload digest;
 - predecessor-entry and entry digests.
 
-The journal enforces equal-identity/equal-semantics replay, rejects identity drift, validates exact length and hashes on reopen, rejects truncation/unknown kind/tampering, reconstructs selected projection state and prevents revocation resurrection after restart.
+The journal enforces equal-identity/equal-semantics replay, rejects identity drift, validates exact length and hashes on reopen, rejects truncation/unknown kind/tampering, reconstructs selected projection state and prevents revocation resurrection after restart. Revocations are keyed by `(objective_digest, subject_digest, payload_digest)`, so an equal payload digest in another objective/subject scope remains independently selectable.
 
 This reference does not claim an activated production writer, operating-system durability, fsync, schema migration, retention or backup qualification. Product composition must bind a selected store and prove those properties independently.
 
@@ -210,7 +210,7 @@ Reference-host p95/p99, transient memory and persistent projection targets remai
 - `NDU-SYS-GV-001`: deterministic zero-noise preference/utility vector reproduces exact Q32 values.
 - `NDU-SYS-GV-002`: a higher-utility privacy-violating candidate is filtered before Pareto analysis.
 - `NDU-SYS-GV-003`: multiple non-dominated candidates without scalarization return a Pareto slow path.
-- `NDU-SYS-GV-004`: simultaneous parent/child update rejects; staged damping converges in the fixture.
+- `NDU-SYS-GV-004`: a concrete parent/child update in one generation rejects; unrelated subjects may share a generation; staged damping converges in the fixture.
 - `NDU-SYS-GV-005`: resource cost above ceiling is infeasible, not negative utility.
 - `NDU-SYS-GV-006`: changed outcome-observer identity invalidates the evaluation chain.
 - `NDU-SYS-GV-007`: policy-specific maximum aggregation differs from summation and is digest-bound.
