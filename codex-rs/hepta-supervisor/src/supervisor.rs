@@ -456,10 +456,13 @@ impl<D: ProcessDriver> Supervisor<D> {
 
     pub fn rollback(&mut self, agent_id: &AgentId, now: Instant) -> Result<(), SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
-            let target = slot
+            let previous = slot
                 .previous_release
-                .clone()
+                .as_ref()
                 .ok_or_else(|| SupervisorError::NoPreviousRelease(agent_id.clone()))?;
+            let target_id = ReleaseId::parse(previous.identity().to_string())?;
+            let target =
+                AgentRelease::try_from(supervisor.registry.resolve_release(agent_id, &target_id)?)?;
             supervisor.upgrade_slot(agent_id, slot, target, now, /*explicit_rollback*/ true)
         })
     }
