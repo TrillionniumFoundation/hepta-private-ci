@@ -207,11 +207,9 @@ impl NonAuthorizingPosture {
     }
 }
 
-impl TryFrom<AuthorityPosture> for NonAuthorizingPosture {
-    type Error = NonAuthorizingPostureError;
-
-    fn try_from(_value: AuthorityPosture) -> Result<Self, Self::Error> {
-        Ok(Self::DENY_ALL)
+impl From<AuthorityPosture> for NonAuthorizingPosture {
+    fn from(_value: AuthorityPosture) -> Self {
+        Self::DENY_ALL
     }
 }
 
@@ -220,19 +218,6 @@ impl From<NonAuthorizingPosture> for AuthorityPosture {
         Self::DENY_ALL
     }
 }
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum NonAuthorizingPostureError {
-    AuthorityGranted,
-}
-
-impl fmt::Display for NonAuthorizingPostureError {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.write_str("authority-bearing posture is not representable in platform.types")
-    }
-}
-
-impl Error for NonAuthorizingPostureError {}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum IdentityError {
