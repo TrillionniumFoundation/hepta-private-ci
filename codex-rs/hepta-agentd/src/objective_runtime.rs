@@ -45,6 +45,7 @@ use crate::ObjectiveRunAdmission;
 use crate::RunSnapshot;
 use crate::RuntimeComposition;
 use crate::authbus_ingress;
+use crate::authbus_trust::TextTrust;
 use crate::authbus_trust::hex_bytes;
 use crate::authbus_trust::invalid;
 use crate::authbus_trust::read_private_owner_file;
