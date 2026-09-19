@@ -21,6 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MAP = ROOT / "docs/modules/inference.worker/IMPLEMENTATION_MAP.json"
 TECH = ROOT / "docs/modules/inference.worker/TECHNICAL.md"
 RUNBOOK = ROOT / "docs/modules/inference.worker/PRODUCTION_READINESS.md"
+QUALIFICATION_WORKFLOW = ROOT / ".github/workflows/inference-worker-qualification.yml"
 LANE_B_WORKFLOW = ROOT / ".github/workflows/hepta-lane-b-truth.yml"
 WORKER_REL = "codex-rs/hepta-infer-worker-host"
 
@@ -42,10 +43,12 @@ EVIDENCE_CLASSES = (
 REQUIRED_TEST_CHECKS = (
     "codex-hepta-infer-core-lib",
     "codex-hepta-infer-worker-host-lib",
+    "codex-hepta-inferd-lib",
 )
 HARDWARE_SCENARIOS = (
     "cold-load-warm-reload",
-    "cpu-or-gpu-inference",
+    "real-cpu-load-run-unload",
+    "real-gpu-load-run-unload",
     "concurrent-at-grant-ceiling",
     "reject-above-grant-ceiling",
     "reject-model-above-memory-grant",
@@ -57,6 +60,8 @@ HARDWARE_SCENARIOS = (
     "repeated-load-run-unload-leak",
     "app-server-kill-restart",
     "worker-kill-durable-boundaries",
+    "artifact-mutation-after-selection",
+    "rollback-predecessor-generation",
 )
 ISOLATION_CONTROLS = (
     "processBoundary",
@@ -214,6 +219,7 @@ def build_receipt(
             str(MAP.relative_to(ROOT)): sha256_file(MAP),
             str(TECH.relative_to(ROOT)): sha256_file(TECH),
             str(RUNBOOK.relative_to(ROOT)): sha256_file(RUNBOOK),
+            str(QUALIFICATION_WORKFLOW.relative_to(ROOT)): sha256_file(QUALIFICATION_WORKFLOW),
             str(LANE_B_WORKFLOW.relative_to(ROOT)): sha256_file(LANE_B_WORKFLOW),
         },
         "qualificationEvidence": {
