@@ -627,10 +627,13 @@ pub fn admit_operator_regularity(
     assessment: OperatorRegularityAssessmentV1,
 ) -> Result<OperatorRegularityAdmissionV1, OperatorClosureError> {
     let bytes = encode_operator_regularity_assessment_v1(assessment.clone())?;
-    let total = assessment.error_components.iter().try_fold(0_i128, |sum, component| {
-        sum.checked_add(i128::from(component.normalized_error.raw()))
-            .ok_or(OperatorClosureError::Arithmetic)
-    })?;
+    let total = assessment
+        .error_components
+        .iter()
+        .try_fold(0_i128, |sum, component| {
+            sum.checked_add(i128::from(component.normalized_error.raw()))
+                .ok_or(OperatorClosureError::Arithmetic)
+        })?;
     let total_normalized_error =
         FixedQ32::from_raw(i64::try_from(total).map_err(|_| OperatorClosureError::Arithmetic)?);
     Ok(OperatorRegularityAdmissionV1 {
