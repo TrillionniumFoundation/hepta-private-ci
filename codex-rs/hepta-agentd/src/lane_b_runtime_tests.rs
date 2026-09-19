@@ -230,3 +230,65 @@ fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity() {
     }
     assert_eq!(coordinator.run("run.1"), None);
 }
+
+#[test]
+fn intelligence_envelope_attaches_to_the_named_runtime_run() {
+    use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
+    use codex_hepta_types::Digest32;
+    use codex_hepta_types::StableId;
+
+    let id = |value: &str| StableId::new(value).expect("fixture id");
+    let d = |value: &str| Digest32::of_bytes(value.as_bytes());
+    let envelope = IntelligenceHostEnvelopeV1::new(
+        id("run.intelligence.1"),
+        d("snapshot"),
+        d("objective"),
+        d("candidate-set"),
+        d("utility"),
+        d("evaluation"),
+        Some(d("neural")),
+        Some(d("prompt")),
+        d("intuition"),
+        d("context"),
+        d("pre-handoff"),
+        10_000,
+    )
+    .expect("intelligence envelope");
+
+    let mut coordinator =
+        AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");
+    coordinator
+        .start_run(
+            100,
+            RunSnapshot {
+                run_id: envelope.run_id.to_string(),
+                request_digest: d("request").to_string(),
+                objective_digest: envelope.objective_digest.to_string(),
+                body_digest: d("body").to_string(),
+                artifact_set_digest: d("artifact-set").to_string(),
+                authority_epoch: 7,
+                deadline_ms: 10_000,
+            },
+        )
+        .expect("admit run");
+
+    let attached = coordinator
+        .attach_intelligence_envelope(1, &envelope)
+        .expect("attach intelligence");
+    assert_eq!(attached.phase, RunPhase::ContextAttached);
+    assert_eq!(
+        attached.context_digest,
+        Some(envelope.context_digest.to_string())
+    );
+
+    let repeated = coordinator
+        .attach_intelligence_envelope(1, &envelope)
+        .expect("idempotent attachment");
+    assert!(repeated.idempotent);
+    assert_eq!(repeated.revision, attached.revision);
+
+    let dispatched = coordinator
+        .mark_dispatched(envelope.run_id.as_str(), attached.revision)
+        .expect("dispatch through existing runtime");
+    assert_eq!(dispatched.phase, RunPhase::Dispatched);
+}

@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "typed_consumer_present_runtime_callsite_pending",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -27,7 +27,9 @@
       "sourcePath": "codex-rs/hepta-intelligence/src/vertical.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-intelligence/src/vertical_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "run_read_only_vertical",
       "mappingClass": "owner_native",
@@ -39,15 +41,75 @@
       "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "run_evaluated_shadow_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "build_legal_candidates_v1",
+      "nativeSymbol": "build_legal_candidates_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/contracts_v1.rs",
+      "designOperation": "build_legal_candidates_v1",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/contracts_v1.rs"
+      ],
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "run_composition_v3",
+      "nativeSymbol": "run_composition_v3",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_v3.rs",
+      "designOperation": "run_composition_v3",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/pipeline_v3_tests.rs"
+      ],
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "run_composition_v3_with_control",
+      "nativeSymbol": "run_composition_v3_with_control",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_v3.rs",
+      "designOperation": "run_composition_v3_with_control",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/pipeline_v3_tests.rs"
+      ],
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "append_outcome_credit_v1",
+      "nativeSymbol": "append_outcome_credit_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/outcome_credit.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/outcome_credit.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "post_execution_outcome_credit_closure",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "learning.ledger"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Bind the V3 graph to authenticated runtime owner adapters and measured Codex delivery/terminal observations.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
