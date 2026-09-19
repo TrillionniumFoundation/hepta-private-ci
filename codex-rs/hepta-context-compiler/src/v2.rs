@@ -854,12 +854,14 @@ impl CompiledContextV2 {
             return Err(ContextCompilerV2Error::SelectedTokenCountMismatch);
         }
         for candidate in &self.selected_candidates {
-            if candidate.generation_vector_digest != self.receipt.generation_vector_digest
-                || candidate.admission.verifier_digest()
-                    != self.receipt.admission_verifier_digest
-            {
+            if candidate.generation_vector_digest != self.receipt.generation_vector_digest {
                 return Err(ContextCompilerV2Error::SelectedSetMismatch);
             }
+            candidate.admission.validate_for_candidate(
+                candidate,
+                self.receipt.scope_digest,
+                self.receipt.admission_verifier_digest,
+            )?;
         }
         if self.receipt.context_digest != compute_context_digest(&self.selected_candidates) {
             return Err(ContextCompilerV2Error::DigestMismatch("context"));
