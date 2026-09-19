@@ -68,6 +68,7 @@ impl From<io::Error> for NduDurableProjectionError {
 /// The core journal advances only after the corresponding record is synced.
 /// After an indeterminate I/O outcome the handle is poisoned; callers must
 /// recover against their independently retained minimum anchor before retrying.
+#[derive(Debug)]
 pub struct NduDurableProjectionStoreV1 {
     file: File,
     journal: NduProjectionJournalV1,
