@@ -1,4 +1,5 @@
 from pathlib import Path
+import hashlib
 import subprocess
 import sys
 import tempfile
@@ -187,6 +188,67 @@ class CandidateChangeSetTests(unittest.TestCase):
         )
         self.assertTrue(receipt.passed)
         self.assertEqual(tested.changed_paths, ("src/b.txt", "src/renamed.txt"))
+
+    def test_binary_rename_uses_streaming_digest_precondition(self):
+        temp, root, base = self.fixture()
+        self.addCleanup(temp.cleanup)
+        payload = b"\x00\xffbinary\x80payload\n"
+        binary = root / "src/blob.bin"
+        binary.write_bytes(payload)
+        git(root, "add", "src/blob.bin")
+        git(root, "commit", "-m", "binary fixture")
+        base = git(root, "rev-parse", "HEAD")
+        envelope = CandidateEnvelope(
+            "env", base, ("src",), require_network_isolation=False
+        )
+        mutation = Mutation(
+            "rename_file",
+            "src/blob.bin",
+            expected_text=hashlib.sha256(payload).hexdigest(),
+            target_path="src/archive/blob.bin",
+        )
+        candidate = generate_candidates(envelope, (mutation,))[1]
+        tested, receipt = sandbox_candidate(
+            root,
+            envelope,
+            candidate,
+            (
+                (
+                    sys.executable,
+                    "-c",
+                    "from pathlib import Path; "
+                    "assert not Path('src/blob.bin').exists(); "
+                    "assert Path('src/archive/blob.bin').read_bytes() == "
+                    + repr(payload),
+                ),
+            ),
+        )
+        self.assertTrue(receipt.passed)
+        self.assertEqual(
+            tested.changed_paths,
+            ("src/archive/blob.bin", "src/blob.bin"),
+        )
+        self.assertTrue(binary.exists())
+        self.assertFalse((root / "src/archive/blob.bin").exists())
+
+    def test_rename_digest_precondition_must_be_sha256(self):
+        temp, _root, base = self.fixture()
+        self.addCleanup(temp.cleanup)
+        envelope = CandidateEnvelope(
+            "env", base, ("src",), require_network_isolation=False
+        )
+        with self.assertRaisesRegex(ValueError, "invalid_rename_precondition"):
+            generate_candidates(
+                envelope,
+                (
+                    Mutation(
+                        "rename_file",
+                        "src/b.txt",
+                        expected_text="not-a-digest",
+                        target_path="src/renamed.txt",
+                    ),
+                ),
+            )
 
     def test_inline_oracle_source_is_immutable_even_without_test_filename(self):
         temp, root, base = self.fixture()
