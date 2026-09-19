@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.cognitive-types-port-schema-bindings.v1",
+  "schemaVersion": 1,
+  "module": "cognitive.types",
+  "authorityDelta": "none",
+  "canonicalProtocolRegistry": "docs/contracts/PROTOCOL_SCHEMAS.json",
+  "bindings": {
+    "cognitive.read": {
+      "portId": "ModulePort::cognitive.types::cognitive.read",
+      "schemas": [
+        "MemoryEventV1",
+        "ModalitySpanRefV1",
+        "MemoryCueV1",
+        "RecallPacketV1"
+      ]
+    },
+    "cognitive.store": {
+      "portId": "ModulePort::cognitive.types::cognitive.store",
+      "schemas": [
+        "MemoryEventV1",
+        "ModalitySpanRefV1",
+        "CrossModalBindingV1",
+        "ForgetPropagationReceiptV1"
+      ]
+    },
+    "knowledge.graph": {
+      "portId": "ModulePort::cognitive.types::knowledge.graph",
+      "schemas": [
+        "MemoryEventV1",
+        "CrossModalBindingV1",
+        "EngramNodeV1",
+        "SynapseV1",
+        "ForgetPropagationReceiptV1"
+      ]
+    },
+    "learning.ledger": {
+      "portId": "ModulePort::cognitive.types::learning.ledger",
+      "schemas": [
+        "OutcomeSignalV1",
+        "ReplaySelectionReceiptV1",
+        "PlasticityBatchV1",
+        "MemoryTopologyProposalV1",
+        "ForgetPropagationReceiptV1"
+      ]
+    }
+  }
+}
