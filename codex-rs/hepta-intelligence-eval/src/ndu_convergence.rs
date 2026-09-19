@@ -108,6 +108,16 @@ pub struct NduConvergenceCertificateV1 {
 
 impl NduConvergenceCertificateV1 {
     #[must_use]
+    pub fn certificate_id(&self) -> &StableId {
+        &self.certificate_id
+    }
+
+    #[must_use]
+    pub const fn subject_class(&self) -> NduSubjectClassV1 {
+        self.subject_class
+    }
+
+    #[must_use]
     pub const fn objective_class_digest(&self) -> Digest32 {
         self.objective_class_digest
     }
@@ -115,6 +125,41 @@ impl NduConvergenceCertificateV1 {
     #[must_use]
     pub const fn solver_digest(&self) -> Digest32 {
         self.solver_digest
+    }
+
+    #[must_use]
+    pub const fn initialization_digest(&self) -> Digest32 {
+        self.initialization_digest
+    }
+
+    #[must_use]
+    pub const fn iterations(&self) -> u32 {
+        self.iterations
+    }
+
+    #[must_use]
+    pub const fn maximum_residual_q32(&self) -> i64 {
+        self.maximum_residual_q32
+    }
+
+    #[must_use]
+    pub const fn spectral_radius_upper95_q32(&self) -> i64 {
+        self.spectral_radius_upper95_q32
+    }
+
+    #[must_use]
+    pub const fn conservation_residual_q32(&self) -> i64 {
+        self.conservation_residual_q32
+    }
+
+    #[must_use]
+    pub const fn multiple_solution_disposition(&self) -> NduMultipleSolutionDispositionV1 {
+        self.multiple_solution_disposition
+    }
+
+    #[must_use]
+    pub fn evaluator_identity(&self) -> &StableId {
+        &self.evaluator_identity
     }
 
     #[must_use]
