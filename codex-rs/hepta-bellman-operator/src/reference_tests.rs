@@ -357,4 +357,3 @@ fn op_02_verified_regularity_binds_signed_approval_and_metrics() {
         Err(OperatorClosureError::EvidencePayloadMismatch)
     );
 }
-
