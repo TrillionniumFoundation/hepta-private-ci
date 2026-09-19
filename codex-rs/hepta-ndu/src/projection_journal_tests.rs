@@ -133,14 +133,12 @@ fn revocation_is_scoped_by_objective_subject_and_payload() {
     ));
     must(journal.select_projection(digest("selection-a"), objective_a, subject_a, projection));
     must(journal.select_projection(digest("selection-b"), objective_b, subject_b, projection));
-    must(journal.revoke_projection(
-        digest("revocation-a"),
-        objective_a,
-        subject_a,
-        projection,
-    ));
+    must(journal.revoke_projection(digest("revocation-a"), objective_a, subject_a, projection));
 
-    assert_eq!(journal.selected_projection_digest(objective_a, subject_a), None);
+    assert_eq!(
+        journal.selected_projection_digest(objective_a, subject_a),
+        None
+    );
     assert_eq!(
         journal.selected_projection_digest(objective_b, subject_b),
         Some(projection)
@@ -166,8 +164,7 @@ fn externally_anchored_checkpoint_detects_full_journal_rewrite() {
     let checkpoint = journal.checkpoint_digest();
     let bytes = journal.export_bytes();
     let reopened = must(NduProjectionJournalV1::reopen_with_checkpoint(
-        &bytes,
-        checkpoint,
+        &bytes, checkpoint,
     ));
     assert_eq!(reopened.entries(), journal.entries());
 
@@ -180,11 +177,8 @@ fn externally_anchored_checkpoint_detects_full_journal_rewrite() {
         digest("other-projection"),
     ));
     assert_eq!(
-        NduProjectionJournalV1::reopen_with_checkpoint(
-            &rewritten.export_bytes(),
-            checkpoint,
-        )
-        .expect_err("independently stored checkpoint must reject rewritten bytes"),
+        NduProjectionJournalV1::reopen_with_checkpoint(&rewritten.export_bytes(), checkpoint,)
+            .expect_err("independently stored checkpoint must reject rewritten bytes"),
         NduProjectionJournalError::CheckpointMismatch
     );
 }
