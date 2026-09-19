@@ -33,6 +33,26 @@ pub struct HoldoutAnchorV1 {
     pub head: Digest32,
 }
 
+/// Host-owned monotonic authority for multi-process or multi-host holdout use.
+///
+/// Implementations must provide a linearizable compare-and-swap over the
+/// independently retained anchor. The CAS is reserved before the local journal
+/// append; a subsequent local write failure therefore fails closed and requires
+/// operator reconciliation rather than permitting a second consumer.
+pub trait HoldoutAnchorAuthorityV1 {
+    fn current_anchor(
+        &mut self,
+        binding: Digest32,
+    ) -> Result<HoldoutAnchorV1, DurableHoldoutError>;
+
+    fn compare_and_swap_anchor(
+        &mut self,
+        binding: Digest32,
+        expected: HoldoutAnchorV1,
+        next: HoldoutAnchorV1,
+    ) -> Result<bool, DurableHoldoutError>;
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum DurableHoldoutError {
     Binding,
@@ -64,6 +84,7 @@ impl From<io::Error> for DurableHoldoutError {
 pub struct DurableFinalHoldoutJournalV1 {
     file: File,
     journal: FinalHoldoutJournalV1,
+    binding: Digest32,
     length: u64,
     poisoned: bool,
 }
@@ -85,6 +106,7 @@ impl DurableFinalHoldoutJournalV1 {
             file,
             journal: FinalHoldoutJournalV1::with_record_limit(MAX_RECORDS)
                 .map_err(|_| DurableHoldoutError::Capacity)?,
+            binding,
             length: HEADER as u64,
             poisoned: false,
         })
@@ -168,15 +190,18 @@ impl DurableFinalHoldoutJournalV1 {
         Ok(Self {
             file,
             journal,
+            binding,
             length,
             poisoned: false,
         })
     }
 
-    /// Sync consumption before exposing it. The host must retain the resulting
-    /// anchor independently BEFORE releasing confirmatory labels or acknowledging
-    /// use externally. Repeating an identical plan never appends another record.
-    pub fn consume(
+    /// Single-host compatibility path.
+    ///
+    /// This relies on the supplied file lock and independently retained anchor.
+    /// Multi-process or multi-host production owners must use consume_fenced
+    /// with a linearizable external anchor authority.
+    pub fn consume_single_host_trusted(
         &mut self,
         expected: HoldoutAnchorV1,
         plan: &CrossFoldPlanReceiptV1,
@@ -220,6 +245,56 @@ impl DurableFinalHoldoutJournalV1 {
         Ok(receipt)
     }
 
+    /// Multi-owner production path with external fencing.
+    ///
+    /// The authority CAS reserves the next semantic head before the local append.
+    /// If the local append becomes indeterminate after a successful reservation,
+    /// this handle is poisoned and recovery against the advanced external anchor
+    /// fails closed until an operator reconciles the durable stores.
+    pub fn consume_fenced<A: HoldoutAnchorAuthorityV1>(
+        &mut self,
+        authority: &mut A,
+        expected: HoldoutAnchorV1,
+        plan: &CrossFoldPlanReceiptV1,
+    ) -> Result<FinalHoldoutJournalReceiptV1, DurableHoldoutError> {
+        if self.poisoned {
+            return Err(DurableHoldoutError::Poisoned);
+        }
+        if authority.current_anchor(self.binding)? != expected || expected != self.anchor() {
+            return Err(DurableHoldoutError::Conflict);
+        }
+        if self.file.metadata()?.len() != self.length {
+            self.poisoned = true;
+            return Err(DurableHoldoutError::Indeterminate);
+        }
+
+        let mut candidate = self.journal.clone();
+        let staged = candidate
+            .consume(expected.head, plan)
+            .map_err(|_| DurableHoldoutError::Semantic)?;
+        if staged.disposition == HoldoutUseDispositionV1::IdempotentReplay {
+            return Ok(staged);
+        }
+        let next = HoldoutAnchorV1 {
+            sequence: candidate.records().len() as u64,
+            head: candidate.head_digest(),
+        };
+        if !authority.compare_and_swap_anchor(self.binding, expected, next)? {
+            return Err(DurableHoldoutError::Conflict);
+        }
+
+        match self.consume_single_host_trusted(expected, plan) {
+            Ok(receipt) if self.anchor() == next => Ok(receipt),
+            Ok(_) => {
+                self.poisoned = true;
+                Err(DurableHoldoutError::Indeterminate)
+            }
+            Err(error) => {
+                self.poisoned = true;
+                Err(error)
+            }
+        }
+    }
     pub fn anchor(&self) -> HoldoutAnchorV1 {
         HoldoutAnchorV1 {
             sequence: self.journal.records().len() as u64,
