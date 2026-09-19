@@ -96,7 +96,7 @@ export async function loadBrowserBootstrap({
       credentials: "same-origin",
       cache: "no-store",
       redirect: "error",
-      referrerPolicy: "same-origin",
+      referrerPolicy: "no-referrer",
       headers: { accept: "application/json" },
       signal: controller?.signal,
     });
