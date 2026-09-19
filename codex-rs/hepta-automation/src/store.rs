@@ -715,8 +715,13 @@ impl AutomationStore {
                      SELECT 1 FROM automation_tasks t
                      WHERE t.task_id = automation_runs.task_id AND t.state = 'enabled'
                  ) THEN 'pending' ELSE 'cancelled' END,
-                 lease_generation = NULL, lease_token = NULL, lease_expires_at_ms = NULL
+                 lease_generation = NULL, lease_token = NULL, lease_expires_at_ms = NULL,
+                 taskflow_step_attempt = CASE
+                     WHEN taskflow_run_id IS NOT NULL THEN taskflow_step_attempt + 1
+                     ELSE taskflow_step_attempt
+                 END
              WHERE state = 'leased' AND lease_generation != ?
+               AND taskflow_step_attempt < 1000000
                AND EXISTS (
                    SELECT 1 FROM automation_tasks t
                    WHERE t.task_id = automation_runs.task_id
@@ -1084,10 +1089,15 @@ impl AutomationStore {
                      SELECT 1 FROM automation_tasks t
                      WHERE t.task_id = automation_runs.task_id AND t.state = 'enabled'
                  ) THEN 'pending' ELSE 'cancelled' END,
-                 lease_generation = NULL, lease_token = NULL, lease_expires_at_ms = NULL
+                 lease_generation = NULL, lease_token = NULL, lease_expires_at_ms = NULL,
+                 taskflow_step_attempt = CASE
+                     WHEN taskflow_run_id IS NOT NULL THEN taskflow_step_attempt + 1
+                     ELSE taskflow_step_attempt
+                 END
              WHERE task_id = ? AND occurrence = ? AND state = 'leased'
                AND lease_generation = ? AND lease_token = ?
-               AND client_user_message_id = ?",
+               AND client_user_message_id = ?
+               AND taskflow_step_attempt < 1000000",
         )
         .bind(lease.task.task_id.to_string())
         .bind(to_i64(lease.occurrence)?)
@@ -1246,9 +1256,14 @@ impl AutomationStore {
                      SELECT 1 FROM automation_tasks t
                      WHERE t.task_id = automation_runs.task_id AND t.state = 'enabled'
                  ) THEN 'pending' ELSE 'cancelled' END,
-                 lease_generation = NULL, lease_token = NULL, lease_expires_at_ms = NULL
+                 lease_generation = NULL, lease_token = NULL, lease_expires_at_ms = NULL,
+                 taskflow_step_attempt = CASE
+                     WHEN taskflow_run_id IS NOT NULL THEN taskflow_step_attempt + 1
+                     ELSE taskflow_step_attempt
+                 END
              WHERE task_id = ? AND occurrence = ? AND state = 'leased'
                AND client_user_message_id = ?
+               AND taskflow_step_attempt < 1000000
                AND EXISTS (
                    SELECT 1 FROM automation_dispatch_outcomes o
                    WHERE o.task_id = automation_runs.task_id
@@ -1402,10 +1417,15 @@ impl AutomationStore {
                      SELECT 1 FROM automation_tasks t
                      WHERE t.task_id = automation_runs.task_id AND t.state = 'enabled'
                  ) THEN 'pending' ELSE 'cancelled' END,
-                 lease_generation = NULL, lease_token = NULL, lease_expires_at_ms = NULL
+                 lease_generation = NULL, lease_token = NULL, lease_expires_at_ms = NULL,
+                 taskflow_step_attempt = CASE
+                     WHEN taskflow_run_id IS NOT NULL THEN taskflow_step_attempt + 1
+                     ELSE taskflow_step_attempt
+                 END
              WHERE task_id = ? AND occurrence = ? AND state = 'leased'
                AND lease_generation = ? AND lease_token = ?
                AND client_user_message_id = ?
+               AND taskflow_step_attempt < 1000000
                AND NOT EXISTS (
                    SELECT 1 FROM automation_dispatch_outcomes o
                    WHERE o.task_id = automation_runs.task_id
