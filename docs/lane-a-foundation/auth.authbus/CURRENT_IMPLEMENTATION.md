@@ -6,48 +6,56 @@ The current candidate has two deliberately separated surfaces.
 
 The signed-admission surface verifies issuer-bound Ed25519 messages, consumes durable replay state in the canonical EvidenceStore, and supports fenced durable delivery. Successful admission still grants no effect authority; `VerificationReceipt` remains `AuthorityPosture::DENY_ALL`.
 
-The control surface adds versioned authorization policy, fixed-window integer quota accounting, exact reservation binding and observed-cost settlement in the same EvidenceStore lineage. `authorize_and_reserve_authbus` persists principal, action, scope, quota revision and the adapter's complete final-effect digest under one semantic binding digest. `begin_authbus_effect` takes the EvidenceStore write lock, reads the owner clock, rechecks the exact principal/action/scope/effect binding plus current policy/quota revisions, and atomically moves `Active -> EffectStarted` before an adapter may cross the external boundary. Once that marker commits, cancellation and expiry can never refund the reservation. Settlement is accepted only from `EffectStarted` or `Quarantined`; indeterminate outcomes remain fully reserved until terminal reconciliation.
+The control surface adds versioned authorization policy, fixed-window integer quota accounting, exact reservation binding and observed-cost settlement in the same EvidenceStore lineage. `authorize_and_reserve_authbus` persists principal, action, scope, quota revision and the adapter's complete final-effect digest under one semantic binding digest. `begin_authbus_effect` takes the EvidenceStore write lock, reads the owner clock, rechecks the exact principal/action/scope/effect binding plus current policy/quota revisions, and atomically moves `Active -> EffectStarted` before an adapter may cross the external boundary. Once that marker commits, cancellation and expiry cannot refund the reservation. Settlement is accepted only from `EffectStarted` or `Quarantined`; indeterminate outcomes remain fully reserved until terminal reconciliation.
 
-## Durable state
+## Public symbols and source bindings
 
-Evidence migrations 0009/0010 retain signed replay/outbox state. Migration 0011 adds:
+- Signed authentication: `IssuerRegistration`, `SignedMessageClaims::signing_bytes`, `SignedMessage::authenticate` and `AuthenticatedMessage` in `codex-rs/hepta-authbus/src/signed.rs`.
+- Legacy deny-all replay model: `PreverifiedAuthEnvelope`, `TrustedReplayContext`, `ReplayWindow` and `VerificationReceipt` in `codex-rs/hepta-authbus/src/lib.rs`.
+- Pure policy/quota/reservation types: `PolicyRule`, `PolicyRevision`, `QuotaConfig`, `Reservation`, `ReservationState` and `Settlement` in `codex-rs/hepta-authbus/src/control.rs`.
+- Durable admission/outbox: `HeptaEvidenceStore::admit_authbus_message` plus the AuthBus outbox APIs in `codex-rs/hepta-evidence/src/authbus_store.rs`, `authbus_outbox.rs` and `authbus_outbox_worker.rs`.
+- Durable authorization/quota control: `install_authbus_policy`, `configure_authbus_quota`, `authorize_and_reserve_authbus`, `begin_authbus_effect`, `settle_authbus_reservation`, cancellation/expiry/quarantine and recovery scanning in `codex-rs/hepta-evidence/src/authbus_control.rs`.
+- Replay/restore recovery: checkpoint verification and `retire_authbus_replay_epoch` in `codex-rs/hepta-evidence/src/authbus_recovery.rs`.
+- Physical schemas: EvidenceStore migrations `0009` through `0012`.
+- Narrow hosts/consumers: Agentd signed-text ingress in `codex-rs/hepta-agentd` and the candidate `BaoClient::consume_kv_v2_with_authbus` effect composition in `codex-rs/hepta-bao-adapter/src/https_consumer.rs`.
 
-- `authbus_policy_heads` and immutable revision rules;
-- `authbus_quota_registry` using fixed-width integer counters plus immutable unit and explicit non-overlapping window start/end;
-- `authbus_quota_reservations` with immutable principal/action/scope/quota/effect binding and active/effect-started/settled/cancelled/expired/quarantined states;
-- database triggers that reject reservation identity drift, illegal state transitions and deletion of held reservations.
+## Durability and activation
 
-Migration 0012 adds restore-checkpoint bindings and replay-epoch tombstones. First enrollment is an explicit provisioning operation through `initialize_authbus_restore_checkpoint`; Agentd has no authority to initialize a missing checkpoint row. Normal startup is verify-only and requires a separate `--authbus-restore-checkpoint generation:digest` host witness whenever AuthBus trust is enabled. The witness must live outside the Agent-home SQLite backup lineage, so a deleted/pre-checkpoint database and a real old SQLite restore both fail closed instead of being silently reinitialized. Replay-key retirement verifies the current checkpoint inside the same `BEGIN IMMEDIATE` transaction as active-outbox inspection, tombstone creation and replay deletion; conflicting tombstone reuse fails.
+Evidence migrations 0009/0010 retain signed replay/outbox state. Migration 0011 adds immutable policy revisions, a fixed-window quota registry, semantically bound reservations and fail-closed database triggers. Migration 0012 adds restore-checkpoint bindings and replay-epoch tombstones.
 
-## Accounting invariants
+Quota arithmetic is integer-only. For each current quota revision/window, `reserved + consumed <= endowment`. Active, EffectStarted and Quarantined reservations contribute to `reserved`; settled observed cost contributes to `consumed`; cancelled and expired reservations contribute to neither. A quota revision cannot advance while quota remains held, same-window revision changes cannot erase prior consumption, and a new window cannot overlap its predecessor.
 
-Quota arithmetic is integer-only. For each quota key:
+Agentd trust remains owner-controlled and fail-closed. The trust file supports the current key epoch plus at most four bounded previous epochs with independent revocation and optional validity windows. Normal AuthBus startup is verify-only and requires a separately supplied restore-checkpoint witness whenever trust is enabled. Replay-key retirement verifies that witness inside the same `BEGIN IMMEDIATE` transaction as active-outbox inspection, tombstone creation and replay deletion.
 
-`reserved + consumed <= endowment`
+The current source candidate composes two callers: the narrow Agentd signed-text path for authentication/delivery and the Bao KV-v2 wrapper for an exact reservation-bound effect. Neither composition is production-accepted merely because the source exists.
 
-Active, EffectStarted and Quarantined reservations contribute to `reserved`; settled observed cost contributes to `consumed`; cancelled and expired reservations contribute to neither. Reconciliation is scoped to the current quota revision/window and fails closed if a held reservation crosses revisions or if the endowment invariant is violated. A quota revision cannot advance while any amount remains held; a new window cannot overlap its predecessor.
+## Target-only design
 
-## Trust and key lifecycle
+The repository does not itself provide an independently governed trusted-time service, an independently retained production checkpoint service, managed issuer enrollment/key-rotation ceremony, operator-controlled target-host provisioning, or independent product/security acceptance. Broader provider/effect families must bind their own final payload and observed-cost semantics before using the AuthBus control surface.
 
-Agentd trust remains owner-controlled and fail-closed. The trust file now supports the current key epoch plus at most four previous epochs, each with independent revocation and optional validity windows. This permits bounded overlap during key rotation so already-enqueued messages do not become orphaned merely because the current epoch advanced. Every admission, claim, renewal and acknowledgement still resolves a fresh trusted registration.
+## Known limits and non-claims
 
-## Product composition
+The legacy `ReplayWindow` remains process-local. SQLite durability does not by itself prevent rollback if the external checkpoint witness is restored with the same backup. The current owner clock is the local host wall clock and is not an independently governed trusted-time source. Bao accounting currently represents the bounded KV-v2 read profile and must not be generalized to unrelated effect cost semantics without a new binding/profile.
 
-The narrow Agentd signed-text path remains the authentication/delivery caller. In addition, `hepta-bao-adapter::BaoClient::consume_kv_v2_with_authbus` computes the complete existing `FinalUseBinding`, derives its exact AuthBus effect digest, requires matching subject/action/scope semantics, commits `EffectStarted`, and only then enters the final-use/HTTPS path. Invalid request syntax can cancel while still Active; after EffectStarted, authority/transport/timeout/consumer-indeterminate failures are held or quarantined rather than refunded. Definitive provider observations settle one quota unit. This candidate still requires exact-head product qualification and independent review before production composition is claimed.
+Neither admission, reservation, EffectStarted nor queue acknowledgement proves an external effect completed. Exactly-once external effects are not claimed. Indeterminate outcomes remain held/quarantined until a current-fence reconciler records terminal evidence.
+
+No source change self-grants production activation, independent acceptance, promotion or release.
 
 ## Verification
 
-Native evidence tests now include the target BUS cases:
+Native source tests include:
 
-- BUS-01: two independent handles cannot both reserve the final quota unit;
-- BUS-02: duplicate settlement is idempotent and altered settlement conflicts;
-- BUS-03: once EffectStarted is durable, expiry cannot refund even when wall-clock expiry races terminal settlement;
-- BUS-04: policy revocation blocks effect-start and subsequent reservations.
+- signed-field substitution, issuer/key epoch, revocation, expiry and scope checks;
+- replay reopen, contention, bounded outbox leases/fences and crash-after-send recovery;
+- BUS-01 last-unit contention and BUS-02 settlement idempotency/conflict;
+- BUS-03 EffectStarted versus expiry and BUS-04 policy revocation;
+- full semantic/idempotency binding, owner-clock expiry, quota-window rollover and same-window consumption preservation;
+- SQLite binding/state/delete triggers, crash/reopen after EffectStarted and failed-settlement recovery;
+- actual old-SQLite restore detection and replay-retirement tombstones;
+- Bao request-binding drift, timeout quarantine, consumer-indeterminate reconciliation, settlement-failure recovery and successful settlement.
 
-Additional tests cover full semantic/idempotency binding, owner-clock expiry, quota-window rollover, SQLite fail-closed triggers, crash/settlement-store failure after EffectStarted, Bao request-binding drift, timeout quarantine and quarantine-to-settlement reconciliation. Recovery qualification restores an actual older SQLite image and verifies it fails against the newer external checkpoint witness, and replay-epoch retirement tests retain tombstones. The Lane A native qualification script now includes the P1.3 qualification crate and the real `hepta-agentd/tests/authbus_text_product.rs` process test.
+These test identities are source evidence only. Exact-head and deterministic synthetic-merge workflows must execute successfully for the candidate SHA before qualification is claimed.
 
-The qualification crate requires execution provenance containing source SHA, source tree, binary digest, runner identity, command digest and a zero exit code; these fields are bound into the qualification digest.
+## Integration prerequisites
 
-## Remaining non-claims
-
-This candidate still requires exact-head and synthetic-merge CI success, independent semantic/security review, target-host measurements, operator acceptance and production enrollment. No source change self-grants activation, promotion or release. Exactly-once external effects are not claimed; effect consumers must retain idempotency and reconciliation.
+A selected host must provision current issuer registrations, independently retain and present the restore-checkpoint witness outside the SQLite backup lineage, govern clock integrity, register the exact effect binding/cost profile, and retain terminal reconciliation for indeterminate effects. Before production use, run exact-head and synthetic-merge qualification, native Agentd/Bao product tests, independent semantic/security review, target-host rollback/fault measurements, operator acceptance and the normal activation/promotion gates.
