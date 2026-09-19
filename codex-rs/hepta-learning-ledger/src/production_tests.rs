@@ -412,6 +412,106 @@ fn production_writer_closes_signed_decision_outcome_credit_and_dataset_path() {
         dataset.snapshot.ledger_head_digest,
         credit_receipt.chain_digest
     );
+
+    let revocation = Revocation {
+        record_id: id("revoke-decision"),
+        target_record_id: id("decision-record"),
+        authority_id: id("evaluator"),
+        reason_digest: digest("privacy-erasure-request"),
+    };
+    let revocation_payload = revocation_admission_payload(&revocation);
+    let revocation_signed = sign(
+        &verifier,
+        "evidence-revocation",
+        "evaluator",
+        LearningEvidenceRoleV1::Evaluator,
+        3,
+        &revocation_payload,
+    );
+    let revocation_receipt = writer
+        .append_revocation(
+            dataset_anchor,
+            revocation,
+            &revocation_signed,
+            &revocation_payload,
+            50,
+        )
+        .expect("revocation");
+
+    let dataset_lineage = UnlearningLineageEventV1 {
+        record_id: id("unlearning-dataset"),
+        source_record_id: id("decision-record"),
+        derived_id: id("dataset-1"),
+        derived_kind: UnlearningDerivedKindV1::Dataset,
+        predecessor: None,
+        upstream_derived_id: None,
+        upstream_derived_digest: None,
+        authority_id: id("evaluator"),
+        reason_digest: digest("privacy-erasure-request"),
+        source_digest: decision_receipt.event_digest,
+        derived_digest: dataset.snapshot.dataset_digest,
+    };
+    let dataset_unlearning_payload = unlearning_admission_payload(&dataset_lineage);
+    let dataset_unlearning_signed = sign(
+        &verifier,
+        "evidence-unlearning-dataset",
+        "evaluator",
+        LearningEvidenceRoleV1::Evaluator,
+        3,
+        &dataset_unlearning_payload,
+    );
+    let dataset_lineage_receipt = writer
+        .append_unlearning_lineage(
+            LedgerAnchor {
+                sequence: revocation_receipt.sequence.get(),
+                chain_digest: revocation_receipt.chain_digest,
+            },
+            dataset_lineage,
+            &dataset_unlearning_signed,
+            &dataset_unlearning_payload,
+            50,
+        )
+        .expect("dataset unlearning");
+
+    let artifact_lineage = UnlearningLineageEventV1 {
+        record_id: id("unlearning-artifact"),
+        source_record_id: id("decision-record"),
+        derived_id: id("artifact-1"),
+        derived_kind: UnlearningDerivedKindV1::Artifact,
+        predecessor: None,
+        upstream_derived_id: Some(id("dataset-1")),
+        upstream_derived_digest: Some(dataset.snapshot.dataset_digest),
+        authority_id: id("evaluator"),
+        reason_digest: digest("privacy-erasure-request"),
+        source_digest: decision_receipt.event_digest,
+        derived_digest: digest("artifact-1"),
+    };
+    let artifact_payload = unlearning_admission_payload(&artifact_lineage);
+    let artifact_signed = sign(
+        &verifier,
+        "evidence-unlearning-artifact",
+        "evaluator",
+        LearningEvidenceRoleV1::Evaluator,
+        3,
+        &artifact_payload,
+    );
+    let artifact_receipt = writer
+        .append_unlearning_lineage(
+            writer.current_anchor().expect("dataset lineage anchor"),
+            artifact_lineage,
+            &artifact_signed,
+            &artifact_payload,
+            50,
+        )
+        .expect("artifact unlearning");
+    assert_eq!(
+        artifact_receipt.upstream_derived_id,
+        Some(id("dataset-1"))
+    );
+    assert_eq!(
+        dataset_lineage_receipt.derived_id,
+        id("dataset-1")
+    );
 }
 
 #[test]
