@@ -687,7 +687,10 @@ pub struct ReferenceHnmfFabric {
 }
 
 impl ReferenceHnmfFabric {
-    pub fn new(generation: u64, config: ReferenceFabricConfig) -> Result<Self, ReferenceFabricError> {
+    pub fn new(
+        generation: u64,
+        config: ReferenceFabricConfig,
+    ) -> Result<Self, ReferenceFabricError> {
         if generation == 0 {
             return Err(ReferenceFabricError::Invalid("snapshot generation must be non-zero"));
         }
@@ -726,7 +729,10 @@ impl ReferenceHnmfFabric {
         self.synapses.get(&(source, target, relation))
     }
 
-    pub fn insert_event(&mut self, event: ReferenceEventFeatures) -> Result<(), ReferenceFabricError> {
+    pub fn insert_event(
+        &mut self,
+        event: ReferenceEventFeatures,
+    ) -> Result<(), ReferenceFabricError> {
         event.validate()?;
         if self.events.len() >= self.config.maximum_candidate_events
             && !self.events.contains_key(&event.id)
@@ -749,7 +755,10 @@ impl ReferenceHnmfFabric {
         insert_exact(&mut self.nodes, node.id, node, "node identity")
     }
 
-    pub fn insert_synapse(&mut self, synapse: ReferenceSynapseState) -> Result<(), ReferenceFabricError> {
+    pub fn insert_synapse(
+        &mut self,
+        synapse: ReferenceSynapseState,
+    ) -> Result<(), ReferenceFabricError> {
         synapse.validate()?;
         if self.synapses.len() >= self.config.maximum_synapses
             && !self
@@ -810,7 +819,10 @@ impl ReferenceHnmfFabric {
         Ok(())
     }
 
-    pub fn recall(&self, cue: &ReferenceCueFeatures) -> Result<ReferenceRecallState, ReferenceFabricError> {
+    pub fn recall(
+        &self,
+        cue: &ReferenceCueFeatures,
+    ) -> Result<ReferenceRecallState, ReferenceFabricError> {
         self.validate()?;
         cue.validate()?;
 
@@ -1173,7 +1185,10 @@ impl ReferenceHnmfFabric {
         })
     }
 
-    pub fn apply_plasticity(&self, batch: &ReferencePlasticityProposalSet) -> Result<Self, ReferenceFabricError> {
+    pub fn apply_plasticity(
+        &self,
+        batch: &ReferencePlasticityProposalSet,
+    ) -> Result<Self, ReferenceFabricError> {
         if batch.predecessor_generation != self.generation
             || batch.next_generation != self.generation + 1
         {
@@ -1217,7 +1232,10 @@ impl ReferenceHnmfFabric {
         Ok(next)
     }
 
-    pub fn propose_forget(&self, event_id: EventId) -> Result<ReferenceForgetPlan, ReferenceFabricError> {
+    pub fn propose_forget(
+        &self,
+        event_id: EventId,
+    ) -> Result<ReferenceForgetPlan, ReferenceFabricError> {
         let event = self
             .events
             .get(&event_id)
@@ -1368,7 +1386,11 @@ fn sparse_select(
         .collect())
 }
 
-fn empty_packet(generation: u64, reason: ReferenceRecallAbstainReason, settling_steps: u8) -> ReferenceRecallState {
+fn empty_packet(
+    generation: u64,
+    reason: ReferenceRecallAbstainReason,
+    settling_steps: u8,
+) -> ReferenceRecallState {
     ReferenceRecallState {
         snapshot_generation: generation,
         candidate_event_count: 0,
@@ -1538,7 +1560,11 @@ mod tests {
         }
     }
 
-    fn cue(modalities: &[ReferenceModalityKind], keys: &[&str], seeds: &[NodeId]) -> ReferenceCueFeatures {
+    fn cue(
+        modalities: &[ReferenceModalityKind],
+        keys: &[&str],
+        seeds: &[NodeId],
+    ) -> ReferenceCueFeatures {
         ReferenceCueFeatures {
             modalities: set(modalities.iter().copied()),
             semantic_keys: set(keys.iter().map(|value| (*value).to_string())),
