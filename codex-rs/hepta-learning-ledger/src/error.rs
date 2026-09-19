@@ -75,7 +75,9 @@ impl LedgerError {
             | Self::EpisodeRevoked(_)
             | Self::OutcomeNotFound(_)
             | Self::OutcomeRevoked(_) => "LRN-E004",
-            Self::OutcomeEpisodeMismatch | Self::OutcomeNotTerminal | Self::OutcomeNotCurrent(_) => "LRN-E005",
+            Self::OutcomeEpisodeMismatch
+            | Self::OutcomeNotTerminal
+            | Self::OutcomeNotCurrent(_) => "LRN-E005",
             Self::PolicySelfLabelsOutcome
             | Self::InvalidAuthenticatedPrincipal
             | Self::OutcomeStateMismatch
@@ -147,7 +149,10 @@ impl fmt::Display for LedgerError {
                 formatter.write_str("credit assignment requires a terminal outcome")
             }
             Self::OutcomeNotCurrent(id) => {
-                write!(formatter, "credit assignment requires the current outcome head: {id}")
+                write!(
+                    formatter,
+                    "credit assignment requires the current outcome head: {id}"
+                )
             }
             Self::PolicySelfLabelsOutcome => {
                 formatter.write_str("evaluated policy cannot label its own outcome")
@@ -176,7 +181,10 @@ impl fmt::Display for LedgerError {
                 formatter.write_str("credit allocations plus residual must equal terminal outcome")
             }
             Self::CorrectionPredecessorRequired(id) => {
-                write!(formatter, "outcome correction predecessor required after head: {id}")
+                write!(
+                    formatter,
+                    "outcome correction predecessor required after head: {id}"
+                )
             }
             Self::CorrectionPredecessorNotFound(id) => {
                 write!(formatter, "outcome correction predecessor not found: {id}")
@@ -185,19 +193,27 @@ impl fmt::Display for LedgerError {
                 formatter.write_str("outcome correction predecessor belongs to another episode")
             }
             Self::CorrectionNotHead(id) => {
-                write!(formatter, "outcome correction predecessor is not current head: {id}")
+                write!(
+                    formatter,
+                    "outcome correction predecessor is not current head: {id}"
+                )
             }
             Self::CorrectionSelfReference => {
                 formatter.write_str("outcome correction cannot reference itself")
             }
             Self::UnlearningSourceNotRevoked(id) => {
-                write!(formatter, "unlearning source is not currently revoked: {id}")
+                write!(
+                    formatter,
+                    "unlearning source is not currently revoked: {id}"
+                )
             }
-            Self::UnlearningSourceDigestMismatch => {
-                formatter.write_str("unlearning source digest does not match the authoritative record")
-            }
+            Self::UnlearningSourceDigestMismatch => formatter
+                .write_str("unlearning source digest does not match the authoritative record"),
             Self::UnlearningPredecessorRequired(id) => {
-                write!(formatter, "unlearning predecessor required after current head: {id}")
+                write!(
+                    formatter,
+                    "unlearning predecessor required after current head: {id}"
+                )
             }
             Self::UnlearningPredecessorNotFound(id) => {
                 write!(formatter, "unlearning predecessor not found: {id}")
@@ -206,7 +222,10 @@ impl fmt::Display for LedgerError {
                 formatter.write_str("unlearning predecessor targets another derived object")
             }
             Self::UnlearningNotHead(id) => {
-                write!(formatter, "unlearning predecessor is not current head: {id}")
+                write!(
+                    formatter,
+                    "unlearning predecessor is not current head: {id}"
+                )
             }
             Self::UnlearningSelfReference => {
                 formatter.write_str("unlearning lineage cannot reference itself")
