@@ -22,7 +22,7 @@ use crate::CognitiveContextItem;
 use crate::CognitiveContextPlan;
 use crate::CognitiveContextSnapshot;
 
-const MAX_CONTEXT_JSON_BYTES: usize = 8 * 1024;
+const MAX_CONTEXT_JSON_BYTES: usize = crate::MAX_COGNITIVE_CONTEXT_BYTES;
 
 /// Only storage failures may invalidate the canonical SQLite owner. A revoked
 /// or unavailable optional ranker closes the ranked read, not other store ports.
