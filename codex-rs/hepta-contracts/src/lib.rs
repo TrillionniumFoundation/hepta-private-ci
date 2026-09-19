@@ -25,6 +25,7 @@ mod provider_effect;
 mod qualification_receipt;
 mod receipt;
 mod stable_id;
+mod verified_use_witness;
 
 pub use authority_trust::AuthorityClock;
 pub use authority_trust::AuthorityFrontierStore;
@@ -59,6 +60,13 @@ pub use final_use_control::SignedFinalUseApproval;
 pub use final_use_control::SignedFinalUseRevocationUpdate;
 pub use final_use_control::SignedFinalUseRevocationAck;
 pub use final_use_control::MAX_REVOCATION_FEED_LIFETIME_MS;
+pub use verified_use_witness::AuthorityLeaseWitnessRefV1;
+pub use verified_use_witness::FinalUseWitnessRefV1;
+pub use verified_use_witness::VERIFIED_USE_TOKEN_WITNESS_SCHEMA_VERSION;
+pub use verified_use_witness::VerifiedUseAuthorityRefV1;
+pub use verified_use_witness::VerifiedUseBoundaryV1;
+pub use verified_use_witness::VerifiedUseTokenWitnessV1;
+pub use verified_use_witness::VerifiedUseWitnessError;
 
 pub use agent_id::AgentId;
 pub use agent_id::AgentIdParseError;
