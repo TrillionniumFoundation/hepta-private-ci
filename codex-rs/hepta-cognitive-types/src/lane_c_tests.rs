@@ -183,6 +183,7 @@ fn compact_checkpoint_and_proof_are_non_authoritative() {
         checkpoint_id: id("checkpoint:1"),
         generation: generation(1),
         source_snapshot: snapshot_key(),
+        source_memory_snapshot_digest: digest("source-memory-snapshot"),
         support_manifest_digest: digest("support-manifest"),
         algorithm_digest: digest("algorithm"),
         payload_digest: digest("payload"),
