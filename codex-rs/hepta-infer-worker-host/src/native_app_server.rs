@@ -114,6 +114,9 @@ impl AppServerModelDriver {
             Some(query) => Some(owner.cognitive_context(query, /*limit*/ 4).await?),
             None => None,
         };
+        let context_cut_digest = context
+            .as_ref()
+            .map(|snapshot| snapshot.cut_digest.clone());
         let additional_context = context
             .map(|snapshot| -> Result<_> {
                 let value = serde_json::to_string(&snapshot)?;
@@ -173,6 +176,15 @@ impl AppServerModelDriver {
         }
         // Recheck the actual generation after acquiring context and connecting.
         owner.session_ingress().await?;
+        if let Some(cut_digest) = context_cut_digest {
+            let revalidated = owner
+                .revalidate_cognitive_context(cut_digest.clone())
+                .await?;
+            if revalidated.cut_digest != cut_digest {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err("cognitive cut revalidation returned a different witness".into());
+            }
+        }
         if cancellation.is_cancelled() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
