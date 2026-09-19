@@ -128,6 +128,10 @@ async fn transport_acceptance_is_not_terminal_until_sync_observation() -> TestRe
         .ok_or("outbox disappeared")?;
     assert_eq!(outbox.state, OutboxState::InFlight);
     assert_eq!(outbox.sent_event_id, None);
+    assert!(
+        store.claim_outbox(u64::MAX / 4, 30, 1).await?.is_empty(),
+        "known accepted event must stay parked until homeserver observation"
+    );
 
     let terminal = observe_send(
         &store,
