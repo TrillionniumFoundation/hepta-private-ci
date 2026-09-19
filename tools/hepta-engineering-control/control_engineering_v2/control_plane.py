@@ -39,6 +39,7 @@ STORE_TABLES = frozenset(
         "assignment_generation_packages",
         "engineering_workers",
         "assignment_claims",
+        "engineering_writer_bindings",
     }
 )
 
