@@ -299,7 +299,7 @@ mod tests {
                 .allowed
         );
 
-        let outside = root.path().parent().unwrap().join("hepta-native-outside.txt");
+        let outside = root.path().with_extension("outside");
         std::fs::write(&outside, b"outside").unwrap();
         assert!(
             !adapter
