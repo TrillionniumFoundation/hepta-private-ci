@@ -17,12 +17,14 @@ The implemented path is:
 decode_source_envelope_json_v1(bytes)
 ObjectiveSourceEnvelopeV1::validate_structure()
 canonical_objective_intent_digest_v1(envelope)
-admit_and_compile_objective_v1(envelope, profile, authenticated_context)
-check_feasibility_v1(grammar, atoms, budget)
-compile(native_envelope)
+admit_objective_v1(envelope, profile, authenticated_context)
+compile_admitted_objective_v1(admitted)
+  -> compiler::compile(native_envelope)
+     -> scalar_adapter::scalar_conflict(...)
+        -> check_feasibility_v1(grammar, atoms, deterministic_budget)
 ```
 
-Admission validates source authentication, principal scope, schema, normalization, profile, source and intent digests before mapping every represented field. Unknown or unrepresentable semantics fail closed. The admission receipt and compiler output carry no effect authority.
+Admission validates source authentication, principal scope, schema, normalization, profile, source and intent digests before mapping every losslessly representable field. Unknown or unrepresentable semantics fail closed. The opaque `AdmittedObjectiveV1` type prevents ordinary downstream code from entering the compiler with a caller-constructed legacy envelope; the old raw compiler surface is available only behind the explicit `qualification-legacy-compile` Cargo feature. The admission receipt and compiler output carry no effect authority.
 
 `abstain` is intrinsic and confirmation-free. A request cannot forbid it. The compiled action ceiling is 128 including abstain: at most 127 caller actions when abstain is implicit, or 128 when the caller supplies the valid intrinsic action explicitly.
 
