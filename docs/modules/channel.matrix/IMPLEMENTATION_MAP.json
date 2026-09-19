@@ -59,7 +59,7 @@
           "command": "just test -p codex-hepta-matrixd --lib"
         }
       ],
-      "sourceSemantics": "Binds room, session, payload, authority epoch, and one Matrix transaction identity before dispatch.",
+      "sourceSemantics": "Prepares the existing durable outbox stable transaction in MatrixDurableStore, binding payload and room/session generation while freezing the exact available authority/grant identity before the first effect.",
       "operation": "prepare_send",
       "nativeSymbol": "pub fn prepare_send(",
       "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
@@ -82,7 +82,7 @@
           "command": "just test -p codex-hepta-matrixd --lib"
         }
       ],
-      "sourceSemantics": "Records trusted server-event acknowledgement or preserves the same transaction as indeterminate for reconciliation.",
+      "sourceSemantics": "Reconciles the same durable stable transaction from trusted homeserver /sync evidence; HTTP acceptance remains non-terminal and redaction evidence is stored separately.",
       "operation": "observe_send",
       "nativeSymbol": "pub fn observe_send(",
       "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
@@ -90,7 +90,7 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Integrate any new send-observer state with the existing MatrixDurableStore transaction identity; the component alone is not a second durable sender."
+    "Compose an independently issued, final-payload-bound final-use grant at the live Matrix sender boundary; the durable dispatch ledger already persists and validates grant identity when supplied."
   ],
   "externalEvidenceGates": [
     "real enrolled homeserver/user/device/encryption identity",

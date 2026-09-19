@@ -9,6 +9,7 @@ use codex_hepta_matrix_protocol::MAX_MATRIX_SYNC_BATCH_PAYLOAD_BYTES_V2;
 use codex_hepta_matrix_protocol::MAX_MATRIX_SYNC_MUTATIONS_V2;
 use codex_hepta_matrix_protocol::MatrixEventId;
 use codex_hepta_matrix_protocol::MatrixRoomId;
+use codex_hepta_matrix_protocol::MatrixTransactionId;
 use codex_hepta_matrix_protocol::MatrixSyncBatchV2;
 use codex_hepta_matrix_protocol::MatrixSyncDecisionV2;
 use codex_hepta_matrix_protocol::MatrixSyncMutationBodyV2;
@@ -64,6 +65,12 @@ impl MatrixSyncComposer<'_> {
             return Err(MatrixSdkError::Configuration);
         }
         let mutations = self.normalize(response, observed_at_ms, room_rules)?;
+        // Reconcile egress before advancing the sync frontier. If the process
+        // crashes after this durable observation but before the V2 sync commit,
+        // replay is idempotent; the reverse ordering could permanently lose the
+        // only homeserver observation behind an advanced next_batch token.
+        self.reconcile_outbound_observations(response, observed_at_ms)
+            .await?;
         let expected = checkpoint.map(|checkpoint| checkpoint.next_batch.as_str());
         // The whole decision, including first-observed time, remains fixed for
         // this attempt. The store binds its complete semantic digest; a reused
@@ -178,6 +185,127 @@ impl MatrixSyncComposer<'_> {
             }
         }
         self.ingress.record_sync_commit(accepted, duplicates);
+        Ok(())
+    }
+
+    async fn reconcile_outbound_observations(
+        &self,
+        response: &SyncResponse,
+        observed_at_ms: u64,
+    ) -> Result<(), MatrixSdkError> {
+        let rooms = response
+            .rooms
+            .joined
+            .iter()
+            .map(|(id, room)| (id, &room.timeline))
+            .chain(
+                response
+                    .rooms
+                    .left
+                    .iter()
+                    .map(|(id, room)| (id, &room.timeline)),
+            );
+        for (native_room_id, timeline) in rooms {
+            let room_id =
+                MatrixRoomId::parse(native_room_id.as_str()).map_err(|_| MatrixSdkError::Sync)?;
+            for event in &timeline.events {
+                let raw = event.raw();
+                let event_id = raw
+                    .get_field::<String>("event_id")
+                    .map_err(|_| MatrixSdkError::Sync)?
+                    .map(MatrixEventId::parse)
+                    .transpose()
+                    .map_err(|_| MatrixSdkError::Sync)?;
+                let sender = raw
+                    .get_field::<String>("sender")
+                    .map_err(|_| MatrixSdkError::Sync)?;
+                let event_type = raw
+                    .get_field::<String>("type")
+                    .map_err(|_| MatrixSdkError::Sync)?;
+                let unsigned = raw
+                    .get_field::<Value>("unsigned")
+                    .map_err(|_| MatrixSdkError::Sync)?;
+
+                if sender.as_deref() == Some(self.config.binding.expected_mxid.as_str())
+                    && event_type.as_deref() == Some("m.room.message")
+                    && let Some(event_id) = event_id.as_ref()
+                {
+                    let txn_id = unsigned
+                        .as_ref()
+                        .and_then(|value| value.get("transaction_id"))
+                        .and_then(Value::as_str)
+                        .map(MatrixTransactionId::parse)
+                        .transpose()
+                        .map_err(|_| MatrixSdkError::Sync)?;
+                    let digest =
+                        Sha256Digest::for_bytes(raw.json().get().as_bytes()).as_str().to_string();
+                    self.store
+                        .observe_matrix_dispatch_succeeded(
+                            txn_id.as_ref(),
+                            event_id,
+                            &room_id,
+                            &digest,
+                            observed_at_ms,
+                        )
+                        .await
+                        .map_err(|_| MatrixSdkError::Store)?;
+                }
+
+                if event_type.as_deref() == Some("m.room.redaction") {
+                    let top_level = raw
+                        .get_field::<String>("redacts")
+                        .map_err(|_| MatrixSdkError::Sync)?;
+                    let content = raw
+                        .get_field::<Value>("content")
+                        .map_err(|_| MatrixSdkError::Sync)?;
+                    let content_target = content
+                        .as_ref()
+                        .and_then(|value| value.get("redacts"))
+                        .and_then(Value::as_str)
+                        .map(str::to_owned);
+                    if top_level.is_some()
+                        && content_target.is_some()
+                        && top_level != content_target
+                    {
+                        return Err(MatrixSdkError::Sync);
+                    }
+                    if let Some(target) = top_level.or(content_target) {
+                        let target =
+                            MatrixEventId::parse(target).map_err(|_| MatrixSdkError::Sync)?;
+                        let digest = Sha256Digest::for_bytes(raw.json().get().as_bytes())
+                            .as_str()
+                            .to_string();
+                        self.store
+                            .observe_matrix_dispatch_redacted(
+                                &target,
+                                &digest,
+                                observed_at_ms,
+                            )
+                            .await
+                            .map_err(|_| MatrixSdkError::Store)?;
+                    }
+                }
+
+                if let (Some(event_id), Some(redaction)) = (
+                    event_id.as_ref(),
+                    unsigned
+                        .as_ref()
+                        .and_then(|value| value.get("redacted_because")),
+                ) {
+                    let evidence =
+                        serde_json::to_vec(redaction).map_err(|_| MatrixSdkError::Sync)?;
+                    let digest = Sha256Digest::for_bytes(&evidence).as_str().to_string();
+                    self.store
+                        .observe_matrix_dispatch_redacted(
+                            event_id,
+                            &digest,
+                            observed_at_ms,
+                        )
+                        .await
+                        .map_err(|_| MatrixSdkError::Store)?;
+                }
+            }
+        }
         Ok(())
     }
 

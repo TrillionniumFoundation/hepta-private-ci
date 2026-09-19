@@ -6,6 +6,8 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_matrix_protocol::MatrixEventId;
+use codex_hepta_matrix_protocol::matrix_binding_digest;
+use codex_hepta_matrix_store::MatrixDispatchAuthority;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::MatrixSyncCheckpoint;
 use codex_hepta_matrix_store::OutboxRecord;
@@ -347,6 +349,21 @@ fn hepta_sync_token(checkpoint: Option<&MatrixSyncCheckpoint>) -> SyncToken {
 }
 
 impl MatrixOutboundTransport for MatrixSdkClient {
+    fn dispatch_authority(
+        &self,
+        record: &OutboxRecord,
+    ) -> Result<MatrixDispatchAuthority, MatrixTransportError> {
+        let binding_digest =
+            matrix_binding_digest(&self.config.binding).map_err(|_| MatrixTransportError::Permanent)?;
+        Ok(MatrixDispatchAuthority {
+            operation_id: record.stable_txn_id.as_str().to_string(),
+            authority_epoch: Some(self.config.binding.revision),
+            authority_binding_digest: Some(binding_digest.as_str().to_string()),
+            grant_id: None,
+            grant_payload_digest: None,
+        })
+    }
+
     fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a> {
         Box::pin(async move {
             if !self.config.binding.allowed_rooms.contains(&record.room_id)
@@ -378,12 +395,14 @@ impl MatrixOutboundTransport for MatrixSdkClient {
                 record,
                 &event_id,
             )
-            .map_err(|_| MatrixTransportError::Retryable)?
+            .map_err(|_| MatrixTransportError::Indeterminate)?
             {
                 // Synapse has accepted the PUT and returned `event_id`, but
                 // deliberately hide that acknowledgement from the durable
-                // dispatcher. The next claim must reuse `stable_txn_id`.
-                return Err(MatrixTransportError::Retryable);
+                // dispatcher. The attempt remains non-terminal; any later
+                // retransmission must reuse this exact stable transaction, and
+                // /sync remains the terminal observer.
+                return Err(MatrixTransportError::Indeterminate);
             }
             Ok(event_id)
         })
@@ -416,7 +435,7 @@ fn classify_sdk_send_error(error: &MatrixSdkTransportError) -> MatrixTransportEr
     match error {
         MatrixSdkTransportError::Http(error) => classify_http_error(error),
         MatrixSdkTransportError::Timeout | MatrixSdkTransportError::ConcurrentRequestFailed => {
-            MatrixTransportError::Retryable
+            MatrixTransportError::Indeterminate
         }
         _ => MatrixTransportError::Permanent,
     }
@@ -424,7 +443,7 @@ fn classify_sdk_send_error(error: &MatrixSdkTransportError) -> MatrixTransportEr
 
 fn classify_http_error(error: &HttpError) -> MatrixTransportError {
     match error {
-        HttpError::Reqwest(_) => MatrixTransportError::Retryable,
+        HttpError::Reqwest(_) => MatrixTransportError::Indeterminate,
         HttpError::Api(_) => error
             .as_client_api_error()
             .map(|error| classify_http_status(error.status_code.as_u16()))
@@ -437,8 +456,10 @@ fn classify_http_error(error: &HttpError) -> MatrixTransportError {
 }
 
 fn classify_http_status(status: u16) -> MatrixTransportError {
-    if status == 429 || (500..=599).contains(&status) {
+    if status == 429 {
         MatrixTransportError::Retryable
+    } else if status == 408 || (500..=599).contains(&status) {
+        MatrixTransportError::Indeterminate
     } else {
         MatrixTransportError::Permanent
     }
@@ -647,8 +668,18 @@ mod tests {
         assert_eq!(classify_http_status(403), MatrixTransportError::Permanent);
         assert_eq!(classify_http_status(404), MatrixTransportError::Permanent);
         assert_eq!(classify_http_status(429), MatrixTransportError::Retryable);
-        assert_eq!(classify_http_status(500), MatrixTransportError::Retryable);
-        assert_eq!(classify_http_status(503), MatrixTransportError::Retryable);
+        assert_eq!(
+            classify_http_status(408),
+            MatrixTransportError::Indeterminate
+        );
+        assert_eq!(
+            classify_http_status(500),
+            MatrixTransportError::Indeterminate
+        );
+        assert_eq!(
+            classify_http_status(503),
+            MatrixTransportError::Indeterminate
+        );
     }
 
     #[test]

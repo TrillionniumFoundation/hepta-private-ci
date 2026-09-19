@@ -3650,7 +3650,14 @@ async fn verify_store(
             ('outbox_messages_by_room_active', 'index'),
             ('matrix_visible_inbox_events_v2', 'view'),
             ('matrix_actionable_inbox_dispatches_v2', 'view'),
-            ('matrix_sendable_outbox_v2', 'view')
+            ('matrix_sendable_outbox_v2', 'view'),
+            ('matrix_dispatch_ledger', 'table'),
+            ('matrix_dispatch_observations', 'table'),
+            ('matrix_dispatch_unresolved', 'index'),
+            ('matrix_dispatch_terminal_event', 'index'),
+            ('matrix_dispatch_observations_no_update', 'trigger'),
+            ('matrix_dispatch_observations_no_delete', 'trigger'),
+            ('matrix_dispatch_ledger_no_delete', 'trigger')
          )
          SELECT COUNT(*) FROM required
          JOIN sqlite_schema USING (name) WHERE sqlite_schema.type = required.type",
@@ -3658,7 +3665,7 @@ async fn verify_store(
     .fetch_one(pool)
     .await
     .map_err(unavailable)?;
-    if required_objects != 31 {
+    if required_objects != 38 {
         return Err(MatrixDurableError::Corrupt);
     }
     verify_matrix_v2_schema(pool).await?;
@@ -3688,6 +3695,70 @@ async fn verify_store(
     .await
     .map_err(unavailable)?;
     if invalid_logical_streams != 0 {
+        return Err(MatrixDurableError::Corrupt);
+    }
+    let invalid_matrix_dispatches: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM matrix_dispatch_ledger AS dispatch
+         JOIN outbox_messages AS outbox
+           ON outbox.stable_txn_id = dispatch.stable_txn_id
+         WHERE dispatch.room_id != outbox.room_id
+            OR dispatch.session_generation != outbox.generation
+            OR dispatch.payload_sha256 != outbox.payload_sha256
+            OR (
+                dispatch.state = 'prepared'
+                AND outbox.state NOT IN ('in_flight', 'retry_scheduled')
+            )
+            OR (
+                dispatch.state IN ('dispatched', 'accepted', 'indeterminate')
+                AND outbox.state != 'in_flight'
+            )
+            OR (
+                dispatch.state = 'accepted'
+                AND dispatch.accepted_event_id IS NULL
+            )
+            OR (
+                dispatch.state IN ('observed_succeeded', 'redacted')
+                AND (
+                    dispatch.terminal_event_id IS NULL
+                    OR dispatch.send_observation_digest IS NULL
+                    OR dispatch.terminal_observed_at_ms IS NULL
+                    OR outbox.state != 'sent'
+                    OR outbox.sent_event_id IS NULL
+                    OR outbox.sent_event_id != dispatch.terminal_event_id
+                    OR (
+                        dispatch.accepted_event_id IS NOT NULL
+                        AND dispatch.accepted_event_id != dispatch.terminal_event_id
+                    )
+                )
+            )
+            OR (
+                dispatch.state = 'observed_failed'
+                AND (
+                    dispatch.send_observation_digest IS NULL
+                    OR dispatch.terminal_observed_at_ms IS NULL
+                    OR outbox.state != 'permanent_failure'
+                )
+            )
+            OR (
+                dispatch.state = 'redacted'
+                AND (
+                    dispatch.redaction_observation_digest IS NULL
+                    OR dispatch.redacted_at_ms IS NULL
+                )
+            )
+            OR (
+                dispatch.state != 'redacted'
+                AND (
+                    dispatch.redaction_observation_digest IS NOT NULL
+                    OR dispatch.redacted_at_ms IS NOT NULL
+                )
+            )",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if invalid_matrix_dispatches != 0 {
         return Err(MatrixDurableError::Corrupt);
     }
     let foreign_checkpoint: i64 =

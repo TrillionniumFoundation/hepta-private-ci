@@ -175,7 +175,7 @@ A homeserver event observation settles send terminality; App Server turn complet
 
 Remaining repository implementation gaps:
 
-- Integrate any new send-observer state with the existing MatrixDurableStore transaction identity; the component alone is not a second durable sender.
+- Compose an independently issued, final-payload-bound final-use grant at the live Matrix sender boundary; the durable dispatch ledger already persists and validates grant identity when supplied.
 
 External evidence gates:
 

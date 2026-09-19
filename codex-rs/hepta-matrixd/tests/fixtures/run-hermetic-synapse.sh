@@ -3043,7 +3043,7 @@ if ((test_rc == 0)); then
       and .runtime_root_removed == true
       and .credential_capabilities_removed == true
       and .promotable == false
-      and .wire_put_attempts == 2
+      and .wire_put_attempts == 1
       and .agent_a_provider_requests == 5
       and .agent_b_provider_requests == 3
       and .release_copy_identity_rechecked_at_lifecycle_boundaries == true

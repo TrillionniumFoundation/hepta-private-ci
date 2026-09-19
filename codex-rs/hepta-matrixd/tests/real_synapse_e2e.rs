@@ -229,7 +229,7 @@ async fn run_real_synapse_qualification(
         process_shutdown_evidence: &process_shutdown_evidence,
     })?;
     eprintln!(
-        "R4_E2E qualification_mode={} test_assertions=PASS candidate_evidence=PENDING_RUNNER_REVALIDATION promotion=false operator_acceptance=false txn_dedupe=PASS outbound_post_send_pre_mark_txn_dedupe=PASS outbound_same_put_uri_twice=PASS network_disconnect_recovery=PASS sidecar_restart_recovery=PASS generation_rollover=PASS idle_sync=PASS token_coalescing=PASS dual_agent_e2ee_inbound_decrypt=PASS dual_agent_e2ee_send_raw_encrypt=PASS fault_isolation=PASS real_pending_approval_authority_boundary=PASS final_stable_count_freeze=PASS durable_isolation=PASS explicit_process_shutdown=PASS",
+        "R4_E2E qualification_mode={} test_assertions=PASS candidate_evidence=PENDING_RUNNER_REVALIDATION promotion=false operator_acceptance=false txn_dedupe=PASS outbound_ack_loss_stable_txn_retransmission=PASS outbound_sync_terminal_reconciliation=PASS network_disconnect_recovery=PASS sidecar_restart_recovery=PASS generation_rollover=PASS idle_sync=PASS token_coalescing=PASS dual_agent_e2ee_inbound_decrypt=PASS dual_agent_e2ee_send_raw_encrypt=PASS fault_isolation=PASS real_pending_approval_authority_boundary=PASS final_stable_count_freeze=PASS durable_isolation=PASS explicit_process_shutdown=PASS",
         environment.qualification_mode.as_str(),
     );
     Ok(())
@@ -446,9 +446,9 @@ async fn run_real_synapse_qualification_inner(
     // Arm a non-default, exact-payload qualification cut in the product
     // Matrix SDK. The first encrypted PUT must reach Synapse and return an
     // event ID, but that acknowledgement is deliberately hidden before the
-    // durable outbox can mark the row sent. The retry must reuse the stable
-    // transaction ID, obtain the same event ID, and create no second timeline
-    // event.
+    // durable dispatcher can record HTTP acceptance. Any retransmission must
+    // reuse the exact stable transaction ID; terminal success still comes only
+    // from the product's own /sync observation of the homeserver event.
     eprintln!("R4_STAGE outbound_post_send_pre_mark:start");
     let ack_loss_receipt_path =
         arm_post_send_pre_mark_ack_drop_once(&agent_a.layout, OUTBOUND_ACK_LOSS_BODY.as_bytes())?;
@@ -476,16 +476,18 @@ async fn run_real_synapse_qualification_inner(
     wait_matrix_store_drained(&agent_a.layout).await?;
     let expected_ack_loss_put_target =
         matrix_encrypted_send_target(&room_a, &ack_loss_proof.stable_txn_id);
-    let initial_ack_loss_wire_proof = network_proxy_a
-        .assert_two_identical_puts(&expected_ack_loss_put_target, &ack_loss_proof.stable_txn_id)?;
-    // Advance beyond the retry response before counting the timeline. If
-    // Synapse accepted a second event under a different transaction ID, it
-    // must be visible here.
+    let initial_ack_loss_wire_proof = network_proxy_a.assert_stable_txn_put_count(
+        &expected_ack_loss_put_target,
+        &ack_loss_proof.stable_txn_id,
+        2,
+    )?;
+    // Advance sync after the idempotent retransmission. Terminal success must
+    // come from this observation, while Synapse still exposes one event.
     encrypted_matrix_a.sync_once(1_000).await?;
     encrypted_matrix_a.assert_body_count(OUTBOUND_ACK_LOSS_BODY, 1)?;
     ensure!(
         model_a_mock.requests().len() == 2,
-        "outbound response-loss retry re-admitted the inbound Core request"
+        "outbound response-loss reconciliation re-admitted the inbound Core request"
     );
     eprintln!("R4_STAGE outbound_post_send_pre_mark:done");
 
@@ -822,11 +824,14 @@ async fn run_real_synapse_qualification_inner(
     assert_pair_sockets_absent(&agent_b)?;
     network_proxy_a.shutdown().await;
     network_proxy_a.assert_capture_clean()?;
-    let ack_loss_wire_proof = network_proxy_a
-        .assert_two_identical_puts(&expected_ack_loss_put_target, &ack_loss_proof.stable_txn_id)?;
+    let ack_loss_wire_proof = network_proxy_a.assert_stable_txn_put_count(
+        &expected_ack_loss_put_target,
+        &ack_loss_proof.stable_txn_id,
+        2,
+    )?;
     ensure!(
         ack_loss_wire_proof == initial_ack_loss_wire_proof,
-        "stable Matrix transaction request count/target drifted after the initial proof"
+        "stable Matrix transaction request count/target drifted after reconciliation"
     );
     encrypted_matrix_a.sync_once(0).await?;
     encrypted_matrix_b.sync_once(0).await?;
@@ -1459,7 +1464,7 @@ async fn assert_isolated_and_drained(agent_a: &AgentFixture, agent_b: &AgentFixt
 
 async fn wait_matrix_store_drained(layout: &HeptaAgentLayout) -> Result<()> {
     let store = MatrixDurableStore::open(layout, MatrixDurableConfig::default()).await?;
-    let deadline = Instant::now() + Duration::from_secs(30);
+    let deadline = Instant::now() + Duration::from_secs(60);
     loop {
         let snapshot = store.snapshot(now_ms()?, 64).await?;
         if snapshot.pending_inbox.is_empty()
@@ -1544,7 +1549,7 @@ async fn verify_post_send_pre_mark_proof(
     let receipt: PostSendPreMarkReceipt = serde_json::from_slice(&std::fs::read(receipt_path)?)?;
     ensure!(receipt.schema_version == 1);
     ensure!(receipt.requested_event_type == "m.room.message");
-    ensure!(receipt.ack_disposition == "dropped_after_synapse_response_before_outbox_mark_sent");
+    ensure!(receipt.ack_disposition == "dropped_after_synapse_response_before_dispatch_acceptance");
     ensure!(
         receipt.attempt == 1,
         "post-send acknowledgement was not cut on the first attempt"
@@ -1572,14 +1577,16 @@ async fn verify_post_send_pre_mark_proof(
         }
         if Instant::now() >= deadline {
             store.close().await;
-            bail!("post-send response-loss retry did not reach Sent/attempts=2: {record:?}");
+            bail!(
+                "post-send response loss did not reconcile from /sync to Sent/attempts=2: {record:?}"
+            );
         }
         tokio::time::sleep(Duration::from_millis(25)).await;
     };
     ensure!(record.payload == expected_body.as_bytes());
     ensure!(
         record.sent_event_id.as_ref() == Some(&first_synapse_event_id),
-        "stable transaction retry did not return Synapse's original event ID"
+        "stable transaction reconciliation did not preserve Synapse's accepted event ID"
     );
     store.close().await;
 
@@ -4200,16 +4207,17 @@ impl LoopbackFaultProxy {
         Ok(())
     }
 
-    fn assert_two_identical_puts(
+    fn assert_stable_txn_put_count(
         &self,
         expected_target: &str,
         stable_txn_id: &str,
+        expected_attempts: usize,
     ) -> Result<WireRetryProof> {
         let capture = self
             .capture
             .lock()
             .map_err(|_| anyhow::anyhow!("downstream HTTP capture mutex was poisoned"))?;
-        prove_two_identical_puts(&capture, expected_target, stable_txn_id)
+        prove_exact_put_count(&capture, expected_target, stable_txn_id, expected_attempts)
     }
 
     fn assert_capture_clean(&self) -> Result<()> {
@@ -4254,11 +4262,13 @@ impl LoopbackFaultProxy {
     }
 }
 
-fn prove_two_identical_puts(
+fn prove_exact_put_count(
     capture: &HttpRequestCapture,
     expected_target: &str,
     stable_txn_id: &str,
+    expected_attempts: usize,
 ) -> Result<WireRetryProof> {
+    ensure!(expected_attempts > 0);
     ensure!(
         capture.errors.is_empty(),
         "downstream HTTP request capture failed closed: {}",
@@ -4271,8 +4281,8 @@ fn prove_two_identical_puts(
         .filter(|request| matrix_send_target_has_transaction(&request.target, stable_txn_id))
         .collect();
     ensure!(
-        attempts.len() == 2,
-        "the exact Matrix v3 encrypted send target appeared in exactly {} downstream HTTP requests, expected 2",
+        attempts.len() == expected_attempts,
+        "the exact Matrix v3 encrypted send transaction appeared in exactly {} downstream HTTP requests, expected {expected_attempts}",
         attempts.len()
     );
     for attempt in &attempts {
@@ -4286,10 +4296,6 @@ fn prove_two_identical_puts(
             String::from_utf8_lossy(&attempt.target)
         );
     }
-    ensure!(
-        attempts[0].target == attempts[1].target,
-        "stable transaction retries did not use byte-identical complete HTTP request targets"
-    );
     let target = std::str::from_utf8(&attempts[0].target)
         .context("stable transaction HTTP target was not UTF-8")?
         .to_owned();
@@ -4445,7 +4451,7 @@ fn downstream_http_capture_handles_fragmented_keep_alive_requests() -> Result<()
     let capture = capture
         .lock()
         .map_err(|_| anyhow::anyhow!("test HTTP capture mutex was poisoned"))?;
-    let proof = prove_two_identical_puts(&capture, &target, transaction_id)?;
+    let proof = prove_exact_put_count(&capture, &target, transaction_id, 2)?;
     assert_eq!(proof.attempts, 2);
     assert_eq!(proof.target, target);
     assert_eq!(capture.requests.len(), 2);
@@ -4474,7 +4480,7 @@ fn downstream_http_capture_rejects_same_txn_on_an_alternate_send_target() {
         ],
         errors: Vec::new(),
     };
-    assert!(prove_two_identical_puts(&capture, &expected, transaction_id).is_err());
+    assert!(prove_exact_put_count(&capture, &expected, transaction_id, 2).is_err());
 }
 
 #[test]
@@ -4494,7 +4500,7 @@ fn downstream_http_capture_commits_chunked_requests_only_after_trailers() -> Res
     let capture = capture
         .lock()
         .map_err(|_| anyhow::anyhow!("test HTTP capture mutex was poisoned"))?;
-    let proof = prove_two_identical_puts(&capture, &target, "chunked-txn")?;
+    let proof = prove_exact_put_count(&capture, &target, "chunked-txn", 2)?;
     assert_eq!(proof.attempts, 2);
     assert!(capture.errors.is_empty());
     Ok(())

@@ -139,17 +139,19 @@ For every owned domain, this module is the only authoritative writer. Mutations 
 
 Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
 
+The current dispatch schema is [`0006_matrix_dispatch_ledger.sql`](../../../codex-rs/hepta-matrix-store/migrations/0006_matrix_dispatch_ledger.sql). It extends, rather than replaces, the existing outbox: `stable_txn_id` remains the Matrix transaction key, unresolved dispatches are bounded separately from terminal history, observations are append-only, and terminal send/redaction evidence occupy separate fields.
+
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/channel.matrix.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/channel.matrix.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/channel.matrix.md#8-current-native-implementation) identifies the actual state owner and transaction boundary. Egress no longer has a second in-memory ledger: `MatrixDurableStore` owns the existing outbox plus `matrix_dispatch_ledger` and append-only `matrix_dispatch_observations`, all keyed from the same canonical `stable_txn_id`. The sender durably prepares that identity before entering the network effect. Known pre-effect failure returns it to the retry schedule; transport uncertainty remains non-terminal and, after the existing claim lease expires, may only retransmit the exact same `stable_txn_id`. A transport-accepted event ID is parked until homeserver observation. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/channel.matrix.md).
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/channel.matrix.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/channel.matrix.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/channel.matrix.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/channel.matrix.md). HTTP/API acceptance is recorded as non-terminal `accepted`; timeout, cancellation after the effect boundary, or response loss is `indeterminate`. `accepted` parks the existing outbox claim across reopen. `indeterminate` preserves uncertainty across reopen but may be reclaimed only as an idempotent retransmission of the same `stable_txn_id`; it never allocates a new transaction identity. Retransmission is bounded by the configured attempt budget, after which the effect stays indeterminate and parked for observation rather than being relabeled as failure. A trusted homeserver `/sync` observation reconciles that stable transaction or accepted event ID to `observed_succeeded`, and a later redaction records separate evidence without replacing the original send evidence. A source library or fixture cannot stand in for an unexecuted external qualification.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -171,7 +173,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use the existing hepta-matrixd, MatrixDurableStore and SDK sender. Keep sync/dedupe and stable send transaction identity in their existing durable owners; send_observer is a reusable state machine, not another sender. Real homeserver, encryption/session and reconnection qualification require the selected host profile.
+Use the existing hepta-matrixd, MatrixDurableStore and SDK sender. Keep sync/dedupe and the stable send transaction identity in that single durable owner. `send_observer` is now only a compatibility seam over `MatrixDurableStore`; it owns neither a BTreeMap ledger nor another sender. The dispatch ledger accepts an independently issued grant identity and final payload digest when supplied; that authority tuple is frozen before the first effect and cannot be added, removed or changed on retransmission. The current live Matrix SDK composition still supplies only its enrolled Matrix binding revision/digest. Composing a real final-use grant immediately before the external send remains repository-controlled activation work. Real homeserver, encryption/session and reconnection qualification require the selected host profile.
 
 Current operating and state-format references:
 
@@ -185,9 +187,12 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs](../../../codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs); named case: `empty_page_continues_and_exact_target_preserves_page_and_event_order`.
-- [codex-rs/hepta-matrix-sdk/src/sync_tests.rs](../../../codex-rs/hepta-matrix-sdk/src/sync_tests.rs); named case: `v1_redaction_commits_before_replay_and_survives_reopen`.
+- [codex-rs/hepta-matrix-sdk/src/sync_tests.rs](../../../codex-rs/hepta-matrix-sdk/src/sync_tests.rs); named cases include `v1_redaction_commits_before_replay_and_survives_reopen` and `own_sync_event_is_the_terminal_observer_for_an_accepted_send`.
+- [codex-rs/hepta-matrix-sdk/tests/durable_transport.rs](../../../codex-rs/hepta-matrix-sdk/tests/durable_transport.rs); covers safe pre-effect retry, accepted-but-nonterminal sends and response-loss retransmission under the same stable transaction.
+- [codex-rs/hepta-matrixd/src/send_observer_tests.rs](../../../codex-rs/hepta-matrixd/src/send_observer_tests.rs); covers crash/reopen reconciliation, split send/redaction evidence and terminal archive marking.
+- [codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs](../../../codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs); feature-gated real Synapse qualification requires the response-loss retry to reuse the byte-identical stable transaction target, produce one Synapse event, and become terminal only after `/sync` reconciliation.
 
-In `codex-rs`, run `just test -p codex-hepta-matrix-sdk -p codex-hepta-matrixd`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/channel.matrix.md) separately labels target acceptance designs.
+In `codex-rs`, run `cargo test -p codex-hepta-matrix-store --tests && cargo test -p codex-hepta-matrix-sdk --tests && cargo test -p codex-hepta-matrixd --lib`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/channel.matrix.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
