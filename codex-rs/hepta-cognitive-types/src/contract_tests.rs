@@ -190,16 +190,27 @@ fn plasticity() -> PlasticityBatchV1 {
 
 fn topology() -> TopologyProposalV1 {
     TopologyProposalV1 {
-        predecessor_generation: generation(1),
-        next_generation: generation(2),
-        operation: TopologyOperationV1::AddNode {
-            label: "new-node".to_string(),
-            population: EngramPopulationV1::MetaMemory,
+        proposal_id: id("topology-proposal:1"),
+        predecessor_topology_digest: digest('d'),
+        operation: TopologyOperationV1::Add,
+        typed_nodes_edges: TopologyTypedNodesEdgesV1 {
+            nodes: vec![TopologyNodeSpecV1 {
+                node_id: id("node:3"),
+                population: EngramPopulationV1::MetaMemory,
+                label: "new-node".to_string(),
+            }],
+            edges: Vec::new(),
         },
-        capability_typed: true,
-        sandbox_only: true,
-        operator_accepted: false,
-        production_activation_allowed: false,
+        compatibility_plan_digest: digest('e'),
+        resource_delta: TopologyResourceDeltaV1 {
+            node_delta: 1,
+            edge_delta: 0,
+            resident_bytes_upper_bound_delta: 4_096,
+        },
+        security_review_digest: digest('f'),
+        lesion_plan_digest: digest('1'),
+        rollback_plan_digest: digest('2'),
+        state: TopologyProposalStateV1::QualificationRequired,
     }
 }
 
@@ -406,7 +417,16 @@ fn proposal_contracts_cannot_self_activate() {
     batch.production_activation_allowed = true;
     assert!(batch.validate().is_err());
 
-    let mut proposal = topology();
-    proposal.operator_accepted = true;
-    assert!(proposal.validate().is_err());
+    let proposal = topology();
+    proposal
+        .validate()
+        .unwrap_or_else(|error| panic!("valid topology proposal: {error}"));
+    let encoded = encode_wire_v1(&proposal).expect("topology wire");
+    let encoded = String::from_utf8(encoded).expect("topology wire utf8");
+    assert!(!encoded.contains("activation"));
+    assert!(encoded.contains("\"state\":\"qualification_required\""));
+
+    let mut invalid = proposal;
+    invalid.typed_nodes_edges.nodes.clear();
+    assert!(invalid.validate().is_err());
 }
