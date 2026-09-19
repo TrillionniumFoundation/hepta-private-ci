@@ -214,3 +214,86 @@ async fn ambiguous_renew_is_durable_and_reconciles_forward() {
     assert_eq!(active.state, LeaseState::Active);
     assert_eq!(active.expires_at_ms, 90_000);
 }
+
+
+#[tokio::test]
+async fn known_unknown_lease_remains_revocable() {
+    let dir = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));
+    let registry = LeaseRegistry::open(&dir.path().join("leases.sqlite"))
+        .await
+        .unwrap_or_else(|error| panic!("open: {error}"));
+    registry
+        .begin_operation("op:issue", LeaseOperationKind::Issue, None, digest(1), 1)
+        .await
+        .unwrap_or_else(|error| panic!("issue begin: {error}"));
+    registry
+        .mark_in_flight("op:issue", 2)
+        .await
+        .unwrap_or_else(|error| panic!("issue inflight: {error}"));
+    registry
+        .commit_issue("op:issue", &lease("lease:unknown"), 3)
+        .await
+        .unwrap_or_else(|error| panic!("issue commit: {error}"));
+    registry
+        .mark_lease_unknown("lease:unknown", 4)
+        .await
+        .unwrap_or_else(|error| panic!("quarantine: {error}"));
+
+    assert_eq!(
+        registry
+            .begin_lease_transition(
+                "op:revoke",
+                LeaseOperationKind::Revoke,
+                "lease:unknown",
+                digest(5),
+                5,
+            )
+            .await,
+        Ok(OperationAdmission::New)
+    );
+    let pending = registry
+        .get_lease("lease:unknown", 6)
+        .await
+        .unwrap_or_else(|error| panic!("get: {error}"))
+        .unwrap_or_else(|| panic!("lease exists"));
+    assert_eq!(pending.state, LeaseState::RevokePending);
+}
+
+#[tokio::test]
+async fn provider_lease_identity_collision_fails_closed() {
+    let dir = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));
+    let registry = LeaseRegistry::open(&dir.path().join("leases.sqlite"))
+        .await
+        .unwrap_or_else(|error| panic!("open: {error}"));
+
+    for (operation, semantic) in [("op:issue:one", 1_u8), ("op:issue:two", 2_u8)] {
+        registry
+            .begin_operation(operation, LeaseOperationKind::Issue, None, digest(semantic), 1)
+            .await
+            .unwrap_or_else(|error| panic!("begin {operation}: {error}"));
+        registry
+            .mark_in_flight(operation, 2)
+            .await
+            .unwrap_or_else(|error| panic!("inflight {operation}: {error}"));
+        let result = registry.commit_issue(operation, &lease("lease:collision"), 3).await;
+        if operation == "op:issue:one" {
+            assert!(result.is_ok());
+        } else {
+            assert_eq!(result, Err(LeaseRegistryError::LeaseIdentityConflict));
+        }
+    }
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn registry_rejects_group_or_world_accessible_parent() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let dir = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o755))
+        .unwrap_or_else(|error| panic!("chmod: {error}"));
+    assert_eq!(
+        LeaseRegistry::open(&dir.path().join("leases.sqlite")).await,
+        Err(LeaseRegistryError::UnsafeStatePath)
+    );
+}
