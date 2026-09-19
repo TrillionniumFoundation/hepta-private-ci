@@ -1,15 +1,17 @@
-//! Verified-admission, exact-tokenizer context compilation and delivery proofs.
+//! Verified-admission, exact-tokenizer context compilation and provider evidence.
 //!
 //! V2 is the normative context path. It accepts only admission evidence verified
 //! by an explicit admission verifier, binds mandatory-group provenance, verifies
 //! actual selected item bytes before serialization, tokenizes the final payload
-//! bytes with the exact model-profile tokenizer, revalidates admission/revocation
-//! state at attachment and delivery, and invokes a transport adapter with the
-//! exact payload whose digest is carried by the terminal delivery receipt.
+//! bytes with the exact model-profile tokenizer, and revalidates current
+//! admission/revocation state at attachment and immediately before dispatch.
 //!
-//! The compiler still grants no model/provider authority. Admission verifiers,
-//! serializers, tokenizers and transports are explicit trusted adapters whose
-//! identities are digest-bound into receipts.
+//! This crate never performs a model/provider/network effect. Instead it emits an
+//! opaque pre-dispatch safety witness whose digest must be bound into the existing
+//! provider invocation evidence. Delivery receipts are created only from a
+//! validated ProviderInvocationReceipt plus an independent delivery verifier.
+//! Admission verifiers, serializers, tokenizers and evidence verifiers remain
+//! explicit trusted adapter seams that require product-host qualification.
 
 use std::cmp::Ordering;
 use std::collections::BTreeMap;
@@ -17,6 +19,9 @@ use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
+use codex_hepta_contracts::ProviderInvocationReceipt;
+use codex_hepta_contracts::ProviderTerminal;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
@@ -40,6 +45,7 @@ const COMPILATION_RECEIPT_DOMAIN: &[u8] = b"hepta.context-compilation-receipt.v2
 const REALIZATION_MANIFEST_DOMAIN: &[u8] = b"hepta.context-realization-manifest.v2";
 const SERIALIZATION_DOMAIN: &[u8] = b"hepta.context-serialization.v2";
 const ATTACHMENT_DOMAIN: &[u8] = b"hepta.context-attachment.v2";
+const DELIVERY_PREPARATION_DOMAIN: &[u8] = b"hepta.context-delivery-preparation.v2";
 const DELIVERY_DOMAIN: &[u8] = b"hepta.context-delivery-receipt.v2";
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -64,6 +70,8 @@ pub trait ContextAdmissionVerifierV2 {
 }
 
 pub trait ContextSerializerV2 {
+    fn serializer_digest(&self) -> Digest32;
+
     fn template_digest(&self) -> Digest32;
 
     fn tool_schema_digest(&self) -> Digest32;
@@ -74,14 +82,19 @@ pub trait ContextSerializerV2 {
     ) -> Result<Vec<u8>, ContextCompilerV2Error>;
 }
 
-pub trait ContextTransportV2 {
-    fn transport_digest(&self) -> Digest32;
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ContextProviderDeliveryDecisionV2 {
+    pub evidence_digest: Digest32,
+    pub recorded_at_unix_ms: u64,
+}
 
-    fn send(
+pub trait ContextProviderDeliveryVerifierV2 {
+    fn verifier_digest(&self) -> Digest32;
+
+    fn verify_delivery(
         &self,
-        payload: &[u8],
-        model_profile_digest: Digest32,
-    ) -> Result<ContextTransportEvidenceV2, ContextCompilerV2Error>;
+        receipt: &ProviderInvocationReceipt,
+    ) -> Result<ContextProviderDeliveryDecisionV2, String>;
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -568,7 +581,10 @@ pub fn verify_admission_v2(
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ContextModelProfileV2 {
     pub model_digest: Digest32,
+    pub provider_id_digest: Digest32,
+    pub provider_model_digest: Digest32,
     pub tokenizer_digest: Digest32,
+    pub serializer_digest: Digest32,
     pub template_digest: Digest32,
     pub tool_schema_digest: Digest32,
     pub maximum_context_tokens: u64,
@@ -578,7 +594,10 @@ impl ContextModelProfileV2 {
     pub fn validate(&self) -> Result<(), ContextCompilerV2Error> {
         for (name, digest) in [
             ("model", self.model_digest),
+            ("provider_id", self.provider_id_digest),
+            ("provider_model", self.provider_model_digest),
             ("tokenizer", self.tokenizer_digest),
+            ("serializer", self.serializer_digest),
             ("template", self.template_digest),
             ("tool_schema", self.tool_schema_digest),
         ] {
@@ -598,7 +617,10 @@ impl ContextModelProfileV2 {
         bytes.extend_from_slice(MODEL_PROFILE_DOMAIN);
         for digest in [
             self.model_digest,
+            self.provider_id_digest,
+            self.provider_model_digest,
             self.tokenizer_digest,
+            self.serializer_digest,
             self.template_digest,
             self.tool_schema_digest,
         ] {
@@ -1231,7 +1253,8 @@ pub fn record_serialization(
     if profile.digest() != compiled.receipt.model_profile_digest {
         return Err(ContextCompilerV2Error::ModelProfileMismatch);
     }
-    if serializer.template_digest() != profile.template_digest
+    if serializer.serializer_digest() != profile.serializer_digest
+        || serializer.template_digest() != profile.template_digest
         || serializer.tool_schema_digest() != profile.tool_schema_digest
     {
         return Err(ContextCompilerV2Error::SerializerProfileMismatch);
@@ -1432,53 +1455,33 @@ pub fn build_attachment(
     Ok(attachment)
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum ContextDeliveryDispositionV2 {
-    Delivered,
-    Rejected,
-    Indeterminate,
-}
-
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ContextTransportEvidenceV2 {
-    pub provider_request_id: StableId,
-    pub transmitted_payload_digest: Digest32,
-    pub provider_acknowledged_payload_digest: Option<Digest32>,
-    pub acknowledgement_digest: Digest32,
-    pub terminal_observed: bool,
-    pub disposition: ContextDeliveryDispositionV2,
-    pub observed_unix_ms: u64,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ContextDeliveryReceiptV2 {
-    delivery_id: StableId,
+pub struct ContextDeliveryPreparationV2 {
+    preparation_id: StableId,
     attachment_digest: Digest32,
     serialization_receipt_digest: Digest32,
     payload_digest: Digest32,
     model_profile_digest: Digest32,
+    provider_id_digest: Digest32,
+    provider_model_digest: Digest32,
     admission_verifier_digest: Digest32,
     admission_snapshot_digest: Digest32,
     admission_snapshot_verification_digest: Digest32,
     admission_snapshot_observed_unix_ms: u64,
     revocation_epoch: u64,
-    transport_digest: Digest32,
-    provider_request_id: StableId,
-    provider_acknowledged_payload_digest: Option<Digest32>,
-    acknowledgement_digest: Digest32,
-    terminal_observed: bool,
-    disposition: ContextDeliveryDispositionV2,
-    observed_unix_ms: u64,
-    receipt_digest: Digest32,
+    preparation_digest: Digest32,
     authority: AuthorityPosture,
 }
 
-pub type ContextDeliveryObservationV2 = ContextDeliveryReceiptV2;
-
-impl ContextDeliveryReceiptV2 {
+impl ContextDeliveryPreparationV2 {
     #[must_use]
     pub const fn payload_digest(&self) -> Digest32 {
         self.payload_digest
+    }
+
+    #[must_use]
+    pub const fn preparation_digest(&self) -> Digest32 {
+        self.preparation_digest
     }
 
     #[must_use]
@@ -1497,13 +1500,187 @@ impl ContextDeliveryReceiptV2 {
     }
 
     #[must_use]
-    pub const fn acknowledgement_digest(&self) -> Digest32 {
-        self.acknowledgement_digest
+    pub const fn authority(&self) -> AuthorityPosture {
+        self.authority
+    }
+
+    pub fn validate_for(
+        &self,
+        attachment: &ContextAttachmentV2,
+        serialization: &SerializedContextV2,
+        profile: &ContextModelProfileV2,
+    ) -> Result<(), ContextCompilerV2Error> {
+        for (name, digest) in [
+            ("delivery_preparation", self.preparation_digest),
+            ("attachment", self.attachment_digest),
+            ("serialization_receipt", self.serialization_receipt_digest),
+            ("payload", self.payload_digest),
+            ("model_profile", self.model_profile_digest),
+            ("provider_id", self.provider_id_digest),
+            ("provider_model", self.provider_model_digest),
+            ("admission_verifier", self.admission_verifier_digest),
+            ("admission_snapshot", self.admission_snapshot_digest),
+            (
+                "admission_snapshot_verification",
+                self.admission_snapshot_verification_digest,
+            ),
+        ] {
+            ensure_digest(name, digest)?;
+        }
+        if self.attachment_digest != attachment.attachment_digest
+            || self.serialization_receipt_digest != serialization.receipt.receipt_digest
+            || self.payload_digest != attachment.payload_digest
+            || self.payload_digest != serialization.receipt.payload_digest
+            || self.model_profile_digest != profile.digest()
+            || self.model_profile_digest != attachment.model_profile_digest
+            || self.provider_id_digest != profile.provider_id_digest
+            || self.provider_model_digest != profile.provider_model_digest
+            || self.admission_verifier_digest != attachment.admission_verifier_digest
+            || self.admission_snapshot_observed_unix_ms
+                < attachment.admission_snapshot_observed_unix_ms
+            || self.revocation_epoch < attachment.revocation_epoch
+        {
+            return Err(ContextCompilerV2Error::DeliveryMismatch);
+        }
+        if self.authority.grants_any() {
+            return Err(ContextCompilerV2Error::AuthorityGranted);
+        }
+        if self.preparation_digest != self.compute_preparation_digest() {
+            return Err(ContextCompilerV2Error::DigestMismatch(
+                "delivery_preparation",
+            ));
+        }
+        Ok(())
     }
 
     #[must_use]
-    pub const fn provider_acknowledged_payload_digest(&self) -> Option<Digest32> {
-        self.provider_acknowledged_payload_digest
+    fn compute_preparation_digest(&self) -> Digest32 {
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(DELIVERY_PREPARATION_DOMAIN);
+        push_id(&mut bytes, &self.preparation_id);
+        for digest in [
+            self.attachment_digest,
+            self.serialization_receipt_digest,
+            self.payload_digest,
+            self.model_profile_digest,
+            self.provider_id_digest,
+            self.provider_model_digest,
+            self.admission_verifier_digest,
+            self.admission_snapshot_digest,
+            self.admission_snapshot_verification_digest,
+        ] {
+            push_digest(&mut bytes, digest);
+        }
+        push_u64(&mut bytes, self.admission_snapshot_observed_unix_ms);
+        push_u64(&mut bytes, self.revocation_epoch);
+        Digest32::of_bytes(&bytes)
+    }
+}
+
+pub fn prepare_delivery_v2(
+    compiled: &CompiledContextV2,
+    serialization: &SerializedContextV2,
+    attachment: &ContextAttachmentV2,
+    profile: &ContextModelProfileV2,
+    current_snapshot: &VerifiedAdmissionSnapshotV2,
+    preparation_id: StableId,
+) -> Result<ContextDeliveryPreparationV2, ContextCompilerV2Error> {
+    attachment.validate_for(compiled, serialization, profile)?;
+    if current_snapshot.revocation_epoch() < attachment.revocation_epoch
+        || current_snapshot.observed_unix_ms()
+            < attachment.admission_snapshot_observed_unix_ms
+    {
+        return Err(ContextCompilerV2Error::StaleAdmissionSnapshot);
+    }
+    revalidate_selected_admissions(compiled, current_snapshot)?;
+    let actual_payload_digest = Digest32::of_bytes(&serialization.payload);
+    if actual_payload_digest != attachment.payload_digest {
+        return Err(ContextCompilerV2Error::DeliveryMismatch);
+    }
+
+    let mut preparation = ContextDeliveryPreparationV2 {
+        preparation_id,
+        attachment_digest: attachment.attachment_digest,
+        serialization_receipt_digest: serialization.receipt.receipt_digest,
+        payload_digest: actual_payload_digest,
+        model_profile_digest: profile.digest(),
+        provider_id_digest: profile.provider_id_digest,
+        provider_model_digest: profile.provider_model_digest,
+        admission_verifier_digest: current_snapshot.verifier_digest(),
+        admission_snapshot_digest: current_snapshot.snapshot_digest(),
+        admission_snapshot_verification_digest: current_snapshot.verification_digest(),
+        admission_snapshot_observed_unix_ms: current_snapshot.observed_unix_ms(),
+        revocation_epoch: current_snapshot.revocation_epoch(),
+        preparation_digest: Digest32::ZERO,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    preparation.preparation_digest = preparation.compute_preparation_digest();
+    preparation.validate_for(attachment, serialization, profile)?;
+    Ok(preparation)
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ContextDeliveryDispositionV2 {
+    Delivered,
+    Rejected,
+    NotDispatched,
+    Indeterminate,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ContextDeliveryReceiptV2 {
+    delivery_id: StableId,
+    preparation_digest: Digest32,
+    attachment_digest: Digest32,
+    serialization_receipt_digest: Digest32,
+    payload_digest: Digest32,
+    model_profile_digest: Digest32,
+    provider_id_digest: Digest32,
+    provider_model_digest: Digest32,
+    provider_request_binding_digest: Digest32,
+    provider_attempt_digest: Digest32,
+    provider_receipt_digest: Digest32,
+    provider_terminal_digest: Digest32,
+    provider_evidence_verifier_digest: Digest32,
+    provider_evidence_digest: Digest32,
+    provider_recorded_at_unix_ms: u64,
+    admission_snapshot_digest: Digest32,
+    admission_snapshot_verification_digest: Digest32,
+    admission_snapshot_observed_unix_ms: u64,
+    revocation_epoch: u64,
+    terminal_observed: bool,
+    disposition: ContextDeliveryDispositionV2,
+    observed_unix_ms: u64,
+    receipt_digest: Digest32,
+    authority: AuthorityPosture,
+}
+
+pub type ContextDeliveryObservationV2 = ContextDeliveryReceiptV2;
+
+impl ContextDeliveryReceiptV2 {
+    #[must_use]
+    pub const fn payload_digest(&self) -> Digest32 {
+        self.payload_digest
+    }
+
+    #[must_use]
+    pub const fn preparation_digest(&self) -> Digest32 {
+        self.preparation_digest
+    }
+
+    #[must_use]
+    pub const fn admission_snapshot_digest(&self) -> Digest32 {
+        self.admission_snapshot_digest
+    }
+
+    #[must_use]
+    pub const fn admission_snapshot_observed_unix_ms(&self) -> u64 {
+        self.admission_snapshot_observed_unix_ms
+    }
+
+    #[must_use]
+    pub const fn revocation_epoch(&self) -> u64 {
+        self.revocation_epoch
     }
 
     #[must_use]
@@ -1523,61 +1700,74 @@ impl ContextDeliveryReceiptV2 {
 
     pub fn validate_for(
         &self,
+        preparation: &ContextDeliveryPreparationV2,
         attachment: &ContextAttachmentV2,
         serialization: &SerializedContextV2,
+        profile: &ContextModelProfileV2,
     ) -> Result<(), ContextCompilerV2Error> {
         for (name, digest) in [
+            ("delivery_preparation", self.preparation_digest),
             ("attachment", self.attachment_digest),
             ("serialization_receipt", self.serialization_receipt_digest),
             ("payload", self.payload_digest),
             ("model_profile", self.model_profile_digest),
-            ("admission_verifier", self.admission_verifier_digest),
+            ("provider_id", self.provider_id_digest),
+            ("provider_model", self.provider_model_digest),
+            ("provider_request_binding", self.provider_request_binding_digest),
+            ("provider_attempt", self.provider_attempt_digest),
+            ("provider_receipt", self.provider_receipt_digest),
+            ("provider_terminal", self.provider_terminal_digest),
+            (
+                "provider_evidence_verifier",
+                self.provider_evidence_verifier_digest,
+            ),
+            ("provider_evidence", self.provider_evidence_digest),
             ("admission_snapshot", self.admission_snapshot_digest),
             (
                 "admission_snapshot_verification",
                 self.admission_snapshot_verification_digest,
             ),
-            ("transport", self.transport_digest),
             ("delivery_receipt", self.receipt_digest),
         ] {
             ensure_digest(name, digest)?;
         }
-        if self.attachment_digest != attachment.attachment_digest
+        if self.preparation_digest != preparation.preparation_digest
+            || self.attachment_digest != attachment.attachment_digest
             || self.serialization_receipt_digest != serialization.receipt.receipt_digest
+            || self.payload_digest != preparation.payload_digest
             || self.payload_digest != attachment.payload_digest
             || self.payload_digest != serialization.receipt.payload_digest
-            || self.model_profile_digest != attachment.model_profile_digest
-            || self.admission_verifier_digest != attachment.admission_verifier_digest
+            || self.model_profile_digest != preparation.model_profile_digest
+            || self.model_profile_digest != profile.digest()
+            || self.provider_id_digest != preparation.provider_id_digest
+            || self.provider_model_digest != preparation.provider_model_digest
+            || self.admission_snapshot_digest != preparation.admission_snapshot_digest
+            || self.admission_snapshot_verification_digest
+                != preparation.admission_snapshot_verification_digest
             || self.admission_snapshot_observed_unix_ms
-                < attachment.admission_snapshot_observed_unix_ms
-            || self.revocation_epoch < attachment.revocation_epoch
+                != preparation.admission_snapshot_observed_unix_ms
+            || self.revocation_epoch != preparation.revocation_epoch
         {
             return Err(ContextCompilerV2Error::DeliveryMismatch);
         }
         match self.disposition {
-            ContextDeliveryDispositionV2::Delivered => {
-                if !self.terminal_observed
-                    || self.acknowledgement_digest.is_zero()
-                    || self.provider_acknowledged_payload_digest != Some(self.payload_digest)
-                {
-                    return Err(ContextCompilerV2Error::MissingTerminalAcknowledgement);
-                }
-            }
-            ContextDeliveryDispositionV2::Rejected => {
-                if !self.terminal_observed || self.acknowledgement_digest.is_zero() {
-                    return Err(ContextCompilerV2Error::MissingTerminalAcknowledgement);
+            ContextDeliveryDispositionV2::Delivered
+            | ContextDeliveryDispositionV2::Rejected
+            | ContextDeliveryDispositionV2::NotDispatched => {
+                if !self.terminal_observed {
+                    return Err(ContextCompilerV2Error::MissingTerminalObservation);
                 }
             }
             ContextDeliveryDispositionV2::Indeterminate => {
-                if self.terminal_observed
-                    || !self.acknowledgement_digest.is_zero()
-                    || self.provider_acknowledged_payload_digest.is_some()
-                {
+                if self.terminal_observed {
                     return Err(ContextCompilerV2Error::InvalidDeliveryDisposition);
                 }
             }
         }
-        if self.observed_unix_ms == 0 {
+        if self.provider_recorded_at_unix_ms
+                < preparation.admission_snapshot_observed_unix_ms
+            || self.observed_unix_ms < self.provider_recorded_at_unix_ms
+        {
             return Err(ContextCompilerV2Error::InvalidObservationTime);
         }
         if self.authority.grants_any() {
@@ -1594,28 +1784,28 @@ impl ContextDeliveryReceiptV2 {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(DELIVERY_DOMAIN);
         push_id(&mut bytes, &self.delivery_id);
-        push_digest(&mut bytes, self.attachment_digest);
-        push_digest(&mut bytes, self.serialization_receipt_digest);
-        push_digest(&mut bytes, self.payload_digest);
-        push_digest(&mut bytes, self.model_profile_digest);
-        push_digest(&mut bytes, self.admission_verifier_digest);
-        push_digest(&mut bytes, self.admission_snapshot_digest);
-        push_digest(
-            &mut bytes,
+        for digest in [
+            self.preparation_digest,
+            self.attachment_digest,
+            self.serialization_receipt_digest,
+            self.payload_digest,
+            self.model_profile_digest,
+            self.provider_id_digest,
+            self.provider_model_digest,
+            self.provider_request_binding_digest,
+            self.provider_attempt_digest,
+            self.provider_receipt_digest,
+            self.provider_terminal_digest,
+            self.provider_evidence_verifier_digest,
+            self.provider_evidence_digest,
+            self.admission_snapshot_digest,
             self.admission_snapshot_verification_digest,
-        );
+        ] {
+            push_digest(&mut bytes, digest);
+        }
+        push_u64(&mut bytes, self.provider_recorded_at_unix_ms);
         push_u64(&mut bytes, self.admission_snapshot_observed_unix_ms);
         push_u64(&mut bytes, self.revocation_epoch);
-        push_digest(&mut bytes, self.transport_digest);
-        push_id(&mut bytes, &self.provider_request_id);
-        match self.provider_acknowledged_payload_digest {
-            Some(digest) => {
-                bytes.push(1);
-                push_digest(&mut bytes, digest);
-            }
-            None => bytes.push(0),
-        }
-        push_digest(&mut bytes, self.acknowledgement_digest);
         bytes.push(u8::from(self.terminal_observed));
         bytes.push(delivery_disposition_code(self.disposition));
         push_u64(&mut bytes, self.observed_unix_ms);
@@ -1623,83 +1813,130 @@ impl ContextDeliveryReceiptV2 {
     }
 }
 
-pub fn deliver_context_v2(
-    compiled: &CompiledContextV2,
-    serialization: &SerializedContextV2,
+pub fn observe_delivery(
+    preparation: &ContextDeliveryPreparationV2,
     attachment: &ContextAttachmentV2,
+    serialization: &SerializedContextV2,
     profile: &ContextModelProfileV2,
-    current_snapshot: &VerifiedAdmissionSnapshotV2,
     delivery_id: StableId,
-    transport: &impl ContextTransportV2,
+    provider_receipt: &ProviderInvocationReceipt,
+    delivery_verifier: &impl ContextProviderDeliveryVerifierV2,
+    observed_unix_ms: u64,
 ) -> Result<ContextDeliveryReceiptV2, ContextCompilerV2Error> {
-    attachment.validate_for(compiled, serialization, profile)?;
-    if current_snapshot.revocation_epoch() < attachment.revocation_epoch
-        || current_snapshot.observed_unix_ms()
-            < attachment.admission_snapshot_observed_unix_ms
+    preparation.validate_for(attachment, serialization, profile)?;
+    provider_receipt
+        .validate()
+        .map_err(ContextCompilerV2Error::ProviderReceiptInvalid)?;
+
+    let provider_evidence_verifier_digest = delivery_verifier.verifier_digest();
+    ensure_digest(
+        "provider_evidence_verifier",
+        provider_evidence_verifier_digest,
+    )?;
+    let delivery_evidence = delivery_verifier
+        .verify_delivery(provider_receipt)
+        .map_err(ContextCompilerV2Error::ProviderEvidenceInvalid)?;
+    ensure_digest("provider_evidence", delivery_evidence.evidence_digest)?;
+
+    let Some(provider_input) = provider_receipt.intent.binding.ephemeral_input_sha256.as_ref()
+    else {
+        return Err(ContextCompilerV2Error::MissingProviderInputBinding);
+    };
+    let Some(provider_input_witness) = provider_receipt
+        .intent
+        .binding
+        .ephemeral_input_witness_sha256
+        .as_ref()
+    else {
+        return Err(ContextCompilerV2Error::MissingProviderInputWitness);
+    };
+    let expected_provider_input = Sha256Digest::for_bytes(serialization.payload());
+    let expected_provider_witness =
+        Sha256Digest::for_bytes(preparation.preparation_digest.as_array());
+    if provider_input != &expected_provider_input
+        || provider_input_witness != &expected_provider_witness
     {
-        return Err(ContextCompilerV2Error::StaleAdmissionSnapshot);
-    }
-    revalidate_selected_admissions(compiled, current_snapshot)?;
-    if Digest32::of_bytes(&serialization.payload) != attachment.payload_digest {
         return Err(ContextCompilerV2Error::DeliveryMismatch);
     }
 
-    let transport_digest = transport.transport_digest();
-    ensure_digest("transport", transport_digest)?;
-    let evidence = transport.send(&serialization.payload, profile.digest())?;
-    ensure_digest("transmitted_payload", evidence.transmitted_payload_digest)?;
-    if evidence.observed_unix_ms < current_snapshot.observed_unix_ms() {
+    let provider_id_digest =
+        Digest32::of_bytes(provider_receipt.intent.binding.provider_id.as_bytes());
+    let provider_model_digest =
+        Digest32::of_bytes(provider_receipt.intent.binding.model.as_bytes());
+    if provider_id_digest != preparation.provider_id_digest
+        || provider_model_digest != preparation.provider_model_digest
+    {
+        return Err(ContextCompilerV2Error::ProviderModelProfileMismatch);
+    }
+
+    if delivery_evidence.recorded_at_unix_ms
+            < preparation.admission_snapshot_observed_unix_ms
+        || observed_unix_ms < delivery_evidence.recorded_at_unix_ms
+    {
         return Err(ContextCompilerV2Error::InvalidObservationTime);
     }
-    let actual_payload_digest = Digest32::of_bytes(&serialization.payload);
-    if evidence.transmitted_payload_digest != actual_payload_digest {
-        return Err(ContextCompilerV2Error::DeliveryMismatch);
-    }
+
+    let provider_request_binding_digest =
+        Digest32::of_bytes(provider_receipt.request_binding_id.as_str().as_bytes());
+    let provider_attempt_digest =
+        Digest32::of_bytes(provider_receipt.attempt_id.as_str().as_bytes());
+    let provider_receipt_digest = Digest32::of_bytes(
+        &provider_receipt
+            .canonical_wire_bytes()
+            .map_err(ContextCompilerV2Error::ProviderReceiptInvalid)?,
+    );
+    let provider_terminal_digest = Digest32::of_bytes(
+        &provider_receipt
+            .terminal
+            .canonical_wire_bytes()
+            .map_err(ContextCompilerV2Error::ProviderReceiptInvalid)?,
+    );
+    let (terminal_observed, disposition) = match &provider_receipt.terminal {
+        ProviderTerminal::Completed { .. } | ProviderTerminal::CompletedUnary { .. } => {
+            (true, ContextDeliveryDispositionV2::Delivered)
+        }
+        ProviderTerminal::Rejected { .. } => {
+            (true, ContextDeliveryDispositionV2::Rejected)
+        }
+        ProviderTerminal::NotDispatched { .. } => {
+            (true, ContextDeliveryDispositionV2::NotDispatched)
+        }
+        ProviderTerminal::Indeterminate { .. } => {
+            (false, ContextDeliveryDispositionV2::Indeterminate)
+        }
+    };
 
     let mut receipt = ContextDeliveryReceiptV2 {
         delivery_id,
+        preparation_digest: preparation.preparation_digest,
         attachment_digest: attachment.attachment_digest,
         serialization_receipt_digest: serialization.receipt.receipt_digest,
-        payload_digest: actual_payload_digest,
-        model_profile_digest: profile.digest(),
-        admission_verifier_digest: current_snapshot.verifier_digest(),
-        admission_snapshot_digest: current_snapshot.snapshot_digest(),
-        admission_snapshot_verification_digest: current_snapshot.verification_digest(),
-        admission_snapshot_observed_unix_ms: current_snapshot.observed_unix_ms(),
-        revocation_epoch: current_snapshot.revocation_epoch(),
-        transport_digest,
-        provider_request_id: evidence.provider_request_id,
-        provider_acknowledged_payload_digest: evidence.provider_acknowledged_payload_digest,
-        acknowledgement_digest: evidence.acknowledgement_digest,
-        terminal_observed: evidence.terminal_observed,
-        disposition: evidence.disposition,
-        observed_unix_ms: evidence.observed_unix_ms,
+        payload_digest: preparation.payload_digest,
+        model_profile_digest: preparation.model_profile_digest,
+        provider_id_digest,
+        provider_model_digest,
+        provider_request_binding_digest,
+        provider_attempt_digest,
+        provider_receipt_digest,
+        provider_terminal_digest,
+        provider_evidence_verifier_digest,
+        provider_evidence_digest: delivery_evidence.evidence_digest,
+        provider_recorded_at_unix_ms: delivery_evidence.recorded_at_unix_ms,
+        admission_snapshot_digest: preparation.admission_snapshot_digest,
+        admission_snapshot_verification_digest:
+            preparation.admission_snapshot_verification_digest,
+        admission_snapshot_observed_unix_ms:
+            preparation.admission_snapshot_observed_unix_ms,
+        revocation_epoch: preparation.revocation_epoch,
+        terminal_observed,
+        disposition,
+        observed_unix_ms,
         receipt_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
     };
     receipt.receipt_digest = receipt.compute_receipt_digest();
-    receipt.validate_for(attachment, serialization)?;
+    receipt.validate_for(preparation, attachment, serialization, profile)?;
     Ok(receipt)
-}
-
-pub fn observe_delivery(
-    compiled: &CompiledContextV2,
-    serialization: &SerializedContextV2,
-    attachment: &ContextAttachmentV2,
-    profile: &ContextModelProfileV2,
-    current_snapshot: &VerifiedAdmissionSnapshotV2,
-    observation_id: StableId,
-    transport: &impl ContextTransportV2,
-) -> Result<ContextDeliveryReceiptV2, ContextCompilerV2Error> {
-    deliver_context_v2(
-        compiled,
-        serialization,
-        attachment,
-        profile,
-        current_snapshot,
-        observation_id,
-        transport,
-    )
 }
 
 fn validate_realizations(
@@ -1887,7 +2124,12 @@ pub enum ContextCompilerV2Error {
     SerializationMismatch,
     AttachmentMismatch,
     DeliveryMismatch,
-    MissingTerminalAcknowledgement,
+    MissingProviderInputBinding,
+    MissingProviderInputWitness,
+    ProviderModelProfileMismatch,
+    ProviderReceiptInvalid(String),
+    ProviderEvidenceInvalid(String),
+    MissingTerminalObservation,
     InvalidDeliveryDisposition,
     InvalidObservationTime,
     AuthorityGranted,
@@ -1950,7 +2192,8 @@ const fn delivery_disposition_code(disposition: ContextDeliveryDispositionV2) ->
     match disposition {
         ContextDeliveryDispositionV2::Delivered => 0,
         ContextDeliveryDispositionV2::Rejected => 1,
-        ContextDeliveryDispositionV2::Indeterminate => 2,
+        ContextDeliveryDispositionV2::NotDispatched => 2,
+        ContextDeliveryDispositionV2::Indeterminate => 3,
     }
 }
 
