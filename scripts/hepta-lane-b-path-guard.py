@@ -39,7 +39,13 @@ def load(path: Path) -> dict[str, Any]:
     return value
 
 
-def canonical_path(root: Path, value: Any, label: str, *, require_file: bool) -> Path:
+def canonical_path(
+    root: Path,
+    value: Any,
+    label: str,
+    *,
+    require_file: bool | None,
+) -> Path:
     need(
         isinstance(value, str)
         and bool(value)
@@ -63,7 +69,12 @@ def canonical_path(root: Path, value: Any, label: str, *, require_file: bool) ->
         and resolved.relative_to(root).as_posix() == value,
         f"{label}: aliased path {value!r}",
     )
-    need(path.is_file() if require_file else path.is_dir(), f"{label}: missing path {value}")
+    if require_file is True:
+        need(path.is_file(), f"{label}: missing file {value}")
+    elif require_file is False:
+        need(path.is_dir(), f"{label}: missing directory {value}")
+    else:
+        need(path.exists(), f"{label}: missing path {value}")
     return path
 
 
@@ -122,7 +133,7 @@ def verify(root: Path = ROOT) -> int:
             f"{module}: resolved roots",
         )
         for owner_root in resolved_roots:
-            canonical_path(root, owner_root, f"{module}: owner root", require_file=False)
+            canonical_path(root, owner_root, f"{module}: owner root", require_file=None)
         maps[module] = row
         roots[module] = resolved_roots
 
@@ -173,7 +184,18 @@ def self_test() -> int:
         source.write_text("pub fn run() {}\n", encoding="utf-8")
         foreign_source = foreign / "source.rs"
         foreign_source.write_text("pub fn run() {}\n", encoding="utf-8")
-        need(canonical_path(root, "owned/source.rs", "fixture", require_file=True) == source, "canonical fixture")
+        need(
+            canonical_path(root, "owned/source.rs", "fixture", require_file=True) == source,
+            "canonical fixture",
+        )
+        need(
+            canonical_path(root, "owned/source.rs", "fixture", require_file=None) == source,
+            "generic source-root file fixture",
+        )
+        need(
+            canonical_path(root, "owned", "fixture", require_file=None) == owned,
+            "generic source-root directory fixture",
+        )
         for bad in (
             "owned/../foreign/source.rs",
             "owned/./source.rs",
