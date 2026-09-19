@@ -384,9 +384,9 @@ impl SecretLeaseRegistry {
         if let Some(replay) = replay_operation(&state, operation_id, request_sha256, kind)? {
             return Ok(match replay {
                 OperationReplay::Resume => PrepareExisting::Resume,
-                OperationReplay::Completed => PrepareExisting::Completed(
-                    lease_for_operation(&state, operation_id)?.clone(),
-                ),
+                OperationReplay::Completed => {
+                    PrepareExisting::Completed(lease_for_operation(&state, operation_id)?.clone())
+                }
                 OperationReplay::NeedsReconciliation(reason) => {
                     PrepareExisting::NeedsReconciliation(reason)
                 }
@@ -414,7 +414,9 @@ impl SecretLeaseRegistry {
             LeaseOperationKind::Revoke => {
                 if matches!(
                     current.state,
-                    SecretLeaseState::Revoked | SecretLeaseState::Expired | SecretLeaseState::Failed
+                    SecretLeaseState::Revoked
+                        | SecretLeaseState::Expired
+                        | SecretLeaseState::Failed
                 ) {
                     return Err(LeaseRegistryError::LeaseTerminal);
                 }
@@ -753,8 +755,7 @@ impl SecretLeaseRegistry {
                     }
                     Some(ReconciliationReason::RevokeOutcomeUnknown) => {
                         lease.state = SecretLeaseState::ReconciliationRequired;
-                        lease.reconciliation_reason =
-                            Some(ReconciliationReason::RevokeStillActive);
+                        lease.reconciliation_reason = Some(ReconciliationReason::RevokeStillActive);
                     }
                     Some(
                         ReconciliationReason::IssueOutcomeUnknown
@@ -773,8 +774,7 @@ impl SecretLeaseRegistry {
                     }
                     Some(ReconciliationReason::RevokeStillActive) => {
                         lease.state = SecretLeaseState::ReconciliationRequired;
-                        lease.reconciliation_reason =
-                            Some(ReconciliationReason::RevokeStillActive);
+                        lease.reconciliation_reason = Some(ReconciliationReason::RevokeStillActive);
                     }
                     None => {
                         lease.state = match previous_state {
@@ -1208,8 +1208,9 @@ impl JournalStore {
     }
 
     fn append(&self, event: &JournalEvent) -> Result<(), LeaseRegistryError> {
-        let mut bytes =
-            Zeroizing::new(serde_json::to_vec(event).map_err(|_| LeaseRegistryError::InvalidState)?);
+        let mut bytes = Zeroizing::new(
+            serde_json::to_vec(event).map_err(|_| LeaseRegistryError::InvalidState)?,
+        );
         if bytes.len() >= MAX_JOURNAL_EVENT_BYTES {
             return Err(LeaseRegistryError::CapacityExceeded);
         }
@@ -1303,7 +1304,8 @@ fn apply_event(state: &mut RegistryState, event: JournalEvent) -> Result<(), Lea
     state
         .leases
         .insert(event.lease.lease_handle_sha256, event.lease);
-    if state.leases.len() > MAX_REGISTRY_LEASES || state.operations.len() > MAX_REGISTRY_OPERATIONS {
+    if state.leases.len() > MAX_REGISTRY_LEASES || state.operations.len() > MAX_REGISTRY_OPERATIONS
+    {
         return Err(LeaseRegistryError::CapacityExceeded);
     }
     state.next_sequence = state
@@ -1358,7 +1360,9 @@ fn normalize_recovery(state: &mut RegistryState) {
                 Some(ReconciliationReason::OrphanedActiveLease)
             }
             SecretLeaseState::Issuing => Some(ReconciliationReason::IssueOutcomeUnknown),
-            SecretLeaseState::IssuedPendingDelivery => Some(ReconciliationReason::SecretDeliveryLost),
+            SecretLeaseState::IssuedPendingDelivery => {
+                Some(ReconciliationReason::SecretDeliveryLost)
+            }
             SecretLeaseState::Renewing => Some(ReconciliationReason::RenewOutcomeUnknown),
             SecretLeaseState::RevokePending => Some(ReconciliationReason::RevokeOutcomeUnknown),
             _ => None,
@@ -1412,11 +1416,9 @@ fn replay_operation(
                     .unwrap_or(ReconciliationReason::IssueOutcomeUnknown),
             )
         }
-        OperationPhase::Failed => OperationReplay::Failed(
-            operation
-                .failure
-                .ok_or(LeaseRegistryError::InvalidState)?,
-        ),
+        OperationPhase::Failed => {
+            OperationReplay::Failed(operation.failure.ok_or(LeaseRegistryError::InvalidState)?)
+        }
     }))
 }
 
@@ -1814,8 +1816,7 @@ impl BaoClient {
             provider_id,
             renewable.unwrap_or(false),
         )?;
-        let (Some(lease_duration), Some(renewable), Some(data)) =
-            (lease_duration, renewable, data)
+        let (Some(lease_duration), Some(renewable), Some(data)) = (lease_duration, renewable, data)
         else {
             registry.mark_reconciliation(
                 &request.operation_id,
@@ -2370,10 +2371,8 @@ impl BaoClient {
                     )?;
                     return Err(BaoLeaseError::Authority(error));
                 }
-                let lease = registry.complete_reconcile_absent(
-                    &request.operation_id,
-                    binding.request_sha256,
-                )?;
+                let lease = registry
+                    .complete_reconcile_absent(&request.operation_id, binding.request_sha256)?;
                 Ok(BaoLeaseMutationReceipt {
                     request_sha256: binding.request_sha256,
                     lease: lease.metadata(),
@@ -2454,9 +2453,7 @@ impl BaoClient {
     }
 }
 
-fn validate_issue_request(
-    request: &BaoDynamicLeaseRequest,
-) -> Result<Vec<String>, BaoLeaseError> {
+fn validate_issue_request(request: &BaoDynamicLeaseRequest) -> Result<Vec<String>, BaoLeaseError> {
     if !component(&request.subject_id)
         || !component(&request.consumer_id)
         || (!request.namespace.is_empty() && !segmented(&request.namespace))
@@ -2621,11 +2618,7 @@ fn lease_handle(request_sha256: [u8; 32], operation_id: &str) -> [u8; 32] {
     Digest32::of_bytes(&bytes).into_array()
 }
 
-fn dynamic_url(
-    client: &BaoClient,
-    mount: &str,
-    path: &str,
-) -> Result<url::Url, BaoLeaseError> {
+fn dynamic_url(client: &BaoClient, mount: &str, path: &str) -> Result<url::Url, BaoLeaseError> {
     let mut url = client.origin.clone();
     {
         let mut parts = url
@@ -2815,10 +2808,7 @@ fn prepare_directory(root: &Path) -> Result<File, LeaseRegistryError> {
         return Err(LeaseRegistryError::Unavailable);
     }
     let before = std::fs::symlink_metadata(root).map_err(|_| LeaseRegistryError::Unavailable)?;
-    if before.file_type().is_symlink()
-        || !before.is_dir()
-        || before.mode() & 0o077 != 0
-    {
+    if before.file_type().is_symlink() || !before.is_dir() || before.mode() & 0o077 != 0 {
         return Err(LeaseRegistryError::UnsafeStateDirectory);
     }
     let directory = File::open(root).map_err(|_| LeaseRegistryError::Unavailable)?;
