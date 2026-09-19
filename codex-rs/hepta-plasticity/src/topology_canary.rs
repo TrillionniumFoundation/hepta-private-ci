@@ -86,6 +86,7 @@ impl StructuralCanaryControllerV1 {
             || plan.maximum_steps > 1_024
             || plan.minimum_successful_steps == 0
             || plan.minimum_successful_steps > plan.maximum_steps
+            || plan.maximum_regressions > plan.maximum_steps
         {
             return Err(StructuralCanaryErrorV1::InvalidPlan);
         }
@@ -272,6 +273,16 @@ mod tests {
         assert_eq!(accepted.successful_steps, 2);
         assert!(!accepted.plan_digest.is_zero());
         assert!(!accepted.observation_chain_digest.is_zero());
+    }
+
+    #[test]
+    fn regression_budget_cannot_exceed_canary_horizon() {
+        let mut invalid = plan();
+        invalid.maximum_regressions = invalid.maximum_steps + 1;
+        assert!(matches!(
+            StructuralCanaryControllerV1::new(invalid),
+            Err(StructuralCanaryErrorV1::InvalidPlan)
+        ));
     }
 
     #[test]
