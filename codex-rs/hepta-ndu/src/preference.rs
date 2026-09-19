@@ -10,6 +10,8 @@ use crate::AxisValue;
 use crate::NduError;
 use crate::SubjectClass;
 use crate::mul_q32_ties_even;
+use crate::protocol::NduIterationContextV1;
+use crate::protocol::ndu_iteration_context_digest_v1;
 
 const ETA_MIN_RAW: i64 = 1_i64 << 28;
 const ETA_MAX_RAW: i64 = 1_i64 << 30;
@@ -148,11 +150,12 @@ pub fn solve_preference_target(
     initial: PreferenceState,
     mut target: Vec<AxisValue>,
     eta: FixedQ32,
-    context_digest: Digest32,
+    context: &NduIterationContextV1,
 ) -> Result<PreferenceSolveOutcome, NduError> {
-    if context_digest.is_zero() {
-        return Err(NduError::EmptyProtocolDigest("iteration_context"));
+    if initial.subject_id != context.subject_id || initial.subject_class != context.subject_class {
+        return Err(NduError::ProtocolContextMismatch);
     }
+    let context_digest = ndu_iteration_context_digest_v1(context)?;
     if !(ETA_MIN_RAW..=ETA_MAX_RAW).contains(&eta.raw()) {
         return Err(NduError::InvalidEta);
     }
