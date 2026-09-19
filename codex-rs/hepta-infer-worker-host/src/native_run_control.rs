@@ -58,6 +58,13 @@ impl AppServerModelDriver {
         if let Some(reason) = &record.pre_dispatch_stop {
             return Err(format!("request stopped before dispatch: {reason}").into());
         }
+        if let Some(rejection) = &record.dispatch_rejection {
+            return Err(format!(
+                "turn/start was explicitly rejected before start ({:?}): {}",
+                rejection.status, rejection.reason
+            )
+            .into());
+        }
         if record.state != NativeReservationState::Reserved {
             if let Some(output) = record.observation {
                 return Ok(output);
@@ -69,6 +76,7 @@ impl AppServerModelDriver {
                 model: record.request.model,
                 model_provider: dispatch.model_provider,
                 status: NativeRunStatus::Indeterminate,
+                boundary_status: codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus::Indeterminate,
                 output: String::new(),
                 observed_output_tokens: None,
                 terminal_observed: false,
@@ -76,6 +84,7 @@ impl AppServerModelDriver {
                 stop_reason: Some(
                     "reopened after possible dispatch; reservation held, no replay".to_string(),
                 ),
+                codex_terminal_correlation_digest: None,
             };
             control.settle_native(&record.request.request_id, output.clone())?;
             return Ok(output);
