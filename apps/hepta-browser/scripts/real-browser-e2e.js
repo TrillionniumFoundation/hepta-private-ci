@@ -140,6 +140,7 @@ const [bwrapBytes, prlimitBytes] = await Promise.all([
 const root = await mkdtemp(join(tmpdir(), "hepta-browser-real-e2e-"));
 await chmod(root, 0o700);
 let forbiddenHits = 0;
+let otherAllowedHits = 0;
 let profileACookieHeader = null;
 let profileBCookieHeader = null;
 const hanging = new Set();
@@ -150,9 +151,15 @@ const forbidden = await listen((_request, response) => {
 });
 const forbiddenOrigin = `http://127.0.0.1:${forbidden.address().port}`;
 
+const otherAllowed = await listen((_request, response) => {
+  otherAllowedHits += 1;
+  response.end("profile-allowed but effect-ungranted redirect");
+});
+const otherAllowedOrigin = `http://127.0.0.1:${otherAllowed.address().port}`;
+
 const app = await listen((request, response) => {
   if (request.url === "/redirect-forbidden") {
-    response.writeHead(302, { location: forbiddenOrigin + "/redirect-escape" });
+    response.writeHead(302, { location: otherAllowedOrigin + "/redirect-escape" });
     response.end();
     return;
   }
@@ -252,7 +259,7 @@ try {
     grantDigest: D2,
     generation: 1,
     expiresAtMs: Date.now() + 120_000,
-    allowedOrigins: [origin],
+    allowedOrigins: [origin, otherAllowedOrigin],
     effectGrants: [navigateGrant],
   });
   const navInput = operation({
@@ -390,7 +397,11 @@ try {
     "redirect denial must reach a terminal local observation before profile close",
   );
   await new Promise((resolve) => setTimeout(resolve, 250));
-  assert.equal(forbiddenHits, 0, "redirect target outside the origin grant must not be reached");
+  assert.equal(
+    otherAllowedHits,
+    0,
+    "redirect target may be profile-allowed but must not escape the current effect destination grant",
+  );
 
   const closed = await host.closeProfile({
     profileId: "profile.e2e",
@@ -677,6 +688,7 @@ try {
       exactOriginEgressObserved: true,
       crossOriginSubresourceDenied: true,
       redirectEscapeDenied: true,
+      profileAllowedCrossOriginRedirectDeniedByEffectGrant: true,
       revocationRaceBlockedUntilDispatchBoundary: true,
       persistedCrashReconciliation: true,
       crossProfileCookieIsolation: true,
@@ -687,5 +699,6 @@ try {
   for (const response of hanging) response.destroy();
   await new Promise((resolve) => app.close(resolve));
   await new Promise((resolve) => forbidden.close(resolve));
+  await new Promise((resolve) => otherAllowed.close(resolve));
   await rm(root, { recursive: true, force: true });
 }

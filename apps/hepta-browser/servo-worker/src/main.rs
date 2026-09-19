@@ -9,7 +9,7 @@ use std::os::unix::net::UnixStream;
 use std::path::Path;
 use std::rc::Rc;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
-use std::sync::{Arc, mpsc};
+use std::sync::{Arc, Mutex, mpsc};
 use std::thread;
 use std::time::{Duration, Instant};
 
@@ -70,6 +70,7 @@ struct Delegate {
     frame_ready: Arc<AtomicBool>,
     navigation_epoch: Arc<AtomicU64>,
     allowed_origins: HashSet<String>,
+    effect_navigation_origin: Arc<Mutex<Option<String>>>,
 }
 
 impl WebViewDelegate for Delegate {
@@ -78,8 +79,16 @@ impl WebViewDelegate for Delegate {
     }
 
     fn request_navigation(&self, _webview: WebView, request: NavigationRequest) {
-        let allowed = request.url.as_str() == "about:blank"
-            || origin(&request.url).is_some_and(|value| self.allowed_origins.contains(&value));
+        let effect_origin = self
+            .effect_navigation_origin
+            .lock()
+            .ok()
+            .and_then(|value| value.clone());
+        let allowed = navigation_request_allowed(
+            &request.url,
+            &self.allowed_origins,
+            effect_origin.as_deref(),
+        );
         if allowed {
             self.navigation_epoch.fetch_add(1, Ordering::AcqRel);
             request.allow();
@@ -91,6 +100,19 @@ impl WebViewDelegate for Delegate {
     fn request_permission(&self, _webview: WebView, request: PermissionRequest) {
         request.deny();
     }
+}
+
+fn navigation_request_allowed(
+    url: &Url,
+    allowed_origins: &HashSet<String>,
+    effect_origin: Option<&str>,
+) -> bool {
+    if url.as_str() == "about:blank" {
+        return true;
+    }
+    origin(url).is_some_and(|value| {
+        allowed_origins.contains(&value) && effect_origin == Some(value.as_str())
+    })
 }
 
 #[derive(Clone)]
@@ -160,6 +182,7 @@ struct Browser {
     webview: WebView,
     frame_ready: Arc<AtomicBool>,
     navigation_epoch: Arc<AtomicU64>,
+    effect_navigation_origin: Arc<Mutex<Option<String>>>,
     observed_navigation_epoch: Option<u64>,
     last_document_digest: Option<String>,
     last_action_surface_digest: Option<String>,
@@ -191,10 +214,12 @@ impl Browser {
         servo.setup_logging();
         let frame_ready = Arc::new(AtomicBool::new(false));
         let navigation_epoch = Arc::new(AtomicU64::new(0));
+        let effect_navigation_origin = Arc::new(Mutex::new(None));
         let delegate = Rc::new(Delegate {
             frame_ready: frame_ready.clone(),
             navigation_epoch: navigation_epoch.clone(),
             allowed_origins: allowed_origins.clone(),
+            effect_navigation_origin: effect_navigation_origin.clone(),
         });
         let webview = WebViewBuilder::new(&servo, context.clone())
             .url(Url::parse("about:blank").expect("literal about:blank is valid"))
@@ -206,6 +231,7 @@ impl Browser {
             webview,
             frame_ready,
             navigation_epoch,
+            effect_navigation_origin,
             observed_navigation_epoch: None,
             last_document_digest: None,
             last_action_surface_digest: None,
@@ -335,6 +361,37 @@ impl Browser {
             let observation = self.verify_action_surface()?;
             validate_action_target(action, &observation)?;
         }
+
+        let destination_origin = string_field(&frame.payload, "destinationOrigin")?;
+        let destination_url = Url::parse(destination_origin)
+            .map_err(|error| format!("dispatch destinationOrigin invalid: {error}"))?;
+        let normalized_destination = origin(&destination_url)
+            .ok_or_else(|| "dispatch destinationOrigin must use HTTP(S)".to_string())?;
+        if normalized_destination != destination_origin
+            || !self.allowed_origins.contains(&normalized_destination)
+        {
+            return Err("dispatch destinationOrigin is outside the admitted profile".to_string());
+        }
+        if kind == "navigate" {
+            let target = action
+                .get("url")
+                .and_then(Value::as_str)
+                .ok_or_else(|| "navigate.url must be a string".to_string())?;
+            let target_url =
+                Url::parse(target).map_err(|error| format!("navigate URL invalid: {error}"))?;
+            if origin(&target_url).as_deref() != Some(normalized_destination.as_str()) {
+                return Err(
+                    "navigate action destination does not match dispatch destinationOrigin"
+                        .to_string(),
+                );
+            }
+        }
+        *self
+            .effect_navigation_origin
+            .lock()
+            .map_err(|_| "effect navigation origin lock is poisoned".to_string())? =
+            Some(normalized_destination);
+
         self.operations.insert(
             operation_id.to_string(),
             StoredOperation {
@@ -1252,6 +1309,30 @@ fn is_digest(value: &str) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn navigation_requests_are_scoped_to_the_current_effect_origin() {
+        let allowed = HashSet::from([
+            "https://a.example".to_string(),
+            "https://b.example".to_string(),
+        ]);
+        let blank = Url::parse("about:blank").expect("about blank");
+        let a = Url::parse("https://a.example/path").expect("origin a");
+        let b = Url::parse("https://b.example/path").expect("origin b");
+
+        assert!(navigation_request_allowed(&blank, &allowed, None));
+        assert!(!navigation_request_allowed(&a, &allowed, None));
+        assert!(navigation_request_allowed(
+            &a,
+            &allowed,
+            Some("https://a.example")
+        ));
+        assert!(!navigation_request_allowed(
+            &b,
+            &allowed,
+            Some("https://a.example")
+        ));
+    }
 
     #[test]
     fn dispatch_snapshot_rejects_generation_document_and_navigation_drift() {

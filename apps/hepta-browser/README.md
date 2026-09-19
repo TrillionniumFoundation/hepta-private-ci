@@ -76,10 +76,13 @@ loopback relay inside the sandbox, which can reach only a profile-private Unix
 socket. The host-side `GrantScopedEgressBroker` revalidates exact origin, DNS
 answers and destination IP for every HTTP request/CONNECT. For HTTPS CONNECT to
 a DNS host it also requires bounded ClientHello SNI to match the granted host
-before any upstream TCP connection. Production denies private/special address
-ranges. The real worker gate verifies both a granted local fixture path
-(test-only private-range override) and denial of an ungranted subresource
-origin.
+before any upstream TCP connection. Independently, the Servo delegate pins
+top-level navigation to the current effect's exact `destinationOrigin`, so a
+second origin may remain profile-allowed for read/subresource policy without
+becoming the redirect target of the current effect. Production denies
+private/special address ranges. The real worker gate verifies both a granted
+local fixture path (test-only private-range override) and denial of an
+ungranted subresource origin.
 
 After worker admission the response remains attached as a terminal-settlement
 future and Browser records any terminal result durably. A process restart may

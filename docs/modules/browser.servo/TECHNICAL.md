@@ -155,7 +155,7 @@ node --test apps/hepta-browser/test/*.test.js
 node --check apps/hepta-browser/src/*.js
 ```
 
-Coverage includes canonical proposals, action/provenance binding, worker-admission authority linearization, bounded parent-channel read/write timeout with revocation-fence release, explicit pre-dispatch rejection, page/document/navigation/action-surface drift, exact observed-target admission, hidden/disabled/password target rejection, host-side observation invalidation after effects, durable generation-resurrection fencing, recovered-generation auto-retirement, volatile-journal rejection, one-WebView outstanding-effect capacity, secret-free durability, semantic-observation digest/budget, bounded serialization backpressure, strict journal hydration/compaction/retirement, private protocol canonicality, response-request echo binding, worker artifact/profile ownership, stderr drain, exact Bubblewrap/prlimit artifact identity, Linux launch allowlist and in-sandbox RLIMIT observation.
+Coverage includes canonical proposals, action/provenance binding, worker-admission authority linearization, bounded parent-channel read/write timeout with revocation-fence release, explicit pre-dispatch rejection, page/document/navigation/action-surface drift, exact observed-target admission, effect-scoped top-level redirect fencing even when the second origin is profile-allowed, hidden/disabled/password target rejection, host-side observation invalidation after effects, durable generation-resurrection fencing, recovered-generation auto-retirement, volatile-journal rejection, one-WebView outstanding-effect capacity, secret-free durability, semantic-observation digest/budget, bounded serialization backpressure, strict journal hydration/compaction/retirement, private protocol canonicality, response-request echo binding, worker artifact/profile ownership, stderr drain, exact Bubblewrap/prlimit artifact identity, Linux launch allowlist and in-sandbox RLIMIT observation.
 
 Cross-owner qualification additionally runs:
 
@@ -217,7 +217,11 @@ separated the hardened owner boundary from a usable browser lifecycle:
   destination IP on every HTTP request/CONNECT. For HTTPS CONNECT to a DNS
   destination it also parses a bounded TLS ClientHello and requires SNI to
   match the granted host before opening any upstream TCP connection; production
-  denies loopback/private/link-local/special destinations.
+  denies loopback/private/link-local/special destinations. Independently of the
+  proxy allowlist, the Servo delegate pins every top-level navigation to the
+  current effect's exact `destinationOrigin`; redirecting to a second origin
+  that is profile-allowed but not selected by this effect is denied before
+  navigation admission.
 - **Terminal pipeline:** final-use authority ends at the worker admission
   boundary, but the driver retains the bound worker response. Terminal
   settlement is persisted without holding the revocation fence; bounded late
@@ -253,8 +257,9 @@ the next call starts a clean private Browser service against the same durable
 journal, allowing an explicit `reconcile_persisted_operation` request to
 consume trusted recovery evidence without redispatch.
 
-The real Browser qualification path also checks HTTP subresource escape, an
-allowed-origin redirect to an ungranted origin, exact HTTPS CONNECT
-authority/port admission, same-profile cookie persistence, cross-profile cookie
-isolation, and a 32-cycle worker RSS/FD soak. These are source qualification
+The real Browser qualification path also checks HTTP subresource escape, a
+redirect to a second profile-allowed origin that is outside the current effect
+destination grant, exact HTTPS CONNECT authority/port/ClientHello-SNI admission,
+same-profile cookie persistence, cross-profile cookie isolation, and a 32-cycle
+worker RSS/FD soak. These are source qualification
 oracles until an exact target-host run produces retained evidence.

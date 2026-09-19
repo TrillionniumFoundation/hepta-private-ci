@@ -172,7 +172,11 @@ match the granted CONNECT host before opening any upstream TCP connection.
 IP-literal grants may omit SNI, while any supplied server name must still match.
 Every redirect/subresource request is rechecked. Production rejects private,
 loopback, link-local, documentation and multicast/special ranges; the
-private-network override exists only for repository E2E fixtures.
+private-network override exists only for repository E2E fixtures. The worker
+also pins top-level `NavigationRequest` admission to the current dispatch
+`destinationOrigin`; a second origin can remain present in the profile
+allowlist for subresource/read policy but cannot become the top-level redirect
+target of the current effect unless a new effect grant selects it.
 
 Worker `dispatch_boundary` remains the final-use linearization point. After
 that boundary the worker response stays attached as a settlement future.
@@ -200,7 +204,8 @@ executing it again.
 
 The egress qualification suite separately checks exact HTTP origin admission,
 HTTPS CONNECT authority+port+ClientHello-SNI binding, forbidden subresource
-denial, redirect escape denial, production denial of mapped/private address
-classes, and two-profile cookie isolation. The broker does not terminate TLS;
+denial, effect-scoped denial of a redirect to a second profile-allowed origin,
+production denial of mapped/private address classes, and two-profile cookie
+isolation. The broker does not terminate TLS;
 after the pre-connect SNI admission check, Servo still performs end-to-end
 certificate and TLS validation inside the CONNECT tunnel.

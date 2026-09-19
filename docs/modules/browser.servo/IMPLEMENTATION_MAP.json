@@ -115,7 +115,7 @@
           "command": "node apps/hepta-browser/scripts/real-browser-e2e.js <qualified-worker>"
         }
       ],
-      "sourceSemantics": "Binds proposal provenance, typed payload, current snapshot, grant and live final-use authority; holds revocation through durable intent and worker-side admission/rejection, then releases it. Worker terminal settlement is retained and durably recorded; exact trusted persisted receipts can refine a post-process-loss unknown without redispatch.",
+      "sourceSemantics": "Binds proposal provenance, typed payload, current snapshot, grant and live final-use authority; holds revocation through durable intent and worker-side admission/rejection, then releases it. The Servo delegate independently pins top-level navigation to the exact current effect destinationOrigin, so a second profile-allowed origin cannot become this effect's redirect target. Worker terminal settlement is retained and durably recorded; exact trusted persisted receipts can refine a post-process-loss unknown without redispatch.",
       "operation": "navigate_or_act",
       "nativeSymbol": "async navigateOrAct(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",

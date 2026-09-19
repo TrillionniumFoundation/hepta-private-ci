@@ -139,6 +139,7 @@ jobs:
           assert receipt['realBrowserE2E']['openNavigateObserveTypeClickClose'] is True
           assert receipt['realBrowserE2E']['crossOriginSubresourceDenied'] is True
           assert receipt['realBrowserE2E']['redirectEscapeDenied'] is True
+          assert receipt['realBrowserE2E']['profileAllowedCrossOriginRedirectDeniedByEffectGrant'] is True
           assert receipt['realBrowserE2E']['crossProfileCookieIsolation'] is True
           assert receipt['realBrowserE2E']['persistedCrashReconciliation'] is True
           assert receipt['realBrowserSoak']['cycles'] == 32
@@ -180,6 +181,7 @@ jobs:
           assert result["openNavigateObserveTypeClickClose"] is True
           assert result["crossOriginSubresourceDenied"] is True
           assert result["redirectEscapeDenied"] is True
+          assert result["profileAllowedCrossOriginRedirectDeniedByEffectGrant"] is True
           assert result["crossProfileCookieIsolation"] is True
           assert result["persistedCrashReconciliation"] is True
           PY
