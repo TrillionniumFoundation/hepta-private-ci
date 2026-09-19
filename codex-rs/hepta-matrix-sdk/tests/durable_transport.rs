@@ -196,8 +196,9 @@ impl MatrixOutboundTransport for PostSendAckLossTransport {
             txn_ids.push(record.stable_txn_id.clone());
             if txn_ids.len() == 1 {
                 // The fake Synapse accepted `accepted_event_id`; only its
-                // response is lost. The durable dispatcher must park the
-                // stable transaction as indeterminate instead of retrying it.
+                // response is lost. The durable dispatcher must preserve the
+                // indeterminate truth and may only retransmit this exact stable
+                // transaction identity.
                 Err(MatrixTransportError::Indeterminate)
             } else {
                 Ok(self.accepted_event_id.clone())
@@ -466,7 +467,7 @@ async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestRes
 }
 
 #[tokio::test]
-async fn post_send_ack_loss_parks_txn_until_sync_reconciliation() -> TestResult {
+async fn post_send_ack_loss_reuses_stable_txn_until_sync_reconciliation() -> TestResult {
     let temp = TempDir::new()?;
     let agent_id = agent(FIRST_AGENT)?;
     let layout = layout(&temp, &agent_id)?;
@@ -493,11 +494,22 @@ async fn post_send_ack_loss_parks_txn_until_sync_reconciliation() -> TestResult 
     assert_eq!(after_response_loss.state, OutboxState::InFlight);
     assert_eq!(after_response_loss.sent_event_id, None);
 
-    assert!(
-        store.claim_outbox(1_000, 20, 1).await?.is_empty(),
-        "indeterminate Matrix effect was blindly reclaimed for resend"
+    let second = dispatch_outbox_once(&store, &transport, &config, &cancel, 31).await?;
+    assert_eq!(second.accepted, 1);
+    assert_eq!(
+        transport.txn_ids()?,
+        vec![
+            original.stable_txn_id.clone(),
+            original.stable_txn_id.clone(),
+        ]
     );
-    assert_eq!(transport.txn_ids()?, vec![original.stable_txn_id.clone()]);
+    let accepted = store
+        .outbox_for_txn(&original.stable_txn_id)
+        .await?
+        .ok_or("retransmitted outbox row disappeared")?;
+    assert_eq!(accepted.state, OutboxState::InFlight);
+    assert_eq!(accepted.attempts, 2);
+    assert_eq!(accepted.sent_event_id, None);
 
     store
         .observe_matrix_dispatch_succeeded(
@@ -505,7 +517,7 @@ async fn post_send_ack_loss_parks_txn_until_sync_reconciliation() -> TestResult 
             &accepted_event_id,
             &original.room_id,
             &observation_digest('c'),
-            1_001,
+            32,
         )
         .await?
         .ok_or("sync did not reconcile response-loss send")?;
@@ -514,7 +526,7 @@ async fn post_send_ack_loss_parks_txn_until_sync_reconciliation() -> TestResult 
         .await?
         .ok_or("sent outbox row disappeared")?;
     assert_eq!(committed.state, OutboxState::Sent);
-    assert_eq!(committed.attempts, 1);
+    assert_eq!(committed.attempts, 2);
     assert_eq!(committed.sent_event_id, Some(accepted_event_id));
     store.close().await;
     Ok(())
