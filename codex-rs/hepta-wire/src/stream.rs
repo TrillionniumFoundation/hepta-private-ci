@@ -38,7 +38,7 @@ impl<R: Read> FramedReader<R> {
     }
 
     pub fn with_max_frame_bytes(inner: R, max_frame_bytes: usize) -> Result<Self, StreamError> {
-        if max_frame_bytes < V1_HEADER_BYTES || max_frame_bytes > MAX_WIRE_FRAME_BYTES {
+        if !(V1_HEADER_BYTES..=MAX_WIRE_FRAME_BYTES).contains(&max_frame_bytes) {
             return Err(StreamError::FrameLimit);
         }
         Ok(Self {
