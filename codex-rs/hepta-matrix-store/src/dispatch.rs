@@ -336,6 +336,10 @@ impl MatrixDurableStore {
         }
         if matches!(current.state, MatrixDispatchState::Failed | MatrixDispatchState::Redacted)
             || current.room_id != room_id.as_str()
+            || current
+                .transport_event_id
+                .as_ref()
+                .is_some_and(|transport_event_id| transport_event_id != event_id)
             || observed_at_ms < current.updated_at_ms
         {
             return Err(MatrixDurableError::Conflict);
@@ -650,7 +654,7 @@ async fn append_observation(
         "INSERT INTO matrix_dispatch_observations (
             stable_txn_id, kind, event_id, evidence_digest, observed_at_ms
          ) VALUES (?, ?, ?, ?, ?)
-         ON CONFLICT(stable_txn_id, kind, event_id, evidence_digest) DO NOTHING",
+         ON CONFLICT(stable_txn_id, kind, event_id, evidence_digest, observed_at_ms) DO NOTHING",
     )
     .bind(txn_id.as_str())
     .bind(kind)
