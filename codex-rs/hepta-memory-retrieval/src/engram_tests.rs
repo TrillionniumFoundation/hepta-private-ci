@@ -563,3 +563,54 @@ fn target_host_hnmf_reports_latency_percentiles_at_candidate_ceiling() {
         resources.settling_steps,
     );
 }
+
+
+#[test]
+#[ignore = "target-host structural-ceiling probe; run explicitly with --ignored --nocapture"]
+fn target_host_hnmf_validates_full_structural_ceiling() {
+    let cue = cue();
+    let nodes = (1..=4096_u64)
+        .map(|number| {
+            node(
+                &format!("ceiling-node:{number:04}"),
+                EngramPopulationV1::SemanticConcept,
+                vec![support(((number - 1) % 512) + 1)],
+                FixedQ32::ZERO,
+            )
+        })
+        .collect::<Vec<_>>();
+    let mut synapses = Vec::with_capacity(32_768);
+    for source in 1..=4096_u64 {
+        for offset in 1..=8_u64 {
+            let target = ((source - 1 + offset) % 4096) + 1;
+            synapses.push(synapse(
+                &format!("ceiling-node:{source:04}"),
+                &format!("ceiling-node:{target:04}"),
+                SynapseRelationV1::Associative,
+                FixedQ32::from_raw(1_i64 << 20),
+            ));
+        }
+    }
+    assert_eq!(nodes.len(), MAX_ENGRAM_NODES);
+    assert_eq!(synapses.len(), MAX_ENGRAM_SYNAPSES);
+
+    let build_started = std::time::Instant::now();
+    let snapshot = EngramSnapshotV1::new(
+        cue.snapshot_key.vector_digest,
+        digest("qualification-full-structural-ceiling"),
+        nodes,
+        synapses,
+    )
+    .expect("full structural-ceiling snapshot");
+    let build_us = build_started.elapsed().as_micros();
+
+    let validate_started = std::time::Instant::now();
+    snapshot.validate().expect("structural ceiling validates");
+    let validate_us = validate_started.elapsed().as_micros();
+
+    eprintln!(
+        "{{\"schema\":\"hepta.memory-retrieval.target-host.v1\",\"phase\":\"hnmf-structural-ceiling\",\"nodes\":4096,\"synapses\":32768,\"build_us\":{},\"validate_us\":{}}}",
+        build_us,
+        validate_us,
+    );
+}

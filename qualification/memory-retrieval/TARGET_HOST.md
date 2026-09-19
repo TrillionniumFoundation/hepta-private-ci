@@ -43,10 +43,24 @@ The fixture executes 100 deterministic HNMF recalls with 512 candidate events,
 512 engram nodes, associative recurrence, the product four-step ceiling and a
 16-result retrieval profile. It prints p50/p95/p99 microseconds plus the final
 engram resource receipt. This is a source-level HNMF probe; it is not a
-substitute for the SQLite/Agentd end-to-end observation above or future
-4096-node/32768-synapse stress profiles.
+substitute for the SQLite/Agentd end-to-end observation above.
 
-## 3. Functional qualification matrix
+## 3. HNMF structural-ceiling probe
+
+```sh
+/usr/bin/time -v \
+  cargo test --release --locked -p codex-hepta-memory-retrieval \
+  target_host_hnmf_validates_full_structural_ceiling \
+  -- --ignored --nocapture --test-threads=1
+```
+
+This fixture constructs and validates the exact 4,096-node / 32,768-synapse
+structural ceiling and prints construction plus validation microseconds.
+GNU `time -v` supplies CPU and RSS/peak-memory observations for the same
+process. This is a structural-capacity probe, not a claim that worst-case
+four-step traversal of every edge meets any latency target.
+
+## 4. Functional qualification matrix
 
 The ordinary package tests cover:
 
@@ -64,7 +78,7 @@ The ordinary package tests cover:
 These fixtures establish deterministic correctness and separable interventions.
 They do not establish real-world recall quality or learned-policy uplift.
 
-## 4. Evidence that remains independent
+## 5. Evidence that remains independent
 
 A performance receipt records measurements; it does not select, accept, promote
 or release the candidate. Real recall-quality and causal-utility claims require
