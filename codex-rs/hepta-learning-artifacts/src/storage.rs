@@ -93,6 +93,8 @@ pub struct RegistryHeadWitnessReceipt {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ArtifactStorageError {
     InvalidBinding,
+    Unscoped,
+    ScopeMismatch,
     InvalidReceipt,
     InvalidHeadWitness,
     HeadWitnessMismatch,
