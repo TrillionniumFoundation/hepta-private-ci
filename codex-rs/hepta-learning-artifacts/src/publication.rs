@@ -736,6 +736,8 @@ mod tests {
             &witness,
             &head_requirement(),
             witness_receipt(&witness),
+            &withdrawal_registry(),
+            20,
         ) {
             panic!("witness durability failed: {error}");
         }
