@@ -269,20 +269,21 @@ pub(crate) async fn revalidate(
         .collect::<BTreeMap<_, _>>();
     for item in items {
         let content_digest = Sha256Digest::for_bytes(item.content.as_bytes());
-        if content_digest.as_str() != item.content_sha256 {
+        if content_digest.as_str() != item.content_sha256.as_str() {
             return Err(CognitiveStoreError::Invalid(
                 "cognitive context content hash mismatch".to_string(),
             )
             .into());
         }
+        let expected_content: Digest32 = item.content_sha256.parse().map_err(|error| {
+            CognitiveStoreError::Invalid(format!("invalid cognitive content digest: {error}"))
+        })?;
         let current = records.get(item.memory_id.as_str()).ok_or_else(|| {
             CognitiveStoreError::Conflict("cognitive context item disappeared".to_string())
         })?;
         if !current.is_live()
             || current.revision.get() != item.revision
-            || current
-                .content_digest
-                .is_none_or(|digest| digest.to_string() != item.content_sha256)
+            || current.content_digest != Some(expected_content)
         {
             return Err(CognitiveStoreError::Conflict(
                 "cognitive context item changed before final use".to_string(),
