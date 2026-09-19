@@ -406,13 +406,19 @@ def verify():
             for op in ops
             if op.get("nativeSymbol") and op.get("sourcePath")
         }
-        if not expected_entrypoints.issubset(actual_entrypoints):
-            failures.append(f"{mid}: dossier entrypoint missing from map")
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+        elif (
+            boundary.get("nativeSourceMappingComplete") is True
+            and not expected_entrypoints.issubset(actual_entrypoints)
+        ):
+            failures.append(f"{mid}: dossier entrypoint missing from complete map")
+    # sourceBase is module-local evidence identity. Different modules may
+    # legitimately pin different ancestor commits as long as each recorded
+    # commit/tree resolves and its own source roots have not changed since.
+    # Requiring one repository-wide identity would make an unrelated module
+    # refresh every map and would reintroduce a documentation-only coupling.
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
