@@ -90,6 +90,7 @@ struct ArtifactBinding {
     license_digest: String,
     sbom_digest: String,
     runtime_digest: String,
+    runtime_config_digest: String,
     device_digest: String,
 }
 
@@ -104,6 +105,7 @@ impl ArtifactBinding {
             license_digest: manifest.license_digest.clone(),
             sbom_digest: manifest.sbom_digest.clone(),
             runtime_digest: manifest.runtime_digest.clone(),
+            runtime_config_digest: manifest.runtime_config_digest.clone(),
             device_digest: manifest.device_digest.clone(),
         }
     }
@@ -454,6 +456,11 @@ fn verify_spec(spec: &LocalModelSpec, manifest: &ModelManifest) -> Result<(), Er
     verify_file_digest(&spec.license_path, &manifest.license_digest, false)?;
     verify_file_digest(&spec.sbom_path, &manifest.sbom_digest, false)?;
     verify_file_digest(&spec.runtime_path, &manifest.runtime_digest, true)?;
+    if runtime_config_digest(spec) != manifest.runtime_config_digest {
+        return Err(Error::DriverFailure(
+            "local runtime launch configuration digest mismatch".to_string(),
+        ));
+    }
     verify_file_digest(
         &spec.device_descriptor_path,
         &manifest.device_digest,
@@ -526,18 +533,62 @@ fn validate_spec_paths(spec: &LocalModelSpec) -> Result<(), Error> {
         }
     }
     if spec.runtime_args.len() > 64
-        || spec.runtime_args.iter().any(|arg| arg.len() > 4096)
+        || spec.runtime_args.iter().any(|arg| {
+            arg.len() > 4096
+                || arg.bytes().any(|byte| matches!(byte, 0 | b'\n' | b'\r'))
+                || arg.contains('/')
+                || arg.contains('\\')
+        })
         || spec.runtime_env.len() > 64
-        || spec
-            .runtime_env
-            .iter()
-            .any(|(key, value)| key.is_empty() || key.len() > 128 || value.len() > 8192)
+        || spec.runtime_env.iter().any(|(key, value)| {
+            !safe_runtime_env_key(key)
+                || value.len() > 8192
+                || value.bytes().any(|byte| matches!(byte, 0 | b'\n' | b'\r'))
+                || value.contains('/')
+                || value.contains('\\')
+        })
     {
         return Err(Error::DriverFailure(
-            "local runtime arguments/environment exceed bounds".to_string(),
+            "local runtime launch configuration exceeds bounds or references unverified paths"
+                .to_string(),
         ));
     }
     Ok(())
+}
+
+fn safe_runtime_env_key(key: &str) -> bool {
+    matches!(
+        key,
+        "CUDA_VISIBLE_DEVICES"
+            | "CUDA_DEVICE_ORDER"
+            | "ROCR_VISIBLE_DEVICES"
+            | "HIP_VISIBLE_DEVICES"
+            | "OMP_NUM_THREADS"
+            | "TOKENIZERS_PARALLELISM"
+            | "RAYON_NUM_THREADS"
+            | "HEPTA_RUNTIME_MODE"
+    )
+}
+
+fn runtime_config_digest(spec: &LocalModelSpec) -> String {
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(b"hepta.local-runtime-config.v1");
+    push_runtime_string(&mut bytes, &spec.runtime_args.len().to_string());
+    for arg in &spec.runtime_args {
+        push_runtime_string(&mut bytes, arg);
+    }
+    push_runtime_string(&mut bytes, &spec.runtime_env.len().to_string());
+    for (key, value) in &spec.runtime_env {
+        push_runtime_string(&mut bytes, key);
+        push_runtime_string(&mut bytes, value);
+    }
+    format!("{:x}", Sha256::digest(&bytes))
+}
+
+fn push_runtime_string(bytes: &mut Vec<u8>, value: &str) {
+    let len = u32::try_from(value.len()).unwrap_or(u32::MAX);
+    bytes.extend_from_slice(&len.to_be_bytes());
+    bytes.extend_from_slice(value.as_bytes());
 }
 
 fn artifact_paths(spec: &LocalModelSpec) -> Result<ArtifactPaths, Error> {
