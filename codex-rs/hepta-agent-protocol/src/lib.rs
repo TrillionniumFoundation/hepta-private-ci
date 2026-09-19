@@ -597,6 +597,42 @@ mod tests {
     }
 
     #[test]
+    fn cognitive_context_response_stays_v2_compatible_and_revalidation_is_additive() {
+        let legacy = serde_json::json!({
+            "snapshot_digest": "a".repeat(64),
+            "read_digest": "b".repeat(64),
+            "omitted_records": 0,
+            "items": [{
+                "memory_id": "memory:v2:test",
+                "revision": 1,
+                "content": "verified memory",
+                "content_sha256": "c".repeat(64)
+            }],
+            "plan": null
+        });
+        let snapshot: CognitiveContextSnapshot =
+            serde_json::from_value(legacy).expect("legacy cognitive context shape");
+        let serialized = serde_json::to_value(&snapshot).expect("serialize cognitive context");
+        assert!(serialized.get("cut_digest").is_none());
+
+        let request = AgentdRequest {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: 13,
+            spawn_generation: 3,
+            method: AgentdMethod::CognitiveContextRevalidate {
+                snapshot_digest: snapshot.snapshot_digest.clone(),
+                items: snapshot.items.clone(),
+            },
+        };
+        let bytes = serde_json::to_vec(&request).expect("serialize revalidation request");
+        assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&bytes).expect("parse revalidation request"),
+            request
+        );
+    }
+
+    #[test]
     fn health_wire_round_trip_is_strict_and_bounded() {
         let request = AgentdRequest::health(7, 11);
         let request_bytes = serde_json::to_vec(&request).expect("serialize request");
