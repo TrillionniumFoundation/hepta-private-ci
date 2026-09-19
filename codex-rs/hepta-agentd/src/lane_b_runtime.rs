@@ -173,11 +173,18 @@ impl AgentRunCoordinator {
     ) -> Result<Self, AgentRunError> {
         validate_composition(&composition)?;
         if recovery.schema_version != RUN_RECOVERY_SCHEMA_VERSION
-            || recovery.composition != composition
             || recovery.records.len() > MAX_RETAINED_RUNS
+            || recovery.composition.agent_id != composition.agent_id
+            || recovery.composition.configuration_digest != composition.configuration_digest
+            || recovery.composition.ports_digest != composition.ports_digest
+            || recovery.composition.supervisor_generation > composition.supervisor_generation
+            || recovery.composition.agentd_generation > composition.agentd_generation
         {
             return Err(AgentRunError::InvalidRecoveryState);
         }
+        let generation_changed =
+            recovery.composition.supervisor_generation != composition.supervisor_generation
+                || recovery.composition.agentd_generation != composition.agentd_generation;
 
         let mut runs = BTreeMap::new();
         for mut record in recovery.records {
@@ -187,6 +194,12 @@ impl AgentRunCoordinator {
             }
 
             match record.phase {
+                RunPhase::Admitted | RunPhase::ContextAttached if generation_changed => {
+                    record.phase = RunPhase::Cancelled;
+                    record.cancellation_reason =
+                        Some("generation_changed_during_restart".to_string());
+                    advance_revision(&mut record)?;
+                }
                 RunPhase::Admitted | RunPhase::ContextAttached
                     if record.snapshot.deadline_ms <= now_ms =>
                 {
@@ -196,7 +209,8 @@ impl AgentRunCoordinator {
                 }
                 RunPhase::Dispatched | RunPhase::Cancelling => {
                     // The process cannot prove whether a prior App Server turn
-                    // reached a terminal state. Never redispatch after restart.
+                    // reached a terminal state. Never redispatch after restart,
+                    // including when the supervisor assigned a newer generation.
                     record.phase = RunPhase::Indeterminate;
                     advance_revision(&mut record)?;
                 }
