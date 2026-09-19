@@ -113,8 +113,11 @@ impl ArtifactPublicationTransactionV1 {
         if registry.snapshot().head_digest != expected_registry_predecessor_head {
             return Err(ArtifactPublicationError::RegistryPredecessorMismatch);
         }
-        let intent_digest =
-            digest_intent(&operation_id, &admission, expected_registry_predecessor_head);
+        let intent_digest = digest_intent(
+            &operation_id,
+            &admission,
+            expected_registry_predecessor_head,
+        );
         let intent = ArtifactPublicationIntentV1 {
             operation_id,
             admission,
@@ -718,7 +721,10 @@ mod tests {
         assert!(!receipt.authority.grants_any());
         let status = transaction.status();
         assert_eq!(status.phase, ArtifactPublicationPhaseV1::Acknowledged);
-        assert_eq!(status.registry_head_digest, Some(receipt.registry_head_digest));
+        assert_eq!(
+            status.registry_head_digest,
+            Some(receipt.registry_head_digest)
+        );
         assert_eq!(status.witness_digest, Some(receipt.witness_digest));
         assert!(!status.authority.grants_any());
     }
@@ -726,7 +732,8 @@ mod tests {
     #[test]
     fn art_07_crash_snapshots_never_promote_partial_publication() {
         let mut transaction = prepared();
-        let prepared = match ArtifactPublicationTransactionV1::from_snapshot(transaction.snapshot()) {
+        let prepared = match ArtifactPublicationTransactionV1::from_snapshot(transaction.snapshot())
+        {
             Ok(value) => value,
             Err(error) => panic!("prepared recovery failed: {error}"),
         };
@@ -746,14 +753,12 @@ mod tests {
         );
 
         let registry = registry_with_candidate(Digest32::ZERO);
-        if let Err(error) =
-            transaction.record_registry_durable(
-                &registry,
-                snapshot_receipt(&registry),
-                &withdrawal_registry(),
-                20,
-            )
-        {
+        if let Err(error) = transaction.record_registry_durable(
+            &registry,
+            snapshot_receipt(&registry),
+            &withdrawal_registry(),
+            20,
+        ) {
             panic!("registry durability failed: {error}");
         }
         let mut recovered =
