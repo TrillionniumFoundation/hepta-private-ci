@@ -63,7 +63,7 @@ The journal has a 64 MiB total byte budget, an 8 MiB encoded-line budget and at 
 - Connect economic quota and device-capacity authorities, and implement authenticated provider reconciliation after process loss. Native local-slot reservations and observed usage settlement are wired; hosted execution does not prove local model artifacts, memory/device grants or process isolation.
 - Connect TaskFlow's existing durable step outbox to a real final-use-authorized effect provider and crash reconciliation. Queue acceptance must remain distinct from effect completion.
 - Persist resource leases under the existing Fleet owner and use real capacity/pressure observations; caller-provided capacity is not hardware discovery.
-- Matrix transport acceptance is non-terminal. Keep dispatch/reconciliation state beside the existing durable outbox under its stable transaction identity, park indeterminate sends across restart, and compose a real independently issued final-use grant before claiming live effect authority.
+- Matrix transport acceptance is non-terminal. Keep dispatch/reconciliation state beside the existing durable outbox under its stable transaction identity. Accepted sends stay parked pending homeserver observation; indeterminate sends may only retransmit that exact stable transaction after lease recovery. Compose a real independently issued final-use grant before claiming live effect authority.
 - Supply the actual Servo/browser host, UI service integration, physical embodiment drivers and measured hardware qualification where absent.
 - Wire F pipeline stages only when each stage calls its actual owner. Hashes of fabricated port receipts would not constitute learning, calibration or dispatch.
 
