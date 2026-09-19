@@ -267,13 +267,15 @@ fn export_reopen_and_snapshot_preserve_history_and_tombstones() {
         .unwrap_or_else(|error| panic!("validate snapshot: {error}"));
 }
 
-
 #[test]
 fn admitted_store_rejects_non_verified_candidates_before_mutation() {
     let mut store = store();
 
-    let mut unverified =
-        candidate("memory:unverified", "content:v1", MemoryAdmissionKind::Inference);
+    let mut unverified = candidate(
+        "memory:unverified",
+        "content:v1",
+        MemoryAdmissionKind::Inference,
+    );
     unverified.verification = MemoryVerificationState::Unverified;
     let unverified_intent = intent(&store, "intent:unverified", &unverified);
     assert_eq!(
@@ -282,8 +284,11 @@ fn admitted_store_rejects_non_verified_candidates_before_mutation() {
     );
     assert!(store.current_head(&id("memory:unverified")).is_none());
 
-    let mut contradicted =
-        candidate("memory:contradicted", "content:v1", MemoryAdmissionKind::Inference);
+    let mut contradicted = candidate(
+        "memory:contradicted",
+        "content:v1",
+        MemoryAdmissionKind::Inference,
+    );
     contradicted.verification = MemoryVerificationState::Contradicted;
     let contradicted_intent = intent(&store, "intent:contradicted", &contradicted);
     assert_eq!(
@@ -292,7 +297,11 @@ fn admitted_store_rejects_non_verified_candidates_before_mutation() {
     );
     assert!(store.current_head(&id("memory:contradicted")).is_none());
 
-    let mut revoked = candidate("memory:revoked", "content:v1", MemoryAdmissionKind::Observation);
+    let mut revoked = candidate(
+        "memory:revoked",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
     revoked.verification = MemoryVerificationState::Revoked;
     let revoked_intent = intent(&store, "intent:revoked", &revoked);
     assert_eq!(
@@ -306,7 +315,11 @@ fn admitted_store_rejects_non_verified_candidates_before_mutation() {
 fn terminal_forget_survives_ordinary_record_and_journal_capacity() {
     let mut store = AdmittedCognitiveStoreV2::new(snapshot_key(), digest("writer-fence"), 1)
         .unwrap_or_else(|error| panic!("valid bounded store: {error}"));
-    let first = candidate("memory:capacity", "content:v1", MemoryAdmissionKind::Observation);
+    let first = candidate(
+        "memory:capacity",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
     store
         .append_admitted(
             &Verifier,
@@ -315,7 +328,11 @@ fn terminal_forget_survives_ordinary_record_and_journal_capacity() {
         )
         .unwrap_or_else(|error| panic!("append first: {error}"));
 
-    let unchanged = candidate("memory:capacity", "content:v1", MemoryAdmissionKind::Observation);
+    let unchanged = candidate(
+        "memory:capacity",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
     store
         .append_admitted(
             &Verifier,
@@ -353,7 +370,11 @@ fn terminal_forget_survives_ordinary_record_and_journal_capacity() {
 fn intent_retention_is_monotonic_bounded_and_survives_reopen() {
     let mut store = AdmittedCognitiveStoreV2::new(snapshot_key(), digest("writer-fence"), 2)
         .unwrap_or_else(|error| panic!("valid bounded store: {error}"));
-    let first = candidate("memory:retention:1", "one", MemoryAdmissionKind::Observation);
+    let first = candidate(
+        "memory:retention:1",
+        "one",
+        MemoryAdmissionKind::Observation,
+    );
     store
         .append_admitted(
             &Verifier,
@@ -361,7 +382,11 @@ fn intent_retention_is_monotonic_bounded_and_survives_reopen() {
             intent(&store, "intent:retention:1", &first),
         )
         .unwrap_or_else(|error| panic!("first: {error}"));
-    let second = candidate("memory:retention:2", "two", MemoryAdmissionKind::Observation);
+    let second = candidate(
+        "memory:retention:2",
+        "two",
+        MemoryAdmissionKind::Observation,
+    );
     store
         .append_admitted(
             &Verifier,
@@ -421,7 +446,11 @@ fn intent_retention_is_monotonic_bounded_and_survives_reopen() {
 #[test]
 fn image_validation_rejects_semantically_forged_journal_and_sequence() {
     let mut store = store();
-    let first = candidate("memory:image", "content:v1", MemoryAdmissionKind::Observation);
+    let first = candidate(
+        "memory:image",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
     store
         .append_admitted(
             &Verifier,
