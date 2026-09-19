@@ -1,9 +1,13 @@
 use std::error::Error;
 use std::fmt;
 
+use codex_hepta_types::Digest32;
+
 const NEGOTIATION_MAGIC: [u8; 4] = *b"HPTN";
 const NEGOTIATION_FORMAT_VERSION: u16 = 1;
 const NEGOTIATION_FIXED_BYTES: usize = 4 + 2 + 1 + 1 + 8;
+const NEGOTIATION_BINDING_DOMAIN: &[u8] = b"hepta.platform.wire.hptn-transcript.v1\0";
+const SESSION_BINDING_DOMAIN: &[u8] = b"hepta.platform.wire.session-frame.v1\0";
 pub const MAX_NEGOTIATION_VERSIONS: usize = 16;
 
 /// Wire versions implemented by this crate.
@@ -243,6 +247,53 @@ pub fn negotiate(
     } else {
         Err(NegotiationError::NoCommonVersion)
     }
+
+}
+
+/// Return the canonical role-ordered digest of an HPTN negotiation transcript.
+///
+/// This is deliberately an unkeyed digest, not peer authentication. A secure
+/// transport/session can MAC or sign this exact value to bind both offers,
+/// required capabilities and the selected result without inventing its own
+/// transcript encoding.
+pub fn negotiation_binding_digest(
+    initiator: &NegotiationOffer,
+    responder: &NegotiationOffer,
+    required: WireCapabilities,
+    negotiated: NegotiatedWire,
+) -> Digest32 {
+    let initiator_bytes = initiator.encode();
+    let responder_bytes = responder.encode();
+    let required_bytes = required.bits().to_be_bytes();
+    let selected_bytes = negotiated.version.as_u16().to_be_bytes();
+    let common_bytes = negotiated.capabilities.bits().to_be_bytes();
+    Digest32::of_parts(&[
+        NEGOTIATION_BINDING_DOMAIN,
+        b"initiator\0",
+        &initiator_bytes,
+        b"responder\0",
+        &responder_bytes,
+        b"required\0",
+        &required_bytes,
+        b"selected\0",
+        &selected_bytes,
+        b"common\0",
+        &common_bytes,
+    ])
+}
+
+/// Bind the canonical negotiation transcript digest to the complete encoded
+/// HPTA frame.
+///
+/// The result is still unkeyed. It is the canonical material that the owning
+/// authenticated transport/session must authenticate when downgrade or frame
+/// substitution resistance is required.
+pub fn session_binding_digest(transcript_digest: Digest32, encoded_frame: &[u8]) -> Digest32 {
+    Digest32::of_parts(&[
+        SESSION_BINDING_DOMAIN,
+        transcript_digest.as_array(),
+        encoded_frame,
+    ])
 }
 
 fn read_u16(bytes: &[u8], start: usize) -> Result<u16, NegotiationError> {
