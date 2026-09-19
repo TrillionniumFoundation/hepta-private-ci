@@ -245,6 +245,7 @@ pub(super) fn build_binding(
         || admission.maximum_in_flight > 256
         || admission.quota_reservation_digest.is_zero()
         || admission.resource_snapshot_digest.is_zero()
+        || admission.worker_assignment_digest.is_zero()
         || !valid_digest(context_digest)
     {
         return Err("invalid native final-use binding input".into());
@@ -267,6 +268,7 @@ pub(super) fn build_binding(
         admission.maximum_in_flight,
         admission.quota_reservation_digest.to_string(),
         admission.resource_snapshot_digest.to_string(),
+        admission.worker_assignment_digest.to_string(),
     ))?);
     let payload_sha256 = digest_array(&serde_json::to_vec(&(
         "hepta.inference.final-use.payload.v1",
