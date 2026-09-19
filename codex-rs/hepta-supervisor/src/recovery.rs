@@ -175,6 +175,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     AgentLifecycle::Failed,
                 )?;
                 slot.event(generation, SupervisorEventKind::OrphanMissing);
+                self.schedule_auto_restart(agent_id, slot, generation, now)?;
             }
             self.recover_matrix_companion(agent_id, slot, record, now)?;
             return Ok(());
@@ -272,6 +273,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                     record.lifecycle.generation
                 };
                 slot.event(generation, SupervisorEventKind::OrphanMissing);
+                if is_live_lifecycle(record.lifecycle.lifecycle) {
+                    self.schedule_auto_restart(agent_id, slot, generation, now)?;
+                }
             }
             Adoption::Rejected => {
                 remove_lease(record.layout.run_root(), &lease)?;
@@ -286,6 +290,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                     record.lifecycle.generation
                 };
                 slot.event(generation, SupervisorEventKind::OrphanRejected);
+                if is_live_lifecycle(record.lifecycle.lifecycle) {
+                    self.schedule_auto_restart(agent_id, slot, generation, now)?;
+                }
             }
         }
         self.recover_matrix_companion(agent_id, slot, record, now)?;
