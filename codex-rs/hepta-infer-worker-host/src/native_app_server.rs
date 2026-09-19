@@ -29,6 +29,7 @@ use codex_app_server_protocol::TurnStartResponse;
 use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_agentd::AgentdClient;
+use codex_hepta_agentd::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_agentd::MAX_COGNITIVE_CONTEXT_BYTES;
@@ -110,14 +111,22 @@ impl AppServerModelDriver {
         if !health.ready || health.fenced {
             return Err("Agent is not ready".into());
         }
+        if context_query.is_some() {
+            let capabilities = owner.capabilities().await?;
+            let supports_revalidation = capabilities.capabilities.iter().any(|capability| {
+                capability.id == COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY
+                    && capability.major == 1
+            });
+            if !supports_revalidation {
+                return Err("owning Agent does not support final-use cognitive revalidation".into());
+            }
+        }
         let context = match context_query {
             Some(query) => Some(owner.cognitive_context(query, /*limit*/ 4).await?),
             None => None,
         };
-        let context_cut_digest = context
-            .as_ref()
-            .map(|snapshot| snapshot.cut_digest.clone());
         let additional_context = context
+            .as_ref()
             .map(|snapshot| -> Result<_> {
                 let value = serde_json::to_string(&snapshot)?;
                 if value.len() > MAX_COGNITIVE_CONTEXT_BYTES {
@@ -176,13 +185,13 @@ impl AppServerModelDriver {
         }
         // Recheck the actual generation after acquiring context and connecting.
         owner.session_ingress().await?;
-        if let Some(cut_digest) = context_cut_digest {
-            let revalidated = owner
-                .revalidate_cognitive_context(cut_digest.clone())
-                .await?;
-            if revalidated.cut_digest != cut_digest {
+        if let Some(snapshot) = context.as_ref() {
+            let revalidated = owner.revalidate_cognitive_context(snapshot).await?;
+            if revalidated.snapshot_digest != snapshot.snapshot_digest
+                || usize::from(revalidated.verified_item_count) != snapshot.items.len()
+            {
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                return Err("cognitive cut revalidation returned a different witness".into());
+                return Err("cognitive final-use revalidation returned a mismatched receipt".into());
             }
         }
         if cancellation.is_cancelled() {
