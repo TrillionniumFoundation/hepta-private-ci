@@ -35,7 +35,7 @@ impl AppServerModelDriver {
         &self,
         control: &mut DurableInferenceControl,
         admission: NativeAdmission,
-        authorization: &NativeExecutionAuthority,
+        authorization: Option<&NativeExecutionAuthority>,
         prompt: String,
         context_query: Option<String>,
         cancellation: &CancellationToken,
