@@ -70,7 +70,8 @@ Monitor the selected host for at least these signals:
 - SQLite open/integrity failures, busy/lock pressure, WAL growth, and disk-full
   conditions;
 - assignment age, expired envelopes, lease expiry, stale revisions, path
-  conflicts, and distributed-fence leader/revocation frontier rollback;
+  conflicts, cluster-global leader/revocation rollback, and holder-local
+  fence-token/revision rollback;
 - sandbox admission failures, timeouts, output-limit violations, and source or
   candidate drift;
 - stale, malformed, replayed, or signature-invalid source/execution/evaluator
@@ -136,8 +137,9 @@ Rollback means selecting an explicitly compatible predecessor; it does not mean
 restoring stale data.
 
 - Verify predecessor compatibility with the current schema and durable records.
-- Preserve revocations, lineage, fencing generations, the highest admitted
-  distributed-fence frontier, and immutable integration decisions across rollback.
+- Preserve revocations, lineage, fencing generations, both the cluster-global
+  distributed leader/revocation frontier and every holder-local fence frontier,
+  and immutable integration decisions across rollback.
 - If a predecessor cannot interpret the current state without deleting or
   weakening evidence, do not start it.
 - For additive migrations, rehearse crash-before-commit and crash-after-commit
