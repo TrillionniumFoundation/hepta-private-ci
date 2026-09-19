@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "2b209faf9b6c46746c07c4359be6b13e7a44ee89",
+    "tree": "de17ec74becb8c70390360b3ac8d1640de4d83e8"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -153,7 +153,8 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "boundCargoPackagesMapped": true
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
@@ -164,5 +165,23 @@
   "technicalGuide": "docs/modules/runtime.agentd/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-agentd"
-  ]
+  ],
+  "sourceBaseSemantics": "generation_provenance_only_freshness_is_source_fingerprint",
+  "sourceFingerprintPolicy": "git-tracked-content-sha256-v1",
+  "boundCargoPackages": [
+    "codex-rs/hepta-agent-protocol",
+    "codex-rs/hepta-agentd"
+  ],
+  "sourceFingerprints": {
+    "codex-rs/hepta-agent-protocol": {
+      "algorithm": "sha256",
+      "digest": "d907bfe7527ae0aec8a7fa1be2b69f9ab479e3145f532992d690373103973a98",
+      "trackedFiles": 5
+    },
+    "codex-rs/hepta-agentd": {
+      "algorithm": "sha256",
+      "digest": "7dd04c982e0050fc715bf834e2b9e54cc194b9a54d2cf45e8aa2ede90c4165a9",
+      "trackedFiles": 42
+    }
+  }
 }

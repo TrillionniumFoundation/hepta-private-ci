@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "2b209faf9b6c46746c07c4359be6b13e7a44ee89",
+    "tree": "de17ec74becb8c70390360b3ac8d1640de4d83e8"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.authority",
@@ -27,7 +27,9 @@
       "sourcePath": "codex-rs/hepta-contracts/src/final_use.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-contracts/src/final_use_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "finaluseauthority",
       "mappingClass": "owner_native",
@@ -62,9 +64,22 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "boundCargoPackagesMapped": true
   },
   "sourceRoot": [
     "codex-rs/hepta-contracts"
-  ]
+  ],
+  "sourceBaseSemantics": "generation_provenance_only_freshness_is_source_fingerprint",
+  "sourceFingerprintPolicy": "git-tracked-content-sha256-v1",
+  "boundCargoPackages": [
+    "codex-rs/hepta-contracts"
+  ],
+  "sourceFingerprints": {
+    "codex-rs/hepta-contracts": {
+      "algorithm": "sha256",
+      "digest": "0a0ec5bdb171e02c8fc3d7f4a3c5abe6e3f1c3661e4c22dba114feb4308dd458",
+      "trackedFiles": 33
+    }
+  }
 }
