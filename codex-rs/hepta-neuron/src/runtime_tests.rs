@@ -464,3 +464,60 @@ fn runtime_rollover_and_chain_recovery_preserve_latest_witness() {
     assert_eq!(checked(recovered.current_anchor()), Some(final_anchor));
     assert_eq!(checked(witness.current()), Some(final_anchor));
 }
+
+
+#[test]
+fn deletion_rebuild_starts_fresh_successor_generation_without_old_state() {
+    let fixture = Fixture::new();
+    let old_native = native_config();
+    let old_config = runtime_config(&old_native);
+    let mut old_runtime = checked(NeuronRuntime::bootstrap(
+        fixture.file(),
+        old_native,
+        scope(),
+        /*max_records*/ 4,
+        old_config,
+        MemoryWitness::default(),
+    ));
+    let mut model = FakeModel::new();
+    let committed = checked(old_runtime.tick(&mut model, input(1, Digest32::ZERO)));
+    let predecessor = JournalAnchor {
+        sequence: 1,
+        checkpoint_digest: committed.tick.checkpoint_after,
+    };
+    drop(old_runtime);
+
+    let mut successor_native = native_config();
+    successor_native.generation = checked(Generation::new(2));
+    let successor_config = runtime_config(&successor_native);
+    let plan = NeuronDeletionRebuildPlanV1 {
+        rebuild_id: checked(StableId::new("neuron-rebuild:runtime")),
+        predecessor_generation: checked(Generation::new(1)),
+        successor_generation: checked(Generation::new(2)),
+        predecessor_checkpoint_digest: predecessor.checkpoint_digest,
+        withdrawal_registry_head_digest: Digest32::of_bytes(b"withdrawal-head"),
+        withdrawal_event_digest: Digest32::of_bytes(b"withdrawal-event"),
+        retained_dataset_set_digest: Digest32::of_bytes(b"retained-datasets"),
+        source_event_set_digest: Digest32::of_bytes(b"retained-events"),
+        retained_event_count: 10,
+        deleted_event_count: 2,
+    };
+    let (mut rebuilt, receipt) = checked(NeuronRuntime::bootstrap_after_deletion(
+        fixture.named_file("rebuild"),
+        successor_native,
+        scope(),
+        /*max_records*/ 4,
+        successor_config,
+        MemoryWitness::default(),
+        predecessor,
+        &plan,
+    ));
+    assert!(!receipt.state_reused);
+    assert_eq!(checked(rebuilt.current_anchor()), None);
+    let rebuilt_first = checked(rebuilt.tick(&mut model, input(1, Digest32::ZERO)));
+    assert_eq!(rebuilt_first.tick.checkpoint_before, Digest32::ZERO);
+    assert_ne!(
+        rebuilt_first.tick.checkpoint_after,
+        predecessor.checkpoint_digest
+    );
+}
