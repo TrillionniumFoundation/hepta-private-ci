@@ -50,7 +50,7 @@ CREATE UNIQUE INDEX automation_runs_taskflow_run
 CREATE INDEX automation_runs_terminal_lookup
     ON automation_runs(task_id, terminal_state, scheduled_for_ms);
 
-CREATE TABLE taskflow_step_outbox (
+CREATE TABLE IF NOT EXISTS taskflow_step_outbox (
     owner_agent_id TEXT NOT NULL,
     run_id TEXT NOT NULL,
     step_id TEXT NOT NULL,
@@ -107,19 +107,19 @@ CREATE TABLE taskflow_step_outbox (
     )
 );
 
-CREATE TRIGGER taskflow_step_outbox_no_update
+CREATE TRIGGER IF NOT EXISTS taskflow_step_outbox_no_update
 BEFORE UPDATE ON taskflow_step_outbox
 BEGIN
     SELECT RAISE(ABORT, 'TaskFlow step outbox is append-only');
 END;
 
-CREATE TRIGGER taskflow_step_outbox_no_delete
+CREATE TRIGGER IF NOT EXISTS taskflow_step_outbox_no_delete
 BEFORE DELETE ON taskflow_step_outbox
 BEGIN
     SELECT RAISE(ABORT, 'TaskFlow step outbox is append-only');
 END;
 
-CREATE INDEX taskflow_step_outbox_lookup
+CREATE INDEX IF NOT EXISTS taskflow_step_outbox_lookup
     ON taskflow_step_outbox(owner_agent_id, run_id, step_id, attempt, event_seq);
 
 DROP TRIGGER automation_meta_no_update;
