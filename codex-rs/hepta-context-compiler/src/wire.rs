@@ -52,7 +52,7 @@ impl ContextCompilationWireCodec {
     }
 
     fn validate(value: &ContextCompilationWireV2) -> Result<(), SchemaCodecError> {
-        StableId::new(value.compilation_id.clone())
+        StableId::new(value.compilation_id.as_str())
             .map_err(|_| SchemaCodecError::Rejected("invalid compilation_id"))?;
         let total = value
             .trusted_instruction_ids
@@ -70,7 +70,7 @@ impl ContextCompilationWireCodec {
             .chain(&value.untrusted_evidence_ids)
             .chain(&value.omitted_ids)
         {
-            StableId::new(id.clone())
+            StableId::new(id.as_str())
                 .map_err(|_| SchemaCodecError::Rejected("invalid context id"))?;
             if !seen.insert(id.as_str()) {
                 return Err(SchemaCodecError::Rejected("duplicate context id"));
