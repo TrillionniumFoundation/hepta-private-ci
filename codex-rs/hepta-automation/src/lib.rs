@@ -10,26 +10,35 @@
 pub mod effect_executor;
 
 mod model;
+mod occurrence_chain;
 mod scheduler;
 mod store;
 mod taskflow;
+mod taskflow_effect;
 mod taskflow_execution_boundary;
 #[cfg(feature = "taskflow-structural-qualification")]
 mod taskflow_kernel;
-#[cfg(feature = "taskflow-structural-qualification")]
 mod taskflow_step;
 
 pub use model::AutomationAdmission;
 pub use model::AutomationDispatchUncertainty;
 pub use model::AutomationError;
 pub use model::AutomationLease;
+pub use model::AutomationOccurrence;
+pub use model::AutomationOccurrenceTerminalState;
 pub use model::AutomationQueueReceipt;
+pub use model::AutomationMissedRunPolicy;
+pub use model::AutomationOverlapPolicy;
 pub use model::AutomationSchedule;
+pub use model::AutomationSchedulePolicy;
 pub use model::AutomationTask;
 pub use model::AutomationTaskDraft;
 pub use model::AutomationTaskId;
 pub use model::AutomationTaskState;
 pub use model::AutomationTick;
+pub use model::deterministic_occurrence_id;
+pub use occurrence_chain::AUTOMATION_OCCURRENCE_WORKFLOW_ID;
+pub use occurrence_chain::AUTOMATION_OCCURRENCE_WORKFLOW_VERSION;
 pub use scheduler::AutomationFuture;
 pub use scheduler::AutomationScheduler;
 pub use scheduler::AutomationTurnQueue;
@@ -53,6 +62,13 @@ pub use taskflow::TaskFlowReconcileOutcome;
 pub use taskflow::TaskFlowRun;
 pub use taskflow::TaskFlowRunState;
 pub use taskflow::TaskFlowTransition;
+pub use taskflow_effect::TASKFLOW_AUTHORIZED_EFFECT_SCHEMA_VERSION;
+pub use taskflow_effect::TaskFlowEffectError;
+pub use taskflow_effect::TaskFlowEffectExecutionResult;
+pub use taskflow_effect::TaskFlowEffectIntent;
+pub use taskflow_effect::TaskFlowEffectProvider;
+pub use taskflow_effect::TaskFlowProviderObservation;
+pub use taskflow_effect::TaskFlowProviderOutcome;
 pub use taskflow_execution_boundary::LocalTaskFlowBoundaryActionV1;
 pub use taskflow_execution_boundary::LocalTaskFlowBoundaryRequestV1;
 pub use taskflow_execution_boundary::LocalTaskFlowPredecessorReferenceV1;
@@ -81,23 +97,15 @@ pub use taskflow_kernel::TaskFlowFrontier;
 pub use taskflow_kernel::TaskFlowReplayReport;
 #[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_kernel::TaskFlowStructuralPreview;
-#[cfg(feature = "taskflow-structural-qualification")]
+pub use taskflow_step::TASKFLOW_STEP_OUTBOX_DURABLE;
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_EFFECTS;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_PRODUCTION_CALLER;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_QUALIFICATION_ENABLED;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_SCHEDULER_AUTHORITY;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepCommandResult;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepCommandStatus;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepObservation;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepReceipt;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepState;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 3;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 4;
