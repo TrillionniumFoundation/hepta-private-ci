@@ -43,6 +43,10 @@ pub struct RuntimeModuleAbiV1 {
     pub owner_id: StableId,
     pub generation: Generation,
     pub implementation_digest: Digest32,
+    /// Digest of the independently evaluated module/topology candidate artifact.
+    /// This may equal the implementation digest for a single-module candidate,
+    /// but remains a separate binding so runtime code cannot substitute bytes.
+    pub candidate_artifact_digest: Digest32,
     pub predecessor_generation: Option<Generation>,
     pub rollback_predecessor_digest: Digest32,
     pub state_class: RuntimeModuleStateClassV1,
@@ -56,6 +60,9 @@ impl RuntimeModuleAbiV1 {
     pub fn validate(&self) -> Result<(), RuntimeModuleRegistryError> {
         if self.implementation_digest.is_zero() {
             return Err(RuntimeModuleRegistryError::EmptyImplementationDigest);
+        }
+        if self.candidate_artifact_digest.is_zero() {
+            return Err(RuntimeModuleRegistryError::EmptyCandidateArtifactDigest);
         }
         if self.input_ports.len() > MAX_MODULE_PORTS
             || self.output_ports.len() > MAX_MODULE_PORTS
@@ -134,6 +141,7 @@ pub struct RuntimeTopologySnapshotV1 {
 pub enum RuntimeModuleRegistryError {
     Bounds,
     EmptyImplementationDigest,
+    EmptyCandidateArtifactDigest,
     DuplicatePort,
     InvalidGeneration,
     MissingPredecessorDigest,
@@ -368,6 +376,7 @@ impl RuntimeModuleRegistryV1 {
             owner_id: predecessor.abi.owner_id,
             generation: rollback_generation,
             implementation_digest: predecessor.abi.implementation_digest,
+            candidate_artifact_digest: predecessor.abi.candidate_artifact_digest,
             predecessor_generation: Some(active_generation),
             rollback_predecessor_digest: active_record.abi.implementation_digest,
             state_class: predecessor.abi.state_class,
@@ -505,6 +514,7 @@ mod tests {
             owner_id: id("memory-team"),
             generation: Generation::new(generation).expect("generation"),
             implementation_digest: digest(implementation),
+            candidate_artifact_digest: digest(implementation),
             predecessor_generation: predecessor.map(|(g, _)| Generation::new(g).expect("generation")),
             rollback_predecessor_digest: predecessor.map_or(Digest32::ZERO, |(_, d)| digest(d)),
             state_class: RuntimeModuleStateClassV1::Stateful,
