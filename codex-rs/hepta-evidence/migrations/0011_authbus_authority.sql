@@ -86,6 +86,13 @@ CREATE TABLE authbus_replay_checkpoint_state (
     observed_at_ms INTEGER NOT NULL CHECK(observed_at_ms > 0)
 );
 
+CREATE TABLE authbus_replay_checkpoint_pending (
+    singleton INTEGER PRIMARY KEY CHECK(singleton = 1),
+    minimum_generation INTEGER NOT NULL CHECK(minimum_generation > 0),
+    replay_root BLOB NOT NULL CHECK(length(replay_root) = 32),
+    created_at_ms INTEGER NOT NULL CHECK(created_at_ms > 0)
+);
+
 CREATE TABLE authbus_trust_epochs (
     issuer_id TEXT NOT NULL,
     key_epoch BLOB NOT NULL CHECK(length(key_epoch) = 8),
