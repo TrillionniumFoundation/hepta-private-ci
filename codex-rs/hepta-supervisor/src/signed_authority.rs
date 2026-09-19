@@ -74,6 +74,10 @@ pub struct H7H89ProductionGrant {
     pub transition: H7H89ProductionTransition,
     pub h7_envelope_sha256: Sha256Digest,
     pub artifact_sha256: Sha256Digest,
+    pub source_release_manifest_sha256: Sha256Digest,
+    pub target_release_manifest_sha256: Sha256Digest,
+    pub target_agentd_sha256: Sha256Digest,
+    pub target_matrixd_sha256: Option<Sha256Digest>,
     pub expected_control_revision: u64,
     pub expected_lifecycle_generation: u64,
     pub authority_epoch: u64,
@@ -147,6 +151,10 @@ impl H7H89ProductionGrantSigner {
         target_release: impl Into<String>,
         transition: H7H89ProductionTransition,
         h7_envelope: &H7SignedArtifactEnvelope,
+        source_release_manifest_sha256: Sha256Digest,
+        target_release_manifest_sha256: Sha256Digest,
+        target_agentd_sha256: Sha256Digest,
+        target_matrixd_sha256: Option<Sha256Digest>,
         expected_control_revision: u64,
         expected_lifecycle_generation: u64,
         authority_epoch: u64,
@@ -180,6 +188,10 @@ impl H7H89ProductionGrantSigner {
             transition,
             h7_envelope_sha256: h7_envelope.digest().clone(),
             artifact_sha256: h7_envelope.artifact_digest().clone(),
+            source_release_manifest_sha256,
+            target_release_manifest_sha256,
+            target_agentd_sha256,
+            target_matrixd_sha256,
             expected_control_revision,
             expected_lifecycle_generation,
             authority_epoch,
@@ -289,6 +301,10 @@ impl H7H89ProductionGrantVerifier {
         agent_id: &AgentId,
         source_release: &str,
         target_release: &str,
+        source_release_manifest_sha256: &Sha256Digest,
+        target_release_manifest_sha256: &Sha256Digest,
+        target_agentd_sha256: &Sha256Digest,
+        target_matrixd_sha256: Option<&Sha256Digest>,
         expected_control_revision: u64,
         expected_lifecycle_generation: u64,
         expected_authority_epoch: u64,
@@ -301,6 +317,10 @@ impl H7H89ProductionGrantVerifier {
         if grant.agent_id != agent_id.to_string()
             || grant.source_release != source_release
             || grant.target_release != target_release
+            || &grant.source_release_manifest_sha256 != source_release_manifest_sha256
+            || &grant.target_release_manifest_sha256 != target_release_manifest_sha256
+            || &grant.target_agentd_sha256 != target_agentd_sha256
+            || grant.target_matrixd_sha256.as_ref() != target_matrixd_sha256
         {
             return Err(ProductionAuthorityError::Binding);
         }
@@ -405,6 +425,18 @@ impl H7H89ProductionGrant {
         validate_window(self.issued_at_unix_seconds, self.expires_at_unix_seconds)?;
         parse_digest(&self.h7_envelope_sha256, "H7 envelope")?;
         parse_digest(&self.artifact_sha256, "H7 artifact")?;
+        parse_digest(
+            &self.source_release_manifest_sha256,
+            "source release manifest",
+        )?;
+        parse_digest(
+            &self.target_release_manifest_sha256,
+            "target release manifest",
+        )?;
+        parse_digest(&self.target_agentd_sha256, "target agentd")?;
+        if let Some(digest) = &self.target_matrixd_sha256 {
+            parse_digest(digest, "target matrixd")?;
+        }
         parse_digest(&self.grant_sha256, "grant")?;
         if self.grant_sha256 != self.payload_digest() {
             return Err(ProductionAuthorityError::DigestMismatch);
@@ -430,9 +462,19 @@ impl H7H89ProductionGrant {
             self.transition.as_str().as_bytes(),
             self.h7_envelope_sha256.as_str().as_bytes(),
             self.artifact_sha256.as_str().as_bytes(),
+            self.source_release_manifest_sha256.as_str().as_bytes(),
+            self.target_release_manifest_sha256.as_str().as_bytes(),
+            self.target_agentd_sha256.as_str().as_bytes(),
             self.signer_id.as_bytes(),
         ] {
             frame(&mut hasher, value);
+        }
+        frame(
+            &mut hasher,
+            &[u8::from(self.target_matrixd_sha256.is_some())],
+        );
+        if let Some(digest) = &self.target_matrixd_sha256 {
+            frame(&mut hasher, digest.as_str().as_bytes());
         }
         frame(&mut hasher, &self.schema_version.to_be_bytes());
         frame(&mut hasher, &self.expected_control_revision.to_be_bytes());
