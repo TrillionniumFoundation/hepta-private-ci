@@ -1470,9 +1470,9 @@
       "source_root_present": true,
       "production_implementation": false,
       "bootstrapWorkPackage": "MEM-0-TYPES",
-      "sha256": "4115df354fc20ec78d28362a077f9fea8b65584a24b7435760142066b258eb73",
-      "bytes": 16098,
-      "words": 1782,
+      "sha256": "445181de704e0f528b08dfa4c44e72a385c7a5faa34b56c699b35eb94a97e775",
+      "bytes": 17756,
+      "words": 1940,
       "requiredSections": [
         "## 1. Identity, mission and ownership",
         "## 2. Source binding and implementation status",
@@ -1500,7 +1500,20 @@
       "consumedContracts": [
         "ModulePort::platform.types::cognitive.types"
       ],
-      "protocols": [],
+      "protocols": [
+        "CrossModalBindingV1",
+        "EngramNodeV1",
+        "ForgetPropagationReceiptV1",
+        "MemoryCueV1",
+        "MemoryEventV1",
+        "ModalitySpanRefV1",
+        "OutcomeSignalV1",
+        "PlasticityBatchV1",
+        "RecallPacketV1",
+        "ReplaySelectionReceiptV1",
+        "SynapseV1",
+        "TopologyProposalV1"
+      ],
       "ownedDomains": [],
       "readDomains": [],
       "workPackages": [
