@@ -1782,21 +1782,21 @@ mod tests {
 
     #[test]
     fn persistent_owner_resets_only_channel_or_indeterminate_failures() {
-        assert!(browser_error_requires_child_reset(&BrowserServoError::Protocol(
-            "bad frame".into()
-        )));
-        assert!(browser_error_requires_child_reset(&BrowserServoError::Indeterminate(
-            "unknown effect".into()
-        )));
-        assert!(browser_error_requires_child_reset(&BrowserServoError::Unavailable(
-            "child exited".into()
-        )));
-        assert!(!browser_error_requires_child_reset(&BrowserServoError::Rejected(
-            "application rejection".into()
-        )));
-        assert!(!browser_error_requires_child_reset(&BrowserServoError::Invalid(
-            "caller input".into()
-        )));
+        assert!(browser_error_requires_child_reset(
+            &BrowserServoError::Protocol("bad frame".into())
+        ));
+        assert!(browser_error_requires_child_reset(
+            &BrowserServoError::Indeterminate("unknown effect".into())
+        ));
+        assert!(browser_error_requires_child_reset(
+            &BrowserServoError::Unavailable("child exited".into())
+        ));
+        assert!(!browser_error_requires_child_reset(
+            &BrowserServoError::Rejected("application rejection".into())
+        ));
+        assert!(!browser_error_requires_child_reset(
+            &BrowserServoError::Invalid("caller input".into())
+        ));
     }
 
     #[test]
