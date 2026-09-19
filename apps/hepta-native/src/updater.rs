@@ -19,6 +19,7 @@ use crate::security::now_unix_ms;
 const UPDATE_SCHEMA: &str = "hepta.native-update.v1";
 const PENDING_SCHEMA: &str = "hepta.native-pending-update.v1";
 const MAX_PACKAGE_BYTES: u64 = 512 * 1024 * 1024;
+const PRODUCT_UPDATE_CHANNEL: &str = "stable";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -68,6 +69,11 @@ impl SignedUpdateManifestV1 {
         validate_digest(&self.predecessor_digest, "update.predecessor_digest")?;
         validate_digest(&self.evidence_digest, "update.evidence_digest")?;
         validate_stable_id(&self.channel, "update.channel")?;
+        if self.channel != PRODUCT_UPDATE_CHANNEL {
+            return Err(ShellError::Security(
+                "native update channel is not admitted by product policy".to_owned(),
+            ));
+        }
         validate_stable_id(&self.selected_by, "update.selected_by")?;
         validate_stable_id(&self.generator_principal, "update.generator_principal")?;
         validate_stable_id(&self.key_id, "update.key_id")?;
@@ -277,13 +283,22 @@ pub fn activate_staged_update(
             "staged update changed after verification".to_owned(),
         ));
     }
+    if !target_path.is_file() {
+        return Err(ShellError::Update(
+            "native update target predecessor is unavailable".to_owned(),
+        ));
+    }
+    let observed_predecessor = digest_file(target_path)?;
+    if observed_predecessor != pending.manifest.predecessor_digest {
+        return Err(ShellError::Security(
+            "installed native predecessor digest mismatch".to_owned(),
+        ));
+    }
     let backup = target_path.with_extension(format!(
         "{}.predecessor",
         pending.manifest.predecessor_digest
     ));
-    if target_path.exists() {
-        copy_and_sync(target_path, &backup)?;
-    }
+    copy_and_sync(target_path, &backup)?;
     pending.target_path = Some(target_path.to_owned());
     pending.backup_path = Some(backup.clone());
     pending.status = PendingUpdateStatus::ActivationStarted;
