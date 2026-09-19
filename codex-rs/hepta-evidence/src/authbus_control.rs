@@ -16,6 +16,8 @@ use crate::HeptaEvidenceStore;
 use crate::schema_validation::classify_sqlx_error;
 use crate::store::now_millis;
 
+const MAX_AUTHBUS_ACTIVE_RESERVATIONS_PER_PRINCIPAL: u32 = 4_096;
+
 #[derive(Debug, thiserror::Error)]
 pub enum AuthBusControlError {
     #[error("AuthBus control request is invalid: {0}")]
@@ -151,9 +153,13 @@ impl HeptaEvidenceStore {
         &self,
         quota: &QuotaConfig,
     ) -> Result<(), AuthBusControlError> {
-        if quota.revision == 0 || quota.window_start_ms >= quota.window_end_ms {
+        if quota.revision == 0
+            || quota.window_start_ms >= quota.window_end_ms
+            || quota.max_active_per_principal == 0
+            || quota.max_active_per_principal > MAX_AUTHBUS_ACTIVE_RESERVATIONS_PER_PRINCIPAL
+        {
             return Err(AuthBusControlError::Invalid(
-                "invalid quota revision/window",
+                "invalid quota revision/window/principal cap",
             ));
         }
         let mut tx = self
@@ -163,7 +169,7 @@ impl HeptaEvidenceStore {
             .map_err(classify_sqlx_error)?;
         let row = sqlx::query(
             "SELECT revision, unit_id, window_start_ms, window_end_ms,
-                    endowment, reserved, consumed
+                    endowment, max_active_per_principal, reserved, consumed
              FROM authbus_quota_registry WHERE quota_key = ?",
         )
         .bind(quota.quota_key.as_str())
@@ -182,6 +188,9 @@ impl HeptaEvidenceStore {
                 decode_u64(row.try_get("window_end_ms").map_err(classify_sqlx_error)?)?;
             let current_endowment =
                 decode_u64(row.try_get("endowment").map_err(classify_sqlx_error)?)?;
+            let current_max_active: i64 = row
+                .try_get("max_active_per_principal")
+                .map_err(classify_sqlx_error)?;
             let reserved = decode_u64(row.try_get("reserved").map_err(classify_sqlx_error)?)?;
             let consumed = decode_u64(row.try_get("consumed").map_err(classify_sqlx_error)?)?;
 
@@ -190,6 +199,7 @@ impl HeptaEvidenceStore {
                     && current_start == quota.window_start_ms
                     && current_end == quota.window_end_ms
                     && current_endowment == quota.endowment
+                    && current_max_active == i64::from(quota.max_active_per_principal)
                 {
                     tx.commit().await.map_err(classify_sqlx_error)?;
                     return Ok(());
@@ -232,11 +242,12 @@ impl HeptaEvidenceStore {
         sqlx::query(
             "INSERT INTO authbus_quota_registry
              (quota_key, revision, unit_id, window_start_ms, window_end_ms,
-              endowment, reserved, consumed, updated_at_ms)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+              endowment, max_active_per_principal, reserved, consumed, updated_at_ms)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
              ON CONFLICT(quota_key) DO UPDATE SET revision=excluded.revision,
              unit_id=excluded.unit_id, window_start_ms=excluded.window_start_ms,
              window_end_ms=excluded.window_end_ms, endowment=excluded.endowment,
+             max_active_per_principal=excluded.max_active_per_principal,
              reserved=excluded.reserved, consumed=excluded.consumed,
              updated_at_ms=excluded.updated_at_ms",
         )
@@ -246,6 +257,7 @@ impl HeptaEvidenceStore {
         .bind(quota.window_start_ms.to_be_bytes().as_slice())
         .bind(quota.window_end_ms.to_be_bytes().as_slice())
         .bind(quota.endowment.to_be_bytes().as_slice())
+        .bind(i64::from(quota.max_active_per_principal))
         .bind(reserved.to_be_bytes().as_slice())
         .bind(consumed.to_be_bytes().as_slice())
         .bind(now)
@@ -341,7 +353,8 @@ impl HeptaEvidenceStore {
         .await?;
 
         let row = sqlx::query(
-            "SELECT revision, window_start_ms, window_end_ms, endowment, reserved, consumed
+            "SELECT revision, window_start_ms, window_end_ms, endowment,
+                    max_active_per_principal, reserved, consumed
              FROM authbus_quota_registry WHERE quota_key = ?",
         )
         .bind(quota_key.as_str())
@@ -363,6 +376,23 @@ impl HeptaEvidenceStore {
             ));
         }
         let endowment = decode_u64(row.try_get("endowment").map_err(classify_sqlx_error)?)?;
+        let max_active_per_principal: i64 = row
+            .try_get("max_active_per_principal")
+            .map_err(classify_sqlx_error)?;
+        let held_for_principal: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM authbus_quota_reservations
+             WHERE quota_key=? AND quota_revision=? AND principal_id=?
+             AND state IN ('active','effect_started','quarantined')",
+        )
+        .bind(quota_key.as_str())
+        .bind(quota_revision.to_be_bytes().as_slice())
+        .bind(principal_id.as_str())
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(classify_sqlx_error)?;
+        if held_for_principal >= max_active_per_principal {
+            return Err(AuthBusControlError::QuotaExceeded);
+        }
         let reserved = decode_u64(row.try_get("reserved").map_err(classify_sqlx_error)?)?;
         let consumed = decode_u64(row.try_get("consumed").map_err(classify_sqlx_error)?)?;
         let used = reserved
