@@ -18,6 +18,7 @@ use crate::AutomationMissedRunPolicy;
 use crate::AutomationOccurrenceId;
 use crate::AutomationOccurrenceTerminal;
 use crate::AutomationOverlapPolicy;
+use crate::AutomationProviderObservationKind;
 use crate::AutomationQueueReceipt;
 use crate::AutomationSchedule;
 use crate::AutomationSchedulePolicy;
@@ -25,6 +26,7 @@ use crate::AutomationTask;
 use crate::AutomationTaskDraft;
 use crate::AutomationTaskId;
 use crate::AutomationTaskState;
+use crate::AutomationSubmittedOccurrence;
 use crate::model::client_message_id;
 use crate::taskflow::TaskFlowError;
 use crate::taskflow::verify_taskflow_store;
@@ -308,6 +310,308 @@ impl AutomationStore {
             return Err(AutomationError::Conflict);
         }
         transaction.commit().await.map_err(unavailable)?;
+        self.task(task_id).await?.ok_or(AutomationError::Corrupt)
+    }
+
+    /// Replaces the future schedule contract while preserving historical
+    /// occurrences. Every accepted edit increments the immutable schedule
+    /// revision used by deterministic occurrence identity.
+    pub async fn revise_task_schedule(
+        &self,
+        task_id: AutomationTaskId,
+        schedule: AutomationSchedule,
+        policy: AutomationSchedulePolicy,
+        first_run_at_ms: u64,
+        now_ms: u64,
+    ) -> Result<AutomationTask, AutomationError> {
+        schedule.validate()?;
+        policy.validate()?;
+        if schedule == AutomationSchedule::Once && policy.overlap == AutomationOverlapPolicy::Allow
+        {
+            return Err(AutomationError::Invalid);
+        }
+        let (schedule_kind, interval_ms) = schedule_columns(schedule)?;
+        let (missed_run_policy, missed_run_limit) = policy.missed_run.columns();
+        let updated = sqlx::query(
+            "UPDATE automation_tasks
+             SET schedule_kind = ?, interval_ms = ?,
+                 schedule_revision = schedule_revision + 1,
+                 overlap_policy = ?, missed_run_policy = ?, missed_run_limit = ?,
+                 next_run_at_ms = CASE WHEN state = 'enabled' THEN ? ELSE NULL END,
+                 updated_at_ms = ?
+             WHERE task_id = ? AND owner_agent_id = ?
+               AND state IN ('enabled', 'disabled')
+               AND schedule_revision < 9223372036854775807",
+        )
+        .bind(schedule_kind)
+        .bind(interval_ms.map(to_i64).transpose()?)
+        .bind(policy.overlap.as_str())
+        .bind(missed_run_policy)
+        .bind(missed_run_limit.map(i64::from))
+        .bind(to_i64(first_run_at_ms)?)
+        .bind(to_i64(now_ms)?)
+        .bind(task_id.to_string())
+        .bind(self.owner_agent_id.as_str())
+        .execute(&self.pool)
+        .await
+        .map_err(unavailable)?;
+        if updated.rows_affected() != 1 {
+            return Err(AutomationError::Conflict);
+        }
+        self.task(task_id).await?.ok_or(AutomationError::Corrupt)
+    }
+
+    /// Returns admitted occurrences that still require a persisted provider
+    /// turn/terminal observation. This is the restart-safe worklist for the
+    /// Agentd reconciler; queue admission is intentionally non-terminal.
+    pub async fn submitted_occurrences(
+        &self,
+        limit: usize,
+    ) -> Result<Vec<AutomationSubmittedOccurrence>, AutomationError> {
+        if !(1..=MAX_TASK_PAGE).contains(&limit) {
+            return Err(AutomationError::Invalid);
+        }
+        let rows = sqlx::query(
+            "SELECT r.task_id, r.occurrence, r.occurrence_id, r.schedule_revision,
+                    r.scheduled_for_ms, r.client_user_message_id,
+                    r.queued_submission_id, r.provider_turn_id, r.submitted_at_ms,
+                    t.thread_id, t.prompt
+             FROM automation_runs r
+             JOIN automation_tasks t ON t.task_id = r.task_id
+             WHERE t.owner_agent_id = ? AND r.state = 'submitted'
+               AND r.terminal_state IS NULL
+             ORDER BY r.submitted_at_ms, r.task_id, r.occurrence
+             LIMIT ?",
+        )
+        .bind(self.owner_agent_id.as_str())
+        .bind(i64::try_from(limit).map_err(|_| AutomationError::Invalid)?)
+        .fetch_all(&self.pool)
+        .await
+        .map_err(unavailable)?;
+        rows.iter()
+            .map(|row| {
+                let task_id = parse_task_id(row, "task_id")?;
+                let occurrence = to_u64(row.try_get("occurrence").map_err(unavailable)?)?;
+                let schedule_revision =
+                    to_u64(row.try_get("schedule_revision").map_err(unavailable)?)?;
+                let scheduled_for_ms =
+                    to_u64(row.try_get("scheduled_for_ms").map_err(unavailable)?)?;
+                let raw_occurrence_id: String =
+                    row.try_get("occurrence_id").map_err(unavailable)?;
+                let occurrence_id = if raw_occurrence_id.is_empty() {
+                    AutomationOccurrenceId::derive(task_id, schedule_revision, scheduled_for_ms)?
+                } else {
+                    AutomationOccurrenceId::parse(&raw_occurrence_id)
+                        .map_err(|_| AutomationError::Corrupt)?
+                };
+                let queued_submission_id: Option<String> =
+                    row.try_get("queued_submission_id").map_err(unavailable)?;
+                let submitted_at_ms: Option<i64> =
+                    row.try_get("submitted_at_ms").map_err(unavailable)?;
+                Ok(AutomationSubmittedOccurrence {
+                    admission: crate::AutomationAdmission {
+                        agent_id: self.owner_agent_id.clone(),
+                        task_id,
+                        occurrence,
+                        occurrence_id,
+                        schedule_revision,
+                        scheduled_for_ms,
+                        thread_id: row.try_get("thread_id").map_err(unavailable)?,
+                        prompt: row.try_get("prompt").map_err(unavailable)?,
+                        client_user_message_id: row
+                            .try_get("client_user_message_id")
+                            .map_err(unavailable)?,
+                    },
+                    queued_submission_id: queued_submission_id.ok_or(AutomationError::Corrupt)?,
+                    provider_turn_id: row.try_get("provider_turn_id").map_err(unavailable)?,
+                    submitted_at_ms: submitted_at_ms
+                        .map(to_u64)
+                        .transpose()?
+                        .ok_or(AutomationError::Corrupt)?,
+                })
+            })
+            .collect()
+    }
+
+    /// Persists the durable provider turn identity once queue reconciliation
+    /// proves that the exact client message was materialized as a turn.
+    pub async fn record_provider_turn(
+        &self,
+        task_id: AutomationTaskId,
+        occurrence: u64,
+        turn_id: &str,
+        observed_at_ms: u64,
+    ) -> Result<(), AutomationError> {
+        if turn_id.is_empty() || turn_id.len() > 256 || turn_id.contains('\0') {
+            return Err(AutomationError::Invalid);
+        }
+        let mut tx = self.pool.begin().await.map_err(unavailable)?;
+        let row = sqlx::query(
+            "SELECT r.provider_turn_id, r.queued_submission_id
+             FROM automation_runs r
+             JOIN automation_tasks t ON t.task_id = r.task_id
+             WHERE r.task_id = ? AND r.occurrence = ? AND t.owner_agent_id = ?
+               AND r.state = 'submitted' AND r.terminal_state IS NULL",
+        )
+        .bind(task_id.to_string())
+        .bind(to_i64(occurrence)?)
+        .bind(self.owner_agent_id.as_str())
+        .fetch_optional(&mut *tx)
+        .await
+        .map_err(unavailable)?
+        .ok_or(AutomationError::Conflict)?;
+        let existing: Option<String> = row.try_get("provider_turn_id").map_err(unavailable)?;
+        if let Some(existing) = existing {
+            if existing != turn_id {
+                return Err(AutomationError::Conflict);
+            }
+            tx.commit().await.map_err(unavailable)?;
+            return Ok(());
+        }
+        let queued_submission_id: Option<String> =
+            row.try_get("queued_submission_id").map_err(unavailable)?;
+        let updated = sqlx::query(
+            "UPDATE automation_runs SET provider_turn_id = ?
+             WHERE task_id = ? AND occurrence = ?
+               AND provider_turn_id IS NULL AND terminal_state IS NULL",
+        )
+        .bind(turn_id)
+        .bind(task_id.to_string())
+        .bind(to_i64(occurrence)?)
+        .execute(&mut *tx)
+        .await
+        .map_err(unavailable)?;
+        if updated.rows_affected() != 1 {
+            return Err(AutomationError::Conflict);
+        }
+        let digest = provider_observation_digest(
+            AutomationProviderObservationKind::TurnPersisted,
+            task_id,
+            occurrence,
+            queued_submission_id.as_deref(),
+            Some(turn_id),
+        );
+        append_provider_observation(
+            &mut tx,
+            task_id,
+            occurrence,
+            AutomationProviderObservationKind::TurnPersisted,
+            queued_submission_id.as_deref(),
+            Some(turn_id),
+            &digest,
+            observed_at_ms,
+        )
+        .await?;
+        tx.commit().await.map_err(unavailable)
+    }
+
+    /// Records a trusted terminal provider observation and only then advances
+    /// a non-overlapping recurring schedule. Replays of the exact terminal
+    /// state are idempotent; conflicting terminal evidence fails closed.
+    pub async fn terminalize_occurrence(
+        &self,
+        task_id: AutomationTaskId,
+        occurrence: u64,
+        terminal: AutomationOccurrenceTerminal,
+        receipt_digest: &Sha256Digest,
+        observed_at_ms: u64,
+    ) -> Result<AutomationTask, AutomationError> {
+        validate_sha256(receipt_digest)?;
+        let mut tx = self.pool.begin().await.map_err(unavailable)?;
+        let row = sqlx::query(
+            "SELECT r.schedule_revision, r.scheduled_for_ms, r.terminal_state,
+                    r.queued_submission_id, r.provider_turn_id
+             FROM automation_runs r
+             JOIN automation_tasks t ON t.task_id = r.task_id
+             WHERE r.task_id = ? AND r.occurrence = ? AND t.owner_agent_id = ?
+               AND r.state = 'submitted'",
+        )
+        .bind(task_id.to_string())
+        .bind(to_i64(occurrence)?)
+        .bind(self.owner_agent_id.as_str())
+        .fetch_optional(&mut *tx)
+        .await
+        .map_err(unavailable)?
+        .ok_or(AutomationError::Conflict)?;
+        let schedule_revision =
+            to_u64(row.try_get("schedule_revision").map_err(unavailable)?)?;
+        let scheduled_for_ms =
+            to_u64(row.try_get("scheduled_for_ms").map_err(unavailable)?)?;
+        let existing_terminal: Option<String> =
+            row.try_get("terminal_state").map_err(unavailable)?;
+        if let Some(existing_terminal) = existing_terminal {
+            if AutomationOccurrenceTerminal::parse(&existing_terminal)? != terminal {
+                return Err(AutomationError::Conflict);
+            }
+            let current_row = sqlx::query(TASK_SELECT_BY_ID)
+                .bind(task_id.to_string())
+                .fetch_one(&mut *tx)
+                .await
+                .map_err(unavailable)?;
+            let current = task_from_row(&current_row, &self.owner_agent_id)?;
+            tx.commit().await.map_err(unavailable)?;
+            return Ok(current);
+        }
+        let queued_submission_id: Option<String> =
+            row.try_get("queued_submission_id").map_err(unavailable)?;
+        let provider_turn_id: Option<String> =
+            row.try_get("provider_turn_id").map_err(unavailable)?;
+        let updated = sqlx::query(
+            "UPDATE automation_runs
+             SET terminal_state = ?, terminal_at_ms = ?
+             WHERE task_id = ? AND occurrence = ? AND terminal_state IS NULL",
+        )
+        .bind(terminal.as_str())
+        .bind(to_i64(observed_at_ms)?)
+        .bind(task_id.to_string())
+        .bind(to_i64(occurrence)?)
+        .execute(&mut *tx)
+        .await
+        .map_err(unavailable)?;
+        if updated.rows_affected() != 1 {
+            return Err(AutomationError::Conflict);
+        }
+        let kind = match terminal {
+            AutomationOccurrenceTerminal::Succeeded => {
+                AutomationProviderObservationKind::TurnCompleted
+            }
+            AutomationOccurrenceTerminal::Failed => AutomationProviderObservationKind::TurnFailed,
+            AutomationOccurrenceTerminal::Cancelled => {
+                AutomationProviderObservationKind::TurnInterrupted
+            }
+        };
+        append_provider_observation(
+            &mut tx,
+            task_id,
+            occurrence,
+            kind,
+            queued_submission_id.as_deref(),
+            provider_turn_id.as_deref(),
+            receipt_digest,
+            observed_at_ms,
+        )
+        .await?;
+
+        let current_row = sqlx::query(TASK_SELECT_BY_ID)
+            .bind(task_id.to_string())
+            .fetch_one(&mut *tx)
+            .await
+            .map_err(unavailable)?;
+        let current = task_from_row(&current_row, &self.owner_agent_id)?;
+        if current.schedule_revision == schedule_revision
+            && current.policy.overlap == AutomationOverlapPolicy::Forbid
+        {
+            advance_task_after_occurrence(
+                &mut tx,
+                &self.owner_agent_id,
+                &current,
+                schedule_revision,
+                scheduled_for_ms,
+                observed_at_ms,
+            )
+            .await?;
+        }
+        tx.commit().await.map_err(unavailable)?;
         self.task(task_id).await?.ok_or(AutomationError::Corrupt)
     }
 
