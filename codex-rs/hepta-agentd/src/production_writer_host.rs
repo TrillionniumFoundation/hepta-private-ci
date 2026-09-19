@@ -142,7 +142,7 @@ impl AgentdProductionWriterHost {
         let proof = prove_compaction(&candidate, request.qualification)?;
         Ok(self
             .writer
-            .publish_qualified_compact_checkpoint(&candidate.checkpoint, &proof)
+            .publish_qualified_compact_checkpoint(candidate.checkpoint(), &proof)
             .await?)
     }
 
