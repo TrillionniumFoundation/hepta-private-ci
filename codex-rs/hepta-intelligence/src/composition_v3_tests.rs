@@ -179,8 +179,7 @@ impl Ports {
     ) -> Result<CompositionPortReceiptV3, CompositionPortFailureV3> {
         self.calls.push(input.stage);
         if self.advance_stage == Some(input.stage) {
-            self.clock
-                .set(input.deadline_unix_micros.saturating_add(1));
+            self.clock.set(input.deadline_unix_micros.saturating_add(1));
         }
         if let Some((stage, class)) = self.failure
             && stage == input.stage
@@ -238,11 +237,7 @@ impl CompositionPortsV3 for Ports {
         &mut self,
         input: &CompositionPortInputV3,
     ) -> Result<CompositionPortReceiptV3, CompositionPortFailureV3> {
-        self.call(
-            input,
-            "neuron.runtime",
-            CompositionPortDecisionV3::Continue,
-        )
+        self.call(input, "neuron.runtime", CompositionPortDecisionV3::Continue)
     }
 
     fn build_prompt_portfolio(
@@ -369,8 +364,16 @@ fn optional_neural_and_prompt_absence_is_explicit_and_never_calls_adapters() {
         receipt.disposition,
         CompositionDispositionV3::HostEnvelopePrepared
     );
-    assert!(!ports.calls.contains(&CompositionStageV3::NeuralSignalCollected));
-    assert!(!ports.calls.contains(&CompositionStageV3::PromptPortfolioBuilt));
+    assert!(
+        !ports
+            .calls
+            .contains(&CompositionStageV3::NeuralSignalCollected)
+    );
+    assert!(
+        !ports
+            .calls
+            .contains(&CompositionStageV3::PromptPortfolioBuilt)
+    );
     for stage in [
         CompositionStageV3::NeuralSignalCollected,
         CompositionStageV3::PromptPortfolioBuilt,
@@ -432,7 +435,11 @@ fn stage_budget_overrun_cannot_be_reported_as_success() {
             CompositionFailureClassV3::TimedOut
         ))
     );
-    assert!(!ports.calls.contains(&CompositionStageV3::EvaluationAdmitted));
+    assert!(
+        !ports
+            .calls
+            .contains(&CompositionStageV3::EvaluationAdmitted)
+    );
     assert!(receipt.envelope.is_none());
 }
 
