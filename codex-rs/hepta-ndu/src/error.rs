@@ -29,8 +29,14 @@ pub enum NduError {
     IncompleteScalarization,
     InvalidWeight(String),
     InvalidEta,
+    EmptyPreferenceState,
+    PreferenceDimensionLimitExceeded,
+    PreferenceValueOutOfRange(String),
     DimensionMismatch,
     StateDigestMismatch,
+    SolverContextMismatch,
+    InvalidHierarchyParent(String),
+    DuplicateHierarchySubject { generation: u64, subject: String },
     SimultaneousHierarchyUpdate(u64),
     Arithmetic,
 }
@@ -64,8 +70,16 @@ impl NduError {
             Self::AbstainInfeasible => "NDU-E005",
             Self::MissingAbstainCandidate => "NDU-E006",
             Self::IncompleteScalarization | Self::InvalidWeight(_) => "NDU-E007",
-            Self::InvalidEta | Self::DimensionMismatch | Self::StateDigestMismatch => "NDU-E008",
-            Self::SimultaneousHierarchyUpdate(_) => "NDU-E009",
+            Self::InvalidEta
+            | Self::EmptyPreferenceState
+            | Self::PreferenceDimensionLimitExceeded
+            | Self::PreferenceValueOutOfRange(_)
+            | Self::DimensionMismatch
+            | Self::StateDigestMismatch => "NDU-E008",
+            Self::SolverContextMismatch => "NDU-E002",
+            Self::InvalidHierarchyParent(_)
+            | Self::DuplicateHierarchySubject { .. }
+            | Self::SimultaneousHierarchyUpdate(_) => "NDU-E009",
             Self::Arithmetic => "NDU-E010",
         }
     }
@@ -146,11 +160,33 @@ impl fmt::Display for NduError {
             Self::InvalidEta => {
                 formatter.write_str("eta must be in the closed interval [1/16, 1/4]")
             }
+            Self::EmptyPreferenceState => {
+                formatter.write_str("preference state must contain at least one axis")
+            }
+            Self::PreferenceDimensionLimitExceeded => {
+                formatter.write_str("preference state exceeds 64 axes")
+            }
+            Self::PreferenceValueOutOfRange(axis) => {
+                write!(formatter, "preference value must be in [-1,1]: {axis}")
+            }
             Self::DimensionMismatch => formatter.write_str("preference dimensions do not match"),
             Self::StateDigestMismatch => formatter.write_str("preference state digest mismatch"),
+            Self::SolverContextMismatch => {
+                formatter.write_str("solver receipt context does not match publication context")
+            }
+            Self::InvalidHierarchyParent(subject) => {
+                write!(formatter, "invalid hierarchy parent reference for subject {subject}")
+            }
+            Self::DuplicateHierarchySubject {
+                generation,
+                subject,
+            } => write!(
+                formatter,
+                "subject {subject} appears more than once in generation {generation}"
+            ),
             Self::SimultaneousHierarchyUpdate(generation) => write!(
                 formatter,
-                "multiple hierarchy levels update in generation {generation}"
+                "a parent and child update in the same hierarchy generation {generation}"
             ),
             Self::Arithmetic => formatter.write_str("deterministic Q32 arithmetic failed"),
         }
