@@ -98,13 +98,33 @@ impl fmt::Debug for DynamicSecretFields {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct SecretLeaseIssueReceipt {
     pub operation_id: String,
+    /// Provider lease identity. This is recovery metadata, not a secret value,
+    /// but callers must keep it out of general logs and model-visible context.
     pub lease_id: String,
     pub request_sha256: [u8; 32],
-    pub response_sha256: [u8; 32],
     pub scope_sha256: [u8; 32],
     pub renewable: bool,
     pub expires_at_ms: u64,
     pub secret_field_count: usize,
+}
+
+/// Issuance can succeed at the provider even when final secret delivery is
+/// fenced or indeterminate. Preserve the known provider lease identity so the
+/// trusted host can revoke/reconcile it instead of minting a replacement.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum SecretLeaseIssueOutcome {
+    Delivered(SecretLeaseIssueReceipt),
+    DeliveryBlocked {
+        receipt: SecretLeaseIssueReceipt,
+        authority_error: FinalUseError,
+    },
+    ConsumerIndeterminate {
+        receipt: SecretLeaseIssueReceipt,
+    },
+    RegistryBlocked {
+        receipt: SecretLeaseIssueReceipt,
+        registry_error: LeaseRegistryError,
+    },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -126,7 +146,7 @@ impl BaoClient {
         request: &BaoLeaseIssueRequest,
         now_ms: u64,
         consumer: impl FnOnce(&DynamicSecretFields) -> Result<(), ()>,
-    ) -> Result<SecretLeaseIssueReceipt, SecretLeaseClientError> {
+    ) -> Result<SecretLeaseIssueOutcome, SecretLeaseClientError> {
         validate_issue(request)?;
         let binding = self.issue_binding(request)?;
         match registry
@@ -233,29 +253,42 @@ impl BaoClient {
             state: LeaseState::Active,
             revision: 1,
         };
-        registry
-            .commit_issue(&request.operation_id, &metadata, now_ms)
-            .await?;
-
-        let secret_field_count = fields.len();
-        let response_sha256 = Digest32::of_bytes(&body).into_array();
-        let consumer_result = authority
-            .with_verified_use(verified, &binding, || consumer(&fields))
-            .map_err(SecretLeaseClientError::Authority)?;
-        if consumer_result.is_err() {
-            return Err(SecretLeaseClientError::ConsumerIndeterminate);
-        }
-
-        Ok(SecretLeaseIssueReceipt {
+        let receipt = SecretLeaseIssueReceipt {
             operation_id: request.operation_id.clone(),
-            lease_id: metadata.lease_id,
+            lease_id: metadata.lease_id.clone(),
             request_sha256: binding.request_sha256,
-            response_sha256,
             scope_sha256: binding.scope_sha256,
             renewable: metadata.renewable,
             expires_at_ms,
-            secret_field_count,
-        })
+            secret_field_count: fields.len(),
+        };
+        if let Err(registry_error) = registry
+            .commit_issue(&request.operation_id, &metadata, now_ms)
+            .await
+        {
+            // The provider already returned a concrete lease identity. Never
+            // erase that fact behind a generic store error: the host needs the
+            // identity to revoke/reconcile the credential.
+            return Ok(SecretLeaseIssueOutcome::RegistryBlocked {
+                receipt,
+                registry_error,
+            });
+        }
+
+        match authority.with_verified_use(verified, &binding, || consumer(&fields)) {
+            Ok(Ok(())) => Ok(SecretLeaseIssueOutcome::Delivered(receipt)),
+            Ok(Err(())) => {
+                let _ = registry.mark_lease_unknown(&metadata.lease_id, now_ms).await;
+                Ok(SecretLeaseIssueOutcome::ConsumerIndeterminate { receipt })
+            }
+            Err(authority_error) => {
+                let _ = registry.mark_lease_unknown(&metadata.lease_id, now_ms).await;
+                Ok(SecretLeaseIssueOutcome::DeliveryBlocked {
+                    receipt,
+                    authority_error,
+                })
+            }
+        }
     }
 
     pub async fn renew_secret_lease(
@@ -433,6 +466,10 @@ impl BaoClient {
 
         let body = serde_json::to_string(&RevokeBody {
             lease_id: &request.lease_id,
+            // OpenBao's synchronous revoke contract makes a successful
+            // response evidence that provider revocation completed, rather
+            // than only that asynchronous revocation was queued.
+            sync: true,
         })
         .map_err(|_| SecretLeaseClientError::InvalidRequest)?;
         let mut token = provider_token_header(&self.token.0)?;
@@ -808,6 +845,7 @@ struct RenewBody<'a> {
 #[derive(Serialize)]
 struct RevokeBody<'a> {
     lease_id: &'a str,
+    sync: bool,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -829,7 +867,6 @@ pub enum SecretLeaseClientError {
     NeedsReconciliation,
     TimedOutUnknown,
     TransportUnknown,
-    ConsumerIndeterminate,
 }
 
 impl From<LeaseRegistryError> for SecretLeaseClientError {
