@@ -30,6 +30,7 @@ use crate::RuntimeComposition;
 
 const RUN_STATE_FILE: &str = "agentd-run-lifecycle-v1.json";
 const MAX_RUN_STATE_BYTES: u64 = 4 * 1024 * 1024;
+const RUN_CANCELLATION_ACK_TIMEOUT_MS: u64 = 5_000;
 
 #[path = "state_control.rs"]
 mod control;
@@ -337,11 +338,14 @@ impl AgentdState {
 
     pub(crate) fn run_cancel(
         &self,
+        now_ms: u64,
         run_id: &str,
         expected_revision: u64,
         reason: &str,
     ) -> Result<(CancellationDisposition, RunReceipt), AgentdError> {
-        self.mutate_runs(|coordinator| coordinator.cancel_run(run_id, expected_revision, reason))
+        self.mutate_runs(|coordinator| {
+            coordinator.cancel_run(now_ms, run_id, expected_revision, reason)
+        })
     }
 
     pub(crate) fn run_observe_terminal(
@@ -404,12 +408,13 @@ impl AgentdState {
 
 fn run_composition(identity: &AgentdIdentity) -> RuntimeComposition {
     let configuration_material = format!(
-        "agentd-runtime-v1\0{}\0{}\0{}\0{}\0{:?}",
+        "agentd-runtime-v2\0{}\0{}\0{}\0{}\0{:?}\0cancel_ack_ms={}",
         identity.agent_id,
         identity.workspace.display(),
         identity.home_root.display(),
         identity.run_root.display(),
         identity.resources,
+        RUN_CANCELLATION_ACK_TIMEOUT_MS,
     );
     let ports_material = format!(
         "agentd-ports-v1\0{}\0{}",
@@ -426,6 +431,7 @@ fn run_composition(identity: &AgentdIdentity) -> RuntimeComposition {
         ports_digest: Sha256Digest::for_bytes(ports_material.as_bytes())
             .as_str()
             .to_string(),
+        cancellation_ack_timeout_ms: RUN_CANCELLATION_ACK_TIMEOUT_MS,
     }
 }
 
