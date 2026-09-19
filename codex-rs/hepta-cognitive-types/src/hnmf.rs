@@ -960,14 +960,12 @@ impl ResourceBudgetV1 {
         )?;
         bounded_u32(self.engram_nodes, MAX_ENGRAM_NODES, "engram nodes")?;
         bounded_u32(self.synapses, MAX_SYNAPSES, "synapses")?;
-        if self.settling_steps == 0 || self.settling_steps > MAX_SETTLING_STEPS {
+        if !(1..=MAX_SETTLING_STEPS).contains(&self.settling_steps) {
             return Err(CognitiveContractError::Invalid(
                 "settling steps outside bound",
             ));
         }
-        if self.final_recalled_events == 0
-            || usize::from(self.final_recalled_events) > MAX_RECALL_EVENTS
-        {
+        if !(1..=MAX_RECALL_EVENTS).contains(&usize::from(self.final_recalled_events)) {
             return Err(CognitiveContractError::Invalid(
                 "final recall count outside bound",
             ));
@@ -1501,7 +1499,7 @@ fn bounded_nonempty(
     maximum: usize,
     field: &'static str,
 ) -> Result<(), CognitiveContractError> {
-    if actual == 0 || actual > maximum {
+    if !(1..=maximum).contains(&actual) {
         return Err(CognitiveContractError::LimitExceeded {
             field,
             actual,
@@ -1531,7 +1529,7 @@ fn bounded_u32(
     maximum: u32,
     field: &'static str,
 ) -> Result<(), CognitiveContractError> {
-    if actual == 0 || actual > maximum {
+    if !(1..=maximum).contains(&actual) {
         return Err(CognitiveContractError::Invalid(field));
     }
     Ok(())
