@@ -136,42 +136,12 @@ impl MatrixDurableStore {
                 || existing.room_id != outbox.room_id
                 || existing.session_generation != outbox.generation
                 || existing.payload_digest != payload_digest
-                || !optional_identity_compatible(
-                    existing.authority_epoch,
-                    authority.authority_epoch,
-                )
-                || !optional_identity_compatible(
-                    existing.authority_binding_digest.as_deref(),
-                    authority.authority_binding_digest.as_deref(),
-                )
-                || !optional_identity_compatible(
-                    existing.grant_id.as_deref(),
-                    authority.grant_id.as_deref(),
-                )
-                || !optional_identity_compatible(
-                    existing.grant_payload_digest.as_deref(),
-                    authority.grant_payload_digest.as_deref(),
-                )
+                || existing.authority_epoch != authority.authority_epoch
+                || existing.authority_binding_digest != authority.authority_binding_digest
+                || existing.grant_id != authority.grant_id
+                || existing.grant_payload_digest != authority.grant_payload_digest
             {
                 return Err(MatrixDurableError::Conflict);
-            }
-            if existing.state.unresolved() {
-                sqlx::query(
-                    "UPDATE matrix_dispatch_ledger
-                     SET authority_epoch = COALESCE(authority_epoch, ?),
-                         authority_binding_digest = COALESCE(authority_binding_digest, ?),
-                         grant_id = COALESCE(grant_id, ?),
-                         grant_payload_sha256 = COALESCE(grant_payload_sha256, ?)
-                     WHERE stable_txn_id = ?",
-                )
-                .bind(authority.authority_epoch.map(to_i64).transpose()?)
-                .bind(authority.authority_binding_digest.as_deref())
-                .bind(authority.grant_id.as_deref())
-                .bind(authority.grant_payload_digest.as_deref())
-                .bind(outbox.stable_txn_id.as_str())
-                .execute(&mut *tx)
-                .await
-                .map_err(unavailable)?;
             }
             tx.commit().await.map_err(unavailable)?;
             return self
@@ -1079,13 +1049,6 @@ fn valid_identity(value: &str) -> bool {
         && value
             .bytes()
             .all(|byte| byte.is_ascii_alphanumeric() || b"._:/-".contains(&byte))
-}
-
-fn optional_identity_compatible<T: PartialEq>(current: Option<T>, proposed: Option<T>) -> bool {
-    match (current, proposed) {
-        (Some(current), Some(proposed)) => current == proposed,
-        _ => true,
-    }
 }
 
 fn to_i64(value: u64) -> Result<i64, MatrixDurableError> {
