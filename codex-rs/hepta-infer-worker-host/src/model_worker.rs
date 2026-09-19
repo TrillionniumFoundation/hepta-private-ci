@@ -392,9 +392,10 @@ impl<D: ModelDriver> InferenceWorker<D> {
             worker_id: authenticated_worker,
             ..
         } = grant.verification()
-            && authenticated_worker != &worker_id
         {
-            return Err(Error::InvalidGrant);
+            if authenticated_worker != &worker_id {
+                return Err(Error::InvalidGrant);
+            }
         }
         let VerifiedResourceGrant {
             grant,
