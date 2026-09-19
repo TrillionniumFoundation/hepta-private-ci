@@ -24,6 +24,7 @@ pub enum NduError {
     AggregationAxisMismatch(String),
     AggregationConflict(String),
     NegativeTolerance(String),
+    EmptyProfileDigest(&'static str),
     MissingAbstainCandidate,
     AbstainInfeasible,
     IncompleteScalarization,
@@ -64,7 +65,8 @@ impl NduError {
             | Self::DuplicateAggregationRule(_)
             | Self::AggregationAxisMismatch(_)
             | Self::AggregationConflict(_)
-            | Self::NegativeTolerance(_) => "NDU-E004",
+            | Self::NegativeTolerance(_)
+            | Self::EmptyProfileDigest(_) => "NDU-E004",
             Self::AbstainInfeasible => "NDU-E005",
             Self::MissingAbstainCandidate => "NDU-E006",
             Self::IncompleteScalarization | Self::InvalidWeight(_) => "NDU-E007",
@@ -142,6 +144,9 @@ impl fmt::Display for NduError {
                     formatter,
                     "Pareto tolerance must be non-negative for axis {axis}"
                 )
+            }
+            Self::EmptyProfileDigest(field) => {
+                write!(formatter, "profile digest must not be zero: {field}")
             }
             Self::MissingAbstainCandidate => {
                 formatter.write_str("every legal candidate set must contain abstain")
