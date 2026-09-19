@@ -48,7 +48,7 @@ provenance: exact source and normalization-profile digests
 
 Free text is evidence for intent extraction, never the final authority representation. Every predicate has an identifier, unit, comparator, bound, evidence source and terminality. Arrays are stable-sorted by semantic identifier. Unicode uses the selected normalization profile; timestamps are UTC; durations are integer microseconds; numeric values use registered fixed-point profiles. Duplicate semantic keys are rejected.
 
-The canonical IR contains no raw credentials, unrestricted external text, hidden model state or executable code. Every payload and collection has both count and encoded-byte bounds. Admission profiles are bounded to 256 constraint mappings, 128 predicate mappings, 128 action mappings, 64 soft dimensions, 128 evidence mappings, 64 abstention rules and 256 KiB of encoded profile semantics; risk and rollback levels must be monotone.
+The canonical IR contains no raw credentials, unrestricted external text, hidden model state or executable code. Every payload and collection has both count and encoded-byte bounds. Source V1 admits at most 246 explicit constraints so the 6 generated resource ceilings and 4 generated risk/rollback constraints fit the native 256-constraint ceiling. Success predicates, terminal conditions and evidence requirements share one combined native ceiling of 128. Legal actions are capped at 127 when intrinsic `abstain` must be injected and may reach 128 only when the selected profile maps a valid explicit `abstain`. Admission profiles are bounded to 256 constraint mappings, 128 predicate mappings, 128 action mappings, 64 soft dimensions, 128 evidence mappings, 64 abstention rules and 256 KiB of encoded profile semantics; risk and rollback levels must be monotone.
 
 ## 3. Constraint precedence and conflict resolution
 
@@ -106,7 +106,7 @@ Compilation semantics are a pure function of the authenticated source envelope, 
 
 ## 5. State machine and persistence
 
-The compiler owns no domain-fact store. The owning caller persists the immutable `ObjectiveFunctionV1`, `RunStartSnapshotV1` and admission/compile receipts. Publication occurs only after source, intent, profile, constraint and objective digests agree.
+The compiler owns no domain-fact store. The canonical source-level caller is Agentd. It verifies the signed structured-objective body against current owner-controlled AuthBus trust, binds the opaque verification receipt digest into the preverified `ObjectiveAdmissionContextV1`, and publishes through the sealed destination-owned learning-ledger journal. The journal durably binds authentication material, admission identity, canonical objective semantics and `RunStartSnapshotV1` before Agentd runtime handoff. A directly constructed `ObjectiveAdmissionContextV1` remains only a preverified library input and is not proof of external authentication.
 
 ```text
 received
@@ -138,7 +138,7 @@ The only canonical definitions are in `docs/contracts/OBJECTIVE_ERRORS.json`:
 | `OBJ-E008` | terminality or durable semantic-identity conflict | conflict |
 | `OBJ-E009` | untrusted evidence attempts authority escalation | security rejected |
 
-`ObjectiveConflictReceiptV1` and `CompileDisposition::ExplicitAbstain` are typed non-error outcomes. Rust variants, documentation and external adapters must be checked against the canonical registry; no component may assign a local alternate meaning to a code.
+`ObjectiveConflictReceiptV1` and `CompileDisposition::ExplicitAbstain` are typed non-error outcomes. Rust variants, documentation and external adapters must be checked against the canonical registry; no component may assign a local alternate meaning to a code. `OBJ-E007` does **not** authorize blind retry: `ObjectiveAdmissionError::retry_disposition()` distinguishes request mutation, fresh source, clock advance and fresh feasibility-budget cases; the canonical registry records the same variant-specific policy.
 
 Fallback may reuse a previously selected immutable objective only when the owning caller proves equal request identity, principal scope, compatibility and current revocation frontier. Otherwise it asks for clarification or abstains. It never substitutes an easier goal.
 
@@ -160,9 +160,9 @@ The following paths are measured separately:
 | inclusion-minimal conflict extraction | at most `n+1` oracle calls and `O(n C(n))` |
 | legal-action construction | `O(a log a)` with compiled `a<=128` |
 
-Pilot ceilings are `<=256` constraints, `<=128` success predicates, `<=127` caller actions when abstain is implicit, `<=128` compiled actions including abstain, `<=64` soft dimensions and `<=257` conflict-oracle calls. CPU and wall-clock budgets are frozen before evaluation. Exceeding a bound rejects or returns unavailable; input is never truncated after semantic analysis.
+Pilot ceilings are `<=246` explicit Source-V1 constraints plus exactly 10 generated resource/risk constraints (`<=256` native total), `<=128` combined success/terminal/evidence predicates, `<=127` legal source actions when abstain is implicit, `<=128` only with explicit mapped abstain, `<=128` compiled actions, `<=64` soft dimensions and `<=257` conflict-oracle calls. Deterministic compilation is bounded by counts/oracle calls and deliberately uses `Duration::MAX` in the owner-internal scalar compatibility adapter; wall-clock exhaustion applies only to the explicit availability API. Exceeding a semantic bound rejects without truncation.
 
-The p95/p99 targets apply only to a named path, fixture and host. A normal-path latency measurement cannot be reused as a conflict-extraction measurement. No network or synchronous central RPC is permitted on the deterministic compiler path.
+The p95/p99 targets apply only to a named path, fixture and host. `docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md` defines an exact-SHA release-mode recorder that measures ordinary authenticated admission/compile separately from a 256-atom, 257-oracle-call maximum conflict extraction. CI only self-tests/compiles that harness; a GitHub runner cannot close the target-host gate. No network or synchronous central RPC is permitted on the deterministic compiler path.
 
 ## 9. Golden fixtures and tests
 
@@ -181,7 +181,7 @@ Tests cover structural round trips, canonical ordering, unit conversion, conflic
 
 ## 10. Implementation sequence
 
-Implement and maintain, in order: strict JSON decoder; owner-local source type; structural validator; authenticated admission context; frozen profile mapping; deterministic feasibility grammar; conflict minimizer; intrinsic legal-action grammar; canonical digests; deny-all receipts; durable caller adapter; faults; benchmarks; exact-source and merge-candidate qualification.
+Implement and maintain, in order: strict JSON decoder; owner-local source type; structural validator; preverified admission context with bound authentication-receipt digest; frozen profile mapping; deterministic feasibility grammar; conflict minimizer; intrinsic legal-action grammar; canonical digests; deny-all receipts; AuthBus-backed Agentd caller; destination-owned durable run-start publication/recovery; faults; separate ordinary/conflict benchmarks; exact-source and merge-candidate qualification.
 
 Coding entry requires a current `CanonicalSourceReceiptV1`, frozen contract/readiness/error-registry digests, a bounded work-package envelope, mandatory fixtures, deterministic fallback and zero authority delta. Source completion still does not establish a production caller, activation, independent acceptance, promotion or release.
 
