@@ -24,12 +24,16 @@ pub use envelope_v2::WireV2Error;
 pub use frame::DecodeFrameError;
 pub use frame::DecodedEnvelope;
 pub use frame::decode_frame;
+pub use schema::MAX_ADMITTED_PRODUCERS;
+pub use schema::MAX_REGISTERED_SCHEMAS;
 pub use schema::PayloadCodec;
+pub use schema::ProducerAdmission;
 pub use schema::SchemaAdmissionError;
 pub use schema::SchemaCodecError;
 pub use schema::SchemaDescriptor;
 pub use schema::SchemaRegistry;
 pub use schema::decode_typed;
+pub use schema::decode_typed_for_producer;
 pub use schema::encode_typed;
 pub use stream::MAX_BUFFERED_WIRE_FRAMES;
 pub use stream::MAX_WIRE_FRAME_BYTES;
@@ -45,6 +49,8 @@ pub use version::NegotiationOffer;
 pub use version::WireCapabilities;
 pub use version::WireVersion;
 pub use version::negotiate;
+pub use version::negotiation_binding_digest;
+pub use version::session_binding_digest;
 
 #[cfg(test)]
 #[path = "property_tests.rs"]
