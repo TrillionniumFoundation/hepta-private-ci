@@ -21,6 +21,7 @@ use crate::PreparedPlanInputV1;
 use crate::ResourceReservationV1;
 use crate::SnapshotRequestV1;
 use crate::bind_ndu_plan_evaluation_v1;
+use crate::canonical_resource_profile_digest;
 use crate::collect_snapshot;
 use crate::finalize_plan;
 use crate::prepare_plan;
@@ -95,18 +96,19 @@ fn candidate(name: &str) -> PlanCandidateV1 {
 }
 
 fn planning_request() -> PlanningRequestV1 {
+    let resource_reservations = vec![ResourceReservationV1 {
+        axis: id("compute"),
+        endowment: q32(10),
+        essential_floor: FixedQ32::ZERO,
+    }];
     PlanningRequestV1 {
         plan_id: id("plan-run"),
         now_micros: 100,
         deadline_micros: 400,
         evaluation_policy_digest: digest("policy"),
-        resource_profile_digest: digest("resource-profile"),
+        resource_profile_digest: must(canonical_resource_profile_digest(&resource_reservations)),
         candidates: vec![candidate("abstain"), candidate("work")],
-        resource_reservations: vec![ResourceReservationV1 {
-            axis: id("compute"),
-            endowment: q32(10),
-            essential_floor: FixedQ32::ZERO,
-        }],
+        resource_reservations,
     }
 }
 
@@ -200,6 +202,61 @@ fn truncation_and_tampering_fail_closed() {
     assert_eq!(
         PlannerJournalV1::reopen(&tampered).expect_err("tamper must reject"),
         PlannerJournalError::CorruptEntryDigest
+    );
+}
+
+#[test]
+fn direct_append_cannot_bypass_selection_semantics() {
+    let mut journal = PlannerJournalV1::new();
+    assert_eq!(
+        journal
+            .append(
+                PlannerJournalKindV1::SelectedPlan,
+                digest("forged-selection"),
+                digest("unknown-decision"),
+            )
+            .expect_err("raw selected-plan append must require a decision"),
+        PlannerJournalError::DecisionNotRecorded
+    );
+
+    let receipt = receipt();
+    must(journal.record_decision(&receipt));
+    must(journal.revoke(digest("revoke-before-select"), receipt.receipt_digest()));
+    assert_eq!(
+        journal
+            .append(
+                PlannerJournalKindV1::SelectedPlan,
+                digest("forged-selection-after-revoke"),
+                receipt.receipt_digest(),
+            )
+            .expect_err("raw selected-plan append must respect revocation"),
+        PlannerJournalError::RevokedPlan
+    );
+}
+
+#[test]
+fn reopen_rejects_hash_valid_semantically_invalid_selection() {
+    let identity = digest("forged-selection");
+    let payload = digest("unknown-decision");
+    let sequence = 1_u64;
+    let predecessor = Digest32::ZERO;
+    let kind = PlannerJournalKindV1::SelectedPlan;
+    let entry_digest = super::digest_entry(sequence, kind, identity, payload, predecessor);
+
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(super::MAGIC);
+    bytes.extend_from_slice(&1_u32.to_be_bytes());
+    bytes.extend_from_slice(&sequence.to_be_bytes());
+    bytes.push(kind.tag());
+    bytes.extend_from_slice(identity.as_array());
+    bytes.extend_from_slice(payload.as_array());
+    bytes.extend_from_slice(predecessor.as_array());
+    bytes.extend_from_slice(entry_digest.as_array());
+
+    assert_eq!(
+        PlannerJournalV1::reopen(&bytes)
+            .expect_err("hash-valid selection without decision must fail semantic replay"),
+        PlannerJournalError::DecisionNotRecorded
     );
 }
 

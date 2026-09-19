@@ -171,9 +171,10 @@
       "implementationMap": "docs/modules/control.runtime/IMPLEMENTATION_MAP.json",
       "dimensions": {
         "technicalSpecification": {
-          "state": "candidate_complete",
+          "state": "candidate_complete_current_source_closure",
           "evidence": [
-            "docs/readiness/CONTROL_RUNTIME_EXECUTION.md"
+            "docs/readiness/CONTROL_RUNTIME_EXECUTION.md",
+            "qualification/module-execution-dossiers/detail/control.runtime.md"
           ]
         },
         "canonicalProtocolRegistration": {
@@ -190,25 +191,29 @@
           ]
         },
         "nativeApiMapping": {
-          "state": "candidate_complete",
+          "state": "candidate_complete_current_surface",
           "evidence": [
             "docs/modules/control.runtime/IMPLEMENTATION_MAP.json"
           ]
         },
         "globalPlannerKernel": {
-          "state": "candidate_implemented",
+          "state": "source_implemented",
           "evidence": [
             "collect_snapshot",
             "prepare_plan",
-            "bind_ndu_plan_evaluation_v1",
+            "canonical_resource_profile_digest",
+            "evaluate_prepared_plan_with_ndu",
             "finalize_plan",
             "request_execution_grants"
           ]
         },
         "durability": {
-          "state": "owner_local_reference_implemented_not_production_writer",
+          "state": "durable_local_unix_owner_store_implemented_not_product_hosted",
           "evidence": [
-            "PlannerJournalV1"
+            "PlannerJournalV1",
+            "PlannerJournalStoreV1",
+            "v1_reference_envelope_migrates_atomically_to_v2",
+            "restore_of_pre_revocation_backup_fails_current_recovery_floor"
           ]
         },
         "effectAuthority": {
@@ -218,16 +223,23 @@
           ]
         },
         "exactHeadSourceQualification": {
-          "state": "pending_current_candidate_workflows",
-          "evidence": []
+          "state": "pending_current_pr_workflows",
+          "evidence": [
+            "PR #698"
+          ]
         },
         "productCaller": {
-          "state": "not_established",
-          "evidence": []
+          "state": "narrow_agentd_context_composed_global_product_host_not_established",
+          "evidence": [
+            "codex-rs/hepta-agentd/src/cognitive_context.rs",
+            "plan_observed_context"
+          ]
         },
         "productionWriter": {
-          "state": "not_established",
-          "evidence": []
+          "state": "durable_owner_store_available_not_composed_by_named_product_host",
+          "evidence": [
+            "PlannerJournalStoreV1"
+          ]
         },
         "independentAcceptance": {
           "state": "not_established",
@@ -255,20 +267,62 @@
             "evaluationPolicyDigest",
             "resourceProfileDigest"
           ]
+        },
+        "authenticatedOwnerAdmission": {
+          "state": "source_implemented",
+          "evidence": [
+            "authenticate_owner_summary_v1",
+            "admit_fleet_allocation_owner_v1"
+          ]
+        },
+        "globalSourceComposition": {
+          "state": "source_implemented_multi_owner_fleet_ndu_authority_bridge",
+          "evidence": [
+            "compose_global_plan_with_fleet_v1",
+            "claim_final_use_for_grant_request_v1",
+            "authenticated_multi_owner_fleet_plan_runs_real_ndu_and_emits_deny_all_request",
+            "independent_authority_claims_exact_planner_binding"
+          ]
+        },
+        "namedHostPerformance": {
+          "state": "not_established",
+          "evidence": []
+        },
+        "resourceProfileBinding": {
+          "state": "source_implemented",
+          "evidence": [
+            "canonical_resource_profile_digest",
+            "resource_profile_digest_must_match_exact_reservations"
+          ]
+        },
+        "monotonicPlannerClock": {
+          "state": "product_caller_implemented",
+          "evidence": [
+            "MonotonicClockV1",
+            "codex-rs/hepta-agentd/src/cognitive_context.rs"
+          ]
+        },
+        "journalSemanticReplay": {
+          "state": "source_implemented",
+          "evidence": [
+            "validate_semantic_replay",
+            "reopen_rejects_hash_valid_semantically_invalid_selection"
+          ]
         }
       }
     }
   ],
   "repositoryControlledClosure": {
-    "state": "candidate_pending_exact_head_qualification",
+    "state": "current_pr_pending_exact_head_and_merge_qualification",
     "requiredChecks": [
       "Lane D semantic conformance",
       "cargo fmt",
-      "cargo check --locked for all three Lane D packages",
-      "package tests for all three Lane D packages",
-      "strict Clippy for all three Lane D packages",
-      "existing repository integrity and readiness workflows",
-      "synthetic merge qualification"
+      "cargo check --locked for affected control-plane, agentd, contracts and fleet packages",
+      "package tests for affected packages",
+      "strict Clippy",
+      "repository integrity and development-doc workflows",
+      "exact-head source qualification",
+      "deterministic synthetic merge qualification"
     ]
   },
   "externalGates": [

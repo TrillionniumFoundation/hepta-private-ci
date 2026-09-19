@@ -552,6 +552,7 @@ pub enum PlannerError {
     InvalidResourceReservation(String),
     MissingResourceAxis { candidate: String, axis: String },
     UnknownResourceAxis { candidate: String, axis: String },
+    ResourceProfileMismatch,
     AbstainUnavailable,
     EvaluationBindingMismatch,
     EvaluationCandidateSetMismatch,
@@ -608,6 +609,9 @@ impl fmt::Display for PlannerError {
                 formatter,
                 "candidate {candidate} has unregistered resource axis {axis}"
             ),
+            Self::ResourceProfileMismatch => {
+                formatter.write_str("resource profile digest does not match canonical reservations")
+            }
             Self::AbstainUnavailable => {
                 formatter.write_str("abstain must be present and feasible after resource floors")
             }
@@ -759,6 +763,11 @@ pub fn prepare_plan(
         .resource_reservations
         .sort_by(|left, right| left.axis.cmp(&right.axis));
     validate_reservations(&request.resource_reservations)?;
+    let canonical_resource_profile =
+        canonical_resource_profile_digest(&request.resource_reservations)?;
+    if canonical_resource_profile != request.resource_profile_digest {
+        return Err(PlannerError::ResourceProfileMismatch);
+    }
 
     let source_candidate_set_digest = digest_candidates(&request.candidates);
     let reservation_map: BTreeMap<_, _> = request
@@ -1113,6 +1122,27 @@ fn validate_candidates(
         }
     }
     Ok(())
+}
+
+/// Canonical digest of the exact bounded resource reservations consumed by planning.
+pub fn canonical_resource_profile_digest(
+    reservations: &[ResourceReservationV1],
+) -> Result<Digest32, PlannerError> {
+    if reservations.is_empty() || reservations.len() > MAX_RESOURCE_RESERVATIONS {
+        return Err(PlannerError::LimitExceeded("resource reservations"));
+    }
+    let mut canonical = reservations.to_vec();
+    canonical.sort_by(|left, right| left.axis.cmp(&right.axis));
+    validate_reservations(&canonical)?;
+
+    let mut bytes = b"hepta.control.resource-profile.v1\0".to_vec();
+    push_len(&mut bytes, canonical.len());
+    for reservation in canonical {
+        push_id(&mut bytes, &reservation.axis);
+        bytes.extend_from_slice(&reservation.endowment.raw().to_be_bytes());
+        bytes.extend_from_slice(&reservation.essential_floor.raw().to_be_bytes());
+    }
+    Ok(Digest32::of_bytes(&bytes))
 }
 
 fn validate_reservations(reservations: &[ResourceReservationV1]) -> Result<(), PlannerError> {
