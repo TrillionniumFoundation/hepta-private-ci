@@ -45,6 +45,13 @@ pub enum LedgerError {
     UnlearningPredecessorMismatch,
     UnlearningNotHead(String),
     UnlearningSelfReference,
+    UnlearningUpstreamRequired,
+    UnlearningUpstreamPairMismatch,
+    UnlearningUpstreamNotFound(String),
+    UnlearningUpstreamSourceMismatch,
+    UnlearningUpstreamDigestMismatch,
+    UnlearningUpstreamKindMismatch,
+    UnlearningUpstreamCycle,
     TargetNotFound(String),
     TargetAlreadyRevoked(String),
     RevocationOfRevocation,
@@ -101,7 +108,14 @@ impl LedgerError {
             | Self::UnlearningPredecessorNotFound(_)
             | Self::UnlearningPredecessorMismatch
             | Self::UnlearningNotHead(_)
-            | Self::UnlearningSelfReference => "LRN-E014",
+            | Self::UnlearningSelfReference
+            | Self::UnlearningUpstreamRequired
+            | Self::UnlearningUpstreamPairMismatch
+            | Self::UnlearningUpstreamNotFound(_)
+            | Self::UnlearningUpstreamSourceMismatch
+            | Self::UnlearningUpstreamDigestMismatch
+            | Self::UnlearningUpstreamKindMismatch
+            | Self::UnlearningUpstreamCycle => "LRN-E014",
             Self::SequenceOverflow => "LRN-E010",
             Self::SnapshotHeadMismatch | Self::SnapshotRecordMismatch(_) => "LRN-E011",
             Self::EmptyDigest(_) | Self::InternalInvariant => "LRN-E012",
@@ -229,6 +243,23 @@ impl fmt::Display for LedgerError {
             }
             Self::UnlearningSelfReference => {
                 formatter.write_str("unlearning lineage cannot reference itself")
+            }
+            Self::UnlearningUpstreamRequired => {
+                formatter.write_str("artifact unlearning requires an upstream dataset lineage")
+            }
+            Self::UnlearningUpstreamPairMismatch => formatter
+                .write_str("unlearning upstream id and digest must be present together"),
+            Self::UnlearningUpstreamNotFound(id) => {
+                write!(formatter, "unlearning upstream derived object not found: {id}")
+            }
+            Self::UnlearningUpstreamSourceMismatch => formatter
+                .write_str("unlearning upstream derived object belongs to another source"),
+            Self::UnlearningUpstreamDigestMismatch => formatter
+                .write_str("unlearning upstream derived digest does not match current lineage"),
+            Self::UnlearningUpstreamKindMismatch => formatter
+                .write_str("artifact unlearning upstream must be a dataset lineage"),
+            Self::UnlearningUpstreamCycle => {
+                formatter.write_str("unlearning derived object cannot depend on itself")
             }
             Self::TargetNotFound(id) => write!(formatter, "revocation target not found: {id}"),
             Self::TargetAlreadyRevoked(id) => {
