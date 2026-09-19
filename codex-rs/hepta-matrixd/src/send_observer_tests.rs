@@ -261,9 +261,7 @@ async fn authority_and_grant_identity_are_frozen_before_first_effect() -> TestRe
         authority_epoch: Some(7),
         authority_binding_digest: Some(digest('a')),
         grant_id: Some("grant.1".to_string()),
-        grant_payload_digest: Some(
-            Sha256Digest::for_bytes(&claimed.payload).as_str().to_string(),
-        ),
+        grant_payload_digest: Some(Sha256Digest::for_bytes(&claimed.payload).as_str().to_string()),
     };
     prepare_send(&store, &claimed, &authority, 10).await?;
     store
