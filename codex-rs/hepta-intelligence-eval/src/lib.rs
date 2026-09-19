@@ -282,9 +282,7 @@ pub mod trusted_inprocess {
     use super::IndependentEvaluationDecisionV1;
     use super::MetricRoleContractV2;
 
-    pub fn evaluate_legacy_v1(
-        request: EvaluationRequest,
-    ) -> Result<EvaluationReceipt, Error> {
+    pub fn evaluate_legacy_v1(request: EvaluationRequest) -> Result<EvaluationReceipt, Error> {
         super::evaluate(request)
     }
 
