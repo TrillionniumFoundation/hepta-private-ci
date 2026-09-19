@@ -19,7 +19,11 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use serde::Deserialize;
 use serde::Serialize;
 use sha2::Digest;
@@ -66,6 +70,8 @@ pub enum ProductionWriterError {
     StaleReceipt,
     #[error("production writer already has an active owner for this local lease")]
     WriterBusy,
+    #[error("final-use authority rejected dispatch: {0}")]
+    FinalUse(#[from] FinalUseError),
 }
 
 /// Opaque authority token supplied by an external grant verifier.
@@ -706,13 +712,128 @@ impl ProductionDurableWriter {
             })?
             .event_id;
         let outcome = target.dispatch(request.clone()).await;
+        self.settle_dispatch_outcome(
+            request,
+            &receipt.occurrence_key,
+            dispatch_claim_event_id,
+            outcome,
+        )
+        .await
+    }
+
+    async fn dispatch_final_use_target<T: FinalUseProductionOutboxTarget + ?Sized>(
+        &self,
+        final_use: &FinalUseAuthority,
+        target: &T,
+        signed: &SignedFinalUseGrant,
+        expected: &FinalUseBinding,
+        receipt: ProductionQueuedReceipt,
+    ) -> Result<ProductionDispatchReceipt, ProductionWriterError> {
+        self.verify_authority().await?;
+        self.validate_queued_receipt(&receipt)?;
+        self.lease
+            .verify_queued_receipt_binding(
+                &receipt.occurrence_key,
+                &receipt.event_id,
+                &receipt.outbox_id,
+                &receipt.topic,
+                &receipt.payload_json,
+                &receipt.payload_sha256,
+            )
+            .await
+            .map_err(|error| match error {
+                LocalLeaseOutboxError::StaleFence(_)
+                | LocalLeaseOutboxError::IllegalTransition(_)
+                | LocalLeaseOutboxError::CasConflict(_) => ProductionWriterError::StaleReceipt,
+                other => ProductionWriterError::Local(other),
+            })?;
+        let request = ProductionDispatchRequest {
+            schema_version: PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION,
+            namespace: PRODUCTION_DURABLE_WRITER_NAMESPACE.to_string(),
+            lease_id: receipt.lease_id.clone(),
+            occurrence_key: receipt.occurrence_key.clone(),
+            topic: receipt.topic.clone(),
+            payload_json: receipt.payload_json.clone(),
+            payload_sha256: receipt.payload_sha256.clone(),
+            idempotency_key: receipt.occurrence_key.clone(),
+            operation_digest: operation_digest(&self.authority, &receipt),
+        };
+        verify_final_use_dispatch_binding(
+            self.store.owner_agent_id(),
+            target.destination_id(),
+            &request,
+            expected,
+        )?;
+
+        // First make the ambiguous external boundary durable. A crash from
+        // this point onward reopens as Indeterminate and must reconcile.
+        let dispatch_claim_event_id = self
+            .lease
+            .claim_dispatch(
+                &receipt.occurrence_key,
+                &self.authority.grant_digest,
+                &request.operation_digest,
+            )
+            .await
+            .map_err(|error| match error {
+                LocalLeaseOutboxError::StaleFence(_)
+                | LocalLeaseOutboxError::IllegalTransition(_)
+                | LocalLeaseOutboxError::CasConflict(_) => ProductionWriterError::StaleReceipt,
+                other => ProductionWriterError::Local(other),
+            })?
+            .event_id;
+
+        // Then consume the single-use grant and revalidate it immediately at
+        // target entry. If either check fails before the adapter is entered we
+        // know no external effect happened, so settle local state as Rejected.
+        let token = match final_use.claim(signed, expected) {
+            Ok(token) => token,
+            Err(error) => {
+                let _ = self
+                    .reject(
+                        &receipt.occurrence_key,
+                        format!("final-use claim rejected: {error}"),
+                    )
+                    .await;
+                return Err(ProductionWriterError::FinalUse(error));
+            }
+        };
+        let future = match final_use.with_verified_use(token, expected, || {
+            target.dispatch(request.clone())
+        }) {
+            Ok(future) => future,
+            Err(error) => {
+                let _ = self
+                    .reject(
+                        &receipt.occurrence_key,
+                        format!("final-use entry rejected: {error}"),
+                    )
+                    .await;
+                return Err(ProductionWriterError::FinalUse(error));
+            }
+        };
+        let outcome = future.await;
+        self.settle_dispatch_outcome(
+            request,
+            &receipt.occurrence_key,
+            dispatch_claim_event_id,
+            outcome,
+        )
+        .await
+    }
+
+    async fn settle_dispatch_outcome(
+        &self,
+        request: ProductionDispatchRequest,
+        occurrence_key: &str,
+        dispatch_claim_event_id: String,
+        outcome: ProductionTargetOutcome,
+    ) -> Result<ProductionDispatchReceipt, ProductionWriterError> {
         match outcome {
             ProductionTargetOutcome::Committed {
                 receipt: target_receipt,
             } => {
-                let applied = self
-                    .apply(&receipt.occurrence_key, target_receipt.clone())
-                    .await;
+                let applied = self.apply(occurrence_key, target_receipt.clone()).await;
                 match applied {
                     Ok(local) => Ok(ProductionDispatchReceipt {
                         request,
@@ -728,7 +849,7 @@ impl ProductionDurableWriter {
                 }
             }
             ProductionTargetOutcome::Rejected { reason } => {
-                let local = self.reject(&receipt.occurrence_key, &reason).await?;
+                let local = self.reject(occurrence_key, &reason).await?;
                 Ok(ProductionDispatchReceipt {
                     request,
                     state: LocalOutcomeState::Rejected,
@@ -841,9 +962,16 @@ pub trait ProductionOutboxTarget: Send + Sync {
     fn dispatch<'a>(&'a self, request: ProductionDispatchRequest) -> ProductionDispatchFuture<'a>;
 }
 
-/// Dispatcher that can only be used with an explicit target attachment.
+/// Production target with a stable destination identity that can be bound into
+/// a `FinalUseBinding`.
+pub trait FinalUseProductionOutboxTarget: ProductionOutboxTarget {
+    fn destination_id(&self) -> &str;
+}
+
+/// Legacy direct dispatcher retained only for in-crate qualification tests.
+/// Product composition must use `ProductionFinalUseOutboxDispatcher`.
 #[derive(Clone)]
-pub struct ProductionOutboxDispatcher {
+pub(crate) struct ProductionOutboxDispatcher {
     target: Arc<dyn ProductionOutboxTarget>,
 }
 
@@ -866,6 +994,50 @@ impl ProductionOutboxDispatcher {
         receipt: ProductionQueuedReceipt,
     ) -> Result<ProductionDispatchReceipt, ProductionWriterError> {
         writer.dispatch_target(self.target.as_ref(), receipt).await
+    }
+}
+
+/// Production dispatcher that consumes a kernel-owned final-use grant exactly
+/// at the attached destination boundary.
+#[derive(Clone)]
+pub struct ProductionFinalUseOutboxDispatcher {
+    final_use: FinalUseAuthority,
+    target: Arc<dyn FinalUseProductionOutboxTarget>,
+}
+
+impl fmt::Debug for ProductionFinalUseOutboxDispatcher {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("ProductionFinalUseOutboxDispatcher")
+            .field("destination_id", &self.target.destination_id())
+            .finish_non_exhaustive()
+    }
+}
+
+impl ProductionFinalUseOutboxDispatcher {
+    pub fn attach(
+        final_use: FinalUseAuthority,
+        target: Arc<dyn FinalUseProductionOutboxTarget>,
+    ) -> Self {
+        Self { final_use, target }
+    }
+
+    pub async fn dispatch(
+        &self,
+        writer: &ProductionDurableWriter,
+        signed: &SignedFinalUseGrant,
+        expected: &FinalUseBinding,
+        receipt: ProductionQueuedReceipt,
+    ) -> Result<ProductionDispatchReceipt, ProductionWriterError> {
+        writer
+            .dispatch_final_use_target(
+                &self.final_use,
+                self.target.as_ref(),
+                signed,
+                expected,
+                receipt,
+            )
+            .await
     }
 }
 
@@ -989,6 +1161,52 @@ impl ProductionRecoveryReceipt {
             external_effect: false,
             physical_power_loss_claim: false,
         }
+    }
+}
+
+fn verify_final_use_dispatch_binding(
+    owner: &AgentId,
+    destination_id: &str,
+    request: &ProductionDispatchRequest,
+    expected: &FinalUseBinding,
+) -> Result<(), ProductionWriterError> {
+    if expected.subject_id != owner.as_str()
+        || expected.destination_id != destination_id
+        || expected.payload_sha256 != digest_bytes(&request.payload_sha256)?
+        || expected.request_sha256 != digest_bytes(&request.operation_digest)?
+    {
+        return Err(ProductionWriterError::FinalUse(
+            FinalUseError::BindingMismatch,
+        ));
+    }
+    Ok(())
+}
+
+fn digest_bytes(digest: &Sha256Digest) -> Result<[u8; 32], ProductionWriterError> {
+    let source = digest.as_str().as_bytes();
+    if source.len() != 64 {
+        return Err(ProductionWriterError::Invalid(
+            "internal SHA-256 digest length is invalid".to_string(),
+        ));
+    }
+    let mut output = [0_u8; 32];
+    for (index, byte) in output.iter_mut().enumerate() {
+        let high = decode_hex(source[index * 2]).ok_or_else(|| {
+            ProductionWriterError::Invalid("internal SHA-256 digest is invalid".to_string())
+        })?;
+        let low = decode_hex(source[index * 2 + 1]).ok_or_else(|| {
+            ProductionWriterError::Invalid("internal SHA-256 digest is invalid".to_string())
+        })?;
+        *byte = (high << 4) | low;
+    }
+    Ok(output)
+}
+
+fn decode_hex(byte: u8) -> Option<u8> {
+    match byte {
+        b'0'..=b'9' => Some(byte - b'0'),
+        b'a'..=b'f' => Some(byte - b'a' + 10),
+        _ => None,
     }
 }
 
