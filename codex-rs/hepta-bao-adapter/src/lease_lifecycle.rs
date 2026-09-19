@@ -316,6 +316,16 @@ impl SecretLeaseRegistry {
         {
             return Err(LeaseRegistryError::CapacityExceeded);
         }
+        if state.leases.values().any(|lease| {
+            lease.subject_id == request.subject_id
+                && lease.consumer_id == request.consumer_id
+                && lease.namespace == request.namespace
+                && lease.mount == request.mount
+                && lease.path == request.path
+                && lease.state == SecretLeaseState::ReconciliationRequired
+        }) {
+            return Err(LeaseRegistryError::UnresolvedLeaseExists);
+        }
         let handle = lease_handle(request_sha256, &request.operation_id);
         if state.leases.contains_key(&handle) {
             return Err(LeaseRegistryError::InvalidState);
@@ -419,14 +429,7 @@ impl SecretLeaseRegistry {
                 }
             }
             LeaseOperationKind::Reconcile => {
-                if !matches!(
-                    current.state,
-                    SecretLeaseState::ReconciliationRequired
-                        | SecretLeaseState::Issuing
-                        | SecretLeaseState::IssuedPendingDelivery
-                        | SecretLeaseState::Renewing
-                        | SecretLeaseState::RevokePending
-                ) {
+                if current.state != SecretLeaseState::ReconciliationRequired {
                     return Err(LeaseRegistryError::InvalidTransition);
                 }
                 if current.provider_lease_id.is_none() {
@@ -1113,6 +1116,7 @@ pub enum LeaseFailureKind {
     ProviderDenied,
     NotFound,
     ConfirmedAbsent,
+    ProviderUnavailable,
 }
 
 #[derive(Clone)]
@@ -1495,6 +1499,7 @@ pub enum LeaseRegistryError {
     MissingProviderLease,
     InvalidTransition,
     BindingMismatch,
+    UnresolvedLeaseExists,
 }
 
 impl fmt::Display for LeaseRegistryError {
@@ -1851,8 +1856,30 @@ impl BaoClient {
                 return Err(BaoLeaseError::ResponseTooLarge);
             }
         }
-        let issued_at_ms = now_ms()?;
-        let expires_at_ms = expiry_from_ttl(issued_at_ms, lease_duration)?;
+        let issued_at_ms = match now_ms() {
+            Ok(value) => value,
+            Err(error) => {
+                registry.mark_reconciliation(
+                    &request.operation_id,
+                    request_sha256,
+                    LeaseOperationKind::Issue,
+                    ReconciliationReason::OrphanedActiveLease,
+                )?;
+                return Err(error);
+            }
+        };
+        let expires_at_ms = match expiry_from_ttl(issued_at_ms, lease_duration) {
+            Ok(value) => value,
+            Err(error) => {
+                registry.mark_reconciliation(
+                    &request.operation_id,
+                    request_sha256,
+                    LeaseOperationKind::Issue,
+                    ReconciliationReason::OrphanedActiveLease,
+                )?;
+                return Err(error);
+            }
+        };
         registry.observe_issue_ready(
             &request.operation_id,
             request_sha256,
@@ -1994,9 +2021,30 @@ impl BaoClient {
                 return Err(BaoLeaseError::ProviderUnavailable);
             }
         }
-        let body = read_bounded_body(response).await?;
-        let decoded: LeaseMutationResponse =
-            serde_json::from_slice(&body).map_err(|_| BaoLeaseError::InvalidResponse)?;
+        let body = match read_bounded_body(response).await {
+            Ok(body) => body,
+            Err(error) => {
+                registry.mark_reconciliation(
+                    &request.operation_id,
+                    binding.request_sha256,
+                    LeaseOperationKind::Renew,
+                    ReconciliationReason::RenewOutcomeUnknown,
+                )?;
+                return Err(error);
+            }
+        };
+        let decoded: LeaseMutationResponse = match serde_json::from_slice(&body) {
+            Ok(decoded) => decoded,
+            Err(_) => {
+                registry.mark_reconciliation(
+                    &request.operation_id,
+                    binding.request_sha256,
+                    LeaseOperationKind::Renew,
+                    ReconciliationReason::RenewOutcomeUnknown,
+                )?;
+                return Err(BaoLeaseError::InvalidResponse);
+            }
+        };
         if decoded.lease_id.as_str() != provider_id.as_str()
             || decoded.lease_duration == 0
             || decoded.lease_duration > MAX_LEASE_DURATION_SECONDS
@@ -2009,7 +2057,30 @@ impl BaoClient {
             )?;
             return Err(BaoLeaseError::ProviderLeaseMismatch);
         }
-        let expires_at_ms = expiry_from_ttl(now_ms()?, decoded.lease_duration)?;
+        let renewed_at_ms = match now_ms() {
+            Ok(value) => value,
+            Err(error) => {
+                registry.mark_reconciliation(
+                    &request.operation_id,
+                    binding.request_sha256,
+                    LeaseOperationKind::Renew,
+                    ReconciliationReason::RenewOutcomeUnknown,
+                )?;
+                return Err(error);
+            }
+        };
+        let expires_at_ms = match expiry_from_ttl(renewed_at_ms, decoded.lease_duration) {
+            Ok(value) => value,
+            Err(error) => {
+                registry.mark_reconciliation(
+                    &request.operation_id,
+                    binding.request_sha256,
+                    LeaseOperationKind::Renew,
+                    ReconciliationReason::RenewOutcomeUnknown,
+                )?;
+                return Err(error);
+            }
+        };
         let lease = registry.complete_renew(
             &request.operation_id,
             binding.request_sha256,
@@ -2193,16 +2264,37 @@ impl BaoClient {
                     &request.operation_id,
                     binding.request_sha256,
                     LeaseOperationKind::Reconcile,
-                    LeaseFailureKind::NotFound,
+                    LeaseFailureKind::ProviderUnavailable,
                 )?;
                 return Err(transport_error(error));
             }
         };
         match response.status() {
             StatusCode::OK => {
-                let body = read_bounded_body(response).await?;
-                let decoded: LeaseLookupResponse =
-                    serde_json::from_slice(&body).map_err(|_| BaoLeaseError::InvalidResponse)?;
+                let body = match read_bounded_body(response).await {
+                    Ok(body) => body,
+                    Err(error) => {
+                        registry.mark_explicit_failure(
+                            &request.operation_id,
+                            binding.request_sha256,
+                            LeaseOperationKind::Reconcile,
+                            LeaseFailureKind::ProviderUnavailable,
+                        )?;
+                        return Err(error);
+                    }
+                };
+                let decoded: LeaseLookupResponse = match serde_json::from_slice(&body) {
+                    Ok(decoded) => decoded,
+                    Err(_) => {
+                        registry.mark_explicit_failure(
+                            &request.operation_id,
+                            binding.request_sha256,
+                            LeaseOperationKind::Reconcile,
+                            LeaseFailureKind::ProviderUnavailable,
+                        )?;
+                        return Err(BaoLeaseError::InvalidResponse);
+                    }
+                };
                 if decoded.data.id.as_str() != provider_id.as_str()
                     || decoded.data.ttl > MAX_LEASE_DURATION_SECONDS
                 {
@@ -2210,14 +2302,43 @@ impl BaoClient {
                         &request.operation_id,
                         binding.request_sha256,
                         LeaseOperationKind::Reconcile,
-                        LeaseFailureKind::NotFound,
+                        LeaseFailureKind::ProviderUnavailable,
                     )?;
                     return Err(BaoLeaseError::ProviderLeaseMismatch);
                 }
-                authority
-                    .with_verified_use(verified, &binding, || ())
-                    .map_err(BaoLeaseError::Authority)?;
-                let expires_at_ms = expiry_from_ttl(now_ms()?, decoded.data.ttl)?;
+                if let Err(error) = authority.with_verified_use(verified, &binding, || ()) {
+                    registry.mark_explicit_failure(
+                        &request.operation_id,
+                        binding.request_sha256,
+                        LeaseOperationKind::Reconcile,
+                        LeaseFailureKind::ProviderUnavailable,
+                    )?;
+                    return Err(BaoLeaseError::Authority(error));
+                }
+                let observed_at_ms = match now_ms() {
+                    Ok(value) => value,
+                    Err(error) => {
+                        registry.mark_explicit_failure(
+                            &request.operation_id,
+                            binding.request_sha256,
+                            LeaseOperationKind::Reconcile,
+                            LeaseFailureKind::ProviderUnavailable,
+                        )?;
+                        return Err(error);
+                    }
+                };
+                let expires_at_ms = match expiry_from_ttl(observed_at_ms, decoded.data.ttl) {
+                    Ok(value) => value,
+                    Err(error) => {
+                        registry.mark_explicit_failure(
+                            &request.operation_id,
+                            binding.request_sha256,
+                            LeaseOperationKind::Reconcile,
+                            LeaseFailureKind::ProviderUnavailable,
+                        )?;
+                        return Err(error);
+                    }
+                };
                 let lease = registry.complete_reconcile_present(
                     &request.operation_id,
                     binding.request_sha256,
@@ -2231,9 +2352,15 @@ impl BaoClient {
                 })
             }
             StatusCode::NOT_FOUND => {
-                authority
-                    .with_verified_use(verified, &binding, || ())
-                    .map_err(BaoLeaseError::Authority)?;
+                if let Err(error) = authority.with_verified_use(verified, &binding, || ()) {
+                    registry.mark_explicit_failure(
+                        &request.operation_id,
+                        binding.request_sha256,
+                        LeaseOperationKind::Reconcile,
+                        LeaseFailureKind::ProviderUnavailable,
+                    )?;
+                    return Err(BaoLeaseError::Authority(error));
+                }
                 let lease = registry.complete_reconcile_absent(
                     &request.operation_id,
                     binding.request_sha256,
@@ -2258,7 +2385,7 @@ impl BaoClient {
                     &request.operation_id,
                     binding.request_sha256,
                     LeaseOperationKind::Reconcile,
-                    LeaseFailureKind::NotFound,
+                    LeaseFailureKind::ProviderUnavailable,
                 )?;
                 Err(BaoLeaseError::ProviderUnavailable)
             }
