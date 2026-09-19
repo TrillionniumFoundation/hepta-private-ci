@@ -43,9 +43,9 @@ use crate::framing::digest_many;
 use crate::framing::path_identity_bytes;
 use crate::framing::workspace_digest;
 
-const FEDERATED_COGNITIVE_SOURCE: &str = "hepta_cognitive_federation_v1";
-const COMBINED_COGNITIVE_SOURCE: &str = "hepta_cognitive_combined_v1";
-const FEDERATED_ATTACHMENT_SCHEMA_VERSION: u32 = 1;
+const FEDERATED_COGNITIVE_SOURCE: &str = "hepta_cognitive_federation_v2";
+const COMBINED_COGNITIVE_SOURCE: &str = "hepta_cognitive_combined_v2";
+const FEDERATED_ATTACHMENT_SCHEMA_VERSION: u32 = 2;
 const MAX_AUTO_CITATIONS_PER_MEMORY: usize = 8;
 const MAX_COMBINED_CITATIONS_PER_MEMORY: usize = 1;
 
@@ -501,7 +501,7 @@ fn combine_cognitive_materials(
     }
     let content_sha256 = Sha256Digest::for_bytes(content.as_bytes());
     let source_binding_sha256 = digest_many(
-        b"hepta:cognitive:combined-ephemeral-source-binding:v1",
+        b"hepta:cognitive:combined-ephemeral-source-binding:v2",
         &[
             input.thread_id.as_bytes(),
             input.turn_id.as_bytes(),
@@ -721,7 +721,7 @@ fn federation_source_binding(
     let serialized = serde_json::to_vec(bindings).ok()?;
     let serialized_coverage = serde_json::to_vec(coverage).ok()?;
     Some(digest_many(
-        b"hepta:cognitive:federated-ephemeral-source-binding:v1",
+        b"hepta:cognitive:federated-ephemeral-source-binding:v2",
         &[
             thread_id.as_bytes(),
             turn_id.as_bytes(),
