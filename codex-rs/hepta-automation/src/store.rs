@@ -329,7 +329,7 @@ impl AutomationStore {
             let resume_at_ms = resume_at_ms.ok_or(AutomationError::Invalid)?;
             sqlx::query(
                 "UPDATE automation_tasks
-                 SET state = 'enabled', next_run_at_ms = ?, updated_at_ms = ?
+                 SET state = 'enabled', next_run_at_ms = ?, catch_up_remaining = 0, updated_at_ms = ?
                  WHERE task_id = ? AND owner_agent_id = ? AND state = 'disabled'
                    AND NOT EXISTS (
                        SELECT 1 FROM automation_runs r
@@ -349,7 +349,7 @@ impl AutomationStore {
             }
             let changed = sqlx::query(
                 "UPDATE automation_tasks
-                 SET state = 'disabled', next_run_at_ms = NULL, updated_at_ms = ?
+                 SET state = 'disabled', next_run_at_ms = NULL, catch_up_remaining = 0, updated_at_ms = ?
                  WHERE task_id = ? AND owner_agent_id = ? AND state = 'enabled'",
             )
             .bind(to_i64(now_ms)?)
