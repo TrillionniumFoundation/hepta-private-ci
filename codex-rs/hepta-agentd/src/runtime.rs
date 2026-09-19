@@ -43,6 +43,9 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     let trust_file = config
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
+    let evidence_trust_file = config
+        .evidence_trust_file()
+        .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
@@ -72,6 +75,15 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             .authbus
             .set(Arc::new(host))
             .map_err(|_| AgentdError::Protocol("AuthBus host already attached".to_string()))?;
+    }
+    if let Some(path) = evidence_trust_file {
+        state.refresh_generation()?;
+        let host = crate::evidence_host::EvidenceHost::open(&identity, path).await?;
+        state.refresh_generation()?;
+        state
+            .evidence
+            .set(Arc::new(host))
+            .map_err(|_| AgentdError::Protocol("kernel evidence host already attached".to_string()))?;
     }
     let cognitive_layout = identity.layout.clone();
     let cognitive_runtime = open_cognitive_runtime_after_generation_fence(&state, || async move {
