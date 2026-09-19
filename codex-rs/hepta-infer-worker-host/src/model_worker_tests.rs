@@ -188,6 +188,7 @@ fn neuron_feature_request() -> NeuronFeatureRequest {
         authorization: request(),
         encoder_digest: "a".repeat(64),
         head_digest: "b".repeat(64),
+        weights_digest: manifest().weights_digest,
         input_digest: "c".repeat(64),
         feature_vector_q24: vec![1 << 22, -(1 << 21)],
         expected_output_width: 5,
@@ -244,4 +245,32 @@ fn neuron_feature_path_rejects_payload_drift_and_driver_identity_drift() {
         worker.run_neuron_features(100, "model.1", neuron_feature_request()),
         Err(Error::FeatureOutputMismatch)
     );
+}
+
+
+#[test]
+fn neuron_feature_worker_projects_exact_inference_control_receipt() {
+    let mut worker =
+        InferenceWorker::new(100, "worker.3".to_string(), 3, grant(), Driver::default())
+            .expect("worker");
+    let selected = manifest();
+    worker.load_model(100, selected.clone()).expect("load");
+    let receipt = worker
+        .run_neuron_features_receipt(100, "model.1", neuron_feature_request())
+        .expect("typed feature receipt");
+    assert_eq!(
+        receipt.runtime_tuple.weights_digest.to_string(),
+        selected.weights_digest
+    );
+    assert_eq!(
+        receipt.runtime_tuple.tokenizer_digest.to_string(),
+        selected.tokenizer_digest
+    );
+    assert_eq!(receipt.drive_q24, vec![1 << 24; 5]);
+    assert_eq!(
+        receipt.status,
+        codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded
+    );
+    assert!(!receipt.receipt_digest.is_zero());
+    assert!(!receipt.authority.grants_any());
 }
