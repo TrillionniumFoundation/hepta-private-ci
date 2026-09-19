@@ -12,7 +12,6 @@ use codex_hepta_wire::TypedPayloadError;
 use codex_hepta_wire::TypedWirePayload;
 use codex_hepta_wire::UnknownFieldPolicy;
 use codex_hepta_wire::WireEnvelopeV2;
-use codex_hepta_wire::encode_typed;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -73,7 +72,11 @@ pub fn encode_codex_operation_intent_wire_v2(
         lease_payload_digest: intent.lease_payload_digest.to_string(),
         deadline_ms: intent.deadline_ms,
     };
-    encode_typed(producer, generation, &value)
+    let mut registry = SchemaRegistry::new();
+    registry
+        .register(codex_operation_intent_wire_schema_v2().map_err(TypedPayloadError::Schema)?)
+        .map_err(TypedPayloadError::Schema)?;
+    registry.encode_typed(producer, generation, &value)
 }
 
 pub fn decode_codex_operation_intent_wire_v2(
