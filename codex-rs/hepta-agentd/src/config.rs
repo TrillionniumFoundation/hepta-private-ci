@@ -38,6 +38,7 @@ pub struct AgentdConfig {
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    cognitive_read_authority: Option<std::sync::Arc<dyn crate::CurrentCognitiveReadAuthority>>,
 }
 
 impl AgentdConfig {
@@ -143,6 +144,7 @@ impl AgentdConfig {
             _writer_lock: writer_lock,
             authbus_trust_file: None,
             cognitive_ranker: None,
+            cognitive_read_authority: None,
         })
     }
 
@@ -178,6 +180,27 @@ impl AgentdConfig {
 
     pub(crate) fn cognitive_ranker(&self) -> Option<std::sync::Arc<crate::PinnedCognitiveRanker>> {
         self.cognitive_ranker.clone()
+    }
+
+    /// Attach the independently owned current-authority capability required by
+    /// production cognitive reads. No default is synthesized from process state.
+    pub fn with_cognitive_read_authority(
+        mut self,
+        authority: std::sync::Arc<dyn crate::CurrentCognitiveReadAuthority>,
+    ) -> Result<Self, AgentdError> {
+        if self.cognitive_read_authority.is_some() {
+            return Err(AgentdError::Invalid(
+                "cognitive read authority already configured".to_string(),
+            ));
+        }
+        self.cognitive_read_authority = Some(authority);
+        Ok(self)
+    }
+
+    pub(crate) fn cognitive_read_authority(
+        &self,
+    ) -> Option<std::sync::Arc<dyn crate::CurrentCognitiveReadAuthority>> {
+        self.cognitive_read_authority.clone()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {
