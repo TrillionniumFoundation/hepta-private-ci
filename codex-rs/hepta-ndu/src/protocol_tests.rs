@@ -136,10 +136,8 @@ fn zero_context_digest_rejects_before_protocol_publication() {
 
     let mut invalid = valid;
     invalid.objective_digest = Digest32::ZERO;
-    let error = bind_solver_iteration_receipt_v1(
-        &invalid,
-        receipts.first().expect("first solver receipt"),
-    )
-    .expect_err("zero objective digest must reject");
+    let error =
+        bind_solver_iteration_receipt_v1(&invalid, receipts.first().expect("first solver receipt"))
+            .expect_err("zero objective digest must reject");
     assert_eq!(error.code(), "NDU-E002");
 }
