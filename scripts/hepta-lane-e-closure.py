@@ -47,6 +47,8 @@ EXPECTED_OPERATIONS = {
         "ProductionLedgerWriter::freeze_dataset_from_ledger",
         "ProductionLedgerWriter::append_unlearning_lineage",
         "ProductionLedgerWriter::current_trust_digest",
+        "verify_learning_trust_manifest",
+        "RootedLearningEvidenceTrustProviderV1::rotate",
         "DurableAnchorWitness::publish",
         "build_ledger_index_checkpoint",
         "measure_ledger_recovery_work",
