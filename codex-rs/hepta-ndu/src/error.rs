@@ -9,6 +9,7 @@ pub enum NduError {
     DimensionLimitExceeded,
     RequiredOrganLimitExceeded,
     EmptyObjectiveDigest,
+    EmptyAxisRegistryDigest,
     EmptyProtocolDigest(&'static str),
     EmptySupportDigest { candidate: String, organ: String },
     MixedObjective,
@@ -29,8 +30,13 @@ pub enum NduError {
     IncompleteScalarization,
     InvalidWeight(String),
     InvalidEta,
+    PreferenceDimensionLimitExceeded,
+    PreferenceValueOutOfRange(String),
     DimensionMismatch,
     StateDigestMismatch,
+    SolverUnavailable,
+    ProtocolContextMismatch,
+    InvalidHierarchyRelation(String),
     SimultaneousHierarchyUpdate(u64),
     Arithmetic,
 }
@@ -52,7 +58,8 @@ impl NduError {
             Self::DuplicateOrganContribution { .. } | Self::MissingRequiredOrgan { .. } => {
                 "NDU-E003"
             }
-            Self::MissingAxis { .. }
+            Self::EmptyAxisRegistryDigest
+            | Self::MissingAxis { .. }
             | Self::UnknownAxis(_)
             | Self::DuplicateAxis(_)
             | Self::NegativeCeiling(_)
@@ -64,9 +71,15 @@ impl NduError {
             Self::AbstainInfeasible => "NDU-E005",
             Self::MissingAbstainCandidate => "NDU-E006",
             Self::IncompleteScalarization | Self::InvalidWeight(_) => "NDU-E007",
-            Self::InvalidEta | Self::DimensionMismatch | Self::StateDigestMismatch => "NDU-E008",
-            Self::SimultaneousHierarchyUpdate(_) => "NDU-E009",
+            Self::InvalidEta
+            | Self::PreferenceDimensionLimitExceeded
+            | Self::PreferenceValueOutOfRange(_)
+            | Self::DimensionMismatch
+            | Self::StateDigestMismatch => "NDU-E008",
+            Self::InvalidHierarchyRelation(_) | Self::SimultaneousHierarchyUpdate(_) => "NDU-E009",
             Self::Arithmetic => "NDU-E010",
+            Self::SolverUnavailable => "NDU-E011",
+            Self::ProtocolContextMismatch => "NDU-E012",
         }
     }
 }
@@ -84,6 +97,9 @@ impl fmt::Display for NduError {
                 formatter.write_str("required organ set exceeds 32 entries")
             }
             Self::EmptyObjectiveDigest => formatter.write_str("objective digest must not be zero"),
+            Self::EmptyAxisRegistryDigest => {
+                formatter.write_str("utility profile axis registry digest must not be zero")
+            }
             Self::EmptyProtocolDigest(field) => {
                 write!(formatter, "protocol digest must not be zero: {field}")
             }
@@ -146,11 +162,26 @@ impl fmt::Display for NduError {
             Self::InvalidEta => {
                 formatter.write_str("eta must be in the closed interval [1/16, 1/4]")
             }
+            Self::PreferenceDimensionLimitExceeded => {
+                formatter.write_str("preference dimension limit exceeds 64")
+            }
+            Self::PreferenceValueOutOfRange(axis) => {
+                write!(formatter, "preference value must be in [-1,1]: {axis}")
+            }
             Self::DimensionMismatch => formatter.write_str("preference dimensions do not match"),
             Self::StateDigestMismatch => formatter.write_str("preference state digest mismatch"),
+            Self::SolverUnavailable => {
+                formatter.write_str("preference solve exhausted the bounded iteration budget")
+            }
+            Self::ProtocolContextMismatch => {
+                formatter.write_str("solver receipt context does not match publication context")
+            }
+            Self::InvalidHierarchyRelation(subject) => {
+                write!(formatter, "invalid subject hierarchy relation: {subject}")
+            }
             Self::SimultaneousHierarchyUpdate(generation) => write!(
                 formatter,
-                "multiple hierarchy levels update in generation {generation}"
+                "related parent and child update in generation {generation}"
             ),
             Self::Arithmetic => formatter.write_str("deterministic Q32 arithmetic failed"),
         }

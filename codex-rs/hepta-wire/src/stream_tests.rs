@@ -60,13 +60,8 @@ fn consecutive_v1_and_v2_frames_decode_from_one_chunk() -> Result<(), Box<dyn Er
 
 #[test]
 fn oversized_advertised_payload_rejects_at_header_boundary() -> Result<(), Box<dyn Error>> {
-    let mut header = WireEnvelopeV2::new(
-        stable("s")?,
-        stable("p")?,
-        Generation::new(1)?,
-        vec![1],
-    )?
-    .encode();
+    let mut header =
+        WireEnvelopeV2::new(stable("s")?, stable("p")?, Generation::new(1)?, vec![1])?.encode();
     header[50..54].copy_from_slice(&((MAX_WIRE_PAYLOAD_BYTES as u32) + 1).to_be_bytes());
     header.truncate(WIRE_HEADER_BYTES);
 
@@ -88,15 +83,9 @@ fn buffer_limit_rejects_before_copying_unbounded_chunk() {
 
 #[test]
 fn blocking_reader_validates_header_before_reading_body() -> Result<(), Box<dyn Error>> {
-    let mut oversized_header = WireEnvelopeV2::new(
-        stable("s")?,
-        stable("p")?,
-        Generation::new(1)?,
-        vec![1],
-    )?
-    .encode();
-    oversized_header[50..54]
-        .copy_from_slice(&((MAX_WIRE_PAYLOAD_BYTES as u32) + 1).to_be_bytes());
+    let mut oversized_header =
+        WireEnvelopeV2::new(stable("s")?, stable("p")?, Generation::new(1)?, vec![1])?.encode();
+    oversized_header[50..54].copy_from_slice(&((MAX_WIRE_PAYLOAD_BYTES as u32) + 1).to_be_bytes());
     oversized_header.truncate(WIRE_HEADER_BYTES);
 
     let mut cursor = std::io::Cursor::new(oversized_header);

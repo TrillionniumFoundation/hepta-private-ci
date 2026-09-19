@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """Generate and verify one implementation map for every registered module.
 
-Maps are source-navigation evidence.  They deliberately distinguish a native
-entrypoint from a composed production caller; an entrypoint never grants
-runtime, effect, acceptance, promotion, or release authority.
+Maps are source-navigation evidence.  Their shared sourceBase is a historical
+map-generation provenance baseline, not a self-referential claim that a
+committed map equals current HEAD. Current source identity is established by
+exact-candidate and deterministic synthetic-merge evidence. Maps deliberately
+distinguish a native entrypoint from a composed product caller; an entrypoint
+never grants runtime, effect, acceptance, promotion, or release authority.
 """
 
 from __future__ import annotations
@@ -17,10 +20,11 @@ from pathlib import Path
 from hepta_module_source_roots import resolve_source_roots
 
 ROOT = Path(__file__).resolve().parents[1]
+SOURCE_BASE_SEMANTICS = "historical_map_generation_provenance_baseline_not_current_source_proof"
 
 
 def current_source_base() -> dict[str, str]:
-    """Return the immutable source identity used by generated maps."""
+    """Return the current checkout identity used by new map generation/CI."""
     return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
 
 
@@ -91,6 +95,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "schema": "hepta.module-implementation-map.v3",
         "schemaVersion": 3,
         "sourceBase": source_base,
+        "sourceBaseSemantics": SOURCE_BASE_SEMANTICS,
         "laneId": lanes[mid],
         "module": mid,
         "owner": module["owner"],
@@ -182,6 +187,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
             "sourceBase": row.get("sourceBase") or source_base,
+            "sourceBaseSemantics": row.get("sourceBaseSemantics", SOURCE_BASE_SEMANTICS),
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -317,6 +323,9 @@ def verify():
             failures.append(f"{mid}: source base")
         else:
             source_bases.add((source_base["commit"], source_base["tree"]))
+        semantics = row.get("sourceBaseSemantics", SOURCE_BASE_SEMANTICS)
+        if semantics != SOURCE_BASE_SEMANTICS:
+            failures.append(f"{mid}: source base semantics")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -347,6 +356,15 @@ def verify():
             failures.append(f"{mid}: claim boundary")
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+    elif source_bases:
+        baseline_commit, baseline_tree = next(iter(source_bases))
+        try:
+            observed_tree = git("rev-parse", f"{baseline_commit}^{{tree}}")
+        except subprocess.CalledProcessError:
+            failures.append("maps: historical source base commit is unavailable")
+        else:
+            if observed_tree != baseline_tree:
+                failures.append("maps: historical source base commit/tree mismatch")
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
@@ -355,6 +373,12 @@ def verify():
                 "status": "PASS_HEPTA_IMPLEMENTATION_MAPS",
                 "modules": len(modules),
                 "maps": len(modules),
+                "sourceBaseSemantics": SOURCE_BASE_SEMANTICS,
+                "historicalSourceBase": {
+                    "commit": next(iter(source_bases))[0],
+                    "tree": next(iter(source_bases))[1],
+                },
+                "currentSource": current_source_base(),
                 "productionImplementationProved": False,
             },
             sort_keys=True,
