@@ -104,9 +104,10 @@ fn capability_snapshot(with_optional: bool) -> CapabilitySnapshotV2 {
 }
 
 fn request(with_optional: bool) -> LaneFRunRequestV3 {
+    let snapshot = capability_snapshot(with_optional);
     let candidates = build_legal_candidates_v1(
         id("candidate-set"),
-        digest("state"),
+        snapshot.digest(),
         digest("grammar"),
         700_000,
         vec![LegalActionCandidateV1 {
@@ -120,7 +121,7 @@ fn request(with_optional: bool) -> LaneFRunRequestV3 {
     LaneFRunRequestV3 {
         run_id: id("run:v3"),
         request_digest: digest("request"),
-        snapshot: capability_snapshot(with_optional),
+        snapshot,
         legal_candidates: candidates,
         budget: LaneFBudgetV3 {
             total_micros: 22_000_000,
@@ -162,12 +163,17 @@ impl Ports {
                 evidence_digest: digest(&format!("failure:{stage:?}")),
             });
         }
+        let output_digest = if input.stage == LaneFStageV3::ObjectiveValidated {
+            digest("objective")
+        } else {
+            digest(&format!("output:{stage:?}", stage = input.stage))
+        };
         Ok(PortReceiptV3 {
             stage: input.stage,
             producer: id(producer),
             snapshot_digest: input.snapshot_digest,
             predecessor_digest: input.predecessor_digest,
-            output_digest: digest(&format!("output:{stage:?}", stage = input.stage)),
+            output_digest,
             decision: if input.stage == LaneFStageV3::IntuitionDecided {
                 self.intuition
             } else {
@@ -331,4 +337,49 @@ fn abstain_skips_context_and_agentd_but_still_records_learning() {
     assert!(!ports.calls.contains(&LaneFStageV3::ContextCompiled));
     assert!(!ports.calls.contains(&LaneFStageV3::HostHandoffAccepted));
     assert_eq!(ports.calls.last(), Some(&LaneFStageV3::LearningRecorded));
+}
+
+#[test]
+fn candidate_set_must_bind_the_exact_capability_snapshot() {
+    let mut value = request(false);
+    value.legal_candidates = build_legal_candidates_v1(
+        id("candidate-set:drift"),
+        digest("different-state"),
+        digest("grammar"),
+        700_000,
+        vec![LegalActionCandidateV1 {
+            candidate_id: id("action.read"),
+            action_digest: digest("action"),
+            support_digest: digest("support"),
+            support_ppm: 900_000,
+        }],
+    )
+    .expect("drifted candidate set");
+    let mut ports = Ports::default();
+    assert_eq!(
+        run_composition_v3(value, &mut ports),
+        Err(PipelineErrorV3::CandidateStateMismatch)
+    );
+    assert!(ports.calls.is_empty());
+}
+
+#[test]
+fn optional_rejection_is_terminal_and_cannot_be_downgraded_to_fallback() {
+    let mut ports = Ports {
+        fail: Some((
+            LaneFStageV3::NeuralSignalCollected,
+            PortFailureClassV3::Rejected,
+        )),
+        ..Ports::default()
+    };
+    let receipt = run_composition_v3(request(true), &mut ports).expect("terminal receipt");
+    assert_eq!(
+        receipt.disposition,
+        PipelineDispositionV3::Failed(PortFailureClassV3::Rejected)
+    );
+    assert_eq!(
+        receipt.stages.last().map(|trace| trace.stage),
+        Some(LaneFStageV3::NeuralSignalCollected)
+    );
+    assert!(!ports.calls.contains(&LaneFStageV3::PromptPortfolioBuilt));
 }
