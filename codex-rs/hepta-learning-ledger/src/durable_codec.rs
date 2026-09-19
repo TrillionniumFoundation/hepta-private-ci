@@ -158,6 +158,8 @@ pub(crate) fn decode_event(mut input: &[u8]) -> Result<LedgerEvent, DurableLedge
             derived_kind: UnlearningDerivedKindV1::from_tag(reader.byte()?)
                 .ok_or(DurableLedgerError::Corrupt)?,
             predecessor: reader.optional_id()?,
+            upstream_derived_id: reader.optional_id()?,
+            upstream_derived_digest: reader.optional_digest()?,
             authority_id: reader.id()?,
             reason_digest: reader.digest()?,
             source_digest: reader.digest()?,
@@ -197,6 +199,14 @@ impl Reader<'_> {
 
     fn digest(&mut self) -> Result<Digest32, DurableLedgerError> {
         Ok(Digest32::from_array(self.take()?))
+    }
+
+    fn optional_digest(&mut self) -> Result<Option<Digest32>, DurableLedgerError> {
+        match self.byte()? {
+            0 => Ok(None),
+            1 => Ok(Some(self.digest()?)),
+            _ => Err(DurableLedgerError::Corrupt),
+        }
     }
 
     fn principal(&mut self) -> Result<AuthenticatedPrincipalV1, DurableLedgerError> {
