@@ -420,7 +420,6 @@ fn candidate_support_digest_binds_organ_and_contribution_semantics() {
     assert_ne!(first_support, second_support);
 }
 
-
 #[test]
 fn utility_profile_digest_binds_axis_registry_semantics() {
     let first = profile();
