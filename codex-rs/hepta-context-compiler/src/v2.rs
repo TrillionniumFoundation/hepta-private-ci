@@ -174,6 +174,7 @@ pub struct ContextAdmissionBindingV2 {
     pub content_digest: Digest32,
     pub source_digest: Digest32,
     pub generation_vector_digest: Digest32,
+    pub scope_digest: Digest32,
     pub contains_secret: bool,
 }
 
@@ -185,6 +186,7 @@ pub struct ContextAdmissionRecordV2 {
     pub content_digest: Digest32,
     pub source_digest: Digest32,
     pub generation_vector_digest: Digest32,
+    pub scope_digest: Digest32,
     pub contains_secret: bool,
     pub issued_unix_ms: u64,
     pub expires_unix_ms: u64,
@@ -205,6 +207,7 @@ impl ContextAdmissionRecordV2 {
             content_digest: binding.content_digest,
             source_digest: binding.source_digest,
             generation_vector_digest: binding.generation_vector_digest,
+            scope_digest: binding.scope_digest,
             contains_secret: binding.contains_secret,
             issued_unix_ms,
             expires_unix_ms,
@@ -222,6 +225,7 @@ impl ContextAdmissionRecordV2 {
             "admission_generation_vector",
             self.generation_vector_digest,
         )?;
+        ensure_digest("admission_scope", self.scope_digest)?;
         if self.issued_unix_ms == 0 || self.expires_unix_ms <= self.issued_unix_ms {
             return Err(ContextCompilerV2Error::InvalidAdmissionTime(
                 self.admission_id.to_string(),
@@ -243,6 +247,7 @@ impl ContextAdmissionRecordV2 {
         push_digest(&mut bytes, self.content_digest);
         push_digest(&mut bytes, self.source_digest);
         push_digest(&mut bytes, self.generation_vector_digest);
+        push_digest(&mut bytes, self.scope_digest);
         bytes.push(u8::from(self.contains_secret));
         push_u64(&mut bytes, self.issued_unix_ms);
         push_u64(&mut bytes, self.expires_unix_ms);
@@ -385,6 +390,7 @@ pub struct VerifiedAdmissionV2 {
     content_digest: Digest32,
     source_digest: Digest32,
     generation_vector_digest: Digest32,
+    scope_digest: Digest32,
     contains_secret: bool,
     expires_unix_ms: u64,
     verifier_digest: Digest32,
@@ -414,31 +420,29 @@ impl VerifiedAdmissionV2 {
 
     fn validate_for_candidate(
         &self,
-        item_id: &StableId,
-        role: ContextRoleV2,
-        content_digest: Digest32,
-        source_digest: Digest32,
-        generation_vector_digest: Digest32,
+        candidate: &ContextCandidateV2,
+        expected_scope_digest: Digest32,
         expected_verifier_digest: Digest32,
     ) -> Result<(), ContextCompilerV2Error> {
-        if &self.item_id != item_id
-            || self.role != role
-            || self.content_digest != content_digest
-            || self.source_digest != source_digest
-            || self.generation_vector_digest != generation_vector_digest
+        if self.item_id != candidate.item_id
+            || self.role != candidate.role
+            || self.content_digest != candidate.content_digest
+            || self.source_digest != candidate.source_digest
+            || self.generation_vector_digest != candidate.generation_vector_digest
+            || self.scope_digest != expected_scope_digest
         {
             return Err(ContextCompilerV2Error::AdmissionBindingMismatch(
-                item_id.to_string(),
+                candidate.item_id.to_string(),
             ));
         }
         if self.verifier_digest != expected_verifier_digest {
             return Err(ContextCompilerV2Error::AdmissionVerifierMismatch(
-                item_id.to_string(),
+                candidate.item_id.to_string(),
             ));
         }
         if self.contains_secret {
             return Err(ContextCompilerV2Error::SecretRejected(
-                item_id.to_string(),
+                candidate.item_id.to_string(),
             ));
         }
         if self.verification_digest != self.compute_verification_digest() {
@@ -485,6 +489,7 @@ impl VerifiedAdmissionV2 {
         push_digest(&mut bytes, self.content_digest);
         push_digest(&mut bytes, self.source_digest);
         push_digest(&mut bytes, self.generation_vector_digest);
+        push_digest(&mut bytes, self.scope_digest);
         bytes.push(u8::from(self.contains_secret));
         push_u64(&mut bytes, self.expires_unix_ms);
         push_digest(&mut bytes, self.verifier_digest);
@@ -545,6 +550,7 @@ pub fn verify_admission_v2(
         content_digest: record.content_digest,
         source_digest: record.source_digest,
         generation_vector_digest: record.generation_vector_digest,
+        scope_digest: record.scope_digest,
         contains_secret: record.contains_secret,
         expires_unix_ms: record.expires_unix_ms,
         verifier_digest,
@@ -619,6 +625,7 @@ impl ContextCandidateV2 {
     fn validate(
         &self,
         expected_generation_vector_digest: Digest32,
+        expected_scope_digest: Digest32,
         expected_admission_verifier_digest: Digest32,
         profile: &ContextModelProfileV2,
     ) -> Result<(), ContextCompilerV2Error> {
@@ -652,11 +659,8 @@ impl ContextCandidateV2 {
             ));
         }
         self.admission.validate_for_candidate(
-            &self.item_id,
-            self.role,
-            self.content_digest,
-            self.source_digest,
-            self.generation_vector_digest,
+            self,
+            expected_scope_digest,
             expected_admission_verifier_digest,
         )?;
         Ok(())
@@ -676,6 +680,7 @@ pub struct ContextCompilationRequestV2 {
     pub objective_digest: Digest32,
     pub prompt_portfolio_digest: Digest32,
     pub generation_vector_digest: Digest32,
+    pub scope_digest: Digest32,
     pub admission_verifier_digest: Digest32,
     pub model_profile: ContextModelProfileV2,
     pub token_budget: u64,
@@ -690,6 +695,7 @@ pub struct ContextCompilationReceiptV2 {
     objective_digest: Digest32,
     prompt_portfolio_digest: Digest32,
     generation_vector_digest: Digest32,
+    scope_digest: Digest32,
     admission_verifier_digest: Digest32,
     model_profile_digest: Digest32,
     candidate_set_digest: Digest32,
@@ -731,6 +737,11 @@ impl ContextCompilationReceiptV2 {
     }
 
     #[must_use]
+    pub const fn scope_digest(&self) -> Digest32 {
+        self.scope_digest
+    }
+
+    #[must_use]
     pub const fn context_digest(&self) -> Digest32 {
         self.context_digest
     }
@@ -750,6 +761,7 @@ impl ContextCompilationReceiptV2 {
             ("objective", self.objective_digest),
             ("prompt_portfolio", self.prompt_portfolio_digest),
             ("generation_vector", self.generation_vector_digest),
+            ("scope", self.scope_digest),
             ("admission_verifier", self.admission_verifier_digest),
             ("model_profile", self.model_profile_digest),
             ("candidate_set", self.candidate_set_digest),
@@ -785,6 +797,7 @@ impl ContextCompilationReceiptV2 {
             self.objective_digest,
             self.prompt_portfolio_digest,
             self.generation_vector_digest,
+            self.scope_digest,
             self.admission_verifier_digest,
             self.model_profile_digest,
             self.candidate_set_digest,
@@ -863,6 +876,7 @@ pub fn compile_v2(
         ("objective", request.objective_digest),
         ("prompt_portfolio", request.prompt_portfolio_digest),
         ("generation_vector", request.generation_vector_digest),
+        ("scope", request.scope_digest),
         ("admission_verifier", request.admission_verifier_digest),
         ("truncation_policy", request.truncation_policy_digest),
     ] {
@@ -887,6 +901,7 @@ pub fn compile_v2(
     for candidate in request.candidates {
         candidate.validate(
             request.generation_vector_digest,
+            request.scope_digest,
             request.admission_verifier_digest,
             &request.model_profile,
         )?;
@@ -1005,6 +1020,7 @@ pub fn compile_v2(
         objective_digest: request.objective_digest,
         prompt_portfolio_digest: request.prompt_portfolio_digest,
         generation_vector_digest: request.generation_vector_digest,
+        scope_digest: request.scope_digest,
         admission_verifier_digest: request.admission_verifier_digest,
         model_profile_digest,
         candidate_set_digest,
