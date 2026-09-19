@@ -47,7 +47,7 @@ impl NativeExecutionAuthority {
             return Err("authority config path must be absolute".into());
         }
         let mut bytes = Vec::new();
-        std::fs::File::open(path)?
+        open_private_authority_file(path)?
             .take((MAX_AUTHORITY_CONFIG_BYTES + 1) as u64)
             .read_to_end(&mut bytes)?;
         if bytes.len() > MAX_AUTHORITY_CONFIG_BYTES {
@@ -100,6 +100,36 @@ impl NativeExecutionAuthority {
 
     pub(super) fn grant_id(&self) -> &str {
         &self.grant.grant.grant_id
+    }
+}
+
+fn open_private_authority_file(path: &Path) -> Result<std::fs::File> {
+    let before = std::fs::symlink_metadata(path)?;
+    if before.file_type().is_symlink() || !before.is_file() {
+        return Err("authority config must be a regular, non-symlink file".into());
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        use std::os::unix::fs::PermissionsExt;
+
+        if before.permissions().mode() & 0o077 != 0 || before.nlink() != 1 {
+            return Err("authority config must be owner-only and singly linked".into());
+        }
+        let file = std::fs::File::open(path)?;
+        let after = file.metadata()?;
+        if !after.is_file()
+            || after.permissions().mode() & 0o077 != 0
+            || after.nlink() != 1
+            || (before.dev(), before.ino()) != (after.dev(), after.ino())
+        {
+            return Err("authority config changed or is unsafe while opening".into());
+        }
+        return Ok(file);
+    }
+    #[cfg(not(unix))]
+    {
+        std::fs::File::open(path).map_err(Into::into)
     }
 }
 
