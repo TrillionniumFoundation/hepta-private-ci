@@ -681,9 +681,12 @@ pub(crate) async fn verify_qualification_evidence_rows(
     pool: &SqlitePool,
 ) -> Result<(), EvidenceError> {
     let rows = sqlx::query(
-        "SELECT seq, evidence_id, issuer_principal_id, issuer_key_epoch,
+        "SELECT seq, evidence_id, schema_version, candidate_id, source_commit, source_tree,
+                claim_class, receipt_kind, issuer_role, issuer_principal_id, issuer_key_epoch,
                 issuer_signing_identity_sha256, auth_message_id, auth_sequence,
-                auth_expires_at_ms, payload_sha256, envelope_sha256, envelope_json
+                auth_expires_at_ms, payload_sha256, envelope_sha256,
+                predecessor_evidence_id, target_evidence_id, observed_at_ms, expires_at_ms,
+                asset_count, envelope_json
          FROM qualification_evidence ORDER BY seq ASC",
     )
     .fetch_all(pool)
@@ -784,9 +787,12 @@ async fn load_claim_rows(
     claim_class: EvidenceClaimClassV1,
 ) -> Result<Vec<StoredQualificationEvidence>, EvidenceError> {
     let rows = sqlx::query(
-        "SELECT seq, evidence_id, issuer_principal_id, issuer_key_epoch,
+        "SELECT seq, evidence_id, schema_version, candidate_id, source_commit, source_tree,
+                claim_class, receipt_kind, issuer_role, issuer_principal_id, issuer_key_epoch,
                 issuer_signing_identity_sha256, auth_message_id, auth_sequence,
-                auth_expires_at_ms, payload_sha256, envelope_sha256, envelope_json
+                auth_expires_at_ms, payload_sha256, envelope_sha256,
+                predecessor_evidence_id, target_evidence_id, observed_at_ms, expires_at_ms,
+                asset_count, envelope_json
          FROM qualification_evidence
          WHERE candidate_id = ? AND source_commit = ? AND source_tree = ? AND claim_class = ?
          ORDER BY seq ASC LIMIT ?",
@@ -815,9 +821,12 @@ async fn load_evidence_by_id(
     evidence_id: &str,
 ) -> Result<Option<StoredQualificationEvidence>, EvidenceError> {
     let row = sqlx::query(
-        "SELECT seq, evidence_id, issuer_principal_id, issuer_key_epoch,
+        "SELECT seq, evidence_id, schema_version, candidate_id, source_commit, source_tree,
+                claim_class, receipt_kind, issuer_role, issuer_principal_id, issuer_key_epoch,
                 issuer_signing_identity_sha256, auth_message_id, auth_sequence,
-                auth_expires_at_ms, payload_sha256, envelope_sha256, envelope_json
+                auth_expires_at_ms, payload_sha256, envelope_sha256,
+                predecessor_evidence_id, target_evidence_id, observed_at_ms, expires_at_ms,
+                asset_count, envelope_json
          FROM qualification_evidence WHERE evidence_id = ?",
     )
     .bind(evidence_id)
@@ -865,6 +874,39 @@ fn decode_row(row: &SqliteRow) -> Result<StoredQualificationEvidence, EvidenceEr
     if row_evidence_id != envelope.evidence_id.as_str() {
         return Err(EvidenceError::Corrupt(
             "qualification evidence row identity differs from envelope".to_string(),
+        ));
+    }
+    let row_schema: i64 = row.try_get("schema_version").map_err(classify_sqlx_error)?;
+    let row_candidate: String = row.try_get("candidate_id").map_err(classify_sqlx_error)?;
+    let row_commit: String = row.try_get("source_commit").map_err(classify_sqlx_error)?;
+    let row_tree: String = row.try_get("source_tree").map_err(classify_sqlx_error)?;
+    let row_claim: String = row.try_get("claim_class").map_err(classify_sqlx_error)?;
+    let row_kind: String = row.try_get("receipt_kind").map_err(classify_sqlx_error)?;
+    let row_role: String = row.try_get("issuer_role").map_err(classify_sqlx_error)?;
+    let row_predecessor: Option<String> =
+        row.try_get("predecessor_evidence_id").map_err(classify_sqlx_error)?;
+    let row_target: Option<String> =
+        row.try_get("target_evidence_id").map_err(classify_sqlx_error)?;
+    let row_observed = read_u64_blob(row, "observed_at_ms")?;
+    let row_expires = read_optional_u64_blob(row, "expires_at_ms")?;
+    let row_asset_count: i64 = row.try_get("asset_count").map_err(classify_sqlx_error)?;
+    if row_schema != i64::from(envelope.schema_version)
+        || row_candidate != envelope.candidate.candidate_id
+        || row_commit != envelope.candidate.source_commit
+        || row_tree != envelope.candidate.source_tree
+        || row_claim != envelope.claim_class.as_str()
+        || row_kind != envelope.receipt_kind.as_str()
+        || row_role != envelope.issuer_role.as_str()
+        || row_predecessor.as_deref()
+            != envelope.predecessor_evidence_id.as_ref().map(EvidenceId::as_str)
+        || row_target.as_deref()
+            != envelope.target_evidence_id.as_ref().map(EvidenceId::as_str)
+        || row_observed != envelope.observed_unix_ms
+        || row_expires != envelope.expires_unix_ms
+        || row_asset_count != i64::try_from(envelope.asset_digests.len()).unwrap_or(-1)
+    {
+        return Err(EvidenceError::Corrupt(
+            "qualification evidence projection differs from canonical envelope".to_string(),
         ));
     }
     Ok(StoredQualificationEvidence {
@@ -990,6 +1032,21 @@ fn read_u64_blob(row: &SqliteRow, column: &str) -> Result<u64, EvidenceError> {
         .try_into()
         .map_err(|_| EvidenceError::Corrupt(format!("{column} has invalid width")))?;
     Ok(u64::from_be_bytes(bytes))
+}
+
+fn read_optional_u64_blob(
+    row: &SqliteRow,
+    column: &str,
+) -> Result<Option<u64>, EvidenceError> {
+    let bytes: Option<Vec<u8>> = row.try_get(column).map_err(classify_sqlx_error)?;
+    bytes
+        .map(|bytes| {
+            let bytes: [u8; 8] = bytes
+                .try_into()
+                .map_err(|_| EvidenceError::Corrupt(format!("{column} has invalid width")))?;
+            Ok(u64::from_be_bytes(bytes))
+        })
+        .transpose()
 }
 
 fn validate_git_identity(value: &str, label: &str) -> Result<(), String> {
