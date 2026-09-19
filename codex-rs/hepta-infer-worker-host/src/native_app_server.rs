@@ -378,11 +378,21 @@ impl AppServerModelDriver {
             )
             .await;
             interrupt(&mut client, &output).await;
+            let grace = CancellationToken::new();
+            let _ = self
+                .observe(
+                    &mut client,
+                    &mut output,
+                    Instant::now() + INTERRUPT_GRACE,
+                    &grace,
+                    /*owner*/ None,
+                )
+                .await;
             let _ = reconcile_lifecycle_observation(
                 &owner,
                 request_id,
                 lifecycle_revision,
-                None,
+                Some(&output),
             )
             .await;
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
@@ -565,7 +575,7 @@ async fn prepare_lifecycle_cancel(
 async fn reconcile_lifecycle_observation(
     owner: &AgentdClient,
     run_id: &str,
-    fallback_revision: u64,
+    _fallback_revision: u64,
     output: Option<&NativeRunOutput>,
 ) -> std::result::Result<AgentdRunReceipt, AgentdError> {
     let current = owner
@@ -578,7 +588,7 @@ async fn reconcile_lifecycle_observation(
     ) {
         return Ok(current);
     }
-    let revision = current.revision.max(fallback_revision);
+    let revision = current.revision;
     match output {
         Some(output) if output.terminal_observed => {
             let phase = match output.status {
