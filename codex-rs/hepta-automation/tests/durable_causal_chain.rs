@@ -17,7 +17,10 @@ use codex_hepta_automation::AutomationTaskId;
 use codex_hepta_automation::AutomationTaskState;
 use codex_hepta_automation::AutomationTick;
 use codex_hepta_automation::AutomationTurnQueue;
+use codex_hepta_automation::TaskFlowFence;
+use codex_hepta_automation::TaskFlowReconcileOutcome;
 use codex_hepta_automation::TaskFlowRunState;
+use codex_hepta_automation::TaskFlowStepState;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentManifest;
@@ -370,6 +373,19 @@ async fn proven_absent_unknown_dispatch_reuses_same_occurrence_identity() {
         .expect("uncertain row");
 
     // Only an external ReconcileOnly `Missing` proof may open this retry path.
+    let run_before_absence = store
+        .taskflow_run(&first.taskflow_run_id)
+        .await
+        .expect("run before absence")
+        .expect("running TaskFlow");
+    let old_fence = TaskFlowFence::new(
+        run_before_absence.owner_agent_id.clone(),
+        run_before_absence.owner_id.clone().expect("owner id"),
+        run_before_absence.owner_epoch.expect("owner epoch"),
+        run_before_absence.generation.expect("generation"),
+        run_before_absence.fencing_token.clone().expect("fencing token"),
+    )
+    .expect("historical fence");
     let proof_digest = Sha256Digest::for_bytes(b"provider proved stable id absent");
     store
         .reconcile_uncertain_occurrence_absent(
@@ -381,6 +397,22 @@ async fn proven_absent_unknown_dispatch_reuses_same_occurrence_identity() {
         )
         .await
         .expect("release after absence proof");
+    let old_step = store
+        .read_taskflow_step(
+            &first.taskflow_run_id,
+            "codex_turn",
+            first.step_attempt,
+            &old_fence,
+        )
+        .await
+        .expect("read old step")
+        .expect("old step evidence");
+    assert_eq!(old_step.state, TaskFlowStepState::Reconciled);
+    assert_eq!(
+        old_step.final_outcome,
+        Some(TaskFlowReconcileOutcome::Cancelled)
+    );
+    assert_eq!(old_step.receipt_digest.as_ref(), Some(&proof_digest));
 
     // Exercise the real second scheduler pass, not merely rematerialization.
     // Reusing the same Agent generation proves TaskFlow's attempt-generation
@@ -415,4 +447,186 @@ async fn proven_absent_unknown_dispatch_reuses_same_occurrence_identity() {
     assert_eq!(second.claim_generation, 1);
     assert_eq!(second.step_attempt, 2);
     assert_eq!(second.state, AutomationOccurrenceState::Admitted);
+}
+
+
+#[tokio::test]
+async fn retired_schedule_with_proven_absence_terminalizes_taskflow_and_occurrence() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75105",
+        AutomationSchedule::Once,
+        100,
+    );
+    store.create_task(&task).await.expect("create task");
+    let scheduler = AutomationScheduler::new(
+        store.clone(),
+        Arc::new(UnknownQueue),
+        1,
+        Duration::from_secs(30),
+        Duration::from_secs(2),
+    )
+    .expect("scheduler");
+    assert!(matches!(
+        scheduler.tick(100).await.expect("unknown tick"),
+        AutomationTick::DispatchUncertain { occurrence: 1, .. }
+    ));
+    store
+        .set_enabled(task.task_id, false, None, 101)
+        .await
+        .expect("disable while outcome is unknown");
+    let uncertain = store
+        .uncertain_dispatches(1)
+        .await
+        .expect("uncertain")
+        .pop()
+        .expect("uncertain row");
+    let proof = Sha256Digest::for_bytes(b"retired schedule provider absence");
+    store
+        .reconcile_uncertain_occurrence_absent(
+            task.task_id,
+            1,
+            &uncertain.client_user_message_id,
+            &proof,
+            102,
+        )
+        .await
+        .expect("terminalize retired absence");
+
+    let occurrence = store
+        .automation_occurrence(task.task_id, 1)
+        .await
+        .expect("occurrence")
+        .expect("materialized");
+    assert_eq!(occurrence.state, AutomationOccurrenceState::Cancelled);
+    assert_eq!(occurrence.terminal_receipt_digest.as_ref(), Some(&proof));
+    let run = store
+        .taskflow_run(&occurrence.taskflow_run_id)
+        .await
+        .expect("run")
+        .expect("taskflow run");
+    assert_eq!(run.state, TaskFlowRunState::Cancelled);
+    assert!(
+        store
+            .uncertain_dispatches(1)
+            .await
+            .expect("uncertain scan")
+            .is_empty()
+    );
+    assert_eq!(
+        store.task(task.task_id).await.expect("task").unwrap().state,
+        AutomationTaskState::Disabled
+    );
+}
+
+#[tokio::test]
+async fn stale_generation_between_taskflow_intent_and_uncertainty_recovers_same_occurrence() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75106",
+        AutomationSchedule::Once,
+        100,
+    );
+    store.create_task(&task).await.expect("create task");
+    let lease = store
+        .claim_due(100, 1, 30_000)
+        .await
+        .expect("claim")
+        .expect("lease");
+    let occurrence = store
+        .materialize_occurrence(&lease, 100)
+        .await
+        .expect("materialize");
+    store
+        .prepare_occurrence_taskflow(&occurrence, &lease, 100, 30_000)
+        .await
+        .expect("persist TaskFlow intent");
+    // Simulate process loss before record_dispatch_uncertain().
+    assert_eq!(
+        store
+            .recover_stale_generation(2, 101)
+            .await
+            .expect("causal stale recovery"),
+        1
+    );
+
+    let scheduler = AutomationScheduler::new(
+        store.clone(),
+        Arc::new(SuccessQueue),
+        2,
+        Duration::from_secs(30),
+        Duration::from_secs(2),
+    )
+    .expect("replacement scheduler");
+    assert!(matches!(
+        scheduler.tick(102).await.expect("replacement tick"),
+        AutomationTick::Submitted { occurrence: 1, .. }
+    ));
+    let recovered = store
+        .automation_occurrence(task.task_id, 1)
+        .await
+        .expect("occurrence")
+        .expect("same occurrence");
+    assert_eq!(recovered.occurrence_id, occurrence.occurrence_id);
+    assert_eq!(
+        recovered.client_user_message_id,
+        occurrence.client_user_message_id
+    );
+    assert_eq!(recovered.step_attempt, 2);
+    assert_eq!(recovered.claim_generation, 2);
+    assert_eq!(recovered.state, AutomationOccurrenceState::Admitted);
+}
+
+#[tokio::test]
+async fn retired_stale_generation_before_uncertainty_closes_without_provider_contact() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75107",
+        AutomationSchedule::Once,
+        100,
+    );
+    store.create_task(&task).await.expect("create task");
+    let lease = store
+        .claim_due(100, 1, 30_000)
+        .await
+        .expect("claim")
+        .expect("lease");
+    let occurrence = store
+        .materialize_occurrence(&lease, 100)
+        .await
+        .expect("materialize");
+    store
+        .prepare_occurrence_taskflow(&occurrence, &lease, 100, 30_000)
+        .await
+        .expect("persist TaskFlow intent");
+    store
+        .set_enabled(task.task_id, false, None, 101)
+        .await
+        .expect("retire schedule");
+    assert_eq!(
+        store
+            .recover_stale_generation(2, 102)
+            .await
+            .expect("retired stale recovery"),
+        1
+    );
+    let terminal = store
+        .automation_occurrence(task.task_id, 1)
+        .await
+        .expect("occurrence")
+        .expect("terminal occurrence");
+    assert_eq!(terminal.state, AutomationOccurrenceState::Cancelled);
+    assert!(terminal.terminal_receipt_digest.is_some());
+    assert_eq!(
+        store
+            .taskflow_run(&terminal.taskflow_run_id)
+            .await
+            .expect("run")
+            .expect("taskflow")
+            .state,
+        TaskFlowRunState::Cancelled
+    );
 }
