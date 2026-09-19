@@ -65,6 +65,7 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ =
         codex_hepta_learning_artifacts::ArtifactPublicationTransactionV1::record_witness_durable;
     let _ = codex_hepta_learning_artifacts::ArtifactPublicationTransactionV1::acknowledge;
+    let _ = codex_hepta_learning_artifacts::ArtifactPublicationTransactionV1::status;
     let _ = codex_hepta_learning_artifacts::validate_iteration_transition;
     let _ = codex_hepta_learning_artifacts::IterationLedgerV1::append_candidate;
     let _ = codex_hepta_learning_artifacts::IterationLedgerV1::transition;
