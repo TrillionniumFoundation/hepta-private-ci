@@ -44,6 +44,23 @@ None.
 
 `existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `learning.artifacts`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
+### 2.1 Current native source surface
+
+The current source is materially beyond the original V1 bootstrap while preserving the V1 registry and payload formats as compatibility surfaces. The crate now contains:
+
+- `registry.rs` and `storage.rs`: append-only V1 registry, create-only payload/snapshot/head-witness storage, bounded reads, and contained prevalidated writes beneath a host-designated trusted root;
+- `closure_v2.rs`: complete `LearningArtifactManifestV2`, scoped dataset-withdrawal registry, registry-head requirements, and lifecycle transition validation;
+- `admission_v3.rs`: withdrawal-head admission that is additionally bound to `authority_domain_id + registry_id + scope_id`; unscoped registries fail closed for V3 admission;
+- `publication.rs`: crash-recoverable host publication transaction contract that binds the complete V2 admission to the exact V1 compatibility-registry snapshot and independently validated current-head witness before acknowledgement;
+- `lifecycle_journal.rs`: predecessor-bound lifecycle journal whose historical replay validates actor evidence at the event occurrence time rather than at process-recovery time;
+- `durable_snapshots.rs`: create-only, canonical, receipt-bound durable snapshots for scoped withdrawal state and lifecycle state;
+- `pinned.rs` and `dataset_revocation.rs`: exact pinned loading, current-view revalidation, and snapshot-local revocation preparation;
+- `iteration.rs` and `iteration_ledger.rs`: bounded authority-free iteration envelopes, candidates, externally evidenced transitions, and replayable iteration bookkeeping. These records do not run sandboxes or grant selection, promotion, merge or release authority.
+
+The shared durable state ceiling is `MAX_DURABLE_ARTIFACT_RECORDS = 4096`. This deliberately aligns accepted artifact-registry, withdrawal and lifecycle record counts with the supported bounded snapshot formats so an in-memory state cannot cross a record-count threshold that the crate refuses to persist.
+
+Source implementation is therefore not equivalent to product activation. The exact candidate remains qualification-dependent, and product filesystem namespace ownership, writer fencing, newest-head distribution, signature authentication, containing-directory durability, independent selection and process routing remain host/external responsibilities.
+
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:
@@ -126,33 +143,54 @@ Rust types and canonical JSON represent identical semantics. Tests cover round t
 
 ## 6. Data authority, persistence and migrations
 
-Owned authoritative or rebuildable domains:
+Owned authoritative or rebuildable domains remain:
 
 - `learning_artifact_registry`
 - `operator_sensor_core_registry`
 
-Read-only data dependencies:
+Read-only dependencies remain `cross_owner_outbox` and `operation_ledger`.
 
-- `cross_owner_outbox`
-- `operation_ledger`
+The stable V1 `ArtifactRegistry` is an append-only compatibility registry with canonical create-only snapshots. A V1 `ArtifactManifest` intentionally remains readable, but it cannot represent every V2 field: V2 supports multiple source datasets, multiple lineage digests and multiple predecessors. The implementation therefore does **not** flatten the complete V2 closure into one V1 predecessor or support field.
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+The complete V2 authority-free admission is retained by `WithdrawalBoundArtifactAdmissionV3`. A publication transaction stores that complete admission as the authoritative sidecar while verifying that the final V1 compatibility-registry record agrees on the fields V1 can faithfully represent: artifact identity, kind, generation, payload digest, producer, compatibility digest and exact byte length.
 
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
+Dataset withdrawal is a separate append-only digest chain. New V3 admission requires a `DatasetWithdrawalScopeV1` binding `authority_domain_id`, `registry_id` and `scope_id`. The scope participates in the scoped genesis/head derivation and the V3 admission digest, so an equal-looking event history in another namespace cannot satisfy the current admission.
 
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+Withdrawal and lifecycle state both have canonical create-only durable snapshot adapters with independently retained receipts binding namespace/scope, chain head, file digest, record count and encoded byte count. Recovery rebuilds the semantic state and rejects non-canonical bytes, digest mismatch, scope mismatch, record-count mismatch or chain mismatch.
+
+Historical lifecycle replay validates actor evidence at `event.occurred_at`. Recovery time is not reused as mutation authorization time: an actor credential that expired after a valid historical append does not make the journal unrecoverable, while a new mutation after expiry still fails.
+
+All artifact-registry, withdrawal and lifecycle state machines share `MAX_DURABLE_ARTIFACT_RECORDS = 4096`. This is a source-enforced capacity invariant, not a target-host throughput claim.
+
+Historical V1 snapshots remain interpretable. New V2/V3/scoped records are additive surfaces; they do not reinterpret an old V1 file as carrying fields it never encoded. Any future schema migration must preserve this distinction and provide checksum-bound deterministic replay.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md).
+Artifact publication is an ordered durability protocol, not an assumed multi-file filesystem transaction.
 
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
+`ArtifactPublicationTransactionV1` enforces:
+
+`Prepared -> PayloadDurable -> RegistryDurable -> WitnessDurable -> Acknowledged`.
+
+Preparation validates the current scoped withdrawal registry and binds the exact predecessor registry head. `PayloadDurable` requires the exact V2 payload digest and byte count. `RegistryDurable` requires a durable registry receipt whose current last record extends the expected predecessor and matches every V2 field representable by V1. `WitnessDurable` requires an independently validated head witness for that exact registry head and predecessor. Acknowledgement before witness durability is rejected.
+
+The transaction exposes a digest-bound snapshot and replay constructor. Crash tests recover after prepared, payload-durable and registry-durable boundaries and prove that a partial publication cannot be relabelled acknowledged. The host that composes this contract must persist the returned transaction snapshot in its fenced transaction store before treating a phase as durable; a host that does not persist/replay the contract is outside this source qualification boundary.
+
+Create-only file writers hold an exclusive advisory file lock through the empty-file check, write and `sync_all`. Readers hold shared locks for bounded reads. The crate does not own the global writer lease, product process, newest-head service or parent-directory fsync. Those are host-owned boundaries and must serialize publication, current-head discovery and final route changes.
+
+Iteration bookkeeping is separately bounded and authority-free. `IterationLedgerV1` can record typed externally produced evidence and replay candidate state, but it does not execute a sandbox, evaluate code, select a candidate, merge source or release an artifact.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+The module fails closed on digest mismatch, scope mismatch, predecessor mismatch, stale withdrawal head, invalid lifecycle transition, expired mutation credentials, invalid current-head witness, non-canonical durable bytes, capacity exhaustion and publication phase skips.
 
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+The contained high-level storage APIs validate snapshot/witness/payload semantics **before** creating the final path, avoiding zero-length files for ordinary validation failures. A write or `sync_all` failure after final-path creation remains `Indeterminate`; the host must reconcile that path and may not infer success or reuse its identity.
+
+`CreateOnlyArtifactFile::create_beneath_trusted_root` rejects absolute paths, `..`, non-normal components and symlink ancestors under the canonical trusted root. This is lexical and ordinary symlink containment, not an `openat2` substitute. Because the crate forbids unsafe code and the standard library does not expose a directory-handle no-follow transaction, the host must prevent concurrent hostile replacement of trusted ancestors and must fsync the containing directory when the target platform requires it.
+
+Withdrawal recovery requires the same scope digest. Lifecycle recovery replays historical actor evidence at occurrence time. Publication recovery preserves the last durable phase and never upgrades an unknown/partial effect into success. Restoring an older registry, withdrawal snapshot or route marker cannot override a current independently authenticated head or current revocation/withdrawal frontier.
+
+Rollback is a new authorized transition to an exact compatible predecessor. It is never implicit reuse of an expired grant, stale backup, old witness or previously selected state.
 
 ## 9. Security, privacy and threat controls
 
@@ -168,35 +206,72 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-learning-artifacts/src/lib.rs](../../../codex-rs/hepta-learning-artifacts/src/lib.rs) and the linked implementation components.
+Source-enforced ceilings relevant to this module include:
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+- candidate payload: 64 MiB;
+- canonical V1 registry snapshot: 8 MiB;
+- artifact-registry / withdrawal / lifecycle durable record ceiling: 4,096 records;
+- V2 source datasets per manifest: 64;
+- V2 lineage digests per manifest: 1,024;
+- V2 predecessor IDs per manifest: 64;
+- iteration candidates: 32;
+- iteration files per candidate envelope: 100;
+- iteration semantic diff budget: 1 MiB;
+- parallel iteration sandboxes named by an envelope: 8;
+- iteration ledger events: 384.
+
+These bounds are safety/resource limits, not benchmark claims. Measure payload write + fsync, snapshot encode/write/reopen, withdrawal and lifecycle replay, current-head witness publication, pinned cold read/hash, current-view revalidation, crash recovery, parent-directory synchronization and orphan reconciliation on the selected target host.
+
+The V1 compatibility registry remains intentionally bounded. A product that needs a larger history must introduce a new durable format or compaction/checkpoint design; it must not silently raise the in-memory limit beyond what the supported durable representation can carry.
 
 ## 11. Observability and operations
 
-Operate create-only candidate storage under one owner, with pinned read bounds and current revocation/head witnesses. Sync bytes before registry publication; incomplete/orphan payloads remain unselected. Reload an exact independently selected compatible tuple; restoring an older registry must not resurrect withdrawn datasets or artifacts.
+Operate create-only artifact storage under one writer owner, with independently retained receipts and current revocation/withdrawal/head witnesses. Do not derive an expected receipt from the file currently under inspection.
+
+For safer filesystem integration prefer the contained prevalidated writers:
+
+- `write_candidate_payload_beneath`;
+- `write_registry_snapshot_beneath`;
+- `write_registry_head_witness_beneath`;
+- `write_dataset_withdrawal_snapshot_beneath`;
+- `write_artifact_lifecycle_snapshot_beneath`.
+
+The lower-level `CreateOnlyArtifactFile` APIs remain for compatibility and capability-based composition. A host using them must reconcile empty files caused by creating a capability before later semantic validation.
+
+The crate deliberately exposes no mutable “admin override”, force-select, force-promote or force-repair API. Service/admin tooling should consume read-only receipts, snapshots, heads and publication phases, and perform repair only through a separately authenticated/fenced host operation. This keeps operational tooling from becoming an undeclared authority bypass.
 
 Current operating and state-format references:
 
-- [codex-rs/hepta-learning-artifacts/STORAGE.md](../../../codex-rs/hepta-learning-artifacts/STORAGE.md).
-- [codex-rs/hepta-learning-artifacts/READ_BOUNDARY.md](../../../codex-rs/hepta-learning-artifacts/READ_BOUNDARY.md).
-- [codex-rs/hepta-learning-artifacts/PINNED_LOAD.md](../../../codex-rs/hepta-learning-artifacts/PINNED_LOAD.md).
-- [codex-rs/hepta-learning-artifacts/DATASET_REVOCATION.md](../../../codex-rs/hepta-learning-artifacts/DATASET_REVOCATION.md).
+- [codex-rs/hepta-learning-artifacts/STORAGE.md](../../../codex-rs/hepta-learning-artifacts/STORAGE.md);
+- [codex-rs/hepta-learning-artifacts/READ_BOUNDARY.md](../../../codex-rs/hepta-learning-artifacts/READ_BOUNDARY.md);
+- [codex-rs/hepta-learning-artifacts/PINNED_LOAD.md](../../../codex-rs/hepta-learning-artifacts/PINNED_LOAD.md);
+- [codex-rs/hepta-learning-artifacts/DATASET_REVOCATION.md](../../../codex-rs/hepta-learning-artifacts/DATASET_REVOCATION.md);
+- [codex-rs/hepta-learning-artifacts/NATIVE_MAPPING.md](../../../codex-rs/hepta-learning-artifacts/NATIVE_MAPPING.md).
 
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
+Target-host alerting should distinguish rejected input, capacity exhaustion, busy lock, stale/scope-mismatched evidence, corrupt durable bytes and indeterminate I/O. Concrete thresholds require the selected deployment profile.
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+Focused native coverage includes:
 
-- [codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs](../../../codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs); named case: `art_01_manifest_v2_normalizes_complete_lineage`.
-- [codex-rs/hepta-learning-artifacts/src/dataset_revocation_tests.rs](../../../codex-rs/hepta-learning-artifacts/src/dataset_revocation_tests.rs); named case: `batch_revokes_direct_targets_and_blocks_descendants_without_mutating_input`.
+- V2 manifest normalization and lineage rejection in `closure_v2_tests.rs`;
+- persistent withdrawal replay and future-admission denial;
+- scoped V3 admission, including unscoped fail-closed and cross-scope publication rejection;
+- lifecycle transition separation plus historical replay after actor credential expiry;
+- create-only storage, lock/read budgets, path escape and symlink-ancestor rejection;
+- validation-before-create proof that a rejected payload does not leave a final-path orphan;
+- canonical durable withdrawal and lifecycle snapshot round trips with digest/scope checks;
+- publication phase ordering, crash snapshot replay and V1/V2 projection mismatch rejection;
+- exact pinned load/current-view revalidation and dataset revocation propagation;
+- bounded iteration and iteration-ledger transition/replay tests.
 
-In `codex-rs`, run `just test -p codex-hepta-learning-artifacts`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.artifacts.md) separately labels target acceptance designs.
+The Lane E workflow executes locked all-target compilation, owner tests, cross-crate causal closure, the Rust↔Python wire-fault test, strict Clippy, rustfmt and an ordered-parent synthetic merge. The synthetic merge uses the pull-request base on PR events and `github.event.before` on normal pushes; initial pushes with a zero predecessor do not pretend to have a valid merge base.
 
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+A green workflow is execution evidence for its exact commit only. It is not product activation, operator acceptance, selection, promotion or release. The repository cannot self-produce external filesystem trust, newest-head distribution, signing-key authentication or production route evidence.
 
 ## 13. Implementation sequence and work packages
+
+The `State:` values inside the execution envelopes below are canonical planning metadata imported from the global work-package plan; they are not a live substitute for the source status in sections 2.1 and 12. A package may still display `planned` here while its source candidate exists and awaits exact-commit qualification or external activation evidence.
 
 Applicable work packages:
 
