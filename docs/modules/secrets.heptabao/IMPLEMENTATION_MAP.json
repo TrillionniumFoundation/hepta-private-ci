@@ -28,8 +28,10 @@
       "nativeSymbol": "consume_kv_v2",
       "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
       "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "authority": "kernel.authority.final_use",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "consume_kv_v2",
       "mappingClass": "owner_native",
@@ -41,15 +43,89 @@
       "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "binding",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "request_secret_lease",
+      "nativeSymbol": "request_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.authority.final_use",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "request_secret_lease",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "renew_secret_lease",
+      "nativeSymbol": "renew_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.authority.final_use",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "renew",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "revoke_secret_lease",
+      "nativeSymbol": "revoke_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.authority.final_use",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revoke",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "reconcile_secret_lease",
+      "nativeSymbol": "reconcile_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.authority.final_use",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "reconcile",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "resolve_unknown_secret_issue",
+      "nativeSymbol": "resolve_unknown_secret_issue",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.authority.final_use",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "resolve_lost_acknowledgement",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Bind every lifecycle operation to an authenticated named product consumer and production state owner.",
+    "Add exact-candidate real-service qualification for a provider-native dynamic secrets engine, including lost-ack and renew/revoke reconciliation fixtures.",
+    "Choose and qualify the production HA/state architecture; the current lease registry is a bounded single-active local backend.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [

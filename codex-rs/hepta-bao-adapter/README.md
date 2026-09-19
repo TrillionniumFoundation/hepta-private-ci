@@ -4,13 +4,21 @@ The legacy `resolve` and `assess_secret_boundary_v1` remain metadata-only;
 `PROVIDER_DISPATCH_ENABLED` remains false for that API. A caller-provided
 `Granted` observation cannot enable this separate client.
 
-`BaoClient::consume_kv_v2` is the executable host integration point. It reads
-`GET /v1/{mount}/data/{path}?version=N`, supplies `X-Vault-Token` and
-`X-Vault-Namespace`, requires a configured CA and hostname-valid HTTPS, disables
-redirects and ambient proxies, and caps the complete response at 1 MiB.
-An empty namespace denotes root and omits the namespace header.
-The supported consumer contract is one string field from one exact KV v2
-version. Other field types and other secrets engines are not silently coerced.
+`BaoClient::consume_kv_v2` is the executable host integration point for exact
+KV v2 reads. Provider-native dynamic issuance, renewal, revocation and
+reconciliation are separately specified in [SECRET_LEASES.md](SECRET_LEASES.md).
+Both paths use the same host-enrolled pinned HTTPS client and independent
+final-use authority; dynamic lease mutation additionally uses a durable local
+operation/lease registry because lost acknowledgements cannot be treated like
+read failures.
+
+`BaoClient::consume_kv_v2` reads `GET /v1/{mount}/data/{path}?version=N`,
+supplies `X-Vault-Token` and `X-Vault-Namespace`, requires a configured CA and
+hostname-valid HTTPS, disables redirects and ambient proxies, and caps the
+complete response at 1 MiB. An empty namespace denotes root and omits the
+namespace header. The supported KV consumer contract is one string field from
+one exact KV v2 version. Other field types and other secrets engines are not
+silently coerced by that API.
 
 The adapter uses the approved `codex-http-client` owner through
 `HttpClientBuilder::build_pinned_https_direct`; it has no direct `reqwest`
@@ -25,12 +33,13 @@ proxy, tracing and trust behavior remains unchanged for other callers.
 
 Before dispatch, `kernel.authority` (`hepta-contracts::FinalUseAuthority`)
 verifies an independent Ed25519 signature and claims a single-use nonce. The
-grant binds the subject, HTTPS origin, CA, namespace, mount, path, field,
-version, expected secret digest and consumer identity. The adapter owns no
-signing key. The host pins the public key, epoch and revocation head; request
-JSON must never supply or replace these trust inputs.
+KV grant binds the subject, HTTPS origin, CA, namespace, mount, path, field,
+version, expected secret digest and consumer identity. Dynamic-lease bindings
+similarly cover the full provider operation, operation ID and consumer scope.
+The adapter owns no signing key. The host pins the public key, epoch and
+revocation head; request JSON must never supply or replace these trust inputs.
 
-After the network response and digest/version validation, the kernel checks
+After a secret-bearing network response and validation, the kernel checks
 current time, epoch and revocation again. The synchronous consumer executes
 under that revocation lock. It must be bounded, must not reenter the authority,
 and must not copy secret bytes into model context, logs or receipts. Response
@@ -48,10 +57,18 @@ let receipt = client.consume_kv_v2(&authority, &grant, &request, |secret| {
 // Publish only receipt: request/body/secret digests, version and byte count.
 ```
 
+Dynamic lease integration follows the same independent-issuer pattern but also
+opens `SecretLeaseRegistry` from an owner-controlled private state directory.
+The exact lifecycle, state machine and required reconciliation behavior are in
+[SECRET_LEASES.md](SECRET_LEASES.md). In particular, mutating provider
+operations have no automatic retry: their operation record is durably marked
+`OutcomeUnknown` before network dispatch, and an indeterminate result must be
+reconciled rather than repeated.
+
 The example `cargo run -p codex-hepta-bao-adapter --example consume_secret --
-binding HOST_CONFIG.json` prints the exact binding without a request. With
+binding HOST_CONFIG.json` prints the exact KV binding without a request. With
 `consume HOST_CONFIG.json`, it reads the provider token from stdin and runs a
-local consumer, printing only the metadata receipt. This is an executable
+local consumer, printing only the metadata receipt. This is an executable KV
 integration example, not an automatically enrolled global provider. A host
 must connect its actual registered consumer at the shown function call.
 The callback and authority configuration are trusted host inputs; the signed
@@ -64,7 +81,9 @@ The config contains `endpoint`, `ca_pem_file`, `signer_id`, `verifying_key`
 `revoked_grant_ids`, `request`, and nullable `grant`. `request` contains
 `subject_id`, `consumer_id`, `namespace`, `mount`, `path`, `field`, `version`,
 and `expected_secret_sha256` (32-byte array). Public trust configuration must
-be delivered through the host's protected configuration channel.
+be delivered through the host's protected configuration channel. The current
+example is KV-specific; dynamic lease host composition supplies its registry
+path and lifecycle request types directly through the library API.
 
 ## Independent issuer and revocation
 
@@ -95,27 +114,40 @@ Storage errors fence that authority instance until recovery. Preserve this
 state across deployments; deleting or restoring it from an old backup is an
 authority reset and requires an independently changed issuer trust/epoch.
 Other platforms fail closed until an equivalent owner ACL store exists.
-The 16,384-entry registry never evicts claims silently; exhaustion rejects new
-dispatch until a trusted epoch transition. A failed/timeout request does not
-refund its nonce or retry automatically. A new grant requires owner action.
+The 16,384-entry final-use nonce registry never evicts claims silently;
+exhaustion rejects new dispatch until a trusted epoch transition. A
+failed/timeout request does not refund its nonce or retry automatically. A new
+grant requires owner action.
 
 Provider 401/403 is denied; missing data, invalid TLS, timeout, oversize,
-malformed response, wrong version and digest mismatch never invoke the
-consumer. If the consumer reports failure after entry, the outcome is
+malformed response, wrong version and digest mismatch never invoke the KV
+consumer. If a consumer reports failure after entry, the outcome is
 `ConsumerIndeterminate`; do not infer no effect or blindly repeat it.
-Only read operations exist here; adding mutation APIs requires durable
-idempotency and post-entry uncertainty handling, not reusing read retry rules.
+
+Dynamic lease operations have stricter mutation semantics. Issuance, renew and
+revoke persist an operation uncertainty fence before provider dispatch.
+Transport loss, timeout or a malformed/non-definitive success remains
+`OutcomeUnknown`. Renew/revoke ambiguity is reconciled by lease lookup;
+issuance ambiguity without a locally observed lease ID requires independent
+provider/audit reconciliation. An independently discovered orphan lease is
+adopted only as `RevokeRequired`, never as a usable active credential. See
+[SECRET_LEASES.md](SECRET_LEASES.md).
 
 ## Verification
 
-Targeted tests cover a real loopback TLS exchange, exact request headers and
+Targeted KV tests cover a real loopback TLS exchange, exact request headers and
 version, forged signature rejection, nonce replay rejection, provider denial,
 revocation during a network wait, incorrect trust root and response bounds.
+SecretLease lifecycle tests additionally cover real TLS dynamic issuance,
+requested-field-only delivery, absence of raw dynamic values from persistent
+state, restart persistence, durable issuance ambiguity, exact renew/revoke
+endpoints, lookup reconciliation without blind renew retry, and orphan
+issuance adoption as `RevokeRequired`.
 Kernel tests cover signed-field changes, wrong issuer, expiry and epoch fences.
 Run `just test -p codex-hepta-bao-adapter -p codex-hepta-contracts` in the normal
 workspace and the repository formatting/lint gates before merging.
 
-For the separate real service check, build this crate's `consume_secret`
+For the separate real service KV check, build this crate's `consume_secret`
 example and the supervisor's `hepta-final-use-signer` binary with
 `--features production-authority`, then run:
 
@@ -135,7 +167,9 @@ consumer receipts, rejects replay across consumer process restarts, rejects
 forged signatures and denied provider tokens, and reads again after killing
 and unsealing the real service. It leaves only synthetic owner-protected test
 state and writes `result.json` containing scenario names and digest metadata.
-It never connects to an existing production service.
+It never connects to an existing production service. The existing fixture is
+KV-focused; dynamic lease lifecycle source tests do not by themselves claim a
+current real-service dynamic-engine qualification receipt.
 
 ## Recorded candidate verification
 
