@@ -1,6 +1,7 @@
 use std::future::Future;
 use std::sync::Arc;
 use std::time::Duration;
+use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -29,6 +30,8 @@ use crate::automation::run_automation_scheduler;
 const EVENT_CAPACITY: usize = 128;
 const GENERATION_POLL_INTERVAL: Duration = Duration::from_millis(50);
 const APP_SERVER_PROBE_TIMEOUT: Duration = Duration::from_secs(2);
+const RUN_DRAIN_TIMEOUT: Duration = Duration::from_secs(10);
+const RUN_DRAIN_POLL_INTERVAL: Duration = Duration::from_millis(25);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum CompletedRuntimeTask {
@@ -162,8 +165,14 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         signal = shutdown_signal() => {
             signal?;
             state.mark_draining()?;
+            state.begin_run_drain("agentd_shutdown")?;
             (Ok(()), None)
         }
+    };
+    let drain_outcome = if completed_task.is_none() {
+        drain_run_lifecycle(&state).await
+    } else {
+        Ok(())
     };
     cancellation.cancel();
     if completed_task != Some(CompletedRuntimeTask::AuthBus) {
@@ -177,7 +186,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         &mut automation_task,
     )
     .await;
-    outcome
+    outcome.and(drain_outcome)
 }
 
 #[cfg(feature = "qualification-cognitive-write")]
@@ -268,6 +277,7 @@ async fn monitor_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {
             state.mark_fenced();
             return Err(error);
         }
+        state.enforce_run_deadlines(system_time_ms()?)?;
         if !app_server_ready {
             match probe_app_server(state.identity()).await {
                 Ok(()) => {
@@ -311,6 +321,31 @@ async fn probe_app_server(identity: &AgentdIdentity) -> Result<(), AgentdError> 
     }
     client.shutdown().await?;
     Ok(())
+}
+
+async fn drain_run_lifecycle(state: &AgentdState) -> Result<(), AgentdError> {
+    let started = Instant::now();
+    loop {
+        if state.run_drain_complete()? {
+            return Ok(());
+        }
+        if started.elapsed() >= RUN_DRAIN_TIMEOUT {
+            // External execution may have happened. Preserve uncertainty
+            // durably before App Server/control tasks are stopped.
+            state.mark_unobserved_runs_indeterminate()?;
+            return Ok(());
+        }
+        tokio::time::sleep(RUN_DRAIN_POLL_INTERVAL).await;
+    }
+}
+
+fn system_time_ms() -> Result<u64, AgentdError> {
+    let millis = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|error| AgentdError::Protocol(error.to_string()))?
+        .as_millis();
+    u64::try_from(millis)
+        .map_err(|_| AgentdError::Protocol("system clock exceeds u64 milliseconds".to_string()))
 }
 
 fn joined(
@@ -374,9 +409,15 @@ async fn cleanup_runtime_tasks<ControlOutput, AppServerOutput, MonitorOutput, Au
 #[cfg(unix)]
 async fn shutdown_signal() -> Result<(), AgentdError> {
     let mut terminate = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())?;
-    terminate.recv().await.ok_or_else(|| {
-        AgentdError::Protocol("SIGTERM listener closed before receiving a signal".to_string())
-    })
+    let mut interrupt = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::interrupt())?;
+    tokio::select! {
+        signal = terminate.recv() => signal.ok_or_else(|| {
+            AgentdError::Protocol("SIGTERM listener closed before receiving a signal".to_string())
+        }),
+        signal = interrupt.recv() => signal.ok_or_else(|| {
+            AgentdError::Protocol("SIGINT listener closed before receiving a signal".to_string())
+        }),
+    }
 }
 
 #[cfg(not(unix))]

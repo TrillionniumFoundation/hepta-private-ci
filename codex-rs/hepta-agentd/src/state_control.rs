@@ -49,12 +49,13 @@ impl AgentdState {
             )));
         }
         self.refresh_generation()?;
-        let (current_generation, lifecycle, app_server_ready, fenced) = {
+        let (current_generation, lifecycle, app_server_ready, draining, fenced) = {
             let runtime = self.runtime.lock().map_err(poisoned_state)?;
             (
                 runtime.current_generation,
                 runtime.lifecycle,
                 runtime.app_server_ready,
+                runtime.draining,
                 runtime.fenced,
             )
         };
@@ -62,15 +63,19 @@ impl AgentdState {
         let cognitive = self.cognitive.lock().map_err(poisoned_state)?.clone();
         let payload = match method {
             crate::AgentdMethod::Capabilities => {
-                AgentdPayload::Capabilities(crate::AgentdCapabilitySet::empty())
+                AgentdPayload::Capabilities(agentd_capabilities()?)
             }
             crate::AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
                 promotion_ready: matches!(
                     lifecycle,
                     AgentLifecycle::Starting | AgentLifecycle::Running
                 ) && app_server_ready
+                    && !draining
                     && !fenced,
-                ready: lifecycle == AgentLifecycle::Running && app_server_ready && !fenced,
+                ready: lifecycle == AgentLifecycle::Running
+                    && app_server_ready
+                    && !draining
+                    && !fenced,
                 fenced,
                 lifecycle,
                 process_id: std::process::id(),
@@ -84,7 +89,7 @@ impl AgentdState {
                 fenced,
             }),
             crate::AgentdMethod::SessionIngress => {
-                if lifecycle != AgentLifecycle::Running || !app_server_ready || fenced {
+                if lifecycle != AgentLifecycle::Running || !app_server_ready || draining || fenced {
                     AgentdPayload::Error {
                         code: "not_ready".to_string(),
                         message: "session ingress is unavailable until this generation is ready"
@@ -97,6 +102,88 @@ impl AgentdState {
                     })
                 }
             }
+            crate::AgentdMethod::RunStart { snapshot } => {
+                require_run_admission_ready(lifecycle, app_server_ready, draining, fenced)?;
+                if snapshot.authority_epoch != current_generation {
+                    return Err(AgentdError::GenerationFenced(
+                        "run authority epoch does not match the current Agent generation"
+                            .to_string(),
+                    ));
+                }
+                AgentdPayload::RunReceipt(run_receipt_to_wire(
+                    self.run_start(now_ms()?, run_snapshot_from_wire(snapshot))?,
+                ))
+            }
+            crate::AgentdMethod::RunAttachContext {
+                expected_revision,
+                attachment,
+            } => {
+                require_run_admission_ready(lifecycle, app_server_ready, draining, fenced)?;
+                if attachment.authority_epoch != current_generation {
+                    return Err(AgentdError::GenerationFenced(
+                        "context authority epoch does not match the current Agent generation"
+                            .to_string(),
+                    ));
+                }
+                AgentdPayload::RunReceipt(run_receipt_to_wire(self.run_attach_context(
+                    now_ms()?,
+                    expected_revision,
+                    context_attachment_from_wire(attachment),
+                )?))
+            }
+            crate::AgentdMethod::RunMarkDispatched {
+                run_id,
+                expected_revision,
+            } => {
+                require_run_admission_ready(lifecycle, app_server_ready, draining, fenced)?;
+                AgentdPayload::RunReceipt(run_receipt_to_wire(self.run_mark_dispatched(
+                    now_ms()?,
+                    &run_id,
+                    expected_revision,
+                )?))
+            }
+            crate::AgentdMethod::RunCancel {
+                run_id,
+                expected_revision,
+                reason,
+            } => {
+                require_run_observation_ready(fenced)?;
+                let (disposition, receipt) =
+                    self.run_cancel(&run_id, expected_revision, &reason)?;
+                AgentdPayload::RunCancellation {
+                    disposition: cancellation_disposition_to_wire(disposition),
+                    receipt: run_receipt_to_wire(receipt),
+                }
+            }
+            crate::AgentdMethod::RunObserveTerminal {
+                run_id,
+                expected_revision,
+                phase,
+                terminal_observed,
+            } => {
+                require_run_observation_ready(fenced)?;
+                AgentdPayload::RunReceipt(run_receipt_to_wire(self.run_observe_terminal(
+                    &run_id,
+                    expected_revision,
+                    run_phase_from_wire(phase),
+                    terminal_observed,
+                )?))
+            }
+            crate::AgentdMethod::RunGet { run_id } => {
+                require_run_observation_ready(fenced)?;
+                AgentdPayload::RunStatus {
+                    receipt: self.run_status(&run_id)?.map(run_receipt_to_wire),
+                }
+            }
+            crate::AgentdMethod::RunRemoveClosed {
+                run_id,
+                expected_revision,
+            } => {
+                require_run_observation_ready(fenced)?;
+                AgentdPayload::RunReceipt(run_receipt_to_wire(
+                    self.run_remove_closed(&run_id, expected_revision)?,
+                ))
+            }
             crate::AgentdMethod::AuthBusText { request } => AgentdPayload::AuthBusTextStatus(
                 crate::authbus_ingress::submit(self, request).await?,
             ),
@@ -106,7 +193,7 @@ impl AgentdState {
                 )
             }
             crate::AgentdMethod::CognitiveContext { query, limit } => {
-                require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
+                require_cognitive_control_ready(lifecycle, app_server_ready, draining, fenced)?;
                 let Some(store) = cognitive else {
                     return self.response_with_payload(
                         request_id,
@@ -131,6 +218,7 @@ impl AgentdState {
                     require_cognitive_control_ready(
                         runtime.lifecycle,
                         runtime.app_server_ready,
+                        runtime.draining,
                         runtime.fenced,
                     )?;
                 }
@@ -169,7 +257,7 @@ impl AgentdState {
                 }
             }
             crate::AgentdMethod::AutomationCreate { draft } => {
-                require_automation_ready(lifecycle, app_server_ready, fenced)?;
+                require_automation_ready(lifecycle, app_server_ready, draining, fenced)?;
                 match automation {
                     Some(store) => self.automation_result(
                         store.create_task(&draft).await,
@@ -179,7 +267,7 @@ impl AgentdState {
                 }
             }
             crate::AgentdMethod::AutomationList { limit } => {
-                require_automation_ready(lifecycle, app_server_ready, fenced)?;
+                require_automation_ready(lifecycle, app_server_ready, draining, fenced)?;
                 if !(1..=256).contains(&limit) {
                     return Err(AgentdError::Invalid(
                         "automation list limit must be between 1 and 256".to_string(),
@@ -194,7 +282,7 @@ impl AgentdState {
                 }
             }
             crate::AgentdMethod::AutomationCancel { task_id } => {
-                require_automation_ready(lifecycle, app_server_ready, fenced)?;
+                require_automation_ready(lifecycle, app_server_ready, draining, fenced)?;
                 match automation {
                     Some(store) => self.automation_result(
                         store.cancel_task(task_id, now_ms()?).await,
@@ -208,7 +296,7 @@ impl AgentdState {
                 enabled,
                 resume_at_ms,
             } => {
-                require_automation_ready(lifecycle, app_server_ready, fenced)?;
+                require_automation_ready(lifecycle, app_server_ready, draining, fenced)?;
                 match automation {
                     Some(store) => self.automation_result(
                         store
@@ -224,7 +312,7 @@ impl AgentdState {
                 owner_scope,
                 lifetime_seconds,
             } => {
-                require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
+                require_cognitive_control_ready(lifecycle, app_server_ready, draining, fenced)?;
                 let Some(store) = cognitive else {
                     return self.response_with_payload(
                         request_id,
@@ -310,7 +398,7 @@ impl AgentdState {
                 )?)
             }
             crate::AgentdMethod::MemoryFederationRevoke { capability_id } => {
-                require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
+                require_cognitive_control_ready(lifecycle, app_server_ready, draining, fenced)?;
                 let Some(store) = cognitive else {
                     return self.response_with_payload(
                         request_id,
@@ -366,7 +454,7 @@ impl AgentdState {
                 AgentdPayload::MemoryFederationCapability(federation_snapshot(status)?)
             }
             crate::AgentdMethod::MemoryFederationList { limit } => {
-                require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
+                require_cognitive_control_ready(lifecycle, app_server_ready, draining, fenced)?;
                 if !(1..=crate::MAX_FEDERATION_CONTROL_LIST).contains(&limit) {
                     return Err(AgentdError::Invalid(format!(
                         "memory federation list limit must be 1..={}",
@@ -398,7 +486,7 @@ impl AgentdState {
                 }
             }
             crate::AgentdMethod::MemoryFederationStatus { capability_id } => {
-                require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
+                require_cognitive_control_ready(lifecycle, app_server_ready, draining, fenced)?;
                 let Some(store) = cognitive else {
                     return self.response_with_payload(
                         request_id,
@@ -518,12 +606,130 @@ fn cognitive_control_unavailable() -> AgentdPayload {
     }
 }
 
+fn agentd_capabilities() -> Result<crate::AgentdCapabilitySet, AgentdError> {
+    crate::AgentdCapabilitySet::new(vec![
+        crate::AgentdCapability::new("run.lifecycle", 1, 0)
+            .map_err(AgentdError::Protocol)?,
+        crate::AgentdCapability::new("control.typed_backpressure", 1, 0)
+            .map_err(AgentdError::Protocol)?,
+    ])
+    .map_err(AgentdError::Protocol)
+}
+
+fn run_snapshot_from_wire(value: crate::AgentdRunSnapshot) -> crate::RunSnapshot {
+    crate::RunSnapshot {
+        run_id: value.run_id,
+        request_digest: value.request_digest,
+        objective_digest: value.objective_digest,
+        body_digest: value.body_digest,
+        artifact_set_digest: value.artifact_set_digest,
+        authority_epoch: value.authority_epoch,
+        deadline_ms: value.deadline_ms,
+    }
+}
+
+fn context_attachment_from_wire(
+    value: crate::AgentdContextAttachment,
+) -> crate::ContextAttachment {
+    crate::ContextAttachment {
+        run_id: value.run_id,
+        request_digest: value.request_digest,
+        objective_digest: value.objective_digest,
+        body_digest: value.body_digest,
+        artifact_set_digest: value.artifact_set_digest,
+        authority_epoch: value.authority_epoch,
+        deadline_ms: value.deadline_ms,
+        context_digest: value.context_digest,
+        compilation_receipt_digest: value.compilation_receipt_digest,
+    }
+}
+
+fn run_phase_from_wire(value: crate::AgentdRunPhase) -> crate::RunPhase {
+    match value {
+        crate::AgentdRunPhase::Admitted => crate::RunPhase::Admitted,
+        crate::AgentdRunPhase::ContextAttached => crate::RunPhase::ContextAttached,
+        crate::AgentdRunPhase::Dispatched => crate::RunPhase::Dispatched,
+        crate::AgentdRunPhase::Cancelling => crate::RunPhase::Cancelling,
+        crate::AgentdRunPhase::Cancelled => crate::RunPhase::Cancelled,
+        crate::AgentdRunPhase::Succeeded => crate::RunPhase::Succeeded,
+        crate::AgentdRunPhase::Failed => crate::RunPhase::Failed,
+        crate::AgentdRunPhase::Indeterminate => crate::RunPhase::Indeterminate,
+    }
+}
+
+fn run_phase_to_wire(value: crate::RunPhase) -> crate::AgentdRunPhase {
+    match value {
+        crate::RunPhase::Admitted => crate::AgentdRunPhase::Admitted,
+        crate::RunPhase::ContextAttached => crate::AgentdRunPhase::ContextAttached,
+        crate::RunPhase::Dispatched => crate::AgentdRunPhase::Dispatched,
+        crate::RunPhase::Cancelling => crate::AgentdRunPhase::Cancelling,
+        crate::RunPhase::Cancelled => crate::AgentdRunPhase::Cancelled,
+        crate::RunPhase::Succeeded => crate::AgentdRunPhase::Succeeded,
+        crate::RunPhase::Failed => crate::AgentdRunPhase::Failed,
+        crate::RunPhase::Indeterminate => crate::AgentdRunPhase::Indeterminate,
+    }
+}
+
+fn run_receipt_to_wire(value: crate::RunReceipt) -> crate::AgentdRunReceipt {
+    crate::AgentdRunReceipt {
+        run_id: value.run_id,
+        revision: value.revision,
+        phase: run_phase_to_wire(value.phase),
+        context_digest: value.context_digest,
+        cancellation_reason: value.cancellation_reason,
+        terminal_observed: value.terminal_observed,
+        idempotent: value.idempotent,
+    }
+}
+
+fn cancellation_disposition_to_wire(
+    value: crate::CancellationDisposition,
+) -> crate::AgentdCancellationDisposition {
+    match value {
+        crate::CancellationDisposition::CancelledBeforeDispatch => {
+            crate::AgentdCancellationDisposition::CancelledBeforeDispatch
+        }
+        crate::CancellationDisposition::CancellingAfterDispatch => {
+            crate::AgentdCancellationDisposition::CancellingAfterDispatch
+        }
+        crate::CancellationDisposition::AlreadyTerminal => {
+            crate::AgentdCancellationDisposition::AlreadyTerminal
+        }
+    }
+}
+
+fn require_run_admission_ready(
+    lifecycle: AgentLifecycle,
+    app_server_ready: bool,
+    draining: bool,
+    fenced: bool,
+) -> Result<(), AgentdError> {
+    if lifecycle == AgentLifecycle::Running && app_server_ready && !draining && !fenced {
+        Ok(())
+    } else {
+        Err(AgentdError::Protocol(
+            "run admission is unavailable until this Agent generation is ready".to_string(),
+        ))
+    }
+}
+
+fn require_run_observation_ready(fenced: bool) -> Result<(), AgentdError> {
+    if fenced {
+        Err(AgentdError::GenerationFenced(
+            "run observation is unavailable after the Agent generation was fenced".to_string(),
+        ))
+    } else {
+        Ok(())
+    }
+}
+
 fn require_cognitive_control_ready(
     lifecycle: AgentLifecycle,
     app_server_ready: bool,
+    draining: bool,
     fenced: bool,
 ) -> Result<(), AgentdError> {
-    if lifecycle == AgentLifecycle::Running && app_server_ready && !fenced {
+    if lifecycle == AgentLifecycle::Running && app_server_ready && !draining && !fenced {
         Ok(())
     } else {
         Err(AgentdError::Protocol(
@@ -587,9 +793,10 @@ fn federation_snapshot(
 fn require_automation_ready(
     lifecycle: AgentLifecycle,
     app_server_ready: bool,
+    draining: bool,
     fenced: bool,
 ) -> Result<(), AgentdError> {
-    if lifecycle == AgentLifecycle::Running && app_server_ready && !fenced {
+    if lifecycle == AgentLifecycle::Running && app_server_ready && !draining && !fenced {
         Ok(())
     } else {
         Err(AgentdError::Protocol(

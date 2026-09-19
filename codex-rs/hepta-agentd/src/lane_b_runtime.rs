@@ -1,9 +1,15 @@
 use std::collections::BTreeMap;
 
+use serde::Deserialize;
+use serde::Serialize;
+
 const MAX_ACTIVE_RUNS: usize = 256;
 const MAX_RETAINED_RUNS: usize = 1_024;
+const MAX_CANCELLATION_REASON_BYTES: usize = 512;
+pub const RUN_RECOVERY_SCHEMA_VERSION: u32 = 1;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum RunPhase {
     Admitted,
     ContextAttached,
@@ -23,9 +29,14 @@ impl RunPhase {
     fn terminal_observed(self) -> bool {
         matches!(self, Self::Cancelled | Self::Succeeded | Self::Failed)
     }
+
+    fn externally_uncertain(self) -> bool {
+        matches!(self, Self::Dispatched | Self::Cancelling | Self::Indeterminate)
+    }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct RuntimeComposition {
     pub agent_id: String,
     pub supervisor_generation: u64,
@@ -34,7 +45,8 @@ pub struct RuntimeComposition {
     pub ports_digest: String,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct RunSnapshot {
     pub run_id: String,
     pub request_digest: String,
@@ -45,65 +57,100 @@ pub struct RunSnapshot {
     pub deadline_ms: u64,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct ContextAttachment {
     pub run_id: String,
     pub request_digest: String,
     pub objective_digest: String,
     pub body_digest: String,
     pub artifact_set_digest: String,
+    pub authority_epoch: u64,
+    pub deadline_ms: u64,
     pub context_digest: String,
     pub compilation_receipt_digest: String,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct RunReceipt {
     pub run_id: String,
     pub revision: u64,
     pub phase: RunPhase,
     pub context_digest: Option<String>,
+    pub cancellation_reason: Option<String>,
     pub terminal_observed: bool,
     pub idempotent: bool,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum CancellationDisposition {
     CancelledBeforeDispatch,
     CancellingAfterDispatch,
     AlreadyTerminal,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum AgentRunError {
+    #[error("invalid {0} identity")]
     InvalidIdentity(&'static str),
+    #[error("invalid {0} digest")]
     InvalidDigest(&'static str),
+    #[error("invalid generation or authority epoch")]
     InvalidGeneration,
+    #[error("invalid or expired deadline")]
     InvalidDeadline,
+    #[error("run deadline has elapsed")]
+    DeadlineExceeded,
+    #[error("invalid cancellation reason")]
+    InvalidCancellationReason,
+    #[error("run capacity exceeded")]
     CapacityExceeded,
+    #[error("run not found")]
     RunNotFound,
+    #[error("operation conflicts with retained run semantics")]
     Conflict,
+    #[error("invalid run lifecycle transition")]
     InvalidTransition,
+    #[error("stale run revision")]
     StaleRevision,
+    #[error("context attachment does not bind the complete frozen run tuple")]
     MixedSnapshot,
+    #[error("context attachment is required before dispatch")]
     ContextRequired,
+    #[error("terminal owner observation is required")]
     TerminalObservationRequired,
+    #[error("run revision overflow")]
     ArithmeticOverflow,
+    #[error("invalid recovery state")]
+    InvalidRecoveryState,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 struct RunRecord {
     snapshot: RunSnapshot,
     revision: u64,
     phase: RunPhase,
     context_digest: Option<String>,
     compilation_receipt_digest: Option<String>,
+    cancellation_reason: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct RunRecoveryState {
+    pub schema_version: u32,
+    pub composition: RuntimeComposition,
+    records: Vec<RunRecord>,
 }
 
 /// Owner-local Lane B coordinator for Agentd.
 ///
-/// This type owns only ephemeral run admission and immutable snapshot references.
-/// Codex remains the thread/turn execution owner, and domain stores remain with
-/// their canonical modules.
+/// This type owns only bounded lifecycle admission and immutable snapshot
+/// references. Codex remains the thread/turn execution owner, and durable
+/// product-domain facts remain with their canonical modules.
 #[derive(Debug)]
 pub struct AgentRunCoordinator {
     composition: RuntimeComposition,
@@ -112,20 +159,69 @@ pub struct AgentRunCoordinator {
 
 impl AgentRunCoordinator {
     pub fn compose_runtime(composition: RuntimeComposition) -> Result<Self, AgentRunError> {
-        validate_identity(&composition.agent_id, "agent")?;
-        validate_digest(&composition.configuration_digest, "configuration")?;
-        validate_digest(&composition.ports_digest, "ports")?;
-        if composition.supervisor_generation == 0 || composition.agentd_generation == 0 {
-            return Err(AgentRunError::InvalidGeneration);
-        }
+        validate_composition(&composition)?;
         Ok(Self {
             composition,
             runs: BTreeMap::new(),
         })
     }
 
+    pub fn restore_runtime(
+        composition: RuntimeComposition,
+        recovery: RunRecoveryState,
+        now_ms: u64,
+    ) -> Result<Self, AgentRunError> {
+        validate_composition(&composition)?;
+        if recovery.schema_version != RUN_RECOVERY_SCHEMA_VERSION
+            || recovery.composition != composition
+            || recovery.records.len() > MAX_RETAINED_RUNS
+        {
+            return Err(AgentRunError::InvalidRecoveryState);
+        }
+
+        let mut runs = BTreeMap::new();
+        for mut record in recovery.records {
+            validate_recovery_record(&record)?;
+            if runs.contains_key(&record.snapshot.run_id) {
+                return Err(AgentRunError::InvalidRecoveryState);
+            }
+
+            match record.phase {
+                RunPhase::Admitted | RunPhase::ContextAttached
+                    if record.snapshot.deadline_ms <= now_ms =>
+                {
+                    record.phase = RunPhase::Cancelled;
+                    record.cancellation_reason = Some("deadline_exceeded_during_restart".to_string());
+                    advance_revision(&mut record)?;
+                }
+                RunPhase::Dispatched | RunPhase::Cancelling => {
+                    // The process cannot prove whether a prior App Server turn
+                    // reached a terminal state. Never redispatch after restart.
+                    record.phase = RunPhase::Indeterminate;
+                    advance_revision(&mut record)?;
+                }
+                _ => {}
+            }
+            runs.insert(record.snapshot.run_id.clone(), record);
+        }
+
+        let coordinator = Self { composition, runs };
+        if coordinator.active_run_count() > MAX_ACTIVE_RUNS {
+            return Err(AgentRunError::InvalidRecoveryState);
+        }
+        Ok(coordinator)
+    }
+
     pub fn composition(&self) -> &RuntimeComposition {
         &self.composition
+    }
+
+    pub fn recovery_state(&self) -> RunRecoveryState {
+        RunRecoveryState {
+            schema_version: RUN_RECOVERY_SCHEMA_VERSION,
+            composition: self.composition.clone(),
+            records: self.runs.values().cloned().collect(),
+        }
     }
 
     pub fn start_run(
@@ -133,12 +229,15 @@ impl AgentRunCoordinator {
         now_ms: u64,
         snapshot: RunSnapshot,
     ) -> Result<RunReceipt, AgentRunError> {
-        validate_snapshot(now_ms, &snapshot)?;
+        validate_snapshot_shape(&snapshot)?;
         if let Some(current) = self.runs.get(&snapshot.run_id) {
             if current.snapshot == snapshot {
                 return Ok(receipt(current, /*idempotent*/ true));
             }
             return Err(AgentRunError::Conflict);
+        }
+        if snapshot.deadline_ms <= now_ms {
+            return Err(AgentRunError::InvalidDeadline);
         }
         if self.active_run_count() >= MAX_ACTIVE_RUNS || self.runs.len() >= MAX_RETAINED_RUNS {
             return Err(AgentRunError::CapacityExceeded);
@@ -149,6 +248,7 @@ impl AgentRunCoordinator {
             phase: RunPhase::Admitted,
             context_digest: None,
             compilation_receipt_digest: None,
+            cancellation_reason: None,
         };
         let result = receipt(&record, /*idempotent*/ false);
         self.runs.insert(snapshot.run_id, record);
@@ -157,6 +257,7 @@ impl AgentRunCoordinator {
 
     pub fn attach_context(
         &mut self,
+        now_ms: u64,
         expected_revision: u64,
         attachment: ContextAttachment,
     ) -> Result<RunReceipt, AgentRunError> {
@@ -169,6 +270,8 @@ impl AgentRunCoordinator {
             || attachment.objective_digest != record.snapshot.objective_digest
             || attachment.body_digest != record.snapshot.body_digest
             || attachment.artifact_set_digest != record.snapshot.artifact_set_digest
+            || attachment.authority_epoch != record.snapshot.authority_epoch
+            || attachment.deadline_ms != record.snapshot.deadline_ms
         {
             return Err(AgentRunError::MixedSnapshot);
         }
@@ -178,6 +281,9 @@ impl AgentRunCoordinator {
                 == Some(attachment.compilation_receipt_digest.as_str())
         {
             return Ok(receipt(record, /*idempotent*/ true));
+        }
+        if record.snapshot.deadline_ms <= now_ms {
+            return Err(AgentRunError::DeadlineExceeded);
         }
         require_revision(record, expected_revision)?;
         if record.phase != RunPhase::Admitted {
@@ -192,6 +298,7 @@ impl AgentRunCoordinator {
 
     pub fn mark_dispatched(
         &mut self,
+        now_ms: u64,
         run_id: &str,
         expected_revision: u64,
     ) -> Result<RunReceipt, AgentRunError> {
@@ -202,6 +309,9 @@ impl AgentRunCoordinator {
             .ok_or(AgentRunError::RunNotFound)?;
         if record.phase == RunPhase::Dispatched {
             return Ok(receipt(record, /*idempotent*/ true));
+        }
+        if record.snapshot.deadline_ms <= now_ms {
+            return Err(AgentRunError::DeadlineExceeded);
         }
         require_revision(record, expected_revision)?;
         if record.phase != RunPhase::ContextAttached {
@@ -216,28 +326,45 @@ impl AgentRunCoordinator {
         &mut self,
         run_id: &str,
         expected_revision: u64,
+        reason: &str,
     ) -> Result<(CancellationDisposition, RunReceipt), AgentRunError> {
         validate_identity(run_id, "run")?;
+        validate_cancellation_reason(reason)?;
         let record = self
             .runs
             .get_mut(run_id)
             .ok_or(AgentRunError::RunNotFound)?;
+
+        if matches!(record.phase, RunPhase::Cancelled | RunPhase::Cancelling) {
+            if record.cancellation_reason.as_deref() != Some(reason) {
+                return Err(AgentRunError::Conflict);
+            }
+            let disposition = if record.phase == RunPhase::Cancelling {
+                CancellationDisposition::CancellingAfterDispatch
+            } else {
+                CancellationDisposition::AlreadyTerminal
+            };
+            return Ok((disposition, receipt(record, /*idempotent*/ true)));
+        }
+
         require_revision(record, expected_revision)?;
         let disposition = match record.phase {
             RunPhase::Admitted | RunPhase::ContextAttached => {
                 record.phase = RunPhase::Cancelled;
+                record.cancellation_reason = Some(reason.to_string());
                 advance_revision(record)?;
                 CancellationDisposition::CancelledBeforeDispatch
             }
             RunPhase::Dispatched => {
                 record.phase = RunPhase::Cancelling;
+                record.cancellation_reason = Some(reason.to_string());
                 advance_revision(record)?;
                 CancellationDisposition::CancellingAfterDispatch
             }
-            RunPhase::Cancelling => CancellationDisposition::CancellingAfterDispatch,
             RunPhase::Cancelled | RunPhase::Succeeded | RunPhase::Failed => {
                 CancellationDisposition::AlreadyTerminal
             }
+            RunPhase::Cancelling => unreachable!("handled above"),
             RunPhase::Indeterminate => return Err(AgentRunError::TerminalObservationRequired),
         };
         Ok((disposition, receipt(record, /*idempotent*/ false)))
@@ -262,12 +389,7 @@ impl AgentRunCoordinator {
             return Ok(receipt(record, /*idempotent*/ true));
         }
         require_revision(record, expected_revision)?;
-        // An unknown external outcome consumes capacity until its owner reports
-        // a terminal observation. It must be reconcilable without redispatch.
-        if !matches!(
-            record.phase,
-            RunPhase::Dispatched | RunPhase::Cancelling | RunPhase::Indeterminate
-        ) {
+        if !record.phase.externally_uncertain() {
             return Err(AgentRunError::InvalidTransition);
         }
         if terminal_observed {
@@ -283,6 +405,87 @@ impl AgentRunCoordinator {
         record.phase = phase;
         advance_revision(record)?;
         Ok(receipt(record, /*idempotent*/ false))
+    }
+
+    /// Apply elapsed deadlines even when no caller is actively mutating a run.
+    ///
+    /// Pre-dispatch work is safely cancelled locally. Once dispatch may have
+    /// happened, deadline expiry becomes a cancellation intent and still
+    /// requires an execution-owner terminal observation.
+    pub fn enforce_deadlines(
+        &mut self,
+        now_ms: u64,
+    ) -> Result<Vec<RunReceipt>, AgentRunError> {
+        let mut changed = Vec::new();
+        for record in self.runs.values_mut() {
+            if record.snapshot.deadline_ms > now_ms {
+                continue;
+            }
+            match record.phase {
+                RunPhase::Admitted | RunPhase::ContextAttached => {
+                    record.phase = RunPhase::Cancelled;
+                    record.cancellation_reason = Some("deadline_exceeded".to_string());
+                    advance_revision(record)?;
+                    changed.push(receipt(record, /*idempotent*/ false));
+                }
+                RunPhase::Dispatched => {
+                    record.phase = RunPhase::Cancelling;
+                    record.cancellation_reason = Some("deadline_exceeded".to_string());
+                    advance_revision(record)?;
+                    changed.push(receipt(record, /*idempotent*/ false));
+                }
+                RunPhase::Cancelling
+                | RunPhase::Cancelled
+                | RunPhase::Succeeded
+                | RunPhase::Failed
+                | RunPhase::Indeterminate => {}
+            }
+        }
+        Ok(changed)
+    }
+
+    pub fn begin_drain(&mut self, reason: &str) -> Result<Vec<RunReceipt>, AgentRunError> {
+        validate_cancellation_reason(reason)?;
+        let mut changed = Vec::new();
+        for record in self.runs.values_mut() {
+            match record.phase {
+                RunPhase::Admitted | RunPhase::ContextAttached => {
+                    record.phase = RunPhase::Cancelled;
+                    record.cancellation_reason = Some(reason.to_string());
+                    advance_revision(record)?;
+                    changed.push(receipt(record, /*idempotent*/ false));
+                }
+                RunPhase::Dispatched => {
+                    record.phase = RunPhase::Cancelling;
+                    record.cancellation_reason = Some(reason.to_string());
+                    advance_revision(record)?;
+                    changed.push(receipt(record, /*idempotent*/ false));
+                }
+                RunPhase::Cancelling
+                | RunPhase::Cancelled
+                | RunPhase::Succeeded
+                | RunPhase::Failed
+                | RunPhase::Indeterminate => {}
+            }
+        }
+        Ok(changed)
+    }
+
+    /// Before process exit, preserve any still-unobserved external outcome as
+    /// indeterminate. This state is durable/recoverable and must never be
+    /// replayed as a fresh dispatch after restart.
+    pub fn mark_unobserved_external_indeterminate(
+        &mut self,
+    ) -> Result<Vec<RunReceipt>, AgentRunError> {
+        let mut changed = Vec::new();
+        for record in self.runs.values_mut() {
+            if matches!(record.phase, RunPhase::Dispatched | RunPhase::Cancelling) {
+                record.phase = RunPhase::Indeterminate;
+                advance_revision(record)?;
+                changed.push(receipt(record, /*idempotent*/ false));
+            }
+        }
+        Ok(changed)
     }
 
     pub fn remove_closed_run(
@@ -307,15 +510,32 @@ impl AgentRunCoordinator {
             .map(|record| receipt(record, /*idempotent*/ false))
     }
 
-    fn active_run_count(&self) -> usize {
+    pub fn active_run_count(&self) -> usize {
         self.runs
             .values()
             .filter(|record| !record.phase.closed())
             .count()
     }
+
+    pub fn pending_external_run_count(&self) -> usize {
+        self.runs
+            .values()
+            .filter(|record| record.phase.externally_uncertain())
+            .count()
+    }
 }
 
-fn validate_snapshot(now_ms: u64, value: &RunSnapshot) -> Result<(), AgentRunError> {
+fn validate_composition(value: &RuntimeComposition) -> Result<(), AgentRunError> {
+    validate_identity(&value.agent_id, "agent")?;
+    validate_digest(&value.configuration_digest, "configuration")?;
+    validate_digest(&value.ports_digest, "ports")?;
+    if value.supervisor_generation == 0 || value.agentd_generation == 0 {
+        return Err(AgentRunError::InvalidGeneration);
+    }
+    Ok(())
+}
+
+fn validate_snapshot_shape(value: &RunSnapshot) -> Result<(), AgentRunError> {
     validate_identity(&value.run_id, "run")?;
     for (digest, field) in [
         (&value.request_digest, "request"),
@@ -325,11 +545,8 @@ fn validate_snapshot(now_ms: u64, value: &RunSnapshot) -> Result<(), AgentRunErr
     ] {
         validate_digest(digest, field)?;
     }
-    if value.authority_epoch == 0 {
+    if value.authority_epoch == 0 || value.deadline_ms == 0 {
         return Err(AgentRunError::InvalidGeneration);
-    }
-    if value.deadline_ms <= now_ms {
-        return Err(AgentRunError::InvalidDeadline);
     }
     Ok(())
 }
@@ -345,6 +562,38 @@ fn validate_attachment(value: &ContextAttachment) -> Result<(), AgentRunError> {
         (&value.compilation_receipt_digest, "compilation receipt"),
     ] {
         validate_digest(digest, field)?;
+    }
+    if value.authority_epoch == 0 || value.deadline_ms == 0 {
+        return Err(AgentRunError::InvalidGeneration);
+    }
+    Ok(())
+}
+
+fn validate_recovery_record(record: &RunRecord) -> Result<(), AgentRunError> {
+    validate_snapshot_shape(&record.snapshot)?;
+    if record.revision == 0 {
+        return Err(AgentRunError::InvalidRecoveryState);
+    }
+    if let Some(reason) = record.cancellation_reason.as_deref() {
+        validate_cancellation_reason(reason)?;
+    }
+    match record.phase {
+        RunPhase::Admitted => {
+            if record.context_digest.is_some() || record.compilation_receipt_digest.is_some() {
+                return Err(AgentRunError::InvalidRecoveryState);
+            }
+        }
+        RunPhase::ContextAttached
+        | RunPhase::Dispatched
+        | RunPhase::Cancelling
+        | RunPhase::Succeeded
+        | RunPhase::Failed
+        | RunPhase::Indeterminate => {
+            if record.context_digest.is_none() || record.compilation_receipt_digest.is_none() {
+                return Err(AgentRunError::InvalidRecoveryState);
+            }
+        }
+        RunPhase::Cancelled => {}
     }
     Ok(())
 }
@@ -373,6 +622,16 @@ fn validate_digest(value: &str, field: &'static str) -> Result<(), AgentRunError
     Ok(())
 }
 
+fn validate_cancellation_reason(value: &str) -> Result<(), AgentRunError> {
+    if value.trim().is_empty()
+        || value.len() > MAX_CANCELLATION_REASON_BYTES
+        || value.as_bytes().contains(&0)
+    {
+        return Err(AgentRunError::InvalidCancellationReason);
+    }
+    Ok(())
+}
+
 fn require_revision(record: &RunRecord, expected_revision: u64) -> Result<(), AgentRunError> {
     if record.revision != expected_revision {
         return Err(AgentRunError::StaleRevision);
@@ -394,6 +653,7 @@ fn receipt(record: &RunRecord, idempotent: bool) -> RunReceipt {
         revision: record.revision,
         phase: record.phase,
         context_digest: record.context_digest.clone(),
+        cancellation_reason: record.cancellation_reason.clone(),
         terminal_observed: record.phase.terminal_observed(),
         idempotent,
     }
