@@ -88,6 +88,8 @@ pub enum LearnedOperatorError {
     EmptyDigest(&'static str),
     InvalidGrid,
     DuplicateIdentity(String),
+    DuplicateEvidence,
+    InvalidArtifact,
     SampleLimit,
     UnknownSensor(String),
     UnknownAction(String),
@@ -158,10 +160,14 @@ pub fn fit_tabular_operator(
 
     let sensors = plan.sensor_ids.iter().collect::<BTreeSet<_>>();
     let actions = plan.action_ids.iter().collect::<BTreeSet<_>>();
+    let mut seen_evidence = BTreeSet::new();
     let mut groups: BTreeMap<(StableId, StableId), CellAccumulator> = BTreeMap::new();
     let mut sample_binding = b"hepta.bellman-operator.tabular-samples.v1".to_vec();
     for sample in &plan.samples {
         require_digest(sample.evidence_digest, "operator training sample")?;
+        if !seen_evidence.insert(sample.evidence_digest) {
+            return Err(LearnedOperatorError::DuplicateEvidence);
+        }
         if !sensors.contains(&sample.sensor_id) {
             return Err(LearnedOperatorError::UnknownSensor(
                 sample.sensor_id.to_string(),
@@ -292,11 +298,72 @@ pub fn fit_tabular_operator(
     })
 }
 
+pub(crate) fn validate_tabular_operator_artifact(
+    artifact: &TabularOperatorArtifactV1,
+) -> Result<(), LearnedOperatorError> {
+    for (label, digest) in [
+        ("operator artifact", artifact.artifact_digest),
+        ("operator objective", artifact.objective_digest),
+        ("operator dataset", artifact.dataset_digest),
+        ("operator sensor core", artifact.sensor_core_digest),
+        ("operator training profile", artifact.training_profile_digest),
+    ] {
+        require_digest(digest, label)?;
+    }
+    if artifact.authority.grants_any()
+        || artifact.cells.is_empty()
+        || artifact.cells.len() > MAX_CELLS
+        || artifact.cells.windows(2).any(|pair| {
+            (&pair[0].sensor_id, &pair[0].action_id)
+                >= (&pair[1].sensor_id, &pair[1].action_id)
+        })
+    {
+        return Err(LearnedOperatorError::InvalidArtifact);
+    }
+
+    let mut sensors = BTreeMap::<&StableId, usize>::new();
+    let mut actions = BTreeSet::<&StableId>::new();
+    let mut samples = 0_usize;
+    for cell in &artifact.cells {
+        if cell.sample_count == 0
+            || cell.evidence_digest.is_zero()
+            || cell.minimum_target > cell.mean_target
+            || cell.mean_target > cell.maximum_target
+        {
+            return Err(LearnedOperatorError::InvalidArtifact);
+        }
+        samples = samples
+            .checked_add(
+                usize::try_from(cell.sample_count).map_err(|_| LearnedOperatorError::Arithmetic)?,
+            )
+            .ok_or(LearnedOperatorError::Arithmetic)?;
+        if samples > MAX_SAMPLES {
+            return Err(LearnedOperatorError::InvalidArtifact);
+        }
+        *sensors.entry(&cell.sensor_id).or_default() += 1;
+        actions.insert(&cell.action_id);
+    }
+    if sensors.len() > MAX_SENSORS
+        || actions.len() > MAX_ACTIONS
+        || sensors.values().any(|count| *count != actions.len())
+    {
+        return Err(LearnedOperatorError::InvalidArtifact);
+    }
+    Ok(())
+}
+
+/// Compatibility prediction over an in-memory artifact.
+///
+/// This path now validates the public artifact structure on every call. A
+/// persisted or externally supplied candidate still requires an independently
+/// pinned `LoadedTabularOperatorV1`; structural validation cannot authenticate
+/// an artifact digest chosen by the same untrusted caller.
 pub fn predict_tabular_operator(
     artifact: &TabularOperatorArtifactV1,
     sensor_id: &StableId,
     action_id: &StableId,
 ) -> Result<TabularOperatorPredictionV1, LearnedOperatorError> {
+    validate_tabular_operator_artifact(artifact)?;
     let cell = artifact
         .cells
         .iter()
