@@ -9,8 +9,6 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error as StdError;
 use std::fmt;
 use std::fs::File;
-use std::fs::TryLockError;
-use std::io::{Read, Seek, SeekFrom, Write};
 
 use codex_hepta_intelligence::{
     AnchoredPlasticityWriterErrorV1, AnchoredPlasticityWriterV1, ParameterPlasticityProductErrorV1,
@@ -26,8 +24,11 @@ use codex_hepta_plasticity::{
 };
 use codex_hepta_types::{Digest32, Generation, StableId};
 
-const ANCHOR_MAGIC: &[u8; 8] = b"HPTAANC1";
-const ANCHOR_BYTES: usize = 8 + 32 + 8 + 8 + 32 + 32;
+use crate::plasticity_anchor_journal::{
+    AdaptiveAnchorJournalErrorV1, AdaptiveAnchorJournalV1, AdaptiveAnchorV1,
+};
+
+const ANCHOR_MAGIC: [u8; 8] = *b"HPTAANC2";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AgentdPlasticityHostErrorV1 {
@@ -352,177 +353,60 @@ fn push_optional_owner_id(
     Ok(())
 }
 
-struct LockedAnchorFile(File);
-impl LockedAnchorFile {
-    fn acquire(file: File) -> Result<Self, AgentdPlasticityHostErrorV1> {
-        if !file
-            .metadata()
-            .map_err(|e| AgentdPlasticityHostErrorV1::AnchorIo(e.kind()))?
-            .is_file()
-        {
-            return Err(AgentdPlasticityHostErrorV1::AnchorNotRegular);
-        }
-        match file.try_lock() {
-            Ok(()) => Ok(Self(file)),
-            Err(TryLockError::WouldBlock) => Err(AgentdPlasticityHostErrorV1::AnchorBusy),
-            Err(TryLockError::Error(error)) => {
-                Err(AgentdPlasticityHostErrorV1::AnchorIo(error.kind()))
-            }
-        }
-    }
-}
-impl Drop for LockedAnchorFile {
-    fn drop(&mut self) {
-        let _ = self.0.unlock();
-    }
+/// Independently durable append-only host journal for the proposal-registry fence
+/// and last acknowledged anchor. The caller must place this file in a rollback
+/// domain independent from the proposal registry file.
+pub struct AgentdPlasticityAnchorStoreV1 {
+    journal: AdaptiveAnchorJournalV1,
 }
 
-/// Independently durable host state for the proposal-registry fence and last
-/// acknowledged anchor. The caller must place this file in a rollback domain
-/// independent from the proposal registry file.
-pub struct AgentdPlasticityAnchorStoreV1 {
-    file: LockedAnchorFile,
-    scope: Digest32,
-    fence: u64,
-    anchor: Option<DurableRegistryAnchorV1>,
-    poisoned: bool,
+impl From<AdaptiveAnchorJournalErrorV1> for AgentdPlasticityHostErrorV1 {
+    fn from(value: AdaptiveAnchorJournalErrorV1) -> Self {
+        match value {
+            AdaptiveAnchorJournalErrorV1::Busy => Self::AnchorBusy,
+            AdaptiveAnchorJournalErrorV1::NotRegular => Self::AnchorNotRegular,
+            AdaptiveAnchorJournalErrorV1::ScopeMismatch => Self::AnchorScopeMismatch,
+            AdaptiveAnchorJournalErrorV1::FenceOverflow => Self::AnchorFenceOverflow,
+            AdaptiveAnchorJournalErrorV1::Io(kind) => Self::AnchorIo(kind),
+            AdaptiveAnchorJournalErrorV1::InvalidScope
+            | AdaptiveAnchorJournalErrorV1::Corrupt
+            | AdaptiveAnchorJournalErrorV1::GenerationPending
+            | AdaptiveAnchorJournalErrorV1::Capacity => Self::AnchorCorrupt,
+        }
+    }
 }
 
 impl AgentdPlasticityAnchorStoreV1 {
     pub fn open(file: File, scope: Digest32) -> Result<Self, AgentdPlasticityHostErrorV1> {
-        if scope.is_zero() {
-            return Err(AgentdPlasticityHostErrorV1::AnchorCorrupt);
-        }
-        let mut file = LockedAnchorFile::acquire(file)?;
-        let length = file
-            .0
-            .metadata()
-            .map_err(|e| AgentdPlasticityHostErrorV1::AnchorIo(e.kind()))?
-            .len();
-        if length == 0 {
-            let mut store = Self {
-                file,
-                scope,
-                fence: 0,
-                anchor: None,
-                poisoned: false,
-            };
-            store.persist_state()?;
-            return Ok(store);
-        }
-        if length != ANCHOR_BYTES as u64 {
-            return Err(AgentdPlasticityHostErrorV1::AnchorCorrupt);
-        }
-        file.0
-            .seek(SeekFrom::Start(0))
-            .map_err(|e| AgentdPlasticityHostErrorV1::AnchorIo(e.kind()))?;
-        let mut bytes = [0_u8; ANCHOR_BYTES];
-        file.0
-            .read_exact(&mut bytes)
-            .map_err(|e| AgentdPlasticityHostErrorV1::AnchorIo(e.kind()))?;
-        if &bytes[..8] != ANCHOR_MAGIC
-            || Digest32::of_bytes(&bytes[..ANCHOR_BYTES - 32]).as_array()
-                != &bytes[ANCHOR_BYTES - 32..]
-        {
-            return Err(AgentdPlasticityHostErrorV1::AnchorCorrupt);
-        }
-        let stored_scope = Digest32::from_array(
-            bytes[8..40]
-                .try_into()
-                .map_err(|_| AgentdPlasticityHostErrorV1::AnchorCorrupt)?,
-        );
-        if stored_scope != scope {
-            return Err(AgentdPlasticityHostErrorV1::AnchorScopeMismatch);
-        }
-        let fence = u64::from_be_bytes(
-            bytes[40..48]
-                .try_into()
-                .map_err(|_| AgentdPlasticityHostErrorV1::AnchorCorrupt)?,
-        );
-        let sequence = u64::from_be_bytes(
-            bytes[48..56]
-                .try_into()
-                .map_err(|_| AgentdPlasticityHostErrorV1::AnchorCorrupt)?,
-        );
-        let frame_digest = Digest32::from_array(
-            bytes[56..88]
-                .try_into()
-                .map_err(|_| AgentdPlasticityHostErrorV1::AnchorCorrupt)?,
-        );
-        let anchor = if sequence == 0 {
-            if !frame_digest.is_zero() {
-                return Err(AgentdPlasticityHostErrorV1::AnchorCorrupt);
-            }
-            None
-        } else {
-            if frame_digest.is_zero() || fence == 0 {
-                return Err(AgentdPlasticityHostErrorV1::AnchorCorrupt);
-            }
-            Some(DurableRegistryAnchorV1 {
-                sequence,
-                frame_digest,
-            })
-        };
         Ok(Self {
-            file,
-            scope,
-            fence,
-            anchor,
-            poisoned: false,
+            journal: AdaptiveAnchorJournalV1::open(file, scope, ANCHOR_MAGIC)?,
         })
     }
 
-    /// Issue a strictly increasing fence for a newly enrolled registry generation.
-    /// Existing acknowledged history retains its original fence on reopen.
+    /// Issue a strictly newer fence for a new proposal-registry generation.
+    /// A pending unacknowledged generation cannot skip to another fence.
     pub fn issue_next_fence(&mut self) -> Result<u64, AgentdPlasticityHostErrorV1> {
-        if self.poisoned || self.anchor.is_some() {
-            return Err(AgentdPlasticityHostErrorV1::AnchorCorrupt);
-        }
-        self.fence = self
-            .fence
-            .checked_add(1)
-            .ok_or(AgentdPlasticityHostErrorV1::AnchorFenceOverflow)?;
-        if self.fence == 0 {
-            return Err(AgentdPlasticityHostErrorV1::AnchorFenceOverflow);
-        }
-        self.persist_state()?;
-        Ok(self.fence)
+        self.journal.issue_new_registry_fence().map_err(Into::into)
     }
 
     pub const fn fence(&self) -> u64 {
-        self.fence
+        self.journal.state().writer_fence
     }
 
-    pub const fn anchor(&self) -> Option<DurableRegistryAnchorV1> {
-        self.anchor
+    pub fn anchor(&self) -> Option<DurableRegistryAnchorV1> {
+        self.journal.state().anchor.map(|anchor| DurableRegistryAnchorV1 {
+            sequence: anchor.sequence,
+            frame_digest: anchor.frame_digest,
+        })
     }
 
-    fn persist_state(&mut self) -> Result<(), AgentdPlasticityHostErrorV1> {
-        let mut bytes = Vec::with_capacity(ANCHOR_BYTES);
-        bytes.extend_from_slice(ANCHOR_MAGIC);
-        bytes.extend_from_slice(self.scope.as_array());
-        bytes.extend_from_slice(&self.fence.to_be_bytes());
-        match self.anchor {
-            Some(anchor) => {
-                bytes.extend_from_slice(&anchor.sequence.to_be_bytes());
-                bytes.extend_from_slice(anchor.frame_digest.as_array());
-            }
-            None => {
-                bytes.extend_from_slice(&0_u64.to_be_bytes());
-                bytes.extend_from_slice(Digest32::ZERO.as_array());
-            }
-        }
-        let checksum = Digest32::of_bytes(&bytes);
-        bytes.extend_from_slice(checksum.as_array());
-        self.file
-            .0
-            .seek(SeekFrom::Start(0))
-            .and_then(|_| self.file.0.write_all(&bytes))
-            .and_then(|_| self.file.0.set_len(ANCHOR_BYTES as u64))
-            .and_then(|_| self.file.0.sync_all())
-            .map_err(|error| {
-                self.poisoned = true;
-                AgentdPlasticityHostErrorV1::AnchorIo(error.kind())
+    pub fn previous_anchor(&self) -> Option<DurableRegistryAnchorV1> {
+        self.journal
+            .state()
+            .previous_anchor
+            .map(|anchor| DurableRegistryAnchorV1 {
+                sequence: anchor.sequence,
+                frame_digest: anchor.frame_digest,
             })
     }
 }
@@ -534,29 +418,16 @@ impl PlasticityAnchorCommitterV1 for AgentdPlasticityAnchorStoreV1 {
         writer_fence: u64,
         anchor: DurableRegistryAnchorV1,
     ) -> bool {
-        if self.poisoned
-            || registry_scope_digest != self.scope
-            || writer_fence != self.fence
-            || writer_fence == 0
-            || anchor.sequence == 0
-            || anchor.frame_digest.is_zero()
-        {
-            self.poisoned = true;
-            return false;
-        }
-        if let Some(current) = self.anchor {
-            if anchor.sequence < current.sequence
-                || (anchor.sequence == current.sequence && anchor != current)
-            {
-                self.poisoned = true;
-                return false;
-            }
-            if anchor == current {
-                return true;
-            }
-        }
-        self.anchor = Some(anchor);
-        self.persist_state().is_ok()
+        self.journal
+            .persist_anchor(
+                registry_scope_digest,
+                writer_fence,
+                AdaptiveAnchorV1 {
+                    sequence: anchor.sequence,
+                    frame_digest: anchor.frame_digest,
+                },
+            )
+            .is_ok()
     }
 }
 
@@ -783,7 +654,7 @@ pub fn bootstrap_agentd_plasticity_writer_v1(
 ) -> Result<(AnchoredPlasticityWriterV1, AgentdPlasticityAnchorStoreV1), AgentdPlasticityHostErrorV1>
 {
     let mut anchor_store = AgentdPlasticityAnchorStoreV1::open(anchor_file, registry_scope_digest)?;
-    if anchor_store.anchor().is_some() {
+    if anchor_store.anchor().is_some() || anchor_store.fence() != 0 {
         return Err(AgentdPlasticityHostErrorV1::AnchorCorrupt);
     }
     let fence = anchor_store.issue_next_fence()?;
@@ -791,6 +662,51 @@ pub fn bootstrap_agentd_plasticity_writer_v1(
         registry_file,
         registry_scope_digest,
         fence,
+        maximum_records,
+    )?;
+    Ok((writer, anchor_store))
+}
+
+pub fn rollover_agentd_plasticity_writer_v1(
+    registry_file: File,
+    anchor_file: File,
+    registry_scope_digest: Digest32,
+    maximum_records: usize,
+    expected_previous_anchor: DurableRegistryAnchorV1,
+) -> Result<(AnchoredPlasticityWriterV1, AgentdPlasticityAnchorStoreV1), AgentdPlasticityHostErrorV1>
+{
+    let mut anchor_store = AgentdPlasticityAnchorStoreV1::open(anchor_file, registry_scope_digest)?;
+    if anchor_store.anchor() != Some(expected_previous_anchor) {
+        return Err(AgentdPlasticityHostErrorV1::AnchorCorrupt);
+    }
+    let fence = anchor_store.issue_next_fence()?;
+    let writer = AnchoredPlasticityWriterV1::bootstrap_new(
+        registry_file,
+        registry_scope_digest,
+        fence,
+        maximum_records,
+    )?;
+    Ok((writer, anchor_store))
+}
+
+/// Resume a generation whose fence was durably issued but whose new registry is
+/// still empty. This never issues another fence and therefore cannot skip a
+/// generation after a crash between fence reservation and registry enrollment.
+pub fn resume_agentd_plasticity_writer_v1(
+    registry_file: File,
+    anchor_file: File,
+    registry_scope_digest: Digest32,
+    maximum_records: usize,
+) -> Result<(AnchoredPlasticityWriterV1, AgentdPlasticityAnchorStoreV1), AgentdPlasticityHostErrorV1>
+{
+    let anchor_store = AgentdPlasticityAnchorStoreV1::open(anchor_file, registry_scope_digest)?;
+    if anchor_store.fence() == 0 || anchor_store.anchor().is_some() {
+        return Err(AgentdPlasticityHostErrorV1::AnchorCorrupt);
+    }
+    let writer = AnchoredPlasticityWriterV1::bootstrap_new(
+        registry_file,
+        registry_scope_digest,
+        anchor_store.fence(),
         maximum_records,
     )?;
     Ok((writer, anchor_store))

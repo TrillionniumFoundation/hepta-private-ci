@@ -6,8 +6,7 @@
 
 use std::error::Error as StdError;
 use std::fmt;
-use std::fs::{File, TryLockError};
-use std::io::{Read, Seek, SeekFrom, Write};
+use std::fs::File;
 
 use codex_hepta_intelligence::{
     TopologyAdmissionEvidenceV1, TopologyPlasticityProductErrorV1,
@@ -22,8 +21,11 @@ use codex_hepta_plasticity::{
 };
 use codex_hepta_types::{Digest32, Generation, StableId};
 
-const ANCHOR_MAGIC: &[u8; 8] = b"HPTTANC1";
-const ANCHOR_BYTES: usize = 8 + 32 + 8 + 8 + 32 + 32;
+use crate::plasticity_anchor_journal::{
+    AdaptiveAnchorJournalErrorV1, AdaptiveAnchorJournalV1, AdaptiveAnchorV1,
+};
+
+const ANCHOR_MAGIC: [u8; 8] = *b"HPTTANC2";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum AgentdTopologyWriterStateV1 {
@@ -74,141 +76,56 @@ impl From<TopologyPlasticityProductErrorV1> for AgentdTopologyHostErrorV1 {
     }
 }
 
-struct LockedAnchorFile(File);
-impl LockedAnchorFile {
-    fn acquire(file: File) -> Result<Self, AgentdTopologyHostErrorV1> {
-        if !file
-            .metadata()
-            .map_err(|e| AgentdTopologyHostErrorV1::AnchorIo(e.kind()))?
-            .is_file()
-        {
-            return Err(AgentdTopologyHostErrorV1::AnchorNotRegular);
-        }
-        match file.try_lock() {
-            Ok(()) => Ok(Self(file)),
-            Err(TryLockError::WouldBlock) => Err(AgentdTopologyHostErrorV1::AnchorBusy),
-            Err(TryLockError::Error(error)) => {
-                Err(AgentdTopologyHostErrorV1::AnchorIo(error.kind()))
-            }
-        }
-    }
-}
-impl Drop for LockedAnchorFile {
-    fn drop(&mut self) {
-        let _ = self.0.unlock();
-    }
+pub struct AgentdTopologyAnchorStoreV1 {
+    journal: AdaptiveAnchorJournalV1,
 }
 
-pub struct AgentdTopologyAnchorStoreV1 {
-    file: LockedAnchorFile,
-    scope: Digest32,
-    fence: u64,
-    anchor: Option<DurableTopologyRegistryAnchorV1>,
-    poisoned: bool,
+impl From<AdaptiveAnchorJournalErrorV1> for AgentdTopologyHostErrorV1 {
+    fn from(value: AdaptiveAnchorJournalErrorV1) -> Self {
+        match value {
+            AdaptiveAnchorJournalErrorV1::Busy => Self::AnchorBusy,
+            AdaptiveAnchorJournalErrorV1::NotRegular => Self::AnchorNotRegular,
+            AdaptiveAnchorJournalErrorV1::ScopeMismatch => Self::AnchorScopeMismatch,
+            AdaptiveAnchorJournalErrorV1::FenceOverflow => Self::AnchorFenceOverflow,
+            AdaptiveAnchorJournalErrorV1::Io(kind) => Self::AnchorIo(kind),
+            AdaptiveAnchorJournalErrorV1::InvalidScope
+            | AdaptiveAnchorJournalErrorV1::Corrupt
+            | AdaptiveAnchorJournalErrorV1::GenerationPending
+            | AdaptiveAnchorJournalErrorV1::Capacity => Self::AnchorCorrupt,
+        }
+    }
 }
 
 impl AgentdTopologyAnchorStoreV1 {
     pub fn open(file: File, scope: Digest32) -> Result<Self, AgentdTopologyHostErrorV1> {
-        if scope.is_zero() {
-            return Err(AgentdTopologyHostErrorV1::AnchorCorrupt);
-        }
-        let mut file = LockedAnchorFile::acquire(file)?;
-        let length = file
-            .0
-            .metadata()
-            .map_err(|e| AgentdTopologyHostErrorV1::AnchorIo(e.kind()))?
-            .len();
-        if length == 0 {
-            let mut store = Self {
-                file,
-                scope,
-                fence: 0,
-                anchor: None,
-                poisoned: false,
-            };
-            store.persist_state()?;
-            return Ok(store);
-        }
-        if length != ANCHOR_BYTES as u64 {
-            return Err(AgentdTopologyHostErrorV1::AnchorCorrupt);
-        }
-        file.0
-            .seek(SeekFrom::Start(0))
-            .map_err(|e| AgentdTopologyHostErrorV1::AnchorIo(e.kind()))?;
-        let mut bytes = [0_u8; ANCHOR_BYTES];
-        file.0
-            .read_exact(&mut bytes)
-            .map_err(|e| AgentdTopologyHostErrorV1::AnchorIo(e.kind()))?;
-        if &bytes[..8] != ANCHOR_MAGIC
-            || Digest32::of_bytes(&bytes[..ANCHOR_BYTES - 32]).as_array()
-                != &bytes[ANCHOR_BYTES - 32..]
-        {
-            return Err(AgentdTopologyHostErrorV1::AnchorCorrupt);
-        }
-        let stored_scope = Digest32::from_array(
-            bytes[8..40]
-                .try_into()
-                .map_err(|_| AgentdTopologyHostErrorV1::AnchorCorrupt)?,
-        );
-        if stored_scope != scope {
-            return Err(AgentdTopologyHostErrorV1::AnchorScopeMismatch);
-        }
-        let fence = u64::from_be_bytes(
-            bytes[40..48]
-                .try_into()
-                .map_err(|_| AgentdTopologyHostErrorV1::AnchorCorrupt)?,
-        );
-        let sequence = u64::from_be_bytes(
-            bytes[48..56]
-                .try_into()
-                .map_err(|_| AgentdTopologyHostErrorV1::AnchorCorrupt)?,
-        );
-        let frame_digest = Digest32::from_array(
-            bytes[56..88]
-                .try_into()
-                .map_err(|_| AgentdTopologyHostErrorV1::AnchorCorrupt)?,
-        );
-        let anchor = if sequence == 0 {
-            if !frame_digest.is_zero() {
-                return Err(AgentdTopologyHostErrorV1::AnchorCorrupt);
-            }
-            None
-        } else {
-            if fence == 0 || frame_digest.is_zero() {
-                return Err(AgentdTopologyHostErrorV1::AnchorCorrupt);
-            }
-            Some(DurableTopologyRegistryAnchorV1 {
-                sequence,
-                frame_digest,
-            })
-        };
         Ok(Self {
-            file,
-            scope,
-            fence,
-            anchor,
-            poisoned: false,
+            journal: AdaptiveAnchorJournalV1::open(file, scope, ANCHOR_MAGIC)?,
         })
     }
 
     pub fn issue_next_fence(&mut self) -> Result<u64, AgentdTopologyHostErrorV1> {
-        if self.poisoned || self.anchor.is_some() {
-            return Err(AgentdTopologyHostErrorV1::AnchorCorrupt);
-        }
-        self.fence = self
-            .fence
-            .checked_add(1)
-            .filter(|value| *value != 0)
-            .ok_or(AgentdTopologyHostErrorV1::AnchorFenceOverflow)?;
-        self.persist_state()?;
-        Ok(self.fence)
+        self.journal.issue_new_registry_fence().map_err(Into::into)
     }
 
     pub const fn fence(&self) -> u64 {
-        self.fence
+        self.journal.state().writer_fence
     }
-    pub const fn anchor(&self) -> Option<DurableTopologyRegistryAnchorV1> {
-        self.anchor
+
+    pub fn anchor(&self) -> Option<DurableTopologyRegistryAnchorV1> {
+        self.journal.state().anchor.map(|anchor| DurableTopologyRegistryAnchorV1 {
+            sequence: anchor.sequence,
+            frame_digest: anchor.frame_digest,
+        })
+    }
+
+    pub fn previous_anchor(&self) -> Option<DurableTopologyRegistryAnchorV1> {
+        self.journal
+            .state()
+            .previous_anchor
+            .map(|anchor| DurableTopologyRegistryAnchorV1 {
+                sequence: anchor.sequence,
+                frame_digest: anchor.frame_digest,
+            })
     }
 
     pub fn persist_anchor(
@@ -217,58 +134,16 @@ impl AgentdTopologyAnchorStoreV1 {
         fence: u64,
         anchor: DurableTopologyRegistryAnchorV1,
     ) -> Result<(), AgentdTopologyHostErrorV1> {
-        if self.poisoned
-            || scope != self.scope
-            || fence != self.fence
-            || fence == 0
-            || anchor.sequence == 0
-            || anchor.frame_digest.is_zero()
-        {
-            self.poisoned = true;
-            return Err(AgentdTopologyHostErrorV1::AnchorCorrupt);
-        }
-        if let Some(current) = self.anchor {
-            if anchor.sequence < current.sequence
-                || (anchor.sequence == current.sequence && anchor != current)
-            {
-                self.poisoned = true;
-                return Err(AgentdTopologyHostErrorV1::AnchorCorrupt);
-            }
-            if anchor == current {
-                return Ok(());
-            }
-        }
-        self.anchor = Some(anchor);
-        self.persist_state()
-    }
-
-    fn persist_state(&mut self) -> Result<(), AgentdTopologyHostErrorV1> {
-        let mut bytes = Vec::with_capacity(ANCHOR_BYTES);
-        bytes.extend_from_slice(ANCHOR_MAGIC);
-        bytes.extend_from_slice(self.scope.as_array());
-        bytes.extend_from_slice(&self.fence.to_be_bytes());
-        match self.anchor {
-            Some(anchor) => {
-                bytes.extend_from_slice(&anchor.sequence.to_be_bytes());
-                bytes.extend_from_slice(anchor.frame_digest.as_array());
-            }
-            None => {
-                bytes.extend_from_slice(&0_u64.to_be_bytes());
-                bytes.extend_from_slice(Digest32::ZERO.as_array());
-            }
-        }
-        let checksum = Digest32::of_bytes(&bytes);
-        bytes.extend_from_slice(checksum.as_array());
-        self.file
-            .0
-            .seek(SeekFrom::Start(0))
-            .and_then(|_| self.file.0.write_all(&bytes))
-            .and_then(|_| self.file.0.set_len(ANCHOR_BYTES as u64))
-            .and_then(|_| self.file.0.sync_all())
-            .map_err(|error| {
-                self.poisoned = true;
-                AgentdTopologyHostErrorV1::AnchorIo(error.kind())
-            })
+        self.journal
+            .persist_anchor(
+                scope,
+                fence,
+                AdaptiveAnchorV1 {
+                    sequence: anchor.sequence,
+                    frame_digest: anchor.frame_digest,
+                },
+            )
+            .map_err(Into::into)
     }
 }
 
@@ -421,7 +296,7 @@ pub fn bootstrap_agentd_topology_writer_v1(
     maximum_records: usize,
 ) -> Result<(AgentdTopologyWriterV1, AgentdTopologyAnchorStoreV1), AgentdTopologyHostErrorV1> {
     let mut anchor_store = AgentdTopologyAnchorStoreV1::open(anchor_file, scope)?;
-    if anchor_store.anchor().is_some() {
+    if anchor_store.anchor().is_some() || anchor_store.fence() != 0 {
         return Err(AgentdTopologyHostErrorV1::AnchorCorrupt);
     }
     let fence = anchor_store.issue_next_fence()?;
@@ -435,6 +310,63 @@ pub fn bootstrap_agentd_topology_writer_v1(
         AgentdTopologyWriterV1 {
             registry,
             scope,
+            fence,
+            state: AgentdTopologyWriterStateV1::Healthy,
+        },
+        anchor_store,
+    ))
+}
+
+pub fn rollover_agentd_topology_writer_v1(
+    registry_file: File,
+    anchor_file: File,
+    registry_scope_digest: Digest32,
+    maximum_records: usize,
+    expected_previous_anchor: DurableTopologyRegistryAnchorV1,
+) -> Result<(AgentdTopologyWriterV1, AgentdTopologyAnchorStoreV1), AgentdTopologyHostErrorV1> {
+    let mut anchor_store = AgentdTopologyAnchorStoreV1::open(anchor_file, registry_scope_digest)?;
+    if anchor_store.anchor() != Some(expected_previous_anchor) {
+        return Err(AgentdTopologyHostErrorV1::AnchorCorrupt);
+    }
+    let fence = anchor_store.issue_next_fence()?;
+    let registry = DurableTopologyProposalRegistryV1::bootstrap_empty(
+        registry_file,
+        registry_scope_digest,
+        fence,
+        maximum_records,
+    )?;
+    Ok((
+        AgentdTopologyWriterV1 {
+            registry,
+            scope: registry_scope_digest,
+            fence,
+            state: AgentdTopologyWriterStateV1::Healthy,
+        },
+        anchor_store,
+    ))
+}
+
+pub fn resume_agentd_topology_writer_v1(
+    registry_file: File,
+    anchor_file: File,
+    registry_scope_digest: Digest32,
+    maximum_records: usize,
+) -> Result<(AgentdTopologyWriterV1, AgentdTopologyAnchorStoreV1), AgentdTopologyHostErrorV1> {
+    let anchor_store = AgentdTopologyAnchorStoreV1::open(anchor_file, registry_scope_digest)?;
+    if anchor_store.fence() == 0 || anchor_store.anchor().is_some() {
+        return Err(AgentdTopologyHostErrorV1::AnchorCorrupt);
+    }
+    let fence = anchor_store.fence();
+    let registry = DurableTopologyProposalRegistryV1::bootstrap_empty(
+        registry_file,
+        registry_scope_digest,
+        fence,
+        maximum_records,
+    )?;
+    Ok((
+        AgentdTopologyWriterV1 {
+            registry,
+            scope: registry_scope_digest,
             fence,
             state: AgentdTopologyWriterStateV1::Healthy,
         },
