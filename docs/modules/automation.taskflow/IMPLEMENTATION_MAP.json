@@ -2,19 +2,19 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "a3eff4e7399ed8650a088abbf4c6fd7d60b778fb",
+    "tree": "09b368cddd5583739bc7f1bed852d505eb1c936d"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
-  "sourceMaturity": "native_durable_scheduler_boundary",
+  "sourceMaturity": "native_durable_taskflow_execution_boundary",
   "declaredRoots": [
     "codex-rs/hepta-automation"
   ],
   "resolvedRoots": [
     "codex-rs/hepta-automation"
   ],
-  "stateOwnerDisposition": "Owns durable schedule revision, deterministic occurrence identity, claim, TaskFlow run/step orchestration, and terminal occurrence projection without owning downstream domain effects.",
+  "stateOwnerDisposition": "Owns durable legacy and Calendar V2 schedule revisions, deterministic occurrence identity, claim, TaskFlow run/step orchestration, provider-attempt/reconciliation evidence, and terminal occurrence projection without owning downstream domain effects.",
   "terminalObserverDisposition": "Agentd observes the existing App Server persisted-turn terminal state for Codex activity; registered external effect owners supply their own terminal/reconciliation receipts through the final-use-authorized durable step seam.",
   "operations": [
     {
@@ -22,22 +22,27 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-automation/src/store.rs",
-        "symbol": "pub async fn create_task(",
+        "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
+        "symbol": "pub async fn create_calendar_task_v2(",
         "buildTarget": "codex-hepta-automation"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-automation/src/store.rs",
-          "kind": "store_and_schedule",
-          "command": "just test -p codex-hepta-automation --lib"
+          "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
+          "kind": "calendar_v2_dst_tzdb_revision",
+          "command": "cargo test -p codex-hepta-automation"
+        },
+        {
+          "path": "codex-rs/hepta-automation/tests/automation.rs",
+          "kind": "legacy_schedule_compatibility",
+          "command": "cargo test -p codex-hepta-automation"
         }
       ],
-      "sourceSemantics": "Persists the automation definition and separately revisioned missed-run/overlap policy under the per-Agent automation owner.",
+      "sourceSemantics": "Persists append-only Calendar V2 revisions with explicit timezone/tzdb identity, start/end, DST gap/overlap policy and bounded recurrence while preserving Once/FixedInterval compatibility records.",
       "operation": "register_schedule",
-      "nativeSymbol": "pub async fn create_task(",
-      "sourcePath": "codex-rs/hepta-automation/src/store.rs",
+      "nativeSymbol": "pub async fn create_calendar_task_v2(",
+      "sourcePath": "codex-rs/hepta-automation/src/schedule_v2.rs",
       "sourcePathExists": true
     },
     {
@@ -54,10 +59,15 @@
         {
           "path": "codex-rs/hepta-automation/src/scheduler.rs",
           "kind": "scheduler_and_recovery",
-          "command": "just test -p codex-hepta-automation --lib"
+          "command": "cargo test -p codex-hepta-automation"
+        },
+        {
+          "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
+          "kind": "calendar_due_materialization",
+          "command": "cargo test -p codex-hepta-automation"
         }
       ],
-      "sourceSemantics": "Claims bounded due work, freezes schedule revision, derives deterministic occurrence identity, and commits TaskFlow step intent before App Server admission.",
+      "sourceSemantics": "Claims bounded due work, freezes schedule revision, derives canonical UTC occurrence identity from the authoritative schedule profile, and commits TaskFlow step intent before App Server or external-provider contact.",
       "operation": "materialize_due",
       "nativeSymbol": "pub async fn tick(",
       "sourcePath": "codex-rs/hepta-automation/src/scheduler.rs",
@@ -86,9 +96,14 @@
           "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
           "kind": "deterministic_occurrence_and_generation_fence",
           "command": "cargo test -p codex-hepta-automation --test durable_causal_chain"
+        },
+        {
+          "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+          "kind": "restart_reconciliation_identity",
+          "command": "cargo test -p codex-hepta-automation"
         }
       ],
-      "sourceSemantics": "Binds one due compatibility lease to a deterministic durable occurrence and generation/token fence; safe reclaim preserves occurrence/client identity.",
+      "sourceSemantics": "Binds one due compatibility lease to a deterministic durable occurrence and generation/token fence; safe reclaim preserves occurrence/client identity, while unresolved provider contact remains quarantined.",
       "operation": "claim_occurrence",
       "nativeSymbol": "pub async fn materialize_occurrence(",
       "sourcePath": "codex-rs/hepta-automation/src/lifecycle.rs",
@@ -114,37 +129,40 @@
       ],
       "tests": [
         {
+          "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+          "kind": "canonical_final_use_intent_binding",
+          "command": "cargo test -p codex-hepta-automation"
+        },
+        {
+          "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+          "kind": "durable_indeterminate_terminal_reconciliation",
+          "command": "cargo test -p codex-hepta-automation"
+        },
+        {
           "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
           "kind": "durable_step_and_terminal_propagation",
           "command": "cargo test -p codex-hepta-automation --test durable_causal_chain"
-        },
-        {
-          "path": "codex-rs/hepta-automation/src/effect_executor_tests.rs",
-          "kind": "reference_effect_terminality_and_compensation",
-          "command": "cargo test -p codex-hepta-automation --lib"
         }
       ],
-      "sourceSemantics": "Requires an already-claimed durable step, verifies independently signed final-use intent/payload binding immediately around the registered provider call, and appends terminal or indeterminate observation.",
+      "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding immediately around provider entry, appends an immutable provider-attempt row before contact, and records initial plus terminal reconciliation evidence without blind redispatch.",
       "operation": "execute_step",
       "nativeSymbol": "pub async fn execute_authorized_taskflow_effect",
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [
-    "Complete the calendar/IANA-timezone recurrence surface, including explicit DST gap/overlap semantics and deterministic timezone-database qualification."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
     "selected-host Agentd/App Server execution receipt for the composed durable causal path",
-    "concrete registered downstream effect owner and terminal observer for each activated external effect",
-    "DST/timezone-database and multi-scheduler target qualification",
-    "independent acceptance and release evidence"
+    "concrete registered downstream effect owner and trusted terminal/reconciliation evidence for every activated external effect",
+    "real IANA timezone-profile provenance/tzdb refresh plus DST and multi-scheduler target qualification",
+    "independent acceptance, activation, promotion and release evidence"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -157,8 +175,8 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "agentd_app_server_composed_for_codex_activity_external_effect_owner_unselected",
+  "productionWriterState": "automation_store_durable_schedule_occurrence_taskflow_owner_established",
   "owner": "automation-platform",
   "deputy": "agent-runtime",
   "technicalGuide": "docs/modules/automation.taskflow/TECHNICAL.md",
