@@ -215,7 +215,7 @@ pub(crate) fn canonical_generation_from_projection(
     })
 }
 
-async fn load_canonical_generation_tx(
+pub(crate) async fn load_canonical_generation_tx(
     transaction: &mut Transaction<'_, Sqlite>,
     projection_scope: &str,
     generation: i64,
