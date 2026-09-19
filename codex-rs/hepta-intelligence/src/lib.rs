@@ -12,6 +12,7 @@ pub use evaluated_shadow::EvaluatedShadowError;
 pub use evaluated_shadow::EvaluatedShadowReceiptV1;
 pub use evaluated_shadow::EvaluatedShadowRequestV1;
 pub use evaluated_shadow::evaluated_candidate_signing_payload_v1;
+pub use evaluated_shadow::evaluated_shadow_production_decision_v2;
 pub use evaluated_shadow::run_evaluated_shadow_v1;
 
 mod capability_snapshot;

@@ -18,42 +18,83 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "qualification_consumer_composed_live_product_not_established",
+  "productionWriterState": "source_implemented_host_not_established",
   "operations": [
     {
-      "operation": "durableledger",
-      "nativeSymbol": "DurableLedger",
-      "sourcePath": "codex-rs/hepta-learning-ledger/src/durable.rs",
-      "state": "source_implemented_not_product_composed",
+      "operation": "ledgerwriter",
+      "nativeSymbol": "LedgerWriter",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "state": "source_implemented_qualification_consumer_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/production_tests.rs",
+        "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "durableledger",
+      "designOperation": "production_causal_writer",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "DurableLedger",
+        "SegmentedLedger",
+        "LedgerWitnessStore",
+        "LearningEvidenceVerifierV1"
+      ]
+    },
+    {
+      "operation": "ledgerwitnessstore",
+      "nativeSymbol": "LedgerWitnessStore",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/witness.rs",
+      "state": "source_implemented_host_placement_external",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/witness_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "independent_acknowledgement_witness",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "learningevidenceverifierv1",
-      "nativeSymbol": "LearningEvidenceVerifierV1",
-      "sourcePath": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
-      "state": "source_implemented_not_product_composed",
+      "operation": "activate_learning_trust",
+      "nativeSymbol": "activate_learning_trust",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/trust_distribution.rs",
+      "state": "source_implemented_distribution_transport_external",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/trust_distribution_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "learningevidenceverifierv1",
+      "designOperation": "versioned_signer_distribution_activation",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "LearningEvidenceVerifierV1"
+      ]
+    },
+    {
+      "operation": "build_ledger_index_checkpoint",
+      "nativeSymbol": "build_ledger_index_checkpoint",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/checkpoint.rs",
+      "state": "source_implemented_rebuildable_projection",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/checkpoint_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verifiable_rebuildable_index",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Pass current exact-head, package, strict-lint, merge-candidate and cross-crate tests for this candidate.",
+    "Keep all repository-controlled learning consumers on LedgerWriter or an explicitly legacy/qualification-only compatibility path."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "named live product caller and exclusive physical writer/directory ownership",
+    "production trust-distribution transport, key custody, independent witness placement and target-host qualification",
+    "live independent outcomes and longitudinal evaluation",
+    "independent semantic review, operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -66,5 +107,12 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-learning-ledger"
-  ]
+  ],
+  "statusDimensions": {
+    "planningState": "work_packages_declared_planned",
+    "sourceImplementationState": "production_writer_source_implemented",
+    "compositionState": "qualification_consumer_composed",
+    "qualificationState": "pending_current_exact_candidate_execution",
+    "liveProductState": "not_established"
+  }
 }

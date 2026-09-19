@@ -282,6 +282,11 @@ impl SegmentedLedger {
         Ok(())
     }
 
+    #[must_use]
+    pub const fn binding_digest(&self) -> Digest32 {
+        self.binding
+    }
+
     pub fn checkpoint(&self) -> Result<LedgerSegmentCheckpoint, DurableLedgerError> {
         self.ready()?;
         Ok(LedgerSegmentCheckpoint {
