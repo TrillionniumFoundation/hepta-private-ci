@@ -4,6 +4,7 @@
 
 mod authbus;
 mod capabilities;
+mod evidence;
 pub use authbus::AuthBusTextBody;
 pub use authbus::AuthBusTextIngress;
 pub use authbus::AuthBusTextState;
@@ -13,6 +14,13 @@ pub use capabilities::AgentdCapability;
 pub use capabilities::AgentdCapabilitySet;
 pub use capabilities::NegotiatedAgentdCapabilities;
 pub use capabilities::negotiate_capabilities;
+pub use evidence::KernelEvidenceAppendIngress;
+pub use evidence::KernelEvidenceCandidateV1;
+pub use evidence::KernelEvidenceQueryV1;
+pub use evidence::KernelEvidenceResult;
+pub use evidence::KernelEvidenceVerifyV1;
+pub use evidence::MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES;
+pub use evidence::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES;
 
 use std::path::PathBuf;
 
