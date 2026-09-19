@@ -1,3 +1,5 @@
+#![allow(deprecated)]
+
 use std::fmt::Debug;
 
 use codex_hepta_types::Digest32;
@@ -8,6 +10,7 @@ use pretty_assertions::assert_eq;
 
 use super::canonical_evaluation_policy_digest;
 use super::canonical_scalarization_digest;
+use super::canonical_utility_profile_digest;
 use super::evaluate_candidates;
 use super::evaluate_candidates_with_policy;
 use super::legacy_evaluation_policy;
@@ -415,4 +418,28 @@ fn candidate_support_digest_binds_organ_and_contribution_semantics() {
         .support_digest;
 
     assert_ne!(first_support, second_support);
+}
+
+
+#[test]
+fn utility_profile_digest_binds_axis_registry_semantics() {
+    let first = profile();
+    let mut second = first.clone();
+    second.axis_registry_digest = Digest32::of_bytes(b"utility-v2-axis-registry");
+
+    assert_ne!(
+        must(canonical_utility_profile_digest(&first)),
+        must(canonical_utility_profile_digest(&second))
+    );
+}
+
+#[test]
+fn empty_axis_registry_digest_fails_closed() {
+    let mut unbound = profile();
+    unbound.axis_registry_digest = Digest32::ZERO;
+
+    assert_eq!(
+        must_err(canonical_utility_profile_digest(&unbound)),
+        crate::NduError::EmptyAxisRegistryDigest
+    );
 }
