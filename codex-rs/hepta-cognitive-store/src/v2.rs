@@ -953,11 +953,11 @@ fn validate_receipt_transition(
     }
     let expected_tombstone = previous_vector
         .tombstone_frontier
-        .checked_add(u64::from(record.state == RecordState::Tombstone))
+        .checked_add(if record.state == RecordState::Tombstone { 1 } else { 0 })
         .ok_or(CognitiveStoreV2Error::ImageFrontierMismatch)?;
     let expected_fact = previous_vector
         .knowledge_fact_frontier
-        .checked_add(u64::from(record.kind == MemoryKind::Fact))
+        .checked_add(if record.kind == MemoryKind::Fact { 1 } else { 0 })
         .ok_or(CognitiveStoreV2Error::ImageFrontierMismatch)?;
     if current_vector.tombstone_frontier != expected_tombstone
         || current_vector.knowledge_fact_frontier != expected_fact
