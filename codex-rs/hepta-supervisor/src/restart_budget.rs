@@ -226,3 +226,44 @@ fn unix_ms_now() -> Result<u64, RestartBudgetError> {
     u64::try_from(millis)
         .map_err(|_| RestartBudgetError::Invalid("system clock overflow".to_string()))
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn restart_budget_is_durable_bounded_and_clearable() -> Result<(), RestartBudgetError> {
+        let temp = tempfile::tempdir().expect("temp");
+        let window = Duration::from_secs(60);
+        let base = Duration::from_millis(10);
+
+        assert!(matches!(
+            schedule(temp.path(), "agent", window, base, 3)?,
+            RestartDecision::Scheduled { attempt: 1, .. }
+        ));
+        assert!(restore_pending(temp.path(), "agent", window)?.is_some());
+        assert!(matches!(
+            schedule(temp.path(), "agent", window, base, 3)?,
+            RestartDecision::Scheduled { attempt: 2, .. }
+        ));
+        assert!(matches!(
+            schedule(temp.path(), "agent", window, base, 3)?,
+            RestartDecision::Scheduled { attempt: 3, .. }
+        ));
+        assert_eq!(
+            schedule(temp.path(), "agent", window, base, 3)?,
+            RestartDecision::Exhausted
+        );
+
+        clear_pending(temp.path(), "agent")?;
+        assert_eq!(restore_pending(temp.path(), "agent", window)?, None);
+        // Clearing the pending deadline does not erase attempt history, so a
+        // daemon restart or explicit start cannot bypass the recovery budget.
+        assert_eq!(
+            schedule(temp.path(), "agent", window, base, 3)?,
+            RestartDecision::Exhausted
+        );
+        Ok(())
+    }
+}
