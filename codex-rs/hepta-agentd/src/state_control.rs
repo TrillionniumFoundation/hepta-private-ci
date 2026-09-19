@@ -455,7 +455,8 @@ impl AgentdState {
                 } else {
                     if request.signed_grant.is_some() || request.binding.is_some() {
                         return Err(AgentdError::Invalid(
-                            "non-effect browser call must not carry final-use authority".to_string(),
+                            "non-effect browser call must not carry final-use authority"
+                                .to_string(),
                         ));
                     }
                     crate::BrowserServoCall::read(module_method, request.input)
@@ -700,8 +701,7 @@ fn require_browser_control_ready(
         Ok(())
     } else {
         Err(AgentdError::Protocol(
-            "browser.servo control is unavailable until this Agent generation is ready"
-                .to_string(),
+            "browser.servo control is unavailable until this Agent generation is ready".to_string(),
         ))
     }
 }

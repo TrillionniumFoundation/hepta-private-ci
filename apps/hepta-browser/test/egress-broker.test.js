@@ -8,6 +8,8 @@ import { join } from "node:path";
 
 import { GrantScopedEgressBroker } from "../src/egress-broker.js";
 
+const GRANT_DIGEST = "a".repeat(64);
+
 function listenHttp(handler) {
   const server = http.createServer(handler);
   return new Promise((resolve) => {
@@ -134,6 +136,7 @@ test("grant-scoped proxy admits only the exact allowed HTTP origin", async () =>
   const allowedPort = allowed.address().port;
   const forbiddenPort = forbidden.address().port;
   const broker = new GrantScopedEgressBroker({
+    grantDigest: GRANT_DIGEST,
     socketPath: join(root, "proxy.sock"),
     allowedOrigins: [`http://127.0.0.1:${allowedPort}`],
     allowPrivateNetworkForTests: true,
@@ -169,16 +172,12 @@ test("production broker rejects loopback/private DNS targets even when the origi
   const server = await listenHttp((_request, response) => response.end("should-not-reach"));
   const port = server.address().port;
   const broker = new GrantScopedEgressBroker({
+    grantDigest: GRANT_DIGEST,
     socketPath: join(root, "proxy.sock"),
     allowedOrigins: [`http://127.0.0.1:${port}`],
   });
-  await broker.start();
   try {
-    const response = await rawProxy(
-      join(root, "proxy.sock"),
-      `GET http://127.0.0.1:${port}/ HTTP/1.1\r\nHost: 127.0.0.1:${port}\r\nConnection: close\r\n\r\n`,
-    );
-    assert.match(response, /502 Bad Gateway|403 Forbidden/);
+    await assert.rejects(broker.start(), /globally routable/);
     assert.equal(broker.observations.length, 0);
   } finally {
     await broker.close();
@@ -187,20 +186,15 @@ test("production broker rejects loopback/private DNS targets even when the origi
   }
 });
 
-
 test("production broker fails closed on IPv4-mapped IPv6 destinations", async () => {
   const root = await mkdtemp(join(tmpdir(), "hepta-egress-mapped-"));
   const broker = new GrantScopedEgressBroker({
+    grantDigest: GRANT_DIGEST,
     socketPath: join(root, "proxy.sock"),
     allowedOrigins: ["http://[::ffff:7f00:1]"],
   });
-  await broker.start();
   try {
-    const response = await rawProxy(
-      join(root, "proxy.sock"),
-      "GET http://[::ffff:7f00:1]/ HTTP/1.1\r\nHost: [::ffff:7f00:1]\r\nConnection: close\r\n\r\n",
-    );
-    assert.match(response, /502 Bad Gateway|403 Forbidden/);
+    await assert.rejects(broker.start(), /globally routable/);
     assert.equal(broker.observations.length, 0);
   } finally {
     await broker.close();
@@ -208,6 +202,51 @@ test("production broker fails closed on IPv4-mapped IPv6 destinations", async ()
   }
 });
 
+test("profile network grant freezes DNS answers for the broker generation", async () => {
+  const root = await mkdtemp(join(tmpdir(), "hepta-egress-dns-pin-"));
+  let hits = 0;
+  let resolutions = 0;
+  const server = await listenHttp((_request, response) => {
+    hits += 1;
+    response.end("pinned");
+  });
+  const port = server.address().port;
+  const resolver = async () => {
+    resolutions += 1;
+    return resolutions === 1
+      ? [{ address: "127.0.0.1", family: 4 }]
+      : [{ address: "203.0.113.7", family: 4 }];
+  };
+  const broker = new GrantScopedEgressBroker({
+    grantDigest: GRANT_DIGEST,
+    socketPath: join(root, "proxy.sock"),
+    allowedOrigins: [`http://pinned.test:${port}`],
+    allowPrivateNetworkForTests: true,
+    resolver,
+  });
+  await broker.start();
+  try {
+    for (const path of ["/one", "/two"]) {
+      const response = await rawProxy(
+        join(root, "proxy.sock"),
+        `GET http://pinned.test:${port}${path} HTTP/1.1\r\nHost: pinned.test:${port}\r\nConnection: close\r\n\r\n`,
+      );
+      assert.match(response, /200 OK/);
+      assert.match(response, /pinned/);
+    }
+    assert.equal(resolutions, 1, "DNS must not be re-resolved after the profile grant is bound");
+    assert.equal(hits, 2);
+    assert.equal(new Set(broker.observations.map((item) => item.networkBindingDigest)).size, 1);
+    assert.deepEqual(
+      [...new Set(broker.observations.map((item) => item.grantDigest))],
+      [GRANT_DIGEST],
+    );
+  } finally {
+    await broker.close();
+    await new Promise((resolve) => server.close(resolve));
+    await rm(root, { recursive: true, force: true });
+  }
+});
 
 test("HTTPS CONNECT binds exact authority, port, and TLS ClientHello SNI before upstream connect", async () => {
   const root = await mkdtemp(join(tmpdir(), "hepta-egress-connect-"));
@@ -226,6 +265,7 @@ test("HTTPS CONNECT binds exact authority, port, and TLS ClientHello SNI before 
   const allowedAuthority = `localhost:${allowedServer.address().port}`;
   const deniedAuthority = `127.0.0.1:${deniedServer.address().port}`;
   const broker = new GrantScopedEgressBroker({
+    grantDigest: GRANT_DIGEST,
     socketPath: join(root, "proxy.sock"),
     allowedOrigins: [`https://${allowedAuthority}`],
     allowPrivateNetworkForTests: true,

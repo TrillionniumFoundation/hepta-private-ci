@@ -93,7 +93,9 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
     let mut frame = Vec::new();
     let count = timeout(IO_TIMEOUT, reader.read_until(b'\n', &mut frame))
         .await
-        .map_err(|_| AgentdError::Protocol("agentd control request read timed out".to_string()))??;
+        .map_err(|_| {
+            AgentdError::Protocol("agentd control request read timed out".to_string())
+        })??;
     if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !frame.ends_with(b"\n") {
         return Err(AgentdError::Protocol(
             "agentd control request must be one bounded newline JSON frame".to_string(),
@@ -111,7 +113,8 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
     } else {
         let request_id = request.request_id;
         let spawn_generation = request.spawn_generation;
-        let request_timeout = if matches!(&request.method, crate::AgentdMethod::BrowserServo { .. }) {
+        let request_timeout = if matches!(&request.method, crate::AgentdMethod::BrowserServo { .. })
+        {
             BROWSER_CONTROL_TIMEOUT
         } else {
             IO_TIMEOUT
@@ -148,10 +151,12 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
     }
     timeout(IO_TIMEOUT, writer.write_all(&bytes))
         .await
-        .map_err(|_| AgentdError::Protocol("agentd control response write timed out".to_string()))??;
-    timeout(IO_TIMEOUT, writer.shutdown())
-        .await
-        .map_err(|_| AgentdError::Protocol("agentd control response shutdown timed out".to_string()))??;
+        .map_err(|_| {
+            AgentdError::Protocol("agentd control response write timed out".to_string())
+        })??;
+    timeout(IO_TIMEOUT, writer.shutdown()).await.map_err(|_| {
+        AgentdError::Protocol("agentd control response shutdown timed out".to_string())
+    })??;
     Ok(())
 }
 

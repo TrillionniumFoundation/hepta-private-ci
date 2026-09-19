@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { lookup } from "node:dns/promises";
 import http from "node:http";
 import net from "node:net";
@@ -9,6 +10,7 @@ const CONNECT_TIMEOUT_MS = 10_000;
 const TLS_CLIENT_HELLO_TIMEOUT_MS = 5_000;
 const MAX_TLS_CLIENT_HELLO_BYTES = 65_536;
 const MAX_TLS_RECORD_BYTES = 18_432;
+const DIGEST = /^[0-9a-f]{64}$/;
 
 const blocked = new net.BlockList();
 for (const [network, prefix] of [
@@ -60,7 +62,7 @@ function privateAddress(address, family) {
   return blocked.check(address, kind);
 }
 
-async function resolvePinned(hostname, { allowPrivateNetworkForTests }) {
+async function resolvePinned(hostname, { allowPrivateNetworkForTests, resolver = lookup }) {
   const normalizedHostname =
     hostname.startsWith("[") && hostname.endsWith("]")
       ? hostname.slice(1, -1)
@@ -68,7 +70,7 @@ async function resolvePinned(hostname, { allowPrivateNetworkForTests }) {
   const direct = net.isIP(normalizedHostname);
   const answers = direct
     ? [{ address: normalizedHostname, family: direct }]
-    : await lookup(normalizedHostname, { all: true, verbatim: true });
+    : await resolver(normalizedHostname, { all: true, verbatim: true });
   if (answers.length === 0 || answers.length > MAX_DNS_ANSWERS) {
     throw new Error("DNS answer count is outside the egress bound");
   }
@@ -82,6 +84,9 @@ async function resolvePinned(hostname, { allowPrivateNetworkForTests }) {
     }
     normalized.push({ address: answer.address, family: answer.family });
   }
+  normalized.sort((left, right) =>
+    left.family - right.family || left.address.localeCompare(right.address)
+  );
   return normalized;
 }
 
@@ -101,8 +106,7 @@ function stripHopByHop(headers) {
   return output;
 }
 
-async function connectResolved(hostname, port, options) {
-  const answers = await resolvePinned(hostname, options);
+async function connectPinned(answers, port) {
   let lastError;
   for (const answer of answers) {
     try {
@@ -128,7 +132,13 @@ async function connectResolved(hostname, port, options) {
       lastError = error;
     }
   }
-  throw lastError ?? new Error("no resolved egress destination connected");
+  throw lastError ?? new Error("no pinned egress destination connected");
+}
+
+function bindingDigest(grantDigest, origin, answers) {
+  return createHash("sha256")
+    .update(JSON.stringify({ grantDigest, origin, answers }))
+    .digest("hex");
 }
 
 function readUInt24(buffer, offset) {
@@ -333,15 +343,27 @@ function readBoundTlsClientHello(client, head, hostname) {
 
 export class GrantScopedEgressBroker {
   #socketPath;
+  #grantDigest;
   #allowedOrigins;
   #allowPrivateNetworkForTests;
+  #resolver;
+  #bindings = new Map();
   #server = null;
   #connections = new Set();
   #observations = [];
 
-  constructor({ socketPath, allowedOrigins, allowPrivateNetworkForTests = false }) {
+  constructor({
+    socketPath,
+    grantDigest,
+    allowedOrigins,
+    allowPrivateNetworkForTests = false,
+    resolver = lookup,
+  }) {
     if (typeof socketPath !== "string" || socketPath.length === 0) {
       throw new TypeError("egress socketPath must be a non-empty string");
+    }
+    if (typeof grantDigest !== "string" || !DIGEST.test(grantDigest) || /^0+$/.test(grantDigest)) {
+      throw new TypeError("egress grantDigest must be a non-zero lowercase SHA-256 digest");
     }
     if (!Array.isArray(allowedOrigins) || allowedOrigins.length > 128) {
       throw new TypeError("egress allowedOrigins must be a bounded array");
@@ -349,9 +371,17 @@ export class GrantScopedEgressBroker {
     if (typeof allowPrivateNetworkForTests !== "boolean") {
       throw new TypeError("allowPrivateNetworkForTests must be boolean");
     }
+    if (typeof resolver !== "function") {
+      throw new TypeError("egress resolver must be a function");
+    }
+    if (resolver !== lookup && allowPrivateNetworkForTests !== true) {
+      throw new TypeError("custom egress resolver is test-only");
+    }
     this.#socketPath = socketPath;
+    this.#grantDigest = grantDigest;
     this.#allowedOrigins = new Set(allowedOrigins.map(canonicalOrigin));
     this.#allowPrivateNetworkForTests = allowPrivateNetworkForTests;
+    this.#resolver = resolver;
   }
 
   get observations() {
@@ -363,6 +393,26 @@ export class GrantScopedEgressBroker {
     await unlink(this.#socketPath).catch((error) => {
       if (error?.code !== "ENOENT") throw error;
     });
+
+    // Freeze exact DNS/IP answers for this profile network-grant generation.
+    // Requests never re-resolve these names, preventing DNS rebinding after admission.
+    const bindings = new Map();
+    for (const origin of this.#allowedOrigins) {
+      const target = new URL(origin);
+      const answers = await resolvePinned(target.hostname, {
+        allowPrivateNetworkForTests: this.#allowPrivateNetworkForTests,
+        resolver: this.#resolver,
+      });
+      bindings.set(origin, Object.freeze({
+        origin,
+        hostname: target.hostname,
+        port: Number(target.port || (target.protocol === "https:" ? 443 : 80)),
+        answers: Object.freeze(answers.map((answer) => Object.freeze({ ...answer }))),
+        bindingDigest: bindingDigest(this.#grantDigest, origin, answers),
+      }));
+    }
+    this.#bindings = bindings;
+
     const server = http.createServer((request, response) => {
       this.#handleHttp(request, response).catch(() => {
         if (!response.headersSent) response.writeHead(502);
@@ -402,6 +452,7 @@ export class GrantScopedEgressBroker {
       this.#connections.clear();
       await new Promise((resolve) => server.close(() => resolve()));
     }
+    this.#bindings = new Map();
     await unlink(this.#socketPath).catch((error) => {
       if (error?.code !== "ENOENT") throw error;
     });
@@ -409,10 +460,11 @@ export class GrantScopedEgressBroker {
 
   #assertOrigin(origin) {
     const canonical = canonicalOrigin(origin);
-    if (!this.#allowedOrigins.has(canonical)) {
+    const binding = this.#bindings.get(canonical);
+    if (!this.#allowedOrigins.has(canonical) || !binding) {
       throw new Error("egress origin is outside the profile grant");
     }
-    return canonical;
+    return binding;
   }
 
   async #handleHttp(request, response) {
@@ -429,12 +481,13 @@ export class GrantScopedEgressBroker {
       response.end();
       return;
     }
-    const origin = this.#assertOrigin(target.origin);
+    const binding = this.#assertOrigin(target.origin);
     const port = Number(target.port || 80);
-    const { socket, address } = await connectResolved(target.hostname, port, {
-      allowPrivateNetworkForTests: this.#allowPrivateNetworkForTests,
-    });
-    this.#record(origin, target.hostname, port, address, "http");
+    if (port !== binding.port || target.hostname !== binding.hostname) {
+      throw new Error("HTTP destination drifted from the frozen profile network grant");
+    }
+    const { socket, address } = await connectPinned(binding.answers, port);
+    this.#record(binding, target.hostname, port, address, "http");
     const headers = stripHopByHop(request.headers);
     headers.host = target.host;
     const upstream = http.request({
@@ -466,8 +519,11 @@ export class GrantScopedEgressBroker {
     if (target.username || target.password || target.pathname !== "/" || target.search || target.hash) {
       throw new Error("CONNECT authority contains forbidden URL components");
     }
-    const origin = this.#assertOrigin(target.origin);
+    const binding = this.#assertOrigin(target.origin);
     const port = Number(target.port || 443);
+    if (port !== binding.port || target.hostname !== binding.hostname) {
+      throw new Error("CONNECT destination drifted from the frozen profile network grant");
+    }
     client.write("HTTP/1.1 200 Connection Established\r\nProxy-Agent: hepta-egress\r\n\r\n");
 
     try {
@@ -475,10 +531,8 @@ export class GrantScopedEgressBroker {
       // bounded ClientHello to name the granted destination before any upstream
       // TCP connection can exist.
       const hello = await readBoundTlsClientHello(client, head, target.hostname);
-      const { socket: upstream, address } = await connectResolved(target.hostname, port, {
-        allowPrivateNetworkForTests: this.#allowPrivateNetworkForTests,
-      });
-      this.#record(origin, target.hostname, port, address, "connect");
+      const { socket: upstream, address } = await connectPinned(binding.answers, port);
+      this.#record(binding, target.hostname, port, address, "connect");
       upstream.write(hello);
       client.pipe(upstream);
       upstream.pipe(client);
@@ -491,8 +545,16 @@ export class GrantScopedEgressBroker {
     }
   }
 
-  #record(origin, hostname, port, address, kind) {
-    this.#observations.push(Object.freeze({ origin, hostname, port, address, kind }));
+  #record(binding, hostname, port, address, kind) {
+    this.#observations.push(Object.freeze({
+      grantDigest: this.#grantDigest,
+      networkBindingDigest: binding.bindingDigest,
+      origin: binding.origin,
+      hostname,
+      port,
+      address,
+      kind,
+    }));
     if (this.#observations.length > 256) this.#observations.shift();
   }
 }

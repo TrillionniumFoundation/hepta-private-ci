@@ -674,6 +674,7 @@ export class SubprocessBrowserDriver {
       await mkdir(this.#profileDir, { mode: 0o700 });
       this.#egressBroker = new GrantScopedEgressBroker({
         socketPath: join(this.#profileDir, ".hepta-egress.sock"),
+        grantDigest,
         allowedOrigins: input.allowedOrigins,
         allowPrivateNetworkForTests: this.#allowPrivateNetworkForTests,
       });

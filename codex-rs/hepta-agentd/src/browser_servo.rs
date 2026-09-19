@@ -353,22 +353,14 @@ fn response_result(frame: DecodedFrame, request_id: &str) -> Result<Value, Brows
     let payload = require_plain_object(&frame.payload, "Browser response payload")?;
     match payload.get("ok") {
         Some(Value::Bool(true)) => {
-            require_exact_object_keys(
-                payload,
-                &["ok", "result"],
-                "Browser success response",
-            )?;
+            require_exact_object_keys(payload, &["ok", "result"], "Browser success response")?;
             payload
                 .get("result")
                 .cloned()
                 .ok_or_else(|| BrowserServoError::Protocol("Browser response lacks result".into()))
         }
         Some(Value::Bool(false)) => {
-            require_exact_object_keys(
-                payload,
-                &["error", "ok"],
-                "Browser failure response",
-            )?;
+            require_exact_object_keys(payload, &["error", "ok"], "Browser failure response")?;
             let message = payload
                 .get("error")
                 .and_then(Value::as_str)
