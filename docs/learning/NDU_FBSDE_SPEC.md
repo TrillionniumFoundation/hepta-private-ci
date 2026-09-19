@@ -12,7 +12,7 @@
 
 This specification defines a deterministic implementation baseline and a separately qualified stochastic candidate. It does not establish dynamic-preference efficacy, production activation, biological equivalence, or autonomous software evolution. The four-level hierarchy, event sourcing and deployment controls are Hepta engineering extensions. `docs/evidence/CLAIMS.json` and current independent evidence govern capability claims.
 
-Existing exported deterministic primitives in `codex-rs/hepta-ndu/src/lib.rs` include `evaluate_candidates`, `solve_preference_target`, `validate_staged_updates`, `evaluate_recursive_utility` and `mul_q32_ties_even`. Reuse compatible primitives and add owner-scoped adapters; a symbol inventory proves neither a real consumer nor an implemented stochastic solver.
+Existing exported deterministic primitives in `codex-rs/hepta-ndu/src/lib.rs` include `evaluate_candidates`, `solve_preference_target`, `validate_staged_updates`, `evaluate_recursive_utility` and `mul_q32_ties_even`. The source also contains the bounded shadow covariance/backward-regression kernel plus admitted original/whitened Z-coordinate and signed-Q24 conversion. These numerical building blocks do not establish coefficient provenance, conditional identification, a complete FBSDE solution, production consumer admission or efficacy.
 
 ## 2. Symbols, dimensions, units and normalization
 
