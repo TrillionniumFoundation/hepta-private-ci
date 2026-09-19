@@ -159,7 +159,6 @@ impl AgentdConfig {
         self.authbus_trust_file.as_deref()
     }
 
-
     /// Explicit owner-managed objective admission profile. A request cannot
     /// select or replace this file; changing it requires a new process generation.
     pub fn with_objective_profile_file(mut self, path: PathBuf) -> Self {
