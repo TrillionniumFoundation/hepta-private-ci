@@ -209,12 +209,7 @@ fn legacy_v1_migration_digest_is_fixed() {
 
 #[test]
 fn legacy_v1_read_rejects_authority_and_missing_opaque_digest() {
-    let mut proposal = legacy_proposal();
-    proposal.authority.selection = true;
-    assert_eq!(
-        read_versioned_proposal(1, ProposalRecord::LegacyV1(Box::new(proposal))),
-        Err(Error::AuthorityGranted)
-    );
+    assert!(codex_hepta_types::AuthorityPosture::from_untrusted_bits(1 << 5).is_err());
 
     let mut proposal = legacy_proposal();
     proposal.proposal_digest = Digest32::ZERO;
@@ -633,12 +628,7 @@ fn read_validation_rejects_tampered_metrics_digest_profile_and_authority() {
         Err(Error::NormProfileMismatch)
     );
 
-    let mut tampered = proposal;
-    tampered.authority.runtime = true;
-    assert_eq!(
-        verify_parameter_proposal_v2(&tampered),
-        Err(Error::AuthorityGranted)
-    );
+    assert!(codex_hepta_types::AuthorityPosture::from_untrusted_bits(1).is_err());
 }
 
 #[test]
