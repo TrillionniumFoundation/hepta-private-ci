@@ -93,7 +93,7 @@ impl ContextTransportV2 for TestTransport {
     ) -> Result<ContextTransportEvidenceV2, ContextCompilerV2Error> {
         let transmitted_payload_digest = self
             .transmitted_override
-            .unwrap_or_else(|| Digest32::of_bytes(payload));
+            .unwrap_or(Digest32::of_bytes(payload));
         Ok(ContextTransportEvidenceV2 {
             provider_request_id: id("provider:request:1"),
             transmitted_payload_digest,
@@ -276,9 +276,9 @@ fn deterministic_value_per_token_preserves_mandatory_floors() {
     assert_eq!(left.receipt().used_tokens(), 80);
     assert_eq!(
         left.receipt().selected_item_ids(),
-        vec![trusted.item_id, schema.item_id, high_ratio.item_id]
+        &[trusted.item_id, schema.item_id, high_ratio.item_id]
     );
-    assert_eq!(left.receipt().omitted_item_ids(), vec![low_ratio.item_id]);
+    assert_eq!(left.receipt().omitted_item_ids(), &[low_ratio.item_id]);
 }
 
 #[test]
