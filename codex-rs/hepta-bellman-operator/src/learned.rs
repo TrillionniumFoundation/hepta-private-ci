@@ -114,7 +114,7 @@ struct CellAccumulator {
     evidence: Vec<Digest32>,
 }
 
-pub fn fit_tabular_operator(
+pub(crate) fn fit_tabular_operator_core(
     mut plan: TabularOperatorPlanV1,
 ) -> Result<TabularOperatorArtifactV1, LearnedOperatorError> {
     for (label, digest) in [
@@ -292,6 +292,18 @@ pub fn fit_tabular_operator(
     })
 }
 
+#[deprecated(
+    note = "legacy V1 compatibility only; new qualification must use fit_tabular_operator_from_dataset_receipt_v3"
+)]
+pub fn fit_tabular_operator(
+    plan: TabularOperatorPlanV1,
+) -> Result<TabularOperatorArtifactV1, LearnedOperatorError> {
+    fit_tabular_operator_core(plan)
+}
+
+#[deprecated(
+    note = "legacy V1 compatibility only; new qualification should use indexed or loaded strict prediction"
+)]
 pub fn predict_tabular_operator(
     artifact: &TabularOperatorArtifactV1,
     sensor_id: &StableId,
