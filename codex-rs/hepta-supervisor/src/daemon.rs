@@ -1201,6 +1201,7 @@ fn safe_rejection(
             actual,
         ),
         SupervisorError::CorruptLease(_)
+        | SupervisorError::FleetAllocation(_)
         | SupervisorError::Registry(_)
         | SupervisorError::Io(_) => error_payload(
             "control_state_unavailable",
