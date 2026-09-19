@@ -18,9 +18,27 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "source_composed_engineering_controller_not_deployed",
+  "productionWriterState": "source_composed_sqlite_v6_singleton_not_deployed",
   "operations": [
+    {
+      "operation": "engineering_controller",
+      "nativeSymbol": "EngineeringController",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/controller.py",
+      "state": "source_composed_not_product_executed",
+      "authority": "none",
+      "tests": [
+        "OpenSslTrustStoreTests.test_verification_only_store_accepts_pinned_key_and_rejects_tamper"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "engineering_controller",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "EngineeringStore",
+        "OpenSslTrustStore",
+        "assignment lifecycle"
+      ]
+    },
     {
       "operation": "issue_work_envelope",
       "nativeSymbol": "issue_work_envelope",
@@ -252,8 +270,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind the canonical v2 operations to a named repository/CI product caller using verification-only production identities.",
-    "Obtain fresh exact-head and deterministic synthetic-merge execution receipts before changing production or acceptance claims."
+    "Exercise EngineeringController from the selected repository CI/host with provisioned verification keys and retain exact command observations.",
+    "Obtain independent semantic review and external key-custody/host evidence before changing productionImplementation or productExecutionProved."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
