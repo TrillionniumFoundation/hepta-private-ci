@@ -90,6 +90,25 @@ impl AutomationStore {
         now_ms: u64,
         lease_duration_ms: u64,
     ) -> Result<TaskFlowRun, AutomationError> {
+        let dispatch_state: Option<String> = sqlx::query_scalar(
+            "SELECT r.state
+             FROM automation_runs r
+             JOIN automation_tasks t ON t.task_id = r.task_id
+             WHERE t.owner_agent_id = ? AND r.task_id = ? AND r.occurrence = ?
+               AND r.occurrence_id = ? AND r.schedule_revision = ?",
+        )
+        .bind(self.owner_agent_id().as_str())
+        .bind(lease.task.task_id.to_string())
+        .bind(to_i64(lease.occurrence)?)
+        .bind(&lease.occurrence_id)
+        .bind(to_i64(lease.schedule_revision)?)
+        .fetch_optional(self.taskflow_pool())
+        .await
+        .map_err(|_| AutomationError::Unavailable)?;
+        if dispatch_state.as_deref() != Some("submitted") {
+            return Err(AutomationError::Conflict);
+        }
+
         let run = self.ensure_occurrence_taskflow(lease, now_ms).await?;
         if matches!(
             run.state,
