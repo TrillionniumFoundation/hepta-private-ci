@@ -64,6 +64,9 @@ struct ValidatedEvaluationPolicy {
 
 /// Compatibility entry point. Its former implicit sum/sum/sum/max and exact
 /// Pareto semantics are now materialized as a digestible policy.
+#[deprecated(
+    note = "compatibility-only; new callers must use evaluate_candidates_with_policy and NduEvaluationReceiptV2"
+)]
 pub fn evaluate_candidates(
     set: ContributionSet,
     profile: UtilityProfile,
