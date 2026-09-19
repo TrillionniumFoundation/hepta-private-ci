@@ -1,9 +1,9 @@
 use super::*;
 use crate::StableId;
 
-const MIXED_VECTOR_HEX: &str = "48455054412d43414e4f4e4943414c2d4449474553542d5631000016706c6174666f726d2e74797065732e6578616d706c65000700066163746976650500000001010005636f756e740300000008000000000000002a00066469676573740600000020be5df7bbbf50c940858b5b6a58a01308df2144a5a8461207f1ac5cb53066b3a400026964070000000f61727469666163743a6974656d2d3100046e6f74650200000005686570746100066f66667365740400000008fffffffffffffff900077061796c6f61640100000004000102ff";
+const MIXED_VECTOR_HEX: &str = "48455054412d43414e4f4e4943414c2d4449474553542d5631000016706c6174666f726d2e74797065732e6578616d706c650000000000000001000700066163746976650500000001010005636f756e740300000008000000000000002a00066469676573740600000020be5df7bbbf50c940858b5b6a58a01308df2144a5a8461207f1ac5cb53066b3a400026964070000000f61727469666163743a6974656d2d3100046e6f74650200000005686570746100066f66667365740400000008fffffffffffffff900077061796c6f61640100000004000102ff";
 const MIXED_VECTOR_DIGEST: &str =
-    "0f4509c975d9fff87b9a2d9d8933aa72e17287b7a35ab7e8353ddfc0b96c4b47";
+    "8fb44e95206b46c5c63972baa14b9d163c1d894c4aadbbdba06a17c1c6684ae7";
 
 fn mixed_fields<'a>(
     id: &'a StableId,
@@ -47,21 +47,21 @@ fn mixed_golden_vector_is_byte_exact_and_domain_separated() {
     let id = StableId::new("artifact:item-1").expect("stable id");
     let digest = Digest32::of_bytes(b"vector-digest");
     let fields = mixed_fields(&id, digest, &[0, 1, 2, 255]);
-    let encoded = canonical_encode_v1("platform.types.example", &fields).expect("canonical bytes");
+    let encoded = canonical_encode_v1("platform.types.example", 1, &fields).expect("canonical bytes");
     let actual_hex = encoded
         .iter()
         .map(|byte| format!("{byte:02x}"))
         .collect::<String>();
     assert_eq!(actual_hex, MIXED_VECTOR_HEX);
     assert_eq!(
-        canonical_digest_v1("platform.types.example", &fields)
+        canonical_digest_v1("platform.types.example", 1, &fields)
             .expect("canonical digest")
             .to_string(),
         MIXED_VECTOR_DIGEST
     );
     assert_ne!(
-        canonical_digest_v1("platform.types.other", &fields).expect("other domain"),
-        canonical_digest_v1("platform.types.example", &fields).expect("original domain")
+        canonical_digest_v1("platform.types.other", 1, &fields).expect("other domain"),
+        canonical_digest_v1("platform.types.example", 1, &fields).expect("original domain")
     );
 }
 
@@ -88,8 +88,8 @@ fn field_framing_prevents_concatenation_ambiguity() {
         },
     ];
     assert_ne!(
-        canonical_digest_v1("platform.types.framing", &left),
-        canonical_digest_v1("platform.types.framing", &right)
+        canonical_digest_v1("platform.types.framing", 1, &left),
+        canonical_digest_v1("platform.types.framing", 1, &right)
     );
 }
 
@@ -106,7 +106,7 @@ fn field_order_duplicates_tokens_and_collection_bounds_fail_closed() {
         },
     ];
     assert_eq!(
-        canonical_encode_v1("platform.types.test", &unsorted),
+        canonical_encode_v1("platform.types.test", 1, &unsorted),
         Err(CanonicalDigestError::FieldsNotCanonical)
     );
 
@@ -121,12 +121,16 @@ fn field_order_duplicates_tokens_and_collection_bounds_fail_closed() {
         },
     ];
     assert_eq!(
-        canonical_encode_v1("platform.types.test", &duplicate),
+        canonical_encode_v1("platform.types.test", 1, &duplicate),
         Err(CanonicalDigestError::FieldsNotCanonical)
     );
     assert_eq!(
-        canonical_encode_v1("Platform.Types", &[]),
+        canonical_encode_v1("Platform.Types", 1, &[]),
         Err(CanonicalDigestError::InvalidDomain)
+    );
+    assert_eq!(
+        canonical_encode_v1("platform.types.test", 0, &[]),
+        Err(CanonicalDigestError::ZeroSchemaVersion)
     );
 
     let oversized = vec![0_u8; MAX_CANONICAL_COLLECTION_BYTES_V1 + 1];
@@ -135,7 +139,7 @@ fn field_order_duplicates_tokens_and_collection_bounds_fail_closed() {
         value: CanonicalValueV1::Bytes(&oversized),
     }];
     assert_eq!(
-        canonical_encode_v1("platform.types.test", &fields),
+        canonical_encode_v1("platform.types.test", 1, &fields),
         Err(CanonicalDigestError::ValueTooLarge(oversized.len()))
     );
 }
