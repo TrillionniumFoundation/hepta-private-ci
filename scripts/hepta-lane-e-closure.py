@@ -42,6 +42,16 @@ EXPECTED_OPERATIONS = {
         "finalize_credit_batch",
         "freeze_dataset",
         "append_shadow_decision",
+        "ProductionLedgerWriter::append_authenticated_outcome",
+        "ProductionLedgerWriter::append_credit_batch",
+        "ProductionLedgerWriter::freeze_dataset_from_ledger",
+        "ProductionLedgerWriter::append_unlearning_lineage",
+        "ProductionLedgerWriter::current_trust_digest",
+        "verify_learning_trust_manifest",
+        "RootedLearningEvidenceTrustProviderV1::rotate",
+        "DurableAnchorWitness::publish",
+        "build_ledger_index_checkpoint",
+        "measure_ledger_recovery_work",
     },
     "learning.artifacts": {
         "validate_artifact_manifest_v2",
@@ -134,9 +144,13 @@ def verify_symbol(source: str, native_symbol: str) -> bool:
         return False
     if len(parts) >= 2 and parts[-2][:1].isupper():
         owner = parts[-2]
+        owner_name = re.escape(owner)
         return bool(
-            re.search(rf"\b(?:struct|enum|type)\s+{re.escape(owner)}\b", source)
-            and re.search(rf"\bimpl\s+{re.escape(owner)}\b", source)
+            re.search(rf"\b(?:struct|enum|type)\s+{owner_name}\b", source)
+            and re.search(
+                rf"\bimpl(?:<[^>]+>)?\s+{owner_name}(?:<[^>]+>)?\s*\{{",
+                source,
+            )
         )
     return True
 

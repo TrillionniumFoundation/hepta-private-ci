@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-learning-ledger/**"
+      - "codex-rs/hepta-intelligence/**"
       - ".github/workflows/hepta-learning-ledger-durable.yml"
 
 permissions:
@@ -63,6 +64,14 @@ jobs:
         working-directory: codex-rs
         run: just test --locked -p codex-hepta-learning-ledger
 
+      - name: Qualification-only evaluated shadow compatibility
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo check --locked -p codex-hepta-intelligence --all-targets --features evaluated-shadow-qualification
+          cargo test --locked -p codex-hepta-intelligence --features evaluated-shadow-qualification
+          cargo clippy --locked -p codex-hepta-intelligence --all-targets --features evaluated-shadow-qualification -- -D warnings
+
       - name: Strict lint
         working-directory: codex-rs
         run: cargo clippy --locked -p codex-hepta-learning-ledger --all-targets -- -D warnings
@@ -70,7 +79,7 @@ jobs:
       - name: Formatting check without source mutation
         if: always()
         working-directory: codex-rs
-        run: cargo fmt --package codex-hepta-learning-ledger -- --check
+        run: cargo fmt --package codex-hepta-learning-ledger --package codex-hepta-intelligence -- --check
 
       - name: Preserve exact source state
         if: always()

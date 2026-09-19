@@ -4,6 +4,10 @@ use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
+use crate::causal_v2::AuthenticatedOutcomeV1;
+use crate::causal_v2::CreditAllocationBatchV1;
+use crate::unlearning::UnlearningLineageEventV1;
+
 /// Independent assertion that the logged candidate set is complete for the
 /// evaluated decision boundary.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -88,6 +92,9 @@ pub enum LedgerEvent {
     Outcome(OutcomeObservation),
     Credit(CreditAssignment),
     Revocation(Revocation),
+    AuthenticatedOutcome(AuthenticatedOutcomeV1),
+    CreditBatch(CreditAllocationBatchV1),
+    UnlearningLineage(UnlearningLineageEventV1),
 }
 
 impl LedgerEvent {
@@ -97,6 +104,9 @@ impl LedgerEvent {
             Self::Outcome(value) => &value.record_id,
             Self::Credit(value) => &value.record_id,
             Self::Revocation(value) => &value.record_id,
+            Self::AuthenticatedOutcome(value) => &value.record_id,
+            Self::CreditBatch(value) => &value.batch_id,
+            Self::UnlearningLineage(value) => &value.record_id,
         }
     }
 }

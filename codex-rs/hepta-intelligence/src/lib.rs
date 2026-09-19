@@ -6,12 +6,18 @@
 
 #![forbid(unsafe_code)]
 
+#[cfg(feature = "evaluated-shadow-qualification")]
 mod evaluated_shadow;
 
+#[cfg(feature = "evaluated-shadow-qualification")]
 pub use evaluated_shadow::EvaluatedShadowError;
+#[cfg(feature = "evaluated-shadow-qualification")]
 pub use evaluated_shadow::EvaluatedShadowReceiptV1;
+#[cfg(feature = "evaluated-shadow-qualification")]
 pub use evaluated_shadow::EvaluatedShadowRequestV1;
+#[cfg(feature = "evaluated-shadow-qualification")]
 pub use evaluated_shadow::evaluated_candidate_signing_payload_v1;
+#[cfg(feature = "evaluated-shadow-qualification")]
 pub use evaluated_shadow::run_evaluated_shadow_v1;
 
 mod capability_snapshot;

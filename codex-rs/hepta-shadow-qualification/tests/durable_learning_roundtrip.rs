@@ -186,7 +186,7 @@ fn durable_experience_candidate_reopen_next_snapshot_and_revocation_safe_rollbac
             completeness: CandidateSetCompleteness::Complete,
             support_digest: Digest32::of_bytes(b"fixture-complete-legal-set"),
         });
-        head = ledger.append(head, decision).unwrap().chain_digest;
+        head = ledger.append_qualification(head, decision).unwrap().chain_digest;
         let observed = LedgerEvent::Outcome(OutcomeObservation {
             record_id: id(&format!("observation-{index}")),
             outcome_id: id(&format!("outcome-{index}")),
@@ -200,7 +200,7 @@ fn durable_experience_candidate_reopen_next_snapshot_and_revocation_safe_rollbac
             finality: OutcomeFinality::Terminal,
             support_digest: Digest32::of_bytes(b"fixture-observer-source"),
         });
-        let receipt = ledger.append(head, observed).unwrap();
+        let receipt = ledger.append_qualification(head, observed).unwrap();
         head = receipt.chain_digest;
         sequence = receipt.sequence.get();
     }

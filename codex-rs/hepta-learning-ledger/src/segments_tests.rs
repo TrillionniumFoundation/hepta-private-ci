@@ -11,7 +11,6 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
 use crate::CandidateSetCompleteness;
-use crate::DurableLearningJournal;
 use crate::DurableLedger;
 use crate::EpisodeDecision;
 use crate::OutcomeFinality;
@@ -374,9 +373,8 @@ fn original_v1_and_segmented_v2_share_the_real_durable_port_not_a_fixture() {
     let f = Fixture::new();
     let mut v1 = must(DurableLedger::create(f.new_file("legacy"), binding(), 2));
     let mut v2 = f.create();
-    for journal in [&mut v1 as &mut dyn DurableLearningJournal, &mut v2] {
-        must(journal.append(Digest32::ZERO, decision(0)));
-    }
+    must(DurableLedger::append(&mut v1, Digest32::ZERO, decision(0)));
+    must(SegmentedLedger::append(&mut v2, Digest32::ZERO, decision(0)));
     assert_eq!(must(v1.snapshot()), must(v2.snapshot()));
     drop(v1);
     drop(v2);

@@ -44,6 +44,29 @@ None.
 
 `existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `learning.ledger`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
+### Independent status axes
+
+Do not collapse package planning, source implementation, product composition and
+qualification into one status word. For this convergence candidate:
+
+- package registry state: the canonical work-package records remain `planned`
+  until their registry owner advances them;
+- source implementation state: authenticated production admission, additive
+  durable causal events, correction graph enforcement, atomic conserved credit,
+  ledger-derived dataset freeze, explicit unlearning lineage, independent anchor
+  witness, canonical protocol adapters and verifiable index checkpoints are
+  implemented in the declared source root;
+- product composition state: no named production caller or exclusive physical
+  production writer is established by this source change;
+- qualification state: source tests/CI are candidate evidence only; target-host
+  durability/performance, live independent outcomes and independent semantic
+  acceptance remain separate;
+- activation/release state: unchanged and false.
+
+This separation is normative for interpreting the `planned` labels in Section
+13: a package-planning label is not evidence that its current source slice is
+absent, and source implementation is not product activation.
+
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:
@@ -199,7 +222,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use DurableLedger with its native codec, owner lock and independently retained anchor. Inspect and reopen existing state before admitting new records; failure of anchored recovery is not permission to fall back to unanchored opening. Segment rotation, retention and backup must preserve acknowledged lineage.
+Use `ProductionLedgerWriter` for product-facing mutation so a host-owned `LearningEvidenceTrustProviderV1` is queried for the current trust revision before every signed mutation; trust rollback/same-revision drift, signed role admission, exact-anchor CAS and V2 semantic validation all fail before the durable append. `RootedLearningEvidenceTrustProviderV1` is the native pinned-root implementation: a root public key supplied out of band verifies complete predecessor-bound signer/controller manifests, while the root private key remains outside this module. `DurableLedger` / `SegmentedLedger` remain the storage engines. Retain acknowledgement frontiers independently with `DurableAnchorWitness` or an externally qualified equivalent; inspect and reopen existing state before admitting new records, and never turn failed anchored recovery into unanchored opening. Segment rotation, retention and backup must preserve acknowledged lineage. `LedgerIndexCheckpointV1` is a verifiable optimization/evidence artifact, not permission to skip journal validation.
 
 Current operating and state-format references:
 
@@ -207,6 +230,11 @@ Current operating and state-format references:
 - [codex-rs/hepta-learning-ledger/LOCK_OWNERSHIP.md](../../../codex-rs/hepta-learning-ledger/LOCK_OWNERSHIP.md).
 - [codex-rs/hepta-learning-ledger/INSPECTION.md](../../../codex-rs/hepta-learning-ledger/INSPECTION.md).
 - [codex-rs/hepta-learning-ledger/NATIVE_MAPPING.md](../../../codex-rs/hepta-learning-ledger/NATIVE_MAPPING.md).
+- `codex-rs/hepta-learning-ledger/src/production.rs` — signed + anchored product writer.
+- `codex-rs/hepta-learning-ledger/src/witness.rs` — independent durable anchor witness.
+- `codex-rs/hepta-learning-ledger/src/trust_root.rs` — pinned-root signed signer distribution and predecessor-bound rotation.
+- `codex-rs/hepta-learning-ledger/src/protocol.rs` — canonical registry protocol adapters.
+- `codex-rs/hepta-learning-ledger/src/index_checkpoint.rs` — verifiable long-history index checkpoint.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -216,6 +244,11 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-learning-ledger/src/durable_tests.rs](../../../codex-rs/hepta-learning-ledger/src/durable_tests.rs); named case: `persisted_causal_events_replay_exact_core_and_revocation_excludes_descendants`.
 - [codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs](../../../codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs); named case: `ledger_03_rejects_shared_credential_chain`.
+- `codex-rs/hepta-learning-ledger/src/convergence_tests.rs` — correction-head/fork, atomic conserved-credit and unlearning-lineage invariants.
+- `codex-rs/hepta-learning-ledger/src/production_tests.rs` — signed decision → authenticated outcome → atomic credit → ledger-derived dataset path plus current-trust refresh/anti-rollback.
+- `codex-rs/hepta-learning-ledger/src/witness_tests.rs` — independently retained acknowledgement recovery.
+- `codex-rs/hepta-learning-ledger/src/protocol_tests.rs` — canonical names/order, unknown-field rejection and semantic-invalid JSON rejection.
+- `codex-rs/hepta-learning-ledger/src/index_checkpoint_tests.rs` — 4,096-record checkpoint plus full 8,192-record single-segment recovery-work capacity fixture.
 
 In `codex-rs`, run `just test -p codex-hepta-learning-ledger`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.ledger.md) separately labels target acceptance designs.
 
@@ -230,7 +263,7 @@ Applicable work packages:
 
 The bootstrap package is `LRN-0-CAUSAL-LEARNING-CONTRACTS`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. The source surfaces listed above are implemented by this candidate, but this document does not pre-judge its CI result. Later package-registry entries may remain `planned` without meaning that already-materialized source is absent; product composition and qualification remain separate axes.
 
 ## 14. Activation, compatibility and retirement
 

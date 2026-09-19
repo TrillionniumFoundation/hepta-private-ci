@@ -5,7 +5,11 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
+use crate::AuthenticatedOutcomeV1;
+use crate::AuthenticatedPrincipalV1;
 use crate::CandidateSetCompleteness;
+use crate::CreditAllocationBatchV1;
+use crate::CreditAllocationV1;
 use crate::CreditAssignment;
 use crate::DurableLedgerError;
 use crate::EpisodeDecision;
@@ -13,7 +17,11 @@ use crate::LedgerEvent;
 use crate::LedgerRecord;
 use crate::OutcomeFinality;
 use crate::OutcomeObservation;
+use crate::OutcomeTerminalityV1;
+use crate::OutcomeWatermarkV1;
 use crate::Revocation;
+use crate::UnlearningDerivedKindV1;
+use crate::UnlearningLineageEventV1;
 
 pub(crate) const MAX_EVENT: usize = 32 * 1024;
 pub(crate) const FRAME_OVERHEAD: usize = 112;
@@ -96,6 +104,67 @@ pub(crate) fn decode_event(mut input: &[u8]) -> Result<LedgerEvent, DurableLedge
             authority_id: reader.id()?,
             reason_digest: reader.digest()?,
         }),
+        4 => LedgerEvent::AuthenticatedOutcome(AuthenticatedOutcomeV1 {
+            record_id: reader.id()?,
+            outcome_id: reader.id()?,
+            episode_id: reader.id()?,
+            observer: reader.principal()?,
+            observed_at: reader.optional_u64()?,
+            value: reader.optional_fixed()?,
+            unit_profile_digest: reader.digest()?,
+            support_digest: reader.digest()?,
+            watermark: OutcomeWatermarkV1 {
+                latest_observable_at: u64::from_be_bytes(reader.take()?),
+                expected_delay_profile_digest: reader.digest()?,
+                terminality: OutcomeTerminalityV1::from_tag(reader.byte()?)
+                    .ok_or(DurableLedgerError::Corrupt)?,
+                censoring_reason: reader.optional_id()?,
+                correction_predecessor: reader.optional_id()?,
+                finalized_at: reader.optional_u64()?,
+            },
+        }),
+        5 => LedgerEvent::CreditBatch(CreditAllocationBatchV1 {
+            batch_id: reader.id()?,
+            episode_id: reader.id()?,
+            outcome_id: reader.id()?,
+            allocator: reader.principal()?,
+            terminal_outcome: FixedQ32::from_raw(i64::from_be_bytes(reader.take()?)),
+            allocations: {
+                let count = u32::from_be_bytes(reader.take()?) as usize;
+                if count > 256 {
+                    return Err(DurableLedgerError::Corrupt);
+                }
+                (0..count)
+                    .map(|_| {
+                        Ok(CreditAllocationV1 {
+                            target_id: reader.id()?,
+                            credit: FixedQ32::from_raw(i64::from_be_bytes(reader.take()?)),
+                        })
+                    })
+                    .collect::<Result<Vec<_>, DurableLedgerError>>()?
+            },
+            conservation_residual: FixedQ32::from_raw(i64::from_be_bytes(reader.take()?)),
+            support_digest: reader.digest()?,
+            finalized: match reader.byte()? {
+                0 => false,
+                1 => true,
+                _ => return Err(DurableLedgerError::Corrupt),
+            },
+        }),
+        6 => LedgerEvent::UnlearningLineage(UnlearningLineageEventV1 {
+            record_id: reader.id()?,
+            source_record_id: reader.id()?,
+            derived_id: reader.id()?,
+            derived_kind: UnlearningDerivedKindV1::from_tag(reader.byte()?)
+                .ok_or(DurableLedgerError::Corrupt)?,
+            predecessor: reader.optional_id()?,
+            upstream_derived_id: reader.optional_id()?,
+            upstream_derived_digest: reader.optional_digest()?,
+            authority_id: reader.id()?,
+            reason_digest: reader.digest()?,
+            source_digest: reader.digest()?,
+            derived_digest: reader.digest()?,
+        }),
         _ => return Err(DurableLedgerError::Corrupt),
     };
     if !reader.0.is_empty() {
@@ -130,6 +199,50 @@ impl Reader<'_> {
 
     fn digest(&mut self) -> Result<Digest32, DurableLedgerError> {
         Ok(Digest32::from_array(self.take()?))
+    }
+
+    fn optional_digest(&mut self) -> Result<Option<Digest32>, DurableLedgerError> {
+        match self.byte()? {
+            0 => Ok(None),
+            1 => Ok(Some(self.digest()?)),
+            _ => Err(DurableLedgerError::Corrupt),
+        }
+    }
+
+    fn principal(&mut self) -> Result<AuthenticatedPrincipalV1, DurableLedgerError> {
+        Ok(AuthenticatedPrincipalV1 {
+            principal_id: self.id()?,
+            credential_chain_digest: self.digest()?,
+            signing_key_digest: self.digest()?,
+            scope_digest: self.digest()?,
+            authority_epoch: u64::from_be_bytes(self.take()?),
+            authenticated_at: u64::from_be_bytes(self.take()?),
+            expires_at: u64::from_be_bytes(self.take()?),
+        })
+    }
+
+    fn optional_id(&mut self) -> Result<Option<StableId>, DurableLedgerError> {
+        match self.byte()? {
+            0 => Ok(None),
+            1 => Ok(Some(self.id()?)),
+            _ => Err(DurableLedgerError::Corrupt),
+        }
+    }
+
+    fn optional_u64(&mut self) -> Result<Option<u64>, DurableLedgerError> {
+        match self.byte()? {
+            0 => Ok(None),
+            1 => Ok(Some(u64::from_be_bytes(self.take()?))),
+            _ => Err(DurableLedgerError::Corrupt),
+        }
+    }
+
+    fn optional_fixed(&mut self) -> Result<Option<FixedQ32>, DurableLedgerError> {
+        match self.byte()? {
+            0 => Ok(None),
+            1 => Ok(Some(FixedQ32::from_raw(i64::from_be_bytes(self.take()?)))),
+            _ => Err(DurableLedgerError::Corrupt),
+        }
     }
 
     fn byte(&mut self) -> Result<u8, DurableLedgerError> {

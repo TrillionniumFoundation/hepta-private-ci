@@ -44,9 +44,10 @@ Later valid complete frames are preserved for lost-acknowledgement reconciliatio
 corruption after the anchor still rejects. Recovered bytes are synced before
 exposing committed results. The host must authenticate and bind the witness,
 retain it independently and acknowledge externally only after retaining it.
-It must not retry a failed anchored recovery as `Unacknowledged`. This patch does
-not supply the independent witness store; an unanchored recovery cannot detect
-loss of a whole valid suffix.
+It must not retry a failed anchored recovery as `Unacknowledged`. `DurableLedger` itself deliberately does not store the acknowledgement witness in
+its own journal. Product composition can use the separately bound
+`DurableAnchorWitness`; an unanchored recovery still cannot detect loss of a whole
+valid suffix and must never substitute for the current independent witness.
 
 ## Causal and resource boundaries
 
@@ -66,6 +67,58 @@ lookup is linear in the bounded record count. The synced path has no hard
 real-time or target-host latency claim. The V2 rotation and evaluated-shadow
 consumer below do not add compaction, arbitrary owner migration, independent
 witness storage or production enrollment.
+
+## Additive causal event kinds
+
+The original V1 event tags remain byte-for-byte assigned as Decision=0,
+Outcome=1, Credit=2 and Revocation=3. This convergence adds:
+
+- tag 4: `AuthenticatedOutcomeV1`, including authenticated-principal metadata,
+  delayed/censored/terminal watermark and correction predecessor;
+- tag 5: `CreditAllocationBatchV1`, one canonical sorted allocation batch whose
+  allocations plus residual must exactly conserve the terminal outcome before
+  one frame is committed;
+- tag 6: `UnlearningLineageEventV1`, a linear invalidation lineage from an
+  already-revoked source record to a derived dataset/artifact/checkpoint/replay/
+  prompt-graph/sensor-core/evaluation/backup object.
+
+New recovery code accepts V1-only histories unchanged. A journal containing a
+tag 4-6 event requires a compatible new reader; there is no claim that an older
+binary can interpret new event kinds. Corrections are append-only and must name
+the current authenticated-outcome head for the same episode. This rejects stale
+forks, cross-episode predecessors and self-reference without rewriting history.
+
+## Product writer and independent acknowledgement witness
+
+`ProductionLedgerWriter` composes a host-owned current trust provider with
+`LearningEvidenceVerifierV1`, exact current-anchor comparison and the durable
+journal. The writer queries `LearningEvidenceTrustProviderV1` before every signed
+mutation and remembers a monotone trust revision/authority-epoch/digest frontier;
+rollback or same-revision trust drift fails closed. A production host can back
+that provider with `RootedLearningEvidenceTrustProviderV1`: an out-of-band pinned
+Ed25519 public root admits only complete root-signed signer/controller manifests,
+and rotation must advance generation with the exact predecessor manifest digest
+and non-regressing authority epoch. The root private key is never accepted by the
+ledger crate. Product-facing methods do not expose raw V1 outcome or per-target
+credit append. Authenticated outcome and atomic credit paths therefore cross
+current signature/role admission and semantic validation before durable append.
+
+`DurableAnchorWitness` is a separate host-authorized HEPTAW01 file. Its binding,
+lock and checksums are independent from the learning journal. Each witness row is
+an increasing `LedgerAnchor` plus checksum and is synced before its in-memory
+frontier advances. Reopen rejects binding drift, checksum damage and sequence
+regression. The host still owns directory fsync, path isolation, trust-root
+distribution and the decision to acknowledge externally only after both journal
+and witness are durable.
+
+`LedgerIndexCheckpointV1` records a verifiable summary of a replayed snapshot:
+head, record/active counts, event-class counts, correction/revocation cuts and
+source-set digest. `LedgerRecoveryWorkV1` separately records the exact replayed
+record count, active count, canonical event bytes and maximum canonical event
+size. Verification deliberately replays canonical history and recomputes these
+facts. The standard capacity regression exercises the full 8,192-record V1
+single-segment profile. These are drift/capacity receipts, not a trusted shortcut
+around journal validation or a target-host wall-clock latency claim.
 
 ## Verification and rollback
 
@@ -103,10 +156,13 @@ this is not a physical power-loss or hostile-writer guarantee.
 ## Segmented V2 persistence behind the existing consumer port
 
 `DurableLearningJournal` is sealed to the actual `DurableLedger` and
-`SegmentedLedger` implementations. The existing
-[`run_evaluated_shadow_v1`](../hepta-intelligence/EVALUATED_SHADOW.md) consumer
-uses this port without changing its evaluation, signature, eight-stage ordering,
-Decision identity or no-effect semantics. There is no second data owner.
+`SegmentedLedger` implementations. Its weak Decision compatibility method exists
+only under `qualification-legacy-write`; default/product builds expose no such
+method. The corresponding
+[`run_evaluated_shadow_v1`](../hepta-intelligence/EVALUATED_SHADOW.md) consumer is
+compiled only under `evaluated-shadow-qualification`, which forwards that ledger
+feature. There is no second data owner and no default product bypass around
+`ProductionLedgerWriter`.
 
 `SegmentedLedger::create(owner_lock, first_segment, binding, limits)` takes only
 host-authorized independent handles. A stable, exclusive owner lock spans all

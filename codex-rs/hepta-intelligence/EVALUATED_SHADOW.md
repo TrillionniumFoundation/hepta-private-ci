@@ -1,6 +1,6 @@
 # Evaluated shadow consumer
 
-`run_evaluated_shadow_v1` is an opt-in library composition entry. It verifies the
+`run_evaluated_shadow_v1` is an opt-in **qualification-only** library composition entry, compiled only with the `evaluated-shadow-qualification` feature. Default/product builds do not expose the weak legacy Decision append surface. It verifies the
 single `DatasetSnapshotReceiptV3` manifest against the complete evaluation
 snapshot-ID set, invokes E's signed V2 evaluation, and requires eligibility
 before invoking any F port. The same registered evaluator must additionally

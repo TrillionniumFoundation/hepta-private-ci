@@ -31,7 +31,6 @@ use codex_hepta_learning_ledger::DurableLedgerError;
 use codex_hepta_learning_ledger::EpisodeDecision;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
-use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::SignedEvidenceError;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_learning_ledger::verify_dataset_snapshot_receipt_v3;
@@ -349,7 +348,7 @@ impl<P: LaneFShadowPortsV1> LaneFShadowPortsV1 for DurableDecisionPorts<'_, P> {
         let mut support = b"hepta.intelligence.durable-shadow-decision.v1\0".to_vec();
         support.extend_from_slice(self.admission_digest.as_array());
         support.extend_from_slice(input.predecessor_digest.as_array());
-        let event = LedgerEvent::Decision(EpisodeDecision {
+        let decision = EpisodeDecision {
             record_id: input.run_id.clone(),
             episode_id: self.episode_id.clone(),
             objective_digest: self.request.objective_digest,
@@ -359,8 +358,8 @@ impl<P: LaneFShadowPortsV1> LaneFShadowPortsV1 for DurableDecisionPorts<'_, P> {
             selected_propensity: propensity,
             completeness: CandidateSetCompleteness::Complete,
             support_digest: Digest32::of_bytes(&support),
-        });
-        match self.ledger.append(self.expected_head, event) {
+        };
+        match self.ledger.append_decision(self.expected_head, decision) {
             Ok(receipt) => {
                 let output_digest = receipt.chain_digest;
                 self.appended = Some(receipt);
