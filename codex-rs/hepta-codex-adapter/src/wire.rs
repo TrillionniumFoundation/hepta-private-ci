@@ -24,8 +24,7 @@ use crate::CodexOperationIntent;
 use crate::Error;
 use crate::adapt;
 
-pub const CODEX_OPERATION_INTENT_WIRE_SCHEMA_V2: &str =
-    "hepta.codex-operation-intent.v2";
+pub const CODEX_OPERATION_INTENT_WIRE_SCHEMA_V2: &str = "hepta.codex-operation-intent.v2";
 const CODEX_OPERATION_INTENT_WIRE_MAX_BYTES: usize = 64 * 1024;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
