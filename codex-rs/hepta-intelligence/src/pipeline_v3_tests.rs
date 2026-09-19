@@ -6,6 +6,8 @@ use crate::CapabilitySnapshotRequestV2;
 use crate::LegalActionCandidateV1;
 use crate::build_legal_candidates_v1;
 use codex_hepta_types::Generation;
+use std::cell::Cell;
+use std::rc::Rc;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("fixture id")
@@ -149,6 +151,7 @@ struct Ports {
     fail: Option<(LaneFStageV3, PortFailureClassV3)>,
     intuition: PortDecisionV3,
     accepted_envelope: Option<Digest32>,
+    cancel_after: Option<(LaneFStageV3, Rc<Cell<bool>>)>,
 }
 
 impl Ports {
@@ -171,7 +174,7 @@ impl Ports {
         } else {
             digest(&format!("output:{stage:?}", stage = input.stage))
         };
-        Ok(PortReceiptV3 {
+        let receipt = PortReceiptV3 {
             stage: input.stage,
             producer: id(producer),
             snapshot_digest: input.snapshot_digest,
@@ -183,7 +186,13 @@ impl Ports {
                 PortDecisionV3::Continue
             },
             authority: AuthorityPosture::DENY_ALL,
-        })
+        };
+        if let Some((stage, cancelled)) = &self.cancel_after
+            && *stage == input.stage
+        {
+            cancelled.set(true);
+        }
+        Ok(receipt)
     }
 }
 
@@ -434,5 +443,51 @@ fn absolute_run_deadline_fails_before_any_owner_call() {
     assert_eq!(
         receipt.stages.last().map(|trace| trace.stage),
         Some(LaneFStageV3::ObjectiveValidated)
+    );
+}
+
+struct SharedCancellation {
+    cancelled: Rc<Cell<bool>>,
+}
+
+impl CompositionControlV3 for SharedCancellation {
+    fn cancelled(&self) -> bool {
+        self.cancelled.get()
+    }
+}
+
+#[test]
+fn cancellation_after_committed_host_handoff_applies_to_next_stage_only() {
+    let cancelled = Rc::new(Cell::new(false));
+    let control = SharedCancellation {
+        cancelled: Rc::clone(&cancelled),
+    };
+    let mut ports = Ports {
+        cancel_after: Some((
+            LaneFStageV3::HostHandoffAccepted,
+            Rc::clone(&cancelled),
+        )),
+        ..Ports::default()
+    };
+    let receipt = run_composition_v3_with_control(request(false), &mut ports, &control)
+        .expect("committed handoff receipt");
+    assert_eq!(
+        receipt.disposition,
+        PipelineDispositionV3::Failed(PortFailureClassV3::Cancelled)
+    );
+    assert_eq!(
+        receipt
+            .stages
+            .iter()
+            .find(|stage| stage.stage == LaneFStageV3::HostHandoffAccepted)
+            .map(|stage| stage.outcome),
+        Some(StageOutcomeV3::Completed)
+    );
+    assert_eq!(
+        receipt.stages.last().map(|stage| (stage.stage, stage.outcome)),
+        Some((
+            LaneFStageV3::LearningRecorded,
+            StageOutcomeV3::Failed(PortFailureClassV3::Cancelled)
+        ))
     );
 }
