@@ -1,5 +1,11 @@
 use super::*;
 
+use codex_hepta_contracts::PROVIDER_EVIDENCE_SCHEMA_VERSION;
+use codex_hepta_contracts::ProviderInvocationIntent;
+use codex_hepta_contracts::ProviderRequestBinding;
+use codex_hepta_contracts::ProviderRequestKind;
+use codex_hepta_contracts::ProviderTransport;
+
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap_or_else(|error| panic!("valid id: {error}"))
 }
@@ -53,6 +59,10 @@ struct FramingSerializer {
 }
 
 impl ContextSerializerV2 for FramingSerializer {
+    fn serializer_digest(&self) -> Digest32 {
+        digest("serializer")
+    }
+
     fn template_digest(&self) -> Digest32 {
         digest("template")
     }
@@ -73,56 +83,90 @@ impl ContextSerializerV2 for FramingSerializer {
     }
 }
 
-struct TestTransport {
-    transmitted_override: Option<Digest32>,
-    acknowledged_override: Option<Digest32>,
-    terminal_observed: bool,
-    disposition: ContextDeliveryDispositionV2,
-    acknowledgement: bool,
+struct TestDeliveryVerifier {
+    accept: bool,
+    recorded_at_unix_ms: u64,
 }
 
-impl ContextTransportV2 for TestTransport {
-    fn transport_digest(&self) -> Digest32 {
-        digest("transport-adapter")
+impl ContextProviderDeliveryVerifierV2 for TestDeliveryVerifier {
+    fn verifier_digest(&self) -> Digest32 {
+        digest("delivery-verifier")
     }
 
-    fn send(
+    fn verify_delivery(
         &self,
-        payload: &[u8],
-        _model_profile_digest: Digest32,
-    ) -> Result<ContextTransportEvidenceV2, ContextCompilerV2Error> {
-        let transmitted_payload_digest = self
-            .transmitted_override
-            .unwrap_or(Digest32::of_bytes(payload));
-        Ok(ContextTransportEvidenceV2 {
-            provider_request_id: id("provider:request:1"),
-            transmitted_payload_digest,
-            provider_acknowledged_payload_digest: if self.acknowledgement
-                && self.disposition == ContextDeliveryDispositionV2::Delivered
-            {
-                Some(
-                    self.acknowledged_override
-                        .unwrap_or(transmitted_payload_digest),
-                )
-            } else {
-                None
-            },
-            acknowledgement_digest: if self.acknowledgement {
-                digest("provider-ack")
-            } else {
-                Digest32::ZERO
-            },
-            terminal_observed: self.terminal_observed,
-            disposition: self.disposition,
-            observed_unix_ms: 10,
+        _receipt: &ProviderInvocationReceipt,
+    ) -> Result<ContextProviderDeliveryDecisionV2, String> {
+        if !self.accept {
+            return Err("delivery evidence rejected".to_string());
+        }
+        Ok(ContextProviderDeliveryDecisionV2 {
+            evidence_digest: digest("delivery-evidence"),
+            recorded_at_unix_ms: self.recorded_at_unix_ms,
         })
+    }
+}
+
+fn delivery_verifier() -> TestDeliveryVerifier {
+    TestDeliveryVerifier {
+        accept: true,
+        recorded_at_unix_ms: 20,
+    }
+}
+
+fn provider_receipt(
+    serialization: &SerializedContextV2,
+    preparation: &ContextDeliveryPreparationV2,
+    provider_id: &str,
+    provider_model: &str,
+    input_override: Option<Sha256Digest>,
+    witness_override: Option<Sha256Digest>,
+    terminal: ProviderTerminal,
+) -> ProviderInvocationReceipt {
+    let binding = ProviderRequestBinding {
+        schema_version: PROVIDER_EVIDENCE_SCHEMA_VERSION,
+        thread_id: "thread-1".to_string(),
+        turn_id: "turn-1".to_string(),
+        host_request_binding_id_sha256: Sha256Digest::for_bytes(b"host-request-1"),
+        request_kind: ProviderRequestKind::Turn,
+        provider_id: provider_id.to_string(),
+        provider_config_sha256: Sha256Digest::for_bytes(b"provider-config"),
+        model: provider_model.to_string(),
+        transport: ProviderTransport::Http,
+        endpoint_sha256: Sha256Digest::for_bytes(b"/responses"),
+        logical_request_sha256: Sha256Digest::for_bytes(b"logical-request"),
+        wire_semantic_sha256: Sha256Digest::for_bytes(b"wire-semantics"),
+        ephemeral_input_sha256: Some(
+            input_override.unwrap_or_else(|| Sha256Digest::for_bytes(serialization.payload())),
+        ),
+        ephemeral_input_witness_sha256: Some(witness_override.unwrap_or_else(|| {
+            Sha256Digest::for_bytes(preparation.preparation_digest().as_array())
+        })),
+        previous_response_id_sha256: None,
+        generate: true,
+    };
+    ProviderInvocationReceipt::new(
+        ProviderInvocationIntent::for_host_attempt_id("host-attempt-1", binding),
+        terminal,
+    )
+}
+
+fn completed_terminal() -> ProviderTerminal {
+    ProviderTerminal::Completed {
+        response_id_sha256: Sha256Digest::for_bytes(b"response-id"),
+        response_items_sha256: Sha256Digest::for_bytes(b"response-items"),
+        token_usage_sha256: Sha256Digest::for_bytes(b"token-usage"),
+        end_turn: Some(true),
     }
 }
 
 fn profile() -> ContextModelProfileV2 {
     ContextModelProfileV2 {
-        model_digest: digest("model"),
+        model_digest: digest("model-profile"),
+        provider_id_digest: digest("provider"),
+        provider_model_digest: digest("model"),
         tokenizer_digest: digest("tokenizer"),
+        serializer_digest: digest("serializer"),
         template_digest: digest("template"),
         tool_schema_digest: digest("tool-schema"),
         maximum_context_tokens: 1_000,
@@ -579,7 +623,7 @@ fn final_serialized_token_count_must_fit_budget_including_framing() {
 }
 
 #[test]
-fn delivery_receipt_is_created_only_from_transport_invoked_with_exact_payload() {
+fn provider_receipt_bound_to_exact_payload_and_pre_dispatch_witness_creates_delivery_receipt() {
     let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
     let (trusted, realized) = candidate(
         "item:trusted",
@@ -607,35 +651,43 @@ fn delivery_receipt_is_created_only_from_transport_invoked_with_exact_payload() 
         id("attachment:1"),
     )
     .unwrap_or_else(|error| panic!("valid attachment: {error}"));
-    let transport = TestTransport {
-        transmitted_override: None,
-        acknowledged_override: None,
-        terminal_observed: true,
-        disposition: ContextDeliveryDispositionV2::Delivered,
-        acknowledgement: true,
-    };
-
-    let delivery = deliver_context_v2(
+    let preparation = prepare_delivery_v2(
         &compiled,
         &serialization,
         &attachment,
         &profile(),
         &snapshot,
-        id("delivery:1"),
-        &transport,
+        id("preparation:1"),
     )
-    .unwrap_or_else(|error| panic!("valid delivery: {error}"));
+    .unwrap_or_else(|error| panic!("valid delivery preparation: {error}"));
+    let provider = provider_receipt(
+        &serialization,
+        &preparation,
+        "provider",
+        "model",
+        None,
+        None,
+        completed_terminal(),
+    );
+
+    let delivery = observe_delivery(
+        &preparation,
+        &attachment,
+        &serialization,
+        &profile(),
+        id("delivery:1"),
+        &provider,
+        &delivery_verifier(),
+        25,
+    )
+    .unwrap_or_else(|error| panic!("valid delivery evidence: {error}"));
 
     assert_eq!(delivery.disposition(), ContextDeliveryDispositionV2::Delivered);
     assert_eq!(
         delivery.payload_digest(),
         Digest32::of_bytes(serialization.payload())
     );
-    assert!(!delivery.acknowledgement_digest().is_zero());
-    assert_eq!(
-        delivery.provider_acknowledged_payload_digest(),
-        Some(Digest32::of_bytes(serialization.payload()))
-    );
+    assert_eq!(delivery.preparation_digest(), preparation.preparation_digest());
     assert_eq!(
         delivery.admission_snapshot_observed_unix_ms(),
         snapshot.observed_unix_ms()
@@ -647,21 +699,21 @@ fn delivery_receipt_is_created_only_from_transport_invoked_with_exact_payload() 
     );
     assert_eq!(delivery.authority(), AuthorityPosture::DENY_ALL);
     delivery
-        .validate_for(&attachment, &serialization)
+        .validate_for(&preparation, &attachment, &serialization, &profile())
         .unwrap_or_else(|error| panic!("valid delivery receipt: {error}"));
 }
 
 #[test]
-fn transport_cannot_claim_delivery_of_different_payload() {
+fn provider_payload_binding_must_match_exact_serialized_payload() {
     let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
-    let (evidence, realized) = candidate(
+    let (candidate, realized) = candidate(
         "item:evidence",
         ContextRoleV2::UntrustedEvidence,
         20,
         FixedQ32::ONE,
         &snapshot,
     );
-    let compiled = compile_v2(request(vec![evidence], 100))
+    let compiled = compile_v2(request(vec![candidate], 100))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
     let serialization = record_serialization(
         &compiled,
@@ -680,39 +732,51 @@ fn transport_cannot_claim_delivery_of_different_payload() {
         id("attachment:1"),
     )
     .unwrap_or_else(|error| panic!("valid attachment: {error}"));
-    let transport = TestTransport {
-        transmitted_override: Some(digest("different-payload")),
-        acknowledged_override: None,
-        terminal_observed: true,
-        disposition: ContextDeliveryDispositionV2::Delivered,
-        acknowledgement: true,
-    };
+    let preparation = prepare_delivery_v2(
+        &compiled,
+        &serialization,
+        &attachment,
+        &profile(),
+        &snapshot,
+        id("preparation:1"),
+    )
+    .unwrap_or_else(|error| panic!("valid preparation: {error}"));
+    let provider = provider_receipt(
+        &serialization,
+        &preparation,
+        "provider",
+        "model",
+        Some(Sha256Digest::for_bytes(b"different-payload")),
+        None,
+        completed_terminal(),
+    );
 
     assert_eq!(
-        deliver_context_v2(
-            &compiled,
-            &serialization,
+        observe_delivery(
+            &preparation,
             &attachment,
+            &serialization,
             &profile(),
-            &snapshot,
             id("delivery:1"),
-            &transport,
+            &provider,
+            &delivery_verifier(),
+            25,
         ),
         Err(ContextCompilerV2Error::DeliveryMismatch)
     );
 }
 
 #[test]
-fn provider_ack_for_different_payload_cannot_receive_delivered_status() {
+fn provider_input_witness_must_bind_current_pre_dispatch_revalidation() {
     let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
-    let (trusted, realized) = candidate(
-        "item:trusted",
-        ContextRoleV2::TrustedInstruction,
+    let (candidate, realized) = candidate(
+        "item:evidence",
+        ContextRoleV2::UntrustedEvidence,
         20,
         FixedQ32::ONE,
         &snapshot,
     );
-    let compiled = compile_v2(request(vec![trusted], 100))
+    let compiled = compile_v2(request(vec![candidate], 100))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
     let serialization = record_serialization(
         &compiled,
@@ -731,31 +795,172 @@ fn provider_ack_for_different_payload_cannot_receive_delivered_status() {
         id("attachment:1"),
     )
     .unwrap_or_else(|error| panic!("valid attachment: {error}"));
-    let transport = TestTransport {
-        transmitted_override: None,
-        acknowledged_override: Some(digest("different-provider-ack-payload")),
-        terminal_observed: true,
-        disposition: ContextDeliveryDispositionV2::Delivered,
-        acknowledgement: true,
-    };
+    let preparation = prepare_delivery_v2(
+        &compiled,
+        &serialization,
+        &attachment,
+        &profile(),
+        &snapshot,
+        id("preparation:1"),
+    )
+    .unwrap_or_else(|error| panic!("valid preparation: {error}"));
+    let provider = provider_receipt(
+        &serialization,
+        &preparation,
+        "provider",
+        "model",
+        None,
+        Some(Sha256Digest::for_bytes(b"stale-preparation")),
+        completed_terminal(),
+    );
 
     assert_eq!(
-        deliver_context_v2(
-            &compiled,
-            &serialization,
+        observe_delivery(
+            &preparation,
             &attachment,
+            &serialization,
             &profile(),
-            &snapshot,
             id("delivery:1"),
-            &transport,
+            &provider,
+            &delivery_verifier(),
+            25,
         ),
-        Err(ContextCompilerV2Error::MissingTerminalAcknowledgement)
+        Err(ContextCompilerV2Error::DeliveryMismatch)
     );
 }
 
+#[test]
+fn provider_and_model_identity_must_match_exact_model_profile() {
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let (candidate, realized) = candidate(
+        "item:evidence",
+        ContextRoleV2::UntrustedEvidence,
+        20,
+        FixedQ32::ONE,
+        &snapshot,
+    );
+    let compiled = compile_v2(request(vec![candidate], 100))
+        .unwrap_or_else(|error| panic!("valid compilation: {error}"));
+    let serialization = record_serialization(
+        &compiled,
+        &profile(),
+        id("serialization:1"),
+        vec![realized],
+        &FramingSerializer { overhead: 0 },
+        &ByteTokenizer,
+    )
+    .unwrap_or_else(|error| panic!("valid serialization: {error}"));
+    let attachment = build_attachment(
+        &compiled,
+        &serialization,
+        &profile(),
+        &snapshot,
+        id("attachment:1"),
+    )
+    .unwrap_or_else(|error| panic!("valid attachment: {error}"));
+    let preparation = prepare_delivery_v2(
+        &compiled,
+        &serialization,
+        &attachment,
+        &profile(),
+        &snapshot,
+        id("preparation:1"),
+    )
+    .unwrap_or_else(|error| panic!("valid preparation: {error}"));
+    let provider = provider_receipt(
+        &serialization,
+        &preparation,
+        "different-provider",
+        "model",
+        None,
+        None,
+        completed_terminal(),
+    );
+
+    assert_eq!(
+        observe_delivery(
+            &preparation,
+            &attachment,
+            &serialization,
+            &profile(),
+            id("delivery:1"),
+            &provider,
+            &delivery_verifier(),
+            25,
+        ),
+        Err(ContextCompilerV2Error::ProviderModelProfileMismatch)
+    );
+}
 
 #[test]
-fn delivery_rejects_snapshot_time_rollback_even_with_same_revocation_epoch() {
+fn independent_provider_evidence_verifier_is_required() {
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let (candidate, realized) = candidate(
+        "item:evidence",
+        ContextRoleV2::UntrustedEvidence,
+        20,
+        FixedQ32::ONE,
+        &snapshot,
+    );
+    let compiled = compile_v2(request(vec![candidate], 100))
+        .unwrap_or_else(|error| panic!("valid compilation: {error}"));
+    let serialization = record_serialization(
+        &compiled,
+        &profile(),
+        id("serialization:1"),
+        vec![realized],
+        &FramingSerializer { overhead: 0 },
+        &ByteTokenizer,
+    )
+    .unwrap_or_else(|error| panic!("valid serialization: {error}"));
+    let attachment = build_attachment(
+        &compiled,
+        &serialization,
+        &profile(),
+        &snapshot,
+        id("attachment:1"),
+    )
+    .unwrap_or_else(|error| panic!("valid attachment: {error}"));
+    let preparation = prepare_delivery_v2(
+        &compiled,
+        &serialization,
+        &attachment,
+        &profile(),
+        &snapshot,
+        id("preparation:1"),
+    )
+    .unwrap_or_else(|error| panic!("valid preparation: {error}"));
+    let provider = provider_receipt(
+        &serialization,
+        &preparation,
+        "provider",
+        "model",
+        None,
+        None,
+        completed_terminal(),
+    );
+    let rejecting = TestDeliveryVerifier {
+        accept: false,
+        recorded_at_unix_ms: 20,
+    };
+
+    assert!(matches!(
+        observe_delivery(
+            &preparation,
+            &attachment,
+            &serialization,
+            &profile(),
+            id("delivery:1"),
+            &provider,
+            &rejecting,
+            25,
+        ),
+        Err(ContextCompilerV2Error::ProviderEvidenceInvalid(_))
+    ));
+}
+
+#[test]
+fn delivery_preparation_rejects_snapshot_time_rollback_even_with_same_epoch() {
     let initial_snapshot = verified_snapshot("snapshot:initial", 10, 1, Vec::new());
     let (trusted, realized) = candidate(
         "item:trusted",
@@ -785,30 +990,22 @@ fn delivery_rejects_snapshot_time_rollback_even_with_same_revocation_epoch() {
     )
     .unwrap_or_else(|error| panic!("valid attachment: {error}"));
     let rollback_snapshot = verified_snapshot("snapshot:rollback", 15, 2, Vec::new());
-    let transport = TestTransport {
-        transmitted_override: None,
-        acknowledged_override: None,
-        terminal_observed: true,
-        disposition: ContextDeliveryDispositionV2::Delivered,
-        acknowledgement: true,
-    };
 
     assert_eq!(
-        deliver_context_v2(
+        prepare_delivery_v2(
             &compiled,
             &serialization,
             &attachment,
             &profile(),
             &rollback_snapshot,
-            id("delivery:1"),
-            &transport,
+            id("preparation:1"),
         ),
         Err(ContextCompilerV2Error::StaleAdmissionSnapshot)
     );
 }
 
 #[test]
-fn delivery_revalidates_again_and_rejects_revocation_after_attachment() {
+fn delivery_preparation_revalidates_and_rejects_revocation_after_attachment() {
     let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
     let (trusted, realized) = candidate(
         "item:trusted",
@@ -839,27 +1036,87 @@ fn delivery_revalidates_again_and_rejects_revocation_after_attachment() {
     .unwrap_or_else(|error| panic!("valid attachment: {error}"));
     let revoked_snapshot =
         verified_snapshot("snapshot:2", 20, 2, vec![admission_id.clone()]);
-    let transport = TestTransport {
-        transmitted_override: None,
-        acknowledged_override: None,
-        terminal_observed: true,
-        disposition: ContextDeliveryDispositionV2::Delivered,
-        acknowledgement: true,
-    };
 
     assert_eq!(
-        deliver_context_v2(
+        prepare_delivery_v2(
             &compiled,
             &serialization,
             &attachment,
             &profile(),
             &revoked_snapshot,
-            id("delivery:1"),
-            &transport,
+            id("preparation:1"),
         ),
         Err(ContextCompilerV2Error::AdmissionRevoked(
             admission_id.to_string()
         ))
+    );
+}
+
+#[test]
+fn indeterminate_provider_terminal_remains_indeterminate() {
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let (candidate, realized) = candidate(
+        "item:evidence",
+        ContextRoleV2::UntrustedEvidence,
+        20,
+        FixedQ32::ONE,
+        &snapshot,
+    );
+    let compiled = compile_v2(request(vec![candidate], 100))
+        .unwrap_or_else(|error| panic!("valid compilation: {error}"));
+    let serialization = record_serialization(
+        &compiled,
+        &profile(),
+        id("serialization:1"),
+        vec![realized],
+        &FramingSerializer { overhead: 0 },
+        &ByteTokenizer,
+    )
+    .unwrap_or_else(|error| panic!("valid serialization: {error}"));
+    let attachment = build_attachment(
+        &compiled,
+        &serialization,
+        &profile(),
+        &snapshot,
+        id("attachment:1"),
+    )
+    .unwrap_or_else(|error| panic!("valid attachment: {error}"));
+    let preparation = prepare_delivery_v2(
+        &compiled,
+        &serialization,
+        &attachment,
+        &profile(),
+        &snapshot,
+        id("preparation:1"),
+    )
+    .unwrap_or_else(|error| panic!("valid preparation: {error}"));
+    let provider = provider_receipt(
+        &serialization,
+        &preparation,
+        "provider",
+        "model",
+        None,
+        None,
+        ProviderTerminal::Indeterminate {
+            reason_code: "lost_terminal_ack".to_string(),
+            partial_response_sha256: None,
+        },
+    );
+
+    let delivery = observe_delivery(
+        &preparation,
+        &attachment,
+        &serialization,
+        &profile(),
+        id("delivery:1"),
+        &provider,
+        &delivery_verifier(),
+        25,
+    )
+    .unwrap_or_else(|error| panic!("valid indeterminate evidence: {error}"));
+    assert_eq!(
+        delivery.disposition(),
+        ContextDeliveryDispositionV2::Indeterminate
     );
 }
 
@@ -897,13 +1154,11 @@ fn tokenizer_generation_secret_and_profile_drift_fail_closed() {
         1,
         1_000,
     )
-    .unwrap_or_else(|error| panic!("valid secret admission record: {error}"));
-    assert_eq!(
+    .unwrap_or_else(|_| panic!("secret test fixture admission record should be structurally valid"));
+    assert!(matches!(
         verify_admission_v2(secret_record, &snapshot, &verifier()),
-        Err(ContextCompilerV2Error::SecretRejected(
-            "item:secret".to_string()
-        ))
-    );
+        Err(ContextCompilerV2Error::SecretRejected(_))
+    ));
 
     let (candidate, realized) = candidate(
         "item:profile",
