@@ -578,6 +578,8 @@ impl AppServerModelDriver {
                             return Err("reconciled output byte limit exceeded".into());
                         }
                         output.output = text;
+                        output.output_sha256 = None;
+                        output.output_retained = true;
                     }
                     output.stop_reason = turn
                         .error
