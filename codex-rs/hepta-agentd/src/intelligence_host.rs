@@ -150,8 +150,12 @@ mod tests {
     fn envelope() -> IntelligenceHostEnvelopeV1 {
         IntelligenceHostEnvelopeV1::new(
             id("run"),
+            digest("request"),
             digest("snapshot"),
             digest("objective"),
+            7,
+            digest("body"),
+            digest("artifact-set"),
             digest("candidate-set"),
             digest("utility"),
             digest("evaluation"),
@@ -160,6 +164,7 @@ mod tests {
             digest("intuition"),
             digest("context"),
             digest("pre-handoff"),
+            10_000_000,
             10_000,
         )
         .expect("envelope")
