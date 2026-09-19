@@ -1,0 +1,132 @@
+name: HeptaBao exact-head qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-bao-adapter/**"
+      - "codex-rs/hepta-contracts/src/final_use.rs"
+      - "codex-rs/hepta-contracts/src/final_use_store.rs"
+      - "codex-rs/hepta-contracts/src/final_use_tests.rs"
+      - "codex-rs/hepta-contracts/FINAL_USE.md"
+      - "docs/modules/secrets.heptabao/**"
+      - "qualification/module-execution-dossiers/detail/secrets.heptabao.md"
+      - ".github/workflows/heptabao-qualification.yml"
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-bao-adapter/**"
+      - "codex-rs/hepta-contracts/src/final_use.rs"
+      - "codex-rs/hepta-contracts/src/final_use_store.rs"
+      - "codex-rs/hepta-contracts/src/final_use_tests.rs"
+      - "codex-rs/hepta-contracts/FINAL_USE.md"
+      - "docs/modules/secrets.heptabao/**"
+      - "qualification/module-execution-dossiers/detail/secrets.heptabao.md"
+      - ".github/workflows/heptabao-qualification.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: heptabao-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  exact-head:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Pin exact candidate identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+          mkdir -p "$RUNNER_TEMP/heptabao-qualification"
+
+      - name: Format check
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          python3 ../scripts/hepta_ci_exec.py             --output "$RUNNER_TEMP/heptabao-qualification/fmt.json"             -- cargo fmt --check -p codex-hepta-contracts -p codex-hepta-bao-adapter
+
+      - name: Final-use authority tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          python3 ../scripts/hepta_ci_exec.py             --output "$RUNNER_TEMP/heptabao-qualification/final-use-tests.json"             -- cargo test --locked -p codex-hepta-contracts final_use::
+
+      - name: HeptaBao adapter tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          python3 ../scripts/hepta_ci_exec.py             --output "$RUNNER_TEMP/heptabao-qualification/adapter-tests.json"             -- cargo test --locked -p codex-hepta-bao-adapter
+
+      - name: Strict Clippy
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          python3 ../scripts/hepta_ci_exec.py             --output "$RUNNER_TEMP/heptabao-qualification/clippy.json"             -- cargo clippy --locked -p codex-hepta-contracts -p codex-hepta-bao-adapter --all-targets -- -D warnings
+
+      - name: Create exact-head receipt
+        shell: bash
+        env:
+          RUN_ID: ${{ github.run_id }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/heptabao-qualification"
+          python3 - "$output" <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import sys
+
+          output = pathlib.Path(sys.argv[1])
+          records = {}
+          for path in sorted(output.glob("*.json")):
+              if path.name == "receipt.json":
+                  continue
+              payload = path.read_bytes()
+              records[path.name] = {
+                  "sha256": hashlib.sha256(payload).hexdigest(),
+                  "bytes": len(payload),
+              }
+          receipt = {
+              "schema": "hepta.secrets.heptabao.qualification.v1",
+              "source_sha": os.environ["SOURCE_SHA"],
+              "github_run_id": os.environ["RUN_ID"],
+              "github_run_attempt": os.environ["RUN_ATTEMPT"],
+              "event": os.environ["EVENT_NAME"],
+              "commands": records,
+              "result": "passed",
+          }
+          (output / "receipt.json").write_text(
+              json.dumps(receipt, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          (cd "$output" && sha256sum *.json | sort > SHA256SUMS)
+
+      - name: Upload exact-head receipt
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: heptabao-qualification-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/heptabao-qualification
+          if-no-files-found: error
+          retention-days: 90

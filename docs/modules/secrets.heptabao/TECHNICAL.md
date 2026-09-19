@@ -48,7 +48,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-bao-adapter/src/https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs); observed identifiers include `BaoToken`, `BaoReadRequest`, `BaoSecretReceipt`, `BaoClient`, `binding`, `consume_kv_v2`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md) for the implemented subset and remaining product work.
+The registered primary source remains [codex-rs/hepta-bao-adapter](../../../codex-rs/hepta-bao-adapter). The executable surfaces now include static `binding`/`consume_kv_v2`, host-owned `TrustedConsumerRegistry`, dynamic `request_secret_lease`/`renew_secret_lease`/`revoke_secret_lease`, known-lease lookup and signed reconciliation. Kernel replay/revocation persistence is implemented in [final_use.rs](../../../codex-rs/hepta-contracts/src/final_use.rs) and [final_use_store.rs](../../../codex-rs/hepta-contracts/src/final_use_store.rs). Read [CURRENT_IMPLEMENTATION.md](CURRENT_IMPLEMENTATION.md) for code that exists today and [SECRET_LEASE_DESIGN.md](SECRET_LEASE_DESIGN.md) for its state-machine contract; product composition and release remain separate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -141,7 +141,7 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Use [FAILURE_RECOVERY.md](FAILURE_RECOVERY.md) for the implemented durable operation states, crash ordering and reconciliation rules. In particular, a provider effect that was durably marked `Dispatched` but lacks a validated terminal response is `Indeterminate` and cannot be blindly reissued. A source library or fixture cannot stand in for provider/operator reconciliation evidence.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -151,19 +151,19 @@ Owned threat entries:
 
 - `secret_value_in_receipt`
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted at ordinary evidence boundaries. Stable provider-body or secret-value digests are not serialized in normal receipts because low-entropy material can be fingerprinted; where a digest is required for verification it remains an internal comparison value or must be governed as sensitive metadata. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
 
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-bao-adapter/src/https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs) and the linked implementation components.
+[HA_AND_STORAGE.md](HA_AND_STORAGE.md) specifies the implemented replay journal, multi-process locking boundary and deployment ceiling. Final-use claims no longer have the former 16,384-entry per-epoch admission cap or whole-state rewrite on each claim. The revocation head and lease metadata store retain explicit size bounds. Multi-host active-active still requires an independently qualified strongly consistent backend; unqualified NFS or disconnected local copies are not one replay domain.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Use the host-enrolled BaoClient consumer behind a registered trusted callback. The current integration supports the KV v2 read contract in the adapter README; the lease/renew/revoke design is a separate target. Configure CA, issuer, epoch and persistent authority state through the host, pass the provider token through the dedicated channel, and retain indeterminate consumer outcomes without blind retry.
+Use the host-enrolled `BaoClient` with a host-built `TrustedConsumerRegistry`. The integration supports the exact-version KV v2 read path plus the bounded dynamic SecretLease issue/renew/revoke/reconciliation profile described in [CURRENT_IMPLEMENTATION.md](CURRENT_IMPLEMENTATION.md). Configure CA, issuer, epoch, authority state and lease-registry state through protected host configuration, pass the provider token through the dedicated channel, and preserve indeterminate outcomes without blind retry.
 
 Current operating and state-format references:
 
@@ -179,8 +179,10 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs); named case: `real_tls_read_uses_headers_exact_version_and_secret_only_consumer`.
 - [codex-rs/hepta-bao-adapter/src/lib_tests.rs](../../../codex-rs/hepta-bao-adapter/src/lib_tests.rs); named case: `exact_reference_returns_only_opaque_digest`.
+- [codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs](../../../codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs); dynamic issue/renew/revoke and indeterminate no-blind-retry cases.
+- [codex-rs/hepta-contracts/src/final_use_tests.rs](../../../codex-rs/hepta-contracts/src/final_use_tests.rs); shared-owner replay/revocation and schema-v1 migration cases.
 
-In `codex-rs`, run `just test -p codex-hepta-bao-adapter`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md) separately labels target acceptance designs.
+The dedicated [HeptaBao exact-head qualification workflow](../../../.github/workflows/heptabao-qualification.yml) checks out the exact candidate SHA, runs focused tests, format and strict Clippy, then uploads a machine-readable receipt containing that tested SHA and hashes of the retained command records. In `codex-rs`, the corresponding local focused commands are `cargo test --locked -p codex-hepta-contracts final_use::` and `cargo test --locked -p codex-hepta-bao-adapter`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -210,7 +212,7 @@ For `secrets.heptabao`, this document grants no runtime, production, model, prov
 
 #### `HEPTABAO-1-SECRET-BOUNDARY`
 
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
+- State: `planned`; priority: `2`; parallel class: `contract_coordinated`. This state is canonical work-package scheduling metadata; it is not a statement that the source entrypoints described in Sections 2, 7, 8 and 17 are absent.
 - Owner/deputy: `secrets-platform` / `security-authority`.
 - Allowed write paths:
 - `codex-rs/hepta-bao-adapter/**`
@@ -256,4 +258,4 @@ The bootstrap source-location obligation for `secrets.heptabao` is implemented b
 - `external/HeptaBao`
 - `codex-rs/hepta-bao-adapter`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. `.github/workflows/hepta-consolidated-source.yml` still verifies the repository-wide gap inventory, but its selected Rust package set is not the `secrets.heptabao` compilation receipt. These receipts are source implementation evidence only. They grant no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml` and by the module-specific `.github/workflows/heptabao-qualification.yml`. The latter produces an exact-head receipt after focused authority/adapter tests, package format checks and strict Clippy. `.github/workflows/hepta-consolidated-source.yml` still verifies the repository-wide gap inventory, but its selected Rust package set is not the `secrets.heptabao` compilation receipt. These receipts are source implementation evidence only. They grant no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.

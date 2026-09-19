@@ -44,6 +44,13 @@ fn fixture()
     ))
 }
 
+fn resign(signed: &mut SignedFinalUseGrant) {
+    signed.signature = SigningKey::from_bytes(&[47; 32])
+        .sign(&signed.grant.signing_bytes().unwrap())
+        .to_bytes()
+        .to_vec();
+}
+
 #[test]
 fn signed_claim_is_single_use_and_delivers_under_same_owner() {
     let (authority, signed, _directory) = fixture().unwrap();
@@ -103,6 +110,26 @@ fn revocation_after_claim_prevents_delivery_and_cannot_be_rolled_back() {
 }
 
 #[test]
+fn revocation_from_second_active_owner_is_visible_at_final_use() {
+    let (authority, signed, directory) = fixture().unwrap();
+    let second = reopen(directory.path()).unwrap();
+    let token = authority.claim(&signed, &signed.grant.binding).unwrap();
+    second
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+        })
+        .unwrap();
+    let mut called = false;
+    assert_eq!(
+        authority.with_verified_use(token, &signed.grant.binding, || called = true),
+        Err(FinalUseError::Revoked)
+    );
+    assert!(!called);
+}
+
+#[test]
 fn epoch_change_fences_outstanding_claims_and_old_grants() {
     let (authority, signed, _directory) = fixture().unwrap();
     let token = authority.claim(&signed, &signed.grant.binding).unwrap();
@@ -128,10 +155,7 @@ fn expired_grant_is_denied_using_verifier_clock() {
     let (authority, mut signed, _directory) = fixture().unwrap();
     signed.grant.not_before_unix_ms = 1;
     signed.grant.expires_at_unix_ms = 2;
-    signed.signature = SigningKey::from_bytes(&[47; 32])
-        .sign(&signed.grant.signing_bytes().unwrap())
-        .to_bytes()
-        .to_vec();
+    resign(&mut signed);
     assert_eq!(
         authority.claim(&signed, &signed.grant.binding).unwrap_err(),
         FinalUseError::Expired
@@ -152,14 +176,18 @@ fn reopen(directory: &std::path::Path) -> Result<FinalUseAuthority, FinalUseErro
 }
 
 #[test]
-fn replay_state_survives_owner_restart_and_prevents_concurrent_owners() {
+fn replay_state_survives_restart_and_is_shared_by_concurrent_owners() {
     let (authority, signed, directory) = fixture().unwrap();
-    assert_eq!(
-        reopen(directory.path()).unwrap_err(),
-        FinalUseError::StateLocked
-    );
+    let concurrent = reopen(directory.path()).unwrap();
     let token = authority.claim(&signed, &signed.grant.binding).unwrap();
+    assert_eq!(
+        concurrent
+            .claim(&signed, &signed.grant.binding)
+            .unwrap_err(),
+        FinalUseError::AlreadyClaimed
+    );
     drop(token);
+    drop(concurrent);
     drop(authority);
     let reopened = reopen(directory.path()).unwrap();
     assert_eq!(
@@ -192,6 +220,28 @@ fn revocation_survives_restart_and_missing_state_is_not_reset() {
     );
 }
 
+#[test]
+fn missing_authority_lock_inode_after_initialization_fails_closed() {
+    let (authority, _signed, directory) = fixture().unwrap();
+    drop(authority);
+    std::fs::remove_file(directory.path().join("authority.lock")).unwrap();
+    assert_eq!(
+        reopen(directory.path()).unwrap_err(),
+        FinalUseError::InvalidTrust
+    );
+}
+
+#[test]
+fn missing_replay_journal_after_initialization_fails_closed() {
+    let (authority, _signed, directory) = fixture().unwrap();
+    drop(authority);
+    std::fs::remove_file(directory.path().join("claims.log")).unwrap();
+    assert_eq!(
+        reopen(directory.path()).unwrap_err(),
+        FinalUseError::InvalidTrust
+    );
+}
+
 #[cfg(unix)]
 #[test]
 fn authority_rejects_shared_state_directory_and_symlinked_files() {
@@ -208,7 +258,7 @@ fn authority_rejects_shared_state_directory_and_symlinked_files() {
 }
 
 #[test]
-fn killed_owner_releases_lock_but_keeps_claim() {
+fn killed_owner_releases_mutation_fence_but_keeps_claim() {
     const CHILD_STATE: &str = "HEPTA_FINAL_USE_TEST_CHILD_STATE";
     if let Some(path) = std::env::var_os(CHILD_STATE) {
         let (_, signed, _fixture_directory) = fixture().unwrap();
@@ -224,7 +274,7 @@ fn killed_owner_releases_lock_but_keeps_claim() {
     let mut child = std::process::Command::new(std::env::current_exe().unwrap())
         .args([
             "--exact",
-            "final_use::tests::killed_owner_releases_lock_but_keeps_claim",
+            "final_use::tests::killed_owner_releases_mutation_fence_but_keeps_claim",
             "--nocapture",
         ])
         .env(CHILD_STATE, directory.path())
@@ -237,16 +287,21 @@ fn killed_owner_releases_lock_but_keeps_claim() {
     while !ready.exists() && std::time::Instant::now() < deadline {
         std::thread::sleep(std::time::Duration::from_millis(10));
     }
-    let was_ready = ready.exists();
-    let locked = if was_ready {
-        reopen(directory.path()).unwrap_err()
-    } else {
-        FinalUseError::Unavailable
-    };
+    assert!(ready.exists(), "child did not persist its claim");
+
+    // A second active owner can open while the child lives and must observe the
+    // child's durable claim rather than treating its own cache as authority.
+    let concurrent = reopen(directory.path()).unwrap();
+    assert_eq!(
+        concurrent
+            .claim(&signed, &signed.grant.binding)
+            .unwrap_err(),
+        FinalUseError::AlreadyClaimed
+    );
+    drop(concurrent);
+
     child.kill().unwrap();
     child.wait().unwrap();
-    assert!(was_ready, "child did not persist its claim");
-    assert_eq!(locked, FinalUseError::StateLocked);
     let reopened = reopen(directory.path()).unwrap();
     assert_eq!(
         reopened.claim(&signed, &signed.grant.binding).unwrap_err(),
@@ -281,5 +336,72 @@ fn startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations() 
             .claim(&signed, &signed.grant.binding)
             .unwrap_err(),
         FinalUseError::Revoked
+    );
+}
+
+#[test]
+fn schema_one_replay_set_above_legacy_claim_limit_migrates_without_eviction() {
+    let issuer = SigningKey::from_bytes(&[47; 32]);
+    let directory = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let lock_path = directory.path().join("authority.lock");
+    std::fs::write(&lock_path, b"").unwrap();
+    std::fs::set_permissions(&lock_path, std::fs::Permissions::from_mode(0o600)).unwrap();
+
+    let mut used_nonces = BTreeSet::new();
+    for value in 1u32..=16_385 {
+        let mut nonce = [0u8; 32];
+        nonce[..4].copy_from_slice(&value.to_be_bytes());
+        used_nonces.insert(nonce);
+    }
+    let head = FinalUseRevocations {
+        authority_epoch: 9,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let legacy = serde_json::json!({
+        "schema": 1,
+        "signer_id": "security-owner",
+        "verifying_key": issuer.verifying_key().to_bytes(),
+        "state": {
+            "head": head,
+            "used_nonces": used_nonces,
+        }
+    });
+    let state_path = directory.path().join("authority.json");
+    std::fs::write(&state_path, serde_json::to_vec(&legacy).unwrap()).unwrap();
+    std::fs::set_permissions(&state_path, std::fs::Permissions::from_mode(0o600)).unwrap();
+
+    let authority = reopen(directory.path()).unwrap();
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_millis() as u64;
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "security-owner".into(),
+        authority_epoch: 9,
+        grant_id: "post-migration".into(),
+        nonce: [250; 32],
+        binding: FinalUseBinding {
+            subject_id: "agent-one".into(),
+            destination_id: "provider:heptabao".into(),
+            request_sha256: [21; 32],
+            scope_sha256: [22; 32],
+            payload_sha256: [23; 32],
+        },
+        not_before_unix_ms: now - 1000,
+        expires_at_unix_ms: now + 30_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: issuer.sign(&grant.signing_bytes().unwrap()).to_bytes().to_vec(),
+        grant,
+    };
+    let token = authority
+        .claim(&signed, &signed.grant.binding)
+        .expect("legacy replay set larger than the former 16,384 cap must migrate");
+    assert_eq!(
+        authority.with_verified_use(token, &signed.grant.binding, || 1),
+        Ok(1)
     );
 }

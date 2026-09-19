@@ -9,6 +9,8 @@ use codex_hepta_contracts::FinalUseRevocations;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
+
+use crate::TrustedSecretConsumer;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::net::TcpListener;
@@ -126,10 +128,44 @@ fn body_for(version: u64, secret: &str) -> String {
     serde_json::json!({"data":{"data":{"value":secret},"metadata":{"version":version}}}).to_string()
 }
 
+
+struct ExpectedConsumer {
+    fail: bool,
+}
+
+impl TrustedSecretConsumer for ExpectedConsumer {
+    fn consume(&self, secret: &[u8]) -> Result<(), ()> {
+        assert_eq!(secret, SECRET.as_bytes());
+        if self.fail { Err(()) } else { Ok(()) }
+    }
+}
+
+fn test_client(
+    endpoint: &str,
+    ca_pem: &[u8],
+    token: BaoToken,
+    timeout: Duration,
+) -> Result<BaoClient, BaoClientError> {
+    test_client_with_failure(endpoint, ca_pem, token, timeout, false)
+}
+
+fn test_client_with_failure(
+    endpoint: &str,
+    ca_pem: &[u8],
+    token: BaoToken,
+    timeout: Duration,
+    fail: bool,
+) -> Result<BaoClient, BaoClientError> {
+    let consumer: Arc<dyn TrustedSecretConsumer> = Arc::new(ExpectedConsumer { fail });
+    let consumers = TrustedConsumerRegistry::new([("model-provider".to_owned(), consumer)])
+        .map_err(|_| BaoClientError::InvalidConfiguration)?;
+    BaoClient::new_with_consumers(endpoint, ca_pem, token, timeout, consumers)
+}
+
 #[tokio::test]
 async fn real_tls_read_uses_headers_exact_version_and_secret_only_consumer() {
     let (endpoint, ca, task) = server(200, body(), || async {}).await.unwrap();
-    let client = BaoClient::new(
+    let client = test_client(
         &endpoint,
         ca.as_bytes(),
         BaoToken::new("fixture-provider-token".into()).unwrap(),
@@ -138,24 +174,22 @@ async fn real_tls_read_uses_headers_exact_version_and_secret_only_consumer() {
     .unwrap();
     let request = read_request();
     let (authority, grant, _directory) = grant(&client, &request).unwrap();
-    let mut consumed = false;
     let receipt = client
-        .consume_kv_v2(&authority, &grant, &request, |bytes| {
-            assert_eq!(bytes, SECRET.as_bytes());
-            consumed = true;
-            Ok(())
-        })
+        .consume_kv_v2(&authority, &grant, &request)
         .await
         .unwrap();
-    assert!(consumed);
-    assert!(!serde_json::to_string(&receipt).unwrap().contains(SECRET));
+    let serialized = serde_json::to_string(&receipt).unwrap();
+    assert!(!serialized.contains(SECRET));
+    assert!(!serialized.contains("secret_sha256"));
+    assert!(!serialized.contains("response_sha256"));
+    assert!(!format!("{receipt:?}").contains("secret_sha256"));
     let observed = task.await.unwrap().unwrap().to_ascii_lowercase();
     assert!(observed.starts_with("get /v1/secret/data/provider/token?version=2 http/1.1\r\n"));
     assert!(observed.contains("x-vault-token: fixture-provider-token\r\n"));
     assert!(observed.contains("x-vault-namespace: team/one\r\n"));
     assert_eq!(
         client
-            .consume_kv_v2(&authority, &grant, &request, |_| Ok(()))
+            .consume_kv_v2(&authority, &grant, &request)
             .await,
         Err(BaoClientError::Authority(FinalUseError::AlreadyClaimed))
     );
@@ -164,7 +198,7 @@ async fn real_tls_read_uses_headers_exact_version_and_secret_only_consumer() {
 #[tokio::test]
 async fn invalid_signature_and_provider_denial_do_not_release_secret() {
     let (endpoint, ca, task) = server(403, "{}".into(), || async {}).await.unwrap();
-    let client = BaoClient::new(
+    let client = test_client(
         &endpoint,
         ca.as_bytes(),
         BaoToken::new("fixture".into()).unwrap(),
@@ -176,16 +210,14 @@ async fn invalid_signature_and_provider_denial_do_not_release_secret() {
     signed.signature[0] ^= 1;
     assert_eq!(
         client
-            .consume_kv_v2(&authority, &signed, &request, |_| panic!(
-                "unauthorized consumer"
-            ))
+            .consume_kv_v2(&authority, &signed, &request)
             .await,
         Err(BaoClientError::Authority(FinalUseError::InvalidSignature))
     );
     signed.signature[0] ^= 1;
     assert_eq!(
         client
-            .consume_kv_v2(&authority, &signed, &request, |_| panic!("denied consumer"))
+            .consume_kv_v2(&authority, &signed, &request)
             .await,
         Err(BaoClientError::ProviderDenied)
     );
@@ -211,7 +243,7 @@ async fn revocation_during_network_wait_prevents_consumer_delivery() {
     })
     .await
     .unwrap();
-    let client = BaoClient::new(
+    let client = test_client(
         &endpoint,
         ca.as_bytes(),
         BaoToken::new("fixture".into()).unwrap(),
@@ -223,9 +255,7 @@ async fn revocation_during_network_wait_prevents_consumer_delivery() {
     *authority_slot.lock().unwrap() = Some(authority.clone());
     assert_eq!(
         client
-            .consume_kv_v2(&authority, &signed, &request, |_| panic!(
-                "revoked consumer"
-            ))
+            .consume_kv_v2(&authority, &signed, &request)
             .await,
         Err(BaoClientError::Authority(FinalUseError::Revoked))
     );
@@ -239,7 +269,7 @@ async fn untrusted_tls_certificate_fails_before_secret_delivery() {
         .unwrap()
         .cert
         .pem();
-    let client = BaoClient::new(
+    let client = test_client(
         &endpoint,
         wrong_ca.as_bytes(),
         BaoToken::new("fixture".into()).unwrap(),
@@ -250,9 +280,7 @@ async fn untrusted_tls_certificate_fails_before_secret_delivery() {
     let (authority, signed, _directory) = grant(&client, &request).unwrap();
     assert_eq!(
         client
-            .consume_kv_v2(&authority, &signed, &request, |_| panic!(
-                "untrusted server"
-            ))
+            .consume_kv_v2(&authority, &signed, &request)
             .await,
         Err(BaoClientError::TransportUnavailable)
     );
@@ -264,7 +292,7 @@ async fn oversized_reply_fails_without_consumer_delivery() {
     let (endpoint, ca, task) = server(200, "x".repeat(MAX_RESPONSE_BYTES + 1), || async {})
         .await
         .unwrap();
-    let client = BaoClient::new(
+    let client = test_client(
         &endpoint,
         ca.as_bytes(),
         BaoToken::new("fixture".into()).unwrap(),
@@ -275,7 +303,7 @@ async fn oversized_reply_fails_without_consumer_delivery() {
     let (authority, signed, _directory) = grant(&client, &request).unwrap();
     assert_eq!(
         client
-            .consume_kv_v2(&authority, &signed, &request, |_| panic!("oversized reply"))
+            .consume_kv_v2(&authority, &signed, &request)
             .await,
         Err(BaoClientError::ResponseTooLarge)
     );
@@ -289,7 +317,7 @@ async fn timeout_does_not_retry_or_release_a_secret() {
     })
     .await
     .unwrap();
-    let client = BaoClient::new(
+    let client = test_client(
         &endpoint,
         ca.as_bytes(),
         BaoToken::new("fixture".into()).unwrap(),
@@ -300,15 +328,13 @@ async fn timeout_does_not_retry_or_release_a_secret() {
     let (authority, signed, _directory) = grant(&client, &request).unwrap();
     assert_eq!(
         client
-            .consume_kv_v2(&authority, &signed, &request, |_| panic!(
-                "timed-out consumer"
-            ))
+            .consume_kv_v2(&authority, &signed, &request)
             .await,
         Err(BaoClientError::TimedOut)
     );
     assert_eq!(
         client
-            .consume_kv_v2(&authority, &signed, &request, |_| Ok(()))
+            .consume_kv_v2(&authority, &signed, &request)
             .await,
         Err(BaoClientError::Authority(FinalUseError::AlreadyClaimed))
     );
@@ -321,24 +347,25 @@ async fn timeout_does_not_retry_or_release_a_secret() {
 #[tokio::test]
 async fn consumer_failure_after_delivery_is_indeterminate() {
     let (endpoint, ca, task) = server(200, body(), || async {}).await.unwrap();
-    let client = BaoClient::new(
+    let client = test_client_with_failure(
         &endpoint,
         ca.as_bytes(),
         BaoToken::new("fixture".into()).unwrap(),
         Duration::from_secs(2),
+        true,
     )
     .unwrap();
     let request = read_request();
     let (authority, signed, _directory) = grant(&client, &request).unwrap();
     assert_eq!(
         client
-            .consume_kv_v2(&authority, &signed, &request, |_| Err(()))
+            .consume_kv_v2(&authority, &signed, &request)
             .await,
         Err(BaoClientError::ConsumerIndeterminate)
     );
     assert_eq!(
         client
-            .consume_kv_v2(&authority, &signed, &request, |_| Ok(()))
+            .consume_kv_v2(&authority, &signed, &request)
             .await,
         Err(BaoClientError::Authority(FinalUseError::AlreadyClaimed))
     );
@@ -348,7 +375,7 @@ async fn consumer_failure_after_delivery_is_indeterminate() {
 #[tokio::test]
 async fn version_and_digest_mismatches_never_deliver() {
     let (endpoint, ca, task) = server(200, body_for(1, SECRET), || async {}).await.unwrap();
-    let client = BaoClient::new(
+    let client = test_client(
         &endpoint,
         ca.as_bytes(),
         BaoToken::new("fixture".into()).unwrap(),
@@ -359,9 +386,7 @@ async fn version_and_digest_mismatches_never_deliver() {
     let (authority, signed, _directory) = grant(&client, &request).unwrap();
     assert_eq!(
         client
-            .consume_kv_v2(&authority, &signed, &request, |_| panic!(
-                "version-mismatched consumer"
-            ))
+            .consume_kv_v2(&authority, &signed, &request)
             .await,
         Err(BaoClientError::VersionMismatch)
     );
@@ -370,7 +395,7 @@ async fn version_and_digest_mismatches_never_deliver() {
     let (endpoint, ca, task) = server(200, body_for(2, "wrong-secret"), || async {})
         .await
         .unwrap();
-    let client = BaoClient::new(
+    let client = test_client(
         &endpoint,
         ca.as_bytes(),
         BaoToken::new("fixture".into()).unwrap(),
@@ -381,9 +406,7 @@ async fn version_and_digest_mismatches_never_deliver() {
     let (authority, signed, _directory) = grant(&client, &request).unwrap();
     assert_eq!(
         client
-            .consume_kv_v2(&authority, &signed, &request, |_| panic!(
-                "digest-mismatched consumer"
-            ))
+            .consume_kv_v2(&authority, &signed, &request)
             .await,
         Err(BaoClientError::SecretDigestMismatch)
     );
@@ -393,7 +416,7 @@ async fn version_and_digest_mismatches_never_deliver() {
 #[tokio::test]
 async fn provider_not_found_and_malformed_success_are_denied() {
     let (endpoint, ca, task) = server(404, "{}".into(), || async {}).await.unwrap();
-    let client = BaoClient::new(
+    let client = test_client(
         &endpoint,
         ca.as_bytes(),
         BaoToken::new("fixture".into()).unwrap(),
@@ -404,9 +427,7 @@ async fn provider_not_found_and_malformed_success_are_denied() {
     let (authority, signed, _directory) = grant(&client, &request).unwrap();
     assert_eq!(
         client
-            .consume_kv_v2(&authority, &signed, &request, |_| panic!(
-                "missing consumer"
-            ))
+            .consume_kv_v2(&authority, &signed, &request)
             .await,
         Err(BaoClientError::NotFound)
     );
@@ -415,7 +436,7 @@ async fn provider_not_found_and_malformed_success_are_denied() {
     let (endpoint, ca, task) = server(200, "{\"data\":{}}".into(), || async {})
         .await
         .unwrap();
-    let client = BaoClient::new(
+    let client = test_client(
         &endpoint,
         ca.as_bytes(),
         BaoToken::new("fixture".into()).unwrap(),
@@ -426,9 +447,7 @@ async fn provider_not_found_and_malformed_success_are_denied() {
     let (authority, signed, _directory) = grant(&client, &request).unwrap();
     assert_eq!(
         client
-            .consume_kv_v2(&authority, &signed, &request, |_| panic!(
-                "malformed consumer"
-            ))
+            .consume_kv_v2(&authority, &signed, &request)
             .await,
         Err(BaoClientError::InvalidResponse)
     );
@@ -438,7 +457,7 @@ async fn provider_not_found_and_malformed_success_are_denied() {
 #[tokio::test]
 async fn root_namespace_omits_namespace_header() {
     let (endpoint, ca, task) = server(200, body(), || async {}).await.unwrap();
-    let client = BaoClient::new(
+    let client = test_client(
         &endpoint,
         ca.as_bytes(),
         BaoToken::new("fixture".into()).unwrap(),
@@ -449,10 +468,7 @@ async fn root_namespace_omits_namespace_header() {
     request.namespace.clear();
     let (authority, signed, _directory) = grant(&client, &request).unwrap();
     client
-        .consume_kv_v2(&authority, &signed, &request, |bytes| {
-            assert_eq!(bytes, SECRET.as_bytes());
-            Ok(())
-        })
+        .consume_kv_v2(&authority, &signed, &request)
         .await
         .unwrap();
     let observed = task.await.unwrap().unwrap().to_ascii_lowercase();

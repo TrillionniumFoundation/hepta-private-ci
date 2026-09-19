@@ -4,7 +4,7 @@ The legacy `resolve` and `assess_secret_boundary_v1` remain metadata-only;
 `PROVIDER_DISPATCH_ENABLED` remains false for that API. A caller-provided
 `Granted` observation cannot enable this separate client.
 
-`BaoClient::consume_kv_v2` is the executable host integration point. It reads
+`BaoClient::consume_kv_v2` is the exact-version static integration point. The same enrolled client also implements the bounded dynamic SecretLease profile through `request_secret_lease`, `renew_secret_lease`, `revoke_secret_lease`, `lookup_secret_lease` and `reconcile_lease_operation`. It reads
 `GET /v1/{mount}/data/{path}?version=N`, supplies `X-Vault-Token` and
 `X-Vault-Namespace`, requires a configured CA and hostname-valid HTTPS, disables
 redirects and ambient proxies, and caps the complete response at 1 MiB.
@@ -31,33 +31,37 @@ signing key. The host pins the public key, epoch and revocation head; request
 JSON must never supply or replace these trust inputs.
 
 After the network response and digest/version validation, the kernel checks
-current time, epoch and revocation again. The synchronous consumer executes
-under that revocation lock. It must be bounded, must not reenter the authority,
-and must not copy secret bytes into model context, logs or receipts. Response
-buffers and decoded secret strings are zeroized on drop; TLS/HTTP libraries
-may retain internal copies, so this is not a locked-memory guarantee.
+current time, epoch and revocation again. Final secret delivery resolves the
+signed `consumer_id` through a host-built `TrustedConsumerRegistry`; request
+data cannot supply an executable closure. The synchronous registered consumer
+executes under the in-process and cross-process revocation fence. It must be
+bounded and must not reenter the authority. Response buffers, decoded strings
+and dynamic secret payloads are zeroized on drop; TLS/HTTP/allocator/kernel
+internals may retain temporary copies, so this is not a complete-RAM-secrecy or
+locked-memory guarantee. Stable secret/body SHA-256 values are omitted from
+serialized/debug receipts to avoid turning low-entropy secrets into long-lived
+fingerprints.
 
 ## Host integration
 
 ```rust,ignore
-let binding = client.binding(&request)?; // metadata for the external issuer
+let consumers = TrustedConsumerRegistry::new(host_registered_consumers)?;
+let client = BaoClient::new_with_consumers(endpoint, ca, token, timeout, consumers)?;
+let binding = client.binding(&request)?; // metadata for the independent issuer
 // The host obtains a SignedFinalUseGrant for this exact binding.
-let receipt = client.consume_kv_v2(&authority, &grant, &request, |secret| {
-    registered_consumer.use_credential(secret)
-}).await?;
-// Publish only receipt: request/body/secret digests, version and byte count.
+let receipt = client.consume_kv_v2(&authority, &grant, &request).await?;
+// Serialized receipts contain request identity/version/byte-count metadata;
+// provider-body and secret-value fingerprints are intentionally omitted.
 ```
 
 The example `cargo run -p codex-hepta-bao-adapter --example consume_secret --
 binding HOST_CONFIG.json` prints the exact binding without a request. With
 `consume HOST_CONFIG.json`, it reads the provider token from stdin and runs a
 local consumer, printing only the metadata receipt. This is an executable
-integration example, not an automatically enrolled global provider. A host
-must connect its actual registered consumer at the shown function call.
-The callback and authority configuration are trusted host inputs; the signed
-consumer ID does not authenticate an arbitrary plugin-supplied closure. Keep
-this API behind the host composition boundary and choose that callback from
-the host registry.
+integration example, not an automatically enrolled global provider. A host must construct the actual `TrustedConsumerRegistry` at composition
+time. The registry and authority configuration are trusted host inputs; the
+signed consumer ID selects a registry entry but does not authenticate arbitrary
+plugin-supplied code.
 
 The config contains `endpoint`, `ca_pem_file`, `signer_id`, `verifying_key`
 (32-byte array), `authority_state_dir`, `authority_epoch`, `revocation_revision`,
@@ -84,27 +88,50 @@ a boolean. The proposal supplies `schema_version: 1`, `signer_id`,
 five minutes. Signing material remains outside the adapter and normal runtime.
 
 `FinalUseAuthority::update_revocations` accepts only monotonic trusted host
-updates. Within one epoch, revoked IDs cannot be removed. `open_state_dir`
-requires a Unix owner-only state directory (0700), creates private regular
-files (0600), and holds an operating-system process lock until exit. Claims
-and revocation updates are synced and atomically replaced before success.
-The example automatically reopens this state: used nonces remain rejected
-after restart without a manual epoch change. Corrupt, missing previously
-initialized state, unsafe permissions, or a concurrent owner cause denial.
-Storage errors fence that authority instance until recovery. Preserve this
-state across deployments; deleting or restoring it from an old backup is an
-authority reset and requires an independently changed issuer trust/epoch.
-Other platforms fail closed until an equivalent owner ACL store exists.
-The 16,384-entry registry never evicts claims silently; exhaustion rejects new
-dispatch until a trusted epoch transition. A failed/timeout request does not
-refund its nonce or retry automatically. A new grant requires owner action.
+updates. Within one epoch, revoked IDs cannot be removed. The authority store
+uses an owner-only schema-v2 head snapshot plus an append-only checksummed
+`claims.log`. A claim appends and syncs one fixed-size record; it does not
+rewrite the entire nonce set and no longer has the former 16,384-claim
+per-epoch admission ceiling. Multiple active processes may open one qualified
+POSIX state directory. Claim, revocation mutation and final synchronous secret
+delivery serialize through a short cross-process OS lock and each owner
+incrementally refreshes journal records appended by peers.
 
-Provider 401/403 is denied; missing data, invalid TLS, timeout, oversize,
-malformed response, wrong version and digest mismatch never invoke the
-consumer. If the consumer reports failure after entry, the outcome is
-`ConsumerIndeterminate`; do not infer no effect or blindly repeat it.
-Only read operations exist here; adding mutation APIs requires durable
-idempotency and post-entry uncertainty handling, not reusing read retry rules.
+This is local shared-state concurrency, not distributed consensus. Independent
+node-local copies, object storage and unqualified NFS are not one replay domain.
+Multi-host active-active requires a separately qualified strongly consistent
+state backend or filesystem semantics.
+
+### Dynamic SecretLease lifecycle
+
+`BaoLeaseRegistry` is a private metadata-only registry. It records operation
+digest/state and provider lease identity/TTL/renewability/generation; it never
+stores provider tokens, raw dynamic secret bytes or secret fingerprints.
+
+Every issue/renew/revoke operation is durably prepared before authority
+admission and durably marked `Dispatched` before network I/O. Confirmed
+provider results transition to `Succeeded` or `Rejected`. Timeout, transport
+loss, 5xx/unexpected status, malformed/oversized success responses and crashes
+after `Dispatched` are `Indeterminate`. The same operation ID cannot dispatch
+again while indeterminate.
+
+Known lease IDs can be inspected through `lookup_secret_lease`. A lost issuance
+response may also lose the newly created lease ID, so V1 deliberately has no
+automatic "retry issuance" fallback. External provider/audit reconciliation
+must establish whether the effect occurred and submit a separately signed
+`BaoLeaseReconciliationObservation`. Only a signed `NotApplied` observation
+returns that operation to `Prepared`, after which a fresh grant is still
+required.
+
+The V1 dynamic issue profile is intentionally GET-only and accepts a map of
+string secret fields. Engines needing POST issue bodies, nested secret values
+or different semantics require another versioned typed profile.
+
+See the module's
+[CURRENT_IMPLEMENTATION.md](../../docs/modules/secrets.heptabao/CURRENT_IMPLEMENTATION.md),
+[SECRET_LEASE_DESIGN.md](../../docs/modules/secrets.heptabao/SECRET_LEASE_DESIGN.md),
+[FAILURE_RECOVERY.md](../../docs/modules/secrets.heptabao/FAILURE_RECOVERY.md)
+and [HA_AND_STORAGE.md](../../docs/modules/secrets.heptabao/HA_AND_STORAGE.md).
 
 ## Verification
 
@@ -112,8 +139,13 @@ Targeted tests cover a real loopback TLS exchange, exact request headers and
 version, forged signature rejection, nonce replay rejection, provider denial,
 revocation during a network wait, incorrect trust root and response bounds.
 Kernel tests cover signed-field changes, wrong issuer, expiry and epoch fences.
-Run `just test -p codex-hepta-bao-adapter -p codex-hepta-contracts` in the normal
-workspace and the repository formatting/lint gates before merging.
+Focused source tests now also cover dynamic issue/renew/revoke, durable
+indeterminate no-blind-retry behavior, signed reconciliation, concurrent
+authority owners, replay-journal migration and receipt fingerprint suppression.
+The dedicated `.github/workflows/heptabao-qualification.yml` checks out the
+exact candidate SHA, runs the focused tests plus package fmt/strict Clippy, and
+uploads a machine-readable receipt containing that SHA and hashes of each
+retained command record.
 
 For the separate real service check, build this crate's `consume_secret`
 example and the supervisor's `hepta-final-use-signer` binary with

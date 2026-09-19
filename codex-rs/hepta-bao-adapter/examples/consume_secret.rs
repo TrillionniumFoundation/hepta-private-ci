@@ -2,11 +2,14 @@
 //! provider token enters on stdin; only a digest receipt leaves on stdout.
 use std::collections::BTreeSet;
 use std::io::Read;
+use std::sync::Arc;
 use std::time::Duration;
 
 use codex_hepta_bao_adapter::BaoClient;
 use codex_hepta_bao_adapter::BaoReadRequest;
 use codex_hepta_bao_adapter::BaoToken;
+use codex_hepta_bao_adapter::TrustedConsumerRegistry;
+use codex_hepta_bao_adapter::TrustedSecretConsumer;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::SignedFinalUseGrant;
@@ -49,7 +52,22 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     } else {
         BaoToken::new("metadata-only-no-dispatch".into())?
     };
-    let client = BaoClient::new(&config.endpoint, &ca, token, Duration::from_secs(10))?;
+    let client = if args[0] == "consume" {
+        let consumer: Arc<dyn TrustedSecretConsumer> = Arc::new(LocalRegisteredConsumer);
+        let consumers = TrustedConsumerRegistry::new([(
+            config.request.consumer_id.clone(),
+            consumer,
+        )])?;
+        BaoClient::new_with_consumers(
+            &config.endpoint,
+            &ca,
+            token,
+            Duration::from_secs(10),
+            consumers,
+        )?
+    } else {
+        BaoClient::new(&config.endpoint, &ca, token, Duration::from_secs(10))?
+    };
     if args[0] == "binding" {
         serde_json::to_writer_pretty(std::io::stdout(), &client.binding(&config.request)?)?;
         println!();
@@ -69,11 +87,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .grant
         .ok_or("consume requires an independently signed grant")?;
     let receipt = client
-        .consume_kv_v2(&authority, &grant, &config.request, |secret| {
-            // Replace this deliberately local consumer with the registered provider
-            // in the host composition root. Do not return or log the secret.
-            if secret.is_empty() { Err(()) } else { Ok(()) }
-        })
+        .consume_kv_v2(&authority, &grant, &config.request)
         .await?;
     serde_json::to_writer_pretty(std::io::stdout(), &receipt)?;
     println!();
@@ -89,4 +103,14 @@ fn bounded_file(path: &str, maximum: usize) -> Result<Vec<u8>, Box<dyn std::erro
         return Err("configuration input exceeds its bound".into());
     }
     Ok(bytes)
+}
+
+struct LocalRegisteredConsumer;
+
+impl TrustedSecretConsumer for LocalRegisteredConsumer {
+    fn consume(&self, secret: &[u8]) -> Result<(), ()> {
+        // Replace this deliberately local registry entry with the real
+        // host-selected provider consumer. Never return or log the bytes.
+        if secret.is_empty() { Err(()) } else { Ok(()) }
+    }
 }
