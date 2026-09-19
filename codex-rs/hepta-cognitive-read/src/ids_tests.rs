@@ -115,3 +115,31 @@ fn duplicate_and_oversized_requests_fail_closed() {
         Err(ReadIdsError::TooManyRecordIds { .. })
     ));
 }
+
+#[test]
+fn maximum_exact_id_batch_resolves_from_the_full_snapshot() {
+    let records = (0..16_384)
+        .map(|index| record(&format!("memory:{index:05}"), RecordState::Live))
+        .collect::<Vec<_>>();
+    let snapshot = snapshot(records);
+    let record_ids = (16_384 - MAX_READ_IDS_V1..16_384)
+        .map(|index| id(&format!("memory:{index:05}")))
+        .collect::<Vec<_>>();
+    let result = read_ids_v1(
+        &snapshot,
+        ReadIdsRequestV1 {
+            snapshot_digest: snapshot.snapshot_digest,
+            record_ids: record_ids.clone(),
+            fields: vec![ReadFieldV1::ContentDigest],
+            maximum_encoded_bytes: MAX_ENCODED_READ_RESULT_BYTES_V2,
+        },
+    )
+    .expect("maximum exact-id batch");
+    assert_eq!(result.records().len(), MAX_READ_IDS_V1);
+    assert!(result.missing_ids().is_empty());
+    assert_eq!(result.records().first().unwrap().record_id, record_ids[0]);
+    assert_eq!(
+        result.records().last().unwrap().record_id,
+        record_ids[MAX_READ_IDS_V1 - 1]
+    );
+}
