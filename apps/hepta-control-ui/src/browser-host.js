@@ -1,4 +1,4 @@
-import { ERROR_CODES, UiControlError, fail, requireRecord, stableId, utf8Bytes } from "./protocol.js";
+import { ERROR_CODES, UiControlError, fail, parseJsonNoDuplicateKeys, requireRecord, stableId, utf8Bytes } from "./protocol.js";
 
 const MAX_BOOTSTRAP_BYTES = 16 * 1024;
 const DEFAULT_BOOTSTRAP_TIMEOUT_MS = 10_000;
@@ -112,12 +112,7 @@ export async function loadBrowserBootstrap({
       fail(ERROR_CODES.PROTOCOL_VIOLATION, "control bootstrap response is not JSON");
     }
     const encoded = await boundedBootstrapText(response);
-    let config;
-    try {
-      config = JSON.parse(encoded);
-    } catch {
-      fail(ERROR_CODES.PROTOCOL_VIOLATION, "control bootstrap is invalid JSON");
-    }
+    const config = parseJsonNoDuplicateKeys(encoded, "control bootstrap");
     requireRecord(config, "control bootstrap");
     stableId(config.persistenceNamespace, "persistenceNamespace");
     if (typeof config.basePath !== "string" || config.basePath.length === 0 || config.basePath.length > 256) {
