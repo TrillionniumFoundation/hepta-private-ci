@@ -24,6 +24,7 @@ pub use requirements::CompilationRequirementsV1;
 pub use requirements::MandatoryContextGroup;
 pub use requirements::compile_with_requirements;
 pub use v2::CompiledContextV2;
+pub use v2::ContextAdmissionBindingV2;
 pub use v2::ContextAdmissionRecordV2;
 pub use v2::ContextAdmissionSnapshotV2;
 pub use v2::ContextAdmissionVerifierV2;
