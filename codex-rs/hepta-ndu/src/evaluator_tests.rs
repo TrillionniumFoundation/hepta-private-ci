@@ -1,3 +1,5 @@
+#![allow(deprecated)]
+
 use std::fmt::Debug;
 
 use codex_hepta_types::Digest32;
