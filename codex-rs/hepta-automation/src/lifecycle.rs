@@ -251,6 +251,15 @@ impl AutomationStore {
         if active != 0 {
             return Err(AutomationError::Conflict);
         }
+        crate::schedule_v2::clone_calendar_schedule_revision_tx(
+            &mut transaction,
+            self,
+            task_id,
+            expected_revision,
+            next_revision,
+            now_ms,
+        )
+        .await?;
         let (kind, maximum) = missed_run.db_parts();
         let changed = sqlx::query(
             "UPDATE automation_schedule_metadata

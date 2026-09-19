@@ -157,13 +157,21 @@ impl AutomationStore {
         attempt: u32,
     ) -> Result<Option<EffectDispatchAttempt>, TaskFlowError> {
         let row = sqlx::query(
-            "SELECT a.*, o.observation, o.evidence_digest, o.observed_at_ms
+            "SELECT a.*,
+                    COALESCE(r.observation, o.observation) AS observation,
+                    COALESCE(r.evidence_digest, o.evidence_digest) AS evidence_digest,
+                    COALESCE(r.observed_at_ms, o.observed_at_ms) AS observed_at_ms
              FROM taskflow_effect_dispatch_attempts a
              LEFT JOIN taskflow_effect_dispatch_observations o
                ON o.owner_agent_id = a.owner_agent_id
               AND o.run_id = a.run_id
               AND o.step_id = a.step_id
               AND o.attempt = a.attempt
+             LEFT JOIN taskflow_effect_dispatch_reconciliations r
+               ON r.owner_agent_id = a.owner_agent_id
+              AND r.run_id = a.run_id
+              AND r.step_id = a.step_id
+              AND r.attempt = a.attempt
              WHERE a.owner_agent_id = ? AND a.run_id = ? AND a.step_id = ?
                AND a.attempt = ?",
         )
@@ -187,14 +195,24 @@ impl AutomationStore {
             ));
         }
         let rows = sqlx::query(
-            "SELECT a.*, o.observation, o.evidence_digest, o.observed_at_ms
+            "SELECT a.*,
+                    COALESCE(r.observation, o.observation) AS observation,
+                    COALESCE(r.evidence_digest, o.evidence_digest) AS evidence_digest,
+                    COALESCE(r.observed_at_ms, o.observed_at_ms) AS observed_at_ms
              FROM taskflow_effect_dispatch_attempts a
              LEFT JOIN taskflow_effect_dispatch_observations o
                ON o.owner_agent_id = a.owner_agent_id
               AND o.run_id = a.run_id
               AND o.step_id = a.step_id
               AND o.attempt = a.attempt
-             WHERE a.owner_agent_id = ? AND o.run_id IS NULL
+             LEFT JOIN taskflow_effect_dispatch_reconciliations r
+               ON r.owner_agent_id = a.owner_agent_id
+              AND r.run_id = a.run_id
+              AND r.step_id = a.step_id
+              AND r.attempt = a.attempt
+             WHERE a.owner_agent_id = ?
+               AND r.run_id IS NULL
+               AND (o.run_id IS NULL OR o.observation = 'indeterminate')
              ORDER BY a.started_at_ms, a.run_id, a.step_id, a.attempt
              LIMIT ?",
         )
@@ -217,6 +235,72 @@ impl AutomationStore {
         evidence_digest: &Sha256Digest,
         observed_at_ms: u64,
     ) -> Result<EffectDispatchAttempt, TaskFlowError> {
+        let current = self
+            .effect_dispatch_attempt(run_id, step_id, attempt)
+            .await?
+            .ok_or_else(|| {
+                TaskFlowError::Conflict("effect dispatch attempt is missing".to_string())
+            })?;
+
+        if let Some(observation) = &current.observation {
+            if observation.kind == kind && observation.evidence_digest == *evidence_digest {
+                return Ok(current);
+            }
+            if observation.kind != EffectDispatchObservationKind::Indeterminate
+                || kind == EffectDispatchObservationKind::Indeterminate
+            {
+                return Err(TaskFlowError::Conflict(
+                    "effect observation is already terminal or bound to different bytes"
+                        .to_string(),
+                ));
+            }
+
+            let inserted = sqlx::query(
+                "INSERT INTO taskflow_effect_dispatch_reconciliations (
+                    owner_agent_id, run_id, step_id, attempt, observation,
+                    evidence_digest, observed_at_ms
+                 ) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            )
+            .bind(self.taskflow_owner_agent_id().as_str())
+            .bind(run_id)
+            .bind(step_id)
+            .bind(i64::from(attempt))
+            .bind(kind.as_str())
+            .bind(evidence_digest.as_str())
+            .bind(to_i64(observed_at_ms)?)
+            .execute(self.taskflow_pool())
+            .await;
+
+            let refreshed = self
+                .effect_dispatch_attempt(run_id, step_id, attempt)
+                .await?
+                .ok_or_else(|| {
+                    TaskFlowError::Corrupt(
+                        "effect dispatch attempt vanished during reconciliation".to_string(),
+                    )
+                })?;
+            return match inserted {
+                Ok(_) => Ok(refreshed),
+                Err(error) if is_constraint(&error) => {
+                    let Some(observation) = &refreshed.observation else {
+                        return Err(TaskFlowError::Conflict(
+                            "effect reconciliation conflicts with durable evidence".to_string(),
+                        ));
+                    };
+                    if observation.kind != kind
+                        || observation.evidence_digest != *evidence_digest
+                    {
+                        return Err(TaskFlowError::Conflict(
+                            "effect reconciliation is already bound to different bytes"
+                                .to_string(),
+                        ));
+                    }
+                    Ok(refreshed)
+                }
+                Err(_) => Err(TaskFlowError::Unavailable),
+            };
+        }
+
         let inserted = sqlx::query(
             "INSERT INTO taskflow_effect_dispatch_observations (
                 owner_agent_id, run_id, step_id, attempt, observation,
@@ -233,16 +317,16 @@ impl AutomationStore {
         .execute(self.taskflow_pool())
         .await;
 
-        let current = self
+        let refreshed = self
             .effect_dispatch_attempt(run_id, step_id, attempt)
             .await?
             .ok_or_else(|| {
-                TaskFlowError::Conflict("effect dispatch attempt is missing".to_string())
+                TaskFlowError::Corrupt("effect dispatch attempt vanished after observation".to_string())
             })?;
         match inserted {
-            Ok(_) => Ok(current),
+            Ok(_) => Ok(refreshed),
             Err(error) if is_constraint(&error) => {
-                let Some(observation) = &current.observation else {
+                let Some(observation) = &refreshed.observation else {
                     return Err(TaskFlowError::Conflict(
                         "effect observation conflicts with durable evidence".to_string(),
                     ));
@@ -252,16 +336,11 @@ impl AutomationStore {
                         "effect observation is already bound to different bytes".to_string(),
                     ));
                 }
-                // The first committed observation timestamp is canonical.
-                // Recovery callers may arrive later; they must reuse the
-                // immutable evidence rather than make timestamp part of the
-                // idempotency key.
-                Ok(current)
+                Ok(refreshed)
             }
             Err(_) => Err(TaskFlowError::Unavailable),
         }
-    }
-}
+    }}
 
 fn effect_attempt_from_row(
     row: sqlx::sqlite::SqliteRow,

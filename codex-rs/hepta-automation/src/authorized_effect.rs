@@ -566,18 +566,46 @@ impl AutomationStore {
                 .receipt
             }
             TaskFlowStepState::Recorded => {
-                if step.receipt_digest.as_ref() != Some(&observation.evidence_digest)
-                    || step.observation != Some(outcome.observation())
-                {
-                    return Err(TaskFlowError::Conflict(
-                        "TaskFlow step is recorded with different provider evidence".to_string(),
-                    )
-                    .into());
+                if step.observation == Some(TaskFlowStepObservation::Indeterminate) {
+                    if let Some(terminal) = outcome.reconcile_outcome() {
+                        self.reconcile_taskflow_step(
+                            &durable.run_id,
+                            &durable.step_id,
+                            durable.attempt,
+                            fence,
+                            &durable.intent_digest,
+                            &durable.payload_digest,
+                            &effect_command_id("step-reconcile", durable),
+                            &observation.evidence_digest,
+                            terminal,
+                            observation.observed_at_ms,
+                        )
+                        .await?
+                        .receipt
+                    } else {
+                        step
+                    }
+                } else {
+                    if step.receipt_digest.as_ref() != Some(&observation.evidence_digest)
+                        || step.observation != Some(outcome.observation())
+                    {
+                        return Err(TaskFlowError::Conflict(
+                            "TaskFlow step is recorded with different provider evidence".to_string(),
+                        )
+                        .into());
+                    }
+                    step
                 }
-                step
             }
             TaskFlowStepState::Reconciled => {
-                if step.receipt_digest.as_ref() != Some(&observation.evidence_digest) {
+                let terminal = outcome.reconcile_outcome().ok_or_else(|| {
+                    TaskFlowError::Conflict(
+                        "reconciled TaskFlow step cannot return to indeterminate".to_string(),
+                    )
+                })?;
+                if step.receipt_digest.as_ref() != Some(&observation.evidence_digest)
+                    || step.final_outcome != Some(terminal)
+                {
                     return Err(TaskFlowError::Conflict(
                         "TaskFlow step reconciliation is bound to different evidence".to_string(),
                     )
@@ -695,12 +723,16 @@ impl AutomationStore {
         if run.state == TaskFlowRunState::Queued {
             return Ok(());
         }
-        if run.state != TaskFlowRunState::Running {
+        if !matches!(
+            run.state,
+            TaskFlowRunState::Running | TaskFlowRunState::Indeterminate
+        ) {
             return Err(TaskFlowError::Conflict(
                 "provider absence cannot requeue the current TaskFlow run state".to_string(),
             )
             .into());
         }
+
         let step = self
             .read_taskflow_step(
                 &durable.run_id,
@@ -710,11 +742,55 @@ impl AutomationStore {
             )
             .await?
             .ok_or_else(|| TaskFlowError::Conflict("effect TaskFlow step vanished".to_string()))?;
-        if step.state != TaskFlowStepState::Claimed {
-            return Err(TaskFlowError::Conflict(
-                "provider absence requires the original claimed step".to_string(),
-            )
-            .into());
+        match step.state {
+            TaskFlowStepState::Claimed => {
+                self.cancel_taskflow_step_after_proven_absence(
+                    &durable.run_id,
+                    &durable.step_id,
+                    durable.attempt,
+                    fence,
+                    &durable.intent_digest,
+                    &durable.payload_digest,
+                    &effect_command_id("step-absent", durable),
+                    &observation.evidence_digest,
+                    observation.observed_at_ms,
+                )
+                .await?;
+            }
+            TaskFlowStepState::Recorded
+                if step.observation == Some(TaskFlowStepObservation::Indeterminate) =>
+            {
+                self.reconcile_taskflow_step(
+                    &durable.run_id,
+                    &durable.step_id,
+                    durable.attempt,
+                    fence,
+                    &durable.intent_digest,
+                    &durable.payload_digest,
+                    &effect_command_id("step-absent-reconcile", durable),
+                    &observation.evidence_digest,
+                    TaskFlowReconcileOutcome::Cancelled,
+                    observation.observed_at_ms,
+                )
+                .await?;
+            }
+            TaskFlowStepState::Reconciled
+                if step.final_outcome == Some(TaskFlowReconcileOutcome::Cancelled)
+                    && step.receipt_digest.as_ref() == Some(&observation.evidence_digest) => {}
+            _ => {
+                return Err(TaskFlowError::Conflict(
+                    "provider absence requires claimed or indeterminate step state".to_string(),
+                )
+                .into());
+            }
+        }
+
+        let run = self
+            .taskflow_run(&durable.run_id)
+            .await?
+            .ok_or_else(|| TaskFlowError::Corrupt("effect TaskFlow run vanished".to_string()))?;
+        if run.state == TaskFlowRunState::Queued {
+            return Ok(());
         }
         let command = TaskFlowCommand::new(
             run.run_id.clone(),
@@ -728,8 +804,7 @@ impl AutomationStore {
         )?;
         self.apply_taskflow_requeue_proven_absent(&command).await?;
         Ok(())
-    }
-}
+    }}
 
 fn validate_effect_id(
     value: &str,

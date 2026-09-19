@@ -1246,7 +1246,12 @@ impl AutomationStore {
         let explicit_reconcile = run.state == TaskFlowRunState::Indeterminate
             && matches!(&command.transition, TaskFlowTransition::Reconcile { .. });
         let proven_absence_recovery = allow_proven_absence_requeue
-            && matches!(run.state, TaskFlowRunState::Queued | TaskFlowRunState::Running)
+            && matches!(
+                run.state,
+                TaskFlowRunState::Queued
+                    | TaskFlowRunState::Running
+                    | TaskFlowRunState::Indeterminate
+            )
             && matches!(
                 &command.transition,
                 TaskFlowTransition::RequeueProvenAbsent { .. }
@@ -1478,9 +1483,14 @@ fn apply_transition(
             run.retry_at_ms = Some(*retry_at_ms);
         }
         TaskFlowTransition::RequeueProvenAbsent { proof_digest } => {
-            if !matches!(run.state, TaskFlowRunState::Queued | TaskFlowRunState::Running) {
+            if !matches!(
+                run.state,
+                TaskFlowRunState::Queued
+                    | TaskFlowRunState::Running
+                    | TaskFlowRunState::Indeterminate
+            ) {
                 return Err(invalid_transition(
-                    "provider-absence requeue requires queued or running state",
+                    "provider-absence requeue requires queued, running, or indeterminate state",
                 ));
             }
             validate_digest(proof_digest, "provider absence proof digest")?;
@@ -1491,9 +1501,14 @@ fn apply_transition(
             clear_lease(run);
         }
         TaskFlowTransition::CancelProvenAbsent { proof_digest } => {
-            if !matches!(run.state, TaskFlowRunState::Queued | TaskFlowRunState::Running) {
+            if !matches!(
+                run.state,
+                TaskFlowRunState::Queued
+                    | TaskFlowRunState::Running
+                    | TaskFlowRunState::Indeterminate
+            ) {
                 return Err(invalid_transition(
-                    "provider-absence cancellation requires queued or running state",
+                    "provider-absence cancellation requires queued, running, or indeterminate state",
                 ));
             }
             validate_digest(proof_digest, "provider absence proof digest")?;

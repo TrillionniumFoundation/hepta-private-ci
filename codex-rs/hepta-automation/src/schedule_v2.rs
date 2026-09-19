@@ -494,6 +494,54 @@ impl AutomationStore {
     }
 }
 
+pub(crate) async fn clone_calendar_schedule_revision_tx(
+    tx: &mut Transaction<'_, Sqlite>,
+    store: &AutomationStore,
+    task_id: AutomationTaskId,
+    expected_revision: u64,
+    next_revision: u64,
+    now_ms: u64,
+) -> Result<bool, AutomationError> {
+    let row = sqlx::query(
+        "SELECT schedule_json, schedule_digest
+         FROM automation_calendar_schedule_versions
+         WHERE task_id = ? AND owner_agent_id = ? AND revision = ?",
+    )
+    .bind(task_id.to_string())
+    .bind(store.taskflow_owner_agent_id().as_str())
+    .bind(to_i64(expected_revision)?)
+    .fetch_optional(&mut **tx)
+    .await
+    .map_err(unavailable)?;
+    let Some(row) = row else {
+        return Ok(false);
+    };
+    let encoded: String = row.try_get("schedule_json").map_err(unavailable)?;
+    let stored_digest: String = row.try_get("schedule_digest").map_err(unavailable)?;
+    let schedule: AutomationCalendarScheduleV2 =
+        serde_json::from_str(&encoded).map_err(|_| AutomationError::Corrupt)?;
+    schedule.validate().map_err(|_| AutomationError::Corrupt)?;
+    if schedule.digest()?.as_str() != stored_digest {
+        return Err(AutomationError::Corrupt);
+    }
+    sqlx::query(
+        "INSERT INTO automation_calendar_schedule_versions (
+            task_id, owner_agent_id, revision, schedule_json, schedule_digest,
+            created_at_ms
+         ) VALUES (?, ?, ?, ?, ?, ?)",
+    )
+    .bind(task_id.to_string())
+    .bind(store.taskflow_owner_agent_id().as_str())
+    .bind(to_i64(next_revision)?)
+    .bind(encoded)
+    .bind(stored_digest)
+    .bind(to_i64(now_ms)?)
+    .execute(&mut **tx)
+    .await
+    .map_err(constraint_or_unavailable)?;
+    Ok(true)
+}
+
 pub(crate) async fn load_calendar_v2_tx(
     tx: &mut Transaction<'_, Sqlite>,
     store: &AutomationStore,
