@@ -17,14 +17,14 @@ Implemented operations include:
 evaluate_candidates(set, profile, scalarization)
 evaluate_candidates_with_policy(set, profile, scalarization, policy)
 canonical_evaluation_policy_digest(profile, policy)
-solve_preference_target(initial, target, eta)
+solve_preference_target(initial, target, eta, context_digest)
 bind_solver_iteration_receipt_v1(context, local_step)
 evaluate_recursive_utility(path)
 solve_backward_regression(conditional_moments, covariance_profile)
 NduProjectionJournalV1::{append_projection, select_projection, revoke_projection, reopen}
 ```
 
-The legacy evaluator is retained as a compatibility entry with an explicit `legacy-sum-max-zero-tolerance-v1` policy. New integrations use `EvaluationPolicyV1` and `NduEvaluationReceiptV2`, whose digest binds utility, risk, resource and uncertainty aggregation plus per-axis Pareto tolerance.
+The legacy evaluator is retained only as a deprecated compatibility entry with an explicit `legacy-sum-max-zero-tolerance-v1` policy. Repository CI rejects new Rust callers of that implicit-policy entry. New integrations use `EvaluationPolicyV1` and `NduEvaluationReceiptV2`; the utility-profile digest also binds axis-registry and normalization/fixed-point-scale manifests so semantic unit drift cannot hide behind a stable profile ID.
 
 ## 3. State, receipts and authority separation
 
@@ -32,9 +32,9 @@ The legacy evaluator is retained as a compatibility entry with an explicit `lega
 
 They are deliberately not named `NduConvergenceCertificateV1`. That canonical certificate remains owned by `learning.eval` and additionally requires independent evaluator identity, conservation, stability and spectral-radius evidence. A local solver cannot certify itself for activation.
 
-`bind_solver_iteration_receipt_v1` publishes an owner-local canonical-context receipt only after binding subject, objective, body generation, event, coefficient, revision, residual, projection count and state digest. The output carries `AuthorityPosture::DENY_ALL`.
+`bind_solver_iteration_receipt_v1` publishes an owner-local canonical-context receipt only after recomputing the canonical subject/objective/body-generation/event/coefficient context digest and matching it against the digest already carried by the solver step. Context re-binding rejects. The published receipt then binds revision, residual, projection count and state digest. The output carries `AuthorityPosture::DENY_ALL`.
 
-`NduProjectionJournalV1` is a bounded durability reference, not a production writer. It provides append-only hash-chain entries, semantic idempotency, selected-projection reconstruction, exact reopen, truncation/tamper detection and revocation non-resurrection. Production composition still requires a selected store, migration, fsync profile, retention and backup/restore evidence.
+`NduProjectionJournalV1` is a bounded durability reference, not a production writer. It provides append-only hash-chain entries, semantic idempotency, selected-projection reconstruction, exact reopen, truncation/tamper detection and revocation non-resurrection. Revocation keys are scoped by objective plus subject plus projection digest, preventing equal payload bytes in another scope from being revoked accidentally. Production composition still requires a selected store, migration, fsync profile, retention and backup/restore evidence.
 
 ## 4. Aggregation, Pareto and solver semantics
 
@@ -51,7 +51,7 @@ Every utility, risk, resource and uncertainty axis has exactly one rule. Unexpec
 
 Pareto dominance uses registered direction and non-negative absolute tolerance for every utility axis. A candidate is strictly better only beyond the tolerance on at least one axis and not worse beyond tolerance on all others. The tolerance vector and aggregation rules are in the evaluation-policy digest.
 
-The deterministic preference solver uses Q32 nearest/ties-even arithmetic, eta in `[1/16,1/4]`, at most 64 iterations, bounded projection and immutable revision advancement. Parent and child hierarchy levels cannot select new artifacts in the same generation.
+The deterministic preference solver uses Q32 nearest/ties-even arithmetic, eta in `[1/16,1/4]`, at most 64 iterations and bounded projection. State is non-empty, limited to 64 axes and admitted only in `[-1,1]`. Every emitted step binds a canonical context digest; already-converged input does not advance revision; iteration exhaustion returns an unavailable outcome exposing the predecessor and evidence rather than a selectable successor. Hierarchy staging uses concrete subject/parent identities, so only an actual parent/child pair is excluded from one generation.
 
 The stochastic shadow kernel solves `Z C = B` with centered conditional moments and an admitted covariance convention. Singular or ill-conditioned pilot covariance rejects. This numeric kernel is not a production stochastic policy or efficacy claim.
 
@@ -82,7 +82,7 @@ Control runtime consumes an opaque NDU evaluation digest plus the complete evalu
 
 Fallback uses a compatible, selected, non-revoked deterministic predecessor, then a frozen objective baseline or abstain. A revoked projection cannot be restored from an old journal or backup. Rollback is a fresh governed transition, not replay of old authority.
 
-This candidate grants no model, tool, network, filesystem, secret, Matrix, fleet, effect, acceptance, merge, promotion or release authority. Production persistence, exact-head qualification, independent `learning.eval` decision, activation and release remain external to the algorithm kernel.
+This candidate grants no model, tool, network, filesystem, secret, Matrix, fleet, effect, acceptance, merge, promotion or release authority. A selected production store with migration/fsync/retention/backup evidence, exact-head qualification, independent `learning.eval` decision, activation and release remain external to the algorithm kernel. Source-level named callers now exist, but product-execution proof remains a separate qualification fact.
 
 ## 8. Current native implementation
 
