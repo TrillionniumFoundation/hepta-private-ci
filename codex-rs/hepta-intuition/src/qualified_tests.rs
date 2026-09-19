@@ -226,9 +226,11 @@ fn evidence_payloads_partition_generator_scorer_profile_and_random_source_owners
     let completeness = canonical_completeness_evidence_payload_v1(&request).unwrap();
     let scorer = canonical_scoring_evidence_payload_v1(&scoring).unwrap();
     let qualification = canonical_profile_qualification_evidence_payload_v1(&profile).unwrap();
-    assert!(canonical_random_assignment_evidence_payload_v1(&request)
-        .unwrap()
-        .is_none());
+    assert!(
+        canonical_random_assignment_evidence_payload_v1(&request)
+            .unwrap()
+            .is_none()
+    );
 
     request.assignment = AssignmentModeV1::CounterBased {
         random_stream_digest: digest("rng-stream"),
@@ -247,9 +249,11 @@ fn evidence_payloads_partition_generator_scorer_profile_and_random_source_owners
         canonical_profile_qualification_evidence_payload_v1(&profile).unwrap(),
         qualification
     );
-    assert!(canonical_random_assignment_evidence_payload_v1(&request)
-        .unwrap()
-        .is_some());
+    assert!(
+        canonical_random_assignment_evidence_payload_v1(&request)
+            .unwrap()
+            .is_some()
+    );
     assert_eq!(
         decide_calibrated_v3(request.clone(), &profile, &scoring),
         Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
