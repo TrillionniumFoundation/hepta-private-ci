@@ -1246,7 +1246,7 @@ impl AutomationStore {
         let explicit_reconcile = run.state == TaskFlowRunState::Indeterminate
             && matches!(&command.transition, TaskFlowTransition::Reconcile { .. });
         let proven_absence_recovery = allow_proven_absence_requeue
-            && run.state == TaskFlowRunState::Running
+            && matches!(run.state, TaskFlowRunState::Queued | TaskFlowRunState::Running)
             && matches!(
                 &command.transition,
                 TaskFlowTransition::RequeueProvenAbsent { .. }
@@ -1478,9 +1478,9 @@ fn apply_transition(
             run.retry_at_ms = Some(*retry_at_ms);
         }
         TaskFlowTransition::RequeueProvenAbsent { proof_digest } => {
-            if run.state != TaskFlowRunState::Running {
+            if !matches!(run.state, TaskFlowRunState::Queued | TaskFlowRunState::Running) {
                 return Err(invalid_transition(
-                    "provider-absence requeue requires running state",
+                    "provider-absence requeue requires queued or running state",
                 ));
             }
             validate_digest(proof_digest, "provider absence proof digest")?;
@@ -1491,9 +1491,9 @@ fn apply_transition(
             clear_lease(run);
         }
         TaskFlowTransition::CancelProvenAbsent { proof_digest } => {
-            if run.state != TaskFlowRunState::Running {
+            if !matches!(run.state, TaskFlowRunState::Queued | TaskFlowRunState::Running) {
                 return Err(invalid_transition(
-                    "provider-absence cancellation requires running state",
+                    "provider-absence cancellation requires queued or running state",
                 ));
             }
             validate_digest(proof_digest, "provider absence proof digest")?;
