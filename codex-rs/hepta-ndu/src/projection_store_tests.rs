@@ -37,10 +37,8 @@ struct TempRoot(PathBuf);
 impl TempRoot {
     fn new(label: &str) -> Self {
         let nonce = NONCE.fetch_add(1, Ordering::Relaxed);
-        let path = std::env::temp_dir().join(format!(
-            "hepta-ndu-{label}-{}-{nonce}",
-            std::process::id()
-        ));
+        let path =
+            std::env::temp_dir().join(format!("hepta-ndu-{label}-{}-{nonce}", std::process::id()));
         fs::create_dir(&path).expect("create temp NDU root");
         Self(path)
     }
@@ -210,7 +208,9 @@ fn indeterminate_handle_fails_closed_until_reopen() {
     store.indeterminate = true;
     assert!(store.is_indeterminate());
     assert_eq!(
-        store.entries().expect_err("poisoned entries must fail closed"),
+        store
+            .entries()
+            .expect_err("poisoned entries must fail closed"),
         NduProjectionStoreError::Indeterminate
     );
     assert_eq!(
