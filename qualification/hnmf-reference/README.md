@@ -1,19 +1,16 @@
-# HNMF deterministic reference runtime
+# HNMF algorithm qualification reference
 
-This standalone Rust crate is a qualification-only executable specification for HNMF. It has no external dependencies and is deliberately excluded from the main Codex workspace until the owning modules adopt the frozen contracts.
+This package is an **algorithm oracle**, not the owner of cognitive/memory
+contract structure.
 
-It implements:
+Canonical HNMF V1 contracts and canonical JSON wire semantics live only in
+`codex-rs/hepta-cognitive-types` (`hnmf.rs`, `hnmf_learning.rs`,
+`wire.rs`). Values in this package are deliberately named `Reference*` and
+represent algorithm-local feature/state fixtures used to exercise bounded
+candidate generation, recurrent settling, sparse competition, contradiction
+handling, replay, plasticity and forgetting.
 
-- nine modality classes and seven functional engram populations;
-- immutable memory events with source, privacy, validity, and tombstone gates;
-- bounded candidate generation over semantic, modality, seed, and associative evidence;
-- recurrent sparse activation with per-population competition and inhibitory/contradictory edges;
-- adaptive-threshold homeostasis and bounded eligibility traces;
-- outcome-derived low-dimensional modulation;
-- candidate-only weight and threshold plasticity with exact predecessor generation;
-- replay selection with source-bucket quotas;
-- add/split/merge/retire/rewire topology proposals that cannot activate themselves;
-- source-driven forgetting that retires unsupported nodes and synapses;
-- deterministic receipts containing no raw source payload.
-
-The crate exposes no filesystem, network, model, provider, tool, secret, merge, promotion, or release capability. It is not a biological brain simulation and it does not establish production or longitudinal claims.
+A `Reference*` value must never be serialized or registered as a production
+protocol, passed as a substitute for a canonical V1 contract, or used to mint
+authority. Cross-language contract conformance is checked separately by
+`qualification/cognitive-types-v1/verify_vectors.py`.
