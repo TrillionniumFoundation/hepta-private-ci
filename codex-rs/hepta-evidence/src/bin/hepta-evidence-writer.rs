@@ -20,7 +20,7 @@ const USAGE: &str = "usage:
   hepta-evidence-writer signing-bytes <envelope-json> <signing-bytes-out>
   hepta-evidence-writer admit <sqlite-home> <trust-policy-json> <envelope-json> <issuer-proof-json> <previous-checkpoint-json> <next-checkpoint-out>
   hepta-evidence-writer prepare-independent <sqlite-home> <trust-policy-json> <input-json> <checkpoint-json> <prepared-out> <signing-bytes-out>
-  hepta-evidence-writer append-independent <sqlite-home> <trust-policy-json> <prepared-json> <issuer-proof-json> <previous-checkpoint-json> <next-checkpoint-out>
+  hepta-evidence-writer append-independent <sqlite-home> <trust-policy-json> <prepared-json> <issuer-proof-json> <previous-checkpoint-json> <next-checkpoint-out> <terminal-receipt-out>
   hepta-evidence-writer verify-checkpoint <sqlite-home> <checkpoint-json>";
 
 #[tokio::main]
