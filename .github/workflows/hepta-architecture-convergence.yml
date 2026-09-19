@@ -176,16 +176,16 @@ jobs:
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           fi
       - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
-        if: matrix.lane == 'source-head' && steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true'
+        if: matrix.lane == 'source-head' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
       - name: Expose DotSlash for existing integration tests
-        if: matrix.lane == 'source-head' && steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true'
+        if: matrix.lane == 'source-head' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
         run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         if: matrix.lane == 'source-head' && steps.scope.outputs.native == 'true'
         with:
           tool: just@1.51.0,nextest@0.9.103
       - name: Resolve verified V8 artifacts
-        if: matrix.lane == 'source-head' && steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true'
+        if: matrix.lane == 'source-head' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
