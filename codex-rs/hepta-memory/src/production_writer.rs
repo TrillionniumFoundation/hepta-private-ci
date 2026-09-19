@@ -40,6 +40,7 @@ use crate::LocalOutcomeState;
 use crate::LocalReplayFinalization;
 use crate::LocalReconcileOutcome;
 use crate::QueuedReceipt;
+use crate::local_lease_outbox::InheritedQueuedReceipt;
 use crate::local_lease_outbox::dispatch_operation_digest;
 
 /// Schema version of the externally-authorized H4 writer boundary.
@@ -540,6 +541,21 @@ impl ProductionDurableWriter {
         ))
     }
 
+    /// Recover one queued outbox row inherited from a terminal predecessor
+    /// generation without creating another outbox identity.
+    pub async fn recover_inherited_queued(
+        &self,
+        occurrence_key: impl Into<String>,
+    ) -> Result<Option<ProductionQueuedReceipt>, ProductionWriterError> {
+        self.verify_authority().await?;
+        let occurrence_key = occurrence_key.into();
+        self.lease
+            .inherited_queued_receipt(&occurrence_key)
+            .await?
+            .map(|receipt| ProductionQueuedReceipt::from_inherited(&self.authority, self.generation(), receipt))
+            .transpose()
+    }
+
     pub async fn status(
         &self,
         occurrence_key: impl Into<String>,
@@ -646,6 +662,9 @@ impl ProductionDurableWriter {
             || receipt.authority_epoch != self.authority.authority_epoch
             || receipt.owner_epoch != self.authority.owner_epoch
             || receipt.generation != self.lease.generation()
+            || receipt
+                .inherited_from_generation
+                .is_some_and(|source| source >= receipt.generation)
             || receipt.fencing_token_digest != self.authority.fencing_token_digest()?
         {
             return Err(ProductionWriterError::StaleReceipt);
@@ -731,22 +750,24 @@ impl ProductionDurableWriter {
     ) -> Result<ProductionDispatchReceipt, ProductionWriterError> {
         self.verify_authority().await?;
         self.validate_queued_receipt(&receipt)?;
-        self.lease
-            .verify_queued_receipt_binding(
-                &receipt.occurrence_key,
-                &receipt.event_id,
-                &receipt.outbox_id,
-                &receipt.topic,
-                &receipt.payload_json,
-                &receipt.payload_sha256,
-            )
-            .await
-            .map_err(|error| match error {
-                LocalLeaseOutboxError::StaleFence(_)
-                | LocalLeaseOutboxError::IllegalTransition(_)
-                | LocalLeaseOutboxError::CasConflict(_) => ProductionWriterError::StaleReceipt,
-                other => ProductionWriterError::Local(other),
-            })?;
+        if receipt.inherited_from_generation.is_none() {
+            self.lease
+                .verify_queued_receipt_binding(
+                    &receipt.occurrence_key,
+                    &receipt.event_id,
+                    &receipt.outbox_id,
+                    &receipt.topic,
+                    &receipt.payload_json,
+                    &receipt.payload_sha256,
+                )
+                .await
+                .map_err(|error| match error {
+                    LocalLeaseOutboxError::StaleFence(_)
+                    | LocalLeaseOutboxError::IllegalTransition(_)
+                    | LocalLeaseOutboxError::CasConflict(_) => ProductionWriterError::StaleReceipt,
+                    other => ProductionWriterError::Local(other),
+                })?;
+        }
         let request = ProductionDispatchRequest {
             schema_version: PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION,
             namespace: PRODUCTION_DURABLE_WRITER_NAMESPACE.to_string(),
@@ -767,21 +788,38 @@ impl ProductionDurableWriter {
 
         // First make the ambiguous external boundary durable. A crash from
         // this point onward reopens as Indeterminate and must reconcile.
-        let dispatch_claim_event_id = self
-            .lease
-            .claim_dispatch(
-                &receipt.occurrence_key,
-                &self.authority.grant_digest,
-                &request.operation_digest,
-            )
-            .await
-            .map_err(|error| match error {
-                LocalLeaseOutboxError::StaleFence(_)
-                | LocalLeaseOutboxError::IllegalTransition(_)
-                | LocalLeaseOutboxError::CasConflict(_) => ProductionWriterError::StaleReceipt,
-                other => ProductionWriterError::Local(other),
-            })?
-            .event_id;
+        let inherited_from_generation = receipt.inherited_from_generation;
+        let dispatch_claim_event_id = match inherited_from_generation {
+            Some(source_generation) => self
+                .lease
+                .claim_inherited_dispatch(
+                    &receipt.occurrence_key,
+                    &receipt.event_id,
+                    &receipt.outbox_id,
+                    source_generation,
+                    &receipt.topic,
+                    &receipt.payload_json,
+                    &receipt.payload_sha256,
+                    &self.authority.grant_digest,
+                    &request.operation_digest,
+                )
+                .await,
+            None => self
+                .lease
+                .claim_dispatch(
+                    &receipt.occurrence_key,
+                    &self.authority.grant_digest,
+                    &request.operation_digest,
+                )
+                .await,
+        }
+        .map_err(|error| match error {
+            LocalLeaseOutboxError::StaleFence(_)
+            | LocalLeaseOutboxError::IllegalTransition(_)
+            | LocalLeaseOutboxError::CasConflict(_) => ProductionWriterError::StaleReceipt,
+            other => ProductionWriterError::Local(other),
+        })?
+        .event_id;
 
         // Then consume the single-use grant and revalidate it immediately at
         // target entry. If either check fails before the adapter is entered we
@@ -790,8 +828,9 @@ impl ProductionDurableWriter {
             Ok(token) => token,
             Err(error) => {
                 let _ = self
-                    .reject(
+                    .settle_pre_dispatch_rejection(
                         &receipt.occurrence_key,
+                        inherited_from_generation.is_some(),
                         format!("final-use claim rejected: {error}"),
                     )
                     .await;
@@ -804,8 +843,9 @@ impl ProductionDurableWriter {
             Ok(future) => future,
             Err(error) => {
                 let _ = self
-                    .reject(
+                    .settle_pre_dispatch_rejection(
                         &receipt.occurrence_key,
+                        inherited_from_generation.is_some(),
                         format!("final-use entry rejected: {error}"),
                     )
                     .await;
@@ -813,13 +853,82 @@ impl ProductionDurableWriter {
             }
         };
         let outcome = future.await;
-        self.settle_dispatch_outcome(
-            request,
-            &receipt.occurrence_key,
-            dispatch_claim_event_id,
-            outcome,
-        )
-        .await
+        if inherited_from_generation.is_some() {
+            self.settle_inherited_dispatch_outcome(
+                request,
+                &receipt.occurrence_key,
+                dispatch_claim_event_id,
+                outcome,
+            )
+            .await
+        } else {
+            self.settle_dispatch_outcome(
+                request,
+                &receipt.occurrence_key,
+                dispatch_claim_event_id,
+                outcome,
+            )
+            .await
+        }
+    }
+
+    async fn settle_pre_dispatch_rejection(
+        &self,
+        occurrence_key: &str,
+        inherited: bool,
+        reason: String,
+    ) -> Result<ProductionOutcomeReceipt, ProductionWriterError> {
+        if inherited {
+            self.reconcile(occurrence_key, LocalReconcileOutcome::Rejected)
+                .await
+        } else {
+            self.reject(occurrence_key, reason).await
+        }
+    }
+
+    async fn settle_inherited_dispatch_outcome(
+        &self,
+        request: ProductionDispatchRequest,
+        occurrence_key: &str,
+        dispatch_claim_event_id: String,
+        outcome: ProductionTargetOutcome,
+    ) -> Result<ProductionDispatchReceipt, ProductionWriterError> {
+        match outcome {
+            ProductionTargetOutcome::Committed { receipt } => {
+                let local = self
+                    .reconcile(occurrence_key, LocalReconcileOutcome::Committed)
+                    .await?;
+                Ok(ProductionDispatchReceipt {
+                    request,
+                    state: LocalOutcomeState::Committed,
+                    target_receipt: Some(receipt),
+                    target_reason: None,
+                    local_event_id: local.event_id,
+                    external_effect: true,
+                })
+            }
+            ProductionTargetOutcome::Rejected { reason } => {
+                let local = self
+                    .reconcile(occurrence_key, LocalReconcileOutcome::Rejected)
+                    .await?;
+                Ok(ProductionDispatchReceipt {
+                    request,
+                    state: LocalOutcomeState::Rejected,
+                    target_receipt: None,
+                    target_reason: Some(reason),
+                    local_event_id: local.event_id,
+                    external_effect: false,
+                })
+            }
+            ProductionTargetOutcome::Indeterminate { reason } => Ok(ProductionDispatchReceipt {
+                request,
+                state: LocalOutcomeState::Indeterminate,
+                target_receipt: None,
+                target_reason: Some(reason),
+                local_event_id: dispatch_claim_event_id,
+                external_effect: false,
+            }),
+        }
     }
 
     async fn settle_dispatch_outcome(
@@ -890,6 +999,10 @@ pub struct ProductionQueuedReceipt {
     pub topic: String,
     pub payload_json: String,
     pub payload_sha256: Sha256Digest,
+    /// Source generation for an immutable queued row adopted after its old
+    /// owner fence became terminal. Absent for normal/current-generation rows.
+    #[serde(default)]
+    pub inherited_from_generation: Option<u64>,
     pub replayed: bool,
     /// Always false until an explicitly attached target returns committed.
     pub external_effect: bool,
@@ -919,7 +1032,35 @@ impl ProductionQueuedReceipt {
             topic: topic.to_string(),
             payload_json: payload_json.to_string(),
             payload_sha256: receipt.payload_sha256,
+            inherited_from_generation: None,
             replayed,
+            external_effect: false,
+        })
+    }
+
+    fn from_inherited(
+        authority: &ProductionAuthorityLease,
+        generation: u64,
+        receipt: InheritedQueuedReceipt,
+    ) -> Result<Self, ProductionWriterError> {
+        Ok(Self {
+            schema_version: PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION,
+            namespace: PRODUCTION_DURABLE_WRITER_NAMESPACE.to_string(),
+            lease_id: receipt.lease_id,
+            occurrence_key: receipt.occurrence_key,
+            event_id: receipt.event_id,
+            outbox_id: receipt.outbox_id,
+            owner_agent_id: receipt.owner_agent_id,
+            authority_grant_digest: authority.grant_digest.clone(),
+            authority_epoch: authority.authority_epoch,
+            owner_epoch: authority.owner_epoch,
+            generation,
+            fencing_token_digest: authority.fencing_token_digest()?,
+            topic: receipt.topic,
+            payload_json: receipt.payload_json,
+            payload_sha256: receipt.payload_sha256,
+            inherited_from_generation: Some(receipt.source_generation),
+            replayed: true,
             external_effect: false,
         })
     }
