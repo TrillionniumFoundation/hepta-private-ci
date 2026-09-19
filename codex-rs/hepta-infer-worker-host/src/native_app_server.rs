@@ -42,11 +42,10 @@ use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::FinalUseAuthority;
-use codex_hepta_contracts::FinalUseBinding;
-use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
+use codex_hepta_infer_core::durable_control::native::NativeFinalUseAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_protocol::user_input::user_input_payload_sha256;
@@ -57,6 +56,11 @@ use sha2::Sha256;
 #[path = "native_run_control.rs"]
 mod control;
 pub use control::NativeAdmission;
+#[path = "native_policy.rs"]
+mod policy;
+pub use policy::FinalUseGrantResolver;
+pub use policy::GrantResolveError;
+pub use policy::NativeExecutionPolicy;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
@@ -77,6 +81,7 @@ pub struct NativeWorkerConfig {
     pub generation: u64,
     pub model: String,
     pub timeout: Duration,
+    pub final_use_authority: FinalUseAuthority,
 }
 
 /// A real provider client. Each new request uses a fresh persistent, single-use
@@ -86,12 +91,6 @@ pub struct NativeWorkerConfig {
 /// owns dispatch identity, local slot admission and settlement.
 pub struct AppServerModelDriver {
     config: NativeWorkerConfig,
-}
-
-pub(super) struct NativeProviderAuthorization<'a> {
-    pub(super) authority: &'a FinalUseAuthority,
-    pub(super) signed: &'a SignedFinalUseGrant,
-    pub(super) binding: FinalUseBinding,
 }
 
 impl AppServerModelDriver {
@@ -108,53 +107,6 @@ impl AppServerModelDriver {
         Ok(Self { config })
     }
 
-    /// Exact final-use binding for the narrow production provider path.
-    ///
-    /// The authorized path intentionally rejects dynamic context_query input:
-    /// the issuer must sign the exact ordered provider user input before the
-    /// adapter can enter dispatch. Read-only context-enriched operator runs
-    /// remain available through `run`, but are not product authority.
-    pub fn provider_final_use_binding(
-        &self,
-        request_id: &str,
-        prompt: &str,
-    ) -> Result<FinalUseBinding> {
-        if request_id.is_empty() || request_id.len() > 128 {
-            return Err("invalid provider request identity".into());
-        }
-        if prompt.is_empty() || prompt.len() > MAX_PROMPT_BYTES {
-            return Err("prompt must contain 1..32768 bytes".into());
-        }
-        let input = vec![UserInput::Text {
-            text: prompt.to_string(),
-            text_elements: Vec::new(),
-        }];
-        let payload_sha256 = decode_sha256(&canonical_input_digest(&input)?)?;
-        let request_sha256 = sha256_array(&serde_json::to_vec(&(
-            "hepta.provider-request.v1",
-            request_id,
-            self.config.agent_id.to_string(),
-            self.config.generation,
-            &self.config.model,
-            prompt,
-            self.config.timeout.as_millis(),
-        ))?);
-        let scope_sha256 = sha256_array(&serde_json::to_vec(&(
-            "hepta.provider-scope.v1",
-            self.config.agent_id.to_string(),
-            self.config.generation,
-            &self.config.model,
-            &self.config.agentd_socket,
-        ))?);
-        Ok(FinalUseBinding {
-            subject_id: self.config.agent_id.to_string(),
-            destination_id: "provider:codex-app-server".to_string(),
-            request_sha256,
-            scope_sha256,
-            payload_sha256,
-        })
-    }
-
     /// Execute once. Transport loss after turn/start remains indeterminate and
     /// must never be automatically replayed as a fresh request.
     async fn run_once(
@@ -163,8 +115,11 @@ impl AppServerModelDriver {
         request_id: &str,
         prompt: String,
         context_query: Option<String>,
+        maximum_output_tokens: u64,
+        maximum_budget_units: u64,
+        policy: &NativeExecutionPolicy,
         cancellation: &CancellationToken,
-        authorization: Option<NativeProviderAuthorization<'_>>,
+        grant_resolver: &FinalUseGrantResolver<'_>,
     ) -> Result<NativeRunOutput> {
         if prompt.is_empty() || prompt.len() > MAX_PROMPT_BYTES {
             return Err("prompt must contain 1..32768 bytes".into());
@@ -253,38 +208,84 @@ impl AppServerModelDriver {
             text_elements: Vec::new(),
         }];
         let input_payload_sha256 = canonical_input_digest(&input)?;
+        let context_digest = control::digest(&serde_json::to_vec(&additional_context)?);
+        let turn_params = TurnStartParams {
+            thread_id: started.thread.id.clone(),
+            client_user_message_id: Some(request_id.to_string()),
+            input,
+            additional_context,
+            environments: Some(Vec::new()),
+            ..Default::default()
+        };
+        let exact_turn_payload = serde_json::to_vec(&turn_params)?;
+        let request_payload_digest = control
+            .native_record(request_id)
+            .ok_or("missing durable native request")?
+            .request
+            .payload_digest
+            .clone();
+        let claimed = policy.claim_turn(
+            &self.config.final_use_authority,
+            grant_resolver,
+            &self.config.agent_id.to_string(),
+            self.config.generation,
+            request_id,
+            &started.model,
+            &started.model_provider,
+            &request_payload_digest,
+            &context_digest,
+            maximum_output_tokens,
+            maximum_budget_units,
+            &exact_turn_payload,
+        )?;
+        let durable_witness = claimed.witness.clone();
         let dispatch = NativeDispatch {
             thread_id: started.thread.id.clone(),
             model_provider: started.model_provider.clone(),
-            context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
+            context_digest,
             client_user_message_id: Some(request_id.to_string()),
             input_payload_sha256: Some(input_payload_sha256),
+            final_use: Some(durable_witness.clone()),
         };
-        if let Some(authorization) = authorization {
-            let token = authorization
-                .authority
-                .claim(authorization.signed, &authorization.binding)?;
-            authorization.authority.with_verified_use(
-                token,
-                &authorization.binding,
-                || control.dispatch_native(request_id, dispatch),
-            )??;
-        } else {
-            control.dispatch_native(request_id, dispatch)?;
-        }
+        let turn_request = ClientRequest::TurnStart {
+            request_id: RequestId::Integer(2),
+            params: turn_params,
+        };
+        let (admission_result, admitted) = NativeExecutionPolicy::admit(
+            &self.config.final_use_authority,
+            claimed,
+            || -> Result<_> {
+                // Both the durable intent and the synchronous bounded transport
+                // queue admission occur under the same revocation fence. Once
+                // try_request succeeds, later transport loss is
+                // accepted-or-unknown and must be reconciled, never replayed.
+                control.dispatch_native(request_id, dispatch)?;
+                Ok(client.try_request(turn_request)?)
+            },
+        )?;
+        let pending = match admission_result {
+            Ok(pending) => pending,
+            Err(error) => {
+                if control.native_record(request_id).is_some_and(|record| {
+                    record.state
+                        == codex_hepta_infer_core::durable_control::native::NativeReservationState::Dispatching
+                }) {
+                    let reason: String = format!(
+                        "local App Server transport rejected before effect admission: {error}"
+                    )
+                    .chars()
+                    .take(1024)
+                    .collect();
+                    control.reconcile_native_no_admission(request_id, reason)?;
+                }
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err(error);
+            }
+        };
+        let admitted_authority = policy::claimed_authority(&durable_witness);
         let response = timeout(
             RPC_TIMEOUT,
-            client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {
-                request_id: RequestId::Integer(2),
-                params: TurnStartParams {
-                    thread_id: started.thread.id.clone(),
-                    client_user_message_id: Some(request_id.to_string()),
-                    input,
-                    additional_context,
-                    environments: Some(Vec::new()),
-                    ..Default::default()
-                },
-            }),
+            pending.response_typed::<TurnStartResponse>(),
         )
         .await;
         let turn = match response {
@@ -301,6 +302,7 @@ impl AppServerModelDriver {
                     observed_output_tokens: None,
                     terminal_observed: false,
                     owner_authority: NativeOwnerAuthority::Unverified,
+                    final_use_authority: admitted_authority.clone(),
                     stop_reason: Some("turn/start outcome unknown; do not replay".to_string()),
                 });
             }
@@ -315,6 +317,7 @@ impl AppServerModelDriver {
             observed_output_tokens: None,
             terminal_observed: false,
             owner_authority: NativeOwnerAuthority::Unverified,
+            final_use_authority: admitted_authority,
             stop_reason: None,
         };
         if let Err(error) = control.native_started(request_id, output.turn_id.clone()) {
@@ -380,6 +383,8 @@ impl AppServerModelDriver {
             // cannot restore authority lost earlier in the run.
             let _ = verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT)
                 .await;
+            output.final_use_authority =
+                NativeExecutionPolicy::finalize(&self.config.final_use_authority, admitted);
         }
         Ok(output)
     }
@@ -532,6 +537,11 @@ impl AppServerModelDriver {
             observed_output_tokens: None,
             terminal_observed: false,
             owner_authority: NativeOwnerAuthority::Unverified,
+            final_use_authority: dispatch
+                .final_use
+                .as_ref()
+                .map(policy::claimed_authority)
+                .unwrap_or(NativeFinalUseAuthority::Unverified),
             stop_reason: None,
         });
         if output.thread_id != dispatch.thread_id
@@ -718,23 +728,6 @@ impl AppServerModelDriver {
             }
         }
     }
-}
-
-fn sha256_array(bytes: &[u8]) -> [u8; 32] {
-    Sha256::digest(bytes).into()
-}
-
-fn decode_sha256(value: &str) -> Result<[u8; 32]> {
-    if value.len() != 64 {
-        return Err("invalid canonical input digest".into());
-    }
-    let mut output = [0_u8; 32];
-    for (index, byte) in output.iter_mut().enumerate() {
-        let offset = index * 2;
-        *byte = u8::from_str_radix(&value[offset..offset + 2], 16)
-            .map_err(|_| "invalid canonical input digest")?;
-    }
-    Ok(output)
 }
 
 fn canonical_input_digest(input: &[UserInput]) -> Result<String> {
