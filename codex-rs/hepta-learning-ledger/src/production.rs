@@ -11,6 +11,7 @@ use std::fmt;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+use crate::AnchorWitnessError;
 use crate::AppendReceipt;
 use crate::AuthenticatedOutcomeV1;
 use crate::CandidateSetCompletenessReceiptV1;
@@ -19,6 +20,7 @@ use crate::CreditAllocationBatchV1;
 use crate::DatasetFreezeRequestV1;
 use crate::DatasetReceiptError;
 use crate::DatasetSnapshotReceiptV3;
+use crate::DurableAnchorWitness;
 use crate::DurableLearningJournal;
 use crate::DurableLedgerError;
 use crate::EpisodeDecision;
@@ -62,6 +64,25 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
 
     pub fn current_anchor(&self) -> Result<LedgerAnchor, ProductionLedgerError> {
         self.journal.anchor().map_err(Into::into)
+    }
+
+    pub fn retain_acknowledgement(
+        &self,
+        witness: &mut DurableAnchorWitness,
+        receipt: &AppendReceipt,
+    ) -> Result<LedgerAnchor, ProductionLedgerError> {
+        let expected = LedgerAnchor {
+            sequence: receipt.sequence.get(),
+            chain_digest: receipt.chain_digest,
+        };
+        if self.journal.anchor()? != expected {
+            return Err(ProductionLedgerError::StaleAnchor);
+        }
+        witness.publish(expected)?;
+        if witness.current()? != Some(expected) {
+            return Err(ProductionLedgerError::WitnessFrontierMismatch);
+        }
+        Ok(expected)
     }
 
     pub fn append_decision(
@@ -277,10 +298,12 @@ pub enum ProductionLedgerError {
     Signed(SignedEvidenceError),
     Causal(CausalV2Error),
     Dataset(DatasetReceiptError),
+    Witness(AnchorWitnessError),
     StaleAnchor,
     PrincipalMismatch,
     CandidateCountMismatch,
     SupportDigestMismatch,
+    WitnessFrontierMismatch,
 }
 
 impl fmt::Display for ProductionLedgerError {
@@ -296,10 +319,12 @@ impl StdError for ProductionLedgerError {
             Self::Signed(error) => Some(error),
             Self::Causal(error) => Some(error),
             Self::Dataset(error) => Some(error),
+            Self::Witness(error) => Some(error),
             Self::StaleAnchor
             | Self::PrincipalMismatch
             | Self::CandidateCountMismatch
-            | Self::SupportDigestMismatch => None,
+            | Self::SupportDigestMismatch
+            | Self::WitnessFrontierMismatch => None,
         }
     }
 }
@@ -319,6 +344,12 @@ impl From<SignedEvidenceError> for ProductionLedgerError {
 impl From<CausalV2Error> for ProductionLedgerError {
     fn from(value: CausalV2Error) -> Self {
         Self::Causal(value)
+    }
+}
+
+impl From<AnchorWitnessError> for ProductionLedgerError {
+    fn from(value: AnchorWitnessError) -> Self {
+        Self::Witness(value)
     }
 }
 
