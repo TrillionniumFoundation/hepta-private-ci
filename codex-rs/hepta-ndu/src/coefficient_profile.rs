@@ -194,6 +194,9 @@ pub fn quantize_z_to_q24(
     if estimate.evidence_digest().is_zero() {
         return Err(NduCoefficientProfileError::MissingDigest);
     }
+    if estimate.covariance_profile_digest() != profile.specification.covariance_profile_digest {
+        return Err(NduCoefficientProfileError::ProfileMismatch);
+    }
     if estimate.z().len() != profile.specification.utility_dimension
         || estimate
             .z()
