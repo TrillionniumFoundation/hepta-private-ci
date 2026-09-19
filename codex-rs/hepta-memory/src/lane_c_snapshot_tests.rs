@@ -360,7 +360,6 @@ async fn retained_cut_detects_old_valid_backup_after_ordinary_reopen() {
     ));
 }
 
-
 #[tokio::test]
 async fn paged_lane_c_keeps_complete_ancestry_and_rejects_mixed_cuts() {
     let temp = TempDir::new().unwrap();
@@ -369,7 +368,10 @@ async fn paged_lane_c_keeps_complete_ancestry_and_rejects_mixed_cuts() {
     let access = CognitiveAccess::agent_private(owner);
     let scope = CognitiveScope::AgentPrivate;
     let citation = store
-        .append_source(&access, &source(scope.clone(), "page-source", "page evidence"))
+        .append_source(
+            &access,
+            &source(scope.clone(), "page-source", "page evidence"),
+        )
         .await
         .unwrap();
 
@@ -490,13 +492,7 @@ async fn paged_lane_c_keeps_complete_ancestry_and_rejects_mixed_cuts() {
         .unwrap();
     assert!(matches!(
         store
-            .lane_c_snapshot_page(
-                &access,
-                &scope,
-                201,
-                first_cursor.as_ref(),
-                1,
-            )
+            .lane_c_snapshot_page(&access, &scope, 201, first_cursor.as_ref(), 1,)
             .await,
         Err(CognitiveStoreError::Conflict(_))
     ));
