@@ -65,6 +65,7 @@ use codex_hepta_matrix_protocol::client_user_message_id;
 use codex_hepta_matrix_protocol::matrix_binding_digest;
 use codex_hepta_matrix_sdk::arm_post_send_pre_mark_ack_drop_once;
 use codex_hepta_matrix_store::InboxDispatchState;
+use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixDurableConfig;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::OutboxState;
@@ -445,10 +446,11 @@ async fn run_real_synapse_qualification_inner(
 
     // Arm a non-default, exact-payload qualification cut in the product
     // Matrix SDK. The first encrypted PUT must reach Synapse and return an
-    // event ID, but that acknowledgement is deliberately hidden before the
-    // durable outbox can mark the row sent. The retry must reuse the stable
-    // transaction ID, obtain the same event ID, and create no second timeline
-    // event.
+    // event ID, but that acknowledgement is deliberately hidden from the
+    // dispatcher. The retry must reuse the stable transaction ID and obtain
+    // the same event ID; transport acceptance still is not terminal success.
+    // The product /sync path must independently observe that exact homeserver
+    // event before the durable dispatch ledger can settle Succeeded.
     eprintln!("R4_STAGE outbound_post_send_pre_mark:start");
     let ack_loss_receipt_path =
         arm_post_send_pre_mark_ack_drop_once(&agent_a.layout, OUTBOUND_ACK_LOSS_BODY.as_bytes())?;
@@ -1562,24 +1564,42 @@ async fn verify_post_send_pre_mark_proof(
 
     let store = MatrixDurableStore::open(layout, MatrixDurableConfig::default()).await?;
     let deadline = Instant::now() + Duration::from_secs(30);
-    let record = loop {
+    let (record, dispatch) = loop {
         let record = store
             .outbox_for_txn(&stable_txn_id)
             .await?
             .context("post-send failpoint outbox row disappeared")?;
-        if record.state == OutboxState::Sent && record.attempts == 2 {
-            break record;
+        let dispatch = store
+            .dispatch_record(&stable_txn_id)
+            .await?
+            .context("post-send failpoint dispatch ledger row disappeared")?;
+        if record.state == OutboxState::Sent
+            && record.attempts == 2
+            && dispatch.state == MatrixDispatchState::Succeeded
+        {
+            break (record, dispatch);
         }
         if Instant::now() >= deadline {
             store.close().await;
-            bail!("post-send response-loss retry did not reach Sent/attempts=2: {record:?}");
+            bail!(
+                "post-send response-loss retry did not reach observed terminal success: outbox={record:?} dispatch={dispatch:?}"
+            );
         }
         tokio::time::sleep(Duration::from_millis(25)).await;
     };
     ensure!(record.payload == expected_body.as_bytes());
     ensure!(
         record.sent_event_id.as_ref() == Some(&first_synapse_event_id),
-        "stable transaction retry did not return Synapse's original event ID"
+        "observed terminal outbox did not retain Synapse's original event ID"
+    );
+    ensure!(
+        dispatch.accepted_event_id.as_ref() == Some(&first_synapse_event_id)
+            && dispatch.terminal_event_id.as_ref() == Some(&first_synapse_event_id),
+        "dispatch ledger did not bind acceptance and terminal observation to the same Synapse event"
+    );
+    ensure!(
+        dispatch.send_observation_digest.is_some(),
+        "dispatch ledger reached Succeeded without durable homeserver observation evidence"
     );
     store.close().await;
 

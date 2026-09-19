@@ -6,6 +6,7 @@
 
 #![forbid(unsafe_code)]
 
+mod dispatch;
 mod model;
 mod store;
 
@@ -26,6 +27,11 @@ pub use model::InboxRecord;
 pub use model::InboxState;
 pub use model::MatrixControlPage;
 pub use model::MatrixControlSnapshot;
+pub use model::MatrixDispatchAuthorityDraft;
+pub use model::MatrixDispatchObservationKind;
+pub use model::MatrixDispatchObservationRecord;
+pub use model::MatrixDispatchRecord;
+pub use model::MatrixDispatchState;
 pub use model::MatrixDurableConfig;
 pub use model::MatrixQueueMetrics;
 pub use model::MatrixSnapshot;

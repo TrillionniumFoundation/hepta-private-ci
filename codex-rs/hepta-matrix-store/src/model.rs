@@ -471,6 +471,154 @@ pub enum OutboxDisposition {
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
+pub enum MatrixDispatchState {
+    Prepared,
+    Dispatched,
+    RetryScheduled,
+    Accepted,
+    Indeterminate,
+    Succeeded,
+    Failed,
+    Redacted,
+    /// Pre-v6 rows that were marked sent from the transport response alone.
+    /// They are intentionally not promoted to observed terminal success until
+    /// a homeserver event observation reconciles them.
+    LegacyUnverified,
+}
+
+impl MatrixDispatchState {
+    pub(crate) fn as_str(self) -> &'static str {
+        match self {
+            Self::Prepared => "prepared",
+            Self::Dispatched => "dispatched",
+            Self::RetryScheduled => "retry_scheduled",
+            Self::Accepted => "accepted",
+            Self::Indeterminate => "indeterminate",
+            Self::Succeeded => "succeeded",
+            Self::Failed => "failed",
+            Self::Redacted => "redacted",
+            Self::LegacyUnverified => "legacy_unverified",
+        }
+    }
+
+    pub(crate) fn parse(value: &str) -> Option<Self> {
+        match value {
+            "prepared" => Some(Self::Prepared),
+            "dispatched" => Some(Self::Dispatched),
+            "retry_scheduled" => Some(Self::RetryScheduled),
+            "accepted" => Some(Self::Accepted),
+            "indeterminate" => Some(Self::Indeterminate),
+            "succeeded" => Some(Self::Succeeded),
+            "failed" => Some(Self::Failed),
+            "redacted" => Some(Self::Redacted),
+            "legacy_unverified" => Some(Self::LegacyUnverified),
+            _ => None,
+        }
+    }
+
+    pub fn is_terminal(self) -> bool {
+        matches!(self, Self::Succeeded | Self::Failed | Self::Redacted)
+    }
+
+    pub fn is_unresolved(self) -> bool {
+        matches!(
+            self,
+            Self::Prepared
+                | Self::Dispatched
+                | Self::RetryScheduled
+                | Self::Accepted
+                | Self::Indeterminate
+        )
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct MatrixDispatchRecord {
+    pub operation_id: String,
+    pub stable_txn_id: MatrixTransactionId,
+    pub homeserver_id: Option<String>,
+    pub room_id: MatrixRoomId,
+    pub device_id: Option<String>,
+    pub binding_revision: u64,
+    pub session_generation: u64,
+    pub authority_epoch: Option<u64>,
+    pub payload_digest: String,
+    pub grant_payload_digest: Option<String>,
+    pub deadline_ms: Option<u64>,
+    pub state: MatrixDispatchState,
+    pub last_attempt: u64,
+    pub accepted_event_id: Option<MatrixEventId>,
+    pub terminal_event_id: Option<MatrixEventId>,
+    pub send_observation_digest: Option<String>,
+    pub redaction_observation_digest: Option<String>,
+    pub prepared_at_ms: u64,
+    pub updated_at_ms: u64,
+    pub terminal_at_ms: Option<u64>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct MatrixDispatchAuthorityDraft {
+    pub operation_id: String,
+    pub stable_txn_id: MatrixTransactionId,
+    pub homeserver_id: String,
+    pub room_id: MatrixRoomId,
+    pub device_id: String,
+    pub session_generation: u64,
+    pub authority_epoch: u64,
+    pub payload_digest: String,
+    pub grant_payload_digest: String,
+    pub deadline_ms: u64,
+    pub prepared_at_ms: u64,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum MatrixDispatchObservationKind {
+    TransportAccepted,
+    TransportRetryable,
+    TransportRejected,
+    HomeserverEvent,
+    Redaction,
+    ManualTerminal,
+}
+
+impl MatrixDispatchObservationKind {
+    pub(crate) fn as_str(self) -> &'static str {
+        match self {
+            Self::TransportAccepted => "transport_accepted",
+            Self::TransportRetryable => "transport_retryable",
+            Self::TransportRejected => "transport_rejected",
+            Self::HomeserverEvent => "homeserver_event",
+            Self::Redaction => "redaction",
+            Self::ManualTerminal => "manual_terminal",
+        }
+    }
+
+    pub(crate) fn parse(value: &str) -> Option<Self> {
+        match value {
+            "transport_accepted" => Some(Self::TransportAccepted),
+            "transport_retryable" => Some(Self::TransportRetryable),
+            "transport_rejected" => Some(Self::TransportRejected),
+            "homeserver_event" => Some(Self::HomeserverEvent),
+            "redaction" => Some(Self::Redaction),
+            "manual_terminal" => Some(Self::ManualTerminal),
+            _ => None,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct MatrixDispatchObservationRecord {
+    pub observation_seq: u64,
+    pub stable_txn_id: MatrixTransactionId,
+    pub kind: MatrixDispatchObservationKind,
+    pub evidence_digest: String,
+    pub server_event_id: Option<MatrixEventId>,
+    pub observed_at_ms: u64,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "snake_case")]
 pub enum ChangeKind {
     RoomBound,
     RoomThreadBound,
@@ -486,8 +634,11 @@ pub enum ChangeKind {
     OutboxCoalesced,
     OutboxClaimed,
     OutboxRetryScheduled,
+    OutboxAccepted,
+    OutboxIndeterminate,
     OutboxSent,
     OutboxFailed,
+    OutboxRedacted,
 }
 
 impl ChangeKind {
@@ -507,8 +658,11 @@ impl ChangeKind {
             Self::OutboxCoalesced => "outbox_coalesced",
             Self::OutboxClaimed => "outbox_claimed",
             Self::OutboxRetryScheduled => "outbox_retry_scheduled",
+            Self::OutboxAccepted => "outbox_accepted",
+            Self::OutboxIndeterminate => "outbox_indeterminate",
             Self::OutboxSent => "outbox_sent",
             Self::OutboxFailed => "outbox_failed",
+            Self::OutboxRedacted => "outbox_redacted",
         }
     }
 
@@ -528,8 +682,11 @@ impl ChangeKind {
             "outbox_coalesced" => Some(Self::OutboxCoalesced),
             "outbox_claimed" => Some(Self::OutboxClaimed),
             "outbox_retry_scheduled" => Some(Self::OutboxRetryScheduled),
+            "outbox_accepted" => Some(Self::OutboxAccepted),
+            "outbox_indeterminate" => Some(Self::OutboxIndeterminate),
             "outbox_sent" => Some(Self::OutboxSent),
             "outbox_failed" => Some(Self::OutboxFailed),
+            "outbox_redacted" => Some(Self::OutboxRedacted),
             _ => None,
         }
     }

@@ -408,10 +408,10 @@ async fn crash_restart_and_duplicate_event_admit_core_exactly_once() -> anyhow::
     let root_event_id = MatrixEventId::parse("$matrix-agent-message-root").expect("root event id");
     restarted
         .store()
-        .mark_outbox_sent(
+        .observe_dispatch_terminal_success(
             &claimed_root[0].stable_txn_id,
-            claimed_root[0].attempts,
             &root_event_id,
+            &"e".repeat(64),
             102,
         )
         .await?;

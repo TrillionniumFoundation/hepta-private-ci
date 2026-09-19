@@ -1,7 +1,7 @@
 # channel.matrix: implementation design
 
 Parent: `docs/modules/channel.matrix/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
-Status: durable Matrix runtime plus a separate send-observer component implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: durable Matrix runtime and canonical durable dispatch-ledger reconciliation implemented; remaining external target qualification and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -45,8 +45,10 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `process_event` in [codex-rs/hepta-matrixd/src/runtime.rs](../../../codex-rs/hepta-matrixd/src/runtime.rs); `recover_pending` in [codex-rs/hepta-matrixd/src/runtime.rs](../../../codex-rs/hepta-matrixd/src/runtime.rs); `observe_send` in [codex-rs/hepta-matrixd/src/send_observer.rs](../../../codex-rs/hepta-matrixd/src/send_observer.rs). Durable Matrix runtime plus a separate send-observer component implemented.
-- **State and recovery:** MatrixRuntime uses MatrixDurableStore for inbox/thread/outbox recovery. The send-observer BTreeMap separately binds operation/transaction/server/session and keeps unknown sends indeterminate; its state is not a replacement durable sender.
-- **Source tests:** [codex-rs/hepta-matrixd/src/runtime/tests.rs](../../../codex-rs/hepta-matrixd/src/runtime/tests.rs), [codex-rs/hepta-matrixd/src/send_observer_tests.rs](../../../codex-rs/hepta-matrixd/src/send_observer_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implemented entrypoints:** `process_event` and `recover_pending` in [codex-rs/hepta-matrixd/src/runtime.rs](../../../codex-rs/hepta-matrixd/src/runtime.rs); `prepare_send` and `observe_send` in [codex-rs/hepta-matrixd/src/send_observer.rs](../../../codex-rs/hepta-matrixd/src/send_observer.rs). The observer is a façade over the canonical durable store, not a separate state owner.
+- **State and recovery:** MatrixRuntime and the SDK sender use MatrixDurableStore for inbox/thread/outbox recovery. Migration `0006_matrix_dispatch_ledger.sql` adds the durable dispatch ledger and append-only observations keyed by the existing stable Matrix transaction identity. SDK/HTTP acceptance records `Accepted` but does not mark terminal success; expired in-flight work is fenced `Indeterminate`; a matching self-authored homeserver event observed through `/sync` settles `Succeeded`. Redaction appends separate evidence and cannot overwrite the original send observation.
+- **Capacity:** the 4096 dispatch ceiling counts only unresolved rows. Terminal dispatch history remains durable and does not exhaust the active reconciliation working set.
+- **Source tests:** [codex-rs/hepta-matrix-store/tests/durable_dispatch.rs](../../../codex-rs/hepta-matrix-store/tests/durable_dispatch.rs), [codex-rs/hepta-matrix-sdk/tests/durable_transport.rs](../../../codex-rs/hepta-matrix-sdk/tests/durable_transport.rs), [codex-rs/hepta-matrixd/src/runtime/tests.rs](../../../codex-rs/hepta-matrixd/src/runtime/tests.rs), and [codex-rs/hepta-matrixd/src/send_observer_tests.rs](../../../codex-rs/hepta-matrixd/src/send_observer_tests.rs). These are source test identities, not execution receipts.
+- **Target qualification:** [codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs](../../../codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs) asserts stable-transaction ACK-loss recovery and homeserver-observed dispatch terminality. The dedicated Matrix workflow binds compile/run receipts to exact source identity; source presence or compilation alone is not a real-homeserver pass receipt.
 - **Implementation and operating references:** [docs/modules/channel.matrix/IMPLEMENTATION_MAP.json](../../../docs/modules/channel.matrix/IMPLEMENTATION_MAP.json), [docs/readiness/LANE_B_RUNTIME_COMPOSITION.md](../../../docs/readiness/LANE_B_RUNTIME_COMPOSITION.md).
-- **Remaining work:** Integrate send-observer state with the canonical durable transaction identity, then qualify enrolled homeserver/device transport, encryption, reconnect/redaction and restore.
+- **Remaining work:** qualify the exact candidate against an enrolled homeserver/user/device/encryption identity, including rate-limit/reconnect/redaction/restore behavior, and complete the separate product/acceptance/activation gates.
