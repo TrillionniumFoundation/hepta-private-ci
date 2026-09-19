@@ -243,6 +243,7 @@ fn context(
         revision: Revision::new(7).expect("revision"),
         now_unix_micros: NOW_MICROS,
         selected_profile_digest: profile.digest().expect("profile digest"),
+        authentication_receipt_digest: digest("preverified-auth-receipt"),
         source_authentication: ObjectiveSourceAuthenticationV1::Principal {
             principal_scope_digest: envelope.principal_scope_digest,
             source_digest: envelope.structured_intent.provenance.source_digest,
@@ -304,6 +305,20 @@ fn semantic_array_reordering_preserves_intent_digest() {
     assert_eq!(
         canonical_objective_intent_digest_v1(&first).expect("first digest"),
         canonical_objective_intent_digest_v1(&second).expect("second digest")
+    );
+}
+
+#[test]
+fn zero_authentication_receipt_digest_rejects_preverified_context() {
+    let profile = profile();
+    let envelope = envelope();
+    let mut context = context(&profile, &envelope);
+    context.authentication_receipt_digest = Digest32::ZERO;
+
+    assert_eq!(
+        ObjectiveAdmissionError::SourceAuthenticationMismatch,
+        admit_objective_v1(&envelope, &profile, &context)
+            .expect_err("preverified authentication receipt must be bound")
     );
 }
 
