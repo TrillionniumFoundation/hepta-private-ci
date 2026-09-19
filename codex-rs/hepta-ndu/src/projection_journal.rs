@@ -139,10 +139,11 @@ impl NduProjectionJournalV1 {
         }) {
             return Err(NduProjectionJournalError::ProjectionNotRecorded);
         }
-        if self
-            .revoked_projections()
-            .contains(&(objective_digest, subject_digest, projection_digest))
-        {
+        if self.revoked_projections().contains(&(
+            objective_digest,
+            subject_digest,
+            projection_digest,
+        )) {
             return Err(NduProjectionJournalError::RevokedProjection);
         }
         self.append(
@@ -198,9 +199,7 @@ impl NduProjectionJournalV1 {
                 _ => {}
             }
         }
-        selected.filter(|digest| {
-            !revoked.contains(&(objective_digest, subject_digest, *digest))
-        })
+        selected.filter(|digest| !revoked.contains(&(objective_digest, subject_digest, *digest)))
     }
 
     fn append(
