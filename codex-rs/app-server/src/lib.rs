@@ -557,7 +557,8 @@ impl PartialEq for AppServerRuntimeOptions {
             && self.plugin_startup_tasks == other.plugin_startup_tasks
             && self.remote_control_startup_mode == other.remote_control_startup_mode
             && self.install_shutdown_signal_handler == other.install_shutdown_signal_handler
-            && self.external_shutdown_token.is_some() == other.external_shutdown_token.is_some()
+            && self.external_shutdown_token.is_some()
+                == other.external_shutdown_token.is_some()
             && self.turn_queue_capacity == other.turn_queue_capacity
             && self.required_sqlite_home == other.required_sqlite_home
             && self.required_thread_store_mode == other.required_thread_store_mode
