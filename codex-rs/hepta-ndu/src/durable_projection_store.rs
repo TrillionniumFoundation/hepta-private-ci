@@ -112,6 +112,7 @@ impl From<NduProjectionJournalError> for DurableNduProjectionError {
 
 /// One exclusively owned local file plus the verified in-memory projection view.
 /// Memory advances only after the corresponding record is durably synced.
+#[derive(Debug)]
 pub struct DurableNduProjectionStoreV1 {
     file: LockedFile,
     core: NduProjectionJournalV1,
@@ -615,6 +616,7 @@ fn anchor_for(
         })
 }
 
+#[derive(Debug)]
 struct LockedFile(File);
 
 impl LockedFile {
