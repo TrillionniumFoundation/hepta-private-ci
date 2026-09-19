@@ -1098,6 +1098,11 @@ mod tests {
             Err(FleetRegistryError::ReleaseNotAllowed { .. })
                 | Err(FleetRegistryError::Io(_))
         ));
+        let installed = fixture
+            .registry
+            .installed_release_binding(&binding.release_id)?;
+        assert_eq!(installed.manifest_sha256, binding.manifest_sha256);
+        assert_eq!(installed.agentd_sha256, binding.agentd_sha256);
         Ok(())
     }
 
