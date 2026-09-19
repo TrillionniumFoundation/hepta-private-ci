@@ -181,7 +181,7 @@ impl SchemaRegistry {
         })
     }
 
-    fn encode_typed_unchecked<T: TypedWirePayload>(
+    pub fn encode_typed<T: TypedWirePayload>(
         &self,
         producer: StableId,
         generation: Generation,
@@ -396,7 +396,7 @@ pub trait TypedWirePayload: Serialize + DeserializeOwned {
     fn schema_id() -> &'static str;
 }
 
-pub fn encode_typed<T: TypedWirePayload>(
+fn encode_typed_unchecked<T: TypedWirePayload>(
     producer: StableId,
     generation: Generation,
     value: &T,
