@@ -80,7 +80,9 @@ fn id(value: &str) -> Result<StableId, Box<dyn Error>> {
     Ok(StableId::new(value)?)
 }
 
-fn run_python_tcp(frame: &[u8]) -> Result<(std::process::ExitStatus, String, String), Box<dyn Error>> {
+fn run_python_tcp(
+    frame: &[u8],
+) -> Result<(std::process::ExitStatus, String, String), Box<dyn Error>> {
     let listener = TcpListener::bind(("127.0.0.1", 0))?;
     let port = listener.local_addr()?.port();
     let child = Command::new(std::env::var_os("PYTHON").unwrap_or_else(|| "python3".into()))
@@ -102,7 +104,8 @@ fn run_python_tcp(frame: &[u8]) -> Result<(std::process::ExitStatus, String, Str
 }
 
 #[test]
-fn live_tcp_runtime_loads_v2_and_rejects_metadata_and_schema_faults() -> Result<(), Box<dyn Error>> {
+fn live_tcp_runtime_loads_v2_and_rejects_metadata_and_schema_faults() -> Result<(), Box<dyn Error>>
+{
     let envelope = WireEnvelopeV2::new(
         id("hepta.integration-live.v2")?,
         id("hepta-shadow-qualification")?,
