@@ -9,8 +9,7 @@ use std::fmt;
 
 use codex_hepta_learning_ledger::{
     LearningEvidenceRoleV1, LearningEvidenceVerifierV1, SignedEvidenceError,
-    SignedLearningEvidenceV1, verify_signed_independent_roles_v1,
-    verify_signed_role_separation,
+    SignedLearningEvidenceV1, verify_signed_independent_roles_v1, verify_signed_role_separation,
 };
 use codex_hepta_plasticity::{
     DurableTopologyAppendReceiptV1, DurableTopologyProposalRegistryV1,
@@ -247,8 +246,7 @@ pub fn propose_authenticated_topology_plasticity_v1(
 
     verify_signed_role_separation(&generator, &observer, now).map_err(E::ObserverEvidence)?;
     verify_signed_role_separation(&generator, &evaluator, now).map_err(E::EvaluatorEvidence)?;
-    verify_signed_independent_roles_v1(&observer, &evaluator, now)
-        .map_err(E::EvaluatorEvidence)?;
+    verify_signed_independent_roles_v1(&observer, &evaluator, now).map_err(E::EvaluatorEvidence)?;
 
     for evidence in [
         &request.generator_attestation,
