@@ -338,3 +338,50 @@ fn streaming_reader_rejects_zero_generation_before_body_read() {
     let mut reader = FramedReader::new(Cursor::new(header_only));
     assert_eq!(reader.read_next(), Err(StreamError::Generation));
 }
+
+#[test]
+fn json_shape_limits_reject_before_recursive_typed_decode() {
+    let schema = SchemaDefinition::new(
+        id("hepta.shape-limits.v1"),
+        &["value"],
+        &[],
+        UnknownFieldPolicy::Reject,
+        MAX_WIRE_PAYLOAD_BYTES,
+    )
+    .expect("shape schema");
+    let mut registry = SchemaRegistry::new();
+    registry.register(schema).expect("register schema");
+
+    let deep = format!(
+        "{{\"value\":{}}}",
+        format!("{}0{}", "[".repeat(MAX_JSON_NESTING), "]".repeat(MAX_JSON_NESTING))
+    );
+    let envelope = WireEnvelopeV2::new(
+        id("hepta.shape-limits.v1"),
+        id("producer"),
+        generation(1),
+        deep.into_bytes(),
+    )
+    .expect("bounded raw envelope");
+    assert_eq!(registry.admit(&envelope), Err(AdmissionError::NestingTooDeep));
+
+    let mut fields = String::from("{");
+    for index in 0..=MAX_SCHEMA_FIELDS {
+        if index != 0 {
+            fields.push(',');
+        }
+        fields.push_str(&format!("\"f{index}\":0"));
+    }
+    fields.push('}');
+    let envelope = WireEnvelopeV2::new(
+        id("hepta.shape-limits.v1"),
+        id("producer"),
+        generation(1),
+        fields.into_bytes(),
+    )
+    .expect("bounded field-count envelope");
+    assert_eq!(
+        registry.admit(&envelope),
+        Err(AdmissionError::FieldCountExceeded)
+    );
+}
