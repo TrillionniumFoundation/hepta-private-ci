@@ -379,36 +379,47 @@ impl AutomationStore {
                     proof_bytes.extend_from_slice(lease.lease_token.as_bytes());
                     let proof_digest = Sha256Digest::for_bytes(&proof_bytes);
 
-                    let run = self
+                    let mut run = self
                         .taskflow_run(&occurrence.taskflow_run_id)
                         .await
                         .map_err(map_taskflow_mutation_error)?;
+                    // A crash may happen after occurrence materialization but
+                    // before a TaskFlow run exists, or after run creation but
+                    // before it receives an owner tuple. In either case create/
+                    // finish only the local durable intent under the exact old
+                    // scheduler lease; this still performs no provider call.
+                    if run.as_ref().is_none_or(|value| {
+                        value.state == crate::TaskFlowRunState::Queued
+                            && value.owner_id.is_none()
+                            && value.owner_epoch.is_none()
+                            && value.generation.is_none()
+                            && value.fencing_token.is_none()
+                    }) {
+                        self.prepare_occurrence_taskflow(
+                            &occurrence,
+                            &lease,
+                            now_ms,
+                            1,
+                        )
+                        .await
+                        .map_err(map_taskflow_mutation_error)?;
+                        run = self
+                            .taskflow_run(&occurrence.taskflow_run_id)
+                            .await
+                            .map_err(map_taskflow_mutation_error)?;
+                    }
+                    if run.is_none() {
+                        return Err(AutomationError::Corrupt);
+                    }
                     if task.state == crate::AutomationTaskState::Enabled {
-                        if run.is_some() {
-                            self.requeue_occurrence_taskflow_after_proven_absence(
-                                &occurrence,
-                                &proof_digest,
-                                now_ms,
-                            )
-                            .await
-                            .map_err(map_taskflow_mutation_error)?;
-                        }
+                        self.requeue_occurrence_taskflow_after_proven_absence(
+                            &occurrence,
+                            &proof_digest,
+                            now_ms,
+                        )
+                        .await
+                        .map_err(map_taskflow_mutation_error)?;
                     } else {
-                        // If the process died after occurrence materialization
-                        // but before creating the TaskFlow run, create only the
-                        // local durable intent under the exact historical lease;
-                        // no provider call is made. This lets retirement finish
-                        // with a complete causal receipt instead of a ghost row.
-                        if run.is_none() {
-                            self.prepare_occurrence_taskflow(
-                                &occurrence,
-                                &lease,
-                                now_ms,
-                                1,
-                            )
-                            .await
-                            .map_err(map_taskflow_mutation_error)?;
-                        }
                         self.cancel_claimed_taskflow_after_proven_absence(
                             &occurrence,
                             &proof_digest,
