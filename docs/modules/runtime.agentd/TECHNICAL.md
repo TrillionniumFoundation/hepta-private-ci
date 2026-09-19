@@ -142,7 +142,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 `AgentdState` owns one mutex-protected `AgentRunCoordinator`; the local control socket is the only current daemon RPC ingress to that lifecycle state. `RunStart` freezes request/objective/body/artifact/authority/deadline identity. `RunAttachContext` must repeat the same complete tuple before context receipt admission. The generation monitor enforces elapsed deadlines even without a mutating caller. Exact retries are idempotent only when retained semantics match; changed reuse conflicts.
 
-The daemon persists lifecycle mutations before returning the corresponding local control result. Codex remains the execution owner: Agentd's `RunMarkDispatched` is an observed lifecycle transition, not permission to fabricate provider execution. The ordinary non-test Codex turn path still requires an explicit adapter that drives these calls from actual turn admission/terminal events.
+The daemon persists lifecycle mutations before returning the corresponding local control result. Codex remains the execution owner: Agentd's `RunMarkDispatched` is a dispatch-boundary lifecycle transition, not permission to fabricate provider execution. The named `hepta-infer-worker --profile native-app-server` product caller now drives `RunStart → RunAttachContext → RunMarkDispatched` around a real App Server `turn/start`, then records matching terminal or indeterminate observation.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -150,7 +150,7 @@ The daemon persists lifecycle mutations before returning the corresponding local
 
 Run restart recovery is now explicit rather than cache reconstruction: pre-dispatch work from a superseded generation is locally cancelled, while dispatched/cancelling work without a terminal owner observation becomes `indeterminate` and continues to consume lifecycle attention without redispatch. Shutdown first marks local draining, stops new admissions, cancels only pre-dispatch run work locally, and allows already-dispatched work to reach an observed terminal state. After the bounded drain window, still-unobserved external outcomes are persisted as `indeterminate` before runtime tasks are stopped.
 
-A recorded `Cancelling` phase is only cancellation intent. Until the normal Codex turn caller is wired to send the actual App Server interrupt and return a matching terminal acknowledgement, documentation must not claim physical interruption from this state alone.
+A recorded `Cancelling` phase remains cancellation intent at the Agentd API boundary. The named native-app-server inference caller now follows that intent with a real App Server `TurnInterrupt`, observes the bounded interrupt grace window, and records matching terminal or `indeterminate` state. A bare `RunCancel` from any other caller does not by itself prove physical interruption.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -205,7 +205,7 @@ Applicable work packages:
 
 The bootstrap package is `P0.8B-READINESS`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. The daemon lifecycle component is now composed into Agentd, but repository source closure for this module remains open until the normal non-test Codex turn path drives start/attach/dispatch/terminal observation and cancellation/deadline intent is bound to a real App Server interrupt plus matching terminal acknowledgement.
+Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. The daemon lifecycle component and one named real App Server caller are now composed. Repository source closure remains open because other direct `SessionIngress` product consumers, notably `hepta-matrixd`, can still reach App Server queue/turn execution without the Agentd lifecycle, and because bare `RunCancel` outside the native inference composition is durable intent rather than an Agentd-owned physical interrupt.
 
 ## 14. Activation, compatibility and retirement
 
@@ -326,5 +326,5 @@ This receipt records repository source bindings for the current documentation ca
 | `attach_context` | `pub(crate) fn run_attach_context(` | `codex-rs/hepta-agentd/src/state.rs` | `codex-rs/hepta-agentd/src/state_isolation_tests.rs`, `lane_b_runtime_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- The daemon lifecycle owner/store and local control callsites are now explicit. The remaining consumer gap is the normal non-test Codex turn adapter plus the physical interrupt/terminal-observation binding described above.
+- The daemon lifecycle owner/store and local control callsites are explicit, and `hepta-infer-worker --profile native-app-server` is the first named non-test caller with real interrupt/terminal observation. Remaining repository work is universal composition for other direct `SessionIngress` product consumers and explicit bare-`RunCancel` ownership semantics.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
