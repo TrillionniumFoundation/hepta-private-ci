@@ -209,6 +209,7 @@ impl ResourceGrantVerifier for Verifier {
         Ok(GrantVerification::Authenticated {
             authority_id: "fleet.authority".to_string(),
             evidence_digest: "a".repeat(64),
+            worker_id: "worker.1".to_string(),
         })
     }
 }
@@ -284,9 +285,33 @@ fn kernel_final_use_verifier_authenticates_one_exact_worker_generation() {
     let verified = VerifiedResourceGrant::verify_with(100, resource.clone(), &verifier).unwrap();
     assert!(matches!(
         verified.verification(),
-        GrantVerification::Authenticated { authority_id, evidence_digest }
-            if authority_id == "resource-authority" && evidence_digest.len() == 64
+        GrantVerification::Authenticated {
+            authority_id,
+            evidence_digest,
+            worker_id,
+        } if authority_id == "resource-authority"
+            && evidence_digest.len() == 64
+            && worker_id == "worker.1"
     ));
+
+    assert!(matches!(
+        InferenceWorker::new(
+            100,
+            "worker.2".to_string(),
+            3,
+            verified.clone(),
+            Driver::default(),
+        ),
+        Err(Error::InvalidGrant)
+    ));
+    InferenceWorker::new(
+        100,
+        "worker.1".to_string(),
+        3,
+        verified,
+        Driver::default(),
+    )
+    .expect("exact authenticated worker subject");
 
     assert_eq!(
         VerifiedResourceGrant::verify_with(100, resource, &verifier),
