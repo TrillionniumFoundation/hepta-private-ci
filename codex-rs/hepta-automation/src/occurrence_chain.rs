@@ -14,7 +14,6 @@ use crate::AutomationOccurrenceTerminalState;
 use crate::AutomationStore;
 use crate::AutomationTask;
 use crate::AutomationTaskId;
-use crate::AutomationTaskState;
 use crate::TaskFlowCommand;
 use crate::TaskFlowDefinition;
 use crate::TaskFlowEdgeSpec;
