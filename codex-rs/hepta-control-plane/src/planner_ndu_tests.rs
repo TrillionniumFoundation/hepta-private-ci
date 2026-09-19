@@ -63,6 +63,9 @@ fn fixture() -> (
     .expect("coherent snapshot");
     let profile = UtilityProfile {
         profile_id: id("available-context"),
+        normalization_manifest_digest: Digest32::of_bytes(
+            b"test.available-context.normalization-manifest",
+        ),
         dimensions: vec![(id("coverage"), AxisDirection::Maximize)],
         risk_ceilings: vec![],
         resource_ceilings: vec![],
