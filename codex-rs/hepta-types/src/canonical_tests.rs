@@ -143,3 +143,45 @@ fn field_order_duplicates_tokens_and_collection_bounds_fail_closed() {
         Err(CanonicalDigestError::ValueTooLarge(oversized.len()))
     );
 }
+
+#[test]
+fn deterministic_fuzz_sweep_preserves_canonical_version_and_payload_framing() {
+    let mut state = 0x4f91_d2ab_7c35_680e_u64;
+    for case in 0..2048_u64 {
+        let length = ((state as usize) % 96) + 1;
+        let mut payload = Vec::with_capacity(length);
+        for _ in 0..length {
+            state ^= state << 13;
+            state ^= state >> 7;
+            state ^= state << 17;
+            payload.push((state & 0xff) as u8);
+        }
+        let fields = [CanonicalFieldV1 {
+            name: "payload",
+            value: CanonicalValueV1::Bytes(&payload),
+        }];
+        let schema_version = case + 1;
+        let first = canonical_encode_v1("platform.types.fuzz", schema_version, &fields)
+            .expect("fuzz corpus must encode");
+        let second = canonical_encode_v1("platform.types.fuzz", schema_version, &fields)
+            .expect("same fuzz corpus must re-encode");
+        assert_eq!(first, second, "canonical encoding must be deterministic");
+
+        let other_version =
+            canonical_encode_v1("platform.types.fuzz", schema_version + 1, &fields)
+                .expect("adjacent schema version must encode");
+        assert_ne!(
+            first, other_version,
+            "semantic schema version must change canonical bytes"
+        );
+
+        let other_domain =
+            canonical_encode_v1("platform.types.fuzz-alt", schema_version, &fields)
+                .expect("alternate domain must encode");
+        assert_ne!(
+            first, other_domain,
+            "domain separation must change canonical bytes"
+        );
+        assert!(first.len() <= MAX_CANONICAL_COLLECTION_BYTES_V1);
+    }
+}
