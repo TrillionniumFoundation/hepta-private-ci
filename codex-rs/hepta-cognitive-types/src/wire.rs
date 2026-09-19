@@ -120,7 +120,7 @@ impl_contract!(
     TopologyProposalV1,
     "TopologyProposalV1",
     "hepta.hnmf.topology-proposal.v1",
-    65_536,
+    262_144,
     TopologyProposalV1::validate
 );
 impl_contract!(
