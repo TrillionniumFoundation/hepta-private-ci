@@ -320,7 +320,7 @@ export function parseJsonNoDuplicateKeys(
         skipWhitespace();
         const key = parseStringToken();
         if (keys.has(key)) {
-          syntax(`contains duplicate object key ${JSON.stringify(key)}`);
+          syntax("contains a duplicate object key");
         }
         keys.add(key);
         skipWhitespace();
