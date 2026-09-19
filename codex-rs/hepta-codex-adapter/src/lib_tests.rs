@@ -86,20 +86,71 @@ fn payload_drift_fails_closed() {
 #[test]
 fn terminal_witness_binds_connection_server_home_and_turn() {
     let intent = product_intent();
-    let wrong = RemoteAppServerObservedEvent::from_test_event(
-        terminal(TurnStatus::Completed).event().clone(),
+    let base = terminal(TurnStatus::Completed);
+
+    let wrong_connection = RemoteAppServerObservedEvent::from_test_event(
+        base.event().clone(),
         CONNECTION_ID + 1,
         Some(SERVER_VERSION.to_string()),
         Some(CODEX_HOME.to_string()),
     );
     assert_eq!(
-        adapt_observed_event(&intent, &id("turn:test"), &wrong),
+        adapt_observed_event(&intent, &id("turn:test"), &wrong_connection),
         Err(Error::CorrelationMismatch("connection"))
     );
+
+    let wrong_server = RemoteAppServerObservedEvent::from_test_event(
+        base.event().clone(),
+        CONNECTION_ID,
+        Some("different-app-server".to_string()),
+        Some(CODEX_HOME.to_string()),
+    );
     assert_eq!(
-        adapt_observed_event(&intent, &id("turn:other"), &terminal(TurnStatus::Completed)),
+        adapt_observed_event(&intent, &id("turn:test"), &wrong_server),
+        Err(Error::CorrelationMismatch("app server version"))
+    );
+
+    let wrong_home = RemoteAppServerObservedEvent::from_test_event(
+        base.event().clone(),
+        CONNECTION_ID,
+        Some(SERVER_VERSION.to_string()),
+        Some("/tmp/other-agent-home".to_string()),
+    );
+    assert_eq!(
+        adapt_observed_event(&intent, &id("turn:test"), &wrong_home),
+        Err(Error::CorrelationMismatch("codex home"))
+    );
+
+    assert_eq!(
+        adapt_observed_event(&intent, &id("turn:other"), &base),
         Err(Error::CorrelationMismatch("turn"))
     );
+}
+
+#[test]
+fn request_digest_binds_source_generation_and_transport_connection() {
+    let intent = product_intent();
+    let baseline = request_digest(&intent);
+
+    let mut changed = intent.clone();
+    changed
+        .app_server_binding
+        .as_mut()
+        .unwrap()
+        .source_admission_digest = digest(b"different-source-admission");
+    assert_ne!(baseline, request_digest(&changed));
+
+    let mut changed = intent.clone();
+    changed
+        .app_server_binding
+        .as_mut()
+        .unwrap()
+        .agent_generation = Generation::new(8).unwrap();
+    assert_ne!(baseline, request_digest(&changed));
+
+    let mut changed = intent;
+    changed.app_server_binding.as_mut().unwrap().connection_id += 1;
+    assert_ne!(baseline, request_digest(&changed));
 }
 
 #[test]
