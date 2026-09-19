@@ -52,4 +52,24 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_learning_artifacts::verify_artifact_admission_v3;
     let _ = codex_hepta_learning_artifacts::ArtifactLifecycleJournalV2::append;
     let _ = codex_hepta_learning_artifacts::ArtifactLifecycleJournalV2::from_snapshot;
+    let _ = codex_hepta_learning_artifacts::DatasetWithdrawalRegistry::new_scoped;
+    let _ = codex_hepta_learning_artifacts::write_dataset_withdrawal_snapshot;
+    let _ = codex_hepta_learning_artifacts::read_dataset_withdrawal_snapshot;
+    let _ = codex_hepta_learning_artifacts::write_artifact_lifecycle_snapshot;
+    let _ = codex_hepta_learning_artifacts::read_artifact_lifecycle_snapshot;
+    let _ = codex_hepta_learning_artifacts::ArtifactPublicationTransactionV1::begin;
+    let _ =
+        codex_hepta_learning_artifacts::ArtifactPublicationTransactionV1::record_payload_durable;
+    let _ =
+        codex_hepta_learning_artifacts::ArtifactPublicationTransactionV1::record_registry_durable;
+    let _ =
+        codex_hepta_learning_artifacts::ArtifactPublicationTransactionV1::record_witness_durable;
+    let _ = codex_hepta_learning_artifacts::ArtifactPublicationTransactionV1::acknowledge;
+    let _ = codex_hepta_learning_artifacts::validate_iteration_transition;
+    let _ = codex_hepta_learning_artifacts::IterationLedgerV1::append_candidate;
+    let _ = codex_hepta_learning_artifacts::IterationLedgerV1::transition;
+    let _ = codex_hepta_learning_artifacts::IterationLedgerV1::from_snapshot;
+    let _ = codex_hepta_learning_artifacts::write_candidate_payload_beneath;
+    let _ = codex_hepta_learning_artifacts::write_registry_snapshot_beneath;
+    let _ = codex_hepta_learning_artifacts::write_registry_head_witness_beneath;
 }
