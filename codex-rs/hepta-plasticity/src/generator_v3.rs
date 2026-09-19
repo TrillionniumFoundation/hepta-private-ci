@@ -565,6 +565,7 @@ mod tests {
         artifact.selected_artifact_digest = digest(b"other-artifact");
         artifact.mutation_policy = build_parameter_mutation_policy_v1(
             id("policy:artifact-context"),
+            digest(b"mutation-grammar"),
             artifact.selected_artifact_digest,
             artifact.window.clone(),
             artifact.mutation_policy.rules.clone(),
@@ -583,6 +584,7 @@ mod tests {
         window.window.window_digest = digest(b"other-window");
         window.mutation_policy = build_parameter_mutation_policy_v1(
             id("policy:window-context"),
+            digest(b"mutation-grammar"),
             window.selected_artifact_digest,
             window.window.clone(),
             window.mutation_policy.rules.clone(),
