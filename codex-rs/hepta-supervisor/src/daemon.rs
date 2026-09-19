@@ -667,6 +667,18 @@ fn unix_seconds_now() -> u64 {
         .unwrap_or(0)
 }
 
+#[cfg(any(unix, test))]
+fn requires_signed_release_transition(
+    production_verifier_present: bool,
+    operation: SupervisordMutation,
+) -> bool {
+    production_verifier_present
+        && matches!(
+            operation,
+            SupervisordMutation::Upgrade | SupervisordMutation::Rollback
+        )
+}
+
 #[cfg(unix)]
 async fn handle_mutation<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
@@ -691,12 +703,10 @@ async fn handle_mutation<D: ProcessDriver>(
         );
     }
 
-    if state.production_grant_verifier.is_some()
-        && matches!(
-            operation,
-            SupervisordMutation::Upgrade | SupervisordMutation::Rollback
-        )
-    {
+    if requires_signed_release_transition(
+        state.production_grant_verifier.is_some(),
+        operation,
+    ) {
         return error_payload(
             "production_authority_required",
             "production release transitions require signed upgrade/rollback authority",
@@ -1516,6 +1526,30 @@ mod tests {
             assert!(!encoded.contains("raw-driver-secret"));
             assert!(!encoded.contains("--token"));
         }
+    }
+
+    #[test]
+    fn production_mode_rejects_unsigned_release_transitions_only() {
+        assert!(requires_signed_release_transition(
+            true,
+            SupervisordMutation::Upgrade
+        ));
+        assert!(requires_signed_release_transition(
+            true,
+            SupervisordMutation::Rollback
+        ));
+        assert!(!requires_signed_release_transition(
+            false,
+            SupervisordMutation::Upgrade
+        ));
+        assert!(!requires_signed_release_transition(
+            true,
+            SupervisordMutation::Start
+        ));
+        assert!(!requires_signed_release_transition(
+            true,
+            SupervisordMutation::Drain
+        ));
     }
 
     #[cfg(unix)]
