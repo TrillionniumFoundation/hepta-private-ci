@@ -447,7 +447,6 @@ impl MetadataImage {
     }
 }
 
-
 #[tokio::test]
 async fn recovery_verifies_exact_current_cut_and_independent_writer_fence_before_vfs_gate() {
     let temp = TempDir::new().expect("temp dir");
