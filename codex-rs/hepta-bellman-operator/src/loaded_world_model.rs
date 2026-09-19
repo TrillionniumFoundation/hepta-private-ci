@@ -157,9 +157,12 @@ pub(crate) fn validate_world_model_v1(
     if model.dataset_digest.is_zero() || model.model_digest.is_zero() {
         return Err(WorldModelPayloadError::Binding);
     }
-    let expected_model_digest =
-        crate::world_model::digest_world_model(&model.model_id, model.dataset_digest, &model.estimates)
-            .map_err(|_| WorldModelPayloadError::Binding)?;
+    let expected_model_digest = crate::world_model::digest_world_model(
+        &model.model_id,
+        model.dataset_digest,
+        &model.estimates,
+    )
+    .map_err(|_| WorldModelPayloadError::Binding)?;
     if expected_model_digest != model.model_digest {
         return Err(WorldModelPayloadError::Binding);
     }
