@@ -348,9 +348,11 @@ impl RuntimeModuleSupervisorV1 {
         Ok(())
     }
 
-    /// Commit topology retirement only after every successor implementation is
-    /// already active at the selected candidate generation. A failed readiness
-    /// check leaves every predecessor untouched.
+    /// Atomically commit one selected topology after every successor has
+    /// completed canary and any required initialization / writer handoff. Until
+    /// this call succeeds, those successors remain non-serving and every
+    /// predecessor route stays externally visible. A failed readiness or graph
+    /// check leaves the serving topology untouched.
     pub fn finalize_topology_candidate(
         &mut self,
         candidate_digest: Digest32,
