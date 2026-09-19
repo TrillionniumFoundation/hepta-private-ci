@@ -125,7 +125,7 @@ impl HeptaEvidenceStore {
         .fetch_optional(&self.pool)
         .await
         .map_err(classify_sqlx_error)?
-        .ok_or(AuthBusAuthorityError::MissingPolicy)?;
+        .ok_or(AuthBusAuthorityError::MissingTrust)?;
         let key: Vec<u8> = row.try_get("public_key").map_err(classify_sqlx_error)?;
         let key: [u8; 32] = key
             .try_into()
