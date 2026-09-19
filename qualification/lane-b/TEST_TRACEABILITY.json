@@ -113,6 +113,10 @@
         {
           "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
           "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ]
     },
