@@ -76,7 +76,11 @@ fn damped_preference_update_emits_local_solver_receipts() {
             .expect("maximum residual")
             .max(FixedQ32::ONE.raw())
     );
-    assert!(receipts.iter().all(|receipt| receipt.context_digest().is_zero()));
+    assert!(
+        receipts
+            .iter()
+            .all(|receipt| receipt.context_digest().is_zero())
+    );
 }
 
 #[test]
@@ -228,10 +232,7 @@ fn iteration_budget_exhaustion_is_unavailable_not_a_terminal_state() {
     let initial = must(PreferenceState::genesis(
         id("agent-slow"),
         SubjectClass::Agent,
-        vec![axis(
-            "utility",
-            FixedQ32::from_raw(-FixedQ32::ONE.raw()),
-        )],
+        vec![axis("utility", FixedQ32::from_raw(-FixedQ32::ONE.raw()))],
     ));
     let error = must_err(solve_preference_target(
         initial,
