@@ -88,15 +88,34 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         })
     }
 
+    pub fn model_request(
+        &self,
+        input: &NeuronTickInputV1,
+    ) -> Result<NeuronModelRequestV1, NeuronRuntimeError> {
+        let input_digest = input.semantic_digest()?;
+        if input.feature_vector_q24.len() != self.config.input_feature_dimension {
+            return Err(NeuronRuntimeError::InvalidInput);
+        }
+        Ok(NeuronModelRequestV1 {
+            config_id: self.config.config_id.clone(),
+            generation: self.config.generation,
+            model_id: self.config.model_id.clone(),
+            encoder_digest: self.config.encoder_digest,
+            head_digest: self.config.head_digest,
+            weights_digest: self.config.weights_digest,
+            input_digest,
+            feature_vector_q24: input.feature_vector_q24.clone(),
+            expected_output_width: self.config.state_width,
+        })
+    }
+
     pub fn tick(
         &mut self,
         model: &mut impl NeuronModelPort,
         input: NeuronTickInputV1,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
-        let input_digest = input.semantic_digest()?;
-        if input.feature_vector_q24.len() != self.config.input_feature_dimension {
-            return Err(NeuronRuntimeError::InvalidInput);
-        }
+        let model_request = self.model_request(&input)?;
+        let input_digest = model_request.input_digest;
         if let Some(pending) = self.pending.clone() {
             if pending.input_digest != input_digest {
                 return Err(NeuronRuntimeError::PendingReconciliation);
@@ -125,17 +144,6 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             checkpoint_digest: checkpoint.digest(),
         });
 
-        let model_request = NeuronModelRequestV1 {
-            config_id: self.config.config_id.clone(),
-            generation: self.config.generation,
-            model_id: self.config.model_id.clone(),
-            encoder_digest: self.config.encoder_digest,
-            head_digest: self.config.head_digest,
-            weights_digest: self.config.weights_digest,
-            input_digest,
-            feature_vector_q24: input.feature_vector_q24.clone(),
-            expected_output_width: self.config.state_width,
-        };
         let started = Instant::now();
         let model_output = model.execute(&model_request)?;
         validate_model_output(&self.config, &model_output)?;
