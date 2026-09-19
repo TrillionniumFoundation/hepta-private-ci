@@ -16,7 +16,7 @@ use serde::de::DeserializeOwned;
 use serde::Serialize;
 
 const USAGE: &str = "usage:
-  hepta-evidence-writer bootstrap-checkpoint <sqlite-home> <checkpoint-out>
+  hepta-evidence-writer bootstrap-trust-policy <sqlite-home> <trust-policy-json> <checkpoint-out>
   hepta-evidence-writer signing-bytes <envelope-json> <signing-bytes-out>
   hepta-evidence-writer admit <sqlite-home> <trust-policy-json> <envelope-json> <issuer-proof-json> <previous-checkpoint-json> <next-checkpoint-out> <terminal-receipt-out>
   hepta-evidence-writer prepare-independent <sqlite-home> <trust-policy-json> <input-json> <checkpoint-json> <prepared-out> <signing-bytes-out>
@@ -35,9 +35,26 @@ async fn run() -> Result<(), String> {
     let args = std::env::args().collect::<Vec<_>>();
     let command = args.get(1).map(String::as_str).ok_or_else(|| USAGE.to_string())?;
     match command {
-        "bootstrap-checkpoint" if args.len() == 4 => {
+        "bootstrap-trust-policy" if args.len() == 5 => {
             let sqlite = sqlite_config(&args[2])?;
+            let policy: EvidenceTrustPolicy = read_json(Path::new(&args[3]))?;
             let store = HeptaEvidenceStore::open(&sqlite)
+                .await
+                .map_err(|error| error.to_string())?;
+            let before = store
+                .qualification()
+                .export_checkpoint()
+                .await
+                .map_err(|error| error.to_string())?;
+            if before.receipt_count != 0 {
+                return Err(
+                    "refusing to bootstrap a trust policy after qualification evidence already exists"
+                        .to_string(),
+                );
+            }
+            store
+                .qualification()
+                .provision_trust_policy(&policy)
                 .await
                 .map_err(|error| error.to_string())?;
             let checkpoint = store
@@ -45,14 +62,11 @@ async fn run() -> Result<(), String> {
                 .export_checkpoint()
                 .await
                 .map_err(|error| error.to_string())?;
-            if checkpoint.receipt_count != 0 {
-                return Err(
-                    "refusing to bootstrap an external checkpoint after qualification evidence already exists"
-                        .to_string(),
-                );
+            if checkpoint.trust_policy_sha256.is_none() {
+                return Err("trust policy was not bound into the checkpoint".to_string());
             }
             write_new(
-                Path::new(&args[3]),
+                Path::new(&args[4]),
                 &checkpoint
                     .canonical_bytes()
                     .map_err(|error| error.to_string())?,
@@ -114,6 +128,11 @@ async fn run() -> Result<(), String> {
             )
             .await
             .map_err(|error| error.to_string())?;
+            store
+                .qualification()
+                .verify_provisioned_trust_policy(&policy)
+                .await
+                .map_err(|error| error.to_string())?;
             let prepared = store
                 .qualification()
                 .prepare_independent_decision(input, &policy)
