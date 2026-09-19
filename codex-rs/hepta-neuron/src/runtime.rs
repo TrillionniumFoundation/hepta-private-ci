@@ -138,6 +138,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             return Err(NeuronRuntimeError::InvalidInput);
         }
         Ok(NeuronModelRequestV1 {
+            request_id: input.tick_id.clone(),
             config_id: self.config.config_id.clone(),
             generation: self.config.generation,
             model_id: self.config.model_id.clone(),
