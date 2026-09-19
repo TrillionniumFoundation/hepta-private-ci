@@ -329,9 +329,11 @@
       "id": "worker-assignment-lifecycle",
       "source": "tools/hepta-engineering-control/control_engineering_v2/assignment.py",
       "symbols": [
+        "WorkerIdentityReceipt",
         "WorkerReceipt",
         "AssignmentClaimReceipt",
-        "register_worker",
+        "register_authenticated_worker",
+        "completed_packages",
         "claim_assignment",
         "begin_assignment",
         "heartbeat_assignment",
@@ -342,6 +344,8 @@
       "state": "source_implemented",
       "physicalState": "SQLite v6 engineering_workers, assignment_generation_packages and assignment_claims",
       "failureModel": [
+        "worker_identity_signature",
+        "worker_identity_stale",
         "worker_identity_conflict",
         "worker_capability_mismatch",
         "worker_capacity_exceeded",
@@ -354,7 +358,7 @@
         "maximumWorkerConcurrency": 32,
         "maximumPackageAttempts": 5
       },
-      "rollback": "expire or revoke the current claim, explicitly requeue retryable work, and preserve fencing history"
+      "rollback": "expire or revoke the current signed worker/claim, explicitly requeue retryable work, and preserve fencing history"
     },
     {
       "id": "verification-only-production-trust",
@@ -396,6 +400,29 @@
         "ambientReleaseAuthority": 0
       },
       "rollback": "close the controller and reopen only with the identical durable writer binding or a separately governed migration"
+    },
+    {
+      "id": "external-audit-anchor",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/audit.py",
+      "symbols": [
+        "AuditAnchorReceipt",
+        "prepare_audit_anchor",
+        "verify_audit_anchor"
+      ],
+      "state": "source_implemented_external_retention_required",
+      "physicalState": "signed receipt retained outside the engineering owner database; owner DB stores only its local hash chain",
+      "failureModel": [
+        "audit_anchor_signature",
+        "audit_anchor_stale",
+        "audit_anchor_sequence",
+        "audit_anchor_writer_mismatch",
+        "audit_anchor_chain_mismatch",
+        "audit_anchor_time_order"
+      ],
+      "resourceBounds": {
+        "maximumVerificationLookups": 1
+      },
+      "rollback": "reject rollback below the independently retained minimum sequence; restoring the SQLite file alone cannot rewrite the external witness"
     }
   ],
   "externalGates": {
