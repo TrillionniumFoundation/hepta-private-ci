@@ -100,7 +100,11 @@ impl WriterHandoffPlanV1 {
         if self.authority_epoch == 0 {
             return Err(WriterHandoffErrorV1::ZeroAuthorityEpoch);
         }
-        if self.old_generation.next().ok() != Some(self.new_generation) {
+        // Module generations are monotone fencing epochs, not a requirement
+        // that every module participate in every global topology generation.
+        // A module may therefore legitimately jump from generation 2 to 8
+        // after remaining unchanged across several topology snapshots.
+        if self.new_generation <= self.old_generation {
             return Err(WriterHandoffErrorV1::NonSuccessorGeneration);
         }
         for (name, digest) in [
@@ -760,6 +764,41 @@ mod tests {
         assert_eq!(recovered.checkpoint(), &expected);
         let len = recovered.file.metadata().expect("metadata").len();
         assert_eq!(len, recovered.durable_length);
+    }
+
+    #[test]
+    fn handoff_allows_monotone_generation_gap_without_resurrection() {
+        let temp = tempfile::tempdir().expect("temp");
+        let mut plan = plan();
+        plan.old_generation = Generation::new(2).expect("old generation");
+        plan.new_generation = Generation::new(8).expect("new generation");
+        let mut journal =
+            DurableWriterHandoffJournalV1::create(file(&temp), plan).expect("journal");
+        assert!(!journal.checkpoint().new_writer_admission_open());
+        for phase in [
+            WriterHandoffPhaseV1::AdmissionStopped,
+            WriterHandoffPhaseV1::Drained,
+            WriterHandoffPhaseV1::OldWriterFenced,
+            WriterHandoffPhaseV1::Snapshotted,
+            WriterHandoffPhaseV1::Migrated,
+            WriterHandoffPhaseV1::Validated,
+            WriterHandoffPhaseV1::NewWriterFenced,
+            WriterHandoffPhaseV1::RoutePublished,
+        ] {
+            let watermark = (phase >= WriterHandoffPhaseV1::Drained).then_some(7);
+            journal
+                .advance(WriterHandoffAdvanceV1 {
+                    phase,
+                    evidence_digest: digest(&format!("gap-{phase:?}")),
+                    outbox_watermark: watermark,
+                    unknown_effect_count: 0,
+                })
+                .expect("advance");
+        }
+        assert!(!journal.checkpoint().old_writer_valid());
+        assert!(journal.checkpoint().new_writer_admission_open());
+        assert_eq!(journal.checkpoint().plan.old_generation.get(), 2);
+        assert_eq!(journal.checkpoint().plan.new_generation.get(), 8);
     }
 
     #[test]
