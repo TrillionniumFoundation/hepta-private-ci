@@ -68,9 +68,9 @@ durable nonce/revocation owner and is subject to the invariants in
 
 The authority socket path must be absolute. The socket inode must be owned by
 the configured `issuer_uid`, must not be world accessible, and its parent
-directory must not be group/world writable. Target-host qualification still
+directory must not be group/world writable. After connect, the worker also checks the kernel-reported peer UID against `issuer_uid`, so pathname metadata alone cannot substitute a different connected principal. Target-host qualification still
 has to establish the intended service identity, ACL/group policy, key custody,
-clock and revocation distribution.
+clock and revocation distribution. The local nonce/revocation store is not an external anti-rollback oracle: snapshot restore or store relocation requires an independently anchored epoch/trust recovery before new grants are accepted.
 
 ## Wire protocol
 
