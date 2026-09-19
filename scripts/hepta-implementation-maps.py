@@ -43,9 +43,25 @@ def lane_by_module():
     }
 
 
+def parse_test_sources(module: str):
+    """Return exact repository test identities named by the module dossier."""
+    path = ROOT / f"qualification/module-execution-dossiers/detail/{module}.md"
+    text = path.read_text(encoding="utf-8") if path.exists() else ""
+    match = re.search(r"\*\*Source tests:\*\*\s*(.*)", text)
+    if not match:
+        return []
+    tests = []
+    for source in re.findall(r"\[([^]]+)\]\([^)]+\)", match.group(1)):
+        source = source.removeprefix("../../../")
+        if (ROOT / source).is_file():
+            tests.append({"path": source})
+    return tests
+
+
 def parse_entrypoints(module: str):
     path = ROOT / f"qualification/module-execution-dossiers/detail/{module}.md"
     text = path.read_text(encoding="utf-8") if path.exists() else ""
+    tests = parse_test_sources(module)
     match = re.search(r"\*\*Implemented entrypoints:\*\*\s*(.*)", text)
     if not match:
         return []
@@ -62,7 +78,7 @@ def parse_entrypoints(module: str):
                 "sourcePath": source,
                 "state": "source_implemented_not_product_composed",
                 "authority": "none",
-                "tests": [],
+                "tests": tests,
                 "sourcePathExists": source_path.is_file(),
             }
         )
@@ -158,6 +174,10 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             op.setdefault("mappingClass", "owner_native")
         op.setdefault("delegatedCallees", [])
         op.setdefault("tests", [])
+        if not op["tests"]:
+            discovered_tests = parse_test_sources(module["id"])
+            if discovered_tests:
+                op["tests"] = discovered_tests
         source = op.get("sourcePath")
         op["sourcePathExists"] = bool(source and (ROOT / source).is_file())
         operations.append(op)
@@ -283,6 +303,69 @@ def generate():
     print(json.dumps({"generated": len(written), "maps": written}, ensure_ascii=False))
 
 
+def exact_head_evidence(output: str):
+    """Materialize exact-HEAD source/test evidence without self-referential commits.
+
+    Static IMPLEMENTATION_MAP.json files remain reviewable registry snapshots.
+    CI calls this command after checkout; every source and test path is rebound
+    to the exact checked-out commit/tree plus its git blob identity.
+    """
+    modules = load("docs/modules/MODULES.json")["modules"]
+    lanes = lane_by_module()
+    source_base = current_source_base()
+    rows = []
+    for module in modules:
+        mid = module["id"]
+        path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
+        row = json.loads(path.read_text(encoding="utf-8"))
+        normalized = migrate_map(row, module, lanes, source_base)
+        normalized["sourceBase"] = source_base
+        for op in normalized["operations"]:
+            source = op.get("sourcePath")
+            op["sourceBlob"] = (
+                git("rev-parse", f"HEAD:{source}") if source and (ROOT / source).is_file() else None
+            )
+            evidence_tests = []
+            for test in op.get("tests", []):
+                test_path = test.get("path") if isinstance(test, dict) else test
+                if not test_path or not (ROOT / test_path).is_file():
+                    raise SystemExit(
+                        f"FAIL_HEPTA_IMPLEMENTATION_EVIDENCE: {mid}: missing test {test_path}"
+                    )
+                evidence_tests.append(
+                    {"path": test_path, "blob": git("rev-parse", f"HEAD:{test_path}")}
+                )
+            op["testEvidence"] = evidence_tests
+        rows.append(normalized)
+    payload = {
+        "schema": "hepta.module-implementation-exact-head-evidence.v1",
+        "schemaVersion": 1,
+        "sourceBase": source_base,
+        "modules": rows,
+        "productionImplementationProved": False,
+        "authorityGranted": False,
+    }
+    destination = Path(output)
+    if not destination.is_absolute():
+        destination = ROOT / destination
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    rendered = json.dumps(payload, indent=2, ensure_ascii=False) + "\n"
+    destination.write_text(rendered, encoding="utf-8")
+    digest = __import__("hashlib").sha256(rendered.encode("utf-8")).hexdigest()
+    print(
+        json.dumps(
+            {
+                "status": "PASS_HEPTA_IMPLEMENTATION_EXACT_HEAD_EVIDENCE",
+                "sourceBase": source_base,
+                "modules": len(rows),
+                "evidenceSha256": digest,
+                "output": str(destination),
+            },
+            sort_keys=True,
+        )
+    )
+
+
 def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
@@ -342,6 +425,10 @@ def verify():
             source = op.get("sourcePath")
             if source and not (ROOT / source).is_file():
                 failures.append(f"{mid}: missing source {source}")
+            for test in op.get("tests", []):
+                test_path = test.get("path") if isinstance(test, dict) else test
+                if not test_path or not (ROOT / test_path).is_file():
+                    failures.append(f"{mid}: missing test {test_path}")
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
@@ -364,8 +451,16 @@ def verify():
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=["generate", "migrate", "verify"])
+    parser.add_argument("command", choices=["generate", "migrate", "verify", "evidence"])
+    parser.add_argument("--output")
     args = parser.parse_args()
+    if args.command == "evidence":
+        if not args.output:
+            parser.error("evidence requires --output")
+        exact_head_evidence(args.output)
+        return
+    if args.output:
+        parser.error("--output applies only to evidence")
     {"generate": generate, "migrate": migrate, "verify": verify}[args.command]()
 
 

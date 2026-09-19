@@ -11,12 +11,23 @@ use std::sync::Arc;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::ProductionAuthorityLease;
 use codex_hepta_memory::ProductionAuthorityVerifier;
+use codex_hepta_memory::ProductionCompactionPublication;
+use codex_hepta_memory::ProductionCompactionReceipt;
 use codex_hepta_memory::ProductionDispatchReceipt;
 use codex_hepta_memory::ProductionDurableWriter;
 use codex_hepta_memory::ProductionOutboxDispatcher;
 use codex_hepta_memory::ProductionOutboxTarget;
 use codex_hepta_memory::ProductionQueuedReceipt;
 use codex_hepta_memory::ProductionWriterError;
+use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
+use codex_hepta_compact_engine::CompactionInputRecordV2;
+use codex_hepta_compact_engine::CompactionPolicyV2;
+use codex_hepta_compact_engine::CompactionQualificationV2;
+use codex_hepta_compact_engine::QualifiedCompactionError;
+use codex_hepta_compact_engine::build_qualified_candidate;
+use codex_hepta_compact_engine::prove_compaction;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 
 use crate::AgentdConfig;
 use crate::AgentdError;
@@ -92,6 +103,70 @@ impl AgentdProductionWriterHost {
         Arc::clone(&self.writer)
     }
 
+    /// Build, independently qualify and atomically publish one canonical
+    /// compaction checkpoint. This is the production consumer callsite for
+    /// compact.engine: all candidate, deletion, resource-budget and proof
+    /// invariants are checked before the owner-store publication boundary.
+    #[allow(clippy::too_many_arguments)]
+    pub async fn qualify_and_publish_compaction(
+        &self,
+        source_snapshot: CognitiveSnapshotKeyV1,
+        checkpoint_generation: Generation,
+        predecessor_checkpoint_digest: Option<Digest32>,
+        policy: &CompactionPolicyV2,
+        inputs: Vec<CompactionInputRecordV2>,
+        qualification: CompactionQualificationV2,
+    ) -> Result<ProductionCompactionReceipt, AgentdError> {
+        let candidate = build_qualified_candidate(
+            source_snapshot,
+            checkpoint_generation,
+            predecessor_checkpoint_digest,
+            policy,
+            inputs,
+        )
+        .map_err(compaction_error)?;
+        let proof = prove_compaction(&candidate, qualification).map_err(compaction_error)?;
+        let publication = ProductionCompactionPublication {
+            checkpoint: candidate.checkpoint.clone(),
+            proof,
+            policy_digest: candidate.policy_digest,
+            candidate_digest: candidate.candidate_digest,
+            retained_bytes: candidate.loss_report.retained_bytes,
+            retained_tokens: candidate.loss_report.retained_tokens,
+            omitted_bytes: candidate.loss_report.omitted_bytes,
+            omitted_tokens: candidate.loss_report.omitted_tokens,
+        };
+        self.publish_compaction(&publication).await
+    }
+
+    /// Publish one independently-qualified canonical compaction checkpoint
+    /// through the Agent-owned production writer. This does not attach a
+    /// provider target and grants no external-effect authority.
+    pub async fn publish_compaction(
+        &self,
+        publication: &ProductionCompactionPublication,
+    ) -> Result<ProductionCompactionReceipt, AgentdError> {
+        self.writer
+            .publish_compaction(publication)
+            .await
+            .map_err(|error| AgentdError::Protocol(format!(
+                "publish canonical compaction checkpoint: {error}"
+            )))
+    }
+
+    /// Reload the current canonical checkpoint after verifying the complete
+    /// durable compact journal and the live production lease.
+    pub async fn load_current_compaction(
+        &self,
+    ) -> Result<Option<ProductionCompactionPublication>, AgentdError> {
+        self.writer
+            .load_current_compaction()
+            .await
+            .map_err(|error| AgentdError::Protocol(format!(
+                "reload canonical compaction checkpoint: {error}"
+            )))
+    }
+
     /// Attach the provider/host target explicitly. Replacing a target is
     /// allowed only through a new host handle, avoiding an in-flight target
     /// swap behind the writer's back.
@@ -115,4 +190,9 @@ impl AgentdProductionWriterHost {
         })?;
         Ok(dispatcher.dispatch(self.writer.as_ref(), receipt).await?)
     }
+}
+
+
+fn compaction_error(error: QualifiedCompactionError) -> AgentdError {
+    AgentdError::Protocol(format!("canonical compaction qualification failed: {error}"))
 }

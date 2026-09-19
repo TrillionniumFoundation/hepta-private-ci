@@ -17,60 +17,108 @@
     "codex-rs/hepta-compact-engine"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionImplementation": true,
+  "productCallerState": "composed_pending_exact_candidate_execution",
+  "productionWriterState": "owner_store_established_pending_exact_candidate_execution",
   "operations": [
-    {
-      "operation": "compact",
-      "nativeSymbol": "compact",
-      "sourcePath": "codex-rs/hepta-compact-engine/src/lib.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
-      "sourcePathExists": true,
-      "designOperation": "compact",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
     {
       "operation": "build_qualified_candidate",
       "nativeSymbol": "build_qualified_candidate",
       "sourcePath": "codex-rs/hepta-compact-engine/src/qualified.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_composed_pending_execution_evidence",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-compact-engine/src/qualified_tests.rs"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_compact.rs"
+        }
+      ],
       "sourcePathExists": true,
       "designOperation": "build_qualified_candidate",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "codex-rs/hepta-agentd/src/production_writer_host.rs"
+      ]
     },
     {
       "operation": "prove_compaction",
       "nativeSymbol": "prove_compaction",
       "sourcePath": "codex-rs/hepta-compact-engine/src/qualified.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_composed_pending_execution_evidence",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-compact-engine/src/qualified_tests.rs"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_compact.rs"
+        }
+      ],
       "sourcePathExists": true,
       "designOperation": "prove_compaction",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "codex-rs/hepta-agentd/src/production_writer_host.rs"
+      ]
+    },
+    {
+      "operation": "publish_compaction",
+      "nativeSymbol": "ProductionDurableWriter::publish_compaction",
+      "sourcePath": "codex-rs/hepta-memory/src/production_compact.rs",
+      "state": "owner_store_implemented_product_composed_pending_execution_evidence",
+      "authority": "externally_verified_production_writer_lease",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-compact-engine/src/qualified_tests.rs"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_compact.rs"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "build_checkpoint",
+      "mappingClass": "delegated_owner_store",
+      "delegatedCallees": [
+        "codex-rs/hepta-agentd/src/production_writer_host.rs"
+      ]
+    },
+    {
+      "operation": "load_current_compaction",
+      "nativeSymbol": "ProductionDurableWriter::load_current_compaction",
+      "sourcePath": "codex-rs/hepta-memory/src/production_compact.rs",
+      "state": "owner_store_implemented_product_composed_pending_execution_evidence",
+      "authority": "externally_verified_production_writer_lease",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-compact-engine/src/qualified_tests.rs"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/production_compact.rs"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "reload_checkpoint",
+      "mappingClass": "delegated_owner_store",
+      "delegatedCallees": [
+        "codex-rs/hepta-agentd/src/production_writer_host.rs"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run focused/package/all-target/strict-lint checks on the exact source head and deterministic synthetic merge.",
+    "Retain target-host performance measurements for byte/token budget and publication/reload paths."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
+    "independent semantic review and evaluator trust provisioning",
+    "target-host qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
@@ -78,5 +126,10 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-compact-engine"
-  ]
+  ],
+  "evidencePolicy": {
+    "staticMapSourceBase": "shared repository baseline; not an exact-current-head claim",
+    "exactHeadCommand": "python3 scripts/hepta-implementation-maps.py evidence --output <path>",
+    "exactHeadSchema": "hepta.module-implementation-exact-head-evidence.v1"
+  }
 }
