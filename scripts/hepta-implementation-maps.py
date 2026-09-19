@@ -427,18 +427,20 @@ def verify():
         else:
             commit = source_base["commit"]
             tree = source_base["tree"]
-            try:
-                actual_tree = git("rev-parse", f"{commit}^{{tree}}")
-            except subprocess.CalledProcessError:
-                failures.append(f"{mid}: source base commit does not resolve")
-            else:
-                if actual_tree != tree:
-                    failures.append(f"{mid}: source base commit/tree mismatch")
-                # sourceBase is immutable generation provenance, not the
-                # freshness predicate. Requiring ancestry would make a valid
-                # map fail after squash/rebase merge even when every mapped
-                # source blob is byte-identical. Current source truth is
-                # enforced below by sourceFingerprints.
+            resolved = subprocess.run(
+                ["git", "rev-parse", f"{commit}^{{tree}}"],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            if resolved.returncode == 0 and resolved.stdout.strip() != tree:
+                failures.append(f"{mid}: source base commit/tree mismatch")
+            # sourceBase is immutable generation provenance, not the freshness
+            # predicate. It may become unreachable after squash/rebase plus
+            # source-branch deletion. When resolvable we verify commit/tree
+            # consistency; current source truth is enforced below by the
+            # content-addressed sourceFingerprints.
         if row.get("sourceBaseSemantics") != SOURCE_BASE_SEMANTICS:
             failures.append(f"{mid}: source base semantics")
         if row.get("sourceFingerprintPolicy") != SOURCE_FINGERPRINT_POLICY:
