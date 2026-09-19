@@ -182,11 +182,16 @@ impl CapabilitySnapshotV2 {
         })
     }
 
-    pub(super) fn bound_owner(&self, capability: &str) -> Option<&str> {
+    pub(crate) fn bound_owner(&self, capability: &str) -> Option<&str> {
         self.bindings
             .iter()
             .find(|(id, _)| id.as_str() == capability)
             .map(|(_, binding)| binding.owner_id.as_str())
+    }
+
+    #[must_use]
+    pub const fn objective_digest(&self) -> Digest32 {
+        self.objective_digest
     }
 
     #[must_use]
