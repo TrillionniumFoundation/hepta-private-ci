@@ -225,9 +225,7 @@ fn solve_row_against_lower(row: &[f64], lower: &[Vec<f64>]) -> Result<Vec<f64>, 
     let dimension = row.len();
     let mut original = vec![0.0; dimension];
     for j in (0..dimension).rev() {
-        let tail: f64 = (j + 1..dimension)
-            .map(|i| original[i] * lower[i][j])
-            .sum();
+        let tail: f64 = (j + 1..dimension).map(|i| original[i] * lower[i][j]).sum();
         let diagonal = lower[j][j];
         if !diagonal.is_finite() || diagonal <= 0.0 {
             return Err(ZConversionError::SingularTransform);
