@@ -7,7 +7,7 @@
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
-  "sourceMaturity": "kernel_authenticated_local_resource_grant_digest_pinned_local_driver_aggregate_memory_deadlines_core_reconciliation_and_hosted_product_root",
+  "sourceMaturity": "kernel_authenticated_local_resource_grant_digest_pinned_local_driver_aggregate_memory_deadlines_atomic_hosted_effect_admission_core_reconciliation_and_named_product_root",
   "declaredRoots": [
     "codex-rs/hepta-infer-worker-host"
   ],
@@ -15,7 +15,7 @@
     "codex-rs/hepta-infer-worker-host"
   ],
   "stateOwnerDisposition": "Owns live local-runtime/provider client handles and bounded in-process execution state. Persistent reservation/dispatch/observation facts remain in the canonical inference.control journal; App Server/Core own provider thread/queue truth; artifact/cache owners retain model bytes.",
-  "terminalObserverDisposition": "Hosted execution observes exact provider turn/output/optional-token facts and reconciles a journaled client-message identity through Core without replay. Local execution observes a resident runtime protocol with explicit reserved/observed memory. Missing authoritative usage remains unknown.",
+  "terminalObserverDisposition": "Hosted execution observes exact provider turn/output/optional-token facts after one-shot final-use admission. The named product root resolves signed authority from an independent issuer socket only after exact runtime binding, then local verification/revocation state guards synchronous bounded queue admission. Reopen reconciles the journaled client-message identity through Core without replay; Missing/Cancelled proves no admission, while missing authoritative usage remains unknown. Local execution observes a resident runtime protocol with explicit reserved/observed memory.",
   "operations": [
     {
       "designOperation": "load_model",
@@ -121,7 +121,7 @@
           "command": "just test -p codex-hepta-inferd --lib"
         }
       ],
-      "sourceSemantics": "Reserves through durable inference.control, claims independently signed final-use authority only for a fresh request, records exact Core client-message/payload dispatch identity, invokes the private Agent/App Server, and settles matching observations. Reopen uses Core ReconcileOnly to recover the original turn or prove no durable admission; recovered terminal turns await exact-turn persisted usage replay under the RPC bound and never submit a replacement turn.",
+      "sourceSemantics": "Reserves through durable inference.control with quota/resource/token/economic holds. A fresh request freezes exact provider/context/TurnStartParams, resolves a signed grant for only that binding from the independent issuer seam, consumes the one-shot token while durable dispatch and synchronous bounded queue admission cross one revocation fence, then settles matching observations. Reopen uses Core ReconcileOnly to recover the original turn or prove NoAdmission and never submits a replacement turn.",
       "operation": "run",
       "nativeSymbol": "pub async fn run(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
@@ -188,7 +188,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "hosted_source_product_host_composed_local_model_product_caller_not_established_deployment_unproved",
+  "productCallerState": "hosted_source_product_host_composed_with_external_exact_binding_issuer_activation_pending_local_model_product_caller_not_established",
   "productionWriterState": "canonical_durable_inference_control_reused",
   "owner": "inference-platform",
   "deputy": "security-authority",
