@@ -383,6 +383,7 @@ impl MatrixDurableStore {
             .commit()
             .await
             .map_err(|_| MatrixDurableError::Unavailable)?;
+        self.compact_dispatch_observations(txn_id, observed_at_ms).await?;
         Ok(true)
     }
 
@@ -459,6 +460,7 @@ impl MatrixDurableStore {
             .commit()
             .await
             .map_err(|_| MatrixDurableError::Unavailable)?;
+        self.compact_dispatch_observations(txn_id, observed_at_ms).await?;
         Ok(true)
     }
 
@@ -540,6 +542,7 @@ impl MatrixDurableStore {
             .commit()
             .await
             .map_err(|_| MatrixDurableError::Unavailable)?;
+        self.compact_dispatch_observations(&txn_id, observed_at_ms).await?;
         Ok(true)
     }
 
