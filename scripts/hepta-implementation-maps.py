@@ -18,10 +18,145 @@ from hepta_module_source_roots import resolve_source_roots
 
 ROOT = Path(__file__).resolve().parents[1]
 
+STATUS_BEGIN = "<!-- BEGIN GENERATED IMPLEMENTATION STATUS -->"
+STATUS_END = "<!-- END GENERATED IMPLEMENTATION STATUS -->"
+PLASTICITY_CURRENT_STATE = (
+    ROOT / "docs/modules/learning.plasticity/CURRENT_STATE.json"
+)
+
+# A committed file cannot literally contain the SHA/tree of the commit that
+# contains that file: changing the file changes the tree and therefore the commit.
+# Maps therefore bind symbolically to the exact verification HEAD. `verify()`
+# resolves this binding to `git rev-parse HEAD` / `HEAD^{tree}` and rejects any
+# stale literal source base.
+VERIFICATION_SOURCE_BASE = {"commit": "@HEAD", "tree": "@HEAD^{tree}"}
+
+
+def plasticity_status_block(row: dict) -> str:
+    lines = [
+        STATUS_BEGIN,
+        "## Generated implementation status",
+        "",
+        "This block is generated only from `IMPLEMENTATION_MAP.json`. Run",
+        "`python3 scripts/hepta-implementation-maps.py sync-plasticity-status` after",
+        "changing the map. Hand-written sections below explain semantics but do not",
+        "override these machine status facts.",
+        "",
+        f"- Product caller: `{row['productCallerState']}`",
+        f"- Production writer: `{row['productionWriterState']}`",
+        f"- Production implementation: `{str(bool(row['productionImplementation'])).lower()}`",
+        f"- Product execution proved: `{str(bool(row['claimBoundary']['productExecutionProved'])).lower()}`",
+        f"- Independent acceptance: `{str(bool(row['claimBoundary']['independentAcceptance'])).lower()}`",
+        f"- Activation: `{str(bool(row['claimBoundary']['activation'])).lower()}`",
+        f"- Release: `{str(bool(row['claimBoundary']['release'])).lower()}`",
+        "",
+        "| Operation | State | Source | Tests |",
+        "| --- | --- | --- | ---: |",
+    ]
+    for op in row["operations"]:
+        lines.append(
+            f"| `{op['operation']}` | `{op['state']}` | "
+            f"`{op.get('sourcePath') or '-'}` | {len(op.get('tests') or [])} |"
+        )
+    lines.extend(["", "### Repository-controlled gaps", ""])
+    lines.extend(f"- {gap}" for gap in row.get("repositoryControlledGaps", []))
+    lines.extend(["", "### External evidence gates", ""])
+    lines.extend(f"- {gate}" for gate in row.get("externalEvidenceGates", []))
+    lines.extend(["", STATUS_END])
+    return "\n".join(lines)
+
+
+def plasticity_current_state_projection(row: dict) -> dict:
+    return {
+        "schema": "hepta.learning-plasticity-current-state.v1",
+        "schemaVersion": 1,
+        "module": row["module"],
+        "generatedFrom": "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
+        "sourceBase": row["sourceBase"],
+        "current": {
+            "sourceRootPresent": bool(row["sourceRootPresent"]),
+            "productionImplementation": bool(row["productionImplementation"]),
+            "productCallerState": row["productCallerState"],
+            "productionWriterState": row["productionWriterState"],
+            "claimBoundary": row["claimBoundary"],
+        },
+        "operations": [
+            {
+                "operation": op["operation"],
+                "state": op["state"],
+                "sourcePath": op.get("sourcePath"),
+                "tests": op.get("tests") or [],
+            }
+            for op in row["operations"]
+        ],
+        "remainingToTarget": {
+            "repositoryControlledGaps": row.get("repositoryControlledGaps", []),
+            "externalEvidenceGates": row.get("externalEvidenceGates", []),
+        },
+    }
+
+
+def sync_plasticity_status() -> None:
+    map_path = ROOT / "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json"
+    doc_path = ROOT / "docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md"
+    row = json.loads(map_path.read_text(encoding="utf-8"))
+    expected = plasticity_status_block(row)
+    text = doc_path.read_text(encoding="utf-8")
+    pattern = re.compile(re.escape(STATUS_BEGIN) + r".*?" + re.escape(STATUS_END), re.S)
+    if pattern.search(text):
+        text = pattern.sub(expected, text, count=1)
+    else:
+        marker = "\n## Status matrix\n"
+        if marker not in text:
+            raise SystemExit("learning.plasticity current implementation is missing Status matrix")
+        text = text.replace(marker, "\n" + expected + "\n" + marker, 1)
+    doc_path.write_text(text, encoding="utf-8")
+    PLASTICITY_CURRENT_STATE.write_text(
+        json.dumps(
+            plasticity_current_state_projection(row),
+            indent=2,
+            ensure_ascii=False,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
+def plasticity_status_matches() -> bool:
+    row = load("docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json")
+    text = (ROOT / "docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md").read_text(
+        encoding="utf-8"
+    )
+    expected = plasticity_status_block(row)
+    pattern = re.compile(re.escape(STATUS_BEGIN) + r".*?" + re.escape(STATUS_END), re.S)
+    match = pattern.search(text)
+    if not (match and match.group(0) == expected):
+        return False
+    if not PLASTICITY_CURRENT_STATE.is_file():
+        return False
+    try:
+        current = json.loads(PLASTICITY_CURRENT_STATE.read_text(encoding="utf-8"))
+    except Exception:
+        return False
+    return current == plasticity_current_state_projection(row)
+
+
 
 def current_source_base() -> dict[str, str]:
-    """Return the immutable source identity used by generated maps."""
+    """Return the exact commit/tree being verified."""
     return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
+
+
+def verification_source_base() -> dict[str, str]:
+    """Return the stable committed binding that resolves to the verification HEAD."""
+    return dict(VERIFICATION_SOURCE_BASE)
+
+
+def resolve_source_base(source_base: dict, verification_head: dict[str, str]) -> dict:
+    """Resolve a committed source binding against the exact candidate under test."""
+    if source_base == VERIFICATION_SOURCE_BASE:
+        return dict(verification_head)
+    return dict(source_base)
 
 
 def load(rel: str):
@@ -181,7 +316,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
-            "sourceBase": row.get("sourceBase") or source_base,
+            "sourceBase": source_base,
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -241,7 +376,7 @@ def migrate():
     modules = load("docs/modules/MODULES.json")["modules"]
     by_id = {m["id"]: m for m in modules}
     lanes = lane_by_module()
-    source_base = current_source_base()
+    source_base = verification_source_base()
     changed = []
     for path in sorted((ROOT / "docs/modules").glob("*/IMPLEMENTATION_MAP.json")):
         row = json.loads(path.read_text(encoding="utf-8"))
@@ -266,10 +401,7 @@ def migrate():
 def generate():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
-    source_base = {
-        "commit": git("rev-parse", "HEAD"),
-        "tree": git("rev-parse", "HEAD^{tree}"),
-    }
+    source_base = verification_source_base()
     written = []
     for module in modules:
         path = ROOT / f"docs/modules/{module['id']}/IMPLEMENTATION_MAP.json"
@@ -283,11 +415,38 @@ def generate():
     print(json.dumps({"generated": len(written), "maps": written}, ensure_ascii=False))
 
 
+def verify_plasticity_test_references(row: dict, failures: list[str]) -> None:
+    for op in row.get("operations", []):
+        tests = op.get("tests")
+        if not isinstance(tests, list) or not tests:
+            failures.append(
+                f"learning.plasticity: {op.get('operation', '<unknown>')} has no focused test identity"
+            )
+            continue
+        for test in tests:
+            if not isinstance(test, str) or ".rs::" not in test:
+                failures.append(f"learning.plasticity: invalid test identity {test!r}")
+                continue
+            source, test_path = test.split(".rs::", 1)
+            source += ".rs"
+            path = ROOT / source
+            if not path.is_file():
+                failures.append(f"learning.plasticity: missing test source {source}")
+                continue
+            leaf = test_path.rsplit("::", 1)[-1]
+            source_text = path.read_text(encoding="utf-8")
+            if re.search(rf"\bfn\s+{re.escape(leaf)}\s*\(", source_text) is None:
+                failures.append(
+                    f"learning.plasticity: test identity {test} does not name a function"
+                )
+
+
 def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     failures = []
     source_bases = set()
+    verification_head = current_source_base()
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -317,6 +476,16 @@ def verify():
             failures.append(f"{mid}: source base")
         else:
             source_bases.add((source_base["commit"], source_base["tree"]))
+            resolved_source_base = resolve_source_base(source_base, verification_head)
+            if resolved_source_base != verification_head:
+                failures.append(
+                    f"{mid}: source base is stale; resolved {resolved_source_base} "
+                    f"!= verification HEAD {verification_head}"
+                )
+            if source_base != VERIFICATION_SOURCE_BASE:
+                failures.append(
+                    f"{mid}: source base must use verification-time HEAD binding"
+                )
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -345,8 +514,14 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
+        if mid == "learning.plasticity":
+            verify_plasticity_test_references(row, failures)
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+    if not plasticity_status_matches():
+        failures.append(
+            "learning.plasticity: generated CURRENT_IMPLEMENTATION/CURRENT_STATE differs from IMPLEMENTATION_MAP"
+        )
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
@@ -356,6 +531,7 @@ def verify():
                 "modules": len(modules),
                 "maps": len(modules),
                 "productionImplementationProved": False,
+                "verifiedSourceBase": verification_head,
             },
             sort_keys=True,
         )
@@ -364,9 +540,16 @@ def verify():
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=["generate", "migrate", "verify"])
+    parser.add_argument(
+        "command", choices=["generate", "migrate", "verify", "sync-plasticity-status"]
+    )
     args = parser.parse_args()
-    {"generate": generate, "migrate": migrate, "verify": verify}[args.command]()
+    {
+        "generate": generate,
+        "migrate": migrate,
+        "verify": verify,
+        "sync-plasticity-status": sync_plasticity_status,
+    }[args.command]()
 
 
 if __name__ == "__main__":

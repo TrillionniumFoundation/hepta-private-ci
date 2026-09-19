@@ -1,0 +1,340 @@
+//! Typed parameter mutation policy for governed parameter plasticity.
+//!
+//! The policy is an explicit allowlist/protected-surface boundary. It is an
+//! executable projection of the canonical control.engineering-owned
+//! MutationGrammarManifestV1 and therefore binds that manifest's semantic digest.
+//! A digest alone is never treated as authorization: every generated signal must
+//! match one typed rule bound to the exact selected artifact and proposal window.
+
+use std::collections::BTreeSet;
+use std::error::Error as StdError;
+use std::fmt;
+
+use codex_hepta_types::{Digest32, FixedQ32, StableId};
+
+use crate::ProposalWindowV2;
+
+const MAX_MUTATION_RULES_V1: usize = 4_096;
+
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum ParameterMutationSurfaceV1 {
+    LearnableParameter,
+    Authority,
+    Evaluator,
+    Deletion,
+    RuntimeTopology,
+    Credential,
+}
+
+impl ParameterMutationSurfaceV1 {
+    const fn tag(self) -> u8 {
+        match self {
+            Self::LearnableParameter => 0,
+            Self::Authority => 1,
+            Self::Evaluator => 2,
+            Self::Deletion => 3,
+            Self::RuntimeTopology => 4,
+            Self::Credential => 5,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct ParameterMutationRuleV1 {
+    pub parameter_id: StableId,
+    pub layer_id: StableId,
+    pub surface: ParameterMutationSurfaceV1,
+    pub minimum_delta: FixedQ32,
+    pub maximum_delta: FixedQ32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ParameterMutationPolicyV1 {
+    pub policy_id: StableId,
+    /// Semantic digest of the canonical control.engineering-owned
+    /// MutationGrammarManifestV1 used to derive this parameter projection.
+    pub mutation_grammar_digest: Digest32,
+    pub selected_artifact_digest: Digest32,
+    pub window: ProposalWindowV2,
+    pub rules: Vec<ParameterMutationRuleV1>,
+    pub policy_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum ParameterMutationPolicyErrorV1 {
+    EmptyMutationGrammar,
+    EmptyArtifact,
+    EmptyWindow,
+    RuleLimit,
+    DuplicateParameter(String),
+    InvertedBounds(String),
+    DigestMismatch,
+    ArtifactMismatch,
+    WindowMismatch,
+    MissingRule(String),
+    LayerMismatch(String),
+    ProtectedSurface(String),
+    BoundsEscape(String),
+    Arithmetic,
+}
+
+impl fmt::Display for ParameterMutationPolicyErrorV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
+    }
+}
+impl StdError for ParameterMutationPolicyErrorV1 {}
+
+pub fn build_parameter_mutation_policy_v1(
+    policy_id: StableId,
+    mutation_grammar_digest: Digest32,
+    selected_artifact_digest: Digest32,
+    window: ProposalWindowV2,
+    mut rules: Vec<ParameterMutationRuleV1>,
+) -> Result<ParameterMutationPolicyV1, ParameterMutationPolicyErrorV1> {
+    if mutation_grammar_digest.is_zero() {
+        return Err(ParameterMutationPolicyErrorV1::EmptyMutationGrammar);
+    }
+    validate_context(selected_artifact_digest, &window, &mut rules)?;
+    let mut policy = ParameterMutationPolicyV1 {
+        policy_id,
+        mutation_grammar_digest,
+        selected_artifact_digest,
+        window,
+        rules,
+        policy_digest: Digest32::ZERO,
+    };
+    policy.policy_digest = digest_policy(&policy)?;
+    Ok(policy)
+}
+
+pub fn verify_parameter_mutation_policy_v1(
+    policy: &ParameterMutationPolicyV1,
+) -> Result<(), ParameterMutationPolicyErrorV1> {
+    if policy.mutation_grammar_digest.is_zero() {
+        return Err(ParameterMutationPolicyErrorV1::EmptyMutationGrammar);
+    }
+    let mut rules = policy.rules.clone();
+    validate_context(policy.selected_artifact_digest, &policy.window, &mut rules)?;
+    if rules != policy.rules || policy.policy_digest.is_zero() {
+        return Err(ParameterMutationPolicyErrorV1::DigestMismatch);
+    }
+    if digest_policy(policy)? != policy.policy_digest {
+        return Err(ParameterMutationPolicyErrorV1::DigestMismatch);
+    }
+    Ok(())
+}
+
+pub fn authorize_parameter_mutation_v1(
+    policy: &ParameterMutationPolicyV1,
+    selected_artifact_digest: Digest32,
+    window: &ProposalWindowV2,
+    layer_id: &StableId,
+    parameter_id: &StableId,
+    lower_bound: FixedQ32,
+    upper_bound: FixedQ32,
+) -> Result<(), ParameterMutationPolicyErrorV1> {
+    verify_parameter_mutation_policy_v1(policy)?;
+    if policy.selected_artifact_digest != selected_artifact_digest {
+        return Err(ParameterMutationPolicyErrorV1::ArtifactMismatch);
+    }
+    if &policy.window != window {
+        return Err(ParameterMutationPolicyErrorV1::WindowMismatch);
+    }
+    let rule = policy
+        .rules
+        .binary_search_by(|rule| rule.parameter_id.cmp(parameter_id))
+        .ok()
+        .and_then(|index| policy.rules.get(index))
+        .ok_or_else(|| ParameterMutationPolicyErrorV1::MissingRule(parameter_id.to_string()))?;
+    if &rule.layer_id != layer_id {
+        return Err(ParameterMutationPolicyErrorV1::LayerMismatch(
+            parameter_id.to_string(),
+        ));
+    }
+    if rule.surface != ParameterMutationSurfaceV1::LearnableParameter {
+        return Err(ParameterMutationPolicyErrorV1::ProtectedSurface(
+            parameter_id.to_string(),
+        ));
+    }
+    if lower_bound < rule.minimum_delta || upper_bound > rule.maximum_delta {
+        return Err(ParameterMutationPolicyErrorV1::BoundsEscape(
+            parameter_id.to_string(),
+        ));
+    }
+    Ok(())
+}
+
+fn validate_context(
+    selected_artifact_digest: Digest32,
+    window: &ProposalWindowV2,
+    rules: &mut Vec<ParameterMutationRuleV1>,
+) -> Result<(), ParameterMutationPolicyErrorV1> {
+    if selected_artifact_digest.is_zero() {
+        return Err(ParameterMutationPolicyErrorV1::EmptyArtifact);
+    }
+    if window.window_digest.is_zero() {
+        return Err(ParameterMutationPolicyErrorV1::EmptyWindow);
+    }
+    if rules.len() > MAX_MUTATION_RULES_V1 {
+        return Err(ParameterMutationPolicyErrorV1::RuleLimit);
+    }
+    rules.sort_by(|left, right| left.parameter_id.cmp(&right.parameter_id));
+    let mut seen = BTreeSet::new();
+    for rule in rules.iter() {
+        if !seen.insert(rule.parameter_id.clone()) {
+            return Err(ParameterMutationPolicyErrorV1::DuplicateParameter(
+                rule.parameter_id.to_string(),
+            ));
+        }
+        if rule.minimum_delta > rule.maximum_delta {
+            return Err(ParameterMutationPolicyErrorV1::InvertedBounds(
+                rule.parameter_id.to_string(),
+            ));
+        }
+    }
+    Ok(())
+}
+
+fn digest_policy(
+    policy: &ParameterMutationPolicyV1,
+) -> Result<Digest32, ParameterMutationPolicyErrorV1> {
+    let mut bytes = b"hepta.plasticity.parameter-mutation-policy.v1\0".to_vec();
+    push_id(&mut bytes, &policy.policy_id)?;
+    bytes.extend_from_slice(policy.mutation_grammar_digest.as_array());
+    bytes.extend_from_slice(policy.selected_artifact_digest.as_array());
+    push_id(&mut bytes, &policy.window.window_id)?;
+    bytes.extend_from_slice(policy.window.window_digest.as_array());
+    push_len(&mut bytes, policy.rules.len())?;
+    for rule in &policy.rules {
+        push_id(&mut bytes, &rule.parameter_id)?;
+        push_id(&mut bytes, &rule.layer_id)?;
+        bytes.push(rule.surface.tag());
+        bytes.extend_from_slice(&rule.minimum_delta.raw().to_be_bytes());
+        bytes.extend_from_slice(&rule.maximum_delta.raw().to_be_bytes());
+    }
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), ParameterMutationPolicyErrorV1> {
+    let raw = value.as_str().as_bytes();
+    let length =
+        u32::try_from(raw.len()).map_err(|_| ParameterMutationPolicyErrorV1::Arithmetic)?;
+    bytes.extend_from_slice(&length.to_be_bytes());
+    bytes.extend_from_slice(raw);
+    Ok(())
+}
+
+fn push_len(bytes: &mut Vec<u8>, value: usize) -> Result<(), ParameterMutationPolicyErrorV1> {
+    let value = u32::try_from(value).map_err(|_| ParameterMutationPolicyErrorV1::Arithmetic)?;
+    bytes.extend_from_slice(&value.to_be_bytes());
+    Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn id(value: &str) -> StableId {
+        StableId::new(value).expect("valid id")
+    }
+    fn digest(value: &[u8]) -> Digest32 {
+        Digest32::of_bytes(value)
+    }
+    fn window() -> ProposalWindowV2 {
+        ProposalWindowV2 {
+            window_id: id("window:policy"),
+            window_digest: digest(b"window"),
+        }
+    }
+    fn rule(surface: ParameterMutationSurfaceV1) -> ParameterMutationRuleV1 {
+        ParameterMutationRuleV1 {
+            parameter_id: id("parameter:1"),
+            layer_id: id("layer:1"),
+            surface,
+            minimum_delta: FixedQ32::from_raw(-100),
+            maximum_delta: FixedQ32::from_raw(100),
+        }
+    }
+
+    #[test]
+    fn learnable_rule_authorizes_only_exact_context_and_bounds() {
+        let artifact = digest(b"artifact");
+        let policy = build_parameter_mutation_policy_v1(
+            id("policy:1"),
+            digest(b"mutation-grammar"),
+            artifact,
+            window(),
+            vec![rule(ParameterMutationSurfaceV1::LearnableParameter)],
+        )
+        .expect("policy");
+        authorize_parameter_mutation_v1(
+            &policy,
+            artifact,
+            &window(),
+            &id("layer:1"),
+            &id("parameter:1"),
+            FixedQ32::from_raw(-10),
+            FixedQ32::from_raw(10),
+        )
+        .expect("authorized");
+    }
+
+    #[test]
+    fn canonical_mutation_grammar_digest_is_mandatory_and_bound() {
+        let artifact = digest(b"artifact");
+        assert_eq!(
+            build_parameter_mutation_policy_v1(
+                id("policy:missing-grammar"),
+                Digest32::ZERO,
+                artifact,
+                window(),
+                vec![rule(ParameterMutationSurfaceV1::LearnableParameter)],
+            ),
+            Err(ParameterMutationPolicyErrorV1::EmptyMutationGrammar)
+        );
+
+        let first = build_parameter_mutation_policy_v1(
+            id("policy:grammar-bound"),
+            digest(b"mutation-grammar:a"),
+            artifact,
+            window(),
+            vec![rule(ParameterMutationSurfaceV1::LearnableParameter)],
+        )
+        .expect("policy");
+        let second = build_parameter_mutation_policy_v1(
+            id("policy:grammar-bound"),
+            digest(b"mutation-grammar:b"),
+            artifact,
+            window(),
+            vec![rule(ParameterMutationSurfaceV1::LearnableParameter)],
+        )
+        .expect("policy");
+        assert_ne!(first.policy_digest, second.policy_digest);
+    }
+
+    #[test]
+    fn protected_surface_fails_closed() {
+        let artifact = digest(b"artifact");
+        let policy = build_parameter_mutation_policy_v1(
+            id("policy:1"),
+            digest(b"mutation-grammar"),
+            artifact,
+            window(),
+            vec![rule(ParameterMutationSurfaceV1::Authority)],
+        )
+        .expect("policy");
+        assert!(matches!(
+            authorize_parameter_mutation_v1(
+                &policy,
+                artifact,
+                &window(),
+                &id("layer:1"),
+                &id("parameter:1"),
+                FixedQ32::ZERO,
+                FixedQ32::ZERO,
+            ),
+            Err(ParameterMutationPolicyErrorV1::ProtectedSurface(_))
+        ));
+    }
+}

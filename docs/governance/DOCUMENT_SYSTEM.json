@@ -210,6 +210,10 @@
     "docs/cns/STATUS.md": {
       "generator": "python3 scripts/hepta-cns.py generate-status",
       "handEditingAllowed": false
+    },
+    "docs/modules/learning.plasticity/CURRENT_STATE.json": {
+      "generator": "python3 scripts/hepta-implementation-maps.py sync-plasticity-status",
+      "handEditingAllowed": false
     }
   },
   "forbiddenLegacyReferenceRules": [
