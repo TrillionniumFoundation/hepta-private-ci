@@ -6,7 +6,9 @@
 
 use std::collections::BTreeMap;
 
+use codex_hepta_cognitive_read::AuthoritativeCognitiveSnapshotProvider;
 use codex_hepta_cognitive_read::AuthoritativeSnapshotV1;
+use codex_hepta_cognitive_read::SnapshotAcquisitionRequestV1;
 use codex_hepta_cognitive_read::ReadRequestV2;
 use codex_hepta_cognitive_read::ReadResultV2;
 use codex_hepta_cognitive_read::SnapshotProviderError;
@@ -55,6 +57,33 @@ pub struct DurableCognitiveSnapshot {
     frontiers: CognitiveOwnerFrontiers,
     snapshot: CognitiveSnapshot,
     observed_at_unix_seconds: i64,
+}
+
+
+/// Production adapter for the authoritative cognitive-read port.
+///
+/// The provider owns one already-acquired SQLite cut. It cannot refresh or
+/// manufacture generations during a read; callers must explicitly revalidate
+/// the envelope against the owner and the current host authority before use.
+#[derive(Clone, Debug)]
+pub struct LaneCAuthoritativeSnapshotProvider {
+    envelope: AuthoritativeSnapshotV1,
+}
+
+impl LaneCAuthoritativeSnapshotProvider {
+    #[must_use]
+    pub const fn envelope(&self) -> &AuthoritativeSnapshotV1 {
+        &self.envelope
+    }
+}
+
+impl AuthoritativeCognitiveSnapshotProvider for LaneCAuthoritativeSnapshotProvider {
+    fn acquire(
+        &self,
+        _request: &SnapshotAcquisitionRequestV1,
+    ) -> Result<AuthoritativeSnapshotV1, SnapshotProviderError> {
+        Ok(self.envelope.clone())
+    }
 }
 
 impl DurableCognitiveSnapshot {
@@ -133,6 +162,20 @@ impl DurableCognitiveSnapshot {
             acquired_at_unix_ms,
             lease_expires_unix_ms,
         )
+    }
+
+    /// Convert this immutable owner cut into the production authoritative
+    /// provider boundary. Acquisition remains explicit and owner-controlled;
+    /// the provider itself has no store handle or write authority.
+    pub fn authoritative_provider(
+        &self,
+        vector: LaneCGenerationVectorV1,
+        acquired_at_unix_ms: u64,
+        lease_expires_unix_ms: u64,
+    ) -> Result<LaneCAuthoritativeSnapshotProvider, SnapshotProviderError> {
+        Ok(LaneCAuthoritativeSnapshotProvider {
+            envelope: self.bind_context(vector, acquired_at_unix_ms, lease_expires_unix_ms)?,
+        })
     }
 }
 
@@ -393,6 +436,44 @@ impl CognitiveStore {
         {
             return Err(CognitiveStoreError::Conflict(
                 "cognitive snapshot changed or rolled back".to_string(),
+            ));
+        }
+        Ok(current)
+    }
+
+    /// Revalidate the complete owner-local authoritative binding immediately
+    /// before context consumption. This checks lease/deadline/scope/purpose and
+    /// authority epoch through the envelope, then reacquires the canonical
+    /// SQLite cut and requires every cognitive-owned frontier, generation and
+    /// snapshot digest to remain exact. Host-owned authority must additionally
+    /// be fenced by the caller before and after this async operation.
+    pub async fn revalidate_lane_c_authoritative_snapshot(
+        &self,
+        access: &CognitiveAccess,
+        scope: &CognitiveScope,
+        expected: &AuthoritativeSnapshotV1,
+        request: &SnapshotAcquisitionRequestV1,
+        now_unix_ms: u64,
+    ) -> Result<DurableCognitiveSnapshot, CognitiveStoreError> {
+        expected
+            .validate_for_request(now_unix_ms, request)
+            .map_err(|error| CognitiveStoreError::Conflict(format!(
+                "authoritative cognitive snapshot invalid: {error}"
+            )))?;
+        let now_unix_seconds = i64::try_from(now_unix_ms / 1000)
+            .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
+        let current = self.lane_c_snapshot(access, scope, now_unix_seconds).await?;
+        let vector = &expected.snapshot_key().vector;
+        if current.scope_id != vector.scope_id
+            || current.frontiers.memory != vector.memory_ledger_frontier
+            || current.frontiers.source != vector.source_ledger_frontier
+            || current.frontiers.tombstone != vector.tombstone_frontier
+            || current.frontiers.knowledge_facts != vector.knowledge_fact_frontier
+            || current.frontiers.knowledge_graph != vector.knowledge_graph_generation
+            || current.snapshot.snapshot_digest != expected.snapshot().snapshot_digest
+        {
+            return Err(CognitiveStoreError::Conflict(
+                "authoritative cognitive generation changed, expired, or was reclaimed".to_string(),
             ));
         }
         Ok(current)
