@@ -303,7 +303,11 @@ impl ModelDriver for LocalProcessDriver {
         &mut self,
         manifest: &ModelManifest,
         grant: &ResourceGrant,
+        maximum_memory_bytes: u64,
     ) -> Result<DriverModelHandle, Error> {
+        if maximum_memory_bytes == 0 || maximum_memory_bytes > grant.maximum_memory_bytes {
+            return Err(Error::ModelCapacity);
+        }
         let artifacts = self.verify_manifest_artifacts(manifest)?;
         let mut process = self.spawn_runtime()?;
         let request = json!({
@@ -332,7 +336,8 @@ impl ModelDriver for LocalProcessDriver {
                 "grant_id": grant.grant_id,
                 "authority_epoch": grant.authority_epoch,
                 "generation": grant.generation,
-                "maximum_memory_bytes": grant.maximum_memory_bytes,
+                "maximum_memory_bytes": maximum_memory_bytes,
+                "authority_maximum_memory_bytes": grant.maximum_memory_bytes,
                 "semantic_digest": grant.semantic_digest,
             }
         });
@@ -362,7 +367,7 @@ impl ModelDriver for LocalProcessDriver {
         let reserved_memory_bytes = u64_field(&response, "reserved_memory_bytes")?;
         let observed_memory_bytes = u64_field(&response, "observed_memory_bytes")?;
         if reserved_memory_bytes == 0
-            || reserved_memory_bytes > grant.maximum_memory_bytes
+            || reserved_memory_bytes > maximum_memory_bytes
             || observed_memory_bytes > reserved_memory_bytes
         {
             process.terminate();
