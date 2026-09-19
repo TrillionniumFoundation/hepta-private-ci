@@ -7,6 +7,7 @@ const MAX_ACTIVE_RUNS: usize = 256;
 const MAX_RETAINED_RUNS: usize = 1_024;
 const MAX_CANCELLATION_REASON_BYTES: usize = 512;
 const MAX_CANCELLATION_ACK_TIMEOUT_MS: u64 = 60_000;
+const MIN_RUN_RECOVERY_SCHEMA_VERSION: u32 = 1;
 pub const RUN_RECOVERY_SCHEMA_VERSION: u32 = 2;
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -181,7 +182,8 @@ impl AgentRunCoordinator {
         now_ms: u64,
     ) -> Result<Self, AgentRunError> {
         validate_composition(&composition)?;
-        if recovery.schema_version != RUN_RECOVERY_SCHEMA_VERSION
+        if !(MIN_RUN_RECOVERY_SCHEMA_VERSION..=RUN_RECOVERY_SCHEMA_VERSION)
+            .contains(&recovery.schema_version)
             || recovery.records.len() > MAX_RETAINED_RUNS
             || recovery.composition.agent_id != composition.agent_id
             || recovery.composition.configuration_digest != composition.configuration_digest
@@ -191,13 +193,17 @@ impl AgentRunCoordinator {
         {
             return Err(AgentRunError::InvalidRecoveryState);
         }
+        let recovery_schema_version = recovery.schema_version;
+        if recovery_schema_version == 1 && recovery.composition.cancellation_ack_timeout_ms != 0 {
+            return Err(AgentRunError::InvalidRecoveryState);
+        }
         let generation_changed = recovery.composition.supervisor_generation
             != composition.supervisor_generation
             || recovery.composition.agentd_generation != composition.agentd_generation;
 
         let mut runs = BTreeMap::new();
         for mut record in recovery.records {
-            validate_recovery_record(&record)?;
+            validate_recovery_record(&record, recovery_schema_version)?;
             if runs.contains_key(&record.snapshot.run_id) {
                 return Err(AgentRunError::InvalidRecoveryState);
             }
@@ -639,7 +645,10 @@ fn validate_attachment(value: &ContextAttachment) -> Result<(), AgentRunError> {
     Ok(())
 }
 
-fn validate_recovery_record(record: &RunRecord) -> Result<(), AgentRunError> {
+fn validate_recovery_record(
+    record: &RunRecord,
+    recovery_schema_version: u32,
+) -> Result<(), AgentRunError> {
     validate_snapshot_shape(&record.snapshot)?;
     if record.revision == 0 {
         return Err(AgentRunError::InvalidRecoveryState);
@@ -647,8 +656,12 @@ fn validate_recovery_record(record: &RunRecord) -> Result<(), AgentRunError> {
     if let Some(reason) = record.cancellation_reason.as_deref() {
         validate_cancellation_reason(reason)?;
     }
-    if record.phase == RunPhase::Cancelling {
-        if record.cancellation_ack_deadline_ms.is_none() {
+    if recovery_schema_version >= 2 {
+        if record.phase == RunPhase::Cancelling {
+            if record.cancellation_ack_deadline_ms.is_none() {
+                return Err(AgentRunError::InvalidRecoveryState);
+            }
+        } else if record.cancellation_ack_deadline_ms.is_some() {
             return Err(AgentRunError::InvalidRecoveryState);
         }
     } else if record.cancellation_ack_deadline_ms.is_some() {
