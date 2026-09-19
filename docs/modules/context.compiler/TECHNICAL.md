@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-context-compiler/src/lib.rs](../../../codex-rs/hepta-context-compiler/src/lib.rs); observed identifiers include `CompilationRequest`, `ContextCompilationReceipt`, `CompilationRequirementsV1`, `compile`, `compile_candidate_bound`, `compile_with_requirements`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/context.compiler.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-context-compiler/src/lib.rs](../../../codex-rs/hepta-context-compiler/src/lib.rs). V1 compatibility surfaces include `CompilationRequest`, `ContextCompilationReceipt`, `CompilationRequirementsV1`, `compile`, `compile_candidate_bound` and `compile_with_requirements`. The normative verified V2 surface is implemented in [src/v2.rs](../../../codex-rs/hepta-context-compiler/src/v2.rs) and includes `verify_admission_snapshot_v2`, `verify_admission_v2`, `compile_v2`, `record_serialization`, `build_attachment`, `deliver_context_v2`, typed admission snapshots/evidence, exact-tokenizer and serializer adapters, and transport-bound delivery receipts. Source presence still does not prove product composition, independent qualification or provider execution. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/context.compiler.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md).
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -76,9 +76,15 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
+- `admission record/snapshot verifier boundary`
 - `input normalizer`
 - `constraint validator`
 - `deterministic compiler`
+- `mandatory-group provenance binder`
+- `selected-byte realization validator`
+- `profile-bound serializer and exact tokenizer boundary`
+- `attachment revocation revalidator`
+- `transport invocation and terminal delivery receipt emitter`
 - `digest and receipt emitter`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
@@ -87,11 +93,29 @@ Adapters translate one registered contract, verify final payload and grant immed
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
+### Normative verified V2 execution path
+
+The V2 source path is deliberately stronger than a digest-only receipt chain:
+
+1. `ContextAdmissionSnapshotV2` is authenticated by a `ContextAdmissionVerifierV2`, producing a non-forgeable-by-struct-literal `VerifiedAdmissionSnapshotV2`.
+2. Every candidate, including evidence, carries `VerifiedAdmissionV2` bound to item id, role, content/source/generation digests, verifier identity, expiry and the snapshot/revocation epoch at which it was verified. A trusted instruction is not represented by a caller-supplied admission digest.
+3. `TokenizationReceiptV2::from_exact_bytes` invokes an `ExactTokenizerV2` over actual candidate bytes and binds the tokenizer identity from the exact model profile.
+4. `compile_v2` requires one admission-verifier digest for the request, preserves non-tradable trusted/schema floors, canonicalizes mandatory groups and includes `mandatory_groups_digest` in the compilation receipt.
+5. `record_serialization` consumes the actual selected item bytes, verifies every byte sequence against the selected content digest, invokes the profile-bound serializer, hashes the resulting final payload and then invokes the exact tokenizer over those final payload bytes. Final framing/tool/template overhead therefore counts against the real token budget.
+6. `build_attachment` requires a freshly verified admission snapshot and rechecks every selected admission for verifier identity, monotonic snapshot/epoch, expiry and revocation before attachment.
+7. `deliver_context_v2` revalidates again immediately before send, passes the exact serialized payload bytes to a `ContextTransportV2`, requires the transport to report the digest of the bytes it transmitted, and emits `ContextDeliveryReceiptV2` binding transport identity, provider request id, acknowledgement digest, terminal disposition and observed time.
+
+The verifier, serializer, tokenizer and transport implementations are explicit trusted adapters. Their digest identities are evidence inputs, not authority grants. A malicious or incorrectly configured adapter is outside the compiler's pure-algorithm proof and must be qualified by the owning integration. V1 APIs remain compatibility source surfaces and do not satisfy this V2 proof chain.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:
 
-- `ContextCompilationReceiptV1`
+- `ContextCompilationReceiptV1` (compatibility surface)
+- `ContextCompilationReceiptV2`
+- `ContextSerializationReceiptV2`
+- `ContextAttachmentV2`
+- `ContextDeliveryReceiptV2`
 - `ModulePort::context.compiler::intelligence.control`
 
 Consumed contracts:
@@ -172,7 +196,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Stateless context compiler, embedded before the physical App Server request. Reserve mandatory groups and reject insufficient budget; preserve exact compiled payload/digest through delivery. The host must revalidate current cognitive and factor revocations at attachment; a successful compilation receipt is not a provider send receipt.
+Stateless context compiler, embedded before the physical App Server request. The verified V2 path reserves mandatory groups, binds their canonical provenance, rejects insufficient candidate or final serialized budgets, validates the exact selected bytes used for realization, tokenizes the actual final payload, revalidates current admission/revocation at attachment and immediately before send, and emits a transport/provider-evidence-bound delivery receipt. A compilation receipt alone is still not a provider send receipt; only the delivery stage invokes a transport adapter, and production qualification must independently establish that adapter's provider semantics.
 
 Current operating and state-format references:
 
@@ -184,8 +208,9 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs](../../../codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs); named case: `omitted_content_is_bound_without_changing_legacy_compilation`.
-- [codex-rs/hepta-context-compiler/src/lib_tests.rs](../../../codex-rs/hepta-context-compiler/src/lib_tests.rs); named case: `evidence_never_becomes_instruction`.
+- [codex-rs/hepta-context-compiler/src/v2_tests.rs](../../../codex-rs/hepta-context-compiler/src/v2_tests.rs); cases cover verifier rejection of otherwise well-formed admission records, role-binding confusion, compile-to-attach revocation TOCTOU, actual realization-byte mismatch, exact final-payload tokenization including framing overhead, mandatory-group provenance binding, transport payload mismatch, and revocation after attachment but before delivery.
+- [codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs](../../../codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs); compatibility case: `omitted_content_is_bound_without_changing_legacy_compilation`.
+- [codex-rs/hepta-context-compiler/src/lib_tests.rs](../../../codex-rs/hepta-context-compiler/src/lib_tests.rs); compatibility case: `evidence_never_becomes_instruction`.
 
 In `codex-rs`, run `just test -p codex-hepta-context-compiler`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/context.compiler.md) separately labels target acceptance designs.
 
@@ -199,7 +224,7 @@ Applicable work packages:
 
 The bootstrap package is `CTX-1-CONTEXT-COMPILER`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. For the verified V2 path this includes authenticated admission evidence, canonical mandatory-group provenance, selected-byte realization checks, final-payload exact tokenization, attach/send-time revocation checks and transport-bound delivery receipts. Product caller composition, concrete admission/tokenizer/serializer/transport adapter qualification, independent acceptance, activation and release remain separate evidence gates.
 
 ## 14. Activation, compatibility and retirement
 
