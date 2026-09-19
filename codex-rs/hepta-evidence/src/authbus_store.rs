@@ -134,6 +134,15 @@ pub(crate) async fn advance_replay(
     transaction: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
     authenticated: &AuthenticatedMessage,
 ) -> Result<(), AuthBusAdmissionError> {
+    let checkpoint_pending: bool = sqlx::query_scalar(
+        "SELECT EXISTS(SELECT 1 FROM authbus_replay_checkpoint_pending WHERE singleton = 1)",
+    )
+    .fetch_one(&mut **transaction)
+    .await
+    .map_err(classify_sqlx_error)?;
+    if checkpoint_pending {
+        return Err(codex_hepta_authbus::Error::ExternalCheckpointRequired.into());
+    }
     let claims = authenticated.claims();
     let epoch = claims.key_epoch.get().to_be_bytes();
     let previous: Option<Vec<u8>> = sqlx::query_scalar(
