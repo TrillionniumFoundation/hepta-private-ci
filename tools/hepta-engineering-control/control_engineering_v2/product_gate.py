@@ -31,6 +31,7 @@ from .orchestration import (
 )
 
 _SHA1 = re.compile(r"[0-9a-f]{40}\Z")
+_SHA256 = re.compile(r"[0-9a-f]{64}\\Z")
 EXPECTED_REPOSITORY = "TrillionniumFoundation/hepta-private-ci"
 EXPECTED_REPOSITORY_ID = 1320694176
 EXPECTED_JOB = "engineering-product-gate"
