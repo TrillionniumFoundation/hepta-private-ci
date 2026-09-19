@@ -347,12 +347,7 @@ fn op_08_regularity_requires_authenticated_evaluator_binding() {
         payload,
     );
     let evaluator = verifier
-        .verify(
-            LearningEvidenceRoleV1::Evaluator,
-            &signed,
-            payload,
-            50,
-        )
+        .verify(LearningEvidenceRoleV1::Evaluator, &signed, payload, 50)
         .expect("authenticated evaluator");
     let admission = admit_operator_regularity_authenticated(assessment, &generator, &evaluator, 50)
         .expect("authenticated regularity admission");
