@@ -10,6 +10,8 @@
 
 mod authority;
 mod authority_store;
+mod quota;
+mod quota_store;
 mod signed;
 pub use authority::AuthBusAuthorityError;
 pub use authority::AuthPolicy;
@@ -18,6 +20,11 @@ pub use authority::PolicyEffect;
 pub use authority::PolicySpec;
 pub use authority::TrustedTimeSample;
 pub use authority_store::AuthBusAuthorityStore;
+pub use quota::QuotaReservation;
+pub use quota::QuotaSnapshot;
+pub use quota::QuotaSpec;
+pub use quota::ReservationRequest;
+pub use quota::ReservationState;
 pub use signed::AuthenticatedMessage;
 pub use signed::IssuerRegistration;
 pub use signed::SignedMessage;

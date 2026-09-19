@@ -147,6 +147,14 @@ pub enum AuthBusAuthorityError {
     AlreadyExists,
     #[error("AuthBus authority revision conflict")]
     RevisionConflict,
+    #[error("AuthBus request reused an idempotency identity with different semantics")]
+    IdempotencyConflict,
+    #[error("AuthBus quota registry entry is missing")]
+    QuotaMissing,
+    #[error("AuthBus quota would exceed its configured endowment")]
+    QuotaExceeded,
+    #[error("AuthBus quota reservation is missing")]
+    ReservationMissing,
     #[error("invalid AuthBus authority state transition")]
     InvalidTransition,
     #[error("trusted AuthBus time moved backwards")]
