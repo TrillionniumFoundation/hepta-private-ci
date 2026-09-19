@@ -129,6 +129,15 @@ impl AgentdRequest {
         }
     }
 
+    pub fn drain(request_id: u64, spawn_generation: u64) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::Drain,
+        }
+    }
+
     pub fn session_ingress(request_id: u64, spawn_generation: u64) -> Self {
         Self {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
@@ -265,6 +274,7 @@ pub enum AgentdMethod {
     Capabilities,
     Health,
     Lifecycle,
+    Drain,
     SessionIngress,
     AuthBusText {
         request: AuthBusTextIngress,
@@ -327,6 +337,9 @@ pub enum AgentdPayload {
     Capabilities(AgentdCapabilitySet),
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
+    DrainAccepted {
+        admission_stopped: bool,
+    },
     SessionIngress(SessionIngress),
     CognitiveContext(CognitiveContextSnapshot),
     AuthBusTextStatus(AuthBusTextStatus),
