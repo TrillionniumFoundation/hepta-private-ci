@@ -191,7 +191,10 @@ def verify_matrix(
         f"matrix modules must be exactly {sorted(EXPECTED_MODULES)}",
     )
     for module, item in modules.items():
-        for key in ("sourceRoot", "stableGuide", "dossier", "nativeMapping"):
+        required_paths = ["sourceRoot", "stableGuide", "dossier", "nativeMapping"]
+        if module == "learning.eval":
+            required_paths.append("productionContract")
+        for key in required_paths:
             path = relative_path(item.get(key), findings, f"{module}.{key}")
             if path is not None:
                 findings.require(
@@ -541,6 +544,7 @@ def verify_learning_eval_production_boundary(findings: Findings) -> None:
         "decide_with_signed_evidence_v2",
         "decide_with_signed_longitudinal_evidence_v3",
         "consume_single_host_trusted",
+        "consume_fenced",
     ):
         findings.require(
             token in api_contract,
