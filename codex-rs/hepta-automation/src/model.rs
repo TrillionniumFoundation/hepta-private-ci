@@ -403,6 +403,7 @@ pub struct AutomationQueueReceipt {
 pub struct AutomationSubmittedOccurrence {
     pub admission: AutomationAdmission,
     pub queued_submission_id: String,
+    pub taskflow_run_id: String,
     pub provider_turn_id: Option<String>,
     pub submitted_at_ms: u64,
 }
