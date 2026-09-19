@@ -39,7 +39,7 @@ override these machine status facts.
 | `durable_topology_registry` | `source_implemented_anchored_governed_topology_registry` | `codex-rs/hepta-plasticity/src/topology_registry.rs` | 1 |
 | `authenticated_topology_product_composition` | `adapter_implemented_called_by_agentd_host_entrypoint_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/topology_product.rs` | 2 |
 | `agentd_topology_host` | `host_adapter_entrypoint_source_implemented_external_anchor_not_runtime_executed_or_target_host_qualified` | `codex-rs/hepta-agentd/src/topology_plasticity_host.rs` | 2 |
-| `structural_canary_controller` | `source_implemented_plan_history_bound_observation_only_no_topology_apply_authority` | `codex-rs/hepta-plasticity/src/topology_canary.rs` | 6 |
+| `structural_canary_controller` | `source_implemented_durable_candidate_plan_history_bound_observation_only_no_topology_apply_authority` | `codex-rs/hepta-plasticity/src/topology_canary.rs` | 6 |
 
 ### Repository-controlled gaps
 
@@ -79,7 +79,7 @@ override these machine status facts.
 | Authenticated topology product admission | **Implemented** | `codex-rs/hepta-intelligence/src/topology_product.rs` |
 | Durable anchored topology proposal registry | **Implemented** | `DurableTopologyProposalRegistryV1` |
 | Agentd topology host adapter + external anchor/fence | **Implemented source composition; not runtime-executed/target-host qualified** | `topology_plasticity_host.rs` |
-| Bounded structural canary controller | **Implemented plan/history-bound observation state machine; explicit finish required; no executed canary evidence** | `StructuralCanaryControllerV1` |
+| Bounded structural canary controller | **Implemented durable-candidate/plan/history-bound observation state machine; explicit finish required; no executed canary evidence** | `StructuralCanaryControllerV1` |
 | Topology application / writer handoff execution | **Target / not implemented** | intentionally no apply API |
 | Weight training / installation | **Target outside this proposal engine** | no authority granted |
 | Selection / activation / promotion / release | **External gate / not implemented** | explicitly denied |
@@ -194,8 +194,10 @@ as one bounded structural update candidate plus the no-change candidate. There i
 API that applies a topology change. Runtime graph mutation remains gated on an
 independently accepted migration/writer-handoff implementation and host canary.
 
-The structural-canary source controller content-binds the complete canary plan
-(admission, rollback, writer-handoff set, baseline health and thresholds) and maintains
+The structural-canary source controller is constructed through a durable-bound builder that
+verifies the exact governed proposal, durable append receipt and selected structural candidate.
+Its plan content-binds the admission, durable sequence/frame, candidate ID, rollback,
+writer-handoff set, baseline health and thresholds, and it maintains
 a rolling observation-chain digest. Reaching the minimum successful-step threshold
 does not auto-accept: an explicit `finish()` transition is required. This prevents a
 last-observation-only receipt from being replayed across a different plan or truncated
