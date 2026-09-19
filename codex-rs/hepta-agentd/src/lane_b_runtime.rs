@@ -1,11 +1,19 @@
 use std::collections::BTreeMap;
 
+use codex_hepta_intelligence::CompositionControlV3;
+use codex_hepta_intelligence::DurableLearningJournal;
 use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
 use codex_hepta_intelligence::LaneFCompositionReceiptV3;
 use codex_hepta_intelligence::LaneFRunRequestV3;
 use codex_hepta_intelligence::LaneFV3Ports;
+use codex_hepta_intelligence::NativeV3OwnerInputs;
+use codex_hepta_intelligence::NativeV3OwnerPorts;
+use codex_hepta_intelligence::NeverCancelledV3;
 use codex_hepta_intelligence::PipelineDispositionV3;
-use codex_hepta_intelligence::run_composition_v3;
+use codex_hepta_intelligence::run_composition_v3_with_control;
+use codex_hepta_types::Digest32;
+
+use crate::intelligence_host::AgentdIntelligenceHostV1;
 
 const MAX_ACTIVE_RUNS: usize = 256;
 const MAX_RETAINED_RUNS: usize = 1_024;
@@ -254,7 +262,22 @@ impl AgentRunCoordinator {
         request: LaneFRunRequestV3,
         ports: &mut P,
     ) -> Result<IntelligenceRunReceiptV3, AgentRunError> {
-        let composition = run_composition_v3(request, ports)
+        self.run_intelligence_v3_with_control(
+            expected_revision,
+            request,
+            ports,
+            &NeverCancelledV3,
+        )
+    }
+
+    pub fn run_intelligence_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>(
+        &mut self,
+        expected_revision: u64,
+        request: LaneFRunRequestV3,
+        ports: &mut P,
+        control: &C,
+    ) -> Result<IntelligenceRunReceiptV3, AgentRunError> {
+        let composition = run_composition_v3_with_control(request, ports, control)
             .map_err(|_| AgentRunError::IntelligenceCompositionFailed)?;
         let runtime = match composition.disposition {
             PipelineDispositionV3::HostHandoffAccepted => {
@@ -272,6 +295,45 @@ impl AgentRunCoordinator {
             composition,
             runtime,
         })
+    }
+
+    /// Product-side V3 caller using the registered owner implementations and the
+    /// typed Agentd host handoff. This remains proposal-only: Codex/App Server
+    /// execution and terminal observation stay in their existing runtime owners.
+    pub fn run_native_intelligence_v3(
+        &mut self,
+        expected_revision: u64,
+        request: LaneFRunRequestV3,
+        inputs: NativeV3OwnerInputs,
+        ledger: &mut dyn DurableLearningJournal,
+        expected_ledger_head: Digest32,
+    ) -> Result<IntelligenceRunReceiptV3, AgentRunError> {
+        self.run_native_intelligence_v3_with_control(
+            expected_revision,
+            request,
+            inputs,
+            ledger,
+            expected_ledger_head,
+            &NeverCancelledV3,
+        )
+    }
+
+    pub fn run_native_intelligence_v3_with_control<C: CompositionControlV3>(
+        &mut self,
+        expected_revision: u64,
+        request: LaneFRunRequestV3,
+        inputs: NativeV3OwnerInputs,
+        ledger: &mut dyn DurableLearningJournal,
+        expected_ledger_head: Digest32,
+        control: &C,
+    ) -> Result<IntelligenceRunReceiptV3, AgentRunError> {
+        let mut ports = NativeV3OwnerPorts::new(
+            inputs,
+            ledger,
+            expected_ledger_head,
+            AgentdIntelligenceHostV1,
+        );
+        self.run_intelligence_v3_with_control(expected_revision, request, &mut ports, control)
     }
 
     pub fn mark_dispatched(
