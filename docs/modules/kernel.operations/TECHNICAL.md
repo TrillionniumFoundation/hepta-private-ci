@@ -46,7 +46,20 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs); observed identifiers include `MAX_MODEL_OPERATION_RECORDS`, `OperationLedger`, `begin`, `authorize`, `record_dispatch`, `mark_indeterminate`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) for the implemented subset and remaining product work.
+The retained reference source is [codex-rs/hepta-operations](../../../codex-rs/hepta-operations). The production-shaped durable owner is deliberately composed into the existing CognitiveStore writer rather than a second database: [local_lease_outbox.rs](../../../codex-rs/hepta-memory/src/local_lease_outbox.rs), [production_writer.rs](../../../codex-rs/hepta-memory/src/production_writer.rs), migration [0011_kernel_operations.sql](../../../codex-rs/hepta-memory/migrations/0011_kernel_operations.sql), the real [production_cognitive_source_target.rs](../../../codex-rs/hepta-memory/src/production_cognitive_source_target.rs), and the named Agentd [production_writer_host.rs](../../../codex-rs/hepta-agentd/src/production_writer_host.rs).
+
+### Current claim levels
+
+| Claim | Current candidate |
+| --- | --- |
+| target | specified durable ledger/outbox/cross-owner transaction architecture |
+| reference-implemented | yes: bounded `hepta-operations` oracle |
+| production-implemented | source-implemented: atomic CognitiveStore operation/event/outbox owner, final-use target entry, one real CognitiveStore destination |
+| execution-proved | pending current exact-head and merge-candidate CI |
+| product-activated | no |
+| independently accepted / promoted / released | no |
+
+The 16,384-record bounds belong only to the reference oracle. The integrated SQLite owner does not inherit that model ceiling. Its lease/event/outbox evidence remains append-only; bounded physical journal compaction/checkpoint retention is still an explicit gap.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -113,7 +126,7 @@ None.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+The target wire/JSON contracts must preserve identical semantics when admitted. The current durable surface is typed Rust plus SQLite records and does not claim a production JSON codec for every target contract. Source tests cover semantic binding, bounds, atomic rollback, crash/reopen, stale fences, final-use entry and destination reconciliation. Error mapping preserves rejected, unavailable, indeterminate and terminal outcomes without treating transport acknowledgement as effect success.
 
 ## 6. Data authority, persistence and migrations
 
@@ -126,21 +139,21 @@ Read-only data dependencies:
 
 None.
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+The durable operation surface reuses the existing CognitiveStore SQLite owner. `admit_operation` owns the source operation/event/outbox transaction and commits all three identities atomically under `BEGIN IMMEDIATE`. Exact semantic replay is idempotent and changed semantic identity conflicts. Destination domain facts remain destination-owned; `CognitiveSourceOutboxTarget` is the first concrete destination binding.
 
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
+Migrations are deterministic and checksum-bound. CognitiveStore open verifies migration lineage, required schema objects, quick/foreign-key checks and local journal integrity before returning a writer. Migration `0011_kernel_operations.sql` adds the immutable operation semantic binding. Rollback is represented by a new append-only lifecycle/outcome record and never erases an observed external effect.
 
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+The authoritative local lease/event/outbox journals remain append-only hash chains. This candidate does not claim bounded physical deletion/compaction of those journals. A future retention implementation must use an explicit segment/checkpoint protocol that preserves anti-resurrection identity and reopen verification; in-place deletion is not an acceptable shortcut.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) identifies the retained in-memory oracle and the actual persistent CognitiveStore owner. Atomic prepare uses `BEGIN IMMEDIATE`; physical dispatch is preceded by a strict durable claim, and successor handoff reuses the same immutable event/outbox identity rather than creating a second send identity.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Source recovery covers SQLite reopen, append-only journal verification, pre-target durable claim, concurrent-dispatch exclusion, predecessor-generation handoff and indeterminate reconciliation. A qualification-only child-process kill/reopen probe exists and explicitly makes no physical power-loss claim. Default hosted reconciliation and target-host storage/power-loss evidence remain activation gates.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 

@@ -1,7 +1,7 @@
 # kernel.operations: implementation design
 
 Parent: `docs/modules/kernel.operations/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: bounded operation transition reference and outbox components implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: integrated SQLite operation owner, atomic local outbox publication, fenced dispatch/handoff, real final-use adapter entry and one real CognitiveStore destination are source-implemented; exact-candidate execution, default activation, bounded journal compaction and independent acceptance remain open as listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -45,8 +45,12 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `OperationLedger` in [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs); `Outbox` in [codex-rs/hepta-operations/src/outbox.rs](../../../codex-rs/hepta-operations/src/outbox.rs). Bounded operation transition reference and outbox components implemented.
-- **State and recovery:** OperationLedger is a BTreeMap reference model capped at 16384 records, with semantic duplicate checks, generation/revision transitions and explicit indeterminate state. Cloning or reopening a caller copy is not durable recovery.
-- **Source tests:** [codex-rs/hepta-operations/src/ledger_tests.rs](../../../codex-rs/hepta-operations/src/ledger_tests.rs), [codex-rs/hepta-operations/src/outbox_tests.rs](../../../codex-rs/hepta-operations/src/outbox_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md](../../../docs/lane-a-foundation/kernel.operations/REFERENCE_MODEL_V1.md).
-- **Remaining work:** Bind these transitions to the existing durable effect owner and final-use authority; this reference model does not implement the target transactional production operation ledger.
+- **Reference oracle:** `OperationLedger` / `Outbox` in `codex-rs/hepta-operations` remain bounded deterministic reference models. Their 16,384-record limits are not production store limits.
+- **Durable owner:** `codex-rs/hepta-memory/src/local_lease_outbox.rs` and migration `0011_kernel_operations.sql` bind the complete `OperationIntent` to the existing CognitiveStore event/outbox owner. Event + outbox + operation row commit in one `BEGIN IMMEDIATE` transaction.
+- **Claim/handoff:** dispatch writes a strict durable indeterminate claim before target entry. Concurrent/reopened dispatch cannot blindly resend. Terminal predecessor generations can hand the same queued event/outbox identity to a successor; unresolved indeterminate work is reconciled rather than reissued.
+- **Authority:** `ProductionFinalUseOutboxDispatcher` consumes the actual non-serializable final-use capability with `FinalUseAuthority::claim` and `with_verified_use` immediately around target entry.
+- **Real destination:** `CognitiveSourceOutboxTarget` applies through the destination-owned CognitiveStore source ledger, deduplicates exact identity, rejects payload drift and exposes terminal observation. The lost-ack vertical slice ends in explicit source reconciliation.
+- **Product seam:** `codex-rs/hepta-agentd/src/production_writer_host.rs` is an explicit host composition seam. The default Agentd runtime remains inactive unless enrolled authority and target are attached.
+- **Fault evidence sources:** `local_lease_outbox_tests.rs`, `production_writer.rs` tests and `production_cognitive_source_target_tests.rs` cover atomic rollback, reopen/tamper, real child-process crash/reopen, concurrent claim exclusion, owner handoff, final-use binding, destination dedupe and lost-ack reconciliation. These are source identities, not current-candidate pass receipts.
+- **Retention boundary:** operation metadata is not bounded by the reference-model 16k ceiling, but the authoritative lease/event/outbox journals are append-only hash chains. Bounded physical journal compaction/checkpoint retention remains a repository-controlled gap and must not be emulated with unsafe row deletion.
+- **Remaining work:** obtain current exact-head and deterministic merge-candidate qualification; close resulting compile/test/security findings; compose an enrolled always-on product dispatcher/reconciler and remaining destination adapters; add a versioned journal segment/checkpoint retention protocol; then obtain target-host power-loss/storage and independent acceptance/promotion/release evidence.
