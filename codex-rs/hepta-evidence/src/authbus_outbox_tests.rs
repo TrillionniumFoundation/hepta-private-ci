@@ -557,3 +557,54 @@ async fn missing_outbox_guard_is_rejected_on_reopen() {
         Err(EvidenceError::Corrupt(_))
     ));
 }
+
+#[tokio::test]
+async fn one_issuer_cannot_exhaust_the_global_active_outbox_across_epochs() {
+    let temp = TempDir::new().unwrap();
+    let store = HeptaEvidenceStore::open(&config(temp.path()))
+        .await
+        .unwrap();
+    let first = enqueue(&store, 1).await;
+    sqlx::query(
+        "WITH RECURSIVE n(x) AS (
+            SELECT 1 UNION ALL SELECT x + 1 FROM n WHERE x < ?
+         )
+         INSERT INTO authbus_outbox
+         SELECT randomblob(32), issuer_id,
+                CAST(printf('%016x', x + 1) AS BLOB),
+                'issuer-cap:' || x, subject_id, scope_digest, payload_digest,
+                sequence, expires_at_ms, signature, payload, state, fence, attempts,
+                worker_id, lease_until_ms, available_at_ms, created_at_ms,
+                updated_at_ms, terminal_at_ms, acknowledgement
+         FROM authbus_outbox, n
+         WHERE delivery_id = ?",
+    )
+    .bind(AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER - 1)
+    .bind(first.delivery_id.as_array().as_slice())
+    .execute(&store.pool)
+    .await
+    .unwrap();
+
+    let active: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM authbus_outbox
+         WHERE issuer_id = 'issuer:queue' AND state IN ('queued', 'leased')",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .unwrap();
+    assert_eq!(active, AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER);
+
+    let (issuer, message) = fixture(2, u64::MAX);
+    assert!(matches!(
+        store
+            .enqueue_authbus_message(
+                &issuer,
+                &message,
+                &message.claims.subject_id,
+                message.claims.scope_digest,
+                b"payload",
+            )
+            .await,
+        Err(AuthBusOutboxError::Capacity)
+    ));
+}
