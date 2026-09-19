@@ -19,8 +19,7 @@ use codex_hepta_intelligence_eval::{
 };
 use codex_hepta_learning_ledger::{
     LearningEvidenceRoleV1, LearningEvidenceVerifierV1, SignedEvidenceError,
-    SignedLearningEvidenceV1, verify_signed_independent_roles_v1,
-    verify_signed_role_separation,
+    SignedLearningEvidenceV1, verify_signed_independent_roles_v1, verify_signed_role_separation,
 };
 use codex_hepta_plasticity::{
     DurableProposalAppendReceiptV1, DurableProposalRegistry, DurableProposalRegistryError,
@@ -397,8 +396,7 @@ pub fn propose_authenticated_parameter_plasticity_v1(
     let candidate_evaluation_digest = Digest32::of_bytes(&evaluation_binding);
     let generator_authentication_digest = attestation_digest(&request.generator_attestation);
     let admission_authentication_digest = attestation_digest(&request.admission_attestation);
-    let mut governed_evaluation =
-        b"hepta.intelligence.plasticity-governed-admission.v1\0".to_vec();
+    let mut governed_evaluation = b"hepta.intelligence.plasticity-governed-admission.v1\0".to_vec();
     for digest in [
         candidate_evaluation_digest,
         generator_authentication_digest,
