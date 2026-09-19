@@ -4,7 +4,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
-const PREFIX = Buffer.from("HEPTA-CANONICAL-DIGEST-V1\\0", "utf8");
+const PREFIX = Buffer.from("HEPTA-CANONICAL-DIGEST-V1\0", "utf8");
 const MAX_COLLECTION = 256 * 1024;
 const TOKEN = /^[a-z0-9._-]+$/;
 const TYPE_TAGS = new Map([
