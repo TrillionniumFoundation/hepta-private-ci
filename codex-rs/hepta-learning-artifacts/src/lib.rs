@@ -96,6 +96,7 @@ pub use publication::ArtifactPublicationError;
 pub use publication::ArtifactPublicationIntentV1;
 pub use publication::ArtifactPublicationPhaseV1;
 pub use publication::ArtifactPublicationReceiptV1;
+pub use publication::ArtifactPublicationStatusV1;
 pub use publication::ArtifactPublicationTransactionSnapshotV1;
 pub use publication::ArtifactPublicationTransactionV1;
 pub use registry::ArtifactRegistry;
