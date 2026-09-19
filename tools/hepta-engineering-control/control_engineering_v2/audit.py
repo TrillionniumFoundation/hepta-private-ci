@@ -50,11 +50,13 @@ def prepare_audit_anchor(
         if writer is None:
             raise _control.EngineeringError("writer_binding_required")
         event = store.connection.execute(
-            "SELECT sequence,event_digest FROM audit_events "
+            "SELECT sequence,event_digest,created_unix_ns FROM audit_events "
             "ORDER BY sequence DESC LIMIT 1"
         ).fetchone()
         if event is None:
             raise _control.EngineeringError("audit_anchor_empty")
+        if now < int(event["created_unix_ns"]):
+            raise _control.EngineeringError("audit_anchor_time_order")
         writer_digest = str(writer["semantic_digest"])
         event_digest = str(event["event_digest"])
         _control.checked_sha256(writer_digest, "writer_binding_digest")
@@ -126,8 +128,10 @@ def verify_audit_anchor(
         if writer is None or str(writer["semantic_digest"]) != anchor.writer_binding_digest:
             raise _control.EngineeringError("audit_anchor_writer_mismatch")
         event = store.connection.execute(
-            "SELECT event_digest FROM audit_events WHERE sequence=?",
+            "SELECT event_digest,created_unix_ns FROM audit_events WHERE sequence=?",
             (anchor.sequence,),
         ).fetchone()
         if event is None or str(event["event_digest"]) != anchor.event_digest:
             raise _control.EngineeringError("audit_anchor_chain_mismatch")
+        if anchor.observed_unix_ns < int(event["created_unix_ns"]):
+            raise _control.EngineeringError("audit_anchor_time_order")
