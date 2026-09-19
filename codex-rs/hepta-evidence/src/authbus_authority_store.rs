@@ -22,6 +22,8 @@ pub enum AuthBusAuthorityError {
     MissingPolicy,
     #[error("AuthBus policy denied the requested action")]
     Denied,
+    #[error("AuthBus trust registration is absent")]
+    MissingTrust,
     #[error("AuthBus policy or quota revision is stale")]
     StaleRevision,
     #[error("AuthBus identity is already bound to different semantics")]
