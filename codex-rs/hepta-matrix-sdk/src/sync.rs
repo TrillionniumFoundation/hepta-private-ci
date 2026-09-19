@@ -237,10 +237,15 @@ impl MatrixSyncComposer<'_> {
                 }
 
                 if value.get("type").and_then(Value::as_str) == Some("m.room.redaction") {
-                    let target = value
-                        .get("redacts")
-                        .or_else(|| value.pointer("/content/redacts"))
-                        .and_then(Value::as_str);
+                    let top_level_target = value.get("redacts").and_then(Value::as_str);
+                    let content_target = value.pointer("/content/redacts").and_then(Value::as_str);
+                    if top_level_target.is_some()
+                        && content_target.is_some()
+                        && top_level_target != content_target
+                    {
+                        return Err(MatrixSdkError::Sync);
+                    }
+                    let target = top_level_target.or(content_target);
                     if let Some(target) = target
                         && let Ok(target_event_id) = MatrixEventId::parse(target)
                     {
