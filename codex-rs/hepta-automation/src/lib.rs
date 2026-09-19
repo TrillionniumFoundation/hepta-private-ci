@@ -9,6 +9,7 @@
 /// Reusable state machine; does not install a second runtime owner.
 pub mod effect_executor;
 
+mod causal_chain;
 mod model;
 mod scheduler;
 mod store;
