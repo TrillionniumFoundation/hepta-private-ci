@@ -1,10 +1,18 @@
+use std::collections::BTreeSet;
 use std::sync::Arc;
 use std::sync::Mutex;
 
 use codex_hepta_automation::AutomationStore;
+use codex_hepta_control_plane::RuntimeModuleAbiV1;
+use codex_hepta_control_plane::RuntimeModuleRegistryV1;
+use codex_hepta_control_plane::RuntimeModuleStateClassV1;
+use codex_hepta_control_plane::RuntimeTopologySnapshotV1;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_memory::CognitiveStore;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 
 use crate::AgentdError;
 use crate::AgentdEventKind;
@@ -27,6 +35,7 @@ pub(crate) struct AgentdState {
     automation: Mutex<Option<AutomationStore>>,
     automation_operations: std::sync::OnceLock<Arc<AgentdOperationsHost>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
+    runtime_modules: Mutex<RuntimeModuleRegistryV1>,
 }
 
 struct RuntimeState {
@@ -64,6 +73,7 @@ impl AgentdState {
             automation: Mutex::new(None),
             automation_operations: std::sync::OnceLock::new(),
             cognitive: Mutex::new(None),
+            runtime_modules: Mutex::new(RuntimeModuleRegistryV1::new()),
         })
     }
 
@@ -82,6 +92,13 @@ impl AgentdState {
                 "cognitive store was attached more than once".to_string(),
             ));
         }
+        self.activate_builtin_runtime_module(
+            "cognitive.store",
+            "cognitive-platform",
+            RuntimeModuleStateClassV1::Stateful,
+            &["knowledge_fact_ledger", "memory_ledger"],
+            &[],
+        )?;
         *cognitive = Some(store);
         Ok(())
     }
@@ -101,6 +118,13 @@ impl AgentdState {
                 "automation store was attached more than once".to_string(),
             ));
         }
+        self.activate_builtin_runtime_module(
+            "automation.taskflow",
+            "automation-platform",
+            RuntimeModuleStateClassV1::Stateful,
+            &["automation_occurrence", "automation_schedule"],
+            &[],
+        )?;
         *automation = Some(store);
         Ok(())
     }
@@ -115,11 +139,116 @@ impl AgentdState {
                     .to_string(),
             ));
         }
+        self.activate_builtin_runtime_module(
+            "kernel.operations",
+            "durability-kernel",
+            RuntimeModuleStateClassV1::Stateful,
+            &["cross_owner_outbox", "operation_ledger"],
+            &["external_effect_dispatch"],
+        )?;
         self.automation_operations.set(host).map_err(|_| {
             AgentdError::Protocol(
                 "automation operations host was attached more than once".to_string(),
             )
         })
+    }
+
+    pub(crate) fn attach_authbus(
+        &self,
+        host: Arc<crate::authbus_ingress::TextIngress>,
+    ) -> Result<(), AgentdError> {
+        if self.authbus.get().is_some() {
+            return Err(AgentdError::Protocol("AuthBus host already attached".to_string()));
+        }
+        self.activate_builtin_runtime_module(
+            "auth.authbus",
+            "identity-access",
+            RuntimeModuleStateClassV1::Stateful,
+            &[],
+            &[],
+        )?;
+        self.authbus
+            .set(host)
+            .map_err(|_| AgentdError::Protocol("AuthBus host already attached".to_string()))
+    }
+
+    pub(crate) fn attach_objective_ingress(
+        &self,
+        host: Arc<crate::objective_ingress::ObjectiveIngressHost>,
+    ) -> Result<(), AgentdError> {
+        if self.objective_ingress.get().is_some() {
+            return Err(AgentdError::Protocol(
+                "Objective ingress host already attached".to_string(),
+            ));
+        }
+        self.activate_builtin_runtime_module(
+            "objective.compiler",
+            "intelligence-platform",
+            RuntimeModuleStateClassV1::Stateless,
+            &[],
+            &[],
+        )?;
+        self.objective_ingress.set(host).map_err(|_| {
+            AgentdError::Protocol("Objective ingress host already attached".to_string())
+        })
+    }
+
+    pub(crate) fn runtime_topology_snapshot(
+        &self,
+    ) -> Result<RuntimeTopologySnapshotV1, AgentdError> {
+        Ok(self
+            .runtime_modules
+            .lock()
+            .map_err(poisoned_state)?
+            .snapshot())
+    }
+
+    fn activate_builtin_runtime_module(
+        &self,
+        module_id: &str,
+        owner_id: &str,
+        state_class: RuntimeModuleStateClassV1,
+        authoritative_domains: &[&str],
+        effect_scope: &[&str],
+    ) -> Result<(), AgentdError> {
+        let module_id = StableId::new(module_id)
+            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
+        let owner_id = StableId::new(owner_id)
+            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
+        let generation = Generation::new(self.identity.spawn_generation)
+            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
+        let authoritative_domains = authoritative_domains
+            .iter()
+            .map(|value| StableId::new(*value).map_err(|error| AgentdError::Protocol(error.to_string())))
+            .collect::<Result<BTreeSet<_>, _>>()?;
+        let effect_scope = effect_scope
+            .iter()
+            .map(|value| StableId::new(*value).map_err(|error| AgentdError::Protocol(error.to_string())))
+            .collect::<Result<BTreeSet<_>, _>>()?;
+        let implementation_digest = Digest32::of_bytes(
+            format!("hepta.compiled-runtime-module.v1:{}", module_id.as_str()).as_bytes(),
+        );
+        let abi = RuntimeModuleAbiV1 {
+            module_id: module_id.clone(),
+            owner_id,
+            generation,
+            implementation_digest,
+            predecessor_generation: None,
+            rollback_predecessor_digest: Digest32::ZERO,
+            state_class,
+            input_ports: Vec::new(),
+            output_ports: Vec::new(),
+            authoritative_domains,
+            effect_scope,
+        };
+        let mut modules = self.runtime_modules.lock().map_err(poisoned_state)?;
+        modules
+            .register_candidate(abi)
+            .map_err(|error| AgentdError::Protocol(format!("runtime module registration failed: {error}")))?;
+        modules
+            .activate_bootstrap(&module_id, generation)
+            .map_err(|error| AgentdError::Protocol(format!("runtime module activation failed: {error}")))?;
+        Ok(())
     }
 
     pub(crate) fn automation_operations(&self) -> Option<Arc<AgentdOperationsHost>> {
