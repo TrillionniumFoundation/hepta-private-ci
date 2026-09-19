@@ -1,5 +1,6 @@
 //! Connect the canonical SQLite owner to the newer bounded cognitive read port.
 
+use std::future::Future;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -52,6 +53,33 @@ pub(crate) async fn read(
     limit: u16,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
+    read_with_revalidation_hook(
+        store,
+        owner,
+        body_generation,
+        authority_epoch,
+        query,
+        limit,
+        ranker,
+        || async { Ok(()) },
+    )
+    .await
+}
+
+async fn read_with_revalidation_hook<F, Fut>(
+    store: &CognitiveStore,
+    owner: &AgentId,
+    body_generation: u64,
+    authority_epoch: u64,
+    query: &str,
+    limit: u16,
+    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    before_final_revalidation: F,
+) -> Result<CognitiveContextSnapshot, CognitiveContextError>
+where
+    F: FnOnce() -> Fut,
+    Fut: Future<Output = Result<(), CognitiveStoreError>>,
+{
     if query.is_empty() || query.len() > 2048 || !(1..=4).contains(&limit) {
         return Err(CognitiveStoreError::Invalid(
             "context requires a 1..2048 byte query and a 1..4 result limit".to_string(),
@@ -221,6 +249,8 @@ pub(crate) async fn read(
         )
         .into());
     }
+    before_final_revalidation().await?;
+
     // Final-use revalidation covers the exact owner cut, every owner frontier,
     // the generation-vector digest, original lease and host authority binding.
     // The lease is never extended during this check.
