@@ -180,13 +180,13 @@ impl SchemaRegistry {
         })
     }
 
-    pub fn encode_typed<T: TypedWirePayload>(
+    fn encode_typed_unchecked<T: TypedWirePayload>(
         &self,
         producer: StableId,
         generation: Generation,
         value: &T,
     ) -> Result<WireEnvelopeV2, TypedPayloadError> {
-        let envelope = encode_typed(producer, generation, value)?;
+        let envelope = encode_typed_unchecked(producer, generation, value)?;
         self.admit(&envelope)
             .map_err(TypedPayloadError::Admission)?;
         Ok(envelope)
