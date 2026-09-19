@@ -3574,6 +3574,8 @@ name = "codex-hepta-codex-adapter"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "codex-hepta-wire",
+ "serde",
 ]
 
 [[package]]
@@ -3612,6 +3614,8 @@ name = "codex-hepta-context-compiler"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "codex-hepta-wire",
+ "serde",
 ]
 
 [[package]]
@@ -4105,6 +4109,8 @@ name = "codex-hepta-wire"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
