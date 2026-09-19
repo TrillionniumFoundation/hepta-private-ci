@@ -2,6 +2,7 @@ import {
   ERROR_CODES,
   fail,
   nonNegativeInteger,
+  parseJsonNoDuplicateKeys,
   positiveInteger,
   readOwnDataFields,
   requireDigest,
@@ -135,9 +136,9 @@ export class LocalStoragePendingStore {
     }
     let parsed;
     try {
-      parsed = JSON.parse(encoded);
+      parsed = parseJsonNoDuplicateKeys(encoded, "pending operation storage");
     } catch {
-      fail(ERROR_CODES.PERSISTENCE_UNAVAILABLE, "pending operation storage is not valid JSON");
+      fail(ERROR_CODES.PERSISTENCE_UNAVAILABLE, "pending operation storage is not valid unambiguous JSON");
     }
     try {
       requireRecord(parsed, "pending store envelope");
