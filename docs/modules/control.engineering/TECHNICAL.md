@@ -147,7 +147,7 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.engineering.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [tools/hepta-engineering-control/hepta_engineering_control.py](../../../tools/hepta-engineering-control/hepta_engineering_control.py) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.engineering.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [control_engineering_v2/control_plane.py](../../../tools/hepta-engineering-control/control_engineering_v2/control_plane.py), [assignment.py](../../../tools/hepta-engineering-control/control_engineering_v2/assignment.py), and [candidate.py](../../../tools/hepta-engineering-control/control_engineering_v2/candidate.py). The historical `hepta_engineering_control.py` surface is compatibility-only.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
