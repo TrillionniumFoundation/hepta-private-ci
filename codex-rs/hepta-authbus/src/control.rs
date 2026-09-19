@@ -35,6 +35,9 @@ pub struct QuotaConfig {
     pub window_start_ms: u64,
     pub window_end_ms: u64,
     pub endowment: u64,
+    /// Maximum simultaneously held reservations for one principal in this
+    /// quota revision. Active, EffectStarted and Quarantined all count.
+    pub max_active_per_principal: u32,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
