@@ -16,6 +16,9 @@ use std::time::UNIX_EPOCH;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_operations::OperationIntent;
+use codex_hepta_operations::OperationKey;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
 use sha2::Digest;
@@ -941,6 +944,14 @@ impl LocalLeaseOutbox {
         let events = verify_event_chain(transaction, &self.lease_id, &self.owner_agent_id).await?;
         let outbox = verify_outbox_chain(transaction, &self.lease_id, &self.owner_agent_id).await?;
         verify_event_outbox_pairing(&events, &outbox)?;
+        verify_operation_ledger(
+            transaction,
+            &self.lease_id,
+            &self.owner_agent_id,
+            &events,
+            &outbox,
+        )
+        .await?;
         Ok(lease)
     }
 
@@ -958,6 +969,14 @@ impl LocalLeaseOutbox {
         let events = verify_event_chain(transaction, &self.lease_id, &self.owner_agent_id).await?;
         let outbox = verify_outbox_chain(transaction, &self.lease_id, &self.owner_agent_id).await?;
         verify_event_outbox_pairing(&events, &outbox)?;
+        verify_operation_ledger(
+            transaction,
+            &self.lease_id,
+            &self.owner_agent_id,
+            &events,
+            &outbox,
+        )
+        .await?;
         Ok(lease)
     }
 
@@ -1402,6 +1421,14 @@ impl LocalLeaseOutbox {
         let outbox_rows =
             verify_outbox_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
         verify_event_outbox_pairing(&events, &outbox_rows)?;
+        verify_operation_ledger(
+            &mut transaction,
+            &self.lease_id,
+            &self.owner_agent_id,
+            &events,
+            &outbox_rows,
+        )
+        .await?;
 
         if let Some(existing) = find_admission(
             &mut transaction,
@@ -3499,6 +3526,150 @@ async fn insert_operation(
     .execute(&mut **transaction)
     .await
     .map_err(crate::cognitive_store::unavailable)?;
+    Ok(())
+}
+
+async fn verify_operation_ledger(
+    transaction: &mut Transaction<'_, Sqlite>,
+    lease_id: &str,
+    expected_owner: &AgentId,
+    events: &[EventRow],
+    outbox_rows: &[OutboxRow],
+) -> Result<(), LocalLeaseOutboxError> {
+    let rows = sqlx::query(
+        "SELECT operation_id, semantic_sha256, scope_id, owner_id,
+                destination_id, payload_sha256, expected_predecessor_sha256,
+                lease_id, event_id, outbox_id, owner_agent_id, generation,
+                fencing_token, authority_epoch, owner_epoch
+         FROM cognitive_operation_ledger
+         WHERE lease_id = ?
+         ORDER BY operation_id",
+    )
+    .bind(lease_id)
+    .fetch_all(&mut **transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
+
+    for row in rows {
+        let stored = DurableOperationRow {
+            operation_id: row
+                .try_get("operation_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            semantic_sha256: row
+                .try_get("semantic_sha256")
+                .map_err(crate::cognitive_store::unavailable)?,
+            scope_id: row
+                .try_get("scope_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            owner_id: row
+                .try_get("owner_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            destination_id: row
+                .try_get("destination_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            payload_sha256: row
+                .try_get("payload_sha256")
+                .map_err(crate::cognitive_store::unavailable)?,
+            expected_predecessor_sha256: row
+                .try_get("expected_predecessor_sha256")
+                .map_err(crate::cognitive_store::unavailable)?,
+            lease_id: row
+                .try_get("lease_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            event_id: row
+                .try_get("event_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            outbox_id: row
+                .try_get("outbox_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            owner_agent_id: parse_agent(&row, "owner_agent_id")?,
+            generation: read_u64(&row, "generation")?,
+            fencing_token: row
+                .try_get("fencing_token")
+                .map_err(crate::cognitive_store::unavailable)?,
+            authority_epoch: read_u64(&row, "authority_epoch")?,
+            owner_epoch: read_u64(&row, "owner_epoch")?,
+        };
+        if stored.owner_agent_id != *expected_owner || stored.owner_id != expected_owner.as_str() {
+            return Err(corrupt("operation ledger contains a foreign owner"));
+        }
+        let operation_id = StableId::new(stored.operation_id.clone())
+            .map_err(|_| corrupt("operation ledger contains an invalid operation id"))?;
+        let scope = StableId::new(stored.scope_id.clone())
+            .map_err(|_| corrupt("operation ledger contains an invalid scope id"))?;
+        let owner = StableId::new(stored.owner_id.clone())
+            .map_err(|_| corrupt("operation ledger contains an invalid owner id"))?;
+        let destination = StableId::new(stored.destination_id.clone())
+            .map_err(|_| corrupt("operation ledger contains an invalid destination id"))?;
+        let payload_digest = stored
+            .payload_sha256
+            .parse::<Digest32>()
+            .map_err(|_| corrupt("operation ledger payload digest is invalid"))?;
+        let expected_predecessor = stored
+            .expected_predecessor_sha256
+            .as_deref()
+            .map(str::parse::<Digest32>)
+            .transpose()
+            .map_err(|_| corrupt("operation ledger predecessor digest is invalid"))?;
+        let operation = OperationIntent {
+            key: OperationKey {
+                id: operation_id,
+                payload_digest,
+            },
+            scope,
+            owner,
+            destination,
+            expected_predecessor,
+        };
+        operation
+            .validate()
+            .map_err(|_| corrupt("operation ledger semantic fields are invalid"))?;
+        if operation.semantic_digest().to_string() != stored.semantic_sha256 {
+            return Err(corrupt("operation ledger semantic digest mismatch"));
+        }
+        let event = events
+            .iter()
+            .find(|event| event.event_id == stored.event_id)
+            .ok_or_else(|| corrupt("operation ledger event reference is missing"))?;
+        let outbox = outbox_rows
+            .iter()
+            .find(|outbox| outbox.outbox_id == stored.outbox_id)
+            .ok_or_else(|| corrupt("operation ledger outbox reference is missing"))?;
+        if event.event_id != outbox.event_id
+            || event.occurrence_key != stored.operation_id
+            || outbox.occurrence_key != stored.operation_id
+            || event.owner_agent_id != stored.owner_agent_id
+            || outbox.owner_agent_id != stored.owner_agent_id
+            || event.generation != stored.generation
+            || outbox.generation != stored.generation
+            || event.fencing_token != stored.fencing_token
+            || outbox.fencing_token != stored.fencing_token
+            || event.payload_sha256.as_str() != stored.payload_sha256
+            || outbox.payload_sha256.as_str() != stored.payload_sha256
+        {
+            return Err(corrupt(
+                "operation ledger is not bound to its immutable event/outbox pair",
+            ));
+        }
+        let bound_lease: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM cognitive_local_leases
+             WHERE lease_id = ? AND generation = ? AND fencing_token = ?
+               AND state = 'active' AND authority_epoch = ? AND owner_epoch = ?",
+        )
+        .bind(&stored.lease_id)
+        .bind(to_i64(stored.generation, "operation generation")?)
+        .bind(&stored.fencing_token)
+        .bind(to_i64(stored.authority_epoch, "operation authority epoch")?)
+        .bind(to_i64(stored.owner_epoch, "operation owner epoch")?)
+        .fetch_one(&mut **transaction)
+        .await
+        .map_err(crate::cognitive_store::unavailable)?;
+        if bound_lease != 1 {
+            return Err(corrupt(
+                "operation ledger initial authority/fence is absent from lease history",
+            ));
+        }
+    }
     Ok(())
 }
 
