@@ -102,18 +102,25 @@ impl<D: ProcessDriver> Supervisor<D> {
             )
         })?;
         let record = self.record(agent_id)?;
-        let required = FleetResourceVectorV1::from(&record.manifest.resources);
         let grant = store.validate_runtime_grant(
             allocation_id,
             agent_id,
-            required,
+            FleetResourceVectorV1::default(),
             now_unix_ms,
         )?;
+        let manifest_ceiling = FleetResourceVectorV1::from(&record.manifest.resources);
+        if !grant.resources.fits(manifest_ceiling) {
+            return Err(SupervisorError::Invalid(
+                "fleet allocation exceeds registered Agent resource ceiling".to_string(),
+            ));
+        }
+        grant.resources.try_into_resource_budget()?;
         Ok(FleetAllocationProcessBinding {
             allocation_id: grant.allocation_id,
             lease_generation: grant.lease_generation,
             authority_epoch: grant.authority_epoch,
             plan_sha256: grant.plan_sha256,
+            resources: grant.resources,
         })
     }
 
@@ -164,6 +171,9 @@ impl<D: ProcessDriver> Supervisor<D> {
             run_root: record.layout.run_root().to_path_buf(),
             control_socket: record.layout.agentd_control_socket().to_path_buf(),
             logs_root: record.layout.logs_root().to_path_buf(),
+            fleet_allocation_id: fleet_allocation
+                .as_ref()
+                .map(|binding| binding.allocation_id.clone()),
             command: release.command().clone(),
         };
         let mut spawned = match self.driver.spawn(&spec) {
@@ -429,16 +439,19 @@ impl<D: ProcessDriver> Supervisor<D> {
             )
         })?;
         let record = self.record(agent_id)?;
-        let required = FleetResourceVectorV1::from(&record.manifest.resources);
         let grant = store.validate_runtime_grant(
             &binding.allocation_id,
             agent_id,
-            required,
+            binding.resources,
             now_unix_ms,
         )?;
-        if grant.lease_generation != binding.lease_generation
+        let manifest_ceiling = FleetResourceVectorV1::from(&record.manifest.resources);
+        if !binding.resources.fits(manifest_ceiling)
+            || binding.resources.try_into_resource_budget().is_err()
+            || grant.lease_generation != binding.lease_generation
             || grant.authority_epoch != binding.authority_epoch
             || grant.plan_sha256 != binding.plan_sha256
+            || grant.resources != binding.resources
         {
             return Err(SupervisorError::Invalid(
                 "runtime fleet allocation fence no longer matches durable grant".to_string(),
