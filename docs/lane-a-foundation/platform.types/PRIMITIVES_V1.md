@@ -22,14 +22,15 @@ never passed through approximate numeric conversion.
 
 ## Authority posture
 
-`NonAuthorizingPosture` is the type-level Platform Types proof for receipts and
-other values that must never carry authority. Its only constructible public
-value is `DENY_ALL`. Conversion from legacy `AuthorityPosture` rejects if
-any grant-like bit is set.
+`AuthorityPosture` is deny-only by construction: its representation is
+private and the only public value is `DENY_ALL`. Safe callers cannot widen it
+with runtime, selection, promotion, release or effect bits.
 
-`AuthorityPosture` remains a compatibility/tamper representation with public
-bits because existing protocol records and negative tests deliberately inject
-authority deltas. It is not a credential or authority token.
+`NonAuthorizingPosture` is the explicit receipt proof form and is likewise
+deny-only. Conversion between the two is infallible. Protocol owners that
+decode raw/wire authority flags must validate those flags before constructing
+shared Platform Types values; raw flags are not represented as
+`AuthorityPosture`.
 
 ## Digests
 
