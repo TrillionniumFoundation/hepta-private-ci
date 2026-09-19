@@ -283,3 +283,45 @@ fn unknown_critical_capability_reports_capability_failure_not_version_failure() 
         ))
     );
 }
+
+#[test]
+fn duplicate_json_keys_are_rejected_before_typed_decode() {
+    let mut registry = SchemaRegistry::new();
+    registry.register(typed_schema()).expect("register schema");
+    let envelope = WireEnvelopeV2::new(
+        id(TypedMessage::schema_id()),
+        id("producer"),
+        generation(2),
+        br#"{"objective":"first","objective":"second","step":1}"#.to_vec(),
+    )
+    .expect("raw duplicate-key envelope");
+    assert!(matches!(
+        registry.admit(&envelope),
+        Err(AdmissionError::Json(message))
+            if message.contains("duplicate JSON object key objective")
+    ));
+}
+
+#[test]
+fn producer_registry_rejects_payload_that_does_not_satisfy_registered_schema() {
+    let schema = SchemaDefinition::new(
+        id(TypedMessage::schema_id()),
+        &["objective", "step", "required_extra"],
+        &[],
+        UnknownFieldPolicy::Reject,
+        4_096,
+    )
+    .expect("schema with extra required field");
+    let mut registry = SchemaRegistry::new();
+    registry.register(schema).expect("register schema");
+    let value = TypedMessage {
+        objective: "ndu".to_owned(),
+        step: 1,
+    };
+    assert_eq!(
+        registry.encode_typed(id("producer"), generation(2), &value),
+        Err(TypedPayloadError::Admission(
+            AdmissionError::MissingRequiredField("required_extra".to_owned())
+        ))
+    );
+}
