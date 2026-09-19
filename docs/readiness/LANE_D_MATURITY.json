@@ -40,22 +40,32 @@
           ]
         },
         "durability": {
-          "state": "not_applicable_stateless_compiler",
+          "state": "destination_owner_run_start_journal_source_implemented_not_activated",
           "evidence": [
-            "owning caller persists immutable objective and run snapshot"
+            "codex-rs/hepta-learning-ledger/src/run_start.rs::DurableRunStartJournal",
+            "codex-rs/hepta-intelligence/src/objective_run.rs::compile_and_publish_objective_run_v1"
           ]
         },
         "exactHeadSourceQualification": {
-          "state": "pending_current_candidate_workflows",
-          "evidence": []
+          "state": "workflow_enforced_per_candidate_current_receipt_required",
+          "evidence": [
+            ".github/workflows/hepta-objective-admission.yml",
+            ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+            "scripts/hepta-implementation-maps.py verify --expected-sha <candidate>"
+          ]
         },
         "productCaller": {
-          "state": "not_established",
-          "evidence": []
+          "state": "source_composed_authenticated_agentd_not_activated",
+          "evidence": [
+            "codex-rs/hepta-agentd/src/objective_runtime.rs::ObjectiveRuntimeHost::submit",
+            "codex-rs/hepta-intelligence/src/objective_run.rs::compile_and_publish_objective_run_v1"
+          ]
         },
         "productionWriter": {
-          "state": "not_applicable_stateless_compiler",
-          "evidence": []
+          "state": "destination_owner_journal_source_composed_not_deployed",
+          "evidence": [
+            "codex-rs/hepta-learning-ledger/src/run_start.rs::DurableRunStartJournal"
+          ]
         },
         "independentAcceptance": {
           "state": "not_established",
@@ -74,6 +84,31 @@
           "evidence": [
             "MAX_PROFILE_ENCODED_BYTES",
             "oversized_profile_mapping_set_is_rejected"
+          ]
+        },
+        "authenticatedIngress": {
+          "state": "source_implemented_current_authbus_revalidation",
+          "evidence": [
+            "codex-rs/hepta-agentd/src/objective_runtime.rs::ObjectiveRuntimeHost::submit",
+            "codex-rs/hepta-agentd/src/objective_runtime.rs::authentication_is_current"
+          ]
+        },
+        "admissionSafeAggregateBounds": {
+          "state": "candidate_implemented",
+          "evidence": [
+            "MAX_SOURCE_CONSTRAINTS=246",
+            "MAX_AGGREGATE_SUCCESS_PREDICATES=128",
+            "source_constraint_bound_reserves_generated_native_slots",
+            "predicate_families_share_the_native_aggregate_ceiling"
+          ]
+        },
+        "targetHostMeasurementHarness": {
+          "state": "source_implemented_external_observation_required",
+          "evidence": [
+            "scripts/hepta-objective-target-measure.py",
+            "docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md",
+            "measurement_ordinary_admission_compile_v1",
+            "measurement_conflict_extraction_v1"
           ]
         }
       }
@@ -260,7 +295,7 @@
     }
   ],
   "repositoryControlledClosure": {
-    "state": "candidate_pending_exact_head_qualification",
+    "state": "candidate_source_composed_requires_current_workflow_success",
     "requiredChecks": [
       "Lane D semantic conformance",
       "cargo fmt",
@@ -273,11 +308,11 @@
   },
   "externalGates": [
     "independent non-author review",
-    "production caller and production writer composition",
-    "named-host resource and recovery measurements",
+    "named target-host resource, crash/restart and backpressure measurements",
+    "deployed AuthBus trust and durable-store ownership qualification",
     "operator acceptance",
     "deployment and activation",
-    "future-window efficacy",
+    "future-window efficacy where applicable",
     "promotion, signing and release"
   ]
 }
