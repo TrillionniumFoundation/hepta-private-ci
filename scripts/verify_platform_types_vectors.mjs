@@ -69,7 +69,7 @@ function encodeValue(value) {
       }
       return Buffer.concat([Buffer.from([3]), u64(value.value)]);
     case "i64":
-      if (typeof value.value !== "string" || !/^-?(0|[1-9][0-9]*)$/.test(value.value)) {
+      if (typeof value.value !== "string" || !/^(0|-?[1-9][0-9]*)$/.test(value.value)) {
         throw new Error("i64 vector value must be a signed decimal string");
       }
       return Buffer.concat([Buffer.from([4]), i64(value.value)]);
