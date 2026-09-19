@@ -151,9 +151,9 @@ pub fn decide_authenticated_intuition_v1(
         (AssignmentModeV1::Deterministic, None, Some(_)) => {
             return Err(IntuitionQualificationError::UnexpectedRandomSourceEvidence);
         }
-        (AssignmentModeV1::CounterBased { .. }, Some(payload), Some(signed)) => Some(
-            verifier.verify(LearningEvidenceRoleV1::RandomSource, signed, payload, now)?,
-        ),
+        (AssignmentModeV1::CounterBased { .. }, Some(payload), Some(signed)) => {
+            Some(verifier.verify(LearningEvidenceRoleV1::RandomSource, signed, payload, now)?)
+        }
         (AssignmentModeV1::CounterBased { .. }, Some(_), None) => {
             return Err(IntuitionQualificationError::MissingRandomSourceEvidence);
         }
@@ -166,8 +166,8 @@ pub fn decide_authenticated_intuition_v1(
     }
     verify_independence_set(&independent, now)?;
 
-    let exact_request_digest = canonical_calibrated_request_digest_v1(&request)
-        .map_err(QualifiedCalibratedError::from)?;
+    let exact_request_digest =
+        canonical_calibrated_request_digest_v1(&request).map_err(QualifiedCalibratedError::from)?;
     let profile_digest = canonical_policy_profile_digest_v1(&profile)?;
     let decision = decide_calibrated_v3(request, &profile, &scoring)?;
 
@@ -199,9 +199,7 @@ pub fn decide_authenticated_intuition_v1(
     bytes.extend_from_slice(&evidence.scoring.signature);
     bytes.extend_from_slice(&evidence.profile_qualification.signature);
     if let Some(assignment) = evidence.assignment {
-        bytes.extend_from_slice(
-            Digest32::of_bytes(&assignment.signing_bytes()).as_array(),
-        );
+        bytes.extend_from_slice(Digest32::of_bytes(&assignment.signing_bytes()).as_array());
         bytes.extend_from_slice(&assignment.signature);
     }
 
