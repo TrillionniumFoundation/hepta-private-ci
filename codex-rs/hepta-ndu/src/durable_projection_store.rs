@@ -316,9 +316,9 @@ fn acquire(file: &File, binding: Digest32) -> Result<(), NduDurableProjectionErr
 }
 
 fn validate_anchor(anchor: NduProjectionJournalAnchorV1) -> Result<(), NduDurableProjectionError> {
-    if usize::try_from(anchor.record_count).map_or(true, |count| count > MAX_RECORDS)
-        || (anchor.record_count == 0) != anchor.tip_digest.is_zero()
-    {
+    let count = usize::try_from(anchor.record_count)
+        .map_err(|_| NduDurableProjectionError::InvalidAnchor)?;
+    if count > MAX_RECORDS || (anchor.record_count == 0) != anchor.tip_digest.is_zero() {
         return Err(NduDurableProjectionError::InvalidAnchor);
     }
     Ok(())
