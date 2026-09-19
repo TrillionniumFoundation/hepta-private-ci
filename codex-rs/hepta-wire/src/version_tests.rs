@@ -91,3 +91,41 @@ fn future_version_numbers_are_advertised_but_not_invented() -> Result<(), Box<dy
     );
     Ok(())
 }
+
+#[test]
+fn negotiation_binding_is_role_ordered_required_capability_and_frame_bound(
+) -> Result<(), Box<dyn Error>> {
+    let initiator = NegotiationOffer::current();
+    let responder = NegotiationOffer::new(vec![2], WireCapabilities::CURRENT)?;
+    let required =
+        WireCapabilities::METADATA_BOUND_DIGEST.union(WireCapabilities::SCHEMA_ADMISSION);
+    let negotiated = negotiate(&initiator, &responder, required)?;
+
+    let transcript = negotiation_binding_digest(&initiator, &responder, required, negotiated);
+    assert_eq!(
+        transcript,
+        negotiation_binding_digest(&initiator, &responder, required, negotiated)
+    );
+    assert_ne!(
+        transcript,
+        negotiation_binding_digest(&responder, &initiator, required, negotiated)
+    );
+    assert_ne!(
+        transcript,
+        negotiation_binding_digest(
+            &initiator,
+            &responder,
+            WireCapabilities::METADATA_BOUND_DIGEST,
+            negotiated,
+        )
+    );
+
+    let frame = b"complete-encoded-hpta-frame";
+    let bound = session_binding_digest(transcript, frame);
+    assert_eq!(bound, session_binding_digest(transcript, frame));
+    assert_ne!(
+        bound,
+        session_binding_digest(transcript, b"complete-encoded-hpta-framf")
+    );
+    Ok(())
+}
