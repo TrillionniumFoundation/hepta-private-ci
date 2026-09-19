@@ -73,6 +73,20 @@ where
     /// Claims and submits at most one occurrence. Bounded single-item ticks
     /// prevent one Agent backlog from creating a fleet-wide drain loop.
     pub async fn tick(&self, now_ms: u64) -> Result<AutomationTick, AutomationError> {
+        // Repair only durable, one-way crash windows before materializing new
+        // work. These sweeps never infer external success from queue admission.
+        self.store
+            .reconcile_terminal_occurrences(now_ms, 32)
+            .await?;
+        self.store
+            .start_submitted_taskflows(
+                self.generation,
+                now_ms,
+                self.lease_duration_ms,
+                32,
+            )
+            .await?;
+
         let Some(lease) = self
             .store
             .claim_due(now_ms, self.generation, self.lease_duration_ms)
@@ -80,6 +94,19 @@ where
         else {
             return Ok(AutomationTick::Idle);
         };
+
+        // Bind the occurrence to its deterministic durable TaskFlow run before
+        // any App Server admission can happen. A pre-admission failure may
+        // retry this same occurrence/run id; it never creates a new run.
+        if let Err(error) = self
+            .store
+            .ensure_occurrence_taskflow(&lease, now_ms)
+            .await
+        {
+            let _ = self.store.release_for_retry(&lease).await;
+            return Err(error);
+        }
+
         // Persist the dispatch intent before crossing the App Server seam.
         // If this process dies after admission (or while the request is still
         // in flight) the successor must observe a durable unknown outcome and
@@ -126,6 +153,12 @@ where
             });
         }
         self.store.mark_submitted(&lease, &receipt, now_ms).await?;
+        // Queue admission starts the durable TaskFlow; it does not complete it.
+        // If this local transition fails after admission, the submitted row and
+        // queued TaskFlow run remain durable and the next tick repairs it.
+        self.store
+            .start_occurrence_taskflow(&lease, now_ms, self.lease_duration_ms)
+            .await?;
         Ok(AutomationTick::Submitted {
             task_id: lease.task.task_id,
             occurrence: lease.occurrence,
