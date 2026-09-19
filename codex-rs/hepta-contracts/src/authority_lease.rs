@@ -1202,6 +1202,32 @@ mod tests {
     }
 
     #[test]
+    fn verified_use_witness_binds_current_lease_and_store_revision() {
+        let (registry, _directory) = fixture();
+        let written = registry.put_lease(lease(), 0).unwrap();
+        let verifier = registry.verifier();
+        let token = verifier
+            .verify_use("lease-one", 1, &binding())
+            .unwrap();
+        let (value, witness) =
+            deliver_authority_lease_with_witness(&verifier, token, &binding(), || 13).unwrap();
+        assert_eq!(value, 13);
+        witness.validate().unwrap();
+        assert_eq!(witness.authority_epoch, 7);
+        assert_eq!(witness.boundary, VerifiedUseBoundaryV1::ConsumerEntry);
+        match witness.authority_ref {
+            crate::VerifiedUseAuthorityRefV1::AuthorityLease(reference) => {
+                assert_eq!(reference.owner_id, "security-authority");
+                assert_eq!(reference.lease_id, "lease-one");
+                assert_eq!(reference.lease_revision, 1);
+                assert_eq!(reference.store_revision, written.store_revision);
+                assert_ne!(reference.binding_sha256, [0; 32]);
+            }
+            other => panic!("unexpected witness authority: {other:?}"),
+        }
+    }
+
+    #[test]
     fn verified_use_releases_owner_lock_before_consumer_code() {
         let (registry, _directory) = fixture();
         registry.put_lease(lease(), 0).unwrap();
