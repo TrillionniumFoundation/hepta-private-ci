@@ -223,6 +223,70 @@ async fn per_principal_cap_counts_quarantined_effects_as_held() {
 }
 
 #[tokio::test]
+async fn bounded_expiry_sweep_releases_only_pre_effect_active_reservations() {
+    let temp = TempDir::new().unwrap();
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+    seed(&store, 10).await;
+    let expires_at_ms = now_ms().checked_add(2_000).unwrap();
+
+    let active = reserve_with(
+        &store,
+        "expiry-active",
+        2,
+        expires_at_ms,
+        effect("expiry-active"),
+    )
+    .await
+    .unwrap()
+    .1;
+    let started = reserve_with(
+        &store,
+        "expiry-started",
+        3,
+        expires_at_ms,
+        effect("expiry-started"),
+    )
+    .await
+    .unwrap()
+    .1;
+    begin_effect(&store, &started, effect("expiry-started"))
+        .await
+        .unwrap();
+
+    tokio::time::sleep(Duration::from_millis(2_100)).await;
+    assert_eq!(
+        store
+            .expire_authbus_reservations(&id("quota:one"), 16)
+            .await
+            .unwrap(),
+        1
+    );
+
+    let active_state: String =
+        sqlx::query_scalar("SELECT state FROM authbus_quota_reservations WHERE reservation_id=?")
+            .bind(active.reservation_id.as_str())
+            .fetch_one(&store.pool)
+            .await
+            .unwrap();
+    let started_state: String =
+        sqlx::query_scalar("SELECT state FROM authbus_quota_reservations WHERE reservation_id=?")
+            .bind(started.reservation_id.as_str())
+            .fetch_one(&store.pool)
+            .await
+            .unwrap();
+    assert_eq!(active_state, ReservationState::Expired.as_str());
+    assert_eq!(started_state, ReservationState::EffectStarted.as_str());
+
+    let reserved: Vec<u8> =
+        sqlx::query_scalar("SELECT reserved FROM authbus_quota_registry WHERE quota_key=?")
+            .bind("quota:one")
+            .fetch_one(&store.pool)
+            .await
+            .unwrap();
+    assert_eq!(decode_counter(reserved), 3);
+}
+
+#[tokio::test]
 async fn bus_02_duplicate_settlement_is_idempotent_and_altered_cost_conflicts() {
     let temp = TempDir::new().unwrap();
     let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
