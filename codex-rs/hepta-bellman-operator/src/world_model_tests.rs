@@ -97,6 +97,7 @@ fn world_model_rejects_duplicate_samples_and_invalid_outcomes() {
         fit_transition_model(id("world-model-2"), digest("dataset"), vec![invalid],),
         Err(WorldModelError::InvalidOutcome)
     );
+}
 
 #[test]
 fn op_05_world_model_rejects_relabelled_duplicate_evidence() {
@@ -175,4 +176,3 @@ fn op_05_world_model_dataset_receipt_binds_rows() {
     );
 }
 
-}
