@@ -122,4 +122,10 @@ END;
 CREATE INDEX taskflow_step_outbox_lookup
     ON taskflow_step_outbox(owner_agent_id, run_id, step_id, attempt, event_seq);
 
+DROP TRIGGER automation_meta_no_update;
 UPDATE automation_meta SET schema_version = 4 WHERE singleton = 1;
+CREATE TRIGGER automation_meta_no_update
+BEFORE UPDATE ON automation_meta
+BEGIN
+    SELECT RAISE(ABORT, 'automation owner metadata is immutable');
+END;
