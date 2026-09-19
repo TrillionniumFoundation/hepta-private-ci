@@ -16,6 +16,7 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 mod deletion;
+mod inference_control;
 mod journal;
 mod journal_lock;
 mod plasticity;
@@ -29,6 +30,8 @@ pub use deletion::DeletionRebuildError;
 pub use deletion::NeuronDeletionRebuildPlanV1;
 pub use deletion::NeuronDeletionRebuildReceiptV1;
 pub use deletion::validate_deletion_rebuild;
+pub use inference_control::InferenceControlModelPort;
+pub use inference_control::NeuronInferenceControlPort;
 pub use journal::JournalAnchor;
 pub use journal::JournalError;
 pub use journal::JournalScope;
