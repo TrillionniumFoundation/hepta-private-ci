@@ -20,6 +20,30 @@ class ScopeTests(unittest.TestCase):
         for group in GROUPS - {"inference"}:
             self.assertFalse(scope[group])
 
+    def test_topology_contract_stays_on_lifecycle_boundary(self):
+        scope = select(["codex-rs/hepta-types/src/topology.rs"])
+        self.assertTrue(scope["lifecycle"])
+        self.assertTrue(scope["native"])
+        self.assertFalse(scope["inference"])
+        self.assertFalse(scope["effects"])
+        self.assertFalse(scope["learning"])
+        self.assertFalse(scope["objective"])
+        self.assertFalse(scope["full_repo"])
+
+    def test_runtime_module_abi_stays_on_lifecycle_boundary(self):
+        scope = select([
+            "codex-rs/hepta-control-plane/src/module_runtime.rs",
+            "codex-rs/hepta-supervisor/src/module_runtime.rs",
+            "codex-rs/hepta-fleet/src/module_catalog.rs",
+        ])
+        self.assertTrue(scope["lifecycle"])
+        self.assertTrue(scope["native"])
+        self.assertFalse(scope["inference"])
+        self.assertFalse(scope["effects"])
+        self.assertFalse(scope["learning"])
+        self.assertFalse(scope["objective"])
+        self.assertFalse(scope["full_repo"])
+
     def test_shared_types_and_agentd_keep_cross_domain_coverage(self):
         for path in ["codex-rs/hepta-types/src/lib.rs", "codex-rs/hepta-agentd/src/state.rs"]:
             with self.subTest(path=path):

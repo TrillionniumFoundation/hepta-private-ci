@@ -84,7 +84,7 @@ impl RuntimeTopologyCandidateV1 {
         if self.rollback_predecessor_digest != self.selected_topology_digest {
             return Err(RuntimeTopologyContractErrorV1::RollbackPredecessorMismatch);
         }
-        if self.changed != !self.deltas.is_empty() {
+        if self.changed == self.deltas.is_empty() {
             return Err(RuntimeTopologyContractErrorV1::CandidateShape);
         }
         if self.deltas.len() > MAX_RUNTIME_TOPOLOGY_DELTAS_V1 {
@@ -103,9 +103,12 @@ impl RuntimeTopologyCandidateV1 {
                     delta.module_id.clone(),
                 ));
             }
-            let related = delta.related_module_ids.iter().cloned().collect::<BTreeSet<_>>();
-            if related.len() != delta.related_module_ids.len()
-                || related.contains(&delta.module_id)
+            let related = delta
+                .related_module_ids
+                .iter()
+                .cloned()
+                .collect::<BTreeSet<_>>();
+            if related.len() != delta.related_module_ids.len() || related.contains(&delta.module_id)
             {
                 return Err(RuntimeTopologyContractErrorV1::DuplicateRelatedModule(
                     delta.module_id.clone(),
@@ -222,7 +225,9 @@ mod tests {
         };
         assert!(matches!(
             candidate(vec![split.clone()]).validate(),
-            Err(RuntimeTopologyContractErrorV1::SplitParticipantMissingAdd(_))
+            Err(RuntimeTopologyContractErrorV1::SplitParticipantMissingAdd(
+                _
+            ))
         ));
         let added = RuntimeTopologyDeltaV1 {
             module_id: id("memory.fast"),
@@ -232,6 +237,8 @@ mod tests {
             candidate_digest: digest("fast"),
             evidence_digest: digest("fast-evidence"),
         };
-        candidate(vec![split, added]).validate().expect("bound split");
+        candidate(vec![split, added])
+            .validate()
+            .expect("bound split");
     }
 }

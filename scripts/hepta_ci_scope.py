@@ -51,6 +51,17 @@ DERIVED_ONLY_DOCS = frozenset({
     "docs/modules/MODULE_DOCS.json",
 })
 
+FILE_GROUPS = {
+    # Stable typed contracts with a single architecture concern should not
+    # expand to every Hepta lane merely because they live in a shared crate.
+    "codex-rs/hepta-types/src/topology.rs": {"lifecycle"},
+    "codex-rs/hepta-control-plane/src/module_runtime.rs": {"lifecycle"},
+    "codex-rs/hepta-supervisor/src/module_runtime.rs": {"lifecycle"},
+    "codex-rs/hepta-fleet/src/module_catalog.rs": {"lifecycle"},
+    "codex-rs/hepta-plasticity/src/topology_v3.rs": {"learning", "lifecycle"},
+    "codex-rs/hepta-plasticity/src/durable_topology_registry.rs": {"learning", "lifecycle"},
+}
+
 CANONICAL_DOC_GROUPS = {
     "docs/modules/MODULES.json": {"lifecycle"},
     "docs/architecture/ARCHITECTURE.json": set(GROUPS),
@@ -103,6 +114,10 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
 
         if path.startswith("apps/hepta-browser/"):
             selected.add("effects")
+            continue
+
+        if path in FILE_GROUPS:
+            selected.update(FILE_GROUPS[path])
             continue
 
         if len(parts) > 2 and parts[0] == "codex-rs":
