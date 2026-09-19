@@ -742,8 +742,9 @@ impl CognitiveStore {
                 }
                 last_head = head;
                 let verification: String = row.try_get("verification").map_err(unavailable)?;
-                let valid_from: i64 =
-                    row.try_get("valid_from_unix_seconds").map_err(unavailable)?;
+                let valid_from: i64 = row
+                    .try_get("valid_from_unix_seconds")
+                    .map_err(unavailable)?;
                 let valid_to: Option<i64> =
                     row.try_get("valid_to_unix_seconds").map_err(unavailable)?;
                 if revision == head
@@ -879,7 +880,6 @@ fn push_frontiers(bytes: &mut Vec<u8>, frontiers: &CognitiveOwnerFrontiers) {
         bytes.extend_from_slice(&value.to_be_bytes());
     }
 }
-
 
 fn corrupt(error: impl std::fmt::Display) -> CognitiveStoreError {
     CognitiveStoreError::Corrupt(format!("Lane C snapshot: {error}"))
