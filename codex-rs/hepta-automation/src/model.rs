@@ -324,6 +324,48 @@ pub struct AutomationQueueReceipt {
     pub client_user_message_id: String,
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AutomationOccurrenceTerminalState {
+    Succeeded,
+    Failed,
+    Cancelled,
+}
+
+impl AutomationOccurrenceTerminalState {
+    pub(crate) fn as_str(self) -> &'static str {
+        match self {
+            Self::Succeeded => "succeeded",
+            Self::Failed => "failed",
+            Self::Cancelled => "cancelled",
+        }
+    }
+
+    pub(crate) fn parse(value: &str) -> Result<Self, AutomationError> {
+        match value {
+            "succeeded" => Ok(Self::Succeeded),
+            "failed" => Ok(Self::Failed),
+            "cancelled" => Ok(Self::Cancelled),
+            _ => Err(AutomationError::Corrupt),
+        }
+    }
+}
+
+/// Durable automation-owned occurrence projection. Queue admission and
+/// TaskFlow terminality are intentionally separate fields.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+pub struct AutomationOccurrence {
+    pub task_id: AutomationTaskId,
+    pub occurrence: u64,
+    pub occurrence_id: String,
+    pub schedule_revision: u64,
+    pub scheduled_for_ms: u64,
+    pub taskflow_run_id: Option<String>,
+    pub terminal_state: Option<AutomationOccurrenceTerminalState>,
+    pub terminal_receipt_digest: Option<String>,
+    pub terminal_at_ms: Option<u64>,
+}
+
 /// Durable evidence that the provider outcome for one occurrence is not yet
 /// known.  The scheduler must not blindly re-submit this occurrence until an
 /// operator or a provider-specific reconciler supplies a terminal receipt (or
