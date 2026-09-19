@@ -11,6 +11,7 @@ from control_engineering_v2 import (
     completed_packages,
     WorkPackage,
 )
+from control_engineering_v2.assignment import register_worker as register_fixture_worker
 
 DENIED = (
     "runtime_authority",
@@ -55,7 +56,7 @@ class AssignmentLifecycleTests(unittest.TestCase):
             generation_id="generation-worker",
             now_ns=101,
         )
-        store.register_worker(
+        register_fixture_worker(store,
             "worker-1",
             "github-actions:engineering",
             "1" * 64,
@@ -281,7 +282,7 @@ class AssignmentLifecycleTests(unittest.TestCase):
                     now_ns=101,
                 )
                 self.assertEqual(first.assigned, ("A",))
-                store.register_worker(
+                register_fixture_worker(store,
                     "worker-a",
                     "worker-principal",
                     "3" * 64,
