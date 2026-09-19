@@ -12,6 +12,7 @@ use crate::schema_validation::classify_sqlx_error;
 
 /// Queue bounds are independent of the separately bounded replay-key registry.
 pub const AUTHBUS_OUTBOX_MAX_ROWS: i64 = 4096;
+pub const AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER: i64 = 512;
 pub const AUTHBUS_OUTBOX_MAX_PAYLOAD_BYTES: usize = 16_384;
 pub const AUTHBUS_OUTBOX_MAX_ATTEMPTS: i64 = 16;
 pub const AUTHBUS_OUTBOX_MAX_LEASE_MS: i64 = 60_000;
