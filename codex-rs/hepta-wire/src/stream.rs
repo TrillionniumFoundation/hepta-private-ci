@@ -78,6 +78,14 @@ impl<R: Read> FramedReader<R> {
 
         let schema_length = usize::from(u16::from_be_bytes([header[6], header[7]]));
         let producer_length = usize::from(u16::from_be_bytes([header[8], header[9]]));
+        let generation = u64::from_be_bytes(
+            header[10..18]
+                .try_into()
+                .map_err(|_| StreamError::Truncated)?,
+        );
+        if generation == 0 {
+            return Err(StreamError::Generation);
+        }
         if !(1..=MAX_ID_BYTES).contains(&schema_length)
             || !(1..=MAX_ID_BYTES).contains(&producer_length)
         {
@@ -166,6 +174,7 @@ pub enum StreamError {
     Magic,
     UnsupportedVersion(u16),
     IdentityLength,
+    Generation,
     PayloadLength,
     FrameLimit,
     Io(ErrorKind),
