@@ -208,7 +208,7 @@
           ]
         },
         "durability": {
-          "state": "durable_local_unix_owner_store_implemented_not_product_hosted",
+          "state": "durable_local_unix_owner_store_source_composed_in_named_supervisor_host_not_deployed",
           "evidence": [
             "PlannerJournalV1",
             "PlannerJournalStoreV1",
@@ -225,7 +225,7 @@
         "exactHeadSourceQualification": {
           "state": "pending_current_pr_workflows",
           "evidence": [
-            "PR #698"
+            "PR #932"
           ]
         },
         "productCaller": {
@@ -319,7 +319,7 @@
     }
   ],
   "repositoryControlledClosure": {
-    "state": "control_pr_and_stacked_supervisor_integration_pending_exact_head_and_merge_qualification",
+    "state": "canonical_current_main_convergence_pending_exact_head_and_merge_qualification",
     "requiredChecks": [
       "Lane D semantic conformance for control.runtime",
       "cargo fmt",
@@ -328,7 +328,7 @@
       "strict Clippy",
       "repository integrity and development-doc workflows",
       "exact-head source qualification",
-      "deterministic synthetic merge qualification for both stacked layers"
+      "deterministic synthetic merge qualification for canonical PR #932"
     ]
   },
   "externalGates": [
