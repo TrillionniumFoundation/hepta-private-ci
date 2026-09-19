@@ -10,12 +10,16 @@ use codex_hepta_intelligence::LaneFV3Ports;
 use codex_hepta_intelligence::NativeV3OwnerInputs;
 use codex_hepta_intelligence::NativeV3OwnerPorts;
 use codex_hepta_intelligence::NeverCancelledV3;
+use codex_hepta_intelligence::OutcomeCreditClosureErrorV1;
+use codex_hepta_intelligence::OutcomeCreditClosureReceiptV1;
+use codex_hepta_intelligence::OutcomeCreditClosureRequestV1;
 use codex_hepta_intelligence::PortDecisionV3;
 use codex_hepta_intelligence::PortFailureClassV3;
 use codex_hepta_intelligence::PortFailureV3;
 use codex_hepta_intelligence::PortInputV3;
 use codex_hepta_intelligence::PortReceiptV3;
 use codex_hepta_intelligence::StageOutcomeV3;
+use codex_hepta_intelligence::append_outcome_credit_v1;
 use codex_hepta_intelligence::run_composition_v3_with_control;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -93,6 +97,21 @@ pub struct RunReceipt {
 pub struct IntelligenceRunReceiptV3 {
     pub composition: LaneFCompositionReceiptV3,
     pub runtime: Option<RunReceipt>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct IntelligenceTerminalClosureReceiptV3 {
+    pub runtime: RunReceipt,
+    pub learning: OutcomeCreditClosureReceiptV1,
+}
+
+#[derive(Debug, Eq, PartialEq)]
+pub enum IntelligenceTerminalClosureErrorV3 {
+    Runtime(AgentRunError),
+    Learning {
+        runtime: RunReceipt,
+        error: OutcomeCreditClosureErrorV1,
+    },
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -557,6 +576,39 @@ impl AgentRunCoordinator {
         record.phase = phase;
         advance_revision(record)?;
         Ok(receipt(record, /*idempotent*/ false))
+    }
+
+    /// Record an already-observed terminal runtime fact and then close the
+    /// corresponding learning episode through the sealed ledger owner.
+    ///
+    /// Runtime terminality is committed first because Agentd owns that fact. A
+    /// later learning failure never rolls the runtime state back; the returned
+    /// error preserves the committed runtime receipt so reconciliation can retry
+    /// the exact ledger closure without redispatching the run.
+    pub fn observe_intelligence_terminal_and_record(
+        &mut self,
+        run_id: &str,
+        expected_revision: u64,
+        phase: RunPhase,
+        closure: OutcomeCreditClosureRequestV1,
+        ledger: &mut dyn DurableLearningJournal,
+    ) -> Result<IntelligenceTerminalClosureReceiptV3, IntelligenceTerminalClosureErrorV3> {
+        if closure.run_id.as_str() != run_id {
+            return Err(IntelligenceTerminalClosureErrorV3::Runtime(
+                AgentRunError::InvalidIdentity("intelligence closure run"),
+            ));
+        }
+        let runtime = self
+            .observe_terminal(run_id, expected_revision, phase, true)
+            .map_err(IntelligenceTerminalClosureErrorV3::Runtime)?;
+        let learning =
+            append_outcome_credit_v1(closure, ledger).map_err(|error| {
+                IntelligenceTerminalClosureErrorV3::Learning {
+                    runtime: runtime.clone(),
+                    error,
+                }
+            })?;
+        Ok(IntelligenceTerminalClosureReceiptV3 { runtime, learning })
     }
 
     pub fn remove_closed_run(
