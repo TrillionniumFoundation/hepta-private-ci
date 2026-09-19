@@ -292,8 +292,6 @@ async fn registry_rejects_group_or_world_accessible_parent() {
     let dir = tempfile::tempdir().unwrap_or_else(|error| panic!("tempdir: {error}"));
     std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o755))
         .unwrap_or_else(|error| panic!("chmod: {error}"));
-    assert_eq!(
-        LeaseRegistry::open(&dir.path().join("leases.sqlite")).await,
-        Err(LeaseRegistryError::UnsafeStatePath)
-    );
+    let result = LeaseRegistry::open(&dir.path().join("leases.sqlite")).await;
+    assert!(matches!(result, Err(LeaseRegistryError::UnsafeStatePath)));
 }
