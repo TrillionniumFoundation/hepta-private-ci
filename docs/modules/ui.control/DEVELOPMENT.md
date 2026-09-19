@@ -308,6 +308,7 @@ Every change touching the transport, projection or browser controller should
 retain tests for:
 
 - provider/secret fields cannot reach `readView()` or the browser view model;
+- duplicate JSON object keys, including escaped key aliases, fail closed at bootstrap, HTTP response and durable pending-store ingress;
 - accessor-shaped required snapshot/module/transport fields fail closed without invoking getters;
 - stale displayed revisions reject mutation;
 - target revision and displayed revision remain separately bound;
