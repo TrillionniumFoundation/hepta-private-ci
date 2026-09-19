@@ -233,6 +233,7 @@ impl AgentdState {
             owner_id,
             generation,
             implementation_digest,
+            candidate_artifact_digest: implementation_digest,
             predecessor_generation: None,
             rollback_predecessor_digest: Digest32::ZERO,
             state_class,
