@@ -632,6 +632,7 @@ async fn run_real_synapse_qualification_inner(
             password: &environment.agent_a_password,
             room_id: &room_a,
         },
+        final_use_broker,
     )?;
     fleet.configure_matrix(
         &agent_b,
@@ -642,6 +643,7 @@ async fn run_real_synapse_qualification_inner(
             password: &environment.agent_b_password,
             room_id: &room_b,
         },
+        final_use_broker,
     )?;
     eprintln!("R4_STAGE matrix_config:done");
     eprintln!("R4_STAGE paired_release_install:start");
@@ -5380,7 +5382,12 @@ impl FleetHarness {
         })
     }
 
-    fn configure_matrix(&self, agent: &AgentFixture, identity: MatrixIdentity<'_>) -> Result<()> {
+    fn configure_matrix(
+        &self,
+        agent: &AgentFixture,
+        identity: MatrixIdentity<'_>,
+        final_use_broker: &QualificationFinalUseBroker,
+    ) -> Result<()> {
         ensure!(!self.started);
         let binding = MatrixBindingV1 {
             schema_version: MATRIX_BINDING_SCHEMA_VERSION,
@@ -5409,6 +5416,7 @@ impl FleetHarness {
         password.write_all(identity.password.as_bytes())?;
         password.write_all(b"\n")?;
         password.sync_all()?;
+        final_use_broker.configure_agent(&agent.layout)?;
         Ok(())
     }
 
