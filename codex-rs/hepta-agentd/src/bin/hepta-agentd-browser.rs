@@ -1,5 +1,6 @@
-//! Explicit Agentd-owned product caller for `browser.servo`.
+//! Explicit one-shot diagnostic/qualification caller for `browser.servo`.
 //!
+//! Production profile lifecycle ownership lives in the long-running Agentd daemon.
 //! This one-shot host deliberately has no Browser listener. It opens the real
 //! persistent final-use authority, verifies the selected Browser service and
 //! Servo worker artifacts, starts the private Browser child, performs one
@@ -47,11 +48,17 @@ struct HostConfig {
     bwrap_sha256: String,
     prlimit_path: PathBuf,
     prlimit_sha256: String,
+    #[serde(default = "default_max_profiles")]
+    max_profiles: u64,
     max_address_space_bytes: u64,
     max_cpu_seconds: u64,
     max_open_files: u64,
     max_processes: u64,
     driver_timeout_ms: u64,
+}
+
+fn default_max_profiles() -> u64 {
+    16
 }
 
 #[derive(Clone, Copy, Deserialize)]
@@ -125,6 +132,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         bwrap_sha256: parse_digest(&config.bwrap_sha256, "bwrap_sha256")?,
         prlimit_path: config.prlimit_path,
         prlimit_sha256: parse_digest(&config.prlimit_sha256, "prlimit_sha256")?,
+        max_profiles: config.max_profiles,
         max_address_space_bytes: config.max_address_space_bytes,
         max_cpu_seconds: config.max_cpu_seconds,
         max_open_files: config.max_open_files,

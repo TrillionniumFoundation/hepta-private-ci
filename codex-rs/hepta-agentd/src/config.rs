@@ -17,6 +17,7 @@ pub const HEPTA_AGENT_ID_ENV: &str = "HEPTA_AGENT_ID";
 pub const HEPTA_AGENT_GENERATION_ENV: &str = "HEPTA_AGENT_GENERATION";
 pub const HEPTA_AGENT_HOME_ENV: &str = "HEPTA_AGENT_HOME";
 pub const HEPTA_AGENT_RUN_ROOT_ENV: &str = "HEPTA_AGENT_RUN_ROOT";
+pub use crate::browser_servo::HEPTA_BROWSER_HOST_CONFIG_ENV;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentdIdentity {
@@ -38,6 +39,7 @@ pub struct AgentdConfig {
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    browser_servo: Option<crate::BrowserServoRuntimeConfig>,
 }
 
 impl AgentdConfig {
@@ -55,7 +57,7 @@ impl AgentdConfig {
         let run_root = required_path(HEPTA_AGENT_RUN_ROOT_ENV)?;
         let codex_home = required_path("CODEX_HOME")?;
         let current_dir = std::env::current_dir()?;
-        Self::load(
+        let mut config = Self::load(
             fleet_root,
             AgentId::parse(agent_id).map_err(|error| AgentdError::Invalid(error.to_string()))?,
             spawn_generation,
@@ -63,7 +65,13 @@ impl AgentdConfig {
             run_root,
             codex_home,
             current_dir,
-        )
+        )?;
+        if let Some(path) = std::env::var_os(HEPTA_BROWSER_HOST_CONFIG_ENV)
+            .filter(|value| !value.is_empty())
+        {
+            config = config.with_browser_servo_host_config_path(PathBuf::from(path))?;
+        }
+        Ok(config)
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -143,6 +151,7 @@ impl AgentdConfig {
             _writer_lock: writer_lock,
             authbus_trust_file: None,
             cognitive_ranker: None,
+            browser_servo: None,
         })
     }
 

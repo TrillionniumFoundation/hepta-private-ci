@@ -16,6 +16,7 @@ use std::path::PathBuf;
 use std::process::Child;
 use std::process::Command;
 use std::process::Stdio;
+use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::mpsc;
 use std::thread;
@@ -24,7 +25,9 @@ use std::time::Duration;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseError;
+use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use serde::Deserialize;
 use serde_json::Map;
 use serde_json::Value;
 use serde_json::json;
@@ -39,6 +42,9 @@ const MAX_SERVICE_BYTES: usize = 8 * 1024 * 1024;
 const MAX_WORKER_BYTES: usize = 512 * 1024 * 1024;
 const MAX_BWRAP_BYTES: usize = 64 * 1024 * 1024;
 const MAX_PRLIMIT_BYTES: usize = 16 * 1024 * 1024;
+const MAX_HOST_CONFIG_BYTES: usize = 64 * 1024;
+const MAX_REVOCATION_FILE_BYTES: usize = 256 * 1024;
+pub const HEPTA_BROWSER_HOST_CONFIG_ENV: &str = "HEPTA_BROWSER_HOST_CONFIG";
 const JS_SAFE_INTEGER: u64 = 9_007_199_254_740_991;
 const MAX_DRIVER_TIMEOUT_MS: u64 = 120_000;
 const PARENT_FRAME_GRACE_MS: u64 = 5_000;
@@ -127,6 +133,11 @@ pub trait BrowserServoTransport: Send {
     ) -> Result<Vec<u8>, BrowserServoError>;
 }
 
+pub trait BrowserServoCaller: Send + Sync {
+    fn call_browser(&self, call: BrowserServoCall) -> Result<Value, BrowserServoError>;
+}
+
+
 pub struct BrowserServoPort<T: BrowserServoTransport> {
     authority: FinalUseAuthority,
     state: Mutex<PortState<T>>,
@@ -146,6 +157,12 @@ impl<T: BrowserServoTransport> fmt::Debug for BrowserServoPort<T> {
             .field("authority", &self.authority)
             .field("transport", &"[PRIVATE CHILD CHANNEL]")
             .finish()
+    }
+}
+
+impl<T: BrowserServoTransport> BrowserServoCaller for BrowserServoPort<T> {
+    fn call_browser(&self, call: BrowserServoCall) -> Result<Value, BrowserServoError> {
+        self.call(call)
     }
 }
 
@@ -686,6 +703,165 @@ fn browser_witness_digest(
     hasher.finalize().into()
 }
 
+#[derive(Clone)]
+pub struct BrowserServoRuntimeConfig {
+    authority: FinalUseAuthority,
+    process: BrowserServoProcessConfig,
+    revocation_file: PathBuf,
+}
+
+impl fmt::Debug for BrowserServoRuntimeConfig {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("BrowserServoRuntimeConfig")
+            .field("process", &self.process)
+            .field("revocation_file", &self.revocation_file)
+            .field("authority", &"[FINAL USE AUTHORITY]")
+            .finish()
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct BrowserServoHostConfigFile {
+    signer_id: String,
+    verifying_key: [u8; 32],
+    authority_state_dir: PathBuf,
+    revocation_file: PathBuf,
+    node_path: PathBuf,
+    service_path: PathBuf,
+    service_sha256: String,
+    worker_path: PathBuf,
+    worker_sha256: String,
+    profile_root: PathBuf,
+    journal_path: PathBuf,
+    bwrap_path: PathBuf,
+    bwrap_sha256: String,
+    prlimit_path: PathBuf,
+    prlimit_sha256: String,
+    #[serde(default = "default_max_profiles")]
+    max_profiles: u64,
+    max_address_space_bytes: u64,
+    max_cpu_seconds: u64,
+    max_open_files: u64,
+    max_processes: u64,
+    driver_timeout_ms: u64,
+}
+
+fn default_max_profiles() -> u64 {
+    16
+}
+
+impl BrowserServoRuntimeConfig {
+    pub fn from_host_config_path(path: &Path) -> Result<Self, BrowserServoError> {
+        let bytes = read_bounded_regular_file(path, MAX_HOST_CONFIG_BYTES, "Browser host config")?;
+        let host: BrowserServoHostConfigFile = serde_json::from_slice(&bytes)
+            .map_err(|error| BrowserServoError::Invalid(format!("Browser host config is invalid: {error}")))?;
+        if !host.authority_state_dir.is_absolute() || !host.revocation_file.is_absolute() {
+            return Err(BrowserServoError::Invalid(
+                "Browser authority state and revocation paths must be absolute".into(),
+            ));
+        }
+        let head = read_revocation_head(&host.revocation_file)?;
+        let authority = FinalUseAuthority::open_state_dir(
+            &host.authority_state_dir,
+            host.signer_id,
+            host.verifying_key,
+            head,
+        )?;
+        let process = BrowserServoProcessConfig {
+            node_path: host.node_path,
+            service_path: host.service_path,
+            service_sha256: parse_hex_32(&host.service_sha256, "service_sha256")?,
+            worker_path: host.worker_path,
+            worker_sha256: parse_hex_32(&host.worker_sha256, "worker_sha256")?,
+            profile_root: host.profile_root,
+            journal_path: host.journal_path,
+            bwrap_path: host.bwrap_path,
+            bwrap_sha256: parse_hex_32(&host.bwrap_sha256, "bwrap_sha256")?,
+            prlimit_path: host.prlimit_path,
+            prlimit_sha256: parse_hex_32(&host.prlimit_sha256, "prlimit_sha256")?,
+            max_profiles: host.max_profiles,
+            max_address_space_bytes: host.max_address_space_bytes,
+            max_cpu_seconds: host.max_cpu_seconds,
+            max_open_files: host.max_open_files,
+            max_processes: host.max_processes,
+            driver_timeout_ms: host.driver_timeout_ms,
+        };
+        process.validate()?;
+        Ok(Self {
+            authority,
+            process,
+            revocation_file: host.revocation_file,
+        })
+    }
+
+    pub fn start_caller(&self) -> Result<Arc<dyn BrowserServoCaller>, BrowserServoError> {
+        let transport = ChildBrowserTransport::spawn(&self.process)?;
+        let timeout = self.process.parent_frame_timeout()?;
+        let port = BrowserServoPort::with_frame_timeout(self.authority.clone(), transport, timeout)?;
+        Ok(Arc::new(port))
+    }
+
+    pub fn read_revocations(&self) -> Result<FinalUseRevocations, BrowserServoError> {
+        read_revocation_head(&self.revocation_file)
+    }
+
+    pub fn update_revocations(&self, head: FinalUseRevocations) -> Result<(), BrowserServoError> {
+        self.authority.update_revocations(head)?;
+        Ok(())
+    }
+
+    pub fn process_config(&self) -> &BrowserServoProcessConfig {
+        &self.process
+    }
+
+    pub fn revocation_file(&self) -> &Path {
+        &self.revocation_file
+    }
+}
+
+fn read_bounded_regular_file(
+    path: &Path,
+    maximum: usize,
+    label: &str,
+) -> Result<Vec<u8>, BrowserServoError> {
+    if !path.is_absolute() {
+        return Err(BrowserServoError::Invalid(format!("{label} path must be absolute")));
+    }
+    let metadata = fs::symlink_metadata(path).map_err(|error| {
+        BrowserServoError::Invalid(format!("cannot inspect {}: {error}", path.display()))
+    })?;
+    if metadata.file_type().is_symlink() || !metadata.is_file() {
+        return Err(BrowserServoError::Invalid(format!(
+            "{label} must be a regular non-symlink file"
+        )));
+    }
+    let size = usize::try_from(metadata.len())
+        .map_err(|_| BrowserServoError::Invalid(format!("{label} size overflow")))?;
+    if size == 0 || size > maximum {
+        return Err(BrowserServoError::Invalid(format!("{label} exceeds its byte limit")));
+    }
+    fs::read(path).map_err(|error| {
+        BrowserServoError::Invalid(format!("cannot read {}: {error}", path.display()))
+    })
+}
+
+fn read_revocation_head(path: &Path) -> Result<FinalUseRevocations, BrowserServoError> {
+    let bytes = read_bounded_regular_file(path, MAX_REVOCATION_FILE_BYTES, "Browser revocation head")?;
+    let head: FinalUseRevocations = serde_json::from_slice(&bytes)
+        .map_err(|error| BrowserServoError::Invalid(format!("Browser revocation head is invalid: {error}")))?;
+    if head.authority_epoch == 0
+        || head.revision == 0
+        || head.revoked_grant_ids.len() > 65_536
+        || head.revoked_grant_ids.iter().any(|id| id.is_empty() || id.len() > 128)
+    {
+        return Err(BrowserServoError::Invalid(
+            "Browser revocation head violates bounded authority invariants".into(),
+        ));
+    }
+    Ok(head)
+}
+
 #[derive(Clone, Debug)]
 pub struct BrowserServoProcessConfig {
     pub node_path: PathBuf,
@@ -699,6 +875,7 @@ pub struct BrowserServoProcessConfig {
     pub bwrap_sha256: [u8; 32],
     pub prlimit_path: PathBuf,
     pub prlimit_sha256: [u8; 32],
+    pub max_profiles: u64,
     pub max_address_space_bytes: u64,
     pub max_cpu_seconds: u64,
     pub max_open_files: u64,
@@ -724,6 +901,7 @@ impl BrowserServoProcessConfig {
             }
         }
         for (value, name) in [
+            (self.max_profiles, "Browser max profiles"),
             (self.max_address_space_bytes, "Browser max address space"),
             (self.max_cpu_seconds, "Browser max CPU seconds"),
             (self.max_open_files, "Browser max open files"),
@@ -735,6 +913,11 @@ impl BrowserServoProcessConfig {
                     "{name} must be a positive safe integer"
                 )));
             }
+        }
+        if self.max_profiles > 64 {
+            return Err(BrowserServoError::Invalid(
+                "Browser max profiles exceeds the hard ceiling of 64".into(),
+            ));
         }
         if self.driver_timeout_ms > MAX_DRIVER_TIMEOUT_MS {
             return Err(BrowserServoError::Invalid(format!(
@@ -795,6 +978,7 @@ impl ChildBrowserTransport {
             )
             .env("HEPTA_BROWSER_PROFILE_ROOT", &config.profile_root)
             .env("HEPTA_BROWSER_JOURNAL_PATH", &config.journal_path)
+            .env("HEPTA_BROWSER_MAX_PROFILES", config.max_profiles.to_string())
             .env("HEPTA_BROWSER_BWRAP_PATH", &config.bwrap_path)
             .env(
                 "HEPTA_BROWSER_BWRAP_SHA256",
