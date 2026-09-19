@@ -3,8 +3,11 @@ use super::*;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_cognitive_read::AuthoritativeSnapshotV1;
+use codex_hepta_cognitive_read::SnapshotAcquisitionRequestV1;
 use codex_hepta_cognitive_types::MemoryKind;
 use codex_hepta_cognitive_types::MemoryRecord;
+use codex_hepta_cognitive_types::build_snapshot;
 use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_contracts::AgentId;
@@ -54,7 +57,7 @@ fn snapshot() -> CognitiveSnapshotKeyV1 {
 }
 
 fn request() -> AgentdCompactionCheckpointRequest {
-    let source_snapshot = snapshot();
+    let source_snapshot_key = snapshot();
     let record = MemoryRecord {
         record_id: id("memory:e2e"),
         revision: revision(1),
@@ -64,8 +67,29 @@ fn request() -> AgentdCompactionCheckpointRequest {
         citations: Vec::new(),
         state: RecordState::Live,
     };
+    let source_memory_snapshot =
+        build_snapshot(generation(21), vec![record.clone()]).expect("source memory snapshot");
+    let now = now_unix_millis();
+    let source_snapshot = AuthoritativeSnapshotV1::new(
+        id("provider:cognitive:e2e"),
+        source_snapshot_key.clone(),
+        source_memory_snapshot.clone(),
+        now.saturating_sub(1_000).max(1),
+        now.saturating_add(3_600_000),
+    )
+    .expect("authoritative source snapshot");
+    let snapshot_acquisition_request = SnapshotAcquisitionRequestV1 {
+        request_id: id("request:compact:e2e"),
+        scope_id: source_snapshot_key.vector.scope_id.clone(),
+        purpose_id: source_snapshot_key.vector.purpose_id.clone(),
+        minimum_memory_frontier: source_snapshot_key.vector.memory_ledger_frontier,
+        minimum_tombstone_frontier: source_snapshot_key.vector.tombstone_frontier,
+        authority_epoch: source_snapshot_key.vector.authority_epoch,
+        deadline_unix_ms: now.saturating_add(3_600_000),
+    };
     AgentdCompactionCheckpointRequest {
-        source_snapshot: source_snapshot.clone(),
+        source_snapshot,
+        snapshot_acquisition_request,
         generation: generation(2),
         predecessor_checkpoint_digest: Some(digest("checkpoint:bootstrap:e2e")),
         policy: CompactionPolicyV2 {
@@ -80,11 +104,12 @@ fn request() -> AgentdCompactionCheckpointRequest {
             protected_record_ids: vec![id("memory:e2e")],
         },
         semantic_payload: CompactionSemanticPayloadV2 {
-            source_snapshot_digest: source_snapshot.vector_digest,
+            source_snapshot_digest: source_snapshot_key.vector_digest,
+            source_memory_snapshot_digest: source_memory_snapshot.snapshot_digest,
             payload_digest: digest("semantic-payload:e2e"),
             generator_implementation_digest: digest("semantic-generator:e2e"),
             generator_receipt_digest: digest("semantic-generator-receipt:e2e"),
-            tokenizer_digest: source_snapshot.vector.tokenizer_digest,
+            tokenizer_digest: source_snapshot_key.vector.tokenizer_digest,
             encoded_bytes: 256,
             token_count: 32,
         },
@@ -111,6 +136,14 @@ fn request() -> AgentdCompactionCheckpointRequest {
             deletion_non_resurrection_passed: true,
         },
     }
+}
+
+fn now_unix_millis() -> u64 {
+    let millis = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("system clock")
+        .as_millis();
+    u64::try_from(millis).expect("timestamp fits u64")
 }
 
 fn now_unix_seconds() -> u64 {
