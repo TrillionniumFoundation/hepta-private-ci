@@ -78,11 +78,20 @@ pub enum OutcomeTerminalityV1 {
 }
 
 impl OutcomeTerminalityV1 {
-    const fn tag(self) -> u8 {
+    pub(crate) const fn tag(self) -> u8 {
         match self {
             Self::Pending => 0,
             Self::Censored => 1,
             Self::Terminal => 2,
+        }
+    }
+
+    pub(crate) const fn from_tag(tag: u8) -> Option<Self> {
+        match tag {
+            0 => Some(Self::Pending),
+            1 => Some(Self::Censored),
+            2 => Some(Self::Terminal),
+            _ => None,
         }
     }
 }
