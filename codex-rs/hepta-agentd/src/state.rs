@@ -296,14 +296,30 @@ impl AgentdState {
         let before = current.recovery_state();
         let mut next = current.clone();
         let result = operation(&mut next).map_err(run_error)?;
-        if next.recovery_state() != before {
-            // Durability is the linearization point for lifecycle metadata.
-            // A failed write/sync/rename must never publish a state transition
-            // that a restarted owner cannot recover.
-            persist_run_state(&self.run_state_path, &next)?;
-            *current = next;
+        if next.recovery_state() == before {
+            return Ok(result);
         }
-        Ok(result)
+
+        match persist_run_state(&self.run_state_path, &next) {
+            Ok(()) => {
+                *current = next;
+                Ok(result)
+            }
+            Err(RunStatePersistError::BeforeRename(error)) => Err(error),
+            Err(RunStatePersistError::AfterRename(error)) => {
+                // Rename made the candidate visible. Parent-directory sync
+                // failure means crash durability is ambiguous, so retain the
+                // same candidate in memory and fence the process. This blocks
+                // a conflicting reuse of the run identity while the visible
+                // file may already contain the new revision.
+                *current = next;
+                drop(current);
+                self.mark_fenced();
+                Err(AgentdError::Protocol(format!(
+                    "run lifecycle persistence became indeterminate after rename: {error}"
+                )))
+            }
+        }
     }
 
     pub(crate) fn run_start(
@@ -458,29 +474,46 @@ fn load_run_coordinator(
     AgentRunCoordinator::restore_runtime(composition, recovery, now_ms).map_err(run_error)
 }
 
-fn persist_run_state(path: &Path, coordinator: &AgentRunCoordinator) -> Result<(), AgentdError> {
-    let bytes = serde_json::to_vec(&coordinator.recovery_state())?;
+enum RunStatePersistError {
+    BeforeRename(AgentdError),
+    AfterRename(AgentdError),
+}
+
+fn persist_run_state(
+    path: &Path,
+    coordinator: &AgentRunCoordinator,
+) -> Result<(), RunStatePersistError> {
+    let bytes = serde_json::to_vec(&coordinator.recovery_state())
+        .map_err(|error| RunStatePersistError::BeforeRename(error.into()))?;
     if bytes.len() as u64 > MAX_RUN_STATE_BYTES {
-        return Err(AgentdError::Protocol(
+        return Err(RunStatePersistError::BeforeRename(AgentdError::Protocol(
             "agentd run lifecycle state exceeded its bounded size".to_string(),
-        ));
+        )));
     }
     let temporary = path.with_extension("json.tmp");
     let mut options = OpenOptions::new();
     options.create(true).truncate(true).write(true);
-    let mut file = options.open(&temporary)?;
+    let mut file = options
+        .open(&temporary)
+        .map_err(|error| RunStatePersistError::BeforeRename(error.into()))?;
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
-        file.set_permissions(std::fs::Permissions::from_mode(0o600))?;
+        file.set_permissions(std::fs::Permissions::from_mode(0o600))
+            .map_err(|error| RunStatePersistError::BeforeRename(error.into()))?;
     }
-    file.write_all(&bytes)?;
-    file.sync_all()?;
+    file.write_all(&bytes)
+        .map_err(|error| RunStatePersistError::BeforeRename(error.into()))?;
+    file.sync_all()
+        .map_err(|error| RunStatePersistError::BeforeRename(error.into()))?;
     drop(file);
-    std::fs::rename(&temporary, path)?;
+    std::fs::rename(&temporary, path)
+        .map_err(|error| RunStatePersistError::BeforeRename(error.into()))?;
     #[cfg(unix)]
     if let Some(parent) = path.parent() {
-        File::open(parent)?.sync_all()?;
+        File::open(parent)
+            .and_then(|directory| directory.sync_all())
+            .map_err(|error| RunStatePersistError::AfterRename(error.into()))?;
     }
     Ok(())
 }
