@@ -44,10 +44,36 @@
       "designOperation": "run_evaluated_shadow_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "admit_ndu_stochastic_candidate_v1",
+      "nativeSymbol": "codex_hepta_intelligence::admit_ndu_stochastic_candidate_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
+      "state": "source_implemented_independent_evidence_composition",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+          "symbol": "independently_accepted_fbsde_evidence_composes_to_deny_all_admission"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+          "symbol": "independent_rejection_or_manifest_drift_blocks_admission"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "admit_ndu_stochastic_candidate_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex_hepta_ndu::AdmittedNduCoefficientProfileV1",
+        "codex_hepta_intelligence_eval::NduConvergenceCertificateV1",
+        "codex_hepta_intelligence_eval::NduWellPosednessCertificateV1"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Bind source-level NDU stochastic admission to an authenticated product caller and selected artifact/store currentness.",
+    "Bind evaluated-shadow operations to real host ports and durable owner stores.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
