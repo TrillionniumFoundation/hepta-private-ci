@@ -29,17 +29,17 @@ override these machine status facts.
 | `verify_generated_parameter_candidates_v3` | `source_implemented_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/generator_v3.rs` | 1 |
 | `propose_topology_v2` | `source_implemented_governed_durable_host_composed_not_applied` | `codex-rs/hepta-plasticity/src/topology_v2.rs` | 1 |
 | `verify_topology_proposal_v2` | `source_implemented_governed_durable_host_composed_not_applied` | `codex-rs/hepta-plasticity/src/topology_v2.rs` | 1 |
-| `durableproposalregistry` | `source_implemented_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/durable_registry.rs` | 1 |
+| `durableproposalregistry` | `source_implemented_anchored_plus_explicit_zero_complete_frame_unacknowledged_bootstrap_recovery` | `codex-rs/hepta-plasticity/src/durable_registry.rs` | 2 |
 | `authenticated_product_composition` | `adapter_implemented_called_by_agentd_host_entrypoint_pairwise_roles_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 5 |
 | `anchored_product_writer` | `adapter_implemented_agentd_external_anchor_host_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 2 |
 | `parameter_mutation_policy` | `source_implemented_typed_parameter_projection_bound_to_control_engineering_mutation_grammar` | `codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs` | 2 |
 | `agentd_parameter_host` | `host_adapter_entrypoint_source_implemented_owner_evidence_required_not_runtime_executed_or_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 2 |
 | `agentd_owner_evidence_resolution` | `host_enforced_context_freshness_and_evidence_kind_owner_allowlist_concrete_deployment_adapters_required` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 4 |
 | `topology_governed_admission` | `source_implemented_typed_writer_handoff_validated` | `codex-rs/hepta-plasticity/src/topology_governance.rs` | 2 |
-| `durable_topology_registry` | `source_implemented_anchored_governed_topology_registry` | `codex-rs/hepta-plasticity/src/topology_registry.rs` | 1 |
+| `durable_topology_registry` | `source_implemented_anchored_plus_explicit_zero_complete_frame_unacknowledged_bootstrap_recovery` | `codex-rs/hepta-plasticity/src/topology_registry.rs` | 2 |
 | `authenticated_topology_product_composition` | `adapter_implemented_called_by_agentd_host_entrypoint_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/topology_product.rs` | 2 |
 | `agentd_topology_host` | `host_adapter_entrypoint_source_implemented_external_anchor_not_runtime_executed_or_target_host_qualified` | `codex-rs/hepta-agentd/src/topology_plasticity_host.rs` | 2 |
-| `agentd_anchor_fence_journal` | `source_implemented_append_only_checksum_journal_crash_tail_repair_monotonic_generation_fences` | `codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs` | 3 |
+| `agentd_anchor_fence_journal` | `source_implemented_append_only_checksum_journal_crash_tail_repair_monotonic_generation_fences_and_safe_bootstrap_resume` | `codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs` | 3 |
 | `structural_canary_controller` | `source_implemented_durable_candidate_plan_history_bound_observation_only_no_topology_apply_authority` | `codex-rs/hepta-plasticity/src/topology_canary.rs` | 6 |
 
 ### Repository-controlled gaps
@@ -193,9 +193,18 @@ checksum-framed journal implementation rather than overwriting the last trusted 
 in place. Reopen replays every complete frame, rejects any complete invalid frame, and
 repairs only an incomplete crash tail. A new registry generation advances the fence
 exactly once; repeated advancement while that generation is still unacknowledged fails
-closed. Explicit rollover/resume entrypoints prevent fence skipping across crashes.
-The host still owns the physical independent rollback domain; storing the registry and
-journal in the same rollback domain does not satisfy this requirement.
+closed.
+
+The registry side has a separate unacknowledged-bootstrap recovery mode. It accepts
+only a physically empty file, the exact expected header with zero complete frames, or
+an incomplete first-frame crash tail. An incomplete first frame is truncated only
+after the exact scope/fence/capacity header validates. Any complete unacknowledged
+proposal frame returns `UnacknowledgedHistoryPresent` and leaves the bytes untouched
+for explicit reconciliation. Agentd rollover/resume uses this restricted mode rather
+than the raw unanchored registry open, preventing fence skipping without converting
+complete unacknowledged history into accepted state. The host still owns the physical
+independent rollback domain; storing the registry and journal in the same rollback
+domain does not satisfy this requirement.
 
 ## Topology boundary
 

@@ -109,10 +109,11 @@
       "operation": "durableproposalregistry",
       "nativeSymbol": "DurableProposalRegistry",
       "sourcePath": "codex-rs/hepta-plasticity/src/durable_registry.rs",
-      "state": "source_implemented_agentd_host_composed_not_target_host_qualified",
+      "state": "source_implemented_anchored_plus_explicit_zero_complete_frame_unacknowledged_bootstrap_recovery",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-plasticity/src/durable_registry_tests.rs::append_reopen_and_anchor_preserve_exact_record"
+        "codex-rs/hepta-plasticity/src/durable_registry_tests.rs::append_reopen_and_anchor_preserve_exact_record",
+        "codex-rs/hepta-plasticity/src/durable_registry_tests.rs::resume_unacknowledged_bootstrap_repairs_only_pre_frame_crash_state"
       ],
       "sourcePathExists": true,
       "designOperation": "durableproposalregistry",
@@ -229,10 +230,11 @@
       "operation": "durable_topology_registry",
       "nativeSymbol": "DurableTopologyProposalRegistryV1",
       "sourcePath": "codex-rs/hepta-plasticity/src/topology_registry.rs",
-      "state": "source_implemented_anchored_governed_topology_registry",
+      "state": "source_implemented_anchored_plus_explicit_zero_complete_frame_unacknowledged_bootstrap_recovery",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-plasticity/src/topology_registry.rs::tests::topology_registry_reopen_and_old_idempotent_retry_preserve_original_frame"
+        "codex-rs/hepta-plasticity/src/topology_registry.rs::tests::topology_registry_reopen_and_old_idempotent_retry_preserve_original_frame",
+        "codex-rs/hepta-plasticity/src/topology_registry.rs::tests::topology_resume_unacknowledged_bootstrap_repairs_only_pre_frame_crash_state"
       ],
       "sourcePathExists": true,
       "designOperation": "durable_topology_registry",
@@ -278,7 +280,7 @@
       "operation": "agentd_anchor_fence_journal",
       "nativeSymbol": "AdaptiveAnchorJournalV1",
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs",
-      "state": "source_implemented_append_only_checksum_journal_crash_tail_repair_monotonic_generation_fences",
+      "state": "source_implemented_append_only_checksum_journal_crash_tail_repair_monotonic_generation_fences_and_safe_bootstrap_resume",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs::tests::journal_preserves_committed_anchor_across_reopen_and_generation_rollover",

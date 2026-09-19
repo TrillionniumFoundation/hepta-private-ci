@@ -127,9 +127,12 @@ until a target-host telemetry stream and exact execution receipts exist.
 6. An identical proposal retry may return the original record. Semantic drift in an
    occupied artifact/window slot remains a conflict.
 7. Registry rollover uses the explicit Agentd rollover entrypoint with the exact
-   previously acknowledged anchor. If a crash occurs after a new fence is journaled
-   but before a new registry is enrolled, resume that pending fence; never issue
-   another fence to skip the interrupted generation.
+   previously acknowledged anchor. If a crash occurs after a new fence is journaled,
+   resume that pending fence through the restricted unacknowledged-bootstrap API.
+   Empty files, exact header-only state and an incomplete first-frame crash tail are
+   recoverable. Any complete unacknowledged proposal frame is preserved and rejected
+   as `UnacknowledgedHistoryPresent`; reconcile it explicitly before proceeding.
+   Never issue another fence to skip the interrupted generation.
 8. Topology proposal recovery follows the same rule through
    `DurableTopologyProposalRegistryV1::reopen_anchored` and the Agentd topology anchor
    journal. Never convert a missing topology anchor into a fresh bootstrap.
@@ -146,7 +149,8 @@ controller collisions, missing evaluation, owner-evidence missing/stale/context
 substitution, stale/frontier witness, anchored reopen, failed external-anchor
 commit and poisoned-writer behavior, old-prefix rollback, incomplete-tail recovery,
 writer-fence mismatch, append-only anchor-journal crash-tail recovery and complete-frame
-corruption rejection, monotonic generation rollover, canonical mutation-grammar digest
+corruption rejection, zero-complete-frame bootstrap recovery plus complete-unacknowledged
+history rejection, monotonic generation rollover, canonical mutation-grammar digest
 binding, evidence-kind wrong-owner denial, typed parameter-mutation-policy
 protected-surface denial, topology writer-handoff validation, topology anchored reopen,
 topology self-activation denial,
