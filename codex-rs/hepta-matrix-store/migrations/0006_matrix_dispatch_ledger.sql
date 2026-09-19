@@ -76,12 +76,41 @@ CREATE TABLE matrix_dispatch_observations (
 CREATE INDEX matrix_dispatch_observations_by_txn
 ON matrix_dispatch_observations(stable_txn_id, observation_seq);
 
+CREATE TABLE matrix_dispatch_observation_archives (
+    archive_seq INTEGER PRIMARY KEY AUTOINCREMENT,
+    stable_txn_id TEXT NOT NULL,
+    prior_archive_digest TEXT NOT NULL CHECK (
+        length(prior_archive_digest) = 64
+        AND prior_archive_digest NOT GLOB '*[^0-9a-f]*'
+    ),
+    segment_digest TEXT NOT NULL CHECK (
+        length(segment_digest) = 64
+        AND segment_digest NOT GLOB '*[^0-9a-f]*'
+    ),
+    observation_count INTEGER NOT NULL CHECK (observation_count > 0),
+    first_observed_at_ms INTEGER NOT NULL CHECK (first_observed_at_ms >= 0),
+    last_observed_at_ms INTEGER NOT NULL CHECK (
+        last_observed_at_ms >= first_observed_at_ms
+    ),
+    archived_at_ms INTEGER NOT NULL CHECK (archived_at_ms >= last_observed_at_ms),
+    FOREIGN KEY (stable_txn_id) REFERENCES matrix_dispatch_ledger(stable_txn_id) ON DELETE RESTRICT,
+    UNIQUE (stable_txn_id, segment_digest)
+) STRICT;
+
+CREATE INDEX matrix_dispatch_observation_archives_by_txn
+ON matrix_dispatch_observation_archives(stable_txn_id, archive_seq);
+
 CREATE TRIGGER matrix_dispatch_observations_no_update
 BEFORE UPDATE ON matrix_dispatch_observations BEGIN
-    SELECT RAISE(ABORT, 'Matrix dispatch observations are append-only');
+    SELECT RAISE(ABORT, 'Matrix dispatch observations are append-only until compacted');
 END;
 
-CREATE TRIGGER matrix_dispatch_observations_no_delete
-BEFORE DELETE ON matrix_dispatch_observations BEGIN
-    SELECT RAISE(ABORT, 'Matrix dispatch observations are append-only');
+CREATE TRIGGER matrix_dispatch_observation_archives_no_update
+BEFORE UPDATE ON matrix_dispatch_observation_archives BEGIN
+    SELECT RAISE(ABORT, 'Matrix dispatch observation archives are immutable');
+END;
+
+CREATE TRIGGER matrix_dispatch_observation_archives_no_delete
+BEFORE DELETE ON matrix_dispatch_observation_archives BEGIN
+    SELECT RAISE(ABORT, 'Matrix dispatch observation archives are immutable');
 END;
