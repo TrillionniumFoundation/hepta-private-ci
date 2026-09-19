@@ -42,6 +42,10 @@ ALTER TABLE automation_runs
     ADD COLUMN taskflow_run_id TEXT;
 
 ALTER TABLE automation_runs
+    ADD COLUMN taskflow_step_attempt INTEGER NOT NULL DEFAULT 1
+    CHECK (taskflow_step_attempt BETWEEN 1 AND 1000000);
+
+ALTER TABLE automation_runs
     ADD COLUMN provider_turn_id TEXT;
 
 ALTER TABLE automation_runs
