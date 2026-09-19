@@ -381,7 +381,12 @@ impl DurableInferenceControl {
             self.poisoned = true;
             return Err(error.into());
         }
-        prune_native_archives(parent, file_name, retain_archives);
+        if let Err(error) =
+            prune_native_archives(parent, file_name, retain_archives, &archive_path)
+        {
+            self.poisoned = true;
+            return Err(error);
+        }
 
         Ok(NativeCompactionReceipt {
             before_bytes: before.len() as u64,
@@ -853,29 +858,44 @@ fn hex_digest(digest: Digest32) -> String {
 }
 
 #[cfg(unix)]
-fn prune_native_archives(parent: &Path, file_name: &str, retain_archives: usize) {
+fn prune_native_archives(
+    parent: &Path,
+    file_name: &str,
+    retain_archives: usize,
+    current_archive: &Path,
+) -> Result<(), Error> {
     let prefix = format!("{file_name}.hepta-archive-");
-    let Ok(entries) = fs::read_dir(parent) else {
-        return;
-    };
-    let mut archives = entries
-        .filter_map(Result::ok)
-        .filter(|entry| {
-            entry
-                .file_name()
-                .to_str()
-                .is_some_and(|name| name.starts_with(&prefix) && name.ends_with(".journal"))
-        })
-        .filter_map(|entry| {
-            let modified = entry.metadata().ok()?.modified().ok()?;
-            Some((modified, entry.path()))
-        })
-        .collect::<Vec<_>>();
-    archives.sort_by_key(|(modified, _)| *modified);
-    let remove = archives.len().saturating_sub(retain_archives);
-    for (_, path) in archives.into_iter().take(remove) {
-        let _ = fs::remove_file(path);
+    let entries = fs::read_dir(parent)?;
+    let mut archives = Vec::new();
+    for entry in entries {
+        let entry = entry?;
+        let name = entry.file_name();
+        let Some(name) = name.to_str() else {
+            continue;
+        };
+        if !name.starts_with(&prefix) || !name.ends_with(".journal") {
+            continue;
+        }
+        let metadata = entry.metadata()?;
+        let modified = metadata.modified()?;
+        archives.push((modified, entry.path()));
     }
+    archives.sort_by(|(left_time, left_path), (right_time, right_path)| {
+        left_time
+            .cmp(right_time)
+            .then_with(|| left_path.cmp(right_path))
+    });
+
+    while archives.len() > retain_archives {
+        let index = archives
+            .iter()
+            .position(|(_, path)| path != current_archive)
+            .ok_or(Error::CorruptJournal("native archive retention"))?;
+        let (_, path) = archives.remove(index);
+        fs::remove_file(path)?;
+    }
+    File::open(parent)?.sync_all()?;
+    Ok(())
 }
 
 fn receipt(record: &RequestRecord, idempotent: bool) -> ControlReceipt {
