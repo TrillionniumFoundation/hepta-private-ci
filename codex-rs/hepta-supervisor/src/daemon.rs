@@ -31,6 +31,8 @@ use codex_hepta_contracts::AgentId;
 #[cfg(any(unix, test))]
 use codex_hepta_fleet::AgentLifecycle;
 #[cfg(unix)]
+use codex_hepta_fleet::FleetAllocationStore;
+#[cfg(unix)]
 use codex_hepta_fleet::FleetRegistry;
 #[cfg(any(unix, test))]
 use codex_hepta_fleet::FleetRegistryError;
@@ -194,8 +196,10 @@ async fn run_supervisord_inner(
     let _instance = SingleInstanceLock::acquire(layout.supervisor_lock())?;
     let driver =
         UnixProcessDriver::new(256).map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-    let (supervisor, recovery) = Supervisor::recover(
+    let allocation_store = FleetAllocationStore::open_or_initialize(&registry)?;
+    let (supervisor, recovery) = Supervisor::recover_with_fleet_allocations(
         registry.clone(),
+        allocation_store,
         driver,
         SupervisorConfig::local_default(),
         Instant::now(),
@@ -474,6 +478,26 @@ async fn handle_request<D: ProcessDriver>(
             };
             handle_mutation(state, SupervisordMutation::Start, fence, Some(target)).await
         }
+        SupervisordMethod::StartAllocated {
+            fence,
+            release_id,
+            allocation_id,
+        } => {
+            let target = match resolve_release_outside_lock(
+                Arc::clone(&state),
+                fence.agent_id.clone(),
+                release_id,
+            )
+            .await
+            {
+                Ok(target) => target,
+                Err(error) => {
+                    let actual = agent_status(&state, &fence.agent_id).await.ok();
+                    return safe_rejection(error, actual, /*mutation_started*/ false);
+                }
+            };
+            handle_allocated_start(state, fence, target, allocation_id).await
+        }
         SupervisordMethod::Drain { fence } => {
             handle_mutation(
                 state,
@@ -656,6 +680,83 @@ fn unix_seconds_now() -> u64 {
         .duration_since(std::time::UNIX_EPOCH)
         .map(|duration| duration.as_secs())
         .unwrap_or(0)
+}
+
+#[cfg(unix)]
+fn unix_millis_now() -> u64 {
+    std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .ok()
+        .and_then(|duration| u64::try_from(duration.as_millis()).ok())
+        .unwrap_or(0)
+}
+
+#[cfg(unix)]
+async fn handle_allocated_start<D: ProcessDriver>(
+    state: Arc<DaemonState<D>>,
+    fence: SupervisordControlFence,
+    target: AgentRelease,
+    allocation_id: String,
+) -> SupervisordPayload {
+    let agent_id = fence.agent_id.clone();
+    let accepted_state_digest = fence.state_digest.clone();
+    let mut supervisor = state.supervisor.lock().await;
+    let actual = match agent_status_locked(&state, &supervisor, &agent_id) {
+        Ok(actual) => actual,
+        Err(error) => {
+            return safe_rejection(error, /*actual*/ None, /*mutation_started*/ false);
+        }
+    };
+    if !control_fence_matches(&fence, &actual.control_fence) {
+        return error_payload(
+            "stale_control_fence",
+            "selected Agent changed; refresh before retry",
+            Some(actual),
+        );
+    }
+    if let Err(error) = supervisor.preflight_start(&agent_id) {
+        let refreshed = agent_status_locked(&state, &supervisor, &agent_id).ok();
+        return safe_rejection(
+            error,
+            refreshed.or(Some(actual)),
+            /*mutation_started*/ false,
+        );
+    }
+    let next_revision = match supervisor.next_control_revision(&agent_id) {
+        Ok(revision) => revision,
+        Err(error) => return safe_rejection(error, Some(actual), /*mutation_started*/ false),
+    };
+    if let Err(error) = supervisor.set_control_revision(&agent_id, next_revision) {
+        return safe_rejection(error, Some(actual), /*mutation_started*/ false);
+    }
+    let mutation = supervisor.start_release_with_allocation(
+        &agent_id,
+        target,
+        &allocation_id,
+        unix_millis_now(),
+        Instant::now(),
+    );
+    let post = agent_status_locked(&state, &supervisor, &agent_id).ok();
+    if mutation.is_err() {
+        return error_payload(
+            "operation_indeterminate",
+            "allocation-bound start outcome is indeterminate; refresh before retry",
+            post,
+        );
+    }
+    let Some(agent) = post else {
+        return error_payload(
+            "operation_indeterminate",
+            "allocation-bound start outcome is indeterminate; refresh before retry",
+            /*actual*/ None,
+        );
+    };
+    SupervisordPayload::MutationAccepted {
+        operation: SupervisordMutation::Start,
+        accepted_state_digest,
+        agent,
+        production_receipt: None,
+    }
 }
 
 #[cfg(unix)]
