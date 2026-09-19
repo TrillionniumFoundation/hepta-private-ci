@@ -569,6 +569,28 @@ fn run_matches_terminal(
     )
 }
 
+impl AutomationStore {
+    /// Reconciles one already-admitted provider occurrence through the durable
+    /// TaskFlow step/run chain before terminalizing the scheduler occurrence.
+    /// The receipt digest must come from the trusted provider observation.
+    pub async fn reconcile_submitted_terminal(
+        &self,
+        occurrence: &AutomationSubmittedOccurrence,
+        terminal: AutomationOccurrenceTerminal,
+        receipt_digest: &Sha256Digest,
+        observed_at_ms: u64,
+    ) -> Result<(), AutomationError> {
+        reconcile_terminal(
+            self,
+            occurrence,
+            terminal,
+            receipt_digest,
+            observed_at_ms,
+        )
+        .await
+    }
+}
+
 fn map_taskflow_error(error: TaskFlowError) -> AutomationError {
     match error {
         TaskFlowError::Invalid(_) => AutomationError::Invalid,
