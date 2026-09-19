@@ -1,5 +1,6 @@
 #![forbid(unsafe_code)]
 
+//! Algorithm-only HNMF qualification model.\n//!\n//! The `Reference*` values below are bounded internal algorithm fixtures, not\n//! canonical cognitive/memory contracts and not wire schemas. Canonical V1\n//! contract ownership lives exclusively in `codex-rs/hepta-cognitive-types`.\n
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 
@@ -21,7 +22,7 @@ pub type EpisodeId = u64;
 pub type NodeId = u64;
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub enum ModalityKind {
+pub enum ReferenceModalityKind {
     Text,
     Image,
     Audio,
@@ -33,7 +34,7 @@ pub enum ModalityKind {
     Sensor,
 }
 
-impl ModalityKind {
+impl ReferenceModalityKind {
     pub const ALL: [Self; 9] = [
         Self::Text,
         Self::Image,
@@ -62,7 +63,7 @@ impl ModalityKind {
 }
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub enum EngramPopulation {
+pub enum ReferenceEngramPopulation {
     SensoryTrace,
     EpisodicBinding,
     SemanticConcept,
@@ -72,7 +73,7 @@ pub enum EngramPopulation {
     MetaMemory,
 }
 
-impl EngramPopulation {
+impl ReferenceEngramPopulation {
     pub const ALL: [Self; 7] = [
         Self::SensoryTrace,
         Self::EpisodicBinding,
@@ -97,7 +98,7 @@ impl EngramPopulation {
 }
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub enum SynapseRelation {
+pub enum ReferenceSynapseRelation {
     Associative,
     Temporal,
     Causal,
@@ -108,26 +109,26 @@ pub enum SynapseRelation {
     Contradicts,
 }
 
-impl SynapseRelation {
+impl ReferenceSynapseRelation {
     const fn is_negative(self) -> bool {
         matches!(self, Self::Inhibitory | Self::Contradicts)
     }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum PrivacyClass {
+pub enum ReferencePrivacyClass {
     AgentPrivate,
     WorkspacePrivate,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct MemoryEvent {
+pub struct ReferenceEventFeatures {
     pub id: EventId,
     pub episode_id: EpisodeId,
-    pub modalities: BTreeSet<ModalityKind>,
+    pub modalities: BTreeSet<ReferenceModalityKind>,
     pub semantic_keys: BTreeSet<String>,
     pub source_sha256: BTreeSet<String>,
-    pub privacy: PrivacyClass,
+    pub privacy: ReferencePrivacyClass,
     pub valid_from_unix_ms: i64,
     pub valid_to_unix_ms: Option<i64>,
     pub utility_ppm: i32,
@@ -135,15 +136,15 @@ pub struct MemoryEvent {
     pub tombstoned: bool,
 }
 
-impl MemoryEvent {
-    pub fn validate(&self) -> Result<(), FabricError> {
+impl ReferenceEventFeatures {
+    pub fn validate(&self) -> Result<(), ReferenceFabricError> {
         if self.id == 0 || self.episode_id == 0 {
-            return Err(FabricError::Invalid(
+            return Err(ReferenceFabricError::Invalid(
                 "event and episode ids must be non-zero",
             ));
         }
-        if self.modalities.is_empty() || self.modalities.len() > ModalityKind::ALL.len() {
-            return Err(FabricError::Invalid(
+        if self.modalities.is_empty() || self.modalities.len() > ReferenceModalityKind::ALL.len() {
+            return Err(ReferenceFabricError::Invalid(
                 "event modality set is empty or invalid",
             ));
         }
@@ -153,7 +154,7 @@ impl MemoryEvent {
             "event semantic keys",
         )?;
         if self.source_sha256.is_empty() || self.source_sha256.len() > MAX_EVENT_SOURCES {
-            return Err(FabricError::Invalid(
+            return Err(ReferenceFabricError::Invalid(
                 "event source set is empty or exceeds its bound",
             ));
         }
@@ -162,7 +163,7 @@ impl MemoryEvent {
             .iter()
             .any(|value| !is_lower_hex_64(value))
         {
-            return Err(FabricError::Invalid(
+            return Err(ReferenceFabricError::Invalid(
                 "event source digest is not lowercase SHA-256",
             ));
         }
@@ -170,17 +171,17 @@ impl MemoryEvent {
             .valid_to_unix_ms
             .is_some_and(|end| end <= self.valid_from_unix_ms)
         {
-            return Err(FabricError::Invalid(
+            return Err(ReferenceFabricError::Invalid(
                 "event validity interval is not increasing",
             ));
         }
         if !(-PPM as i32..=PPM as i32).contains(&self.utility_ppm) {
-            return Err(FabricError::Invalid(
+            return Err(ReferenceFabricError::Invalid(
                 "event utility is outside the fixed-point range",
             ));
         }
         if u64::from(self.risk_ppm) > PPM as u64 {
-            return Err(FabricError::Invalid(
+            return Err(ReferenceFabricError::Invalid(
                 "event risk is outside the fixed-point range",
             ));
         }
@@ -195,10 +196,10 @@ impl MemoryEvent {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct EngramNode {
+pub struct ReferenceEngramState {
     pub id: NodeId,
-    pub population: EngramPopulation,
-    pub modalities: BTreeSet<ModalityKind>,
+    pub population: ReferenceEngramPopulation,
+    pub modalities: BTreeSet<ReferenceModalityKind>,
     pub cue_keys: BTreeSet<String>,
     pub support_events: BTreeSet<EventId>,
     pub threshold_ppm: i32,
@@ -207,13 +208,13 @@ pub struct EngramNode {
     pub retired: bool,
 }
 
-impl EngramNode {
-    pub fn validate(&self) -> Result<(), FabricError> {
+impl ReferenceEngramState {
+    pub fn validate(&self) -> Result<(), ReferenceFabricError> {
         if self.id == 0 {
-            return Err(FabricError::Invalid("node id must be non-zero"));
+            return Err(ReferenceFabricError::Invalid("node id must be non-zero"));
         }
-        if self.modalities.is_empty() || self.modalities.len() > ModalityKind::ALL.len() {
-            return Err(FabricError::Invalid(
+        if self.modalities.is_empty() || self.modalities.len() > ReferenceModalityKind::ALL.len() {
+            return Err(ReferenceFabricError::Invalid(
                 "node modality set is empty or invalid",
             ));
         }
@@ -221,19 +222,19 @@ impl EngramNode {
         if self.support_events.len() > MAX_SUPPORT_EVENTS
             || (!self.retired && self.support_events.is_empty())
         {
-            return Err(FabricError::Invalid(
+            return Err(ReferenceFabricError::Invalid(
                 "node support set is empty for an active node or exceeds its bound",
             ));
         }
         if !(-PPM as i32..=PPM as i32).contains(&self.threshold_ppm) {
-            return Err(FabricError::Invalid(
+            return Err(ReferenceFabricError::Invalid(
                 "node threshold is outside the fixed-point range",
             ));
         }
         if u64::from(self.target_activity_ppm) > PPM as u64
             || u64::from(self.confidence_ppm) > PPM as u64
         {
-            return Err(FabricError::Invalid(
+            return Err(ReferenceFabricError::Invalid(
                 "node activity or confidence is outside the fixed-point range",
             ));
         }
@@ -242,34 +243,34 @@ impl EngramNode {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Synapse {
+pub struct ReferenceSynapseState {
     pub source: NodeId,
     pub target: NodeId,
-    pub relation: SynapseRelation,
+    pub relation: ReferenceSynapseRelation,
     pub weight_ppm: i32,
     pub eligibility_ppm: i32,
     pub support_events: BTreeSet<EventId>,
     pub retired: bool,
 }
 
-impl Synapse {
-    pub fn validate(&self) -> Result<(), FabricError> {
+impl ReferenceSynapseState {
+    pub fn validate(&self) -> Result<(), ReferenceFabricError> {
         if self.source == 0 || self.target == 0 || self.source == self.target {
-            return Err(FabricError::Invalid(
+            return Err(ReferenceFabricError::Invalid(
                 "synapse endpoints must be distinct non-zero ids",
             ));
         }
         if !(-PPM as i32..=PPM as i32).contains(&self.weight_ppm)
             || !(-PPM as i32..=PPM as i32).contains(&self.eligibility_ppm)
         {
-            return Err(FabricError::Invalid(
+            return Err(ReferenceFabricError::Invalid(
                 "synapse weight or eligibility is outside range",
             ));
         }
         if self.support_events.len() > MAX_SUPPORT_EVENTS
             || (!self.retired && self.support_events.is_empty())
         {
-            return Err(FabricError::Invalid(
+            return Err(ReferenceFabricError::Invalid(
                 "synapse support set is empty for an active synapse or exceeds its bound",
             ));
         }
@@ -278,7 +279,7 @@ impl Synapse {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub struct FabricConfig {
+pub struct ReferenceFabricConfig {
     pub maximum_candidate_events: usize,
     pub maximum_nodes: usize,
     pub maximum_synapses: usize,
@@ -298,7 +299,7 @@ pub struct FabricConfig {
     pub contradiction_forces_abstention: bool,
 }
 
-impl Default for FabricConfig {
+impl Default for ReferenceFabricConfig {
     fn default() -> Self {
         Self {
             maximum_candidate_events: 512,
@@ -322,8 +323,8 @@ impl Default for FabricConfig {
     }
 }
 
-impl FabricConfig {
-    pub fn validate(self) -> Result<(), FabricError> {
+impl ReferenceFabricConfig {
+    pub fn validate(self) -> Result<(), ReferenceFabricError> {
         if self.maximum_candidate_events == 0
             || self.maximum_candidate_events > 512
             || self.maximum_nodes == 0
@@ -341,7 +342,7 @@ impl FabricConfig {
             || self.maximum_activation_paths == 0
             || self.maximum_activation_paths > 32
         {
-            return Err(FabricError::BoundExceeded("fabric structural bound"));
+            return Err(ReferenceFabricError::BoundExceeded("fabric structural bound"));
         }
         for value in [
             self.leak_ppm,
@@ -353,62 +354,62 @@ impl FabricConfig {
             self.minimum_confidence_ppm,
         ] {
             if u64::from(value) > PPM as u64 {
-                return Err(FabricError::Invalid(
+                return Err(ReferenceFabricError::Invalid(
                     "configuration fixed-point value exceeds one",
                 ));
             }
         }
         if self.maximum_weight_delta_ppm <= 0 || i64::from(self.maximum_weight_delta_ppm) > PPM {
-            return Err(FabricError::Invalid("maximum weight delta is invalid"));
+            return Err(ReferenceFabricError::Invalid("maximum weight delta is invalid"));
         }
         Ok(())
     }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct MemoryCue {
-    pub modalities: BTreeSet<ModalityKind>,
+pub struct ReferenceCueFeatures {
+    pub modalities: BTreeSet<ReferenceModalityKind>,
     pub semantic_keys: BTreeSet<String>,
     pub seed_nodes: BTreeSet<NodeId>,
     pub now_unix_ms: i64,
 }
 
-impl MemoryCue {
-    pub fn validate(&self) -> Result<(), FabricError> {
-        if self.modalities.is_empty() || self.modalities.len() > ModalityKind::ALL.len() {
-            return Err(FabricError::Invalid("cue modality set is empty or invalid"));
+impl ReferenceCueFeatures {
+    pub fn validate(&self) -> Result<(), ReferenceFabricError> {
+        if self.modalities.is_empty() || self.modalities.len() > ReferenceModalityKind::ALL.len() {
+            return Err(ReferenceFabricError::Invalid("cue modality set is empty or invalid"));
         }
         validate_keys(&self.semantic_keys, MAX_CUE_KEYS, "cue semantic keys")?;
         if self.seed_nodes.len() > MAX_CUE_SEEDS || self.seed_nodes.contains(&0) {
-            return Err(FabricError::BoundExceeded("cue seed nodes"));
+            return Err(ReferenceFabricError::BoundExceeded("cue seed nodes"));
         }
         Ok(())
     }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ActiveNode {
+pub struct ReferenceActiveNode {
     pub node_id: NodeId,
-    pub population: EngramPopulation,
+    pub population: ReferenceEngramPopulation,
     pub activation_ppm: i32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ActivationPath {
+pub struct ReferenceActivationPath {
     pub source: NodeId,
     pub target: NodeId,
-    pub relation: SynapseRelation,
+    pub relation: ReferenceSynapseRelation,
     pub contribution_ppm: i32,
 }
 
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub struct Contradiction {
+pub struct ReferenceContradiction {
     pub left: NodeId,
     pub right: NodeId,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum RecallAbstainReason {
+pub enum ReferenceRecallAbstainReason {
     NoCandidate,
     OutOfDistribution,
     LowConfidence,
@@ -416,23 +417,23 @@ pub enum RecallAbstainReason {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct RecallPacket {
+pub struct ReferenceRecallState {
     pub snapshot_generation: u64,
     pub candidate_event_count: usize,
     pub selected_events: Vec<EventId>,
-    pub active_nodes: Vec<ActiveNode>,
-    pub activation_paths: Vec<ActivationPath>,
-    pub contradictions: Vec<Contradiction>,
+    pub active_nodes: Vec<ReferenceActiveNode>,
+    pub activation_paths: Vec<ReferenceActivationPath>,
+    pub contradictions: Vec<ReferenceContradiction>,
     pub coverage_ppm: u32,
     pub confidence_ppm: u32,
     pub ood_ppm: u32,
     pub settling_steps: u8,
-    pub abstain: Option<RecallAbstainReason>,
+    pub abstain: Option<ReferenceRecallAbstainReason>,
     pub contains_raw_source_payload: bool,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub struct OutcomeSignal {
+pub struct ReferenceOutcomeFeatures {
     pub utility_delta_ppm: i32,
     pub prediction_error_ppm: u32,
     pub novelty_ppm: u32,
@@ -440,10 +441,10 @@ pub struct OutcomeSignal {
     pub ood_ppm: u32,
 }
 
-impl OutcomeSignal {
-    pub fn validate(self) -> Result<(), FabricError> {
+impl ReferenceOutcomeFeatures {
+    pub fn validate(self) -> Result<(), ReferenceFabricError> {
         if !(-PPM as i32..=PPM as i32).contains(&self.utility_delta_ppm) {
-            return Err(FabricError::Invalid("utility delta is outside range"));
+            return Err(ReferenceFabricError::Invalid("utility delta is outside range"));
         }
         for value in [
             self.prediction_error_ppm,
@@ -452,13 +453,13 @@ impl OutcomeSignal {
             self.ood_ppm,
         ] {
             if u64::from(value) > PPM as u64 {
-                return Err(FabricError::Invalid("outcome component is outside range"));
+                return Err(ReferenceFabricError::Invalid("outcome component is outside range"));
             }
         }
         Ok(())
     }
 
-    pub fn modulator_ppm(self) -> Result<i32, FabricError> {
+    pub fn modulator_ppm(self) -> Result<i32, ReferenceFabricError> {
         self.validate()?;
         let positive = i64::from(self.utility_delta_ppm)
             + i64::from(self.prediction_error_ppm) / 2
@@ -469,10 +470,10 @@ impl OutcomeSignal {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct WeightProposal {
+pub struct ReferenceWeightProposal {
     pub source: NodeId,
     pub target: NodeId,
-    pub relation: SynapseRelation,
+    pub relation: ReferenceSynapseRelation,
     pub old_weight_ppm: i32,
     pub new_weight_ppm: i32,
     pub delta_ppm: i32,
@@ -480,7 +481,7 @@ pub struct WeightProposal {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ThresholdProposal {
+pub struct ReferenceThresholdProposal {
     pub node_id: NodeId,
     pub old_threshold_ppm: i32,
     pub new_threshold_ppm: i32,
@@ -488,18 +489,18 @@ pub struct ThresholdProposal {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct PlasticityBatch {
+pub struct ReferencePlasticityProposalSet {
     pub predecessor_generation: u64,
     pub next_generation: u64,
     pub modulator_ppm: i32,
-    pub weight_proposals: Vec<WeightProposal>,
-    pub threshold_proposals: Vec<ThresholdProposal>,
+    pub weight_proposals: Vec<ReferenceWeightProposal>,
+    pub threshold_proposals: Vec<ReferenceThresholdProposal>,
     pub current_snapshot_immutable: bool,
     pub production_activation_allowed: bool,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ReplayCandidate {
+pub struct ReferenceReplayCandidate {
     pub event_id: EventId,
     pub source_bucket: u16,
     pub expected_utility_gain_ppm: u32,
@@ -511,8 +512,8 @@ pub struct ReplayCandidate {
     pub privacy_allowed: bool,
 }
 
-impl ReplayCandidate {
-    fn score(&self) -> Result<u64, FabricError> {
+impl ReferenceReplayCandidate {
+    fn score(&self) -> Result<u64, ReferenceFabricError> {
         for value in [
             self.expected_utility_gain_ppm,
             self.prediction_error_ppm,
@@ -522,7 +523,7 @@ impl ReplayCandidate {
             self.coverage_need_ppm,
         ] {
             if u64::from(value) > PPM as u64 {
-                return Err(FabricError::Invalid("replay score component exceeds one"));
+                return Err(ReferenceFabricError::Invalid("replay score component exceeds one"));
             }
         }
         let values = [
@@ -538,7 +539,7 @@ impl ReplayCandidate {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ReplaySelectionReceipt {
+pub struct ReferenceReplaySelection {
     pub selected_event_ids: Vec<EventId>,
     pub source_bucket_counts: BTreeMap<u16, usize>,
     pub candidate_count: usize,
@@ -546,10 +547,10 @@ pub struct ReplaySelectionReceipt {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum TopologyOperation {
+pub enum ReferenceTopologyOperation {
     AddNode {
         label: String,
-        population: EngramPopulation,
+        population: ReferenceEngramPopulation,
     },
     SplitNode {
         node_id: NodeId,
@@ -568,23 +569,23 @@ pub enum TopologyOperation {
         source: NodeId,
         old_target: NodeId,
         new_target: NodeId,
-        relation: SynapseRelation,
+        relation: ReferenceSynapseRelation,
     },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct TopologyProposal {
+pub struct ReferenceTopologyProposal {
     pub predecessor_generation: u64,
     pub next_generation: u64,
-    pub operation: TopologyOperation,
+    pub operation: ReferenceTopologyOperation,
     pub capability_typed: bool,
     pub sandbox_only: bool,
     pub operator_accepted: bool,
     pub production_activation_allowed: bool,
 }
 
-impl TopologyProposal {
-    pub fn validate(&self) -> Result<(), FabricError> {
+impl ReferenceTopologyProposal {
+    pub fn validate(&self) -> Result<(), ReferenceFabricError> {
         if self.predecessor_generation == 0
             || self.next_generation != self.predecessor_generation + 1
             || !self.capability_typed
@@ -592,28 +593,28 @@ impl TopologyProposal {
             || self.operator_accepted
             || self.production_activation_allowed
         {
-            return Err(FabricError::AuthorityBoundary);
+            return Err(ReferenceFabricError::AuthorityBoundary);
         }
         match &self.operation {
-            TopologyOperation::AddNode { label, .. }
-            | TopologyOperation::MergeNodes { label, .. } => validate_label(label)?,
-            TopologyOperation::SplitNode { node_id, labels } => {
+            ReferenceTopologyOperation::AddNode { label, .. }
+            | ReferenceTopologyOperation::MergeNodes { label, .. } => validate_label(label)?,
+            ReferenceTopologyOperation::SplitNode { node_id, labels } => {
                 if *node_id == 0 {
-                    return Err(FabricError::Invalid("split node id is zero"));
+                    return Err(ReferenceFabricError::Invalid("split node id is zero"));
                 }
                 validate_label(&labels[0])?;
                 validate_label(&labels[1])?;
                 if labels[0] == labels[1] {
-                    return Err(FabricError::Invalid("split labels must be distinct"));
+                    return Err(ReferenceFabricError::Invalid("split labels must be distinct"));
                 }
             }
-            TopologyOperation::RetireNode { node_id, reason } => {
+            ReferenceTopologyOperation::RetireNode { node_id, reason } => {
                 if *node_id == 0 {
-                    return Err(FabricError::Invalid("retire node id is zero"));
+                    return Err(ReferenceFabricError::Invalid("retire node id is zero"));
                 }
                 validate_label(reason)?;
             }
-            TopologyOperation::Rewire {
+            ReferenceTopologyOperation::Rewire {
                 source,
                 old_target,
                 new_target,
@@ -626,7 +627,7 @@ impl TopologyProposal {
                     || source == new_target
                     || old_target == new_target
                 {
-                    return Err(FabricError::Invalid("rewire endpoints are invalid"));
+                    return Err(ReferenceFabricError::Invalid("rewire endpoints are invalid"));
                 }
             }
         }
@@ -635,19 +636,19 @@ impl TopologyProposal {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ForgetBatch {
+pub struct ReferenceForgetPlan {
     pub event_id: EventId,
     pub predecessor_generation: u64,
     pub next_generation: u64,
     pub affected_nodes: Vec<NodeId>,
-    pub affected_synapses: Vec<(NodeId, NodeId, SynapseRelation)>,
+    pub affected_synapses: Vec<(NodeId, NodeId, ReferenceSynapseRelation)>,
     pub projection_rebuild_required: bool,
     pub artifact_revocation_required: bool,
     pub production_activation_allowed: bool,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub enum FabricError {
+pub enum ReferenceFabricError {
     Invalid(&'static str),
     BoundExceeded(&'static str),
     Conflict(&'static str),
@@ -656,7 +657,7 @@ pub enum FabricError {
     ArithmeticOverflow,
 }
 
-impl fmt::Display for FabricError {
+impl fmt::Display for ReferenceFabricError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Invalid(message) => write!(formatter, "invalid HNMF input: {message}"),
@@ -669,21 +670,21 @@ impl fmt::Display for FabricError {
     }
 }
 
-impl std::error::Error for FabricError {}
+impl std::error::Error for ReferenceFabricError {}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct HnmfFabric {
+pub struct ReferenceHnmfFabric {
     generation: u64,
-    config: FabricConfig,
-    events: BTreeMap<EventId, MemoryEvent>,
-    nodes: BTreeMap<NodeId, EngramNode>,
-    synapses: BTreeMap<(NodeId, NodeId, SynapseRelation), Synapse>,
+    config: ReferenceFabricConfig,
+    events: BTreeMap<EventId, ReferenceEventFeatures>,
+    nodes: BTreeMap<NodeId, ReferenceEngramState>,
+    synapses: BTreeMap<(NodeId, NodeId, ReferenceSynapseRelation), ReferenceSynapseState>,
 }
 
-impl HnmfFabric {
-    pub fn new(generation: u64, config: FabricConfig) -> Result<Self, FabricError> {
+impl ReferenceHnmfFabric {
+    pub fn new(generation: u64, config: ReferenceFabricConfig) -> Result<Self, ReferenceFabricError> {
         if generation == 0 {
-            return Err(FabricError::Invalid("snapshot generation must be non-zero"));
+            return Err(ReferenceFabricError::Invalid("snapshot generation must be non-zero"));
         }
         config.validate()?;
         Ok(Self {
@@ -699,15 +700,15 @@ impl HnmfFabric {
         self.generation
     }
 
-    pub const fn config(&self) -> FabricConfig {
+    pub const fn config(&self) -> ReferenceFabricConfig {
         self.config
     }
 
-    pub fn event(&self, event_id: EventId) -> Option<&MemoryEvent> {
+    pub fn event(&self, event_id: EventId) -> Option<&ReferenceEventFeatures> {
         self.events.get(&event_id)
     }
 
-    pub fn node(&self, node_id: NodeId) -> Option<&EngramNode> {
+    pub fn node(&self, node_id: NodeId) -> Option<&ReferenceEngramState> {
         self.nodes.get(&node_id)
     }
 
@@ -715,63 +716,63 @@ impl HnmfFabric {
         &self,
         source: NodeId,
         target: NodeId,
-        relation: SynapseRelation,
-    ) -> Option<&Synapse> {
+        relation: ReferenceSynapseRelation,
+    ) -> Option<&ReferenceSynapseState> {
         self.synapses.get(&(source, target, relation))
     }
 
-    pub fn insert_event(&mut self, event: MemoryEvent) -> Result<(), FabricError> {
+    pub fn insert_event(&mut self, event: ReferenceEventFeatures) -> Result<(), ReferenceFabricError> {
         event.validate()?;
         if self.events.len() >= self.config.maximum_candidate_events
             && !self.events.contains_key(&event.id)
         {
-            return Err(FabricError::BoundExceeded("events"));
+            return Err(ReferenceFabricError::BoundExceeded("events"));
         }
         insert_exact(&mut self.events, event.id, event, "event identity")
     }
 
-    pub fn insert_node(&mut self, node: EngramNode) -> Result<(), FabricError> {
+    pub fn insert_node(&mut self, node: ReferenceEngramState) -> Result<(), ReferenceFabricError> {
         node.validate()?;
         if self.nodes.len() >= self.config.maximum_nodes && !self.nodes.contains_key(&node.id) {
-            return Err(FabricError::BoundExceeded("nodes"));
+            return Err(ReferenceFabricError::BoundExceeded("nodes"));
         }
         for event_id in &node.support_events {
             if !self.events.contains_key(event_id) {
-                return Err(FabricError::Missing("node support event"));
+                return Err(ReferenceFabricError::Missing("node support event"));
             }
         }
         insert_exact(&mut self.nodes, node.id, node, "node identity")
     }
 
-    pub fn insert_synapse(&mut self, synapse: Synapse) -> Result<(), FabricError> {
+    pub fn insert_synapse(&mut self, synapse: ReferenceSynapseState) -> Result<(), ReferenceFabricError> {
         synapse.validate()?;
         if self.synapses.len() >= self.config.maximum_synapses
             && !self
                 .synapses
                 .contains_key(&(synapse.source, synapse.target, synapse.relation))
         {
-            return Err(FabricError::BoundExceeded("synapses"));
+            return Err(ReferenceFabricError::BoundExceeded("synapses"));
         }
         if !self.nodes.contains_key(&synapse.source) || !self.nodes.contains_key(&synapse.target) {
-            return Err(FabricError::Missing("synapse endpoint"));
+            return Err(ReferenceFabricError::Missing("synapse endpoint"));
         }
         for event_id in &synapse.support_events {
             if !self.events.contains_key(event_id) {
-                return Err(FabricError::Missing("synapse support event"));
+                return Err(ReferenceFabricError::Missing("synapse support event"));
             }
         }
         let key = (synapse.source, synapse.target, synapse.relation);
         insert_exact(&mut self.synapses, key, synapse, "synapse identity")
     }
 
-    pub fn validate(&self) -> Result<(), FabricError> {
+    pub fn validate(&self) -> Result<(), ReferenceFabricError> {
         self.config.validate()?;
         if self.generation == 0
             || self.events.len() > self.config.maximum_candidate_events
             || self.nodes.len() > self.config.maximum_nodes
             || self.synapses.len() > self.config.maximum_synapses
         {
-            return Err(FabricError::BoundExceeded("snapshot"));
+            return Err(ReferenceFabricError::BoundExceeded("snapshot"));
         }
         for event in self.events.values() {
             event.validate()?;
@@ -783,7 +784,7 @@ impl HnmfFabric {
                 .iter()
                 .any(|id| !self.events.contains_key(id))
             {
-                return Err(FabricError::Missing("node support event"));
+                return Err(ReferenceFabricError::Missing("node support event"));
             }
         }
         for synapse in self.synapses.values() {
@@ -791,20 +792,20 @@ impl HnmfFabric {
             if !self.nodes.contains_key(&synapse.source)
                 || !self.nodes.contains_key(&synapse.target)
             {
-                return Err(FabricError::Missing("synapse endpoint"));
+                return Err(ReferenceFabricError::Missing("synapse endpoint"));
             }
             if synapse
                 .support_events
                 .iter()
                 .any(|id| !self.events.contains_key(id))
             {
-                return Err(FabricError::Missing("synapse support event"));
+                return Err(ReferenceFabricError::Missing("synapse support event"));
             }
         }
         Ok(())
     }
 
-    pub fn recall(&self, cue: &MemoryCue) -> Result<RecallPacket, FabricError> {
+    pub fn recall(&self, cue: &ReferenceCueFeatures) -> Result<ReferenceRecallState, ReferenceFabricError> {
         self.validate()?;
         cue.validate()?;
 
@@ -842,7 +843,7 @@ impl HnmfFabric {
         if candidate_event_ids.is_empty() {
             return Ok(empty_packet(
                 self.generation,
-                RecallAbstainReason::NoCandidate,
+                ReferenceRecallAbstainReason::NoCandidate,
                 self.config.maximum_recurrent_steps,
             ));
         }
@@ -866,7 +867,7 @@ impl HnmfFabric {
             let node = self
                 .nodes
                 .get(node_id)
-                .ok_or(FabricError::Missing("candidate node"))?;
+                .ok_or(ReferenceFabricError::Missing("candidate node"))?;
             let semantic_overlap = node.cue_keys.intersection(&cue.semantic_keys).count() as i64;
             let modality_overlap = node.modalities.intersection(&cue.modalities).count() as i64;
             let seeded = if cue.seed_nodes.contains(node_id) {
@@ -884,7 +885,7 @@ impl HnmfFabric {
                 .and_then(|value| value.checked_add(modality_overlap * 100_000))
                 .and_then(|value| value.checked_add(cross_modal * 200_000))
                 .and_then(|value| value.checked_add(seeded * 800_000))
-                .ok_or(FabricError::ArithmeticOverflow)?;
+                .ok_or(ReferenceFabricError::ArithmeticOverflow)?;
             direct_drive.insert(*node_id, clamp_i64(drive, 0, PPM));
         }
 
@@ -901,7 +902,7 @@ impl HnmfFabric {
                 let node = self
                     .nodes
                     .get(node_id)
-                    .ok_or(FabricError::Missing("candidate node"))?;
+                    .ok_or(ReferenceFabricError::Missing("candidate node"))?;
                 let previous = activation.get(node_id).copied().unwrap_or(0);
                 let leak = mul_ppm(previous, i64::from(self.config.leak_ppm))?;
                 let mut value = direct_drive.get(node_id).copied().unwrap_or(0) + leak
@@ -926,9 +927,9 @@ impl HnmfFabric {
                     };
                     value = value
                         .checked_add(contribution)
-                        .ok_or(FabricError::ArithmeticOverflow)?;
+                        .ok_or(ReferenceFabricError::ArithmeticOverflow)?;
                     if contribution != 0 {
-                        paths.push(ActivationPath {
+                        paths.push(ReferenceActivationPath {
                             source: synapse.source,
                             target: synapse.target,
                             relation: synapse.relation,
@@ -957,7 +958,7 @@ impl HnmfFabric {
             .filter(|(_, value)| **value > 0)
             .map(|(node_id, value)| {
                 let node = self.nodes.get(node_id).expect("candidate node exists");
-                ActiveNode {
+                ReferenceActiveNode {
                     node_id: *node_id,
                     population: node.population,
                     activation_ppm: *value as i32,
@@ -981,11 +982,11 @@ impl HnmfFabric {
             .values()
             .filter(|synapse| {
                 !synapse.retired
-                    && synapse.relation == SynapseRelation::Contradicts
+                    && synapse.relation == ReferenceSynapseRelation::Contradicts
                     && active_ids.contains(&synapse.source)
                     && active_ids.contains(&synapse.target)
             })
-            .map(|synapse| Contradiction {
+            .map(|synapse| ReferenceContradiction {
                 left: synapse.source.min(synapse.target),
                 right: synapse.source.max(synapse.target),
             })
@@ -999,7 +1000,7 @@ impl HnmfFabric {
             let node = self
                 .nodes
                 .get(&active.node_id)
-                .ok_or(FabricError::Missing("active node"))?;
+                .ok_or(ReferenceFabricError::Missing("active node"))?;
             for event_id in &node.support_events {
                 if candidate_event_ids.contains(event_id)
                     && self
@@ -1043,28 +1044,28 @@ impl HnmfFabric {
                 let node = self
                     .nodes
                     .get(&active.node_id)
-                    .ok_or(FabricError::Missing("active node"))?;
+                    .ok_or(ReferenceFabricError::Missing("active node"))?;
                 let calibrated = u64::from(active.activation_ppm.unsigned_abs())
                     .min(u64::from(node.confidence_ppm));
                 sum.checked_add(calibrated)
-                    .ok_or(FabricError::ArithmeticOverflow)
+                    .ok_or(ReferenceFabricError::ArithmeticOverflow)
             })?;
             u32::try_from(total / active_nodes.len() as u64).unwrap_or(PPM as u32)
         };
 
         let abstain = if selected_events.is_empty() {
-            Some(RecallAbstainReason::NoCandidate)
+            Some(ReferenceRecallAbstainReason::NoCandidate)
         } else if self.config.contradiction_forces_abstention && !contradictions.is_empty() {
-            Some(RecallAbstainReason::UnresolvedContradiction)
+            Some(ReferenceRecallAbstainReason::UnresolvedContradiction)
         } else if ood_ppm >= self.config.ood_abstain_ppm {
-            Some(RecallAbstainReason::OutOfDistribution)
+            Some(ReferenceRecallAbstainReason::OutOfDistribution)
         } else if confidence_ppm < self.config.minimum_confidence_ppm {
-            Some(RecallAbstainReason::LowConfidence)
+            Some(ReferenceRecallAbstainReason::LowConfidence)
         } else {
             None
         };
 
-        Ok(RecallPacket {
+        Ok(ReferenceRecallState {
             snapshot_generation: self.generation,
             candidate_event_count: candidate_event_ids.len(),
             selected_events,
@@ -1082,12 +1083,12 @@ impl HnmfFabric {
 
     pub fn propose_plasticity(
         &self,
-        packet: &RecallPacket,
-        signal: OutcomeSignal,
-    ) -> Result<PlasticityBatch, FabricError> {
+        packet: &ReferenceRecallState,
+        signal: ReferenceOutcomeFeatures,
+    ) -> Result<ReferencePlasticityProposalSet, ReferenceFabricError> {
         self.validate()?;
         if packet.snapshot_generation != self.generation || packet.contains_raw_source_payload {
-            return Err(FabricError::Conflict(
+            return Err(ReferenceFabricError::Conflict(
                 "recall packet does not match current snapshot",
             ));
         }
@@ -1123,7 +1124,7 @@ impl HnmfFabric {
             );
             let new_weight = clamp_i64(i64::from(synapse.weight_ppm) + delta, -PPM, PPM);
             if eligibility != i64::from(synapse.eligibility_ppm) || delta != 0 {
-                weight_proposals.push(WeightProposal {
+                weight_proposals.push(ReferenceWeightProposal {
                     source: synapse.source,
                     target: synapse.target,
                     relation: synapse.relation,
@@ -1147,7 +1148,7 @@ impl HnmfFabric {
             let difference = observed - i64::from(node.target_activity_ppm);
             let delta = mul_ppm(difference, i64::from(self.config.homeostasis_rate_ppm))?;
             let new_threshold = clamp_i64(i64::from(node.threshold_ppm) + delta, -PPM, PPM);
-            threshold_proposals.push(ThresholdProposal {
+            threshold_proposals.push(ReferenceThresholdProposal {
                 node_id: node.id,
                 old_threshold_ppm: node.threshold_ppm,
                 new_threshold_ppm: new_threshold as i32,
@@ -1156,7 +1157,7 @@ impl HnmfFabric {
         }
         threshold_proposals.sort_by_key(|proposal| proposal.node_id);
 
-        Ok(PlasticityBatch {
+        Ok(ReferencePlasticityProposalSet {
             predecessor_generation: self.generation,
             next_generation: self.generation + 1,
             modulator_ppm,
@@ -1167,29 +1168,29 @@ impl HnmfFabric {
         })
     }
 
-    pub fn apply_plasticity(&self, batch: &PlasticityBatch) -> Result<Self, FabricError> {
+    pub fn apply_plasticity(&self, batch: &ReferencePlasticityProposalSet) -> Result<Self, ReferenceFabricError> {
         if batch.predecessor_generation != self.generation
             || batch.next_generation != self.generation + 1
         {
-            return Err(FabricError::Conflict("plasticity generation mismatch"));
+            return Err(ReferenceFabricError::Conflict("plasticity generation mismatch"));
         }
         if !batch.current_snapshot_immutable || batch.production_activation_allowed {
-            return Err(FabricError::AuthorityBoundary);
+            return Err(ReferenceFabricError::AuthorityBoundary);
         }
         let mut next = self.clone();
         for proposal in &batch.weight_proposals {
             let synapse = next
                 .synapses
                 .get_mut(&(proposal.source, proposal.target, proposal.relation))
-                .ok_or(FabricError::Missing("plasticity synapse"))?;
+                .ok_or(ReferenceFabricError::Missing("plasticity synapse"))?;
             if synapse.weight_ppm != proposal.old_weight_ppm {
-                return Err(FabricError::Conflict("plasticity old weight mismatch"));
+                return Err(ReferenceFabricError::Conflict("plasticity old weight mismatch"));
             }
             if proposal.new_weight_ppm - proposal.old_weight_ppm != proposal.delta_ppm
                 || i64::from(proposal.delta_ppm).abs()
                     > i64::from(self.config.maximum_weight_delta_ppm)
             {
-                return Err(FabricError::Invalid("plasticity delta is invalid"));
+                return Err(ReferenceFabricError::Invalid("plasticity delta is invalid"));
             }
             synapse.weight_ppm = proposal.new_weight_ppm;
             synapse.eligibility_ppm = proposal.new_eligibility_ppm;
@@ -1198,11 +1199,11 @@ impl HnmfFabric {
             let node = next
                 .nodes
                 .get_mut(&proposal.node_id)
-                .ok_or(FabricError::Missing("plasticity node"))?;
+                .ok_or(ReferenceFabricError::Missing("plasticity node"))?;
             if node.threshold_ppm != proposal.old_threshold_ppm
                 || proposal.new_threshold_ppm - proposal.old_threshold_ppm != proposal.delta_ppm
             {
-                return Err(FabricError::Conflict("plasticity threshold mismatch"));
+                return Err(ReferenceFabricError::Conflict("plasticity threshold mismatch"));
             }
             node.threshold_ppm = proposal.new_threshold_ppm;
         }
@@ -1211,13 +1212,13 @@ impl HnmfFabric {
         Ok(next)
     }
 
-    pub fn propose_forget(&self, event_id: EventId) -> Result<ForgetBatch, FabricError> {
+    pub fn propose_forget(&self, event_id: EventId) -> Result<ReferenceForgetPlan, ReferenceFabricError> {
         let event = self
             .events
             .get(&event_id)
-            .ok_or(FabricError::Missing("forget event"))?;
+            .ok_or(ReferenceFabricError::Missing("forget event"))?;
         if event.tombstoned {
-            return Err(FabricError::Conflict("event is already tombstoned"));
+            return Err(ReferenceFabricError::Conflict("event is already tombstoned"));
         }
         let affected_nodes = self
             .nodes
@@ -1231,7 +1232,7 @@ impl HnmfFabric {
             .filter(|synapse| synapse.support_events.contains(&event_id))
             .map(|synapse| (synapse.source, synapse.target, synapse.relation))
             .collect::<Vec<_>>();
-        Ok(ForgetBatch {
+        Ok(ReferenceForgetPlan {
             event_id,
             predecessor_generation: self.generation,
             next_generation: self.generation + 1,
@@ -1243,25 +1244,25 @@ impl HnmfFabric {
         })
     }
 
-    pub fn apply_forget(&self, batch: &ForgetBatch) -> Result<Self, FabricError> {
+    pub fn apply_forget(&self, batch: &ReferenceForgetPlan) -> Result<Self, ReferenceFabricError> {
         if batch.predecessor_generation != self.generation
             || batch.next_generation != self.generation + 1
         {
-            return Err(FabricError::Conflict("forget generation mismatch"));
+            return Err(ReferenceFabricError::Conflict("forget generation mismatch"));
         }
         if !batch.projection_rebuild_required
             || !batch.artifact_revocation_required
             || batch.production_activation_allowed
         {
-            return Err(FabricError::AuthorityBoundary);
+            return Err(ReferenceFabricError::AuthorityBoundary);
         }
         let mut next = self.clone();
         let event = next
             .events
             .get_mut(&batch.event_id)
-            .ok_or(FabricError::Missing("forget event"))?;
+            .ok_or(ReferenceFabricError::Missing("forget event"))?;
         if event.tombstoned {
-            return Err(FabricError::Conflict("event is already tombstoned"));
+            return Err(ReferenceFabricError::Conflict("event is already tombstoned"));
         }
         event.tombstoned = true;
         for node in next.nodes.values_mut() {
@@ -1283,23 +1284,23 @@ impl HnmfFabric {
 }
 
 pub fn select_replay(
-    candidates: &[ReplayCandidate],
+    candidates: &[ReferenceReplayCandidate],
     maximum_selected: usize,
     maximum_per_source_bucket: usize,
-) -> Result<ReplaySelectionReceipt, FabricError> {
+) -> Result<ReferenceReplaySelection, ReferenceFabricError> {
     if candidates.len() > 4096
         || maximum_selected == 0
         || maximum_selected > 256
         || maximum_per_source_bucket == 0
         || maximum_per_source_bucket > maximum_selected
     {
-        return Err(FabricError::BoundExceeded("replay selection"));
+        return Err(ReferenceFabricError::BoundExceeded("replay selection"));
     }
     let mut scored = candidates
         .iter()
         .filter(|candidate| candidate.privacy_allowed)
         .map(|candidate| Ok((candidate, candidate.score()?)))
-        .collect::<Result<Vec<_>, FabricError>>()?;
+        .collect::<Result<Vec<_>, ReferenceFabricError>>()?;
     scored.sort_by(|left, right| {
         right
             .1
@@ -1322,7 +1323,7 @@ pub fn select_replay(
         *count += 1;
         selected_event_ids.push(candidate.event_id);
     }
-    Ok(ReplaySelectionReceipt {
+    Ok(ReferenceReplaySelection {
         selected_event_ids,
         source_bucket_counts,
         candidate_count: candidates.len(),
@@ -1331,11 +1332,11 @@ pub fn select_replay(
 }
 
 fn sparse_select(
-    fabric: &HnmfFabric,
+    fabric: &ReferenceHnmfFabric,
     raw: &BTreeMap<NodeId, i64>,
-) -> Result<BTreeMap<NodeId, i64>, FabricError> {
+) -> Result<BTreeMap<NodeId, i64>, ReferenceFabricError> {
     let mut selected = BTreeMap::new();
-    for population in EngramPopulation::ALL {
+    for population in ReferenceEngramPopulation::ALL {
         let mut group = raw
             .iter()
             .filter_map(|(node_id, value)| {
@@ -1348,7 +1349,7 @@ fn sparse_select(
         for (rank, (node_id, value)) in group.into_iter().enumerate() {
             let inhibition = i64::from(fabric.config.lateral_inhibition_ppm)
                 .checked_mul(rank as i64)
-                .ok_or(FabricError::ArithmeticOverflow)?;
+                .ok_or(ReferenceFabricError::ArithmeticOverflow)?;
             selected.insert(node_id, clamp_i64(value - inhibition, 0, PPM));
         }
     }
@@ -1362,8 +1363,8 @@ fn sparse_select(
         .collect())
 }
 
-fn empty_packet(generation: u64, reason: RecallAbstainReason, settling_steps: u8) -> RecallPacket {
-    RecallPacket {
+fn empty_packet(generation: u64, reason: ReferenceRecallAbstainReason, settling_steps: u8) -> ReferenceRecallState {
+    ReferenceRecallState {
         snapshot_generation: generation,
         candidate_event_count: 0,
         selected_events: Vec::new(),
@@ -1384,12 +1385,12 @@ fn insert_exact<K: Ord + Clone, V: Eq>(
     key: K,
     value: V,
     conflict: &'static str,
-) -> Result<(), FabricError> {
+) -> Result<(), ReferenceFabricError> {
     if let Some(existing) = map.get(&key) {
         if existing == &value {
             return Ok(());
         }
-        return Err(FabricError::Conflict(conflict));
+        return Err(ReferenceFabricError::Conflict(conflict));
     }
     map.insert(key, value);
     Ok(())
@@ -1399,9 +1400,9 @@ fn validate_keys(
     keys: &BTreeSet<String>,
     maximum: usize,
     name: &'static str,
-) -> Result<(), FabricError> {
+) -> Result<(), ReferenceFabricError> {
     if keys.is_empty() || keys.len() > maximum {
-        return Err(FabricError::BoundExceeded(name));
+        return Err(ReferenceFabricError::BoundExceeded(name));
     }
     for key in keys {
         if key.trim().is_empty()
@@ -1409,18 +1410,18 @@ fn validate_keys(
             || key.chars().any(char::is_control)
             || key.to_lowercase() != key.as_str()
         {
-            return Err(FabricError::Invalid("semantic key is not canonical"));
+            return Err(ReferenceFabricError::Invalid("semantic key is not canonical"));
         }
     }
     Ok(())
 }
 
-fn validate_label(value: &str) -> Result<(), FabricError> {
+fn validate_label(value: &str) -> Result<(), ReferenceFabricError> {
     if value.trim().is_empty()
         || value.len() > MAX_TOPOLOGY_LABEL_BYTES
         || value.chars().any(char::is_control)
     {
-        return Err(FabricError::Invalid("topology label is invalid"));
+        return Err(ReferenceFabricError::Invalid("topology label is invalid"));
     }
     Ok(())
 }
@@ -1432,9 +1433,9 @@ fn is_lower_hex_64(value: &str) -> bool {
             .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
 }
 
-fn mul_ppm(left: i64, right: i64) -> Result<i64, FabricError> {
+fn mul_ppm(left: i64, right: i64) -> Result<i64, ReferenceFabricError> {
     left.checked_mul(right)
-        .ok_or(FabricError::ArithmeticOverflow)
+        .ok_or(ReferenceFabricError::ArithmeticOverflow)
         .map(|product| product / PPM)
 }
 
@@ -1475,16 +1476,16 @@ mod tests {
     fn event(
         id: EventId,
         episode_id: EpisodeId,
-        modalities: &[ModalityKind],
+        modalities: &[ReferenceModalityKind],
         keys: &[&str],
-    ) -> MemoryEvent {
-        MemoryEvent {
+    ) -> ReferenceEventFeatures {
+        ReferenceEventFeatures {
             id,
             episode_id,
             modalities: set(modalities.iter().copied()),
             semantic_keys: set(keys.iter().map(|value| (*value).to_string())),
             source_sha256: set([digest(char::from_digit(id as u32 % 6 + 10, 16).unwrap())]),
-            privacy: PrivacyClass::AgentPrivate,
+            privacy: ReferencePrivacyClass::AgentPrivate,
             valid_from_unix_ms: 1,
             valid_to_unix_ms: None,
             utility_ppm: 100_000,
@@ -1495,13 +1496,13 @@ mod tests {
 
     fn node(
         id: NodeId,
-        population: EngramPopulation,
-        modalities: &[ModalityKind],
+        population: ReferenceEngramPopulation,
+        modalities: &[ReferenceModalityKind],
         keys: &[&str],
         support_events: &[EventId],
         threshold_ppm: i32,
-    ) -> EngramNode {
-        EngramNode {
+    ) -> ReferenceEngramState {
+        ReferenceEngramState {
             id,
             population,
             modalities: set(modalities.iter().copied()),
@@ -1517,11 +1518,11 @@ mod tests {
     fn synapse(
         source: NodeId,
         target: NodeId,
-        relation: SynapseRelation,
+        relation: ReferenceSynapseRelation,
         weight_ppm: i32,
         support_events: &[EventId],
-    ) -> Synapse {
-        Synapse {
+    ) -> ReferenceSynapseState {
+        ReferenceSynapseState {
             source,
             target,
             relation,
@@ -1532,8 +1533,8 @@ mod tests {
         }
     }
 
-    fn cue(modalities: &[ModalityKind], keys: &[&str], seeds: &[NodeId]) -> MemoryCue {
-        MemoryCue {
+    fn cue(modalities: &[ReferenceModalityKind], keys: &[&str], seeds: &[NodeId]) -> ReferenceCueFeatures {
+        ReferenceCueFeatures {
             modalities: set(modalities.iter().copied()),
             semantic_keys: set(keys.iter().map(|value| (*value).to_string())),
             seed_nodes: set(seeds.iter().copied()),
@@ -1541,21 +1542,21 @@ mod tests {
         }
     }
 
-    fn cross_modal_fabric() -> HnmfFabric {
-        let mut fabric = HnmfFabric::new(7, FabricConfig::default()).unwrap();
+    fn cross_modal_fabric() -> ReferenceHnmfFabric {
+        let mut fabric = ReferenceHnmfFabric::new(7, ReferenceFabricConfig::default()).unwrap();
         fabric
             .insert_event(event(
                 1,
                 1,
-                &[ModalityKind::Image, ModalityKind::Text],
+                &[ReferenceModalityKind::Image, ReferenceModalityKind::Text],
                 &["door", "red"],
             ))
             .unwrap();
         fabric
             .insert_node(node(
                 1,
-                EngramPopulation::SensoryTrace,
-                &[ModalityKind::Image],
+                ReferenceEngramPopulation::SensoryTrace,
+                &[ReferenceModalityKind::Image],
                 &["door"],
                 &[1],
                 50_000,
@@ -1564,8 +1565,8 @@ mod tests {
         fabric
             .insert_node(node(
                 2,
-                EngramPopulation::EpisodicBinding,
-                &[ModalityKind::Text, ModalityKind::Image],
+                ReferenceEngramPopulation::EpisodicBinding,
+                &[ReferenceModalityKind::Text, ReferenceModalityKind::Image],
                 &["door"],
                 &[1],
                 100_000,
@@ -1574,35 +1575,35 @@ mod tests {
         fabric
             .insert_node(node(
                 3,
-                EngramPopulation::SemanticConcept,
-                &[ModalityKind::Text],
+                ReferenceEngramPopulation::SemanticConcept,
+                &[ReferenceModalityKind::Text],
                 &["door", "red"],
                 &[1],
                 120_000,
             ))
             .unwrap();
         fabric
-            .insert_synapse(synapse(1, 2, SynapseRelation::Associative, 900_000, &[1]))
+            .insert_synapse(synapse(1, 2, ReferenceSynapseRelation::Associative, 900_000, &[1]))
             .unwrap();
         fabric
-            .insert_synapse(synapse(2, 3, SynapseRelation::Supports, 800_000, &[1]))
+            .insert_synapse(synapse(2, 3, ReferenceSynapseRelation::Supports, 800_000, &[1]))
             .unwrap();
         fabric
     }
 
     #[test]
     fn exposes_all_modalities_and_populations() {
-        assert_eq!(ModalityKind::ALL.len(), 9);
-        assert_eq!(EngramPopulation::ALL.len(), 7);
-        assert_eq!(ModalityKind::ToolTrajectory.as_str(), "tool_trajectory");
-        assert_eq!(EngramPopulation::MetaMemory.as_str(), "meta_memory");
+        assert_eq!(ReferenceModalityKind::ALL.len(), 9);
+        assert_eq!(ReferenceEngramPopulation::ALL.len(), 7);
+        assert_eq!(ReferenceModalityKind::ToolTrajectory.as_str(), "tool_trajectory");
+        assert_eq!(ReferenceEngramPopulation::MetaMemory.as_str(), "meta_memory");
     }
 
     #[test]
     fn cross_modal_pattern_completion_recalls_episode() {
         let fabric = cross_modal_fabric();
         let packet = fabric
-            .recall(&cue(&[ModalityKind::Audio], &["door"], &[1]))
+            .recall(&cue(&[ReferenceModalityKind::Audio], &["door"], &[1]))
             .unwrap();
         assert_eq!(packet.abstain, None);
         assert_eq!(packet.selected_events, vec![1]);
@@ -1613,17 +1614,17 @@ mod tests {
 
     #[test]
     fn sparse_competition_is_bounded() {
-        let mut config = FabricConfig::default();
+        let mut config = ReferenceFabricConfig::default();
         config.maximum_active_per_population = 1;
-        let mut fabric = HnmfFabric::new(1, config).unwrap();
+        let mut fabric = ReferenceHnmfFabric::new(1, config).unwrap();
         fabric
-            .insert_event(event(1, 1, &[ModalityKind::Text], &["alpha"]))
+            .insert_event(event(1, 1, &[ReferenceModalityKind::Text], &["alpha"]))
             .unwrap();
         fabric
             .insert_node(node(
                 1,
-                EngramPopulation::SemanticConcept,
-                &[ModalityKind::Text],
+                ReferenceEngramPopulation::SemanticConcept,
+                &[ReferenceModalityKind::Text],
                 &["alpha"],
                 &[1],
                 10_000,
@@ -1632,20 +1633,20 @@ mod tests {
         fabric
             .insert_node(node(
                 2,
-                EngramPopulation::SemanticConcept,
-                &[ModalityKind::Text],
+                ReferenceEngramPopulation::SemanticConcept,
+                &[ReferenceModalityKind::Text],
                 &["alpha"],
                 &[1],
                 20_000,
             ))
             .unwrap();
         let packet = fabric
-            .recall(&cue(&[ModalityKind::Text], &["alpha"], &[]))
+            .recall(&cue(&[ReferenceModalityKind::Text], &["alpha"], &[]))
             .unwrap();
         let semantic_count = packet
             .active_nodes
             .iter()
-            .filter(|node| node.population == EngramPopulation::SemanticConcept)
+            .filter(|node| node.population == ReferenceEngramPopulation::SemanticConcept)
             .count();
         assert_eq!(semantic_count, 1);
         assert_eq!(packet.active_nodes[0].node_id, 1);
@@ -1653,15 +1654,15 @@ mod tests {
 
     #[test]
     fn contradiction_forces_abstention() {
-        let mut fabric = HnmfFabric::new(2, FabricConfig::default()).unwrap();
+        let mut fabric = ReferenceHnmfFabric::new(2, ReferenceFabricConfig::default()).unwrap();
         fabric
-            .insert_event(event(1, 1, &[ModalityKind::Text], &["status"]))
+            .insert_event(event(1, 1, &[ReferenceModalityKind::Text], &["status"]))
             .unwrap();
         fabric
             .insert_node(node(
                 1,
-                EngramPopulation::SemanticConcept,
-                &[ModalityKind::Text],
+                ReferenceEngramPopulation::SemanticConcept,
+                &[ReferenceModalityKind::Text],
                 &["status"],
                 &[1],
                 10_000,
@@ -1670,22 +1671,22 @@ mod tests {
         fabric
             .insert_node(node(
                 2,
-                EngramPopulation::EpisodicBinding,
-                &[ModalityKind::Text],
+                ReferenceEngramPopulation::EpisodicBinding,
+                &[ReferenceModalityKind::Text],
                 &["status"],
                 &[1],
                 10_000,
             ))
             .unwrap();
         fabric
-            .insert_synapse(synapse(1, 2, SynapseRelation::Contradicts, 1, &[1]))
+            .insert_synapse(synapse(1, 2, ReferenceSynapseRelation::Contradicts, 1, &[1]))
             .unwrap();
         let packet = fabric
-            .recall(&cue(&[ModalityKind::Text], &["status"], &[1, 2]))
+            .recall(&cue(&[ReferenceModalityKind::Text], &["status"], &[1, 2]))
             .unwrap();
         assert_eq!(
             packet.abstain,
-            Some(RecallAbstainReason::UnresolvedContradiction)
+            Some(ReferenceRecallAbstainReason::UnresolvedContradiction)
         );
         assert_eq!(packet.contradictions.len(), 1);
     }
@@ -1695,12 +1696,12 @@ mod tests {
         let fabric = cross_modal_fabric();
         let before = fabric.clone();
         let packet = fabric
-            .recall(&cue(&[ModalityKind::Image], &["door"], &[1]))
+            .recall(&cue(&[ReferenceModalityKind::Image], &["door"], &[1]))
             .unwrap();
         let batch = fabric
             .propose_plasticity(
                 &packet,
-                OutcomeSignal {
+                ReferenceOutcomeFeatures {
                     utility_delta_ppm: 400_000,
                     prediction_error_ppm: 500_000,
                     novelty_ppm: 200_000,
@@ -1724,12 +1725,12 @@ mod tests {
     fn applying_plasticity_creates_exact_next_generation() {
         let fabric = cross_modal_fabric();
         let packet = fabric
-            .recall(&cue(&[ModalityKind::Image], &["door"], &[1]))
+            .recall(&cue(&[ReferenceModalityKind::Image], &["door"], &[1]))
             .unwrap();
         let batch = fabric
             .propose_plasticity(
                 &packet,
-                OutcomeSignal {
+                ReferenceOutcomeFeatures {
                     utility_delta_ppm: 500_000,
                     prediction_error_ppm: 500_000,
                     novelty_ppm: 300_000,
@@ -1754,12 +1755,12 @@ mod tests {
     fn homeostasis_raises_threshold_for_active_node() {
         let fabric = cross_modal_fabric();
         let packet = fabric
-            .recall(&cue(&[ModalityKind::Image], &["door"], &[1]))
+            .recall(&cue(&[ReferenceModalityKind::Image], &["door"], &[1]))
             .unwrap();
         let batch = fabric
             .propose_plasticity(
                 &packet,
-                OutcomeSignal {
+                ReferenceOutcomeFeatures {
                     utility_delta_ppm: 0,
                     prediction_error_ppm: 0,
                     novelty_ppm: 0,
@@ -1782,16 +1783,16 @@ mod tests {
         let mut fabric = cross_modal_fabric();
         fabric
             .synapses
-            .get_mut(&(1, 2, SynapseRelation::Associative))
+            .get_mut(&(1, 2, ReferenceSynapseRelation::Associative))
             .unwrap()
             .eligibility_ppm = 500_000;
-        let packet = RecallPacket {
+        let packet = ReferenceRecallState {
             snapshot_generation: fabric.generation(),
             candidate_event_count: 1,
             selected_events: vec![1],
-            active_nodes: vec![ActiveNode {
+            active_nodes: vec![ReferenceActiveNode {
                 node_id: 1,
-                population: EngramPopulation::SensoryTrace,
+                population: ReferenceEngramPopulation::SensoryTrace,
                 activation_ppm: 500_000,
             }],
             activation_paths: Vec::new(),
@@ -1806,7 +1807,7 @@ mod tests {
         let batch = fabric
             .propose_plasticity(
                 &packet,
-                OutcomeSignal {
+                ReferenceOutcomeFeatures {
                     utility_delta_ppm: 0,
                     prediction_error_ppm: 0,
                     novelty_ppm: 0,
@@ -1821,14 +1822,14 @@ mod tests {
             .find(|proposal| {
                 proposal.source == 1
                     && proposal.target == 2
-                    && proposal.relation == SynapseRelation::Associative
+                    && proposal.relation == ReferenceSynapseRelation::Associative
             })
             .unwrap();
         assert_eq!(proposal.new_eligibility_ppm, 400_000);
         assert_eq!(proposal.delta_ppm, 0);
         assert_eq!(
             fabric
-                .synapse(1, 2, SynapseRelation::Associative)
+                .synapse(1, 2, ReferenceSynapseRelation::Associative)
                 .unwrap()
                 .eligibility_ppm,
             500_000
@@ -1837,7 +1838,7 @@ mod tests {
 
     #[test]
     fn modulator_is_risk_and_ood_bounded() {
-        let positive = OutcomeSignal {
+        let positive = ReferenceOutcomeFeatures {
             utility_delta_ppm: 900_000,
             prediction_error_ppm: 900_000,
             novelty_ppm: 900_000,
@@ -1846,7 +1847,7 @@ mod tests {
         }
         .modulator_ppm()
         .unwrap();
-        let negative = OutcomeSignal {
+        let negative = ReferenceOutcomeFeatures {
             utility_delta_ppm: 100_000,
             prediction_error_ppm: 100_000,
             novelty_ppm: 100_000,
@@ -1862,7 +1863,7 @@ mod tests {
     #[test]
     fn replay_selection_enforces_source_quota() {
         let candidates = (1..=6)
-            .map(|event_id| ReplayCandidate {
+            .map(|event_id| ReferenceReplayCandidate {
                 event_id,
                 source_bucket: if event_id <= 4 { 1 } else { 2 },
                 expected_utility_gain_ppm: 900_000 - event_id as u32,
@@ -1889,34 +1890,34 @@ mod tests {
         assert!(next.event(1).unwrap().tombstoned);
         assert!(next.node(1).unwrap().retired);
         assert!(
-            next.synapse(1, 2, SynapseRelation::Associative)
+            next.synapse(1, 2, ReferenceSynapseRelation::Associative)
                 .unwrap()
                 .retired
         );
         let packet = next
-            .recall(&cue(&[ModalityKind::Image], &["door"], &[1]))
+            .recall(&cue(&[ReferenceModalityKind::Image], &["door"], &[1]))
             .unwrap();
         assert_eq!(packet.selected_events, Vec::<EventId>::new());
-        assert_eq!(packet.abstain, Some(RecallAbstainReason::NoCandidate));
+        assert_eq!(packet.abstain, Some(ReferenceRecallAbstainReason::NoCandidate));
     }
 
     #[test]
     fn insertion_order_does_not_change_recall() {
         let first = cross_modal_fabric();
-        let mut second = HnmfFabric::new(7, FabricConfig::default()).unwrap();
+        let mut second = ReferenceHnmfFabric::new(7, ReferenceFabricConfig::default()).unwrap();
         second
             .insert_event(event(
                 1,
                 1,
-                &[ModalityKind::Image, ModalityKind::Text],
+                &[ReferenceModalityKind::Image, ReferenceModalityKind::Text],
                 &["door", "red"],
             ))
             .unwrap();
         second
             .insert_node(node(
                 3,
-                EngramPopulation::SemanticConcept,
-                &[ModalityKind::Text],
+                ReferenceEngramPopulation::SemanticConcept,
+                &[ReferenceModalityKind::Text],
                 &["door", "red"],
                 &[1],
                 120_000,
@@ -1925,8 +1926,8 @@ mod tests {
         second
             .insert_node(node(
                 2,
-                EngramPopulation::EpisodicBinding,
-                &[ModalityKind::Text, ModalityKind::Image],
+                ReferenceEngramPopulation::EpisodicBinding,
+                &[ReferenceModalityKind::Text, ReferenceModalityKind::Image],
                 &["door"],
                 &[1],
                 100_000,
@@ -1935,20 +1936,20 @@ mod tests {
         second
             .insert_node(node(
                 1,
-                EngramPopulation::SensoryTrace,
-                &[ModalityKind::Image],
+                ReferenceEngramPopulation::SensoryTrace,
+                &[ReferenceModalityKind::Image],
                 &["door"],
                 &[1],
                 50_000,
             ))
             .unwrap();
         second
-            .insert_synapse(synapse(2, 3, SynapseRelation::Supports, 800_000, &[1]))
+            .insert_synapse(synapse(2, 3, ReferenceSynapseRelation::Supports, 800_000, &[1]))
             .unwrap();
         second
-            .insert_synapse(synapse(1, 2, SynapseRelation::Associative, 900_000, &[1]))
+            .insert_synapse(synapse(1, 2, ReferenceSynapseRelation::Associative, 900_000, &[1]))
             .unwrap();
-        let recall_cue = cue(&[ModalityKind::Audio], &["door"], &[1]);
+        let recall_cue = cue(&[ReferenceModalityKind::Audio], &["door"], &[1]);
         assert_eq!(
             first.recall(&recall_cue).unwrap(),
             second.recall(&recall_cue).unwrap()
@@ -1957,10 +1958,10 @@ mod tests {
 
     #[test]
     fn topology_proposal_cannot_self_activate() {
-        let proposal = TopologyProposal {
+        let proposal = ReferenceTopologyProposal {
             predecessor_generation: 7,
             next_generation: 8,
-            operation: TopologyOperation::SplitNode {
+            operation: ReferenceTopologyOperation::SplitNode {
                 node_id: 3,
                 labels: ["door-red".to_string(), "door-blue".to_string()],
             },
@@ -1970,11 +1971,11 @@ mod tests {
             production_activation_allowed: false,
         };
         proposal.validate().unwrap();
-        let invalid = TopologyProposal {
+        let invalid = ReferenceTopologyProposal {
             production_activation_allowed: true,
             ..proposal
         };
-        assert_eq!(invalid.validate(), Err(FabricError::AuthorityBoundary));
+        assert_eq!(invalid.validate(), Err(ReferenceFabricError::AuthorityBoundary));
         assert!(!ONLINE_TOPOLOGY_ACTIVATION_ALLOWED);
         assert!(!PRODUCTION_AUTHORITY);
         assert!(!EXTERNAL_EFFECTS_ALLOWED);
@@ -1983,19 +1984,19 @@ mod tests {
 
     #[test]
     fn hard_bounds_fail_closed() {
-        let mut config = FabricConfig::default();
+        let mut config = ReferenceFabricConfig::default();
         config.maximum_recurrent_steps = 5;
         assert_eq!(
-            HnmfFabric::new(1, config),
-            Err(FabricError::BoundExceeded("fabric structural bound"))
+            ReferenceHnmfFabric::new(1, config),
+            Err(ReferenceFabricError::BoundExceeded("fabric structural bound"))
         );
-        let invalid_event = MemoryEvent {
+        let invalid_event = ReferenceEventFeatures {
             source_sha256: set(["not-a-digest".to_string()]),
-            ..event(1, 1, &[ModalityKind::Text], &["alpha"])
+            ..event(1, 1, &[ReferenceModalityKind::Text], &["alpha"])
         };
         assert_eq!(
             invalid_event.validate(),
-            Err(FabricError::Invalid(
+            Err(ReferenceFabricError::Invalid(
                 "event source digest is not lowercase SHA-256"
             ))
         );
