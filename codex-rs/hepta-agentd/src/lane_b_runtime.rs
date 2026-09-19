@@ -470,10 +470,10 @@ impl AgentRunCoordinator {
                     changed.push(receipt(record, /*idempotent*/ false));
                 }
                 RunPhase::Dispatched => {
-                    record.phase = RunPhase::Cancelling;
-                    record.cancellation_reason = Some(reason.to_string());
-                    advance_revision(record)?;
-                    changed.push(receipt(record, /*idempotent*/ false));
+                    // Graceful drain is not an interrupt. Keep the external
+                    // execution state unchanged and wait for its owner to
+                    // report terminality. Shutdown timeout will preserve any
+                    // remaining uncertainty as Indeterminate.
                 }
                 RunPhase::Cancelling
                 | RunPhase::Cancelled
