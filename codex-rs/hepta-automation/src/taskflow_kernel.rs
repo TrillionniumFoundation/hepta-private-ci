@@ -402,9 +402,12 @@ fn apply_replay_transition(
             state.retry_at_ms = Some(*retry_at_ms);
         }
         TaskFlowTransition::RequeueProvenAbsent { proof_digest } => {
-            if state.state != TaskFlowRunState::Running {
+            if !matches!(
+                state.state,
+                TaskFlowRunState::Queued | TaskFlowRunState::Running
+            ) {
                 return Err(invalid_transition(
-                    "provider-absence requeue requires running state",
+                    "provider-absence requeue requires queued or running state",
                 ));
             }
             validate_digest(proof_digest.as_str(), "provider absence proof digest")?;
@@ -414,9 +417,12 @@ fn apply_replay_transition(
             state.terminal_reason = None;
         }
         TaskFlowTransition::CancelProvenAbsent { proof_digest } => {
-            if state.state != TaskFlowRunState::Running {
+            if !matches!(
+                state.state,
+                TaskFlowRunState::Queued | TaskFlowRunState::Running
+            ) {
                 return Err(invalid_transition(
-                    "provider-absence cancellation requires running state",
+                    "provider-absence cancellation requires queued or running state",
                 ));
             }
             validate_digest(proof_digest.as_str(), "provider absence proof digest")?;
