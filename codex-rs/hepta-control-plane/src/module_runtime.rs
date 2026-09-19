@@ -203,6 +203,34 @@ impl RuntimeModuleRegistryV1 {
         Ok(())
     }
 
+    /// Activate an initial reviewed module at process bootstrap. This is not a
+    /// self-evolution promotion and therefore records no selection/canary
+    /// evidence. Replacement generations must use shadow/canary promotion.
+    pub fn activate_bootstrap(
+        &mut self,
+        module_id: &StableId,
+        generation: Generation,
+    ) -> Result<RuntimeTopologySnapshotV1, RuntimeModuleRegistryError> {
+        let key = (module_id.clone(), generation);
+        let candidate = self
+            .records
+            .get(&key)
+            .ok_or(RuntimeModuleRegistryError::UnknownCandidate)?;
+        if candidate.lifecycle != RuntimeModuleLifecycleV1::Registered
+            || candidate.abi.predecessor_generation.is_some()
+            || self.active.contains_key(module_id)
+        {
+            return Err(RuntimeModuleRegistryError::InvalidLifecycleTransition);
+        }
+        self.ensure_writer_domains_available(&candidate.abi, None)?;
+        self.records
+            .get_mut(&key)
+            .expect("candidate was validated above")
+            .lifecycle = RuntimeModuleLifecycleV1::Active;
+        self.active.insert(module_id.clone(), generation);
+        Ok(self.snapshot())
+    }
+
     pub fn enter_shadow(
         &mut self,
         module_id: &StableId,
