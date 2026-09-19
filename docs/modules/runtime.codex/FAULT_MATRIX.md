@@ -1,6 +1,6 @@
 # runtime.codex fault matrix
 
-This matrix is source-level acceptance guidance for the composed Codex App Server boundary. It is not an activation, production-execution, independent-acceptance, promotion, or release receipt.
+This matrix is source-level acceptance guidance for the composed Codex App Server boundary. The listed repository tests exercise adapter/native-caller/durable-control semantics, but they are not a target-host process E2E. A real Agentd + App Server + provider run, including process/socket identity and failure injection, remains qualification evidence. This matrix is not an activation, production-execution, independent-acceptance, promotion, or release receipt.
 
 | Fault / observation | Required adapter result | Replay posture | Durable slot | Required evidence |
 | --- | --- | --- | --- | --- |
@@ -16,6 +16,7 @@ This matrix is source-level acceptance guidance for the composed Codex App Serve
 | Authority endpoint timeout, malformed/oversized response, unsafe socket identity, connected peer UID mismatch, or unsupported schema | reject before `turn/start` | none | release pre-dispatch reservation | external-authority port negative path plus kernel peer-credential check |
 | Signed grant has wrong binding/signature, is expired/revoked, or reuses a nonce | reject before `turn/start` | none | release pre-dispatch reservation | `FinalUseAuthority` plus external-authority port tests |
 | Authority endpoint attempts revocation-head rollback/removal | reject before `turn/start` | none | release pre-dispatch reservation | monotonic revocation synchronization test |
+| Final-use state directory is restored from an older filesystem snapshot or relocated | local store alone cannot prove freshness; fail production qualification until an independently anchored epoch/trust recovery is established | none | do not treat restored nonce/revocation state as fresh authority | external anti-rollback / recovery ceremony evidence |
 | Authority wait consumes the runtime.codex deadline | if the deadline expires while waiting, reject before `turn/start`; authority, acknowledgement and initial observation share one absolute deadline and never reset a fresh full timeout | none | release pre-dispatch reservation before dispatch; reconcile-only after dispatch | bounded authority-await plus absolute observation-budget tests |
 | Agent generation/readiness or App Server ingress changes while authority is pending | reject after grant claim but before `turn/start`; burned nonce is not reused | none | release pre-dispatch reservation | post-authority owner/ingress recheck |
 | Cancellation arrives while authority is pending | reject before final-use entry / `turn/start` | none | release pre-dispatch reservation | post-authority cancellation fence |
@@ -50,4 +51,4 @@ The v2 runtime.codex request digest binds the operation ID, Agent/App Server ses
 
 ## Authority ceiling
 
-Every `CodexAdapterReceipt` remains `DENY_ALL` and never grants model, provider, tool, external-effect, promotion, or release authority. Payload-binding checks do not substitute for the separately owned final-use authority contract. The native worker now requires the external final-use authority port, locally verifies the independently signed exact binding, persists the authority witness, and consumes the one-entry capability immediately before `turn/start`. This source composition still does not certify the deployed issuer policy/key custody, target-host socket/process identity, provider execution, delegated tool terminality, independent acceptance, activation, promotion or release.
+Every `CodexAdapterReceipt` remains `DENY_ALL` and never grants model, provider, tool, external-effect, promotion, or release authority. Payload-binding checks do not substitute for the separately owned final-use authority contract. The native worker now requires the external final-use authority port, locally verifies the independently signed exact binding, persists the authority witness, and consumes the one-entry capability immediately before `turn/start`. This source composition still does not certify the deployed issuer policy/key custody, external anti-rollback freshness of the replay store, target-host socket/process identity, real provider execution, delegated tool terminality, independent acceptance, activation, promotion or release.
