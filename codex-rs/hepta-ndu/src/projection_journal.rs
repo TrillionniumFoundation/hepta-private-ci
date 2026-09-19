@@ -6,8 +6,8 @@ use std::fmt;
 use codex_hepta_types::Digest32;
 
 const MAGIC: &[u8; 8] = b"HNDUPJ01";
-const MAX_RECORDS: usize = 4096;
-const RECORD_BYTES: usize = 8 + 1 + 32 + 32 + 32 + 32 + 32 + 32;
+pub(crate) const MAX_RECORDS: usize = 4096;
+pub(crate) const RECORD_BYTES: usize = 8 + 1 + 32 + 32 + 32 + 32 + 32 + 32;
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum NduProjectionKindV1 {
