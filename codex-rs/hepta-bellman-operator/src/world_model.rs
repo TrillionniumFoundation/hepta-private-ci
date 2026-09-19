@@ -183,22 +183,12 @@ pub fn fit_transition_model(
         });
     }
 
-    let mut bytes = b"hepta.bellman-operator.tabular-world-model.v1".to_vec();
-    push_id(&mut bytes, &model_id);
-    bytes.extend_from_slice(dataset_digest.as_array());
-    bytes.extend_from_slice(
-        &u32::try_from(estimates.len())
-            .map_err(|_| WorldModelError::Arithmetic)?
-            .to_be_bytes(),
-    );
-    for estimate in &estimates {
-        bytes.extend_from_slice(estimate.estimate_digest.as_array());
-    }
+    let model_digest = digest_world_model(&model_id, dataset_digest, &estimates)?;
     Ok(TabularWorldModelV1 {
         model_id,
         dataset_digest,
         estimates,
-        model_digest: Digest32::of_bytes(&bytes),
+        model_digest,
         authority: AuthorityPosture::DENY_ALL,
     })
 }
@@ -231,6 +221,25 @@ pub fn predict_transition(
         synthetic: true,
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+pub(crate) fn digest_world_model(
+    model_id: &StableId,
+    dataset_digest: Digest32,
+    estimates: &[TransitionEstimateV1],
+) -> Result<Digest32, WorldModelError> {
+    let mut bytes = b"hepta.bellman-operator.tabular-world-model.v1".to_vec();
+    push_id(&mut bytes, model_id);
+    bytes.extend_from_slice(dataset_digest.as_array());
+    bytes.extend_from_slice(
+        &u32::try_from(estimates.len())
+            .map_err(|_| WorldModelError::Arithmetic)?
+            .to_be_bytes(),
+    );
+    for estimate in estimates {
+        bytes.extend_from_slice(estimate.estimate_digest.as_array());
+    }
+    Ok(Digest32::of_bytes(&bytes))
 }
 
 pub(crate) fn exact_probabilities(
