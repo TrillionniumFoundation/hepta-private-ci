@@ -352,25 +352,33 @@ def verify():
                 git("merge-base", "--is-ancestor", source_head, "HEAD")
             except subprocess.CalledProcessError:
                 failures.append(f"{mid}: sourceHead is not an ancestor of HEAD")
-            mapped_paths = sorted(
+            source_paths = sorted(
                 {
-                    op.get("sourcePath")
-                    for op in ops
-                    if isinstance(op.get("sourcePath"), str) and op.get("sourcePath")
+                    value
+                    for value in row.get("resolvedRoots", [])
+                    if isinstance(value, str) and value
                 }
             )
-            if mapped_paths:
+            if not source_paths:
+                source_paths = sorted(
+                    {
+                        op.get("sourcePath")
+                        for op in ops
+                        if isinstance(op.get("sourcePath"), str) and op.get("sourcePath")
+                    }
+                )
+            if source_paths:
                 drift = subprocess.run(
-                    ["git", "diff", "--quiet", source_head, "HEAD", "--", *mapped_paths],
+                    ["git", "diff", "--quiet", source_head, "HEAD", "--", *source_paths],
                     cwd=ROOT,
                     check=False,
                 )
                 if drift.returncode == 1:
                     failures.append(
-                        f"{mid}: mapped owner source changed after sourceHead; refresh map"
+                        f"{mid}: owner source root changed after sourceHead; refresh map"
                     )
                 elif drift.returncode not in (0, 1):
-                    failures.append(f"{mid}: cannot compare mapped source with sourceHead")
+                    failures.append(f"{mid}: cannot compare owner source with sourceHead")
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
