@@ -1675,7 +1675,14 @@ impl LocalLeaseOutbox {
         )
         .await?
         .ok_or_else(|| corrupt("event admission has no paired outbox row"))?;
-        ensure_current_occurrence_fence(self, &admission, &outbox)?;
+        ensure_occurrence_readable(
+            &mut transaction,
+            self,
+            &events,
+            &admission,
+            &outbox,
+        )
+        .await?;
         let state = current_outcome(
             &mut transaction,
             &self.lease_id,
@@ -2123,10 +2130,17 @@ impl LocalLeaseOutbox {
         )
         .await?
         .ok_or_else(|| corrupt("event admission has no paired outbox row"))?;
-        // Status is read-only, but it still has to be scoped to the exact
-        // admitted attempt. A newer generation must not observe or report
-        // the state of an occurrence admitted under an older fence.
-        ensure_current_occurrence_fence(self, &admission, &outbox)?;
+        // Status is read-only. A successor may inspect an inherited
+        // occurrence only after the exact source fence is terminal. This
+        // grants no permission to dispatch or mutate that historical attempt.
+        ensure_occurrence_readable(
+            &mut transaction,
+            self,
+            &events,
+            &admission,
+            &outbox,
+        )
+        .await?;
         let state = current_outcome(
             &mut transaction,
             &self.lease_id,
@@ -3679,6 +3693,52 @@ fn queued_receipt(
         payload_sha256: event.payload_sha256.clone(),
         external_effect: false,
     })
+}
+
+async fn ensure_occurrence_readable(
+    transaction: &mut Transaction<'_, Sqlite>,
+    handle: &LocalLeaseOutbox,
+    events: &[EventRow],
+    event: &EventRow,
+    outbox: &OutboxRow,
+) -> Result<(), LocalLeaseOutboxError> {
+    if event.event_id != outbox.event_id
+        || event.occurrence_key != outbox.occurrence_key
+        || event.owner_agent_id != handle.owner_agent_id
+        || outbox.owner_agent_id != handle.owner_agent_id
+    {
+        return Err(corrupt("event/outbox read binding mismatch"));
+    }
+    if event.generation == handle.generation
+        && event.fencing_token == handle.fencing_token
+        && outbox.generation == handle.generation
+        && outbox.fencing_token == handle.fencing_token
+    {
+        return Ok(());
+    }
+    let latest = events
+        .iter()
+        .rev()
+        .find(|candidate| candidate.occurrence_key == event.occurrence_key)
+        .ok_or_else(|| corrupt("occurrence event chain is missing"))?;
+    if latest.generation == handle.generation && latest.fencing_token == handle.fencing_token {
+        return Ok(());
+    }
+    if latest.generation < handle.generation
+        && lease_fence_is_terminal(
+            transaction,
+            &handle.lease_id,
+            latest.generation,
+            &latest.fencing_token,
+        )
+        .await?
+    {
+        return Ok(());
+    }
+    Err(LocalLeaseOutboxError::StaleFence(format!(
+        "occurrence remains owned by active generation {}",
+        latest.generation
+    )))
 }
 
 fn ensure_current_occurrence_fence(
