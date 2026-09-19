@@ -16,10 +16,13 @@ mod error;
 mod journal;
 mod ledger;
 mod model;
+mod production;
 mod segment_codec;
 mod segments;
 mod shadow;
 mod signed_evidence;
+mod unlearning;
+mod witness;
 
 pub use causal_v2::AuthenticatedOutcomeV1;
 pub use causal_v2::AuthenticatedPrincipalV1;
@@ -48,6 +51,8 @@ pub use durable::LedgerRecovery;
 pub use durable::inspect_ledger;
 pub use error::LedgerError;
 pub use journal::DurableLearningJournal;
+pub use production::ProductionLedgerError;
+pub use production::ProductionLedgerWriter;
 pub use ledger::LearningLedger;
 pub use model::AppendDisposition;
 pub use model::AppendReceipt;
@@ -80,6 +85,11 @@ pub use signed_evidence::SignedLearningEvidenceV1;
 pub use signed_evidence::TrustedLearningSignerV1;
 pub use signed_evidence::VerifiedLearningEvidenceV1;
 pub use signed_evidence::verify_signed_role_separation;
+pub use unlearning::UnlearningDerivedKindV1;
+pub use unlearning::UnlearningLineageEventV1;
+pub use unlearning::UnlearningLineageReceiptV1;
+pub use witness::AnchorWitnessError;
+pub use witness::DurableAnchorWitness;
 
 #[cfg(test)]
 #[path = "shadow_tests.rs"]
