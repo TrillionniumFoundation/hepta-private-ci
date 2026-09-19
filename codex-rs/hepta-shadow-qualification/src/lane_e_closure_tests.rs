@@ -13,7 +13,7 @@ use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::MetricContractV1;
 use codex_hepta_intelligence_eval::MetricGateV1;
-use codex_hepta_intelligence_eval::decide_independently;
+use codex_hepta_intelligence_eval::trusted_inprocess::decide_v1;
 use codex_hepta_intelligence_eval::freeze_cross_fold_plan;
 use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::ArtifactLifecycleEventV1;
@@ -305,7 +305,7 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
         Err(error) => panic!("final holdout use failed: {error}"),
     };
 
-    let evaluation = match decide_independently(
+    let evaluation = match decide_v1(
         IndependentEvaluationBundleV1 {
             evaluation_id: id("evaluation-1"),
             candidate_id: artifact_id.clone(),
