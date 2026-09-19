@@ -378,6 +378,48 @@ impl LearningLedger {
         &self,
         outcome: &AuthenticatedOutcomeV1,
     ) -> Result<(), LedgerError> {
+        if outcome.observer.authority_epoch == 0
+            || outcome.observer.authenticated_at > outcome.observer.expires_at
+        {
+            return Err(LedgerError::InvalidAuthenticatedPrincipal);
+        }
+        match outcome.watermark.terminality {
+            OutcomeTerminalityV1::Pending => {
+                if outcome.observed_at.is_some()
+                    || outcome.value.is_some()
+                    || outcome.watermark.finalized_at.is_some()
+                    || outcome.watermark.censoring_reason.is_some()
+                    || outcome.watermark.correction_predecessor.is_some()
+                {
+                    return Err(LedgerError::OutcomeStateMismatch);
+                }
+            }
+            OutcomeTerminalityV1::Censored => {
+                let Some(finalized_at) = outcome.watermark.finalized_at else {
+                    return Err(LedgerError::OutcomeStateMismatch);
+                };
+                if outcome.observed_at.is_some()
+                    || outcome.value.is_some()
+                    || outcome.watermark.censoring_reason.is_none()
+                    || finalized_at < outcome.watermark.latest_observable_at
+                {
+                    return Err(LedgerError::OutcomeStateMismatch);
+                }
+            }
+            OutcomeTerminalityV1::Terminal => {
+                let (Some(observed_at), Some(_), Some(finalized_at)) =
+                    (outcome.observed_at, outcome.value, outcome.watermark.finalized_at)
+                else {
+                    return Err(LedgerError::OutcomeStateMismatch);
+                };
+                if outcome.watermark.censoring_reason.is_some()
+                    || observed_at > outcome.watermark.latest_observable_at
+                    || finalized_at < observed_at
+                {
+                    return Err(LedgerError::InvalidWatermark);
+                }
+            }
+        }
         if self.outcomes.contains_key(&outcome.outcome_id) {
             return Err(LedgerError::OutcomeAlreadyExists(
                 outcome.outcome_id.to_string(),
@@ -424,6 +466,11 @@ impl LearningLedger {
     }
 
     fn validate_credit_batch(&self, batch: &CreditAllocationBatchV1) -> Result<(), LedgerError> {
+        if batch.allocator.authority_epoch == 0
+            || batch.allocator.authenticated_at > batch.allocator.expires_at
+        {
+            return Err(LedgerError::InvalidAuthenticatedPrincipal);
+        }
         if !batch.finalized {
             return Err(LedgerError::CreditBatchNotFinalized);
         }
