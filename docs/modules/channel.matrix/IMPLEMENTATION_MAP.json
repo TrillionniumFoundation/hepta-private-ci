@@ -48,20 +48,20 @@
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "codex-rs/hepta-matrixd/src/send_observer.rs",
-        "symbol": "pub fn prepare_send(",
+        "symbol": "pub async fn prepare_send(",
         "buildTarget": "codex-hepta-matrixd::send_observer"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-matrixd/src/send_observer_tests.rs",
-          "kind": "send_identity",
-          "command": "just test -p codex-hepta-matrixd --lib"
+          "path": "codex-rs/hepta-matrix-store/tests/dispatch_ledger.rs",
+          "kind": "durable_send_identity_and_authority_binding",
+          "command": "cargo test -p codex-hepta-matrix-store --test dispatch_ledger"
         }
       ],
-      "sourceSemantics": "Binds room, session, payload, authority epoch, and one Matrix transaction identity before dispatch.",
+      "sourceSemantics": "Binds the exact stable Matrix transaction to room, transport session, payload digest and authority/grant identity in MatrixDurableStore before governed dispatch.",
       "operation": "prepare_send",
-      "nativeSymbol": "pub fn prepare_send(",
+      "nativeSymbol": "pub async fn prepare_send(",
       "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
       "sourcePathExists": true
     },
@@ -71,30 +71,35 @@
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "codex-rs/hepta-matrixd/src/send_observer.rs",
-        "symbol": "pub fn observe_send(",
+        "symbol": "pub async fn observe_send(",
         "buildTarget": "codex-hepta-matrixd::send_observer"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-matrixd/src/send_observer_tests.rs",
-          "kind": "acknowledgement_and_reconciliation",
-          "command": "just test -p codex-hepta-matrixd --lib"
+          "path": "codex-rs/hepta-matrix-store/tests/dispatch_ledger.rs",
+          "kind": "durable_terminal_and_redaction_recovery",
+          "command": "cargo test -p codex-hepta-matrix-store --test dispatch_ledger"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs",
+          "kind": "transport_acceptance_is_not_terminal",
+          "command": "cargo test -p codex-hepta-matrix-sdk --test durable_transport"
         }
       ],
-      "sourceSemantics": "Records trusted server-event acknowledgement or preserves the same transaction as indeterminate for reconciliation.",
+      "sourceSemantics": "Persists transport acceptance separately from terminal homeserver observation, reconciles trusted /sync echoes by stable transaction ID, and preserves independent redaction evidence across restart.",
       "operation": "observe_send",
-      "nativeSymbol": "pub fn observe_send(",
+      "nativeSymbol": "pub async fn observe_send(",
       "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
       "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
-    "Integrate any new send-observer state with the existing MatrixDurableStore transaction identity; the component alone is not a second durable sender."
+    "Wire a final-use authority/grant caller into the production Matrix outbox path before activation; the durable ledger can bind and verify that identity, but the legacy outbox producer does not yet supply it."
   ],
   "externalEvidenceGates": [
     "real enrolled homeserver/user/device/encryption identity",
-    "live sync and send transport callsites",
+    "exact-candidate real Synapse qualification receipt from the trusted MacBook runner",
     "rate-limit/reconnect/redaction/restore target qualification"
   ],
   "claimBoundary": {
