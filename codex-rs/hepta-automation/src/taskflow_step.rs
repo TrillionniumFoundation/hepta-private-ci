@@ -1,17 +1,15 @@
-//! Qualification-only durable TaskFlow step outbox.
+//! Durable TaskFlow step outbox.
 //!
 //! The regular TaskFlow ledger records the run projection and its transition
-//! chain.  It intentionally does not claim a provider/effect.  This module
-//! adds the smallest durable seam needed by H3: one append-only, per-step
-//! intent/receipt chain.  A prepared row is an outbox item; claim, observation
-//! and reconciliation append receipts to that same chain.  No method here
-//! invokes a provider, wakes a scheduler, or grants production authority.
+//! chain. This module owns the append-only per-step intent/receipt chain used
+//! before any provider boundary. A prepared row is an outbox item; claim,
+//! observation and reconciliation append receipts to that same chain.
 //!
-//! The table is created lazily by the explicitly opt-in qualification API.
-//! This keeps the default automation schema/version unchanged while making the
-//! qualification state durable across reopen.  Every read and mutation first
-//! verifies the owner, run history, definition binding, event hash chain and
-//! exact generation/fence tuple.
+//! Durability is part of the default automation schema. Durability alone grants
+//! no effect, scheduler, provider, or production-caller authority: a caller must
+//! still present a current run fence and a separately verified final-use grant
+//! at the actual effect seam. Every read and mutation verifies the owner, run
+//! history, definition binding, event hash chain and exact generation/fence tuple.
 
 #![allow(
     clippy::too_many_arguments,
@@ -34,9 +32,10 @@ use crate::TaskFlowRun;
 use crate::taskflow::load_taskflow_definition_tx;
 use crate::taskflow::load_taskflow_run_tx;
 
-/// This module is compiled and callable only by an explicit qualification
-/// feature.  These constants are intentionally negative for all authority
-/// surfaces.
+/// The outbox is a default durable substrate. The compatibility qualification
+/// flag remains true because qualification callers may still use it, but it is
+/// no longer feature-gated.
+pub const TASKFLOW_STEP_OUTBOX_DURABLE: bool = true;
 pub const TASKFLOW_STEP_OUTBOX_QUALIFICATION_ENABLED: bool = true;
 pub const TASKFLOW_STEP_OUTBOX_EFFECTS: bool = false;
 pub const TASKFLOW_STEP_OUTBOX_PRODUCTION_CALLER: bool = false;
@@ -686,9 +685,9 @@ impl From<TaskFlowReconcileOutcome> for StepOperationResult {
 }
 
 async fn ensure_step_schema(store: &AutomationStore) -> Result<(), TaskFlowError> {
-    // The schema is additive and deliberately qualification-only.  Keeping it
-    // out of the default migrator avoids changing AUTOMATION_SCHEMA_VERSION or
-    // existing production/open paths.
+    // Migration 0004 installs this table for normal store opens. CREATE IF NOT
+    // EXISTS remains here as a defensive compatibility check for callers that
+    // opened an older test fixture before the migration was introduced.
     sqlx::query(
         r#"CREATE TABLE IF NOT EXISTS taskflow_step_outbox (
             owner_agent_id TEXT NOT NULL,
