@@ -121,7 +121,12 @@ def tests_for_source(source: str | None) -> list[str]:
     if path.suffix != ".rs":
         return []
     candidate = path.with_name(f"{path.stem}_tests.rs")
-    return [str(candidate)] if (ROOT / candidate).is_file() else []
+    if (ROOT / candidate).is_file():
+        return [str(candidate)]
+    source_path = ROOT / path
+    if source_path.is_file() and "#[cfg(test)]" in source_path.read_text(encoding="utf-8"):
+        return [str(path)]
+    return []
 
 
 def parse_entrypoints(module: str):
