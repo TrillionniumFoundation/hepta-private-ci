@@ -250,7 +250,7 @@ impl LeaseRegistry {
         Ok(())
     }
 
-    pub async fn begin_operation(
+    pub(crate) async fn begin_operation(
         &self,
         operation_id: &str,
         kind: LeaseOperationKind,
@@ -305,7 +305,7 @@ impl LeaseRegistry {
         Ok(OperationAdmission::New)
     }
 
-    pub async fn mark_in_flight(
+    pub(crate) async fn mark_in_flight(
         &self,
         operation_id: &str,
         now_ms: u64,
@@ -319,7 +319,7 @@ impl LeaseRegistry {
         .await
     }
 
-    pub async fn commit_issue(
+    pub(crate) async fn commit_issue(
         &self,
         operation_id: &str,
         lease: &LeaseMetadata,
@@ -377,7 +377,7 @@ impl LeaseRegistry {
         Ok(())
     }
 
-    pub async fn begin_lease_transition(
+    pub(crate) async fn begin_lease_transition(
         &self,
         operation_id: &str,
         kind: LeaseOperationKind,
@@ -455,7 +455,7 @@ impl LeaseRegistry {
         Ok(OperationAdmission::New)
     }
 
-    pub async fn commit_renew(
+    pub(crate) async fn commit_renew(
         &self,
         operation_id: &str,
         lease_id: &str,
@@ -495,7 +495,7 @@ impl LeaseRegistry {
         Ok(())
     }
 
-    pub async fn commit_revoke(
+    pub(crate) async fn commit_revoke(
         &self,
         operation_id: &str,
         lease_id: &str,
@@ -531,7 +531,7 @@ impl LeaseRegistry {
         Ok(())
     }
 
-    pub async fn mark_unknown(
+    pub(crate) async fn mark_unknown(
         &self,
         operation_id: &str,
         now_ms: u64,
@@ -586,7 +586,7 @@ impl LeaseRegistry {
     /// Quarantine a known provider lease after issuance succeeded but final
     /// delivery was revoked or became indeterminate. The lease identity stays
     /// recoverable and the revoke path explicitly accepts this state.
-    pub async fn mark_lease_unknown(
+    pub(crate) async fn mark_lease_unknown(
         &self,
         lease_id: &str,
         now_ms: u64,
@@ -607,7 +607,7 @@ impl LeaseRegistry {
         Ok(())
     }
 
-    pub async fn reject_operation(
+    pub(crate) async fn reject_operation(
         &self,
         operation_id: &str,
         now_ms: u64,
