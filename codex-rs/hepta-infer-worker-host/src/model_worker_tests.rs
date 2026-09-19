@@ -293,16 +293,6 @@ fn kernel_final_use_verifier_authenticates_one_exact_worker_generation() {
             && worker_id == "worker.1"
     ));
 
-    assert!(matches!(
-        InferenceWorker::new(
-            100,
-            "worker.2".to_string(),
-            3,
-            verified.clone(),
-            Driver::default(),
-        ),
-        Err(Error::InvalidGrant)
-    ));
     InferenceWorker::new(
         100,
         "worker.1".to_string(),
@@ -321,6 +311,21 @@ fn kernel_final_use_verifier_authenticates_one_exact_worker_generation() {
     drop(verifier);
     drop(authority);
     std::fs::remove_dir_all(root).unwrap();
+}
+
+#[test]
+fn authenticated_resource_grant_cannot_cross_worker_subjects() {
+    let verified = VerifiedResourceGrant::verify_with(100, grant(), &Verifier).unwrap();
+    assert!(matches!(
+        InferenceWorker::new(
+            100,
+            "worker.2".to_string(),
+            3,
+            verified,
+            Driver::default(),
+        ),
+        Err(Error::InvalidGrant)
+    ));
 }
 
 #[test]
