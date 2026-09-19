@@ -311,11 +311,26 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         let (confidence_ppm, ood_ppm, mut abstain) =
             calibrate(&self.config.calibration, &sparse_receipt, input.logical_sequence)?;
         let execution_micros = u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
+        let checkpoint_bytes = checkpoint.bounded_encoded_bytes() as u64;
+        let journal_bytes_written = u64::try_from(304_usize + 16 * self.config.state_width)
+            .map_err(|_| NeuronRuntimeError::Arithmetic)?;
+        let write_amplification_ppm = {
+            let numerator = u128::from(journal_bytes_written)
+                .checked_mul(1_000_000)
+                .ok_or(NeuronRuntimeError::Arithmetic)?;
+            let denominator = u128::from(checkpoint_bytes);
+            let rounded_up = numerator
+                .checked_add(denominator.saturating_sub(1))
+                .ok_or(NeuronRuntimeError::Arithmetic)?
+                / denominator;
+            u32::try_from(rounded_up).map_err(|_| NeuronRuntimeError::Arithmetic)?
+        };
         if execution_micros > self.config.resource_envelope.p99_latency_micros
             || model_output.transient_allocation_bytes
                 > self.config.resource_envelope.transient_allocation_bytes
-            || checkpoint.bounded_encoded_bytes() as u64
-                > self.config.resource_envelope.checkpoint_bytes
+            || checkpoint_bytes > self.config.resource_envelope.checkpoint_bytes
+            || write_amplification_ppm
+                > self.config.resource_envelope.write_amplification_ppm
         {
             abstain = true;
         }
@@ -341,7 +356,9 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         let resource_receipt = NeuronResourceReceiptV1 {
             execution_micros,
             transient_allocation_bytes: model_output.transient_allocation_bytes,
-            checkpoint_bytes: checkpoint.bounded_encoded_bytes() as u64,
+            checkpoint_bytes,
+            journal_bytes_written,
+            write_amplification_ppm,
             saturation_count: sparse_receipt.projection_count,
             queue_age_micros: model_output.queue_age_micros,
         };
