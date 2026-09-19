@@ -48,3 +48,17 @@ END;
 
 CREATE INDEX kg_projection_generation_semantics_digest_lookup
 ON kg_projection_generation_semantics(generation_sha256, projection_scope, generation);
+
+-- Any generation made current after this migration must already have its
+-- canonical V2 semantics receipt in the same transaction. Existing current
+-- generations remain valid legacy history until the next projection write.
+CREATE TRIGGER kg_projection_current_semantics_on_update
+BEFORE UPDATE OF generation ON kg_projection
+WHEN NEW.generation > OLD.generation AND NOT EXISTS (
+    SELECT 1
+    FROM kg_projection_generation_semantics s
+    WHERE s.projection_scope = NEW.projection_scope
+      AND s.generation = NEW.generation
+) BEGIN
+    SELECT RAISE(ABORT, 'current KG projection requires canonical generation semantics');
+END;
