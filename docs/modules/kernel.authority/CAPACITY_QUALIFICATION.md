@@ -76,6 +76,15 @@ or GC code cannot advance epochs.
 Expired unrevoked general leases may be pruned online. Revocation tombstones and
 FinalUse replay history must not be discarded merely to recover capacity.
 
+## Evidence admission
+
+The target-host measurement receipt is a required artifact in the
+[`kernel.authority production evidence bundle`](../../../qualification/kernel-authority/README.md).
+The generic verifier requires every load point and crash/fault case named in this
+document before the bundle can be admitted. This turns omitted measurements into
+a machine failure without treating synthetic repository measurements as target
+hardware evidence.
+
 ## Pass criterion
 
 Capacity qualification is PASS only when:
