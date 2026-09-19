@@ -347,6 +347,45 @@ impl EvidenceTrustPolicy {
             authenticator_id: AUTHENTICATOR_ID.to_string(),
         })
     }
+
+    fn validate_authenticated(
+        &self,
+        envelope: &QualificationEvidenceEnvelope,
+        issuer: &AuthenticatedEvidenceIssuer,
+    ) -> Result<(), EvidenceError> {
+        issuer.validate_for(envelope)?;
+        let policy_digest = self.digest()?;
+        if issuer.trust_policy_sha256 != policy_digest
+            || issuer.trust_policy_id != self.policy_id
+            || issuer.trust_policy_revision != self.revision
+        {
+            return Err(invalid(
+                "authenticated issuer is not bound to the provisioned trust policy",
+            ));
+        }
+        let registration = self.registration(&issuer.principal_id)?;
+        if registration.verifying_key_hex != issuer.verifying_key_hex
+            || registration.roles != issuer.roles
+            || registration.not_before_ms != issuer.credential_not_before_ms
+            || registration.expires_at_ms != issuer.credential_expires_at_ms
+        {
+            return Err(invalid(
+                "authenticated issuer differs from the provisioned registration",
+            ));
+        }
+        let identity = registration.signing_identity_digest()?;
+        if identity != issuer.signing_identity_sha256
+            || self
+                .revoked_signing_identity_sha256
+                .iter()
+                .any(|digest| digest == &identity)
+        {
+            return Err(invalid(
+                "authenticated issuer signing identity is not currently trusted",
+            ));
+        }
+        Ok(())
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -370,8 +409,8 @@ impl EvidenceIssuerProof {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct AuthenticatedEvidenceIssuer {
     schema_version: u32,
     principal_id: String,
@@ -387,6 +426,46 @@ pub struct AuthenticatedEvidenceIssuer {
     trust_policy_id: String,
     trust_policy_revision: u64,
     authenticator_id: String,
+}
+
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+struct AuthenticatedEvidenceIssuerWire {
+    schema_version: u32,
+    principal_id: String,
+    verifying_key_hex: String,
+    signature_hex: String,
+    signed_at_ms: u64,
+    roles: Vec<String>,
+    credential_not_before_ms: u64,
+    credential_expires_at_ms: u64,
+    signing_identity_sha256: Sha256Digest,
+    signature_sha256: Sha256Digest,
+    trust_policy_sha256: Sha256Digest,
+    trust_policy_id: String,
+    trust_policy_revision: u64,
+    authenticator_id: String,
+}
+
+impl AuthenticatedEvidenceIssuerWire {
+    fn into_authenticated(self) -> AuthenticatedEvidenceIssuer {
+        AuthenticatedEvidenceIssuer {
+            schema_version: self.schema_version,
+            principal_id: self.principal_id,
+            verifying_key_hex: self.verifying_key_hex,
+            signature_hex: self.signature_hex,
+            signed_at_ms: self.signed_at_ms,
+            roles: self.roles,
+            credential_not_before_ms: self.credential_not_before_ms,
+            credential_expires_at_ms: self.credential_expires_at_ms,
+            signing_identity_sha256: self.signing_identity_sha256,
+            signature_sha256: self.signature_sha256,
+            trust_policy_sha256: self.trust_policy_sha256,
+            trust_policy_id: self.trust_policy_id,
+            trust_policy_revision: self.trust_policy_revision,
+            authenticator_id: self.authenticator_id,
+        }
+    }
 }
 
 impl AuthenticatedEvidenceIssuer {
@@ -649,6 +728,76 @@ impl HeptaEvidenceStore {
 }
 
 impl QualificationEvidence<'_> {
+    pub async fn provision_trust_policy(
+        &self,
+        policy: &EvidenceTrustPolicy,
+    ) -> Result<AppendDisposition, EvidenceError> {
+        policy.validate()?;
+        let policy_sha256 = policy.digest()?;
+        let policy_bytes = canonical_json(policy)?;
+        let policy_json = String::from_utf8(policy_bytes)
+            .map_err(|error| EvidenceError::Serialization(error.to_string()))?;
+        let mut tx = self
+            .store
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(classify_sqlx_error)?;
+        let evidence_count: i64 =
+            sqlx::query_scalar("SELECT COUNT(*) FROM qualification_evidence")
+                .fetch_one(&mut *tx)
+                .await
+                .map_err(classify_sqlx_error)?;
+        if evidence_count != 0 {
+            return Err(invalid(
+                "qualification trust policy must be provisioned before the first evidence receipt",
+            ));
+        }
+        if let Some(row) = sqlx::query(
+            "SELECT policy_id, revision, policy_sha256, policy_json
+             FROM qualification_trust_policy WHERE slot = 1",
+        )
+        .fetch_optional(&mut *tx)
+        .await
+        .map_err(classify_sqlx_error)?
+        {
+            let existing_id: String = row.get("policy_id");
+            let existing_revision: i64 = row.get("revision");
+            let existing_digest: String = row.get("policy_sha256");
+            let existing_json: String = row.get("policy_json");
+            if existing_id == policy.policy_id
+                && existing_revision == i64::try_from(policy.revision)
+                    .map_err(|_| invalid("trust policy revision exceeds SQLite range"))?
+                && existing_digest == policy_sha256.as_str()
+                && existing_json == policy_json
+            {
+                tx.commit().await.map_err(classify_sqlx_error)?;
+                return Ok(AppendDisposition::AlreadyPresent);
+            }
+            return Err(EvidenceError::IdempotencyConflict {
+                record_id: "qualification_trust_policy".to_string(),
+            });
+        }
+        sqlx::query(
+            "INSERT INTO qualification_trust_policy
+             (slot, policy_id, revision, policy_sha256, policy_json, provisioned_at_ms)
+             VALUES (1, ?, ?, ?, ?, ?)",
+        )
+        .bind(&policy.policy_id)
+        .bind(
+            i64::try_from(policy.revision)
+                .map_err(|_| invalid("trust policy revision exceeds SQLite range"))?,
+        )
+        .bind(policy_sha256.as_str())
+        .bind(policy_json)
+        .bind(now_millis()?)
+        .execute(&mut *tx)
+        .await
+        .map_err(classify_sqlx_error)?;
+        tx.commit().await.map_err(classify_sqlx_error)?;
+        Ok(AppendDisposition::Inserted)
+    }
+
     pub async fn append_receipt(
         &self,
         envelope: &QualificationEvidenceEnvelope,
@@ -1150,6 +1299,7 @@ pub(crate) async fn verify_qualification_evidence_rows(
     pool: &SqlitePool,
 ) -> Result<(), EvidenceError> {
     let _ = load_store_instance_id(pool).await?;
+    let provisioned_policy = load_trust_policy(pool).await?;
     let mut last_seq = 0_i64;
     let mut expected_previous = QUALIFICATION_EVIDENCE_ZERO_CHAIN.to_string();
     loop {
@@ -1171,6 +1321,18 @@ pub(crate) async fn verify_qualification_evidence_rows(
         }
         for row in rows {
             let stored = decode_stored_row(&row)?;
+            let policy = provisioned_policy.as_ref().ok_or_else(|| {
+                EvidenceError::Corrupt(
+                    "qualification evidence exists without a provisioned trust policy".to_string(),
+                )
+            })?;
+            policy
+                .validate_authenticated(&stored.envelope, &stored.issuer)
+                .map_err(|error| {
+                    EvidenceError::Corrupt(format!(
+                        "qualification evidence trust-policy verification failed: {error}"
+                    ))
+                })?;
             if stored.seq <= last_seq {
                 return Err(EvidenceError::Corrupt(
                     "qualification evidence sequence is not strictly increasing".to_string(),
@@ -1221,6 +1383,10 @@ async fn append_receipt_in_transaction(
 ) -> Result<AppendDisposition, EvidenceError> {
     envelope.validate()?;
     issuer.validate_for(envelope)?;
+    let provisioned_policy = load_trust_policy_in_transaction(tx)
+        .await?
+        .ok_or_else(|| invalid("qualification trust policy has not been provisioned"))?;
+    provisioned_policy.validate_authenticated(envelope, issuer)?;
     if envelope.claim_class == EvidenceClaimClass::IndependentDecision && !allow_independent_decision
     {
         return Err(invalid(
@@ -1701,8 +1867,9 @@ fn decode_stored_row(
     let issuer_json: String = row.get("issuer_json");
     let envelope: QualificationEvidenceEnvelope = serde_json::from_str(&envelope_json)
         .map_err(|error| EvidenceError::Corrupt(format!("invalid qualification evidence JSON: {error}")))?;
-    let issuer: AuthenticatedEvidenceIssuer = serde_json::from_str(&issuer_json)
-        .map_err(|error| EvidenceError::Corrupt(format!("invalid authenticated issuer JSON: {error}")))?;
+    let issuer: AuthenticatedEvidenceIssuer = serde_json::from_str::<AuthenticatedEvidenceIssuerWire>(&issuer_json)
+        .map_err(|error| EvidenceError::Corrupt(format!("invalid authenticated issuer JSON: {error}")))?
+        .into_authenticated();
     envelope.validate()?;
     issuer.validate_for(&envelope)?;
     let canonical_envelope = String::from_utf8(canonical_json(&envelope)?)
@@ -1794,6 +1961,61 @@ fn chain_link_digest(previous: &Sha256Digest, record: &Sha256Digest) -> Sha256Di
     bytes.push(b':');
     bytes.extend_from_slice(record.as_str().as_bytes());
     Sha256Digest::for_bytes(&bytes)
+}
+
+async fn load_trust_policy(
+    pool: &SqlitePool,
+) -> Result<Option<EvidenceTrustPolicy>, EvidenceError> {
+    let row = sqlx::query(
+        "SELECT policy_id, revision, policy_sha256, policy_json
+         FROM qualification_trust_policy WHERE slot = 1",
+    )
+    .fetch_optional(pool)
+    .await
+    .map_err(classify_sqlx_error)?;
+    row.map(|row| decode_trust_policy_row(&row)).transpose()
+}
+
+async fn load_trust_policy_in_transaction(
+    tx: &mut Transaction<'_, Sqlite>,
+) -> Result<Option<EvidenceTrustPolicy>, EvidenceError> {
+    let row = sqlx::query(
+        "SELECT policy_id, revision, policy_sha256, policy_json
+         FROM qualification_trust_policy WHERE slot = 1",
+    )
+    .fetch_optional(&mut **tx)
+    .await
+    .map_err(classify_sqlx_error)?;
+    row.map(|row| decode_trust_policy_row(&row)).transpose()
+}
+
+fn decode_trust_policy_row(
+    row: &sqlx::sqlite::SqliteRow,
+) -> Result<EvidenceTrustPolicy, EvidenceError> {
+    let policy_id: String = row.get("policy_id");
+    let revision: i64 = row.get("revision");
+    let policy_sha256: String = row.get("policy_sha256");
+    let policy_json: String = row.get("policy_json");
+    let policy: EvidenceTrustPolicy = serde_json::from_str(&policy_json)
+        .map_err(|error| EvidenceError::Corrupt(format!("invalid trust policy JSON: {error}")))?;
+    policy
+        .validate()
+        .map_err(|error| EvidenceError::Corrupt(format!("invalid trust policy: {error}")))?;
+    let canonical = canonical_json(&policy)
+        .map_err(|error| EvidenceError::Corrupt(format!("trust policy serialization failed: {error}")))?;
+    let canonical_text =
+        String::from_utf8(canonical.clone()).map_err(|error| EvidenceError::Corrupt(error.to_string()))?;
+    let digest = Sha256Digest::for_bytes(&canonical);
+    if policy_id != policy.policy_id
+        || u64::try_from(revision).ok() != Some(policy.revision)
+        || policy_sha256 != digest.as_str()
+        || policy_json != canonical_text
+    {
+        return Err(EvidenceError::Corrupt(
+            "provisioned qualification trust policy projection mismatch".to_string(),
+        ));
+    }
+    Ok(policy)
 }
 
 async fn load_store_instance_id(pool: &SqlitePool) -> Result<Sha256Digest, EvidenceError> {
