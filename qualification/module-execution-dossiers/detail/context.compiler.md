@@ -32,7 +32,7 @@ Pilot ceilings are design targets, not measurements. Stricter canonical limits p
 
 - CTX-01: a well-formed admission record is insufficient unless the configured verifier accepts it, and role/content/source/generation bindings cannot be rewritten after verification.
 - CTX-02: a tiny context budget preserves mandatory fields or explicitly refuses compilation; final serializer framing overhead is also checked against the real token budget.
-- CTX-03: compile-to-attach and attach-to-send revocation changes fail closed against a newer verified snapshot.
+- CTX-03: compile-to-attach and attach-to-send revocation changes fail closed against a newer verified snapshot; snapshot epoch and observation time cannot roll back across attachment/delivery, and admission is expired when `observed_unix_ms >= expires_unix_ms`.
 - CTX-04: actual selected bytes must match compiled content digests, the final payload is tokenized after serialization, and a transport claiming a different transmitted payload digest cannot receive a delivered receipt.
 - CTX-05: canonical mandatory-group definitions are digest-bound even when two policies happen to select the same item set.
 - CTX-06: a delivered receipt requires terminal provider/transport acknowledgement evidence bound to the exact payload and transport identity.
