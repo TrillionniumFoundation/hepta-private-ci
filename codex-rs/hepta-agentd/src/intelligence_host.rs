@@ -95,6 +95,11 @@ impl AgentdIntelligenceHostV1 {
         if input.predecessor_digest != envelope.envelope_digest {
             return Err(rejection());
         }
+        if input.deadline_unix_micros == 0
+            || input.deadline_unix_micros > envelope.deadline_unix_micros
+        {
+            return Err(rejection());
+        }
         let acceptance = self.accept(envelope).map_err(|_| rejection())?;
         let producer = StableId::new("runtime.agentd").map_err(|_| rejection())?;
         Ok(PortReceiptV3 {
