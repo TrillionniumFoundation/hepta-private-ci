@@ -51,7 +51,19 @@ jobs:
             git checkout --detach "$MERGE"
           fi
           git rev-parse HEAD HEAD^{tree}
+      - name: Select exact-tree native execution
+        id: execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_candidate.py \
+            --source "$SOURCE_SHA" \
+            --tested "$(git rev-parse HEAD)" \
+            --base "$BASE_SHA" \
+            --lane "${{ matrix.lane }}" \
+            --github-output "$GITHUB_OUTPUT"
       - name: Prepare native prerequisites
+        if: steps.execution.outputs.run_native == 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
@@ -60,16 +72,20 @@ jobs:
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
           fi
       - name: Contract authority drift guard
+        if: steps.execution.outputs.run_native == 'true'
         run: python3 -m unittest -v scripts.test_hepta_objective_contracts
       - name: Verify lock and formatting
+        if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: |
           python3 ../scripts/verify_cargo_lock.py
           cargo fmt --package codex-hepta-objective --package codex-hepta-learning-ledger --package codex-hepta-intelligence --package codex-hepta-agentd -- --check
       - name: Compile product objective chain
+        if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: cargo check --locked -p codex-hepta-objective -p codex-hepta-learning-ledger -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets
       - name: Test product objective chain
+        if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: |
           cargo test --locked -p codex-hepta-objective
@@ -77,6 +93,7 @@ jobs:
           cargo test --locked -p codex-hepta-intelligence product_objective -- --nocapture
           cargo test --locked -p codex-hepta-agentd objective -- --nocapture
       - name: Strict lint
+        if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: cargo clippy --locked -p codex-hepta-objective -p codex-hepta-learning-ledger -p codex-hepta-intelligence -p codex-hepta-agentd --all-targets -- -D warnings
       - name: Exact tracked-source cleanliness
