@@ -569,6 +569,8 @@ class EngineeringStore:
         normalized = canonical_paths(paths)
         with self._transaction():
             envelope = self._get_envelope(envelope_id, now)
+            if expires_unix_ns > int(envelope["expires_unix_ns"]):
+                _error("lease_outlives_envelope")
             allowed = tuple(
                 json.loads(bytes(envelope["allowed_paths_json"]).decode("utf-8"))
             )
@@ -673,6 +675,9 @@ class EngineeringStore:
                     now, expiry
                 ):
                     _error("invalid_lease_expiry")
+                envelope = self._get_envelope(str(row["envelope_id"]), now)
+                if new_expiry_unix_ns > int(envelope["expires_unix_ns"]):
+                    _error("lease_outlives_envelope")
                 expiry = new_expiry_unix_ns
             elif disposition == "release":
                 state = "released"
