@@ -24,6 +24,7 @@ pub struct ModelManifest {
     pub license_digest: String,
     pub sbom_digest: String,
     pub runtime_digest: String,
+    pub runtime_config_digest: String,
     pub device_digest: String,
     pub maximum_tokens: u32,
 }
@@ -425,6 +426,7 @@ fn validate_manifest(value: &ModelManifest) -> Result<(), Error> {
         (&value.license_digest, "license"),
         (&value.sbom_digest, "sbom"),
         (&value.runtime_digest, "runtime"),
+        (&value.runtime_config_digest, "runtime config"),
         (&value.device_digest, "device"),
     ] {
         validate_digest(digest, field)?;
