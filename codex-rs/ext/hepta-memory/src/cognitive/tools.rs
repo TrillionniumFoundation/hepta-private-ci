@@ -520,6 +520,10 @@ impl CognitiveTool {
                 "kg_projection_generation": explanation
                     .kg_projection_generation
                     .map(codex_hepta_memory::ProjectionGeneration::get),
+                "kg_projection_generation_sha256": explanation
+                    .kg_projection_generation_sha256
+                    .as_ref()
+                    .map(codex_hepta_contracts::Sha256Digest::as_str),
             }),
             MAX_EXPLAIN_OUTPUT_BYTES,
         )
