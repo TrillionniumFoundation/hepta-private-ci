@@ -301,9 +301,7 @@ impl SecretLeaseRegistry {
             LeaseOperationKind::Issue,
         )? {
             return Ok(match replay {
-                OperationReplay::Resume => PrepareIssue::Resume(
-                    lease_for_operation(&state, &request.operation_id)?.clone(),
-                ),
+                OperationReplay::Resume => PrepareIssue::Resume,
                 OperationReplay::Completed => PrepareIssue::Completed(
                     lease_for_operation(&state, &request.operation_id)?.clone(),
                 ),
@@ -342,7 +340,6 @@ impl SecretLeaseRegistry {
             pending_operation_id: Some(request.operation_id.clone()),
             pending_operation_sha256: Some(request_sha256),
             pending_operation_kind: Some(LeaseOperationKind::Issue),
-            pending_increment_seconds: None,
             pending_previous_state: None,
             pending_previous_reconciliation_reason: None,
             secret_fields: 0,
@@ -358,7 +355,7 @@ impl SecretLeaseRegistry {
             None,
             lease.clone(),
         )?;
-        Ok(PrepareIssue::New(lease))
+        Ok(PrepareIssue::New)
     }
 
     fn prepare_existing_operation(
@@ -367,7 +364,6 @@ impl SecretLeaseRegistry {
         operation_id: &str,
         request_sha256: [u8; 32],
         kind: LeaseOperationKind,
-        increment_seconds: Option<u64>,
     ) -> Result<PrepareExisting, LeaseRegistryError> {
         let mut state = self
             .0
@@ -377,9 +373,7 @@ impl SecretLeaseRegistry {
         ensure_registry_live(&state)?;
         if let Some(replay) = replay_operation(&state, operation_id, request_sha256, kind)? {
             return Ok(match replay {
-                OperationReplay::Resume => PrepareExisting::Resume(
-                    lease_for_operation(&state, operation_id)?.clone(),
-                ),
+                OperationReplay::Resume => PrepareExisting::Resume,
                 OperationReplay::Completed => PrepareExisting::Completed(
                     lease_for_operation(&state, operation_id)?.clone(),
                 ),
@@ -414,6 +408,12 @@ impl SecretLeaseRegistry {
                 ) {
                     return Err(LeaseRegistryError::LeaseTerminal);
                 }
+                if !matches!(
+                    current.state,
+                    SecretLeaseState::Active | SecretLeaseState::ReconciliationRequired
+                ) {
+                    return Err(LeaseRegistryError::InvalidTransition);
+                }
                 if current.provider_lease_id.is_none() {
                     return Err(LeaseRegistryError::MissingProviderLease);
                 }
@@ -443,7 +443,6 @@ impl SecretLeaseRegistry {
         next.pending_operation_id = Some(operation_id.to_owned());
         next.pending_operation_sha256 = Some(request_sha256);
         next.pending_operation_kind = Some(kind);
-        next.pending_increment_seconds = increment_seconds;
         next.reconciliation_reason = current.reconciliation_reason;
         next.state = match kind {
             LeaseOperationKind::Renew => SecretLeaseState::RenewPrepared,
@@ -463,7 +462,7 @@ impl SecretLeaseRegistry {
             None,
             next.clone(),
         )?;
-        Ok(PrepareExisting::New(next))
+        Ok(PrepareExisting::New)
     }
 
     fn prepare_unknown_issue_resolution(
@@ -484,9 +483,7 @@ impl SecretLeaseRegistry {
             LeaseOperationKind::ResolveUnknownIssue,
         )? {
             return Ok(match replay {
-                OperationReplay::Resume => PrepareExisting::Resume(
-                    lease_for_operation(&state, &request.operation_id)?.clone(),
-                ),
+                OperationReplay::Resume => PrepareExisting::Resume,
                 OperationReplay::Completed => PrepareExisting::Completed(
                     lease_for_operation(&state, &request.operation_id)?.clone(),
                 ),
@@ -526,7 +523,7 @@ impl SecretLeaseRegistry {
             None,
             next.clone(),
         )?;
-        Ok(PrepareExisting::New(next))
+        Ok(PrepareExisting::New)
     }
 
     fn mark_dispatching(
@@ -1029,7 +1026,6 @@ struct StoredLease {
     pending_operation_id: Option<String>,
     pending_operation_sha256: Option<[u8; 32]>,
     pending_operation_kind: Option<LeaseOperationKind>,
-    pending_increment_seconds: Option<u64>,
     pending_previous_state: Option<SecretLeaseState>,
     pending_previous_reconciliation_reason: Option<ReconciliationReason>,
     secret_fields: usize,
@@ -1132,7 +1128,7 @@ impl JournalStore {
             .seek(SeekFrom::Start(0))
             .map_err(|_| LeaseRegistryError::Unavailable)?;
         let mut bytes = Zeroizing::new(Vec::new());
-        journal
+        (&mut journal)
             .take(MAX_JOURNAL_BYTES + 1)
             .read_to_end(&mut bytes)
             .map_err(|_| LeaseRegistryError::Unavailable)?;
@@ -1400,7 +1396,6 @@ fn clear_pending(lease: &mut StoredLease) {
     lease.pending_operation_id = None;
     lease.pending_operation_sha256 = None;
     lease.pending_operation_kind = None;
-    lease.pending_increment_seconds = None;
     lease.pending_previous_state = None;
     lease.pending_previous_reconciliation_reason = None;
 }
@@ -1421,16 +1416,16 @@ fn validate_operation_subject(lease: &StoredLease) -> Result<(), LeaseRegistryEr
 }
 
 enum PrepareIssue {
-    New(StoredLease),
-    Resume(StoredLease),
+    New,
+    Resume,
     Completed(StoredLease),
     NeedsReconciliation(ReconciliationReason),
     Failed(LeaseFailureKind),
 }
 
 enum PrepareExisting {
-    New(StoredLease),
-    Resume(StoredLease),
+    New,
+    Resume,
     Completed(StoredLease),
     NeedsReconciliation(ReconciliationReason),
     Failed(LeaseFailureKind),
@@ -1651,7 +1646,7 @@ impl BaoClient {
             PrepareIssue::Failed(failure) => {
                 return Err(BaoLeaseError::PriorOperationFailed(failure));
             }
-            PrepareIssue::New(_) | PrepareIssue::Resume(_) => {}
+            PrepareIssue::New | PrepareIssue::Resume => {}
         }
 
         let verified = authority
@@ -1829,7 +1824,6 @@ impl BaoClient {
             &request.operation_id,
             binding.request_sha256,
             LeaseOperationKind::Renew,
-            Some(request.increment_seconds),
         )? {
             PrepareExisting::Completed(lease) => {
                 return Ok(BaoLeaseMutationReceipt {
@@ -1844,7 +1838,7 @@ impl BaoClient {
             PrepareExisting::Failed(failure) => {
                 return Err(BaoLeaseError::PriorOperationFailed(failure));
             }
-            PrepareExisting::New(_) | PrepareExisting::Resume(_) => {}
+            PrepareExisting::New | PrepareExisting::Resume => {}
         }
         authority
             .claim(grant, &binding)
@@ -1955,7 +1949,6 @@ impl BaoClient {
             &request.operation_id,
             binding.request_sha256,
             LeaseOperationKind::Revoke,
-            None,
         )? {
             PrepareExisting::Completed(lease) => {
                 return Ok(BaoLeaseMutationReceipt {
@@ -1970,7 +1963,7 @@ impl BaoClient {
             PrepareExisting::Failed(failure) => {
                 return Err(BaoLeaseError::PriorOperationFailed(failure));
             }
-            PrepareExisting::New(_) | PrepareExisting::Resume(_) => {}
+            PrepareExisting::New | PrepareExisting::Resume => {}
         }
         authority
             .claim(grant, &binding)
@@ -2066,7 +2059,6 @@ impl BaoClient {
             &request.operation_id,
             binding.request_sha256,
             LeaseOperationKind::Reconcile,
-            None,
         )? {
             PrepareExisting::Completed(lease) => {
                 return Ok(BaoLeaseMutationReceipt {
@@ -2081,7 +2073,7 @@ impl BaoClient {
             PrepareExisting::Failed(failure) => {
                 return Err(BaoLeaseError::PriorOperationFailed(failure));
             }
-            PrepareExisting::New(_) | PrepareExisting::Resume(_) => {}
+            PrepareExisting::New | PrepareExisting::Resume => {}
         }
         let verified = authority
             .claim(grant, &binding)
@@ -2211,7 +2203,7 @@ impl BaoClient {
             PrepareExisting::Failed(failure) => {
                 return Err(BaoLeaseError::PriorOperationFailed(failure));
             }
-            PrepareExisting::New(_) | PrepareExisting::Resume(_) => {}
+            PrepareExisting::New | PrepareExisting::Resume => {}
         }
         let verified = authority
             .claim(grant, &binding)
@@ -2532,6 +2524,7 @@ struct DynamicLeaseResponse {
 
 #[derive(Deserialize)]
 #[serde(untagged)]
+#[allow(dead_code)]
 enum SecretValue {
     String(Zeroizing<String>),
     Bool(bool),
