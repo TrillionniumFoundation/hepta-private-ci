@@ -630,7 +630,9 @@ impl AppServerModelDriver {
             let event = timeout_at(deadline, client.next_event())
                 .await
                 .map_err(|_| "persisted token-usage replay timed out".to_string())?
-                .ok_or_else(|| "provider event stream ended during usage reconciliation".to_string())?;
+                .ok_or_else(|| {
+                    "provider event stream ended during usage reconciliation".to_string()
+                })?;
             match event {
                 AppServerEvent::ServerNotification(notification) => {
                     observe_notification(output, *notification)?;
@@ -652,7 +654,9 @@ impl AppServerModelDriver {
                         ),
                     )
                     .await
-                    .map_err(|_| "approval rejection timed out during usage reconciliation".to_string())?
+                    .map_err(|_| {
+                        "approval rejection timed out during usage reconciliation".to_string()
+                    })?
                     .map_err(|error| error.to_string())?;
                 }
                 AppServerEvent::Lagged { .. } => {
