@@ -25,11 +25,11 @@ from control_engineering_v2.closure import bind_candidate_evidence
 
 
 class PersistedDecisionClosureTests(unittest.TestCase):
-    def test_schema_v5_and_rejection_survive_reopen(self) -> None:
+    def test_schema_v6_and_rejection_survive_reopen(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             database = Path(temporary) / "engineering.sqlite3"
             with EngineeringStore(database) as store:
-                self.assertEqual(store.connection.execute("PRAGMA user_version").fetchone()[0], 5)
+                self.assertEqual(store.connection.execute("PRAGMA user_version").fetchone()[0], 6)
                 record_integration_decision(store, "pending", EvidenceDecision(False, ("tests_pending",), "e" * 64), now_ns=100)
                 first = tuple(store.connection.execute("SELECT * FROM integration_decisions").fetchone())
             with EngineeringStore(database) as reopened:
