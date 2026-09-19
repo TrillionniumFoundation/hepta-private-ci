@@ -94,6 +94,14 @@ pub struct NativeDispatch {
     pub model_provider: String,
     /// Exact serialized additional context, including its owner snapshot.
     pub context_digest: String,
+    /// Stable Core/App Server admission identity. Absent only for journals
+    /// written before native admission reconciliation was introduced.
+    #[serde(default)]
+    pub client_user_message_id: Option<String>,
+    /// Canonical SHA-256 of the normalized user input used by Core's exact
+    /// queue reconciliation authority. Absent only for legacy journals.
+    #[serde(default)]
+    pub input_payload_sha256: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -108,6 +116,11 @@ pub struct NativeRunRecord {
     /// A locally proven pre-dispatch stop releases a slot without pretending
     /// to have observed a provider terminal event or zero token consumption.
     pub pre_dispatch_stop: Option<String>,
+    /// Exact Core reconciliation can prove that a durably journaled dispatch
+    /// intent never became a persisted user-message admission. This also
+    /// releases the local slot without inventing provider terminality/usage.
+    #[serde(default)]
+    pub reconciled_no_admission: Option<String>,
     pub observation: Option<NativeRunOutput>,
 }
 
@@ -136,6 +149,10 @@ enum Event {
         request_id: String,
     },
     Stop {
+        request_id: String,
+        reason: String,
+    },
+    NoAdmission {
         request_id: String,
         reason: String,
     },
@@ -213,11 +230,33 @@ impl DurableInferenceControl {
         request_id: &str,
         turn_id: String,
     ) -> Result<NativeRunRecord, Error> {
+        if let Some(record) = self.native.records.get(request_id)
+            && record.turn_id.as_deref() == Some(turn_id.as_str())
+        {
+            return Ok(record.clone());
+        }
         self.commit_native(
             request_id,
             Event::Started {
                 request_id: request_id.to_string(),
                 turn_id,
+            },
+        )
+    }
+
+    /// Trusted recovery port. Core's exact client-message reconciliation may
+    /// prove that a synced dispatch intent never produced a durable admission.
+    /// Such proof frees the local slot without fabricating a provider outcome.
+    pub fn reconcile_native_no_admission(
+        &mut self,
+        request_id: &str,
+        reason: String,
+    ) -> Result<NativeRunRecord, Error> {
+        self.commit_native(
+            request_id,
+            Event::NoAdmission {
+                request_id: request_id.to_string(),
+                reason,
             },
         )
     }
@@ -361,6 +400,7 @@ impl NativeJournal {
                     turn_id: None,
                     cancel_requested: false,
                     pre_dispatch_stop: None,
+                    reconciled_no_admission: None,
                     observation: None,
                 },
             );
@@ -372,6 +412,7 @@ impl NativeJournal {
             | Event::Started { request_id, .. }
             | Event::Cancel { request_id }
             | Event::Stop { request_id, .. }
+            | Event::NoAdmission { request_id, .. }
             | Event::Observe { request_id, .. } => request_id,
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
@@ -384,16 +425,44 @@ impl NativeJournal {
                 validate_identity(&dispatch.thread_id, "native thread")?;
                 validate_identity(&dispatch.model_provider, "native provider")?;
                 validate_digest(&dispatch.context_digest, "native context")?;
+                match (
+                    dispatch.client_user_message_id.as_deref(),
+                    dispatch.input_payload_sha256.as_deref(),
+                ) {
+                    (Some(client_id), Some(payload_sha256)) => {
+                        validate_identity(client_id, "native client message")?;
+                        validate_digest(payload_sha256, "native input payload")?;
+                        if client_id != record.request.request_id {
+                            return Err(Error::AssignmentMismatch);
+                        }
+                    }
+                    (None, None) => {}
+                    _ => return Err(Error::InvalidIdentity("native reconciliation binding")),
+                }
                 record.dispatch = Some(dispatch);
                 record.state = NativeReservationState::Dispatching;
             }
             Event::Started { turn_id, .. } => {
-                if record.state != NativeReservationState::Dispatching {
+                if !matches!(
+                    record.state,
+                    NativeReservationState::Dispatching
+                        | NativeReservationState::Indeterminate
+                        | NativeReservationState::Cancelling
+                ) {
                     return Err(Error::InvalidTransition);
                 }
                 validate_identity(&turn_id, "native turn")?;
+                if record
+                    .turn_id
+                    .as_ref()
+                    .is_some_and(|existing| existing != &turn_id)
+                {
+                    return Err(Error::AssignmentMismatch);
+                }
                 record.turn_id = Some(turn_id);
-                record.state = NativeReservationState::Running;
+                if record.state != NativeReservationState::Cancelling {
+                    record.state = NativeReservationState::Running;
+                }
             }
             Event::Cancel { .. } => {
                 if record.state == NativeReservationState::Released
@@ -412,6 +481,27 @@ impl NativeJournal {
                     return Err(Error::InvalidTransition);
                 }
                 record.pre_dispatch_stop = Some(reason);
+                record.state = NativeReservationState::Released;
+            }
+            Event::NoAdmission { reason, .. } => {
+                if !matches!(
+                    record.state,
+                    NativeReservationState::Dispatching
+                        | NativeReservationState::Indeterminate
+                        | NativeReservationState::Cancelling
+                ) || record.turn_id.is_some()
+                    || reason.is_empty()
+                    || reason.len() > 4096
+                    || record.observation.as_ref().is_some_and(|output| {
+                        output.terminal_observed
+                            || !output.turn_id.is_empty()
+                            || !output.output.is_empty()
+                            || output.observed_output_tokens.is_some()
+                    })
+                {
+                    return Err(Error::InvalidTransition);
+                }
+                record.reconciled_no_admission = Some(reason);
                 record.state = NativeReservationState::Released;
             }
             Event::Observe { output, .. } => {

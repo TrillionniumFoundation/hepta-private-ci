@@ -1,0 +1,169 @@
+name: Inference worker exact-revision qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-inferd/**"
+      - "docs/modules/inference.worker/**"
+      - "qualification/module-execution-dossiers/detail/inference.worker.md"
+      - "qualification/module-execution-dossiers/DETAILS.json"
+      - "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
+      - "scripts/hepta-inference-worker-readiness.py"
+      - "scripts/test_hepta_inference_worker_readiness.py"
+      - ".github/workflows/inference-worker-qualification.yml"
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-inferd/**"
+      - "docs/modules/inference.worker/**"
+      - "qualification/module-execution-dossiers/detail/inference.worker.md"
+      - "qualification/module-execution-dossiers/DETAILS.json"
+      - "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
+      - "scripts/hepta-inference-worker-readiness.py"
+      - "scripts/test_hepta_inference_worker_readiness.py"
+      - ".github/workflows/inference-worker-qualification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: inference-worker-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  qualify:
+    name: ${{ matrix.lane }} worker/core/control qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind source checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+
+      - name: Construct deterministic merge candidate
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Inference Worker CI
+          author-email: hepta-inference-worker-ci@users.noreply.github.com
+          message: Inference worker synthetic merge
+
+      - name: Prepare native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+
+      - name: Resolve verified sandboxed V8 artifacts for Cargo
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Verify detailed design and implementation-map truth
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/inference-worker-evidence/design.json" -- python3 scripts/hepta-technical-closure.py verify
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/inference-worker-evidence/maps.json" -- python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/inference-worker-evidence/readiness-tests.json" -- python3 -m unittest -v scripts/test_hepta_inference_worker_readiness.py
+
+      - name: Check focused formatting
+        working-directory: codex-rs
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+        run: |
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/inference-worker-evidence/fmt.json" -- \
+            cargo fmt --package codex-hepta-infer-core --package codex-hepta-infer-worker-host --package codex-hepta-inferd -- --check
+
+      - name: Test canonical control worker and composition seam
+        working-directory: codex-rs
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+          CARGO_TARGET_DIR: ${{ runner.temp }}/inference-worker-target-${{ matrix.lane }}
+        run: |
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/inference-worker-evidence/tests.json" -- \
+            just test --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-inferd
+
+      - name: Strict lint canonical control worker and composition seam
+        working-directory: codex-rs
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+          CARGO_TARGET_DIR: ${{ runner.temp }}/inference-worker-target-${{ matrix.lane }}
+        run: |
+          python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/inference-worker-evidence/clippy.json" -- \
+            cargo clippy --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-inferd --all-targets --no-deps -- -D warnings
+
+      - name: Emit exact candidate receipt and fail-closed hardware template
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          class="source-head-tested"
+          if [ "$HEPTA_CI_LANE" = "base-merge" ]; then
+            class="merge-candidate-tested"
+          fi
+          python3 scripts/hepta-inference-worker-readiness.py \
+            --expected-sha "$TESTED_SHA" \
+            --evidence-class "$class" \
+            --passed-check codex-hepta-infer-core-lib \
+            --passed-check codex-hepta-infer-worker-host-lib \
+            --passed-check codex-hepta-inferd-lib \
+            --output "$RUNNER_TEMP/inference-worker-evidence/receipt.json"
+          python3 scripts/hepta-inference-worker-readiness.py \
+            --expected-sha "$TESTED_SHA" \
+            --emit-hardware-template "$RUNNER_TEMP/inference-worker-evidence/hardware-evidence-template.json"
+
+      - name: Retain exact inference.worker evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-worker-${{ matrix.lane }}-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/inference-worker-evidence/*.json
+          if-no-files-found: error
+          retention-days: 30
