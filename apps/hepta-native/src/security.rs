@@ -1,5 +1,7 @@
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::path::Path;
+use std::path::PathBuf;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -141,6 +143,7 @@ pub trait GrantVerifier: Send + Sync {
 #[derive(Debug, Clone)]
 pub struct TrustedKeySet {
     keys: BTreeMap<String, VerifyingKey>,
+    revoked_key_ids: BTreeSet<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -148,6 +151,8 @@ pub struct TrustedKeySet {
 struct KeySetFile {
     schema: String,
     keys: BTreeMap<String, String>,
+    #[serde(default)]
+    revoked_key_ids: BTreeSet<String>,
 }
 
 impl TrustedKeySet {
@@ -163,6 +168,10 @@ impl TrustedKeySet {
                 "trusted native key set schema or key population is invalid".to_owned(),
             ));
         }
+        for key_id in &file.revoked_key_ids {
+            validate_stable_id(key_id, "revoked trusted key id")?;
+        }
+        let revoked_key_ids = file.revoked_key_ids;
         let mut keys = BTreeMap::new();
         for (key_id, encoded) in file.keys {
             validate_stable_id(&key_id, "trusted key id")?;
@@ -176,7 +185,10 @@ impl TrustedKeySet {
                 .map_err(|error| ShellError::Security(error.to_string()))?;
             keys.insert(key_id, key);
         }
-        Ok(Self { keys })
+        Ok(Self {
+            keys,
+            revoked_key_ids,
+        })
     }
 
     pub fn verify_message(
@@ -186,6 +198,11 @@ impl TrustedKeySet {
         message: &[u8],
     ) -> Result<(), ShellError> {
         validate_stable_id(key_id, "signing key id")?;
+        if self.revoked_key_ids.contains(key_id) {
+            return Err(ShellError::Security(format!(
+                "native signing key {key_id} is revoked"
+            )));
+        }
         let key = self
             .keys
             .get(key_id)
@@ -197,6 +214,33 @@ impl TrustedKeySet {
             .map_err(|error| ShellError::Security(error.to_string()))?;
         key.verify(message, &signature)
             .map_err(|error| ShellError::Security(error.to_string()))
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct ReloadingGrantVerifier {
+    path: PathBuf,
+}
+
+impl ReloadingGrantVerifier {
+    pub fn new(path: PathBuf) -> Result<Self, ShellError> {
+        if !path.is_absolute() {
+            return Err(ShellError::InvalidInput(
+                "reloading grant trust path must be absolute".to_owned(),
+            ));
+        }
+        TrustedKeySet::from_path(&path)?;
+        Ok(Self { path })
+    }
+}
+
+impl GrantVerifier for ReloadingGrantVerifier {
+    fn verify_platform_grant(
+        &self,
+        grant: &SignedPlatformGrantV1,
+        context: PlatformGrantContext<'_>,
+    ) -> Result<(), ShellError> {
+        TrustedKeySet::from_path(&self.path)?.verify_platform_grant(grant, context)
     }
 }
 
