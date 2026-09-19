@@ -60,6 +60,7 @@ pub use outcome_credit::OutcomeCreditClosureErrorV1;
 pub use outcome_credit::OutcomeCreditClosureReceiptV1;
 pub use outcome_credit::OutcomeCreditClosureRequestV1;
 pub use outcome_credit::append_outcome_credit_v1;
+pub use codex_hepta_learning_ledger::DurableLearningJournal;
 pub use native_ports_v3::HostEnvelopePortV3;
 pub use native_ports_v3::LearningDecisionTemplateV3;
 pub use native_ports_v3::NativeV3OwnerInputs;
