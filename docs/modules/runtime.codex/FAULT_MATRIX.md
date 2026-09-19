@@ -16,7 +16,7 @@ This matrix is source-level acceptance guidance for the composed Codex App Serve
 | Authority endpoint timeout, malformed/oversized response, unsafe socket identity or unsupported schema | reject before `turn/start` | none | release pre-dispatch reservation | external-authority port negative path |
 | Signed grant has wrong binding/signature, is expired/revoked, or reuses a nonce | reject before `turn/start` | none | release pre-dispatch reservation | `FinalUseAuthority` plus external-authority port tests |
 | Authority endpoint attempts revocation-head rollback/removal | reject before `turn/start` | none | release pre-dispatch reservation | monotonic revocation synchronization test |
-| Authority wait consumes the runtime.codex deadline | if the deadline expires while waiting, reject before `turn/start` | none | release pre-dispatch reservation | bounded authority-await path |
+| Authority wait consumes the runtime.codex deadline | if the deadline expires while waiting, reject before `turn/start`; authority, acknowledgement and initial observation share one absolute deadline and never reset a fresh full timeout | none | release pre-dispatch reservation before dispatch; reconcile-only after dispatch | bounded authority-await plus absolute observation-budget tests |
 | Agent generation/readiness or App Server ingress changes while authority is pending | reject after grant claim but before `turn/start`; burned nonce is not reused | none | release pre-dispatch reservation | post-authority owner/ingress recheck |
 | Cancellation arrives while authority is pending | reject before final-use entry / `turn/start` | none | release pre-dispatch reservation | post-authority cancellation fence |
 | Exact signed grant passes local signature/epoch/revocation/nonce checks and `VerifiedUseToken::enter` | one capability entry only; authority witness and exact request are durably recorded before the network send | never grants blind retry | write-ahead dispatch journaled before `turn/start` | non-constructible token/entered-token source path |
@@ -34,14 +34,15 @@ This matrix is source-level acceptance guidance for the composed Codex App Serve
 | Cancellation after admission | interrupt requested; success is not inferred from interrupt ACK | `ReconcileOnly` until terminal event | hold until real terminal event | matching `Interrupted`, `Failed`, or `Completed` terminal event |
 | Deadline expires, then matching terminal event arrives | map the real terminal status; do not discard it | terminal result decides | release after settlement | late typed terminal event |
 | Owner readiness/generation is lost, then provider completes | retain factual provider terminal status but owner authority remains lost | no success authorization | release local slot after terminal fact | durable sticky owner-loss observation |
-| Duplicate/restart while original App Server still retains the thread | `thread/read(includeTurns=true)`; match exact `client_user_message_id`; do not submit a new turn | reconcile only | hold or release from recovered state | original session/thread/request digest plus retained turn |
-| Reconciliation finds multiple turns for one stable request id | hard conflict | no replay | hold | duplicate-effect evidence |
-| App Server process loss removes ephemeral thread history | remain unknown; never infer not-applied and never auto-replay | `ReconcileOnly` | hold | durable dispatch/request digest only |
+| Duplicate/restart while original App Server still retains the thread | `thread/read(includeTurns=true)`; require exact `client_user_message_id` **and original `UserMessage` content**; do not submit a new turn | reconcile only | hold or release from recovered state | original session/thread/request digest plus retained turn and user input |
+| Reconciliation finds the stable request id with different user input | hard correlation conflict | no replay | hold | same-id/different-input evidence |
+| Reconciliation finds multiple exact turns for one stable request id | hard conflict | no replay | hold | duplicate-effect evidence |
+| App Server process loss removes ephemeral thread history | remain unknown; never infer not-applied and never auto-replay | `ReconcileOnly` | hold/quarantine under policy; no release without independently evidenced terminal/no-effect resolution | durable dispatch/request digest only |
 | Reconciled request digest differs from durable dispatch digest | hard assignment conflict | no replay | hold | durable request/correlation records |
 
 ## Correlation scope
 
-The v2 runtime.codex request digest binds the operation ID, Agent/App Server session ID, thread ID, method ID, final payload digest, owner generation, App Server protocol version, and deadline. The durable native inference journal persists the session, deadline, and request digest before `turn/start`; a later recovered turn ID is admitted only if it is correlated to the original thread and stable `client_user_message_id`.
+The v2 runtime.codex request digest binds the operation ID, Agent/App Server session ID, thread ID, the actual v2 wire method ID `turn/start`, final payload digest, owner generation, App Server protocol version, and absolute deadline. The durable native inference journal persists the session, deadline, and request digest before `turn/start`; a later recovered turn ID is admitted only if it is correlated to the original thread and stable `client_user_message_id`.
 
 ## Witness and trust boundary
 
