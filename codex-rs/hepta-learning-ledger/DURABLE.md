@@ -94,10 +94,14 @@ forks, cross-episode predecessors and self-reference without rewriting history.
 `LearningEvidenceVerifierV1`, exact current-anchor comparison and the durable
 journal. The writer queries `LearningEvidenceTrustProviderV1` before every signed
 mutation and remembers a monotone trust revision/authority-epoch/digest frontier;
-rollback or same-revision trust drift fails closed. Its product-facing methods do
-not expose raw V1 outcome or per-target credit append. Authenticated outcome and
-atomic credit paths therefore cross current signature/role admission and semantic
-validation before durable append.
+rollback or same-revision trust drift fails closed. A production host can back
+that provider with `RootedLearningEvidenceTrustProviderV1`: an out-of-band pinned
+Ed25519 public root admits only complete root-signed signer/controller manifests,
+and rotation must advance generation with the exact predecessor manifest digest
+and non-regressing authority epoch. The root private key is never accepted by the
+ledger crate. Product-facing methods do not expose raw V1 outcome or per-target
+credit append. Authenticated outcome and atomic credit paths therefore cross
+current signature/role admission and semantic validation before durable append.
 
 `DurableAnchorWitness` is a separate host-authorized HEPTAW01 file. Its binding,
 lock and checksums are independent from the learning journal. Each witness row is
