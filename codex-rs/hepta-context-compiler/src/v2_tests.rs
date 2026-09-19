@@ -398,6 +398,32 @@ fn admission_role_binding_prevents_evidence_instruction_confusion() {
 }
 
 #[test]
+fn admission_expires_at_the_exact_expiry_instant() {
+    let snapshot = verified_snapshot("snapshot:expiry", 1_000, 1, Vec::new());
+    let content = content_bytes("item:expiry", 20);
+    let record = ContextAdmissionRecordV2::new(
+        id("admission:item:expiry"),
+        ContextAdmissionBindingV2 {
+            item_id: id("item:expiry"),
+            role: ContextRoleV2::TrustedInstruction,
+            content_digest: Digest32::of_bytes(&content),
+            source_digest: digest("source:item:expiry"),
+            generation_vector_digest: digest("generation-vector"),
+        },
+        1,
+        1_000,
+    )
+    .unwrap_or_else(|error| panic!("valid admission record: {error}"));
+
+    assert_eq!(
+        verify_admission_v2(record, &snapshot, &verifier()),
+        Err(ContextCompilerV2Error::AdmissionExpired(
+            "admission:item:expiry".to_string()
+        ))
+    );
+}
+
+#[test]
 fn attachment_revalidation_rejects_compile_then_revoke_toc_tou() {
     let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
     let (trusted, realized) = candidate(
@@ -583,6 +609,10 @@ fn delivery_receipt_is_created_only_from_transport_invoked_with_exact_payload() 
         delivery.provider_acknowledged_payload_digest(),
         Some(Digest32::of_bytes(serialization.payload()))
     );
+    assert_eq!(
+        delivery.admission_snapshot_observed_unix_ms(),
+        snapshot.observed_unix_ms()
+    );
     assert_eq!(delivery.revocation_epoch(), snapshot.revocation_epoch());
     assert_eq!(
         delivery.admission_snapshot_digest(),
@@ -696,6 +726,59 @@ fn provider_ack_for_different_payload_cannot_receive_delivered_status() {
     );
 }
 
+
+#[test]
+fn delivery_rejects_snapshot_time_rollback_even_with_same_revocation_epoch() {
+    let initial_snapshot = verified_snapshot("snapshot:initial", 10, 1, Vec::new());
+    let (trusted, realized) = candidate(
+        "item:trusted",
+        ContextRoleV2::TrustedInstruction,
+        20,
+        FixedQ32::ONE,
+        &initial_snapshot,
+    );
+    let compiled = compile_v2(request(vec![trusted], 100))
+        .unwrap_or_else(|error| panic!("valid compilation: {error}"));
+    let serialization = record_serialization(
+        &compiled,
+        &profile(),
+        id("serialization:1"),
+        vec![realized],
+        &FramingSerializer { overhead: 0 },
+        &ByteTokenizer,
+    )
+    .unwrap_or_else(|error| panic!("valid serialization: {error}"));
+    let attachment_snapshot = verified_snapshot("snapshot:attachment", 20, 2, Vec::new());
+    let attachment = build_attachment(
+        &compiled,
+        &serialization,
+        &profile(),
+        &attachment_snapshot,
+        id("attachment:1"),
+    )
+    .unwrap_or_else(|error| panic!("valid attachment: {error}"));
+    let rollback_snapshot = verified_snapshot("snapshot:rollback", 15, 2, Vec::new());
+    let transport = TestTransport {
+        transmitted_override: None,
+        acknowledged_override: None,
+        terminal_observed: true,
+        disposition: ContextDeliveryDispositionV2::Delivered,
+        acknowledgement: true,
+    };
+
+    assert_eq!(
+        deliver_context_v2(
+            &compiled,
+            &serialization,
+            &attachment,
+            &profile(),
+            &rollback_snapshot,
+            id("delivery:1"),
+            &transport,
+        ),
+        Err(ContextCompilerV2Error::StaleAdmissionSnapshot)
+    );
+}
 
 #[test]
 fn delivery_revalidates_again_and_rejects_revocation_after_attachment() {
