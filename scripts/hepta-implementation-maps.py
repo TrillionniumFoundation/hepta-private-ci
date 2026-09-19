@@ -329,15 +329,25 @@ def verify():
             else:
                 if actual_tree != source_tree:
                     failures.append(f"{mid}: source base tree mismatch")
-                ancestor = subprocess.run(
-                    ["git", "merge-base", "--is-ancestor", source_commit, "HEAD"],
+                staged = subprocess.run(
+                    ["git", "diff", "--cached", "--quiet"],
                     cwd=ROOT,
                     capture_output=True,
                     text=True,
                     check=False,
                 )
-                if ancestor.returncode != 0:
-                    failures.append(f"{mid}: source base is not an ancestor of HEAD")
+                if staged.returncode == 0:
+                    ancestor = subprocess.run(
+                        ["git", "merge-base", "--is-ancestor", source_commit, "HEAD"],
+                        cwd=ROOT,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+                    if ancestor.returncode != 0:
+                        failures.append(f"{mid}: source base is not an ancestor of HEAD")
+                elif staged.returncode != 1:
+                    failures.append(f"{mid}: cannot inspect staged candidate state")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -350,7 +360,7 @@ def verify():
                 failures.append(f"{mid}: resolved source roots")
             if source_commit is not None and resolved:
                 drift = subprocess.run(
-                    ["git", "diff", "--quiet", source_commit, "HEAD", "--", *resolved],
+                    ["git", "diff", "--cached", "--quiet", source_commit, "--", *resolved],
                     cwd=ROOT,
                     capture_output=True,
                     text=True,
