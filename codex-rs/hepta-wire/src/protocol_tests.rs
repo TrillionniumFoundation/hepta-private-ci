@@ -327,3 +327,14 @@ fn producer_registry_rejects_payload_that_does_not_satisfy_registered_schema() {
         ))
     );
 }
+
+#[test]
+fn streaming_reader_rejects_zero_generation_before_body_read() {
+    let envelope = WireEnvelopeV2::new(id("s"), id("p"), generation(1), vec![1, 2, 3])
+        .expect("valid V2");
+    let mut header_only = envelope.encode();
+    header_only[10..18].fill(0);
+    header_only.truncate(HPTA_V2_HEADER_BYTES);
+    let mut reader = FramedReader::new(Cursor::new(header_only));
+    assert_eq!(reader.read_next(), Err(StreamError::Generation));
+}
