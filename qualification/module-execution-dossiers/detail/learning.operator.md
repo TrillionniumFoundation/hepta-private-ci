@@ -1,7 +1,7 @@
 # learning.operator: implementation design
 
 Parent: `docs/modules/learning.operator/TECHNICAL.md`. Lane: `LANE-E-LEARNING`.
-Status: deterministic reference, simplest-sufficient tabular learner and action-conditioned world-model source candidate implemented; current exact-head and synthetic-merge CI determine source qualification, while real-model efficacy and independent acceptance remain separate. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: deterministic reference, receipt-bound strict tabular learner, receipt-bound action-conditioned world model and signed evaluator admission are source-implemented; current exact-head and synthetic-merge CI determine source qualification, while real-model efficacy and independent acceptance remain separate. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -12,7 +12,9 @@ Concrete source mappings are recorded in `../../../codex-rs/hepta-bellman-operat
 
 ## 2. Public operations and contract details
 
-`build_sensor_core(design) -> OperatorSensorCoreManifestV1`; `fit_transition_model(dataset) -> TabularWorldModelV1`; `build_targets(dataset, objective) -> BellmanOperatorArtifact`; `fit_tabular_operator(dataset, sensor_core, profile) -> TabularOperatorArtifactV1`; `predict_transition(model, state, legal_action) -> WorldModelPredictionV1`; `predict_tabular_operator(artifact, sensor, legal_action) -> TabularOperatorPredictionV1`; `admit_operator_regularity(assessment) -> OperatorRegularityAdmissionV1`.
+`build_sensor_core(design) -> OperatorSensorCoreManifestV1`; `fit_transition_model_from_dataset_receipt_v3(receipt, rows) -> TabularWorldModelV1`; `build_targets(dataset, objective) -> BellmanOperatorArtifact`; `fit_tabular_operator_from_dataset_receipt_v3(plan, receipt) -> TabularOperatorArtifactV1`; `predict_transition(model, state, legal_action) -> WorldModelPredictionV1`; `predict_tabular_operator_indexed_v2(artifact, sensor, legal_action) -> TabularOperatorPredictionV1`; `validate_applicability_certificate_verified(certificate, generator, evaluator) -> digest`; `admit_operator_regularity_verified(assessment, generator, evaluator) -> OperatorRegularityAdmissionV1`.
+
+The lower-level `fit_tabular_operator`, `fit_transition_model`, `validate_applicability_certificate` and `admit_operator_regularity` surfaces remain compatibility/pure-core APIs. New qualification composition uses the strict V2/V3 dataset-bound and verified-evidence entrypoints.
 
 The original `train` function remains a compatibility alias for `build_targets`; it is explicitly a target builder, not a neural trainer. Transition/dynamics estimation and continuation-value estimation have separate artifacts and evidence.
 
@@ -20,13 +22,15 @@ The original `train` function remains a compatibility alias for `build_targets`;
 
 There is no production source writer. Training reads immutable ledger-bound datasets and emits deny-all candidate values for `learning.artifacts`. Sensor cores are fixed versioned designs, not replay caches. Artifacts bind axis partition, conditioning snapshot, model and dataset lineage, normalized units, code/runtime/device, error budget, applicability certificate and predecessor through the artifact owner.
 
-The tabular learner requires a complete canonical sensor-by-action grid and a minimum sample count for every cell. It stores per-cell mean, minimum, maximum, sample count and evidence digest. Missing or underfilled cells fail. Predictions outside the fitted grid fail rather than extrapolate.
+The tabular learner requires a complete canonical sensor-by-action grid and a minimum sample count for every cell. New qualification uses `fit_tabular_operator_from_dataset_receipt_v3`: it recomputes the frozen V3 dataset receipt, requires objective/dataset identity equality, rejects relabelled duplicate evidence and rejects any training row whose evidence digest is outside that exact snapshot. It stores per-cell mean, minimum, maximum, sample count and evidence digest. Missing or underfilled cells fail. Predictions outside the fitted grid fail rather than extrapolate.
 
 ## 4. Deterministic algorithm and scheduling
 
 Partition smooth, jump and hard axes; reject unsupported ellipticity or regularity rather than inject noise into hard state; construct deterministic farthest-point sensors; measure fill distance, separation radius and mesh ratio; run the complete tabular Bellman reference; fit the simplest sufficient tabular candidate; and measure rank, reconstruction, shape, OOD and complete error budget separately.
 
-The action-conditioned world-model baseline groups immutable observed samples by state/action, publishes exact Q32 branch distributions that sum to one and rejects unsupported pairs. Every prediction is marked synthetic. A model prediction cannot become an independent factual outcome.
+The action-conditioned world-model baseline groups immutable observed samples by state/action, rejects duplicate underlying evidence even when sample IDs differ, and its qualification entrypoint derives the dataset digest from a verified `DatasetSnapshotReceiptV3` while requiring every row's evidence digest to belong to that snapshot. It publishes exact Q32 branch distributions that sum to one and rejects unsupported pairs. Every prediction is marked synthetic. A model prediction cannot become an independent factual outcome.
+
+Applicability and regularity retain structural compatibility validators, but new qualification uses signed `VerifiedLearningEvidenceV1` receipts. Generator/evaluator controller separation, evaluator role, principal/credential binding, validity/revocation and the exact canonical applicability/regularity payload are checked before admission. This authenticates the attestation; it does not self-prove the underlying mathematics or efficacy.
 
 A later neural or low-rank tensor model must use a separately reviewed training profile and must beat or justify itself against the deterministic/tabular reference. Source presence alone cannot bypass applicability, future calibration, retention or rollback gates.
 
@@ -42,6 +46,8 @@ These are source bounds, not target-host measurements. A coordinate failing assu
 - OP-02: degenerate diffusion, bad mesh ratio or excessive reconstruction gain disables the learned path.
 - OP-03: a high in-sample fit with poor future calibration/retention fails evaluation.
 - OP-04: model-generated rollouts remain synthetic and cannot become independent factual outcome evidence.
+- OP-05: strict operator/world-model fitting rejects relabelled duplicate evidence and detached dataset rows.
+- OP-06: persisted candidates require an independent pin; corruption, truncation and revoked rollback fail across fresh process loads.
 
 Every case is mapped to concrete Rust test functions in `../../lane-e/TEST_TRACEABILITY.json`. Additional learned-grid tests verify order independence, complete-cell admission, minimum samples and domain-bounded prediction.
 
@@ -53,11 +59,11 @@ Use all eighteen dossier receipt fields. Immediate revocation and stop remain ef
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `build_targets` in [codex-rs/hepta-bellman-operator/src/lib.rs](../../../codex-rs/hepta-bellman-operator/src/lib.rs); `fit_tabular_operator` in [codex-rs/hepta-bellman-operator/src/learned.rs](../../../codex-rs/hepta-bellman-operator/src/learned.rs); `fit_transition_model` in [codex-rs/hepta-bellman-operator/src/world_model.rs](../../../codex-rs/hepta-bellman-operator/src/world_model.rs). Deterministic targets, tabular operator fitting and action-conditioned world-model baseline implemented.
+- **Implemented entrypoints:** `build_targets` in [codex-rs/hepta-bellman-operator/src/lib.rs](../../../codex-rs/hepta-bellman-operator/src/lib.rs); `fit_tabular_operator_strict_v2` and `fit_tabular_operator_from_dataset_receipt_v3` in [codex-rs/hepta-bellman-operator/src/learned_strict.rs](../../../codex-rs/hepta-bellman-operator/src/learned_strict.rs); `fit_transition_model_from_dataset_receipt_v3` in [codex-rs/hepta-bellman-operator/src/world_model.rs](../../../codex-rs/hepta-bellman-operator/src/world_model.rs); and verified applicability/regularity admission in [codex-rs/hepta-bellman-operator/src/reference.rs](../../../codex-rs/hepta-bellman-operator/src/reference.rs). Lower-level V1/pure-core APIs remain compatibility surfaces.
 - **State and recovery:** Pure candidate artifacts bind immutable data/profile/sensor identities. encode_tabular_payload_v1 and LoadedTabularOperatorV1 add bounded persisted candidate encoding and independently pinned, once-validated prediction. Storage and selection remain with learning.artifacts and its host. train is a compatibility alias for target construction; the separate tabular learner requires a complete supported sensor/action grid and retains per-cell sample statistics.
 - **Source tests:** [codex-rs/hepta-bellman-operator/src/learned_tests.rs](../../../codex-rs/hepta-bellman-operator/src/learned_tests.rs), [codex-rs/hepta-bellman-operator/src/world_model_tests.rs](../../../codex-rs/hepta-bellman-operator/src/world_model_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md](../../../codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md), [docs/learning/HOLDER_BELLMAN_SPEC.md](../../../docs/learning/HOLDER_BELLMAN_SPEC.md).
-- **Remaining work:** A neural/tensor model, device execution, independent mathematical applicability and future calibration/retention require separate evidence; model predictions remain synthetic observations.
+- **Remaining work:** Neural/tensor modeling remains optional and requires separate justification. Target-device execution, independent mathematical/scientific review, future calibration/retention, live-world transition validation, automatic product training/scheduling, independent selection and operator acceptance remain separate evidence/composition gates; model predictions remain synthetic observations.
 
 ## 9. Native closure and remaining evidence
 
