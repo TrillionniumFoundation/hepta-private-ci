@@ -688,3 +688,62 @@ fn restart_converts_dispatching_issue_to_reconciliation_required() {
         Some(ReconciliationReason::IssueOutcomeUnknown)
     );
 }
+
+
+#[test]
+fn restart_during_callback_recovers_consumer_outcome_unknown() {
+    let directory = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let registry = SecretLeaseRegistry::open_state_dir(directory.path()).unwrap();
+    let request = issue_request("callback-crash-window");
+    let request_sha256 = [41; 32];
+    assert!(matches!(
+        registry.prepare_issue(
+            &request,
+            request_sha256,
+            vec!["password".into(), "username".into()]
+        ),
+        Ok(PrepareIssue::New)
+    ));
+    registry
+        .mark_dispatching(
+            &request.operation_id,
+            request_sha256,
+            LeaseOperationKind::Issue,
+        )
+        .unwrap();
+    registry
+        .observe_issue_identity(
+            &request.operation_id,
+            request_sha256,
+            Zeroizing::new(PROVIDER_LEASE_ID.to_owned()),
+            true,
+        )
+        .unwrap();
+    registry
+        .observe_issue_ready(
+            &request.operation_id,
+            request_sha256,
+            true,
+            1_000,
+            121_000,
+            2,
+            USERNAME.len() + PASSWORD.len(),
+        )
+        .unwrap();
+    registry
+        .mark_delivering(&request.operation_id, request_sha256)
+        .unwrap();
+    drop(registry);
+
+    let reopened = SecretLeaseRegistry::open_state_dir(directory.path()).unwrap();
+    let recovered = reopened
+        .lookup_by_operation_id(&request.operation_id)
+        .unwrap()
+        .unwrap();
+    assert_eq!(recovered.state, SecretLeaseState::ReconciliationRequired);
+    assert_eq!(
+        recovered.reconciliation_reason,
+        Some(ReconciliationReason::ConsumerOutcomeUnknown)
+    );
+}
