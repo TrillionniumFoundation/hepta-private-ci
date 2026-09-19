@@ -6,6 +6,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_hepta_wire::PayloadCodec;
+use codex_hepta_wire::ProducerAdmission;
 use codex_hepta_wire::SchemaAdmissionError;
 use codex_hepta_wire::SchemaCodecError;
 use codex_hepta_wire::SchemaDescriptor;
@@ -13,7 +14,7 @@ use codex_hepta_wire::SchemaRegistry;
 use codex_hepta_wire::WireEnvelopeV2;
 use codex_hepta_wire::WireV2Error;
 use codex_hepta_wire::WireVersion;
-use codex_hepta_wire::decode_typed;
+use codex_hepta_wire::decode_typed_for_producer;
 use codex_hepta_wire::encode_typed;
 use serde::Deserialize;
 use serde::Serialize;
@@ -25,6 +26,7 @@ use crate::Error;
 use crate::adapt;
 
 pub const CODEX_OPERATION_INTENT_WIRE_SCHEMA_V2: &str = "hepta.codex-operation-intent.v2";
+pub const CODEX_OPERATION_INTENT_WIRE_PRODUCER: &str = "runtime.agentd";
 const CODEX_OPERATION_INTENT_WIRE_MAX_BYTES: usize = 64 * 1024;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -104,12 +106,20 @@ pub fn codex_operation_intent_wire_schema_v2() -> Result<SchemaDescriptor, Schem
     )
 }
 
+fn runtime_codex_producers() -> Result<ProducerAdmission, WireAdapterError> {
+    let producer = StableId::new(CODEX_OPERATION_INTENT_WIRE_PRODUCER)
+        .map_err(|_| WireAdapterError::Identity("runtime.codex producer"))?;
+    ProducerAdmission::allow_list([producer]).map_err(WireAdapterError::Schema)
+}
+
 pub fn encode_codex_operation_intent_wire_v2(
     intent: &CodexOperationIntent,
     producer: StableId,
     generation: Generation,
 ) -> Result<WireEnvelopeV2, WireAdapterError> {
     let codec = CodexOperationIntentWireCodec::new().map_err(WireAdapterError::Schema)?;
+    let producers = runtime_codex_producers()?;
+    producers.admit(&producer).map_err(WireAdapterError::Schema)?;
     let mut registry = SchemaRegistry::new();
     registry
         .register(codec.descriptor().clone())
@@ -137,14 +147,17 @@ pub fn decode_codex_operation_intent_wire_v2(
     envelope: &WireEnvelopeV2,
 ) -> Result<CodexOperationIntent, WireAdapterError> {
     let codec = CodexOperationIntentWireCodec::new().map_err(WireAdapterError::Schema)?;
+    let producers = runtime_codex_producers()?;
     let mut registry = SchemaRegistry::new();
     registry
         .register(codec.descriptor().clone())
         .map_err(WireAdapterError::Schema)?;
-    let value = decode_typed(
+    let value = decode_typed_for_producer(
         &registry,
+        &producers,
         WireVersion::V2,
         envelope.schema(),
+        envelope.producer(),
         &codec,
         envelope.payload(),
     )
