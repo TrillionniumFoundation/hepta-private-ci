@@ -19,7 +19,7 @@
   "operations": [
     {
       "designOperation": "connect_runtime",
-      "mappingClass": "owner_product_entrypoint",
+      "mappingClass": "owner_boundary",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "apps/hepta-native/src/runtime.rs",
@@ -42,7 +42,7 @@
     },
     {
       "designOperation": "render_runtime_view",
-      "mappingClass": "owner_product_entrypoint",
+      "mappingClass": "owner_boundary",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "apps/hepta-native/src/runtime.rs",
@@ -65,7 +65,7 @@
     },
     {
       "designOperation": "request_platform_capability",
-      "mappingClass": "owner_product_entrypoint",
+      "mappingClass": "owner_boundary",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "apps/hepta-native/src/runtime.rs",
@@ -88,7 +88,7 @@
     },
     {
       "designOperation": "apply_shell_update",
-      "mappingClass": "owner_product_entrypoint",
+      "mappingClass": "owner_boundary",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "apps/hepta-native/src/updater.rs",
