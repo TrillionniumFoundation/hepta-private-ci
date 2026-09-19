@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "2b209faf9b6c46746c07c4359be6b13e7a44ee89",
+    "tree": "de17ec74becb8c70390360b3ac8d1640de4d83e8"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.artifacts",
@@ -27,7 +27,9 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "load_pinned_candidate",
       "mappingClass": "owner_native",
@@ -39,7 +41,9 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/storage.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/storage_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "write_candidate_payload",
       "mappingClass": "owner_native",
@@ -74,9 +78,22 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "boundCargoPackagesMapped": true
   },
   "sourceRoot": [
     "codex-rs/hepta-learning-artifacts"
-  ]
+  ],
+  "sourceBaseSemantics": "generation_provenance_only_freshness_is_source_fingerprint",
+  "sourceFingerprintPolicy": "git-tracked-content-sha256-v1",
+  "boundCargoPackages": [
+    "codex-rs/hepta-learning-artifacts"
+  ],
+  "sourceFingerprints": {
+    "codex-rs/hepta-learning-artifacts": {
+      "algorithm": "sha256",
+      "digest": "51ebc8cf6b90ae3856fc3321fde422046282283ef4bfd50cb8ffe4403eb97aaa",
+      "trackedFiles": 28
+    }
+  }
 }

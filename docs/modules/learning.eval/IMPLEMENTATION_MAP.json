@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "2b209faf9b6c46746c07c4359be6b13e7a44ee89",
+    "tree": "de17ec74becb8c70390360b3ac8d1640de4d83e8"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.eval",
@@ -27,7 +27,9 @@
       "sourcePath": "codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/temporal_evaluation_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "evaluate_temporal_holdout",
       "mappingClass": "owner_native",
@@ -50,9 +52,28 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "boundCargoPackagesMapped": true
   },
   "sourceRoot": [
     "codex-rs/hepta-intelligence-eval"
-  ]
+  ],
+  "sourceBaseSemantics": "generation_provenance_only_freshness_is_source_fingerprint",
+  "sourceFingerprintPolicy": "git-tracked-content-sha256-v1",
+  "boundCargoPackages": [
+    "codex-rs/hepta-intelligence-eval",
+    "codex-rs/hepta-shadow-qualification"
+  ],
+  "sourceFingerprints": {
+    "codex-rs/hepta-intelligence-eval": {
+      "algorithm": "sha256",
+      "digest": "b53f0144a1c27b8902b7a0cb41df236f7208a1de0bc8f255a2389d30c5920ac6",
+      "trackedFiles": 29
+    },
+    "codex-rs/hepta-shadow-qualification": {
+      "algorithm": "sha256",
+      "digest": "9900e5fe41c8a6ea3b08482dcdcdf46283b452c85db0ffeb907d44d35e33c951",
+      "trackedFiles": 50
+    }
+  }
 }
