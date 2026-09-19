@@ -502,8 +502,10 @@ async fn malformed_remote_event_is_nonfatal_and_does_not_block_the_next_event() 
     Ok(())
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn expired_crash_lease_reuses_the_stable_transaction_after_reopen() -> TestResult {
+    let authorizer = TestAuthorizer::new()?;
     let temp = TempDir::new()?;
     let agent_id = agent(FIRST_AGENT)?;
     let layout = layout(&temp, &agent_id)?;
@@ -520,6 +522,7 @@ async fn expired_crash_lease_reuses_the_stable_transaction_after_reopen() -> Tes
     let stats = dispatch_outbox_once(
         &reopened,
         &transport,
+        &authorizer,
         &OutboxDispatchConfig {
             lease_ms: 20,
             retry_delay_ms: 10,
@@ -566,8 +569,10 @@ async fn expired_crash_lease_reuses_the_stable_transaction_after_reopen() -> Tes
     Ok(())
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestResult {
+    let authorizer = TestAuthorizer::new()?;
     let temp = TempDir::new()?;
     let agent_id = agent(FIRST_AGENT)?;
     let layout = layout(&temp, &agent_id)?;
@@ -588,12 +593,12 @@ async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestRes
     let cancel = CancellationToken::new();
 
     assert_eq!(
-        dispatch_outbox_once(&store, &transport, &config, &cancel, 10)
+        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 10)
             .await?
             .retry_scheduled,
         1
     );
-    let accepted = dispatch_outbox_once(&store, &transport, &config, &cancel, 20).await?;
+    let accepted = dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 20).await?;
     assert_eq!(accepted.sent, 0);
     assert_eq!(accepted.transport_accepted, 1);
     assert_eq!(
@@ -622,15 +627,17 @@ async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestRes
     cancel.cancel();
     tokio::time::timeout(
         Duration::from_millis(250),
-        run_outbox_sender(&store, &transport, &config, &cancel),
+        run_outbox_sender(&store, &transport, &authorizer, &config, &cancel),
     )
     .await??;
     store.close().await;
     Ok(())
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> TestResult {
+    let authorizer = TestAuthorizer::new()?;
     let temp = TempDir::new()?;
     let agent_id = agent(FIRST_AGENT)?;
     let layout = layout(&temp, &agent_id)?;
@@ -648,7 +655,7 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
     };
     let cancel = CancellationToken::new();
 
-    let first = dispatch_outbox_once(&store, &transport, &config, &cancel, 10).await?;
+    let first = dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 10).await?;
     assert_eq!(first.retry_scheduled, 1);
     let after_response_loss = store
         .outbox_for_txn(&original.stable_txn_id)
@@ -657,7 +664,7 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
     assert_eq!(after_response_loss.state, OutboxState::RetryScheduled);
     assert_eq!(after_response_loss.sent_event_id, None);
 
-    let second = dispatch_outbox_once(&store, &transport, &config, &cancel, 20).await?;
+    let second = dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 20).await?;
     assert_eq!(second.sent, 0);
     assert_eq!(second.transport_accepted, 1);
     assert_eq!(
@@ -692,8 +699,10 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
     Ok(())
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn later_permanent_rejection_cannot_erase_prior_transport_acceptance() -> TestResult {
+    let authorizer = TestAuthorizer::new()?;
     let temp = TempDir::new()?;
     let agent_id = agent(FIRST_AGENT)?;
     let layout = layout(&temp, &agent_id)?;
@@ -714,10 +723,10 @@ async fn later_permanent_rejection_cannot_erase_prior_transport_acceptance() -> 
     };
     let cancel = CancellationToken::new();
 
-    let accepted = dispatch_outbox_once(&store, &transport, &config, &cancel, 10).await?;
+    let accepted = dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 10).await?;
     assert_eq!(accepted.transport_accepted, 1);
     assert_eq!(accepted.sent, 0);
-    let rejected_retry = dispatch_outbox_once(&store, &transport, &config, &cancel, 20).await?;
+    let rejected_retry = dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 20).await?;
     assert_eq!(rejected_retry.permanent_failure, 0);
     assert_eq!(rejected_retry.indeterminate, 1);
 
@@ -751,8 +760,10 @@ async fn later_permanent_rejection_cannot_erase_prior_transport_acceptance() -> 
     Ok(())
 }
 
+#[cfg(unix)]
 #[tokio::test]
 async fn transient_failures_use_bounded_backoff_and_then_park_for_reconciliation() -> TestResult {
+    let authorizer = TestAuthorizer::new()?;
     let temp = TempDir::new()?;
     let agent_id = agent(FIRST_AGENT)?;
     let layout = layout(&temp, &agent_id)?;
@@ -774,7 +785,7 @@ async fn transient_failures_use_bounded_backoff_and_then_park_for_reconciliation
     let cancel = CancellationToken::new();
 
     assert_eq!(
-        dispatch_outbox_once(&store, &transport, &config, &cancel, 10)
+        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 10)
             .await?
             .retry_scheduled,
         1
@@ -785,7 +796,7 @@ async fn transient_failures_use_bounded_backoff_and_then_park_for_reconciliation
         .ok_or("first retry record disappeared")?;
     assert_eq!(first_retry.next_attempt_at_ms, 20);
     assert_eq!(
-        dispatch_outbox_once(&store, &transport, &config, &cancel, 20)
+        dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 20)
             .await?
             .retry_scheduled,
         1
@@ -795,7 +806,7 @@ async fn transient_failures_use_bounded_backoff_and_then_park_for_reconciliation
         .await?
         .ok_or("second retry record disappeared")?;
     assert_eq!(second_retry.next_attempt_at_ms, 40);
-    let parked = dispatch_outbox_once(&store, &transport, &config, &cancel, 40).await?;
+    let parked = dispatch_outbox_once(&store, &transport, &authorizer, &config, &cancel, 40).await?;
     assert_eq!(parked.permanent_failure, 0);
     assert_eq!(parked.indeterminate, 1);
     let unresolved = store
