@@ -112,10 +112,7 @@ pub fn fit_transition_model_from_dataset_receipt(
     now: u64,
 ) -> Result<TabularWorldModelV1, OperatorAdmissionError> {
     verify_dataset_snapshot_receipt_v3(receipt, now)?;
-    require_receipt_rows(
-        receipt,
-        samples.iter().map(|sample| sample.evidence_digest),
-    )?;
+    require_receipt_rows(receipt, samples.iter().map(|sample| sample.evidence_digest))?;
     Ok(fit_transition_model(
         model_id,
         receipt.snapshot.dataset_digest,
