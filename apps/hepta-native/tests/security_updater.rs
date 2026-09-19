@@ -8,6 +8,7 @@ use hepta_native::model::PlatformAction;
 use hepta_native::model::SignedPlatformGrantV1;
 use hepta_native::model::sha256_hex;
 use hepta_native::security::GrantVerifier;
+use hepta_native::security::ReloadingGrantVerifier;
 use hepta_native::security::PlatformGrantContext;
 use hepta_native::security::SignedEndpointManifestV1;
 use hepta_native::security::TrustedKeySet;
@@ -114,8 +115,8 @@ fn revoked_signing_key_is_rejected_on_next_grant_verification() {
         .unwrap(),
     )
     .unwrap();
-    let keys = TrustedKeySet::from_path(&key_path).unwrap();
-    let error = keys
+    let verifier = ReloadingGrantVerifier::new(key_path.clone()).unwrap();
+    let error = verifier
         .verify_platform_grant(
             &grant,
             PlatformGrantContext {
