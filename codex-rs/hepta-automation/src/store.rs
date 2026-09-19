@@ -1351,6 +1351,52 @@ async fn verify_store(pool: &SqlitePool, owner_agent_id: &AgentId) -> Result<(),
     if invalid_outcomes != 0 {
         return Err(AutomationError::Corrupt);
     }
+
+    // Occurrence identity is a causal key, not descriptive metadata. Recompute
+    // it on every reopen and reject any projection/link/terminal receipt drift.
+    let invalid_occurrences: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM automation_runs r
+         JOIN automation_tasks t ON t.task_id = r.task_id
+         LEFT JOIN taskflow_runs f
+           ON f.owner_agent_id = t.owner_agent_id
+          AND f.run_id = r.taskflow_run_id
+         WHERE t.owner_agent_id = ?
+           AND (
+               r.occurrence_id IS NULL
+               OR r.schedule_revision IS NULL
+               OR r.schedule_revision <= 0
+               OR r.occurrence_id != (
+                   'hepta.automation.occurrence.v1:' || t.owner_agent_id || ':' ||
+                   r.task_id || ':' || r.schedule_revision || ':' || r.scheduled_for_ms
+               )
+               OR (r.taskflow_run_id IS NOT NULL AND (
+                   r.taskflow_run_id != r.occurrence_id
+                   OR f.run_id IS NULL
+                   OR f.workflow_id != 'automation-occurrence'
+                   OR f.workflow_version != 1
+                   OR f.thread_id != t.thread_id
+               ))
+               OR (r.terminal_state IS NOT NULL AND (
+                   r.taskflow_run_id IS NULL
+                   OR r.terminal_receipt_digest IS NULL
+                   OR r.terminal_at_ms IS NULL
+                   OR f.state != r.terminal_state
+                   OR f.state_digest != r.terminal_receipt_digest
+               ))
+               OR (r.terminal_state IS NULL AND (
+                   r.terminal_receipt_digest IS NOT NULL OR r.terminal_at_ms IS NOT NULL
+               ))
+           )",
+    )
+    .bind(owner_agent_id.as_str())
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if invalid_occurrences != 0 {
+        return Err(AutomationError::Corrupt);
+    }
+
     verify_taskflow_store(pool, owner_agent_id)
         .await
         .map_err(map_taskflow_verify_error)?;
