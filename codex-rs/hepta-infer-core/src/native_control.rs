@@ -34,6 +34,19 @@ pub enum NativeRunStatus {
     Indeterminate,
 }
 
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum NativeBoundaryStatus {
+    Succeeded,
+    Failed,
+    Interrupted,
+    Cancelled,
+    TimedOut,
+    Quarantined,
+    #[default]
+    Indeterminate,
+}
+
 /// Provider terminality and the owner's authority observation are independent.
 /// Missing historical fields never establish that authority was checked.
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
@@ -58,12 +71,19 @@ pub struct NativeRunOutput {
     pub model: String,
     pub model_provider: String,
     pub status: NativeRunStatus,
+    #[serde(default)]
+    pub boundary_status: NativeBoundaryStatus,
     pub output: String,
     pub observed_output_tokens: Option<u64>,
     pub terminal_observed: bool,
     pub stop_reason: Option<String>,
     #[serde(default)]
     pub owner_authority: NativeOwnerAuthority,
+    /// Present for new runtime.codex-bound terminal observations. Historical
+    /// records may omit it, but a dispatch carrying a codex request digest may
+    /// not settle terminally without it.
+    #[serde(default)]
+    pub codex_terminal_correlation_digest: Option<String>,
 }
 
 impl NativeRunOutput {
@@ -72,7 +92,10 @@ impl NativeRunOutput {
     pub fn succeeded(&self) -> bool {
         self.terminal_observed
             && self.status == NativeRunStatus::Completed
+            && self.boundary_status == NativeBoundaryStatus::Succeeded
+            && self.stop_reason.is_none()
             && self.owner_authority == NativeOwnerAuthority::ObservedReady
+            && self.codex_terminal_correlation_digest.is_some()
     }
 }
 
@@ -94,6 +117,44 @@ pub struct NativeDispatch {
     pub model_provider: String,
     /// Exact serialized additional context, including its owner snapshot.
     pub context_digest: String,
+    /// Exact serialized turn/start payload digest. Optional only for replaying
+    /// pre-runtime.codex journal records.
+    #[serde(default)]
+    pub codex_payload_digest: Option<String>,
+    /// Adapter request digest binding durable admission + physical payload.
+    #[serde(default)]
+    pub codex_request_digest: Option<String>,
+    /// Version reported by the App Server initialize handshake.
+    #[serde(default)]
+    pub app_server_version: Option<String>,
+    /// Exact protocol family/version, for example codex.app-server.v2.
+    #[serde(default)]
+    pub protocol_id: Option<String>,
+    #[serde(default)]
+    pub codex_source_admission_digest: Option<String>,
+    #[serde(default)]
+    pub codex_home_digest: Option<String>,
+    #[serde(default)]
+    pub codex_connection_id: Option<u64>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum NativeDispatchRejectionStatus {
+    Rejected,
+    Overloaded,
+    /// Legacy journal spelling retained for replay.
+    Unavailable,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct NativeDispatchRejection {
+    pub status: NativeDispatchRejectionStatus,
+    pub reason: String,
+    pub response_digest: String,
+    /// Only overload/pre-processing refusal may carry this bit.
+    pub retry_safe_before_admission: bool,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -108,6 +169,8 @@ pub struct NativeRunRecord {
     /// A locally proven pre-dispatch stop releases a slot without pretending
     /// to have observed a provider terminal event or zero token consumption.
     pub pre_dispatch_stop: Option<String>,
+    #[serde(default)]
+    pub dispatch_rejection: Option<NativeDispatchRejection>,
     pub observation: Option<NativeRunOutput>,
 }
 
@@ -131,6 +194,10 @@ enum Event {
     Started {
         request_id: String,
         turn_id: String,
+    },
+    RejectBeforeStart {
+        request_id: String,
+        rejection: NativeDispatchRejection,
     },
     Cancel {
         request_id: String,
@@ -218,6 +285,23 @@ impl DurableInferenceControl {
             Event::Started {
                 request_id: request_id.to_string(),
                 turn_id,
+            },
+        )
+    }
+
+    /// A typed JSON-RPC error is evidence that the App Server returned a
+    /// rejection rather than a lost acknowledgement. This transition is legal
+    /// only after Dispatch and before any turn identity was observed.
+    pub fn reject_native_before_start(
+        &mut self,
+        request_id: &str,
+        rejection: NativeDispatchRejection,
+    ) -> Result<NativeRunRecord, Error> {
+        self.commit_native(
+            request_id,
+            Event::RejectBeforeStart {
+                request_id: request_id.to_string(),
+                rejection,
             },
         )
     }
@@ -361,6 +445,7 @@ impl NativeJournal {
                     turn_id: None,
                     cancel_requested: false,
                     pre_dispatch_stop: None,
+                    dispatch_rejection: None,
                     observation: None,
                 },
             );
@@ -370,6 +455,7 @@ impl NativeJournal {
             Event::Reserve { .. } => return Err(Error::InvalidTransition),
             Event::Dispatch { request_id, .. }
             | Event::Started { request_id, .. }
+            | Event::RejectBeforeStart { request_id, .. }
             | Event::Cancel { request_id }
             | Event::Stop { request_id, .. }
             | Event::Observe { request_id, .. } => request_id,
@@ -384,16 +470,94 @@ impl NativeJournal {
                 validate_identity(&dispatch.thread_id, "native thread")?;
                 validate_identity(&dispatch.model_provider, "native provider")?;
                 validate_digest(&dispatch.context_digest, "native context")?;
+                let codex_fields = [
+                    dispatch.codex_payload_digest.is_some(),
+                    dispatch.codex_request_digest.is_some(),
+                    dispatch.app_server_version.is_some(),
+                    dispatch.protocol_id.is_some(),
+                ];
+                if codex_fields.iter().any(|present| *present)
+                    && !codex_fields.iter().all(|present| *present)
+                {
+                    return Err(Error::InvalidIdentity("native codex dispatch binding"));
+                }
+                let extended_codex_fields = [
+                    dispatch.codex_source_admission_digest.is_some(),
+                    dispatch.codex_home_digest.is_some(),
+                    dispatch.codex_connection_id.is_some(),
+                ];
+                if extended_codex_fields.iter().any(|present| *present)
+                    && (!codex_fields.iter().all(|present| *present)
+                        || !extended_codex_fields.iter().all(|present| *present))
+                {
+                    return Err(Error::InvalidIdentity(
+                        "native codex extended dispatch binding",
+                    ));
+                }
+                if let Some(digest) = &dispatch.codex_payload_digest {
+                    validate_digest(digest, "native codex payload")?;
+                }
+                if let Some(digest) = &dispatch.codex_request_digest {
+                    validate_digest(digest, "native codex request")?;
+                }
+                if let Some(version) = &dispatch.app_server_version
+                    && (version.is_empty()
+                        || version.len() > 128
+                        || version.bytes().any(|byte| byte.is_ascii_control()))
+                {
+                    return Err(Error::InvalidIdentity("native app server version"));
+                }
+                if let Some(protocol_id) = &dispatch.protocol_id {
+                    validate_identity(protocol_id, "native app server protocol")?;
+                }
+                if let Some(digest) = &dispatch.codex_source_admission_digest {
+                    validate_digest(digest, "native codex source admission")?;
+                }
+                if let Some(digest) = &dispatch.codex_home_digest {
+                    validate_digest(digest, "native codex home")?;
+                }
+                if dispatch.codex_connection_id == Some(0) {
+                    return Err(Error::InvalidIdentity("native codex connection"));
+                }
                 record.dispatch = Some(dispatch);
                 record.state = NativeReservationState::Dispatching;
             }
             Event::Started { turn_id, .. } => {
-                if record.state != NativeReservationState::Dispatching {
+                if record.state != NativeReservationState::Dispatching
+                    || record.dispatch_rejection.is_some()
+                {
                     return Err(Error::InvalidTransition);
                 }
                 validate_identity(&turn_id, "native turn")?;
                 record.turn_id = Some(turn_id);
                 record.state = NativeReservationState::Running;
+            }
+            Event::RejectBeforeStart { rejection, .. } => {
+                if record.state != NativeReservationState::Dispatching
+                    || record.turn_id.is_some()
+                    || record.observation.is_some()
+                    || rejection.reason.is_empty()
+                    || rejection.reason.len() > 4096
+                {
+                    return Err(Error::InvalidTransition);
+                }
+                validate_digest(&rejection.response_digest, "native dispatch rejection")?;
+                if rejection.retry_safe_before_admission
+                    && !matches!(
+                        rejection.status,
+                        NativeDispatchRejectionStatus::Overloaded
+                            | NativeDispatchRejectionStatus::Unavailable
+                    )
+                {
+                    return Err(Error::InvalidTransition);
+                }
+                let safe_before_admission = rejection.retry_safe_before_admission;
+                record.dispatch_rejection = Some(rejection);
+                record.state = if safe_before_admission {
+                    NativeReservationState::Released
+                } else {
+                    NativeReservationState::Indeterminate
+                };
             }
             Event::Cancel { .. } => {
                 if record.state == NativeReservationState::Released
@@ -415,6 +579,9 @@ impl NativeJournal {
                 record.state = NativeReservationState::Released;
             }
             Event::Observe { output, .. } => {
+                if record.dispatch_rejection.is_some() {
+                    return Err(Error::InvalidTransition);
+                }
                 apply_observation(record, output)?;
             }
         }
@@ -446,6 +613,16 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
     {
         return Err(Error::CapacityExceeded);
     }
+    if let Some(digest) = &output.codex_terminal_correlation_digest {
+        validate_digest(digest, "native codex terminal correlation")?;
+    }
+    if output.terminal_observed
+        && dispatch.codex_request_digest.is_some()
+        && (output.codex_terminal_correlation_digest.is_none()
+            || output.boundary_status == NativeBoundaryStatus::Indeterminate)
+    {
+        return Err(Error::TerminalObservationMissing);
+    }
     if let NativeOwnerAuthority::Lost { reason } = &output.owner_authority
         && (reason.is_empty() || reason.len() > 4096)
     {
@@ -472,8 +649,11 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
         }
         if previous.terminal_observed
             && (previous.status != output.status
+                || previous.boundary_status != output.boundary_status
                 || !output.terminal_observed
-                || previous.output != output.output)
+                || previous.output != output.output
+                || previous.codex_terminal_correlation_digest
+                    != output.codex_terminal_correlation_digest)
         {
             return Err(Error::Conflict);
         }
