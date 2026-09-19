@@ -338,3 +338,7 @@ fn validate_model(model: &str) -> Result<(), AgentdPromptRuntimeError> {
 fn host_error(error: AgentdPromptRuntimeError) -> PromptRuntimeHostError {
     PromptRuntimeHostError::new("agentd_prompt_runtime_error", error.to_string())
 }
+
+#[cfg(test)]
+#[path = "prompt_runtime_tests.rs"]
+mod tests;
