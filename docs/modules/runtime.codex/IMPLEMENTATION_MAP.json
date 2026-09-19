@@ -136,6 +136,7 @@
     "authenticated target-host Agentd/App Server execution receipt",
     "real model/provider terminal stream observation under the target deployment",
     "delegated external tool terminal and acknowledgement-loss qualification",
+    "independent policy/evidence for resolving or quarantining indeterminate effects when ephemeral App Server history is unavailable; no unauthenticated manual release",
     "independent acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
@@ -170,7 +171,7 @@
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
       "symbol": "pub(super) async fn run_once(",
       "buildTarget": "codex-hepta-infer-worker-host",
-      "semantics": "Sends real v2 thread/start and turn/start requests; requires an independently signed kernel.authority final-use capability for the exact final TurnStartParams binding; after authority acquisition rechecks cancellation, deadline, exact Agent generation/readiness and ingress identity; consumes the one-entry token; durably records the witness/request binding before the turn/start network await; routes typed errors and matching TurnCompleted notifications through hepta-codex-adapter; and never replays an unknown acknowledgement. Target-host issuer/provider qualification remains external evidence."
+      "semantics": "Sends real v2 thread/start and the actual wire method turn/start; requires an independently signed kernel.authority final-use capability for the exact final TurnStartParams binding; after authority acquisition rechecks cancellation, the same absolute deadline, exact Agent generation/readiness and ingress identity; consumes the one-entry token; durably records the witness/request binding before the turn/start network await; routes typed errors and matching TurnCompleted notifications through hepta-codex-adapter; spends only the remaining absolute deadline on initial terminal observation; and never replays an unknown acknowledgement. Target-host issuer/provider qualification remains external evidence."
     },
     {
       "role": "final_use_authority_port",
@@ -184,7 +185,7 @@
       "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
       "symbol": "pub(super) async fn reconcile_existing(",
       "buildTarget": "codex-hepta-infer-worker-host",
-      "semantics": "Uses thread/read with includeTurns against the original Agentd/App Server generation and matches the stable client_user_message_id without submitting a new turn."
+      "semantics": "Uses thread/read with includeTurns against the original Agentd/App Server generation and accepts recovery only when the stable client_user_message_id and original UserMessage content both match, without submitting a new turn. Same-id/different-input or multiple exact matches are hard conflicts; missing ephemeral history stays indeterminate."
     },
     {
       "role": "durable_owner",
@@ -202,7 +203,8 @@
         "terminal status correctness",
         "thread/turn correlation",
         "overload vs unknown outcome",
-        "late terminal observation"
+        "late terminal observation",
+        "actual v2 turn/start method binding"
       ]
     },
     {
@@ -241,7 +243,9 @@
       "command": "just test -p codex-hepta-infer-worker-host",
       "covers": [
         "post-authority deadline, cancellation, owner-readiness and ingress fencing",
-        "terminal status and owner-authority success conjunction"
+        "one absolute runtime.codex deadline across authority/send/initial observation",
+        "terminal status and owner-authority success conjunction",
+        "recovery client-id plus original-input binding"
       ]
     }
   ]
