@@ -693,13 +693,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let selection = read_selection(record.layout.run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        let (Some(intent), Some(selection)) = (intent, selection) else {
-            if intent.is_none() && selection.is_none() {
-                return Ok(());
+        let (intent, selection) = match (intent, selection) {
+            (None, None) => return Ok(()),
+            (Some(intent), Some(selection)) => (intent, selection),
+            _ => {
+                return Err(SupervisorError::SignedIntentRecoveryRequired(
+                    agent_id.clone(),
+                ));
             }
-            return Err(SupervisorError::SignedIntentRecoveryRequired(
-                agent_id.clone(),
-            ));
         };
         if intent.agent_id != agent_id.to_string()
             || selection.agent_id != agent_id.to_string()
