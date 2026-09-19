@@ -333,10 +333,17 @@ impl PromptRuntimeTerminalRecordV1 {
             || self.source_binding_digest.is_zero()
             || self.provider_request_digest.is_zero()
             || self.thread_id.is_empty()
+            || self.thread_id.len() > 256
             || self.turn_id.is_empty()
+            || self.turn_id.len() > 256
             || self.attempt_id.is_empty()
+            || self.attempt_id.len() > 256
             || self.request_binding_id.is_empty()
+            || self.request_binding_id.len() > 256
             || self.observed_unix_ms == 0
+            || self.terminal_reason_code.as_ref().is_some_and(|reason| {
+                reason.is_empty() || reason.len() > 256 || reason.as_bytes().contains(&0)
+            })
         {
             return Err(PromptRuntimeError::InvalidTerminalRecord);
         }
@@ -356,14 +363,17 @@ impl PromptRuntimeTerminalRecordV1 {
                     .delivery_observation
                     .as_ref()
                     .ok_or(PromptRuntimeError::InvalidTerminalRecord)?;
-                if observation.delivered || self.terminal_reason_code.is_none() {
+                if observation.delivered || self.terminal_reason_code.is_none() || self.end_turn.is_some() {
                     return Err(PromptRuntimeError::InvalidTerminalRecord);
                 }
                 validate_observation_binding(self, observation)?;
             }
             PromptRuntimeTerminalOutcomeV1::NotDispatched
             | PromptRuntimeTerminalOutcomeV1::Indeterminate => {
-                if self.delivery_observation.is_some() || self.terminal_reason_code.is_none() {
+                if self.delivery_observation.is_some()
+                    || self.terminal_reason_code.is_none()
+                    || self.end_turn.is_some()
+                {
                     return Err(PromptRuntimeError::InvalidTerminalRecord);
                 }
             }
