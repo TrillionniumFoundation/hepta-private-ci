@@ -491,6 +491,11 @@ pub struct AppServerRuntimeOptions {
     /// validated local policy, and an available CognitiveRuntime all hold.
     pub hepta_qualification_turn_writer:
         Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
+    /// Optional source-bound prompt runtime capability. Ordinary Codex keeps
+    /// this absent; only an embedding that already owns an exercise-bound
+    /// attachment may install the runtime.codex delivery bridge.
+    pub hepta_prompt_runtime_host:
+        Option<codex_hepta_codex_adapter::PromptRuntimeHost>,
     /// Embedding-owned feature states applied after ordinary config layers
     /// and per-request overrides. Empty for ordinary Codex runtimes; a local
     /// embedding can use this to keep a capability boundary fail-closed.
@@ -533,6 +538,10 @@ impl std::fmt::Debug for AppServerRuntimeOptions {
             .field(
                 "hepta_qualification_turn_writer",
                 &self.hepta_qualification_turn_writer,
+            )
+            .field(
+                "hepta_prompt_runtime_host",
+                &self.hepta_prompt_runtime_host,
             )
             .field("required_feature_states", &self.required_feature_states)
             .finish()
@@ -584,6 +593,7 @@ impl PartialEq for AppServerRuntimeOptions {
             && self.hepta_qualification_turn_writer_enabled
                 == other.hepta_qualification_turn_writer_enabled
             && self.hepta_qualification_turn_writer == other.hepta_qualification_turn_writer
+            && self.hepta_prompt_runtime_host == other.hepta_prompt_runtime_host
             && self.required_feature_states == other.required_feature_states
     }
 }
@@ -605,6 +615,7 @@ impl Default for AppServerRuntimeOptions {
             hepta_local_development_policy: None,
             hepta_qualification_turn_writer_enabled: false,
             hepta_qualification_turn_writer: None,
+            hepta_prompt_runtime_host: None,
             required_feature_states: BTreeMap::new(),
         }
     }
@@ -1102,6 +1113,7 @@ pub async fn run_main_with_transport_options(
             hepta_qualification_turn_writer_enabled: runtime_options
                 .hepta_qualification_turn_writer_enabled,
             hepta_qualification_turn_writer: runtime_options.hepta_qualification_turn_writer,
+            hepta_prompt_runtime_host: runtime_options.hepta_prompt_runtime_host,
         }));
         let mut thread_created_rx = processor.thread_created_receiver();
         let mut running_turn_count_rx = processor.subscribe_running_assistant_turn_count();
