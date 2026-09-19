@@ -278,6 +278,7 @@ mod tests {
             predecessor_generation: predecessor.map(|(value, _)| generation(value)),
             rollback_predecessor_digest: predecessor.map_or(Digest32::ZERO, |(_, value)| digest(value)),
             state_class: RuntimeModuleStateClassV1::Stateful,
+            dependencies: Vec::new(),
             input_ports: Vec::new(),
             output_ports: Vec::new(),
             authoritative_domains: [id("memory-ledger")].into_iter().collect::<BTreeSet<_>>(),
