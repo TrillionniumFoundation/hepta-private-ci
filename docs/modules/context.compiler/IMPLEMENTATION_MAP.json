@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "fbb2154564c567a1fce0d5bba3298d425aebd165",
-    "tree": "ade32cac1df7d46f9fdb3f4bee1635654d7e6572"
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "context.compiler",
@@ -134,8 +134,6 @@
       "delegatedCallees": []
     },
     {
-      "operation": "deliver_context_v2",
-      "nativeSymbol": "deliver_context_v2",
       "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
@@ -143,14 +141,30 @@
         "codex-rs/hepta-context-compiler/src/v2_tests.rs"
       ],
       "sourcePathExists": true,
-      "designOperation": "compile_context",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "operation": "prepare_delivery_v2",
+      "nativeSymbol": "prepare_delivery_v2",
+      "designOperation": "revalidate_attachment"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-context-compiler/src/v2.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "operation": "observe_delivery",
+      "nativeSymbol": "observe_delivery",
+      "designOperation": "compile_context"
     }
   ],
   "repositoryControlledGaps": [
-    "Bind the verified V2 operations to an authenticated production consumer and concrete admission/tokenizer/serializer/transport adapters.",
-    "Qualify verifier-authenticated request scope and secret classification, authoritative admission/revocation semantics, exact provider tokenizer/template/tool-schema identities, and payload-bound transport/provider acknowledgement semantics on the selected target host.",
+    "Bind the verified V2 operations to an authenticated production consumer, authoritative admission verifier, exact tokenizer/serializer, and runtime provider owner.",
+    "At the real provider boundary consume current final-use authority, bind the exact serialized payload plus ContextDeliveryPreparationV2 witness into canonical ProviderRequestBinding evidence, and qualify the independent provider-evidence resolver.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
