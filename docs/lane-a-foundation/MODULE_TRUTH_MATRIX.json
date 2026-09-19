@@ -294,7 +294,9 @@
             "CREATE TABLE qualification_evidence",
             "CREATE TABLE independent_decision_receipts",
             "qualification_evidence_no_update",
-            "qualification_evidence_meta_no_update"
+            "qualification_evidence_meta_no_update",
+            "CREATE TABLE qualification_trust_policy",
+            "qualification_trust_policy_no_update"
           ]
         },
         {
@@ -304,7 +306,9 @@
             "pub async fn verify_chain(",
             "pub async fn query_claim(",
             "pub async fn verify_external_checkpoint(",
-            "pub struct IndependentDecisionReceiptV1"
+            "pub struct IndependentDecisionReceiptV1",
+            "pub async fn provision_trust_policy(",
+            "trust-policy checkpoint diverged"
           ]
         }
       ]
