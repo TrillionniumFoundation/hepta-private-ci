@@ -19,6 +19,7 @@ use super::PreparedPlanInputV1;
 use super::ResourceReservationV1;
 use super::SnapshotRequestV1;
 use super::bind_ndu_plan_evaluation_v1;
+use super::canonical_resource_profile_digest;
 use super::collect_snapshot;
 use super::finalize_plan;
 use super::prepare_plan;
@@ -97,18 +98,19 @@ fn candidate(name: &str, resource: i64) -> PlanCandidateV1 {
 }
 
 fn planning_request(work_resource: i64) -> PlanningRequestV1 {
+    let resource_reservations = vec![ResourceReservationV1 {
+        axis: id("compute"),
+        endowment: q32(10),
+        essential_floor: FixedQ32::ZERO,
+    }];
     PlanningRequestV1 {
         plan_id: id("plan-run-1"),
         now_micros: 1_000,
         deadline_micros: 1_900,
         evaluation_policy_digest: digest("policy"),
-        resource_profile_digest: digest("resource-profile"),
+        resource_profile_digest: must(canonical_resource_profile_digest(&resource_reservations)),
         candidates: vec![candidate("abstain", 0), candidate("work", work_resource)],
-        resource_reservations: vec![ResourceReservationV1 {
-            axis: id("compute"),
-            endowment: q32(10),
-            essential_floor: FixedQ32::ZERO,
-        }],
+        resource_reservations,
     }
 }
 
@@ -451,4 +453,32 @@ fn resource_profile_and_snapshot_policy_are_mandatory_and_digest_bound() {
         must_err(prepare_plan(&changed, planning_request(1))),
         PlannerError::PreparedPlanMismatch
     );
+}
+
+
+#[test]
+fn nonzero_resource_profile_drift_is_rejected() {
+    let snapshot = must(collect_snapshot(
+        snapshot_request(),
+        vec![summary(OwnerReadinessV1::Ready, 950, 1_800)],
+    ));
+    let mut request = planning_request(1);
+    request.resource_profile_digest = digest("different-resource-profile");
+    assert_eq!(
+        must_err(prepare_plan(&snapshot, request)),
+        PlannerError::ResourceProfileMismatch
+    );
+}
+
+#[test]
+fn stale_optional_owner_does_not_block_required_snapshot() {
+    let mut optional = summary(OwnerReadinessV1::Ready, 100, 1_800);
+    optional.owner_id = id("optional-observer");
+    let snapshot = must(collect_snapshot(
+        snapshot_request(),
+        vec![summary(OwnerReadinessV1::Ready, 950, 1_800), optional],
+    ));
+    assert!(snapshot.stale_owner_ids().is_empty());
+    assert!(snapshot.unavailable_owner_ids().is_empty());
+    must(prepare_plan(&snapshot, planning_request(1)));
 }
