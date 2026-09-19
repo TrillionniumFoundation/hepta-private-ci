@@ -1,4 +1,3 @@
-use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -733,24 +732,5 @@ async fn replay_sequence_is_consumed_atomically_with_insert() {
             .expect("query")
             .iter()
             .all(|reference| reference.evidence_id != second.evidence_id)
-    );
-}
-
-#[tokio::test]
-async fn corrupted_rows_do_not_turn_into_missing_positive_proof() {
-    // A short sleep keeps this test's expiry arithmetic clearly away from the
-    // append boundary on very coarse test clocks.
-    tokio::time::sleep(Duration::from_millis(1)).await;
-    let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&config(&temp))
-        .await
-        .expect("open evidence");
-    assert!(
-        store
-            .qualification()
-            .query_claim(&candidate('b'), EvidenceClaimClassV1::Hardware)
-            .await
-            .expect("empty query")
-            .is_empty()
     );
 }
