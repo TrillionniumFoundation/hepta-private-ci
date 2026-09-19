@@ -13,17 +13,49 @@ fn sha256_round_trip_is_canonical() {
 }
 
 #[test]
-fn uppercase_and_wrong_length_fail_closed() {
+fn uppercase_wrong_length_and_non_hex_fail_closed() {
     assert_eq!("00".parse::<Digest32>(), Err(DigestParseError::Length(2)));
     let uppercase = "A".repeat(64);
     assert_eq!(
         uppercase.parse::<Digest32>(),
         Err(DigestParseError::Character(0))
     );
+    let mut invalid = "0".repeat(64);
+    invalid.replace_range(31..32, "g");
+    assert_eq!(
+        invalid.parse::<Digest32>(),
+        Err(DigestParseError::Character(31))
+    );
+}
+
+#[test]
+fn zero_and_all_lowercase_nibbles_round_trip() {
+    let zero = "0".repeat(64);
+    assert_eq!(zero.parse::<Digest32>(), Ok(Digest32::ZERO));
+
+    let source = "0123456789abcdef".repeat(4);
+    let parsed = source.parse::<Digest32>();
+    let Ok(parsed) = parsed else {
+        panic!("lowercase digest alphabet rejected");
+    };
+    assert_eq!(parsed.to_string(), source);
 }
 
 #[test]
 fn multipart_hash_matches_exact_concatenation() {
     let parts: [&[u8]; 4] = [b"he", b"p", b"", b"ta"];
     assert_eq!(Digest32::of_parts(&parts), Digest32::of_bytes(b"hepta"));
+}
+
+
+#[test]
+fn every_digest_position_rejects_non_hex() {
+    for index in 0..64 {
+        let mut invalid = "0".repeat(64);
+        invalid.replace_range(index..index + 1, "g");
+        assert_eq!(
+            invalid.parse::<Digest32>(),
+            Err(DigestParseError::Character(index))
+        );
+    }
 }

@@ -287,9 +287,43 @@ def validate_wire_vector(root: Path = ROOT) -> None:
         raise VerificationError("HPTN V1 conformance vector mismatch")
 
 
+def validate_platform_types_vector(root: Path = ROOT) -> None:
+    value = read_json(
+        root / "docs/lane-a-foundation/platform.types/CANONICAL_DIGEST_V1.json"
+    )
+    try:
+        encoded = bytes.fromhex(value["encodedHex"])
+        expected_digest = value["sha256"]
+    except (KeyError, TypeError, ValueError) as error:
+        raise VerificationError(
+            f"invalid Platform Types canonical V1 vector: {error}"
+        ) from error
+    if (
+        value.get("schemaVersion") != 1
+        or value.get("contract") != "hepta.platform-types.canonical-digest-v1"
+        or value.get("encodingSchemaVersion") != 1
+        or value.get("typeId") != "platform.types:golden"
+        or value.get("encodedLength") != 254
+        or len(encoded) != 254
+        or not encoded.startswith(b"HEPTA-CANONICAL-DIGEST-V1\\0")
+        or hashlib.sha256(encoded).hexdigest() != expected_digest
+        or expected_digest
+        != "8ef482c0a0cd42aee59638898402103024004fbb0ea189d5673d4d6455c2a53d"
+        or value.get("authority") != "none"
+    ):
+        raise VerificationError("Platform Types canonical V1 conformance vector mismatch")
+
+
 def validate_source_specific(root: Path = ROOT) -> None:
     required = {
-        "codex-rs/hepta-types/src/lib.rs": ["pub use identity::IdentityError;"],
+        "codex-rs/hepta-types/src/lib.rs": [
+            "pub use identity::IdentityError;",
+            "pub use identity::IdProfileV1;",
+            "pub use identity::NonAuthorizingPosture;",
+            "pub use canonical_digest::canonical_digest_v1;",
+            "pub use registry::ContractRegistryV1;",
+            "pub use numeric_conversion::rescale_signal_registered;",
+        ],
         "codex-rs/hepta-wire/src/envelope.rs": ["const WIRE_VERSION: u16 = 1;"],
         "codex-rs/hepta-operations/src/lib.rs": [
             "In-memory reference model",
