@@ -56,7 +56,7 @@ impl CodexOperationIntentWireCodec {
             ("thread_id", &value.thread_id),
             ("method_id", &value.method_id),
         ] {
-            StableId::new(id.clone()).map_err(|_| match name {
+            StableId::new(id.as_str()).map_err(|_| match name {
                 "operation_id" => SchemaCodecError::Rejected("invalid operation_id"),
                 "thread_id" => SchemaCodecError::Rejected("invalid thread_id"),
                 _ => SchemaCodecError::Rejected("invalid method_id"),
