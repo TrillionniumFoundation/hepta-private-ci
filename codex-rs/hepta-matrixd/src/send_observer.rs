@@ -49,6 +49,9 @@ pub struct SendReceipt {
     pub state: SendState,
     pub server_event_id: Option<String>,
     pub observation_digest: Option<String>,
+    /// Independent evidence for a later homeserver redaction. Never replaces
+    /// the original send-terminal observation digest.
+    pub redaction_observation_digest: Option<String>,
     pub terminal_observed: bool,
     pub idempotent: bool,
 }
@@ -102,7 +105,12 @@ impl MatrixSendObserver {
             }
             return Err(Error::OperationConflict);
         }
-        if self.sends.len() >= MAX_PENDING_SENDS {
+        let unresolved = self
+            .sends
+            .values()
+            .filter(|current| matches!(current.receipt.state, SendState::Prepared | SendState::Indeterminate))
+            .count();
+        if unresolved >= MAX_PENDING_SENDS {
             return Err(Error::CapacityExceeded);
         }
         if self
@@ -118,6 +126,7 @@ impl MatrixSendObserver {
             state: SendState::Prepared,
             server_event_id: None,
             observation_digest: None,
+            redaction_observation_digest: None,
             terminal_observed: false,
             idempotent: false,
         };
@@ -211,7 +220,7 @@ impl MatrixSendObserver {
             .get_mut(&operation_id)
             .ok_or(Error::SendNotFound)?;
         if current.receipt.state == SendState::Redacted {
-            if current.receipt.observation_digest.as_deref() == Some(redaction_digest) {
+            if current.receipt.redaction_observation_digest.as_deref() == Some(redaction_digest) {
                 let mut receipt = current.receipt.clone();
                 receipt.idempotent = true;
                 return Ok(receipt);
@@ -219,7 +228,7 @@ impl MatrixSendObserver {
             return Err(Error::AlreadyTerminal);
         }
         current.receipt.state = SendState::Redacted;
-        current.receipt.observation_digest = Some(redaction_digest.to_string());
+        current.receipt.redaction_observation_digest = Some(redaction_digest.to_string());
         current.receipt.terminal_observed = true;
         Ok(current.receipt.clone())
     }
