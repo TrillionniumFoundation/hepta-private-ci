@@ -769,9 +769,9 @@ fn validate_projected_dependency_graph(
             projected.remove(&delta.module_id);
             continue;
         }
-        let abi = admitted
-            .get(&delta.module_id)
-            .ok_or_else(|| RuntimeModuleSupervisorErrorV1::MissingTopologyAbi(delta.module_id.clone()))?;
+        let abi = admitted.get(&delta.module_id).ok_or_else(|| {
+            RuntimeModuleSupervisorErrorV1::MissingTopologyAbi(delta.module_id.clone())
+        })?;
         projected.insert(delta.module_id.clone(), abi.dependencies.clone());
     }
     validate_dependency_map(&projected)
