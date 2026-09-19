@@ -208,9 +208,6 @@ impl RemoteFederatedResponseV2 {
         if !self.terminal_observed {
             return Err(FederationV2Error::MissingTerminalObservation);
         }
-        if self.observed_frontier == 0 {
-            return Err(FederationV2Error::ZeroValue("observed_frontier"));
-        }
         if self.expires_unix_ms == 0 {
             return Err(FederationV2Error::ZeroValue("response_expiry"));
         }
@@ -412,7 +409,7 @@ impl FederatedResultV2 {
             return Err(FederationV2Error::ZeroValue("result_expiry"));
         }
         if self.coverage.requested_peers != 1
-            || u64::from(self.coverage.completed_peers) + u64::from(self.coverage.failed_peers) > 1
+            || u64::from(self.coverage.completed_peers) + u64::from(self.coverage.failed_peers) != 1
         {
             return Err(FederationV2Error::InvalidCoverage);
         }
