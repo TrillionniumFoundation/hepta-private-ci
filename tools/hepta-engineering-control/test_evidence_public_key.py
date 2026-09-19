@@ -6,6 +6,7 @@ import hashlib
 from pathlib import Path
 import subprocess
 import tempfile
+import time
 import unittest
 
 from control_engineering_v2 import (
@@ -15,6 +16,7 @@ from control_engineering_v2 import (
     HmacTrustStore,
     OpenSslTrustStore,
     TrustedPublicKey,
+    WorkerIdentityReceipt,
 )
 
 
@@ -27,8 +29,6 @@ class OpenSslTrustStoreTests(unittest.TestCase):
             root = Path(temp)
             private = root / "private.pem"
             public = root / "public.pem"
-            payload = root / "payload"
-            signature = root / "signature"
             subprocess.run(
                 [
                     str(openssl),
@@ -72,34 +72,42 @@ class OpenSslTrustStoreTests(unittest.TestCase):
                 20,
             )
             public_bytes = public.read_bytes()
+            pinned_key = TrustedPublicKey(
+                public_bytes,
+                hashlib.sha256(public_bytes).hexdigest(),
+            )
             store = OpenSslTrustStore(
                 {
-                    ("ci_executor", "github-actions-workload"): TrustedPublicKey(
-                        public_bytes,
-                        hashlib.sha256(public_bytes).hexdigest(),
-                    )
+                    ("ci_executor", "github-actions-workload"): pinned_key,
+                    ("engineering_worker_authority", "worker-authority"): pinned_key,
+                    ("engineering_audit_witness", "audit-witness"): pinned_key,
                 }
             )
-            payload.write_bytes(store.payload(receipt))
-            subprocess.run(
-                [
-                    str(openssl),
-                    "dgst",
-                    "-sha256",
-                    "-sign",
-                    str(private),
-                    "-out",
-                    str(signature),
-                    str(payload),
-                ],
-                check=True,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-            )
-            signed = replace(
-                receipt,
-                signature=base64.b64encode(signature.read_bytes()).decode("ascii"),
-            )
+
+            def sign(value, name: str):
+                payload_file = root / f"{name}.payload"
+                signature_file = root / f"{name}.signature"
+                payload_file.write_bytes(store.payload(value))
+                subprocess.run(
+                    [
+                        str(openssl),
+                        "dgst",
+                        "-sha256",
+                        "-sign",
+                        str(private),
+                        "-out",
+                        str(signature_file),
+                        str(payload_file),
+                    ],
+                    check=True,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                )
+                return replace(
+                    value,
+                    signature=base64.b64encode(signature_file.read_bytes()).decode("ascii"),
+                )
+            signed = sign(receipt, "execution")
             self.assertTrue(
                 store.verify(
                     signed,
@@ -132,6 +140,44 @@ class OpenSslTrustStoreTests(unittest.TestCase):
                 self.assertTrue(
                     any(event["eventType"] == "engineering_writer_bound" for event in events)
                 )
+
+                now = time.time_ns()
+                identity = WorkerIdentityReceipt(
+                    "worker-signed",
+                    "github-actions:engineering-worker",
+                    "6" * 64,
+                    ("git", "python"),
+                    2,
+                    11,
+                    now,
+                    now + 5_000_000_000,
+                    "engineering_worker_authority",
+                    "worker-authority",
+                )
+                worker = controller.register_worker(
+                    sign(identity, "worker"),
+                    now_ns=now + 1,
+                )
+                self.assertEqual(worker.state, "active")
+                self.assertEqual(worker.principal, identity.principal)
+
+                anchor = controller.prepare_audit_anchor(
+                    signing_identity="audit-witness",
+                    observed_unix_ns=now + 2,
+                    expires_unix_ns=now + 5_000_000_000,
+                )
+                signed_anchor = sign(anchor, "audit")
+                controller.verify_audit_anchor(
+                    signed_anchor,
+                    minimum_sequence=anchor.sequence,
+                    now_ns=now + 3,
+                )
+                with self.assertRaisesRegex(EngineeringError, "audit_anchor_sequence"):
+                    controller.verify_audit_anchor(
+                        signed_anchor,
+                        minimum_sequence=anchor.sequence + 1,
+                        now_ns=now + 3,
+                    )
 
             with self.assertRaisesRegex(EngineeringError, "writer_binding_conflict"):
                 EngineeringController(
