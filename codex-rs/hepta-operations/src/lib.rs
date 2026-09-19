@@ -1,22 +1,37 @@
-//! In-memory reference model for Hepta operation, outbox and reconciliation
-//! semantics.
+//! Operation, outbox and reconciliation semantics for Hepta.
 //!
-//! Queue acknowledgement is deliberately separate from terminal effect
-//! observation. Once dispatch may have crossed an external boundary, the
-//! operation cannot be blindly retried; it remains indeterminate until a
+//! The `OperationLedger`/`Outbox` pair remains the bounded **In-memory reference model**
+//! used as a deterministic transition oracle; that reference model **does not provide durable storage**.
+//! `DurableOperationStore` is the SQLite-backed owner for production composition.
+//! Queue or transport acknowledgement is deliberately separate from terminal effect
+//! observation. Once dispatch may have crossed an external boundary, the operation
+//! cannot be blindly retried; it remains dispatched/indeterminate until a
 //! current-fence observer reconciles it.
-//!
-//! This crate does not provide durable storage, crash/reopen recovery, a
-//! background dispatcher or production authority. Product code must not infer
-//! durability from cloning this model.
 
 #![forbid(unsafe_code)]
 
+mod durable;
 mod error;
 mod ledger;
 mod model;
 mod outbox;
 
+pub use durable::DestinationReceipt;
+pub use durable::DispatchBoundaryResult;
+pub use durable::DispatchLease;
+pub use durable::DurableDispatcher;
+pub use durable::DurableOperationError;
+pub use durable::DurableOperationRecord;
+pub use durable::DurableOperationState;
+pub use durable::DurableOperationStore;
+pub use durable::DurableOutboxState;
+pub use durable::DurableOutboxStatus;
+pub use durable::OperationsMetrics;
+pub use durable::PrepareOperationIntent;
+pub use durable::MAX_DURABLE_OPERATION_RECORDS;
+pub use durable::MAX_OPERATION_ATTEMPTS;
+pub use durable::MAX_OPERATION_CLAIM_BATCH;
+pub use durable::MAX_OPERATION_LEASE_MS;
 pub use error::OperationError;
 pub use ledger::MAX_MODEL_OPERATION_RECORDS;
 pub use ledger::OperationLedger;

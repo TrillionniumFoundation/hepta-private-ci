@@ -1077,6 +1077,23 @@ async fn verify_store(pool: &SqlitePool, owner_agent_id: &AgentId) -> Result<(),
     if schema != i64::from(AUTOMATION_SCHEMA_VERSION) {
         return Err(AutomationError::Corrupt);
     }
+    for (name, kind) in [
+        ("destination_operation_dedupe", "table"),
+        ("destination_operation_dedupe_no_update", "trigger"),
+        ("destination_operation_dedupe_no_delete", "trigger"),
+    ] {
+        let present: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM sqlite_master WHERE name = ? AND type = ?",
+        )
+        .bind(name)
+        .bind(kind)
+        .fetch_one(pool)
+        .await
+        .map_err(unavailable)?;
+        if present != 1 {
+            return Err(AutomationError::Corrupt);
+        }
+    }
     if owner != owner_agent_id.as_str() {
         return Err(AutomationError::AccessDenied);
     }

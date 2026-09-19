@@ -1,0 +1,264 @@
+{
+  "schemaVersion": 1,
+  "module": "kernel.operations",
+  "role": "durable_current_capability_extension",
+  "entryCount": 5,
+  "entries": [
+    {
+      "capabilityId": "kernel.operations.atomic-durable-ledger-outbox.v2",
+      "summary": "atomic durable operation ledger and source outbox co-commit",
+      "publicSymbols": [
+        "DurableOperationStore::open",
+        "DurableOperationStore::prepare_intent",
+        "PrepareOperationIntent"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-operations/src/durable/store.rs",
+          "mustContain": [
+            "pub struct DurableOperationStore",
+            "begin_with(\"BEGIN IMMEDIATE\")",
+            "pub async fn prepare_intent("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/migrations/0001_operation_store.sql",
+          "mustContain": [
+            "CREATE TABLE operation_ledger",
+            "CREATE TABLE cross_owner_outbox",
+            "FOREIGN KEY(scope, operation_id) REFERENCES operation_ledger"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-operations/src/durable/tests.rs",
+          "mustContain": [
+            "intent_and_outbox_commit_atomically_and_survive_reopen",
+            "semantic_replay_is_idempotent_and_payload_drift_conflicts"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-operations/src/durable/tests.rs",
+          "mustContain": [
+            "failed_outbox_insert_rolls_back_operation_insert",
+            "missing_required_schema_object_fails_reopen_closed"
+          ]
+        }
+      ],
+      "durability": "sqlite_wal_full_transactional",
+      "activation": "host_composition_required",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "kernel.operations.leased-fenced-outbox.v2",
+      "summary": "bounded leased outbox claims with generation fencing and crash-reopen takeover",
+      "publicSymbols": [
+        "DurableOperationStore::claim_outbox",
+        "DurableOperationStore::renew_outbox_lease",
+        "DurableDispatcher::claim_ready"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-operations/src/durable/store.rs",
+          "mustContain": [
+            "pub async fn claim_outbox(",
+            "pub async fn renew_outbox_lease(",
+            "pub async fn retry_outbox("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/durable/dispatcher.rs",
+          "mustContain": [
+            "pub struct DurableDispatcher",
+            "pub async fn claim_ready("
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-operations/src/durable/tests.rs",
+          "mustContain": [
+            "expired_lease_can_be_taken_over_by_higher_generation"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/durable/fault_tests.rs",
+          "mustContain": [
+            "actual_process_crash_before_dispatch_recovers_same_identity_with_new_fence"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-operations/src/durable/fault_tests.rs",
+          "mustContain": [
+            "two_independent_handles_serialize_one_live_claim",
+            "bounded_attempt_budget_quarantines_instead_of_retrying_forever"
+          ]
+        }
+      ],
+      "durability": "sqlite_wal_full_transactional",
+      "activation": "host_composition_required",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "kernel.operations.final-use-reconciliation.v2",
+      "summary": "final-use authority dispatch admission with indeterminate recovery and terminal reconciliation",
+      "publicSymbols": [
+        "DurableDispatcher::dispatch_authorized",
+        "DurableOperationStore::reconcile_destination_receipt",
+        "DestinationReceipt"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-operations/src/durable/dispatcher.rs",
+          "mustContain": [
+            "self.store.claim_final_use(authority, signed, lease).await?",
+            "self.store.mark_dispatched(lease, dispatch_digest).await?",
+            "authority.with_verified_use(token, &binding"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/durable/reconcile.rs",
+          "mustContain": [
+            "pub async fn reconcile_destination_receipt(",
+            "if observer_generation < operation.owner_generation",
+            "UPDATE operation_ledger SET owner_generation = ?"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-operations/src/durable/tests.rs",
+          "mustContain": [
+            "indeterminate_effect_reconciles_from_destination_dedup",
+            "final_use_authority_is_bound_to_durable_operation_identity"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/src/durable/fault_tests.rs",
+          "mustContain": [
+            "actual_process_crash_after_dispatch_never_blindly_reclaims_and_can_reconcile"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-operations/src/durable/tests.rs",
+          "mustContain": [
+            "dispatch_ack_is_not_terminal_and_blind_retry_is_rejected",
+            "DurableOperationError::StaleLease"
+          ]
+        }
+      ],
+      "durability": "sqlite_wal_full_transactional",
+      "activation": "host_composition_required",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "kernel.operations.destination-owner-automation.v1",
+      "summary": "destination-owner transaction dedupe with immutable apply receipts",
+      "publicSymbols": [
+        "AutomationStore::create_task_from_operation",
+        "AutomationStore::observe_task_operation",
+        "DurableOperationStore::reconcile_destination_receipt"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-automation/src/operation_destination.rs",
+          "mustContain": [
+            "pub async fn create_task_from_operation(",
+            ".begin_with(\"BEGIN IMMEDIATE\")",
+            "INSERT INTO automation_tasks",
+            "INSERT INTO destination_operation_dedupe"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-automation/migrations/0004_kernel_operation_dedupe.sql",
+          "mustContain": [
+            "CREATE TABLE destination_operation_dedupe",
+            "destination_operation_dedupe_no_update",
+            "destination_operation_dedupe_no_delete"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-automation/tests/kernel_operations_destination.rs",
+          "mustContain": [
+            "cross_owner_lost_ack_applies_once_and_reconciles_terminal",
+            "AutomationOperationDisposition::AlreadyApplied"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-automation/tests/kernel_operations_destination.rs",
+          "mustContain": [
+            "destination_payload_drift_conflicts_without_second_task"
+          ]
+        }
+      ],
+      "durability": "sqlite_wal_full_transactional",
+      "activation": "host_composition_required",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "kernel.operations.retention-observability.v2",
+      "summary": "bounded retention tombstones and backlog metrics",
+      "publicSymbols": [
+        "DurableOperationStore::prune_terminal",
+        "DurableOperationStore::prune_destination_receipts",
+        "DurableOperationStore::metrics"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-operations/src/durable/store.rs",
+          "mustContain": [
+            "pub async fn metrics(",
+            "pub async fn prune_terminal(",
+            "pub async fn prune_destination_receipts("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-operations/migrations/0002_retired_identity_tombstones.sql",
+          "mustContain": [
+            "CREATE TABLE operation_tombstones",
+            "CREATE TABLE destination_operation_tombstones",
+            "operation_tombstones_no_delete",
+            "destination_operation_tombstones_no_delete"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-operations/src/durable/tests.rs",
+          "mustContain": [
+            "metrics_and_terminal_retention_are_bounded",
+            "pruned_destination_receipt_remains_a_dedupe_fence"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-operations/src/durable/tests.rs",
+          "mustContain": [
+            "DurableOperationError::Retired",
+            "changed-retired-evidence"
+          ]
+        }
+      ],
+      "durability": "sqlite_wal_full_transactional",
+      "activation": "host_composition_required",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    }
+  ]
+}

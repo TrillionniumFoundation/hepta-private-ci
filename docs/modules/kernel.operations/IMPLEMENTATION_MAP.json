@@ -18,18 +18,86 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "source_composed_agentd_store_open_effect_activation_pending",
+  "productionWriterState": "durable_source_owner_implemented_not_product_activated",
   "operations": [
+    {
+      "operation": "prepare_intent",
+      "nativeSymbol": "DurableOperationStore::prepare_intent",
+      "sourcePath": "codex-rs/hepta-operations/src/durable/store.rs",
+      "state": "durable_source_implemented_not_product_activated",
+      "authority": "durability-kernel",
+      "tests": [
+        "codex-rs/hepta-operations/src/durable/tests.rs",
+        "codex-rs/hepta-operations/src/durable/fault_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prepare_intent",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "claim_outbox",
+      "nativeSymbol": "DurableOperationStore::claim_outbox",
+      "sourcePath": "codex-rs/hepta-operations/src/durable/store.rs",
+      "state": "durable_source_implemented_not_product_activated",
+      "authority": "durability-kernel",
+      "tests": [
+        "codex-rs/hepta-operations/src/durable/tests.rs",
+        "codex-rs/hepta-operations/src/durable/fault_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "claim_outbox",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "authorized_dispatch",
+      "nativeSymbol": "DurableDispatcher::dispatch_authorized",
+      "sourcePath": "codex-rs/hepta-operations/src/durable/dispatcher.rs",
+      "state": "real_final_use_boundary_source_implemented_not_product_activated",
+      "authority": "kernel.authority_final_use_consumed",
+      "tests": [
+        "codex-rs/hepta-operations/src/durable/dispatcher_tests.rs",
+        "codex-rs/hepta-automation/tests/kernel_operations_destination.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authorized_dispatch",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "kernel.authority",
+        "automation.taskflow"
+      ]
+    },
+    {
+      "operation": "observe_terminal",
+      "nativeSymbol": "DurableOperationStore::reconcile_destination_receipt",
+      "sourcePath": "codex-rs/hepta-operations/src/durable/reconcile.rs",
+      "state": "durable_source_implemented_not_product_activated",
+      "authority": "generation_fenced_destination_evidence",
+      "tests": [
+        "codex-rs/hepta-operations/src/durable/tests.rs",
+        "codex-rs/hepta-operations/src/durable/fault_tests.rs",
+        "codex-rs/hepta-automation/tests/kernel_operations_destination.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "observe_terminal",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "automation.taskflow"
+      ]
+    },
     {
       "operation": "operationledger",
       "nativeSymbol": "OperationLedger",
       "sourcePath": "codex-rs/hepta-operations/src/ledger.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "reference_oracle_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-operations/src/ledger_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "operationledger",
+      "designOperation": "reference_operationledger",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -37,22 +105,25 @@
       "operation": "outbox",
       "nativeSymbol": "Outbox",
       "sourcePath": "codex-rs/hepta-operations/src/outbox.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "reference_oracle_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-operations/src/outbox_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "outbox",
+      "designOperation": "reference_outbox",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Keep exact-head and deterministic synthetic-merge native qualification current for the durable source candidate.",
+    "Bind the source-composed Agentd operations host to an enrolled production grant source and continuously hosted dispatcher/reconciler before activation.",
+    "Compose registered destinations beyond the automation.taskflow owner slice with equivalent destination-owned dedupe and terminal observation."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
-    "product execution and target-host qualification",
+    "product execution and target-host crash/power-loss/storage qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
