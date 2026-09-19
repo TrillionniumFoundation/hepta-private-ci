@@ -127,10 +127,11 @@ async fn agentd_compaction_checkpoint_round_trips_through_authorized_writer() {
     std::fs::create_dir_all(&fleet_root).expect("fleet root");
     let fleet = HeptaFleetRoot::parse(fleet_root.canonicalize().expect("canonical fleet root"))
         .expect("valid fleet root");
-    let owner =
-        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c44").expect("valid owner agent");
+    let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c44").expect("valid owner agent");
     let layout = fleet.layout().agent(&owner);
-    let store = CognitiveStore::open(&layout).await.expect("open cognitive store");
+    let store = CognitiveStore::open(&layout)
+        .await
+        .expect("open cognitive store");
 
     let authority = ProductionAuthorityLease::from_verified_parts(
         owner.clone(),
@@ -168,7 +169,10 @@ async fn agentd_compaction_checkpoint_round_trips_through_authorized_writer() {
         publication.proof.checkpoint_digest,
         publication.checkpoint.checkpoint_digest
     );
-    assert_eq!(publication.proof.evaluator_id, id("evaluator:independent:e2e"));
+    assert_eq!(
+        publication.proof.evaluator_id,
+        id("evaluator:independent:e2e")
+    );
 
     let latest = store
         .latest_qualified_compact_checkpoint(
