@@ -31,6 +31,7 @@ use crate::LearningEvidenceVerifierV1;
 use crate::LearningLedger;
 use crate::LedgerAnchor;
 use crate::LedgerEvent;
+use crate::ProductionAppendPermit;
 use crate::Revocation;
 use crate::SignedEvidenceError;
 use crate::SignedLearningEvidenceV1;
@@ -228,9 +229,7 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
             return Err(ProductionLedgerError::SupportDigestMismatch);
         }
 
-        self.journal
-            .append(expected_anchor.chain_digest, LedgerEvent::Decision(decision))
-            .map_err(Into::into)
+        self.append_event(expected_anchor.chain_digest, LedgerEvent::Decision(decision))
     }
 
     pub fn append_authenticated_outcome(
@@ -260,12 +259,10 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
         }
         validate_authenticated_outcome(generator.principal(), &outcome, now)?;
 
-        self.journal
-            .append(
-                expected_anchor.chain_digest,
-                LedgerEvent::AuthenticatedOutcome(outcome),
-            )
-            .map_err(Into::into)
+        self.append_event(
+            expected_anchor.chain_digest,
+            LedgerEvent::AuthenticatedOutcome(outcome),
+        )
     }
 
     pub fn append_credit_batch(
@@ -290,12 +287,10 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
         }
         finalize_credit_batch(batch.clone(), now)?;
 
-        self.journal
-            .append(
-                expected_anchor.chain_digest,
-                LedgerEvent::CreditBatch(batch),
-            )
-            .map_err(Into::into)
+        self.append_event(
+            expected_anchor.chain_digest,
+            LedgerEvent::CreditBatch(batch),
+        )
     }
 
     pub fn append_revocation(
@@ -318,12 +313,10 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
         if revocation.reason_digest != evidence.payload_digest {
             return Err(ProductionLedgerError::SupportDigestMismatch);
         }
-        self.journal
-            .append(
-                expected_anchor.chain_digest,
-                LedgerEvent::Revocation(revocation),
-            )
-            .map_err(Into::into)
+        self.append_event(
+            expected_anchor.chain_digest,
+            LedgerEvent::Revocation(revocation),
+        )
     }
 
     pub fn append_unlearning_lineage(
@@ -350,7 +343,7 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
         let record_id = lineage.record_id.clone();
         let source_record_id = lineage.source_record_id.clone();
         let derived_id = lineage.derived_id.clone();
-        let receipt = self.journal.append(
+        let receipt = self.append_event(
             expected_anchor.chain_digest,
             LedgerEvent::UnlearningLineage(lineage),
         )?;
@@ -426,6 +419,20 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
         let expected_payload = dataset_freeze_admission_payload(&request);
         require_exact_payload(producer_payload, &expected_payload)?;
         freeze_dataset_receipt_v3(request, now).map_err(Into::into)
+    }
+
+    fn append_event(
+        &mut self,
+        expected_predecessor: Digest32,
+        event: LedgerEvent,
+    ) -> Result<AppendReceipt, ProductionLedgerError> {
+        self.journal
+            .append_production(
+                ProductionAppendPermit::new(),
+                expected_predecessor,
+                event,
+            )
+            .map_err(Into::into)
     }
 
     fn require_anchor(&self, expected: LedgerAnchor) -> Result<(), ProductionLedgerError> {
