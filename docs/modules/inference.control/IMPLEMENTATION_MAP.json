@@ -7,7 +7,7 @@
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.control",
-  "sourceMaturity": "native_hosted_policy_bound_dispatch_reconciliation_compaction_and_deterministic_worker_selection",
+  "sourceMaturity": "native_hosted_policy_bound_atomic_effect_admission_reconciliation_compaction_deterministic_worker_selection_and_named_product_root",
   "declaredRoots": [
     "codex-rs/hepta-infer-core",
     "codex-rs/hepta-inferd"
@@ -16,8 +16,8 @@
     "codex-rs/hepta-infer-core",
     "codex-rs/hepta-inferd"
   ],
-  "stateOwnerDisposition": "The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, quota/resource/economic-budget holds, dispatch/final-use bindings, terminal observations and bounded native compaction archives.",
-  "terminalObserverDisposition": "The actual Agent-fenced App Server client supplies matching turn observations through a trusted in-process port. Live dispatch consumes a signed final-use grant bound to the exact serialized turn. Post-crash recovery is read-only: a persisted matching Completed/Failed turn can establish terminality and release local capacity, but cannot recreate the non-serializable final-use token or retroactively report authorized success.",
+  "stateOwnerDisposition": "The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, quota/resource/economic-budget holds, dispatch/final-use bindings, terminal observations and bounded native compaction archives. Archive-retention failure poisons the writer rather than silently allowing sensitive predecessor growth.",
+  "terminalObserverDisposition": "The actual Agent-fenced App Server client supplies matching turn observations through a trusted in-process port. A fresh live effect freezes the exact provider/context/TurnStart payload, resolves a signed grant from an independent issuer seam, then consumes the one-shot token while durable dispatch intent and synchronous bounded transport-queue admission cross the same revocation fence. Queue admission is the local effect linearization point. Post-crash recovery is ReconcileOnly: exact Persisted may recover terminal facts, exact Missing/Cancelled proves NoAdmission, and ambiguous outcomes remain held. Recovery cannot recreate the non-serializable terminal revalidation receipt or retroactively report authorized success.",
   "operations": [
     {
       "designOperation": "reserve_request",
@@ -82,7 +82,7 @@
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Canonicalizes and digest-binds an eligible worker snapshot, performs deterministic feasible ranking under model/token/concurrency constraints, then the durable owner syncs exact thread/provider/context/final-use dispatch intent before the actual turn/start RPC. Planning never grants provider authority and a duplicate cannot issue a new turn.",
+      "sourceSemantics": "Canonicalizes and digest-binds an eligible worker snapshot and performs deterministic feasible ranking under model/token/concurrency constraints. For a selected fresh request, the worker freezes the exact provider/context/serialized TurnStart payload, resolves and claims exact final-use authority, then under one revocation fence the durable owner syncs dispatch/final-use intent and synchronously admits the request into the bounded App Server queue. Planning never grants provider authority; successful queue admission is accepted-or-unknown and duplicates cannot issue a replacement turn.",
       "operation": "schedule",
       "nativeSymbol": "pub fn dispatch_native(",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
@@ -142,7 +142,7 @@
   ],
   "repositoryControlledGaps": [],
   "externalEvidenceGates": [
-    "activate the named hepta-infer-worker native-app-server entrypoint under the deployed Supervisor/Agentd composition with owner-issued current quota/resource evidence and signed final-use grants",
+    "activate the named hepta-inference-runtime-host under deployed Supervisor/Agentd composition with owner-issued current quota/resource evidence and an independently operated exact-binding final-use issuer socket",
     "real provider deployment, crash/cancellation/reconciliation acceptance and provider-side retention behavior",
     "real economic billing reconciliation and measured device-capacity authority/qualification; source budget units and ResourceAdvertisement bindings do not prove provider charges or hardware availability",
     "independently operated final-use signer/revocation service and product activation",
@@ -165,7 +165,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "source_entrypoint_ready_activation_pending",
+  "productCallerState": "named_hosted_source_product_caller_composed_activation_pending",
   "productionWriterState": "durable_single_writer_source_established",
   "owner": "inference-platform",
   "deputy": "runtime-control",
