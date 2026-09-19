@@ -37,7 +37,14 @@ pub struct OperationIntent {
 
 impl OperationIntent {
     pub fn validate(&self) -> Result<(), OperationError> {
-        self.key.validate()
+        self.key.validate()?;
+        if self
+            .expected_predecessor
+            .is_some_and(Digest32::is_zero)
+        {
+            return Err(OperationError::InvalidDigest("expected predecessor"));
+        }
+        Ok(())
     }
 
     /// Canonical semantic digest used to bind a durable outbox row to the
