@@ -255,3 +255,60 @@ fn launch_notification(title: &str, body: &str) -> Result<std::process::ExitStat
         .status()
         .map_err(|error| ShellError::Platform(format!("send notification: {error}")))
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use tempfile::TempDir;
+
+    #[test]
+    fn local_policy_denies_unapproved_effect_classes() {
+        let root = TempDir::new().unwrap();
+        let adapter = SystemPlatformAdapter::new(
+            LocalPlatformPolicy::new(vec![root.path().to_path_buf()], false, false).unwrap(),
+        );
+
+        let clipboard = adapter
+            .permission(&PlatformPayload::CopyText {
+                text: "denied".to_owned(),
+            })
+            .unwrap();
+        assert!(!clipboard.allowed);
+
+        let notification = adapter
+            .permission(&PlatformPayload::Notify {
+                title: "denied".to_owned(),
+                body: "denied".to_owned(),
+            })
+            .unwrap();
+        assert!(!notification.allowed);
+    }
+
+    #[test]
+    fn local_path_policy_is_root_scoped_before_os_entry() {
+        let root = TempDir::new().unwrap();
+        let allowed = root.path().join("allowed.txt");
+        std::fs::write(&allowed, b"allowed").unwrap();
+        let adapter = SystemPlatformAdapter::new(
+            LocalPlatformPolicy::new(vec![root.path().to_path_buf()], false, false).unwrap(),
+        );
+        assert!(
+            adapter
+                .permission(&PlatformPayload::OpenPath { path: allowed })
+                .unwrap()
+                .allowed
+        );
+
+        let outside = root.path().parent().unwrap().join("hepta-native-outside.txt");
+        std::fs::write(&outside, b"outside").unwrap();
+        assert!(
+            !adapter
+                .permission(&PlatformPayload::RevealPath {
+                    path: outside.clone(),
+                })
+                .unwrap()
+                .allowed
+        );
+        let _ = std::fs::remove_file(outside);
+    }
+}
