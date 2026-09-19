@@ -69,6 +69,9 @@ ON authbus_quota_reservations(quota_key, quota_revision, state, updated_at_ms, r
 CREATE INDEX authbus_quota_reservations_principal_held
 ON authbus_quota_reservations(quota_key, quota_revision, principal_id, state, reservation_id);
 
+CREATE INDEX authbus_quota_reservations_expiry
+ON authbus_quota_reservations(quota_key, state, expires_at_ms, reservation_id);
+
 CREATE TRIGGER authbus_quota_reservation_immutable BEFORE UPDATE OF
     reservation_id, operation_id, principal_id, action_id, scope_digest, quota_key,
     quota_revision, amount, expires_at_ms, policy_id, policy_revision, effect_digest,
