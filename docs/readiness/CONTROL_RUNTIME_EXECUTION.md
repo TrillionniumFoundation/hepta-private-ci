@@ -298,3 +298,22 @@ global revocation frontier. Existing host authorization and generation checks
 remain required before and after the read. Context bytes exclude the planning
 metadata to avoid a self-referential digest; the host separately bounds the final
 response envelope. Neither helper grants effects or proves long-term improvement.
+
+
+## Current hardened composition
+
+The current source adds three fail-closed bindings to the execution model.
+
+First, `resource_profile_digest` is the canonical digest of the sorted `ResourceReservationV1` set. The digest domain includes every resource axis, total endowment and essential floor. `prepare_plan` recomputes that digest after canonical sorting and reservation validation, then rejects any mismatch. A profile label can no longer be reused with changed effective reservations.
+
+Second, planner time is one monotonic process-local domain at the current Agentd product caller. Agentd obtains planner observation time from `Instant` and derives the one-second request-local expiry from that value. Unix wall time remains separate for storage APIs that explicitly use Unix seconds. A body-generation restart creates a new monotonic domain and no planner receipt is reused across that generation fence.
+
+Third, journal reopen is semantic replay. In addition to byte length, sequence, predecessor and entry-digest checks, snapshot and decision identities must match their payload digests, a selected plan must have a prior decision, and a revoked decision cannot be selected. `PlannerJournalStoreV1` persists only journal bytes that successfully reopen under these rules. Its v2 envelope binds a version, byte length and content digest; the qualified Unix path uses same-directory temporary creation, file fsync, rename and parent-directory fsync. Raw v1 journal bytes migrate only after successful semantic reopen.
+
+The general source-level integration seam is `execute_authenticated_global_plan_v1`. It deliberately accepts opaque owner proofs plus an externally supplied `OwnerSummaryVerifierV1`; no default verifier exists. After every owner proof verifies, it constructs the coherent snapshot, validates the canonical resource profile, executes the real NDU implementation, finalizes the bounded plan and constructs the deny-all `GrantRequestSetV1`. Non-empty request sets are passed to a separately supplied `AuthorityRequestSetVerifierV1`. The only value returned to control.runtime from that boundary is a nonzero receipt digest, never a capability or effect acknowledgement.
+
+The currently named product composition remains narrower: Agentd calls `plan_observed_context` for verified cognitive-context delivery. The general global integration seam is source implemented but has no named production caller, production owner-proof verifier, or activated kernel.authority adapter yet. Those facts remain explicit rather than being inferred from the bounded Agentd caller.
+
+### Named-host measurement fixture
+
+`planner_named_host_profile` is ignored during ordinary unit tests and is reserved for qualification. It exercises 32 owner summaries, 128 candidates, 32 resource axes and a 4096-entry journal, then emits p50/p95/p99 planner and reopen timings. A measurement is a performance claim only when its workflow artifact records exact source SHA, runner image, CPU identity, Rust version and release profile.
