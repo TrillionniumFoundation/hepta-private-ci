@@ -842,6 +842,24 @@ mod tests {
                 actual: 8,
             })
         );
+        assert_eq!(
+            verifier.verify(
+                &grant,
+                &envelope,
+                &agent,
+                "release-v2",
+                "release-v3",
+                &Sha256Digest::for_bytes(b"source-release-manifest"),
+                &Sha256Digest::for_bytes(b"different-target-manifest"),
+                &Sha256Digest::for_bytes(b"target-agentd"),
+                None,
+                8,
+                11,
+                3,
+                150
+            ),
+            Err(ProductionAuthorityError::Binding)
+        );
         let mut tampered = grant;
         tampered.target_release = "release-v4".to_string();
         assert_eq!(
