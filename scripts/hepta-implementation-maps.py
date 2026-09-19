@@ -24,6 +24,13 @@ PLASTICITY_CURRENT_STATE = (
     ROOT / "docs/modules/learning.plasticity/CURRENT_STATE.json"
 )
 
+# A committed file cannot literally contain the SHA/tree of the commit that
+# contains that file: changing the file changes the tree and therefore the commit.
+# Maps therefore bind symbolically to the exact verification HEAD. `verify()`
+# resolves this binding to `git rev-parse HEAD` / `HEAD^{tree}` and rejects any
+# stale literal source base.
+VERIFICATION_SOURCE_BASE = {"commit": "@HEAD", "tree": "@HEAD^{tree}"}
+
 
 def plasticity_status_block(row: dict) -> str:
     lines = [
@@ -136,8 +143,20 @@ def plasticity_status_matches() -> bool:
 
 
 def current_source_base() -> dict[str, str]:
-    """Return the immutable source identity used by generated maps."""
+    """Return the exact commit/tree being verified."""
     return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
+
+
+def verification_source_base() -> dict[str, str]:
+    """Return the stable committed binding that resolves to the verification HEAD."""
+    return dict(VERIFICATION_SOURCE_BASE)
+
+
+def resolve_source_base(source_base: dict, verification_head: dict[str, str]) -> dict:
+    """Resolve a committed source binding against the exact candidate under test."""
+    if source_base == VERIFICATION_SOURCE_BASE:
+        return dict(verification_head)
+    return dict(source_base)
 
 
 def load(rel: str):
@@ -297,7 +316,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
-            "sourceBase": row.get("sourceBase") or source_base,
+            "sourceBase": source_base,
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -357,7 +376,7 @@ def migrate():
     modules = load("docs/modules/MODULES.json")["modules"]
     by_id = {m["id"]: m for m in modules}
     lanes = lane_by_module()
-    source_base = current_source_base()
+    source_base = verification_source_base()
     changed = []
     for path in sorted((ROOT / "docs/modules").glob("*/IMPLEMENTATION_MAP.json")):
         row = json.loads(path.read_text(encoding="utf-8"))
@@ -382,10 +401,7 @@ def migrate():
 def generate():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
-    source_base = {
-        "commit": git("rev-parse", "HEAD"),
-        "tree": git("rev-parse", "HEAD^{tree}"),
-    }
+    source_base = verification_source_base()
     written = []
     for module in modules:
         path = ROOT / f"docs/modules/{module['id']}/IMPLEMENTATION_MAP.json"
@@ -430,6 +446,7 @@ def verify():
     lanes = lane_by_module()
     failures = []
     source_bases = set()
+    verification_head = current_source_base()
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -459,6 +476,16 @@ def verify():
             failures.append(f"{mid}: source base")
         else:
             source_bases.add((source_base["commit"], source_base["tree"]))
+            resolved_source_base = resolve_source_base(source_base, verification_head)
+            if resolved_source_base != verification_head:
+                failures.append(
+                    f"{mid}: source base is stale; resolved {resolved_source_base} "
+                    f"!= verification HEAD {verification_head}"
+                )
+            if source_base != VERIFICATION_SOURCE_BASE:
+                failures.append(
+                    f"{mid}: source base must use verification-time HEAD binding"
+                )
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -504,6 +531,7 @@ def verify():
                 "modules": len(modules),
                 "maps": len(modules),
                 "productionImplementationProved": False,
+                "verifiedSourceBase": verification_head,
             },
             sort_keys=True,
         )

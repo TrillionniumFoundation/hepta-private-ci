@@ -4,9 +4,8 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use codex_hepta_plasticity::{
     DurableTopologyProposalRegistryV1, GovernedTopologyProposalV1, ProposalWindowV2,
-    StructuralCanaryControllerV1,
-    StructuralCanaryObservationV1, StructuralCanaryStateV1, TopologyChangeV2,
-    TopologyOperationV2, TopologyProposalRequestV2, WriterHandoffPlanV1,
+    StructuralCanaryControllerV1, StructuralCanaryObservationV1, StructuralCanaryStateV1,
+    TopologyChangeV2, TopologyOperationV2, TopologyProposalRequestV2, WriterHandoffPlanV1,
     admit_governed_topology_v1, build_structural_canary_plan_v1, build_writer_handoff_plan_v1,
     propose_topology_v2,
 };
