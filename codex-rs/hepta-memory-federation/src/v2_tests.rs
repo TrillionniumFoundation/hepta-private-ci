@@ -407,8 +407,7 @@ fn result_expiry_is_capped_by_lease_and_query() {
 fn result_expiry_is_capped_by_query_when_query_is_shorter_than_lease() {
     let mut query = query();
     query.deadline_unix_ms = 70;
-    let mut long_lease = lease(&query);
-    long_lease.expires_unix_ms = 500;
+    let long_lease = lease(&query);
     let mut response = terminal_response(&query);
     response.expires_unix_ms = 600;
     response.response_digest = response.compute_response_digest();

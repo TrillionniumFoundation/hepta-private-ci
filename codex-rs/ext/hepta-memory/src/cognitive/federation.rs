@@ -788,8 +788,8 @@ mod tests {
     use codex_hepta_contracts::AgentId;
     use codex_hepta_contracts::Sha256Digest;
     use codex_hepta_memory::CognitiveAccess;
-
     use codex_hepta_memory::CognitiveRuntime;
+    use codex_hepta_memory::CognitiveScope;
     use codex_hepta_memory::CognitiveStore;
     use codex_hepta_memory::FederationGrantRequest;
     use codex_hepta_memory::FederationGrantScope;
