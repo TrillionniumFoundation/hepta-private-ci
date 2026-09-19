@@ -5,13 +5,22 @@ use codex_hepta_intelligence::DurableLearningJournal;
 use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
 use codex_hepta_intelligence::LaneFCompositionReceiptV3;
 use codex_hepta_intelligence::LaneFRunRequestV3;
+use codex_hepta_intelligence::LaneFStageV3;
 use codex_hepta_intelligence::LaneFV3Ports;
 use codex_hepta_intelligence::NativeV3OwnerInputs;
 use codex_hepta_intelligence::NativeV3OwnerPorts;
 use codex_hepta_intelligence::NeverCancelledV3;
 use codex_hepta_intelligence::PipelineDispositionV3;
+use codex_hepta_intelligence::PortDecisionV3;
+use codex_hepta_intelligence::PortFailureClassV3;
+use codex_hepta_intelligence::PortFailureV3;
+use codex_hepta_intelligence::PortInputV3;
+use codex_hepta_intelligence::PortReceiptV3;
+use codex_hepta_intelligence::StageOutcomeV3;
 use codex_hepta_intelligence::run_composition_v3_with_control;
+use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
 use crate::intelligence_host::AgentdIntelligenceHostV1;
 
@@ -131,6 +140,112 @@ struct RunRecord {
 pub struct AgentRunCoordinator {
     composition: RuntimeComposition,
     runs: BTreeMap<String, RunRecord>,
+}
+
+/// Product composition wrapper that makes the V3 runtime.agentd stage a real
+/// AgentRunCoordinator mutation. The wrapped owner ports never get to substitute
+/// a validation-only host receipt for actual runtime admission.
+struct AgentdRuntimePorts<'a, P> {
+    inner: &'a mut P,
+    coordinator: &'a mut AgentRunCoordinator,
+    expected_revision: u64,
+}
+
+impl<P: LaneFV3Ports> LaneFV3Ports for AgentdRuntimePorts<'_, P> {
+    fn validate_objective(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
+        self.inner.validate_objective(input)
+    }
+
+    fn evaluate_utility(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
+        self.inner.evaluate_utility(input)
+    }
+
+    fn admit_evaluation(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
+        self.inner.admit_evaluation(input)
+    }
+
+    fn collect_neural_signal(
+        &mut self,
+        input: &PortInputV3,
+    ) -> Result<PortReceiptV3, PortFailureV3> {
+        self.inner.collect_neural_signal(input)
+    }
+
+    fn build_prompt_portfolio(
+        &mut self,
+        input: &PortInputV3,
+    ) -> Result<PortReceiptV3, PortFailureV3> {
+        self.inner.build_prompt_portfolio(input)
+    }
+
+    fn decide_intuition(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
+        self.inner.decide_intuition(input)
+    }
+
+    fn compile_context(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
+        self.inner.compile_context(input)
+    }
+
+    fn accept_host_envelope(
+        &mut self,
+        input: &PortInputV3,
+        envelope: &IntelligenceHostEnvelopeV1,
+    ) -> Result<PortReceiptV3, PortFailureV3> {
+        if input.stage != LaneFStageV3::HostHandoffAccepted
+            || input.run_id != envelope.run_id
+            || input.snapshot_digest != envelope.snapshot_digest
+            || input.predecessor_digest != envelope.envelope_digest
+        {
+            return Err(agentd_handoff_failure(
+                input,
+                envelope,
+                "handoff-binding",
+            ));
+        }
+
+        let run = self
+            .coordinator
+            .attach_intelligence_envelope(self.expected_revision, envelope)
+            .map_err(|error| {
+                agentd_handoff_failure(input, envelope, &format!("runtime:{error:?}"))
+            })?;
+
+        let mut bytes = b"hepta.agentd.runtime-intelligence-handoff.v1\0".to_vec();
+        bytes.extend_from_slice(envelope.envelope_digest.as_array());
+        bytes.extend_from_slice(&run.revision.to_be_bytes());
+        let producer = StableId::new("runtime.agentd")
+            .map_err(|_| agentd_handoff_failure(input, envelope, "producer-id"))?;
+
+        Ok(PortReceiptV3 {
+            stage: input.stage,
+            producer,
+            snapshot_digest: input.snapshot_digest,
+            predecessor_digest: input.predecessor_digest,
+            output_digest: Digest32::of_bytes(&bytes),
+            decision: PortDecisionV3::Continue,
+            authority: AuthorityPosture::DENY_ALL,
+        })
+    }
+
+    fn record_learning(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
+        self.inner.record_learning(input)
+    }
+}
+
+fn agentd_handoff_failure(
+    input: &PortInputV3,
+    envelope: &IntelligenceHostEnvelopeV1,
+    reason: &str,
+) -> PortFailureV3 {
+    let mut bytes = b"hepta.agentd.runtime-intelligence-handoff-failure.v1\0".to_vec();
+    bytes.extend_from_slice(input.snapshot_digest.as_array());
+    bytes.extend_from_slice(input.predecessor_digest.as_array());
+    bytes.extend_from_slice(envelope.envelope_digest.as_array());
+    bytes.extend_from_slice(reason.as_bytes());
+    PortFailureV3 {
+        class: PortFailureClassV3::Rejected,
+        evidence_digest: Digest32::of_bytes(&bytes),
+    }
 }
 
 impl AgentRunCoordinator {
@@ -275,19 +390,24 @@ impl AgentRunCoordinator {
         ports: &mut P,
         control: &C,
     ) -> Result<IntelligenceRunReceiptV3, AgentRunError> {
-        let composition = run_composition_v3_with_control(request, ports, control)
-            .map_err(|_| AgentRunError::IntelligenceCompositionFailed)?;
-        let runtime = match composition.disposition {
-            PipelineDispositionV3::HostHandoffAccepted => {
-                let envelope = composition
-                    .host_envelope
-                    .as_ref()
-                    .ok_or(AgentRunError::InvalidIntelligenceEnvelope)?;
-                Some(self.attach_intelligence_envelope(expected_revision, envelope)?)
-            }
-            PipelineDispositionV3::Abstained
-            | PipelineDispositionV3::SlowPath
-            | PipelineDispositionV3::Failed(_) => None,
+        let run_id = request.run_id.clone();
+        let composition = {
+            let mut runtime_ports = AgentdRuntimePorts {
+                inner: ports,
+                coordinator: self,
+                expected_revision,
+            };
+            run_composition_v3_with_control(request, &mut runtime_ports, control)
+                .map_err(|_| AgentRunError::IntelligenceCompositionFailed)?
+        };
+        let host_attached = composition.stages.iter().any(|stage| {
+            stage.stage == LaneFStageV3::HostHandoffAccepted
+                && stage.outcome == StageOutcomeV3::Completed
+        });
+        let runtime = if host_attached {
+            self.run(run_id.as_str())
+        } else {
+            None
         };
         Ok(IntelligenceRunReceiptV3 {
             composition,
