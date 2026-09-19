@@ -61,6 +61,8 @@ An `OperatorApplicabilityCertificateV1` is mandatory and records:
 
 Uniform ellipticity means every unit vector `v` satisfies `v^T sigma sigma^T v >= nu` on the declared domain. A lower confidence bound `nu_LCB <= 0` fails the certificate. Deliberately injecting artificial noise into an authority or truth coordinate is forbidden.
 
+The compatibility certificate fields alone are not authentication. Qualification encodes the complete certificate into canonical bytes and requires a host-trusted `VerifiedLearningEvidenceV1` evaluator attestation bound to those bytes. The generator and evaluator must pass signed role/controller separation; evaluator principal and credential fields must match the certificate. Signature validity authenticates the attestation but does not by itself prove the mathematical assumptions.
+
 Hepta partitions state as `(x,j,h)`. The operator conditions only on a frozen jump/hard snapshot. A jump creates a new segment and may change the active operator artifact. It does not receive a fictitious smooth interpolation. The learned branch/trunk architecture is anisotropic:
 
 ```text
@@ -102,7 +104,7 @@ The pilot operator is a tensor-product DeepONet-style model:
 
 `B` consumes continuation values only at the immutable sensor core. `T^x` uses smooth activations and spectral/norm constraints appropriate to the registered Hölder profile. `T^a` is Lipschitz-constrained and supports categorical embeddings only for registered action categories. Rank begins at `8` and may grow to `64` only when held-out singular-value diagnostics justify it.
 
-Training data is built from immutable episode and model snapshots; replay rows cannot replace the sensor core. The objective is
+Training data is built from immutable episode and model snapshots; replay rows cannot replace the sensor core. New qualification accepts training/world-model rows only through a verified `DatasetSnapshotReceiptV3`: the dataset identity is recomputed from its complete freeze semantics, each row's evidence digest must occur in that exact snapshot, and duplicate underlying evidence is rejected even if sample IDs are relabelled. Lower-level detached-digest APIs remain compatibility/pure-core surfaces. The objective is
 
 \[
 L=L_{direct}+\lambda_{gap}L_{action-gap}+\lambda_{mono}L_{monotone}

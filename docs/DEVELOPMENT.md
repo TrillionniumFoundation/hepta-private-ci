@@ -239,7 +239,7 @@ smooth continuous axes
 
 Authority, lease, CAS, truth and writer-ownership axes are never noised or learned.
 
-Operator learning uses a fixed, versioned `OperatorSensorCore` that is separate from the causal replay ledger. Runtime experience may not silently replace the sensor core. Coverage, fill distance, separation radius, mesh ratio, OOD margin, effective rank and resource budget are measured.
+Operator learning uses a fixed, versioned `OperatorSensorCore` that is separate from the causal replay ledger. Runtime experience may not silently replace the sensor core. Coverage, fill distance, separation radius, mesh ratio, OOD margin, effective rank and resource budget are measured. New qualification consumes a self-verifying `DatasetSnapshotReceiptV3` rather than a detached dataset digest, rejects relabelled duplicate evidence, and requires host-verified signed evaluator evidence for applicability and regularity admission. Structural V1 validators remain compatibility surfaces, not independent-review receipts.
 
 The target architecture separates continuation-value branch encoding, smooth state trunk and Lipschitz/categorical action trunk. Low separation rank is an empirical requirement, not an assumption disguised as evidence. Reconstruction must be bounded, monotone/positive where required and approximately non-expansive in the declared norm. Residual Bellman mode is permitted only for a measured near-greedy active set; off-policy candidates use a direct target or action-gap head.
 

@@ -1,3 +1,5 @@
+#![allow(deprecated)]
+
 //! Compile-time linkage contract for every Lane E operation registered in the
 //! closed-world implementation matrix. The test intentionally performs no
 //! authority-bearing action; it proves that mapped symbols are public and
@@ -16,14 +18,20 @@ fn lane_e_public_operation_surface_is_linkable() {
 
     let _ = codex_hepta_bellman_operator::build_targets;
     let _ = codex_hepta_bellman_operator::validate_applicability_certificate;
+    let _ = codex_hepta_bellman_operator::validate_applicability_certificate_verified;
+    let _ = codex_hepta_bellman_operator::encode_applicability_evidence_v1;
     let _ = codex_hepta_bellman_operator::build_sensor_core;
     let _ = codex_hepta_bellman_operator::evaluate_bellman_reference;
     let _ = codex_hepta_bellman_operator::admit_operator_regularity;
+    let _ = codex_hepta_bellman_operator::admit_operator_regularity_verified;
+    let _ = codex_hepta_bellman_operator::encode_operator_regularity_assessment_v1;
     let _ = codex_hepta_bellman_operator::fit_transition_model;
+    let _ = codex_hepta_bellman_operator::fit_transition_model_from_dataset_receipt_v3;
     let _ = codex_hepta_bellman_operator::predict_transition;
     let _ = codex_hepta_bellman_operator::fit_tabular_operator;
     let _ = codex_hepta_bellman_operator::predict_tabular_operator;
     let _ = codex_hepta_bellman_operator::fit_tabular_operator_strict_v2;
+    let _ = codex_hepta_bellman_operator::fit_tabular_operator_from_dataset_receipt_v3;
     let _ = codex_hepta_bellman_operator::predict_tabular_operator_indexed_v2;
 
     let _ = codex_hepta_intelligence_eval::estimate_ope;

@@ -10,6 +10,9 @@ use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
+use codex_hepta_learning_ledger::DatasetReceiptError;
+use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
+use codex_hepta_learning_ledger::verify_dataset_snapshot_receipt_v3;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
@@ -76,6 +79,9 @@ pub enum WorldModelError {
     EmptyDataset,
     SampleLimit,
     DuplicateSample(String),
+    DuplicateEvidence,
+    DatasetReceipt(DatasetReceiptError),
+    EvidenceOutsideDataset,
     InvalidOutcome,
     StateActionLimit,
     BranchLimit,
@@ -90,6 +96,12 @@ impl fmt::Display for WorldModelError {
 }
 
 impl StdError for WorldModelError {}
+
+impl From<DatasetReceiptError> for WorldModelError {
+    fn from(value: DatasetReceiptError) -> Self {
+        Self::DatasetReceipt(value)
+    }
+}
 
 #[derive(Default)]
 struct Group {
@@ -122,8 +134,12 @@ pub fn fit_transition_model(
     }
 
     let mut groups: BTreeMap<(StableId, StableId), Group> = BTreeMap::new();
+    let mut seen_evidence = BTreeSet::new();
     for sample in &samples {
         require_digest(sample.evidence_digest, "world-model sample evidence")?;
+        if !seen_evidence.insert(sample.evidence_digest) {
+            return Err(WorldModelError::DuplicateEvidence);
+        }
         if !(-FixedQ32::ONE.raw()..=FixedQ32::ONE.raw()).contains(&sample.outcome.raw()) {
             return Err(WorldModelError::InvalidOutcome);
         }
@@ -195,6 +211,31 @@ pub fn fit_transition_model(
         model_digest: Digest32::of_bytes(&bytes),
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+/// Qualification entrypoint for a world model whose row lineage is bound to a
+/// self-verifying frozen dataset receipt. The dataset digest is taken from the
+/// verified receipt rather than accepted as a detached caller assertion.
+pub fn fit_transition_model_from_dataset_receipt_v3(
+    model_id: StableId,
+    dataset: &DatasetSnapshotReceiptV3,
+    samples: Vec<WorldModelSampleV1>,
+    now: u64,
+) -> Result<TabularWorldModelV1, WorldModelError> {
+    verify_dataset_snapshot_receipt_v3(dataset, now)?;
+    let admitted = dataset
+        .snapshot
+        .source_record_digests
+        .iter()
+        .copied()
+        .collect::<BTreeSet<_>>();
+    if samples
+        .iter()
+        .any(|sample| !admitted.contains(&sample.evidence_digest))
+    {
+        return Err(WorldModelError::EvidenceOutsideDataset);
+    }
+    fit_transition_model(model_id, dataset.snapshot.dataset_digest, samples)
 }
 
 pub fn predict_transition(

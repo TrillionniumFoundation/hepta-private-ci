@@ -175,7 +175,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Offline/reference learning library. Bind immutable dataset/sensor profiles and emit candidates through the artifact owner. Distinguish the deterministic reference, simplest-sufficient learner and action-conditioned world model; synthetic trajectories cannot supply independent production outcome evidence.
+Offline/reference learning library. New qualification binds `DatasetSnapshotReceiptV3` directly into strict tabular/world-model fitting, uses evidence-unique rows, and consumes host-verified signed evaluator receipts for applicability/regularity. Lower-level V1 structural APIs remain compatibility surfaces. Emit candidates through the artifact owner. Distinguish the deterministic reference, simplest-sufficient learner and action-conditioned world model; synthetic trajectories cannot supply independent production outcome evidence.
 
 Current operating and state-format references:
 
@@ -188,6 +188,10 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-bellman-operator/src/learned_tests.rs](../../../codex-rs/hepta-bellman-operator/src/learned_tests.rs); named case: `op_05_tabular_operator_fits_complete_grid_deterministically`.
+- [codex-rs/hepta-bellman-operator/src/learned_strict.rs](../../../codex-rs/hepta-bellman-operator/src/learned_strict.rs); named cases cover duplicate-evidence and V3 dataset binding.
+- [codex-rs/hepta-bellman-operator/src/world_model_tests.rs](../../../codex-rs/hepta-bellman-operator/src/world_model_tests.rs); named cases cover duplicate-evidence and V3 dataset binding.
+- [codex-rs/hepta-bellman-operator/src/reference_tests.rs](../../../codex-rs/hepta-bellman-operator/src/reference_tests.rs); named cases cover signed evaluator applicability/regularity admission.
+- [codex-rs/hepta-bellman-operator/src/loaded_tests.rs](../../../codex-rs/hepta-bellman-operator/src/loaded_tests.rs); named cases cover immutable pin validation and fresh-process rollback.
 - [codex-rs/hepta-bellman-operator/src/lib_tests.rs](../../../codex-rs/hepta-bellman-operator/src/lib_tests.rs); named case: `deterministic_and_canonical`.
 
 In `codex-rs`, run `just test -p codex-hepta-bellman-operator`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.operator.md) separately labels target acceptance designs.

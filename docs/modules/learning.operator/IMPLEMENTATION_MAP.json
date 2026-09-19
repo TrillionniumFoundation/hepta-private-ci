@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "a5e40587c4058ba3849d55fe41d27cd87a28a66b",
+    "tree": "b89a375b587e3c831695ad398381a07f394f4ed3"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "explicit_read_consumer_composed_default_learning_loop_not_wired",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -27,41 +27,98 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/lib.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "deterministic_and_canonical"
+      ],
       "sourcePathExists": true,
       "designOperation": "build_targets",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "fit_tabular_operator",
-      "nativeSymbol": "fit_tabular_operator",
-      "sourcePath": "codex-rs/hepta-bellman-operator/src/learned.rs",
-      "state": "source_implemented_not_product_composed",
+      "operation": "validate_applicability_certificate_verified",
+      "nativeSymbol": "validate_applicability_certificate_verified",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/reference.rs",
+      "state": "source_implemented_qualification_entrypoint",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "op_02_verified_applicability_requires_authenticated_independent_evaluator"
+      ],
       "sourcePathExists": true,
-      "designOperation": "fit_tabular_operator",
+      "designOperation": "validate_applicability_certificate_verified",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "learning.ledger::VerifiedLearningEvidenceV1"
+      ]
     },
     {
-      "operation": "fit_transition_model",
-      "nativeSymbol": "fit_transition_model",
-      "sourcePath": "codex-rs/hepta-bellman-operator/src/world_model.rs",
-      "state": "source_implemented_not_product_composed",
+      "operation": "admit_operator_regularity_verified",
+      "nativeSymbol": "admit_operator_regularity_verified",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/reference.rs",
+      "state": "source_implemented_qualification_entrypoint",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "op_02_verified_regularity_binds_signed_approval_and_metrics"
+      ],
       "sourcePathExists": true,
-      "designOperation": "fit_transition_model",
+      "designOperation": "admit_operator_regularity_verified",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "learning.ledger::VerifiedLearningEvidenceV1"
+      ]
+    },
+    {
+      "operation": "fit_tabular_operator_from_dataset_receipt_v3",
+      "nativeSymbol": "fit_tabular_operator_from_dataset_receipt_v3",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
+      "state": "source_implemented_qualification_entrypoint",
+      "authority": "none",
+      "tests": [
+        "op_05_dataset_receipt_binds_strict_training_rows"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "fit_tabular_operator_from_dataset_receipt_v3",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "learning.ledger::DatasetSnapshotReceiptV3"
+      ]
+    },
+    {
+      "operation": "fit_transition_model_from_dataset_receipt_v3",
+      "nativeSymbol": "fit_transition_model_from_dataset_receipt_v3",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/world_model.rs",
+      "state": "source_implemented_qualification_entrypoint",
+      "authority": "none",
+      "tests": [
+        "op_05_world_model_rejects_relabelled_duplicate_evidence",
+        "op_05_world_model_dataset_receipt_binds_rows"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "fit_transition_model_from_dataset_receipt_v3",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "learning.ledger::DatasetSnapshotReceiptV3"
+      ]
+    },
+    {
+      "operation": "load_pinned_tabular_candidate",
+      "nativeSymbol": "LoadedTabularOperatorV1",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/loaded.rs",
+      "state": "source_implemented_explicit_read_consumer_composed",
+      "authority": "none",
+      "tests": [
+        "independent_pin_and_all_truncations_are_checked",
+        "distinct_process_load_changes_prediction_and_rolls_back_without_retraining"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "load_pinned_tabular_candidate",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "learning.artifacts::load_pinned_candidate"
+      ]
     }
   ],
-  "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
     "independent semantic review",
     "product execution and target-host qualification",
@@ -72,11 +129,21 @@
     "sourceRootPresent": true,
     "productionImplementation": false,
     "productExecutionProved": false,
+    "explicitReadConsumerComposed": true,
+    "defaultLearningLoopWired": false,
     "independentAcceptance": false,
     "activation": false,
     "release": false
   },
   "sourceRoot": [
     "codex-rs/hepta-bellman-operator"
+  ],
+  "consumerEvidence": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+      "nativeSymbol": "PinnedCognitiveRanker",
+      "state": "explicit_read_only_consumer_composed",
+      "limitation": "not_default_training_evaluation_selection_or_longitudinal_loop"
+    }
   ]
 }

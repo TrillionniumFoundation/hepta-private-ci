@@ -29,7 +29,7 @@ EXPECTED_MODULES = {
 }
 EXPECTED_CASES = {
     *(f"LEDGER-{index:02d}" for index in range(1, 5)),
-    *(f"OP-{index:02d}" for index in range(1, 5)),
+    *(f"OP-{index:02d}" for index in range(1, 7)),
     *(f"EVAL-{index:02d}" for index in range(1, 5)),
     *(f"ART-{index:02d}" for index in range(1, 5)),
 }
@@ -53,10 +53,15 @@ EXPECTED_OPERATIONS = {
     "learning.operator": {
         "build_targets",
         "validate_applicability_certificate",
+        "validate_applicability_certificate_verified",
         "build_sensor_core",
         "evaluate_bellman_reference",
         "admit_operator_regularity",
+        "admit_operator_regularity_verified",
+        "fit_tabular_operator_strict_v2",
+        "fit_tabular_operator_from_dataset_receipt_v3",
         "fit_transition_model",
+        "fit_transition_model_from_dataset_receipt_v3",
         "predict_transition",
     },
     "learning.eval": {
