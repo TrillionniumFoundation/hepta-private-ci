@@ -214,6 +214,26 @@ fn recovery_cancels_expired_pre_dispatch_work() {
 }
 
 #[test]
+fn newer_generation_cancels_pre_dispatch_recovery_instead_of_reusing_authority() {
+    let old = composition();
+    let mut coordinator = AgentRunCoordinator::compose_runtime(old).expect("compose");
+    coordinator.start_run(100, snapshot()).expect("admit");
+
+    let mut next = composition();
+    next.supervisor_generation += 1;
+    next.agentd_generation += 1;
+    let restored =
+        AgentRunCoordinator::restore_runtime(next, coordinator.recovery_state(), 200)
+            .expect("restore newer generation");
+    let receipt = restored.run("run.1").expect("retained");
+    assert_eq!(receipt.phase, RunPhase::Cancelled);
+    assert_eq!(
+        receipt.cancellation_reason.as_deref(),
+        Some("generation_changed_during_restart")
+    );
+}
+
+#[test]
 fn terminal_observation_is_idempotent_and_only_closed_runs_can_be_removed() {
     let mut coordinator =
         AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");
