@@ -279,8 +279,17 @@ fn decode_withdrawal_snapshot(
             return Err(ArtifactStorageError::Corrupt);
         }
         let fields: Vec<_> = line.split('|').collect();
-        let ["W", notice_id, dataset, tombstone, authority, credential, key, epoch, issued_at] =
-            fields.as_slice()
+        let [
+            "W",
+            notice_id,
+            dataset,
+            tombstone,
+            authority,
+            credential,
+            key,
+            epoch,
+            issued_at,
+        ] = fields.as_slice()
         else {
             return Err(ArtifactStorageError::Corrupt);
         };
@@ -535,10 +544,9 @@ mod tests {
                 .duration_since(std::time::UNIX_EPOCH)
                 .unwrap_or_else(|error| panic!("clock before epoch: {error:?}"))
                 .as_nanos();
-            Self(
-                std::env::temp_dir()
-                    .join(format!("hepta-artifact-{label}-{process}-{time}-{sequence}")),
-            )
+            Self(std::env::temp_dir().join(format!(
+                "hepta-artifact-{label}-{process}-{time}-{sequence}"
+            )))
         }
 
         fn create(&self) -> CreateOnlyArtifactFile {
@@ -594,8 +602,9 @@ mod tests {
             .unwrap_or_else(|error| panic!("withdrawal append failed: {error}"));
 
         let file = TestFile::new("withdrawal");
-        let receipt = write_dataset_withdrawal_snapshot(file.create(), &registry, digest("binding"))
-            .unwrap_or_else(|error| panic!("withdrawal persistence failed: {error:?}"));
+        let receipt =
+            write_dataset_withdrawal_snapshot(file.create(), &registry, digest("binding"))
+                .unwrap_or_else(|error| panic!("withdrawal persistence failed: {error:?}"));
         let recovered = read_dataset_withdrawal_snapshot(file.open(), receipt)
             .unwrap_or_else(|error| panic!("withdrawal recovery failed: {error:?}"));
         assert_eq!(recovered.snapshot(), registry.snapshot());
@@ -648,9 +657,8 @@ mod tests {
             .unwrap_or_else(|error| panic!("lifecycle append failed: {error}"));
 
         let file = TestFile::new("lifecycle");
-        let receipt =
-            write_artifact_lifecycle_snapshot(file.create(), &journal, digest("binding"))
-                .unwrap_or_else(|error| panic!("lifecycle persistence failed: {error:?}"));
+        let receipt = write_artifact_lifecycle_snapshot(file.create(), &journal, digest("binding"))
+            .unwrap_or_else(|error| panic!("lifecycle persistence failed: {error:?}"));
         let mut recovered = read_artifact_lifecycle_snapshot(file.open(), receipt)
             .unwrap_or_else(|error| panic!("lifecycle recovery failed: {error:?}"));
         assert_eq!(recovered.snapshot(), journal.snapshot());
