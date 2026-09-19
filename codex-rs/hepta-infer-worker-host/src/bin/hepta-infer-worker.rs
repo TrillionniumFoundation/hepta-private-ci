@@ -22,8 +22,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut operation_id = None;
     let mut request_id = None;
     let mut maximum_in_flight = None;
-    let mut quota_reservation_digest = None;
-    let mut resource_snapshot_digest = None;
+    let mut quota_reservation_digest: Option<Digest32> = None;
+    let mut resource_snapshot_digest: Option<Digest32> = None;
     let mut authority_config = None;
     let mut context_query = None;
     let mut native_profile_selected = false;
