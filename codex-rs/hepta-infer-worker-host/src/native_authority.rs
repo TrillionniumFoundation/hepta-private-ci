@@ -119,12 +119,13 @@ pub(super) fn build_binding(
     context_query: Option<&str>,
     context_digest: &str,
 ) -> Result<FinalUseBinding> {
-    if admission.operation_id.is_empty()
-        || model_provider.is_empty()
-        || context_digest.len() != 64
-        || !context_digest
-            .bytes()
-            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+    if !valid_identity(&admission.operation_id)
+        || !valid_identity(model_provider)
+        || admission.maximum_in_flight == 0
+        || admission.maximum_in_flight > 256
+        || admission.quota_reservation_digest.is_zero()
+        || admission.resource_snapshot_digest.is_zero()
+        || !valid_digest(context_digest)
     {
         return Err("invalid native final-use binding input".into());
     }
@@ -143,6 +144,7 @@ pub(super) fn build_binding(
         model_provider,
         agentd_socket,
         timeout.as_millis(),
+        admission.maximum_in_flight,
         admission.quota_reservation_digest.to_string(),
         admission.resource_snapshot_digest.to_string(),
     ))?);
@@ -165,6 +167,22 @@ pub(super) fn build_binding(
 
 pub(super) fn binding_digest(binding: &FinalUseBinding) -> Result<String> {
     Ok(Digest32::of_bytes(&serde_json::to_vec(binding)?).to_string())
+}
+
+fn valid_identity(value: &str) -> bool {
+    !value.is_empty()
+        && value.len() <= 128
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || b"._:-".contains(&byte))
+}
+
+fn valid_digest(value: &str) -> bool {
+    value.len() == 64
+        && !value.bytes().all(|byte| byte == b'0')
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
 }
 
 fn digest_array(bytes: &[u8]) -> [u8; 32] {
