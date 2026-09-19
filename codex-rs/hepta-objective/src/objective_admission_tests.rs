@@ -18,7 +18,9 @@ use super::ObjectiveRiskProfileV1;
 use super::ObjectiveSoftDimensionProfileV1;
 use super::ObjectiveSourceAuthenticationV1;
 use super::admit_and_compile_objective_v1;
+use super::admit_objective_v1;
 use super::canonical_objective_intent_digest_v1;
+use super::compile_admitted_objective_v1;
 use crate::ConfirmationPolicy;
 use crate::ConstraintClass;
 use crate::ObjectiveConstraintComparatorV1;
@@ -456,4 +458,18 @@ fn risk_profile_ordering_is_monotone() {
             .digest()
             .expect_err("non-monotone risk profile must reject")
     );
+}
+
+#[test]
+fn two_phase_admission_matches_convenience_wrapper() {
+    let profile = profile();
+    let envelope = envelope();
+    let context = context(&profile, &envelope);
+
+    let direct =
+        admit_and_compile_objective_v1(&envelope, &profile, &context).expect("direct compile");
+    let admitted = admit_objective_v1(&envelope, &profile, &context).expect("admit");
+    assert_eq!(admitted.receipt(), &direct.receipt);
+    let staged = compile_admitted_objective_v1(admitted).expect("staged compile");
+    assert_eq!(staged, direct);
 }
