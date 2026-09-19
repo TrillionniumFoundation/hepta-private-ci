@@ -19,7 +19,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 pub const APP_SERVER_PROTOCOL_V2: u16 = 2;
-pub const TURN_START_METHOD_ID: &str = "turn:start";
+pub const TURN_START_METHOD_ID: &str = "turn/start";
 pub const OVERLOADED_ERROR_CODE: i64 = -32001;
 const INVALID_REQUEST_ERROR_CODE: i64 = -32600;
 const METHOD_NOT_FOUND_ERROR_CODE: i64 = -32601;
