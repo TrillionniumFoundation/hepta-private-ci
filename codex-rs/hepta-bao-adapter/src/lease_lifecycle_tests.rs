@@ -73,10 +73,7 @@ async fn server(
             if content_length != 0 {
                 stream.read_exact(&mut body).await?;
             }
-            observed.push(format!(
-                "{header_text}{}",
-                String::from_utf8_lossy(&body)
-            ));
+            observed.push(format!("{header_text}{}", String::from_utf8_lossy(&body)));
             let response_body = response.body.into_bytes();
             let status_text = match response.status {
                 200 => "OK",
@@ -265,24 +262,25 @@ async fn dynamic_issue_delivers_only_to_callback_and_replay_does_not_reissue() {
     assert!(!journal.contains(PASSWORD));
 
     let replay = client
-        .request_secret_lease(
-            &registry,
-            &authority.authority,
-            &grant,
-            &request,
-            |_| panic!("completed issue must never redeliver secret bytes"),
-        )
+        .request_secret_lease(&registry, &authority.authority, &grant, &request, |_| {
+            panic!("completed issue must never redeliver secret bytes")
+        })
         .await
         .unwrap();
     assert_eq!(replay.delivery, LeaseDelivery::AlreadyIssuedNoRedelivery);
-    assert_eq!(replay.lease.lease_handle_sha256, receipt.lease.lease_handle_sha256);
+    assert_eq!(
+        replay.lease.lease_handle_sha256,
+        receipt.lease.lease_handle_sha256
+    );
 
     let requests = task.await.unwrap().unwrap();
     assert_eq!(requests.len(), 1);
     assert!(requests[0].starts_with("GET /v1/database/creds/read-only HTTP/1.1\r\n"));
-    assert!(requests[0]
-        .to_ascii_lowercase()
-        .contains("x-vault-namespace: team/one\r\n"));
+    assert!(
+        requests[0]
+            .to_ascii_lowercase()
+            .contains("x-vault-namespace: team/one\r\n")
+    );
 }
 
 #[tokio::test]
@@ -442,7 +440,9 @@ async fn unknown_issue_blocks_new_operation_until_signed_absence_resolution() {
     };
     let resolution_grant = sign_grant(
         &authority,
-        client.unknown_issue_resolution_binding(&resolution).unwrap(),
+        client
+            .unknown_issue_resolution_binding(&resolution)
+            .unwrap(),
         "grant-resolve-unknown",
         6,
     )
@@ -526,7 +526,10 @@ async fn unknown_renew_is_reconciled_by_provider_lookup_without_blind_retry() {
             .await,
         Err(BaoLeaseError::ProviderUnavailable)
     );
-    let unknown = registry.lookup(issued.lease.lease_handle_sha256).unwrap().unwrap();
+    let unknown = registry
+        .lookup(issued.lease.lease_handle_sha256)
+        .unwrap()
+        .unwrap();
     assert_eq!(
         unknown.reconciliation_reason,
         Some(ReconciliationReason::RenewOutcomeUnknown)
