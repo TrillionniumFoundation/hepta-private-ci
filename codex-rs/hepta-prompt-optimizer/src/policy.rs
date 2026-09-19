@@ -516,7 +516,7 @@ pub fn select_portfolio_with_audit(
     let total_token_upper_bound =
         u32::try_from(chosen.token_cost).map_err(|_| PolicyError::Arithmetic)?;
     let receipt = PromptPortfolioReceiptV1 {
-        portfolio_id: request.portfolio_id,
+        portfolio_id: request.portfolio_id.clone(),
         candidate_set_digest: request.pricing.candidate_set_digest,
         factor_ids: chosen.factor_ids,
         interaction_digest,
