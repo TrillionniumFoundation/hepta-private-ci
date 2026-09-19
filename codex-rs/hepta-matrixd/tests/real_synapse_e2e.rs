@@ -444,20 +444,35 @@ async fn run_real_synapse_qualification(
     environment: E2eEnvironment,
     mut fleet: FleetHarness,
 ) -> Result<()> {
-    let inner_result = run_real_synapse_qualification_inner(&environment, &mut fleet).await;
+    let final_use_broker =
+        QualificationFinalUseBroker::start(&environment.runtime_tmp_root).await?;
+    let inner_result =
+        run_real_synapse_qualification_inner(&environment, &mut fleet, &final_use_broker).await;
     let shutdown_result = fleet.shutdown_all().await;
-    let success = match (inner_result, shutdown_result) {
-        (Ok(success), Ok(())) => success,
-        (Err(error), Ok(())) => return Err(error),
-        (Ok(_), Err(shutdown_error)) => {
-            return Err(shutdown_error.context("unconditional explicit product shutdown failed"));
-        }
-        (Err(error), Err(shutdown_error)) => {
-            return Err(error.context(format!(
-                "unconditional explicit product shutdown also failed: {shutdown_error:#}"
-            )));
+    let broker_shutdown_result = final_use_broker.shutdown().await;
+    let success = match inner_result {
+        Ok(success) => success,
+        Err(error) => {
+            let mut context = String::new();
+            if let Err(shutdown_error) = shutdown_result {
+                context.push_str(&format!(
+                    " product shutdown also failed: {shutdown_error:#};"
+                ));
+            }
+            if let Err(broker_error) = broker_shutdown_result {
+                context.push_str(&format!(
+                    " final-use broker shutdown also failed: {broker_error:#};"
+                ));
+            }
+            return if context.is_empty() {
+                Err(error)
+            } else {
+                Err(error.context(context))
+            };
         }
     };
+    shutdown_result.context("unconditional explicit product shutdown failed")?;
+    broker_shutdown_result.context("final-use broker shutdown failed")?;
     let process_shutdown_evidence = fleet.process_shutdown_evidence()?;
     fleet.cleanup_runtime_root()?;
     environment.write_completion_receipt(&QualificationCompletionEvidence {
@@ -471,7 +486,7 @@ async fn run_real_synapse_qualification(
         process_shutdown_evidence: &process_shutdown_evidence,
     })?;
     eprintln!(
-        "R4_E2E qualification_mode={} test_assertions=PASS candidate_evidence=PENDING_RUNNER_REVALIDATION promotion=false operator_acceptance=false txn_dedupe=PASS outbound_post_send_pre_mark_txn_dedupe=PASS outbound_same_put_uri_twice=PASS network_disconnect_recovery=PASS sidecar_restart_recovery=PASS generation_rollover=PASS idle_sync=PASS token_coalescing=PASS dual_agent_e2ee_inbound_decrypt=PASS dual_agent_e2ee_send_raw_encrypt=PASS fault_isolation=PASS real_pending_approval_authority_boundary=PASS final_stable_count_freeze=PASS durable_isolation=PASS explicit_process_shutdown=PASS",
+        "R4_E2E qualification_mode={} test_assertions=PASS candidate_evidence=PENDING_RUNNER_REVALIDATION promotion=false operator_acceptance=false txn_dedupe=PASS outbound_post_send_pre_mark_txn_dedupe=PASS outbound_same_put_uri_twice=PASS network_disconnect_recovery=PASS sidecar_restart_recovery=PASS generation_rollover=PASS idle_sync=PASS token_coalescing=PASS dual_agent_e2ee_inbound_decrypt=PASS dual_agent_e2ee_send_raw_encrypt=PASS fault_isolation=PASS real_pending_approval_authority_boundary=PASS matrix_final_use_authority=PASS final_stable_count_freeze=PASS durable_isolation=PASS explicit_process_shutdown=PASS",
         environment.qualification_mode.as_str(),
     );
     Ok(())
@@ -480,6 +495,7 @@ async fn run_real_synapse_qualification(
 async fn run_real_synapse_qualification_inner(
     environment: &E2eEnvironment,
     fleet: &mut FleetHarness,
+    final_use_broker: &QualificationFinalUseBroker,
 ) -> Result<QualificationRunSuccess> {
     eprintln!(
         "R4_SOURCE verified_mode={} candidate_sha={} source_clean={}",
