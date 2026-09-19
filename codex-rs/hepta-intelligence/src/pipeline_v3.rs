@@ -888,11 +888,7 @@ fn internal_stage<C: CompositionControlV3>(
     let input = port_input(request, snapshot_digest, predecessor, stage);
     let stage_started = Instant::now();
     if control.cancelled() {
-        let failure = control_failure(stage, snapshot_digest, predecessor, PortFailureClassV3::Cancelled);
-        return Err(PipelineErrorV3::InvalidReceipt(match failure.class {
-            PortFailureClassV3::Cancelled => "cancelled internal stage",
-            _ => "internal stage",
-        }));
+        return Err(PipelineErrorV3::InvalidReceipt("cancelled internal stage"));
     }
     if started.elapsed() > Duration::from_micros(request.budget.total_micros)
         || stage_started.elapsed() > Duration::from_micros(input.budget_micros)
@@ -1259,3 +1255,7 @@ const fn outcome_code(outcome: StageOutcomeV3) -> u8 {
         StageOutcomeV3::Failed(class) => 20 + failure_code(class),
     }
 }
+
+#[cfg(test)]
+#[path = "pipeline_v3_tests.rs"]
+mod tests;
