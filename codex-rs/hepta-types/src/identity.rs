@@ -173,49 +173,25 @@ monotonic_identity!(Generation);
 monotonic_identity!(Revision);
 monotonic_identity!(LogicalSequence);
 
-/// Compatibility/tamper representation of authority flags.
+/// Authority-free posture shared by Platform Types consumers.
 ///
-/// This value is not an authority token. Security-sensitive Platform Types
-/// outputs should expose `NonAuthorizingPosture`, which cannot represent a
-/// granted flag. Public fields remain for backwards-compatible negative tests
-/// and legacy record decoding.
+/// The representation is intentionally private and has no authority-bearing
+/// constructor. Safe code can only obtain `DENY_ALL`; raw/wire grant flags
+/// belong to the protocol owner that validates them before constructing shared
+/// typed contracts.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub struct AuthorityPosture {
-    pub runtime: bool,
-    pub production_writer: bool,
-    pub model_invocation: bool,
-    pub provider_dispatch: bool,
-    pub external_effect: bool,
-    pub selection: bool,
-    pub promotion: bool,
-    pub release: bool,
-}
+pub struct AuthorityPosture(());
 
 impl AuthorityPosture {
-    pub const DENY_ALL: Self = Self {
-        runtime: false,
-        production_writer: false,
-        model_invocation: false,
-        provider_dispatch: false,
-        external_effect: false,
-        selection: false,
-        promotion: false,
-        release: false,
-    };
+    pub const DENY_ALL: Self = Self(());
 
     pub const fn grants_any(self) -> bool {
-        self.runtime
-            || self.production_writer
-            || self.model_invocation
-            || self.provider_dispatch
-            || self.external_effect
-            || self.selection
-            || self.promotion
-            || self.release
+        false
     }
 }
 
-/// Type-level proof that a value carries no runtime/effect/selection authority.
+/// Explicit proof type for receipts and values whose schema wants to state the
+/// non-authorizing invariant directly.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct NonAuthorizingPosture(());
 
@@ -234,17 +210,14 @@ impl NonAuthorizingPosture {
 impl TryFrom<AuthorityPosture> for NonAuthorizingPosture {
     type Error = NonAuthorizingPostureError;
 
-    fn try_from(value: AuthorityPosture) -> Result<Self, Self::Error> {
-        if value.grants_any() {
-            return Err(NonAuthorizingPostureError::AuthorityGranted);
-        }
+    fn try_from(_value: AuthorityPosture) -> Result<Self, Self::Error> {
         Ok(Self::DENY_ALL)
     }
 }
 
 impl From<NonAuthorizingPosture> for AuthorityPosture {
-    fn from(value: NonAuthorizingPosture) -> Self {
-        value.as_legacy()
+    fn from(_value: NonAuthorizingPosture) -> Self {
+        Self::DENY_ALL
     }
 }
 
@@ -255,7 +228,7 @@ pub enum NonAuthorizingPostureError {
 
 impl fmt::Display for NonAuthorizingPostureError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.write_str("authority-bearing posture cannot enter a non-authorizing boundary")
+        formatter.write_str("authority-bearing posture is not representable in platform.types")
     }
 }
 
