@@ -26,6 +26,7 @@ pub use model::OperationRecord;
 pub use model::OperationState;
 pub use model::ReconciliationOutcome;
 pub use model::ReferenceAuthorityWitness;
+pub use outbox::MAX_MODEL_OUTBOX_ATTEMPTS;
 pub use outbox::MAX_MODEL_OUTBOX_RECORDS;
 pub use outbox::Outbox;
 pub use outbox::OutboxIntent;
