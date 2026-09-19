@@ -18,13 +18,18 @@ Hosted provider execution:
   recovered admission and settlement.
 - `codex-rs/hepta-inferd/src/worker_port.rs` is the typed
   `inference.control -> inference.worker` source-composition seam. It does not
-  mint authority; the provider path requires a kernel-owned
-  `FinalUseAuthority` and independently signed `SignedFinalUseGrant`.
+  mint authority. The worker configuration owns only the kernel verification /
+  nonce / revocation state; the exact signed grant is resolved after the final
+  provider binding is frozen.
 - `codex-rs/hepta-inferd/src/bin/hepta-inference-runtime-host.rs` is the named
   hosted-provider source composition root. It binds protected host
-  configuration, the canonical durable inference-control owner, final-use
-  trust/revocation state and `NativeWorkerPort`. This is source composition,
-  not evidence that a production deployment exists.
+  configuration, the canonical durable inference-control owner, current
+  quota/resource evidence, final-use verification/revocation state and
+  `NativeWorkerPort`. At the exact runtime binding point it requests a signed
+  grant over a bounded Unix protocol from an independently operated issuer
+  socket, then verifies the response locally. The host has no signing key and
+  cannot mint authority. This is source composition; deployment of the issuer,
+  its policy owner and the product host remains an activation/evidence gate.
 
 Local model execution:
 
@@ -51,8 +56,12 @@ There are two different authority objects and they must not be conflated.
 
 1. Provider dispatch uses kernel `FinalUseAuthority`. The issuer signs the
    exact subject, destination, request, scope and canonical payload binding.
-   `run_authorized` claims that grant only for a fresh Reserved request and
-   immediately enters the durable dispatch-intent boundary. Planning in
+   For the named product host, the worker freezes provider/context and exact
+   `TurnStartParams`, sends only that `FinalUseBinding` to the configured
+   independent issuer socket, then locally verifies the returned signed grant
+   against pinned signer/epoch/revocation state. The one-shot verified token is
+   consumed while durable dispatch intent and synchronous bounded App Server
+   queue admission cross the same revocation fence. Planning in
    `hepta-inferd::plan` remains `DENY_ALL`.
 2. Local resource admission uses `VerifiedResourceGrant`. A raw
    `ResourceGrant` is data, not proof of authenticity. The concrete
@@ -118,9 +127,13 @@ descriptor.
 ## 5. Provider crash/restart reconciliation
 
 Hosted provider requests use a persistent single-use App Server thread. Before
-`turn/start`, inference.control synchronously records the thread/provider,
-stable `client_user_message_id == request_id`, canonical input SHA-256 and
-context digest.
+physical `turn/start` admission, inference.control freezes the exact payload
+and obtains the independently signed final-use grant. Under one revocation
+fence it synchronously records the thread/provider/final-use witness, stable
+`client_user_message_id == request_id`, canonical input SHA-256 and context
+digest, then synchronously admits that request to the bounded single-owner App
+Server command queue. Queue admission is the local effect linearization point;
+a later transport failure is accepted-or-unknown and cannot be replayed.
 
 If `turn/start` acknowledgement or the worker is lost, restart performs
 `thread/queue/reconcile` in `ReconcileOnly` mode using the same thread,
@@ -236,7 +249,9 @@ of these are true:
 - the named deployed hosted-provider product caller reaches
   `NativeWorkerPort::execute`, and any selected local-model profile has a
   separately authenticated local product caller;
-- protected signer trust/revocation state is configured outside the worker;
+- protected signer trust/revocation state is configured outside the worker,
+  and the named host reaches an independently operated exact-binding issuer
+  socket whose policy/identity is deployment-controlled;
 - economic quota and hardware-capacity authority are composed;
 - real model/runtime/device qualification above is attached;
 - OS isolation controls required by the deployment are identified and measured;
