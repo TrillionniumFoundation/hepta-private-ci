@@ -14,6 +14,7 @@ import json
 from typing import TYPE_CHECKING
 
 from . import control_plane as _control
+from .evidence import SignatureVerifier
 
 if TYPE_CHECKING:
     from .control_plane import EngineeringStore
@@ -37,6 +38,21 @@ class WorkerReceipt:
     registered_unix_ns: int
     last_heartbeat_unix_ns: int
     lease_expires_unix_ns: int
+
+
+@dataclass(frozen=True)
+class WorkerIdentityReceipt:
+    worker_id: str
+    principal: str
+    credential_chain_digest: str
+    capabilities: tuple[str, ...]
+    maximum_concurrency: int
+    authority_epoch: int
+    observed_unix_ns: int
+    expires_unix_ns: int
+    issuer: str
+    signing_identity: str
+    signature: str = ""
 
 
 @dataclass(frozen=True)
@@ -176,6 +192,84 @@ def _expire_state(store: "EngineeringStore", now: int) -> None:
             {"claimId": str(row["claim_id"]), "revision": revision},
             now,
         )
+
+
+def register_authenticated_worker(
+    store: "EngineeringStore",
+    identity: WorkerIdentityReceipt,
+    verifier: SignatureVerifier,
+    *,
+    now_ns: int | None = None,
+) -> WorkerReceipt:
+    if not isinstance(identity, WorkerIdentityReceipt):
+        raise _control.EngineeringError("worker_identity_receipt_required")
+    now = store._now(now_ns)
+    capabilities = _canonical_capabilities(identity.capabilities)
+    if capabilities != identity.capabilities:
+        raise _control.EngineeringError("worker_identity_noncanonical")
+    _control.checked_id(identity.worker_id, "worker_id")
+    _control.checked_id(identity.principal, "worker_principal")
+    _control.checked_sha256(identity.credential_chain_digest, "credential_chain_digest")
+    if identity.credential_chain_digest == "0" * 64:
+        raise _control.EngineeringError("invalid_credential_chain_digest")
+    if (
+        type(identity.maximum_concurrency) is not int
+        or not 1 <= identity.maximum_concurrency <= MAX_WORKER_CONCURRENCY
+        or type(identity.authority_epoch) is not int
+        or identity.authority_epoch < 1
+    ):
+        raise _control.EngineeringError("invalid_worker_identity_bounds")
+    if (
+        type(identity.observed_unix_ns) is not int
+        or type(identity.expires_unix_ns) is not int
+        or not identity.observed_unix_ns <= now < identity.expires_unix_ns
+    ):
+        raise _control.EngineeringError("worker_identity_stale")
+    if (
+        identity.issuer != "engineering_worker_authority"
+        or not isinstance(identity.signing_identity, str)
+        or not identity.signing_identity
+    ):
+        raise _control.EngineeringError("worker_identity_issuer_role")
+    if not verifier.verify(
+        identity,
+        identity.issuer,
+        identity.signing_identity,
+        identity.signature,
+    ):
+        raise _control.EngineeringError("worker_identity_signature")
+    return register_worker(
+        store,
+        identity.worker_id,
+        identity.principal,
+        identity.credential_chain_digest,
+        identity.capabilities,
+        maximum_concurrency=identity.maximum_concurrency,
+        authority_epoch=identity.authority_epoch,
+        expires_unix_ns=identity.expires_unix_ns,
+        now_ns=now,
+    )
+
+
+def completed_packages(
+    store: "EngineeringStore",
+    envelope_id: str,
+    *,
+    now_ns: int | None = None,
+) -> tuple[str, ...]:
+    _control.checked_id(envelope_id, "envelope_id")
+    now = store._now(now_ns)
+    with store._transaction():
+        store._get_envelope(envelope_id, now)
+        store._expire_leases(now)
+        _expire_state(store, now)
+        rows = store.connection.execute(
+            "SELECT DISTINCT c.package_id FROM assignment_claims c "
+            "JOIN assignment_generations g ON g.generation_id=c.generation_id "
+            "WHERE g.envelope_id=? AND c.state='completed' ORDER BY c.package_id",
+            (envelope_id,),
+        ).fetchall()
+    return tuple(str(row["package_id"]) for row in rows)
 
 
 def register_worker(
