@@ -96,6 +96,7 @@ fn contribution(candidate: &str, success: i64, latency: i64) -> UtilityContribut
 fn profile() -> UtilityProfile {
     UtilityProfile {
         profile_id: id("utility-v1"),
+        semantic_manifest_digest: Digest32::of_bytes(b"utility-profile-semantics-v2"),
         dimensions: vec![
             (id("success"), AxisDirection::Maximize),
             (id("latency"), AxisDirection::Minimize),
