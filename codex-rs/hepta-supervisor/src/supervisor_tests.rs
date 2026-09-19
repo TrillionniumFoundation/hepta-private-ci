@@ -7,16 +7,30 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::Duration;
 use std::time::Instant;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseGrant;
+use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentManifest;
+use codex_hepta_fleet::FleetAllocationStore;
+use codex_hepta_fleet::FleetCapacityObservationSourceV1;
+use codex_hepta_fleet::FleetHolderDispositionV1;
+use codex_hepta_fleet::FleetHostObservationV1;
+use codex_hepta_fleet::FleetPlacementRequestV1;
 use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::FleetResourceVectorV1;
 use codex_hepta_fleet::ReleaseId;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
@@ -1323,4 +1337,122 @@ fn finish_release_drain(
     assert_eq!(supervisor.tick(now), TickReport::default());
     control.set_exit(agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
+}
+
+
+#[test]
+fn durable_fleet_grant_is_consumed_by_spawn_and_released_by_observed_exit(
+) -> Result<(), Box<dyn std::error::Error>> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+
+    let unix_ms = SystemTime::now()
+        .duration_since(UNIX_EPOCH)?
+        .as_millis() as u64;
+    supervisor.admit_fleet_host_observation(FleetHostObservationV1::new(
+        "host.local".to_string(),
+        "rack.local".to_string(),
+        1,
+        1,
+        unix_ms.saturating_sub(1),
+        unix_ms + 120_000,
+        FleetCapacityObservationSourceV1::LocalKernel,
+        FleetResourceVectorV1 {
+            concurrent_turns: 2,
+            memory_mib: 8_192,
+            tool_processes: 32,
+            turn_queue_slots: 512,
+        },
+    )?)?;
+
+    let prepared = supervisor.prepare_fleet_allocation(
+        "principal.1",
+        9,
+        &[FleetPlacementRequestV1 {
+            allocation_id: "allocation.product".to_string(),
+            request_id: "request.product".to_string(),
+            agent_id: fleet.first.clone(),
+            caller_supplied_weight: 1,
+            minimum: FleetResourceVectorV1 {
+                concurrent_turns: 1,
+                memory_mib: 256,
+                tool_processes: 1,
+                turn_queue_slots: 1,
+            },
+            desired: FleetResourceVectorV1 {
+                concurrent_turns: 1,
+                memory_mib: 1_024,
+                tool_processes: 2,
+                turn_queue_slots: 8,
+            },
+            allowed_failure_domains: Vec::new(),
+        }],
+        30_000,
+        unix_ms,
+    )?;
+
+    let issuer = SigningKey::from_bytes(&[79; 32]);
+    let authority_root = fleet._temp.path().join("fleet-final-use");
+    std::fs::create_dir(&authority_root)?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(
+            &authority_root,
+            std::fs::Permissions::from_mode(/*mode*/ 0o700),
+        )?;
+    }
+    let authority = FinalUseAuthority::open_state_dir(
+        &authority_root,
+        "fleet-authority".to_string(),
+        issuer.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
+    )?;
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "fleet-authority".to_string(),
+        authority_epoch: 9,
+        grant_id: "supervisor-fleet-product".to_string(),
+        nonce: [9; 32],
+        binding: prepared.final_use_binding.clone(),
+        not_before_unix_ms: unix_ms.saturating_sub(1_000),
+        expires_at_unix_ms: unix_ms + 60_000,
+    };
+    let signed = SignedFinalUseGrant {
+        signature: issuer.sign(&grant.signing_bytes()?).to_bytes().to_vec(),
+        grant,
+    };
+    let token = authority.claim(&signed, &prepared.final_use_binding)?;
+    supervisor.commit_fleet_allocation(&authority, token, &prepared, unix_ms)?;
+
+    supervisor.start(&fleet.first, command()?, now)?;
+    {
+        let store = FleetAllocationStore::open(&fleet.registry)?;
+        let durable = store
+            .active_grant_for_agent(&fleet.first)?
+            .expect("active product grant");
+        assert_eq!(durable.holder, FleetHolderDispositionV1::Holding);
+    }
+
+    control.set_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    let store = FleetAllocationStore::open(&fleet.registry)?;
+    assert!(store.active_grant_for_agent(&fleet.first)?.is_none());
+    let state = store.load()?;
+    assert_eq!(
+        state
+            .terminal_grants
+            .get("allocation.product")
+            .expect("terminal product grant")
+            .holder,
+        FleetHolderDispositionV1::Released
+    );
+    Ok(())
 }
