@@ -584,9 +584,9 @@
       "implementationState": "specified_not_product_evidence",
       "apiContract": "reserve_request(request,modelManifest,quota); schedule(reservation,eligibleWorkers); cancel(id,expectedRevision); settle(observation,epoch). Request/lease/reservation must bind identical model/payload.",
       "stateAndEncoding": "Request principal,model,payload,deadline,state; reservation quota/resource/worker generation; receipt usage/output digest/finality. One owner persists assignment with dispatch outbox.",
-      "linearizationAndRecovery": "Owner CAS resolves cancel/finish: terminal observation is recorded once; late actual usage is still charged. Worker cannot refund the owner reservation. Unknown consumption stays held/quarantined.",
-      "algorithmAndBounds": "Queue<=4096/shard, batch<=256, metadata<=64 KiB. Schedule only eligible enrolled workers. Retry budget covers proven pre-dispatch infrastructure failures, not unchanged semantic rejection.",
-      "acceptanceOracle": "Cancel and finish in either ordering yield one settlement and no double refund. Wrong model/digest denies before dispatch. Worker disappearance does not imply zero usage.",
+      "linearizationAndRecovery": "Durable reserve binds current quota/resource evidence and conservative request/token/concurrency/economic holds. Fresh dispatch freezes exact provider/context/TurnStart payload; a one-shot kernel final-use token is consumed while durable dispatch intent and synchronous bounded App Server queue admission cross the same revocation fence. Queue admission is accepted-or-unknown; exact Missing/Cancelled reconciliation proves NoAdmission. Terminal observation settles once; missing usage stays held/unknown and restart cannot recreate the non-serializable terminal authority receipt.",
+      "algorithmAndBounds": "Eligible-worker scheduling canonicalizes at most 256 candidates and deterministically filters/ranks by exact model, token and concurrency feasibility. Native journal is capped at 64 MiB / 8 MiB line / 16,384 records; high-water compaction snapshots exact native state, preserves legacy bytes, bounds private predecessor archives and poisons the writer if retention cannot be enforced.",
+      "acceptanceOracle": "Wrong model/payload/quota/resource/final-use binding denies before effect admission. Revocation before bounded transport admission executes no effect. Queue admission followed by crash is never replayed; Core ReconcileOnly must recover the original turn, prove NoAdmission, or remain indeterminate. Cancel/finish races yield one settlement and no double refund; missing billing/usage is never fabricated.",
       "nativeMappingRequired": true,
       "productTestsExecuted": false,
       "deploymentQualified": false,
@@ -597,24 +597,48 @@
             "symbol": "reserve_native"
           },
           {
+            "path": "codex-rs/hepta-inferd/src/lib.rs",
+            "symbol": "schedule"
+          },
+          {
             "path": "codex-rs/hepta-infer-core/src/native_control.rs",
             "symbol": "dispatch_native"
           },
           {
             "path": "codex-rs/hepta-infer-core/src/native_control.rs",
+            "symbol": "cancel_native"
+          },
+          {
+            "path": "codex-rs/hepta-infer-core/src/native_control.rs",
             "symbol": "settle_native"
+          },
+          {
+            "path": "codex-rs/hepta-infer-core/src/durable_control.rs",
+            "symbol": "compact_native_journal"
+          },
+          {
+            "path": "codex-rs/hepta-inferd/src/bin/hepta-inference-runtime-host.rs",
+            "symbol": "main"
           }
         ],
-        "stateAndRecovery": "DurableInferenceControl owns one locked, synced journal with additive native-v1 records. A reservation is a local in-flight slot; unknown execution retains capacity, unknown token usage remains None, and replay never dispatches a replacement turn.",
+        "stateAndRecovery": "DurableInferenceControl owns the locked/synced journal and cross-bound request/token/concurrency/economic holds. Native dispatch stores exact Core client-message/input identity plus final-use witness. Physical effect admission is synchronous bounded App Server queue admission under the same revocation fence as durable dispatch. Restart uses Core ReconcileOnly: Persisted recovers the original turn, Missing/Cancelled proves NoAdmission, ambiguous outcomes remain held, and no replacement turn is submitted. Recovered terminal facts cannot fabricate live terminal final-use authority. High-water compaction has bounded private archives and retention failure poisons the writer.",
         "testFiles": [
-          "codex-rs/hepta-infer-core/src/native_control_tests.rs"
+          "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+          "codex-rs/hepta-inferd/src/lib_tests.rs",
+          "codex-rs/hepta-infer-worker-host/src/native_policy_tests.rs",
+          "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
+          "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+          "codex-rs/hepta-contracts/src/final_use_tests.rs",
+          "codex-rs/hepta-inferd/src/bin/hepta-inference-runtime-host.rs"
         ],
         "runtimeDocuments": [
           "docs/readiness/LANE_B_NATIVE_HOST.md",
           "docs/modules/inference.control/IMPLEMENTATION_MAP.json"
         ],
         "remainingWork": [
-          "Integrate economic quota/hardware capacity authorities and authenticated post-crash provider reconciliation. Add bounded archival under the same owner before the 64 MiB journal ceiling is reached."
+          "Deploy the named hepta-inference-runtime-host under Supervisor/Agentd with current owner-issued quota/resource evidence and an independently operated exact-binding final-use issuer socket; source composition is present but activation/product execution is not proved.",
+          "Connect real provider billing and measured hardware/device-capacity authorities; source economic budget units and ResourceAdvertisement bindings are not billing or VRAM truth.",
+          "Run retained target-host provider crash/cancellation/reconciliation, quota exhaustion, capacity, archive-retention/backup policy and independent acceptance evidence."
         ]
       }
     },
@@ -634,7 +658,7 @@
       "implementationState": "specified_not_product_evidence",
       "apiContract": "load_model(verifiedManifest,verifiedResourceGrant); run(request,lease,reservation,cancellation); unload(handle,deadline). Pure receipt validation is not model execution.",
       "stateAndEncoding": "Ephemeral model/process generation, read-only model descriptor, move-only verified resource-grant capability, KV/cache handles, request handles and usage counters. FinalUseResourceGrantVerifier binds one exact worker generation to kernel authority with a durable single-use nonce; GrantVerification retains that authenticated worker subject and InferenceWorker::new exact-matches it. The post-claim VerifiedResourceGrant cannot be cloned into multiple worker instances. Artifact/cache owner retains persistent model bytes.",
-      "linearizationAndRecovery": "Authenticate local worker-generation creation through FinalUseResourceGrantVerifier, then before each local load sum live model reservations and pass only remaining worker memory to the runtime; reject aggregate overcommit. Run-response waits are capped by the exact request deadline. Later resource revocation requires product-host generation fencing. Hosted dispatch persists exact Core client-message/input identity before provider admission and recovery is ReconcileOnly with no replacement turn.",
+      "linearizationAndRecovery": "Authenticate local worker-generation creation through FinalUseResourceGrantVerifier, then enforce remaining-memory admission and request deadlines. Hosted fresh dispatch freezes exact provider/context/TurnStart payload and resolves a signed grant only for that binding; one-shot authority is consumed while durable dispatch and bounded App Server queue admission cross one revocation fence. Restart is ReconcileOnly and never submits a replacement turn.",
       "algorithmAndBounds": "Concurrent models,tokens,aggregate accelerator/host memory,protocol response waits and cancellations use explicit grants and selected model bounds. Local run timeout after write is indeterminate, not retry authority. Separate real encoder latency from deterministic feature-fixture latency.",
       "acceptanceOracle": "Changing tokenizer with equal model ID rejects. A resource capability authenticated for worker A cannot construct worker B, its final-use nonce cannot be replayed, and the post-claim VerifiedResourceGrant cannot be cloned into another worker instance. Multiple models cannot cumulatively reserve beyond the worker grant. A hung local runtime is bounded by the request deadline and becomes indeterminate without replay. Real-use receipt identifies binary,weights,device and actual consumer; synthetic output cannot substitute.",
       "nativeMappingRequired": true,
@@ -652,7 +676,7 @@
           },
           {
             "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
-            "symbol": "AppServerModelDriver::run_authorized"
+            "symbol": "AppServerModelDriver::run"
           },
           {
             "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
@@ -663,7 +687,7 @@
             "symbol": "NativeWorkerPort::execute"
           }
         ],
-        "stateAndRecovery": "Local execution requires move-only VerifiedResourceGrant. FinalUseResourceGrantVerifier reuses kernel FinalUseAuthority to bind the complete resource grant plus exact worker identity/generation, current epoch/revocation and a durable single-use nonce at generation creation; the authenticated worker subject is retained and exact-matched by InferenceWorker::new. The post-claim proof is non-cloneable. LocalProcessDriver verifies digest-pinned runtime/model/device artifacts, passes only remaining grant memory into each load, enforces aggregate reserved and observed<=reserved memory, and bounds resident run waits by the request deadline. The verified grant remains a snapshot and later revocation requires lifecycle fencing. Hosted execution durably binds Core client-message/input identity, final-use-gates fresh dispatch, and reopens through ReconcileOnly to recover the original turn or prove no admission without replay; recovered terminal turns await exact-turn persisted usage replay under the RPC bound. Missing authoritative usage remains None.",
+        "stateAndRecovery": "Local execution requires move-only VerifiedResourceGrant and aggregate remaining-memory accounting. Hosted execution uses quota/resource-aware DurableInferenceControl, exact runtime-binding grant resolution, revocation-fenced durable dispatch plus synchronous bounded queue admission, and Core ReconcileOnly recovery. The named hepta-inference-runtime-host asks an independent issuer socket to sign only the frozen binding and verifies the response locally; it has no signing key. Missing authoritative usage remains None, and process-loss recovery cannot recreate live terminal authority.",
         "testFiles": [
           "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
           "codex-rs/hepta-infer-worker-host/src/local_process_driver_tests.rs",
@@ -678,7 +702,7 @@
           "docs/readiness/LANE_B_NATIVE_HOST.md"
         ],
         "remainingWork": [
-          "Compose the local-model product caller around FinalUseResourceGrantVerifier with protected runtime/artifact/device configuration and lifecycle fencing for later authority revocation. The hosted provider source root hepta-inference-runtime-host already exists, but deployment is not proved.",
+          "Compose the local-model product caller around FinalUseResourceGrantVerifier with protected runtime/artifact/device configuration and lifecycle fencing for later authority revocation. The hosted provider source root and exact-binding issuer seam exist; deployment/activation of the independent issuer and host are not proved.",
           "Add trusted provider/billing usage reconciliation when persisted App Server history has no authoritative usage for the recovered exact turn.",
           "Run retained real CPU and GPU load/run/unload, OOM, device-reset, cancellation, crash, leak, concurrency, artifact-mutation, rollback and OS/device isolation qualification before deployment claims."
         ]
