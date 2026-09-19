@@ -29,14 +29,10 @@ struct Fixture {
 
 impl Fixture {
     fn new(evaluator_controller_collision: bool) -> Self {
-        Self::new_with_evaluator_controller(
-            evaluator_controller_collision.then_some(0),
-        )
+        Self::new_with_evaluator_controller(evaluator_controller_collision.then_some(0))
     }
 
-    fn new_with_evaluator_controller(
-        evaluator_controller_collision_with: Option<usize>,
-    ) -> Self {
+    fn new_with_evaluator_controller(evaluator_controller_collision_with: Option<usize>) -> Self {
         let keys = [
             SigningKey::from_bytes(&[11; 32]),
             SigningKey::from_bytes(&[22; 32]),
