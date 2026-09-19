@@ -357,3 +357,45 @@ fn protected_set_cannot_exceed_checkpoint_capacity() {
         Err(QualifiedCompactionError::ProtectedReferencesExceedCapacity)
     );
 }
+
+
+#[test]
+fn large_bounded_batch_remains_deterministic() {
+    let mut large_policy = policy(256, Vec::new());
+    large_policy.maximum_retained_bytes = 256 * 64;
+    large_policy.maximum_retained_tokens = 256 * 16;
+    let inputs = (0_u32..10_000)
+        .map(|index| {
+            input(
+                record(
+                    &format!("memory:large:{index:05}"),
+                    1,
+                    None,
+                    RecordState::Live,
+                ),
+                10_000 - index,
+            )
+        })
+        .collect::<Vec<_>>();
+    let mut reversed = inputs.clone();
+    reversed.reverse();
+    let left = build_qualified_candidate(
+        snapshot_key(),
+        generation(2),
+        Some(digest("predecessor-checkpoint")),
+        &large_policy,
+        inputs,
+    )
+    .expect("large candidate");
+    let right = build_qualified_candidate(
+        snapshot_key(),
+        generation(2),
+        Some(digest("predecessor-checkpoint")),
+        &large_policy,
+        reversed,
+    )
+    .expect("large reversed candidate");
+    assert_eq!(left, right);
+    assert_eq!(left.retained_records.len(), 256);
+    assert_eq!(left.loss_report.omitted_live_records, 9_744);
+}
