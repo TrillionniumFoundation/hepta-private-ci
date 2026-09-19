@@ -180,6 +180,30 @@ mod tests {
     }
 
     #[test]
+    fn op_05_dataset_binding_rejects_detached_training_rows() {
+        let bound_plan = plan();
+        let mut evidence = bound_plan
+            .samples
+            .iter()
+            .map(|sample| sample.evidence_digest)
+            .collect::<Vec<_>>();
+        evidence.sort_unstable();
+        let binding = DatasetEvidenceBindingV1 {
+            dataset_digest: bound_plan.dataset_digest,
+            source_evidence_digests: evidence,
+        };
+        fit_tabular_operator_with_dataset_binding_v3(bound_plan.clone(), &binding)
+            .expect("bound rows fit");
+
+        let mut detached = bound_plan;
+        detached.samples[0].evidence_digest = digest("detached-evidence");
+        assert_eq!(
+            fit_tabular_operator_with_dataset_binding_v3(detached, &binding),
+            Err(StrictLearnedOperatorError::DatasetBinding)
+        );
+    }
+
+    #[test]
     fn op_05_indexed_prediction_uses_canonical_grid() {
         let artifact = fit_tabular_operator_strict_v2(plan()).expect("strict fit succeeds");
         let prediction =
