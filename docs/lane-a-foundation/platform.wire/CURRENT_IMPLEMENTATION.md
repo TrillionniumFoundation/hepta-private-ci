@@ -18,7 +18,7 @@ contract. The broader target architecture remains in
 | Property testing | implemented | deterministic randomized round-trip and arbitrary-byte decoder tests |
 | Fuzz target | implemented | `codex-rs/hepta-wire/fuzz/fuzz_targets/decode_frames.rs` |
 | Live cross-runtime loading | implemented qualification path | Rust↔Python raw binary HPTN + HPTA V2 session test |
-| Named product source caller | source-composed | read-only runtime status can be returned as V2 by the native gateway when explicitly requested |
+| Named product source callers | source-composed | read-only native gateway plus strict `context.compiler` receipt and `runtime.codex` intent adapters |
 | Production activation / external acceptance | not granted | requires separate exact-candidate, target-host and operator gates |
 
 V1 continues to use its frozen payload-only digest. V2 binds schema, producer,
@@ -35,6 +35,8 @@ digest. Neither digest is a MAC or signature.
 - streaming decoder: `codex-rs/hepta-wire/src/stream.rs` — `StreamingDecoder`
 - product source caller: `codex-rs/hepta-runtime/src/lib.rs` — `HeptaRuntime::status_wire_v2`
 - product transport surface: `codex-rs/hepta-native-gateway/src/lib.rs`
+- registered `context.compiler` port adapter: `codex-rs/hepta-context-compiler/src/wire.rs`
+- registered `runtime.codex` port adapter: `codex-rs/hepta-codex-adapter/src/wire.rs`
 
 The existing JSON response from `GET /api/hepta/runtime` remains the default.
 An explicit `Accept: application/x-hepta-wire; version=2` requests the V2
@@ -84,7 +86,8 @@ Current source evidence includes:
 - incremental stream and buffer-bound tests;
 - deterministic property tests and a cargo-fuzz target;
 - a raw-binary Rust↔Python HPTN + HPTA V2 session test;
-- native gateway content-negotiation tests.
+- native gateway content-negotiation tests;
+- `context.compiler` and `runtime.codex` strict schema-admission adapter tests.
 
 The vectors are machine-checked by the Lane A foundation verifier. Source tests
 are not independent acceptance receipts until the exact candidate and required
