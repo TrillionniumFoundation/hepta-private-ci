@@ -44,7 +44,7 @@ Cross-organ aggregation is never implicit for a new integration. `EvaluationPoli
 
 Missing rules, duplicate rules, unknown axes and `RequireEqual` disagreement reject. Overflow rejects rather than saturating outside a named mathematical projection.
 
-The compatibility API `evaluate_candidates` remains available, but its prior behavior is now explicitly materialized as `legacy-sum-max-zero-tolerance-v1`:
+The compatibility API `evaluate_candidates` remains available only as an explicitly deprecated compatibility entry; Lane D semantic CI rejects new non-compatibility callers. Its prior behavior is materialized as `legacy-sum-max-zero-tolerance-v1`:
 
 - utility: sum;
 - risk: sum;
@@ -52,7 +52,7 @@ The compatibility API `evaluate_candidates` remains available, but its prior beh
 - uncertainty: maximum;
 - Pareto absolute tolerance: zero.
 
-New integrations call `evaluate_candidates_with_policy`. `NduEvaluationReceiptV2` binds the normalized policy digest in addition to the legacy evaluation digest, preventing a future aggregation change from silently reinterpreting an old result.
+New integrations call `evaluate_candidates_with_policy`. `NduEvaluationReceiptV2` binds the normalized policy digest in addition to the legacy evaluation digest, preventing a future aggregation change from silently reinterpreting an old result. `UtilityProfile` also carries a nonzero immutable `axis_registry_digest`; the canonical utility-profile V2 digest binds it so units, scales and normalization semantics cannot drift under an unchanged profile identity.
 
 ### 3.1 Feasibility, Pareto and scalarization
 
@@ -95,7 +95,7 @@ P_next = (1 - eta) * P_k + eta * P_candidate
 U_k = project(instant_utility + discount * continuation_utility)
 ```
 
-`eta` is in `[1/16,1/4]`. The preference target solver emits immutable revisions and at most 64 local iteration receipts. Parent and child artifact updates cannot share one generation.
+`eta` is in `[1/16,1/4]`. Public preference state and target inputs enforce `dim(P) <= 64` and every value in `[-1,1]` before any revision is created. The preference target solver emits at most 64 local iteration receipts. A state already within the residual tolerance is a zero-iteration, revision-preserving no-op. Iteration exhaustion returns an explicit unavailable outcome without exposing the terminal numerical iterate as a usable preference state. Same-generation hierarchy validation uses explicit artifact identity and declared direct-parent identity: unrelated subjects may update together, while an actual parent/child pair cannot.
 
 ## 5. Convergence, infeasibility and multiple solutions
 
@@ -110,9 +110,9 @@ U_k = project(instant_utility + discount * continuation_utility)
 
 These local records are not an activation certificate. They deliberately do not use the name `NduConvergenceCertificateV1`.
 
-The canonical `NduConvergenceCertificateV1` remains owned by `learning.eval`. It additionally binds independent evaluator identity, operating region, residuals, resource/risk conservation, perturbation evidence and the spectral-radius upper confidence bound. A certificate with a spectral-radius upper 95% bound `>=0.95`, stale objective, unsupported dimension or missing independent decision cannot activate an adaptive artifact.
+The canonical `NduConvergenceCertificateV1` remains owned by `learning.eval`. The source candidate now includes `evaluate_ndu_convergence_v1`, which consumes local NDU termination evidence under an evaluator/producer separation check and evaluates the registered residual, resource/risk, boundary, martingale-mean, multiple-solution and spectral-radius thresholds. It binds independent evaluator identity, operating region, perturbation, conservation and support evidence and always carries zero authority. This closes the repository-owned decision kernel only: authenticated real evidence, future-window qualification, independent acceptance and activation remain separate gates. A certificate with a spectral-radius upper 95% bound `>=0.95`, stale objective, unsupported dimension or missing independent decision cannot activate an adaptive artifact.
 
-`bind_solver_iteration_receipt_v1` converts one local step into an owner-local protocol representation only after binding:
+`NduSolverIterationReceipt` is created inside the owner solver with a crate-sealed digest of the complete frozen iteration context. `bind_solver_iteration_receipt_v1` recomputes that canonical context digest and rejects context/objective/subject/generation/event/coefficient rebinding before converting one local step into an owner-local protocol representation. The bound context contains:
 
 - subject ID and class;
 - immutable objective digest;
@@ -142,7 +142,9 @@ Use a stable linear solve, not explicit matrix inversion. Only when `C_k = dt I`
 
 The full-rank pilot rejects singular or ill-conditioned covariance. A pseudoinverse requires a separately qualified supported-subspace profile with residual and null-space identifiability tests. Conditional-moment samples use pre-boundary features; future outcomes may label training rows but never enter runtime features.
 
-A numeric covariance fixture proves algebra only. It does not prove conditional identification, a complete FBSDE solution, adaptive efficacy or activation safety.
+`ZEstimateV1` is crate-sealed to the admitted covariance profile. `materialize_q24_coefficient_candidate_v1` converts a solver-produced estimate into signed Q24 with nearest/ties-to-even semantics, rejects range overflow rather than clipping, records a conservative `1/2^25` absolute conversion-error bound, and binds units, covariance profile, coefficient-manifest digest and operating-region digest into deny-all evidence. This is coordinate/conversion evidence, not coefficient provenance admission by itself.
+
+A numeric covariance fixture and Q24 materialization prove bounded algebra and representation only. They do not prove conditional identification, learned coefficient validity, a complete FBSDE solution, adaptive efficacy or activation safety.
 
 ### 6.2 Projection state and owner-local durability reference
 
@@ -157,9 +159,11 @@ Preference and utility projections are append-only revisions owned by `utility.n
 - projection payload digest;
 - predecessor-entry and entry digests.
 
-The journal enforces equal-identity/equal-semantics replay, rejects identity drift, validates exact length and hashes on reopen, rejects truncation/unknown kind/tampering, reconstructs selected projection state and prevents revocation resurrection after restart.
+The journal enforces equal-identity/equal-semantics replay, rejects identity drift, validates exact length and hashes on reopen, rejects truncation/unknown kind/tampering, reconstructs selected projection state and prevents revocation resurrection after restart. Revocation identity is scoped by `(objective_digest, subject_digest, payload_digest)`, so one subject/objective cannot revoke an equal payload digest in another scope.
 
-This reference does not claim an activated production writer, operating-system durability, fsync, schema migration, retention or backup qualification. Product composition must bind a selected store and prove those properties independently.
+`DurableNduProjectionStoreV1` is a stronger source-level durability adapter over an explicitly host-authorized regular `File`. It uses an exclusive lock, a store binding/header digest, bounded append-only records, `sync_all()` before in-memory advancement, stale-writer anchor checks, externally retained `{binding, sequence, entry_digest}` recovery anchors, fail-closed unwitnessed-tail detection, bounded retention, exact backup/restore verification and migration from a validated reference journal. An incomplete crash tail may be truncated only when every complete record is covered by the supplied current anchor.
+
+This durable adapter is still not an activated production writer. File creation/path authentication, containing-directory durability, protection/currentness of external anchors and backups, production scheduling, target-host qualification and product composition remain outside the crate and must be proven independently.
 
 ## 7. Goodhart and wireheading controls
 
