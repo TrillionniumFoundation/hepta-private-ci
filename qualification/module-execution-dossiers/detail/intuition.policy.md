@@ -1,52 +1,110 @@
 # intuition.policy: implementation design
 
 Parent: `docs/modules/intuition.policy/TECHNICAL.md`. Lane: `LANE-F-ADAPTIVE-POLICY`.
-Status: bounded calibrated decision and candidate/request binding implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+
+Status: bounded calibrated decision, complete-request binding, canonical profile enforcement, per-decision learned-score provenance, five-role signed admission and split kernel/authenticated performance gates are source implemented on this candidate. Product composition, real production artifacts, independent acceptance and release remain separate gates.
 
 ## 1. Source and work envelope
 
-Roots: `codex-rs/hepta-intuition`.
-Packages: `INT-1-CALIBRATED-INTUITION-POLICY`.
+Owner root: `codex-rs/hepta-intuition`. Registered consumer adapter: `codex-rs/hepta-intelligence/src/intuition_qualification.rs`.
 
-Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
+Package: `INT-1-CALIBRATED-INTUITION-POLICY`.
 
-## 2. Public operations and contract details
+This source path grants no model/tool/provider/effect authority.
 
-`score_legal_set(objective, candidates, ndu, neural_signals, evidence) -> BoundedScores`; `calibrate(scores, profile, support) -> ActionDistribution`; `choose(distribution, random_stream, risk_profile) -> IntuitionDecisionReceiptV1`. Output includes complete legal set, chosen action, propensity, confidence/OOD, abstain/ask or slow-path disposition. The policy never executes the selected action.
+## 2. Native public surfaces
 
-## 3. State records and transaction design
+- Historical replay: `decide_calibrated`.
+- Request-bound compatibility: `decide_calibrated_v2`.
+- Current source path: `decide_calibrated_v3(request, profile, scoring_commitment)`.
+- Host admission: `decide_authenticated_intuition_v1`.
+- Scoring provenance: `ScoringCommitmentV1` and `scoring_commitment_for_request_v1`.
 
-No authoritative facts or current-run weight writer. Selected policy/calibration artifacts are immutable and lineage-bound. Ephemeral decision state contains only approved features and exact source/model/objective generations. Decision/exposure/outcome records go through learning.ledger. Calibration labels come from independent observed outcomes, not the policy's own confidence.
+V2 and V3 reject nonzero `omitted_count_bound`.
 
-## 4. Deterministic algorithm and scheduling
+## 3. Identity and authority partition
 
-Apply hard legality and support checks before scoring; consume bounded cached NDU and qualified neural signals; normalize a bounded action distribution using the canonical numeric profile; include explicit abstain/no-op; select with a recorded counter-based random stream when randomized. High-risk, unsupported, OOD or insufficient-confidence cases take deterministic validation/slow path. Calibration uses disjoint data and is assessed by task/risk/subgroup, not only an overall average.
+The source separates:
 
-## 5. Capacity and performance profile
+- policy semantics: `policy_digest`;
+- immutable learned model: `model_artifact_digest`;
+- scorer interface: `scorer_contract_digest`;
+- exact feature snapshot/schema;
+- calibration/OOD artifact and dataset identities;
+- candidate completeness;
+- learned score outputs;
+- exact request / assignment-distribution ownership;
+- random-stream/counter/draw ownership.
 
-Pilot <=128 legal candidates, input dimensions/bytes bounded by selected model profile, no central synchronous RPC or unrestricted hidden state. ECE/OOD/safety thresholds are inherited from the canonical qualification profile and cannot be changed by the policy. Measure decision p99 and safe-abstention coverage.
+No model digest is used as the policy digest by construction.
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+The policy crate owns no durable state, trust keys, assignment randomness or effect authority.
 
-## 6. Concrete verification cases
+## 4. Canonical profile
 
-- INT-01: chosen action belongs to the complete legal set and logged probability is exact/positive.
-- INT-02: a high-score forbidden action never reaches execution; an uncalibrated neural signal forces slow path.
-- INT-03: OOD and protected-slice calibration failures cannot be hidden by average success.
-- INT-04: deterministic baseline, no-NDU and no-neural ablations compare behavior under equal resource limits.
+`CanonicalPolicyProfileV1` is the only current-generation threshold/routing source. It binds:
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+- policy/objective class/generation and profile window;
+- confidence, ECE, OOD FAR and maximum in-domain OOD thresholds;
+- risk routing;
+- model/scorer identities and schemas;
+- frozen calibration/OOD datasets;
+- admitted calibration/OOD artifact identities;
+- measured ECE, subgroup audit, OOD false-acceptance, detector/support;
+- exact calibration/OOD validity windows.
 
-## 7. Integration, rollback and capability ceiling
+Request compatibility fields must equal the profile. Callers cannot loosen them.
 
-C1 first uses read-only/reversible supported decisions. Fast path selection is not effect authority. Rollback selects the compatible calibrated predecessor for future runs, or deterministic abstention when its lineage is revoked.
+## 5. Per-decision provenance and scheduling
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+The current authenticated flow is:
 
-## 8. Current native implementation
+1. Generator signs candidate identity and completeness.
+2. Scorer signs `ScoringCommitmentV1` over model, feature snapshot/schema and exact output values.
+3. RequestAttestor signs the exact calibrated request digest, including decision-time risk classification.
+4. Evaluator signs the reusable canonical profile qualification.
+5. RandomSource signs exact stream + request sequence/counter + draw + assignment distribution for CounterBased requests.
+6. The host verifies all evidence through `LearningEvidenceVerifierV1`, including revocation/window/authority and pairwise signer/controller independence.
+7. The host accepts the exact calibrated request only after the RequestAttestor attestation verifies.
+8. V3 validates profile and scoring correspondence, then delegates bounded selection to V2.
+9. The authenticated receipt binds exact request, all evidence payloads/signatures and V3 receipt.
 
-- **Implemented entrypoints:** `decide_calibrated` in [codex-rs/hepta-intuition/src/calibrated.rs](../../../codex-rs/hepta-intuition/src/calibrated.rs); `decide_calibrated_v2` in [codex-rs/hepta-intuition/src/calibrated_binding.rs](../../../codex-rs/hepta-intuition/src/calibrated_binding.rs). Bounded calibrated decision and candidate/request binding implemented.
-- **State and recovery:** Pure receipts retain action propensities and explicit abstain/slow-path mass; hard veto, OOD, confidence and risk checks precede selection over the supplied candidate set. Calibration, completeness and provenance are input evidence, not learned here.
-- **Source tests:** [codex-rs/hepta-intuition/src/calibrated_tests.rs](../../../codex-rs/hepta-intuition/src/calibrated_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/modules/intuition.policy/TECHNICAL.md](../../../docs/modules/intuition.policy/TECHNICAL.md), [codex-rs/hepta-intelligence/EVALUATED_SHADOW.md](../../../codex-rs/hepta-intelligence/EVALUATED_SHADOW.md).
-- **Remaining work:** Bind authenticated current calibration/OOD/completeness artifacts and an owner-supplied assignment draw; real calibration quality and consumer execution require independent evidence.
+Deterministic assignment has no RandomSource evidence. Randomized assignment without it fails closed.
+
+## 6. Verification cases
+
+- INT-01: selected action is legal, not hard-vetoed and has exact logged propensity.
+- INT-02: nonzero omission fails inside the intuition crate.
+- INT-03: request-local threshold or qualified artifact metadata drift fails before selection.
+- INT-04: model/policy/scorer identities are independent and explicitly bound.
+- INT-05: score mutation after `ScoringCommitmentV1` fails.
+- INT-06: missing/tampered scorer, RequestAttestor exact-request or RandomSource evidence fails.
+- INT-07: frozen reference model/data derive ECE/OOD artifacts and exercise the complete signed chain.
+- INT-08: kernel and authenticated end-to-end gates both report 1/16/64/128-candidate p50/p95/p99 and throughput.
+
+These are source qualification tests, not production efficacy evidence.
+
+## 7. Performance
+
+Kernel gate: `codex-rs/hepta-intuition/examples/fast_gate.rs`.
+
+Authenticated end-to-end gate: `codex-rs/hepta-intelligence/tests/intuition_authenticated_fast_gate.rs`.
+
+The second gate includes Ed25519 trust verification, role/controller independence, RequestAttestor-authenticated exact-request admission, profile/scoring/RNG admission and the V3 decision. CI limits are regression ceilings, not product SLOs.
+
+## 8. Current native implementation and remaining work
+
+- **Implemented entrypoints:** `decide_calibrated` in [codex-rs/hepta-intuition/src/calibrated.rs](../../../codex-rs/hepta-intuition/src/calibrated.rs); `decide_calibrated_v2` in [codex-rs/hepta-intuition/src/calibrated_binding.rs](../../../codex-rs/hepta-intuition/src/calibrated_binding.rs); `decide_calibrated_v3` and `scoring_commitment_for_request_v1` in [codex-rs/hepta-intuition/src/qualified.rs](../../../codex-rs/hepta-intuition/src/qualified.rs); `decide_authenticated_intuition_v1` in [codex-rs/hepta-intelligence/src/intuition_qualification.rs](../../../codex-rs/hepta-intelligence/src/intuition_qualification.rs).
+- **Trust extension:** `LearningEvidenceRoleV1::{Scorer, RandomSource}` and pairwise verified independence live in [codex-rs/hepta-learning-ledger/src/signed_evidence.rs](../../../codex-rs/hepta-learning-ledger/src/signed_evidence.rs).
+- **Source tests:** [qualified policy tests](../../../codex-rs/hepta-intuition/src/qualified_tests.rs), [frozen five-role qualification](../../../codex-rs/hepta-intelligence/tests/intuition_frozen_qualification.rs), [authenticated end-to-end fast gate](../../../codex-rs/hepta-intelligence/tests/intuition_authenticated_fast_gate.rs), and [kernel fast gate](../../../codex-rs/hepta-intuition/examples/fast_gate.rs).
+
+- **Remaining work:**
+
+- compose a named product caller instead of shadow/qualification-only composition;
+- add a native V3 host port for stricter risk routing;
+- replace reference fixtures with independently retained production-candidate artifacts;
+- retain target-host authenticated end-to-end measurements;
+- establish real consumer execution and independent semantic/operator acceptance;
+- canary, promotion and release remain external.
+
+The capability claim therefore remains below production activation even though the source implements calibrated-policy mechanics.

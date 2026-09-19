@@ -97,10 +97,15 @@ pub fn canonical_calibrated_request_digest_v1(
 
 /// Apply the existing calibrated policy with a receipt bound to the complete
 /// request. Output fields retain the V1 shape; the receipt uses a V2 domain.
-/// [`decide_calibrated`] remains available for replaying historical V1 receipts.
+/// [`decide_calibrated`] remains available only for replaying historical V1
+/// receipts. Current V2/V3 decisions fail closed unless the candidate generator
+/// certifies that zero legal candidates were omitted.
 pub fn decide_calibrated_v2(
     request: CalibratedDecisionRequestV1,
 ) -> Result<CalibratedIntuitionReceiptV1, CalibratedError> {
+    if request.completeness.omitted_count_bound != 0 {
+        return Err(CalibratedError::CandidateSetMismatch);
+    }
     let request_digest = canonical_calibrated_request_digest_v1(&request)?;
     let mut receipt = decide_calibrated(request)?;
     let mut bytes = b"hepta.intuition.calibrated-decision.v2".to_vec();
