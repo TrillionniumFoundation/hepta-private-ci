@@ -37,8 +37,8 @@ use crate::LocalLeaseOutbox;
 use crate::LocalLeaseOutboxError;
 use crate::LocalOutcomeReceipt;
 use crate::LocalOutcomeState;
-use crate::LocalReplayFinalization;
 use crate::LocalReconcileOutcome;
+use crate::LocalReplayFinalization;
 use crate::QueuedReceipt;
 use crate::local_lease_outbox::InheritedQueuedReceipt;
 use crate::local_lease_outbox::dispatch_operation_digest;
@@ -421,10 +421,12 @@ impl ProductionDurableWriter {
                 // preserving its unresolved occurrences, then acquire the
                 // successor generation through the append-only head CAS.
                 // No outbox row is dispatched during takeover.
-                let previous_authority_epoch =
-                    head.authority_epoch.ok_or(ProductionWriterError::StaleReceipt)?;
-                let previous_owner_epoch =
-                    head.owner_epoch.ok_or(ProductionWriterError::StaleReceipt)?;
+                let previous_authority_epoch = head
+                    .authority_epoch
+                    .ok_or(ProductionWriterError::StaleReceipt)?;
+                let previous_owner_epoch = head
+                    .owner_epoch
+                    .ok_or(ProductionWriterError::StaleReceipt)?;
                 let previous_expiry = head
                     .lease_expires_at_unix_seconds
                     .ok_or(ProductionWriterError::StaleReceipt)?;
@@ -619,7 +621,9 @@ impl ProductionDurableWriter {
         self.lease
             .inherited_queued_receipt(&occurrence_key)
             .await?
-            .map(|receipt| ProductionQueuedReceipt::from_inherited(&self.authority, self.generation(), receipt))
+            .map(|receipt| {
+                ProductionQueuedReceipt::from_inherited(&self.authority, self.generation(), receipt)
+            })
             .transpose()
     }
 
@@ -848,10 +852,7 @@ impl ProductionDurableWriter {
         };
         let durable_operation = self
             .lease
-            .verify_operation_dispatch_binding(
-                &receipt.occurrence_key,
-                target.destination_id(),
-            )
+            .verify_operation_dispatch_binding(&receipt.occurrence_key, target.destination_id())
             .await
             .map_err(|error| match error {
                 LocalLeaseOutboxError::StaleFence(_)
@@ -871,28 +872,30 @@ impl ProductionDurableWriter {
         // this point onward reopens as Indeterminate and must reconcile.
         let inherited_from_generation = receipt.inherited_from_generation;
         let dispatch_claim_event_id = match inherited_from_generation {
-            Some(source_generation) => self
-                .lease
-                .claim_inherited_dispatch(
-                    &receipt.occurrence_key,
-                    &receipt.event_id,
-                    &receipt.outbox_id,
-                    source_generation,
-                    &receipt.topic,
-                    &receipt.payload_json,
-                    &receipt.payload_sha256,
-                    &self.authority.grant_digest,
-                    &request.operation_digest,
-                )
-                .await,
-            None => self
-                .lease
-                .claim_dispatch(
-                    &receipt.occurrence_key,
-                    &self.authority.grant_digest,
-                    &request.operation_digest,
-                )
-                .await,
+            Some(source_generation) => {
+                self.lease
+                    .claim_inherited_dispatch(
+                        &receipt.occurrence_key,
+                        &receipt.event_id,
+                        &receipt.outbox_id,
+                        source_generation,
+                        &receipt.topic,
+                        &receipt.payload_json,
+                        &receipt.payload_sha256,
+                        &self.authority.grant_digest,
+                        &request.operation_digest,
+                    )
+                    .await
+            }
+            None => {
+                self.lease
+                    .claim_dispatch(
+                        &receipt.occurrence_key,
+                        &self.authority.grant_digest,
+                        &request.operation_digest,
+                    )
+                    .await
+            }
         }
         .map_err(|error| match error {
             LocalLeaseOutboxError::StaleFence(_)
@@ -918,9 +921,9 @@ impl ProductionDurableWriter {
                 return Err(ProductionWriterError::FinalUse(error));
             }
         };
-        let future = match final_use.with_verified_use(token, expected, || {
-            target.dispatch(request.clone())
-        }) {
+        let future = match final_use
+            .with_verified_use(token, expected, || target.dispatch(request.clone()))
+        {
             Ok(future) => future,
             Err(error) => {
                 let _ = self
@@ -1395,8 +1398,7 @@ fn verify_final_use_dispatch_binding(
 ) -> Result<(), ProductionWriterError> {
     if expected.subject_id != owner.as_str()
         || expected.destination_id != destination_id
-        || expected.scope_sha256
-            != digest_bytes(&Sha256Digest::for_bytes(scope_id.as_bytes()))?
+        || expected.scope_sha256 != digest_bytes(&Sha256Digest::for_bytes(scope_id.as_bytes()))?
         || expected.payload_sha256 != digest_bytes(&request.payload_sha256)?
         || expected.request_sha256 != digest_bytes(&request.operation_digest)?
     {
@@ -2173,7 +2175,6 @@ mod tests {
     }
 }
 
-
 #[cfg(test)]
 mod takeover_regression_tests {
     use super::*;
@@ -2281,10 +2282,7 @@ mod takeover_regression_tests {
         );
 
         let settled = successor
-            .reconcile(
-                "occurrence:takeover",
-                LocalReconcileOutcome::Committed,
-            )
+            .reconcile("occurrence:takeover", LocalReconcileOutcome::Committed)
             .await
             .expect("successor reconciliation");
         assert_eq!(settled.state, LocalOutcomeState::Committed);
@@ -2297,7 +2295,6 @@ mod takeover_regression_tests {
         );
     }
 }
-
 
 #[cfg(all(test, unix))]
 mod final_use_dispatch_tests {
@@ -2456,11 +2453,8 @@ mod final_use_dispatch_tests {
 
         let authority_dir = temp.path().join("final-use-authority");
         std::fs::create_dir(&authority_dir).expect("authority dir");
-        std::fs::set_permissions(
-            &authority_dir,
-            std::fs::Permissions::from_mode(0o700),
-        )
-        .expect("authority permissions");
+        std::fs::set_permissions(&authority_dir, std::fs::Permissions::from_mode(0o700))
+            .expect("authority permissions");
         let issuer = SigningKey::from_bytes(&[83; 32]);
         let final_use = FinalUseAuthority::open_state_dir(
             &authority_dir,
@@ -2522,15 +2516,25 @@ mod final_use_dispatch_tests {
             .await
             .expect("canonical bad-case binding");
         bad_binding.destination_id = "destination:substituted".to_string();
-        let bad_signed =
-            signed_final_use(&issuer, bad_binding.clone(), "final-use-bad-destination", [12; 32]);
+        let bad_signed = signed_final_use(
+            &issuer,
+            bad_binding.clone(),
+            "final-use-bad-destination",
+            [12; 32],
+        );
         assert!(matches!(
             dispatcher
                 .dispatch(&writer, &bad_signed, &bad_binding, queued_bad.clone())
                 .await,
-            Err(ProductionWriterError::FinalUse(FinalUseError::BindingMismatch))
+            Err(ProductionWriterError::FinalUse(
+                FinalUseError::BindingMismatch
+            ))
         ));
-        assert_eq!(target.calls(), 1, "mismatched destination never enters target");
+        assert_eq!(
+            target.calls(),
+            1,
+            "mismatched destination never enters target"
+        );
         assert_eq!(
             writer
                 .status("occurrence:final-use:2")
@@ -2613,11 +2617,8 @@ mod final_use_dispatch_tests {
 
         let authority_dir = temp.path().join("final-use-handoff");
         std::fs::create_dir(&authority_dir).expect("authority dir");
-        std::fs::set_permissions(
-            &authority_dir,
-            std::fs::Permissions::from_mode(0o700),
-        )
-        .expect("authority permissions");
+        std::fs::set_permissions(&authority_dir, std::fs::Permissions::from_mode(0o700))
+            .expect("authority permissions");
         let issuer = SigningKey::from_bytes(&[84; 32]);
         let final_use = FinalUseAuthority::open_state_dir(
             &authority_dir,
@@ -2631,14 +2632,12 @@ mod final_use_dispatch_tests {
         )
         .expect("final-use authority");
         let target = Arc::new(CountingTarget::new("destination:cognitive-store"));
-        let dispatcher =
-            ProductionFinalUseOutboxDispatcher::attach(final_use, target.clone());
+        let dispatcher = ProductionFinalUseOutboxDispatcher::attach(final_use, target.clone());
         let binding = successor
             .final_use_binding(&inherited, target.destination_id())
             .await
             .expect("canonical handoff binding");
-        let signed =
-            signed_final_use(&issuer, binding.clone(), "final-use-handoff", [13; 32]);
+        let signed = signed_final_use(&issuer, binding.clone(), "final-use-handoff", [13; 32]);
         let result = dispatcher
             .dispatch(&successor, &signed, &binding, inherited)
             .await
@@ -2653,6 +2652,9 @@ mod final_use_dispatch_tests {
             LocalOutcomeState::Committed
         );
         let counts = successor.lease.snapshot_counts().await.expect("counts");
-        assert_eq!(counts.outbox_rows, 1, "handoff reuses one durable outbox identity");
+        assert_eq!(
+            counts.outbox_rows, 1,
+            "handoff reuses one durable outbox identity"
+        );
     }
 }

@@ -39,9 +39,9 @@ use crate::cognitive_test_support::layout;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_operations::OperationIntent;
 use codex_hepta_operations::OperationKey;
+use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
-use codex_hepta_paths::HeptaFleetRoot;
 
 async fn opened_store(temp: &TempDir, number: u8) -> CognitiveStore {
     let owner = agent_id(number);
@@ -2642,7 +2642,6 @@ fn qualification_durable_writer_crash_reopen_probe() {
     );
 }
 
-
 #[tokio::test]
 async fn expired_owner_handoff_allows_successor_to_reconcile_indeterminate_without_resend() {
     let temp = TempDir::new().expect("temp dir");
@@ -2661,13 +2660,9 @@ async fn expired_owner_handoff_allows_successor_to_reconcile_indeterminate_witho
             .await
             .expect("old host-bound lease"),
     );
-    old.admit(
-        "occurrence:handoff",
-        "destination.write",
-        "{\"value\":1}",
-    )
-    .await
-    .expect("atomic admission");
+    old.admit("occurrence:handoff", "destination.write", "{\"value\":1}")
+        .await
+        .expect("atomic admission");
     old.mark_indeterminate("occurrence:handoff", "ack-lost")
         .await
         .expect("indeterminate");
@@ -2699,7 +2694,9 @@ async fn expired_owner_handoff_allows_successor_to_reconcile_indeterminate_witho
         .expect("successor reconciliation");
     assert_eq!(settled.state, LocalOutcomeState::Committed);
     assert_eq!(
-        next.status("occurrence:handoff").await.expect("successor status"),
+        next.status("occurrence:handoff")
+            .await
+            .expect("successor status"),
         LocalOutcomeState::Committed,
         "read-only status follows the reconciled append-only outcome after handoff"
     );
@@ -2752,7 +2749,6 @@ async fn successor_reconciliation_never_upgrades_inherited_queued_to_terminal() 
     ));
 }
 
-
 fn durable_operation(
     owner: &codex_hepta_contracts::AgentId,
     id: &str,
@@ -2772,13 +2768,11 @@ fn durable_operation(
 }
 
 async fn operation_rows(store: &CognitiveStore, lease_id: &str) -> i64 {
-    sqlx::query_scalar(
-        "SELECT COUNT(*) FROM cognitive_operation_ledger WHERE lease_id = ?",
-    )
-    .bind(lease_id)
-    .fetch_one(&store.pool)
-    .await
-    .expect("operation row count")
+    sqlx::query_scalar("SELECT COUNT(*) FROM cognitive_operation_ledger WHERE lease_id = ?")
+        .bind(lease_id)
+        .fetch_one(&store.pool)
+        .await
+        .expect("operation row count")
 }
 
 #[tokio::test]
@@ -2789,14 +2783,7 @@ async fn operation_event_and_outbox_are_one_atomic_transaction_across_every_faul
     let lease_id = "lease:atomic-operation";
     let handle = acquired(
         store
-            .acquire_host_bound_lease(
-                lease_id,
-                21,
-                31,
-                1,
-                "fence:atomic-operation",
-                expires_at,
-            )
+            .acquire_host_bound_lease(lease_id, 21, 31, 1, "fence:atomic-operation", expires_at)
             .await
             .expect("bound lease"),
     );
@@ -2818,12 +2805,7 @@ async fn operation_event_and_outbox_are_one_atomic_transaction_across_every_faul
         );
         assert!(matches!(
             handle
-                .admit_operation_with_fault(
-                    operation,
-                    "memory.write",
-                    payload,
-                    fault,
-                )
+                .admit_operation_with_fault(operation, "memory.write", payload, fault,)
                 .await,
             Err(LocalLeaseOutboxError::TransactionAborted(_))
         ));

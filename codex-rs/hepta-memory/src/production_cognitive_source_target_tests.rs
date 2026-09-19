@@ -40,8 +40,8 @@ fn agent() -> AgentId {
 async fn store(temp: &TempDir) -> CognitiveStore {
     let root = temp.path().join("fleet-real-target");
     std::fs::create_dir_all(&root).expect("fleet root");
-    let fleet = HeptaFleetRoot::parse(root.canonicalize().expect("canonical root"))
-        .expect("fleet root");
+    let fleet =
+        HeptaFleetRoot::parse(root.canonicalize().expect("canonical root")).expect("fleet root");
     CognitiveStore::open(&fleet.layout().agent(&agent()))
         .await
         .expect("store")
@@ -79,11 +79,7 @@ fn production_authority(owner: AgentId) -> ProductionAuthorityLease {
     .expect("production authority")
 }
 
-fn operation(
-    owner: &AgentId,
-    operation_id: &str,
-    payload: &str,
-) -> OperationIntent {
+fn operation(owner: &AgentId, operation_id: &str, payload: &str) -> OperationIntent {
     OperationIntent {
         key: OperationKey {
             id: StableId::new(operation_id).expect("operation id"),
@@ -126,11 +122,8 @@ fn signed_final_use(
 fn final_use(temp: &TempDir, issuer: &SigningKey) -> FinalUseAuthority {
     let authority_dir = temp.path().join("final-use-real-target");
     std::fs::create_dir(&authority_dir).expect("authority dir");
-    std::fs::set_permissions(
-        &authority_dir,
-        std::fs::Permissions::from_mode(0o700),
-    )
-    .expect("authority permissions");
+    std::fs::set_permissions(&authority_dir, std::fs::Permissions::from_mode(0o700))
+        .expect("authority permissions");
     FinalUseAuthority::open_state_dir(
         &authority_dir,
         "real-target-final-use-owner".to_string(),
@@ -225,8 +218,7 @@ async fn real_cognitive_destination_deduplicates_same_operation_and_rejects_payl
     };
     assert_eq!(first_receipt, second_receipt);
 
-    let (_changed_draft, changed_payload) =
-        source_payload(operation_id, b"changed-source-content");
+    let (_changed_draft, changed_payload) = source_payload(operation_id, b"changed-source-content");
     let changed = crate::ProductionDispatchRequest {
         payload_json: changed_payload.clone(),
         payload_sha256: Sha256Digest::for_bytes(changed_payload.as_bytes()),
@@ -263,10 +255,8 @@ async fn full_durable_final_use_slice_reconciles_lost_ack_from_real_destination(
         inner: real_target.clone(),
     });
     let issuer = SigningKey::from_bytes(&[91; 32]);
-    let dispatcher = ProductionFinalUseOutboxDispatcher::attach(
-        final_use(&temp, &issuer),
-        lost_ack_target,
-    );
+    let dispatcher =
+        ProductionFinalUseOutboxDispatcher::attach(final_use(&temp, &issuer), lost_ack_target);
 
     let operation_id = "operation:cognitive-lost-ack";
     let (_draft, payload) = source_payload(operation_id, b"durable-real-effect");
@@ -290,7 +280,10 @@ async fn full_durable_final_use_slice_reconciles_lost_ack_from_real_destination(
         .expect("dispatch with lost ack");
     assert_eq!(dispatched.state, LocalOutcomeState::Indeterminate);
     assert_eq!(
-        writer.status(operation_id).await.expect("indeterminate status"),
+        writer
+            .status(operation_id)
+            .await
+            .expect("indeterminate status"),
         LocalOutcomeState::Indeterminate
     );
 

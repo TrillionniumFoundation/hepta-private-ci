@@ -6,10 +6,6 @@
 //! delivery is idempotent at the destination instead of relying on source-side
 //! bookkeeping alone.
 
-use base64::Engine;
-use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
-use serde::Deserialize;
-use serde::Serialize;
 use crate::CognitiveAccess;
 use crate::CognitiveScope;
 use crate::CognitiveStore;
@@ -23,7 +19,11 @@ use crate::production_writer::ProductionDispatchFuture;
 use crate::production_writer::ProductionDispatchRequest;
 use crate::production_writer::ProductionOutboxTarget;
 use crate::production_writer::ProductionTargetOutcome;
+use base64::Engine;
+use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
 use codex_hepta_contracts::Sha256Digest;
+use serde::Deserialize;
+use serde::Serialize;
 
 pub const COGNITIVE_SOURCE_DESTINATION_V1: &str = "cognitive.store.source-ledger";
 pub const COGNITIVE_SOURCE_TOPIC_V1: &str = "hepta.cognitive.source.append.v1";
@@ -107,7 +107,9 @@ impl std::fmt::Debug for CognitiveSourceOutboxTarget {
 impl CognitiveSourceOutboxTarget {
     pub fn new(store: CognitiveStore, access: CognitiveAccess) -> Result<Self, String> {
         if access.agent_id() != store.owner_agent_id() {
-            return Err("cognitive source target access owner does not match store owner".to_string());
+            return Err(
+                "cognitive source target access owner does not match store owner".to_string(),
+            );
         }
         Ok(Self { store, access })
     }
@@ -207,10 +209,7 @@ impl CognitiveSourceOutboxTarget {
 }
 
 impl ProductionOutboxTarget for CognitiveSourceOutboxTarget {
-    fn dispatch<'a>(
-        &'a self,
-        request: ProductionDispatchRequest,
-    ) -> ProductionDispatchFuture<'a> {
+    fn dispatch<'a>(&'a self, request: ProductionDispatchRequest) -> ProductionDispatchFuture<'a> {
         Box::pin(async move {
             let draft = match self.decode_request(&request) {
                 Ok(draft) => draft,
@@ -226,8 +225,7 @@ impl ProductionOutboxTarget for CognitiveSourceOutboxTarget {
                     | CognitiveStoreError::Conflict(reason),
                 ) => ProductionTargetOutcome::Rejected { reason },
                 Err(
-                    CognitiveStoreError::Corrupt(reason)
-                    | CognitiveStoreError::Unavailable(reason),
+                    CognitiveStoreError::Corrupt(reason) | CognitiveStoreError::Unavailable(reason),
                 ) => ProductionTargetOutcome::Indeterminate { reason },
             }
         })

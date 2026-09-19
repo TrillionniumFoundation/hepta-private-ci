@@ -12,11 +12,11 @@ use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_memory::CognitiveStore;
+use codex_hepta_memory::FinalUseProductionOutboxTarget;
 use codex_hepta_memory::ProductionAuthorityLease;
 use codex_hepta_memory::ProductionAuthorityVerifier;
 use codex_hepta_memory::ProductionDispatchReceipt;
 use codex_hepta_memory::ProductionDurableWriter;
-use codex_hepta_memory::FinalUseProductionOutboxTarget;
 use codex_hepta_memory::ProductionFinalUseOutboxDispatcher;
 use codex_hepta_memory::ProductionQueuedReceipt;
 use codex_hepta_memory::ProductionWriterError;
@@ -104,8 +104,7 @@ impl AgentdProductionWriterHost {
         target: Arc<dyn FinalUseProductionOutboxTarget>,
     ) -> Self {
         self.dispatcher = Some(ProductionFinalUseOutboxDispatcher::attach(
-            final_use,
-            target,
+            final_use, target,
         ));
         self
     }

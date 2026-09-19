@@ -1474,8 +1474,7 @@ impl LocalLeaseOutbox {
                     existing.generation, self.generation
                 )));
             }
-            let durable_operation =
-                find_operation(&mut transaction, &occurrence_key).await?;
+            let durable_operation = find_operation(&mut transaction, &occurrence_key).await?;
             match (operation.as_ref(), durable_operation.as_ref()) {
                 (Some(expected), Some(stored)) => {
                     verify_operation_row_binding(
@@ -1905,8 +1904,7 @@ impl LocalLeaseOutbox {
             .await?
         {
             return Err(LocalLeaseOutboxError::StaleFence(
-                "inherited queued receipt does not match a terminal predecessor fence"
-                    .to_string(),
+                "inherited queued receipt does not match a terminal predecessor fence".to_string(),
             ));
         }
         let state = current_outcome(
@@ -1931,16 +1929,12 @@ impl LocalLeaseOutbox {
         );
         if expected != *operation_digest {
             return Err(LocalLeaseOutboxError::StaleFence(
-                "inherited dispatch operation digest is not bound to immutable outbox"
-                    .to_string(),
+                "inherited dispatch operation digest is not bound to immutable outbox".to_string(),
             ));
         }
 
         let kind = "indeterminate";
-        let payload = format!(
-            "dispatch_started_pending_ack:{}",
-            operation_digest.as_str()
-        );
+        let payload = format!("dispatch_started_pending_ack:{}", operation_digest.as_str());
         let payload_digest = Sha256Digest::for_bytes(payload.as_bytes());
         let sequence = next_event_sequence(&mut transaction, &self.lease_id).await?;
         let previous = event_head(&mut transaction, &self.lease_id).await?;
@@ -2152,14 +2146,7 @@ impl LocalLeaseOutbox {
         )
         .await?
         .ok_or_else(|| corrupt("event admission has no paired outbox row"))?;
-        ensure_occurrence_readable(
-            &mut transaction,
-            self,
-            &events,
-            &admission,
-            &outbox,
-        )
-        .await?;
+        ensure_occurrence_readable(&mut transaction, self, &events, &admission, &outbox).await?;
         let state = current_outcome(
             &mut transaction,
             &self.lease_id,
@@ -2192,7 +2179,8 @@ impl LocalLeaseOutbox {
         occurrence_key: impl Into<String>,
         outcome: LocalReconcileOutcome,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
-        self.append_reconciliation(occurrence_key.into(), outcome).await
+        self.append_reconciliation(occurrence_key.into(), outcome)
+            .await
     }
 
     async fn append_reconciliation(
@@ -2205,9 +2193,7 @@ impl LocalLeaseOutbox {
             LocalReconcileOutcome::Committed => {
                 ("reconcile_committed", LocalOutcomeState::Committed)
             }
-            LocalReconcileOutcome::Rejected => {
-                ("reconcile_rejected", LocalOutcomeState::Rejected)
-            }
+            LocalReconcileOutcome::Rejected => ("reconcile_rejected", LocalOutcomeState::Rejected),
             LocalReconcileOutcome::StillIndeterminate => (
                 "reconcile_still_indeterminate",
                 LocalOutcomeState::Indeterminate,
@@ -2232,9 +2218,7 @@ impl LocalLeaseOutbox {
 
         let admission = events
             .iter()
-            .find(|event| {
-                event.occurrence_key == occurrence_key && event.kind == "admitted"
-            })
+            .find(|event| event.occurrence_key == occurrence_key && event.kind == "admitted")
             .ok_or_else(|| {
                 LocalLeaseOutboxError::IllegalTransition(format!(
                     "occurrence {occurrence_key} has no admitted event"
@@ -2270,8 +2254,8 @@ impl LocalLeaseOutbox {
             .rev()
             .find(|event| event.occurrence_key == occurrence_key)
             .ok_or_else(|| corrupt("occurrence event chain is missing"))?;
-        let current_fence = latest.generation == self.generation
-            && latest.fencing_token == self.fencing_token;
+        let current_fence =
+            latest.generation == self.generation && latest.fencing_token == self.fencing_token;
         let admission_fence = admission.generation == self.generation
             && admission.fencing_token == self.fencing_token
             && outbox.generation == self.generation
@@ -2610,14 +2594,7 @@ impl LocalLeaseOutbox {
         // Status is read-only. A successor may inspect an inherited
         // occurrence only after the exact source fence is terminal. This
         // grants no permission to dispatch or mutate that historical attempt.
-        ensure_occurrence_readable(
-            &mut transaction,
-            self,
-            &events,
-            &admission,
-            &outbox,
-        )
-        .await?;
+        ensure_occurrence_readable(&mut transaction, self, &events, &admission, &outbox).await?;
         let state = current_outcome(
             &mut transaction,
             &self.lease_id,
@@ -3576,7 +3553,10 @@ async fn insert_operation(
     .bind(handle.owner_agent_id.as_str())
     .bind(to_i64(handle.generation, "operation generation")?)
     .bind(&handle.fencing_token)
-    .bind(to_i64(binding.authority_epoch, "operation authority epoch")?)
+    .bind(to_i64(
+        binding.authority_epoch,
+        "operation authority epoch",
+    )?)
     .bind(to_i64(binding.owner_epoch, "operation owner epoch")?)
     .bind(prepared_at)
     .execute(&mut **transaction)
