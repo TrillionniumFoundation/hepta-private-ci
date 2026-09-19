@@ -31,6 +31,13 @@ pub use composition_v3::LegalActionCandidateV1;
 pub use composition_v3::build_legal_candidates;
 pub use composition_v3::prepare_intelligence_run_v3;
 
+mod learning_closure;
+
+pub use learning_closure::OutcomeCreditClosureErrorV1;
+pub use learning_closure::OutcomeCreditClosureReceiptV1;
+pub use learning_closure::OutcomeCreditClosureRequestV1;
+pub use learning_closure::append_outcome_and_credit_v1;
+
 mod evaluated_shadow;
 
 pub use evaluated_shadow::EvaluatedShadowError;
