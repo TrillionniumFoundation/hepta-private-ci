@@ -1,7 +1,7 @@
 # auth.authbus: implementation design
 
 Parent: `docs/modules/auth.authbus/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: signed message admission and evidence-owner durable replay/delivery implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: signed admission, durable replay/delivery, policy authorization, quota reservation/settlement, trust revisions and replay-checkpoint gates are implemented in the existing evidence owner; external time/checkpoint retention, effect composition and independent acceptance remain. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -45,8 +45,8 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `authenticate` in [codex-rs/hepta-authbus/src/signed.rs](../../../codex-rs/hepta-authbus/src/signed.rs); `admit_authbus_message` in [codex-rs/hepta-evidence/src/authbus_store.rs](../../../codex-rs/hepta-evidence/src/authbus_store.rs); `enqueue_authbus_message` in [codex-rs/hepta-evidence/src/authbus_outbox.rs](../../../codex-rs/hepta-evidence/src/authbus_outbox.rs). Signed message admission and evidence-owner durable replay/delivery implemented.
-- **State and recovery:** The legacy ReplayWindow is in-memory. Signed admission/delivery use the existing evidence SQLite owner, migrations 0009/0010, replay high-water and fenced outbox leases; enqueue commits replay consumption and payload atomically. Delivery acknowledgement is not effect terminality.
+- **Implemented entrypoints:** `authenticate` in [codex-rs/hepta-authbus/src/signed.rs](../../../codex-rs/hepta-authbus/src/signed.rs); `admit_authbus_message` in [codex-rs/hepta-evidence/src/authbus_store.rs](../../../codex-rs/hepta-evidence/src/authbus_store.rs); `enqueue_authbus_message` in [codex-rs/hepta-evidence/src/authbus_outbox.rs](../../../codex-rs/hepta-evidence/src/authbus_outbox.rs); `publish_authbus_policy` / `authorize_authbus` / `configure_authbus_quota` / `reserve_authbus_quota` / `reconcile_authbus_reservation` in [codex-rs/hepta-evidence/src/authbus_authority_store.rs](../../../codex-rs/hepta-evidence/src/authbus_authority_store.rs); trust/checkpoint/retirement APIs in [codex-rs/hepta-evidence/src/authbus_trust_store.rs](../../../codex-rs/hepta-evidence/src/authbus_trust_store.rs).
+- **State and recovery:** The legacy ReplayWindow is in-memory. Signed admission/delivery use the existing evidence SQLite owner, migrations 0009/0010/0011, replay high-water, fenced outbox leases and conservation-checked policy/quota state; enqueue commits replay consumption and payload atomically. Delivery acknowledgement is not effect terminality.
 - **Source tests:** [codex-rs/hepta-authbus/src/signed_tests.rs](../../../codex-rs/hepta-authbus/src/signed_tests.rs), [codex-rs/hepta-evidence/src/authbus_outbox_tests.rs](../../../codex-rs/hepta-evidence/src/authbus_outbox_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [codex-rs/hepta-authbus/SIGNED_ADMISSION.md](../../../codex-rs/hepta-authbus/SIGNED_ADMISSION.md), [codex-rs/hepta-agentd/AUTHBUS_TEXT.md](../../../codex-rs/hepta-agentd/AUTHBUS_TEXT.md).
-- **Remaining work:** The target effect-policy/quota reserve/settle APIs are not provided by the replay library. General effect dispatch, trust provisioning and backup anti-rollback are separate owner integrations.
+- **Remaining work:** compose these owner APIs into real effect callers; supply independently governed trusted time/checkpoint retention and production key ceremony; run exact-head product qualification and independent acceptance.
