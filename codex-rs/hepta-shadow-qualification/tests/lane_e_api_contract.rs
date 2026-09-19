@@ -11,10 +11,8 @@ fn lane_e_public_operation_surface_is_linkable() {
         registry: &codex_hepta_learning_artifacts::ArtifactRegistry,
         artifact: &codex_hepta_types::StableId,
         bytes: &[u8],
-    ) -> Result<
-        codex_hepta_types::Digest32,
-        codex_hepta_learning_artifacts::ArtifactStorageError,
-    > {
+    ) -> Result<codex_hepta_types::Digest32, codex_hepta_learning_artifacts::ArtifactStorageError>
+    {
         codex_hepta_learning_artifacts::write_candidate_payload_beneath(
             root, relative, registry, artifact, bytes,
         )
