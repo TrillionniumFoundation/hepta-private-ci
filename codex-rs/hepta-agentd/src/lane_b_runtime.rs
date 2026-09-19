@@ -1,5 +1,7 @@
 use std::collections::BTreeMap;
 
+use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
+
 const MAX_ACTIVE_RUNS: usize = 256;
 const MAX_RETAINED_RUNS: usize = 1_024;
 
@@ -86,6 +88,7 @@ pub enum AgentRunError {
     StaleRevision,
     MixedSnapshot,
     ContextRequired,
+    InvalidIntelligenceEnvelope,
     TerminalObservationRequired,
     ArithmeticOverflow,
 }
@@ -185,6 +188,44 @@ impl AgentRunCoordinator {
         }
         record.context_digest = Some(attachment.context_digest);
         record.compilation_receipt_digest = Some(attachment.compilation_receipt_digest);
+        record.phase = RunPhase::ContextAttached;
+        advance_revision(record)?;
+        Ok(receipt(record, /*idempotent*/ false))
+    }
+
+    /// Attach the canonical intelligence facade handoff to an admitted run.
+    ///
+    /// The envelope is validated before mutating runtime state. Agentd reuses its
+    /// existing context-attached phase; the context digest is the compiled
+    /// context and the compilation receipt is the exact intelligence envelope.
+    /// Codex/App Server remains the execution owner after this handoff.
+    pub fn attach_intelligence_envelope(
+        &mut self,
+        expected_revision: u64,
+        envelope: &IntelligenceHostEnvelopeV1,
+    ) -> Result<RunReceipt, AgentRunError> {
+        envelope
+            .validate()
+            .map_err(|_| AgentRunError::InvalidIntelligenceEnvelope)?;
+        let run_id = envelope.run_id.as_str();
+        let record = self.runs.get_mut(run_id).ok_or(AgentRunError::RunNotFound)?;
+        if record.snapshot.objective_digest != envelope.objective_digest.to_string() {
+            return Err(AgentRunError::MixedSnapshot);
+        }
+        let context_digest = envelope.context_digest.to_string();
+        let envelope_digest = envelope.envelope_digest.to_string();
+        if record.phase == RunPhase::ContextAttached
+            && record.context_digest.as_deref() == Some(context_digest.as_str())
+            && record.compilation_receipt_digest.as_deref() == Some(envelope_digest.as_str())
+        {
+            return Ok(receipt(record, /*idempotent*/ true));
+        }
+        require_revision(record, expected_revision)?;
+        if record.phase != RunPhase::Admitted {
+            return Err(AgentRunError::InvalidTransition);
+        }
+        record.context_digest = Some(context_digest);
+        record.compilation_receipt_digest = Some(envelope_digest);
         record.phase = RunPhase::ContextAttached;
         advance_revision(record)?;
         Ok(receipt(record, /*idempotent*/ false))
