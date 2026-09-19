@@ -90,6 +90,8 @@ pub use model::SupervisorConfig;
 pub use model::SupervisorEvent;
 pub use model::SupervisorEventKind;
 pub use model::TickReport;
+pub use module_runtime::RuntimeModuleInitializationWitnessV1;
+pub use module_runtime::RuntimeModuleRetirementWitnessV1;
 pub use module_runtime::RuntimeModuleSupervisorErrorV1;
 pub use module_runtime::RuntimeModuleSupervisorV1;
 pub use process_deadline::ProcessDeadlineOutcomeV1;
