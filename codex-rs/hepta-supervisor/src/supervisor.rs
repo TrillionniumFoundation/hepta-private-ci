@@ -831,8 +831,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
     ) -> Result<Option<ReleaseSelectionSnapshot>, SupervisorError> {
         let record = self.record(agent_id)?;
-        Ok(read_release_selection(record.layout.run_root())?
-            .map(|selection| selection.snapshot()))
+        Ok(
+            read_release_selection(record.layout.run_root())?
+                .map(|selection| selection.snapshot()),
+        )
     }
 
     pub fn production_mutation_receipt(
