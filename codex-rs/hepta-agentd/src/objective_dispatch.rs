@@ -21,7 +21,7 @@ pub(crate) async fn run(
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
 ) -> Result<(), AgentdError> {
-    if state.objective_ingress.get().is_none() {
+    if state.objective_ingress()?.is_none() {
         cancellation.cancelled().await;
         return Ok(());
     }
