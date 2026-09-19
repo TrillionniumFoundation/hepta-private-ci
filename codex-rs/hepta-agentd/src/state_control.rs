@@ -120,6 +120,7 @@ impl AgentdState {
                     &store,
                     &self.identity.agent_id,
                     self.identity.spawn_generation,
+                    current_generation,
                     &query,
                     limit,
                     self.cognitive_ranker.get(),
@@ -133,6 +134,11 @@ impl AgentdState {
                         runtime.app_server_ready,
                         runtime.fenced,
                     )?;
+                    if runtime.current_generation != current_generation {
+                        return Err(AgentdError::GenerationFenced(
+                            "cognitive read authority epoch changed before publication".to_string(),
+                        ));
+                    }
                 }
                 match result {
                     Ok(snapshot) => AgentdPayload::CognitiveContext(snapshot),
