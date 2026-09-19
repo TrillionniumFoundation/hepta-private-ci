@@ -1,16 +1,15 @@
-//! Qualification-only durable TaskFlow step outbox.
+//! Durable TaskFlow step intent/outbox ledger.
 //!
 //! The regular TaskFlow ledger records the run projection and its transition
-//! chain.  It intentionally does not claim a provider/effect.  This module
-//! adds the smallest durable seam needed by H3: one append-only, per-step
-//! intent/receipt chain.  A prepared row is an outbox item; claim, observation
-//! and reconciliation append receipts to that same chain.  No method here
-//! invokes a provider, wakes a scheduler, or grants production authority.
+//! chain. This module owns one append-only per-step intent/receipt chain:
+//! prepare, claim, provider observation, and reconciliation append evidence to
+//! the same durable identity. The normal automation schema now creates this
+//! table and the composed automation path calls it directly.
 //!
-//! The table is created lazily by the explicitly opt-in qualification API.
-//! This keeps the default automation schema/version unchanged while making the
-//! qualification state durable across reopen.  Every read and mutation first
-//! verifies the owner, run history, definition binding, event hash chain and
+//! Composition does not grant effect, scheduler, or final-use authority. No
+//! method here invokes a provider or mints authority; provider contact remains
+//! behind the separately verified final-use seam. Every read and mutation
+//! verifies the owner, run history, definition binding, event hash chain, and
 //! exact generation/fence tuple.
 
 #![allow(
@@ -34,10 +33,12 @@ use crate::TaskFlowRun;
 use crate::taskflow::load_taskflow_definition_tx;
 use crate::taskflow::load_taskflow_run_tx;
 
-/// This module is compiled and callable only by an explicit qualification
-/// feature.  These constants are intentionally negative for all authority
-/// surfaces.
+/// Qualification APIs remain available, while the same durable ledger is
+/// now installed by the normal automation schema and used by the composed
+/// automation caller. Composition is intentionally separate from authority.
 pub const TASKFLOW_STEP_OUTBOX_QUALIFICATION_ENABLED: bool = true;
+pub const TASKFLOW_STEP_OUTBOX_DURABLE_SCHEMA_ENABLED: bool = true;
+pub const TASKFLOW_STEP_OUTBOX_COMPOSED_CALLER: bool = true;
 pub const TASKFLOW_STEP_OUTBOX_EFFECTS: bool = false;
 pub const TASKFLOW_STEP_OUTBOX_PRODUCTION_CALLER: bool = false;
 pub const TASKFLOW_STEP_OUTBOX_SCHEDULER_AUTHORITY: bool = false;
@@ -390,6 +391,123 @@ impl AutomationStore {
         .await
     }
 
+    /// Close an undispatched prepared/claimed attempt only after the owning
+    /// recovery path has supplied durable provider-absence evidence. This is
+    /// intentionally crate-private: ordinary callers cannot turn a missing
+    /// provider observation into a terminal step.
+    pub(crate) async fn cancel_taskflow_step_after_proven_absence(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+        fence: &TaskFlowFence,
+        intent_digest: &Sha256Digest,
+        payload_digest: &Sha256Digest,
+        command_id: &str,
+        proof_digest: &Sha256Digest,
+        now_ms: u64,
+    ) -> Result<TaskFlowStepCommandResult, TaskFlowError> {
+        validate_common(
+            run_id,
+            step_id,
+            attempt,
+            command_id,
+            intent_digest,
+            payload_digest,
+        )?;
+        validate_fence(self, fence)?;
+        validate_digest(proof_digest, "provider absence proof digest")?;
+        ensure_step_schema(self).await?;
+        let mut tx = self.begin_step_tx().await?;
+        let run = load_run(&mut tx, self, run_id).await?;
+        let definition = load_definition(&mut tx, self, &run).await?;
+        validate_step_node(&definition, step_id)?;
+        let events = load_step_events(&mut tx, self, run_id, step_id, attempt).await?;
+        let command_digest = operation_digest(
+            "cancel_proven_absent",
+            self.taskflow_owner_agent_id(),
+            run_id,
+            step_id,
+            attempt,
+            command_id,
+            intent_digest.as_str(),
+            payload_digest.as_str(),
+            fence,
+            Some(proof_digest.as_str()),
+            /*observation*/ None,
+            Some(TaskFlowReconcileOutcome::Cancelled),
+            now_ms,
+        )?;
+        if let Some(existing) = existing_command(&events, command_id, command_digest.as_str())? {
+            let receipt = reconstruct_step(
+                self.taskflow_owner_agent_id(),
+                run_id,
+                step_id,
+                attempt,
+                &events,
+            )?;
+            tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+            return Ok(TaskFlowStepCommandResult {
+                status: TaskFlowStepCommandStatus::AlreadyApplied,
+                receipt: receipt_with_seq(receipt, existing.event_seq),
+            });
+        }
+        let current = events
+            .last()
+            .ok_or_else(|| TaskFlowError::Conflict("step intent is not prepared".to_string()))?;
+        if current.intent_digest != intent_digest.as_str()
+            || current.payload_digest != payload_digest.as_str()
+        {
+            return Err(TaskFlowError::Conflict(
+                "step cancellation is bound to different intent bytes".to_string(),
+            ));
+        }
+        check_historical_fence(
+            &run,
+            &fence_from_event(self.taskflow_owner_agent_id(), current)?,
+            fence,
+        )?;
+        if !matches!(
+            current.event_kind,
+            TaskFlowStepState::Prepared | TaskFlowStepState::Claimed
+        ) {
+            return Err(invalid_step_transition(
+                "provider-absence cancellation requires prepared or claimed state",
+            ));
+        }
+        let event = append_step_event(
+            &mut tx,
+            self,
+            run_id,
+            step_id,
+            attempt,
+            TaskFlowStepState::Reconciled,
+            command_id,
+            command_digest.as_str(),
+            intent_digest.as_str(),
+            payload_digest.as_str(),
+            Some(proof_digest.as_str()),
+            /*observation*/ None,
+            Some(TaskFlowReconcileOutcome::Cancelled),
+            fence,
+            now_ms,
+        )
+        .await?;
+        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+        let mut all_events = events;
+        all_events.push(event);
+        Ok(TaskFlowStepCommandResult {
+            status: TaskFlowStepCommandStatus::Applied,
+            receipt: reconstruct_step(
+                self.taskflow_owner_agent_id(),
+                run_id,
+                step_id,
+                attempt,
+                &all_events,
+            )?,
+        })
+    }
+
     /// Read and verify one immutable step chain.  A historical terminal step
     /// may be read after lease expiry, but the supplied fence must still be
     /// exactly the fence that authored the chain.
@@ -419,7 +537,16 @@ impl AutomationStore {
             attempt,
             &events,
         )?;
-        check_historical_fence(&run, &receipt.fence, fence)?;
+        if receipt.state == TaskFlowStepState::Reconciled {
+            // Recovery may legitimately re-fence a still-Running run projection
+            // after this immutable step has already reached its terminal
+            // reconciliation receipt. Historical terminal evidence remains
+            // readable only under the exact fence that authored the step; this
+            // does not authorize any new step mutation or provider dispatch.
+            check_step_fence(&receipt.fence, fence)?;
+        } else {
+            check_historical_fence(&run, &receipt.fence, fence)?;
+        }
         tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
         Ok(Some(receipt))
     }
@@ -686,9 +813,9 @@ impl From<TaskFlowReconcileOutcome> for StepOperationResult {
 }
 
 async fn ensure_step_schema(store: &AutomationStore) -> Result<(), TaskFlowError> {
-    // The schema is additive and deliberately qualification-only.  Keeping it
-    // out of the default migrator avoids changing AUTOMATION_SCHEMA_VERSION or
-    // existing production/open paths.
+    // The schema is additive. Keep this idempotent guard for stores created by
+    // the historical qualification path; normal stores receive this table from
+    // migrations.
     sqlx::query(
         r#"CREATE TABLE IF NOT EXISTS taskflow_step_outbox (
             owner_agent_id TEXT NOT NULL,
@@ -1128,6 +1255,21 @@ fn verify_step_events(
                 }
                 TaskFlowStepState::Reconciled
             }
+            (Some(TaskFlowStepState::Prepared), TaskFlowStepState::Reconciled)
+            | (Some(TaskFlowStepState::Claimed), TaskFlowStepState::Reconciled) => {
+                if !event
+                    .command_id
+                    .starts_with("automation:step:provider-absent:")
+                    || event.receipt_digest.is_none()
+                    || event.observation.is_some()
+                    || event.final_outcome != Some(TaskFlowReconcileOutcome::Cancelled)
+                {
+                    return Err(corrupt(
+                        "direct reconciled step lacks provider-absence cancellation evidence",
+                    ));
+                }
+                TaskFlowStepState::Reconciled
+            }
             (Some(TaskFlowStepState::Prepared), TaskFlowStepState::Prepared)
             | (Some(TaskFlowStepState::Claimed), TaskFlowStepState::Claimed)
             | (Some(TaskFlowStepState::Recorded), TaskFlowStepState::Recorded)
@@ -1384,8 +1526,7 @@ fn check_run_identity_for_observation(
     Ok(())
 }
 
-fn check_historical_fence(
-    run: &TaskFlowRun,
+fn check_step_fence(
     event_fence: &TaskFlowFence,
     supplied: &TaskFlowFence,
 ) -> Result<(), TaskFlowError> {
@@ -1397,14 +1538,24 @@ fn check_historical_fence(
     {
         return Err(TaskFlowError::StaleFence);
     }
-    // If the run is still leased, its current tuple must remain the same.  A
-    // terminal run clears the lease but keeps the historical step readable.
-    if !matches!(
-        run.state,
-        crate::TaskFlowRunState::Succeeded
-            | crate::TaskFlowRunState::Failed
-            | crate::TaskFlowRunState::Cancelled
-    ) {
+    Ok(())
+}
+
+fn check_historical_fence(
+    run: &TaskFlowRun,
+    event_fence: &TaskFlowFence,
+    supplied: &TaskFlowFence,
+) -> Result<(), TaskFlowError> {
+    check_step_fence(event_fence, supplied)?;
+    // Historical reads are authority-free. If the projection is currently
+    // leased, require the live tuple to match as well; if requeue/terminal
+    // recovery cleared the lease, the immutable event fence is sufficient.
+    let has_projection_lease = run.owner_id.is_some()
+        || run.owner_epoch.is_some()
+        || run.generation.is_some()
+        || run.fencing_token.is_some()
+        || run.lease_expires_at_ms.is_some();
+    if has_projection_lease {
         check_run_identity_for_observation(run, supplied)?;
     }
     Ok(())

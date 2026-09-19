@@ -1,24 +1,54 @@
-//! Per-Agent durable automation queue.
+//! Per-Agent durable automation queue and TaskFlow lifecycle.
 //!
-//! This crate stores schedules and leases, then emits a typed request to the
-//! owning Agent's normal App Server thread queue. It has no model, tool, or
-//! fleet-wide execution authority.
+//! The timer scheduler owns wake-up/materialization. Durable occurrence and
+//! TaskFlow records keep Core queue admission separate from terminal execution;
+//! downstream effects still require their owning final-use authority and
+//! terminal observer.
 
 #![forbid(unsafe_code)]
 
-/// Reusable state machine; does not install a second runtime owner.
-pub mod effect_executor;
+/// Legacy reference reducer retained only for focused unit tests. Product
+/// execution uses the durable TaskFlow ledger/outbox and authorized effect seam.
+#[cfg(test)]
+mod effect_executor;
 
+mod authorized_effect;
+mod automation_taskflow;
+mod dispatch_recovery;
+mod effect_dispatch_ledger;
+mod lifecycle;
 mod model;
 mod scheduler;
+mod schedule_v2;
 mod store;
 mod taskflow;
 mod taskflow_execution_boundary;
 #[cfg(feature = "taskflow-structural-qualification")]
 mod taskflow_kernel;
-#[cfg(feature = "taskflow-structural-qualification")]
+mod taskflow_recovery;
 mod taskflow_step;
 
+pub use authorized_effect::AuthorizedEffectDependency;
+pub use authorized_effect::AuthorizedEffectDriver;
+pub use authorized_effect::AuthorizedEffectDriverError;
+pub use authorized_effect::AuthorizedEffectError;
+pub use authorized_effect::AuthorizedEffectIntent;
+pub use authorized_effect::AuthorizedEffectOutcome;
+pub use authorized_effect::AuthorizedEffectPending;
+pub use authorized_effect::AuthorizedEffectProviderReceipt;
+pub use authorized_effect::AuthorizedEffectRecovery;
+pub use authorized_effect::AuthorizedEffectRecoveryResult;
+pub use authorized_effect::AuthorizedEffectRequest;
+pub use automation_taskflow::AutomationTaskFlowDispatch;
+pub use automation_taskflow::admission_receipt_digest;
+pub use lifecycle::AutomationMissedRunPolicy;
+pub use lifecycle::AutomationOccurrence;
+pub use lifecycle::AutomationOccurrenceState;
+pub use lifecycle::AutomationOccurrenceTerminalState;
+pub use lifecycle::AutomationOccurrenceWork;
+pub use lifecycle::AutomationOverlapPolicy;
+pub use lifecycle::AutomationSchedulePolicy;
+pub use lifecycle::deterministic_occurrence_id;
 pub use model::AutomationAdmission;
 pub use model::AutomationDispatchUncertainty;
 pub use model::AutomationError;
@@ -33,7 +63,13 @@ pub use model::AutomationTick;
 pub use scheduler::AutomationFuture;
 pub use scheduler::AutomationScheduler;
 pub use scheduler::AutomationTurnQueue;
+pub use schedule_v2::AutomationCalendarScheduleV2;
+pub use schedule_v2::AutomationDstGapPolicy;
+pub use schedule_v2::AutomationDstOverlapPolicy;
+pub use schedule_v2::AutomationTimeZoneProfileV1;
+pub use schedule_v2::AutomationTimezoneTransitionV1;
 pub use store::AutomationStore;
+pub use taskflow::TASKFLOW_COMPOSED_CALLER;
 pub use taskflow::TASKFLOW_EXTERNAL_EFFECTS;
 pub use taskflow::TASKFLOW_NAMESPACE;
 pub use taskflow::TASKFLOW_PRODUCTION_CALLER;
@@ -81,23 +117,16 @@ pub use taskflow_kernel::TaskFlowFrontier;
 pub use taskflow_kernel::TaskFlowReplayReport;
 #[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_kernel::TaskFlowStructuralPreview;
-#[cfg(feature = "taskflow-structural-qualification")]
+pub use taskflow_step::TASKFLOW_STEP_OUTBOX_COMPOSED_CALLER;
+pub use taskflow_step::TASKFLOW_STEP_OUTBOX_DURABLE_SCHEMA_ENABLED;
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_EFFECTS;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_PRODUCTION_CALLER;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_QUALIFICATION_ENABLED;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_SCHEDULER_AUTHORITY;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepCommandResult;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepCommandStatus;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepObservation;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepReceipt;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepState;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 3;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 13;

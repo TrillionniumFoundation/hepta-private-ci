@@ -3,6 +3,9 @@ name: Hepta Lane B source closure
 on:
   pull_request:
     paths:
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-automation/**"
+      - "codex-rs/hepta-contracts/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
       - "docs/memory/**"
@@ -12,11 +15,15 @@ on:
       - "scripts/hepta-lane-b-*.py"
       - "scripts/test_hepta_lane_b_*.py"
       - ".github/workflows/hepta-lane-b-truth.yml"
+      - ".github/workflows/automation-taskflow-focused.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   push:
     branches:
       - main
     paths:
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-automation/**"
+      - "codex-rs/hepta-contracts/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
       - "docs/memory/**"
@@ -26,6 +33,7 @@ on:
       - "scripts/hepta-lane-b-*.py"
       - "scripts/test_hepta_lane_b_*.py"
       - ".github/workflows/hepta-lane-b-truth.yml"
+      - ".github/workflows/automation-taskflow-focused.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   workflow_dispatch:
 
@@ -85,13 +93,22 @@ jobs:
           cargo test -p codex-hepta-fleet --bin hepta-fleet-leased
           cargo test -p codex-hepta-infer-core --bin hepta-infer-control
           cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker
-          cargo test -p codex-hepta-automation --lib
+          cargo test -p codex-hepta-automation
+          cargo test -p codex-hepta-automation --features taskflow-structural-qualification
           cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime
           cargo test -p codex-hepta-matrixd --lib
           cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
           cargo test -p codex-app-server --test all thread_start
           cargo test -p codex-app-server --test all turn_start
           cargo test -p codex-core executed_tool_calls
+
+      - name: Verify TaskFlow Bazel qualification targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          bazel test --test_output=errors \
+            //codex-rs/hepta-automation:hepta-automation-taskflow-kernel-qualification-test \
+            //codex-rs/hepta-automation:hepta-automation-taskflow-step-qualification-test
 
       - name: Assert tracked tree remains clean
         run: test -z "$(git status --porcelain --untracked-files=no)"
@@ -130,7 +147,14 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta-lane-b-path-guard.py verify
           python3 scripts/hepta-lane-b-truth.py verify
-          cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
-          cd ..
+          (
+            cd codex-rs
+            cargo test -p codex-hepta-automation
+            cargo test -p codex-hepta-automation --features taskflow-structural-qualification
+            cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
+          )
+          bazel test --test_output=errors \
+            //codex-rs/hepta-automation:hepta-automation-taskflow-kernel-qualification-test \
+            //codex-rs/hepta-automation:hepta-automation-taskflow-step-qualification-test
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"

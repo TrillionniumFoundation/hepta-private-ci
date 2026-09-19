@@ -8499,7 +8499,7 @@
       "id": "TASKFLOW-1-EXECUTION-BOUNDARY",
       "module": "automation.taskflow",
       "priority": 2,
-      "state": "planned",
+      "state": "source_implemented_execution_pending",
       "parallelClass": "contract_coordinated",
       "authorityDelta": "none",
       "developmentAfter": [
@@ -8516,9 +8516,14 @@
       "sourceMutationAllowed": true,
       "allowedWritePaths": [
         "codex-rs/hepta-automation/**",
+        "codex-rs/hepta-agentd/src/automation.rs",
+        "codex-rs/hepta-agentd/src/automation_recovery.rs",
+        ".github/workflows/automation-taskflow-focused.yml",
         ".github/workflows/hepta-lane-b-truth.yml"
       ],
-      "coOwnerModules": [],
+      "coOwnerModules": [
+        "runtime.agentd"
+      ],
       "consumesContracts": [
         "DomainRead::cross_owner_outboxV1",
         "DomainRead::operation_ledgerV1",
