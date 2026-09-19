@@ -14,7 +14,12 @@ values. It does not fit a neural network or prove a complete Bellman operator.
 
 The complete regularity gate uses `OperatorRegularityAssessmentV1`; the legacy
 `RegularityProfile` contains only target-builder diagnostics and must not be
-interpreted as the Hölder/operator qualification profile.
+interpreted as the Hölder/operator qualification profile. The original V1
+tabular fit remains source-compatible but now rejects duplicate underlying
+evidence as well as duplicate sample IDs. `fit_tabular_operator_strict_v2`
+remains the explicit compatibility surface, while
+`fit_tabular_operator_with_dataset_binding_v3` additionally constrains every
+training evidence digest to a canonical host-supplied dataset evidence binding.
 
 ## Design operation to Rust symbol
 
@@ -24,19 +29,28 @@ interpreted as the Hölder/operator qualification profile.
 | admit smooth-axis applicability | `validate_applicability_certificate` | `src/reference.rs` | implemented |
 | build fixed sensor core | `build_sensor_core` | `src/reference.rs` | implemented |
 | execute tabular Bellman reference | `evaluate_bellman_reference` | `src/reference.rs` | implemented |
-| fit complete simplest-sufficient operator | `fit_tabular_operator` | `src/learned.rs` | implemented |
+| fit complete simplest-sufficient operator | `fit_tabular_operator` | `src/learned.rs` | implemented, duplicate-evidence fail-closed |
+| bind tabular fit to frozen-dataset evidence | `fit_tabular_operator_with_dataset_binding_v3` | `src/learned_strict.rs` | implemented |
 | predict only a fitted sensor/action cell | `predict_tabular_operator` | `src/learned.rs` | implemented |
-| admit rank/gain/shape/OOD/error budget | `admit_operator_regularity` | `src/reference.rs` | implemented |
-| fit action-conditioned tabular dynamics | `fit_transition_model` | `src/world_model.rs` | implemented |
+| structurally admit rank/gain/shape/OOD/error budget | `admit_operator_regularity` | `src/reference.rs` | implemented |
+| bind applicability to independent evaluator identities | `admit_applicability_with_independent_evaluator` | `src/reference.rs` | implemented |
+| bind regularity to independent evaluator identities | `admit_operator_regularity_with_independent_evaluator` | `src/reference.rs` | implemented |
+| fit action-conditioned tabular dynamics | `fit_transition_model` | `src/world_model.rs` | implemented, duplicate-evidence fail-closed |
+| bind world-model rows to frozen-dataset evidence | `fit_transition_model_with_dataset_binding` | `src/world_model.rs` | implemented |
 | predict supported transition distribution | `predict_transition` | `src/world_model.rs` | implemented |
 
 ## Applicability and sensor core
 
 `OperatorApplicabilityCertificateV1` binds the axis partition, domain, action
 space, Hölder/Lipschitz profiles, ellipticity lower bound, control interval,
-independent evaluator credential, fallback, expiry and decision. Non-positive
+evaluator credential digest, fallback, expiry and decision. Non-positive
 ellipticity, expired certificates and unsupported control intervals fail before
-operator evaluation.
+operator evaluation. The legacy validator is structural: a nonzero credential
+digest is not authentication. For an independent-review claim, the host first
+authenticates producer/evaluator identities and then calls
+`admit_applicability_with_independent_evaluator`, which rejects collisions in
+principal, credential-chain or signing-key identity and returns a separate
+evaluator-binding digest.
 
 `build_sensor_core` uses deterministic farthest-point insertion over a bounded,
 canonical candidate design. It rejects duplicate identities, duplicate
@@ -54,7 +68,8 @@ canonical action ID. This reference is the oracle for any later learned model.
 
 `fit_tabular_operator` is the first source-complete trainable operator profile.
 It canonicalizes a frozen sensor-by-action grid, validates every sample and
-requires a configurable positive minimum sample count for every grid cell. The
+requires a configurable positive minimum sample count for every grid cell.
+Relabelled duplicate evidence is rejected even when sample IDs differ. The
 artifact stores each cell's mean, minimum, maximum, sample count and evidence
 digest. Caller order cannot change the result. `predict_tabular_operator`
 returns only an explicitly fitted cell; an unknown sensor or action is OOD. Its
@@ -77,14 +92,19 @@ baselines.
   `0.05`;
 - independent approval when one component consumes more than half of the total.
 
-Unmeasured components are not silently omitted. A learned implementation must
-publish every required component under a separately reviewed model/runtime
-profile.
+Unmeasured components are not silently omitted. `admit_operator_regularity`
+is a structural/numeric gate, not signature authentication. Independent-review
+consumers use `admit_operator_regularity_with_independent_evaluator` after the
+host authenticates both actor identities. A learned implementation must publish
+every required component under a separately reviewed model/runtime profile.
 
 ## World-model baseline
 
 `fit_transition_model` builds a deterministic action-conditioned tabular model
-from an immutable dataset. For every supported `(state, action)` it records the
+from an immutable dataset. It rejects both duplicate sample IDs and duplicate
+underlying evidence. `fit_transition_model_with_dataset_binding` additionally
+requires every sample evidence digest to belong to the canonical dataset
+evidence set supplied by the host. For every supported `(state, action)` it records the
 mean bounded outcome and a branch distribution whose Q32 probabilities sum
 exactly to one. `predict_transition` rejects unsupported pairs rather than
 extrapolating and marks every prediction synthetic with deny-all authority.
