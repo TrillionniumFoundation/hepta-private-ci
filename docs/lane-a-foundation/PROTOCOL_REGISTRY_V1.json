@@ -12,14 +12,21 @@
         "codex-rs/hepta-types/src/bounded.rs",
         "codex-rs/hepta-types/src/digest.rs",
         "codex-rs/hepta-types/src/identity.rs",
-        "codex-rs/hepta-types/src/fixed.rs"
+        "codex-rs/hepta-types/src/fixed.rs",
+        "codex-rs/hepta-types/src/numeric_profile.rs",
+        "codex-rs/hepta-types/src/numeric_conversion.rs",
+        "codex-rs/hepta-types/src/canonical.rs",
+        "codex-rs/hepta-types/src/registry.rs"
       ],
       "invariants": [
-        "bounded values reject empty and oversized content",
-        "stable identifiers preserve exact accepted bytes",
-        "generation revision and logical sequence are nonzero u64 values",
-        "Digest32 is exactly 32 bytes",
-        "types grant no runtime or effect authority"
+        "bounded values reject empty and oversized content and expose borrowed preflight constructors",
+        "stable identifiers preserve exact accepted bytes and profiled identifiers bind a closed namespace without normalization",
+        "generation revision and logical sequence are nonzero u64 values with checked increment",
+        "Digest32 is exactly 32 bytes and raw byte hashing is distinct from semantic canonical digesting",
+        "canonical V1 binds an explicit domain and nonzero semantic schema version with sorted unique typed length-framed fields",
+        "qualification AuthorityPosture V1 has exactly one representable value and grants no runtime or effect authority",
+        "schema and normalization definitions resolve by canonical digest through a bounded host-owned in-memory registry with no durability claim",
+        "numeric signal conversion is checked deterministic non-saturating arithmetic with explicit rounding and error receipts"
       ]
     },
     {
