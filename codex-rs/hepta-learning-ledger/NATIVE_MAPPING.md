@@ -39,6 +39,7 @@ anchor.
 | finalize conserved credit | `finalize_credit_batch` | `src/causal_v2.rs` | implemented |
 | freeze immutable dataset | `freeze_dataset` | `src/causal_v2.rs` | implemented |
 | production signed + anchored admission | `ProductionLedgerWriter` | `src/production.rs` | implemented, not product-composed |
+| current trust refresh + anti-rollback | `LearningEvidenceTrustProviderV1`, `LearningEvidenceTrustSnapshotV1` | `src/signed_evidence.rs`, `src/production.rs` | implemented, host provider not product-bound |
 | durable authenticated/corrected outcome | `LedgerEvent::AuthenticatedOutcome` | `src/model.rs`, `src/ledger.rs`, `src/durable_codec.rs` | implemented |
 | durable atomic conserved credit batch | `LedgerEvent::CreditBatch` | `src/model.rs`, `src/ledger.rs`, `src/durable_codec.rs` | implemented |
 | correction graph head/fork/cycle prevention | `LearningLedger::validate_authenticated_outcome` | `src/ledger.rs` | implemented |
@@ -47,13 +48,17 @@ anchor.
 | independent acknowledgement witness | `DurableAnchorWitness` | `src/witness.rs` | implemented |
 | canonical registry protocol adapters | `OutcomeReceiptV1`, `CreditAssignmentReceiptV1`, `DatasetSnapshotV1`, `LearningDecisionV1`, `LearningEpisodeV1` | `src/protocol.rs` | implemented |
 | verifiable long-history index checkpoint | `LedgerIndexCheckpointV1` | `src/index_checkpoint.rs` | implemented |
+| deterministic recovery-work accounting | `LedgerRecoveryWorkV1`, `measure_ledger_recovery_work` | `src/index_checkpoint.rs` | implemented |
 
 The V2 identity check compares principal ID, credential-chain digest and
 signing-key digest, and validates authority epoch and expiry.
-`LearningEvidenceVerifierV1` performs Ed25519 admission against immutable
-host-supplied trust state, and `ProductionLedgerWriter` requires that verified
-evidence plus an exact current ledger anchor before product-facing writes. The
-host still owns signer distribution, trust-root rotation and controller identity.
+`LearningEvidenceVerifierV1` performs Ed25519 admission against a host-owned trust
+snapshot. `ProductionLedgerWriter` no longer caches one verifier indefinitely:
+it queries `LearningEvidenceTrustProviderV1` before every signed mutation,
+validates the snapshot time window and maintains a monotone revision/authority
+epoch/trust-digest frontier. Trust rollback or same-revision drift fails closed.
+The host still owns the authority store, signer distribution, root rotation and
+controller identity.
 
 `OutcomeWatermarkV1` distinguishes pending, censored and terminal observations.
 Terminal records require an observed value and finalization time; censored
@@ -89,6 +94,7 @@ A test caller or source-path inventory is not a production caller. A different
 
 - semantic identity reuse with changed content conflicts;
 - missing/stale authentication fails before a causal receipt is emitted;
+- current trust is reloaded per signed production mutation; revision/epoch rollback and same-revision trust drift reject;
 - acknowledgement loss retries the original identity and semantic digest;
 - pending or censored outcomes never become zero reward;
 - a failed anchored reopen never silently retries unanchored;
@@ -97,6 +103,8 @@ A test caller or source-path inventory is not a production caller. A different
 - dataset source/correction/revocation cuts are derived from the anchored ledger by the production writer rather than caller-supplied;
 - dataset source digests are sorted and duplicate source records reject;
 - unlearning lineage requires an already-revoked source and one linear head per derived object;
+- canonical protocol adapters reject unknown fields and semantically invalid values on both encode and decode;
+- recovery-work receipts account exact replayed canonical event bytes without claiming target-host wall-clock latency;
 - every exported V2 receipt remains deny-all and cannot select or activate an
   artifact.
 
