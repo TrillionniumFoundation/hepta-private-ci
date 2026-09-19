@@ -251,7 +251,7 @@ mod durable_operations_control {
         };
 
         let host = state
-            .automation_operations()
+            .automation_operations()?
             .expect("configured durable operations host");
         let source = host
             .source_store()
