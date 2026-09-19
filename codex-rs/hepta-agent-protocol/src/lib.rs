@@ -20,17 +20,20 @@ use codex_hepta_automation::AutomationTask;
 use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_automation::AutomationTaskId;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_fleet::AgentLifecycle;
 use serde::Deserialize;
 use serde::Serialize;
+use serde_json::Value;
 
 pub const AGENTD_CONTROL_SCHEMA_VERSION: u32 = 2;
 /// Version for the transport-only host turn authority witness.  This type is
 /// deliberately not an authority grant and is not consumed by the Agentd
 /// runtime yet; it gives a future host/supervisor seam one strict wire shape.
 pub const HOST_TURN_AUTHORITY_BINDING_SCHEMA_VERSION: u32 = 1;
-pub const MAX_CONTROL_FRAME_BYTES: u64 = 65_536;
+pub const MAX_CONTROL_FRAME_BYTES: u64 = 1_048_576;
 pub const MAX_EVENT_BATCH: u16 = 256;
 pub const MAX_FEDERATION_CONTROL_LIST: u16 = 128;
 const FEDERATION_CAPABILITY_ID_PREFIX: &str = "federation:v1:";
@@ -257,6 +260,39 @@ impl AgentdRequest {
             method: AgentdMethod::MemoryFederationStatus { capability_id },
         }
     }
+
+    pub fn browser_call(
+        request_id: u64,
+        spawn_generation: u64,
+        method: BrowserControlMethod,
+        input: Value,
+        signed_grant: Option<SignedFinalUseGrant>,
+        binding: Option<FinalUseBinding>,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::BrowserCall {
+                method,
+                input,
+                signed_grant,
+                binding,
+            },
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum BrowserControlMethod {
+    OpenProfile,
+    AdmitEffectGrant,
+    ObservePage,
+    NavigateOrAct,
+    ReconcileOperation,
+    ReconcilePersistedOperation,
+    CloseProfile,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -275,6 +311,12 @@ pub enum AgentdMethod {
     CognitiveContext {
         query: String,
         limit: u16,
+    },
+    BrowserCall {
+        method: BrowserControlMethod,
+        input: Value,
+        signed_grant: Option<SignedFinalUseGrant>,
+        binding: Option<FinalUseBinding>,
     },
     Events {
         after_cursor: u64,
@@ -329,6 +371,9 @@ pub enum AgentdPayload {
     Lifecycle(LifecycleSnapshot),
     SessionIngress(SessionIngress),
     CognitiveContext(CognitiveContextSnapshot),
+    BrowserResult {
+        result: Value,
+    },
     AuthBusTextStatus(AuthBusTextStatus),
     Events(EventBatch),
     AutomationTask(AutomationTask),
@@ -669,6 +714,37 @@ mod tests {
             .replace(&"a".repeat(64), "not-a-digest");
         assert!(serde_json::from_str::<AgentdRequest>(&malformed).is_err());
     }
+
+
+    #[test]
+    fn browser_control_wire_is_strict_bounded_and_authority_explicit() {
+        let request = AgentdRequest::browser_call(
+            17,
+            3,
+            BrowserControlMethod::ObservePage,
+            serde_json::json!({
+                "profileId": "profile.1",
+                "principalId": "principal.1",
+                "generation": 1,
+                "observationBudget": 262144
+            }),
+            None,
+            None,
+        );
+        let bytes = serde_json::to_vec(&request).expect("serialize browser request");
+        assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&bytes).expect("parse browser request"),
+            request
+        );
+        let unknown = String::from_utf8(bytes)
+            .expect("utf8")
+            .replace("\"observationBudget\":262144", "\"observationBudget\":262144,\"unexpected\":true");
+        // Browser input is an opaque typed-module payload at this layer. The
+        // Browser service itself owns its exact-key schema and rejects drift.
+        assert!(serde_json::from_str::<AgentdRequest>(&unknown).is_ok());
+    }
+
 
     #[test]
     fn host_turn_authority_binding_is_strict_and_fail_closed() {

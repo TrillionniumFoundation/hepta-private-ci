@@ -29,6 +29,7 @@ use crate::automation::run_automation_scheduler;
 const EVENT_CAPACITY: usize = 128;
 const GENERATION_POLL_INTERVAL: Duration = Duration::from_millis(50);
 const APP_SERVER_PROBE_TIMEOUT: Duration = Duration::from_secs(2);
+const BROWSER_REVOCATION_POLL_INTERVAL: Duration = Duration::from_millis(250);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum CompletedRuntimeTask {
@@ -37,6 +38,7 @@ enum CompletedRuntimeTask {
     Monitor,
     Automation,
     AuthBus,
+    BrowserAuthority,
 }
 
 pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {
@@ -44,6 +46,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
+    let browser_servo = config.browser_servo_runtime();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -64,6 +67,19 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             .set(ranker)
             .map_err(|_| AgentdError::Invalid("cognitive ranker already attached".to_string()))?;
     }
+    let browser_revocation_runtime = if let Some(runtime) = browser_servo {
+        state.refresh_generation()?;
+        let start_runtime = runtime.clone();
+        let caller = tokio::task::spawn_blocking(move || start_runtime.start_caller())
+            .await
+            .map_err(|error| AgentdError::Protocol(format!("Browser owner startup task failed: {error}")))?
+            .map_err(|error| AgentdError::Protocol(format!("Browser owner startup failed: {error}")))?;
+        state.refresh_generation()?;
+        state.attach_browser_servo(caller)?;
+        Some(runtime)
+    } else {
+        None
+    };
     if let Some(path) = trust_file {
         state.refresh_generation()?;
         let host = crate::authbus_ingress::TextIngress::open(&identity, path).await?;
@@ -138,7 +154,30 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         cancellation.clone(),
     ));
 
+    let browser_authority_state = Arc::clone(&state);
+    let browser_authority_cancellation = cancellation.clone();
+    let mut browser_authority_task = tokio::spawn(async move {
+        match browser_revocation_runtime {
+            Some(runtime) => {
+                run_browser_revocation_monitor(
+                    runtime,
+                    browser_authority_state,
+                    browser_authority_cancellation,
+                )
+                .await
+            }
+            None => {
+                browser_authority_cancellation.cancelled().await;
+                Ok(())
+            }
+        }
+    });
+
     let (outcome, completed_task) = tokio::select! {
+        result = &mut browser_authority_task => (
+            joined("Browser authority/revocation owner", result),
+            Some(CompletedRuntimeTask::BrowserAuthority),
+        ),
         result = &mut authbus_task => (
             joined("AuthBus text relay", result),
             Some(CompletedRuntimeTask::AuthBus),
@@ -168,6 +207,9 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     cancellation.cancel();
     if completed_task != Some(CompletedRuntimeTask::AuthBus) {
         abort_and_join(&mut authbus_task).await;
+    }
+    if completed_task != Some(CompletedRuntimeTask::BrowserAuthority) {
+        abort_and_join(&mut browser_authority_task).await;
     }
     cleanup_runtime_tasks(
         completed_task,
@@ -254,6 +296,74 @@ where
     // concurrent with that work cannot reach a serving runtime.
     state.refresh_generation()?;
     Ok(cognitive_runtime)
+}
+
+async fn run_browser_revocation_monitor(
+    runtime: crate::BrowserServoRuntimeConfig,
+    state: Arc<AgentdState>,
+    cancellation: CancellationToken,
+) -> Result<(), AgentdError> {
+    let initial_runtime = runtime.clone();
+    let mut last = tokio::task::spawn_blocking(move || initial_runtime.read_revocations())
+        .await
+        .map_err(|error| AgentdError::Protocol(format!("Browser revocation read task failed: {error}")))?
+        .map_err(|error| AgentdError::Protocol(format!("Browser revocation head unavailable: {error}")))?;
+
+    loop {
+        tokio::select! {
+            _ = cancellation.cancelled() => return Ok(()),
+            _ = tokio::time::sleep(BROWSER_REVOCATION_POLL_INTERVAL) => {}
+        }
+
+        let read_runtime = runtime.clone();
+        let next = match tokio::task::spawn_blocking(move || read_runtime.read_revocations()).await {
+            Ok(Ok(head)) => head,
+            Ok(Err(error)) => {
+                state.mark_fenced();
+                return Err(AgentdError::GenerationFenced(format!(
+                    "Browser revocation feed became unavailable: {error}"
+                )));
+            }
+            Err(error) => {
+                state.mark_fenced();
+                return Err(AgentdError::GenerationFenced(format!(
+                    "Browser revocation read task failed: {error}"
+                )));
+            }
+        };
+
+        let identical = next.authority_epoch == last.authority_epoch
+            && next.revision == last.revision
+            && next.revoked_grant_ids == last.revoked_grant_ids;
+        if identical {
+            continue;
+        }
+        let monotonic = next.authority_epoch >= last.authority_epoch
+            && next.revision > last.revision
+            && (next.authority_epoch > last.authority_epoch
+                || next.revoked_grant_ids.is_superset(&last.revoked_grant_ids));
+        if !monotonic {
+            state.mark_fenced();
+            return Err(AgentdError::GenerationFenced(
+                "Browser revocation feed regressed or changed a committed revision".to_string(),
+            ));
+        }
+
+        let update_runtime = runtime.clone();
+        let update_head = next.clone();
+        if let Err(error) = tokio::task::spawn_blocking(move || {
+            update_runtime.update_revocations(update_head)
+        })
+        .await
+        .map_err(|error| AgentdError::Protocol(format!("Browser revocation update task failed: {error}")))?
+        {
+            state.mark_fenced();
+            return Err(AgentdError::GenerationFenced(format!(
+                "Browser revocation update failed closed: {error}"
+            )));
+        }
+        last = next;
+    }
 }
 
 async fn monitor_runtime(state: Arc<AgentdState>) -> Result<(), AgentdError> {

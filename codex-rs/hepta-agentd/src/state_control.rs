@@ -105,6 +105,66 @@ impl AgentdState {
                     crate::authbus_ingress::status(self, delivery_id).await?,
                 )
             }
+            crate::AgentdMethod::BrowserCall {
+                method,
+                input,
+                signed_grant,
+                binding,
+            } => {
+                require_browser_ready(lifecycle, fenced)?;
+                let Some(caller) = self.browser_servo_caller() else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        browser_unavailable("Browser Servo owner is not configured"),
+                    );
+                };
+                let module_method = browser_method(method);
+                let call = if matches!(module_method, crate::BrowserServoMethod::NavigateOrAct) {
+                    let signed_grant = signed_grant.ok_or_else(|| {
+                        AgentdError::Invalid(
+                            "navigate_or_act requires independently signed final-use authority"
+                                .to_string(),
+                        )
+                    })?;
+                    let binding = binding.ok_or_else(|| {
+                        AgentdError::Invalid(
+                            "navigate_or_act requires an exact FinalUseBinding".to_string(),
+                        )
+                    })?;
+                    crate::BrowserServoCall::effect(
+                        input,
+                        crate::BrowserFinalUseInvocation {
+                            signed_grant,
+                            binding,
+                        },
+                    )
+                    .map_err(|error| AgentdError::Invalid(error.to_string()))?
+                } else {
+                    if signed_grant.is_some() || binding.is_some() {
+                        return Err(AgentdError::Invalid(
+                            "non-effect Browser calls must not carry final-use authority"
+                                .to_string(),
+                        ));
+                    }
+                    crate::BrowserServoCall::read(module_method, input)
+                        .map_err(|error| AgentdError::Invalid(error.to_string()))?
+                };
+                let result = tokio::task::spawn_blocking(move || caller.call_browser(call))
+                    .await
+                    .map_err(|error| {
+                        AgentdError::Protocol(format!("Browser owner task failed: {error}"))
+                    })?;
+                self.refresh_generation()?;
+                {
+                    let runtime = self.runtime.lock().map_err(poisoned_state)?;
+                    require_browser_ready(runtime.lifecycle, runtime.fenced)?;
+                }
+                match result {
+                    Ok(result) => AgentdPayload::BrowserResult { result },
+                    Err(error) => browser_error_payload(error),
+                }
+            }
             crate::AgentdMethod::CognitiveContext { query, limit } => {
                 require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
                 let Some(store) = cognitive else {
@@ -501,6 +561,70 @@ impl AgentdState {
             return Err(error);
         }
         Ok(())
+    }
+}
+
+fn browser_method(method: crate::BrowserControlMethod) -> crate::BrowserServoMethod {
+    match method {
+        crate::BrowserControlMethod::OpenProfile => crate::BrowserServoMethod::OpenProfile,
+        crate::BrowserControlMethod::AdmitEffectGrant => {
+            crate::BrowserServoMethod::AdmitEffectGrant
+        }
+        crate::BrowserControlMethod::ObservePage => crate::BrowserServoMethod::ObservePage,
+        crate::BrowserControlMethod::NavigateOrAct => crate::BrowserServoMethod::NavigateOrAct,
+        crate::BrowserControlMethod::ReconcileOperation => {
+            crate::BrowserServoMethod::ReconcileOperation
+        }
+        crate::BrowserControlMethod::ReconcilePersistedOperation => {
+            crate::BrowserServoMethod::ReconcilePersistedOperation
+        }
+        crate::BrowserControlMethod::CloseProfile => crate::BrowserServoMethod::CloseProfile,
+    }
+}
+
+fn browser_error_payload(error: crate::BrowserServoError) -> AgentdPayload {
+    let (code, message) = match error {
+        crate::BrowserServoError::Indeterminate(message) => {
+            ("browser_indeterminate", message)
+        }
+        crate::BrowserServoError::Unavailable(message) => {
+            ("browser_unavailable", message)
+        }
+        crate::BrowserServoError::Authority(error) => {
+            ("browser_authority_denied", error.to_string())
+        }
+        crate::BrowserServoError::Protocol(message) => {
+            ("browser_protocol_error", message)
+        }
+        crate::BrowserServoError::BindingMismatch(message)
+        | crate::BrowserServoError::Rejected(message)
+        | crate::BrowserServoError::Invalid(message) => {
+            ("browser_rejected", message)
+        }
+    };
+    AgentdPayload::Error {
+        code: code.to_string(),
+        message: message.chars().take(512).collect(),
+    }
+}
+
+fn browser_unavailable(message: &str) -> AgentdPayload {
+    AgentdPayload::Error {
+        code: "browser_unavailable".to_string(),
+        message: message.to_string(),
+    }
+}
+
+fn require_browser_ready(
+    lifecycle: AgentLifecycle,
+    fenced: bool,
+) -> Result<(), AgentdError> {
+    if lifecycle == AgentLifecycle::Running && !fenced {
+        Ok(())
+    } else {
+        Err(AgentdError::Protocol(
+            "Browser control is unavailable until this Agent generation is running".to_string(),
+        ))
     }
 }
 
