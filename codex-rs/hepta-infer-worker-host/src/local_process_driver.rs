@@ -346,12 +346,12 @@ impl ModelDriver for LocalProcessDriver {
             return Err(error);
         }
         let response = match read_message(&process.stdout, self.config.response_timeout) {
-                Ok(response) => response,
-                Err(error) => {
-                    process.terminate();
-                    return Err(error);
-                }
-            };
+            Ok(response) => response,
+            Err(error) => {
+                process.terminate();
+                return Err(error);
+            }
+        };
         require_string(&response, "protocol", LOCAL_RUNTIME_PROTOCOL)?;
         require_string(&response, "op", "loaded")?;
         require_string(&response, "model_id", &manifest.model_id)?;
@@ -428,12 +428,12 @@ impl ModelDriver for LocalProcessDriver {
             &process.stdout,
             self.config.response_timeout.min(response_timeout),
         ) {
-                Ok(response) => response,
-                Err(_) => {
-                    process.terminate();
-                    return Ok(indeterminate(process.observed_memory_bytes));
-                }
-            };
+            Ok(response) => response,
+            Err(_) => {
+                process.terminate();
+                return Ok(indeterminate(process.observed_memory_bytes));
+            }
+        };
         if require_string(&response, "protocol", LOCAL_RUNTIME_PROTOCOL).is_err()
             || require_string(&response, "op", "run_result").is_err()
             || require_string(&response, "handle_id", &handle.opaque_id).is_err()
@@ -514,12 +514,12 @@ impl ModelDriver for LocalProcessDriver {
             return Err(error);
         }
         let response = match read_message(&process.stdout, self.config.response_timeout) {
-                Ok(response) => response,
-                Err(error) => {
-                    process.terminate();
-                    return Err(error);
-                }
-            };
+            Ok(response) => response,
+            Err(error) => {
+                process.terminate();
+                return Err(error);
+            }
+        };
         if require_string(&response, "protocol", LOCAL_RUNTIME_PROTOCOL).is_err()
             || require_string(&response, "op", "unloaded").is_err()
             || require_string(&response, "handle_id", &handle.opaque_id).is_err()
