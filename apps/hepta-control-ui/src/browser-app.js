@@ -345,7 +345,7 @@ export class ControlPlaneApp {
   async #requestStop(button) {
     const view = this.#view;
     if (!view?.canMutate || this.#mutationBlock !== null) return;
-    const busyKey = `stop:${view.revision}`;
+    const busyKey = "stop";
     if (this.#busy.has(busyKey)) {
       this.#announce("A runtime stop request is already awaiting confirmation or acknowledgement.");
       return;
