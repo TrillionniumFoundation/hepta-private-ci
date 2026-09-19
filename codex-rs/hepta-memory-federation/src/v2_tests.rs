@@ -123,6 +123,20 @@ impl FederationAuthorityV2 for FixtureAuthority {
     }
 }
 
+
+struct PendingAuthority;
+
+impl FederationAuthorityV2 for PendingAuthority {
+    fn revalidate<'a>(
+        &'a self,
+        _query: &'a FederatedQueryV2,
+        _lease: &'a FederatedLeaseV2,
+        _now_unix_ms: u64,
+    ) -> FederationFutureV2<'a, Result<FederationAuthorityStateV2, FederationV2Error>> {
+        Box::pin(std::future::pending())
+    }
+}
+
 #[derive(Clone, Copy)]
 struct FixedClock(u64);
 
@@ -480,6 +494,23 @@ async fn cancellation_interrupts_a_pending_transport_attempt() {
     .unwrap_or_else(|error| panic!("cancelled result: {error}"));
     assert!(result.items.is_empty());
     assert_eq!(result.validity, FederatedValidityV2::Indeterminate);
+}
+
+#[tokio::test(start_paused = true)]
+async fn engine_deadline_bounds_a_pending_authority_lookup() {
+    let query = query();
+    assert_eq!(
+        execute_once(
+            &FixtureTransport::pending(),
+            &PendingAuthority,
+            &NeverCancelledV2,
+            &FixedClock(10),
+            query.clone(),
+            &lease(&query),
+        )
+        .await,
+        Err(FederationV2Error::DeadlineExpired)
+    );
 }
 
 #[tokio::test(start_paused = true)]
