@@ -216,6 +216,8 @@ For `learning.plasticity`, this document grants no runtime, production, model, p
 
 ### Work-package execution envelopes
 
+The `State` values below are canonical delivery/work-package states projected from the delivery registry. They do not override current source-capability facts. Use `IMPLEMENTATION_MAP.json` and the generated status block in `CURRENT_IMPLEMENTATION.md` for implemented-source truth; activation, independent acceptance and release remain separate evidence states.
+
 #### `PLS-1-PARAMETER-PLASTICITY`
 
 - State: `planned`; priority: `3`; parallel class: `contract_coordinated`.
