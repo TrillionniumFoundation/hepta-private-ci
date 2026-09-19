@@ -96,7 +96,7 @@ The compatibility timer API keeps `AutomationTick::Submitted`; its meaning is ex
 
 ## 6. Data authority, persistence and migrations
 
-Schema v10 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables and adds:
+Schema v11 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables and adds:
 
 - `automation_schedule_metadata`: revision, missed-run policy, bounded catch-up state and overlap policy.
 - `automation_occurrence_lifecycle`: deterministic occurrence identity, frozen schedule revision, claim generation/token, TaskFlow run ID, queue/turn identity, recovery phase and terminal receipt.
@@ -106,7 +106,7 @@ Schema v10 retains the original `automation_tasks`, `automation_runs` and dispat
 
 `taskflow_definitions`, `taskflow_runs` and `taskflow_events` remain the durable TaskFlow ledger. A materialized occurrence freezes its schedule revision until it becomes terminal. Safe generation reclaim preserves occurrence/client identity and allocates a new step attempt; an indeterminate provider outcome does not.
 
-Migrations are additive from v3 through v10. An older binary that only understands automation schema v3 must not be started against a v10 owner store.
+Migrations are additive from v3 through v11. An older binary that only understands automation schema v3 must not be started against a v11 owner store.
 
 ## 7. Runtime, concurrency and transaction model
 
