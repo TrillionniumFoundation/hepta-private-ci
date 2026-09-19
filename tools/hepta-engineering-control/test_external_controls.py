@@ -15,7 +15,10 @@ from control_engineering_v2.external_controls import (
     AuditAnchorAttestation,
     DistributedFenceReceipt,
     KeyCustodyReceipt,
+    admit_distributed_fence,
+    distributed_fence_frontier,
     verify_distributed_fence,
+    verify_persisted_distributed_fence,
     verify_distributed_revocation_frontier,
     verify_external_audit_anchor,
     verify_external_key_custody,
@@ -131,6 +134,24 @@ class ExternalControlTests(unittest.TestCase):
                     now_ns=self.now,
                 )
                 self.assertEqual(len(digest), 64)
+                self.assertEqual(
+                    admit_distributed_fence(
+                        lease,
+                        self.envelope,
+                        receipt,
+                        frontier,
+                        self.trust,
+                        store=store,
+                        now_ns=self.now,
+                    ),
+                    digest,
+                )
+                persisted = distributed_fence_frontier(
+                    store,
+                    receipt.cluster_id,
+                    receipt.holder,
+                )
+                self.assertEqual(persisted["fenceReceiptDigest"], digest)
 
                 with self.assertRaisesRegex(
                     ValueError,
@@ -236,6 +257,88 @@ class ExternalControlTests(unittest.TestCase):
                         frontier,
                         self.trust,
                         store=store,
+                        now_ns=self.now,
+                    )
+
+    def test_persisted_distributed_frontier_rejects_restart_replay(self):
+        with tempfile.TemporaryDirectory() as temp:
+            database = Path(temp) / "store.db"
+            with EngineeringStore(database) as store:
+                store.issue_work_envelope(self.envelope, now_ns=self.now)
+                lease = store.acquire_path_lease(
+                    "lease-restart",
+                    "env",
+                    "worker-restart",
+                    ("src/restart",),
+                    authority_epoch=9,
+                    expires_unix_ns=self.now + 500,
+                    now_ns=self.now,
+                )
+                old_frontier = self.frontier(
+                    sequence=10,
+                    digest="1" * 64,
+                    observed_offset=-1,
+                )
+                old_fence = self.fence(lease, old_frontier)
+                admit_distributed_fence(
+                    lease,
+                    self.envelope,
+                    old_fence,
+                    old_frontier,
+                    self.trust,
+                    store=store,
+                    now_ns=self.now,
+                )
+
+                new_frontier = self.frontier(
+                    sequence=11,
+                    digest="2" * 64,
+                    observed_offset=0,
+                )
+                new_fence = self.fence(lease, new_frontier)
+                new_digest = admit_distributed_fence(
+                    lease,
+                    self.envelope,
+                    new_fence,
+                    new_frontier,
+                    self.trust,
+                    store=store,
+                    now_ns=self.now,
+                )
+                self.assertEqual(
+                    distributed_fence_frontier(
+                        store,
+                        new_fence.cluster_id,
+                        new_fence.holder,
+                    )["fenceReceiptDigest"],
+                    new_digest,
+                )
+
+            with EngineeringStore(database) as reopened:
+                with self.assertRaisesRegex(
+                    ValueError,
+                    "distributed_fence_frontier_not_current",
+                ):
+                    verify_persisted_distributed_fence(
+                        lease,
+                        self.envelope,
+                        old_fence,
+                        old_frontier,
+                        self.trust,
+                        store=reopened,
+                        now_ns=self.now,
+                    )
+                with self.assertRaisesRegex(
+                    ValueError,
+                    "distributed_fence_frontier_stale",
+                ):
+                    admit_distributed_fence(
+                        lease,
+                        self.envelope,
+                        old_fence,
+                        old_frontier,
+                        self.trust,
+                        store=reopened,
                         now_ns=self.now,
                     )
 
@@ -397,6 +500,15 @@ class ExternalControlTests(unittest.TestCase):
                 )
                 frontier = self.frontier()
                 fence = self.fence(lease, frontier)
+                admit_distributed_fence(
+                    lease,
+                    self.envelope,
+                    fence,
+                    frontier,
+                    self.trust,
+                    store=store,
+                    now_ns=self.now,
+                )
                 anchor = store.audit_anchor()
                 audit = self.sign(
                     AuditAnchorAttestation(
