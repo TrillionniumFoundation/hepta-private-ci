@@ -300,41 +300,141 @@ impl AutomationStore {
         self.task(task_id).await?.ok_or(AutomationError::Corrupt)
     }
 
-    /// Releases work held by an older process generation. The caller must own
-    /// the per-Agent writer lock before invoking this immediate recovery path.
+    /// Recover work held by an older Agent generation before admitting new
+    /// work. A stale lease with a materialized TaskFlow boundary is first
+    /// reconciled as provider-proven-absent; only then is the compatibility
+    /// scheduler lease released. The caller must own the per-Agent writer lock.
     pub async fn recover_stale_generation(
         &self,
         current_generation: u64,
+        now_ms: u64,
     ) -> Result<u64, AutomationError> {
         if current_generation == 0 {
             return Err(AutomationError::Invalid);
         }
-        let recovered = sqlx::query(
-            "UPDATE automation_runs
-             SET state = CASE WHEN EXISTS (
-                     SELECT 1 FROM automation_tasks t
-                     WHERE t.task_id = automation_runs.task_id AND t.state = 'enabled'
-                 ) THEN 'pending' ELSE 'cancelled' END,
-                 lease_generation = NULL, lease_token = NULL, lease_expires_at_ms = NULL
-             WHERE state = 'leased' AND lease_generation != ?
-               AND EXISTS (
-                   SELECT 1 FROM automation_tasks t
-                   WHERE t.task_id = automation_runs.task_id
-                     AND t.owner_agent_id = ?
-               )
+        let rows = sqlx::query(
+            "SELECT r.task_id, r.occurrence, r.scheduled_for_ms,
+                    r.client_user_message_id, r.lease_generation,
+                    r.lease_token, r.lease_expires_at_ms
+             FROM automation_runs r
+             JOIN automation_tasks t ON t.task_id = r.task_id
+             WHERE r.state = 'leased' AND r.lease_generation != ?
+               AND t.owner_agent_id = ?
                AND NOT EXISTS (
                    SELECT 1 FROM automation_dispatch_outcomes o
-                   WHERE o.task_id = automation_runs.task_id
-                     AND o.occurrence = automation_runs.occurrence
+                   WHERE o.task_id = r.task_id
+                     AND o.occurrence = r.occurrence
                      AND o.outcome = 'uncertain'
-               )",
+               )
+             ORDER BY r.task_id, r.occurrence",
         )
         .bind(to_i64(current_generation)?)
         .bind(self.owner_agent_id.as_str())
-        .execute(&self.pool)
+        .fetch_all(&self.pool)
         .await
         .map_err(unavailable)?;
-        Ok(recovered.rows_affected())
+
+        let mut recovered = 0_u64;
+        for row in rows {
+            let task_id = parse_task_id(&row, "task_id")?;
+            let occurrence_number =
+                to_u64(row.try_get("occurrence").map_err(unavailable)?)?;
+            let task = self
+                .task(task_id)
+                .await?
+                .ok_or(AutomationError::Corrupt)?;
+            let lease = AutomationLease {
+                task: task.clone(),
+                occurrence: occurrence_number,
+                scheduled_for_ms: to_u64(
+                    row.try_get("scheduled_for_ms").map_err(unavailable)?,
+                )?,
+                client_user_message_id: row
+                    .try_get("client_user_message_id")
+                    .map_err(unavailable)?,
+                lease_generation: to_u64(
+                    row.try_get("lease_generation").map_err(unavailable)?,
+                )?,
+                lease_token: row.try_get("lease_token").map_err(unavailable)?,
+                lease_expires_at_ms: to_u64(
+                    row.try_get("lease_expires_at_ms").map_err(unavailable)?,
+                )?,
+            };
+
+            if let Some(occurrence) =
+                self.automation_occurrence(task_id, occurrence_number).await?
+            {
+                if occurrence.state == crate::AutomationOccurrenceState::Claimed {
+                    if occurrence.claim_generation != lease.lease_generation
+                        || occurrence.claim_token != lease.lease_token
+                        || occurrence.client_user_message_id != lease.client_user_message_id
+                    {
+                        return Err(AutomationError::Conflict);
+                    }
+                    let mut proof_bytes =
+                        b"hepta.automation.stale-before-provider.v1\0".to_vec();
+                    proof_bytes.extend_from_slice(occurrence.occurrence_id.as_bytes());
+                    proof_bytes.push(0);
+                    proof_bytes.extend_from_slice(&lease.lease_generation.to_be_bytes());
+                    proof_bytes.extend_from_slice(lease.lease_token.as_bytes());
+                    let proof_digest = Sha256Digest::for_bytes(&proof_bytes);
+
+                    let run = self
+                        .taskflow_run(&occurrence.taskflow_run_id)
+                        .await
+                        .map_err(map_taskflow_mutation_error)?;
+                    if task.state == crate::AutomationTaskState::Enabled {
+                        if run.is_some() {
+                            self.requeue_occurrence_taskflow_after_proven_absence(
+                                &occurrence,
+                                &proof_digest,
+                                now_ms,
+                            )
+                            .await
+                            .map_err(map_taskflow_mutation_error)?;
+                        }
+                    } else {
+                        // If the process died after occurrence materialization
+                        // but before creating the TaskFlow run, create only the
+                        // local durable intent under the exact historical lease;
+                        // no provider call is made. This lets retirement finish
+                        // with a complete causal receipt instead of a ghost row.
+                        if run.is_none() {
+                            self.prepare_occurrence_taskflow(
+                                &occurrence,
+                                &lease,
+                                now_ms,
+                                1,
+                            )
+                            .await
+                            .map_err(map_taskflow_mutation_error)?;
+                        }
+                        self.cancel_claimed_taskflow_after_proven_absence(
+                            &occurrence,
+                            &proof_digest,
+                            now_ms,
+                        )
+                        .await
+                        .map_err(map_taskflow_mutation_error)?;
+                        self.complete_occurrence(
+                            task_id,
+                            occurrence_number,
+                            crate::AutomationOccurrenceTerminalState::Cancelled,
+                            &proof_digest,
+                            now_ms,
+                        )
+                        .await?;
+                    }
+                } else if occurrence.state != crate::AutomationOccurrenceState::Cancelled {
+                    return Err(AutomationError::Conflict);
+                }
+            }
+            self.release_for_retry(&lease).await?;
+            recovered = recovered
+                .checked_add(1)
+                .ok_or(AutomationError::Corrupt)?;
+        }
+        Ok(recovered)
     }
 
     pub async fn claim_due(
