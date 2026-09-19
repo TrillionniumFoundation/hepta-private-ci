@@ -317,7 +317,7 @@ class ExternalControlTests(unittest.TestCase):
             with EngineeringStore(database) as reopened:
                 with self.assertRaisesRegex(
                     ValueError,
-                    "distributed_fence_frontier_not_current",
+                    "distributed_cluster_frontier_not_current",
                 ):
                     verify_persisted_distributed_fence(
                         lease,
@@ -330,7 +330,7 @@ class ExternalControlTests(unittest.TestCase):
                     )
                 with self.assertRaisesRegex(
                     ValueError,
-                    "distributed_fence_frontier_stale",
+                    "distributed_cluster_frontier_stale",
                 ):
                     admit_distributed_fence(
                         lease,
@@ -341,6 +341,118 @@ class ExternalControlTests(unittest.TestCase):
                         store=reopened,
                         now_ns=self.now,
                     )
+
+    def test_new_cluster_leader_fences_stale_receipts_for_other_holders(self):
+        with tempfile.TemporaryDirectory() as temp:
+            with EngineeringStore(Path(temp) / "store.db") as store:
+                store.issue_work_envelope(self.envelope, now_ns=self.now)
+                lease_a = store.acquire_path_lease(
+                    "lease-a",
+                    "env",
+                    "worker-a",
+                    ("src/a",),
+                    authority_epoch=1,
+                    expires_unix_ns=self.now + 500,
+                    now_ns=self.now,
+                )
+                lease_b = store.acquire_path_lease(
+                    "lease-b",
+                    "env",
+                    "worker-b",
+                    ("src/b",),
+                    authority_epoch=1,
+                    expires_unix_ns=self.now + 500,
+                    now_ns=self.now,
+                )
+                old_frontier = self.frontier(
+                    sequence=10,
+                    digest="1" * 64,
+                    leader_term=3,
+                )
+                stale_b = self.fence(lease_b, old_frontier)
+                new_frontier = self.frontier(
+                    sequence=11,
+                    digest="2" * 64,
+                    leader_term=4,
+                    observed_offset=0,
+                )
+                current_a = self.fence(lease_a, new_frontier)
+                admit_distributed_fence(
+                    lease_a,
+                    self.envelope,
+                    current_a,
+                    new_frontier,
+                    self.trust,
+                    store=store,
+                    now_ns=self.now,
+                )
+                with self.assertRaisesRegex(
+                    ValueError,
+                    "distributed_cluster_frontier_stale",
+                ):
+                    admit_distributed_fence(
+                        lease_b,
+                        self.envelope,
+                        stale_b,
+                        old_frontier,
+                        self.trust,
+                        store=store,
+                        now_ns=self.now,
+                    )
+
+    def test_same_cluster_frontier_allows_newer_local_lease_revision(self):
+        with tempfile.TemporaryDirectory() as temp:
+            with EngineeringStore(Path(temp) / "store.db") as store:
+                store.issue_work_envelope(self.envelope, now_ns=self.now)
+                lease = store.acquire_path_lease(
+                    "lease-renew",
+                    "env",
+                    "worker-renew",
+                    ("src/renew",),
+                    authority_epoch=2,
+                    expires_unix_ns=self.now + 400,
+                    now_ns=self.now,
+                )
+                frontier = self.frontier()
+                first = self.fence(lease, frontier)
+                admit_distributed_fence(
+                    lease,
+                    self.envelope,
+                    first,
+                    frontier,
+                    self.trust,
+                    store=store,
+                    now_ns=self.now,
+                )
+                renewed = store.transition_path_lease(
+                    lease.lease_id,
+                    expected_revision=lease.revision,
+                    authority_epoch=lease.epoch,
+                    disposition="renew",
+                    new_expiry_unix_ns=self.now + 500,
+                    now_ns=self.now,
+                )
+                second = self.fence(renewed, frontier)
+                admit_distributed_fence(
+                    renewed,
+                    self.envelope,
+                    second,
+                    frontier,
+                    self.trust,
+                    store=store,
+                    now_ns=self.now,
+                )
+                persisted = distributed_fence_frontier(
+                    store,
+                    second.cluster_id,
+                    second.holder,
+                )
+                self.assertEqual(persisted["leaseRevision"], renewed.revision)
+                self.assertEqual(persisted["fencingToken"], renewed.fencing_token)
+                self.assertEqual(
+                    persisted["clusterRevocationFrontierSequence"],
+                    frontier.frontier_sequence,
+                )
 
     def test_revocation_frontier_requires_order_freshness_and_signature(self):
         frontier = self.frontier()
