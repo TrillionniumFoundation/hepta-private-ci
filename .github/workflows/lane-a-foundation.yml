@@ -7,6 +7,8 @@ on:
       - "codex-rs/kernel-*/**"
       - "docs/contracts/**"
       - "scripts/verify_hepta_callers.py"
+      - "scripts/verify_platform_types_vectors.py"
+      - "scripts/verify_platform_types_vectors.mjs"
       - ".github/workflows/lane-a-foundation.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   push:
@@ -52,6 +54,12 @@ jobs:
           (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Verify platform.types cross-language canonical vectors
+        shell: bash
+        run: |
+          python3 scripts/verify_platform_types_vectors.py
+          node scripts/verify_platform_types_vectors.mjs
 
       - name: Run Lane A native tests and strict lint
         shell: bash
@@ -116,6 +124,12 @@ jobs:
           (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Verify platform.types cross-language canonical vectors on merge candidate
+        shell: bash
+        run: |
+          python3 scripts/verify_platform_types_vectors.py
+          node scripts/verify_platform_types_vectors.mjs
 
       - name: Run Lane A native tests and strict lint on merge candidate
         shell: bash
