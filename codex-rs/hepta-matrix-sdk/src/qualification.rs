@@ -24,7 +24,7 @@ const CLAIMED_NAME: &str = "claimed.once";
 const RECEIPT_NAME: &str = "receipt.json";
 const RECEIPT_TEMP_NAME: &str = "receipt.json.tmp";
 const MATRIX_ROOM_MESSAGE_EVENT_TYPE: &str = "m.room.message";
-const ACK_DISPOSITION: &str = "dropped_after_synapse_response_before_outbox_mark_sent";
+const ACK_DISPOSITION: &str = "dropped_after_synapse_response_before_dispatch_acceptance";
 
 /// Arm one response-loss cut for the exact normalized outbox payload.
 ///
@@ -248,7 +248,7 @@ mod tests {
         assert_eq!(value["requested_event_type"], "m.room.message");
         assert_eq!(
             value["ack_disposition"],
-            "dropped_after_synapse_response_before_outbox_mark_sent"
+            "dropped_after_synapse_response_before_dispatch_acceptance"
         );
         assert_eq!(value["attempt"], 1);
         Ok(())
