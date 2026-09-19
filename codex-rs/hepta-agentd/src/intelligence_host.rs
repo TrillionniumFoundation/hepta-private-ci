@@ -9,6 +9,7 @@ use std::error::Error as StdError;
 use std::fmt;
 
 use codex_hepta_intelligence::IntelligenceContractErrorV1;
+use codex_hepta_intelligence::HostEnvelopePortV3;
 use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
 use codex_hepta_intelligence::LaneFStageV3;
 use codex_hepta_intelligence::PortDecisionV3;
@@ -105,6 +106,16 @@ impl AgentdIntelligenceHostV1 {
             decision: PortDecisionV3::Continue,
             authority: AuthorityPosture::DENY_ALL,
         })
+    }
+}
+
+impl HostEnvelopePortV3 for AgentdIntelligenceHostV1 {
+    fn accept_host_envelope_v3(
+        &mut self,
+        input: &PortInputV3,
+        envelope: &IntelligenceHostEnvelopeV1,
+    ) -> Result<PortReceiptV3, PortFailureV3> {
+        self.port_receipt(input, envelope)
     }
 }
 
