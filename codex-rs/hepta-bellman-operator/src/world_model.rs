@@ -76,6 +76,8 @@ pub enum WorldModelError {
     EmptyDataset,
     SampleLimit,
     DuplicateSample(String),
+    DuplicateEvidence,
+    InvalidModel,
     InvalidOutcome,
     StateActionLimit,
     BranchLimit,
@@ -122,8 +124,12 @@ pub fn fit_transition_model(
     }
 
     let mut groups: BTreeMap<(StableId, StableId), Group> = BTreeMap::new();
+    let mut seen_evidence = BTreeSet::new();
     for sample in &samples {
         require_digest(sample.evidence_digest, "world-model sample evidence")?;
+        if !seen_evidence.insert(sample.evidence_digest) {
+            return Err(WorldModelError::DuplicateEvidence);
+        }
         if !(-FixedQ32::ONE.raw()..=FixedQ32::ONE.raw()).contains(&sample.outcome.raw()) {
             return Err(WorldModelError::InvalidOutcome);
         }
@@ -177,36 +183,33 @@ pub fn fit_transition_model(
         });
     }
 
-    let mut bytes = b"hepta.bellman-operator.tabular-world-model.v1".to_vec();
-    push_id(&mut bytes, &model_id);
-    bytes.extend_from_slice(dataset_digest.as_array());
-    bytes.extend_from_slice(
-        &u32::try_from(estimates.len())
-            .map_err(|_| WorldModelError::Arithmetic)?
-            .to_be_bytes(),
-    );
-    for estimate in &estimates {
-        bytes.extend_from_slice(estimate.estimate_digest.as_array());
-    }
+    let model_digest = digest_world_model(&model_id, dataset_digest, &estimates)?;
     Ok(TabularWorldModelV1 {
         model_id,
         dataset_digest,
         estimates,
-        model_digest: Digest32::of_bytes(&bytes),
+        model_digest,
         authority: AuthorityPosture::DENY_ALL,
     })
 }
 
+#[deprecated(
+    note = "compatibility-only raw model prediction; use LoadedTabularWorldModelV1::from_pinned_payload(...).predict(...) for independently pinned inference"
+)]
 pub fn predict_transition(
     model: &TabularWorldModelV1,
     state_id: &StableId,
     action_id: &StableId,
 ) -> Result<WorldModelPredictionV1, WorldModelError> {
-    let estimate = model
+    crate::loaded_world_model::validate_world_model_v1(model)
+        .map_err(|_| WorldModelError::InvalidModel)?;
+    let index = model
         .estimates
-        .iter()
-        .find(|estimate| &estimate.state_id == state_id && &estimate.action_id == action_id)
-        .ok_or(WorldModelError::UnsupportedStateAction)?;
+        .binary_search_by(|estimate| {
+            (&estimate.state_id, &estimate.action_id).cmp(&(state_id, action_id))
+        })
+        .map_err(|_| WorldModelError::UnsupportedStateAction)?;
+    let estimate = &model.estimates[index];
     Ok(WorldModelPredictionV1 {
         model_id: model.model_id.clone(),
         dataset_digest: model.dataset_digest,
@@ -220,7 +223,26 @@ pub fn predict_transition(
     })
 }
 
-fn exact_probabilities(
+pub(crate) fn digest_world_model(
+    model_id: &StableId,
+    dataset_digest: Digest32,
+    estimates: &[TransitionEstimateV1],
+) -> Result<Digest32, WorldModelError> {
+    let mut bytes = b"hepta.bellman-operator.tabular-world-model.v1".to_vec();
+    push_id(&mut bytes, model_id);
+    bytes.extend_from_slice(dataset_digest.as_array());
+    bytes.extend_from_slice(
+        &u32::try_from(estimates.len())
+            .map_err(|_| WorldModelError::Arithmetic)?
+            .to_be_bytes(),
+    );
+    for estimate in estimates {
+        bytes.extend_from_slice(estimate.estimate_digest.as_array());
+    }
+    Ok(Digest32::of_bytes(&bytes))
+}
+
+pub(crate) fn exact_probabilities(
     total: u32,
     counts: BTreeMap<StableId, u32>,
 ) -> Result<Vec<TransitionBranchV1>, WorldModelError> {

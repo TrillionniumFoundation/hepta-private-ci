@@ -88,6 +88,8 @@ pub enum LearnedOperatorError {
     EmptyDigest(&'static str),
     InvalidGrid,
     DuplicateIdentity(String),
+    DuplicateEvidence,
+    InvalidArtifact,
     SampleLimit,
     UnknownSensor(String),
     UnknownAction(String),
@@ -158,10 +160,14 @@ pub fn fit_tabular_operator(
 
     let sensors = plan.sensor_ids.iter().collect::<BTreeSet<_>>();
     let actions = plan.action_ids.iter().collect::<BTreeSet<_>>();
+    let mut seen_evidence = BTreeSet::new();
     let mut groups: BTreeMap<(StableId, StableId), CellAccumulator> = BTreeMap::new();
     let mut sample_binding = b"hepta.bellman-operator.tabular-samples.v1".to_vec();
     for sample in &plan.samples {
         require_digest(sample.evidence_digest, "operator training sample")?;
+        if !seen_evidence.insert(sample.evidence_digest) {
+            return Err(LearnedOperatorError::DuplicateEvidence);
+        }
         if !sensors.contains(&sample.sensor_id) {
             return Err(LearnedOperatorError::UnknownSensor(
                 sample.sensor_id.to_string(),
@@ -292,11 +298,16 @@ pub fn fit_tabular_operator(
     })
 }
 
+#[deprecated(
+    note = "compatibility-only raw artifact prediction; use LoadedTabularOperatorV1::from_pinned_payload(...).predict(...) for independently pinned inference"
+)]
 pub fn predict_tabular_operator(
     artifact: &TabularOperatorArtifactV1,
     sensor_id: &StableId,
     action_id: &StableId,
 ) -> Result<TabularOperatorPredictionV1, LearnedOperatorError> {
+    crate::loaded::validate_tabular_artifact_v1(artifact)
+        .map_err(|_| LearnedOperatorError::InvalidArtifact)?;
     let cell = artifact
         .cells
         .iter()
