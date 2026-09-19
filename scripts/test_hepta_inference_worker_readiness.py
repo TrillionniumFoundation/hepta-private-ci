@@ -72,6 +72,21 @@ class InferenceWorkerReadinessTests(unittest.TestCase):
             receipt["limitations"],
         )
 
+    def test_receipt_binds_dedicated_workflow_and_inferd_composition(self):
+        receipt = MODULE.build_receipt()
+        self.assertIn(
+            ".github/workflows/inference-worker-qualification.yml",
+            receipt["documents"],
+        )
+        self.assertIn("codex-hepta-inferd-lib", MODULE.REQUIRED_TEST_CHECKS)
+
+    def test_hardware_matrix_requires_separate_cpu_gpu_and_rollback(self):
+        scenarios = set(MODULE.HARDWARE_SCENARIOS)
+        self.assertIn("real-cpu-load-run-unload", scenarios)
+        self.assertIn("real-gpu-load-run-unload", scenarios)
+        self.assertIn("artifact-mutation-after-selection", scenarios)
+        self.assertIn("rollback-predecessor-generation", scenarios)
+
     def test_wrong_expected_sha_rejects(self):
         with self.assertRaisesRegex(ValueError, "does not match expected candidate"):
             MODULE.build_receipt("0" * 40)
