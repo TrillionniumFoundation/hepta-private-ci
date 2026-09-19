@@ -17,4 +17,5 @@ workspace = true
 codex-hepta-types = { path = "../hepta-types" }
 
 [dev-dependencies]
+tempfile = { workspace = true }
 pretty_assertions = { workspace = true }
