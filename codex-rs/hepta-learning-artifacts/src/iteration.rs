@@ -259,7 +259,11 @@ mod tests {
         let mut value = candidate(IterationCandidateStateV1::Drafted, false);
         let before = value.clone();
         assert!(value.validate(&envelope()).is_ok());
-        assert!(value.transition(&envelope(), IterationCandidateStateV1::StaticallyValidated).is_err());
+        assert!(
+            value
+                .transition(&envelope(), IterationCandidateStateV1::StaticallyValidated)
+                .is_err()
+        );
         assert_eq!(value, before);
     }
 
@@ -267,9 +271,18 @@ mod tests {
     fn every_successful_transition_preserves_the_candidate_invariant() {
         use IterationCandidateStateV1::*;
         let states = [
-            Drafted, StaticallyValidated, SandboxTested, IndependentlyEvaluated,
-            ReviewRequested, AcceptedCandidate, Selected, Promoted, Released,
-            Rejected, Quarantined, Superseded,
+            Drafted,
+            StaticallyValidated,
+            SandboxTested,
+            IndependentlyEvaluated,
+            ReviewRequested,
+            AcceptedCandidate,
+            Selected,
+            Promoted,
+            Released,
+            Rejected,
+            Quarantined,
+            Superseded,
         ];
         for from in states {
             for to in states {
@@ -289,14 +302,43 @@ mod tests {
     }
 
     #[test]
+    fn invalid_binding_or_digest_never_partially_advances_a_candidate() {
+        let valid_envelope = envelope();
+        for broken_field in 0..4 {
+            let mut value = candidate(IterationCandidateStateV1::Drafted, true);
+            match broken_field {
+                0 => value.envelope_id = id("different-envelope"),
+                1 => value.semantic_diff_digest = Digest32::ZERO,
+                2 => value.test_plan_digest = Digest32::ZERO,
+                _ => value.rollback_digest = Digest32::ZERO,
+            }
+            let before = value.clone();
+            assert!(
+                value
+                    .transition(&valid_envelope, IterationCandidateStateV1::StaticallyValidated)
+                    .is_err()
+            );
+            assert_eq!(value, before);
+        }
+    }
+
+    #[test]
     fn bound_candidate_traverses_the_complete_recorded_path() {
         use IterationCandidateStateV1::*;
         let mut value = candidate(Drafted, true);
         for next in [
-            StaticallyValidated, SandboxTested, IndependentlyEvaluated,
-            ReviewRequested, AcceptedCandidate, Selected, Promoted, Released,
+            StaticallyValidated,
+            SandboxTested,
+            IndependentlyEvaluated,
+            ReviewRequested,
+            AcceptedCandidate,
+            Selected,
+            Promoted,
+            Released,
         ] {
-            value.transition(&envelope(), next).expect("valid recorded transition");
+            value
+                .transition(&envelope(), next)
+                .expect("valid recorded transition");
             value.validate(&envelope()).expect("preserved invariant");
         }
         let before = value.clone();
