@@ -43,7 +43,7 @@ library-only dependency and its values grant no runtime or effect authority.
 Generated language bindings, a durable/process-global schema service, production
 profile admission and product/runtime composition remain target-only. The current
 cross-language claim is limited to the frozen canonical V1 vectors, independently
-checked by Rust, Python and Node/TypeScript-compatible code.
+checked independently by Rust, Python and TypeScript code.
 
 ## Known limits and non-claims
 
@@ -65,7 +65,7 @@ registry capacity/kind binding, numeric overflow, rounding and error bounds.
 
 `testdata/canonical_digest_v1_vectors.json` freezes language-neutral bytes and
 SHA-256 outputs. `scripts/verify_platform_types_vectors.py` and
-`scripts/verify_platform_types_vectors.mjs` independently reconstruct those bytes.
+`scripts/verify_platform_types_vectors.ts` independently reconstruct those bytes.
 The Lane A workflow runs these vector checks plus native tests and strict lint on
 both exact PR source and the deterministic synthetic merge candidate.
 

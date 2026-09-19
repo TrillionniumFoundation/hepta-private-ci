@@ -32,7 +32,7 @@ The authority-free compatibility corpus is:
 - `codex-rs/hepta-types/testdata/canonical_digest_v1_vectors.json`;
 - Rust: `src/canonical_tests.rs`;
 - Python: `scripts/verify_platform_types_vectors.py`;
-- Node/TypeScript-compatible JS: `scripts/verify_platform_types_vectors.mjs`.
+- TypeScript: `scripts/verify_platform_types_vectors.ts` (Node 22 type stripping).
 
 The mixed scalar vector freezes every V1 type tag and the empty-field vector
 freezes the zero-field envelope. Any implementation that disagrees byte-for-byte

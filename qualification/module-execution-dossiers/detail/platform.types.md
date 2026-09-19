@@ -61,7 +61,7 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 - **Source tests:** canonical, identity, bounded, digest, fixed-point, registry and
   numeric conversion unit suites. Frozen canonical vectors live at
   `codex-rs/hepta-types/testdata/canonical_digest_v1_vectors.json` and are
-  independently reconstructed by Python and Node/TypeScript-compatible scripts.
+  independently reconstructed by Python and TypeScript scripts.
 - **Qualification:** `.github/workflows/lane-a-foundation.yml` runs exact-head
   source/native checks and a deterministic synthetic-merge job, retaining both
   receipt sets as Actions artifacts. Source documents do not self-assert those

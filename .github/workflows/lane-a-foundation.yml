@@ -8,7 +8,7 @@ on:
       - "docs/contracts/**"
       - "scripts/verify_hepta_callers.py"
       - "scripts/verify_platform_types_vectors.py"
-      - "scripts/verify_platform_types_vectors.mjs"
+      - "scripts/verify_platform_types_vectors.ts"
       - ".github/workflows/lane-a-foundation.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   push:
@@ -55,11 +55,16 @@ jobs:
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
+      - name: Set up Node.js for platform.types canonical vectors
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 22
+
       - name: Verify platform.types cross-language canonical vectors
         shell: bash
         run: |
           python3 scripts/verify_platform_types_vectors.py
-          node scripts/verify_platform_types_vectors.mjs
+          node --experimental-strip-types --no-warnings scripts/verify_platform_types_vectors.ts
 
       - name: Run Lane A native tests and strict lint
         shell: bash
@@ -125,11 +130,16 @@ jobs:
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
+      - name: Set up Node.js for platform.types canonical vectors on merge candidate
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 22
+
       - name: Verify platform.types cross-language canonical vectors on merge candidate
         shell: bash
         run: |
           python3 scripts/verify_platform_types_vectors.py
-          node scripts/verify_platform_types_vectors.mjs
+          node --experimental-strip-types --no-warnings scripts/verify_platform_types_vectors.ts
 
       - name: Run Lane A native tests and strict lint on merge candidate
         shell: bash
