@@ -12,8 +12,10 @@ use crate::AutomationError;
 use crate::AutomationLease;
 use crate::AutomationOccurrence;
 use crate::AutomationOccurrenceState;
+use crate::AutomationOccurrenceTerminalState;
 use crate::AutomationQueueReceipt;
 use crate::AutomationStore;
+use crate::AutomationTaskState;
 use crate::AutomationTaskId;
 use crate::TaskFlowError;
 
@@ -99,29 +101,75 @@ impl AutomationStore {
             .automation_occurrence(task_id, occurrence)
             .await?
             .ok_or(AutomationError::Conflict)?;
-        if current.state != AutomationOccurrenceState::Claimed
-            || current.client_user_message_id != client_user_message_id
+        if current.client_user_message_id != client_user_message_id {
+            return Err(AutomationError::Conflict);
+        }
+        let task = self.task(task_id).await?.ok_or(AutomationError::Conflict)?;
+
+        if task.state == AutomationTaskState::Enabled {
+            if current.state != AutomationOccurrenceState::Claimed {
+                return Err(AutomationError::Conflict);
+            }
+            // Phase 1 seals the old TaskFlow dispatch attempt as provider-proven
+            // absent and clears only the TaskFlow run lease. It is idempotent so
+            // a crash before phase 2 can safely repeat the same reconciliation.
+            self.requeue_occurrence_taskflow_after_proven_absence(
+                &current,
+                proof_digest,
+                observed_at_ms,
+            )
+            .await
+            .map_err(taskflow_recovery_error)?;
+
+            // Phase 2 releases the compatibility scheduler lease. The next claim
+            // keeps the occurrence/client identity, while materialization
+            // allocates a fresh step attempt before any new provider contact.
+            return self
+                .release_uncertain_for_retry(task_id, occurrence, client_user_message_id)
+                .await;
+        }
+
+        if !matches!(
+            task.state,
+            AutomationTaskState::Disabled
+                | AutomationTaskState::Cancelled
+                | AutomationTaskState::Completed
+        ) {
+            return Err(AutomationError::Conflict);
+        }
+
+        // A schedule retired while the old queue identity was being checked.
+        // Provider absence means there is nothing left to retry: reconcile the
+        // claimed step and run to Cancelled with the same proof, then terminalize
+        // the deterministic occurrence before clearing compatibility state.
+        if current.state == AutomationOccurrenceState::Claimed {
+            self.cancel_claimed_taskflow_after_proven_absence(
+                &current,
+                proof_digest,
+                observed_at_ms,
+            )
+            .await
+            .map_err(taskflow_recovery_error)?;
+            self.complete_occurrence(
+                task_id,
+                occurrence,
+                AutomationOccurrenceTerminalState::Cancelled,
+                proof_digest,
+                observed_at_ms,
+            )
+            .await?;
+        } else if current.state != AutomationOccurrenceState::Cancelled
+            || current.terminal_receipt_digest.as_ref() != Some(proof_digest)
         {
             return Err(AutomationError::Conflict);
         }
 
-        // Phase 1 seals the old TaskFlow dispatch attempt as provider-proven
-        // absent and clears only the TaskFlow run lease. It is idempotent so a
-        // crash before phase 2 can safely repeat the same reconciliation.
-        self.requeue_occurrence_taskflow_after_proven_absence(
-            &current,
-            proof_digest,
-            observed_at_ms,
-        )
-        .await
-        .map_err(taskflow_recovery_error)?;
-
-        // Phase 2 releases the compatibility scheduler lease. The next claim
-        // keeps the occurrence/client identity, while materialization allocates
-        // a fresh step attempt before any new provider contact.
+        // Exact-idempotent phase-2 cleanup makes a crash after terminalization
+        // replayable without resurrecting the retired task or occurrence.
         self.release_uncertain_for_retry(task_id, occurrence, client_user_message_id)
             .await
     }
+
 }
 
 fn to_i64(value: u64) -> Result<i64, AutomationError> {
