@@ -14,7 +14,11 @@ fn id(value: &str) -> StableId {
     StableId::new(value).expect("stable id")
 }
 
-fn record(run_id: &str, sequence: u64, disposition: RunStartObjectiveDispositionV1) -> RunStartRecordV1 {
+fn record(
+    run_id: &str,
+    sequence: u64,
+    disposition: RunStartObjectiveDispositionV1,
+) -> RunStartRecordV1 {
     let objective = format!("objective:{run_id}").into_bytes();
     RunStartRecordV1 {
         authentication: RunStartAuthenticationV1 {
@@ -82,13 +86,19 @@ fn state_with(record: RunStartRecordV1) -> (TempDir, ObjectiveHostState) {
 fn durable_authentication_frontier_allows_only_exact_replay() {
     let first = record("run.1", 7, RunStartObjectiveDispositionV1::Compiled);
     let (_temp, state) = state_with(first.clone());
-    assert!(require_replay_admission(&state, &first.authentication, &first.snapshot.run_id).is_ok());
+    assert!(
+        require_replay_admission(&state, &first.authentication, &first.snapshot.run_id).is_ok()
+    );
 
     let other = record("run.2", 7, RunStartObjectiveDispositionV1::Compiled);
-    assert!(require_replay_admission(&state, &other.authentication, &other.snapshot.run_id).is_err());
+    assert!(
+        require_replay_admission(&state, &other.authentication, &other.snapshot.run_id).is_err()
+    );
 
     let newer = record("run.2", 8, RunStartObjectiveDispositionV1::Compiled);
-    assert!(require_replay_admission(&state, &newer.authentication, &newer.snapshot.run_id).is_ok());
+    assert!(
+        require_replay_admission(&state, &newer.authentication, &newer.snapshot.run_id).is_ok()
+    );
 }
 
 #[test]
@@ -108,11 +118,7 @@ fn runtime_consumes_compiled_record_but_not_explicit_abstain() {
     ensure_runtime_record(&mut coordinator, &compiled, 1).expect("compiled run");
     assert!(coordinator.run("run.1").is_some());
 
-    let abstain = record(
-        "run.2",
-        2,
-        RunStartObjectiveDispositionV1::ExplicitAbstain,
-    );
+    let abstain = record("run.2", 2, RunStartObjectiveDispositionV1::ExplicitAbstain);
     ensure_runtime_record(&mut coordinator, &abstain, 1).expect("abstain");
     assert!(coordinator.run("run.2").is_none());
 }
