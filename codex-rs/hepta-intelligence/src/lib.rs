@@ -23,6 +23,26 @@ pub use capability_snapshot::CapabilitySnapshotErrorV2;
 pub use capability_snapshot::CapabilitySnapshotRequestV2;
 pub use capability_snapshot::CapabilitySnapshotV2;
 
+mod pipeline_v3;
+
+pub use pipeline_v3::IntelligenceBudgetV3;
+pub use pipeline_v3::IntelligenceCompositionPortsV3;
+pub use pipeline_v3::IntelligenceCompositionReceiptV3;
+pub use pipeline_v3::IntelligenceDispositionV3;
+pub use pipeline_v3::IntelligenceFailureClassV3;
+pub use pipeline_v3::IntelligenceHostEnvelopeV1;
+pub use pipeline_v3::IntelligencePipelineErrorV3;
+pub use pipeline_v3::IntelligencePortDecisionV3;
+pub use pipeline_v3::IntelligencePortFailureV3;
+pub use pipeline_v3::IntelligencePortInputV3;
+pub use pipeline_v3::IntelligencePortReceiptV3;
+pub use pipeline_v3::IntelligenceRunRequestV3;
+pub use pipeline_v3::IntelligenceStageOutcomeV3;
+pub use pipeline_v3::IntelligenceStageTraceV3;
+pub use pipeline_v3::IntelligenceStageV3;
+pub use pipeline_v3::LegalActionCandidateSetV1;
+pub use pipeline_v3::run_composition_v3;
+
 mod pipeline_v2;
 
 pub use pipeline_v2::LaneFRunRequestV2;

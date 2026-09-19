@@ -182,7 +182,7 @@ impl CapabilitySnapshotV2 {
         })
     }
 
-    pub(super) fn bound_owner(&self, capability: &str) -> Option<&str> {
+    pub(crate) fn bound_owner(&self, capability: &str) -> Option<&str> {
         self.bindings
             .iter()
             .find(|(id, _)| id.as_str() == capability)
