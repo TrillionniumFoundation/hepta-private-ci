@@ -63,7 +63,7 @@ impl EvidenceTrust {
                     "evidence trust registry has duplicate issuer epochs or invalid role bounds",
                 ));
             }
-            StableId::new(&issuer.issuer_id).map_err(|error| invalid(&error.to_string()))?;
+            StableId::new(issuer.issuer_id.clone()).map_err(|error| invalid(&error.to_string()))?;
             Generation::new(issuer.key_epoch).map_err(|error| invalid(&error.to_string()))?;
             let _: [u8; 32] = hex_bytes(&issuer.public_key_hex)?;
             let mut roles = BTreeSet::new();
