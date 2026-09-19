@@ -186,7 +186,7 @@ fn every_collection_enforces_counts_and_duplicate_keys_before_semantic_compilati
             s.terminal_conditions
                 .resize(n, s.terminal_conditions[0].clone())
         }),
-        ("legalActionClasses", 1, 128, |s, n| {
+        ("legalActionClasses", 0, 128, |s, n| {
             s.legal_action_classes
                 .resize(n, s.legal_action_classes[0].clone())
         }),
@@ -198,7 +198,7 @@ fn every_collection_enforces_counts_and_duplicate_keys_before_semantic_compilati
             s.confirmation_action_classes
                 .resize(n, s.confirmation_action_classes[0].clone())
         }),
-        ("constraints", 1, 256, |s, n| {
+        ("constraints", 1, 246, |s, n| {
             s.constraints.resize(n, s.constraints[0].clone())
         }),
         ("softDimensions", 0, 64, |s, n| {
@@ -241,6 +241,70 @@ fn every_collection_enforces_counts_and_duplicate_keys_before_semantic_compilati
             Err(ObjectiveStructureError::DuplicateSemanticKey { field, index: 1 })
         );
     }
+}
+
+#[test]
+fn source_constraint_bound_reserves_generated_native_slots() {
+    let mut source = envelope();
+    let template = source.structured_intent.constraints[0].clone();
+    source.structured_intent.constraints = (0..247)
+        .map(|index| ObjectiveSourceConstraintV1 {
+            constraint_id: format!("constraint-{index}"),
+            ..template.clone()
+        })
+        .collect();
+    assert_eq!(
+        source.validate_structure(),
+        Err(ObjectiveStructureError::CollectionCount {
+            field: "constraints",
+            actual: 247,
+            minimum: 1,
+            maximum: 246,
+        })
+    );
+}
+
+#[test]
+fn predicate_families_share_the_native_aggregate_ceiling() {
+    let mut source = envelope();
+    let success = source.structured_intent.success_predicates[0].clone();
+    let terminal = source.structured_intent.terminal_conditions[0].clone();
+    source.structured_intent.success_predicates = (0..64)
+        .map(|index| ObjectiveSourcePredicateV1 {
+            predicate_id: format!("success-{index}"),
+            terminal: false,
+            ..success.clone()
+        })
+        .collect();
+    source.structured_intent.terminal_conditions = (0..63)
+        .map(|index| ObjectiveSourcePredicateV1 {
+            predicate_id: format!("terminal-{index}"),
+            terminal: true,
+            ..terminal.clone()
+        })
+        .collect();
+    let evidence = source.structured_intent.evidence_requirements[0].clone();
+    source.structured_intent.evidence_requirements = vec![evidence.clone(), ObjectiveEvidenceRequirementV1 {
+        requirement_id: "evidence-overflow".into(),
+        ..evidence
+    }];
+    assert_eq!(
+        source.validate_structure(),
+        Err(ObjectiveStructureError::CollectionCount {
+            field: "successPredicates+terminalConditions+evidenceRequirements",
+            actual: 129,
+            minimum: 0,
+            maximum: 128,
+        })
+    );
+}
+
+#[test]
+fn empty_caller_action_set_is_structurally_valid_for_intrinsic_abstain() {
+    let mut source = envelope();
+    source.structured_intent.legal_action_classes.clear();
+    source.structured_intent.confirmation_action_classes.clear();
+    assert_eq!(source.validate_structure(), Ok(()));
 }
 
 #[test]
