@@ -143,16 +143,17 @@ class OpenSslTrustStoreTests(unittest.TestCase):
 
                 now = time.time_ns()
                 identity = WorkerIdentityReceipt(
-                    "worker-signed",
-                    "github-actions:engineering-worker",
-                    "6" * 64,
-                    ("git", "python"),
-                    2,
-                    11,
-                    now,
-                    now + 5_000_000_000,
-                    "engineering_worker_authority",
-                    "worker-authority",
+                    worker_id="worker-signed",
+                    principal="github-actions:engineering-worker",
+                    credential_chain_digest="6" * 64,
+                    capabilities=("git", "python"),
+                    maximum_concurrency=2,
+                    authority_epoch=11,
+                    observed_unix_ns=now,
+                    lease_expires_unix_ns=now + 1_000_000_000,
+                    expires_unix_ns=now + 5_000_000_000,
+                    issuer="engineering_worker_authority",
+                    signing_identity="worker-authority",
                 )
                 worker = controller.register_worker(
                     sign(identity, "worker"),
@@ -160,6 +161,25 @@ class OpenSslTrustStoreTests(unittest.TestCase):
                 )
                 self.assertEqual(worker.state, "active")
                 self.assertEqual(worker.principal, identity.principal)
+                renewed = controller.heartbeat_worker(
+                    worker.worker_id,
+                    expected_revision=worker.revision,
+                    authority_epoch=worker.authority_epoch,
+                    new_expiry_unix_ns=now + 2_000_000_000,
+                    now_ns=now + 2,
+                )
+                self.assertEqual(
+                    renewed.lease_expires_unix_ns,
+                    now + 2_000_000_000,
+                )
+                with self.assertRaisesRegex(EngineeringError, "invalid_worker_expiry"):
+                    controller.heartbeat_worker(
+                        worker.worker_id,
+                        expected_revision=renewed.revision,
+                        authority_epoch=renewed.authority_epoch,
+                        new_expiry_unix_ns=now + 6_000_000_000,
+                        now_ns=now + 3,
+                    )
 
                 anchor = controller.prepare_audit_anchor(
                     signing_identity="audit-witness",
