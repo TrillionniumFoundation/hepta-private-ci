@@ -31,7 +31,9 @@ pub enum NduContinuityScopeV1 {
 
 impl NduContinuityScopeV1 {
     const fn tag(self) -> u8 {
-        0
+        match self {
+            Self::DeclaredOperatingDomain => 0,
+        }
     }
 }
 
@@ -87,6 +89,11 @@ pub struct NduWellPosednessCertificateV1 {
 
 impl NduWellPosednessCertificateV1 {
     #[must_use]
+    pub fn certificate_id(&self) -> &StableId {
+        &self.certificate_id
+    }
+
+    #[must_use]
     pub const fn manifest_digest(&self) -> Digest32 {
         self.manifest_digest
     }
@@ -94,6 +101,51 @@ impl NduWellPosednessCertificateV1 {
     #[must_use]
     pub const fn operating_domain_digest(&self) -> Digest32 {
         self.operating_domain_digest
+    }
+
+    #[must_use]
+    pub fn square_integrability(&self) -> &NduAssumptionEvidenceV1 {
+        &self.square_integrability
+    }
+
+    #[must_use]
+    pub fn conditional_mean(&self) -> &NduConditionalMeanEvidenceV1 {
+        &self.conditional_mean
+    }
+
+    #[must_use]
+    pub fn coefficient_bounds(&self) -> &NduAssumptionEvidenceV1 {
+        &self.coefficient_bounds
+    }
+
+    #[must_use]
+    pub fn lipschitz(&self) -> &NduAssumptionEvidenceV1 {
+        &self.lipschitz
+    }
+
+    #[must_use]
+    pub fn generator_monotonicity(&self) -> &NduAssumptionEvidenceV1 {
+        &self.generator_monotonicity
+    }
+
+    #[must_use]
+    pub fn terminal_lipschitz(&self) -> &NduAssumptionEvidenceV1 {
+        &self.terminal_lipschitz
+    }
+
+    #[must_use]
+    pub const fn continuity_scope(&self) -> NduContinuityScopeV1 {
+        self.continuity_scope
+    }
+
+    #[must_use]
+    pub fn solver_stability(&self) -> &NduAssumptionEvidenceV1 {
+        &self.solver_stability
+    }
+
+    #[must_use]
+    pub fn evaluator_identity(&self) -> &StableId {
+        &self.evaluator_identity
     }
 
     #[must_use]
