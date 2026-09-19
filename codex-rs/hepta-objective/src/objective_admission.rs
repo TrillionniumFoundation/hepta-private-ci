@@ -539,7 +539,7 @@ pub fn admit_objective_v1(
 pub fn compile_admitted_objective_v1(
     admitted: AdmittedObjectiveV1,
 ) -> Result<ObjectiveAdmissionOutcomeV1, ObjectiveAdmissionError> {
-    let compile_result = crate::compile(admitted.source)?;
+    let compile_result = crate::compiler::compile(admitted.source)?;
     Ok(ObjectiveAdmissionOutcomeV1 {
         receipt: admitted.receipt,
         compile_result,
