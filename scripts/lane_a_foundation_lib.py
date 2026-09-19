@@ -111,6 +111,7 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
     validate_capability_map(matrix, capability, root)
     native = validate_native_bindings(root)
     validate_wire_vector(root)
+    validate_platform_types_vector(root)
     validate_source_specific(root)
     return native["currentSourceBinding"]
 
