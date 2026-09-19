@@ -8,6 +8,15 @@ on:
     paths:
       - codex-rs/hepta-objective/**
       - codex-rs/hepta-types/**
+      - codex-rs/hepta-agentd/Cargo.toml
+      - codex-rs/hepta-agentd/src/objective_runtime.rs
+      - codex-rs/hepta-agentd/src/objective_runtime_tests.rs
+      - codex-rs/Cargo.lock
+      - docs/modules/objective.compiler/**
+      - docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md
+      - qualification/module-execution-dossiers/detail/objective.compiler.md
+      - docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md
+      - scripts/hepta-objective-target-measure.py
       - .github/workflows/hepta-objective-admission.yml
 
 permissions:
@@ -34,6 +43,12 @@ jobs:
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
           git rev-parse HEAD HEAD^{tree}
 
+      - name: Validate target-host measurement recorder
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-objective-target-measure.py --self-test
+
       - name: Objective tests
         working-directory: codex-rs
         shell: bash
@@ -41,19 +56,26 @@ jobs:
           set -euo pipefail
           cargo test --locked -p codex-hepta-objective -- --nocapture
 
-      - name: Strict objective lint
+      - name: Product caller composition tests
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo clippy --locked -p codex-hepta-objective --all-targets -- -D warnings
+          cargo test --locked -p codex-hepta-agentd objective_runtime -- --nocapture
+
+      - name: Strict objective and caller lint
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-objective -p codex-hepta-agentd --all-targets -- -D warnings
 
       - name: Formatting and clean source
         if: always()
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-objective -- --check
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-objective --package codex-hepta-agentd -- --check
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
