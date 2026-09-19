@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "1004232384db8bb699abd1137898cff2102cb643",
-    "tree": "772e5c01e6b49c4b1144c8e1283b236cacebc7d8"
+    "commit": "fbb2154564c567a1fce0d5bba3298d425aebd165",
+    "tree": "ade32cac1df7d46f9fdb3f4bee1635654d7e6572"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "context.compiler",
@@ -150,7 +150,7 @@
   ],
   "repositoryControlledGaps": [
     "Bind the verified V2 operations to an authenticated production consumer and concrete admission/tokenizer/serializer/transport adapters.",
-    "Qualify verifier-authenticated secret classification, authoritative admission/revocation semantics, exact provider tokenizer/template/tool-schema identities, and payload-bound transport/provider acknowledgement semantics on the selected target host.",
+    "Qualify verifier-authenticated request scope and secret classification, authoritative admission/revocation semantics, exact provider tokenizer/template/tool-schema identities, and payload-bound transport/provider acknowledgement semantics on the selected target host.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
