@@ -184,6 +184,38 @@ impl From<&OutcomeWatermarkV1> for CanonicalOutcomeWatermarkV1 {
     }
 }
 
+impl CanonicalOutcomeWatermarkV1 {
+    fn validate_protocol(&self) -> Result<(), ProtocolAdapterError> {
+        require_nonzero(
+            self.expected_delay_profile_digest,
+            "expectedDelayProfileDigest",
+        )?;
+        validate_terminality(&self.terminality)?;
+        match self.terminality.as_str() {
+            "pending" => {
+                if self.censoring_reason.is_some()
+                    || self.correction_predecessor.is_some()
+                    || self.finalized_at.is_some()
+                {
+                    return Err(ProtocolAdapterError::InvalidValue("outcomeWatermark"));
+                }
+            }
+            "censored" => {
+                if self.censoring_reason.is_none() || self.finalized_at.is_none() {
+                    return Err(ProtocolAdapterError::InvalidValue("outcomeWatermark"));
+                }
+            }
+            "terminal" => {
+                if self.censoring_reason.is_some() || self.finalized_at.is_none() {
+                    return Err(ProtocolAdapterError::InvalidValue("outcomeWatermark"));
+                }
+            }
+            _ => unreachable!("terminality validated"),
+        }
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields, rename_all = "camelCase")]
 pub struct LearningEpisodeV1 {
@@ -261,7 +293,10 @@ impl OutcomeReceiptV1 {
 }
 
 pub trait CanonicalLearningProtocol: Serialize + DeserializeOwned + Sized {
+    fn validate_protocol(&self) -> Result<(), ProtocolAdapterError>;
+
     fn to_canonical_json(&self) -> Result<Vec<u8>, ProtocolAdapterError> {
+        self.validate_protocol()?;
         let bytes = serde_json::to_vec(self).map_err(|_| ProtocolAdapterError::Json)?;
         if bytes.len() > MAX_PROTOCOL_BYTES {
             return Err(ProtocolAdapterError::EncodedSize);
@@ -273,15 +308,94 @@ pub trait CanonicalLearningProtocol: Serialize + DeserializeOwned + Sized {
         if bytes.len() > MAX_PROTOCOL_BYTES {
             return Err(ProtocolAdapterError::EncodedSize);
         }
-        serde_json::from_slice(bytes).map_err(|_| ProtocolAdapterError::Json)
+        let value: Self = serde_json::from_slice(bytes).map_err(|_| ProtocolAdapterError::Json)?;
+        value.validate_protocol()?;
+        Ok(value)
     }
 }
 
-impl CanonicalLearningProtocol for CreditAssignmentReceiptV1 {}
-impl CanonicalLearningProtocol for DatasetSnapshotV1 {}
-impl CanonicalLearningProtocol for LearningDecisionV1 {}
-impl CanonicalLearningProtocol for LearningEpisodeV1 {}
-impl CanonicalLearningProtocol for OutcomeReceiptV1 {}
+impl CanonicalLearningProtocol for CreditAssignmentReceiptV1 {
+    fn validate_protocol(&self) -> Result<(), ProtocolAdapterError> {
+        require_nonzero(self.outcome_digest, "outcomeDigest")?;
+        require_nonzero(self.rule_digest, "ruleDigest")?;
+        if self.allocations.is_empty() || self.allocations.len() > 256 {
+            return Err(ProtocolAdapterError::InvalidValue("allocations"));
+        }
+        let mut targets = self
+            .allocations
+            .iter()
+            .map(|allocation| allocation.target_id.clone())
+            .collect::<Vec<_>>();
+        targets.sort();
+        if targets.windows(2).any(|pair| pair[0] == pair[1]) {
+            return Err(ProtocolAdapterError::InvalidValue("duplicate allocation target"));
+        }
+        Ok(())
+    }
+}
+
+impl CanonicalLearningProtocol for DatasetSnapshotV1 {
+    fn validate_protocol(&self) -> Result<(), ProtocolAdapterError> {
+        if self.row_count == 0 {
+            return Err(ProtocolAdapterError::InvalidValue("rowCount"));
+        }
+        for (label, digest) in [
+            ("episodeRangeDigest", self.episode_range_digest),
+            ("schemaDigest", self.schema_digest),
+            ("splitPolicyDigest", self.split_policy_digest),
+            ("deletionCutoffDigest", self.deletion_cutoff_digest),
+            ("contentDigest", self.content_digest),
+        ] {
+            require_nonzero(digest, label)?;
+        }
+        Ok(())
+    }
+}
+
+impl CanonicalLearningProtocol for LearningDecisionV1 {
+    fn validate_protocol(&self) -> Result<(), ProtocolAdapterError> {
+        require_nonzero(self.candidate_set_digest, "candidateSetDigest")?;
+        require_nonzero(self.policy_digest, "policyDigest")?;
+        if self.propensity_ppm == 0 || self.propensity_ppm > 1_000_000 {
+            return Err(ProtocolAdapterError::InvalidValue("propensityPpm"));
+        }
+        if self.random_seed_digest.is_some_and(Digest32::is_zero) {
+            return Err(ProtocolAdapterError::InvalidValue("randomSeedDigest"));
+        }
+        Ok(())
+    }
+}
+
+impl CanonicalLearningProtocol for LearningEpisodeV1 {
+    fn validate_protocol(&self) -> Result<(), ProtocolAdapterError> {
+        require_nonzero(self.run_snapshot_digest, "runSnapshotDigest")?;
+        if self.ordered_event_digests.is_empty()
+            || self.ordered_event_digests.len() > 4096
+            || self.ordered_event_digests.iter().any(Digest32::is_zero)
+        {
+            return Err(ProtocolAdapterError::InvalidValue("orderedEventDigests"));
+        }
+        validate_terminality(&self.terminality)?;
+        self.outcome_watermark.validate_protocol()
+    }
+}
+
+impl CanonicalLearningProtocol for OutcomeReceiptV1 {
+    fn validate_protocol(&self) -> Result<(), ProtocolAdapterError> {
+        require_nonzero(self.observation_digest, "observationDigest")?;
+        validate_terminality(&self.censoring)?;
+        if self.utility_vector.len() > 4096 {
+            return Err(ProtocolAdapterError::InvalidValue("utilityVector"));
+        }
+        if self.censoring == "terminal" && self.utility_vector.is_empty() {
+            return Err(ProtocolAdapterError::InvalidValue("utilityVector"));
+        }
+        if self.censoring != "terminal" && !self.utility_vector.is_empty() {
+            return Err(ProtocolAdapterError::InvalidValue("utilityVector"));
+        }
+        Ok(())
+    }
+}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ProtocolAdapterError {
@@ -289,6 +403,7 @@ pub enum ProtocolAdapterError {
     EncodedSize,
     InvalidId,
     InvalidDigest,
+    InvalidValue(&'static str),
 }
 
 impl fmt::Display for ProtocolAdapterError {
@@ -298,6 +413,23 @@ impl fmt::Display for ProtocolAdapterError {
 }
 
 impl StdError for ProtocolAdapterError {}
+
+fn require_nonzero(
+    digest: Digest32,
+    label: &'static str,
+) -> Result<(), ProtocolAdapterError> {
+    if digest.is_zero() {
+        return Err(ProtocolAdapterError::InvalidValue(label));
+    }
+    Ok(())
+}
+
+fn validate_terminality(value: &str) -> Result<(), ProtocolAdapterError> {
+    match value {
+        "pending" | "censored" | "terminal" => Ok(()),
+        _ => Err(ProtocolAdapterError::InvalidValue("terminality")),
+    }
+}
 
 fn terminality_name(value: OutcomeTerminalityV1) -> &'static str {
     match value {
