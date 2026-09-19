@@ -605,18 +605,19 @@ impl FleetAllocationStore {
     ) -> Result<FleetAllocationSnapshotV1, FleetAllocationStoreError> {
         let current = self.load_state()?;
         require_generation(&current, expected_generation)?;
-        let mut grants = current.grants;
-        let before = grants.len();
+        let grant_count = current.grants.len();
+        let host_count = current.hosts.len();
+        let mut grants = current.grants.clone();
         grants.retain(|_, grant| {
             !((grant.revoked || grant.expires_at_unix_ms <= now_unix_ms)
                 && grant.holder_state == FleetAllocationHolderStateV1::Released)
         });
-        let mut hosts = current.hosts;
+        let mut hosts = current.hosts.clone();
         hosts.retain(|host_id, host| {
             host.valid_until_unix_ms > now_unix_ms
                 || grants.values().any(|grant| &grant.host_id == host_id)
         });
-        if grants.len() == before && hosts.len() == current.hosts.len() {
+        if grants.len() == grant_count && hosts.len() == host_count {
             return Ok(current.snapshot());
         }
         let next = self.publish_next(current.generation, hosts, grants)?;
@@ -807,19 +808,23 @@ impl FleetAllocationStore {
     fn load_state(&self) -> Result<StoredFleetAllocationStateV1, FleetAllocationStoreError> {
         validate_physical_directory(&self.root)?;
         let generations = list_state_generations(&self.root)?;
-        let latest = generations
-            .into_iter()
-            .max()
-            .ok_or_else(|| FleetAllocationStoreError::Corrupt(
+        if generations.is_empty() {
+            return Err(FleetAllocationStoreError::Corrupt(
                 "allocation-store state is missing".to_string(),
-            ))?;
-        for expected in 0..=latest {
-            if !state_path(&self.root, expected).is_file() {
+            ));
+        }
+        for pair in generations.windows(2) {
+            if pair[1] != pair[0].saturating_add(1) {
                 return Err(FleetAllocationStoreError::Corrupt(
-                    "allocation-store generations are not contiguous".to_string(),
+                    "retained allocation-store generations are not contiguous".to_string(),
                 ));
             }
         }
+        let latest = *generations
+            .last()
+            .ok_or_else(|| FleetAllocationStoreError::Corrupt(
+                "allocation-store state is missing".to_string(),
+            ))?;
         read_state(&state_path(&self.root, latest))
     }
 
