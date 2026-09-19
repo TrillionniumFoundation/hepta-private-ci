@@ -559,11 +559,52 @@ impl SecretLeaseRegistry {
         Ok(lease)
     }
 
-    fn observe_issue(
+    fn observe_issue_identity(
         &self,
         operation_id: &str,
         request_sha256: [u8; 32],
         provider_lease_id: Zeroizing<String>,
+        renewable: bool,
+    ) -> Result<StoredLease, LeaseRegistryError> {
+        let mut state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| LeaseRegistryError::Unavailable)?;
+        ensure_registry_live(&state)?;
+        let mut lease = lease_for_operation(&state, operation_id)?.clone();
+        require_pending(
+            &lease,
+            operation_id,
+            request_sha256,
+            LeaseOperationKind::Issue,
+        )?;
+        if lease.state != SecretLeaseState::Issuing || !provider_lease_id(&provider_lease_id) {
+            return Err(LeaseRegistryError::InvalidTransition);
+        }
+        lease.provider_lease_id = Some(provider_lease_id);
+        lease.renewable = renewable;
+        // From this point onward a provider-side lease definitely exists. If
+        // anything fails before secret delivery, retain its identity and
+        // require cleanup/reconciliation rather than collapsing to "unknown".
+        lease.reconciliation_reason = Some(ReconciliationReason::OrphanedActiveLease);
+        append_event(
+            &self.0.store,
+            &mut state,
+            operation_id,
+            request_sha256,
+            LeaseOperationKind::Issue,
+            OperationPhase::ProviderObserved,
+            None,
+            lease.clone(),
+        )?;
+        Ok(lease)
+    }
+
+    fn observe_issue_ready(
+        &self,
+        operation_id: &str,
+        request_sha256: [u8; 32],
         renewable: bool,
         issued_at_ms: u64,
         expires_at_ms: u64,
@@ -583,10 +624,9 @@ impl SecretLeaseRegistry {
             request_sha256,
             LeaseOperationKind::Issue,
         )?;
-        if lease.state != SecretLeaseState::Issuing || !provider_lease_id(&provider_lease_id) {
+        if lease.state != SecretLeaseState::Issuing || lease.provider_lease_id.is_none() {
             return Err(LeaseRegistryError::InvalidTransition);
         }
-        lease.provider_lease_id = Some(provider_lease_id);
         lease.renewable = renewable;
         lease.issued_at_ms = Some(issued_at_ms);
         lease.expires_at_ms = Some(expires_at_ms);
@@ -1300,6 +1340,9 @@ fn normalize_recovery(state: &mut RegistryState) {
             continue;
         };
         let reason = match lease.state {
+            SecretLeaseState::Issuing if lease.provider_lease_id.is_some() => {
+                Some(ReconciliationReason::OrphanedActiveLease)
+            }
             SecretLeaseState::Issuing => Some(ReconciliationReason::IssueOutcomeUnknown),
             SecretLeaseState::IssuedPendingDelivery => Some(ReconciliationReason::SecretDeliveryLost),
             SecretLeaseState::Renewing => Some(ReconciliationReason::RenewOutcomeUnknown),
@@ -1727,10 +1770,22 @@ impl BaoClient {
                 return Err(BaoLeaseError::InvalidResponse);
             }
         };
-        if !provider_lease_id(&decoded.lease_id)
-            || decoded.lease_duration == 0
-            || decoded.lease_duration > MAX_LEASE_DURATION_SECONDS
-        {
+        let DynamicLeaseResponse {
+            lease_id,
+            lease_duration,
+            renewable,
+            data,
+        } = decoded;
+        let Some(provider_id) = lease_id else {
+            registry.mark_reconciliation(
+                &request.operation_id,
+                request_sha256,
+                LeaseOperationKind::Issue,
+                ReconciliationReason::IssueOutcomeUnknown,
+            )?;
+            return Err(BaoLeaseError::InvalidResponse);
+        };
+        if !provider_lease_id(&provider_id) {
             registry.mark_reconciliation(
                 &request.operation_id,
                 request_sha256,
@@ -1739,31 +1794,69 @@ impl BaoClient {
             )?;
             return Err(BaoLeaseError::InvalidResponse);
         }
+        registry.observe_issue_identity(
+            &request.operation_id,
+            request_sha256,
+            provider_id,
+            renewable.unwrap_or(false),
+        )?;
+        let (Some(lease_duration), Some(renewable), Some(data)) =
+            (lease_duration, renewable, data)
+        else {
+            registry.mark_reconciliation(
+                &request.operation_id,
+                request_sha256,
+                LeaseOperationKind::Issue,
+                ReconciliationReason::OrphanedActiveLease,
+            )?;
+            return Err(BaoLeaseError::InvalidResponse);
+        };
+        if lease_duration == 0 || lease_duration > MAX_LEASE_DURATION_SECONDS {
+            registry.mark_reconciliation(
+                &request.operation_id,
+                request_sha256,
+                LeaseOperationKind::Issue,
+                ReconciliationReason::OrphanedActiveLease,
+            )?;
+            return Err(BaoLeaseError::InvalidResponse);
+        }
         let mut secret_bytes = 0usize;
         for field in &fields {
-            let Some(SecretValue::String(value)) = decoded.data.get(field) else {
+            let Some(SecretValue::String(value)) = data.get(field) else {
                 registry.mark_reconciliation(
                     &request.operation_id,
                     request_sha256,
                     LeaseOperationKind::Issue,
-                    ReconciliationReason::IssueOutcomeUnknown,
+                    ReconciliationReason::OrphanedActiveLease,
                 )?;
                 return Err(BaoLeaseError::InvalidResponse);
             };
-            secret_bytes = secret_bytes
-                .checked_add(value.len())
-                .ok_or(BaoLeaseError::InvalidResponse)?;
+            let Some(total) = secret_bytes.checked_add(value.len()) else {
+                registry.mark_reconciliation(
+                    &request.operation_id,
+                    request_sha256,
+                    LeaseOperationKind::Issue,
+                    ReconciliationReason::OrphanedActiveLease,
+                )?;
+                return Err(BaoLeaseError::InvalidResponse);
+            };
+            secret_bytes = total;
             if secret_bytes > MAX_RESPONSE_BYTES {
+                registry.mark_reconciliation(
+                    &request.operation_id,
+                    request_sha256,
+                    LeaseOperationKind::Issue,
+                    ReconciliationReason::OrphanedActiveLease,
+                )?;
                 return Err(BaoLeaseError::ResponseTooLarge);
             }
         }
         let issued_at_ms = now_ms()?;
-        let expires_at_ms = expiry_from_ttl(issued_at_ms, decoded.lease_duration)?;
-        registry.observe_issue(
+        let expires_at_ms = expiry_from_ttl(issued_at_ms, lease_duration)?;
+        registry.observe_issue_ready(
             &request.operation_id,
             request_sha256,
-            decoded.lease_id.clone(),
-            decoded.renewable,
+            renewable,
             issued_at_ms,
             expires_at_ms,
             fields.len(),
@@ -1772,7 +1865,7 @@ impl BaoClient {
 
         let view = BaoDynamicSecret {
             required_fields: &fields,
-            data: &decoded.data,
+            data: &data,
         };
         let delivery = match authority.with_verified_use(verified, &binding, || consumer(&view)) {
             Ok(Ok(())) => LeaseDelivery::Delivered,
@@ -2516,10 +2609,10 @@ fn provider_lease_id(value: &str) -> bool {
 
 #[derive(Deserialize)]
 struct DynamicLeaseResponse {
-    lease_id: Zeroizing<String>,
-    lease_duration: u64,
-    renewable: bool,
-    data: BTreeMap<String, SecretValue>,
+    lease_id: Option<Zeroizing<String>>,
+    lease_duration: Option<u64>,
+    renewable: Option<bool>,
+    data: Option<BTreeMap<String, SecretValue>>,
 }
 
 #[derive(Deserialize)]
