@@ -144,7 +144,11 @@ impl AppServerModelDriver {
             return Err("Agent is not ready".into());
         }
         let context = match context_query {
-            Some(query) => Some(owner.cognitive_context(query.to_string(), /*limit*/ 4).await?),
+            Some(query) => Some(
+                owner
+                    .cognitive_context(query.to_string(), /*limit*/ 4)
+                    .await?,
+            ),
             None => None,
         };
         let additional_context = context
@@ -186,8 +190,8 @@ impl AppServerModelDriver {
         if prompt.is_empty() || prompt.len() > MAX_PROMPT_BYTES {
             return Err("prompt must contain 1..32768 bytes".into());
         }
-        let authorization = authorization
-            .ok_or("final-use authority is required before provider contact")?;
+        let authorization =
+            authorization.ok_or("final-use authority is required before provider contact")?;
         if cancellation.is_cancelled() {
             return Err("cancelled before admission".into());
         }
