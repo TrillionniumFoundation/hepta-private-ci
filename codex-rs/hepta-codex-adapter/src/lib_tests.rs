@@ -10,6 +10,10 @@ fn id(value: &str) -> StableId {
     value
 }
 
+fn method(value: &str) -> AppServerWireMethod {
+    AppServerWireMethod::new(value.to_string()).expect("test wire method must be bounded")
+}
+
 fn digest(value: &[u8]) -> Digest32 {
     Digest32::of_bytes(value)
 }
@@ -19,7 +23,7 @@ fn intent() -> CodexOperationIntent {
         operation_id: id("operation:1"),
         session_id: id("session:1"),
         thread_id: id("thread:1"),
-        method_id: id(TURN_START_METHOD_ID),
+        method: method(TURN_START_METHOD_ID),
         payload_digest: digest(b"payload"),
         lease_payload_digest: digest(b"payload"),
         owner_generation: 7,
@@ -47,7 +51,7 @@ fn terminal(status: TurnStatus, error: Option<TurnError>) -> TurnCompletedNotifi
 #[test]
 fn turn_start_method_id_matches_the_v2_wire_method() {
     assert_eq!(TURN_START_METHOD_ID, "turn/start");
-    assert_eq!(intent().method_id.as_str(), "turn/start");
+    assert_eq!(intent().method.as_str(), "turn/start");
 }
 
 #[test]
