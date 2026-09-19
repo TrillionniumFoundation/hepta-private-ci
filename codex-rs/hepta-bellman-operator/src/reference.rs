@@ -134,8 +134,10 @@ pub fn validate_applicability_certificate(
     Ok(Digest32::of_bytes(&bytes))
 }
 
-/// Structural certificate validation only. This checks bounded semantics and
-/// embedded evaluator fields, but does not authenticate the evaluator identity.
+/// Bind a structurally valid certificate to host-authenticated producer and
+/// evaluator identities and enforce principal, credential-chain and signing-key
+/// separation. This function does not verify signatures or provision trust roots;
+/// the host must authenticate both identities before constructing these values.
 pub fn admit_applicability_with_independent_evaluator(
     certificate: &OperatorApplicabilityCertificateV1,
     now: u64,
