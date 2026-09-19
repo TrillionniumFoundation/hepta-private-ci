@@ -84,7 +84,7 @@ async fn simultaneous_last_unit_reservations_cannot_both_succeed() {
         left_store.reserve(&decision, request("operation:left"), time.clone()),
         right_store.reserve(&decision, request("operation:right"), time),
     );
-    assert_eq!(usize::from(left.is_ok()) + usize::from(right.is_ok()), 1);
+    assert_eq!(u8::from(left.is_ok()) + u8::from(right.is_ok()), 1);
     assert!(matches!(
         left.err().or_else(|| right.err()),
         Some(AuthBusAuthorityError::RevisionConflict)
