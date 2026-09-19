@@ -785,7 +785,7 @@ mod tests {
             WriterHandoffPhaseV1::NewWriterFenced,
             WriterHandoffPhaseV1::RoutePublished,
         ] {
-            let watermark = (phase >= WriterHandoffPhaseV1::Drained).then_some(7);
+            let watermark = phase.at_or_after_drained().then_some(7);
             journal
                 .advance(WriterHandoffAdvanceV1 {
                     phase,
