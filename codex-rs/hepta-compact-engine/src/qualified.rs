@@ -12,6 +12,7 @@ use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
 
+use codex_hepta_cognitive_types::CognitiveSnapshot;
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
@@ -138,6 +139,7 @@ impl CompactionInputRecordV2 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CompactionSemanticPayloadV2 {
     pub source_snapshot_digest: Digest32,
+    pub source_memory_snapshot_digest: Digest32,
     pub payload_digest: Digest32,
     pub generator_implementation_digest: Digest32,
     pub generator_receipt_digest: Digest32,
@@ -150,10 +152,15 @@ impl CompactionSemanticPayloadV2 {
     pub fn validate(
         &self,
         source_snapshot: &CognitiveSnapshotKeyV1,
+        source_memory_snapshot_digest: Digest32,
         policy: &CompactionPolicyV2,
     ) -> Result<(), QualifiedCompactionError> {
         for (name, digest) in [
             ("semantic_source_snapshot", self.source_snapshot_digest),
+            (
+                "semantic_source_memory_snapshot",
+                self.source_memory_snapshot_digest,
+            ),
             ("semantic_payload", self.payload_digest),
             (
                 "semantic_generator_implementation",
@@ -166,6 +173,9 @@ impl CompactionSemanticPayloadV2 {
         }
         if self.source_snapshot_digest != source_snapshot.vector_digest {
             return Err(QualifiedCompactionError::SemanticSnapshotMismatch);
+        }
+        if self.source_memory_snapshot_digest != source_memory_snapshot_digest {
+            return Err(QualifiedCompactionError::SemanticMemorySnapshotMismatch);
         }
         if self.tokenizer_digest != source_snapshot.vector.tokenizer_digest {
             return Err(QualifiedCompactionError::TokenizerMismatch);
@@ -186,6 +196,7 @@ impl CompactionSemanticPayloadV2 {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(SEMANTIC_PAYLOAD_DOMAIN);
         push_digest(&mut bytes, self.source_snapshot_digest);
+        push_digest(&mut bytes, self.source_memory_snapshot_digest);
         push_digest(&mut bytes, self.payload_digest);
         push_digest(&mut bytes, self.generator_implementation_digest);
         push_digest(&mut bytes, self.generator_receipt_digest);
@@ -278,11 +289,13 @@ impl CompactionLossReportV2 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct QualifiedCompactionCandidateV2 {
     source_snapshot: CognitiveSnapshotKeyV1,
+    source_memory_snapshot_digest: Digest32,
     policy: CompactionPolicyV2,
     semantic_payload: CompactionSemanticPayloadV2,
     retained_records: Vec<MemoryRecord>,
     retained_input_digests: Vec<Digest32>,
     omitted_input_digests: Vec<Digest32>,
+    deleted_input_digests: Vec<Digest32>,
     checkpoint: CompactCheckpointV1,
     loss_report: CompactionLossReportV2,
     candidate_digest: Digest32,
@@ -293,6 +306,11 @@ impl QualifiedCompactionCandidateV2 {
     #[must_use]
     pub fn source_snapshot(&self) -> &CognitiveSnapshotKeyV1 {
         &self.source_snapshot
+    }
+
+    #[must_use]
+    pub fn source_memory_snapshot_digest(&self) -> Digest32 {
+        self.source_memory_snapshot_digest
     }
 
     #[must_use]
@@ -330,14 +348,24 @@ impl QualifiedCompactionCandidateV2 {
             .validate()
             .map_err(QualifiedCompactionError::Contract)?;
         self.policy.validate()?;
-        self.semantic_payload
-            .validate(&self.source_snapshot, &self.policy)?;
+        ensure_digest(
+            "source_memory_snapshot",
+            self.source_memory_snapshot_digest,
+        )?;
+        self.semantic_payload.validate(
+            &self.source_snapshot,
+            self.source_memory_snapshot_digest,
+            &self.policy,
+        )?;
         self.checkpoint
             .validate()
             .map_err(QualifiedCompactionError::Contract)?;
         self.loss_report.validate()?;
         if self.checkpoint.source_snapshot != self.source_snapshot {
             return Err(QualifiedCompactionError::SnapshotMismatch);
+        }
+        if self.checkpoint.source_memory_snapshot_digest != self.source_memory_snapshot_digest {
+            return Err(QualifiedCompactionError::SourceMemorySnapshotMismatch);
         }
         if self
             .source_snapshot
@@ -362,6 +390,8 @@ impl QualifiedCompactionCandidateV2 {
             || self.retained_records.len() != self.retained_input_digests.len()
             || self.loss_report.omitted_live_records
                 != u64::try_from(self.omitted_input_digests.len()).unwrap_or(u64::MAX)
+            || self.loss_report.deleted_records
+                != u64::try_from(self.deleted_input_digests.len()).unwrap_or(u64::MAX)
         {
             return Err(QualifiedCompactionError::InvalidLossAccounting);
         }
@@ -374,6 +404,7 @@ impl QualifiedCompactionCandidateV2 {
 
         let mut all_inputs = self.retained_input_digests.clone();
         all_inputs.extend_from_slice(&self.omitted_input_digests);
+        all_inputs.extend_from_slice(&self.deleted_input_digests);
         if self.checkpoint.support_manifest_digest
             != digest_digests(SUPPORT_MANIFEST_DOMAIN, &all_inputs)
             || self.checkpoint.omitted_information_digest
@@ -412,6 +443,7 @@ impl QualifiedCompactionCandidateV2 {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(CANDIDATE_DOMAIN);
         push_digest(&mut bytes, self.source_snapshot.vector_digest);
+        push_digest(&mut bytes, self.source_memory_snapshot_digest);
         push_digest(&mut bytes, self.policy.digest());
         push_digest(&mut bytes, self.semantic_payload.digest());
         push_digest(&mut bytes, self.checkpoint.checkpoint_digest);
@@ -426,6 +458,10 @@ impl QualifiedCompactionCandidateV2 {
         }
         push_len(&mut bytes, self.omitted_input_digests.len());
         for digest in &self.omitted_input_digests {
+            push_digest(&mut bytes, *digest);
+        }
+        push_len(&mut bytes, self.deleted_input_digests.len());
+        for digest in &self.deleted_input_digests {
             push_digest(&mut bytes, *digest);
         }
         Digest32::of_bytes(&bytes)
@@ -456,6 +492,7 @@ pub struct CompactionQualificationV2 {
 
 pub fn build_qualified_candidate(
     source_snapshot: CognitiveSnapshotKeyV1,
+    source_memory_snapshot: &CognitiveSnapshot,
     generation: Generation,
     predecessor_checkpoint_digest: Option<Digest32>,
     policy: &CompactionPolicyV2,
@@ -465,10 +502,29 @@ pub fn build_qualified_candidate(
     source_snapshot
         .validate()
         .map_err(QualifiedCompactionError::Contract)?;
+    source_memory_snapshot
+        .validate_integrity()
+        .map_err(|error| QualifiedCompactionError::InvalidSourceSnapshot(error.to_string()))?;
     policy.validate()?;
-    semantic_payload.validate(&source_snapshot, policy)?;
+    semantic_payload.validate(
+        &source_snapshot,
+        source_memory_snapshot.snapshot_digest,
+        policy,
+    )?;
     if inputs.len() > MAX_QUALIFIED_COMPACTION_INPUTS {
         return Err(QualifiedCompactionError::InputLimitExceeded);
+    }
+
+    let mut snapshot_heads = BTreeMap::<StableId, MemoryRecord>::new();
+    for record in &source_memory_snapshot.records {
+        if snapshot_heads
+            .insert(record.record_id.clone(), record.clone())
+            .is_some()
+        {
+            return Err(QualifiedCompactionError::SourceSnapshotNotHeadOnly(
+                record.record_id.to_string(),
+            ));
+        }
     }
 
     let mut by_record = BTreeMap::<StableId, Vec<CompactionInputRecordV2>>::new();
@@ -478,6 +534,14 @@ pub fn build_qualified_candidate(
             .entry(input.record.record_id.clone())
             .or_default()
             .push(input);
+    }
+
+    if by_record.len() != snapshot_heads.len()
+        || by_record
+            .keys()
+            .any(|record_id| !snapshot_heads.contains_key(record_id))
+    {
+        return Err(QualifiedCompactionError::SourceSnapshotCoverageMismatch);
     }
 
     let protected = policy
@@ -493,6 +557,7 @@ pub fn build_qualified_candidate(
     }
 
     let mut live_heads = Vec::<CompactionInputRecordV2>::new();
+    let mut deleted_input_digests = Vec::<Digest32>::new();
     let mut source_current_heads = 0_u64;
     let mut deleted_records = 0_u64;
     let mut protected_deleted_records = 0_u64;
@@ -503,8 +568,14 @@ pub fn build_qualified_candidate(
         let Some(head) = lineage.pop() else {
             return Err(QualifiedCompactionError::EmptyLineage);
         };
+        if snapshot_heads.get(&record_id) != Some(&head.record) {
+            return Err(QualifiedCompactionError::SourceSnapshotRecordMismatch(
+                record_id.to_string(),
+            ));
+        }
         source_current_heads = checked_add(source_current_heads, 1)?;
         if head.record.state == RecordState::Tombstone {
+            deleted_input_digests.push(head.digest());
             deleted_records = checked_add(deleted_records, 1)?;
             if protected.contains(&record_id) {
                 protected_deleted_records = checked_add(protected_deleted_records, 1)?;
@@ -591,6 +662,7 @@ pub fn build_qualified_candidate(
 
     let mut support_digests = retained_input_digests.clone();
     support_digests.extend_from_slice(&omitted_input_digests);
+    support_digests.extend_from_slice(&deleted_input_digests);
     let support_manifest_digest = digest_digests(SUPPORT_MANIFEST_DOMAIN, &support_digests);
     let omitted_information_digest = digest_digests(OMITTED_DOMAIN, &omitted_input_digests);
 
@@ -603,6 +675,7 @@ pub fn build_qualified_candidate(
         .map_err(|_| QualifiedCompactionError::InvalidCheckpointIdentity)?,
         generation,
         source_snapshot: source_snapshot.clone(),
+        source_memory_snapshot_digest: source_memory_snapshot.snapshot_digest,
         support_manifest_digest,
         algorithm_digest: policy.algorithm_digest,
         payload_digest: semantic_payload.payload_digest,
@@ -641,11 +714,13 @@ pub fn build_qualified_candidate(
 
     let mut candidate = QualifiedCompactionCandidateV2 {
         source_snapshot,
+        source_memory_snapshot_digest: source_memory_snapshot.snapshot_digest,
         policy: policy.clone(),
         semantic_payload: semantic_payload.clone(),
         retained_records,
         retained_input_digests,
         omitted_input_digests,
+        deleted_input_digests,
         checkpoint,
         loss_report,
         candidate_digest: Digest32::ZERO,
@@ -813,6 +888,10 @@ pub enum QualifiedCompactionError {
     ProtectedReferenceLost,
     InvalidLossAccounting,
     InvalidRecord(String),
+    InvalidSourceSnapshot(String),
+    SourceSnapshotNotHeadOnly(String),
+    SourceSnapshotCoverageMismatch,
+    SourceSnapshotRecordMismatch(String),
     InvalidInputCost(String),
     InvalidSemanticPayloadCost,
     PayloadBudgetExceeded,
@@ -825,6 +904,8 @@ pub enum QualifiedCompactionError {
     SnapshotMismatch,
     CheckpointGenerationMismatch,
     SemanticSnapshotMismatch,
+    SemanticMemorySnapshotMismatch,
+    SourceMemorySnapshotMismatch,
     TokenizerMismatch,
     PolicyCheckpointMismatch,
     SemanticPayloadMismatch,
