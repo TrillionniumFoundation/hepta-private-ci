@@ -120,7 +120,8 @@ audit/listing/recovery path.
 
 SecretLeaseRegistry uses an append-only leases.journal plus an OS-exclusive
 lease.lock in an owner-controlled 0700 state directory with owner-only regular
-files and no-follow opens.
+files. Symlink entries are rejected before open and inode/owner/mode/link-count
+identity is rechecked after open.
 
 Each event is sequence-numbered and fsynced. Replay rejects identity drift,
 operation drift, malformed complete events, unsafe ownership/modes, or capacity
