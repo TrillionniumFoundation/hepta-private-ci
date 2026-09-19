@@ -214,6 +214,39 @@ async fn indeterminate_dispatch_survives_reopen_and_reuses_only_stable_txn() -> 
 }
 
 #[tokio::test]
+async fn crash_after_dispatch_prepare_reuses_only_stable_txn() -> TestResult {
+    let temp = TempDir::new()?;
+    let (layout, store, claimed) = store_and_outbox(&temp).await?;
+    let authority = MatrixDispatchAuthority::owner_local(&claimed.stable_txn_id);
+    prepare_send(&store, &claimed, &authority, 10).await?;
+    store
+        .mark_matrix_dispatch_dispatched(&claimed.stable_txn_id, claimed.attempts, &digest('1'), 11)
+        .await?;
+    store.close().await;
+
+    let reopened = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
+    let mut reclaimed = reopened.claim_outbox(41, 30, 1).await?;
+    let reclaimed = reclaimed
+        .pop()
+        .ok_or("crashed dispatched send was not reclaimed")?;
+    assert_eq!(reclaimed.stable_txn_id, claimed.stable_txn_id);
+    assert_eq!(reclaimed.attempts, claimed.attempts + 1);
+    prepare_send(&reopened, &reclaimed, &authority, 41).await?;
+    let retried = reopened
+        .mark_matrix_dispatch_dispatched(
+            &reclaimed.stable_txn_id,
+            reclaimed.attempts,
+            &digest('2'),
+            41,
+        )
+        .await?;
+    assert_eq!(retried.state, MatrixDispatchState::Dispatched);
+    assert_eq!(retried.attempt, reclaimed.attempts);
+    reopened.close().await;
+    Ok(())
+}
+
+#[tokio::test]
 async fn redaction_keeps_original_send_evidence_and_uses_separate_digest() -> TestResult {
     let temp = TempDir::new()?;
     let (_layout, store, claimed) = store_and_outbox(&temp).await?;
