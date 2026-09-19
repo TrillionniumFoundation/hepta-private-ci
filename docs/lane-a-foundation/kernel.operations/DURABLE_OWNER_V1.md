@@ -8,6 +8,10 @@ The durable source implementation reuses the existing per-Agent CognitiveStore S
 
 `LocalLeaseOutbox::admit_operation` validates the complete `OperationIntent`, acquires `BEGIN IMMEDIATE`, verifies the current lease and journal chains, then inserts the admitted local event, immutable local outbox row and immutable operation row before one commit. Fault injection after every insert proves rollback leaves no partial identity.
 
+## Predecessor authority boundary
+
+`OperationIntent.expected_predecessor` is an immutable semantic expectation carried into the operation digest and durable row; it is not a grant for `kernel.operations` to read or own another domain's current head. If a destination mutation has predecessor/CAS semantics, the destination owner must compare this expected digest against its authoritative current predecessor inside the same transaction that applies the destination mutation and records its dedupe/terminal receipt. A mismatch is a destination rejection/not-applied outcome, not permission for the source dispatcher to rewrite or retry the operation.
+
 ## Dispatch and ambiguity
 
 `ProductionDurableWriter` verifies the queued receipt and exact durable operation/destination binding. Before any target call it writes the strict one-shot indeterminate dispatch claim. An exact replay of that claim is rejected. A crash or acknowledgement loss therefore reopens as unresolved work and must reconcile rather than resend.
