@@ -9,9 +9,7 @@ use std::fmt;
 
 use codex_hepta_types::{Digest32, StableId};
 
-use crate::{
-    DurableTopologyAppendReceiptV1, GovernedTopologyProposalV1, TopologyCandidateKindV2,
-};
+use crate::{DurableTopologyProposalRegistryV1, TopologyCandidateKindV2};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum StructuralCanaryStateV1 {
@@ -23,18 +21,18 @@ pub enum StructuralCanaryStateV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct StructuralCanaryPlanV1 {
-    pub topology_admission_digest: Digest32,
+    topology_admission_digest: Digest32,
     /// Exact durable frame that admitted the governed proposal being canaried.
-    pub durable_registry_sequence: u64,
-    pub durable_registry_frame_digest: Digest32,
+    durable_registry_sequence: u64,
+    durable_registry_frame_digest: Digest32,
     /// Exact content-addressed structural candidate under observation.
-    pub candidate_id: StableId,
-    pub rollback_plan_digest: Digest32,
-    pub writer_handoff_set_digest: Digest32,
-    pub baseline_health_digest: Digest32,
-    pub maximum_steps: u32,
-    pub maximum_regressions: u32,
-    pub minimum_successful_steps: u32,
+    candidate_id: StableId,
+    rollback_plan_digest: Digest32,
+    writer_handoff_set_digest: Digest32,
+    baseline_health_digest: Digest32,
+    maximum_steps: u32,
+    maximum_regressions: u32,
+    minimum_successful_steps: u32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -93,14 +91,18 @@ pub struct StructuralCanaryControllerV1 {
 /// canary receipt for an arbitrary non-zero admission digest or for a different
 /// candidate than the one represented by the durable append receipt.
 pub fn build_structural_canary_plan_v1(
-    governed: &GovernedTopologyProposalV1,
-    durable: &DurableTopologyAppendReceiptV1,
+    registry: &DurableTopologyProposalRegistryV1,
+    proposal_id: &StableId,
     candidate_id: StableId,
     baseline_health_digest: Digest32,
     maximum_steps: u32,
     maximum_regressions: u32,
     minimum_successful_steps: u32,
 ) -> Result<StructuralCanaryPlanV1, StructuralCanaryErrorV1> {
+    let (governed, durable) = registry
+        .canary_binding(proposal_id)
+        .map_err(|_| StructuralCanaryErrorV1::Binding)?
+        .ok_or(StructuralCanaryErrorV1::Binding)?;
     if durable.authority.grants_any()
         || durable.sequence == 0
         || durable.frame_digest.is_zero()
