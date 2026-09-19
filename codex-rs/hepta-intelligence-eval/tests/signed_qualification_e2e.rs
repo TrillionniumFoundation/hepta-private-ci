@@ -98,8 +98,18 @@ fn signed_qualification_e2e_binds_plan_holdout_roles_and_trust() {
     let scope_digest = digest("shared-learning-scope");
     let generator_key = SigningKey::from_bytes(&[31; 32]);
     let evaluator_key = SigningKey::from_bytes(&[47; 32]);
-    let generator = principal("generator", "generator-credential", &generator_key, scope_digest);
-    let evaluator = principal("evaluator", "evaluator-credential", &evaluator_key, scope_digest);
+    let generator = principal(
+        "generator",
+        "generator-credential",
+        &generator_key,
+        scope_digest,
+    );
+    let evaluator = principal(
+        "evaluator",
+        "evaluator-credential",
+        &evaluator_key,
+        scope_digest,
+    );
 
     let roles = vec![MetricRoleContractV2 {
         metric_id: id("task-utility"),
