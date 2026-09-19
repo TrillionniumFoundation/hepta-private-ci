@@ -102,7 +102,7 @@ def validate_matrix(matrix: dict[str, Any], root: Path = ROOT) -> dict[str, Any]
         ("platform.wire", "implementation"): "versioned_v1_v2_codec",
         ("kernel.authority", "implementation"): "final_use_boundary",
         ("kernel.evidence", "durability"): "sqlite_migrations_0001_0010",
-        ("secrets.heptabao", "implementation"): "bounded_kv_v2_reader",
+        ("secrets.heptabao", "implementation"): "kv_v2_and_dynamic_lease_lifecycle_source",
     }
     for (module, axis), value in exact.items():
         if by_name[module]["states"][axis] != value:
