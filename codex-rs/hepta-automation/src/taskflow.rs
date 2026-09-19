@@ -1124,13 +1124,17 @@ impl AutomationStore {
                 state_digest: run.state_digest,
             });
         }
-        let explicit_reconcile = run.state == TaskFlowRunState::Indeterminate
-            && matches!(&command.transition, TaskFlowTransition::Reconcile { .. });
-        if explicit_reconcile {
-            // An indeterminate run retains its durable owner tuple, but its
-            // lease may have expired while an external outcome was being
-            // investigated. Reconciliation still requires that exact tuple;
-            // the run is never claimable by a new generation.
+        let historical_fence_transition =
+            (run.state == TaskFlowRunState::Indeterminate
+                && matches!(&command.transition, TaskFlowTransition::Reconcile { .. }))
+                || matches!(&command.transition, TaskFlowTransition::Indeterminate { .. });
+        if historical_fence_transition {
+            // Indeterminate is fail-closed and grants no execution authority,
+            // so an exact historical owner tuple may quarantine a run after
+            // its lease expires. Reconciliation likewise requires that exact
+            // historical tuple. This closes the crash window between provider
+            // dispatch and durable local acknowledgement without allowing a
+            // stale fence to execute or claim new work.
             self.check_run_identity_fence(&run, &command.fence)?;
         } else {
             self.check_run_fence(&run, &command.fence, command.now_ms)?;
