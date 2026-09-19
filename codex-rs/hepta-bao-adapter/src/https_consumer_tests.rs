@@ -506,6 +506,7 @@ async fn reserve_authbus_for_request(
             window_start_ms: 1,
             window_end_ms: u64::MAX,
             endowment: 1,
+            max_active_per_principal: 16,
         })
         .await
         .unwrap();
