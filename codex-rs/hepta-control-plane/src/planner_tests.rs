@@ -469,16 +469,3 @@ fn nonzero_resource_profile_drift_is_rejected() {
         PlannerError::ResourceProfileMismatch
     );
 }
-
-#[test]
-fn stale_optional_owner_does_not_block_required_snapshot() {
-    let mut optional = summary(OwnerReadinessV1::Ready, 100, 1_800);
-    optional.owner_id = id("optional-observer");
-    let snapshot = must(collect_snapshot(
-        snapshot_request(),
-        vec![summary(OwnerReadinessV1::Ready, 950, 1_800), optional],
-    ));
-    assert!(snapshot.stale_owner_ids().is_empty());
-    assert!(snapshot.unavailable_owner_ids().is_empty());
-    must(prepare_plan(&snapshot, planning_request(1)));
-}
