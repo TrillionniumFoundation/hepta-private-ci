@@ -689,11 +689,14 @@ fn restart_converts_dispatching_issue_to_reconciliation_required() {
     );
 }
 
-
 #[test]
 fn restart_during_callback_recovers_consumer_outcome_unknown() {
     let directory = tempfile::tempdir().unwrap();
-    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    std::fs::set_permissions(
+        directory.path(),
+        std::fs::Permissions::from_mode(0o700),
+    )
+    .unwrap();
     let registry = SecretLeaseRegistry::open_state_dir(directory.path()).unwrap();
     let request = issue_request("callback-crash-window");
     let request_sha256 = [41; 32];
