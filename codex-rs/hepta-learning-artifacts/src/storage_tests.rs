@@ -415,3 +415,64 @@ fn zero_binding_leaves_created_file_empty_for_host_reconciliation() {
     );
     assert_eq!(fs::metadata(&file.0).unwrap().len(), 0);
 }
+
+
+#[test]
+fn contained_write_rejects_escape_and_validates_before_create() {
+    let root = TestFile::new();
+    fs::create_dir(&root.0).unwrap();
+    let mut registry = ArtifactRegistry::new();
+    register(&mut registry, "policy", None, b"policy-v1");
+
+    assert_eq!(
+        CreateOnlyArtifactFile::create_beneath_trusted_root(&root.0, "../escape"),
+        Err(ArtifactStorageError::InvalidPath)
+    );
+
+    let rejected = PathBuf::from("rejected-payload");
+    assert_eq!(
+        write_candidate_payload_beneath(
+            &root.0,
+            &rejected,
+            &registry,
+            &id("policy"),
+            b"wrong",
+        ),
+        Err(ArtifactStorageError::PayloadMismatch)
+    );
+    assert!(!root.0.join(&rejected).exists());
+
+    let accepted = PathBuf::from("accepted-payload");
+    assert_eq!(
+        write_candidate_payload_beneath(
+            &root.0,
+            &accepted,
+            &registry,
+            &id("policy"),
+            b"policy-v1",
+        )
+        .unwrap(),
+        Digest32::of_bytes(b"policy-v1")
+    );
+    assert_eq!(fs::read(root.0.join(accepted)).unwrap(), b"policy-v1");
+    fs::remove_dir_all(&root.0).unwrap();
+}
+
+#[cfg(unix)]
+#[test]
+fn contained_write_rejects_symlink_ancestor() {
+    use std::os::unix::fs::symlink;
+
+    let root = TestFile::new();
+    fs::create_dir(&root.0).unwrap();
+    let real = root.0.join("real");
+    fs::create_dir(&real).unwrap();
+    symlink(&real, root.0.join("alias")).unwrap();
+
+    assert_eq!(
+        CreateOnlyArtifactFile::create_beneath_trusted_root(&root.0, "alias/payload"),
+        Err(ArtifactStorageError::PathEscape)
+    );
+    assert!(!real.join("payload").exists());
+    fs::remove_dir_all(&root.0).unwrap();
+}
