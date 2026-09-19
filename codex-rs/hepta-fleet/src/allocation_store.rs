@@ -234,6 +234,7 @@ impl StoredFleetAllocationStateV1 {
 #[derive(Clone, Debug)]
 pub struct FleetAllocationStore {
     root: PathBuf,
+    registry: FleetRegistry,
 }
 
 impl FleetAllocationStore {
@@ -241,7 +242,10 @@ impl FleetAllocationStore {
         let root = registry.layout().state_root().join(STORE_DIRECTORY);
         std::fs::create_dir_all(&root)?;
         validate_physical_directory(&root)?;
-        let store = Self { root };
+        let store = Self {
+            root,
+            registry: registry.clone(),
+        };
         if store.latest_state_path()?.is_none() {
             store.publish_initial_state()?;
         }
@@ -252,7 +256,10 @@ impl FleetAllocationStore {
     pub fn open_existing(registry: &FleetRegistry) -> Result<Self, FleetAllocationStoreError> {
         let root = registry.layout().state_root().join(STORE_DIRECTORY);
         validate_physical_directory(&root)?;
-        let store = Self { root };
+        let store = Self {
+            root,
+            registry: registry.clone(),
+        };
         store.load_state()?;
         Ok(store)
     }
@@ -329,6 +336,15 @@ impl FleetAllocationStore {
         now_unix_ms: u64,
     ) -> Result<(u64, FleetAllocationPlanV1), FleetAllocationStoreError> {
         policy.validate()?;
+        for request in requests {
+            let record = self.registry.load_agent(&request.agent_id)?;
+            let ceiling = FleetResourceVectorV1::from(&record.manifest.resources);
+            if !request.minimum.fits(ceiling) || !request.desired.fits(ceiling) {
+                return Err(FleetAllocationStoreError::AgentBudgetExceeded(
+                    request.agent_id.clone(),
+                ));
+            }
+        }
         let state = self.load_state()?;
         let mut hosts = Vec::new();
         for observation in state.hosts.values() {
@@ -698,6 +714,13 @@ impl FleetAllocationStore {
 
         let mut planned_by_host: BTreeMap<String, FleetResourceVectorV1> = BTreeMap::new();
         for share in &plan.shares {
+            let record = self.registry.load_agent(&share.agent_id)?;
+            let ceiling = FleetResourceVectorV1::from(&record.manifest.resources);
+            if !share.resources.fits(ceiling) {
+                return Err(FleetAllocationStoreError::AgentBudgetExceeded(
+                    share.agent_id.clone(),
+                ));
+            }
             let host = current
                 .hosts
                 .get(&share.host_id)
@@ -1074,6 +1097,8 @@ pub enum FleetAllocationStoreError {
     UnknownHost(String),
     #[error("unknown fleet allocation: {0}")]
     UnknownAllocation(String),
+    #[error("fleet request exceeds registered Agent resource budget: {0}")]
+    AgentBudgetExceeded(AgentId),
     #[error("fleet allocation lease generation is stale: current {current}, proposed {proposed}")]
     StaleLease { current: u64, proposed: u64 },
     #[error("fleet allocation grant is not live")]
