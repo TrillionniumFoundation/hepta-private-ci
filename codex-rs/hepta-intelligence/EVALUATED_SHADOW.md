@@ -48,3 +48,12 @@ or quality improvement.
 reopen/replay, capacity/corruption, signed-input substitution, upstream failure,
 abstention and slow-path checks. Test signatures and metrics are synthetic
 qualification inputs, not measured learning results.
+
+
+## Post-decision Outcome and Credit closure
+
+The evaluated-shadow entrypoint intentionally still appends only the Decision. A separate source entrypoint, \`append_outcome_and_credit_v1\`, closes a host-observed terminal Decision -> Outcome -> Credit chain without making \`intelligence.control\` the observation or allocation owner.
+
+The host supplies the exact durable Decision predecessor, an independently authenticated terminal \`OutcomeObservation\`, and a separately authorized \`CreditAssignment\`. The adapter verifies episode/outcome identity and support bindings, then appends both facts through the same sealed \`DurableLearningJournal\`. It never synthesizes an Outcome from dispatch acknowledgement and never computes credit from its own decision. If the Outcome append commits and the Credit append fails, the Outcome remains durable; an exact retry relies on the journal's existing idempotent record identity rules.
+
+This closure does not turn a shadow Decision into product learning evidence. Target-host observation authentication, allocator independence, current revocation state, longitudinal evaluation and artifact selection remain separate evidence gates.
