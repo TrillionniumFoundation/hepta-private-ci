@@ -211,7 +211,6 @@ def register_worker(
             "capabilities": normalized_capabilities,
             "maximumConcurrency": maximum_concurrency,
             "authorityEpoch": authority_epoch,
-            "registeredUnixNs": now,
             "leaseExpiresUnixNs": expires_unix_ns,
         }
     )
@@ -409,16 +408,6 @@ def claim_assignment(
         if not required.issubset(capabilities):
             raise _control.EngineeringError("worker_capability_mismatch")
 
-        active_count = int(
-            store.connection.execute(
-                "SELECT COUNT(*) FROM assignment_claims "
-                "WHERE worker_id=? AND state IN ('claimed','running')",
-                (worker_id,),
-            ).fetchone()[0]
-        )
-        if active_count >= int(worker["maximum_concurrency"]):
-            raise _control.EngineeringError("worker_capacity_exceeded")
-
         lease = store.connection.execute(
             "SELECT * FROM path_leases WHERE lease_id=?", (lease_id,)
         ).fetchone()
@@ -444,6 +433,33 @@ def claim_assignment(
         existing = store.connection.execute(
             "SELECT * FROM assignment_claims WHERE claim_id=?", (claim_id,)
         ).fetchone()
+        if existing is not None:
+            replay_semantic = _control.semantic_digest(
+                {
+                    "claimId": claim_id,
+                    "generationId": generation_id,
+                    "packageId": package_id,
+                    "workerId": worker_id,
+                    "leaseId": lease_id,
+                    "authorityEpoch": authority_epoch,
+                    "attempt": int(existing["attempt"]),
+                    "expiresUnixNs": expires_unix_ns,
+                }
+            )
+            if str(existing["semantic_digest"]) != replay_semantic:
+                raise _control.EngineeringError("claim_identity_conflict")
+            return _claim_receipt(existing)
+
+        active_count = int(
+            store.connection.execute(
+                "SELECT COUNT(*) FROM assignment_claims "
+                "WHERE worker_id=? AND state IN ('claimed','running')",
+                (worker_id,),
+            ).fetchone()[0]
+        )
+        if active_count >= int(worker["maximum_concurrency"]):
+            raise _control.EngineeringError("worker_capacity_exceeded")
+
         attempt_rows = store.connection.execute(
             "SELECT * FROM assignment_claims WHERE generation_id=? AND package_id=? "
             "ORDER BY attempt, fencing_token",
@@ -471,10 +487,6 @@ def claim_assignment(
                 "expiresUnixNs": expires_unix_ns,
             }
         )
-        if existing is not None:
-            if str(existing["semantic_digest"]) != semantic:
-                raise _control.EngineeringError("claim_identity_conflict")
-            return _claim_receipt(existing)
         fencing_token = int(
             store.connection.execute(
                 "SELECT COALESCE(MAX(fencing_token),0)+1 FROM assignment_claims"
@@ -704,6 +716,8 @@ def fail_assignment(
         raise _control.EngineeringError("invalid_retryable")
     now = store._now(now_ns)
     with store._transaction():
+        store._expire_leases(now)
+        _expire_state(store, now)
         return _transition_claim(
             store,
             claim_id,
@@ -728,6 +742,8 @@ def requeue_assignment(
     _control.checked_id(claim_id, "claim_id")
     now = store._now(now_ns)
     with store._transaction():
+        store._expire_leases(now)
+        _expire_state(store, now)
         row = store.connection.execute(
             "SELECT c.*,p.maximum_attempts FROM assignment_claims c "
             "JOIN assignment_generation_packages p "
