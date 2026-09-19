@@ -14,7 +14,8 @@
   ],
   "resolvedRoots": [
     "codex-rs/app-server",
-    "codex-rs/core",
+    "codex-rs/core/src/tools/router.rs",
+    "codex-rs/core/src/codex_thread.rs",
     "codex-rs/hepta-codex-adapter"
   ],
   "stateOwnerDisposition": "The existing App Server and Codex core remain the sole thread, turn, model, and tool execution spine.",
