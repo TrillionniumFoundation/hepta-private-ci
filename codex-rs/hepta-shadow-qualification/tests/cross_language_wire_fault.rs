@@ -1,3 +1,9 @@
+#![allow(
+    clippy::expect_used,
+    clippy::redundant_clone,
+    clippy::uninlined_format_args
+)]
+
 //! A real Rust↔Python product-boundary test.
 //!
 //! The Rust producer emits the HPTA v1 frame consumed by a tiny Python
