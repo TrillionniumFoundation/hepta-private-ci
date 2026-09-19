@@ -362,8 +362,8 @@ async fn unknown_checkpoint_image_field_fails_store_reopen() {
         );
     let checkpoint_json =
         serde_json::to_string(&checkpoint_value).expect("encode checkpoint with unknown field");
-    let proof_json = serde_json::to_string(&ProofImageV2::from_contract(&proof))
-        .expect("serialize proof image");
+    let proof_json =
+        serde_json::to_string(&ProofImageV2::from_contract(&proof)).expect("serialize proof image");
     let publication = publication_digest(&checkpoint, &proof);
 
     sqlx::query(
