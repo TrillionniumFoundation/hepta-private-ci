@@ -19,8 +19,7 @@ mod source_envelope_json_shape;
 mod source_envelope_v1;
 mod source_envelope_validation;
 
-pub use compiler::compile;
-pub use error::ObjectiveError;
+/// Legacy typed-fixture compiler. This API does not perform source authentication,\n/// profile binding, freshness checks, or canonical source admission. Product\n/// callers must use `admit_and_compile_objective_v1`.\n#[doc(hidden)]\npub use compiler::compile as compile_prevalidated_legacy_objective;\npub use error::ObjectiveError;
 pub use feasibility::check_feasibility_v1;
 pub use feasibility_model::AtomPrecedenceV1;
 pub use feasibility_model::AtomPredicateV1;

@@ -17,14 +17,16 @@ bounded JSON bytes
 -> ObjectiveSourceEnvelopeV1::validate_structure
 -> authenticate source and principal scope
 -> bind exact ObjectiveAdmissionProfileV1 digest
--> normalize and map every represented semantic field
+-> map every supported represented semantic field; reject unsupported semantics without approximation
+-> adapt_source (admitted rich V1 -> legacy scalar compatibility IR)
+-> compiler::compile
+-> scalar_conflict
 -> check_feasibility_v1
--> compile
 -> ObjectiveAdmissionReceiptV1
 -> ObjectiveCompileReceiptV1 | ObjectiveConflictReceiptV1
 ```
 
-No stage may silently drop a represented constraint, action, success predicate, resource ceiling, risk rule, evidence requirement or provenance field. A decoder or structural validator is not semantic admission. A profile label is not authentication. The admitted source digest binds the supplied source digest, authenticated source class and selected profile.
+No stage may silently drop a represented constraint, action, success predicate, resource ceiling, risk rule, evidence requirement or provenance field. A represented spelling can be deterministically rejected rather than compiled; in particular V1 `in`/`not_in` are not yet mapped into the generic enumeration feasibility IR. A decoder or structural validator is not semantic admission. A profile label is not authentication. The admitted source digest binds the supplied source digest, authenticated source class and selected profile.
 
 ## 2. Input grammar and canonical IR
 
@@ -224,3 +226,12 @@ Bound work packages:
 - `P0.7B-B3-BOUNDARIES`
 - `P0.7B-B4-CALLSITE-PROOF`
 - `P0.8A-AST-RATCHET`
+
+
+### Determinism boundary
+
+The semantic solver is deterministic for the same registered grammar and atoms when availability exhaustion is not part of the decision. `OracleBudgetV1.wall_time`, `FeasibilityOutcomeV1::Exhausted`, and receipt `elapsed` are host-observation/availability surfaces and are not byte-for-byte deterministic semantic outputs. The legacy scalar compatibility compiler deliberately uses `Duration::MAX` so host scheduling cannot change a valid compile into an availability exhaustion.
+
+### Public admission boundary
+
+Product code must call `admit_and_compile_objective_v1`. The raw scalar compiler is not exported under the generic `compile` name; the hidden `compile_prevalidated_legacy_objective` alias exists only for legacy typed fixtures and qualification code and carries no authentication, freshness or profile-binding claim.

@@ -152,17 +152,17 @@
       "sourcePathExists": true
     },
     {
-      "operation": "compile",
-      "nativeSymbol": "codex_hepta_objective::compile",
+      "operation": "compile_prevalidated_legacy_objective",
+      "nativeSymbol": "codex_hepta_objective::compile_prevalidated_legacy_objective",
       "sourcePath": "codex-rs/hepta-objective/src/compiler.rs",
       "inputs": [
-        "ObjectiveSourceEnvelope"
+        "prevalidated legacy ObjectiveSourceEnvelope"
       ],
       "outputs": [
         "ObjectiveCompileReceipt",
         "ObjectiveConflictReceipt"
       ],
-      "state": "source_implemented",
+      "state": "source_implemented_legacy_hidden_not_admission",
       "authority": "none",
       "tests": [
         {
@@ -222,8 +222,9 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Compose a named authenticated production caller that atomically persists the admitted immutable objective, RunStartSnapshotV1, and admission/compile receipts, then proves recovery/replay by exact semantic identity.",
+    "Map currently unsupported represented V1 semantics into the generic feasibility IR or keep them explicitly rejected in the semantic support matrix.",
+    "Run exact-head and deterministic synthetic-merge qualification before changing the product/activation claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",

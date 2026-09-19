@@ -34,7 +34,7 @@ use codex_hepta_objective::SoftDirection;
 use codex_hepta_objective::SoftPreference;
 use codex_hepta_objective::SourceTrust;
 use codex_hepta_objective::SuccessPredicate;
-use codex_hepta_objective::compile;
+use codex_hepta_objective::compile_prevalidated_legacy_objective;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
@@ -103,7 +103,7 @@ fn contribution(
 
 #[test]
 fn objective_to_ndu_to_independent_learning_ledger_is_replayable_and_revocable() {
-    let compiled = must(must(compile(ObjectiveSourceEnvelope {
+    let compiled = must(must(compile_prevalidated_legacy_objective(ObjectiveSourceEnvelope {
         request_id: id("request-value-learning-1"),
         principal_scope: id("principal:alpha"),
         revision: must(Revision::new(1)),
