@@ -1113,11 +1113,21 @@ impl AutomationStore {
         .await
         .map_err(unavailable)?;
 
-        advance_task_after_submission(
-            &mut transaction,
-            &self.owner_agent_id,
+        let digest = provider_observation_digest(
+            AutomationProviderObservationKind::QueueAdmitted,
             task_id,
-            scheduled_for_ms,
+            occurrence,
+            Some(&receipt.queued_submission_id),
+            None,
+        );
+        append_provider_observation(
+            &mut transaction,
+            task_id,
+            occurrence,
+            AutomationProviderObservationKind::QueueAdmitted,
+            Some(&receipt.queued_submission_id),
+            None,
+            &digest,
             submitted_at_ms,
         )
         .await?;
@@ -1259,46 +1269,28 @@ impl AutomationStore {
             })?;
         }
 
-        // Control operations can disable or cancel a task while an already admitted
-        // occurrence is in flight. The queue admission cannot be revoked after the
-        // App Server accepts it, but its completion must never resurrect the task or
-        // overwrite a later control-plane decision from the stale lease snapshot.
-        let current_row = sqlx::query(TASK_SELECT_BY_ID)
-            .bind(lease.task.task_id.to_string())
-            .fetch_one(&mut *transaction)
-            .await
-            .map_err(unavailable)?;
-        let current = task_from_row(&current_row, &self.owner_agent_id)?;
-        let (next_state, next_run) = match current.state {
-            AutomationTaskState::Enabled => {
-                let next_run = current.schedule.next_after(lease.scheduled_for_ms)?;
-                let next_state = if next_run.is_some() {
-                    AutomationTaskState::Enabled
-                } else {
-                    AutomationTaskState::Completed
-                };
-                (next_state, next_run)
-            }
-            AutomationTaskState::Disabled
-            | AutomationTaskState::Cancelled
-            | AutomationTaskState::Completed => (current.state, None),
-        };
-        let updated = sqlx::query(
-            "UPDATE automation_tasks
-             SET state = ?, next_run_at_ms = ?, updated_at_ms = ?
-             WHERE task_id = ? AND owner_agent_id = ?",
+        // Queue admission is durable evidence, but it is not occurrence
+        // completion. The scheduler remains blocked by the active submitted
+        // occurrence under the default overlap policy until a trusted
+        // terminal provider observation is recorded.
+        let digest = provider_observation_digest(
+            AutomationProviderObservationKind::QueueAdmitted,
+            lease.task.task_id,
+            lease.occurrence,
+            Some(&receipt.queued_submission_id),
+            None,
+        );
+        append_provider_observation(
+            &mut transaction,
+            lease.task.task_id,
+            lease.occurrence,
+            AutomationProviderObservationKind::QueueAdmitted,
+            Some(&receipt.queued_submission_id),
+            None,
+            &digest,
+            submitted_at_ms,
         )
-        .bind(next_state.as_str())
-        .bind(next_run.map(to_i64).transpose()?)
-        .bind(to_i64(submitted_at_ms)?)
-        .bind(lease.task.task_id.to_string())
-        .bind(self.owner_agent_id.as_str())
-        .execute(&mut *transaction)
-        .await
-        .map_err(unavailable)?;
-        if updated.rows_affected() != 1 {
-            return Err(AutomationError::Corrupt);
-        }
+        .await?;
         transaction.commit().await.map_err(unavailable)?;
         self.task(lease.task.task_id)
             .await?
@@ -1340,22 +1332,25 @@ impl AutomationStore {
     }
 }
 
-async fn advance_task_after_submission(
+async fn advance_task_after_occurrence(
     transaction: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
     owner_agent_id: &AgentId,
-    task_id: AutomationTaskId,
+    current: &AutomationTask,
+    expected_schedule_revision: u64,
     scheduled_for_ms: u64,
-    submitted_at_ms: u64,
+    observed_at_ms: u64,
 ) -> Result<(), AutomationError> {
-    let current_row = sqlx::query(TASK_SELECT_BY_ID)
-        .bind(task_id.to_string())
-        .fetch_one(&mut **transaction)
-        .await
-        .map_err(unavailable)?;
-    let current = task_from_row(&current_row, owner_agent_id)?;
+    if current.schedule_revision != expected_schedule_revision {
+        return Err(AutomationError::Conflict);
+    }
     let (next_state, next_run) = match current.state {
         AutomationTaskState::Enabled => {
-            let next_run = current.schedule.next_after(scheduled_for_ms)?;
+            let next_run = next_run_after_observation(
+                current.schedule,
+                current.policy.missed_run,
+                scheduled_for_ms,
+                observed_at_ms,
+            )?;
             let next_state = if next_run.is_some() {
                 AutomationTaskState::Enabled
             } else {
@@ -1365,23 +1360,143 @@ async fn advance_task_after_submission(
         }
         AutomationTaskState::Disabled
         | AutomationTaskState::Cancelled
-        | AutomationTaskState::Completed => (current.state, None),
+        | AutomationTaskState::Completed => return Ok(()),
     };
     let updated = sqlx::query(
         "UPDATE automation_tasks
          SET state = ?, next_run_at_ms = ?, updated_at_ms = ?
-         WHERE task_id = ? AND owner_agent_id = ?",
+         WHERE task_id = ? AND owner_agent_id = ? AND schedule_revision = ?",
     )
     .bind(next_state.as_str())
     .bind(next_run.map(to_i64).transpose()?)
-    .bind(to_i64(submitted_at_ms)?)
-    .bind(task_id.to_string())
+    .bind(to_i64(observed_at_ms)?)
+    .bind(current.task_id.to_string())
     .bind(owner_agent_id.as_str())
+    .bind(to_i64(expected_schedule_revision)?)
     .execute(&mut **transaction)
     .await
     .map_err(unavailable)?;
     if updated.rows_affected() != 1 {
-        return Err(AutomationError::Corrupt);
+        return Err(AutomationError::Conflict);
+    }
+    Ok(())
+}
+
+fn next_run_after_observation(
+    schedule: AutomationSchedule,
+    policy: AutomationMissedRunPolicy,
+    scheduled_for_ms: u64,
+    observed_at_ms: u64,
+) -> Result<Option<u64>, AutomationError> {
+    let Some(base) = schedule.next_after(scheduled_for_ms)? else {
+        return Ok(None);
+    };
+    if base > observed_at_ms {
+        return Ok(Some(base));
+    }
+    let AutomationSchedule::FixedInterval { interval_ms } = schedule else {
+        return Ok(None);
+    };
+    let elapsed = observed_at_ms
+        .checked_sub(base)
+        .ok_or(AutomationError::Invalid)?;
+    let due_count = elapsed
+        .checked_div(interval_ms)
+        .and_then(|value| value.checked_add(1))
+        .ok_or(AutomationError::Invalid)?;
+    let skip_slots = match policy {
+        AutomationMissedRunPolicy::Skip => due_count,
+        AutomationMissedRunPolicy::Coalesce => due_count.saturating_sub(1),
+        AutomationMissedRunPolicy::BoundedCatchUp { max_occurrences } => {
+            due_count.saturating_sub(u64::from(max_occurrences))
+        }
+    };
+    base.checked_add(
+        interval_ms
+            .checked_mul(skip_slots)
+            .ok_or(AutomationError::Invalid)?,
+    )
+    .map(Some)
+    .ok_or(AutomationError::Invalid)
+}
+
+async fn append_provider_observation(
+    transaction: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+    task_id: AutomationTaskId,
+    occurrence: u64,
+    kind: AutomationProviderObservationKind,
+    queued_submission_id: Option<&str>,
+    turn_id: Option<&str>,
+    receipt_digest: &Sha256Digest,
+    observed_at_ms: u64,
+) -> Result<(), AutomationError> {
+    validate_sha256(receipt_digest)?;
+    let previous_seq = sqlx::query_scalar::<_, Option<i64>>(
+        "SELECT MAX(observation_seq)
+         FROM automation_provider_observations
+         WHERE task_id = ? AND occurrence = ?",
+    )
+    .bind(task_id.to_string())
+    .bind(to_i64(occurrence)?)
+    .fetch_one(&mut **transaction)
+    .await
+    .map_err(unavailable)?
+    .unwrap_or(0);
+    let next_seq = to_u64(previous_seq)?
+        .checked_add(1)
+        .ok_or(AutomationError::Corrupt)?;
+    sqlx::query(
+        "INSERT INTO automation_provider_observations (
+            task_id, occurrence, observation_seq, observation_kind,
+            queued_submission_id, turn_id, receipt_digest, observed_at_ms
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+    )
+    .bind(task_id.to_string())
+    .bind(to_i64(occurrence)?)
+    .bind(to_i64(next_seq)?)
+    .bind(kind.as_str())
+    .bind(queued_submission_id)
+    .bind(turn_id)
+    .bind(receipt_digest.as_str())
+    .bind(to_i64(observed_at_ms)?)
+    .execute(&mut **transaction)
+    .await
+    .map_err(|error| {
+        if is_constraint(&error) {
+            AutomationError::Conflict
+        } else {
+            unavailable(error)
+        }
+    })?;
+    Ok(())
+}
+
+fn provider_observation_digest(
+    kind: AutomationProviderObservationKind,
+    task_id: AutomationTaskId,
+    occurrence: u64,
+    queued_submission_id: Option<&str>,
+    turn_id: Option<&str>,
+) -> Sha256Digest {
+    let canonical = format!(
+        "hepta.automation.provider-observation.v1\\0{}\\0{}\\0{}\\0{}\\0{}",
+        kind.as_str(),
+        task_id,
+        occurrence,
+        queued_submission_id.unwrap_or(""),
+        turn_id.unwrap_or(""),
+    );
+    Sha256Digest::for_bytes(canonical.as_bytes())
+}
+
+fn validate_sha256(digest: &Sha256Digest) -> Result<(), AutomationError> {
+    let value = digest.as_str();
+    if value.len() != 64
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+    {
+        return Err(AutomationError::Invalid);
     }
     Ok(())
 }
