@@ -162,6 +162,7 @@ impl From<ArtifactClosureError> for ArtifactAdmissionError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_support::FixtureValue;
     use codex_hepta_types::Generation;
     use codex_hepta_types::StableId;
 
@@ -171,7 +172,7 @@ mod tests {
     use crate::ProvenanceModeV1;
 
     fn id(value: &str) -> StableId {
-        StableId::new(value.to_owned()).expect("valid test id")
+        StableId::new(value.to_owned()).fixture("valid test id")
     }
 
     fn digest(value: &str) -> Digest32 {
@@ -190,7 +191,7 @@ mod tests {
         LearningArtifactManifestV2 {
             artifact_id: id("artifact-v3"),
             kind: ArtifactKind::Model,
-            generation: Generation::new(1).expect("valid generation"),
+            generation: Generation::new(1).fixture("valid generation"),
             provenance_mode: ProvenanceModeV1::DatasetDerived,
             source_dataset_digests: vec![dataset],
             lineage_digests: vec![digest("lineage")],
@@ -217,9 +218,9 @@ mod tests {
         let head = registry.head_digest();
         let admission =
             admit_manifest_at_withdrawal_head_v3(&registry, head, manifest(digest("dataset")), 20)
-                .expect("admission succeeds");
+                .fixture("admission succeeds");
         validate_artifact_publication_v3(&admission, &registry, 20)
-            .expect("unchanged head remains valid");
+            .fixture("unchanged head remains valid");
         assert!(!admission.authority.grants_any());
     }
 
@@ -249,7 +250,7 @@ mod tests {
             manifest(digest("dataset")),
             20,
         )
-        .expect("scoped admission succeeds");
+        .fixture("scoped admission succeeds");
         assert_eq!(
             validate_artifact_publication_v3(&admission, &registry_b, 20),
             Err(ArtifactAdmissionError::WithdrawalScopeChanged)
@@ -266,7 +267,7 @@ mod tests {
             manifest(dataset),
             20,
         )
-        .expect("initial admission succeeds");
+        .fixture("initial admission succeeds");
         registry
             .append(DatasetWithdrawalNoticeV1 {
                 notice_id: id("notice"),
@@ -278,7 +279,7 @@ mod tests {
                 authority_epoch: 1,
                 issued_at: 21,
             })
-            .expect("withdrawal appends");
+            .fixture("withdrawal appends");
         assert_eq!(
             validate_artifact_publication_v3(&admission, &registry, 21),
             Err(ArtifactAdmissionError::WithdrawalHeadChanged)
