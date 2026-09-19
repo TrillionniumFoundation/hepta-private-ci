@@ -7,7 +7,7 @@
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
-  "sourceMaturity": "verified_local_process_driver_aggregate_memory_deadlines_core_reconciliation_and_hosted_product_root",
+  "sourceMaturity": "kernel_authenticated_local_resource_grant_digest_pinned_local_driver_aggregate_memory_deadlines_core_reconciliation_and_hosted_product_root",
   "declaredRoots": [
     "codex-rs/hepta-infer-worker-host"
   ],
@@ -28,6 +28,13 @@
       },
       "delegatedCallees": [
         {
+          "role": "authority_verifier",
+          "path": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
+          "symbol": "pub struct FinalUseResourceGrantVerifier",
+          "buildTarget": "codex-hepta-infer-worker-host::model_worker",
+          "ownerModule": "inference.worker"
+        },
+        {
           "role": "supporting_algorithm",
           "path": "codex-rs/hepta-infer-worker-host/src/local_process_driver.rs",
           "symbol": "impl ModelDriver for LocalProcessDriver",
@@ -45,9 +52,14 @@
           "path": "codex-rs/hepta-infer-worker-host/src/local_process_driver_tests.rs",
           "kind": "real_resident_child_digest_pinned_load_run_unload",
           "command": "just test -p codex-hepta-infer-worker-host --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs",
+          "kind": "kernel_final_use_resource_grant_single_use_and_scope_binding",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Requires VerifiedResourceGrant, validates exact manifest/grant bounds, then delegates physical loading to LocalProcessDriver, which verifies runtime/model/device artifacts, obtains a nonzero memory reservation from the resident runtime, rechecks artifacts before usability and records reserved/observed memory.",
+      "sourceSemantics": "Requires VerifiedResourceGrant. FinalUseResourceGrantVerifier can authenticate creation of one exact worker generation through kernel FinalUseAuthority with complete resource-grant/worker binding and durable single-use nonce. load_model enforces aggregate live reservations, passes only remaining memory to LocalProcessDriver, which verifies runtime/model/device artifacts, obtains a nonzero reservation, rechecks artifacts before usability and records reserved/observed memory.",
       "operation": "load_model",
       "nativeSymbol": "pub fn load_model(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
@@ -109,7 +121,7 @@
           "command": "just test -p codex-hepta-inferd --lib"
         }
       ],
-      "sourceSemantics": "Reserves through durable inference.control, claims independently signed final-use authority only for a fresh request, records exact Core client-message/payload dispatch identity, invokes the private Agent/App Server, and settles matching observations. Reopen uses Core ReconcileOnly to recover the original turn or prove no durable admission; it never submits a replacement turn.",
+      "sourceSemantics": "Reserves through durable inference.control, claims independently signed final-use authority only for a fresh request, records exact Core client-message/payload dispatch identity, invokes the private Agent/App Server, and settles matching observations. Reopen uses Core ReconcileOnly to recover the original turn or prove no durable admission; recovered terminal turns await exact-turn persisted usage replay under the RPC bound and never submit a replacement turn.",
       "operation": "run",
       "nativeSymbol": "pub async fn run(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
@@ -148,8 +160,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Compose the local-model product caller around InferenceWorker<LocalProcessDriver> with protected runtime/artifact/device configuration and an authenticated ResourceGrantVerifier. The hosted provider source root already exists as hepta-inference-runtime-host; local-model product composition is still absent.",
-    "Back the local ResourceGrantVerifier with a deployed authority/revocation owner and re-verify current epoch/revocation at the caller boundary before constructing each worker generation. VerifiedResourceGrant is a bounded verification snapshot; it is not itself a revocation feed.",
+    "Compose the local-model product caller around InferenceWorker<LocalProcessDriver> with protected runtime/artifact/device configuration and FinalUseResourceGrantVerifier. The kernel-backed verifier and hosted provider source root exist; the local product caller is still absent.",
+    "Wire local worker-generation fencing to the deployed resource-authority/revocation owner. FinalUseResourceGrantVerifier authenticates and single-use-claims creation of one exact worker generation, while VerifiedResourceGrant remains a bounded snapshot and does not itself stream later revocations.",
     "Add trusted provider/billing usage reconciliation for recovered terminal turns when persisted App Server token-usage replay has no authoritative usage for that exact turn; missing usage must remain unknown."
   ],
   "externalEvidenceGates": [
