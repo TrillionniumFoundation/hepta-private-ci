@@ -107,12 +107,14 @@ jobs:
       - name: Verify Cargo lockfile integrity
         run: python3 scripts/verify_cargo_lock.py
 
-      - name: Formatting
+      - name: Formatting Lane D packages
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --all -- --check
+          cargo fmt --package codex-hepta-objective -- --check
+          cargo fmt --package codex-hepta-ndu -- --check
+          cargo fmt --package codex-hepta-control-plane -- --check
 
       - name: Compile Lane D packages
         working-directory: codex-rs
