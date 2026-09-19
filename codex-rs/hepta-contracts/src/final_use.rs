@@ -3,6 +3,7 @@
 
 use std::collections::BTreeSet;
 use std::fmt;
+use std::future::Future;
 use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::SystemTime;
@@ -250,6 +251,41 @@ impl FinalUseAuthority {
         }
         validate_live(&token.grant, &state.head)?;
         let result = consumer();
+        drop(state);
+        Ok(result)
+    }
+
+    /// Revalidate live authority and hold the revocation fence across one
+    /// bounded asynchronous effect entry. This is intentionally stronger than
+    /// checking immediately before constructing a future: the authority state
+    /// remains locked until the adapter has observed the dispatch result.
+    ///
+    /// Callers must bound `consumer` with their transport timeout. Revocation
+    /// updates wait for this critical section instead of racing an in-flight
+    /// external effect.
+    #[allow(clippy::await_holding_lock)]
+    pub async fn with_verified_use_async<T, Fut>(
+        &self,
+        token: VerifiedUseToken,
+        expected: &FinalUseBinding,
+        consumer: impl FnOnce() -> Fut,
+    ) -> Result<T, FinalUseError>
+    where
+        Fut: Future<Output = T>,
+    {
+        if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
+            return Err(FinalUseError::BindingMismatch);
+        }
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        validate_live(&token.grant, &state.head)?;
+        let result = consumer().await;
         drop(state);
         Ok(result)
     }
