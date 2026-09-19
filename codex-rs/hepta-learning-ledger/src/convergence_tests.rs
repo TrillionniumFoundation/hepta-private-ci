@@ -68,12 +68,26 @@ fn outcome(
 #[test]
 fn correction_graph_rejects_forks_missing_predecessors_and_cross_episode_edges() {
     let mut ledger = LearningLedger::new();
-    ledger.append(decision("decision-1", "episode-1")).expect("decision");
-    ledger.append(decision("decision-2", "episode-2")).expect("decision");
     ledger
-        .append(outcome("outcome-record-1", "outcome-1", "episode-1", None, 100))
+        .append(decision("decision-1", "episode-1"))
+        .expect("decision");
+    ledger
+        .append(decision("decision-2", "episode-2"))
+        .expect("decision");
+    ledger
+        .append(outcome(
+            "outcome-record-1",
+            "outcome-1",
+            "episode-1",
+            None,
+            100,
+        ))
         .expect("first outcome");
-    let superseded_digest = ledger.records().last().expect("first outcome row").event_digest;
+    let superseded_digest = ledger
+        .records()
+        .last()
+        .expect("first outcome row")
+        .event_digest;
     ledger
         .append(outcome(
             "outcome-record-2",
@@ -83,7 +97,11 @@ fn correction_graph_rejects_forks_missing_predecessors_and_cross_episode_edges()
             100,
         ))
         .expect("correction");
-    let current_digest = ledger.records().last().expect("current outcome row").event_digest;
+    let current_digest = ledger
+        .records()
+        .last()
+        .expect("current outcome row")
+        .event_digest;
     let source_digests = ledger.dataset_source_record_digests();
     assert!(!source_digests.contains(&superseded_digest));
     assert!(source_digests.contains(&current_digest));
@@ -125,9 +143,17 @@ fn correction_graph_rejects_forks_missing_predecessors_and_cross_episode_edges()
 #[test]
 fn conserved_credit_batch_is_one_ledger_record_and_rejects_drift() {
     let mut ledger = LearningLedger::new();
-    ledger.append(decision("decision-1", "episode-1")).expect("decision");
     ledger
-        .append(outcome("outcome-record-1", "outcome-1", "episode-1", None, 100))
+        .append(decision("decision-1", "episode-1"))
+        .expect("decision");
+    ledger
+        .append(outcome(
+            "outcome-record-1",
+            "outcome-1",
+            "episode-1",
+            None,
+            100,
+        ))
         .expect("outcome");
 
     let batch = CreditAllocationBatchV1 {
@@ -170,7 +196,9 @@ fn conserved_credit_batch_is_one_ledger_record_and_rejects_drift() {
 #[test]
 fn unlearning_lineage_requires_revoked_source_and_linear_derived_head() {
     let mut ledger = LearningLedger::new();
-    ledger.append(decision("decision-1", "episode-1")).expect("decision");
+    ledger
+        .append(decision("decision-1", "episode-1"))
+        .expect("decision");
 
     let source_digest = ledger.records()[0].event_digest;
     let base = UnlearningLineageEventV1 {
