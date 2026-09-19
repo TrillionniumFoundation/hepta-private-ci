@@ -2,7 +2,7 @@ use codex_hepta_bellman_operator::BellmanReferenceCellV1;
 use codex_hepta_bellman_operator::BellmanReferencePlanV1;
 use codex_hepta_bellman_operator::WorldModelSampleV1;
 use codex_hepta_bellman_operator::evaluate_bellman_reference;
-use codex_hepta_bellman_operator::fit_transition_model;
+use codex_hepta_bellman_operator::fit_transition_model_from_dataset_receipt_v3;
 use codex_hepta_intelligence_eval::CrossFoldPartitionV1;
 use codex_hepta_intelligence_eval::CrossFoldPlanV1;
 use codex_hepta_intelligence_eval::EvaluationClaimScopeV1;
@@ -31,7 +31,7 @@ use codex_hepta_learning_ledger::DatasetFreezeRequestV1;
 use codex_hepta_learning_ledger::OutcomeTerminalityV1;
 use codex_hepta_learning_ledger::OutcomeWatermarkV1;
 use codex_hepta_learning_ledger::finalize_credit_batch;
-use codex_hepta_learning_ledger::freeze_dataset;
+use codex_hepta_learning_ledger::freeze_dataset_receipt_v3;
 use codex_hepta_learning_ledger::validate_authenticated_outcome;
 use codex_hepta_learning_ledger::validate_candidate_set_completeness;
 use codex_hepta_types::Digest32;
@@ -155,7 +155,7 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
     };
     assert!(!credit.authority.grants_any());
 
-    let dataset = match freeze_dataset(
+    let dataset_receipt = match freeze_dataset_receipt_v3(
         DatasetFreezeRequestV1 {
             snapshot_id: id("dataset-1"),
             producer: evaluator.clone(),
@@ -175,11 +175,12 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
         Ok(snapshot) => snapshot,
         Err(error) => panic!("dataset freeze failed: {error}"),
     };
+    let dataset = &dataset_receipt.snapshot;
     assert!(!dataset.authority.grants_any());
 
-    let world_model = match fit_transition_model(
+    let world_model = match fit_transition_model_from_dataset_receipt_v3(
         id("world-model-1"),
-        dataset.dataset_digest,
+        &dataset_receipt,
         vec![WorldModelSampleV1 {
             sample_id: id("sample-1"),
             state_id: id("state-1"),
@@ -188,6 +189,7 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
             outcome: FixedQ32::from_raw(100),
             evidence_digest: outcome_digest,
         }],
+        50,
     ) {
         Ok(model) => model,
         Err(error) => panic!("world-model fit failed: {error}"),
