@@ -389,8 +389,10 @@ async fn real_agentd_remember_recall_correct_and_forget_revalidate_physical_send
     ensure!(
         before_restart.fact_set_sha256 == remember_projection.fact_set_sha256
             && before_restart.input_heads_sha256 == remember_projection.input_heads_sha256
-            && before_restart.output_sha256 == remember_projection.output_sha256,
-        "physical remember output did not bind the persisted KG receipt digests"
+            && before_restart.output_sha256 == remember_projection.output_sha256
+            && before_restart.generation_sha256 == remember_projection.generation_sha256
+            && before_restart.publication_sha256 == remember_projection.publication_sha256,
+        "physical remember output did not bind the persisted physical and canonical KG receipt digests"
     );
 
     fleet.supervisor.restart(&agent.agent_id, Instant::now())?;
@@ -2105,6 +2107,8 @@ struct KgProjectionEvidence {
     fact_set_sha256: String,
     input_heads_sha256: String,
     output_sha256: String,
+    generation_sha256: String,
+    publication_sha256: String,
 }
 
 fn assert_projection_receipt(
@@ -2127,6 +2131,8 @@ fn assert_projection_receipt(
         fact_set_sha256: json_sha256(projection, "fact_set_sha256")?,
         input_heads_sha256: json_sha256(projection, "input_heads_sha256")?,
         output_sha256: json_sha256(projection, "output_sha256")?,
+        generation_sha256: json_sha256(projection, "generation_sha256")?,
+        publication_sha256: json_sha256(projection, "publication_sha256")?,
     };
     ensure!(
         evidence.generation == generation
@@ -2247,14 +2253,30 @@ async fn read_kg_sqlite_evidence(
         receipt_fact_set_sha256,
         input_heads_sha256,
         output_sha256,
+        generation_sha256,
+        publication_sha256,
         entity_count,
         relation_count,
         node_count,
         edge_count,
         actual_node_count,
         actual_edge_count,
-    ): (i64, String, String, String, i64, i64, i64, i64, i64, i64) = sqlx::query_as(
+    ): (
+        i64,
+        String,
+        String,
+        String,
+        String,
+        String,
+        i64,
+        i64,
+        i64,
+        i64,
+        i64,
+        i64,
+    ) = sqlx::query_as(
         "SELECT r.generation, r.fact_set_sha256, r.input_heads_sha256, r.output_sha256,
+                s.generation_sha256, s.publication_sha256,
                 r.entity_count, r.relation_count, r.node_count, r.edge_count,
                 (SELECT COUNT(*) FROM kg_nodes AS n
                  WHERE n.projection_scope = r.projection_scope
@@ -2269,6 +2291,8 @@ async fn read_kg_sqlite_evidence(
                    AND e.memory_revision = r.trigger_memory_revision
                    AND e.source_id = ? AND e.source_revision = 1)
          FROM kg_projection_generation_receipts AS r
+         JOIN kg_projection_generation_semantics AS s
+           ON s.projection_scope = r.projection_scope AND s.generation = r.generation
          JOIN kg_projection AS p
            ON p.projection_scope = r.projection_scope AND p.generation = r.generation
          WHERE r.trigger_memory_id = ? AND r.trigger_memory_revision = ?",
@@ -2298,6 +2322,8 @@ async fn read_kg_sqlite_evidence(
         fact_set_sha256,
         input_heads_sha256,
         output_sha256,
+        generation_sha256,
+        publication_sha256,
     })
 }
 
