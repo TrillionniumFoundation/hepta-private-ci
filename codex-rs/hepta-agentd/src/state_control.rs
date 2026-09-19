@@ -1,8 +1,19 @@
 //! Domain control dispatch kept separate from process lifecycle state.
 
+use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_app_server_client::RemoteAppServerClient;
+use codex_app_server_client::RemoteAppServerConnectArgs;
+use codex_app_server_client::RemoteAppServerEndpoint;
+use codex_app_server_protocol::ClientRequest;
+use codex_app_server_protocol::RequestId;
+use codex_app_server_protocol::ThreadReadParams;
+use codex_app_server_protocol::ThreadReadResponse;
+use codex_app_server_protocol::TurnInterruptParams;
+use codex_app_server_protocol::TurnInterruptResponse;
+use codex_app_server_protocol::TurnStatus;
 use codex_hepta_automation::AutomationError;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_memory::CognitiveAccess;
@@ -22,12 +33,33 @@ use crate::AgentdPayload;
 use crate::AgentdResponse;
 use crate::HealthSnapshot;
 use crate::LifecycleSnapshot;
+use crate::RunExecutionBinding;
+use crate::RunPhase;
+use crate::RunTerminalObservation;
 use crate::SessionIngress;
 use crate::SessionTransport;
 use crate::cognitive_context::CognitiveContextError;
+use codex_utils_absolute_path::AbsolutePathBuf;
+use tokio::time::timeout;
 
 use super::AgentdState;
 use super::poisoned_state;
+
+fn agentd_capabilities() -> Result<crate::AgentdCapabilitySet, AgentdError> {
+    let capabilities = [
+        ("run.lifecycle", 1_u16, 1_u16),
+        ("run.lifecycle.exact-execution", 1_u16, 0_u16),
+        ("run.lifecycle.recovery", 1_u16, 0_u16),
+        ("control.typed-overload", 1_u16, 0_u16),
+    ]
+    .into_iter()
+    .map(|(id, major, minor)| {
+        codex_hepta_agent_protocol::AgentdCapability::new(id, major, minor)
+            .map_err(AgentdError::Protocol)
+    })
+    .collect::<Result<Vec<_>, _>>()?;
+    crate::AgentdCapabilitySet::new(capabilities).map_err(AgentdError::Protocol)
+}
 
 const AUTOMATION_UNAVAILABLE_CODE: &str = "automation_unavailable";
 const AUTOMATION_UNAVAILABLE_MESSAGE: &str =
@@ -64,7 +96,7 @@ impl AgentdState {
         let cognitive = self.cognitive.lock().map_err(poisoned_state)?.clone();
         let payload = match method {
             crate::AgentdMethod::Capabilities => {
-                AgentdPayload::Capabilities(crate::AgentdCapabilitySet::empty())
+                AgentdPayload::Capabilities(agentd_capabilities()?)
             }
             crate::AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
                 promotion_ready: matches!(
@@ -99,6 +131,107 @@ impl AgentdState {
                     })
                 }
             }
+            crate::AgentdMethod::RunStart { snapshot } => {
+                AgentdPayload::RunReceipt(self.run_start(now_ms()?, snapshot)?)
+            }
+            crate::AgentdMethod::RunAttachContext {
+                expected_revision,
+                attachment,
+            } => AgentdPayload::RunReceipt(self.run_attach_context(
+                now_ms()?,
+                expected_revision,
+                attachment,
+            )?),
+            crate::AgentdMethod::RunMarkDispatched {
+                run_id,
+                expected_revision,
+                binding,
+            } => AgentdPayload::RunReceipt(self.run_mark_dispatched(
+                now_ms()?,
+                &run_id,
+                expected_revision,
+                binding,
+            )?),
+            crate::AgentdMethod::RunBindExecution {
+                run_id,
+                expected_revision,
+                binding,
+            } => {
+                self.verify_codex_execution_binding(&binding).await?;
+                let receipt = self.run_bind_execution(
+                    now_ms()?,
+                    &run_id,
+                    expected_revision,
+                    binding.clone(),
+                )?;
+                if matches!(receipt.phase, RunPhase::Cancelling | RunPhase::Indeterminate) {
+                    // A durable cancellation/uncertainty intent wins even if
+                    // the interrupt RPC is lost or the turn raced terminal.
+                    let _ = self.interrupt_codex_execution(&binding).await;
+                }
+                AgentdPayload::RunReceipt(receipt)
+            }
+            crate::AgentdMethod::RunCancel {
+                run_id,
+                expected_revision,
+                reason,
+            } => {
+                let (disposition, receipt) =
+                    self.run_cancel(now_ms()?, &run_id, expected_revision, reason)?;
+                if disposition == crate::CancellationDisposition::CancellingAfterDispatch
+                    && let Some(binding) = self.run_execution_binding(&run_id)?
+                {
+                    // Persisted cancellation intent precedes the effect. Failure
+                    // to observe an interrupt acknowledgement leaves the run
+                    // Cancelling until its acknowledgement deadline, then
+                    // Indeterminate; it never fabricates terminality.
+                    let _ = self.interrupt_codex_execution(&binding).await;
+                }
+                AgentdPayload::RunCancellation {
+                    disposition,
+                    receipt,
+                }
+            }
+            crate::AgentdMethod::RunObserveTerminal {
+                run_id,
+                expected_revision,
+                phase,
+                observation,
+            } => {
+                if let Some(observation) = observation.as_ref() {
+                    let execution = self
+                        .run_execution_binding(&run_id)?
+                        .ok_or_else(|| {
+                            AgentdError::Protocol(
+                                "terminal observation requires an exact execution binding"
+                                    .to_string(),
+                            )
+                        })?;
+                    if observation.execution_binding_digest != execution.binding_digest
+                        || observation.thread_id != execution.thread_id
+                        || observation.turn_id != execution.turn_id
+                    {
+                        return Err(AgentdError::Protocol(
+                            "terminal observation does not match the exact bound Codex turn"
+                                .to_string(),
+                        ));
+                    }
+                    self.verify_codex_terminal_observation(observation).await?;
+                }
+                AgentdPayload::RunReceipt(self.run_observe_terminal(
+                    &run_id,
+                    expected_revision,
+                    phase,
+                    observation,
+                )?)
+            }
+            crate::AgentdMethod::RunStatus { run_id } => AgentdPayload::RunStatus {
+                receipt: self.run_status(&run_id)?,
+            },
+            crate::AgentdMethod::RunRemoveClosed {
+                run_id,
+                expected_revision,
+            } => AgentdPayload::RunReceipt(self.run_remove_closed(&run_id, expected_revision)?),
             crate::AgentdMethod::ObjectiveStart { request } => {
                 AgentdPayload::AuthBusObjectiveStatus(
                     crate::objective_ingress::submit(self, request).await?,
@@ -532,6 +665,218 @@ impl AgentdState {
             }
             Err(error) => Err(error.into()),
         }
+    }
+
+    async fn verify_codex_execution_binding(
+        &self,
+        binding: &RunExecutionBinding,
+    ) -> Result<(), AgentdError> {
+        binding.validate().map_err(AgentdError::Protocol)?;
+        let socket_path = AbsolutePathBuf::from_absolute_path(&self.identity.app_server_socket)?;
+        let client = timeout(
+            Duration::from_secs(1),
+            RemoteAppServerClient::connect(RemoteAppServerConnectArgs {
+                endpoint: RemoteAppServerEndpoint::UnixSocket { socket_path },
+                client_name: "hepta-agentd-execution-verifier".to_string(),
+                client_version: env!("CARGO_PKG_VERSION").to_string(),
+                experimental_api: true,
+                mcp_server_openai_form_elicitation: false,
+                opt_out_notification_methods: Vec::new(),
+                channel_capacity: 8,
+            }),
+        )
+        .await
+        .map_err(|_| {
+            AgentdError::Protocol("Codex execution verification connect timed out".to_string())
+        })??;
+        let expected_home = self.identity.home_root.to_string_lossy();
+        if client.codex_home() != Some(expected_home.as_ref()) {
+            let _ = client.shutdown().await;
+            return Err(AgentdError::GenerationFenced(
+                "Codex execution verifier reached a different Agent home".to_string(),
+            ));
+        }
+        let response = timeout(
+            Duration::from_secs(1),
+            client.request_typed::<ThreadReadResponse>(ClientRequest::ThreadRead {
+                request_id: RequestId::String(format!(
+                    "agentd-execution-{}",
+                    binding.binding_digest
+                )),
+                params: ThreadReadParams {
+                    thread_id: binding.thread_id.clone(),
+                    include_turns: true,
+                },
+            }),
+        )
+        .await
+        .map_err(|_| {
+            AgentdError::Protocol("Codex execution verification read timed out".to_string())
+        })??;
+        let _ = client.shutdown().await;
+        if response.thread.id != binding.thread_id
+            || !response.thread.turns.iter().any(|turn| turn.id == binding.turn_id)
+        {
+            return Err(AgentdError::Protocol(
+                "Codex execution binding does not identify an observed turn".to_string(),
+            ));
+        }
+        Ok(())
+    }
+
+    async fn interrupt_codex_execution(
+        &self,
+        binding: &RunExecutionBinding,
+    ) -> Result<(), AgentdError> {
+        binding.validate().map_err(AgentdError::Protocol)?;
+        let socket_path = AbsolutePathBuf::from_absolute_path(&self.identity.app_server_socket)?;
+        let client = timeout(
+            Duration::from_secs(1),
+            RemoteAppServerClient::connect(RemoteAppServerConnectArgs {
+                endpoint: RemoteAppServerEndpoint::UnixSocket { socket_path },
+                client_name: "hepta-agentd-run-cancel".to_string(),
+                client_version: env!("CARGO_PKG_VERSION").to_string(),
+                experimental_api: true,
+                mcp_server_openai_form_elicitation: false,
+                opt_out_notification_methods: Vec::new(),
+                channel_capacity: 8,
+            }),
+        )
+        .await
+        .map_err(|_| AgentdError::Protocol("Codex interrupt connect timed out".to_string()))??;
+        let expected_home = self.identity.home_root.to_string_lossy();
+        if client.codex_home() != Some(expected_home.as_ref()) {
+            let _ = client.shutdown().await;
+            return Err(AgentdError::GenerationFenced(
+                "Codex interrupt reached a different Agent home".to_string(),
+            ));
+        }
+        let result = timeout(
+            Duration::from_secs(3),
+            client.request_typed::<TurnInterruptResponse>(ClientRequest::TurnInterrupt {
+                request_id: RequestId::String(format!(
+                    "agentd-cancel-{}",
+                    binding.binding_digest
+                )),
+                params: TurnInterruptParams {
+                    thread_id: binding.thread_id.clone(),
+                    turn_id: binding.turn_id.clone(),
+                },
+            }),
+        )
+        .await;
+        let _ = client.shutdown().await;
+        result
+            .map_err(|_| AgentdError::Protocol("Codex interrupt acknowledgement timed out".to_string()))??;
+        Ok(())
+    }
+
+    async fn verify_codex_terminal_observation(
+        &self,
+        observation: &RunTerminalObservation,
+    ) -> Result<(), AgentdError> {
+        observation.validate().map_err(AgentdError::Protocol)?;
+        let socket_path = AbsolutePathBuf::from_absolute_path(&self.identity.app_server_socket)?;
+        let client = timeout(
+            Duration::from_secs(1),
+            RemoteAppServerClient::connect(RemoteAppServerConnectArgs {
+                endpoint: RemoteAppServerEndpoint::UnixSocket { socket_path },
+                client_name: "hepta-agentd-terminal-verifier".to_string(),
+                client_version: env!("CARGO_PKG_VERSION").to_string(),
+                experimental_api: true,
+                mcp_server_openai_form_elicitation: false,
+                opt_out_notification_methods: Vec::new(),
+                channel_capacity: 8,
+            }),
+        )
+        .await
+        .map_err(|_| {
+            AgentdError::Protocol("Codex terminal verification connect timed out".to_string())
+        })??;
+        let expected_home = self.identity.home_root.to_string_lossy();
+        if client.codex_home() != Some(expected_home.as_ref()) {
+            let _ = client.shutdown().await;
+            return Err(AgentdError::GenerationFenced(
+                "Codex terminal verifier reached a different Agent home".to_string(),
+            ));
+        }
+        let response = timeout(
+            Duration::from_secs(1),
+            client.request_typed::<ThreadReadResponse>(ClientRequest::ThreadRead {
+                request_id: RequestId::String(format!(
+                    "agentd-terminal-{}",
+                    observation.observation_digest
+                )),
+                params: ThreadReadParams {
+                    thread_id: observation.thread_id.clone(),
+                    include_turns: true,
+                },
+            }),
+        )
+        .await
+        .map_err(|_| {
+            AgentdError::Protocol("Codex terminal verification read timed out".to_string())
+        })??;
+        let _ = client.shutdown().await;
+        if response.thread.id != observation.thread_id {
+            return Err(AgentdError::Protocol(
+                "Codex terminal verification returned a different thread".to_string(),
+            ));
+        }
+        let turn = response
+            .thread
+            .turns
+            .iter()
+            .find(|turn| turn.id == observation.turn_id)
+            .ok_or_else(|| {
+                AgentdError::Protocol(
+                    "Codex terminal verification could not find the observed turn".to_string(),
+                )
+            })?;
+        let observed_phase = match turn.status {
+            TurnStatus::Completed => RunPhase::Succeeded,
+            TurnStatus::Interrupted => RunPhase::Cancelled,
+            TurnStatus::Failed => RunPhase::Failed,
+            TurnStatus::InProgress => {
+                return Err(AgentdError::Protocol(
+                    "Codex turn is still in progress and is not terminal".to_string(),
+                ));
+            }
+        };
+        if observed_phase != observation.phase {
+            return Err(AgentdError::Protocol(format!(
+                "Codex terminal status does not match lifecycle observation: {:?} != {:?}",
+                observed_phase, observation.phase
+            )));
+        }
+        Ok(())
+    }
+
+    /// Advance lifecycle deadlines and propagate a durable post-dispatch
+    /// cancellation intent to the exact bound Codex turn when one is known.
+    ///
+    /// State is persisted as Cancelling before the interrupt RPC. A lost or
+    /// rejected acknowledgement therefore cannot roll the lifecycle record
+    /// back to Dispatched; the normal acknowledgement deadline will move it
+    /// to Indeterminate unless a delegated terminal observation arrives.
+    pub(crate) async fn expire_run_deadlines_and_interrupt(
+        &self,
+        now_ms: u64,
+    ) -> Result<(), AgentdError> {
+        let expired = self.expire_run_deadlines(now_ms)?;
+        for receipt in expired {
+            if receipt.phase != RunPhase::Cancelling {
+                continue;
+            }
+            let Some(binding) = self.run_execution_binding(&receipt.run_id)? else {
+                // A caller can bind the exact Codex turn after the dispatch
+                // boundary. RunBindExecution observes Cancelling and issues
+                // the same interrupt then, so absence here is not terminal.
+                continue;
+            };
+            let _ = self.interrupt_codex_execution(&binding).await;
+        }
+        Ok(())
     }
 
     fn response_with_payload(

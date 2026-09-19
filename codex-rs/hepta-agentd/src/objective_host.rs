@@ -43,34 +43,37 @@ impl StdError for ObjectiveHostError {
     }
 }
 
-/// Consume one already-durable, deny-all objective envelope into Agentd's
-/// ephemeral run coordinator.
+/// Consume one already-durable, deny-all objective envelope into a supplied
+/// coordinator. Product ingress uses AgentdState's sole durable lifecycle ledger;
+/// this helper remains for deterministic compatibility/qualification callers.
 ///
 /// No durable objective bytes are copied into Agentd. The runtime stores only
 /// exact digest references and requires context attachment before dispatch.
-pub fn start_intelligence_run_v1(
-    coordinator: &mut AgentRunCoordinator,
-    now_ms: u64,
+pub(crate) fn intelligence_run_snapshot_v1(
     envelope: &IntelligenceHostEnvelopeV1,
-) -> Result<RunReceipt, ObjectiveHostError> {
+) -> Result<RunSnapshot, ObjectiveHostError> {
     envelope.validate().map_err(ObjectiveHostError::Envelope)?;
     let deadline_micros = envelope
         .deadline_unix_micros
         .ok_or(ObjectiveHostError::DeadlineMissing)?;
     let deadline_ms = deadline_micros / 1_000;
+    Ok(RunSnapshot {
+        run_id: envelope.run_start.run_id.to_string(),
+        request_digest: envelope.admitted_source_digest.to_string(),
+        objective_digest: envelope.run_start.objective_digest.to_string(),
+        body_digest: envelope.runtime_body_digest.to_string(),
+        artifact_set_digest: envelope.run_start.artifact_set_digest.to_string(),
+        authority_epoch: envelope.run_start.authority_epoch,
+        deadline_ms,
+    })
+}
 
+pub fn start_intelligence_run_v1(
+    coordinator: &mut AgentRunCoordinator,
+    now_ms: u64,
+    envelope: &IntelligenceHostEnvelopeV1,
+) -> Result<RunReceipt, ObjectiveHostError> {
     coordinator
-        .start_run(
-            now_ms,
-            RunSnapshot {
-                run_id: envelope.run_start.run_id.to_string(),
-                request_digest: envelope.admitted_source_digest.to_string(),
-                objective_digest: envelope.run_start.objective_digest.to_string(),
-                body_digest: envelope.runtime_body_digest.to_string(),
-                artifact_set_digest: envelope.run_start.artifact_set_digest.to_string(),
-                authority_epoch: envelope.run_start.authority_epoch,
-                deadline_ms,
-            },
-        )
+        .start_run(now_ms, intelligence_run_snapshot_v1(envelope)?)
         .map_err(ObjectiveHostError::Runtime)
 }

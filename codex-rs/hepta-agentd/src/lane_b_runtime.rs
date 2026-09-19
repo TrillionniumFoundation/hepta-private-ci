@@ -1,76 +1,29 @@
 use std::collections::BTreeMap;
 
+use codex_hepta_agent_protocol::CancellationDisposition;
+use codex_hepta_agent_protocol::ContextAttachment;
+use codex_hepta_agent_protocol::MAX_RUN_CANCEL_REASON_BYTES;
+use codex_hepta_agent_protocol::RunDispatchBinding;
+use codex_hepta_agent_protocol::RunExecutionBinding;
+use codex_hepta_agent_protocol::RunPhase;
+use codex_hepta_agent_protocol::RunReceipt;
+use codex_hepta_agent_protocol::RunSnapshot;
+use codex_hepta_agent_protocol::RunTerminalObservation;
+use serde::Deserialize;
+use serde::Serialize;
+
 const MAX_ACTIVE_RUNS: usize = 256;
 const MAX_RETAINED_RUNS: usize = 1_024;
+const MAX_CANCELLATION_ACK_TIMEOUT_MS: u64 = 60_000;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum RunPhase {
-    Admitted,
-    ContextAttached,
-    Dispatched,
-    Cancelling,
-    Cancelled,
-    Succeeded,
-    Failed,
-    Indeterminate,
-}
-
-impl RunPhase {
-    fn closed(self) -> bool {
-        matches!(self, Self::Cancelled | Self::Succeeded | Self::Failed)
-    }
-
-    fn terminal_observed(self) -> bool {
-        matches!(self, Self::Cancelled | Self::Succeeded | Self::Failed)
-    }
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct RuntimeComposition {
     pub agent_id: String,
     pub supervisor_generation: u64,
     pub agentd_generation: u64,
     pub configuration_digest: String,
     pub ports_digest: String,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct RunSnapshot {
-    pub run_id: String,
-    pub request_digest: String,
-    pub objective_digest: String,
-    pub body_digest: String,
-    pub artifact_set_digest: String,
-    pub authority_epoch: u64,
-    pub deadline_ms: u64,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct ContextAttachment {
-    pub run_id: String,
-    pub request_digest: String,
-    pub objective_digest: String,
-    pub body_digest: String,
-    pub artifact_set_digest: String,
-    pub context_digest: String,
-    pub compilation_receipt_digest: String,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct RunReceipt {
-    pub run_id: String,
-    pub revision: u64,
-    pub phase: RunPhase,
-    pub context_digest: Option<String>,
-    pub terminal_observed: bool,
-    pub idempotent: bool,
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum CancellationDisposition {
-    CancelledBeforeDispatch,
-    CancellingAfterDispatch,
-    AlreadyTerminal,
+    pub cancellation_ack_timeout_ms: u64,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -79,48 +32,59 @@ pub enum AgentRunError {
     InvalidDigest(&'static str),
     InvalidGeneration,
     InvalidDeadline,
+    InvalidCancellationAckTimeout,
+    InvalidCancelReason,
     CapacityExceeded,
+    Draining,
     RunNotFound,
     Conflict,
     InvalidTransition,
     StaleRevision,
     MixedSnapshot,
     ContextRequired,
+    DispatchBindingRequired,
+    InvalidDispatchBinding,
+    ExecutionBindingRequired,
+    InvalidExecutionBinding,
     TerminalObservationRequired,
+    InvalidTerminalObservation,
+    DeadlineExceeded,
     ArithmeticOverflow,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 struct RunRecord {
     snapshot: RunSnapshot,
     revision: u64,
     phase: RunPhase,
     context_digest: Option<String>,
     compilation_receipt_digest: Option<String>,
+    dispatch_binding: Option<RunDispatchBinding>,
+    execution_binding: Option<RunExecutionBinding>,
+    terminal_observation: Option<RunTerminalObservation>,
+    cancel_reason: Option<String>,
+    cancellation_ack_deadline_ms: Option<u64>,
 }
 
 /// Owner-local Lane B coordinator for Agentd.
 ///
-/// This type owns only ephemeral run admission and immutable snapshot references.
-/// Codex remains the thread/turn execution owner, and domain stores remain with
-/// their canonical modules.
-#[derive(Debug)]
+/// This type owns only recoverable run admission metadata and immutable snapshot
+/// references. Codex remains the thread/turn execution owner, and product
+/// domain stores remain with their canonical modules.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub struct AgentRunCoordinator {
     composition: RuntimeComposition,
     runs: BTreeMap<String, RunRecord>,
+    draining: bool,
 }
 
 impl AgentRunCoordinator {
     pub fn compose_runtime(composition: RuntimeComposition) -> Result<Self, AgentRunError> {
-        validate_identity(&composition.agent_id, "agent")?;
-        validate_digest(&composition.configuration_digest, "configuration")?;
-        validate_digest(&composition.ports_digest, "ports")?;
-        if composition.supervisor_generation == 0 || composition.agentd_generation == 0 {
-            return Err(AgentRunError::InvalidGeneration);
-        }
+        validate_composition(&composition)?;
         Ok(Self {
             composition,
             runs: BTreeMap::new(),
+            draining: false,
         })
     }
 
@@ -128,17 +92,175 @@ impl AgentRunCoordinator {
         &self.composition
     }
 
+    pub fn validate_recovered_state(&self) -> Result<(), AgentRunError> {
+        validate_composition(&self.composition)?;
+        if self.runs.len() > MAX_RETAINED_RUNS {
+            return Err(AgentRunError::CapacityExceeded);
+        }
+        for (run_id, record) in &self.runs {
+            if run_id != &record.snapshot.run_id || record.revision == 0 {
+                return Err(AgentRunError::Conflict);
+            }
+            validate_snapshot(/* now_ms */ 0, &record.snapshot)?;
+            if let Some(context_digest) = &record.context_digest {
+                validate_digest(context_digest, "context")?;
+            }
+            if let Some(receipt_digest) = &record.compilation_receipt_digest {
+                validate_digest(receipt_digest, "compilation receipt")?;
+            }
+            if let Some(binding) = &record.dispatch_binding {
+                binding
+                    .validate()
+                    .map_err(|_| AgentRunError::InvalidDispatchBinding)?;
+                if binding.run_id != record.snapshot.run_id
+                    || record.context_digest.as_deref() != Some(binding.context_digest.as_str())
+                {
+                    return Err(AgentRunError::InvalidDispatchBinding);
+                }
+            }
+            if let Some(execution) = &record.execution_binding {
+                execution
+                    .validate()
+                    .map_err(|_| AgentRunError::InvalidExecutionBinding)?;
+                let Some(dispatch) = &record.dispatch_binding else {
+                    return Err(AgentRunError::DispatchBindingRequired);
+                };
+                if execution.run_id != record.snapshot.run_id
+                    || execution.dispatch_binding_digest != dispatch.binding_digest
+                    || execution.thread_id != dispatch.thread_id
+                {
+                    return Err(AgentRunError::InvalidExecutionBinding);
+                }
+            }
+            if let Some(observation) = &record.terminal_observation {
+                observation
+                    .validate()
+                    .map_err(|_| AgentRunError::InvalidTerminalObservation)?;
+                let Some(binding) = &record.dispatch_binding else {
+                    return Err(AgentRunError::DispatchBindingRequired);
+                };
+                let Some(execution) = &record.execution_binding else {
+                    return Err(AgentRunError::ExecutionBindingRequired);
+                };
+                if observation.run_id != record.snapshot.run_id
+                    || observation.dispatch_binding_digest != binding.binding_digest
+                    || observation.execution_binding_digest != execution.binding_digest
+                    || observation.thread_id != execution.thread_id
+                    || observation.turn_id != execution.turn_id
+                    || observation.phase != record.phase
+                {
+                    return Err(AgentRunError::InvalidTerminalObservation);
+                }
+            }
+            if let Some(reason) = &record.cancel_reason {
+                validate_cancel_reason(reason)?;
+            }
+            let has_context = record.context_digest.is_some();
+            if has_context != record.compilation_receipt_digest.is_some() {
+                return Err(AgentRunError::InvalidTransition);
+            }
+            let has_dispatch = record.dispatch_binding.is_some();
+            let has_execution = record.execution_binding.is_some();
+            let has_terminal_observation = record.terminal_observation.is_some();
+            match record.phase {
+                RunPhase::Admitted
+                    if has_context || has_dispatch || has_execution || has_terminal_observation =>
+                {
+                    return Err(AgentRunError::InvalidTransition);
+                }
+                RunPhase::ContextAttached
+                    if !has_context || has_dispatch || has_execution || has_terminal_observation =>
+                {
+                    return Err(AgentRunError::InvalidTransition);
+                }
+                RunPhase::Dispatched | RunPhase::Cancelling | RunPhase::Indeterminate
+                    if !has_context || !has_dispatch || has_terminal_observation =>
+                {
+                    return Err(AgentRunError::InvalidTransition);
+                }
+                RunPhase::Succeeded | RunPhase::Failed
+                    if !has_context
+                        || !has_dispatch
+                        || !has_execution
+                        || !has_terminal_observation =>
+                {
+                    return Err(AgentRunError::InvalidTransition);
+                }
+                RunPhase::Cancelled
+                    if has_dispatch != has_terminal_observation
+                        || has_execution != has_terminal_observation =>
+                {
+                    return Err(AgentRunError::InvalidTransition);
+                }
+                _ => {}
+            }
+            if record.phase == RunPhase::Cancelling && record.cancel_reason.is_none() {
+                return Err(AgentRunError::InvalidCancelReason);
+            }
+            if record
+                .cancellation_ack_deadline_ms
+                .is_some_and(|deadline| deadline == 0)
+            {
+                return Err(AgentRunError::InvalidCancellationAckTimeout);
+            }
+            if record.phase == RunPhase::Cancelling {
+                if record.cancellation_ack_deadline_ms.is_none() {
+                    return Err(AgentRunError::InvalidCancellationAckTimeout);
+                }
+            } else if record.cancellation_ack_deadline_ms.is_some() {
+                return Err(AgentRunError::InvalidCancellationAckTimeout);
+            }
+        }
+        Ok(())
+    }
+
+    /// Rebind a recovered ledger to the new process generation without
+    /// redispatching any uncertain external effect.
+    pub fn reconcile_after_restart(
+        &mut self,
+        composition: RuntimeComposition,
+    ) -> Result<Vec<RunReceipt>, AgentRunError> {
+        validate_composition(&composition)?;
+        if self.composition.agent_id != composition.agent_id {
+            return Err(AgentRunError::InvalidIdentity("agent"));
+        }
+        if composition.agentd_generation <= self.composition.agentd_generation
+            || composition.supervisor_generation <= self.composition.supervisor_generation
+        {
+            return Err(AgentRunError::InvalidGeneration);
+        }
+        let changed = self.mark_unfinished(
+            "agentd_restarted_before_dispatch",
+            "agentd_restarted_after_dispatch",
+        )?;
+        self.composition = composition;
+        self.draining = false;
+        Ok(changed)
+    }
+
+    pub fn begin_drain(&mut self) {
+        self.draining = true;
+    }
+
+    pub fn is_draining(&self) -> bool {
+        self.draining
+    }
+
     pub fn start_run(
         &mut self,
         now_ms: u64,
         snapshot: RunSnapshot,
     ) -> Result<RunReceipt, AgentRunError> {
-        validate_snapshot(now_ms, &snapshot)?;
+        validate_identity(&snapshot.run_id, "run")?;
         if let Some(current) = self.runs.get(&snapshot.run_id) {
             if current.snapshot == snapshot {
-                return Ok(receipt(current, /*idempotent*/ true));
+                return Ok(receipt(current, /* idempotent */ true));
             }
             return Err(AgentRunError::Conflict);
+        }
+        validate_snapshot(now_ms, &snapshot)?;
+        if self.draining {
+            return Err(AgentRunError::Draining);
         }
         if self.active_run_count() >= MAX_ACTIVE_RUNS || self.runs.len() >= MAX_RETAINED_RUNS {
             return Err(AgentRunError::CapacityExceeded);
@@ -149,14 +271,20 @@ impl AgentRunCoordinator {
             phase: RunPhase::Admitted,
             context_digest: None,
             compilation_receipt_digest: None,
+            dispatch_binding: None,
+            execution_binding: None,
+            terminal_observation: None,
+            cancel_reason: None,
+            cancellation_ack_deadline_ms: None,
         };
-        let result = receipt(&record, /*idempotent*/ false);
+        let result = receipt(&record, /* idempotent */ false);
         self.runs.insert(snapshot.run_id, record);
         Ok(result)
     }
 
     pub fn attach_context(
         &mut self,
+        now_ms: u64,
         expected_revision: u64,
         attachment: ContextAttachment,
     ) -> Result<RunReceipt, AgentRunError> {
@@ -169,6 +297,8 @@ impl AgentRunCoordinator {
             || attachment.objective_digest != record.snapshot.objective_digest
             || attachment.body_digest != record.snapshot.body_digest
             || attachment.artifact_set_digest != record.snapshot.artifact_set_digest
+            || attachment.authority_epoch != record.snapshot.authority_epoch
+            || attachment.deadline_ms != record.snapshot.deadline_ms
         {
             return Err(AgentRunError::MixedSnapshot);
         }
@@ -177,9 +307,10 @@ impl AgentRunCoordinator {
             && record.compilation_receipt_digest.as_deref()
                 == Some(attachment.compilation_receipt_digest.as_str())
         {
-            return Ok(receipt(record, /*idempotent*/ true));
+            return Ok(receipt(record, /* idempotent */ true));
         }
         require_revision(record, expected_revision)?;
+        require_before_deadline(record, now_ms)?;
         if record.phase != RunPhase::Admitted {
             return Err(AgentRunError::InvalidTransition);
         }
@@ -187,60 +318,194 @@ impl AgentRunCoordinator {
         record.compilation_receipt_digest = Some(attachment.compilation_receipt_digest);
         record.phase = RunPhase::ContextAttached;
         advance_revision(record)?;
-        Ok(receipt(record, /*idempotent*/ false))
+        Ok(receipt(record, /* idempotent */ false))
     }
 
     pub fn mark_dispatched(
         &mut self,
+        now_ms: u64,
         run_id: &str,
         expected_revision: u64,
+        binding: RunDispatchBinding,
     ) -> Result<RunReceipt, AgentRunError> {
         validate_identity(run_id, "run")?;
+        binding
+            .validate()
+            .map_err(|_| AgentRunError::InvalidDispatchBinding)?;
         let record = self
             .runs
             .get_mut(run_id)
             .ok_or(AgentRunError::RunNotFound)?;
+        if binding.run_id != record.snapshot.run_id
+            || record.context_digest.as_deref() != Some(binding.context_digest.as_str())
+        {
+            return Err(AgentRunError::InvalidDispatchBinding);
+        }
         if record.phase == RunPhase::Dispatched {
-            return Ok(receipt(record, /*idempotent*/ true));
+            if record.dispatch_binding.as_ref() == Some(&binding) {
+                return Ok(receipt(record, /* idempotent */ true));
+            }
+            return Err(AgentRunError::Conflict);
         }
         require_revision(record, expected_revision)?;
+        require_before_deadline(record, now_ms)?;
         if record.phase != RunPhase::ContextAttached {
             return Err(AgentRunError::ContextRequired);
         }
+        record.dispatch_binding = Some(binding);
         record.phase = RunPhase::Dispatched;
         advance_revision(record)?;
-        Ok(receipt(record, /*idempotent*/ false))
+        Ok(receipt(record, /* idempotent */ false))
+    }
+
+    pub fn bind_execution(
+        &mut self,
+        now_ms: u64,
+        run_id: &str,
+        expected_revision: u64,
+        binding: RunExecutionBinding,
+    ) -> Result<RunReceipt, AgentRunError> {
+        validate_identity(run_id, "run")?;
+        binding
+            .validate()
+            .map_err(|_| AgentRunError::InvalidExecutionBinding)?;
+        let record = self.runs.get_mut(run_id).ok_or(AgentRunError::RunNotFound)?;
+        let Some(dispatch) = &record.dispatch_binding else {
+            return Err(AgentRunError::DispatchBindingRequired);
+        };
+        if binding.run_id != record.snapshot.run_id
+            || binding.dispatch_binding_digest != dispatch.binding_digest
+            || binding.thread_id != dispatch.thread_id
+        {
+            return Err(AgentRunError::InvalidExecutionBinding);
+        }
+        if let Some(current) = &record.execution_binding {
+            if current == &binding {
+                return Ok(receipt(record, /* idempotent */ true));
+            }
+            return Err(AgentRunError::Conflict);
+        }
+        require_revision(record, expected_revision)?;
+        if record.phase == RunPhase::Dispatched && record.snapshot.deadline_ms <= now_ms {
+            record.phase = RunPhase::Cancelling;
+            record.cancel_reason = Some("deadline_exceeded".to_string());
+            record.cancellation_ack_deadline_ms = Some(cancellation_ack_deadline(
+                now_ms,
+                self.composition.cancellation_ack_timeout_ms,
+            )?);
+        }
+        if !matches!(
+            record.phase,
+            RunPhase::Dispatched | RunPhase::Cancelling | RunPhase::Indeterminate
+        ) {
+            return Err(AgentRunError::InvalidTransition);
+        }
+        record.execution_binding = Some(binding);
+        advance_revision(record)?;
+        Ok(receipt(record, /* idempotent */ false))
     }
 
     pub fn cancel_run(
         &mut self,
+        now_ms: u64,
         run_id: &str,
         expected_revision: u64,
+        reason: impl Into<String>,
     ) -> Result<(CancellationDisposition, RunReceipt), AgentRunError> {
         validate_identity(run_id, "run")?;
+        let reason = normalize_cancel_reason(reason.into())?;
+        let cancellation_ack_timeout_ms = self.composition.cancellation_ack_timeout_ms;
         let record = self
             .runs
             .get_mut(run_id)
             .ok_or(AgentRunError::RunNotFound)?;
+
+        if matches!(record.phase, RunPhase::Cancelling | RunPhase::Cancelled)
+            && record.cancel_reason.as_deref() == Some(reason.as_str())
+        {
+            let disposition = if record.phase == RunPhase::Cancelling {
+                CancellationDisposition::CancellingAfterDispatch
+            } else {
+                CancellationDisposition::AlreadyTerminal
+            };
+            return Ok((disposition, receipt(record, /* idempotent */ true)));
+        }
+
         require_revision(record, expected_revision)?;
         let disposition = match record.phase {
             RunPhase::Admitted | RunPhase::ContextAttached => {
                 record.phase = RunPhase::Cancelled;
+                record.cancel_reason = Some(reason);
+                record.cancellation_ack_deadline_ms = None;
                 advance_revision(record)?;
                 CancellationDisposition::CancelledBeforeDispatch
             }
             RunPhase::Dispatched => {
+                let cancellation_ack_deadline_ms =
+                    cancellation_ack_deadline(now_ms, cancellation_ack_timeout_ms)?;
                 record.phase = RunPhase::Cancelling;
+                record.cancel_reason = Some(reason);
+                record.cancellation_ack_deadline_ms = Some(cancellation_ack_deadline_ms);
                 advance_revision(record)?;
                 CancellationDisposition::CancellingAfterDispatch
             }
-            RunPhase::Cancelling => CancellationDisposition::CancellingAfterDispatch,
+            RunPhase::Cancelling => return Err(AgentRunError::Conflict),
             RunPhase::Cancelled | RunPhase::Succeeded | RunPhase::Failed => {
                 CancellationDisposition::AlreadyTerminal
             }
             RunPhase::Indeterminate => return Err(AgentRunError::TerminalObservationRequired),
         };
-        Ok((disposition, receipt(record, /*idempotent*/ false)))
+        Ok((disposition, receipt(record, /* idempotent */ false)))
+    }
+
+    pub fn expire_deadlines(&mut self, now_ms: u64) -> Result<Vec<RunReceipt>, AgentRunError> {
+        let mut expired = Vec::new();
+        let cancellation_ack_timeout_ms = self.composition.cancellation_ack_timeout_ms;
+        for record in self.runs.values_mut() {
+            if is_closed(record.phase) {
+                continue;
+            }
+            if record.phase == RunPhase::Cancelling {
+                if record
+                    .cancellation_ack_deadline_ms
+                    .is_some_and(|deadline| deadline <= now_ms)
+                {
+                    record.phase = RunPhase::Indeterminate;
+                    record.cancellation_ack_deadline_ms = None;
+                    advance_revision(record)?;
+                    expired.push(receipt(record, /* idempotent */ false));
+                }
+                continue;
+            }
+            if record.phase == RunPhase::Indeterminate || record.snapshot.deadline_ms > now_ms {
+                continue;
+            }
+            match record.phase {
+                RunPhase::Admitted | RunPhase::ContextAttached => {
+                    record.phase = RunPhase::Cancelled;
+                    record.cancel_reason = Some("deadline_exceeded".to_string());
+                    record.cancellation_ack_deadline_ms = None;
+                    advance_revision(record)?;
+                    expired.push(receipt(record, /* idempotent */ false));
+                }
+                RunPhase::Dispatched => {
+                    record.phase = RunPhase::Cancelling;
+                    record.cancel_reason = Some("deadline_exceeded".to_string());
+                    record.cancellation_ack_deadline_ms = Some(cancellation_ack_deadline(
+                        now_ms,
+                        cancellation_ack_timeout_ms,
+                    )?);
+                    advance_revision(record)?;
+                    expired.push(receipt(record, /* idempotent */ false));
+                }
+                RunPhase::Cancelling
+                | RunPhase::Indeterminate
+                | RunPhase::Cancelled
+                | RunPhase::Succeeded
+                | RunPhase::Failed => {}
+            }
+        }
+        Ok(expired)
     }
 
     pub fn observe_terminal(
@@ -248,41 +513,63 @@ impl AgentRunCoordinator {
         run_id: &str,
         expected_revision: u64,
         phase: RunPhase,
-        terminal_observed: bool,
+        observation: Option<RunTerminalObservation>,
     ) -> Result<RunReceipt, AgentRunError> {
         validate_identity(run_id, "run")?;
+        if let Some(observation) = &observation {
+            observation
+                .validate()
+                .map_err(|_| AgentRunError::InvalidTerminalObservation)?;
+        }
         let record = self
             .runs
             .get_mut(run_id)
             .ok_or(AgentRunError::RunNotFound)?;
         if record.phase == phase
-            && ((terminal_observed && phase.terminal_observed())
-                || (!terminal_observed && phase == RunPhase::Indeterminate))
+            && ((phase == RunPhase::Indeterminate && observation.is_none())
+                || (is_terminal_observed(phase)
+                    && record.terminal_observation.as_ref() == observation.as_ref()))
         {
-            return Ok(receipt(record, /*idempotent*/ true));
+            return Ok(receipt(record, /* idempotent */ true));
         }
         require_revision(record, expected_revision)?;
-        // An unknown external outcome consumes capacity until its owner reports
-        // a terminal observation. It must be reconcilable without redispatch.
         if !matches!(
             record.phase,
             RunPhase::Dispatched | RunPhase::Cancelling | RunPhase::Indeterminate
         ) {
             return Err(AgentRunError::InvalidTransition);
         }
-        if terminal_observed {
-            if !matches!(
-                phase,
-                RunPhase::Cancelled | RunPhase::Succeeded | RunPhase::Failed
-            ) {
+        if is_terminal_observed(phase) {
+            let Some(observation) = observation else {
                 return Err(AgentRunError::TerminalObservationRequired);
+            };
+            let Some(binding) = &record.dispatch_binding else {
+                return Err(AgentRunError::DispatchBindingRequired);
+            };
+            let Some(execution) = &record.execution_binding else {
+                return Err(AgentRunError::ExecutionBindingRequired);
+            };
+            if observation.phase != phase
+                || observation.run_id != record.snapshot.run_id
+                || observation.dispatch_binding_digest != binding.binding_digest
+                || observation.execution_binding_digest != execution.binding_digest
+                || observation.thread_id != execution.thread_id
+                || observation.turn_id != execution.turn_id
+            {
+                return Err(AgentRunError::InvalidTerminalObservation);
             }
-        } else if phase != RunPhase::Indeterminate {
+            record.terminal_observation = Some(observation);
+        } else if phase == RunPhase::Indeterminate {
+            if observation.is_some() {
+                return Err(AgentRunError::InvalidTerminalObservation);
+            }
+        } else {
             return Err(AgentRunError::TerminalObservationRequired);
         }
         record.phase = phase;
+        record.cancellation_ack_deadline_ms = None;
         advance_revision(record)?;
-        Ok(receipt(record, /*idempotent*/ false))
+        Ok(receipt(record, /* idempotent */ false))
     }
 
     pub fn remove_closed_run(
@@ -293,10 +580,10 @@ impl AgentRunCoordinator {
         validate_identity(run_id, "run")?;
         let record = self.runs.get(run_id).ok_or(AgentRunError::RunNotFound)?;
         require_revision(record, expected_revision)?;
-        if !record.phase.closed() {
+        if !is_closed(record.phase) {
             return Err(AgentRunError::InvalidTransition);
         }
-        let receipt = receipt(record, /*idempotent*/ false);
+        let receipt = receipt(record, /* idempotent */ false);
         self.runs.remove(run_id);
         Ok(receipt)
     }
@@ -304,15 +591,84 @@ impl AgentRunCoordinator {
     pub fn run(&self, run_id: &str) -> Option<RunReceipt> {
         self.runs
             .get(run_id)
-            .map(|record| receipt(record, /*idempotent*/ false))
+            .map(|record| receipt(record, /* idempotent */ false))
     }
 
-    fn active_run_count(&self) -> usize {
+    pub fn execution_binding(&self, run_id: &str) -> Option<RunExecutionBinding> {
+        self.runs
+            .get(run_id)
+            .and_then(|record| record.execution_binding.clone())
+    }
+
+    pub fn active_run_count(&self) -> usize {
         self.runs
             .values()
-            .filter(|record| !record.phase.closed())
+            .filter(|record| !is_closed(record.phase))
             .count()
     }
+
+    /// Close safe pre-dispatch work and preserve post-dispatch uncertainty.
+    pub fn mark_unfinished_for_shutdown(&mut self) -> Result<Vec<RunReceipt>, AgentRunError> {
+        self.mark_unfinished(
+            "agentd_shutdown_before_dispatch",
+            "agentd_shutdown_after_dispatch",
+        )
+    }
+
+    fn mark_unfinished(
+        &mut self,
+        before_dispatch_reason: &str,
+        after_dispatch_reason: &str,
+    ) -> Result<Vec<RunReceipt>, AgentRunError> {
+        let mut changed = Vec::new();
+        for record in self.runs.values_mut() {
+            match record.phase {
+                RunPhase::Admitted | RunPhase::ContextAttached => {
+                    record.phase = RunPhase::Cancelled;
+                    record.cancel_reason = Some(before_dispatch_reason.to_string());
+                    advance_revision(record)?;
+                    changed.push(receipt(record, /* idempotent */ false));
+                }
+                RunPhase::Dispatched | RunPhase::Cancelling => {
+                    record.phase = RunPhase::Indeterminate;
+                    record.cancellation_ack_deadline_ms = None;
+                    if record.cancel_reason.is_none() {
+                        record.cancel_reason = Some(after_dispatch_reason.to_string());
+                    }
+                    advance_revision(record)?;
+                    changed.push(receipt(record, /* idempotent */ false));
+                }
+                RunPhase::Indeterminate => {
+                    if record.cancel_reason.is_none() {
+                        record.cancel_reason = Some(after_dispatch_reason.to_string());
+                        advance_revision(record)?;
+                        changed.push(receipt(record, /* idempotent */ false));
+                    }
+                }
+                RunPhase::Cancelled | RunPhase::Succeeded | RunPhase::Failed => {}
+            }
+        }
+        Ok(changed)
+    }
+}
+
+fn validate_composition(value: &RuntimeComposition) -> Result<(), AgentRunError> {
+    validate_identity(&value.agent_id, "agent")?;
+    validate_digest(&value.configuration_digest, "configuration")?;
+    validate_digest(&value.ports_digest, "ports")?;
+    if value.supervisor_generation == 0 || value.agentd_generation == 0 {
+        return Err(AgentRunError::InvalidGeneration);
+    }
+    if !(1..=MAX_CANCELLATION_ACK_TIMEOUT_MS).contains(&value.cancellation_ack_timeout_ms) {
+        return Err(AgentRunError::InvalidCancellationAckTimeout);
+    }
+    Ok(())
+}
+
+fn cancellation_ack_deadline(now_ms: u64, timeout_ms: u64) -> Result<u64, AgentRunError> {
+    now_ms
+        .checked_add(timeout_ms)
+        .ok_or(AgentRunError::ArithmeticOverflow)
 }
 
 fn validate_snapshot(now_ms: u64, value: &RunSnapshot) -> Result<(), AgentRunError> {
@@ -346,6 +702,9 @@ fn validate_attachment(value: &ContextAttachment) -> Result<(), AgentRunError> {
     ] {
         validate_digest(digest, field)?;
     }
+    if value.authority_epoch == 0 || value.deadline_ms == 0 {
+        return Err(AgentRunError::InvalidGeneration);
+    }
     Ok(())
 }
 
@@ -373,6 +732,29 @@ fn validate_digest(value: &str, field: &'static str) -> Result<(), AgentRunError
     Ok(())
 }
 
+fn normalize_cancel_reason(reason: String) -> Result<String, AgentRunError> {
+    let reason = reason.trim().to_string();
+    validate_cancel_reason(&reason)?;
+    Ok(reason)
+}
+
+fn validate_cancel_reason(reason: &str) -> Result<(), AgentRunError> {
+    if reason.is_empty()
+        || reason.len() > MAX_RUN_CANCEL_REASON_BYTES
+        || reason.chars().any(char::is_control)
+    {
+        return Err(AgentRunError::InvalidCancelReason);
+    }
+    Ok(())
+}
+
+fn require_before_deadline(record: &RunRecord, now_ms: u64) -> Result<(), AgentRunError> {
+    if now_ms >= record.snapshot.deadline_ms {
+        return Err(AgentRunError::DeadlineExceeded);
+    }
+    Ok(())
+}
+
 fn require_revision(record: &RunRecord, expected_revision: u64) -> Result<(), AgentRunError> {
     if record.revision != expected_revision {
         return Err(AgentRunError::StaleRevision);
@@ -388,14 +770,30 @@ fn advance_revision(record: &mut RunRecord) -> Result<(), AgentRunError> {
     Ok(())
 }
 
+fn is_closed(phase: RunPhase) -> bool {
+    matches!(
+        phase,
+        RunPhase::Cancelled | RunPhase::Succeeded | RunPhase::Failed
+    )
+}
+
+fn is_terminal_observed(phase: RunPhase) -> bool {
+    matches!(
+        phase,
+        RunPhase::Cancelled | RunPhase::Succeeded | RunPhase::Failed
+    )
+}
+
 fn receipt(record: &RunRecord, idempotent: bool) -> RunReceipt {
     RunReceipt {
         run_id: record.snapshot.run_id.clone(),
         revision: record.revision,
         phase: record.phase,
         context_digest: record.context_digest.clone(),
-        terminal_observed: record.phase.terminal_observed(),
+        terminal_observed: is_terminal_observed(record.phase),
         idempotent,
+        cancel_reason: record.cancel_reason.clone(),
+        cancellation_ack_deadline_ms: record.cancellation_ack_deadline_ms,
     }
 }
 

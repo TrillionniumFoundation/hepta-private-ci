@@ -67,12 +67,15 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
         parts = PurePosixPath(path).parts
         if not path or path.startswith("/") or ".." in parts or "\\" in path or "\x00" in path:
             raise ValueError(f"invalid repository path: {path!r}")
-        # Only established prose roots are exempt; a .md elsewhere may be an
-        # include_str! input and therefore defaults to the conservative path.
-        if path in {"README.md", "CONTRIBUTING.md"} or (path.startswith("docs/") and path.endswith(".md")):
-            continue
+        # Generated projections must be classified before the broad docs/*.md
+        # prose exemption; otherwise derived Markdown such as readiness/STATUS.md
+        # silently bypasses the derived gate.
         if path in DERIVED_ONLY_DOCS:
             derived = True
+        # Only established prose roots are exempt; a .md elsewhere may be an
+        # include_str! input and therefore defaults to the conservative path.
+        elif path in {"README.md", "CONTRIBUTING.md"} or (path.startswith("docs/") and path.endswith(".md")):
+            continue
         elif path in ARCHITECTURE_REGISTRY_FILES or path.startswith(ARCHITECTURE_REGISTRY_PREFIXES):
             derived = True
             selected.update(GROUPS)

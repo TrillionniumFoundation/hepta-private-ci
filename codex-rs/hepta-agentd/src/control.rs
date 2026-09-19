@@ -24,7 +24,9 @@ use crate::MAX_CONTROL_FRAME_BYTES;
 use crate::error::io_context;
 
 const CONNECTION_CAPACITY: usize = 32;
+const OVERLOAD_RESPONSE_CAPACITY: usize = 8;
 const IO_TIMEOUT: Duration = Duration::from_secs(2);
+const OVERLOAD_IO_TIMEOUT: Duration = Duration::from_millis(250);
 
 pub(crate) struct AgentdControlServer {
     listener: UnixListener,
@@ -32,6 +34,7 @@ pub(crate) struct AgentdControlServer {
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
     connections: Arc<Semaphore>,
+    overload_connections: Arc<Semaphore>,
 }
 
 impl AgentdControlServer {
@@ -51,6 +54,7 @@ impl AgentdControlServer {
             state,
             cancellation,
             connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
+            overload_connections: Arc::new(Semaphore::new(OVERLOAD_RESPONSE_CAPACITY)),
         })
     }
 
@@ -61,7 +65,23 @@ impl AgentdControlServer {
                 accepted = self.listener.accept() => accepted?,
             };
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
-                drop(stream);
+                let Ok(overload_permit) =
+                    Arc::clone(&self.overload_connections).try_acquire_owned()
+                else {
+                    // Even overload reporting is bounded. At this point there
+                    // is no safe capacity left to parse another request.
+                    drop(stream);
+                    continue;
+                };
+                let state = Arc::clone(&self.state);
+                tokio::spawn(async move {
+                    let _permit = overload_permit;
+                    let _ = timeout(
+                        OVERLOAD_IO_TIMEOUT,
+                        serve_overloaded_connection(stream, state),
+                    )
+                    .await;
+                });
                 continue;
             };
             let state = Arc::clone(&self.state);
@@ -87,6 +107,11 @@ impl Drop for AgentdControlServer {
 }
 
 async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result<(), AgentdError> {
+    // Socket-path permissions protect rendezvous. Also bind mutation authority
+    // to the kernel-reported peer user before reading any protocol bytes.
+    stream.ensure_current_user_peer().map_err(|error| {
+        AgentdError::Protocol(format!("reject agentd control peer identity: {error}"))
+    })?;
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
@@ -125,6 +150,48 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
     if bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES {
         return Err(AgentdError::Protocol(
             "agentd control response exceeded frame bound".to_string(),
+        ));
+    }
+    writer.write_all(&bytes).await?;
+    writer.shutdown().await?;
+    Ok(())
+}
+
+async fn serve_overloaded_connection(
+    stream: UnixStream,
+    state: Arc<AgentdState>,
+) -> Result<(), AgentdError> {
+    // Overload is still part of the authenticated local control boundary.
+    // Do not parse or reflect request metadata from a peer that the normal
+    // control path would reject.
+    stream.ensure_current_user_peer().map_err(|error| {
+        AgentdError::Protocol(format!(
+            "reject overloaded agentd control peer identity: {error}"
+        ))
+    })?;
+    let (reader, mut writer) = tokio::io::split(stream);
+    let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
+    let mut frame = Vec::new();
+    let count = reader.read_until(b'\n', &mut frame).await?;
+    if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !frame.ends_with(b"\n") {
+        return Ok(());
+    }
+    let request: AgentdRequest = match serde_json::from_slice(&frame) {
+        Ok(request) => request,
+        Err(_) => return Ok(()),
+    };
+    let response = error_response(
+        &state,
+        request.request_id,
+        request.spawn_generation,
+        "overloaded",
+        "agentd control connection capacity exceeded; retry with bounded backoff",
+    );
+    let mut bytes = serde_json::to_vec(&response)?;
+    bytes.push(b'\n');
+    if bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES {
+        return Err(AgentdError::Protocol(
+            "agentd overload response exceeded frame bound".to_string(),
         ));
     }
     writer.write_all(&bytes).await?;

@@ -20,7 +20,16 @@ use crate::AgentdError;
 use crate::AgentdEventKind;
 use crate::AgentdIdentity;
 use crate::AgentdOperationsHost;
+use crate::CancellationDisposition;
+use crate::ContextAttachment;
 use crate::EventBuffer;
+use crate::RunDispatchBinding;
+use crate::RunExecutionBinding;
+use crate::RunPhase;
+use crate::RunReceipt;
+use crate::RunSnapshot;
+use crate::RunTerminalObservation;
+use crate::run_ledger::RunLedger;
 
 const CANONICAL_MODULE_REGISTRY: &str = include_str!("../../../docs/modules/MODULES.json");
 
@@ -49,6 +58,7 @@ pub(crate) struct AgentdState {
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
+    runs: Mutex<RunLedger>,
     events: Mutex<EventBuffer>,
     automation: Mutex<Option<AutomationStore>>,
     automation_operations: std::sync::OnceLock<Arc<AgentdOperationsHost>>,
@@ -69,6 +79,7 @@ impl AgentdState {
         registry: FleetRegistry,
         event_capacity: usize,
     ) -> Result<Self, AgentdError> {
+        let runs = RunLedger::open(&identity)?;
         let mut events = EventBuffer::new(event_capacity)?;
         events.push(AgentdEventKind::Bootstrapped);
         events.push(AgentdEventKind::Lifecycle {
@@ -87,6 +98,7 @@ impl AgentdState {
             }),
             identity,
             registry,
+            runs: Mutex::new(runs),
             events: Mutex::new(events),
             automation: Mutex::new(None),
             automation_operations: std::sync::OnceLock::new(),
@@ -373,8 +385,20 @@ impl AgentdState {
     }
 
     pub(crate) fn mark_draining(&self) -> Result<(), AgentdError> {
+        // Keep the runtime guard until the durable run ledger has installed
+        // its drain fence. A concurrent admission that already acquired the
+        // same runtime guard linearizes before drain; every later admission
+        // observes app_server_ready=false.
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
         runtime.app_server_ready = false;
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .transact(|coordinator| {
+                coordinator.begin_drain();
+                Ok(())
+            })?;
+        drop(runtime);
         self.events
             .lock()
             .map_err(poisoned_state)?
@@ -402,6 +426,223 @@ impl AgentdState {
         Ok(runtime.lifecycle == AgentLifecycle::Running
             && runtime.app_server_ready
             && !runtime.fenced)
+    }
+
+    /// Rehydrate a durable product RunStart while Agentd is still in its
+    /// non-serving startup phase. This is the only bypass around the normal
+    /// Running+ready admission guard and exists solely to migrate/reconcile
+    /// owner-durable RunStart facts into the single Agentd lifecycle ledger.
+    pub(crate) fn recover_run_start(
+        &self,
+        now_ms: u64,
+        snapshot: RunSnapshot,
+    ) -> Result<RunReceipt, AgentdError> {
+        self.refresh_generation()?;
+        {
+            let runtime = self.runtime.lock().map_err(poisoned_state)?;
+            if runtime.lifecycle != AgentLifecycle::Starting
+                || runtime.app_server_ready
+                || runtime.fenced
+            {
+                return Err(AgentdError::Protocol(
+                    "run recovery is allowed only before Agentd begins serving".to_string(),
+                ));
+            }
+        }
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .transact(|coordinator| coordinator.start_run(now_ms, snapshot))
+    }
+
+    pub(crate) fn run_authority_epoch(&self) -> Result<u64, AgentdError> {
+        let runtime = self.run_execution_guard()?;
+        Ok(runtime.current_generation)
+    }
+
+    pub(crate) fn run_start(
+        &self,
+        now_ms: u64,
+        snapshot: RunSnapshot,
+    ) -> Result<RunReceipt, AgentdError> {
+        let runtime = self.run_execution_guard()?;
+        if snapshot.authority_epoch != runtime.current_generation {
+            return Err(AgentdError::GenerationFenced(format!(
+                "run authority epoch {} does not match current Agentd lifecycle generation {}",
+                snapshot.authority_epoch, runtime.current_generation
+            )));
+        }
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .transact(|coordinator| coordinator.start_run(now_ms, snapshot))
+    }
+
+    pub(crate) fn run_attach_context(
+        &self,
+        now_ms: u64,
+        expected_revision: u64,
+        attachment: ContextAttachment,
+    ) -> Result<RunReceipt, AgentdError> {
+        let _runtime = self.run_execution_guard()?;
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .transact(|coordinator| {
+                coordinator.attach_context(now_ms, expected_revision, attachment)
+            })
+    }
+
+    pub(crate) fn run_mark_dispatched(
+        &self,
+        now_ms: u64,
+        run_id: &str,
+        expected_revision: u64,
+        binding: RunDispatchBinding,
+    ) -> Result<RunReceipt, AgentdError> {
+        let _runtime = self.run_execution_guard()?;
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .transact(|coordinator| {
+                coordinator.mark_dispatched(now_ms, run_id, expected_revision, binding)
+            })
+    }
+
+    pub(crate) fn run_bind_execution(
+        &self,
+        now_ms: u64,
+        run_id: &str,
+        expected_revision: u64,
+        binding: RunExecutionBinding,
+    ) -> Result<RunReceipt, AgentdError> {
+        self.require_run_reconciliation_ready()?;
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .transact(|coordinator| coordinator.bind_execution(now_ms, run_id, expected_revision, binding))
+    }
+
+    pub(crate) fn run_execution_binding(
+        &self,
+        run_id: &str,
+    ) -> Result<Option<RunExecutionBinding>, AgentdError> {
+        self.refresh_generation()?;
+        Ok(self
+            .runs
+            .lock()
+            .map_err(poisoned_state)?
+            .coordinator()
+            .execution_binding(run_id))
+    }
+
+    pub(crate) fn run_cancel(
+        &self,
+        now_ms: u64,
+        run_id: &str,
+        expected_revision: u64,
+        reason: String,
+    ) -> Result<(CancellationDisposition, RunReceipt), AgentdError> {
+        self.require_run_reconciliation_ready()?;
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .transact(|coordinator| {
+                coordinator.cancel_run(now_ms, run_id, expected_revision, reason)
+            })
+    }
+
+    pub(crate) fn run_observe_terminal(
+        &self,
+        run_id: &str,
+        expected_revision: u64,
+        phase: RunPhase,
+        observation: Option<RunTerminalObservation>,
+    ) -> Result<RunReceipt, AgentdError> {
+        self.require_run_reconciliation_ready()?;
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .transact(|coordinator| {
+                coordinator.observe_terminal(run_id, expected_revision, phase, observation)
+            })
+    }
+
+    pub(crate) fn run_status(&self, run_id: &str) -> Result<Option<RunReceipt>, AgentdError> {
+        self.refresh_generation()?;
+        Ok(self
+            .runs
+            .lock()
+            .map_err(poisoned_state)?
+            .coordinator()
+            .run(run_id))
+    }
+
+    pub(crate) fn run_remove_closed(
+        &self,
+        run_id: &str,
+        expected_revision: u64,
+    ) -> Result<RunReceipt, AgentdError> {
+        self.require_run_reconciliation_ready()?;
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .transact(|coordinator| coordinator.remove_closed_run(run_id, expected_revision))
+    }
+
+    pub(crate) fn expire_run_deadlines(&self, now_ms: u64) -> Result<Vec<RunReceipt>, AgentdError> {
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .transact(|coordinator| coordinator.expire_deadlines(now_ms))
+    }
+
+    pub(crate) fn active_run_count(&self) -> Result<usize, AgentdError> {
+        Ok(self
+            .runs
+            .lock()
+            .map_err(poisoned_state)?
+            .coordinator()
+            .active_run_count())
+    }
+
+    pub(crate) fn mark_unfinished_runs_for_shutdown(&self) -> Result<Vec<RunReceipt>, AgentdError> {
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .transact(|coordinator| coordinator.mark_unfinished_for_shutdown())
+    }
+
+    fn run_execution_guard(&self) -> Result<std::sync::MutexGuard<'_, RuntimeState>, AgentdError> {
+        self.refresh_generation()?;
+        let runtime = self.runtime.lock().map_err(poisoned_state)?;
+        if runtime.lifecycle != AgentLifecycle::Running
+            || !runtime.app_server_ready
+            || runtime.fenced
+        {
+            return Err(AgentdError::Protocol(
+                "run lifecycle admission is unavailable unless this generation is running and ready"
+                    .to_string(),
+            ));
+        }
+        Ok(runtime)
+    }
+
+    fn require_run_reconciliation_ready(&self) -> Result<(), AgentdError> {
+        self.refresh_generation()?;
+        let runtime = self.runtime.lock().map_err(poisoned_state)?;
+        if runtime.fenced
+            || !matches!(
+                runtime.lifecycle,
+                AgentLifecycle::Running | AgentLifecycle::Draining
+            )
+        {
+            return Err(AgentdError::Protocol(
+                "run lifecycle reconciliation requires a running or draining unfenced generation"
+                    .to_string(),
+            ));
+        }
+        Ok(())
     }
 }
 
