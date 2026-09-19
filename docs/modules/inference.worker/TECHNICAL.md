@@ -161,7 +161,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Hosted provider execution is exposed through `native_app_server::AppServerModelDriver`; the source-composed `inference.control -> inference.worker` seam is `hepta-inferd::worker_port::NativeWorkerPort`, which accepts a kernel-owned `FinalUseAuthority` plus an independently signed `SignedFinalUseGrant` and invokes only the final-use-gated worker path. Operator/qualification CLI behavior is not itself production-composition evidence. Local execution uses `LocalProcessDriver` plus `InferenceWorker<LocalProcessDriver>` and requires an externally verified `VerifiedResourceGrant`. Neither path claims host GPU/OS sandboxing without target-host evidence.
+Hosted provider execution is exposed through `native_app_server::AppServerModelDriver`; the source-composed `inference.control -> inference.worker` seam is `hepta-inferd::worker_port::NativeWorkerPort`. The worker configuration owns kernel `FinalUseAuthority`, while `execute` receives a resolver that can supply a signed grant only for the exact runtime-frozen final-use binding. The one-shot token is consumed when durable dispatch and synchronous bounded App Server queue admission cross the same revocation fence; callers cannot authorize an earlier prompt-only or partial binding. Operator/qualification CLI behavior is not itself deployment evidence. Local execution uses `LocalProcessDriver` plus `InferenceWorker<LocalProcessDriver>` and requires an externally verified `VerifiedResourceGrant`. Neither path claims host GPU/OS sandboxing without target-host evidence.
 
 Current operating and state-format references:
 
@@ -179,7 +179,7 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-infer-worker-host/src/local_process_driver_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/local_process_driver_tests.rs); runs a real resident child process through digest-pinned load/run/unload and rejects artifact mutation.
 - [codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs); covers restart/no-replay and pre-dispatch release semantics.
 - [codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs); covers exact turn binding, usage monotonicity and owner fencing.
-- [codex-rs/hepta-inferd/src/worker_port.rs](../../../codex-rs/hepta-inferd/src/worker_port.rs); verifies the final-use binding exposed by the production composition seam.
+- [codex-rs/hepta-inferd/src/worker_port.rs](../../../codex-rs/hepta-inferd/src/worker_port.rs); verifies the typed production composition seam and exact-binding grant-resolver surface.
 
 In `codex-rs`, run `just test -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-inferd`. The command is a test invocation, not a stored result. The module-specific exact-revision workflow additionally runs strict Clippy and retains command records bound to the tested source SHA/tree. Real CPU/GPU/OOM/device-reset/soak/sandbox qualification remains a separate target-host gate. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.worker.md) separately labels target acceptance designs.
 
