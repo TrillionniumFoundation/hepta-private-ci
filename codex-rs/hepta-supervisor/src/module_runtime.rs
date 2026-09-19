@@ -11,6 +11,7 @@ use codex_hepta_control_plane::RuntimeModuleAbiV1;
 use codex_hepta_control_plane::RuntimeModulePromotionWitnessV1;
 use codex_hepta_control_plane::RuntimeModuleRegistryError;
 use codex_hepta_control_plane::RuntimeModuleRegistryV1;
+use codex_hepta_control_plane::RuntimeModuleStateClassV1;
 use codex_hepta_control_plane::RuntimeTopologySnapshotV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -28,6 +29,20 @@ pub struct RuntimeModuleSupervisorV1 {
     registry: RuntimeModuleRegistryV1,
     selections: BTreeMap<(StableId, Generation), Digest32>,
     pending_topologies: BTreeMap<Digest32, RuntimeTopologyCandidateV1>,
+    retirement_ready: BTreeMap<(StableId, Generation), Digest32>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RuntimeModuleInitializationWitnessV1 {
+    pub initial_state_digest: Digest32,
+    pub readiness_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RuntimeModuleRetirementWitnessV1 {
+    pub drain_digest: Digest32,
+    pub reconciliation_digest: Digest32,
+    pub unknown_effect_count: u64,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -52,6 +67,8 @@ pub enum RuntimeModuleSupervisorErrorV1 {
     TopologyAbiMismatch(StableId),
     TopologyPredecessorMismatch(StableId),
     TopologyNotReady(StableId),
+    InvalidInitializationWitness,
+    InvalidRetirementWitness,
 }
 
 impl std::fmt::Display for RuntimeModuleSupervisorErrorV1 {
@@ -86,6 +103,7 @@ impl RuntimeModuleSupervisorV1 {
             registry: RuntimeModuleRegistryV1::new(),
             selections: BTreeMap::new(),
             pending_topologies: BTreeMap::new(),
+            retirement_ready: BTreeMap::new(),
         }
     }
 
@@ -340,7 +358,29 @@ impl RuntimeModuleSupervisorV1 {
             }
         }
 
+        // Verify all retirements before mutating the staged registry.
+        for delta in &candidate.deltas {
+            if delta.operation != RuntimeTopologyOperationV1::Retire {
+                continue;
+            }
+            let generation = self
+                .registry
+                .active_generation(&delta.module_id)
+                .ok_or_else(|| {
+                    RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
+                        delta.module_id.clone(),
+                    )
+                })?;
+            if !self
+                .retirement_ready
+                .contains_key(&(delta.module_id.clone(), generation))
+            {
+                return Err(RuntimeModuleSupervisorErrorV1::InvalidRetirementWitness);
+            }
+        }
+
         let mut staged = self.registry.clone();
+        let mut retired = Vec::new();
         for delta in &candidate.deltas {
             if delta.operation != RuntimeTopologyOperationV1::Retire {
                 continue;
@@ -368,9 +408,13 @@ impl RuntimeModuleSupervisorV1 {
             }
             staged.begin_retire(&delta.module_id, generation)?;
             staged.finish_retire(&delta.module_id, generation)?;
+            retired.push((delta.module_id.clone(), generation));
         }
 
         self.registry = staged;
+        for key in retired {
+            self.retirement_ready.remove(&key);
+        }
         self.pending_topologies.remove(&candidate_digest);
         Ok(self.registry.snapshot())
     }
@@ -412,6 +456,45 @@ impl RuntimeModuleSupervisorV1 {
                 selection_digest,
                 canary_digest,
                 handoff_digest: Digest32::ZERO,
+            },
+        )?)
+    }
+
+    /// Promote a newly introduced stateful/effectful module when there is no
+    /// predecessor writer to hand off from. The initialization witness binds
+    /// durable initial state and readiness; existing-domain replacements must
+    /// use the writer-handoff path instead.
+    pub fn promote_new_initialized_module(
+        &mut self,
+        module_id: &StableId,
+        generation: Generation,
+        canary_digest: Digest32,
+        witness: RuntimeModuleInitializationWitnessV1,
+    ) -> Result<RuntimeTopologySnapshotV1, RuntimeModuleSupervisorErrorV1> {
+        if witness.initial_state_digest.is_zero() || witness.readiness_digest.is_zero() {
+            return Err(RuntimeModuleSupervisorErrorV1::InvalidInitializationWitness);
+        }
+        let record = self
+            .registry
+            .record(module_id, generation)
+            .ok_or(RuntimeModuleSupervisorErrorV1::ModuleMismatch)?;
+        if record.abi.predecessor_generation.is_some()
+            || record.abi.state_class == RuntimeModuleStateClassV1::Stateless
+        {
+            return Err(RuntimeModuleSupervisorErrorV1::PredecessorMismatch);
+        }
+        let selection_digest = self.selection_digest(module_id, generation)?;
+        let mut bytes = b"hepta.runtime-module-initialization.v1".to_vec();
+        bytes.extend_from_slice(witness.initial_state_digest.as_array());
+        bytes.extend_from_slice(witness.readiness_digest.as_array());
+        let initialization_digest = Digest32::of_bytes(&bytes);
+        Ok(self.registry.promote_after_handoff(
+            module_id,
+            generation,
+            RuntimeModulePromotionWitnessV1 {
+                selection_digest,
+                canary_digest,
+                handoff_digest: initialization_digest,
             },
         )?)
     }
@@ -464,13 +547,46 @@ impl RuntimeModuleSupervisorV1 {
         )?)
     }
 
-    pub fn retire(
+    pub fn record_retirement_ready(
         &mut self,
         module_id: &StableId,
         generation: Generation,
+        witness: RuntimeModuleRetirementWitnessV1,
+    ) -> Result<(), RuntimeModuleSupervisorErrorV1> {
+        let record = self
+            .registry
+            .record(module_id, generation)
+            .ok_or(RuntimeModuleSupervisorErrorV1::ModuleMismatch)?;
+        if self.registry.active_generation(module_id) != Some(generation)
+            || witness.drain_digest.is_zero()
+            || witness.unknown_effect_count != 0
+            || ((!record.abi.effect_scope.is_empty() || !record.abi.authoritative_domains.is_empty())
+                && witness.reconciliation_digest.is_zero())
+        {
+            return Err(RuntimeModuleSupervisorErrorV1::InvalidRetirementWitness);
+        }
+        let mut bytes = b"hepta.runtime-module-retirement.v1".to_vec();
+        bytes.extend_from_slice(witness.drain_digest.as_array());
+        bytes.extend_from_slice(witness.reconciliation_digest.as_array());
+        bytes.extend_from_slice(&witness.unknown_effect_count.to_be_bytes());
+        self.retirement_ready
+            .insert((module_id.clone(), generation), Digest32::of_bytes(&bytes));
+        Ok(())
+    }
+
+    pub fn retire_after_reconciliation(
+        &mut self,
+        module_id: &StableId,
+        generation: Generation,
+        witness: RuntimeModuleRetirementWitnessV1,
     ) -> Result<RuntimeTopologySnapshotV1, RuntimeModuleSupervisorErrorV1> {
-        self.registry.begin_retire(module_id, generation)?;
-        Ok(self.registry.finish_retire(module_id, generation)?)
+        self.record_retirement_ready(module_id, generation, witness)?;
+        let mut staged = self.registry.clone();
+        staged.begin_retire(module_id, generation)?;
+        let snapshot = staged.finish_retire(module_id, generation)?;
+        self.registry = staged;
+        self.retirement_ready.remove(&(module_id.clone(), generation));
+        Ok(snapshot)
     }
 
     pub fn rollback_verified(
