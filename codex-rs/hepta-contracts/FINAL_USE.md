@@ -82,12 +82,7 @@ group/world permissions; opens reject symlinks. The lock is held until the
 last authority/token reference disappears. It also releases automatically on
 process death. Concurrent opens fail with `StateLocked`.
 
-Every successful claim or head update serializes the complete next state,
-truncates and writes `authority.next`, fsyncs that file, renames it over
-`authority.json`, and fsyncs the root directory. The operation is not admitted
-until persistence succeeds. On a storage error, the live authority becomes
-unavailable and stays fenced; callers cannot remove a bad temporary file and
-silently retry through that same instance.
+`authority.json` is the compact trust/revocation checkpoint. A hot-path nonce claim instead appends one fixed-size `(authority_epoch, nonce)` record to `claims.log` and fsyncs it before dispatch admission; claim cost therefore does not grow with the retained replay set. Trusted revocation/head updates checkpoint the complete in-memory replay set through `authority.next` -> fsync -> rename -> parent fsync, then truncate and fsync the claim journal. A crash after checkpoint publication but before journal truncation is safe because replay is set-union/idempotent. On a storage error, the live authority becomes unavailable and stays fenced; callers cannot remove a bad temporary file and silently retry through that same instance.
 
 The lock file also records that initialization has begun. If a later open
 finds it but no durable state file, it fails closed instead of resetting the
@@ -95,13 +90,7 @@ nonce registry. Corrupt or oversized JSON and trust-key/schema mismatch also
 fail closed. A crash during first initialization can therefore require owner
 recovery rather than automatic recreation.
 
-Normal restart loads the persisted nonce set and revocation head automatically.
-An old configuration cannot roll back a stronger stored head. A newer trusted
-startup head can be applied atomically when its revision increases, its epoch
-does not decrease, and same-epoch revocations are a superset. An epoch increase
-fences every old grant and clears the previous nonce set. There is no silent
-nonce eviction: 16,384 claims fill the epoch and reject further claims until a
-trusted epoch transition.
+Normal restart loads the checkpoint and replays `claims.log` automatically. A partial/torn fixed-size record fails closed instead of silently dropping a claim. An old configuration cannot roll back a stronger stored head. A newer trusted startup head can be applied atomically when its revision increases, its epoch does not decrease, and same-epoch revocations are a superset. An epoch increase fences every old grant and clears the previous nonce set. There is no silent nonce eviction and no fixed 16,384 claim-per-epoch ceiling. The separate revoked-grant-ID set remains bounded at 16,384.
 
 These files are not an external anti-rollback oracle. Deleting the entire
 store, restoring an old filesystem snapshot, or switching its configured
@@ -113,8 +102,7 @@ turn missing/corrupt state into an empty registry.
 ## Admission, concurrency and recovery
 
 1. `claim(signed, expected)` validates the exact binding, signer and signature.
-2. Under the owner mutex it checks the current clock, epoch and revocations,
-   rejects a consumed nonce or full registry, and persists the nonce claim.
+2. Under the owner mutex it checks the current clock, epoch and revocations, rejects a consumed nonce, then appends and fsyncs one claim-journal record.
 3. It samples time again after disk I/O, then returns a private, non-cloneable,
    non-serializable `VerifiedUseToken`. The claim is the dispatch admission
    point; rejection or expiry after persistence does not refund the nonce.
@@ -146,7 +134,8 @@ or persistence failure refuses further operations.
 | `with_verified_use` | Consume that token at the final synchronous secret-use boundary |
 | `InvalidGrant`, `InvalidSignature`, `BindingMismatch` | Reject the proposal; do not dispatch |
 | `EpochMismatch`, `Revoked`, `NotYetValid`, `Expired` | Reject stale or currently unauthorized use |
-| `AlreadyClaimed`, `CapacityExceeded` | Require owner reconciliation/new authorization or an epoch transition |
+| `AlreadyClaimed` | Require owner reconciliation/new authorization; the nonce is already durably consumed |
+| `CapacityExceeded` | Reserved compatibility error; nonce-claim admission no longer uses a fixed-count capacity ceiling |
 | `InvalidTrust`, `UnsafeStateDirectory`, `StateLocked`, `Unavailable` | Fail closed; repair owner configuration/storage without resetting authority implicitly |
 | `StaleRevocationHead` | Reject a rollback/inconsistent host update |
 
