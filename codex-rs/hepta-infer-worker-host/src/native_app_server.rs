@@ -456,37 +456,30 @@ impl AppServerModelDriver {
         // payload digest, so a same-id/different-content history entry is a
         // hard correlation conflict, never evidence for settlement.
         let mut binding_mismatch = false;
-        let mut matching_turns = response.thread.turns.into_iter().filter(|turn| {
+        let mut matching_turns = Vec::new();
+        for turn in response.thread.turns {
             match recovered_user_binding(
                 &turn.items,
                 &record.request.request_id,
                 expected_prompt,
             ) {
-                RecoveredUserBinding::Exact => true,
-                RecoveredUserBinding::Mismatch => {
-                    binding_mismatch = true;
-                    false
-                }
-                RecoveredUserBinding::NotPresent => false,
+                RecoveredUserBinding::Exact => matching_turns.push(turn),
+                RecoveredUserBinding::Mismatch => binding_mismatch = true,
+                RecoveredUserBinding::NotPresent => {}
             }
-        });
-        let Some(turn) = matching_turns.next() else {
-            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-            if binding_mismatch {
-                return Err(
-                    "App Server recovery client id matched different user input".into(),
-                );
-            }
-            return Ok(None);
-        };
-        if matching_turns.next().is_some() {
-            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-            return Err("multiple App Server turns share one native request id".into());
         }
         if binding_mismatch {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("App Server recovery client id matched different user input".into());
         }
+        if matching_turns.len() > 1 {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("multiple App Server turns share one native request id".into());
+        }
+        let Some(turn) = matching_turns.pop() else {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Ok(None);
+        };
 
         let intent = codex_intent(
             &record.request.request_id,
