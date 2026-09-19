@@ -5,8 +5,11 @@ use std::path::Path;
 use std::path::PathBuf;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
+use codex_hepta_fleet::FleetAllocationStore;
 use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::FleetResourceVectorV1;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
@@ -17,6 +20,15 @@ pub const HEPTA_AGENT_ID_ENV: &str = "HEPTA_AGENT_ID";
 pub const HEPTA_AGENT_GENERATION_ENV: &str = "HEPTA_AGENT_GENERATION";
 pub const HEPTA_AGENT_HOME_ENV: &str = "HEPTA_AGENT_HOME";
 pub const HEPTA_AGENT_RUN_ROOT_ENV: &str = "HEPTA_AGENT_RUN_ROOT";
+pub const HEPTA_FLEET_ALLOCATION_ID_ENV: &str = "HEPTA_FLEET_ALLOCATION_ID";
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AgentdFleetAllocation {
+    pub allocation_id: String,
+    pub lease_generation: u64,
+    pub authority_epoch: u64,
+    pub plan_sha256: Sha256Digest,
+}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentdIdentity {
@@ -26,6 +38,7 @@ pub struct AgentdIdentity {
     pub fleet_root: PathBuf,
     pub workspace: PathBuf,
     pub resources: ResourceBudget,
+    pub fleet_allocation: Option<AgentdFleetAllocation>,
     pub home_root: PathBuf,
     pub run_root: PathBuf,
     pub control_socket: PathBuf,
@@ -55,7 +68,8 @@ impl AgentdConfig {
         let run_root = required_path(HEPTA_AGENT_RUN_ROOT_ENV)?;
         let codex_home = required_path("CODEX_HOME")?;
         let current_dir = std::env::current_dir()?;
-        Self::load(
+        let fleet_allocation_id = optional_utf8(HEPTA_FLEET_ALLOCATION_ID_ENV)?;
+        Self::load_inner(
             fleet_root,
             AgentId::parse(agent_id).map_err(|error| AgentdError::Invalid(error.to_string()))?,
             spawn_generation,
@@ -63,6 +77,7 @@ impl AgentdConfig {
             run_root,
             codex_home,
             current_dir,
+            fleet_allocation_id,
         )
     }
 
@@ -75,6 +90,29 @@ impl AgentdConfig {
         run_root: PathBuf,
         codex_home: PathBuf,
         current_dir: PathBuf,
+    ) -> Result<Self, AgentdError> {
+        Self::load_inner(
+            fleet_root,
+            agent_id,
+            spawn_generation,
+            home_root,
+            run_root,
+            codex_home,
+            current_dir,
+            None,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn load_inner(
+        fleet_root: PathBuf,
+        agent_id: AgentId,
+        spawn_generation: u64,
+        home_root: PathBuf,
+        run_root: PathBuf,
+        codex_home: PathBuf,
+        current_dir: PathBuf,
+        fleet_allocation_id: Option<String>,
     ) -> Result<Self, AgentdError> {
         if spawn_generation == 0 {
             return Err(AgentdError::Invalid(
@@ -111,6 +149,34 @@ impl AgentdConfig {
             )));
         }
 
+        let (resources, fleet_allocation) = if let Some(allocation_id) = fleet_allocation_id {
+            let store = FleetAllocationStore::open_existing(&registry)?;
+            let grant = store.validate_runtime_grant(
+                &allocation_id,
+                &agent_id,
+                FleetResourceVectorV1::default(),
+                unix_ms_now()?,
+            )?;
+            let manifest_ceiling = FleetResourceVectorV1::from(&record.manifest.resources);
+            if !grant.resources.fits(manifest_ceiling) {
+                return Err(AgentdError::GenerationFenced(
+                    "fleet allocation exceeds registered Agent resource ceiling".to_string(),
+                ));
+            }
+            let resources = grant.resources.try_into_resource_budget()?;
+            (
+                resources,
+                Some(AgentdFleetAllocation {
+                    allocation_id: grant.allocation_id,
+                    lease_generation: grant.lease_generation,
+                    authority_epoch: grant.authority_epoch,
+                    plan_sha256: grant.plan_sha256,
+                }),
+            )
+        } else {
+            (record.manifest.resources.clone(), None)
+        };
+
         let writer_lock = OpenOptions::new()
             .create(true)
             .truncate(false)
@@ -133,7 +199,8 @@ impl AgentdConfig {
                 spawn_generation,
                 fleet_root,
                 workspace,
-                resources: record.manifest.resources,
+                resources,
+                fleet_allocation,
                 home_root,
                 run_root,
                 control_socket,
@@ -187,6 +254,25 @@ impl AgentdConfig {
     pub(crate) fn into_parts(self) -> (AgentdIdentity, FleetRegistry, File) {
         (self.identity, self.registry, self._writer_lock)
     }
+}
+
+fn optional_utf8(name: &str) -> Result<Option<String>, AgentdError> {
+    match std::env::var_os(name).filter(|value| !value.is_empty()) {
+        Some(value) => value
+            .into_string()
+            .map(Some)
+            .map_err(|_| AgentdError::Invalid(format!("{name} must be UTF-8"))),
+        None => Ok(None),
+    }
+}
+
+fn unix_ms_now() -> Result<u64, AgentdError> {
+    let millis = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_err(|_| AgentdError::Invalid("system clock predates Unix epoch".to_string()))?
+        .as_millis();
+    u64::try_from(millis)
+        .map_err(|_| AgentdError::Invalid("Unix millisecond clock overflow".to_string()))
 }
 
 fn required_utf8(name: &str) -> Result<String, AgentdError> {
