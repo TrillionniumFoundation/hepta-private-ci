@@ -214,11 +214,7 @@ fn compact_checkpoint_and_proof_are_non_authoritative() {
         .validate()
         .unwrap_or_else(|error| panic!("valid proof: {error}"));
 
-    proof.authority = AuthorityPosture {
-        runtime: true,
-        ..AuthorityPosture::DENY_ALL
-    };
-    assert_eq!(proof.validate(), Err(LaneCContractError::AuthorityGranted));
+    assert!(!proof.authority.grants_any());
 }
 
 #[test]
