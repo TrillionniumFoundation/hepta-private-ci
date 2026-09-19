@@ -249,6 +249,7 @@ fn escaping_contents() -> Vec<String> {
 
 #[tokio::test]
 async fn learned_winner_survives_legacy_byte_cut_and_response_stays_bounded() {
+    let authority = crate::cognitive_authority::test_cognitive_read_authority();
     let (_directory, store, owner, items) = stored_candidates(escaping_contents()).await;
     let baseline = read(
         &store, &owner, /*body_generation*/ 1, "lemon", /*limit*/ 4, /*ranker*/ None,
@@ -264,6 +265,7 @@ async fn learned_winner_survives_legacy_byte_cut_and_response_stays_bounded() {
         /*body_generation*/ 1,
         "lemon",
         /*limit*/ 1,
+        Some(&authority),
         Some(&fixture.ranker),
     )
     .await
@@ -275,6 +277,7 @@ async fn learned_winner_survives_legacy_byte_cut_and_response_stays_bounded() {
         /*body_generation*/ 1,
         "lemon",
         /*limit*/ 4,
+        Some(&authority),
         Some(&fixture.ranker),
     )
     .await
@@ -288,6 +291,7 @@ async fn learned_winner_survives_legacy_byte_cut_and_response_stays_bounded() {
 
 #[tokio::test]
 async fn oversized_learned_winner_does_not_consume_the_only_result_slot() {
+    let authority = crate::cognitive_authority::test_cognitive_read_authority();
     let mut contents = vec![
         "lemon alpha".to_string(),
         "lemon beta".to_string(),
@@ -316,6 +320,7 @@ async fn oversized_learned_winner_does_not_consume_the_only_result_slot() {
         /*body_generation*/ 1,
         "lemon",
         /*limit*/ 1,
+        Some(&authority),
         Some(&fixture.ranker),
     )
     .await
@@ -326,6 +331,7 @@ async fn oversized_learned_winner_does_not_consume_the_only_result_slot() {
 
 #[tokio::test]
 async fn byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstention() {
+    let authority = crate::cognitive_authority::test_cognitive_read_authority();
     let (_directory, store, owner, items) = stored_candidates(escaping_contents()).await;
     let baseline = read(
         &store, &owner, /*body_generation*/ 1, "lemon", /*limit*/ 4, /*ranker*/ None,
@@ -343,6 +349,7 @@ async fn byte_cut_cannot_hide_an_unsupported_candidate_from_whole_batch_abstenti
         /*body_generation*/ 1,
         "lemon",
         /*limit*/ 1,
+        Some(&authority),
         Some(&fixture.ranker),
     )
     .await
