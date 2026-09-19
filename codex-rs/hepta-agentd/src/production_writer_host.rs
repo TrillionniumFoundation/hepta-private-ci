@@ -11,6 +11,8 @@ use std::sync::Arc;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::ProductionAuthorityLease;
 use codex_hepta_memory::ProductionAuthorityVerifier;
+use codex_hepta_memory::ProductionCompactionPublication;
+use codex_hepta_memory::ProductionCompactionReceipt;
 use codex_hepta_memory::ProductionDispatchReceipt;
 use codex_hepta_memory::ProductionDurableWriter;
 use codex_hepta_memory::ProductionOutboxDispatcher;
@@ -90,6 +92,34 @@ impl AgentdProductionWriterHost {
 
     pub fn writer(&self) -> Arc<ProductionDurableWriter> {
         Arc::clone(&self.writer)
+    }
+
+    /// Publish one independently-qualified canonical compaction checkpoint
+    /// through the Agent-owned production writer. This does not attach a
+    /// provider target and grants no external-effect authority.
+    pub async fn publish_compaction(
+        &self,
+        publication: &ProductionCompactionPublication,
+    ) -> Result<ProductionCompactionReceipt, AgentdError> {
+        self.writer
+            .publish_compaction(publication)
+            .await
+            .map_err(|error| AgentdError::Protocol(format!(
+                "publish canonical compaction checkpoint: {error}"
+            )))
+    }
+
+    /// Reload the current canonical checkpoint after verifying the complete
+    /// durable compact journal and the live production lease.
+    pub async fn load_current_compaction(
+        &self,
+    ) -> Result<Option<ProductionCompactionPublication>, AgentdError> {
+        self.writer
+            .load_current_compaction()
+            .await
+            .map_err(|error| AgentdError::Protocol(format!(
+                "reload canonical compaction checkpoint: {error}"
+            )))
     }
 
     /// Attach the provider/host target explicitly. Replacing a target is
