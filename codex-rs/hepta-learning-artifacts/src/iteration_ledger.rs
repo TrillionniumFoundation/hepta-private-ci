@@ -306,8 +306,9 @@ const fn requires_independent_actor(next: IterationCandidateStateV1) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_support::FixtureValue;
     fn id(value: &str) -> StableId {
-        StableId::new(value).unwrap()
+        StableId::new(value).fixture("test fixture")
     }
     fn digest(value: u8) -> Digest32 {
         Digest32::from_array([value; 32])
@@ -351,22 +352,22 @@ mod tests {
 
     #[test]
     fn records_bounded_external_transitions() {
-        let mut ledger = IterationLedgerV1::new(envelope()).unwrap();
-        ledger.append_candidate(candidate()).unwrap();
+        let mut ledger = IterationLedgerV1::new(envelope()).fixture("test fixture");
+        ledger.append_candidate(candidate()).fixture("test fixture");
         ledger
             .transition(
                 &id("candidate"),
                 IterationCandidateStateV1::StaticallyValidated,
                 receipt(IterationEvidenceKindV1::StaticValidation, "generator", 8),
             )
-            .unwrap();
+            .fixture("test fixture");
         ledger
             .transition(
                 &id("candidate"),
                 IterationCandidateStateV1::SandboxTested,
                 receipt(IterationEvidenceKindV1::Sandbox, "generator", 9),
             )
-            .unwrap();
+            .fixture("test fixture");
         assert!(
             ledger
                 .transition(
@@ -382,14 +383,14 @@ mod tests {
                 IterationCandidateStateV1::IndependentlyEvaluated,
                 receipt(IterationEvidenceKindV1::Evaluation, "evaluator", 10),
             )
-            .unwrap();
+            .fixture("test fixture");
         assert_eq!(ledger.events().len(), 3);
     }
 
     #[test]
     fn snapshot_replay_is_exact_and_duplicate_receipts_fail() {
-        let mut ledger = IterationLedgerV1::new(envelope()).unwrap();
-        ledger.append_candidate(candidate()).unwrap();
+        let mut ledger = IterationLedgerV1::new(envelope()).fixture("test fixture");
+        ledger.append_candidate(candidate()).fixture("test fixture");
         let r = receipt(IterationEvidenceKindV1::StaticValidation, "generator", 8);
         ledger
             .transition(
@@ -397,7 +398,7 @@ mod tests {
                 IterationCandidateStateV1::StaticallyValidated,
                 r.clone(),
             )
-            .unwrap();
+            .fixture("test fixture");
         assert!(matches!(
             ledger.transition(
                 &id("candidate"),
@@ -406,7 +407,7 @@ mod tests {
             ),
             Err(IterationLedgerError::EvidenceKindMismatch)
         ));
-        let restored = IterationLedgerV1::from_snapshot(ledger.snapshot()).unwrap();
+        let restored = IterationLedgerV1::from_snapshot(ledger.snapshot()).fixture("test fixture");
         assert_eq!(restored.snapshot(), ledger.snapshot());
     }
 }
