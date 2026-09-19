@@ -14,7 +14,7 @@
   "resolvedRoots": [
     "codex-rs/hepta-agentd"
   ],
-  "stateOwnerDisposition": "Owns a bounded owner-private crash-recovery lifecycle journal, immutable run snapshot references, bounded cancellation-ack deadlines and runtime-health composition state; lifecycle mutations are persisted before live publication and product-domain facts remain with their canonical owners.",
+  "stateOwnerDisposition": "Owns a bounded owner-private crash-recovery lifecycle journal, immutable run snapshot references, bounded cancellation-ack deadlines and runtime-health composition state; pre-rename failure leaves live state unchanged, post-rename durability ambiguity fences the generation, and closed rows are compacted at the retention ceiling; product-domain facts remain with their canonical owners.",
   "terminalObserverDisposition": "Agentd preserves dispatch-boundary uncertainty, never redispatches an unobserved external run after restart, and accepts success/failure/cancel terminality only from the delegated execution owner.",
   "operations": [
     {
