@@ -33,6 +33,7 @@ pub const HOST_TURN_AUTHORITY_BINDING_SCHEMA_VERSION: u32 = 1;
 pub const MAX_CONTROL_FRAME_BYTES: u64 = 65_536;
 /// Maximum serialized cognitive context accepted by both Agentd and the final model consumer.
 pub const MAX_COGNITIVE_CONTEXT_BYTES: usize = 8 * 1024;
+pub const COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY: &str = "cognitive.context.revalidate";
 pub const MAX_EVENT_BATCH: u16 = 256;
 pub const MAX_FEDERATION_CONTROL_LIST: u16 = 128;
 const FEDERATION_CAPABILITY_ID_PREFIX: &str = "federation:v1:";
@@ -279,7 +280,8 @@ pub enum AgentdMethod {
         limit: u16,
     },
     CognitiveContextRevalidate {
-        cut_digest: String,
+        snapshot_digest: String,
+        items: Vec<CognitiveContextItem>,
     },
     Events {
         after_cursor: u64,
@@ -359,9 +361,6 @@ pub enum AgentdPayload {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct CognitiveContextSnapshot {
-    /// Exact owner cut witness. Consumers must revalidate this immediately
-    /// before physical model attachment; it is not a lease over future writes.
-    pub cut_digest: String,
     pub snapshot_digest: String,
     pub read_digest: String,
     pub omitted_records: u64,
@@ -372,7 +371,8 @@ pub struct CognitiveContextSnapshot {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct CognitiveContextRevalidation {
-    pub cut_digest: String,
+    pub snapshot_digest: String,
+    pub verified_item_count: u16,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
