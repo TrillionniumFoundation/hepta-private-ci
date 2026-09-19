@@ -342,7 +342,7 @@ impl HeptaEvidenceStore {
         .bind(operation_id.as_str())
         .bind(amount_i64)
         .bind(u64_to_i64(expires_at_ms)?)
-        .bind(u64_to_i64(next_revision)?)
+        .bind(u64_to_i64(expected_revision)?)
         .bind(candidate.reservation_digest.as_array().as_slice())
         .bind(now)
         .bind(now)
