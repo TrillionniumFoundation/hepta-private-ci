@@ -104,6 +104,18 @@
           "nativeSymbol": "measure_ledger_recovery_work",
           "source": "codex-rs/hepta-learning-ledger/src/index_checkpoint.rs",
           "status": "implemented"
+        },
+        {
+          "operation": "verify_learning_trust_manifest",
+          "nativeSymbol": "verify_learning_trust_manifest",
+          "source": "codex-rs/hepta-learning-ledger/src/trust_root.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "RootedLearningEvidenceTrustProviderV1::rotate",
+          "nativeSymbol": "RootedLearningEvidenceTrustProviderV1::rotate",
+          "source": "codex-rs/hepta-learning-ledger/src/trust_root.rs",
+          "status": "implemented"
         }
       ],
       "tests": [
@@ -123,12 +135,15 @@
         "canonical_decision_json_uses_registry_field_names_and_order",
         "production_writer_reloads_current_trust_and_rejects_rollback",
         "canonical_protocols_reject_semantically_invalid_json",
-        "recovery_work_receipt_covers_full_single_segment_record_profile"
+        "recovery_work_receipt_covers_full_single_segment_record_profile",
+        "pinned_root_admits_signed_signer_distribution",
+        "manifest_cannot_replace_pinned_root",
+        "rooted_provider_rotates_only_predecessor_bound_manifests"
       ],
       "remainingRepositoryGaps": [],
       "remainingExternalEvidence": [
         "named_product_caller_and_exclusive_physical_writer",
-        "live_trust_root_distribution_and_independent_observer_operations",
+        "live_pinned_root_key_custody_manifest_publication_and_independent_observer_operations",
         "target_host_durability_latency_storage_and_power_loss_measurements",
         "independent_semantic_acceptance_canary_promotion_and_release"
       ]
