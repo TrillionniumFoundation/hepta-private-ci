@@ -1,4 +1,4 @@
-use std::error::Error;
+use std::error::Error as StdError;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -12,12 +12,15 @@ use crate::AppServerObservation;
 use crate::CodexOperationIntent;
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("test id")
+    let Ok(value) = StableId::new(value) else {
+        panic!("test identifier rejected");
+    };
+    value
 }
 
 #[test]
 fn wire_v2_is_admitted_before_existing_runtime_codex_adapter_logic(
-) -> Result<(), Box<dyn Error>> {
+) -> Result<(), Box<dyn StdError>> {
     let digest = Digest32::of_bytes(b"payload");
     let intent = CodexOperationIntent {
         operation_id: id("operation.1"),
@@ -48,7 +51,7 @@ fn wire_v2_is_admitted_before_existing_runtime_codex_adapter_logic(
 
 #[test]
 fn wire_v2_rejects_unknown_fields_and_payload_binding_drift(
-) -> Result<(), Box<dyn Error>> {
+) -> Result<(), Box<dyn StdError>> {
     let digest = Digest32::of_bytes(b"payload");
     let invalid = WireEnvelopeV2::new(
         id(CODEX_OPERATION_INTENT_WIRE_SCHEMA_V2),
