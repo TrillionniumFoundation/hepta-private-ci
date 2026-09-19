@@ -322,6 +322,10 @@ fn millis_to_seconds(millis: u64) -> Result<i64, CognitiveStoreError> {
         .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))
 }
 
+fn now_seconds() -> Result<i64, CognitiveStoreError> {
+    millis_to_seconds(now_millis()?)
+}
+
 #[cfg(test)]
 #[path = "cognitive_context_tests.rs"]
 mod tests;
