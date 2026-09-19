@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-evidence/src/provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs); observed identifiers include `StoredProviderEffect`, `append_provider_effect_intent`, `dispatch_provider_effect_qualification`, `append_provider_effect_ack`, `mark_provider_effect_indeterminate`, `reconcile_provider_effect_lookup`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md) for the implemented subset and remaining product work.
+The qualification contract is implemented in [codex-rs/hepta-evidence/src/qualification.rs](../../../codex-rs/hepta-evidence/src/qualification.rs); native identifiers include `append_receipt`, `query_claim`, `verify_chain`, `prepare_independent_decision`, `append_prepared_independent_decision`, `export_checkpoint` and `verify_external_checkpoint`. Existing provider-effect evidence remains in [codex-rs/hepta-evidence/src/provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs). The named checkpoint-guarded writer is [codex-rs/hepta-evidence/src/bin/hepta-evidence-writer.rs](../../../codex-rs/hepta-evidence/src/bin/hepta-evidence-writer.rs). These bindings establish source implementation and product composition, not independent acceptance, activation, promotion or release.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -56,6 +56,7 @@ Direct dependencies:
 
 Authoritative write domains:
 
+- `independent_decision_receipt_v1`
 - `qualification_evidence`
 
 Explicitly denied capabilities:
@@ -73,8 +74,11 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 The bounded components are:
 
 - `append-only receipt store`
-- `integrity verifier`
+- `cryptographic issuer verifier`
+- `integrity and predecessor-chain verifier`
 - `query projection`
+- `typed independent-decision projection`
+- `external checkpoint / rollback-verification boundary`
 - `retention and export boundary`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
@@ -88,6 +92,7 @@ Configuration is immutable for one process generation. Changes affecting authori
 Produced contracts:
 
 - `DomainRead::qualification_evidenceV1`
+- `IndependentDecisionReceiptV1`
 - `ModulePort::kernel.evidence::control.engineering`
 - `ModulePort::kernel.evidence::control.runtime`
 - `ModulePort::kernel.evidence::learning.eval`
@@ -96,6 +101,9 @@ Produced contracts:
 
 Consumed contracts:
 
+- `AlgorithmFaultReceiptV1`
+- `CandidateEvaluationReceiptV1`
+- `ConformanceReceiptV1`
 - `DomainRead::automation_occurrenceV1`
 - `DomainRead::automation_scheduleV1`
 - `DomainRead::browser_profile_stateV1`
@@ -119,7 +127,11 @@ Consumed contracts:
 
 Critical protocol schemas:
 
+- `AlgorithmFaultReceiptV1`
+- `CandidateEvaluationReceiptV1`
+- `ConformanceReceiptV1`
 - `EvaluationReceiptV1`
+- `IndependentDecisionReceiptV1`
 - `LocalModelRuntimeReceiptV1`
 - `LongitudinalEvaluationReceiptV1`
 - `UnlearningComplianceReceiptV1`
@@ -132,6 +144,7 @@ Rust types and canonical JSON represent identical semantics. Tests cover round t
 
 Owned authoritative or rebuildable domains:
 
+- `independent_decision_receipt_v1`
 - `qualification_evidence`
 
 Read-only data dependencies:
@@ -146,7 +159,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md#8-current-native-implementation) identifies the actual state owner and lock/transaction boundary. Qualification mutations serialize with `BEGIN IMMEDIATE` so predecessor/revocation validation, idempotency comparison and global chain-frontier advancement share one transaction. The named `hepta-evidence-writer` verifies an independently retained predecessor checkpoint before every non-bootstrap qualification mutation and emits a successor checkpoint only after commit. Provider-effect process-local mutex limits remain documented separately.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -168,16 +181,19 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-evidence/src/provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md) specifies this module's algorithm and capacity fixtures. The qualification API now enforces the 256 KiB canonical receipt bound, 64 asset-reference bound, 256-edge predecessor traversal bound and 512-reference query bound in [codex-rs/hepta-evidence/src/qualification.rs](../../../codex-rs/hepta-evidence/src/qualification.rs). Provider-effect limits remain in [codex-rs/hepta-evidence/src/provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs).
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Operate through the existing evidence store and its migrations. Keep candidate, issuer and terminal-observer identities separate; query integrity before admitting restored evidence. Qualification dispatch and stored caller observations must not be exposed as a production issuer or remote terminal oracle.
+Operate through the existing evidence store and migrations. Keep candidate, issuer and terminal-observer identities separate; verify the independently retained checkpoint before admitting restored evidence. Qualification dispatch observations must not be exposed as provider terminal receipts.
 
 Current operating and state-format references:
 
+- [codex-rs/hepta-evidence/src/qualification.rs](../../../codex-rs/hepta-evidence/src/qualification.rs);
+- [codex-rs/hepta-evidence/src/bin/hepta-evidence-writer.rs](../../../codex-rs/hepta-evidence/src/bin/hepta-evidence-writer.rs);
+- [docs/lane-a-foundation/kernel.evidence/STORE_V1.md](../../lane-a-foundation/kernel.evidence/STORE_V1.md);
 - [codex-rs/hepta-evidence/src/provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
@@ -186,10 +202,11 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-evidence/src/qualification_tests.rs](../../../codex-rs/hepta-evidence/src/qualification_tests.rs) covers signed append/idempotency, exact candidate/tree matching, expiry, revocation, independent-role collision, typed independent decisions and external checkpoint replacement/rollback rejection.
 - [codex-rs/hepta-evidence/src/authbus_outbox_issuer_tests.rs](../../../codex-rs/hepta-evidence/src/authbus_outbox_issuer_tests.rs); named case: `current_issuer_scan_cannot_be_starved_by_older_epochs_or_other_issuers`.
 - [codex-rs/hepta-evidence/src/authbus_outbox_quarantine_tests.rs](../../../codex-rs/hepta-evidence/src/authbus_outbox_quarantine_tests.rs); named case: `quarantine_requires_current_fence_and_survives_reopen_without_acknowledgement`.
 
-In `codex-rs`, run `just test -p codex-hepta-evidence`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-evidence`. Lane A runs the native package tests/clippy and then emits exact source-head or synthetic-merge [traceability receipts](TRACEABILITY.json). A tracked implementation map is source-navigation metadata; exact-candidate execution identity comes from those CI receipts. Neither source tests nor CI receipts are an independent semantic acceptance decision.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
