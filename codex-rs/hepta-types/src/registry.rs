@@ -114,13 +114,13 @@ impl RegistryDefinitionV1 {
                 name: "media_type",
                 value: CanonicalValueV1::Text(self.media_type.as_str()),
             },
-            CanonicalFieldV1 {
-                name: "schema_version",
-                value: CanonicalValueV1::U64(self.schema_version),
-            },
         ];
-        canonical_digest_v1("platform.types.registry-definition", &fields)
-            .map_err(RegistryError::Canonical)
+        canonical_digest_v1(
+            "platform.types.registry-definition",
+            self.schema_version,
+            &fields,
+        )
+        .map_err(RegistryError::Canonical)
     }
 }
 
