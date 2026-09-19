@@ -128,6 +128,9 @@ pub struct SupervisorConfig {
     pub health_timeout: Duration,
     pub drain_timeout: Duration,
     pub stop_grace: Duration,
+    pub restart_window: Duration,
+    pub restart_backoff_base: Duration,
+    pub max_restart_attempts: u8,
     pub event_capacity: usize,
     pub log_capacity: usize,
     pub max_log_bytes: usize,
@@ -144,6 +147,9 @@ impl SupervisorConfig {
             health_timeout: Duration::from_secs(60),
             drain_timeout: Duration::from_secs(30),
             stop_grace: Duration::from_secs(5),
+            restart_window: Duration::from_secs(300),
+            restart_backoff_base: Duration::from_secs(1),
+            max_restart_attempts: 3,
             event_capacity: 128,
             log_capacity: 256,
             max_log_bytes: 4_096,
@@ -155,6 +161,9 @@ impl SupervisorConfig {
         if self.health_timeout.is_zero()
             || self.drain_timeout.is_zero()
             || self.stop_grace.is_zero()
+            || self.restart_window.is_zero()
+            || self.restart_backoff_base.is_zero()
+            || !(1..=16).contains(&self.max_restart_attempts)
             || !(1..=4_096).contains(&self.event_capacity)
             || !(1..=16_384).contains(&self.log_capacity)
             || !(1..=65_536).contains(&self.max_log_bytes)
@@ -230,6 +239,8 @@ pub enum SupervisorEventKind {
     StopRequested,
     KillRequested,
     RestartQueued,
+    AutoRestartQueued { attempt: u8, delay_ms: u64 },
+    RestartBudgetExhausted,
     UpgradeQueued { previous: String, target: String },
     UpgradeCommitted { previous: String, target: String },
     AutomaticRollbackQueued { failed: String, target: String },

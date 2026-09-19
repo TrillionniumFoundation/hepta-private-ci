@@ -458,6 +458,15 @@ async fn handle_request<D: ProcessDriver>(
                 safe_rejection(error, /*actual*/ None, /*mutation_started*/ false)
             }
         },
+        SupervisordMethod::ProductionMutationStatus { agent_id } => {
+            let supervisor = state.supervisor.lock().await;
+            match supervisor.production_mutation_receipt(&agent_id) {
+                Ok(receipt) => SupervisordPayload::ProductionMutationStatus { receipt },
+                Err(error) => {
+                    safe_rejection(error, /*actual*/ None, /*mutation_started*/ false)
+                }
+            }
+        }
         SupervisordMethod::Start { fence, release_id } => {
             let target = match resolve_release_outside_lock(
                 Arc::clone(&state),
@@ -658,6 +667,18 @@ fn unix_seconds_now() -> u64 {
         .unwrap_or(0)
 }
 
+#[cfg(any(unix, test))]
+fn requires_signed_release_transition(
+    production_verifier_present: bool,
+    operation: SupervisordMutation,
+) -> bool {
+    production_verifier_present
+        && matches!(
+            operation,
+            SupervisordMutation::Upgrade | SupervisordMutation::Rollback
+        )
+}
+
 #[cfg(unix)]
 async fn handle_mutation<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
@@ -678,6 +699,17 @@ async fn handle_mutation<D: ProcessDriver>(
         return error_payload(
             "stale_control_fence",
             "selected Agent changed; refresh before retry",
+            Some(actual),
+        );
+    }
+
+    if requires_signed_release_transition(
+        state.production_grant_verifier.is_some(),
+        operation,
+    ) {
+        return error_payload(
+            "production_authority_required",
+            "production release transitions require signed upgrade/rollback authority",
             Some(actual),
         );
     }
@@ -1494,6 +1526,30 @@ mod tests {
             assert!(!encoded.contains("raw-driver-secret"));
             assert!(!encoded.contains("--token"));
         }
+    }
+
+    #[test]
+    fn production_mode_rejects_unsigned_release_transitions_only() {
+        assert!(requires_signed_release_transition(
+            true,
+            SupervisordMutation::Upgrade
+        ));
+        assert!(requires_signed_release_transition(
+            true,
+            SupervisordMutation::Rollback
+        ));
+        assert!(!requires_signed_release_transition(
+            false,
+            SupervisordMutation::Upgrade
+        ));
+        assert!(!requires_signed_release_transition(
+            true,
+            SupervisordMutation::Start
+        ));
+        assert!(!requires_signed_release_transition(
+            true,
+            SupervisordMutation::Drain
+        ));
     }
 
     #[cfg(unix)]

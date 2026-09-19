@@ -84,6 +84,8 @@ Adapters translate one registered contract, verify final payload and grant immed
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
+The local Agentd control protocol is currently schema v3. V3 adds a generation-bound `Drain` request and `DrainAccepted { admission_stopped }` response. Older v2 binaries are not silently treated as drain-capable; supervisor and Agentd must cut over together within one release generation.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:
