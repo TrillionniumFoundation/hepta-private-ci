@@ -215,8 +215,12 @@ pub(crate) async fn run_automation_scheduler(
     identity: AgentdIdentity,
     cancellation: CancellationToken,
 ) -> Result<(), AgentdError> {
+    let recovery_now_ms = match unix_time_ms() {
+        Ok(now_ms) => now_ms,
+        Err(error) => return stop_after_automation_error(error, &state, &cancellation).await,
+    };
     if let Err(error) = store
-        .recover_stale_generation(identity.spawn_generation)
+        .recover_stale_generation(identity.spawn_generation, recovery_now_ms)
         .await
     {
         return stop_after_automation_error(error, &state, &cancellation).await;
