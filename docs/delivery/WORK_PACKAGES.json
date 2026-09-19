@@ -2715,9 +2715,20 @@
       "deputy": "durability-kernel",
       "sourceMutationAllowed": true,
       "allowedWritePaths": [
-        "codex-rs/hepta-compact-engine/**"
+        "codex-rs/hepta-compact-engine/**",
+        "codex-rs/hepta-cognitive-types/src/lane_c.rs",
+        "codex-rs/hepta-memory/Cargo.toml",
+        "codex-rs/hepta-memory/src/lib.rs",
+        "codex-rs/hepta-memory/src/production_writer.rs",
+        "codex-rs/hepta-memory/src/production_compact.rs",
+        "codex-rs/hepta-agentd/Cargo.toml",
+        "codex-rs/hepta-agentd/src/production_writer_host.rs"
       ],
-      "coOwnerModules": [],
+      "coOwnerModules": [
+        "cognitive.types",
+        "cognitive.store",
+        "runtime.agentd"
+      ],
       "consumesContracts": [
         "DomainRead::cross_owner_outboxV1",
         "DomainRead::operation_ledgerV1",
@@ -2752,7 +2763,7 @@
         "merge_candidate_execution"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
+        "maxChangedPaths": 20,
         "maxCiMinutes": 30,
         "maxParallelAgents": 2
       },
