@@ -2,12 +2,12 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "7f3c2bd231fea1fb4bfe4c0f829228d91889c474",
+    "tree": "137d163a2278a60304ec6ac25e93e5eb6c7d64c9"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
-  "sourceMaturity": "native_durable_scheduler_boundary",
+  "sourceMaturity": "native_durable_causal_chain",
   "declaredRoots": [
     "codex-rs/hepta-automation"
   ],
@@ -15,7 +15,7 @@
     "codex-rs/hepta-automation"
   ],
   "stateOwnerDisposition": "Owns schedule, occurrence, claim, and step-orchestration facts without owning downstream domain effects.",
-  "terminalObserverDisposition": "The registered effect driver supplies terminal observations; unknown effects block dependent steps and compensation is separately authorized.",
+  "terminalObserverDisposition": "Provider observations are durable evidence; only a bound durable TaskFlow terminal projection may terminalize the automation occurrence and advance recurrence.",
   "operations": [
     {
       "designOperation": "register_schedule",
@@ -26,15 +26,20 @@
         "symbol": "pub async fn create_task(",
         "buildTarget": "codex-hepta-automation"
       },
-      "delegatedCallees": [],
-      "tests": [
+      "delegatedCallees": [
         {
-          "path": "codex-rs/hepta-automation/src/store.rs",
-          "kind": "store_and_schedule",
-          "command": "just test -p codex-hepta-automation --lib"
+          "path": "codex-rs/hepta-automation/src/causal.rs",
+          "symbol": "pub async fn revise_schedule("
         }
       ],
-      "sourceSemantics": "Persists the canonical automation definition with revision and owner identity.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-automation/tests/automation.rs",
+          "kind": "schedule_revision_and_policy",
+          "command": "just test -p codex-hepta-automation"
+        }
+      ],
+      "sourceSemantics": "Persists schedule revision, explicit overlap/missed-run policy, owner identity and the next canonical due instant.",
       "operation": "register_schedule",
       "nativeSymbol": "pub async fn create_task(",
       "sourcePath": "codex-rs/hepta-automation/src/store.rs",
@@ -49,41 +54,51 @@
         "symbol": "pub async fn tick(",
         "buildTarget": "codex-hepta-automation"
       },
-      "delegatedCallees": [],
-      "tests": [
+      "delegatedCallees": [
         {
-          "path": "codex-rs/hepta-automation/src/scheduler.rs",
-          "kind": "scheduler_and_recovery",
-          "command": "just test -p codex-hepta-automation --lib"
+          "path": "codex-rs/hepta-automation/src/store.rs",
+          "symbol": "pub async fn claim_due("
         }
       ],
-      "sourceSemantics": "Materializes bounded due work and commits intent before App Server admission.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-automation/tests/automation.rs",
+          "kind": "deterministic_occurrence_and_overlap",
+          "command": "just test -p codex-hepta-automation"
+        }
+      ],
+      "sourceSemantics": "Materializes one deterministic revision-bound occurrence, fences overlap, persists dispatch uncertainty, and records queue admission without terminalizing the occurrence.",
       "operation": "materialize_due",
       "nativeSymbol": "pub async fn tick(",
       "sourcePath": "codex-rs/hepta-automation/src/scheduler.rs",
       "sourcePathExists": true
     },
     {
-      "designOperation": "claim_occurrence",
+      "designOperation": "durable_step_outbox",
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-automation/src/effect_executor.rs",
-        "symbol": "pub fn claim_occurrence(",
-        "buildTarget": "codex-hepta-automation::effect_executor"
+        "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
+        "symbol": "pub async fn prepare_taskflow_step(",
+        "buildTarget": "codex-hepta-automation"
       },
-      "delegatedCallees": [],
-      "tests": [
+      "delegatedCallees": [
         {
-          "path": "codex-rs/hepta-automation/src/effect_executor_tests.rs",
-          "kind": "generation_fence",
-          "command": "just test -p codex-hepta-automation --lib"
+          "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
+          "symbol": "pub async fn claim_taskflow_step("
         }
       ],
-      "sourceSemantics": "Claims one occurrence under an immutable generation fence.",
-      "operation": "claim_occurrence",
-      "nativeSymbol": "pub fn claim_occurrence(",
-      "sourcePath": "codex-rs/hepta-automation/src/effect_executor.rs",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-automation/tests/taskflow_step.rs",
+          "kind": "append_only_step_intent_receipts",
+          "command": "just test -p codex-hepta-automation --test taskflow_step"
+        }
+      ],
+      "sourceSemantics": "Persists append-only, fence-bound step prepare/claim/observation/reconciliation receipts in the default store.",
+      "operation": "durable_step_outbox",
+      "nativeSymbol": "pub async fn prepare_taskflow_step(",
+      "sourcePath": "codex-rs/hepta-automation/src/taskflow_step.rs",
       "sourcePathExists": true
     },
     {
@@ -91,33 +106,66 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-automation/src/effect_executor.rs",
-        "symbol": "pub fn execute_step(",
-        "buildTarget": "codex-hepta-automation::effect_executor"
+        "path": "codex-rs/hepta-automation/src/taskflow_effect_runtime.rs",
+        "symbol": "pub async fn dispatch_taskflow_step_with_final_use",
+        "buildTarget": "codex-hepta-automation"
+      },
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use.rs",
+          "symbol": "pub fn claim("
+        },
+        {
+          "path": "codex-rs/hepta-automation/src/causal.rs",
+          "symbol": "pub async fn record_provider_observation("
+        }
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-automation/src/taskflow_effect_runtime.rs",
+          "kind": "final_use_binding_and_replay_fence",
+          "command": "just test -p codex-hepta-automation --lib"
+        }
+      ],
+      "sourceSemantics": "Requires a durable step claim and the existing kernel final-use verifier before provider dispatch; replayed claims require reconciliation rather than redispatch.",
+      "operation": "execute_step",
+      "nativeSymbol": "pub async fn dispatch_taskflow_step_with_final_use",
+      "sourcePath": "codex-rs/hepta-automation/src/taskflow_effect_runtime.rs",
+      "sourcePathExists": true
+    },
+    {
+      "designOperation": "terminalize_occurrence",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-automation/src/causal.rs",
+        "symbol": "pub async fn reconcile_occurrence_from_taskflow(",
+        "buildTarget": "codex-hepta-automation"
       },
       "delegatedCallees": [],
       "tests": [
         {
-          "path": "codex-rs/hepta-automation/src/effect_executor_tests.rs",
-          "kind": "effect_terminality_and_compensation",
+          "path": "codex-rs/hepta-automation/src/causal.rs",
+          "kind": "terminal_progression_and_missed_run_policy",
           "command": "just test -p codex-hepta-automation --lib"
         }
       ],
-      "sourceSemantics": "Binds final payload and authority, dispatches once, and records terminal or indeterminate state.",
-      "operation": "execute_step",
-      "nativeSymbol": "pub fn execute_step(",
-      "sourcePath": "codex-rs/hepta-automation/src/effect_executor.rs",
+      "sourceSemantics": "Maps only the bound durable TaskFlow terminal projection to the automation occurrence terminal state and then advances recurrence according to explicit missed-run policy.",
+      "operation": "terminalize_occurrence",
+      "nativeSymbol": "pub async fn reconcile_occurrence_from_taskflow(",
+      "sourcePath": "codex-rs/hepta-automation/src/causal.rs",
       "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
-    "Connect the effect-executor component to the existing durable TaskFlow step outbox and a real final-use authorized effect provider.",
-    "Implement post-crash effect reconciliation before permitting dependent steps."
+    "Compose TaskFlowEffectProvider with a named real downstream effect owner and authenticated terminal observer.",
+    "Add exact-target crash-injection/provider reconciliation qualification before activation.",
+    "Complete timezone/tzdb recurrence grammar and DST qualification if calendar schedules are admitted beyond once/fixed interval."
   ],
   "externalEvidenceGates": [
-    "non-test Codex/App Server caller",
+    "named non-test Codex/App Server product caller",
     "real downstream effect owner and terminal observer",
-    "DST/timezone-database and multi-scheduler target qualification"
+    "DST/timezone-database target qualification for calendar recurrence"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -137,7 +185,7 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionWriterState": "durable_owner_chain_present_provider_uncomposed",
   "owner": "automation-platform",
   "deputy": "agent-runtime",
   "technicalGuide": "docs/modules/automation.taskflow/TECHNICAL.md",

@@ -9,22 +9,28 @@
 /// Reusable state machine; does not install a second runtime owner.
 pub mod effect_executor;
 
+mod causal;
 mod model;
 mod scheduler;
 mod store;
 mod taskflow;
 mod taskflow_execution_boundary;
+mod taskflow_effect_runtime;
 #[cfg(feature = "taskflow-structural-qualification")]
 mod taskflow_kernel;
-#[cfg(feature = "taskflow-structural-qualification")]
 mod taskflow_step;
 
 pub use model::AutomationAdmission;
 pub use model::AutomationDispatchUncertainty;
 pub use model::AutomationError;
+pub use causal::AutomationOccurrence;
 pub use model::AutomationLease;
+pub use model::AutomationMissedRunPolicy;
+pub use model::AutomationOccurrenceTerminal;
+pub use model::AutomationOverlapPolicy;
 pub use model::AutomationQueueReceipt;
 pub use model::AutomationSchedule;
+pub use model::automation_occurrence_id;
 pub use model::AutomationTask;
 pub use model::AutomationTaskDraft;
 pub use model::AutomationTaskId;
@@ -67,6 +73,13 @@ pub use taskflow_execution_boundary::TaskFlowBoundaryUnavailableReason;
 pub use taskflow_execution_boundary::TaskFlowExecutionUnavailableV1;
 pub use taskflow_execution_boundary::assess_local_taskflow_boundary;
 pub use taskflow_execution_boundary::assess_local_taskflow_boundary_json;
+pub use taskflow_effect_runtime::TaskFlowAuthorizedDispatch;
+pub use taskflow_effect_runtime::TaskFlowAuthorizedDispatchResult;
+pub use taskflow_effect_runtime::TaskFlowEffectFuture;
+pub use taskflow_effect_runtime::TaskFlowEffectProvider;
+pub use taskflow_effect_runtime::TaskFlowEffectRuntimeError;
+pub use taskflow_effect_runtime::TaskFlowProviderObservation;
+pub use taskflow_effect_runtime::TaskFlowProviderRequest;
 #[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_kernel::TASKFLOW_STRUCTURAL_EFFECTS;
 #[cfg(feature = "taskflow-structural-qualification")]
@@ -81,23 +94,15 @@ pub use taskflow_kernel::TaskFlowFrontier;
 pub use taskflow_kernel::TaskFlowReplayReport;
 #[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_kernel::TaskFlowStructuralPreview;
-#[cfg(feature = "taskflow-structural-qualification")]
+pub use taskflow_step::TASKFLOW_STEP_OUTBOX_DURABLE;
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_EFFECTS;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_PRODUCTION_CALLER;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_QUALIFICATION_ENABLED;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_SCHEDULER_AUTHORITY;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepCommandResult;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepCommandStatus;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepObservation;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepReceipt;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepState;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 3;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 4;
