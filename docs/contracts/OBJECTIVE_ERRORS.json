@@ -97,7 +97,17 @@
         "ObjectiveAdmissionError::DeadlineMissing",
         "ObjectiveAdmissionError::DeadlineBeforeObservation",
         "ObjectiveAdmissionError::DeadlineExpired"
-      ]
+      ],
+      "retryPolicy": "variant_specific_no_blind_retry",
+      "variantRetryPolicy": {
+        "ObjectiveError::FeasibilityBudgetExhausted": "fresh_feasibility_budget_allowed",
+        "ObjectiveAdmissionError::SourceFromFuture": "clock_advance_may_help",
+        "ObjectiveAdmissionError::SourceStale": "fresh_source_required",
+        "ObjectiveAdmissionError::LocaleNotAllowed": "request_mutation_required",
+        "ObjectiveAdmissionError::DeadlineMissing": "request_mutation_required",
+        "ObjectiveAdmissionError::DeadlineBeforeObservation": "request_mutation_required",
+        "ObjectiveAdmissionError::DeadlineExpired": "request_mutation_required"
+      }
     },
     {
       "code": "OBJ-E008",
