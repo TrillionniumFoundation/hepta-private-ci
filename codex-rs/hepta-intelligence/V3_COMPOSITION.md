@@ -72,8 +72,13 @@ before and after each owner port. A cancelled or over-budget owner call becomes 
 typed Cancelled or TimedOut failure/fallback according to the stage policy.
 
 The V3 coordinator is synchronous. It cannot safely preempt a port while that port
-is blocked. Ports therefore remain proposal-only and must enforce their supplied
-absolute stage deadline at their own I/O boundary. A host that requires hard interruption must
+is blocked. Ports therefore remain proposal-only except for the explicitly owned
+Agentd handoff and learning-ledger commit boundaries, and must enforce their
+supplied absolute stage deadline at their own I/O boundary. Cancellation/deadline
+is checked before every boundary; once HostHandoffAccepted or LearningRecorded
+returns a successful commit, a later control observation cannot retroactively
+rewrite that commit as failure. The next stage rechecks control before entry. A
+host that requires hard interruption must
 adapt the owner call to its existing async cancellation/timeout primitive before
 implementing the V3 port.
 
