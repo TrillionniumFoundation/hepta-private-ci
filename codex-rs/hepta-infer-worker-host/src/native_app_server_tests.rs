@@ -17,6 +17,8 @@ fn output() -> NativeRunOutput {
         stop_reason: None,
         owner_authority: NativeOwnerAuthority::Unverified,
         final_use_authority: NativeFinalUseAuthority::Unverified,
+        output_sha256: None,
+        output_retained: true,
     }
 }
 
