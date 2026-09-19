@@ -16,6 +16,7 @@ pub use codex_hepta_matrix_protocol::MatrixTransactionId;
 pub use codex_hepta_matrix_protocol::MatrixUserId;
 pub use dispatch::MAX_UNRESOLVED_MATRIX_DISPATCHES;
 pub use dispatch::MatrixDispatchAuthority;
+pub use dispatch::MatrixDispatchAuthorityClaim;
 pub use dispatch::MatrixDispatchRecord;
 pub use dispatch::MatrixDispatchState;
 pub use model::ChangeEvent;
