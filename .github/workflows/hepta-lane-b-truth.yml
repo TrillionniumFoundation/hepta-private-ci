@@ -5,6 +5,11 @@ on:
     paths:
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
+      - "codex-rs/hepta-contracts/src/final_use.rs"
+      - "codex-rs/hepta-contracts/src/final_use_store.rs"
+      - "codex-rs/hepta-contracts/src/final_use_tests.rs"
+      - "codex-rs/hepta-contracts/src/lib.rs"
+      - "codex-rs/Cargo.lock"
       - "codex-rs/hepta-matrix-protocol/**"
       - "codex-rs/hepta-matrix-sdk/**"
       - "codex-rs/hepta-matrix-store/**"
@@ -23,6 +28,11 @@ on:
     paths:
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
+      - "codex-rs/hepta-contracts/src/final_use.rs"
+      - "codex-rs/hepta-contracts/src/final_use_store.rs"
+      - "codex-rs/hepta-contracts/src/final_use_tests.rs"
+      - "codex-rs/hepta-contracts/src/lib.rs"
+      - "codex-rs/Cargo.lock"
       - "codex-rs/hepta-matrix-protocol/**"
       - "codex-rs/hepta-matrix-sdk/**"
       - "codex-rs/hepta-matrix-store/**"
@@ -95,8 +105,11 @@ jobs:
           cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker
           cargo test -p codex-hepta-automation --lib
           cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime
+          cargo test -p codex-hepta-contracts final_use
+          cargo test -p codex-hepta-matrix-store --test sync_mutation_v2
+          cargo test -p codex-hepta-matrix-store --test sync_observation_v1
+          cargo test -p codex-hepta-matrix-sdk --test durable_transport
           cargo test -p codex-hepta-matrixd --lib
-          cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
           cargo test -p codex-app-server --test all thread_start
           cargo test -p codex-app-server --test all turn_start
           cargo test -p codex-core executed_tool_calls
@@ -138,7 +151,12 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta-lane-b-path-guard.py verify
           python3 scripts/hepta-lane-b-truth.py verify
-          cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
+          cd codex-rs
+          cargo test -p codex-hepta-contracts final_use
+          cargo test -p codex-hepta-matrix-store --test sync_mutation_v2
+          cargo test -p codex-hepta-matrix-store --test sync_observation_v1
+          cargo test -p codex-hepta-matrix-sdk --test durable_transport
+          cargo test -p codex-hepta-matrixd --lib
           cd ..
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
