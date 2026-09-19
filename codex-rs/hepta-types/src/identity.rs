@@ -15,6 +15,7 @@ pub enum IdProfileV1 {
     Namespaced,
     Execution,
     Schema,
+    Normalization,
     Receipt,
     Artifact,
 }
@@ -26,6 +27,7 @@ impl IdProfileV1 {
             "namespaced-id-v1" => Ok(Self::Namespaced),
             "execution-id-v1" => Ok(Self::Execution),
             "schema-id-v1" => Ok(Self::Schema),
+            "normalization-id-v1" => Ok(Self::Normalization),
             "receipt-id-v1" => Ok(Self::Receipt),
             "artifact-id-v1" => Ok(Self::Artifact),
             _ => Err(IdentityError::UnknownProfile),
@@ -38,6 +40,7 @@ impl IdProfileV1 {
             Self::Namespaced => "namespaced-id-v1",
             Self::Execution => "execution-id-v1",
             Self::Schema => "schema-id-v1",
+            Self::Normalization => "normalization-id-v1",
             Self::Receipt => "receipt-id-v1",
             Self::Artifact => "artifact-id-v1",
         }
@@ -113,6 +116,7 @@ fn validate_profile(raw: &str, profile: IdProfileV1) -> Result<(), IdentityError
         }
         IdProfileV1::Execution => validate_prefix(raw, "execution:", profile),
         IdProfileV1::Schema => validate_prefix(raw, "schema:", profile),
+        IdProfileV1::Normalization => validate_prefix(raw, "normalization:", profile),
         IdProfileV1::Receipt => validate_prefix(raw, "receipt:", profile),
         IdProfileV1::Artifact => validate_prefix(raw, "artifact:", profile),
     }
