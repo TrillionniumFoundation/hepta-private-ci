@@ -67,7 +67,7 @@ pub fn bind_solver_iteration_receipt_v1(
     receipt: &NduSolverIterationReceipt,
 ) -> Result<NduIterationReceiptV1, NduError> {
     let context_digest = canonical_iteration_context_digest(context)?;
-    if receipt.context_digest != context_digest {
+    if receipt.context_digest() != context_digest {
         return Err(NduError::SolverContextMismatch);
     }
     require_digest(receipt.state_digest, "state")?;
