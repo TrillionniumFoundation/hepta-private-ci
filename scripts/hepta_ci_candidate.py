@@ -20,16 +20,17 @@ def git(*args: str) -> str:
 
 
 def candidate_plan(*, source: str, tested: str, lane: str, base: str | None = None) -> dict:
-    if lane not in {"source-head", "base-merge"}:
+    merge_lane = lane in {"base-merge", "synthetic-merge"}
+    if lane != "source-head" and not merge_lane:
         raise ValueError("unknown qualification lane")
-    for identity in (source, tested, *([base] if lane == "base-merge" else [])):
+    for identity in (source, tested, *([base] if merge_lane else [])):
         if not isinstance(identity, str) or re.fullmatch(r"[0-9a-f]{40}", identity) is None:
             raise ValueError("candidate identities must be exact SHA-1 commits")
     if git("rev-parse", "HEAD") != tested:
         raise ValueError("checked-out commit differs from tested identity")
     if lane == "source-head" and source != tested:
         raise ValueError("source lane is not the exact source head")
-    if lane == "base-merge":
+    if merge_lane:
         parents = git("show", "-s", "--format=%P", tested).split()
         if parents != [base, source]:
             raise ValueError("prospective merge parents differ from base and source")
@@ -45,7 +46,7 @@ def candidate_plan(*, source: str, tested: str, lane: str, base: str | None = No
         "source_tree": source_tree,
         "tested_tree": tested_tree,
         "native_execution_required": lane == "source-head" or not identical,
-        "requires_source_head_success": lane == "base-merge" and identical,
+        "requires_source_head_success": merge_lane and identical,
     }
 
 
