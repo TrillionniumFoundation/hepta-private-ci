@@ -709,7 +709,7 @@ pub fn resume_agentd_plasticity_writer_v1(
     if anchor_store.fence() == 0 || anchor_store.anchor().is_some() {
         return Err(AgentdPlasticityHostErrorV1::AnchorCorrupt);
     }
-    let writer = AnchoredPlasticityWriterV1::bootstrap_new(
+    let writer = AnchoredPlasticityWriterV1::resume_unacknowledged_bootstrap(
         registry_file,
         registry_scope_digest,
         anchor_store.fence(),

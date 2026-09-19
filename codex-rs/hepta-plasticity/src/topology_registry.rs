@@ -54,6 +54,7 @@ pub enum DurableTopologyRegistryErrorV1 {
     InvalidLimit,
     InvalidAnchor,
     BootstrapRequiresEmptyFile,
+    UnacknowledgedHistoryPresent,
     AcknowledgedHistoryMissing,
     AnchorMismatch,
     ContextMismatch,
@@ -92,6 +93,7 @@ struct TopologySlotV1 {
 #[derive(Clone, Copy)]
 enum RecoveryPolicy {
     BootstrapEmpty,
+    ResumeUnacknowledgedBootstrap,
     Require(DurableTopologyRegistryAnchorV1),
 }
 
@@ -150,6 +152,24 @@ impl DurableTopologyProposalRegistryV1 {
             writer_fence,
             maximum_records,
             RecoveryPolicy::BootstrapEmpty,
+        )
+    }
+
+    /// Resume a newly enrolled generation only if no complete topology proposal
+    /// frame exists. Incomplete first-frame crash tails are repairable; complete
+    /// unacknowledged frames are preserved for explicit reconciliation.
+    pub fn resume_unacknowledged_bootstrap(
+        file: File,
+        scope: Digest32,
+        writer_fence: u64,
+        maximum_records: usize,
+    ) -> Result<Self, DurableTopologyRegistryErrorV1> {
+        Self::open_with_policy(
+            file,
+            scope,
+            writer_fence,
+            maximum_records,
+            RecoveryPolicy::ResumeUnacknowledgedBootstrap,
         )
     }
 
@@ -295,6 +315,12 @@ impl DurableTopologyProposalRegistryV1 {
             offset = offset
                 .checked_add(total)
                 .ok_or(DurableTopologyRegistryErrorV1::Capacity)?;
+        }
+
+        if matches!(policy, RecoveryPolicy::ResumeUnacknowledgedBootstrap)
+            && !store.frame_digests.is_empty()
+        {
+            return Err(DurableTopologyRegistryErrorV1::UnacknowledgedHistoryPresent);
         }
 
         if let RecoveryPolicy::Require(anchor) = policy {
@@ -1004,6 +1030,66 @@ mod tests {
             digest(&format!("eval-auth:{label}")),
         )
         .expect("governed")
+    }
+
+    #[test]
+    fn topology_resume_unacknowledged_bootstrap_repairs_only_pre_frame_crash_state() {
+        let file = TestFile::new();
+        let scope = digest("resume-scope");
+        {
+            let store =
+                DurableTopologyProposalRegistryV1::bootstrap_empty(file.create(), scope, 31, 8)
+                    .expect("bootstrap");
+            drop(store);
+        }
+        {
+            let mut tail = OpenOptions::new()
+                .append(true)
+                .open(&file.0)
+                .expect("append");
+            tail.write_all(&[0, 0, 0]).expect("tail");
+            tail.sync_all().expect("sync");
+        }
+        {
+            let store = DurableTopologyProposalRegistryV1::resume_unacknowledged_bootstrap(
+                file.open(),
+                scope,
+                31,
+                8,
+            )
+            .expect("resume");
+            assert_eq!(store.record_count(), Ok(0));
+            drop(store);
+        }
+        assert_eq!(
+            std::fs::metadata(&file.0).expect("metadata").len(),
+            HEADER_SIZE as u64
+        );
+
+        {
+            let mut store = DurableTopologyProposalRegistryV1::resume_unacknowledged_bootstrap(
+                file.open(),
+                scope,
+                31,
+                8,
+            )
+            .expect("resume");
+            store
+                .append(Digest32::ZERO, governed("unacknowledged-complete"))
+                .expect("append");
+        }
+        let complete = std::fs::read(&file.0).expect("read");
+        assert_eq!(
+            DurableTopologyProposalRegistryV1::resume_unacknowledged_bootstrap(
+                file.open(),
+                scope,
+                31,
+                8,
+            )
+            .err(),
+            Some(DurableTopologyRegistryErrorV1::UnacknowledgedHistoryPresent)
+        );
+        assert_eq!(std::fs::read(&file.0).expect("read"), complete);
     }
 
     #[test]

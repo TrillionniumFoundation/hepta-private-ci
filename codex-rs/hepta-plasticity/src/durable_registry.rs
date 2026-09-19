@@ -81,6 +81,7 @@ pub enum DurableProposalRegistryError {
     InvalidWriterFence,
     InvalidAnchor,
     BootstrapRequiresEmptyFile,
+    UnacknowledgedHistoryPresent,
     AcknowledgedHistoryMissing,
     AnchorMismatch,
     ContextMismatch,
@@ -114,6 +115,7 @@ impl From<Error> for DurableProposalRegistryError {
 enum RecoveryPolicy {
     Unanchored,
     BootstrapEmpty,
+    ResumeUnacknowledgedBootstrap,
     Require(DurableRegistryAnchorV1),
 }
 
@@ -194,6 +196,26 @@ impl DurableProposalRegistry {
             writer_fence,
             maximum_records,
             RecoveryPolicy::BootstrapEmpty,
+        )
+    }
+
+    /// Resume a production enrollment only when no complete proposal frame exists.
+    ///
+    /// This accepts a physically empty file, an exact header-only file, or an
+    /// incomplete first-frame crash tail. Any complete unacknowledged frame is
+    /// preserved and rejected for explicit reconciliation.
+    pub fn resume_unacknowledged_bootstrap(
+        file: File,
+        registry_scope_digest: Digest32,
+        writer_fence: u64,
+        maximum_records: usize,
+    ) -> Result<Self, DurableProposalRegistryError> {
+        Self::open_with_policy(
+            file,
+            registry_scope_digest,
+            writer_fence,
+            maximum_records,
+            RecoveryPolicy::ResumeUnacknowledgedBootstrap,
         )
     }
 
@@ -346,6 +368,12 @@ impl DurableProposalRegistry {
             offset = offset
                 .checked_add(total)
                 .ok_or(DurableProposalRegistryError::Capacity)?;
+        }
+
+        if matches!(policy, RecoveryPolicy::ResumeUnacknowledgedBootstrap)
+            && !store.frame_digests.is_empty()
+        {
+            return Err(DurableProposalRegistryError::UnacknowledgedHistoryPresent);
         }
 
         if let RecoveryPolicy::Require(anchor) = policy {

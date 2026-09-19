@@ -360,7 +360,7 @@ pub fn resume_agentd_topology_writer_v1(
         return Err(AgentdTopologyHostErrorV1::AnchorCorrupt);
     }
     let fence = anchor_store.fence();
-    let registry = DurableTopologyProposalRegistryV1::bootstrap_empty(
+    let registry = DurableTopologyProposalRegistryV1::resume_unacknowledged_bootstrap(
         registry_file,
         registry_scope_digest,
         fence,

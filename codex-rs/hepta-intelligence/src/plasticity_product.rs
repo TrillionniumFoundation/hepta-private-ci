@@ -192,6 +192,27 @@ impl AnchoredPlasticityWriterV1 {
         })
     }
 
+    /// Resume a newly enrolled generation only while no complete proposal frame
+    /// exists. Complete unacknowledged history requires explicit reconciliation.
+    pub fn resume_unacknowledged_bootstrap(
+        file: File,
+        registry_scope_digest: Digest32,
+        writer_fence: u64,
+        maximum_records: usize,
+    ) -> Result<Self, AnchoredPlasticityWriterErrorV1> {
+        Ok(Self {
+            registry: DurableProposalRegistry::resume_unacknowledged_bootstrap(
+                file,
+                registry_scope_digest,
+                writer_fence,
+                maximum_records,
+            )?,
+            registry_scope_digest,
+            writer_fence,
+            state: PlasticityWriterStateV1::Healthy,
+        })
+    }
+
     /// Reopen any non-bootstrap registry only with independently retained history.
     pub fn reopen_anchored(
         file: File,
