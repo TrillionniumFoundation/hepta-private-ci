@@ -566,7 +566,7 @@ impl SecretLeaseRegistry {
         &self,
         operation_id: &str,
         request_sha256: [u8; 32],
-        provider_lease_id: Zeroizing<String>,
+        provider_id: Zeroizing<String>,
         renewable: bool,
     ) -> Result<StoredLease, LeaseRegistryError> {
         let mut state = self
@@ -582,10 +582,10 @@ impl SecretLeaseRegistry {
             request_sha256,
             LeaseOperationKind::Issue,
         )?;
-        if lease.state != SecretLeaseState::Issuing || !provider_lease_id(&provider_lease_id) {
+        if lease.state != SecretLeaseState::Issuing || !provider_lease_id(&provider_id) {
             return Err(LeaseRegistryError::InvalidTransition);
         }
-        lease.provider_lease_id = Some(provider_lease_id);
+        lease.provider_lease_id = Some(provider_id);
         lease.renewable = renewable;
         // From this point onward a provider-side lease definitely exists. If
         // anything fails before secret delivery, retain its identity and
