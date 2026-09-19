@@ -24,6 +24,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut maximum_in_flight = None;
     let mut quota_reservation_digest: Option<Digest32> = None;
     let mut resource_snapshot_digest: Option<Digest32> = None;
+    let mut worker_assignment_digest: Option<Digest32> = None;
     let mut authority_config = None;
     let mut context_query = None;
     let mut native_profile_selected = false;
@@ -33,7 +34,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     while let Some(flag) = args.next() {
         if flag == "--help" {
             println!(
-                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --model-provider PROVIDER --operation-id ID --request-id ID --maximum-in-flight N --quota-reservation-sha256 HEX --resource-snapshot-sha256 HEX [--authority-binding-only | --authority-config /absolute/authority.json --journal /absolute/private/native-runs.journal] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin. --authority-binding-only prints the exact FinalUseBinding without provider contact; execution requires an independently signed single-use grant."
+                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --model-provider PROVIDER --operation-id ID --request-id ID --maximum-in-flight N --quota-reservation-sha256 HEX --resource-snapshot-sha256 HEX --worker-assignment-sha256 HEX [--authority-binding-only | --authority-config /absolute/authority.json --journal /absolute/private/native-runs.journal] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin. --authority-binding-only prints the exact FinalUseBinding without provider contact; execution requires an independently signed single-use grant."
             );
             return Ok(());
         }
@@ -56,6 +57,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             "--maximum-in-flight" => maximum_in_flight = Some(value.parse()?),
             "--quota-reservation-sha256" => quota_reservation_digest = Some(value.parse()?),
             "--resource-snapshot-sha256" => resource_snapshot_digest = Some(value.parse()?),
+            "--worker-assignment-sha256" => worker_assignment_digest = Some(value.parse()?),
             "--authority-config" => authority_config = Some(PathBuf::from(value)),
             "--context-query" => context_query = Some(value),
             "--timeout-ms" => timeout_ms = value.parse()?,
@@ -81,6 +83,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             .ok_or("--quota-reservation-sha256 is required")?,
         resource_snapshot_digest: resource_snapshot_digest
             .ok_or("--resource-snapshot-sha256 is required")?,
+        worker_assignment_digest: worker_assignment_digest
+            .ok_or("--worker-assignment-sha256 is required")?,
     };
     let mut prompt = String::new();
     tokio::io::stdin()
