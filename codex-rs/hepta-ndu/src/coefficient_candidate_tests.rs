@@ -23,7 +23,11 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn profile(units: &str, driver_dimension: usize, maximum_absolute_z: f64) -> AdmittedCovarianceProfileV1 {
+fn profile(
+    units: &str,
+    driver_dimension: usize,
+    maximum_absolute_z: f64,
+) -> AdmittedCovarianceProfileV1 {
     must(admit_covariance_profile(NduCovarianceProfileV1 {
         units_digest: digest(units),
         driver_dimension,
