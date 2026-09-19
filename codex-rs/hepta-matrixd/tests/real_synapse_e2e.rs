@@ -4212,7 +4212,7 @@ impl LoopbackFaultProxy {
             .capture
             .lock()
             .map_err(|_| anyhow::anyhow!("downstream HTTP capture mutex was poisoned"))?;
-        prove_single_put(&capture, expected_target, stable_txn_id)
+        prove_exact_put_count(&capture, expected_target, stable_txn_id, 1)
     }
 
     fn assert_capture_clean(&self) -> Result<()> {
@@ -4257,11 +4257,13 @@ impl LoopbackFaultProxy {
     }
 }
 
-fn prove_single_put(
+fn prove_exact_put_count(
     capture: &HttpRequestCapture,
     expected_target: &str,
     stable_txn_id: &str,
+    expected_attempts: usize,
 ) -> Result<WireRetryProof> {
+    ensure!(expected_attempts > 0);
     ensure!(
         capture.errors.is_empty(),
         "downstream HTTP request capture failed closed: {}",
@@ -4274,25 +4276,26 @@ fn prove_single_put(
         .filter(|request| matrix_send_target_has_transaction(&request.target, stable_txn_id))
         .collect();
     ensure!(
-        attempts.len() == 1,
-        "the exact Matrix v3 encrypted send target appeared in exactly {} downstream HTTP requests, expected 1 because an indeterminate send must not be blindly retried",
+        attempts.len() == expected_attempts,
+        "the exact Matrix v3 encrypted send transaction appeared in exactly {} downstream HTTP requests, expected {expected_attempts}",
         attempts.len()
     );
-    let attempt = attempts[0];
-    ensure!(
-        attempt.method == b"PUT",
-        "stable transaction request was not an HTTP PUT"
-    );
-    ensure!(
-        attempt.target == expected_target.as_bytes(),
-        "stable transaction request target differed from the expected Ruma path: actual={:?} expected={expected_target:?}",
-        String::from_utf8_lossy(&attempt.target)
-    );
-    let target = std::str::from_utf8(&attempt.target)
+    for attempt in &attempts {
+        ensure!(
+            attempt.method == b"PUT",
+            "stable transaction request was not an HTTP PUT"
+        );
+        ensure!(
+            attempt.target == expected_target.as_bytes(),
+            "stable transaction request target differed from the expected Ruma path: actual={:?} expected={expected_target:?}",
+            String::from_utf8_lossy(&attempt.target)
+        );
+    }
+    let target = std::str::from_utf8(&attempts[0].target)
         .context("stable transaction HTTP target was not UTF-8")?
         .to_owned();
     Ok(WireRetryProof {
-        attempts: 1,
+        attempts: attempts.len(),
         target,
     })
 }
@@ -4443,7 +4446,7 @@ fn downstream_http_capture_handles_fragmented_keep_alive_requests() -> Result<()
     let capture = capture
         .lock()
         .map_err(|_| anyhow::anyhow!("test HTTP capture mutex was poisoned"))?;
-    let proof = prove_two_identical_puts(&capture, &target, transaction_id)?;
+    let proof = prove_exact_put_count(&capture, &target, transaction_id, 2)?;
     assert_eq!(proof.attempts, 2);
     assert_eq!(proof.target, target);
     assert_eq!(capture.requests.len(), 2);
@@ -4472,7 +4475,7 @@ fn downstream_http_capture_rejects_same_txn_on_an_alternate_send_target() {
         ],
         errors: Vec::new(),
     };
-    assert!(prove_two_identical_puts(&capture, &expected, transaction_id).is_err());
+    assert!(prove_exact_put_count(&capture, &expected, transaction_id, 2).is_err());
 }
 
 #[test]
@@ -4492,7 +4495,7 @@ fn downstream_http_capture_commits_chunked_requests_only_after_trailers() -> Res
     let capture = capture
         .lock()
         .map_err(|_| anyhow::anyhow!("test HTTP capture mutex was poisoned"))?;
-    let proof = prove_two_identical_puts(&capture, &target, "chunked-txn")?;
+    let proof = prove_exact_put_count(&capture, &target, "chunked-txn", 2)?;
     assert_eq!(proof.attempts, 2);
     assert!(capture.errors.is_empty());
     Ok(())
