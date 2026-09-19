@@ -53,10 +53,13 @@ impl<R: Read> FramedReader<R> {
     /// advertised oversize payload fails before a body-sized allocation.
     pub fn read_next(&mut self) -> Result<Option<VersionedEnvelope>, StreamError> {
         let mut prefix = [0_u8; 6];
-        match self.inner.read(&mut prefix[..1]) {
-            Ok(0) => return Ok(None),
-            Ok(_) => {}
-            Err(error) => return Err(StreamError::Io(error.kind())),
+        loop {
+            match self.inner.read(&mut prefix[..1]) {
+                Ok(0) => return Ok(None),
+                Ok(_) => break,
+                Err(error) if error.kind() == ErrorKind::Interrupted => continue,
+                Err(error) => return Err(StreamError::Io(error.kind())),
+            }
         }
         read_exact_bounded(&mut self.inner, &mut prefix[1..])?;
         if prefix[..4] != MAGIC {
