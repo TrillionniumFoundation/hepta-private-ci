@@ -237,6 +237,16 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
                     )
                     .await
                     .map_err(store_error)?;
+                if record.attempts >= config.max_attempts {
+                    store
+                        .park_matrix_dispatch_indeterminate(
+                            &record.stable_txn_id,
+                            record.attempts,
+                            now_ms,
+                        )
+                        .await
+                        .map_err(store_error)?;
+                }
                 stats.indeterminate += 1;
             }
             Err(MatrixTransportError::Permanent) => {
