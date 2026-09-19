@@ -31,6 +31,7 @@ use codex_app_server_protocol::UserInput;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::HealthSnapshot;
+use codex_hepta_agentd::MAX_COGNITIVE_CONTEXT_BYTES;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
@@ -49,7 +50,6 @@ use tokio_util::sync::CancellationToken;
 
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
 const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
-const MAX_MODEL_CONTEXT_BYTES: usize = 8 * 1024;
 const RPC_TIMEOUT: Duration = Duration::from_secs(5);
 const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
 
@@ -120,7 +120,7 @@ impl AppServerModelDriver {
         let additional_context = context
             .map(|snapshot| -> Result<_> {
                 let value = serde_json::to_string(&snapshot)?;
-                if value.len() > MAX_MODEL_CONTEXT_BYTES {
+                if value.len() > MAX_COGNITIVE_CONTEXT_BYTES {
                     return Err("verified context exceeds the model attachment byte limit".into());
                 }
                 Ok(HashMap::from([(
