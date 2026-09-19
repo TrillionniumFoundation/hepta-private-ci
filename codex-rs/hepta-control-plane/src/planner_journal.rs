@@ -70,6 +70,7 @@ pub enum PlannerJournalError {
     CorruptEntryDigest,
     UnknownKind(u8),
     DecisionNotRecorded,
+    RevocationTargetNotRecorded,
     RevokedPlan,
 }
 
@@ -149,6 +150,11 @@ impl PlannerJournalV1 {
         revocation_identity_digest: Digest32,
         target_digest: Digest32,
     ) -> Result<PlannerJournalEntryV1, PlannerJournalError> {
+        if !self.entries.iter().any(|entry| {
+            entry.kind == PlannerJournalKindV1::Decision && entry.payload_digest == target_digest
+        }) {
+            return Err(PlannerJournalError::RevocationTargetNotRecorded);
+        }
         self.append(
             PlannerJournalKindV1::Revocation,
             revocation_identity_digest,
@@ -195,6 +201,7 @@ impl PlannerJournalV1 {
             }
             return Err(PlannerJournalError::IdentityConflict);
         }
+        self.validate_semantic_transition(kind, payload_digest)?;
         if self.entries.len() >= MAX_RECORDS {
             return Err(PlannerJournalError::RecordLimitExceeded);
         }
@@ -314,6 +321,30 @@ impl PlannerJournalV1 {
             if journal.identities.contains_key(&identity_digest) {
                 return Err(PlannerJournalError::DuplicateSerializedIdentity);
             }
+            match kind {
+                PlannerJournalKindV1::SelectedPlan => {
+                    let decision_exists = journal.entries.iter().any(|entry| {
+                        entry.kind == PlannerJournalKindV1::Decision
+                            && entry.payload_digest == payload_digest
+                    });
+                    if !decision_exists {
+                        return Err(PlannerJournalError::DecisionNotRecorded);
+                    }
+                    if journal.revoked_digests().contains(&payload_digest) {
+                        return Err(PlannerJournalError::RevokedPlan);
+                    }
+                }
+                PlannerJournalKindV1::Revocation => {
+                    let decision_exists = journal.entries.iter().any(|entry| {
+                        entry.kind == PlannerJournalKindV1::Decision
+                            && entry.payload_digest == payload_digest
+                    });
+                    if !decision_exists {
+                        return Err(PlannerJournalError::RevocationTargetNotRecorded);
+                    }
+                }
+                PlannerJournalKindV1::Snapshot | PlannerJournalKindV1::Decision => {}
+            }
             journal
                 .identities
                 .insert(identity_digest, (kind, payload_digest));
@@ -327,6 +358,36 @@ impl PlannerJournalV1 {
             });
         }
         Ok(journal)
+    }
+
+    fn validate_semantic_transition(
+        &self,
+        kind: PlannerJournalKindV1,
+        payload_digest: Digest32,
+    ) -> Result<(), PlannerJournalError> {
+        match kind {
+            PlannerJournalKindV1::SelectedPlan => {
+                if !self.entries.iter().any(|entry| {
+                    entry.kind == PlannerJournalKindV1::Decision
+                        && entry.payload_digest == payload_digest
+                }) {
+                    return Err(PlannerJournalError::DecisionNotRecorded);
+                }
+                if self.revoked_digests().contains(&payload_digest) {
+                    return Err(PlannerJournalError::RevokedPlan);
+                }
+            }
+            PlannerJournalKindV1::Revocation => {
+                if !self.entries.iter().any(|entry| {
+                    entry.kind == PlannerJournalKindV1::Decision
+                        && entry.payload_digest == payload_digest
+                }) {
+                    return Err(PlannerJournalError::RevocationTargetNotRecorded);
+                }
+            }
+            PlannerJournalKindV1::Snapshot | PlannerJournalKindV1::Decision => {}
+        }
+        Ok(())
     }
 
     fn revoked_digests(&self) -> BTreeSet<Digest32> {

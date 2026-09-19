@@ -116,13 +116,14 @@ impl AgentdState {
                 };
                 // The model and context plan bind to the body that was launched.
                 // Current lifecycle authority remains fenced before and after I/O.
-                let result = crate::cognitive_context::read(
+                let result = crate::cognitive_context::read_with_monotonic_origin(
                     &store,
                     &self.identity.agent_id,
                     self.identity.spawn_generation,
                     &query,
                     limit,
                     self.cognitive_ranker.get(),
+                    self.monotonic_origin(),
                 )
                 .await;
                 self.refresh_generation()?;

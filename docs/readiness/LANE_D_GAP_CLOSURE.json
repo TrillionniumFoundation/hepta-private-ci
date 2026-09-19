@@ -285,6 +285,80 @@
         "docs/readiness/NDU_SYSTEM_EXECUTION.md",
         "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json"
       ]
+    },
+    {
+      "id": "LANE-D-RCP-STATUS-029",
+      "severity": "P1",
+      "title": "Control-runtime caller/maturity registries lagged the live Agentd planner composition",
+      "state": "closed",
+      "closure": [
+        "docs/modules/control.runtime/IMPLEMENTATION_MAP.json",
+        "docs/readiness/LANE_D_MATURITY.json",
+        "codex-rs/hepta-contracts/CALLERS.toml"
+      ]
+    },
+    {
+      "id": "LANE-D-RCP-RESOURCE-030",
+      "severity": "P0",
+      "title": "Resource-profile digests were caller labels rather than canonical reservation commitments",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-control-plane/src/planner.rs",
+        "codex-rs/hepta-control-plane/src/planner_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-RCP-CLOCK-031",
+      "severity": "P0",
+      "title": "The live Agentd planner caller supplied Unix wall-clock micros to a monotonic-time contract",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-agentd/src/state.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context.rs",
+        "codex-rs/hepta-agentd/src/state_control.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-RCP-JOURNAL-032",
+      "severity": "P0",
+      "title": "Planner journal reopen verified hashes without replaying selection/revocation semantics",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-control-plane/src/planner_journal.rs",
+        "codex-rs/hepta-control-plane/src/planner_journal_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-RCP-STORE-033",
+      "severity": "P1",
+      "title": "Planner decisions had no fsync/frontier durable-store candidate or anti-rollback restore fixture",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-control-plane/src/planner_store.rs",
+        "codex-rs/hepta-control-plane/src/planner_store_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-RCP-COMPOSE-034",
+      "severity": "P0",
+      "title": "No common authenticated multi-owner global orchestration path or explicit kernel-authority claim bridge existed",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-control-plane/src/planner_global.rs",
+        "codex-rs/hepta-control-plane/src/planner_global_tests.rs",
+        "codex-rs/hepta-control-plane/src/planner_authority.rs",
+        "codex-rs/hepta-control-plane/src/planner_authority_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-RCP-EVIDENCE-035",
+      "severity": "P1",
+      "title": "Control runtime had no dedicated exact-head/synthetic-merge gate with full-ceiling named-host measurement",
+      "state": "closed",
+      "closure": [
+        ".github/workflows/hepta-control-runtime-closure.yml",
+        "codex-rs/hepta-control-plane/examples/control_runtime_probe.rs"
+      ]
     }
   ],
   "externalGates": [
