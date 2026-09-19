@@ -14,21 +14,25 @@
   "requirements": [
     {
       "id": "KE-EVID-001",
-      "requirement": "Append exact-candidate evidence only after cryptographic issuer authentication; exact replay is idempotent and identity/payload drift conflicts.",
+      "requirement": "Provision one immutable store-owned trust policy, then append exact-candidate evidence only after cryptographic issuer authentication; exact replay is idempotent and identity/payload or trust-root drift conflicts.",
       "sourceAnchors": [
         {
           "path": "codex-rs/hepta-evidence/src/qualification.rs",
           "mustContain": [
+            "pub async fn provision_trust_policy(",
             "pub async fn append_receipt(",
             "pub fn authenticate(",
             "qualification evidence signature verification failed",
+            "authenticated issuer is not bound to the provisioned trust policy",
             "IdempotencyConflict"
           ]
         },
         {
           "path": "codex-rs/hepta-evidence/migrations/0011_qualification_evidence.sql",
           "mustContain": [
+            "CREATE TABLE qualification_trust_policy",
             "CREATE TABLE qualification_evidence",
+            "qualification_trust_policy_no_update",
             "qualification_evidence_no_update"
           ]
         }
@@ -38,7 +42,8 @@
           "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
           "mustContain": [
             "qualification_receipt_is_authenticated_idempotent_queryable_and_reopen_safe",
-            "same_receipt_identity_with_changed_content_conflicts"
+            "same_receipt_identity_with_changed_content_conflicts",
+            "unprovisioned_or_different_trust_policy_cannot_write"
           ]
         }
       ],
@@ -188,13 +193,15 @@
     },
     {
       "id": "KE-EVID-007",
-      "requirement": "An independently retained monotonic checkpoint detects database replacement, rollback and chain-frontier divergence.",
+      "requirement": "An independently retained monotonic checkpoint binds store identity, provisioned trust-policy digest and chain frontier, detecting authority rollback, database replacement, receipt rollback and chain divergence.",
       "sourceAnchors": [
         {
           "path": "codex-rs/hepta-evidence/src/qualification.rs",
           "mustContain": [
             "pub struct EvidenceCheckpoint",
+            "trust_policy_sha256",
             "pub async fn verify_external_checkpoint(",
+            "trust-policy checkpoint diverged",
             "database replacement detected",
             "rollback detected",
             "checkpoint frontier diverged"
@@ -217,12 +224,13 @@
     },
     {
       "id": "KE-EVID-008",
-      "requirement": "A named authenticated product writer requires a prior external checkpoint for every evidence mutation and emits a new append-only checkpoint/terminal receipt.",
+      "requirement": "A named authenticated product writer bootstraps the immutable trust root before evidence, then requires a prior external checkpoint for every mutation and emits a new create-only checkpoint/terminal receipt.",
       "sourceAnchors": [
         {
           "path": "codex-rs/hepta-evidence/src/bin/hepta-evidence-writer.rs",
           "mustContain": [
-            "bootstrap-checkpoint",
+            "bootstrap-trust-policy",
+            "provision_trust_policy",
             "open_with_checkpoint",
             "append_prepared_independent_decision",
             "terminal-receipt-out"
@@ -262,7 +270,7 @@
           "path": "scripts/verify_kernel_evidence_traceability.py",
           "mustContain": [
             "expected-sha",
-            "git_tree",
+            "gitTree",
             "independentAcceptance"
           ]
         }
