@@ -17,8 +17,8 @@ fn request() -> InferenceRequest {
     }
 }
 
-fn ledger() -> InferenceLedger {
-    let Ok(value) = InferenceLedger::new(8) else {
+fn ledger() -> ReferenceInferenceLedger {
+    let Ok(value) = ReferenceInferenceLedger::new(8) else {
         panic!("test ledger must initialize");
     };
     value
