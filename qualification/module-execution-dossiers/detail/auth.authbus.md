@@ -1,7 +1,7 @@
 # auth.authbus: implementation design
 
 Parent: `docs/modules/auth.authbus/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: signed message admission and evidence-owner durable replay/delivery implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: signed admission/replay plus the policy, fixed-window quota, reservation, EffectStarted fencing and Bao effect-composition source candidate are implemented; exact-candidate execution and independently governed production acceptance remain open as listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -16,15 +16,15 @@ Operation signatures below describe the target contract. Section 8 identifies th
 
 ## 3. State records and transaction design
 
-`auth_policy` binds versioned allowed/denied operations and principal scope. `quota_registry` binds an immutable unit, explicit fixed window, limit and consumed/reserved amounts. `quota_reservation` binds operation, principal, action, scope, quota revision, amount, expiry, final-effect digest, state and settlement digest. Reservation updates conserve available+reserved+consumed under a single-writer transaction; any same-operation semantic drift conflicts. SQLite triggers independently enforce binding immutability and legal state transitions.
+`auth_policy` binds versioned allowed/denied operations and principal scope. `quota_registry` binds an immutable unit, explicit fixed window, limit, per-principal held-reservation cap and consumed/reserved amounts. `quota_reservation` binds operation, principal, action, scope, quota revision, amount, expiry, final-effect digest, state and settlement digest. Reservation updates conserve available+reserved+consumed under a single-writer transaction; any same-operation semantic drift conflicts. SQLite triggers independently enforce binding immutability and legal state transitions.
 
 ## 4. Deterministic algorithm and scheduling
 
-Check current policy/revocation, reserve before effect dispatch, then settle only from observed cost/terminal disposition. Expired reservations do not prove an external effect did not occur; indeterminate costs remain held or quarantined under policy. Refunds cannot make total available exceed the configured endowment. Reconcile after crash before accepting new reservations.
+Check current policy/revocation, reserve before effect dispatch, atomically commit EffectStarted under the owner clock before adapter entry, then settle only from observed cost/terminal disposition. A bounded owner-clock sweep expires only pre-effect Active reservations. EffectStarted or Quarantined reservations never refund merely because their nominal expiry passed; indeterminate costs remain held until reconciliation. Refunds cannot make total available exceed the configured endowment. Reconcile after crash before accepting new reservations.
 
 ## 5. Capacity and performance profile
 
-Pilot reservation request <= 16 KiB, batch <= 128, per-principal active reservation cap fixed by policy. Measure contention, lease expiry backlog, reconciliation time and conservation residual; no floating-point currency or quota arithmetic.
+Pilot reservation request <= 16 KiB and recovery batch <= 128. Each quota revision carries `max_active_per_principal` in `1..=4096`; Active, EffectStarted and Quarantined reservations all count as held for that principal. Measure contention, lease expiry backlog, reconciliation time and conservation residual; no floating-point currency or quota arithmetic.
 
 Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
 
@@ -45,12 +45,12 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `authenticate`, `admit_authbus_message`, `enqueue_authbus_message`, `authorize_and_reserve_authbus`, `begin_authbus_effect`, `settle_authbus_reservation`, `pending_authbus_effect_reservations`, `retire_authbus_replay_epoch`, and candidate `consume_kv_v2_with_authbus`.
+- **Implemented entrypoints:** `authenticate`, `admit_authbus_message`, `enqueue_authbus_message`, `authorize_and_reserve_authbus`, `begin_authbus_effect`, `settle_authbus_reservation`, `pending_authbus_effect_reservations`, `expire_authbus_reservations`, `retire_authbus_replay_epoch`, and candidate `consume_kv_v2_with_authbus`.
 - **Authentication / admission:** `authenticate` in `codex-rs/hepta-authbus/src/signed.rs`; durable admission and outbox in `codex-rs/hepta-evidence/src/authbus_store.rs` and `authbus_outbox.rs`.
-- **Policy and quota candidate:** pure contract types live in `codex-rs/hepta-authbus/src/control.rs`. Durable policy revisions, quota registry, reservations, final-use validation, settlement, cancellation, expiry, quarantine and reconciliation live in `codex-rs/hepta-evidence/src/authbus_control.rs` under migration 0011.
+- **Policy and quota candidate:** pure contract types live in `codex-rs/hepta-authbus/src/control.rs`. Durable policy revisions, fixed-window quota registry, per-principal held caps, reservations, final-use fencing, settlement, cancellation, bounded pre-effect expiry recovery, quarantine and reconciliation live in `codex-rs/hepta-evidence/src/authbus_control.rs` under migration 0011.
 - **Transaction boundary:** `authorize_and_reserve_authbus` evaluates the exact current non-revoked policy revision and reserves integer quota inside one `BEGIN IMMEDIATE` transaction. `begin_authbus_effect` uses the owner clock after acquiring the write lock, revalidates principal/action/scope/effect and policy/quota revisions, then durably commits EffectStarted. Cancel/expiry cannot cross that marker. Settlement binds non-empty terminal evidence and observed cost; queue acknowledgement is not effect terminality.
 - **Recovery / rollback candidate:** migration 0012 and `authbus_recovery.rs` bind the SQLite lineage to a separately supplied host restore-checkpoint witness. Agentd requires the witness alongside the trust file. Replay epoch retirement checks the witness, active outbox, tombstone and replay deletion atomically; an actual old-database restore is exercised by the recovery test.
 - **Key lifecycle:** Agentd trust supports the current key plus at most four bounded previous epochs with independent revocation and optional validity windows. Admission/dispatch resolve fresh registrations.
 - **Qualification:** `hepta-authbus-p1-3-qualification` now requires source SHA, source tree, binary digest, runner identity, command digest and successful exit status, all bound into the qualification digest. Lane A native qualification includes the real Agentd AuthBus product test.
-- **Native tests:** `authbus_control_tests.rs` executes BUS-01 through BUS-04 against real SQLite and additionally covers semantic binding drift, owner-clock expiry, quota windows, DB triggers and crash-after-effect-start recovery. `authbus_recovery_tests.rs` restores a real older SQLite image and verifies replay retirement tombstones. Bao tests cover request mismatch, timeout quarantine, consumer-indeterminate reconciliation and successful settlement.
+- **Native tests:** `authbus_control_tests.rs` executes BUS-01 through BUS-04 against real SQLite and additionally covers semantic binding drift, contradictory-policy rejection before storage, owner-clock expiry, bounded expiry sweep, fixed quota windows, per-principal held caps, DB triggers and crash-after-effect-start recovery. `authbus_recovery_tests.rs` restores a real older SQLite image and verifies replay retirement tombstones. Bao tests cover request mismatch, timeout quarantine, consumer-indeterminate reconciliation and successful settlement.
 - **Composition limit:** Agentd signed-text is the narrow authentication/delivery caller and Bao has a candidate reservation-aware effect wrapper. This still does not establish production implementation, activation, acceptance or release until exact-candidate CI and external gates close.
