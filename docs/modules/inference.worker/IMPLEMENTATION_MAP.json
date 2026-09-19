@@ -7,7 +7,7 @@
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
-  "sourceMaturity": "verified_local_process_driver_core_reconciliation_and_final_use_worker_port",
+  "sourceMaturity": "verified_local_process_driver_aggregate_memory_deadlines_core_reconciliation_and_hosted_product_root",
   "declaredRoots": [
     "codex-rs/hepta-infer-worker-host"
   ],
@@ -148,9 +148,9 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Compose a named deployed product host around NativeWorkerPort with trusted host configuration, independently issued final-use grants and the canonical DurableInferenceControl owner; the source seam exists but deployment composition is not yet proved.",
-    "Compose an authenticated local-resource grant issuer/verifier into the deployed local-model caller; VerifiedResourceGrant closes the worker type boundary but does not create resource authority.",
-    "Add trusted provider/billing usage reconciliation for recovered terminal turns when App Server history lacks authoritative token usage; missing usage must remain unknown."
+    "Compose the local-model product caller around InferenceWorker<LocalProcessDriver> with protected runtime/artifact/device configuration and an authenticated ResourceGrantVerifier. The hosted provider source root already exists as hepta-inference-runtime-host; local-model product composition is still absent.",
+    "Back the local ResourceGrantVerifier with a deployed authority/revocation owner and re-verify current epoch/revocation at the caller boundary before constructing each worker generation. VerifiedResourceGrant is a bounded verification snapshot; it is not itself a revocation feed.",
+    "Add trusted provider/billing usage reconciliation for recovered terminal turns when persisted App Server token-usage replay has no authoritative usage for that exact turn; missing usage must remain unknown."
   ],
   "externalEvidenceGates": [
     "identified real weights/tokenizer/preprocessor/quantization/runtime/device tuple",
@@ -176,7 +176,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "source_seam_composed_product_host_not_established",
+  "productCallerState": "hosted_source_product_host_composed_local_model_product_caller_not_established_deployment_unproved",
   "productionWriterState": "canonical_durable_inference_control_reused",
   "owner": "inference-platform",
   "deputy": "security-authority",
