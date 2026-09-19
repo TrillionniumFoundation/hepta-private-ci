@@ -1466,6 +1466,24 @@ async fn append_receipt_in_transaction(
         });
     }
 
+    let signing_identity_revoked: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM qualification_evidence
+         WHERE candidate_id = ? AND source_commit = ? AND source_tree = ?
+           AND claim_class = 'revocation' AND revokes_issuer_key_sha256 = ?",
+    )
+    .bind(&envelope.candidate.candidate_id)
+    .bind(&envelope.candidate.source_commit)
+    .bind(&envelope.candidate.source_tree)
+    .bind(issuer.signing_identity_sha256.as_str())
+    .fetch_one(&mut **tx)
+    .await
+    .map_err(classify_sqlx_error)?;
+    if signing_identity_revoked != 0 {
+        return Err(invalid(
+            "qualification evidence issuer signing identity was revoked for this candidate",
+        ));
+    }
+
     if let Some(predecessor) = envelope.predecessor_receipt_id.as_deref() {
         let row = sqlx::query(
             "SELECT candidate_id, source_commit, source_tree, claim_class
