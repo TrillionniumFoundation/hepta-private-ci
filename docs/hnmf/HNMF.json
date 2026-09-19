@@ -73,13 +73,16 @@
       "id": "ModalitySpanRefV1",
       "maximumEncodedBytes": 32768,
       "requiredFields": [
+        "spanId",
         "modality",
         "assetSha256",
-        "start",
-        "end",
+        "range",
         "preprocessorManifestSha256",
+        "featureBlobSha256",
+        "symbolicProjectionSha256",
         "uncertaintyPpm",
-        "privacyClass"
+        "privacyClass",
+        "redactionMaskSha256"
       ]
     },
     {
@@ -91,12 +94,16 @@
         "scope",
         "observedInterval",
         "modalitySpans",
+        "crossModalBindings",
         "semanticKeys",
+        "causalParents",
+        "temporalNeighbors",
         "provenance",
         "verification",
         "retentionPolicy",
         "objectiveDigest",
-        "nduStateDigest"
+        "nduStateDigest",
+        "lifecycle"
       ]
     },
     {
@@ -118,6 +125,7 @@
         "nodeId",
         "population",
         "modalityMask",
+        "semanticKeys",
         "supportManifestSha256",
         "thresholdQ16",
         "targetActivityPpm",
@@ -209,12 +217,13 @@
       ]
     },
     {
-      "id": "TopologyProposalV1",
+      "id": "MemoryTopologyProposalV1",
       "maximumEncodedBytes": 65536,
       "requiredFields": [
         "predecessorGeneration",
         "nextGeneration",
         "operation",
+        "subjectIds",
         "capabilityTyped",
         "sandboxOnly",
         "operatorAccepted",
@@ -447,7 +456,7 @@
       "source-aware multimodal recall packet compilation"
     ],
     "intelligence.control": [
-      "composition fa\u00e7ade only; no durable fact or model execution ownership"
+      "composition façade only; no durable fact or model execution ownership"
     ]
   },
   "prohibitedSubstitutions": [

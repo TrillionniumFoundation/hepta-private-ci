@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "native_consumers_present_product_authentication_not_composed",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -27,7 +27,9 @@
       "sourcePath": "codex-rs/hepta-cognitive-types/src/lib.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lib_tests.rs#snapshot_is_canonical_and_authority_free"
+      ],
       "sourcePathExists": true,
       "designOperation": "build_snapshot",
       "mappingClass": "owner_native",
@@ -39,16 +41,207 @@
       "sourcePath": "codex-rs/hepta-cognitive-types/src/lane_c.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs#snapshot_key_rejects_digest_drift"
+      ],
       "sourcePathExists": true,
       "designOperation": "cognitivesnapshotkeyv1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "modalityspanrefv1",
+      "nativeSymbol": "ModalitySpanRefV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hnmf_tests.rs#ctype_01_modality_units_are_not_interchangeable",
+        "codex-rs/hepta-cognitive-types/src/hnmf_tests.rs#ctype_02_asset_bounds_and_selectors_fail_closed"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "modalityspanrefv1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "memoryeventv1",
+      "nativeSymbol": "MemoryEventV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hnmf_tests.rs#ctype_03_correction_and_tombstone_are_distinct_semantics"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "memoryeventv1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "crossmodalbindingv1",
+      "nativeSymbol": "CrossModalBindingV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hnmf_tests.rs#cross_modal_binding_requires_distinct_modalities"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "crossmodalbindingv1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "engramnodev1",
+      "nativeSymbol": "EngramNodeV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "engramnodev1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "synapsev1",
+      "nativeSymbol": "SynapseV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "synapsev1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "memorycuev1",
+      "nativeSymbol": "MemoryCueV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "memorycuev1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "recallpacketv1",
+      "nativeSymbol": "RecallPacketV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hnmf_tests.rs#recall_packet_requires_supported_non_abstaining_output"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "recallpacketv1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "outcomesignalv1",
+      "nativeSymbol": "OutcomeSignalV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "outcomesignalv1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "replayselectionreceiptv1",
+      "nativeSymbol": "ReplaySelectionReceiptV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "replayselectionreceiptv1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "plasticitybatchv1",
+      "nativeSymbol": "PlasticityBatchV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hnmf_tests.rs#next_snapshot_contracts_cannot_self_activate"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "plasticitybatchv1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "memorytopologyproposalv1",
+      "nativeSymbol": "MemoryTopologyProposalV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hnmf_tests.rs#next_snapshot_contracts_cannot_self_activate"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "memorytopologyproposalv1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "forgetpropagationreceiptv1",
+      "nativeSymbol": "ForgetPropagationReceiptV1",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/hnmf_tests.rs#next_snapshot_contracts_cannot_self_activate"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "forgetpropagationreceiptv1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "canonical_json_v1",
+      "nativeSymbol": "encode_canonical_json/decode_canonical_json/contract_digest",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/wire.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/wire_tests.rs#ctype_04_cross_language_canonical_vector_is_stable",
+        "codex-rs/hepta-cognitive-types/src/wire_tests.rs#unknown_missing_and_invalid_fields_fail_closed"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical_json_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "module_port_schema_bindings",
+      "nativeSymbol": "MODULE_PORT_SCHEMA_BINDINGS",
+      "sourcePath": "codex-rs/hepta-cognitive-types/src/ports.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/ports_tests.rs#every_cognitive_port_has_a_nonempty_exact_schema_set"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "module_port_schema_bindings",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head package tests, all-target compilation and strict lint for the converged canonical schema surface.",
+    "Bind authenticated product callsites to the registered ModulePort schema sets without introducing a second wire type system.",
+    "Retire duplicate qualification-only protocol structures after reference parity is demonstrated."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -66,5 +259,11 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-cognitive-types"
-  ]
+  ],
+  "sourceBaseSemantics": "shared immutable implementation-map registry baseline; not the current exact candidate",
+  "mappingReviewBase": {
+    "commit": "d7af096f28fa9989388939efa0e6600b52a43952",
+    "tree": "789fa2ea88e8a6e787a0fb838a8dda3cf2e20701",
+    "semantics": "main baseline from which the cognitive.types convergence branch was created"
+  }
 }

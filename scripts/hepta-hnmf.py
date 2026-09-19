@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -51,7 +52,7 @@ PROTOCOLS = [
     "OutcomeSignalV1",
     "ReplaySelectionReceiptV1",
     "PlasticityBatchV1",
-    "TopologyProposalV1",
+    "MemoryTopologyProposalV1",
     "ForgetPropagationReceiptV1",
 ]
 
@@ -96,6 +97,12 @@ REQUIRED_FILES = [
     "qualification/hnmf-reference/Cargo.lock",
     "qualification/hnmf-reference/README.md",
     "qualification/hnmf-reference/src/lib.rs",
+    "qualification/hnmf-contract-reference/src/lib.rs",
+    "qualification/hnmf-contract-reference/canonical_vectors.json",
+    "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+    "codex-rs/hepta-cognitive-types/src/wire.rs",
+    "codex-rs/hepta-cognitive-types/src/ports.rs",
+    "docs/modules/cognitive.types/PORT_SCHEMAS.json",
     ".github/workflows/hnmf-qualification.yml",
 ]
 
@@ -300,6 +307,53 @@ def verify() -> int:
     need(all(position >= 0 for position in positions), "technical heading coverage")
     need(positions == sorted(positions), "technical heading ordering")
     need(len(set(positions)) == len(positions), "technical heading uniqueness")
+
+    canonical_source = (ROOT / "codex-rs/hepta-cognitive-types/src/hnmf.rs").read_text(encoding="utf-8")
+    protocol_registry = (ROOT / "docs/contracts/PROTOCOL_SCHEMAS.json").read_text(encoding="utf-8")
+    port_registry = (ROOT / "docs/modules/cognitive.types/PORT_SCHEMAS.json").read_text(encoding="utf-8")
+    for protocol in PROTOCOLS:
+        need(
+            f"pub struct {protocol}" in canonical_source
+            or f"pub enum {protocol}" in canonical_source,
+            f"production canonical type {protocol}",
+        )
+        need(f'"id": "{protocol}"' in protocol_registry, f"global protocol {protocol}")
+    for port in [
+        "ModulePort::cognitive.types::cognitive.read",
+        "ModulePort::cognitive.types::cognitive.store",
+        "ModulePort::cognitive.types::knowledge.graph",
+        "ModulePort::cognitive.types::learning.ledger",
+    ]:
+        need(port in port_registry, f"cognitive port schema binding {port}")
+    need(
+        "pub struct TopologyProposalV1" not in canonical_source,
+        "memory topology must not collide with learning TopologyProposalV1",
+    )
+
+    vectors = load_json("qualification/hnmf-contract-reference/canonical_vectors.json")
+    need(vectors.get("schema") == "hepta.cognitive-canonical-json-vectors.v1", "canonical vector schema")
+    need(vectors.get("schemaVersion") == 1, "canonical vector schema version")
+    vector_rows = vectors.get("vectors", [])
+    need(vector_rows, "canonical vectors")
+    for vector in vector_rows:
+        schema_id = vector.get("schemaId")
+        canonical_json = vector.get("canonicalJson")
+        value = vector.get("value")
+        expected_digest = vector.get("digestSha256")
+        need(schema_id in PROTOCOLS, "canonical vector protocol")
+        need(isinstance(canonical_json, str), "canonical vector JSON")
+        need(isinstance(value, dict), "canonical vector value")
+        python_canonical = json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+        need(python_canonical == canonical_json, "cross-language canonical JSON")
+        payload = canonical_json.encode("utf-8")
+        schema_bytes = schema_id.encode("utf-8")
+        digest = hashlib.sha256(
+            b"hepta.cognitive.canonical-json.v1"
+            + len(schema_bytes).to_bytes(4, "big")
+            + schema_bytes
+            + payload
+        ).hexdigest()
+        need(digest == expected_digest, "cross-language canonical digest")
 
     migration_path = "docs/hnmf/MIGRATION.md"
     migration = (ROOT / migration_path).read_text(encoding="utf-8")

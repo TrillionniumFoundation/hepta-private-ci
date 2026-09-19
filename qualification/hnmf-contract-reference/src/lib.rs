@@ -1,244 +1,152 @@
 #![forbid(unsafe_code)]
 
+//! Qualification-only conformance checks for the production cognitive contract owner.
+//!
+//! This package intentionally defines no cognitive/memory protocol structs. The
+//! only canonical Rust definitions live in `codex-rs/hepta-cognitive-types`.
+//! These checks bind the HNMF documentation/registry and qualification cases to
+//! that production source without creating a second schema or authority spine.
+
+use std::error::Error as StdError;
 use std::fmt;
 
-pub const PPM: u32 = 1_000_000;
-pub const MAX_MODALITY_SPANS: usize = 64;
-pub const MAX_BINDINGS: usize = 32;
-pub const MAX_BINDING_SPANS: usize = 16;
-pub const MAX_SEMANTIC_KEYS: usize = 64;
-pub const MAX_PROVENANCE: usize = 32;
-pub const MAX_CUE_SEEDS: usize = 64;
-pub const MAX_GRAPH_HOPS: u8 = 4;
-pub const MAX_SUBGRAPH_NODES: usize = 4096;
-pub const CURRENT_RUN_MUTATION_ALLOWED: bool = false;
-pub const ONLINE_TOPOLOGY_ACTIVATION_ALLOWED: bool = false;
-pub const PRODUCTION_AUTHORITY: bool = false;
-pub const EXTERNAL_EFFECTS_ALLOWED: bool = false;
+const CANONICAL_HNMF_SOURCE: &str =
+    include_str!("../../../codex-rs/hepta-cognitive-types/src/hnmf.rs");
+const CANONICAL_WIRE_SOURCE: &str =
+    include_str!("../../../codex-rs/hepta-cognitive-types/src/wire.rs");
+const CANONICAL_PORT_SOURCE: &str =
+    include_str!("../../../codex-rs/hepta-cognitive-types/src/ports.rs");
+const HNMF_TEST_SOURCE: &str =
+    include_str!("../../../codex-rs/hepta-cognitive-types/src/hnmf_tests.rs");
+const WIRE_TEST_SOURCE: &str =
+    include_str!("../../../codex-rs/hepta-cognitive-types/src/wire_tests.rs");
+const HNMF_REGISTRY: &str = include_str!("../../../docs/hnmf/HNMF.json");
+const PROTOCOL_REGISTRY: &str =
+    include_str!("../../../docs/contracts/PROTOCOL_SCHEMAS.json");
+const PORT_REGISTRY: &str =
+    include_str!("../../../docs/modules/cognitive.types/PORT_SCHEMAS.json");
 
-pub type EventId = u64;
-pub type EpisodeId = u64;
-pub type SpanId = u64;
-pub type BindingId = u64;
-pub type NodeId = u64;
+pub const REQUIRED_PROTOCOLS: [&str; 12] = [
+    "ModalitySpanRefV1",
+    "MemoryEventV1",
+    "CrossModalBindingV1",
+    "EngramNodeV1",
+    "SynapseV1",
+    "MemoryCueV1",
+    "RecallPacketV1",
+    "OutcomeSignalV1",
+    "ReplaySelectionReceiptV1",
+    "PlasticityBatchV1",
+    "MemoryTopologyProposalV1",
+    "ForgetPropagationReceiptV1",
+];
 
-#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub struct Digest32(String);
-
-impl Digest32 {
-    pub fn parse(value: impl Into<String>) -> Result<Self, ContractError> {
-        let value = value.into();
-        if value.len() != 64
-            || value
-                .bytes()
-                .any(|byte| !byte.is_ascii_hexdigit() || byte.is_ascii_uppercase())
-        {
-            return Err(ContractError::Invalid(
-                "digest must be 64 lowercase hexadecimal characters",
-            ));
-        }
-        Ok(Self(value))
-    }
-
-    pub fn as_str(&self) -> &str {
-        &self.0
-    }
-}
-
-#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub enum ModalityKind {
-    Text,
-    Image,
-    Audio,
-    Video,
-    CodeAst,
-    GuiState,
-    ToolTrajectory,
-    StructuredData,
-    Sensor,
-}
-
-impl ModalityKind {
-    pub const ALL: [Self; 9] = [
-        Self::Text,
-        Self::Image,
-        Self::Audio,
-        Self::Video,
-        Self::CodeAst,
-        Self::GuiState,
-        Self::ToolTrajectory,
-        Self::StructuredData,
-        Self::Sensor,
-    ];
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum PrivacyClass {
-    AgentPrivate,
-    WorkspacePrivate,
-}
+pub const CTYPE_CASES: [&str; 4] = [
+    "ctype_01_modality_units_are_not_interchangeable",
+    "ctype_02_asset_bounds_and_selectors_fail_closed",
+    "ctype_03_correction_and_tombstone_are_distinct_semantics",
+    "ctype_04_cross_language_canonical_vector_is_stable",
+];
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct PrincipalScope {
-    pub agent_id: String,
-    pub workspace_sha256: Option<Digest32>,
+pub enum ReferenceError {
+    MissingCanonicalType(&'static str),
+    MissingRegistryProtocol(&'static str),
+    MissingQualificationCase(&'static str),
+    MissingWireInvariant(&'static str),
+    MissingPortBinding(&'static str),
+    TopologyProtocolCollision,
 }
 
-impl PrincipalScope {
-    pub fn validate(&self) -> Result<(), ContractError> {
-        validate_text(&self.agent_id, 128, "principal agent id")
-    }
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum MemoryScope {
-    AgentPrivate {
-        agent_id: String,
-    },
-    WorkspacePrivate {
-        agent_id: String,
-        workspace_sha256: Digest32,
-    },
-}
-
-impl MemoryScope {
-    pub fn validate(&self) -> Result<(), ContractError> {
-        match self {
-            Self::AgentPrivate { agent_id } | Self::WorkspacePrivate { agent_id, .. } => {
-                validate_text(agent_id, 128, "scope agent id")
-            }
-        }
-    }
-
-    pub const fn privacy_class(&self) -> PrivacyClass {
-        match self {
-            Self::AgentPrivate { .. } => PrivacyClass::AgentPrivate,
-            Self::WorkspacePrivate { .. } => PrivacyClass::WorkspacePrivate,
-        }
-    }
-
-    pub fn permits(&self, principal: &PrincipalScope) -> bool {
-        match self {
-            Self::AgentPrivate { agent_id } => principal.agent_id == *agent_id,
-            Self::WorkspacePrivate {
-                agent_id,
-                workspace_sha256,
-            } => {
-                principal.agent_id == *agent_id
-                    && principal.workspace_sha256.as_ref() == Some(workspace_sha256)
-            }
-        }
-    }
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub struct TimeInterval {
-    pub start_unix_ms: i64,
-    pub end_unix_ms: Option<i64>,
-}
-
-impl TimeInterval {
-    pub fn validate(self) -> Result<(), ContractError> {
-        if self
-            .end_unix_ms
-            .is_some_and(|end| end <= self.start_unix_ms)
-        {
-            return Err(ContractError::Invalid(
-                "time interval end must be greater than start",
-            ));
-        }
-        Ok(())
-    }
-
-    pub fn contains(self, now_unix_ms: i64) -> bool {
-        self.start_unix_ms <= now_unix_ms && self.end_unix_ms.is_none_or(|end| now_unix_ms < end)
-    }
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum ContractError {
-    Invalid(&'static str),
-    BoundExceeded(&'static str),
-    Conflict(&'static str),
-    Missing(&'static str),
-}
-
-impl fmt::Display for ContractError {
+impl fmt::Display for ReferenceError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Invalid(message) => write!(formatter, "invalid contract: {message}"),
-            Self::BoundExceeded(name) => write!(formatter, "contract bound exceeded: {name}"),
-            Self::Conflict(message) => write!(formatter, "contract conflict: {message}"),
-            Self::Missing(name) => write!(formatter, "contract object missing: {name}"),
+            Self::MissingCanonicalType(name) => {
+                write!(formatter, "canonical cognitive type missing from production source: {name}")
+            }
+            Self::MissingRegistryProtocol(name) => {
+                write!(formatter, "canonical cognitive protocol missing from registry: {name}")
+            }
+            Self::MissingQualificationCase(name) => {
+                write!(formatter, "canonical cognitive qualification case missing: {name}")
+            }
+            Self::MissingWireInvariant(name) => {
+                write!(formatter, "canonical wire invariant missing: {name}")
+            }
+            Self::MissingPortBinding(name) => {
+                write!(formatter, "canonical cognitive port binding missing: {name}")
+            }
+            Self::TopologyProtocolCollision => formatter.write_str(
+                "memory topology protocol collides with learning-owned TopologyProposalV1",
+            ),
         }
     }
 }
 
-impl std::error::Error for ContractError {}
+impl StdError for ReferenceError {}
 
-pub(crate) fn validate_keys(
-    keys: &std::collections::BTreeSet<String>,
-) -> Result<(), ContractError> {
-    if keys.is_empty() || keys.len() > MAX_SEMANTIC_KEYS {
-        return Err(ContractError::BoundExceeded("semantic keys"));
+pub fn verify_canonical_contract_owner() -> Result<(), ReferenceError> {
+    for protocol in REQUIRED_PROTOCOLS {
+        let struct_marker = format!("pub struct {protocol}");
+        let enum_marker = format!("pub enum {protocol}");
+        if !CANONICAL_HNMF_SOURCE.contains(&struct_marker)
+            && !CANONICAL_HNMF_SOURCE.contains(&enum_marker)
+        {
+            return Err(ReferenceError::MissingCanonicalType(protocol));
+        }
+        let registry_marker = format!("\"id\": \"{protocol}\"");
+        if !HNMF_REGISTRY.contains(&registry_marker)
+            || !PROTOCOL_REGISTRY.contains(&registry_marker)
+        {
+            return Err(ReferenceError::MissingRegistryProtocol(protocol));
+        }
     }
-    if keys.iter().any(|key| {
-        key.trim().is_empty()
-            || key.len() > 128
-            || key.chars().any(char::is_control)
-            || key.to_lowercase() != *key
-    }) {
-        return Err(ContractError::Invalid(
-            "semantic key must be bounded lowercase canonical text",
-        ));
-    }
-    Ok(())
-}
 
-pub(crate) fn ppm(value: u32, name: &'static str) -> Result<(), ContractError> {
-    if value > PPM {
-        return Err(ContractError::Invalid(name));
+    for qualification_case in CTYPE_CASES {
+        if !HNMF_TEST_SOURCE.contains(qualification_case)
+            && !WIRE_TEST_SOURCE.contains(qualification_case)
+        {
+            return Err(ReferenceError::MissingQualificationCase(
+                qualification_case,
+            ));
+        }
     }
-    Ok(())
-}
 
-pub(crate) fn validate_text(
-    value: &str,
-    maximum_bytes: usize,
-    name: &'static str,
-) -> Result<(), ContractError> {
-    if value.trim().is_empty() || value.len() > maximum_bytes || value.chars().any(char::is_control)
+    for invariant in [
+        "pub trait CanonicalContractV1",
+        "MAX_ENCODED_BYTES",
+        "decode_canonical_json",
+        "canonical != bytes",
+        "contract_digest",
+        "hepta.cognitive.canonical-json.v1",
+    ] {
+        if !CANONICAL_WIRE_SOURCE.contains(invariant) {
+            return Err(ReferenceError::MissingWireInvariant(invariant));
+        }
+    }
+
+    for port in [
+        "ModulePort::cognitive.types::cognitive.read",
+        "ModulePort::cognitive.types::cognitive.store",
+        "ModulePort::cognitive.types::knowledge.graph",
+        "ModulePort::cognitive.types::learning.ledger",
+    ] {
+        if !CANONICAL_PORT_SOURCE.contains(port) || !PORT_REGISTRY.contains(port) {
+            return Err(ReferenceError::MissingPortBinding(port));
+        }
+    }
+
+    let learning_topology = "\"id\": \"TopologyProposalV1\"";
+    let memory_topology = "\"id\": \"MemoryTopologyProposalV1\"";
+    if !PROTOCOL_REGISTRY.contains(learning_topology)
+        || !PROTOCOL_REGISTRY.contains(memory_topology)
+        || CANONICAL_HNMF_SOURCE.contains("pub struct TopologyProposalV1")
     {
-        return Err(ContractError::Invalid(name));
+        return Err(ReferenceError::TopologyProtocolCollision);
     }
+
     Ok(())
 }
-
-pub(crate) fn validate_bounded(
-    value: &str,
-    maximum_bytes: usize,
-    name: &'static str,
-) -> Result<(), ContractError> {
-    if value.len() > maximum_bytes || value.chars().any(char::is_control) {
-        return Err(ContractError::Invalid(name));
-    }
-    Ok(())
-}
-
-pub(crate) fn increasing(start: u64, end: u64, name: &'static str) -> Result<(), ContractError> {
-    if end <= start {
-        return Err(ContractError::Invalid(name));
-    }
-    Ok(())
-}
-
-mod event;
-mod ledger;
-mod span;
-
-pub use event::*;
-pub use ledger::*;
-pub use span::*;
 
 #[cfg(test)]
 mod tests;

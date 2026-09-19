@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-cognitive-types/src/lib.rs](../../../codex-rs/hepta-cognitive-types/src/lib.rs); observed identifiers include `MemoryRecord`, `CognitiveSnapshot`, `build_snapshot`, `validate_integrity`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.types.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.types.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-cognitive-types/src/lib.rs](../../../codex-rs/hepta-cognitive-types/src/lib.rs). The bounded legacy snapshot surface remains in `lib.rs`; Lane C generation contracts are in [lane_c.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c.rs); canonical HNMF V1 event/span/engram/synapse/cue/recall/replay/plasticity/topology/forget contracts are in [hnmf.rs](../../../codex-rs/hepta-cognitive-types/src/hnmf.rs); strict canonical JSON is in [wire.rs](../../../codex-rs/hepta-cognitive-types/src/wire.rs); and exact ModulePort schema sets are in [ports.rs](../../../codex-rs/hepta-cognitive-types/src/ports.rs) plus [PORT_SCHEMAS.json](PORT_SCHEMAS.json). This source mapping proves implementation location only; authenticated product composition, independent acceptance, activation and release remain separate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -97,11 +97,24 @@ Consumed contracts:
 
 Critical protocol schemas:
 
-None.
+- `ModalitySpanRefV1`
+- `MemoryEventV1`
+- `CrossModalBindingV1`
+- `EngramNodeV1`
+- `SynapseV1`
+- `MemoryCueV1`
+- `RecallPacketV1`
+- `OutcomeSignalV1`
+- `ReplaySelectionReceiptV1`
+- `PlasticityBatchV1`
+- `MemoryTopologyProposalV1`
+- `ForgetPropagationReceiptV1`
+
+The global field/bound registry is `docs/contracts/PROTOCOL_SCHEMAS.json`. Exact port-to-schema membership is `docs/modules/cognitive.types/PORT_SCHEMAS.json`. `MemoryTopologyProposalV1` is intentionally distinct from the pre-existing learning-owned `TopologyProposalV1`; the two payloads are not wire-compatible.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+For the registered critical protocols above, the Rust definitions in `hnmf.rs` and canonical JSON in `wire.rs` represent identical semantics. Owner-native Lane C structs that are not registered critical protocols remain in-process-only and must not be serialized ad hoc. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability for the registered wire surface. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
 ## 6. Data authority, persistence and migrations
 
@@ -163,6 +176,9 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-cognitive-types/src/lane_c_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c_tests.rs); named case: `generation_vector_digest_binds_every_generation`.
 - [codex-rs/hepta-cognitive-types/src/lib_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lib_tests.rs); named case: `snapshot_is_canonical_and_authority_free`.
+- [codex-rs/hepta-cognitive-types/src/hnmf_tests.rs](../../../codex-rs/hepta-cognitive-types/src/hnmf_tests.rs); named cases: `ctype_01_modality_units_are_not_interchangeable`, `ctype_02_asset_bounds_and_selectors_fail_closed`, `ctype_03_correction_and_tombstone_are_distinct_semantics`.
+- [codex-rs/hepta-cognitive-types/src/wire_tests.rs](../../../codex-rs/hepta-cognitive-types/src/wire_tests.rs); named cases: `ctype_04_cross_language_canonical_vector_is_stable`, `unknown_missing_and_invalid_fields_fail_closed`, `non_canonical_json_is_rejected_after_semantic_decode`, `encoded_size_is_checked_before_parse`.
+- [codex-rs/hepta-cognitive-types/src/ports_tests.rs](../../../codex-rs/hepta-cognitive-types/src/ports_tests.rs); named case: `every_cognitive_port_has_a_nonempty_exact_schema_set`.
 
 In `codex-rs`, run `just test -p codex-hepta-cognitive-types`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.types.md) separately labels target acceptance designs.
 
@@ -246,8 +262,8 @@ The following additional work packages are source-planning envelopes introduced 
 
 ## 17. Source implementation receipt
 
-The bootstrap source-location obligation for `cognitive.types` is implemented by work package `MEM-0-TYPES` in:
+The bootstrap source-location obligation for `cognitive.types` and the repository-controlled canonical HNMF/JSON contract surface are implemented under work package `MEM-0-TYPES` in:
 
 - `codex-rs/hepta-cognitive-types`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. The new contract surface additionally requires HNMF registry qualification plus canonical JSON golden vectors. Until exact-head and synthetic-merge receipts pass for the converged branch, `MEM-0-TYPES` remains execution-pending. This receipt grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.

@@ -1,6 +1,6 @@
 # HNMF deterministic reference runtime
 
-This standalone Rust crate is a qualification-only executable specification for HNMF. It has no external dependencies and is deliberately excluded from the main Codex workspace until the owning modules adopt the frozen contracts.
+This standalone Rust crate is a qualification-only executable specification for HNMF algorithms. It has no external dependencies and remains deliberately excluded from the main Codex workspace. Canonical V1 cognitive/memory contracts are now owned by `codex-rs/hepta-cognitive-types`; the unversioned structs in this crate are internal deterministic reference-model state only and are not wire schemas, persistence schemas, or a second contract owner.
 
 It implements:
 
