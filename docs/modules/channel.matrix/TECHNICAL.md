@@ -32,13 +32,17 @@ Declared exclusive target roots:
 
 - `codex-rs/hepta-matrix-sdk`
 - `codex-rs/hepta-matrixd`
+- `codex-rs/hepta-matrix-store`
+- `codex-rs/hepta-matrix-protocol`
 
 Existing declared roots at this exact source snapshot:
 
 - `codex-rs/hepta-matrix-sdk`
 - `codex-rs/hepta-matrixd`
+- `codex-rs/hepta-matrix-store`
+- `codex-rs/hepta-matrix-protocol`
 
-Non-authoritative implementation evidence roots:
+Implementation component roots:
 
 - `codex-rs/hepta-matrix-sdk`
 - `codex-rs/hepta-matrixd`
@@ -53,7 +57,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-matrixd/src/runtime.rs](../../../codex-rs/hepta-matrixd/src/runtime.rs); observed identifiers include `MatrixRuntime`, `MatrixRuntimeBridge`, `MatrixDispatchOutcome`, `MatrixRuntimeRecovery`, `process_event`, `recover_pending`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/channel.matrix.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/channel.matrix.md) for the implemented subset and remaining product work.
+The native source is split deliberately across the transport/runtime boundary: [runtime.rs](../../../codex-rs/hepta-matrixd/src/runtime.rs) owns App Server projection, [outbound.rs](../../../codex-rs/hepta-matrix-sdk/src/outbound.rs) owns durable transport attempts, [sync.rs](../../../codex-rs/hepta-matrix-sdk/src/sync.rs) turns homeserver observations into owner mutations, and [dispatch.rs](../../../codex-rs/hepta-matrix-store/src/dispatch.rs) owns the canonical dispatch ledger. `stable_txn_id` is the single Matrix transaction identity across retries and reconciliation. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/channel.matrix.md#8-current-native-implementation) for the remaining external qualification gates.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -171,7 +175,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use the existing hepta-matrixd, MatrixDurableStore and SDK sender. Keep sync/dedupe and stable send transaction identity in their existing durable owners; send_observer is a reusable state machine, not another sender. Real homeserver, encryption/session and reconnection qualification require the selected host profile.
+Use the existing hepta-matrixd, MatrixDurableStore and SDK sender. The former in-memory `send_observer` is retired as an owner; its public module is only a compatibility re-export of durable dispatch types. Transport acceptance records `accepted` or `indeterminate` but does not mark the outbox `sent`. A matching homeserver timeline observation carrying `unsigned.transaction_id` settles success in the same SQLite transaction that advances the sync checkpoint. Real homeserver, encryption/session and reconnection qualification still require the selected host profile.
 
 Current operating and state-format references:
 
@@ -184,10 +188,12 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-matrix-sdk/tests/durable_transport.rs](../../../codex-rs/hepta-matrix-sdk/tests/durable_transport.rs): transport acceptance is non-terminal, retry exhaustion parks reconciliation, and a homeserver sync observation settles the same stable transaction.
+- [codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs](../../../codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs): accepted dispatch state survives reopen; terminal send and later redaction evidence remain separate and durable.
 - [codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs](../../../codex-rs/hepta-matrix-sdk/src/gap_fill_tests.rs); named case: `empty_page_continues_and_exact_target_preserves_page_and_event_order`.
 - [codex-rs/hepta-matrix-sdk/src/sync_tests.rs](../../../codex-rs/hepta-matrix-sdk/src/sync_tests.rs); named case: `v1_redaction_commits_before_replay_and_survives_reopen`.
 
-In `codex-rs`, run `just test -p codex-hepta-matrix-sdk -p codex-hepta-matrixd`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/channel.matrix.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-matrix-store --test sync_mutation_v2 && just test -p codex-hepta-matrix-sdk --test durable_transport && just test -p codex-hepta-matrixd --lib`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/channel.matrix.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -221,6 +227,11 @@ For `channel.matrix`, this document grants no runtime, production, model, provid
 - Owner/deputy: `channels-platform` / `security-authority`.
 - Allowed write paths:
 - `codex-rs/hepta-matrix-sdk/**`
+- `codex-rs/hepta-matrixd/**`
+- `codex-rs/hepta-matrix-store/**`
+- `codex-rs/hepta-matrix-protocol/**`
+- `.github/workflows/hepta-lane-b-truth.yml`
+- `.github/workflows/hepta-lane-b-matrix-real-synapse.yml`
 - Development predecessors:
 - `P0.7B-B3-BOUNDARIES`
 - Activation predecessors:
@@ -262,9 +273,9 @@ This receipt records repository source bindings for the current documentation ca
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
 | `admit_event` | `pub async fn process_event(` | `codex-rs/hepta-matrixd/src/runtime.rs` | `codex-rs/hepta-matrixd/src/tests.rs` |
-| `prepare_send` | `pub fn prepare_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
-| `observe_send` | `pub fn observe_send(` | `codex-rs/hepta-matrixd/src/send_observer.rs` | `codex-rs/hepta-matrixd/src/send_observer_tests.rs` |
+| `prepare_send` | `pub async fn dispatch_outbox_once` | `codex-rs/hepta-matrix-sdk/src/outbound.rs` | `codex-rs/hepta-matrix-sdk/tests/durable_transport.rs` |
+| `observe_send` | `pub async fn commit_response(` | `codex-rs/hepta-matrix-sdk/src/sync.rs` | `codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
+- The production source call chain is `hepta-matrixd -> run_outbox_sender -> MatrixDurableStore` for egress and `Matrix SDK /sync -> commit_response -> apply_sync_decision_v2` for terminal observation. Exact current-head execution evidence remains separate from this source receipt.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
