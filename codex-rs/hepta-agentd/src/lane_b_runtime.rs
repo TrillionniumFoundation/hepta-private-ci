@@ -44,6 +44,7 @@ pub struct RuntimeComposition {
     pub agentd_generation: u64,
     pub configuration_digest: String,
     pub ports_digest: String,
+    #[serde(default)]
     pub cancellation_ack_timeout_ms: u64,
 }
 
@@ -139,6 +140,7 @@ struct RunRecord {
     context_digest: Option<String>,
     compilation_receipt_digest: Option<String>,
     cancellation_reason: Option<String>,
+    #[serde(default)]
     cancellation_ack_deadline_ms: Option<u64>,
 }
 
