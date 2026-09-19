@@ -182,7 +182,9 @@ impl LearningLedger {
 
     #[must_use]
     pub fn head_sequence(&self) -> u64 {
-        self.records.last().map_or(0, |record| record.sequence.get())
+        self.records
+            .last()
+            .map_or(0, |record| record.sequence.get())
     }
 
     #[must_use]
@@ -398,9 +400,11 @@ impl LearningLedger {
                 }
             }
             OutcomeTerminalityV1::Terminal => {
-                let (Some(observed_at), Some(_), Some(finalized_at)) =
-                    (outcome.observed_at, outcome.value, outcome.watermark.finalized_at)
-                else {
+                let (Some(observed_at), Some(_), Some(finalized_at)) = (
+                    outcome.observed_at,
+                    outcome.value,
+                    outcome.watermark.finalized_at,
+                ) else {
                     return Err(LedgerError::OutcomeStateMismatch);
                 };
                 if outcome.watermark.censoring_reason.is_some()
@@ -438,9 +442,10 @@ impl LearningLedger {
                 if prior.episode_id != outcome.episode_id {
                     return Err(LedgerError::CorrectionEpisodeMismatch);
                 }
-                let current = self.outcome_heads.get(&outcome.episode_id).ok_or_else(|| {
-                    LedgerError::CorrectionNotHead(predecessor.to_string())
-                })?;
+                let current = self
+                    .outcome_heads
+                    .get(&outcome.episode_id)
+                    .ok_or_else(|| LedgerError::CorrectionNotHead(predecessor.to_string()))?;
                 if current != predecessor {
                     return Err(LedgerError::CorrectionNotHead(predecessor.to_string()));
                 }
@@ -566,9 +571,10 @@ impl LearningLedger {
                 if prior_derived != &lineage.derived_id {
                     return Err(LedgerError::UnlearningPredecessorMismatch);
                 }
-                let current = self.unlearning_heads.get(&lineage.derived_id).ok_or_else(|| {
-                    LedgerError::UnlearningNotHead(predecessor.to_string())
-                })?;
+                let current = self
+                    .unlearning_heads
+                    .get(&lineage.derived_id)
+                    .ok_or_else(|| LedgerError::UnlearningNotHead(predecessor.to_string()))?;
                 if current != predecessor {
                     return Err(LedgerError::UnlearningNotHead(predecessor.to_string()));
                 }
@@ -826,7 +832,8 @@ fn normalize_event(event: &mut LedgerEvent) -> Result<(), LedgerError> {
             if batch.allocations.len() > 256 {
                 return Err(LedgerError::CreditBatchLimitExceeded);
             }
-            batch.allocations
+            batch
+                .allocations
                 .sort_by_key(|allocation| allocation.target_id.clone());
             for window in batch.allocations.windows(2) {
                 if window[0].target_id == window[1].target_id {
