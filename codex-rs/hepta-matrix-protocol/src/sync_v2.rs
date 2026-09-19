@@ -8,6 +8,7 @@ use std::collections::BTreeSet;
 use crate::MatrixEventId;
 use crate::MatrixProtocolError;
 use crate::MatrixRoomId;
+use crate::MatrixTransactionId;
 use crate::MatrixUserId;
 
 /// Version of the owner-local typed persistence seam.
@@ -138,6 +139,9 @@ pub struct MatrixSyncMutationV2 {
     pub source_event_id: MatrixEventId,
     pub room_id: MatrixRoomId,
     pub sender: MatrixUserId,
+    /// Present only for a homeserver-observed event emitted by this exact
+    /// Matrix device. It binds egress terminality to the stable transaction.
+    pub transaction_id: Option<MatrixTransactionId>,
     pub binding_revision: u64,
     pub generation: u64,
     pub origin_server_ts_ms: u64,
@@ -149,6 +153,13 @@ impl MatrixSyncMutationV2 {
     pub fn validate(&self) -> Result<(), MatrixProtocolError> {
         if self.binding_revision == 0 || self.generation == 0 {
             return Err(invalid("Matrix sync V2 mutation binding fence is invalid"));
+        }
+        if self.transaction_id.is_some()
+            && !matches!(&self.body, MatrixSyncMutationBodyV2::Timeline { .. })
+        {
+            return Err(invalid(
+                "Matrix transaction identity is valid only for a timeline observation",
+            ));
         }
         match &self.body {
             MatrixSyncMutationBodyV2::Timeline {
