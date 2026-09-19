@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "contract": "hepta.platform-types.canonical-digest-v1",
+  "encodingSchemaVersion": 1,
+  "typeId": "platform.types:golden",
+  "fields": [
+    {
+      "name": "values",
+      "value": {
+        "type": "array",
+        "items": [
+          { "type": "i64", "value": -1 },
+          { "type": "u64", "value": 2 },
+          { "type": "bytes", "hex": "0001" }
+        ]
+      }
+    },
+    {
+      "name": "name",
+      "value": { "type": "text", "value": "hépta" }
+    },
+    {
+      "name": "labels",
+      "value": {
+        "type": "map",
+        "entries": [
+          { "key": "beta", "value": { "type": "i64", "value": -2 } },
+          { "key": "alpha", "value": { "type": "text", "value": "A" } }
+        ]
+      }
+    },
+    {
+      "name": "digest",
+      "value": {
+        "type": "digest",
+        "hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f"
+      }
+    },
+    {
+      "name": "count",
+      "value": { "type": "u64", "value": 42 }
+    },
+    {
+      "name": "active",
+      "value": { "type": "bool", "value": true }
+    }
+  ],
+  "encodedLength": 218,
+  "encodedHex": "48455054412d43414e4f4e4943414c2d4449474553542d5631000015706c6174666f726d2e74797065733a676f6c64656e000000010006000661637469766505010005636f756e7403000000000000002a000664696765737406000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f00066c6162656c7308000000020005616c70686102000000014100046265746104fffffffffffffffe00046e616d65020000000668c3a9707461000676616c756573070000000304ffffffffffffffff03000000000000000201000000020001",
+  "sha256": "b2dd7cbfbd9b6d6635f32ca616beadb135c7f7c5a62c7b6eea8a12071251394d",
+  "authority": "none",
+  "notes": [
+    "Top-level fields are sorted lexicographically by UTF-8 field name bytes.",
+    "Map entries are sorted lexicographically by UTF-8 key bytes.",
+    "Arrays preserve semantic order.",
+    "Text is UTF-8 as supplied; V1 performs no Unicode normalization.",
+    "Every variable-width byte sequence is length framed."
+  ]
+}
