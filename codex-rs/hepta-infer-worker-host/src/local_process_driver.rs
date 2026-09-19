@@ -23,6 +23,9 @@ use std::process::ChildStdin;
 use std::process::ChildStdout;
 use std::process::Command;
 use std::process::Stdio;
+use std::sync::mpsc::Receiver;
+use std::sync::mpsc::RecvTimeoutError;
+use std::sync::mpsc::sync_channel;
 use std::thread;
 use std::time::Duration;
 use std::time::Instant;
@@ -44,6 +47,8 @@ pub const LOCAL_RUNTIME_PROTOCOL: &str = "hepta.local-model-driver.v1";
 const DEFAULT_MAX_PROTOCOL_LINE_BYTES: usize = 2 * 1024 * 1024;
 const HARD_MAX_PROTOCOL_LINE_BYTES: usize = 8 * 1024 * 1024;
 const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
+const DEFAULT_RESPONSE_TIMEOUT: Duration = Duration::from_secs(30);
+const HARD_MAX_RESPONSE_TIMEOUT: Duration = Duration::from_secs(300);
 const DEFAULT_SHUTDOWN_TIMEOUT: Duration = Duration::from_secs(2);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -63,6 +68,9 @@ pub struct LocalProcessDriverConfig {
     pub runtime_executable: PathBuf,
     pub models: BTreeMap<String, LocalModelArtifacts>,
     pub maximum_protocol_line_bytes: usize,
+    /// Absolute ceiling for load/run/unload protocol responses. Per-request
+    /// run deadlines may make this bound shorter.
+    pub response_timeout: Duration,
     pub shutdown_timeout: Duration,
 }
 
@@ -75,6 +83,7 @@ impl LocalProcessDriverConfig {
             runtime_executable,
             models,
             maximum_protocol_line_bytes: DEFAULT_MAX_PROTOCOL_LINE_BYTES,
+            response_timeout: DEFAULT_RESPONSE_TIMEOUT,
             shutdown_timeout: DEFAULT_SHUTDOWN_TIMEOUT,
         }
     }
@@ -97,7 +106,7 @@ struct VerifiedArtifacts {
 struct RuntimeProcess {
     child: Child,
     stdin: ChildStdin,
-    stdout: BufReader<ChildStdout>,
+    stdout: Receiver<Result<Value, String>>,
     reserved_memory_bytes: u64,
     observed_memory_bytes: u64,
 }
@@ -119,6 +128,8 @@ impl LocalProcessDriver {
     pub fn new(config: LocalProcessDriverConfig) -> Result<Self, Error> {
         if config.maximum_protocol_line_bytes == 0
             || config.maximum_protocol_line_bytes > HARD_MAX_PROTOCOL_LINE_BYTES
+            || config.response_timeout.is_zero()
+            || config.response_timeout > HARD_MAX_RESPONSE_TIMEOUT
             || config.shutdown_timeout.is_zero()
             || config.shutdown_timeout > Duration::from_secs(30)
         {
@@ -217,10 +228,11 @@ impl LocalProcessDriver {
             .stdout
             .take()
             .ok_or_else(|| driver_error("local runtime stdout unavailable"))?;
+        let stdout = spawn_protocol_reader(stdout, self.config.maximum_protocol_line_bytes)?;
         Ok(RuntimeProcess {
             child,
             stdin,
-            stdout: BufReader::new(stdout),
+            stdout,
             reserved_memory_bytes: 0,
             observed_memory_bytes: 0,
         })
@@ -328,8 +340,7 @@ impl ModelDriver for LocalProcessDriver {
             process.terminate();
             return Err(error);
         }
-        let response =
-            match read_message(&mut process.stdout, self.config.maximum_protocol_line_bytes) {
+        let response = match read_message(&process.stdout, self.config.response_timeout) {
                 Ok(response) => response,
                 Err(error) => {
                     process.terminate();
@@ -381,6 +392,7 @@ impl ModelDriver for LocalProcessDriver {
         &mut self,
         handle: &DriverModelHandle,
         request: &WorkerRequest,
+        response_timeout: Duration,
     ) -> Result<DriverRunObservation, Error> {
         let process = self
             .processes
@@ -407,8 +419,10 @@ impl ModelDriver for LocalProcessDriver {
             process.terminate();
             return Ok(indeterminate(process.observed_memory_bytes));
         }
-        let response =
-            match read_message(&mut process.stdout, self.config.maximum_protocol_line_bytes) {
+        let response = match read_message(
+            &process.stdout,
+            self.config.response_timeout.min(response_timeout),
+        ) {
                 Ok(response) => response,
                 Err(_) => {
                     process.terminate();
@@ -494,8 +508,7 @@ impl ModelDriver for LocalProcessDriver {
             process.terminate();
             return Err(error);
         }
-        let response =
-            match read_message(&mut process.stdout, self.config.maximum_protocol_line_bytes) {
+        let response = match read_message(&process.stdout, self.config.response_timeout) {
                 Ok(response) => response,
                 Err(error) => {
                     process.terminate();
@@ -531,20 +544,66 @@ fn write_message(stdin: &mut ChildStdin, value: &Value) -> Result<(), Error> {
     stdin.flush().map_err(io_error)
 }
 
-fn read_message(stdout: &mut BufReader<ChildStdout>, maximum_bytes: usize) -> Result<Value, Error> {
-    let mut line = String::new();
-    let read = stdout
-        .take(u64::try_from(maximum_bytes).unwrap_or(u64::MAX) + 1)
-        .read_line(&mut line)
+fn spawn_protocol_reader(
+    stdout: ChildStdout,
+    maximum_bytes: usize,
+) -> Result<Receiver<Result<Value, String>>, Error> {
+    let (sender, receiver) = sync_channel(1);
+    thread::Builder::new()
+        .name("hepta-local-model-protocol".to_string())
+        .spawn(move || {
+            let mut stdout = BufReader::new(stdout);
+            loop {
+                let mut line = String::new();
+                let read = match (&mut stdout)
+                    .take(u64::try_from(maximum_bytes).unwrap_or(u64::MAX) + 1)
+                    .read_line(&mut line)
+                {
+                    Ok(read) => read,
+                    Err(error) => {
+                        let _ = sender.send(Err(format!(
+                            "local runtime protocol read failed: {error}"
+                        )));
+                        return;
+                    }
+                };
+                if read == 0 {
+                    let _ = sender.send(Err(
+                        "local runtime closed its protocol stream".to_string(),
+                    ));
+                    return;
+                }
+                if read > maximum_bytes || !line.ends_with('\n') {
+                    let _ = sender.send(Err(
+                        "local runtime protocol line exceeded its bound".to_string(),
+                    ));
+                    return;
+                }
+                let parsed = serde_json::from_str(&line)
+                    .map_err(|error| format!("local runtime returned invalid JSON: {error}"));
+                if sender.send(parsed).is_err() {
+                    return;
+                }
+            }
+        })
         .map_err(io_error)?;
-    if read == 0 {
-        return Err(driver_error("local runtime closed its protocol stream"));
+    Ok(receiver)
+}
+
+fn read_message(
+    stdout: &Receiver<Result<Value, String>>,
+    timeout: Duration,
+) -> Result<Value, Error> {
+    match stdout.recv_timeout(timeout) {
+        Ok(Ok(value)) => Ok(value),
+        Ok(Err(message)) => Err(driver_error(message)),
+        Err(RecvTimeoutError::Timeout) => {
+            Err(driver_error("local runtime response deadline elapsed"))
+        }
+        Err(RecvTimeoutError::Disconnected) => {
+            Err(driver_error("local runtime protocol reader disconnected"))
+        }
     }
-    if read > maximum_bytes || !line.ends_with('\n') {
-        return Err(driver_error("local runtime protocol line exceeded its bound"));
-    }
-    serde_json::from_str(&line)
-        .map_err(|error| driver_error(format!("local runtime returned invalid JSON: {error}")))
 }
 
 fn verify_regular_file(
