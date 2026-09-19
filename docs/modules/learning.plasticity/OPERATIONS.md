@@ -41,9 +41,10 @@ proposal is persisted in `DurableTopologyProposalRegistryV1`, with the same
 lock-before-bootstrap and external-anchor posture as parameter proposals.
 
 `StructuralCanaryControllerV1` is an observation-only bounded state machine. It
-cannot apply topology. `build_structural_canary_plan_v1` requires the exact governed
-proposal, its `DurableTopologyAppendReceiptV1`, and the content-addressed update
-candidate ID; it rejects proposal/admission/frame/candidate/handoff/rollback drift.
+cannot apply topology. `build_structural_canary_plan_v1` accepts the durable topology
+registry plus proposal/candidate IDs and reads the stored governed proposal and original
+append receipt internally; `StructuralCanaryPlanV1` fields are not externally
+constructible. It rejects proposal/admission/frame/candidate/handoff/rollback drift.
 The plan binds that durable sequence/frame and candidate identity in addition to the
 rollback, writer-handoff set, baseline health and thresholds. Safety violation,
 lineage mismatch, excess regression or an unverified rollback causes terminal abort.
