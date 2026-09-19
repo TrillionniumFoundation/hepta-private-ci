@@ -11,7 +11,6 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
 use crate::CandidateSetCompleteness;
-use crate::DurableLearningJournal;
 use crate::DurableLedger;
 use crate::EpisodeDecision;
 use crate::OutcomeFinality;
