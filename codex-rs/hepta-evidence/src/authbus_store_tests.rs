@@ -215,3 +215,30 @@ async fn managed_admission_uses_durable_trust_and_bounded_trusted_time() {
         Err(AuthBusAdmissionError::Authentication(Error::Revoked))
     ));
 }
+
+#[tokio::test]
+async fn replay_admission_is_fenced_while_external_checkpoint_ack_is_pending() {
+    let temp = TempDir::new().unwrap();
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+    sqlx::query(
+        "INSERT INTO authbus_replay_checkpoint_pending
+         (singleton, minimum_generation, replay_root, created_at_ms)
+         VALUES (1, 2, ?, 1000)",
+    )
+    .bind(Digest32::of_bytes(b"pending-root").as_array().as_slice())
+    .execute(&store.pool)
+    .await
+    .unwrap();
+
+    assert!(matches!(
+        admit(&store, 1).await,
+        Err(AuthBusAdmissionError::Authentication(
+            Error::ExternalCheckpointRequired
+        ))
+    ));
+    let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_replay_sequences")
+        .fetch_one(&store.pool)
+        .await
+        .unwrap();
+    assert_eq!(count, 0);
+}
