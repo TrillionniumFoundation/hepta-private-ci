@@ -11,6 +11,7 @@ CREATE TABLE matrix_dispatch_ledger (
     binding_revision INTEGER NOT NULL CHECK (binding_revision > 0),
     generation INTEGER NOT NULL CHECK (generation > 0),
     authority_epoch INTEGER CHECK (authority_epoch IS NULL OR authority_epoch > 0),
+    grant_id TEXT,
     grant_payload_sha256 TEXT CHECK (
         grant_payload_sha256 IS NULL OR
         (length(grant_payload_sha256) = 64 AND grant_payload_sha256 NOT GLOB '*[^0-9a-f]*')
@@ -54,6 +55,7 @@ CREATE TABLE matrix_dispatch_ledger (
     ),
     CHECK (
         (authority_epoch IS NULL
+            AND grant_id IS NULL
             AND grant_payload_sha256 IS NULL
             AND deadline_ms IS NULL
             AND homeserver_id IS NULL
@@ -61,6 +63,7 @@ CREATE TABLE matrix_dispatch_ledger (
             AND session_generation IS NULL)
         OR
         (authority_epoch IS NOT NULL
+            AND grant_id IS NOT NULL
             AND grant_payload_sha256 IS NOT NULL
             AND deadline_ms IS NOT NULL
             AND homeserver_id IS NOT NULL
