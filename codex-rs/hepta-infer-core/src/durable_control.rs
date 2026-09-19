@@ -297,13 +297,14 @@ impl DurableInferenceControl {
             return Err(Error::CorruptJournal("incomplete line"));
         }
 
+        let compacted_native = self.native.redacted_for_compaction()?;
         let mut compacted = Vec::new();
         for line in before.split_inclusive(|byte| *byte == b'\n') {
             if !line.starts_with(native::JOURNAL_PREFIX.as_bytes()) {
                 compacted.extend_from_slice(line);
             }
         }
-        for line in self.native.snapshot_lines()? {
+        for line in compacted_native.snapshot_lines()? {
             compacted.extend_from_slice(line.as_bytes());
         }
         if compacted.len() as u64 > MAX_JOURNAL_BYTES {
@@ -376,6 +377,7 @@ impl DurableInferenceControl {
         // The new inode is already locked before the old lock is dropped, so
         // another writer never observes an unlocked journal path.
         self.file = next;
+        self.native = compacted_native;
         self.journal_bytes = compacted.len() as u64;
         if let Err(error) = File::open(parent).and_then(|directory| directory.sync_all()) {
             self.poisoned = true;
