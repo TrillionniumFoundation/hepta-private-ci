@@ -40,10 +40,8 @@ pub struct HoldoutAnchorV1 {
 /// append; a subsequent local write failure therefore fails closed and requires
 /// operator reconciliation rather than permitting a second consumer.
 pub trait HoldoutAnchorAuthorityV1 {
-    fn current_anchor(
-        &mut self,
-        binding: Digest32,
-    ) -> Result<HoldoutAnchorV1, DurableHoldoutError>;
+    fn current_anchor(&mut self, binding: Digest32)
+    -> Result<HoldoutAnchorV1, DurableHoldoutError>;
 
     fn compare_and_swap_anchor(
         &mut self,
