@@ -66,8 +66,8 @@ Agentd preserves dispatch-boundary uncertainty, never redispatches an unobserved
 
 Remaining repository implementation gaps:
 
-- Bind the normal non-test Codex turn path to Agentd RunStart/RunAttachContext/RunMarkDispatched/RunObserveTerminal so actual turn execution, rather than only the local control API, drives lifecycle state.
-- Bind RunCancel and deadline-triggered cancellation intent to the actual Codex App Server interrupt and matching terminal acknowledgement path; do not equate a recorded cancelling state with a physical interrupt.
+- Compose the remaining direct SessionIngress product consumer(s), notably hepta-matrixd queue/turn execution, into the Agentd lifecycle API or enforce an equivalent host-side lifecycle hook before claiming universal per-Agent run coverage.
+- Define and enforce the bare RunCancel contract for callers outside the native inference composition: the native-app-server inference caller now pairs cancellation intent with a real TurnInterrupt and terminal observation, but RunCancel by itself remains a durable intent rather than proof of physical interruption.
 
 External evidence gates:
 
