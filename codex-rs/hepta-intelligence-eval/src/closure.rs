@@ -146,7 +146,7 @@ pub struct IndependentEvaluationDecisionV1 {
 
 /// Legacy contract: every metric must strictly outperform its baseline.
 /// Use [`decide_independently_v2`] for preregistered metric roles.
-pub fn decide_independently(
+pub(crate) fn decide_independently(
     bundle: IndependentEvaluationBundleV1,
     now: u64,
 ) -> Result<IndependentEvaluationDecisionV1, EvaluationClosureError> {
