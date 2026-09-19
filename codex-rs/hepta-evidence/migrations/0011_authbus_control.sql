@@ -26,6 +26,7 @@ CREATE TABLE authbus_quota_registry (
     window_start_ms BLOB NOT NULL CHECK(length(window_start_ms) = 8),
     window_end_ms BLOB NOT NULL CHECK(length(window_end_ms) = 8),
     endowment BLOB NOT NULL CHECK(length(endowment) = 8),
+    max_active_per_principal INTEGER NOT NULL CHECK(max_active_per_principal BETWEEN 1 AND 4096),
     reserved BLOB NOT NULL CHECK(length(reserved) = 8),
     consumed BLOB NOT NULL CHECK(length(consumed) = 8),
     updated_at_ms INTEGER NOT NULL
@@ -64,6 +65,9 @@ CREATE TABLE authbus_quota_reservations (
 
 CREATE INDEX authbus_quota_reservations_state
 ON authbus_quota_reservations(quota_key, quota_revision, state, updated_at_ms, reservation_id);
+
+CREATE INDEX authbus_quota_reservations_principal_held
+ON authbus_quota_reservations(quota_key, quota_revision, principal_id, state, reservation_id);
 
 CREATE TRIGGER authbus_quota_reservation_immutable BEFORE UPDATE OF
     reservation_id, operation_id, principal_id, action_id, scope_digest, quota_key,
