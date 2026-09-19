@@ -53,6 +53,8 @@ pub use durable::LedgerRecovery;
 pub use durable::inspect_ledger;
 pub use error::LedgerError;
 pub use journal::DurableLearningJournal;
+#[doc(hidden)]
+pub use journal::ProductionAppendPermit;
 pub use index_checkpoint::LedgerCheckpointError;
 pub use index_checkpoint::LedgerIndexCheckpointV1;
 pub use index_checkpoint::build_ledger_index_checkpoint;
