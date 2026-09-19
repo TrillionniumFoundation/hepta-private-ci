@@ -178,8 +178,9 @@ prediction surface under the bounded `HEPTWM01` format. A host-selected
 `WorldModelPayloadPinV1` binds the payload digest, model identity, model digest
 and dataset digest. `LoadedTabularWorldModelV1::from_pinned_payload` verifies
 that independent pin, canonical state/action ordering, sample-count totals,
-branch-count totals, exact Q32 probabilities, bounded outcomes and deny-all
-authority once before exposing O(log n) repeated lookup. Because V1 transition
+branch-count totals, exact Q32 probabilities, bounded outcomes, the top-level
+model digest reconstructed from the ordered retained estimate digests, and
+deny-all authority once before exposing O(log n) repeated lookup. Because V1 transition
 estimates do not retain the original per-sample evidence set, a raw public
 `TabularWorldModelV1` cannot independently reconstruct its historical
 estimate digests; therefore raw prediction remains compatibility-only and the
