@@ -251,7 +251,9 @@ impl OutcomeReceiptV1 {
             episode_id: outcome.episode_id.clone(),
             observer_id: outcome.observer.principal_id.clone(),
             observation_digest,
-            utility_vector: outcome.value.map_or_else(Vec::new, |value| vec![value.raw()]),
+            utility_vector: outcome
+                .value
+                .map_or_else(Vec::new, |value| vec![value.raw()]),
             observed_at_unix_ms,
             censoring: terminality_name(outcome.watermark.terminality).to_owned(),
         }
@@ -433,10 +435,7 @@ mod digest_vec_wire {
     use serde::Deserializer;
     use serde::Serializer;
 
-    pub fn serialize<S: Serializer>(
-        values: &[Digest32],
-        serializer: S,
-    ) -> Result<S::Ok, S::Error> {
+    pub fn serialize<S: Serializer>(values: &[Digest32], serializer: S) -> Result<S::Ok, S::Error> {
         let encoded = values
             .iter()
             .map(|value| encode_hex(value.as_array()))
