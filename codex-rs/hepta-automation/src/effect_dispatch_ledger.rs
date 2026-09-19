@@ -433,3 +433,216 @@ fn to_i64(value: u64) -> Result<i64, TaskFlowError> {
 fn is_constraint(error: &sqlx::Error) -> bool {
     matches!(error, sqlx::Error::Database(database) if database.is_unique_violation() || database.is_foreign_key_violation() || database.is_check_violation())
 }
+
+
+#[cfg(test)]
+mod tests {
+    use codex_hepta_contracts::AgentId;
+    use codex_hepta_contracts::Sha256Digest;
+    use codex_hepta_fleet::AgentManifest;
+    use codex_hepta_fleet::FleetRegistry;
+    use codex_hepta_fleet::ResourceBudget;
+    use codex_hepta_fleet::WorkspaceBinding;
+    use codex_hepta_paths::HeptaFleetRoot;
+
+    use super::*;
+    use crate::TaskFlowDefinition;
+    use crate::TaskFlowEdgeSpec;
+    use crate::TaskFlowFence;
+    use crate::TaskFlowNodeKind;
+    use crate::TaskFlowNodeSpec;
+
+    const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
+
+    fn fixture() -> (tempfile::TempDir, codex_hepta_paths::HeptaAgentLayout) {
+        let temp = tempfile::tempdir().expect("temp root");
+        let root = temp.path().canonicalize().expect("canonical temp root");
+        let fleet_root = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet root");
+        let registry = FleetRegistry::initialize(fleet_root.clone()).expect("fleet registry");
+        let workspace = root.join("workspace");
+        std::fs::create_dir(&workspace).expect("workspace");
+        let workspace = workspace.canonicalize().expect("canonical workspace");
+        let manifest = AgentManifest::new(
+            AgentId::parse(AGENT_ID).expect("agent id"),
+            WorkspaceBinding::new(workspace, &fleet_root).expect("workspace binding"),
+            ResourceBudget::local_default(),
+        )
+        .expect("manifest");
+        let layout = registry.register(manifest).expect("register agent").layout;
+        (temp, layout)
+    }
+
+    async fn prepared_store() -> (
+        tempfile::TempDir,
+        codex_hepta_paths::HeptaAgentLayout,
+        AutomationStore,
+        TaskFlowFence,
+    ) {
+        let (temp, layout) = fixture();
+        let store = AutomationStore::open(&layout).await.expect("open store");
+        let fence = TaskFlowFence::new(
+            AgentId::parse(AGENT_ID).expect("agent id"),
+            "effect-owner",
+            1,
+            1,
+            "effect-fence-1",
+        )
+        .expect("fence");
+        let definition = TaskFlowDefinition::new(
+            "effect-recovery",
+            1,
+            "work",
+            vec![
+                TaskFlowNodeSpec::new("work", TaskFlowNodeKind::Activity),
+                TaskFlowNodeSpec::new("success", TaskFlowNodeKind::TerminalSuccess),
+                TaskFlowNodeSpec::new("failure", TaskFlowNodeKind::TerminalFailure),
+            ],
+            vec![
+                TaskFlowEdgeSpec::new("work", "success"),
+                TaskFlowEdgeSpec::new("work", "failure"),
+            ],
+            Vec::new(),
+            Sha256Digest::for_bytes(b"effect-policy"),
+        )
+        .expect("definition");
+        store
+            .register_taskflow_definition(&definition, &fence, 10)
+            .await
+            .expect("register definition");
+        store
+            .create_taskflow_run(
+                "effect-run",
+                &definition.workflow_id,
+                definition.version,
+                definition.definition_digest(),
+                "effect-thread",
+                10,
+            )
+            .await
+            .expect("create run");
+        store
+            .claim_taskflow_run("effect-run", &fence, 20, 10_000)
+            .await
+            .expect("claim run");
+        (temp, layout, store, fence)
+    }
+
+    #[tokio::test]
+    async fn indeterminate_provider_evidence_reconciles_after_reopen_without_redispatch() {
+        let (_temp, layout, store, _fence) = prepared_store().await;
+        let intent = Sha256Digest::for_bytes(b"effect-intent");
+        let payload = Sha256Digest::for_bytes(b"effect-payload");
+        let binding = Sha256Digest::for_bytes(b"effect-binding");
+        let nonce = Sha256Digest::for_bytes(b"effect-nonce");
+        let started = store
+            .begin_effect_dispatch_attempt(
+                "effect-run",
+                "work",
+                1,
+                &intent,
+                &payload,
+                &binding,
+                "provider:test",
+                7,
+                "grant-1",
+                &nonce,
+                "record-effect",
+                21,
+            )
+            .await
+            .expect("begin attempt");
+        assert!(matches!(started, EffectDispatchStart::Inserted(_)));
+
+        let unknown = Sha256Digest::for_bytes(b"provider-unknown");
+        let first = store
+            .record_effect_dispatch_observation(
+                "effect-run",
+                "work",
+                1,
+                EffectDispatchObservationKind::Indeterminate,
+                &unknown,
+                22,
+            )
+            .await
+            .expect("record indeterminate");
+        assert_eq!(
+            first.observation.as_ref().map(|value| value.kind),
+            Some(EffectDispatchObservationKind::Indeterminate)
+        );
+        assert_eq!(
+            store
+                .pending_effect_dispatch_attempts(10)
+                .await
+                .expect("pending")
+                .len(),
+            1
+        );
+
+        store.close().await;
+        let reopened = AutomationStore::open(&layout).await.expect("reopen store");
+        let pending = reopened
+            .pending_effect_dispatch_attempts(10)
+            .await
+            .expect("pending after reopen");
+        assert_eq!(pending.len(), 1);
+        assert_eq!(pending[0].grant_id, "grant-1");
+
+        let terminal = Sha256Digest::for_bytes(b"provider-terminal");
+        let settled = reopened
+            .record_effect_dispatch_observation(
+                "effect-run",
+                "work",
+                1,
+                EffectDispatchObservationKind::Succeeded,
+                &terminal,
+                30,
+            )
+            .await
+            .expect("terminal reconciliation");
+        assert_eq!(
+            settled.observation.as_ref().map(|value| value.kind),
+            Some(EffectDispatchObservationKind::Succeeded)
+        );
+        assert_eq!(
+            settled
+                .observation
+                .as_ref()
+                .map(|value| value.evidence_digest.clone()),
+            Some(terminal.clone())
+        );
+        assert!(
+            reopened
+                .pending_effect_dispatch_attempts(10)
+                .await
+                .expect("no pending after terminal")
+                .is_empty()
+        );
+
+        let replay = reopened
+            .record_effect_dispatch_observation(
+                "effect-run",
+                "work",
+                1,
+                EffectDispatchObservationKind::Succeeded,
+                &terminal,
+                31,
+            )
+            .await
+            .expect("terminal replay");
+        assert_eq!(replay.observation, settled.observation);
+        assert!(matches!(
+            reopened
+                .record_effect_dispatch_observation(
+                    "effect-run",
+                    "work",
+                    1,
+                    EffectDispatchObservationKind::Failed,
+                    &Sha256Digest::for_bytes(b"different-terminal"),
+                    32,
+                )
+                .await,
+            Err(TaskFlowError::Conflict(_))
+        ));
+        reopened.close().await;
+    }
+}

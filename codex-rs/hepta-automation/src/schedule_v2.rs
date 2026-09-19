@@ -973,6 +973,119 @@ mod tests {
         assert!(second_value > transition);
     }
 
+    #[tokio::test]
+    async fn calendar_policy_revision_preserves_authoritative_schedule_bytes() {
+        use codex_hepta_contracts::AgentId;
+        use codex_hepta_fleet::AgentManifest;
+        use codex_hepta_fleet::FleetRegistry;
+        use codex_hepta_fleet::ResourceBudget;
+        use codex_hepta_fleet::WorkspaceBinding;
+        use codex_hepta_paths::HeptaFleetRoot;
+
+        let temp = tempfile::tempdir().expect("temp root");
+        let root = temp.path().canonicalize().expect("canonical temp root");
+        let fleet_root = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet root");
+        let registry = FleetRegistry::initialize(fleet_root.clone()).expect("fleet registry");
+        let workspace = root.join("workspace");
+        std::fs::create_dir(&workspace).expect("workspace");
+        let workspace = workspace.canonicalize().expect("canonical workspace");
+        let manifest = AgentManifest::new(
+            AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent id"),
+            WorkspaceBinding::new(workspace, &fleet_root).expect("workspace binding"),
+            ResourceBudget::local_default(),
+        )
+        .expect("manifest");
+        let layout = registry.register(manifest).expect("register agent").layout;
+        let store = AutomationStore::open(&layout).await.expect("open store");
+
+        let profile = AutomationTimeZoneProfileV1 {
+            timezone_id: "Etc/UTC".to_string(),
+            tzdb_digest: digest(b"tzdb-utc"),
+            valid_from_utc_ms: 0,
+            valid_until_utc_ms: 30 * DAY,
+            initial_offset_seconds: 0,
+            transitions: Vec::new(),
+        };
+        let calendar = AutomationCalendarScheduleV2 {
+            timezone_id: profile.timezone_id.clone(),
+            tzdb_digest: profile.tzdb_digest.clone(),
+            start_at_utc_ms: DAY,
+            end_at_utc_ms: Some(20 * DAY),
+            every_days: 1,
+            local_time_ms: (2 * HOUR) as u32,
+            dst_gap_policy: AutomationDstGapPolicy::Skip,
+            dst_overlap_policy: AutomationDstOverlapPolicy::First,
+            clock_profile: profile,
+        };
+        let draft = AutomationTaskDraft::new(
+            "thread-calendar",
+            "calendar prompt",
+            AutomationSchedule::Once,
+            DAY,
+            1,
+        );
+        let task = store
+            .create_calendar_task_v2(
+                &draft,
+                &calendar,
+                AutomationMissedRunPolicy::Skip,
+                AutomationOverlapPolicy::Allow,
+            )
+            .await
+            .expect("create calendar task");
+        let (revision, stored) = store
+            .calendar_schedule_v2(task.task_id)
+            .await
+            .expect("read calendar")
+            .expect("calendar exists");
+        assert_eq!(revision, 1);
+        assert_eq!(stored.digest().expect("digest"), calendar.digest().expect("digest"));
+
+        let policy = store
+            .set_schedule_policy(
+                task.task_id,
+                1,
+                AutomationMissedRunPolicy::Coalesce,
+                AutomationOverlapPolicy::Forbid,
+                2,
+            )
+            .await
+            .expect("policy revision");
+        assert_eq!(policy.revision, 2);
+        let (revision, cloned) = store
+            .calendar_schedule_v2(task.task_id)
+            .await
+            .expect("read cloned calendar")
+            .expect("calendar exists");
+        assert_eq!(revision, 2);
+        assert_eq!(cloned.digest().expect("digest"), calendar.digest().expect("digest"));
+
+        let mut replacement = calendar.clone();
+        replacement.every_days = 2;
+        assert_eq!(
+            store
+                .replace_calendar_schedule_v2(task.task_id, 2, &replacement, 3)
+                .await
+                .expect("replace calendar"),
+            3
+        );
+        let (revision, replaced) = store
+            .calendar_schedule_v2(task.task_id)
+            .await
+            .expect("read replaced calendar")
+            .expect("calendar exists");
+        assert_eq!(revision, 3);
+        assert_eq!(
+            replaced.digest().expect("digest"),
+            replacement.digest().expect("digest")
+        );
+        assert_ne!(
+            replaced.digest().expect("digest"),
+            calendar.digest().expect("digest")
+        );
+        store.close().await;
+    }
+
     #[test]
     fn tzdb_identity_changes_schedule_digest() {
         let transition = 100 * DAY + 9 * HOUR;
