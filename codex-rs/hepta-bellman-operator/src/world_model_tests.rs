@@ -100,7 +100,6 @@ fn world_model_rejects_duplicate_samples_and_invalid_outcomes() {
     );
 }
 
-
 #[test]
 fn world_model_rejects_relabelled_duplicate_evidence() {
     let first = sample("sample-1", "state-b", 10);
