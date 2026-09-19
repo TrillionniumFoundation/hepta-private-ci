@@ -413,6 +413,19 @@ fn apply_replay_transition(
             state.retry_at_ms = None;
             state.terminal_reason = None;
         }
+        TaskFlowTransition::CancelProvenAbsent { proof_digest } => {
+            if state.state != TaskFlowRunState::Running {
+                return Err(invalid_transition(
+                    "provider-absence cancellation requires running state",
+                ));
+            }
+            validate_digest(proof_digest.as_str(), "provider absence proof digest")?;
+            state.cancel_requested = true;
+            state.state = TaskFlowRunState::Cancelled;
+            state.wait_token = None;
+            state.retry_at_ms = None;
+            state.terminal_reason = Some("provider_proven_absent".to_string());
+        }
         TaskFlowTransition::Cancel { reason } => {
             if is_terminal_state(state.state) {
                 return Err(invalid_transition("terminal run cannot be cancelled"));
@@ -509,6 +522,7 @@ fn transition_name(transition: &TaskFlowTransition) -> &'static str {
         TaskFlowTransition::Resume { .. } => "resumed",
         TaskFlowTransition::Retry { .. } => "retry_scheduled",
         TaskFlowTransition::RequeueProvenAbsent { .. } => "requeued_proven_absent",
+        TaskFlowTransition::CancelProvenAbsent { .. } => "cancelled_proven_absent",
         TaskFlowTransition::Cancel { .. } => "cancelled",
         TaskFlowTransition::Succeed { .. } => "succeeded",
         TaskFlowTransition::Fail { .. } => "failed",
