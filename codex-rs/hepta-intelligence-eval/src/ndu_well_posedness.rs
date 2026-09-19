@@ -67,22 +67,54 @@ pub struct NduWellPosednessEvidenceV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduWellPosednessCertificateV1 {
-    pub certificate_id: StableId,
-    pub manifest_digest: Digest32,
-    pub operating_domain_digest: Digest32,
-    pub square_integrability: NduAssumptionEvidenceV1,
-    pub conditional_mean: NduConditionalMeanEvidenceV1,
-    pub coefficient_bounds: NduAssumptionEvidenceV1,
-    pub lipschitz: NduAssumptionEvidenceV1,
-    pub generator_monotonicity: NduAssumptionEvidenceV1,
-    pub terminal_lipschitz: NduAssumptionEvidenceV1,
-    pub continuity_scope: NduContinuityScopeV1,
-    pub solver_stability: NduAssumptionEvidenceV1,
-    pub evaluator_identity: StableId,
-    pub decision: NduWellPosednessDecisionV1,
-    pub expires_unix_ms: u64,
-    pub certificate_digest: Digest32,
-    pub authority: AuthorityPosture,
+    certificate_id: StableId,
+    manifest_digest: Digest32,
+    operating_domain_digest: Digest32,
+    square_integrability: NduAssumptionEvidenceV1,
+    conditional_mean: NduConditionalMeanEvidenceV1,
+    coefficient_bounds: NduAssumptionEvidenceV1,
+    lipschitz: NduAssumptionEvidenceV1,
+    generator_monotonicity: NduAssumptionEvidenceV1,
+    terminal_lipschitz: NduAssumptionEvidenceV1,
+    continuity_scope: NduContinuityScopeV1,
+    solver_stability: NduAssumptionEvidenceV1,
+    evaluator_identity: StableId,
+    decision: NduWellPosednessDecisionV1,
+    expires_unix_ms: u64,
+    certificate_digest: Digest32,
+    authority: AuthorityPosture,
+}
+
+impl NduWellPosednessCertificateV1 {
+    #[must_use]
+    pub const fn manifest_digest(&self) -> Digest32 {
+        self.manifest_digest
+    }
+
+    #[must_use]
+    pub const fn operating_domain_digest(&self) -> Digest32 {
+        self.operating_domain_digest
+    }
+
+    #[must_use]
+    pub const fn decision(&self) -> NduWellPosednessDecisionV1 {
+        self.decision
+    }
+
+    #[must_use]
+    pub const fn expires_unix_ms(&self) -> u64 {
+        self.expires_unix_ms
+    }
+
+    #[must_use]
+    pub const fn certificate_digest(&self) -> Digest32 {
+        self.certificate_digest
+    }
+
+    #[must_use]
+    pub const fn authority(&self) -> AuthorityPosture {
+        self.authority
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
