@@ -101,6 +101,8 @@ pub use shadow::append_shadow_decision;
 pub use shadow::canonical_candidate_set_digest;
 pub use shadow::prepare_shadow_decision;
 pub use signed_evidence::LearningEvidenceRoleV1;
+pub use signed_evidence::LearningEvidenceTrustProviderV1;
+pub use signed_evidence::LearningEvidenceTrustSnapshotV1;
 pub use signed_evidence::LearningEvidenceTrustV1;
 pub use signed_evidence::LearningEvidenceVerifierV1;
 pub use signed_evidence::SignedEvidenceError;
