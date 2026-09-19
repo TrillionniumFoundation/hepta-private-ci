@@ -341,14 +341,16 @@ impl AgentdState {
             effect_scope,
         };
         let mut modules = self.runtime_modules.lock().map_err(poisoned_state)?;
-        modules.register_candidate(abi).map_err(|error| {
+        let mut staged = modules.clone();
+        staged.register_candidate(abi).map_err(|error| {
             AgentdError::Protocol(format!("runtime module registration failed: {error}"))
         })?;
-        modules
+        staged
             .activate_bootstrap(&module_id, generation)
             .map_err(|error| {
                 AgentdError::Protocol(format!("runtime module activation failed: {error}"))
             })?;
+        *modules = staged;
         Ok(())
     }
 
