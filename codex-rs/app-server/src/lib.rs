@@ -491,6 +491,14 @@ pub struct AppServerRuntimeOptions {
     /// validated local policy, and an available CognitiveRuntime all hold.
     pub hepta_qualification_turn_writer:
         Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
+    /// Optional embedding-owned provider policy contributor.
+    ///
+    /// Ordinary Codex leaves this unset. A host may install one pre-existing
+    /// provider-policy capability without changing the physical provider
+    /// transport. The contributor participates only through core's finalized
+    /// request / terminal-attempt policy seam.
+    pub embedding_model_provider_policy_contributor:
+        Option<Arc<dyn codex_extension_api::ModelProviderPolicyContributor>>,
     /// Embedding-owned feature states applied after ordinary config layers
     /// and per-request overrides. Empty for ordinary Codex runtimes; a local
     /// embedding can use this to keep a capability boundary fail-closed.
@@ -533,6 +541,13 @@ impl std::fmt::Debug for AppServerRuntimeOptions {
             .field(
                 "hepta_qualification_turn_writer",
                 &self.hepta_qualification_turn_writer,
+            )
+            .field(
+                "embedding_model_provider_policy_contributor",
+                &self
+                    .embedding_model_provider_policy_contributor
+                    .as_ref()
+                    .map(|_| "<configured>"),
             )
             .field("required_feature_states", &self.required_feature_states)
             .finish()
@@ -584,6 +599,14 @@ impl PartialEq for AppServerRuntimeOptions {
             && self.hepta_qualification_turn_writer_enabled
                 == other.hepta_qualification_turn_writer_enabled
             && self.hepta_qualification_turn_writer == other.hepta_qualification_turn_writer
+            && match (
+                &self.embedding_model_provider_policy_contributor,
+                &other.embedding_model_provider_policy_contributor,
+            ) {
+                (Some(left), Some(right)) => Arc::ptr_eq(left, right),
+                (None, None) => true,
+                _ => false,
+            }
             && self.required_feature_states == other.required_feature_states
     }
 }
@@ -605,6 +628,7 @@ impl Default for AppServerRuntimeOptions {
             hepta_local_development_policy: None,
             hepta_qualification_turn_writer_enabled: false,
             hepta_qualification_turn_writer: None,
+            embedding_model_provider_policy_contributor: None,
             required_feature_states: BTreeMap::new(),
         }
     }
@@ -1102,6 +1126,8 @@ pub async fn run_main_with_transport_options(
             hepta_qualification_turn_writer_enabled: runtime_options
                 .hepta_qualification_turn_writer_enabled,
             hepta_qualification_turn_writer: runtime_options.hepta_qualification_turn_writer,
+            embedding_model_provider_policy_contributor: runtime_options
+                .embedding_model_provider_policy_contributor,
         }));
         let mut thread_created_rx = processor.thread_created_receiver();
         let mut running_turn_count_rx = processor.subscribe_running_assistant_turn_count();
