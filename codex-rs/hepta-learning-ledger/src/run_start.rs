@@ -155,12 +155,7 @@ struct StoredRunStart {
     record: RunStartRecordV1,
 }
 
-type ReplayedRunStarts = (
-    Vec<StoredRunStart>,
-    BTreeMap<StableId, usize>,
-    u64,
-    u64,
-);
+type ReplayedRunStarts = (Vec<StoredRunStart>, BTreeMap<StableId, usize>, u64, u64);
 
 struct LockedRunStartFile(File);
 
@@ -391,7 +386,11 @@ fn validate_record(record: &RunStartRecordV1) -> Result<(), RunStartStoreError> 
     if record.authentication.key_epoch == 0
         || record.authentication.sequence == 0
         || record.authentication.expires_at_ms == 0
-        || record.authentication.signature.iter().all(|byte| *byte == 0)
+        || record
+            .authentication
+            .signature
+            .iter()
+            .all(|byte| *byte == 0)
     {
         return Err(RunStartStoreError::InvalidSnapshot("authentication"));
     }
@@ -406,7 +405,10 @@ fn validate_record(record: &RunStartRecordV1) -> Result<(), RunStartStoreError> 
         ("signedBodyDigest", record.authentication.signed_body_digest),
         ("profileDigest", record.admission.profile_digest),
         ("intentDigest", record.admission.intent_digest),
-        ("admittedSourceDigest", record.admission.admitted_source_digest),
+        (
+            "admittedSourceDigest",
+            record.admission.admitted_source_digest,
+        ),
         ("runtimeBodyDigest", record.runtime_body_digest),
         ("objectiveDigest", snapshot.objective_digest),
         ("hardConstraintDigest", snapshot.hard_constraint_digest),
