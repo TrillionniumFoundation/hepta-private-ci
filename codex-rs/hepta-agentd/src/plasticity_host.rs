@@ -169,17 +169,19 @@ impl PlasticityOwnerEvidencePolicyV1 {
         let mut bytes = b"hepta.agentd.plasticity-owner-evidence-policy.v1\0".to_vec();
         for kind in PLASTICITY_OWNER_EVIDENCE_KINDS_V1 {
             bytes.push(kind.tag());
-            let owners = self
-                .allowed_owners
-                .get(&kind)
-                .expect("validated policy contains every evidence kind");
-            bytes.extend_from_slice(&u32::try_from(owners.len()).unwrap_or(u32::MAX).to_be_bytes());
-            for owner in owners {
-                let raw = owner.as_str().as_bytes();
+            if let Some(owners) = self.allowed_owners.get(&kind) {
                 bytes.extend_from_slice(
-                    &u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes(),
+                    &u32::try_from(owners.len()).unwrap_or(u32::MAX).to_be_bytes(),
                 );
-                bytes.extend_from_slice(raw);
+                for owner in owners {
+                    let raw = owner.as_str().as_bytes();
+                    bytes.extend_from_slice(
+                        &u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes(),
+                    );
+                    bytes.extend_from_slice(raw);
+                }
+            } else {
+                bytes.extend_from_slice(&0_u32.to_be_bytes());
             }
         }
         Digest32::of_bytes(&bytes)

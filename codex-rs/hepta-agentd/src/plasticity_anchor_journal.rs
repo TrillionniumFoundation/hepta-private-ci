@@ -312,7 +312,6 @@ fn append_frame(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::fs::OpenOptions;
     use tempfile::tempfile;
 
     fn digest(value: &[u8]) -> Digest32 {
@@ -372,11 +371,7 @@ mod tests {
         }
         let valid_len = file.metadata().expect("metadata").len();
         {
-            let mut append = OpenOptions::new()
-                .append(true)
-                .open(format!("/proc/self/fd/{}", std::os::fd::AsRawFd::as_raw_fd(&file)))
-                .or_else(|_| file.try_clone())
-                .expect("append handle");
+            let mut append = file.try_clone().expect("append handle");
             append.seek(SeekFrom::End(0)).expect("seek");
             append.write_all(&[TAG_ANCHOR, 0, 0, 0]).expect("tail");
             append.sync_all().expect("sync");
