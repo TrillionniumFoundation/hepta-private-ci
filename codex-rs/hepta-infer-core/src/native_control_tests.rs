@@ -372,7 +372,6 @@ fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
     std::fs::remove_file(path).unwrap();
 }
 
-
 #[test]
 fn receipt_only_settlement_persists_digest_without_model_text() {
     let path = path("receipt-only");
@@ -385,9 +384,7 @@ fn receipt_only_settlement_persists_digest_without_model_text() {
         grant_id: "grant-1".to_string(),
     };
     let live_text = observed.output.clone();
-    let settled = control
-        .settle_native_receipt_only("r1", observed)
-        .unwrap();
+    let settled = control.settle_native_receipt_only("r1", observed).unwrap();
     let persisted = settled.observation.as_ref().unwrap();
     assert_eq!(persisted.output, "");
     assert!(!persisted.output_retained);
@@ -400,9 +397,18 @@ fn receipt_only_settlement_persists_digest_without_model_text() {
     drop(control);
 
     let bytes = std::fs::read(&path).unwrap();
-    assert!(!bytes.windows(live_text.len()).any(|window| window == live_text.as_bytes()));
+    assert!(
+        !bytes
+            .windows(live_text.len())
+            .any(|window| window == live_text.as_bytes())
+    );
     let reopened = DurableInferenceControl::open(&path, 8).unwrap();
-    let replayed = reopened.native_record("r1").unwrap().observation.as_ref().unwrap();
+    let replayed = reopened
+        .native_record("r1")
+        .unwrap()
+        .observation
+        .as_ref()
+        .unwrap();
     assert_eq!(replayed.output, "");
     assert!(!replayed.output_retained);
     assert!(replayed.succeeded());
