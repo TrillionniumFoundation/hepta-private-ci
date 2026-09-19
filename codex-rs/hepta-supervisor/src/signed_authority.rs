@@ -22,6 +22,8 @@ use serde::Serialize;
 use sha2::Digest;
 use sha2::Sha256;
 use thiserror::Error;
+use crate::signed_intent::SignedIntentStatus;
+use crate::signed_intent::SignedSupervisorIntent;
 
 pub const SIGNED_AUTHORITY_SCHEMA_VERSION: u32 = 1;
 pub const SIGNED_AUTHORITY_NAMESPACE: &str = "hepta:production:authority:v1";
@@ -523,10 +525,37 @@ pub struct ProductionMutationReceipt {
 pub enum ProductionMutationStatus {
     Queued,
     Committed,
+    RolledBack,
+    Failed,
     RecoveryRequired,
 }
 
 impl ProductionMutationReceipt {
+    pub(crate) fn from_intent(intent: &SignedSupervisorIntent) -> Self {
+        let status = match intent.status {
+            SignedIntentStatus::Prepared | SignedIntentStatus::Queued => {
+                ProductionMutationStatus::Queued
+            }
+            SignedIntentStatus::Committed => ProductionMutationStatus::Committed,
+            SignedIntentStatus::RolledBack => ProductionMutationStatus::RolledBack,
+            SignedIntentStatus::Failed => ProductionMutationStatus::Failed,
+            SignedIntentStatus::RecoveryRequired => ProductionMutationStatus::RecoveryRequired,
+        };
+        Self {
+            grant_sha256: intent.grant_sha256.clone(),
+            agent_id: intent.agent_id.clone(),
+            transition: intent.transition,
+            source_release: intent.source_release.clone(),
+            target_release: intent.target_release.clone(),
+            control_revision: intent.expected_control_revision.saturating_add(1),
+            status,
+            production_authority: true,
+            external_effects: true,
+            operator_acceptance: true,
+            promotion: true,
+        }
+    }
+
     pub(crate) fn queued(grant: &H7H89ProductionGrant, control_revision: u64) -> Self {
         Self {
             grant_sha256: grant.grant_sha256.clone(),
