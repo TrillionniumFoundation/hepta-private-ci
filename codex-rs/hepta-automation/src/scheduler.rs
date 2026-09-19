@@ -10,18 +10,19 @@ use crate::AutomationError;
 use crate::AutomationQueueReceipt;
 use crate::AutomationStore;
 use crate::AutomationTick;
+use crate::admission_receipt_digest;
 
 pub type AutomationFuture<'a, T> =
     Pin<Box<dyn Future<Output = Result<T, AutomationError>> + Send + 'a>>;
 
-/// The only execution seam available to automation.
+/// The only Codex admission seam available to the timer scheduler.
 ///
-/// Product implementations must enqueue this admission through the owning
-/// Agent's App Server `thread/queue/add` API. The scheduler cannot call a
-/// model, a tool, Core, or another Agent directly. `Dispatch`, `Unavailable`,
-/// and `Corrupt` are retryable only when the implementation knows the
-/// request did not cross that admission seam; otherwise it must return
-/// `DispatchUnknown` so the durable intent remains quarantined.
+/// Product implementations must use the owning Agent's durable App Server
+/// thread queue. `thread/queue/reconcile` is preferred because it atomically
+/// binds a stable client id and canonical payload to an existing queued or
+/// persisted Core record. The scheduler cannot call a model, tool, or another
+/// Agent directly. Failures after possible admission must be reported as
+/// `DispatchUnknown`; only proven pre-admission failures may be retried.
 pub trait AutomationTurnQueue: Send + Sync {
     fn enqueue(
         &self,
@@ -70,8 +71,9 @@ where
         &self.store
     }
 
-    /// Claims and submits at most one occurrence. Bounded single-item ticks
-    /// prevent one Agent backlog from creating a fleet-wide drain loop.
+    /// Claims and admits at most one occurrence. Queue admission is deliberately
+    /// non-terminal: the owning runtime must later bind the persisted turn and
+    /// terminal observation through the durable occurrence lifecycle.
     pub async fn tick(&self, now_ms: u64) -> Result<AutomationTick, AutomationError> {
         let Some(lease) = self
             .store
@@ -80,21 +82,28 @@ where
         else {
             return Ok(AutomationTick::Idle);
         };
-        // Persist the dispatch intent before crossing the App Server seam.
-        // If this process dies after admission (or while the request is still
-        // in flight) the successor must observe a durable unknown outcome and
-        // refuse a blind duplicate.  Known pre-admission failures explicitly
-        // clear this marker below, preserving the bounded retry path.
+
+        // Freeze schedule revision + canonical scheduled instant into a stable
+        // occurrence identity before any external admission boundary.
+        let occurrence = self.store.materialize_occurrence(&lease, now_ms).await?;
+        // Bind the same occurrence to the existing durable TaskFlow run and
+        // append its step intent/claim before provider contact.
+        let taskflow = self
+            .store
+            .prepare_occurrence_taskflow(&occurrence, &lease, now_ms, self.lease_duration_ms)
+            .await
+            .map_err(|_| AutomationError::Unavailable)?;
+
+        // Persist the dispatch intent before crossing the App Server seam. If
+        // this process dies after possible admission, recovery retains the same
+        // client id and must reconcile instead of blindly creating a duplicate.
         self.store.record_dispatch_uncertain(&lease, now_ms).await?;
         let admission = lease.admission();
         let result = timeout(self.dispatch_timeout, self.queue.enqueue(admission)).await;
         let receipt = match result {
             Ok(Ok(receipt)) => receipt,
-            // Owner/generation fencing is not a transient dispatch failure.
-            // Agentd performs this check before the queue seam, so remove the
-            // pre-admission intent before returning the fence to the caller.
             Ok(Err(AutomationError::AccessDenied)) => {
-                self.store.abort_dispatch_before_admission(&lease).await?;
+                self.store.abort_dispatch_before_admission(&lease, now_ms).await?;
                 return Err(AutomationError::AccessDenied);
             }
             Ok(Err(AutomationError::DispatchUnknown)) | Err(_) => {
@@ -105,11 +114,7 @@ where
                 });
             }
             Ok(Err(_)) => {
-                // Agentd maps only failures observed before the App Server
-                // admission seam to these retryable errors. If the process
-                // dies before this cleanup, the durable intent remains
-                // uncertain and recovery stays fail-closed.
-                self.store.abort_dispatch_before_admission(&lease).await?;
+                self.store.abort_dispatch_before_admission(&lease, now_ms).await?;
                 return Ok(AutomationTick::RetryScheduled {
                     task_id: lease.task.task_id,
                     occurrence: lease.occurrence,
@@ -125,7 +130,23 @@ where
                 occurrence: lease.occurrence,
             });
         }
-        self.store.mark_submitted(&lease, &receipt, now_ms).await?;
+
+        // Critical semantic boundary: durable Core admission is not automation
+        // completion. The lifecycle row remains admitted/running until a trusted
+        // terminal observation (or reconciliation) settles it.
+        let admitted = self
+            .store
+            .record_occurrence_admitted(&lease, &receipt, now_ms)
+            .await?;
+        let admission_digest = admission_receipt_digest(&admitted);
+        self.store
+            .mark_occurrence_taskflow_admitted(&admitted, &taskflow, &admission_digest, now_ms)
+            .await
+            .map_err(|_| AutomationError::Unavailable)?;
+
+        // Preserve the public v1 tick variant for compatibility. `Submitted`
+        // now means only durable Core queue admission; it is explicitly not an
+        // automation-occurrence terminal state.
         Ok(AutomationTick::Submitted {
             task_id: lease.task.task_id,
             occurrence: lease.occurrence,
