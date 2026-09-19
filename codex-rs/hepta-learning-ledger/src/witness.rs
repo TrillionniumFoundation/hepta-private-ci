@@ -212,3 +212,7 @@ fn map_durable(value: crate::DurableLedgerError) -> AnchorWitnessError {
         _ => AnchorWitnessError::Corrupt,
     }
 }
+
+#[cfg(test)]
+#[path = "witness_tests.rs"]
+mod tests;
