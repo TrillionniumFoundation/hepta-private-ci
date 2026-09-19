@@ -6,6 +6,7 @@
 
 #![forbid(unsafe_code)]
 
+mod admission_profile_json;
 mod compiler;
 mod error;
 mod feasibility;
