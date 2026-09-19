@@ -93,7 +93,6 @@ impl NduSolverIterationReceipt {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum SolveDisposition {
     Converged,
-    IterationBoundReached,
 }
 
 /// Local solver termination evidence. It deliberately does not use the name
@@ -412,7 +411,7 @@ impl PreferenceState {
     ) -> Result<Self, NduError> {
         validate_preference_values(&values)?;
         normalize_values(&mut values)?;
-        let revision = Revision::new(/*value*/ 1).map_err(|_| NduError::Arithmetic)?;
+        let revision = Revision::new(1).map_err(|_| NduError::Arithmetic)?;
         let state_digest = digest_state(
             &subject_id,
             subject_class,
