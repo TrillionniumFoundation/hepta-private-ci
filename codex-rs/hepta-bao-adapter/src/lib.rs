@@ -30,6 +30,7 @@ pub use lease_client::BaoLeaseRenewRequest;
 pub use lease_client::BaoLeaseRevokeRequest;
 pub use lease_client::DynamicSecretFields;
 pub use lease_client::SecretLeaseClientError;
+pub use lease_client::SecretLeaseIssueOutcome;
 pub use lease_client::SecretLeaseIssueReceipt;
 pub use lease_client::SecretLeaseMutationReceipt;
 
