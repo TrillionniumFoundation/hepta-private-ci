@@ -108,6 +108,7 @@ pub use signed_authority::ProductionMutationReceipt;
 pub use signed_authority::ProductionMutationStatus;
 pub use signed_authority::SIGNED_AUTHORITY_NAMESPACE;
 pub use signed_authority::SIGNED_AUTHORITY_SCHEMA_VERSION;
+pub use signed_intent::SignedIntentStatus;
 pub use signed_authority::authority_epoch_for_supervisor_epoch;
 pub use supervisor::Supervisor;
 pub use supervisor_qualification::H8_H9_SHADOW_EFFECT_AUTHORITY;
