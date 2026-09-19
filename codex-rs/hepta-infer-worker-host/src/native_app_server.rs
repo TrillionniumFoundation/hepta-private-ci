@@ -281,7 +281,7 @@ impl AppServerModelDriver {
             NativeDispatch {
                 thread_id: started.thread.id.clone(),
                 model_provider: started.model_provider.clone(),
-                context_digest: context_digest.clone(),
+                context_digest,
             },
         ) {
             let _ = owner
