@@ -19,6 +19,7 @@ use codex_hepta_types::Digest32;
 
 pub use authoritative::AuthoritativeCognitiveSnapshotProvider;
 pub use authoritative::AuthoritativeReadResultV1;
+pub use authoritative::CognitiveReadGenerationVectorV1;
 pub use authoritative::AuthoritativeSnapshotV1;
 pub use authoritative::SnapshotAcquisitionRequestV1;
 pub use authoritative::SnapshotProviderError;
@@ -27,7 +28,7 @@ pub use v2::MAX_ENCODED_READ_RESULT_BYTES_V2;
 pub use v2::ReadRequestV2;
 pub use v2::ReadResultV2;
 pub use v2::ReadV2Error;
-pub use v2::read_v2;
+pub(crate) use v2::read_v2;
 
 const MAX_RESULTS: usize = 1_024;
 
