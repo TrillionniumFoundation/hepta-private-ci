@@ -48,10 +48,14 @@ class ScopeTests(unittest.TestCase):
         for group in GROUPS - {"learning", "lifecycle"}:
             self.assertFalse(scope[group])
 
-    def test_registry_is_not_prose(self):
+    def test_registry_is_runtime_consumed_lifecycle_input(self):
         scope = select(["docs/modules/MODULES.json"])
         self.assertTrue(scope["derived"])
-        self.assertTrue(all(scope[key] for key in GROUPS))
+        self.assertTrue(scope["lifecycle"])
+        self.assertTrue(scope["native"])
+        self.assertFalse(scope["full_repo"])
+        for group in GROUPS - {"lifecycle"}:
+            self.assertFalse(scope[group])
 
     def test_unknown_or_executable_document_selects_full(self):
         for path in ["docs/check.rs", "scripts/new-verifier.py", ".github/workflows/new.yml"]:
