@@ -885,6 +885,26 @@ impl AutomationStore {
                    SELECT 1 FROM automation_dispatch_outcomes o
                    WHERE o.task_id = automation_runs.task_id
                      AND o.occurrence = automation_runs.occurrence
+               )
+               AND (
+                   NOT EXISTS (
+                       SELECT 1 FROM automation_occurrence_lifecycle l
+                       WHERE l.task_id = automation_runs.task_id
+                         AND l.occurrence = automation_runs.occurrence
+                   )
+                   OR EXISTS (
+                       SELECT 1
+                       FROM automation_occurrence_lifecycle l
+                       JOIN taskflow_runs tf
+                         ON tf.owner_agent_id = l.owner_agent_id
+                        AND tf.run_id = l.taskflow_run_id
+                       WHERE l.task_id = automation_runs.task_id
+                         AND l.occurrence = automation_runs.occurrence
+                         AND (
+                             (l.state = 'claimed' AND tf.state = 'queued')
+                             OR l.state = 'cancelled'
+                         )
+                   )
                )",
         )
         .bind(lease.task.task_id.to_string())
