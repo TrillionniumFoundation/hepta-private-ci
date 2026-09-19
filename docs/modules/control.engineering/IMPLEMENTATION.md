@@ -71,10 +71,16 @@ is rejected. A corrupted store must be quarantined and restored from a verified
 backup; startup does not silently reconstruct acceptance or change owner facts.
 
 The named `EngineeringController` composes one store and a verification-only
-trust boundary, and durably binds one repository/writer-instance/credential-chain
-tuple. A different writer cannot silently reuse the same owner database.
+trust boundary, durably binds one repository/writer-instance/credential-chain
+tuple, and admits workers only through signed identities. A different writer
+cannot silently reuse the same owner database. The controller can also prepare and
+verify signed `AuditAnchorReceipt` records that bind an exact audit sequence/event
+digest and writer binding. Anti-rollback protection exists only when those signed
+anchors are retained by an independent witness outside the SQLite owner.
 
 The store is a local coordination database, not a replicated consensus service.
+External audit anchoring reduces silent local rollback risk but does not make the
+SQLite owner highly available or distributed.
 One connection belongs to one execution thread; concurrent callers use separate
 connections and serialize writes in SQLite. WAL disk growth, backups, external
 audit anchoring, archival retention and production availability remain operational
@@ -98,10 +104,14 @@ lease exclusion, intra-batch path exclusion, stable priority and envelope capaci
 A generation binds the exact source/envelope/active-lease frontier and immutable
 package path/capability/retry facts. A changed frontier requires a new generation ID.
 
-Workers register an authenticated principal and credential-chain digest, bounded
-capabilities/capacity, authority epoch and heartbeat lease. A scheduled package is
-not executable until one active worker holds a covering path lease and acquires a
-durable fenced claim. Claims move through claimed -> running -> completed/failed
+Workers register through a signed `WorkerIdentityReceipt` verified by the selected
+public-key trust boundary. The receipt binds principal, credential-chain digest,
+capabilities/capacity, authority epoch, a short worker lease and a longer signed
+identity expiry; heartbeat may extend the lease only within that signed expiry.
+A scheduled package is not executable until one active worker holds a covering path
+lease and acquires a durable fenced claim. The named controller derives completed
+dependency IDs from durable completed claims rather than accepting them as caller
+assertions. Claims move through claimed -> running -> completed/failed
 or expire. Failure/expiry never retries implicitly: retryable terminal work must be
 explicitly requeued before a later bounded attempt may be claimed.
 
