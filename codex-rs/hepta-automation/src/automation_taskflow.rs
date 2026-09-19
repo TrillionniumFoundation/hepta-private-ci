@@ -247,9 +247,9 @@ impl AutomationStore {
     }
 
     /// Re-open the same durable TaskFlow run only after the queue owner has
-    /// supplied an exact proof that the previous stable dispatch identity is
-    /// absent. The old step attempt remains immutable evidence and can no
-    /// longer execute once the run lease is cleared/reclaimed.
+    /// supplied exact proof that the previous stable dispatch identity is
+    /// absent. Any durable prepared/claimed step attempt is closed as
+    /// reconciled/cancelled with that same proof before the run is requeued.
     pub(crate) async fn requeue_occurrence_taskflow_after_proven_absence(
         &self,
         occurrence: &AutomationOccurrence,
@@ -258,9 +258,6 @@ impl AutomationStore {
     ) -> Result<(), TaskFlowError> {
         let step_attempt = self
             .automation_occurrence_step_attempt(occurrence.task_id, occurrence.occurrence)
-            .await?;
-        let fence = self
-            .historical_automation_step_fence(&occurrence.taskflow_run_id, step_attempt)
             .await?;
         let command_id = format!(
             "automation:run:requeue-absent:{}:{step_attempt}",
@@ -291,9 +288,13 @@ impl AutomationStore {
             let transition: TaskFlowTransition = serde_json::from_str(&payload).map_err(|_| {
                 TaskFlowError::Corrupt("provider-absence event payload".to_string())
             })?;
-            if !matches!(transition, TaskFlowTransition::RequeueProvenAbsent { .. }) {
-                return Err(TaskFlowError::Corrupt(
-                    "automation requeue command has the wrong transition".to_string(),
+            if !matches!(
+                transition,
+                TaskFlowTransition::RequeueProvenAbsent { proof_digest: ref stored }
+                    if stored == proof_digest
+            ) {
+                return Err(TaskFlowError::Conflict(
+                    "queued automation run is bound to different absence evidence".to_string(),
                 ));
             }
             return Ok(());
@@ -303,7 +304,8 @@ impl AutomationStore {
                 "automation TaskFlow run is not eligible for absence requeue".to_string(),
             ));
         }
-        let step = self
+        let fence = automation_recovery_fence(&run, occurrence)?;
+        if let Some(step) = self
             .read_taskflow_step(
                 &occurrence.taskflow_run_id,
                 AUTOMATION_STEP_ID,
@@ -311,13 +313,35 @@ impl AutomationStore {
                 &fence,
             )
             .await?
-            .ok_or_else(|| {
-                TaskFlowError::Conflict("automation TaskFlow step is missing".to_string())
-            })?;
-        if step.state != TaskFlowStepState::Claimed {
-            return Err(TaskFlowError::Conflict(
-                "provider absence can requeue only an undisposed claimed step".to_string(),
-            ));
+        {
+            match step.state {
+                TaskFlowStepState::Prepared | TaskFlowStepState::Claimed => {
+                    self.cancel_taskflow_step_after_proven_absence(
+                        &occurrence.taskflow_run_id,
+                        AUTOMATION_STEP_ID,
+                        step_attempt,
+                        &fence,
+                        &step.intent_digest,
+                        &step.payload_digest,
+                        &format!(
+                            "automation:step:requeue-absent:{}:{step_attempt}",
+                            occurrence.occurrence_id
+                        ),
+                        proof_digest,
+                        now_ms,
+                    )
+                    .await?;
+                }
+                TaskFlowStepState::Reconciled
+                    if step.final_outcome == Some(TaskFlowReconcileOutcome::Cancelled)
+                        && step.receipt_digest.as_ref() == Some(proof_digest) => {}
+                _ => {
+                    return Err(TaskFlowError::Conflict(
+                        "provider absence found a step that already crossed its terminal boundary"
+                            .to_string(),
+                    ));
+                }
+            }
         }
         let command = TaskFlowCommand::new(
             run.run_id.clone(),
@@ -504,9 +528,7 @@ impl AutomationStore {
 
     /// Terminalize a claimed pre-admission attempt when the registered queue
     /// owner proves that no provider admission occurred and the schedule has
-    /// meanwhile been retired (disabled/cancelled/completed). The absence
-    /// proof is the durable reconciliation receipt: no provider call or grant
-    /// is performed here.
+    /// meanwhile been retired. No provider call or grant is performed here.
     pub(crate) async fn cancel_claimed_taskflow_after_proven_absence(
         &self,
         occurrence: &AutomationOccurrence,
@@ -516,34 +538,53 @@ impl AutomationStore {
         let step_attempt = self
             .automation_occurrence_step_attempt(occurrence.task_id, occurrence.occurrence)
             .await?;
-        let fence = self
-            .historical_automation_step_fence(&occurrence.taskflow_run_id, step_attempt)
-            .await?;
-        let task = sqlx::query(
-            "SELECT thread_id, prompt FROM automation_tasks
-             WHERE task_id = ? AND owner_agent_id = ?",
-        )
-        .bind(occurrence.task_id.to_string())
-        .bind(self.taskflow_owner_agent_id().as_str())
-        .fetch_optional(self.taskflow_pool())
-        .await
-        .map_err(|_| TaskFlowError::Unavailable)?
-        .ok_or_else(|| TaskFlowError::Conflict("automation task is missing".to_string()))?;
-        let thread_id: String = task
-            .try_get("thread_id")
-            .map_err(|_| TaskFlowError::Corrupt("automation thread id column".to_string()))?;
-        let prompt: String = task
-            .try_get("prompt")
-            .map_err(|_| TaskFlowError::Corrupt("automation prompt column".to_string()))?;
-        let payload_digest = Sha256Digest::for_bytes(prompt.as_bytes());
-        let intent_digest = automation_intent_digest(
-            occurrence,
-            &thread_id,
-            &occurrence.client_user_message_id,
-            &payload_digest,
-        )?;
-
-        let mut step = self
+        let command_id = format!(
+            "automation:run:cancel-absent:{}:{step_attempt}",
+            occurrence.occurrence_id
+        );
+        let run = self
+            .taskflow_run(&occurrence.taskflow_run_id)
+            .await?
+            .ok_or_else(|| {
+                TaskFlowError::Corrupt("automation TaskFlow run vanished".to_string())
+            })?;
+        if run.state == TaskFlowRunState::Cancelled {
+            let payload: Option<String> = sqlx::query_scalar(
+                "SELECT payload_json FROM taskflow_events
+                 WHERE owner_agent_id = ? AND run_id = ? AND command_id = ?",
+            )
+            .bind(self.taskflow_owner_agent_id().as_str())
+            .bind(&occurrence.taskflow_run_id)
+            .bind(&command_id)
+            .fetch_optional(self.taskflow_pool())
+            .await
+            .map_err(|_| TaskFlowError::Unavailable)?;
+            let Some(payload) = payload else {
+                return Err(TaskFlowError::Conflict(
+                    "cancelled automation run lacks provider-absence evidence".to_string(),
+                ));
+            };
+            let transition: TaskFlowTransition = serde_json::from_str(&payload).map_err(|_| {
+                TaskFlowError::Corrupt("provider-absence cancellation payload".to_string())
+            })?;
+            if !matches!(
+                transition,
+                TaskFlowTransition::CancelProvenAbsent { proof_digest: ref stored }
+                    if stored == proof_digest
+            ) {
+                return Err(TaskFlowError::Conflict(
+                    "cancelled automation run is bound to different absence evidence".to_string(),
+                ));
+            }
+            return Ok(());
+        }
+        if run.state != TaskFlowRunState::Running {
+            return Err(TaskFlowError::Conflict(
+                "provider-absence cancellation requires a running TaskFlow".to_string(),
+            ));
+        }
+        let fence = automation_recovery_fence(&run, occurrence)?;
+        if let Some(step) = self
             .read_taskflow_step(
                 &occurrence.taskflow_run_id,
                 AUTOMATION_STEP_ID,
@@ -551,131 +592,47 @@ impl AutomationStore {
                 &fence,
             )
             .await?
-            .ok_or_else(|| {
-                TaskFlowError::Conflict("automation TaskFlow step is missing".to_string())
-            })?;
-        match step.state {
-            TaskFlowStepState::Claimed => {
-                step = self
-                    .record_taskflow_step(
+        {
+            match step.state {
+                TaskFlowStepState::Prepared | TaskFlowStepState::Claimed => {
+                    self.cancel_taskflow_step_after_proven_absence(
                         &occurrence.taskflow_run_id,
                         AUTOMATION_STEP_ID,
                         step_attempt,
                         &fence,
-                        &intent_digest,
-                        &payload_digest,
+                        &step.intent_digest,
+                        &step.payload_digest,
                         &format!(
-                            "automation:step:absent-cancel-record:{}:{step_attempt}",
+                            "automation:step:cancel-absent:{}:{step_attempt}",
                             occurrence.occurrence_id
                         ),
                         proof_digest,
-                        TaskFlowStepObservation::Indeterminate,
                         now_ms,
                     )
-                    .await?
-                    .receipt;
-            }
-            TaskFlowStepState::Recorded
-                if step.observation == Some(TaskFlowStepObservation::Indeterminate)
-                    && step.receipt_digest.as_ref() == Some(proof_digest) => {}
-            TaskFlowStepState::Reconciled
-                if step.final_outcome == Some(TaskFlowReconcileOutcome::Cancelled)
-                    && step.receipt_digest.as_ref() == Some(proof_digest) => {}
-            _ => {
-                return Err(TaskFlowError::Conflict(
-                    "provider-absence cancellation conflicts with step evidence".to_string(),
-                ));
+                    .await?;
+                }
+                TaskFlowStepState::Reconciled
+                    if step.final_outcome == Some(TaskFlowReconcileOutcome::Cancelled)
+                        && step.receipt_digest.as_ref() == Some(proof_digest) => {}
+                _ => {
+                    return Err(TaskFlowError::Conflict(
+                        "provider-absence cancellation found incompatible step evidence"
+                            .to_string(),
+                    ));
+                }
             }
         }
-
-        let mut run = self
-            .taskflow_run(&occurrence.taskflow_run_id)
-            .await?
-            .ok_or_else(|| {
-                TaskFlowError::Corrupt("automation TaskFlow run vanished".to_string())
-            })?;
-        if run.state == TaskFlowRunState::Running {
-            let command = TaskFlowCommand::new(
-                run.run_id.clone(),
-                format!("automation:run:absent-cancel-observed:{}", occurrence.occurrence_id),
-                fence.clone(),
-                run.revision,
-                TaskFlowTransition::Indeterminate {
-                    reason: "provider proven absent; schedule retired before retry".to_string(),
-                },
-                now_ms,
-            )?;
-            self.apply_taskflow_command(&command).await?;
-            run = self
-                .taskflow_run(&occurrence.taskflow_run_id)
-                .await?
-                .ok_or_else(|| {
-                    TaskFlowError::Corrupt("automation TaskFlow run vanished".to_string())
-                })?;
-        }
-        if !matches!(
-            run.state,
-            TaskFlowRunState::Indeterminate | TaskFlowRunState::Cancelled
-        ) {
-            return Err(TaskFlowError::Conflict(
-                "provider-absence cancellation found incompatible run state".to_string(),
-            ));
-        }
-
-        if step.state == TaskFlowStepState::Recorded {
-            step = self
-                .reconcile_taskflow_step(
-                    &occurrence.taskflow_run_id,
-                    AUTOMATION_STEP_ID,
-                    step_attempt,
-                    &fence,
-                    &intent_digest,
-                    &payload_digest,
-                    &format!(
-                        "automation:step:absent-cancel-terminal:{}:{step_attempt}",
-                        occurrence.occurrence_id
-                    ),
-                    proof_digest,
-                    TaskFlowReconcileOutcome::Cancelled,
-                    now_ms,
-                )
-                .await?
-                .receipt;
-        }
-        if step.state != TaskFlowStepState::Reconciled
-            || step.final_outcome != Some(TaskFlowReconcileOutcome::Cancelled)
-            || step.receipt_digest.as_ref() != Some(proof_digest)
-        {
-            return Err(TaskFlowError::Conflict(
-                "provider-absence cancellation lacks reconciled step evidence".to_string(),
-            ));
-        }
-
-        if run.state == TaskFlowRunState::Indeterminate {
-            let command = TaskFlowCommand::new(
-                run.run_id.clone(),
-                format!("automation:run:absent-cancel-terminal:{}", occurrence.occurrence_id),
-                fence,
-                run.revision,
-                TaskFlowTransition::Reconcile {
-                    receipt_digest: proof_digest.clone(),
-                    outcome: TaskFlowReconcileOutcome::Cancelled,
-                },
-                now_ms,
-            )?;
-            self.apply_taskflow_command(&command).await?;
-            run = self
-                .taskflow_run(&occurrence.taskflow_run_id)
-                .await?
-                .ok_or_else(|| {
-                    TaskFlowError::Corrupt("automation TaskFlow run vanished".to_string())
-                })?;
-        }
-        if run.state != TaskFlowRunState::Cancelled {
-            return Err(TaskFlowError::Conflict(
-                "provider-absence cancellation did not terminalize TaskFlow".to_string(),
-            ));
-        }
+        let command = TaskFlowCommand::new(
+            run.run_id.clone(),
+            command_id,
+            fence,
+            run.revision,
+            TaskFlowTransition::CancelProvenAbsent {
+                proof_digest: proof_digest.clone(),
+            },
+            now_ms,
+        )?;
+        self.apply_taskflow_cancel_proven_absent(&command).await?;
         Ok(())
     }
 
@@ -848,6 +805,38 @@ impl AutomationStore {
             fencing_token,
         })
     }
+}
+
+fn automation_recovery_fence(
+    run: &TaskFlowRun,
+    occurrence: &AutomationOccurrence,
+) -> Result<TaskFlowFence, TaskFlowError> {
+    let expected_owner = format!("automation.scheduler:{}", occurrence.task_id);
+    if run.owner_id.as_deref() != Some(expected_owner.as_str()) {
+        return Err(TaskFlowError::StaleFence);
+    }
+    Ok(TaskFlowFence {
+        owner_agent_id: occurrence
+            .task_id
+            .to_string()
+            .parse::<uuid::Uuid>()
+            .ok()
+            .and_then(|_| Some(run.owner_agent_id.clone()))
+            .unwrap_or_else(|| run.owner_agent_id.clone()),
+        owner_id: run
+            .owner_id
+            .clone()
+            .ok_or_else(|| TaskFlowError::Corrupt("automation run lost owner id".to_string()))?,
+        owner_epoch: run
+            .owner_epoch
+            .ok_or_else(|| TaskFlowError::Corrupt("automation run lost owner epoch".to_string()))?,
+        generation: run
+            .generation
+            .ok_or_else(|| TaskFlowError::Corrupt("automation run lost generation".to_string()))?,
+        fencing_token: run.fencing_token.clone().ok_or_else(|| {
+            TaskFlowError::Corrupt("automation run lost fencing token".to_string())
+        })?,
+    })
 }
 
 pub fn admission_receipt_digest(occurrence: &AutomationOccurrence) -> Sha256Digest {
