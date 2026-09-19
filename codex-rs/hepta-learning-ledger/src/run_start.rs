@@ -279,9 +279,9 @@ impl DurableRunStartJournal {
             if existing.record_digest != record_digest || existing.record != record {
                 return Err(RunStartStoreError::Conflict);
             }
-            if existing.predecessor_chain_digest != expected_predecessor {
-                return Err(RunStartStoreError::Conflict);
-            }
+            // Exact run identity is sufficient for idempotent replay even when
+            // later runs have advanced the journal head. The predecessor fence
+            // applies only to new appends.
             return Ok(RunStartAppendReceipt {
                 disposition: RunStartAppendDisposition::IdempotentReplay,
                 sequence: existing.sequence,
