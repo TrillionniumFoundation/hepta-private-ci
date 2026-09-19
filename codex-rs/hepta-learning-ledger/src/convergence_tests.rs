@@ -207,6 +207,8 @@ fn unlearning_lineage_requires_revoked_source_and_linear_derived_head() {
         derived_id: id("dataset-1"),
         derived_kind: UnlearningDerivedKindV1::Dataset,
         predecessor: None,
+        upstream_derived_id: None,
+        upstream_derived_digest: None,
         authority_id: id("privacy-owner"),
         reason_digest: digest("reason"),
         source_digest,
@@ -244,7 +246,36 @@ fn unlearning_lineage_requires_revoked_source_and_linear_derived_head() {
     successor.record_id = id("unlearn-2");
     successor.predecessor = Some(id("unlearn-1"));
     successor.derived_digest = digest("dataset-successor");
+    let successor_digest = successor.derived_digest;
     ledger
         .append(LedgerEvent::UnlearningLineage(successor))
         .expect("lineage successor");
+
+    let artifact_without_dataset = UnlearningLineageEventV1 {
+        record_id: id("unlearn-artifact-missing-upstream"),
+        source_record_id: id("decision-1"),
+        derived_id: id("artifact-1"),
+        derived_kind: UnlearningDerivedKindV1::Artifact,
+        predecessor: None,
+        upstream_derived_id: None,
+        upstream_derived_digest: None,
+        authority_id: id("privacy-owner"),
+        reason_digest: digest("reason"),
+        source_digest,
+        derived_digest: digest("artifact"),
+    };
+    assert_eq!(
+        ledger.append(LedgerEvent::UnlearningLineage(
+            artifact_without_dataset.clone()
+        )),
+        Err(LedgerError::UnlearningUpstreamRequired)
+    );
+
+    let mut artifact = artifact_without_dataset;
+    artifact.record_id = id("unlearn-artifact-1");
+    artifact.upstream_derived_id = Some(id("dataset-1"));
+    artifact.upstream_derived_digest = Some(successor_digest);
+    ledger
+        .append(LedgerEvent::UnlearningLineage(artifact))
+        .expect("source -> dataset -> artifact lineage");
 }
