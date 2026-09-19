@@ -1,0 +1,58 @@
+name: Hepta offline native build inputs
+
+on:
+  push:
+    branches: [work/architecture-scalability-convergence-20260918]
+    paths: [.github/workflows/hepta-offline-build-inputs.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-offline-build-inputs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  inputs:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Resolve the exact locked dependency sources
+        working-directory: codex-rs
+        env:
+          RUSTUP_TOOLCHAIN: 1.95.0
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal
+          mkdir -p "$RUNNER_TEMP/hepta-offline-inputs"
+          cargo vendor --locked --versioned-dirs "$RUNNER_TEMP/hepta-offline-inputs/vendor" > "$RUNNER_TEMP/hepta-offline-inputs/offline-config.toml"
+          sha256sum Cargo.lock > "$RUNNER_TEMP/hepta-offline-inputs/lock.sha256"
+          printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/hepta-offline-inputs/source-sha.txt"
+          git diff --exit-code -- Cargo.lock
+      - name: Install the pinned offline host compiler
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0-x86_64-unknown-linux-gnu --force-non-host --profile minimal --component rustfmt --component clippy
+          tar -C "$HOME/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu" -czf "$RUNNER_TEMP/hepta-offline-inputs/compiler.tar.gz" .
+      - name: Package source inputs only, never credentials or mutable Cargo configuration
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/hepta-offline-inputs"
+          tar -czf dependencies.tar.gz vendor offline-config.toml lock.sha256 source-sha.txt
+          sha256sum compiler.tar.gz dependencies.tar.gz > SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-offline-build-inputs-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-offline-inputs/compiler.tar.gz
+            ${{ runner.temp }}/hepta-offline-inputs/dependencies.tar.gz
+            ${{ runner.temp }}/hepta-offline-inputs/SHA256SUMS
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error
