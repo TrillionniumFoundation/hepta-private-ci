@@ -292,6 +292,13 @@ def _git_identity(root: Path, commit: str) -> tuple[str, tuple[str, ...]]:
     return tree, parents
 
 
+def _deterministic_merge_tree(root: Path, base_commit: str, source_commit: str) -> str:
+    tree = _run_git(root, "merge-tree", "--write-tree", base_commit, source_commit)
+    if SHA1.fullmatch(tree) is None or tree == "0" * 40:
+        raise EngineeringError("deterministic_merge_tree_failed")
+    return tree
+
+
 def _normal_remote(value: str) -> str:
     value = value.strip().removesuffix(".git").removesuffix("/")
     if value.startswith("git@github.com:"):
@@ -409,9 +416,12 @@ def verify_integration_evidence(
         source_tree, _source_parents = _git_identity(repository, source.source_commit)
         exact_tree, exact_parents = _git_identity(repository, source_execution.commit)
         merge_tree, merge_parents = _git_identity(repository, merge_execution.commit)
+        deterministic_merge_tree = _deterministic_merge_tree(
+            repository, source.base_commit, source.source_commit
+        )
     except EngineeringError as error:
         reasons.append(error.code)
-        base_tree = source_tree = exact_tree = merge_tree = ""
+        base_tree = source_tree = exact_tree = merge_tree = deterministic_merge_tree = ""
         exact_parents = merge_parents = ()
     if base_tree != source.base_tree:
         reasons.append("base_tree_mismatch")
@@ -438,9 +448,11 @@ def verify_integration_evidence(
         reasons.append("merge_execution_identity_mismatch")
     if merge_parents != (source.base_commit, source.source_commit):
         reasons.append("merge_parent_order_mismatch")
-    if merge_tree != source.expected_merge_tree:
+    if deterministic_merge_tree != source.expected_merge_tree:
+        reasons.append("expected_merge_tree_mismatch")
+    if merge_tree != deterministic_merge_tree:
         reasons.append("merge_tree_mismatch")
-    if merge_execution.tree != source.expected_merge_tree:
+    if merge_execution.tree != deterministic_merge_tree:
         reasons.append("merge_execution_expected_tree_mismatch")
     if merge_execution.commit in {source.source_commit, source.base_commit, *merge_parents}:
         reasons.append("synthetic_merge_not_distinct")
