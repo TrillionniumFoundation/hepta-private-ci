@@ -202,3 +202,11 @@ async fn endpoint_denial_updates_head_and_old_head_cannot_roll_back() -> Result<
     server.await??;
     Ok(())
 }
+
+#[test]
+fn connected_issuer_peer_uid_must_match_configured_owner() {
+    let owner = rustix::process::geteuid().as_raw();
+    assert!(validate_issuer_peer_uid(owner, owner).is_ok());
+    let other = owner.checked_add(1).unwrap_or_else(|| owner.saturating_sub(1));
+    assert!(validate_issuer_peer_uid(other, owner).is_err());
+}
