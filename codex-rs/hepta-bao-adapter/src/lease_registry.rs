@@ -8,6 +8,8 @@ use std::fmt;
 use std::path::Path;
 use std::time::Duration;
 
+use serde::Deserialize;
+use serde::Serialize;
 use sqlx::Row;
 use sqlx::SqlitePool;
 use sqlx::sqlite::SqliteConnectOptions;
@@ -19,7 +21,7 @@ const SCHEMA_VERSION: i64 = 1;
 const MAX_ID_BYTES: usize = 512;
 const MAX_PROVIDER_PATH_BYTES: usize = 2048;
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub enum LeaseState {
     Issuing,
     Active,
@@ -57,7 +59,7 @@ impl LeaseState {
     }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub enum LeaseOperationKind {
     Issue,
     Renew,
@@ -83,7 +85,7 @@ impl LeaseOperationKind {
     }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 pub enum LeaseOperationState {
     Prepared,
     InFlight,
@@ -509,30 +511,44 @@ impl LeaseRegistry {
         operation_id: &str,
         now_ms: u64,
     ) -> Result<(), LeaseRegistryError> {
-        let row = sqlx::query("SELECT lease_id FROM lease_operations WHERE operation_id=?")
+        validate_id(operation_id)?;
+        let mut tx = self.pool.begin().await.map_err(|_| LeaseRegistryError::StoreUnavailable)?;
+        let row = sqlx::query("SELECT lease_id,state FROM lease_operations WHERE operation_id=?")
             .bind(operation_id)
-            .fetch_optional(&self.pool)
+            .fetch_optional(&mut *tx)
             .await
             .map_err(|_| LeaseRegistryError::StoreUnavailable)?
             .ok_or(LeaseRegistryError::OperationNotFound)?;
-        let lease_id: Option<String> = row.try_get("lease_id").map_err(|_| LeaseRegistryError::CorruptState)?;
-        self.transition_operation(
-            operation_id,
-            &[LeaseOperationState::InFlight],
-            LeaseOperationState::Unknown,
-            now_ms,
+        let state = LeaseOperationState::parse(
+            row.try_get::<String, _>("state")
+                .map_err(|_| LeaseRegistryError::CorruptState)?
+                .as_str(),
+        )?;
+        if state != LeaseOperationState::InFlight {
+            return Err(LeaseRegistryError::InvalidOperationState);
+        }
+        let lease_id: Option<String> = row
+            .try_get("lease_id")
+            .map_err(|_| LeaseRegistryError::CorruptState)?;
+        sqlx::query(
+            "UPDATE lease_operations SET state='unknown',observed_at_ms=? WHERE operation_id=?",
         )
-        .await?;
+        .bind(to_i64(now_ms)?)
+        .bind(operation_id)
+        .execute(&mut *tx)
+        .await
+        .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
         if let Some(lease_id) = lease_id {
             sqlx::query(
                 "UPDATE secret_leases SET state='unknown',revision=revision+1,updated_at_ms=? WHERE lease_id=?",
             )
             .bind(to_i64(now_ms)?)
             .bind(lease_id)
-            .execute(&self.pool)
+            .execute(&mut *tx)
             .await
             .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
         }
+        tx.commit().await.map_err(|_| LeaseRegistryError::StoreUnavailable)?;
         Ok(())
     }
 
