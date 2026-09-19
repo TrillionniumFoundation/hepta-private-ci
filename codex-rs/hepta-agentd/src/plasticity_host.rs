@@ -500,10 +500,22 @@ pub fn resolve_agentd_plasticity_owner_evidence_set_v1(
     let mut digests = Vec::with_capacity(6 + input.generator_profile.signals.len());
     for (kind, evidence_digest) in [
         (PlasticityOwnerEvidenceKindV1::Dataset, input.dataset_digest),
-        (PlasticityOwnerEvidenceKindV1::UpdateRule, input.update_rule_digest),
-        (PlasticityOwnerEvidenceKindV1::Modulator, input.modulator_digest),
-        (PlasticityOwnerEvidenceKindV1::ModulatorBroadcast, input.modulator_broadcast_digest),
-        (PlasticityOwnerEvidenceKindV1::Eligibility, input.eligibility_digest),
+        (
+            PlasticityOwnerEvidenceKindV1::UpdateRule,
+            input.update_rule_digest,
+        ),
+        (
+            PlasticityOwnerEvidenceKindV1::Modulator,
+            input.modulator_digest,
+        ),
+        (
+            PlasticityOwnerEvidenceKindV1::ModulatorBroadcast,
+            input.modulator_broadcast_digest,
+        ),
+        (
+            PlasticityOwnerEvidenceKindV1::Eligibility,
+            input.eligibility_digest,
+        ),
         (
             PlasticityOwnerEvidenceKindV1::MutationPolicy,
             input.generator_profile.mutation_policy.policy_digest,
@@ -536,8 +548,8 @@ pub fn resolve_agentd_plasticity_owner_evidence_set_v1(
     }
 
     let mut bytes = b"hepta.agentd.plasticity-owner-evidence-set.v1\0".to_vec();
-    let count = u32::try_from(digests.len())
-        .map_err(|_| PlasticityOwnerEvidenceErrorV1::InvalidReceipt)?;
+    let count =
+        u32::try_from(digests.len()).map_err(|_| PlasticityOwnerEvidenceErrorV1::InvalidReceipt)?;
     bytes.extend_from_slice(&count.to_be_bytes());
     for digest in digests {
         bytes.extend_from_slice(digest.as_array());
@@ -798,7 +810,8 @@ mod tests {
             fn resolve(
                 &self,
                 query: &PlasticityOwnerEvidenceQueryV1,
-            ) -> Result<VerifiedPlasticityOwnerEvidenceV1, PlasticityOwnerEvidenceErrorV1> {
+            ) -> Result<VerifiedPlasticityOwnerEvidenceV1, PlasticityOwnerEvidenceErrorV1>
+            {
                 self.seen
                     .borrow_mut()
                     .push((query.kind, query.evidence_digest));
@@ -849,9 +862,8 @@ mod tests {
         let resolver = RecordingResolver {
             seen: RefCell::new(Vec::new()),
         };
-        let set_digest =
-            resolve_agentd_plasticity_owner_evidence_set_v1(&input, &resolver, 50)
-                .expect("owner evidence set");
+        let set_digest = resolve_agentd_plasticity_owner_evidence_set_v1(&input, &resolver, 50)
+            .expect("owner evidence set");
         assert!(!set_digest.is_zero());
 
         let seen = resolver.seen.borrow();
