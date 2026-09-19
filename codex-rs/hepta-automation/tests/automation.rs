@@ -4,8 +4,11 @@ use std::time::Duration;
 use codex_hepta_automation::AutomationAdmission;
 use codex_hepta_automation::AutomationError;
 use codex_hepta_automation::AutomationFuture;
+use codex_hepta_automation::AutomationMissedRunPolicy;
+use codex_hepta_automation::AutomationOverlapPolicy;
 use codex_hepta_automation::AutomationQueueReceipt;
 use codex_hepta_automation::AutomationSchedule;
+use codex_hepta_automation::AutomationSchedulePolicy;
 use codex_hepta_automation::AutomationScheduler;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_automation::AutomationTaskDraft;
@@ -14,6 +17,7 @@ use codex_hepta_automation::AutomationTaskState;
 use codex_hepta_automation::AutomationTick;
 use codex_hepta_automation::AutomationTurnQueue;
 use codex_hepta_automation::TaskFlowCommand;
+use codex_hepta_automation::deterministic_occurrence_id;
 use codex_hepta_automation::TaskFlowFence;
 use codex_hepta_automation::TaskFlowTransition;
 use codex_hepta_contracts::AgentId;
@@ -1422,4 +1426,290 @@ async fn five_real_agent_identities_are_isolated_and_one_blocked_backlog_cannot_
         a_task.await.expect("join A").expect("A tick"),
         AutomationTick::Submitted { .. }
     ));
+}
+
+
+#[tokio::test]
+async fn coalesce_materializes_only_the_latest_due_slot_with_deterministic_identity() {
+    let fixture = FleetFixture::new(1);
+    let store = AutomationStore::open(&fixture.layouts[0])
+        .await
+        .expect("open store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75201",
+        AutomationSchedule::FixedInterval { interval_ms: 1_000 },
+        100,
+    );
+    let policy = AutomationSchedulePolicy::new(
+        AutomationOverlapPolicy::Allow,
+        AutomationMissedRunPolicy::Coalesce,
+        8,
+    )
+    .expect("policy");
+    store
+        .create_task_with_policy(&task, policy)
+        .await
+        .expect("create task");
+
+    let lease = store
+        .claim_due(10_100, 1, 30_000)
+        .await
+        .expect("claim")
+        .expect("coalesced occurrence");
+    assert_eq!(lease.scheduled_for_ms, 10_100);
+    assert_eq!(lease.schedule_revision, 1);
+    assert_eq!(
+        lease.occurrence_id,
+        deterministic_occurrence_id(store.owner_agent_id(), task.task_id, 1, 10_100)
+            .expect("deterministic id")
+    );
+    assert_eq!(
+        store
+            .task(task.task_id)
+            .await
+            .expect("read")
+            .expect("task")
+            .next_run_at_ms,
+        Some(11_100)
+    );
+}
+
+#[tokio::test]
+async fn bounded_catch_up_never_drains_an_unbounded_stale_backlog() {
+    let fixture = FleetFixture::new(1);
+    let store = AutomationStore::open(&fixture.layouts[0])
+        .await
+        .expect("open store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75202",
+        AutomationSchedule::FixedInterval { interval_ms: 1_000 },
+        100,
+    );
+    let policy = AutomationSchedulePolicy::new(
+        AutomationOverlapPolicy::Allow,
+        AutomationMissedRunPolicy::BoundedCatchUp,
+        3,
+    )
+    .expect("policy");
+    store
+        .create_task_with_policy(&task, policy)
+        .await
+        .expect("create task");
+
+    let mut instants = Vec::new();
+    for occurrence in 1..=3 {
+        let lease = store
+            .claim_due(10_100, occurrence, 30_000)
+            .await
+            .expect("claim")
+            .expect("bounded occurrence");
+        instants.push(lease.scheduled_for_ms);
+        store
+            .mark_submitted(
+                &lease,
+                &AutomationQueueReceipt {
+                    queued_submission_id: format!("bounded-{occurrence}"),
+                    client_user_message_id: lease.client_user_message_id.clone(),
+                },
+                10_100 + occurrence,
+            )
+            .await
+            .expect("mark submitted");
+    }
+    assert_eq!(instants, vec![100, 1_100, 10_100]);
+    assert!(
+        store
+            .claim_due(10_100, 4, 30_000)
+            .await
+            .expect("post catch-up claim")
+            .is_none(),
+        "catch-up budget must coalesce the remaining stale slots"
+    );
+    assert_eq!(
+        store
+            .task(task.task_id)
+            .await
+            .expect("read")
+            .expect("task")
+            .next_run_at_ms,
+        Some(11_100)
+    );
+}
+
+#[tokio::test]
+async fn overlap_policy_controls_materialization_after_queue_admission() {
+    let forbid_fixture = FleetFixture::new(1);
+    let forbid_store = AutomationStore::open(&forbid_fixture.layouts[0])
+        .await
+        .expect("forbid store");
+    let forbid_task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75203",
+        AutomationSchedule::FixedInterval { interval_ms: 1_000 },
+        100,
+    );
+    forbid_store
+        .create_task_with_policy(
+            &forbid_task,
+            AutomationSchedulePolicy::new(
+                AutomationOverlapPolicy::Forbid,
+                AutomationMissedRunPolicy::Coalesce,
+                1,
+            )
+            .expect("forbid policy"),
+        )
+        .await
+        .expect("create forbid task");
+    let forbid_first = forbid_store
+        .claim_due(100, 1, 30_000)
+        .await
+        .expect("claim forbid first")
+        .expect("forbid first");
+    forbid_store
+        .mark_submitted(
+            &forbid_first,
+            &AutomationQueueReceipt {
+                queued_submission_id: "forbid-first".to_string(),
+                client_user_message_id: forbid_first.client_user_message_id.clone(),
+            },
+            101,
+        )
+        .await
+        .expect("submit forbid first");
+    assert!(
+        forbid_store
+            .claim_due(1_100, 2, 30_000)
+            .await
+            .expect("claim forbid second")
+            .is_none(),
+        "forbid overlap waits for automation terminality, not queue admission"
+    );
+
+    let allow_fixture = FleetFixture::new(1);
+    let allow_store = AutomationStore::open(&allow_fixture.layouts[0])
+        .await
+        .expect("allow store");
+    let allow_task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75204",
+        AutomationSchedule::FixedInterval { interval_ms: 1_000 },
+        100,
+    );
+    allow_store
+        .create_task_with_policy(
+            &allow_task,
+            AutomationSchedulePolicy::new(
+                AutomationOverlapPolicy::Allow,
+                AutomationMissedRunPolicy::Coalesce,
+                1,
+            )
+            .expect("allow policy"),
+        )
+        .await
+        .expect("create allow task");
+    let allow_first = allow_store
+        .claim_due(100, 1, 30_000)
+        .await
+        .expect("claim allow first")
+        .expect("allow first");
+    allow_store
+        .mark_submitted(
+            &allow_first,
+            &AutomationQueueReceipt {
+                queued_submission_id: "allow-first".to_string(),
+                client_user_message_id: allow_first.client_user_message_id.clone(),
+            },
+            101,
+        )
+        .await
+        .expect("submit allow first");
+    let allow_second = allow_store
+        .claim_due(1_100, 2, 30_000)
+        .await
+        .expect("claim allow second")
+        .expect("allow overlap materializes second occurrence");
+    assert_eq!(allow_second.occurrence, 2);
+    assert_eq!(allow_second.scheduled_for_ms, 1_100);
+}
+
+#[tokio::test]
+async fn schedule_revision_is_fenced_by_active_occurrences_and_changes_occurrence_identity() {
+    let fixture = FleetFixture::new(1);
+    let store = AutomationStore::open(&fixture.layouts[0])
+        .await
+        .expect("open store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75205",
+        AutomationSchedule::FixedInterval { interval_ms: 1_000 },
+        100,
+    );
+    let policy = AutomationSchedulePolicy::default();
+    store
+        .create_task_with_policy(&task, policy)
+        .await
+        .expect("create task");
+    let first = store
+        .claim_due(100, 1, 30_000)
+        .await
+        .expect("claim first")
+        .expect("first occurrence");
+    assert_eq!(
+        store
+            .revise_task_schedule(
+                task.task_id,
+                1,
+                AutomationSchedule::FixedInterval { interval_ms: 2_000 },
+                5_000,
+                policy,
+                101,
+            )
+            .await,
+        Err(AutomationError::Conflict),
+        "active occurrence must fence schedule revision"
+    );
+
+    store
+        .ensure_occurrence_taskflow(&first, 101)
+        .await
+        .expect("bind first TaskFlow");
+    store
+        .mark_submitted(
+            &first,
+            &AutomationQueueReceipt {
+                queued_submission_id: "revision-first".to_string(),
+                client_user_message_id: first.client_user_message_id.clone(),
+            },
+            102,
+        )
+        .await
+        .expect("submit first");
+    store
+        .start_occurrence_taskflow(&first, 102, 30_000)
+        .await
+        .expect("start first TaskFlow");
+    terminalize_occurrence(&store, task.task_id, 1, 103).await;
+
+    let revised = store
+        .revise_task_schedule(
+            task.task_id,
+            1,
+            AutomationSchedule::FixedInterval { interval_ms: 2_000 },
+            5_000,
+            policy,
+            104,
+        )
+        .await
+        .expect("revise after terminal occurrence");
+    assert_eq!(revised.schedule_revision, 2);
+
+    let second = store
+        .claim_due(5_000, 2, 30_000)
+        .await
+        .expect("claim revised")
+        .expect("revised occurrence");
+    assert_eq!(second.schedule_revision, 2);
+    assert_ne!(second.occurrence_id, first.occurrence_id);
+    assert_eq!(
+        second.occurrence_id,
+        deterministic_occurrence_id(store.owner_agent_id(), task.task_id, 2, 5_000)
+            .expect("revision 2 identity")
+    );
 }
