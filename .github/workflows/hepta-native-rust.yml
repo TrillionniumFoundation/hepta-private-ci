@@ -217,6 +217,16 @@ jobs:
           pathlib.Path("dist/qualification-receipt.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
           '@ | python -
 
+      - name: Preserve resolved native Cargo lock (Unix)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: cp Cargo.lock dist/Cargo.lock
+
+      - name: Preserve resolved native Cargo lock (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Copy-Item Cargo.lock dist/Cargo.lock
+
       - name: Upload unsigned development artifact
         uses: actions/upload-artifact@v4
         with:
