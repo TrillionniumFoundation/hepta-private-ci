@@ -302,6 +302,14 @@ pub fn build_qualified_candidate(
         .validate()
         .map_err(QualifiedCompactionError::Contract)?;
     policy.validate()?;
+    let expected_generation = source_snapshot
+        .vector
+        .compact_checkpoint_generation
+        .next()
+        .map_err(|_| QualifiedCompactionError::Arithmetic)?;
+    if generation != expected_generation {
+        return Err(QualifiedCompactionError::GenerationMismatch);
+    }
     if policy.tokenizer_digest != source_snapshot.vector.tokenizer_digest {
         return Err(QualifiedCompactionError::TokenizerMismatch);
     }
@@ -684,6 +692,7 @@ pub enum QualifiedCompactionError {
     InvalidTokenLimit,
     InvalidResourceCost,
     TokenizerMismatch,
+    GenerationMismatch,
     InputLimitExceeded,
     ProtectedReferenceLimitExceeded,
     DuplicateProtectedReference(String),
