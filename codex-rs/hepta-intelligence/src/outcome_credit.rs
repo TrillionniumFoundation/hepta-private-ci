@@ -132,10 +132,7 @@ fn validate_request(
     Ok(())
 }
 
-fn push_id(
-    bytes: &mut Vec<u8>,
-    value: &StableId,
-) -> Result<(), OutcomeCreditClosureErrorV1> {
+fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), OutcomeCreditClosureErrorV1> {
     let raw = value.as_str().as_bytes();
     let length = u32::try_from(raw.len())
         .map_err(|_| OutcomeCreditClosureErrorV1::Binding("identifier length"))?;
@@ -220,8 +217,7 @@ mod tests {
         let mut ledger = DurableLedger::create(file, binding, 3).expect("ledger");
         let decision = ledger.append(Digest32::ZERO, decision()).expect("decision");
         let request = request(decision.chain_digest);
-        let receipt =
-            append_outcome_credit_v1(request.clone(), &mut ledger).expect("closure");
+        let receipt = append_outcome_credit_v1(request.clone(), &mut ledger).expect("closure");
         assert_eq!(receipt.outcome.disposition, AppendDisposition::Appended);
         assert_eq!(receipt.credit.disposition, AppendDisposition::Appended);
         assert!(!receipt.closure_digest.is_zero());
@@ -245,8 +241,14 @@ mod tests {
         .expect("recover");
         assert_eq!(reopened.records().expect("records").len(), 3);
         let replay = append_outcome_credit_v1(request, &mut reopened).expect("replay");
-        assert_eq!(replay.outcome.disposition, AppendDisposition::IdempotentReplay);
-        assert_eq!(replay.credit.disposition, AppendDisposition::IdempotentReplay);
+        assert_eq!(
+            replay.outcome.disposition,
+            AppendDisposition::IdempotentReplay
+        );
+        assert_eq!(
+            replay.credit.disposition,
+            AppendDisposition::IdempotentReplay
+        );
         assert_eq!(replay.closure_digest, receipt.closure_digest);
     }
 
