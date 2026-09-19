@@ -178,7 +178,7 @@ pub fn convert_z_to_original_q24(
         for value in row {
             let scaled = *value * Q24_SCALE;
             if !scaled.is_finite()
-                || scaled < -(1_u64 << 53) as f64
+                || scaled < -((1_u64 << 53) as f64)
                 || scaled > (1_u64 << 53) as f64
             {
                 return Err(ZConversionError::Q24Overflow);
