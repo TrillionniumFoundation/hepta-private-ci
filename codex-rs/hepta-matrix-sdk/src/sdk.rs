@@ -6,6 +6,8 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_matrix_protocol::MatrixEventId;
+use codex_hepta_matrix_protocol::matrix_binding_digest;
+use codex_hepta_matrix_store::MatrixDispatchContext;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::MatrixSyncCheckpoint;
 use codex_hepta_matrix_store::OutboxRecord;
@@ -33,6 +35,7 @@ use crate::MatrixSession;
 use crate::MatrixSidecarConfig;
 use crate::MatrixSidecarConfigError;
 use crate::MatrixTransportError;
+use crate::dispatch_reconcile::reconcile_sync_dispatches;
 use crate::sync::MatrixSyncComposer;
 
 const MATRIX_ROOM_MESSAGE_EVENT_TYPE: &str = "m.room.message";
@@ -287,23 +290,32 @@ impl MatrixSdkClient {
             .await
             .map_err(|_| MatrixSdkError::Sync)?
             .map_err(|_| MatrixSdkError::Sync)?;
+            let observed_at_ms = system_time_ms()?;
+            // Settle matching durable sends before advancing the authoritative
+            // Hepta sync cursor. If the process dies after this point but before
+            // the ingress commit, the same /sync response is replayed and the
+            // exact txn/event observation is idempotent.
+            reconcile_sync_dispatches(
+                store,
+                &response,
+                self.config.binding.revision,
+                self.config.matrix_generation,
+                &self.config.binding.expected_mxid,
+                observed_at_ms,
+            )
+            .await?;
             MatrixSyncComposer {
                 config: &self.config,
                 ingress,
                 store,
             }
-            .commit_response(
-                &response,
-                checkpoint.as_ref(),
-                system_time_ms()?,
-                |room_id| {
-                    self.client.get_room(room_id).and_then(|room| {
-                        room.clone_info()
-                            .room_version()
-                            .and_then(matrix_sdk::ruma::RoomVersionId::rules)
-                    })
-                },
-            )
+            .commit_response(&response, checkpoint.as_ref(), observed_at_ms, |room_id| {
+                self.client.get_room(room_id).and_then(|room| {
+                    room.clone_info()
+                        .room_version()
+                        .and_then(matrix_sdk::ruma::RoomVersionId::rules)
+                })
+            })
             .await
         }
         .await;
@@ -347,6 +359,21 @@ fn hepta_sync_token(checkpoint: Option<&MatrixSyncCheckpoint>) -> SyncToken {
 }
 
 impl MatrixOutboundTransport for MatrixSdkClient {
+    fn dispatch_context(&self, record: &OutboxRecord) -> MatrixDispatchContext {
+        MatrixDispatchContext {
+            homeserver_id: Some(self.config.binding.homeserver.as_str().to_string()),
+            device_id: Some(self.config.binding.expected_device_id.as_str().to_string()),
+            session_generation: record.generation,
+            binding_revision: record.binding_revision,
+            authority_epoch: None,
+            authority_binding_digest: matrix_binding_digest(&self.config.binding)
+                .ok()
+                .map(|digest| digest.as_str().to_string()),
+            grant_id: None,
+            grant_payload_digest: None,
+        }
+    }
+
     fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a> {
         Box::pin(async move {
             if !self.config.binding.allowed_rooms.contains(&record.room_id)

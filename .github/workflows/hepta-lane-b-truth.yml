@@ -5,6 +5,10 @@ on:
     paths:
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
+      - "codex-rs/hepta-matrixd/**"
+      - "codex-rs/hepta-matrix-sdk/**"
+      - "codex-rs/hepta-matrix-store/**"
+      - "codex-rs/hepta-matrix-protocol/**"
       - "docs/memory/**"
       - "docs/modules/**/IMPLEMENTATION_MAP.json"
       - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
@@ -12,6 +16,7 @@ on:
       - "scripts/hepta-lane-b-*.py"
       - "scripts/test_hepta_lane_b_*.py"
       - ".github/workflows/hepta-lane-b-truth.yml"
+      - ".github/workflows/hepta-matrix-real-synapse.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   push:
     branches:
@@ -19,6 +24,10 @@ on:
     paths:
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
+      - "codex-rs/hepta-matrixd/**"
+      - "codex-rs/hepta-matrix-sdk/**"
+      - "codex-rs/hepta-matrix-store/**"
+      - "codex-rs/hepta-matrix-protocol/**"
       - "docs/memory/**"
       - "docs/modules/**/IMPLEMENTATION_MAP.json"
       - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
@@ -26,6 +35,7 @@ on:
       - "scripts/hepta-lane-b-*.py"
       - "scripts/test_hepta_lane_b_*.py"
       - ".github/workflows/hepta-lane-b-truth.yml"
+      - ".github/workflows/hepta-matrix-real-synapse.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   workflow_dispatch:
 
@@ -87,6 +97,9 @@ jobs:
           cargo test -p codex-hepta-infer-worker-host --bin hepta-infer-worker
           cargo test -p codex-hepta-automation --lib
           cargo test -p codex-hepta-automation --bin hepta-taskflow-runtime
+          cargo test -p codex-hepta-matrix-store --test dispatch_ledger
+          cargo test -p codex-hepta-matrix-sdk
+          cargo test -p codex-hepta-matrix-sdk --test durable_transport
           cargo test -p codex-hepta-matrixd --lib
           cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
           cargo test -p codex-app-server --test all thread_start
@@ -120,7 +133,7 @@ jobs:
           author-email: hepta-lane-b-ci@users.noreply.github.com
           message: Synthetic Lane B merge
 
-      - name: Verify synthetic merge truth and tests
+      - name: Verify synthetic merge truth and Matrix closure tests
         env:
           EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
           HEPTA_SYNTHETIC_MERGE: "1"
@@ -130,6 +143,10 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta-lane-b-path-guard.py verify
           python3 scripts/hepta-lane-b-truth.py verify
+          cd codex-rs
+          cargo test -p codex-hepta-matrix-store --test dispatch_ledger
+          cargo test -p codex-hepta-matrix-sdk --test durable_transport
+          cargo test -p codex-hepta-matrixd --lib
           cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
           cd ..
           git diff --check

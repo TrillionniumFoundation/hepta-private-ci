@@ -6,6 +6,8 @@
 
 #![forbid(unsafe_code)]
 
+mod dispatch_ledger;
+mod dispatch_lookup;
 mod model;
 mod store;
 
@@ -13,6 +15,12 @@ pub use codex_hepta_matrix_protocol::MatrixEventId;
 pub use codex_hepta_matrix_protocol::MatrixRoomId;
 pub use codex_hepta_matrix_protocol::MatrixTransactionId;
 pub use codex_hepta_matrix_protocol::MatrixUserId;
+pub use dispatch_ledger::MAX_UNRESOLVED_MATRIX_DISPATCHES;
+pub use dispatch_ledger::MatrixDispatchContext;
+pub use dispatch_ledger::MatrixDispatchIntent;
+pub use dispatch_ledger::MatrixDispatchReceipt;
+pub use dispatch_ledger::MatrixDispatchState;
+pub use dispatch_ledger::matrix_dispatch_operation_id;
 pub use model::ChangeEvent;
 pub use model::ChangeKind;
 pub use model::ChangePage;

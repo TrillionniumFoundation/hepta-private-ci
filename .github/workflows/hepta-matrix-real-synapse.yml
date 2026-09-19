@@ -1,0 +1,115 @@
+name: Hepta Matrix real Synapse qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_sha:
+        description: Exact commit SHA to qualify
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-matrix-real-synapse-${{ inputs.candidate_sha }}
+  cancel-in-progress: false
+
+jobs:
+  qualify-real-synapse:
+    name: Qualify exact Matrix candidate against pinned Synapse
+    # The checked-in hermetic runner intentionally binds macOS/Xcode, Docker,
+    # Homebrew Python/Bash, and the pinned Synapse image. Use the already
+    # registered MacBook Pro integration runner; never auto-run PR code on it.
+    runs-on: [self-hosted, macOS, ARM64, macbook]
+    timeout-minutes: 90
+    steps:
+      - name: Verify trusted Matrix qualification runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_EVENT_NAME" = workflow_dispatch
+          test "$RUNNER_NAME" = macbook-pro
+          test "$RUNNER_OS" = macOS
+          test "$RUNNER_ARCH" = ARM64
+          command -v docker >/dev/null
+          command -v /opt/homebrew/bin/python3 >/dev/null
+          command -v /opt/homebrew/bin/bash >/dev/null
+
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact source identity
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ inputs.candidate_sha }}"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+
+      - name: Run pinned real Synapse qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          artifacts="$RUNNER_TEMP/hepta-matrix-real-synapse"
+          mkdir -p "$artifacts"
+          codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh \
+            --source-root "$GITHUB_WORKSPACE" \
+            --source-mode exact \
+            --artifacts-dir "$artifacts"
+
+      - name: Seal workflow receipt
+        shell: bash
+        env:
+          CANDIDATE_SHA: ${{ steps.source.outputs.sha }}
+          CANDIDATE_TREE: ${{ steps.source.outputs.tree }}
+        run: |
+          set -euo pipefail
+          artifacts="$RUNNER_TEMP/hepta-matrix-real-synapse"
+          /opt/homebrew/bin/python3 - "$artifacts/workflow-receipt.json" <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import sys
+
+          target = pathlib.Path(sys.argv[1])
+          root = target.parent
+          files = []
+          for path in sorted(root.rglob('*')):
+              if not path.is_file() or path == target:
+                  continue
+              digest = hashlib.sha256(path.read_bytes()).hexdigest()
+              files.append({
+                  'path': str(path.relative_to(root)),
+                  'sha256': digest,
+                  'size_bytes': path.stat().st_size,
+              })
+          receipt = {
+              'schema': 'hepta.matrix-real-synapse-workflow-receipt.v1',
+              'candidate_sha': os.environ['CANDIDATE_SHA'],
+              'candidate_tree': os.environ['CANDIDATE_TREE'],
+              'repository': os.environ['GITHUB_REPOSITORY'],
+              'workflow': os.environ['GITHUB_WORKFLOW'],
+              'run_id': os.environ['GITHUB_RUN_ID'],
+              'run_attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'files': files,
+          }
+          target.write_text(json.dumps(receipt, sort_keys=True, indent=2) + '\n', encoding='utf-8')
+          PY
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Upload exact qualification evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: matrix-real-synapse-${{ steps.source.outputs.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-matrix-real-synapse
+          if-no-files-found: error
+          retention-days: 30
