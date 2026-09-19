@@ -6,7 +6,7 @@ import json
 import re
 from pathlib import Path
 
-PREFIX = b"HEPTA-CANONICAL-DIGEST-V1\\x00"
+PREFIX = b"HEPTA-CANONICAL-DIGEST-V1\x00"
 MAX_COLLECTION = 256 * 1024
 TOKEN = re.compile(r"^[a-z0-9._-]+$")
 TYPE_TAGS = {
