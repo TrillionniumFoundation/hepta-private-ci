@@ -220,3 +220,48 @@ async fn expiry_and_unknown_effect_keep_the_hold_until_reconciliation() {
     let status = store.authbus_quota_status(&quota.quota_key).await.unwrap();
     assert_eq!((status.available, status.reserved, status.consumed), (9, 0, 0));
 }
+
+#[tokio::test]
+async fn observed_cost_overrun_keeps_reservation_indeterminate_and_held() {
+    let temp = TempDir::new().unwrap();
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+    let quota = QuotaDefinition {
+        quota_key: id("quota:overrun"),
+        limit: 10,
+        revision: 1,
+    };
+    store.configure_authbus_quota(&quota).await.unwrap();
+    let reservation = store
+        .reserve_authbus_quota(
+            id("reservation:overrun"),
+            quota.quota_key.clone(),
+            id("operation:overrun"),
+            4,
+            1,
+            10_000,
+            &time(1_000),
+        )
+        .await
+        .unwrap();
+    assert!(matches!(
+        store
+            .reconcile_authbus_reservation(
+                &reservation.reservation_id,
+                Digest32::of_bytes(b"provider-overrun"),
+                AuthBusSettlementOutcome::Applied { observed_cost: 5 },
+                &time(2_000),
+            )
+            .await,
+        Err(AuthBusAuthorityError::UsageOverrun)
+    ));
+    let status = store.authbus_quota_status(&quota.quota_key).await.unwrap();
+    assert_eq!((status.available, status.reserved, status.consumed), (6, 4, 0));
+    let row: String = sqlx::query_scalar(
+        "SELECT state FROM authbus_quota_reservations WHERE reservation_id = ?",
+    )
+    .bind(reservation.reservation_id.as_str())
+    .fetch_one(&store.pool)
+    .await
+    .unwrap();
+    assert_eq!(row, "indeterminate");
+}
