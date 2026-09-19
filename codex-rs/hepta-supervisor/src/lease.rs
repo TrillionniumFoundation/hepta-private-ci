@@ -17,7 +17,7 @@ use serde::Serialize;
 use crate::ProcessIdentity;
 use crate::SupervisorError;
 
-const LEGACY_PROCESS_LEASE_SCHEMA_VERSION: u32 = 2;
+pub(crate) const LEGACY_PROCESS_LEASE_SCHEMA_VERSION: u32 = 2;
 pub(crate) const PROCESS_LEASE_SCHEMA_VERSION: u32 = 3;
 pub(crate) const MATRIX_PROCESS_LEASE_SCHEMA_VERSION: u32 = 2;
 const PROCESS_LEASE_FILE: &str = "supervisor-process.json";
