@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
@@ -139,11 +140,20 @@ pub fn canonical_subject_hierarchy_digest(
     let mut normalized = edges.to_vec();
     normalized.sort();
     let mut parents = BTreeMap::<StableId, StableId>::new();
+    let mut classes = BTreeMap::<StableId, SubjectClass>::new();
+    let mut seen_edges = BTreeSet::new();
     let mut bytes = Vec::new();
     bytes.extend_from_slice(SUBJECT_HIERARCHY_DIGEST_DOMAIN);
     bytes.extend_from_slice(&usize_to_u32(normalized.len()).to_be_bytes());
     for edge in &normalized {
         validate_hierarchy_edge(edge)?;
+        if !seen_edges.insert(edge.clone()) {
+            return Err(NduError::InvalidHierarchyRelation(
+                "duplicate hierarchy edge".to_string(),
+            ));
+        }
+        bind_subject_class(&mut classes, &edge.parent_subject_id, edge.parent_subject_class)?;
+        bind_subject_class(&mut classes, &edge.child_subject_id, edge.child_subject_class)?;
         if let Some(existing) =
             parents.insert(edge.child_subject_id.clone(), edge.parent_subject_id.clone())
         {
@@ -178,7 +188,18 @@ pub fn validate_staged_updates(
     }
 
     let mut parents = BTreeMap::<StableId, (&StableId, SubjectClass, SubjectClass)>::new();
+    let mut declared_classes = BTreeMap::<StableId, SubjectClass>::new();
     for edge in &hierarchy.edges {
+        bind_subject_class(
+            &mut declared_classes,
+            &edge.parent_subject_id,
+            edge.parent_subject_class,
+        )?;
+        bind_subject_class(
+            &mut declared_classes,
+            &edge.child_subject_id,
+            edge.child_subject_class,
+        )?;
         parents.insert(
             edge.child_subject_id.clone(),
             (
@@ -190,6 +211,7 @@ pub fn validate_staged_updates(
     }
 
     let mut staged = BTreeMap::<(u64, StableId), &UpdateGeneration>::new();
+    let mut artifact_subjects = BTreeMap::<StableId, StableId>::new();
     for update in updates {
         let key = (update.generation.get(), update.subject_id.clone());
         if staged.insert(key, update).is_some() {
@@ -198,11 +220,21 @@ pub fn validate_staged_updates(
                 update.subject_id
             )));
         }
-        if let Some((_, _, child_class)) = parents.get(&update.subject_id) {
-            if *child_class != update.subject_class {
+        if let Some(expected_class) = declared_classes.get(&update.subject_id) {
+            if *expected_class != update.subject_class {
                 return Err(NduError::InvalidHierarchyRelation(
                     update.subject_id.to_string(),
                 ));
+            }
+        }
+        if let Some(existing_subject) =
+            artifact_subjects.insert(update.artifact_id.clone(), update.subject_id.clone())
+        {
+            if existing_subject != update.subject_id {
+                return Err(NduError::InvalidHierarchyRelation(format!(
+                    "artifact {} is staged for multiple subjects",
+                    update.artifact_id
+                )));
             }
         }
     }
@@ -468,6 +500,21 @@ fn maximum_residual_raw(current: &[AxisValue], target: &[AxisValue]) -> Result<i
         residual_raw = residual_raw.max(residual);
     }
     Ok(residual_raw)
+}
+
+fn bind_subject_class(
+    classes: &mut BTreeMap<StableId, SubjectClass>,
+    subject_id: &StableId,
+    subject_class: SubjectClass,
+) -> Result<(), NduError> {
+    if let Some(existing) = classes.insert(subject_id.clone(), subject_class) {
+        if existing != subject_class {
+            return Err(NduError::InvalidHierarchyRelation(
+                subject_id.to_string(),
+            ));
+        }
+    }
+    Ok(())
 }
 
 fn validate_hierarchy_edge(edge: &SubjectHierarchyEdgeV1) -> Result<(), NduError> {
