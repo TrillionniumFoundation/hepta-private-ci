@@ -25,6 +25,7 @@ impl ModelDriver for Driver {
         &mut self,
         _handle: &DriverModelHandle,
         _request: &WorkerRequest,
+        _response_timeout: Duration,
     ) -> Result<DriverRunObservation, Error> {
         if self.indeterminate {
             return Ok(DriverRunObservation {
@@ -118,6 +119,33 @@ fn loads_runs_and_unloads_exact_model_tuple() {
             .expect("unload")
             .terminal_observed
     );
+}
+
+#[test]
+fn aggregate_reserved_memory_cannot_exceed_the_worker_grant() {
+    let mut bounded_grant = grant();
+    bounded_grant.maximum_memory_bytes = 3_072;
+    bounded_grant.maximum_models = 2;
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.1".to_string(),
+        3,
+        VerifiedResourceGrant::trusted_in_process(100, bounded_grant).unwrap(),
+        Driver::default(),
+    )
+    .expect("worker");
+
+    worker.load_model(100, manifest()).expect("first load");
+
+    let mut second = manifest();
+    second.model_id = "model.2".to_string();
+    second.model_digest = "b".repeat(64);
+    assert_eq!(
+        worker.load_model(100, second),
+        Err(Error::ModelCapacity)
+    );
+    assert_eq!(worker.models.len(), 1);
+    assert_eq!(worker.driver.loaded, 1);
 }
 
 #[test]
