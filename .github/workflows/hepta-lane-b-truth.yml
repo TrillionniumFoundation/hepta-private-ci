@@ -8,6 +8,10 @@ on:
       - "codex-rs/hepta-infer-core/**"
       - "codex-rs/hepta-infer-worker-host/**"
       - "codex-rs/hepta-inferd/**"
+      - "codex-rs/hepta-contracts/src/final_use.rs"
+      - "codex-rs/hepta-contracts/src/final_use_tests.rs"
+      - "codex-rs/app-server-client/src/remote.rs"
+      - "codex-rs/app-server-client/src/lib.rs"
       - "codex-rs/ext/hepta-governance/src/**"
       - "codex-rs/app-server/src/extensions.rs"
       - "codex-rs/mcp-server/src/message_processor.rs"
@@ -36,6 +40,10 @@ on:
       - "codex-rs/hepta-infer-core/**"
       - "codex-rs/hepta-infer-worker-host/**"
       - "codex-rs/hepta-inferd/**"
+      - "codex-rs/hepta-contracts/src/final_use.rs"
+      - "codex-rs/hepta-contracts/src/final_use_tests.rs"
+      - "codex-rs/app-server-client/src/remote.rs"
+      - "codex-rs/app-server-client/src/lib.rs"
       - "codex-rs/ext/hepta-governance/src/**"
       - "codex-rs/app-server/src/extensions.rs"
       - "codex-rs/mcp-server/src/message_processor.rs"
@@ -113,6 +121,8 @@ jobs:
           cargo test -p codex-hepta-supervisor --lib
           cargo test -p codex-hepta-agentd --lib
           cargo test -p codex-hepta-fleet --bin hepta-fleet-leased
+          cargo test -p codex-hepta-contracts --lib
+          cargo test -p codex-app-server-client --lib
           cargo test -p codex-hepta-infer-core --lib
           cargo test -p codex-hepta-infer-core --bin hepta-infer-control
           cargo test -p codex-hepta-infer-worker-host --lib
