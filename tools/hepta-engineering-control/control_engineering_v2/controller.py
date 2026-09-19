@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from .audit import AuditAnchorReceipt, prepare_audit_anchor, verify_audit_anchor
 from .assignment import (
     WorkerIdentityReceipt,
     assignment_status,
@@ -228,6 +229,36 @@ class EngineeringController:
             independence,
             self.verifier,
             expected_document_set_digest=expected_document_set_digest,
+            now_ns=now_ns,
+        )
+
+    def prepare_audit_anchor(
+        self,
+        *,
+        signing_identity: str,
+        expires_unix_ns: int,
+        observed_unix_ns: int | None = None,
+    ) -> AuditAnchorReceipt:
+        return prepare_audit_anchor(
+            self.store,
+            issuer="engineering_audit_witness",
+            signing_identity=signing_identity,
+            observed_unix_ns=observed_unix_ns,
+            expires_unix_ns=expires_unix_ns,
+        )
+
+    def verify_audit_anchor(
+        self,
+        anchor: AuditAnchorReceipt,
+        *,
+        minimum_sequence: int = 0,
+        now_ns: int | None = None,
+    ) -> None:
+        return verify_audit_anchor(
+            self.store,
+            anchor,
+            self.verifier,
+            minimum_sequence=minimum_sequence,
             now_ns=now_ns,
         )
 
