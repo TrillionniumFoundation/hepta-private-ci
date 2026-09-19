@@ -50,8 +50,23 @@ impl SupervisordRequest {
                     Err(SupervisordRequestValidationError::InvalidRequest)
                 }
             }
+            SupervisordMethod::StartAllocated {
+                fence,
+                allocation_id,
+                ..
+            } => {
+                fence.validate()?;
+                if allocation_id.is_empty()
+                    || allocation_id.len() > 128
+                    || !allocation_id
+                        .bytes()
+                        .all(|byte| byte.is_ascii_alphanumeric() || b"._:-".contains(&byte))
+                {
+                    return Err(SupervisordRequestValidationError::InvalidRequest);
+                }
+                Ok(())
+            }
             SupervisordMethod::Start { fence, .. }
-            | SupervisordMethod::StartAllocated { fence, .. }
             | SupervisordMethod::Drain { fence }
             | SupervisordMethod::Stop { fence }
             | SupervisordMethod::Kill { fence }
