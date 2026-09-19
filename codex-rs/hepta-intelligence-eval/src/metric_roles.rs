@@ -50,7 +50,7 @@ pub fn freeze_cross_fold_plan_v2(
 /// Evaluate using the exact roles frozen by [`freeze_cross_fold_plan_v2`].
 /// All V1 evidence, role-separation, holdout and absolute-bound checks apply.
 /// No role or margin can be changed after freezing without a new plan digest.
-pub fn decide_independently_v2(
+pub(crate) fn decide_independently_v2(
     bundle: IndependentEvaluationBundleV1,
     metric_roles: Vec<MetricRoleContractV2>,
     now: u64,
