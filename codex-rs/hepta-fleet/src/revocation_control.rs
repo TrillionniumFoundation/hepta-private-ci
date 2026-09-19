@@ -16,9 +16,9 @@ use codex_hepta_contracts::FinalUseRevocationAck;
 use codex_hepta_contracts::FinalUseRevocationConvergenceReport;
 use codex_hepta_contracts::FinalUseRevocationConvergenceVerifier;
 use codex_hepta_contracts::FinalUseRevocationFeedVerifier;
+use codex_hepta_contracts::MAX_REVOCATION_FEED_LIFETIME_MS;
 use codex_hepta_contracts::SignedFinalUseRevocationAck;
 use codex_hepta_contracts::SignedFinalUseRevocationUpdate;
-use codex_hepta_contracts::MAX_REVOCATION_FEED_LIFETIME_MS;
 
 pub const MAX_FLEET_REVOCATION_NODES: usize = 256;
 
@@ -280,9 +280,7 @@ impl FleetRevocationCoordinator {
         })
     }
 
-    fn current_report(
-        &self,
-    ) -> Result<FinalUseRevocationConvergenceReport, FleetRevocationError> {
+    fn current_report(&self) -> Result<FinalUseRevocationConvergenceReport, FleetRevocationError> {
         let current = self
             .current
             .as_ref()
@@ -388,8 +386,8 @@ mod tests {
             distributor.verifying_key().to_bytes(),
         )
         .unwrap();
-        let convergence = FinalUseRevocationConvergenceVerifier::new([
-            FinalUseRevocationNodeTrust {
+        let convergence =
+            FinalUseRevocationConvergenceVerifier::new([FinalUseRevocationNodeTrust {
                 node_id: "node-a".into(),
                 keys: vec![FinalUseTrustKey {
                     key_id: "node-key".into(),
@@ -397,9 +395,8 @@ mod tests {
                     not_before_authority_epoch: 1,
                     not_after_authority_epoch: 99,
                 }],
-            },
-        ])
-        .unwrap();
+            }])
+            .unwrap();
         let clock = Arc::new(ManualClock::new(1_100));
         let coordinator =
             FleetRevocationCoordinator::new(feed, convergence, clock.clone(), 500).unwrap();
@@ -445,10 +442,7 @@ mod tests {
             applied_at_unix_ms,
         };
         SignedFinalUseRevocationAck {
-            signature: node
-                .sign(&ack.signing_bytes().unwrap())
-                .to_bytes()
-                .to_vec(),
+            signature: node.sign(&ack.signing_bytes().unwrap()).to_bytes().to_vec(),
             ack,
         }
     }
@@ -501,7 +495,11 @@ mod tests {
             .unwrap();
 
         let mut drifted = update.clone();
-        drifted.update.head.revoked_grant_ids.insert("grant-b".into());
+        drifted
+            .update
+            .head
+            .revoked_grant_ids
+            .insert("grant-b".into());
         drifted.signature = distributor
             .sign(&drifted.update.signing_bytes().unwrap())
             .to_bytes()
