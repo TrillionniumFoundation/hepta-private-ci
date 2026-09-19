@@ -245,6 +245,19 @@ pub struct QueuedReceipt {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct InheritedQueuedReceipt {
+    pub lease_id: String,
+    pub occurrence_key: String,
+    pub event_id: String,
+    pub outbox_id: String,
+    pub owner_agent_id: AgentId,
+    pub source_generation: u64,
+    pub topic: String,
+    pub payload_json: String,
+    pub payload_sha256: Sha256Digest,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LocalAdmission {
     Queued(QueuedReceipt),
     Replay(QueuedReceipt),
@@ -1509,6 +1522,254 @@ impl LocalLeaseOutbox {
             /*allow_exact_replay*/ false,
         )
         .await
+    }
+
+    /// Recover one queued occurrence admitted by a terminal predecessor fence.
+    ///
+    /// This is read-only and preserves the original event/outbox identity.
+    /// The returned row is not dispatchable until `claim_inherited_dispatch`
+    /// atomically appends a current-generation Indeterminate claim.
+    pub(crate) async fn inherited_queued_receipt(
+        &self,
+        occurrence_key: &str,
+    ) -> Result<Option<InheritedQueuedReceipt>, LocalLeaseOutboxError> {
+        validate_text(occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
+        let mut transaction = self
+            .store
+            .pool
+            .begin()
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        let lease = self.current_lease(&mut transaction).await?;
+        ensure_current_active(&lease, self)?;
+        let events =
+            verify_event_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
+        let outbox_rows =
+            verify_outbox_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
+        verify_event_outbox_pairing(&events, &outbox_rows)?;
+        let Some(admission) = events
+            .iter()
+            .find(|event| event.occurrence_key == occurrence_key && event.kind == "admitted")
+        else {
+            transaction
+                .commit()
+                .await
+                .map_err(crate::cognitive_store::unavailable)?;
+            return Ok(None);
+        };
+        let outbox = outbox_rows
+            .iter()
+            .find(|row| row.occurrence_key == occurrence_key)
+            .ok_or_else(|| corrupt("event admission has no paired outbox row"))?;
+        let state = current_outcome(
+            &mut transaction,
+            &self.lease_id,
+            occurrence_key,
+            &self.owner_agent_id,
+        )
+        .await?;
+        if state != LocalOutcomeState::Queued
+            || (admission.generation == self.generation
+                && admission.fencing_token == self.fencing_token)
+        {
+            transaction
+                .commit()
+                .await
+                .map_err(crate::cognitive_store::unavailable)?;
+            return Ok(None);
+        }
+        if admission.event_id != outbox.event_id
+            || admission.generation != outbox.generation
+            || admission.fencing_token != outbox.fencing_token
+            || admission.generation >= self.generation
+            || !lease_fence_is_terminal(
+                &mut transaction,
+                &self.lease_id,
+                admission.generation,
+                &admission.fencing_token,
+            )
+            .await?
+        {
+            return Err(LocalLeaseOutboxError::StaleFence(
+                "queued occurrence predecessor fence is not terminal for takeover".to_string(),
+            ));
+        }
+        let inherited = InheritedQueuedReceipt {
+            lease_id: self.lease_id.clone(),
+            occurrence_key: occurrence_key.to_string(),
+            event_id: admission.event_id.clone(),
+            outbox_id: outbox.outbox_id.clone(),
+            owner_agent_id: self.owner_agent_id.clone(),
+            source_generation: admission.generation,
+            topic: outbox.topic.clone(),
+            payload_json: outbox.payload_json.clone(),
+            payload_sha256: outbox.payload_sha256.clone(),
+        };
+        transaction
+            .commit()
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        Ok(Some(inherited))
+    }
+
+    /// Claim an inherited queued occurrence under the current successor fence.
+    ///
+    /// The immutable outbox row is reused; no second outbox identity is
+    /// created. The current generation writes the same one-shot
+    /// `indeterminate` marker used by normal dispatch *before* the target
+    /// boundary, so a crash can only recover/reconcile rather than resend.
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) async fn claim_inherited_dispatch(
+        &self,
+        occurrence_key: &str,
+        event_id: &str,
+        outbox_id: &str,
+        source_generation: u64,
+        topic: &str,
+        payload_json: &str,
+        payload_sha256: &Sha256Digest,
+        grant_digest: &Sha256Digest,
+        operation_digest: &Sha256Digest,
+    ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        validate_text(occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
+        validate_text(event_id, "event id", /*max_bytes*/ 512)?;
+        validate_text(outbox_id, "outbox id", /*max_bytes*/ 512)?;
+        validate_text(topic, "outbox topic", /*max_bytes*/ 256)?;
+        validate_text(payload_json, "event payload", /*max_bytes*/ 65_536)?;
+        if Sha256Digest::for_bytes(payload_json.as_bytes()) != *payload_sha256 {
+            return Err(LocalLeaseOutboxError::StaleFence(
+                "inherited queued payload digest mismatch".to_string(),
+            ));
+        }
+        let mut transaction = self
+            .store
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        let lease = self.current_lease(&mut transaction).await?;
+        ensure_current_active(&lease, self)?;
+        let events =
+            verify_event_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
+        let outbox_rows =
+            verify_outbox_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
+        verify_event_outbox_pairing(&events, &outbox_rows)?;
+        let admission = events
+            .iter()
+            .find(|event| event.occurrence_key == occurrence_key && event.kind == "admitted")
+            .ok_or_else(|| {
+                LocalLeaseOutboxError::StaleFence(
+                    "inherited dispatch admission is missing".to_string(),
+                )
+            })?;
+        let outbox = outbox_rows
+            .iter()
+            .find(|row| row.occurrence_key == occurrence_key)
+            .ok_or_else(|| {
+                LocalLeaseOutboxError::StaleFence(
+                    "inherited dispatch outbox is missing".to_string(),
+                )
+            })?;
+        if admission.event_id != event_id
+            || outbox.outbox_id != outbox_id
+            || admission.event_id != outbox.event_id
+            || admission.generation != source_generation
+            || outbox.generation != source_generation
+            || admission.fencing_token != outbox.fencing_token
+            || source_generation >= self.generation
+            || outbox.topic != topic
+            || outbox.payload_json != payload_json
+            || outbox.payload_sha256 != *payload_sha256
+            || !lease_fence_is_terminal(
+                &mut transaction,
+                &self.lease_id,
+                source_generation,
+                &admission.fencing_token,
+            )
+            .await?
+        {
+            return Err(LocalLeaseOutboxError::StaleFence(
+                "inherited queued receipt does not match a terminal predecessor fence"
+                    .to_string(),
+            ));
+        }
+        let state = current_outcome(
+            &mut transaction,
+            &self.lease_id,
+            occurrence_key,
+            &self.owner_agent_id,
+        )
+        .await?;
+        if state != LocalOutcomeState::Queued {
+            return Err(LocalLeaseOutboxError::IllegalTransition(format!(
+                "inherited occurrence is already in {} state",
+                state.as_str()
+            )));
+        }
+        let expected = dispatch_operation_digest(
+            grant_digest,
+            &self.lease_id,
+            occurrence_key,
+            &outbox.topic,
+            &outbox.payload_sha256,
+        );
+        if expected != *operation_digest {
+            return Err(LocalLeaseOutboxError::StaleFence(
+                "inherited dispatch operation digest is not bound to immutable outbox"
+                    .to_string(),
+            ));
+        }
+
+        let kind = "indeterminate";
+        let payload = format!(
+            "dispatch_started_pending_ack:{}",
+            operation_digest.as_str()
+        );
+        let payload_digest = Sha256Digest::for_bytes(payload.as_bytes());
+        let sequence = next_event_sequence(&mut transaction, &self.lease_id).await?;
+        let previous = event_head(&mut transaction, &self.lease_id).await?;
+        let new_event_id = journal_row_id("event", &self.lease_id, sequence);
+        let digest = event_digest(
+            &self.lease_id,
+            sequence,
+            &new_event_id,
+            occurrence_key,
+            &self.owner_agent_id,
+            self.generation,
+            &self.fencing_token,
+            kind,
+            &payload_digest,
+            &previous,
+        );
+        insert_event(
+            &mut transaction,
+            EventInsert {
+                lease_id: &self.lease_id,
+                sequence,
+                event_id: &new_event_id,
+                occurrence_key,
+                owner: &self.owner_agent_id,
+                generation: self.generation,
+                fencing_token: &self.fencing_token,
+                kind,
+                payload_json: &payload,
+                payload_sha256: &payload_digest,
+                previous_sha256: &previous,
+                event_sha256: &digest,
+            },
+        )
+        .await?;
+        transaction
+            .commit()
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        Ok(LocalOutcomeReceipt {
+            lease_id: self.lease_id.clone(),
+            occurrence_key: occurrence_key.to_string(),
+            state: LocalOutcomeState::Indeterminate,
+            event_id: new_event_id,
+            external_effect: false,
+        })
     }
 
     /// Verify that a dispatch claim digest is canonical and derives from the
