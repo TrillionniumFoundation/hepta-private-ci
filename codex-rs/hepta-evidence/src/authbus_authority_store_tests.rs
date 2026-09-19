@@ -43,24 +43,14 @@ async fn policy_revisions_are_monotone_and_authorization_fails_closed() {
     };
     store.publish_authbus_policy(&policy).await.unwrap();
     let decision = store
-        .authorize_authbus(
-            &policy.principal_id,
-            &policy.action_id,
-            scope,
-            1,
-        )
+        .authorize_authbus(&policy.principal_id, &policy.action_id, scope, 1)
         .await
         .unwrap();
     assert!(decision.allowed);
 
     assert!(matches!(
         store
-            .authorize_authbus(
-                &policy.principal_id,
-                &policy.action_id,
-                scope,
-                2,
-            )
+            .authorize_authbus(&policy.principal_id, &policy.action_id, scope, 2,)
             .await,
         Err(AuthBusAuthorityError::StaleRevision)
     ));
@@ -70,12 +60,7 @@ async fn policy_revisions_are_monotone_and_authorization_fails_closed() {
     store.publish_authbus_policy(&policy).await.unwrap();
     assert!(matches!(
         store
-            .authorize_authbus(
-                &policy.principal_id,
-                &policy.action_id,
-                scope,
-                2,
-            )
+            .authorize_authbus(&policy.principal_id, &policy.action_id, scope, 2,)
             .await,
         Err(AuthBusAuthorityError::Denied)
     ));
@@ -114,7 +99,10 @@ async fn simultaneous_last_unit_reservations_cannot_both_succeed() {
     let (left, right) = tokio::join!(left, right);
     assert_eq!(usize::from(left.is_ok()) + usize::from(right.is_ok()), 1);
     let status = first.authbus_quota_status(&quota.quota_key).await.unwrap();
-    assert_eq!((status.available, status.reserved, status.consumed), (0, 1, 0));
+    assert_eq!(
+        (status.available, status.reserved, status.consumed),
+        (0, 1, 0)
+    );
 }
 
 #[tokio::test]
@@ -154,7 +142,12 @@ async fn settlement_is_conservation_safe_and_exact_retry_is_idempotent() {
     assert_eq!(settled.observed_cost, Some(5));
     let status = store.authbus_quota_status(&quota.quota_key).await.unwrap();
     assert_eq!(
-        (status.limit, status.available, status.reserved, status.consumed),
+        (
+            status.limit,
+            status.available,
+            status.reserved,
+            status.consumed
+        ),
         (10, 5, 0, 5)
     );
 
@@ -203,9 +196,18 @@ async fn expiry_and_unknown_effect_keep_the_hold_until_reconciliation() {
         )
         .await
         .unwrap();
-    assert_eq!(store.expire_authbus_reservations(&time(2_000), 32).await.unwrap(), 1);
+    assert_eq!(
+        store
+            .expire_authbus_reservations(&time(2_000), 32)
+            .await
+            .unwrap(),
+        1
+    );
     let status = store.authbus_quota_status(&quota.quota_key).await.unwrap();
-    assert_eq!((status.available, status.reserved, status.consumed), (2, 7, 0));
+    assert_eq!(
+        (status.available, status.reserved, status.consumed),
+        (2, 7, 0)
+    );
 
     let reconciled = store
         .reconcile_authbus_reservation(
@@ -218,7 +220,10 @@ async fn expiry_and_unknown_effect_keep_the_hold_until_reconciliation() {
         .unwrap();
     assert_eq!(reconciled.state, ReservationState::Cancelled);
     let status = store.authbus_quota_status(&quota.quota_key).await.unwrap();
-    assert_eq!((status.available, status.reserved, status.consumed), (9, 0, 0));
+    assert_eq!(
+        (status.available, status.reserved, status.consumed),
+        (9, 0, 0)
+    );
 }
 
 #[tokio::test]
@@ -255,13 +260,15 @@ async fn observed_cost_overrun_keeps_reservation_indeterminate_and_held() {
         Err(AuthBusAuthorityError::UsageOverrun)
     ));
     let status = store.authbus_quota_status(&quota.quota_key).await.unwrap();
-    assert_eq!((status.available, status.reserved, status.consumed), (6, 4, 0));
-    let row: String = sqlx::query_scalar(
-        "SELECT state FROM authbus_quota_reservations WHERE reservation_id = ?",
-    )
-    .bind(reservation.reservation_id.as_str())
-    .fetch_one(&store.pool)
-    .await
-    .unwrap();
+    assert_eq!(
+        (status.available, status.reserved, status.consumed),
+        (6, 4, 0)
+    );
+    let row: String =
+        sqlx::query_scalar("SELECT state FROM authbus_quota_reservations WHERE reservation_id = ?")
+            .bind(reservation.reservation_id.as_str())
+            .fetch_one(&store.pool)
+            .await
+            .unwrap();
     assert_eq!(row, "indeterminate");
 }
