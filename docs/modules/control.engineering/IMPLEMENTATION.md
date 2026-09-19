@@ -75,7 +75,8 @@ caller that can directly rewrite its connection, modules or database.
 - `path_leases`: state, revision, authority epoch, monotonically increasing fence and expiry;
 - `assignment_generations`: immutable assigned and blocked projections;
 - `assignment_generation_frontiers`: exact envelope revision, source and active-lease frontier;
-- `distributed_fence_frontiers`: highest admitted external leader/revocation fence per cluster/holder, retained across restart;
+- `distributed_cluster_frontiers`: cluster-global highest admitted leader term and revocation frontier, shared across all holders;
+- `distributed_fence_frontiers`: highest admitted holder-local fence/token/revision bound to the current cluster frontier, retained across restart;
 - `integration_decisions`: immutable eligibility and rejection projection;
 - `integration_decision_bindings`: candidate, sandbox and evidence identity;
 - `integration_decision_seals`: authenticated seal identity, freshness and replay uniqueness;
@@ -139,10 +140,13 @@ writes must additionally present a signed distributed fence matching epoch/token
 paths, source and revocation frontier. Fence verification re-reads the current
 SQLite lease row and requires the same envelope, holder, revision, epoch, token,
 paths and expiry to still be active. Before production admission, the verified fence
-is transactionally recorded as the highest accepted leader-term/revocation-sequence
-frontier for its cluster/holder together with an audit event. Production control
-verification requires the presented receipt to equal that persisted frontier, so
-an older still-fresh signed receipt cannot become valid again after process restart.
+advances two transactionally persisted high-water marks together with an audit
+event: a cluster-global leader-term/revocation frontier and a holder-local
+fence-token/revision frontier. Production control verification requires both to
+match. Thus a new leader observed by one holder immediately fences stale receipts
+for every other holder, while a legitimate lease renewal may advance its local
+revision under an unchanged cluster frontier. Older still-fresh signed receipts
+cannot become valid again after process restart.
 A previously signed active receipt also fails immediately after local release or
 revocation. External fence and audit-anchor validity windows may not outlive their
 owning local lease/envelope.
