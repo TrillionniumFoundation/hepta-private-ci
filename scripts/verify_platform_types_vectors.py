@@ -49,6 +49,13 @@ def encode(vector: dict[str, object]) -> bytes:
     if not domain or len(domain_bytes) > 128 or not TOKEN.fullmatch(domain):
         raise AssertionError(f"invalid domain: {domain}")
 
+    try:
+        schema_version = int(str(vector["schemaVersion"]))
+    except (KeyError, TypeError, ValueError) as error:
+        raise AssertionError("schemaVersion must be a base-10 u64 string") from error
+    if schema_version <= 0 or schema_version > (1 << 64) - 1:
+        raise AssertionError("schemaVersion must be a nonzero u64")
+
     fields = list(vector["fields"])
     if len(fields) > 1024:
         raise AssertionError("too many fields")
@@ -59,6 +66,7 @@ def encode(vector: dict[str, object]) -> bytes:
     output = bytearray(PREFIX)
     output.extend(len(domain_bytes).to_bytes(2, "big"))
     output.extend(domain_bytes)
+    output.extend(schema_version.to_bytes(8, "big"))
     output.extend(len(fields).to_bytes(2, "big"))
 
     for field in fields:
