@@ -23,6 +23,11 @@ use crate::LegalActionCandidateSetV1;
 
 const MAX_V3_STAGES: usize = 11;
 
+enum StageAdvanceV3 {
+    Continue(Digest32),
+    Terminal(PortFailureClassV3, Digest32),
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LaneFStageV3 {
     ObjectiveValidated,
@@ -676,7 +681,7 @@ fn validate_capabilities(snapshot: &CapabilitySnapshotV2) -> Result<(), Pipeline
 }
 
 #[allow(clippy::too_many_arguments)]
-fn required_port_stage<P, C, F>(
+fn required_port_stage<C, F>(
     request: &LaneFRunRequestV3,
     snapshot_digest: Digest32,
     predecessor: Digest32,
@@ -686,7 +691,7 @@ fn required_port_stage<P, C, F>(
     started: Instant,
     control: &C,
     call: F,
-) -> Result<Digest32, PipelineErrorV3>
+) -> Result<StageAdvanceV3, PipelineErrorV3>
 where
     C: CompositionControlV3,
     F: FnOnce(&PortInputV3) -> Result<PortReceiptV3, PortFailureV3>,
@@ -715,7 +720,7 @@ where
                 outcome: StageOutcomeV3::Completed,
                 evidence_digest: output,
             });
-            Ok(output)
+            Ok(StageAdvanceV3::Continue(output))
         }
         Err(failure) => {
             validate_failure(&failure)?;
@@ -729,7 +734,7 @@ where
                 outcome: StageOutcomeV3::Failed(class),
                 evidence_digest: failure.evidence_digest,
             });
-            Err(PipelineErrorV3::InvalidReceipt("terminal stage returned through helper"))
+            Ok(StageAdvanceV3::Terminal(class, output))
         }
     }
 }
@@ -1036,7 +1041,7 @@ fn valid_transition(
                 | (LaneFStageV3::HostEnvelopeBuilt, LaneFStageV3::HostHandoffAccepted)
                 | (LaneFStageV3::HostHandoffAccepted, LaneFStageV3::LearningRecorded)
         ),
-        StageOutcomeV3::Abstained | StageOutcomeV3::SlowPath | StageOutcomeV3::Failed(_) => false,
+        StageOutcomeV3::Failed(_) => false,
     }
 }
 
