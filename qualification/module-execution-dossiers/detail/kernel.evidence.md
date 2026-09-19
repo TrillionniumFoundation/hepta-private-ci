@@ -1,52 +1,160 @@
 # kernel.evidence: implementation design
 
 Parent: `docs/modules/kernel.evidence/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: SQLite provider-effect intent, acknowledgement and reconciliation source implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: authenticated exact-candidate qualification storage/query/verification and
+an Agentd named product caller are source implemented. Independent external
+acceptance, external monotonic recovery frontier activation, operator acceptance,
+promotion and release remain separate gates. Common requirements:
+`../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`.
 
 ## 1. Source and work envelope
 
 Roots: `codex-rs/hepta-evidence`.
+Product composition: `codex-rs/hepta-agentd`.
 Packages: `P0.9-EXTERNAL-GATES`.
 
-Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
+The native target contract is implemented through
+`HeptaEvidenceStore::qualification() -> QualificationEvidenceStore`. This
+separate typed facade preserves the pre-existing governance
+`HeptaEvidenceStore::append_receipt(GovernanceReceipt)` without overloading its
+semantics.
 
 ## 2. Public operations and contract details
 
-`append_receipt(envelope, authenticated_issuer) -> EvidenceId | EvidenceError`; `verify_chain(candidate, required_roles, now) -> EvidenceDisposition`; `query_claim(candidate, claim_class) -> bounded evidence references`. Verification checks exact candidate/tree, schema, evidence digests, issuer role, signature/key chain, expiry and revocation; arbitrary different issuer strings do not establish independence.
+Native operations are:
+
+- `QualificationEvidenceStore::append_receipt(authenticated_issuer, signed_message, envelope) -> EvidenceId | EvidenceError`;
+- `QualificationEvidenceStore::verify_chain(VerifyChainRequestV1) -> EvidenceDispositionV1`;
+- `QualificationEvidenceStore::query_claim(candidate, claim_class) -> bounded EvidenceReferenceV1[]`.
+
+The Agentd product path exposes the same semantic operations through bounded
+control methods and reloads the owner-controlled multi-issuer trust registry
+immediately before physical append.
+
+Append verifies the exact canonical envelope signature, issuer/key epoch,
+candidate/tree/role subject, replay sequence, expiry, role allowlist and
+correction/revocation lineage. Durable replay advancement and the evidence
+insert share one `BEGIN IMMEDIATE` transaction.
+
+Verification checks exact candidate/tree and claim class, canonical envelope and
+payload digests, expiry, correction/revocation lineage and required role
+coverage. Multiple required independent roles must be satisfiable by distinct
+authenticated principals; different display names or roles on one principal do
+not establish independence.
 
 ## 3. State records and transaction design
 
-`qualification_evidence` is append-only: receipt ID, candidate/source/tree, evidence class, issuer principal/key reference, payload digest, predecessor, observation time, expiry and revocation links. Large logs are content-addressed bounded external evidence assets; the store contains references and integrity metadata. Corrections supersede rather than rewrite prior receipts.
+Migration `0011_qualification_evidence.sql` owns
+`qualification_evidence`. It is append-only and stores receipt ID,
+candidate/source/tree, claim class, receipt kind, issuer role/principal/key epoch
+and signing-key digest, AuthBus message/sequence/expiry, exact payload and
+envelope digests, predecessor/target lineage, observation/expiry and bounded
+asset references.
+
+Corrections and revocations append lineage instead of rewriting prior receipts.
+Same identity + same authenticated semantics is idempotent. Reusing an evidence
+identity with changed semantics conflicts.
+
+`IndependentDecisionReceiptV1` is stored as an
+`independent_decision` qualification receipt and binds candidate, decision
+role, authenticated principal, signing identity digest, evidence-set digest,
+decision, conditions and expiry.
 
 ## 4. Deterministic algorithm and scheduling
 
-Authenticate the producer at the host boundary; canonicalize the envelope; validate signatures and role separation; append durably; publish a rebuildable index. Claim resolution returns missing, conflicting, expired or supported evidence per class. A green fixture cannot be upgraded to hardware, production caller, future efficacy or independent acceptance evidence.
+1. Canonicalize and bound the complete envelope.
+2. Resolve the current issuer registration/role at the host boundary.
+3. Authenticate the AuthBus signature over that exact envelope.
+4. Bind subject to exact candidate commit/tree and role.
+5. In one `BEGIN IMMEDIATE` transaction, verify idempotency/lineage, advance
+   replay high-water and insert the immutable receipt.
+6. Query by exact candidate/tree + claim class only.
+7. Reconstruct canonical rows on read/open and fail closed on projection/digest
+   drift.
+8. Resolve active evidence after corrections, revocations and expiry.
+9. Satisfy multiple independent roles only with distinct authenticated
+   principals.
+
+A fixture cannot be upgraded to hardware, provider effect, longitudinal,
+production-caller or independent-acceptance evidence.
 
 ## 5. Capacity and performance profile
 
-Pilot receipt <= 256 KiB, referenced assets <= 64 per receipt, chain traversal <= 256 edges and query result <= 512 references. Reject cycles and traversal exhaustion rather than treating an incomplete chain as valid.
+Native/store ceilings:
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+- receipt canonical envelope <= 256 KiB;
+- referenced assets <= 64 per receipt;
+- predecessor traversal <= 256 edges;
+- query result <= 512 references;
+- required independent roles <= 32.
+
+The current Agentd control transport imposes the stricter product-wire ceiling
+of 48 KiB for one envelope/result so it remains below the existing bounded
+control frame. Larger evidence assets remain content-addressed references.
+
+These are enforced source bounds, not throughput measurements. Production
+capacity evidence remains required before activation.
 
 ## 6. Concrete verification cases
 
-- EVID-01: one principal with two display names cannot satisfy generator/evaluator independence.
-- EVID-02: evidence for a different tree or expired candidate is unavailable.
-- EVID-03: corrupted payload and broken predecessor fail integrity checks after reopen.
-- EVID-04: fixture/hardware/effect/longitudinal claim-class substitution is rejected.
+- **EVID-01:** one authenticated principal cannot satisfy
+  generator/evaluator or other multi-role independence; distinct principals can.
+- **EVID-02:** evidence for a different tree is missing and expired evidence is
+  expired/unavailable.
+- **EVID-03:** canonical payload/projection corruption and broken predecessor
+  lineage fail closed on reopen.
+- **EVID-04:** fixture/hardware and other claim classes are not substitutable.
+- Exact signed retry is idempotent; payload drift conflicts.
+- Correction/revocation history survives reopen without resurrection.
+- Real Agentd product test exercises append -> query -> verify, two independent
+  decision principals, terminal-observer evidence and revocation reload.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+Source test identities are not independent acceptance receipts. Exact-head and
+synthetic-merge execution receipts are produced by the dedicated workflow.
 
 ## 7. Integration, rollback and capability ceiling
 
-The evaluator, reviewer, selector and loader retain separately authorized identities. Evidence storage is not permission to select or release. Rollback keeps append-only history and the current revocation frontier; it does not resurrect invalid evidence.
+Agentd is the named product caller/writer host for qualification evidence when
+explicitly configured with `--evidence-trust-file`. It authenticates evidence
+writers; it does **not** gain selection, merge, promotion or release authority.
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+The evaluator, reviewer, terminal observer, selector and loader retain separate
+identities. Repository-authored code/tests cannot self-issue an independent
+external acceptance. The exact candidate must be reviewed and signed by an
+external authorized principal.
+
+Local SQLite verification is not an external anti-rollback oracle. Production
+backup/restore must satisfy
+`docs/lane-a-foundation/kernel.evidence/RECOVERY_FRONTIER_V1.md`; a concrete
+independently retained frontier backend remains an activation prerequisite.
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `append_provider_effect_intent` in [codex-rs/hepta-evidence/src/provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs); `reconcile_provider_effect_lookup` in [codex-rs/hepta-evidence/src/provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs). SQLite provider-effect intent, acknowledgement and reconciliation source implemented.
-- **State and recovery:** HeptaEvidenceStore stores canonical JSON and digests in existing SQLite tables; BEGIN IMMEDIATE makes exact intent retries idempotent and rejects changed payloads. Dispatch uncertainty remains distinct from provider acknowledgement and ambiguous timestamp order remains indeterminate.
-- **Source tests:** [codex-rs/hepta-evidence/src/provider_effect_tests.rs](../../../codex-rs/hepta-evidence/src/provider_effect_tests.rs), [codex-rs/hepta-evidence/src/provider_claim_tests.rs](../../../codex-rs/hepta-evidence/src/provider_claim_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/lane-a-foundation/kernel.evidence/STORE_V1.md](../../../docs/lane-a-foundation/kernel.evidence/STORE_V1.md).
-- **Remaining work:** dispatch_provider_effect_qualification remains an injected qualification seam; authenticated production providers, terminal observers and target recovery evidence must be supplied separately.
+- **Qualification entrypoints:** `append_receipt`, `query_claim` and
+  `verify_chain` in
+  [codex-rs/hepta-evidence/src/qualification.rs](../../../codex-rs/hepta-evidence/src/qualification.rs).
+- **Durable state:** migration
+  [0011_qualification_evidence.sql](../../../codex-rs/hepta-evidence/migrations/0011_qualification_evidence.sql)
+  plus canonical startup row/lineage verification.
+- **Product caller/writer:** Agentd
+  [evidence_host.rs](../../../codex-rs/hepta-agentd/src/evidence_host.rs) with
+  [evidence_trust.rs](../../../codex-rs/hepta-agentd/src/evidence_trust.rs) and
+  control/client operations.
+- **Terminal observer boundary:** `terminal_observer` is a separately
+  registered evidence role; the real Agentd product test persists a
+  provider-effect terminal observation from a distinct principal.
+- **Provider-effect journal:** existing intent/ACK/uncertainty reconciliation in
+  [provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs)
+  remains separate from qualification acceptance.
+- **Source tests:**
+  [qualification_tests.rs](../../../codex-rs/hepta-evidence/src/qualification_tests.rs),
+  [provider_effect_tests.rs](../../../codex-rs/hepta-evidence/src/provider_effect_tests.rs),
+  and
+  [kernel_evidence_product.rs](../../../codex-rs/hepta-agentd/tests/kernel_evidence_product.rs).
+- **Operating references:**
+  [STORE_V1.md](../../../docs/lane-a-foundation/kernel.evidence/STORE_V1.md) and
+  [RECOVERY_FRONTIER_V1.md](../../../docs/lane-a-foundation/kernel.evidence/RECOVERY_FRONTIER_V1.md).
+- **Remaining external gates:** exact-candidate independent acceptance,
+  concrete external monotonic frontier backend/restore ceremony, operator
+  acceptance, canary, promotion and release. None may be inferred from source
+  implementation or CI success.
