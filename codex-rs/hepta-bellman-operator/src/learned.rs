@@ -115,6 +115,10 @@ struct CellAccumulator {
     evidence: Vec<Digest32>,
 }
 
+/// Pure deterministic fitting kernel. It rejects duplicate underlying evidence,
+/// but does not itself prove that the caller-supplied dataset digest names these
+/// rows. Product/qualification callers use
+/// `fit_tabular_operator_from_dataset_receipt`.
 pub fn fit_tabular_operator(
     mut plan: TabularOperatorPlanV1,
 ) -> Result<TabularOperatorArtifactV1, LearnedOperatorError> {
