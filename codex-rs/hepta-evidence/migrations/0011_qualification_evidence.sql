@@ -11,6 +11,18 @@ CREATE TABLE qualification_evidence_meta (
     created_at_ms INTEGER NOT NULL CHECK (created_at_ms >= 0)
 );
 
+CREATE TABLE qualification_trust_policy (
+    slot INTEGER PRIMARY KEY CHECK (slot = 1),
+    policy_id TEXT NOT NULL CHECK (length(policy_id) BETWEEN 1 AND 128),
+    revision INTEGER NOT NULL CHECK (revision > 0),
+    policy_sha256 TEXT NOT NULL UNIQUE CHECK (
+        length(policy_sha256) = 64
+        AND policy_sha256 NOT GLOB '*[^0-9a-f]*'
+    ),
+    policy_json TEXT NOT NULL,
+    provisioned_at_ms INTEGER NOT NULL CHECK (provisioned_at_ms >= 0)
+);
+
 CREATE TABLE qualification_evidence (
     seq INTEGER PRIMARY KEY AUTOINCREMENT,
     receipt_id TEXT NOT NULL UNIQUE CHECK (length(receipt_id) BETWEEN 1 AND 128),
@@ -103,6 +115,18 @@ CREATE INDEX qualification_evidence_candidate_role_seq
 CREATE INDEX qualification_evidence_revoked_key_seq
     ON qualification_evidence(revokes_issuer_key_sha256, seq)
     WHERE revokes_issuer_key_sha256 IS NOT NULL;
+
+CREATE TRIGGER qualification_trust_policy_no_update
+BEFORE UPDATE ON qualification_trust_policy
+BEGIN
+    SELECT RAISE(ABORT, 'qualification trust policy is immutable');
+END;
+
+CREATE TRIGGER qualification_trust_policy_no_delete
+BEFORE DELETE ON qualification_trust_policy
+BEGIN
+    SELECT RAISE(ABORT, 'qualification trust policy is immutable');
+END;
 
 CREATE TRIGGER qualification_evidence_meta_no_update
 BEFORE UPDATE ON qualification_evidence_meta
