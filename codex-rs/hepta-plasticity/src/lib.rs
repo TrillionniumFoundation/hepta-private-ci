@@ -59,6 +59,7 @@ pub use types::TopologyProposalV3;
 
 use types::LEGACY_V1;
 use types::PARAMETER_V2;
+use types::TOPOLOGY_V3;
 
 #[cfg(test)]
 use codex_hepta_types::Digest32;
