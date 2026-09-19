@@ -73,15 +73,27 @@ impl AgentdClient {
     }
 
     pub async fn health(&self) -> Result<HealthSnapshot, AgentdError> {
-        match self
+        self.health_with_generation()
+            .await
+            .map(|(snapshot, _current_generation)| snapshot)
+    }
+
+    /// Return health together with the daemon's current lifecycle generation.
+    ///
+    /// The client spawn generation identifies the process. Run authority binds
+    /// to the current supervisor lifecycle generation carried by the response.
+    pub async fn health_with_generation(
+        &self,
+    ) -> Result<(HealthSnapshot, u64), AgentdError> {
+        let response = self
             .send(AgentdRequest::health(
                 self.request_id(),
                 self.spawn_generation,
             ))
-            .await?
-            .payload
-        {
-            AgentdPayload::Health(snapshot) => Ok(snapshot),
+            .await?;
+        let current_generation = response.current_generation;
+        match response.payload {
+            AgentdPayload::Health(snapshot) => Ok((snapshot, current_generation)),
             payload => unexpected(payload),
         }
     }
