@@ -81,6 +81,100 @@ async fn serving_agent_survives_unrelated_registry_corruption() {
     );
 }
 
+#[tokio::test]
+async fn wire_run_lifecycle_is_daemon_owned_and_recovers_uncertain_dispatch() {
+    let (_temp, registry, state) = fixture().expect("runtime fixture");
+    let snapshot = crate::AgentdRunSnapshot {
+        run_id: "run.product.1".to_string(),
+        request_digest: "1".repeat(64),
+        objective_digest: "2".repeat(64),
+        body_digest: "3".repeat(64),
+        artifact_set_digest: "4".repeat(64),
+        authority_epoch: 2,
+        deadline_ms: u64::MAX - 1,
+    };
+    let started = state
+        .response(
+            1,
+            1,
+            crate::AgentdMethod::RunStart {
+                snapshot: snapshot.clone(),
+            },
+        )
+        .await
+        .expect("start through daemon");
+    let AgentdPayload::RunReceipt(started) = started.payload else {
+        panic!("expected run receipt");
+    };
+    assert_eq!(started.phase, crate::AgentdRunPhase::Admitted);
+    assert_eq!(started.revision, 1);
+
+    let attached = state
+        .response(
+            2,
+            1,
+            crate::AgentdMethod::RunAttachContext {
+                expected_revision: started.revision,
+                attachment: crate::AgentdContextAttachment {
+                    run_id: snapshot.run_id.clone(),
+                    request_digest: snapshot.request_digest.clone(),
+                    objective_digest: snapshot.objective_digest.clone(),
+                    body_digest: snapshot.body_digest.clone(),
+                    artifact_set_digest: snapshot.artifact_set_digest.clone(),
+                    authority_epoch: snapshot.authority_epoch,
+                    deadline_ms: snapshot.deadline_ms,
+                    context_digest: "5".repeat(64),
+                    compilation_receipt_digest: "6".repeat(64),
+                },
+            },
+        )
+        .await
+        .expect("attach through daemon");
+    let AgentdPayload::RunReceipt(attached) = attached.payload else {
+        panic!("expected attached receipt");
+    };
+    assert_eq!(attached.phase, crate::AgentdRunPhase::ContextAttached);
+
+    let dispatched = state
+        .response(
+            3,
+            1,
+            crate::AgentdMethod::RunMarkDispatched {
+                run_id: snapshot.run_id.clone(),
+                expected_revision: attached.revision,
+            },
+        )
+        .await
+        .expect("dispatch through daemon");
+    let AgentdPayload::RunReceipt(dispatched) = dispatched.payload else {
+        panic!("expected dispatch receipt");
+    };
+    assert_eq!(dispatched.phase, crate::AgentdRunPhase::Dispatched);
+
+    let identity = state.identity.clone();
+    drop(state);
+    let recovered =
+        AgentdState::new(identity, registry, /*event_capacity*/ 16).expect("recover state");
+    let status = recovered
+        .response(
+            4,
+            1,
+            crate::AgentdMethod::RunGet {
+                run_id: snapshot.run_id,
+            },
+        )
+        .await
+        .expect("get recovered run");
+    let AgentdPayload::RunStatus {
+        receipt: Some(receipt),
+    } = status.payload
+    else {
+        panic!("expected recovered run status");
+    };
+    assert_eq!(receipt.phase, crate::AgentdRunPhase::Indeterminate);
+    assert_eq!(receipt.revision, dispatched.revision + 1);
+}
+
 #[test]
 fn missing_local_record_immediately_fences_the_serving_agent() {
     let (_temp, _registry, state) = fixture().expect("runtime fixture");
