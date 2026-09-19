@@ -20,6 +20,11 @@ Hosted provider execution:
   `inference.control -> inference.worker` source-composition seam. It does not
   mint authority; the provider path requires a kernel-owned
   `FinalUseAuthority` and independently signed `SignedFinalUseGrant`.
+- `codex-rs/hepta-inferd/src/bin/hepta-inference-runtime-host.rs` is the named
+  hosted-provider source composition root. It binds protected host
+  configuration, the canonical durable inference-control owner, final-use
+  trust/revocation state and `NativeWorkerPort`. This is source composition,
+  not evidence that a production deployment exists.
 
 Local model execution:
 
@@ -28,7 +33,11 @@ Local model execution:
   It verifies the selected runtime executable, weights, tokenizer,
   preprocessor, quantization metadata and device descriptor by SHA-256; requires
   a completed memory-reservation/load handshake; sends the exact lease-bound
-  input; and performs bounded unload/kill cleanup.
+  input; and performs bounded unload/kill cleanup. Each load receives only the
+  worker grant's remaining unreserved memory, and aggregate live model
+  reservations may not exceed the worker grant.
+- A named local-model product caller is still absent. The local source path is
+  therefore not a deployed/product-composed resource-authority boundary yet.
 
 The `hepta-infer-worker --profile native-app-server` CLI remains an explicit
 operator/qualification surface. Possessing CLI access is not production
@@ -48,7 +57,12 @@ There are two different authority objects and they must not be conflated.
    pass it through a trusted `ResourceGrantVerifier` that returns an
    authenticated authority identity and evidence digest. The
    `TrustedInProcess` constructor is crate-private and only covers an
-   explicitly shared trusted process boundary.
+   explicitly shared trusted process boundary. `VerifiedResourceGrant` is a
+   verification snapshot, not a live revocation subscription: a production
+   local-model caller must check current authority epoch/revocation before
+   constructing a worker generation and must fence/replace that generation when
+   its resource authority is withdrawn. Reusing the snapshot across an authority
+   change is not a supported trust model.
 
 Neither path grants fleet mutation, grant issuance, model installation or
 permission to widen another module's authority.
@@ -63,8 +77,12 @@ Repository source currently enforces:
 - stable request/client-message/payload/turn binding and no blind provider replay;
 - digest-pinned local runtime and model artifacts;
 - one local runtime child per loaded handle, bounded protocol lines and output;
-- grant-bounded memory reservation handshake and observed-memory checks;
+- per-load remaining-memory admission plus aggregate live reservation checks
+  against the worker grant, followed by observed-memory checks;
 - request concurrency/token/deadline validation in `InferenceWorker`;
+- bounded local protocol response waits; a run wait is additionally capped by
+  the exact request deadline and becomes indeterminate rather than replayable
+  after an unknown post-write timeout;
 - forced child kill/wait when local runtime cleanup becomes uncertain.
 
 These are execution ownership, identity and resource-contract guarantees. They
@@ -100,7 +118,10 @@ If `turn/start` acknowledgement or the worker is lost, restart performs
 client message ID, input and payload digest:
 
 - `Persisted { turn_id }`: bind only that original turn, read persisted turn
-  history, and refine terminal/output/usage observations when available.
+  history, and refine terminal/output observations. `thread/resume` also
+  replays persisted token usage to the recovery connection; the worker waits
+  under the normal RPC bound for a matching exact-turn usage replay rather than
+  relying on a fixed scheduling window.
 - `Missing` or `Cancelled`: durably record no-admission proof and release the
   local slot. Re-execution requires a new request identity and new authority.
 - `Queued`: reject as an unexpected state for the direct-turn path.
@@ -123,16 +144,20 @@ Before load:
    preprocessor, quantization descriptor and device descriptor;
 3. verify every digest and reject symlink/non-regular terminal files;
 4. start the exact runtime process;
-5. send the model tuple plus maximum permitted memory;
+5. compute already-reserved live model memory and send the model tuple plus only
+   the remaining permitted worker memory; the runtime cannot legitimately
+   reserve against the grant's full budget for every model independently;
 6. require an echoed model/runtime/device identity and nonzero
-   `reserved_memory_bytes <= maximum_memory_bytes`;
+   `reserved_memory_bytes <= remaining_memory_bytes`;
 7. require `observed_memory_bytes <= reserved_memory_bytes`;
 8. re-hash runtime/artifacts after the load handshake before publishing the
    handle.
 
 Run requests contain the exact input whose SHA-256 equals both request and lease
-payload digests. Unknown runtime outcome is nonterminal with unknown usage and
-is never an automatic replay signal.
+payload digests. Local protocol responses use a bounded wait; for `run`, that
+wait is the smaller of the configured runtime-response ceiling and the request's
+remaining deadline. Unknown runtime outcome is nonterminal with unknown usage
+and is never an automatic replay signal.
 
 ## 7. Shutdown, rollback and leak handling
 
@@ -155,6 +180,8 @@ Important hard bounds in source include:
 - App Server RPC timeout: 5 seconds;
 - local model input: 1 MiB;
 - local runtime protocol line: configurable, default 2 MiB, hard maximum 8 MiB;
+- local runtime response wait: default 30 seconds, hard configuration maximum
+  300 seconds; `run` is further capped by its request deadline;
 - local runtime output: 1 MiB;
 - loaded models: 8;
 - active local requests: 256;
@@ -197,7 +224,9 @@ of these are true:
 
 - exact source commit/tree and synthetic merge candidate are recorded;
 - package tests, all-target build and strict Clippy pass on that exact candidate;
-- the named non-test product caller reaches `NativeWorkerPort::execute`;
+- the named deployed hosted-provider product caller reaches
+  `NativeWorkerPort::execute`, and any selected local-model profile has a
+  separately authenticated local product caller;
 - protected signer trust/revocation state is configured outside the worker;
 - economic quota and hardware-capacity authority are composed;
 - real model/runtime/device qualification above is attached;
