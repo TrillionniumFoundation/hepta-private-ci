@@ -1249,6 +1249,20 @@ impl QualificationEvidence<'_> {
         Ok(checkpoint)
     }
 
+    pub async fn verify_current_checkpoint(
+        &self,
+        checkpoint: &EvidenceCheckpoint,
+    ) -> Result<(), EvidenceError> {
+        checkpoint.validate()?;
+        let current = self.export_checkpoint().await?;
+        if current != *checkpoint {
+            return Err(EvidenceError::Corrupt(
+                "stale or divergent qualification evidence writer checkpoint".to_string(),
+            ));
+        }
+        Ok(())
+    }
+
     pub async fn verify_external_checkpoint(
         &self,
         checkpoint: &EvidenceCheckpoint,
