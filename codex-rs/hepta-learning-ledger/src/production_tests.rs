@@ -156,25 +156,9 @@ fn production_writer_closes_signed_decision_outcome_credit_and_dataset_path() {
     let ledger =
         crate::DurableLedger::create(fixture.file(), digest("binding"), 32).expect("ledger");
     let verifier = LearningEvidenceVerifierV1::new(trust()).expect("trust");
-    let generator_signed = sign(
-        &verifier,
-        "evidence-generator",
-        "generator",
-        LearningEvidenceRoleV1::Generator,
-        1,
-        b"decision",
-    );
-    let generator = verifier
-        .verify(
-            LearningEvidenceRoleV1::Generator,
-            &generator_signed,
-            b"decision",
-            50,
-        )
-        .expect("generator");
     let mut writer = ProductionLedgerWriter::new(ledger, verifier.clone());
 
-    let decision = EpisodeDecision {
+    let mut decision = EpisodeDecision {
         record_id: id("decision-record"),
         episode_id: id("episode-1"),
         objective_digest: digest("objective"),
@@ -183,7 +167,7 @@ fn production_writer_closes_signed_decision_outcome_credit_and_dataset_path() {
         selected_candidate_id: id("choice"),
         selected_propensity: ProbabilityQ32::from_raw(1 << 31).expect("probability"),
         completeness: CandidateSetCompleteness::Complete,
-        support_digest: Digest32::of_bytes(b"decision"),
+        support_digest: Digest32::ZERO,
     };
     let completeness = CandidateSetCompletenessReceiptV1 {
         set_id: id("candidate-set"),
@@ -199,30 +183,54 @@ fn production_writer_closes_signed_decision_outcome_credit_and_dataset_path() {
         canonical_order_digest: digest("order"),
         complete_for_generator: true,
     };
+    let decision_payload =
+        decision_admission_payload(&decision, &completeness).expect("decision payload");
+    decision.support_digest = Digest32::of_bytes(&decision_payload);
+    let generator_signed = sign(
+        &verifier,
+        "evidence-generator",
+        "generator",
+        LearningEvidenceRoleV1::Generator,
+        1,
+        &decision_payload,
+    );
+    let generator = verifier
+        .verify(
+            LearningEvidenceRoleV1::Generator,
+            &generator_signed,
+            &decision_payload,
+            50,
+        )
+        .expect("generator");
     let zero = LedgerAnchor {
         sequence: 0,
         chain_digest: Digest32::ZERO,
     };
+    let mut drifted_decision = decision.clone();
+    drifted_decision.selected_candidate_id = id("abstain");
+    assert_eq!(
+        writer.append_decision(
+            zero,
+            drifted_decision,
+            &completeness,
+            &generator_signed,
+            &decision_payload,
+            50,
+        ),
+        Err(ProductionLedgerError::AdmissionPayloadMismatch)
+    );
     let decision_receipt = writer
         .append_decision(
             zero,
             decision,
             &completeness,
             &generator_signed,
-            b"decision",
+            &decision_payload,
             50,
         )
         .expect("decision");
 
-    let observer_signed = sign(
-        &verifier,
-        "evidence-observer",
-        "observer",
-        LearningEvidenceRoleV1::Observer,
-        2,
-        b"outcome",
-    );
-    let outcome = AuthenticatedOutcomeV1 {
+    let mut outcome = AuthenticatedOutcomeV1 {
         record_id: id("outcome-record"),
         outcome_id: id("outcome-1"),
         episode_id: id("episode-1"),
@@ -230,7 +238,7 @@ fn production_writer_closes_signed_decision_outcome_credit_and_dataset_path() {
         observed_at: Some(40),
         value: Some(FixedQ32::from_raw(100)),
         unit_profile_digest: digest("unit"),
-        support_digest: Digest32::of_bytes(b"outcome"),
+        support_digest: Digest32::ZERO,
         watermark: OutcomeWatermarkV1 {
             latest_observable_at: 40,
             expected_delay_profile_digest: digest("delay"),
@@ -240,6 +248,16 @@ fn production_writer_closes_signed_decision_outcome_credit_and_dataset_path() {
             finalized_at: Some(41),
         },
     };
+    let outcome_payload = authenticated_outcome_admission_payload(&outcome);
+    outcome.support_digest = Digest32::of_bytes(&outcome_payload);
+    let observer_signed = sign(
+        &verifier,
+        "evidence-observer",
+        "observer",
+        LearningEvidenceRoleV1::Observer,
+        2,
+        &outcome_payload,
+    );
     let outcome_receipt = writer
         .append_authenticated_outcome(
             LedgerAnchor {
@@ -249,20 +267,12 @@ fn production_writer_closes_signed_decision_outcome_credit_and_dataset_path() {
             &generator,
             outcome,
             &observer_signed,
-            b"outcome",
+            &outcome_payload,
             50,
         )
         .expect("outcome");
 
-    let credit_signed = sign(
-        &verifier,
-        "evidence-credit",
-        "evaluator",
-        LearningEvidenceRoleV1::Evaluator,
-        3,
-        b"credit",
-    );
-    let batch = CreditAllocationBatchV1 {
+    let mut batch = CreditAllocationBatchV1 {
         batch_id: id("credit-batch"),
         episode_id: id("episode-1"),
         outcome_id: id("outcome-1"),
@@ -279,9 +289,19 @@ fn production_writer_closes_signed_decision_outcome_credit_and_dataset_path() {
             },
         ],
         conservation_residual: FixedQ32::from_raw(10),
-        support_digest: Digest32::of_bytes(b"credit"),
+        support_digest: Digest32::ZERO,
         finalized: true,
     };
+    let credit_payload = credit_batch_admission_payload(&batch);
+    batch.support_digest = Digest32::of_bytes(&credit_payload);
+    let credit_signed = sign(
+        &verifier,
+        "evidence-credit",
+        "evaluator",
+        LearningEvidenceRoleV1::Evaluator,
+        3,
+        &credit_payload,
+    );
     let credit_receipt = writer
         .append_credit_batch(
             LedgerAnchor {
@@ -290,7 +310,7 @@ fn production_writer_closes_signed_decision_outcome_credit_and_dataset_path() {
             },
             batch,
             &credit_signed,
-            b"credit",
+            &credit_payload,
             50,
         )
         .expect("credit");
