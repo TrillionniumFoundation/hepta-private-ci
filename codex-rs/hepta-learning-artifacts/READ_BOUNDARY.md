@@ -22,11 +22,17 @@ promoted to create-only authority. The implementation retains an exclusive
 advisory lock while checking the new file is still empty, writing and calling
 `sync_all`.
 
-Creation of the capability precedes semantic validation. A validation rejection
-may leave a zero-length orphan. The host reconciles or separately removes that
-orphan and must not reuse the path. Bytes appearing between atomic creation and
-the guarded write return `Indeterminate`; lock contention returns `Busy`; a
-write or sync error is also `Indeterminate`.
+The retained low-level capability path still permits creation before semantic
+validation, so a rejected legacy write may leave a zero-length orphan that the
+host must reconcile and never reuse.
+
+New integrations should prefer the `*_beneath` high-level writers. They perform
+semantic validation and canonical encoding before the final path exists, then
+call `CreateOnlyArtifactFile::create_beneath_trusted_root`. Invalid binding,
+ineligible artifact, payload mismatch, invalid witness or unscoped withdrawal
+state therefore leaves no final-path validation orphan. Bytes appearing after
+creation but before the guarded write return `Indeterminate`; lock contention
+returns `Busy`; a write or sync error is also `Indeterminate`.
 
 ## Reader capability and locks
 
@@ -45,11 +51,13 @@ unsupported; duplicate handles appear only in regression fixtures.
 
 ## Trust boundary and evidence
 
-Atomic `create_new` closes the final-component existence-check/write race but
-does not authenticate ancestor traversal, preserve a path-to-inode binding,
-synchronize the containing directory or isolate hostile writers. The host still
-authenticates target parents, witnesses and registry revocations; owns
-parent-directory synchronization and cross-store reconciliation; and separately
+Atomic `create_new` closes the final-component existence-check/write race.
+`create_beneath_trusted_root` additionally rejects absolute/parent/non-normal
+relative paths and symlink ancestors below a canonical host-designated root.
+This is not a substitute for an OS directory-handle primitive such as
+`openat2`: the host still prevents concurrent hostile ancestor replacement,
+authenticates the trusted root, witnesses and registry revocations, owns
+parent-directory synchronization and cross-store reconciliation, and separately
 authorizes use. File locking is not authentication or continuous revocation
 freshness. Logical revocation is not physical erasure.
 
@@ -59,3 +67,14 @@ concurrent creators and post-create interference. Test source and CI submission
 are not passed execution evidence; source-head, actual-base merge, product-matrix
 and independent review gates remain mandatory. No capability or completion state
 is advanced by this document.
+
+
+## Scoped durable state
+
+The same create-only and bounded-read trust model now applies to
+`DatasetWithdrawalRegistry` and `ArtifactLifecycleJournalV2` through
+`durable_snapshots.rs`. Withdrawal recovery binds the independently retained
+scope digest as well as the chain head and file digest. Lifecycle recovery
+replays actor evidence at each immutable event's `occurred_at`, so later
+credential expiry cannot make valid history unreadable while a new post-expiry
+mutation still fails.

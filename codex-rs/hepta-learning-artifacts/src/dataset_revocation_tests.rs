@@ -1,4 +1,5 @@
 use super::*;
+use crate::test_support::FixtureValue;
 use std::fs::File;
 use std::path::PathBuf;
 use std::sync::atomic::AtomicU64;
@@ -19,7 +20,7 @@ use crate::write_registry_snapshot;
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).unwrap()
+    StableId::new(value).fixture("test fixture")
 }
 
 fn dataset() -> Digest32 {
@@ -48,7 +49,8 @@ fn register(
             manifest: ArtifactManifest {
                 artifact_id: id(name),
                 kind: ArtifactKind::Policy,
-                generation: Generation::new(if parent.is_some() { 2 } else { 1 }).unwrap(),
+                generation: Generation::new(if parent.is_some() { 2 } else { 1 })
+                    .fixture("test fixture"),
                 predecessor_id: parent.map(id),
                 content_digest: Digest32::of_bytes(name.as_bytes()),
                 objective_digest: Digest32::of_bytes(b"objective"),
@@ -58,7 +60,7 @@ fn register(
                 encoded_size_bytes: name.len() as u64,
             },
         })
-        .unwrap();
+        .fixture("test fixture");
 }
 
 fn head(registry: &ArtifactRegistry) -> Digest32 {
@@ -100,7 +102,8 @@ fn batch_revokes_direct_targets_and_blocks_descendants_without_mutating_input() 
         "generator",
     );
     let before = registry.snapshot();
-    let prepared = prepare_dataset_revocation(&registry, head(&registry), &notice()).unwrap();
+    let prepared =
+        prepare_dataset_revocation(&registry, head(&registry), &notice()).fixture("test fixture");
     assert_eq!(registry.snapshot(), before);
     assert_eq!(prepared.summary().direct_artifacts, vec![id("a"), id("b")]);
     assert_eq!(prepared.summary().appended, 2);
@@ -150,9 +153,10 @@ fn identical_retry_reuses_existing_events_and_history() {
         dataset(),
         "generator",
     );
-    let first = prepare_dataset_revocation(&registry, head(&registry), &notice()).unwrap();
-    let retry =
-        prepare_dataset_revocation(first.registry(), head(first.registry()), &notice()).unwrap();
+    let first =
+        prepare_dataset_revocation(&registry, head(&registry), &notice()).fixture("test fixture");
+    let retry = prepare_dataset_revocation(first.registry(), head(first.registry()), &notice())
+        .fixture("test fixture");
     assert_eq!(retry.registry().snapshot(), first.registry().snapshot());
     assert_eq!(retry.summary().appended, 0);
     assert_eq!(retry.summary().replayed, 1);
@@ -172,7 +176,8 @@ fn changed_notice_or_evaluator_under_same_operation_conflicts() {
         dataset(),
         "generator",
     );
-    let first = prepare_dataset_revocation(&registry, head(&registry), &notice()).unwrap();
+    let first =
+        prepare_dataset_revocation(&registry, head(&registry), &notice()).fixture("test fixture");
     let before = first.registry().snapshot();
     for field in ["notice", "evaluator"] {
         let mut request = notice();
@@ -244,9 +249,12 @@ fn quarantined_targets_revoke_and_previously_revoked_targets_are_reported() {
     };
     registry
         .append(ArtifactEvent::Quarantine(change("a")))
-        .unwrap();
-    registry.append(ArtifactEvent::Revoke(change("b"))).unwrap();
-    let prepared = prepare_dataset_revocation(&registry, head(&registry), &notice()).unwrap();
+        .fixture("test fixture");
+    registry
+        .append(ArtifactEvent::Revoke(change("b")))
+        .fixture("test fixture");
+    let prepared =
+        prepare_dataset_revocation(&registry, head(&registry), &notice()).fixture("test fixture");
     assert_eq!(prepared.summary().appended, 1);
     assert_eq!(prepared.summary().already_revoked, 1);
     assert_eq!(
@@ -288,16 +296,16 @@ impl Files {
             "hepta-dataset-revoke-{}-{serial}",
             std::process::id()
         ));
-        std::fs::create_dir(&path).unwrap();
+        std::fs::create_dir(&path).fixture("test fixture");
         Self(path)
     }
 
     fn create(&self, name: &str) -> CreateOnlyArtifactFile {
-        CreateOnlyArtifactFile::create(self.0.join(name)).unwrap()
+        CreateOnlyArtifactFile::create(self.0.join(name)).fixture("test fixture")
     }
 
     fn read(&self, name: &str) -> File {
-        File::open(self.0.join(name)).unwrap()
+        File::open(self.0.join(name)).fixture("test fixture")
     }
 }
 
@@ -332,35 +340,41 @@ fn persisted_batch_reopens_and_blocks_candidate_but_keeps_clean_rollback() {
         &id("baseline"),
         b"baseline",
     )
-    .unwrap();
+    .fixture("test fixture");
     write_candidate_payload(
         files.create("candidate"),
         &registry,
         &id("candidate"),
         b"candidate",
     )
-    .unwrap();
-    let old_witness = write_registry_snapshot(files.create("old"), &registry, binding).unwrap();
-    let prepared = prepare_dataset_revocation(&registry, head(&registry), &notice()).unwrap();
+    .fixture("test fixture");
+    let old_witness =
+        write_registry_snapshot(files.create("old"), &registry, binding).fixture("test fixture");
+    let prepared =
+        prepare_dataset_revocation(&registry, head(&registry), &notice()).fixture("test fixture");
     let current_witness =
-        write_registry_snapshot(files.create("current"), prepared.registry(), binding).unwrap();
+        write_registry_snapshot(files.create("current"), prepared.registry(), binding)
+            .fixture("test fixture");
     assert_eq!(
         read_registry_snapshot(files.read("old"), old_witness)
-            .unwrap()
+            .fixture("test fixture")
             .snapshot(),
         registry.snapshot()
     );
     assert!(read_registry_snapshot(files.read("old"), current_witness).is_err());
-    let current = read_registry_snapshot(files.read("current"), current_witness).unwrap();
+    let current =
+        read_registry_snapshot(files.read("current"), current_witness).fixture("test fixture");
     assert_eq!(current.snapshot(), prepared.registry().snapshot());
     assert_eq!(
         read_candidate_payload(files.read("candidate"), &current, &id("candidate")),
         Err(ArtifactStorageError::Unavailable)
     );
     assert_eq!(
-        read_candidate_payload(files.read("baseline"), &current, &id("baseline")).unwrap(),
+        read_candidate_payload(files.read("baseline"), &current, &id("baseline"))
+            .fixture("test fixture"),
         b"baseline"
     );
-    let retry = prepare_dataset_revocation(&current, head(&current), &notice()).unwrap();
+    let retry =
+        prepare_dataset_revocation(&current, head(&current), &notice()).fixture("test fixture");
     assert_eq!(retry.registry().snapshot(), current.snapshot());
 }
