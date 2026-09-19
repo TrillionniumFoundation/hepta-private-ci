@@ -129,6 +129,8 @@ impl UnixFinalUseAuthorizer {
         let request_len = u32::try_from(request_bytes.len())?;
         let exchange = async {
             let mut stream = tokio::net::UnixStream::connect(&self.issuer_socket).await?;
+            let peer = stream.peer_cred()?;
+            validate_issuer_peer_uid(peer.uid(), self.issuer_uid)?;
             stream.write_all(&request_len.to_be_bytes()).await?;
             stream.write_all(&request_bytes).await?;
             stream.flush().await?;
@@ -228,6 +230,14 @@ fn read_private_config(path: &Path) -> Result<Vec<u8>> {
 #[cfg(not(unix))]
 fn read_private_config(_path: &Path) -> Result<Vec<u8>> {
     Err("runtime.codex final-use authority configuration requires Unix".into())
+}
+
+#[cfg(unix)]
+fn validate_issuer_peer_uid(actual_uid: u32, expected_uid: u32) -> Result<()> {
+    if actual_uid != expected_uid {
+        return Err("connected final-use authority peer UID does not match configured issuer".into());
+    }
+    Ok(())
 }
 
 #[cfg(unix)]
