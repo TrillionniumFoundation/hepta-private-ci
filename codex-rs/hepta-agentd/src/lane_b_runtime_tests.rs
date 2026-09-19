@@ -11,6 +11,7 @@ fn composition() -> RuntimeComposition {
         agentd_generation: 3,
         configuration_digest: digest('1'),
         ports_digest: digest('2'),
+        cancellation_ack_timeout_ms: 5_000,
     }
 }
 
@@ -74,7 +75,7 @@ fn cancellation_preserves_dispatch_boundary_and_reason_idempotency() {
     let mut before = AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");
     before.start_run(100, snapshot()).expect("admit run");
     let early = before
-        .cancel_run("run.1", 1, "operator_cancel")
+        .cancel_run(100, "run.1", 1, "operator_cancel")
         .expect("cancel");
     assert_eq!(early.0, CancellationDisposition::CancelledBeforeDispatch);
     assert_eq!(early.1.phase, RunPhase::Cancelled);
@@ -83,7 +84,7 @@ fn cancellation_preserves_dispatch_boundary_and_reason_idempotency() {
         Some("operator_cancel")
     );
     let repeated = before
-        .cancel_run("run.1", 1, "operator_cancel")
+        .cancel_run(100, "run.1", 1, "operator_cancel")
         .expect("idempotent retry");
     assert_eq!(repeated.0, CancellationDisposition::AlreadyTerminal);
     assert!(repeated.1.idempotent);
@@ -97,10 +98,11 @@ fn cancellation_preserves_dispatch_boundary_and_reason_idempotency() {
         .mark_dispatched(100, "run.1", 2)
         .expect("dispatch");
     let late = after
-        .cancel_run("run.1", 3, "operator_cancel")
+        .cancel_run(100, "run.1", 3, "operator_cancel")
         .expect("cancel");
     assert_eq!(late.0, CancellationDisposition::CancellingAfterDispatch);
     assert_eq!(late.1.phase, RunPhase::Cancelling);
+    assert_eq!(late.1.cancellation_ack_deadline_ms, Some(5_100));
     let terminal = after
         .observe_terminal("run.1", 4, RunPhase::Indeterminate, false)
         .expect("observe unknown terminality");
@@ -144,6 +146,37 @@ fn deadline_is_enforced_after_admission_and_by_background_sweep() {
         changed[0].cancellation_reason.as_deref(),
         Some("deadline_exceeded")
     );
+}
+
+#[test]
+fn cancellation_ack_deadline_converts_lost_ack_to_indeterminate() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    coordinator.start_run(100, snapshot()).expect("admit");
+    coordinator
+        .attach_context(100, 1, attachment())
+        .expect("attach");
+    coordinator
+        .mark_dispatched(100, "run.1", 2)
+        .expect("dispatch");
+    let (_, cancelling) = coordinator
+        .cancel_run(200, "run.1", 3, "operator_cancel")
+        .expect("cancel");
+    assert_eq!(cancelling.phase, RunPhase::Cancelling);
+    assert_eq!(cancelling.cancellation_ack_deadline_ms, Some(5_200));
+
+    assert!(
+        coordinator
+            .enforce_deadlines(5_199)
+            .expect("before ack deadline")
+            .is_empty()
+    );
+    let changed = coordinator
+        .enforce_deadlines(5_200)
+        .expect("ack deadline elapsed");
+    assert_eq!(changed.len(), 1);
+    assert_eq!(changed[0].phase, RunPhase::Indeterminate);
+    assert_eq!(changed[0].cancellation_ack_deadline_ms, None);
+    assert!(!changed[0].terminal_observed);
 }
 
 #[test]
