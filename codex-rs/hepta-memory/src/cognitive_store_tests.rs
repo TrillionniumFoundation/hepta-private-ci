@@ -1,3 +1,5 @@
+use std::time::Instant;
+
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
@@ -862,4 +864,168 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
         .expect("migration ledger"),
         "1,2,3,4,5,6,7,8,9,10"
     );
+}
+
+
+#[tokio::test]
+#[ignore = "PERF-DURABLE qualification; set HEPTA_COGNITIVE_PERF_REVISIONS and run explicitly"]
+async fn perf_durable_cognitive_store_profile() {
+    let revision_count = std::env::var("HEPTA_COGNITIVE_PERF_REVISIONS")
+        .ok()
+        .and_then(|value| value.parse::<usize>().ok())
+        .unwrap_or(256);
+    assert!(
+        (1..=16_384).contains(&revision_count),
+        "PERF-DURABLE revisions must be 1..=16384"
+    );
+
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(209);
+    let owner_layout = layout(&temp, &owner);
+    let open_started = Instant::now();
+    let store = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("open durable cognitive store");
+    let open_us = elapsed_us(open_started);
+    let access = CognitiveAccess::agent_private(owner);
+    let scope = CognitiveScope::AgentPrivate;
+    let citation = store
+        .append_source(
+            &access,
+            &source(
+                scope.clone(),
+                "perf-durable-source",
+                "PERF-DURABLE stable source evidence",
+            ),
+        )
+        .await
+        .expect("append performance source");
+
+    let mut commit_us = Vec::with_capacity(revision_count);
+    for ordinal in 0..revision_count {
+        let started = Instant::now();
+        store
+            .remember_memory(
+                &access,
+                &MemoryDraft {
+                    stable_key: format!("perf-durable-memory-{ordinal:05}"),
+                    revision: crate::cognitive_test_support::memory_revision(
+                        scope.clone(),
+                        &format!("PERF-DURABLE memory {ordinal:05}"),
+                        citation.clone(),
+                    ),
+                },
+            )
+            .await
+            .unwrap_or_else(|error| panic!("commit {ordinal} failed: {error}"));
+        commit_us.push(elapsed_us(started));
+    }
+
+    let snapshot_started = Instant::now();
+    let snapshot = store
+        .lane_c_snapshot(&access, &scope, 200)
+        .await
+        .expect("full bounded snapshot");
+    let snapshot_us = elapsed_us(snapshot_started);
+    assert_eq!(snapshot.frontiers().memory as usize, revision_count);
+
+    let page_started = Instant::now();
+    let mut cursor = None;
+    let mut page_count = 0_u64;
+    let mut paged_lineage_count = 0_u64;
+    loop {
+        let page = store
+            .lane_c_snapshot_page(&access, &scope, 200, cursor.as_ref(), 256)
+            .await
+            .expect("paged bounded snapshot");
+        page_count += 1;
+        paged_lineage_count +=
+            u64::try_from(page.lineage_records().len()).expect("lineage count fits u64");
+        match page.next_cursor().cloned() {
+            Some(next) => cursor = Some(next),
+            None => break,
+        }
+    }
+    let paging_us = elapsed_us(page_started);
+    assert_eq!(paged_lineage_count as usize, revision_count);
+
+    let recovery_started = Instant::now();
+    let recovery_anchor = store.recovery_anchor().await;
+    let recovery_anchor_us = elapsed_us(recovery_started);
+    let recovery_anchor_status = recovery_anchor
+        .as_ref()
+        .map(|_| "ok".to_string())
+        .unwrap_or_else(|error| format!("error:{error}"));
+
+    let database_path = store.path().to_path_buf();
+    let wal_path = database_path.with_extension("sqlite3-wal");
+    let database_bytes_before_close = std::fs::metadata(&database_path)
+        .map(|metadata| metadata.len())
+        .unwrap_or(0);
+    let wal_bytes_before_close = std::fs::metadata(&wal_path)
+        .map(|metadata| metadata.len())
+        .unwrap_or(0);
+
+    store.pool.close().await;
+    let reopen_started = Instant::now();
+    let reopened = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("reopen durable cognitive store");
+    let reopen_us = elapsed_us(reopen_started);
+    let reopened_snapshot_started = Instant::now();
+    let reopened_snapshot = reopened
+        .lane_c_snapshot(&access, &scope, 201)
+        .await
+        .expect("snapshot after reopen");
+    let reopened_snapshot_us = elapsed_us(reopened_snapshot_started);
+    assert_eq!(reopened_snapshot.frontiers().memory as usize, revision_count);
+    let database_bytes_after_reopen = std::fs::metadata(&database_path)
+        .map(|metadata| metadata.len())
+        .unwrap_or(0);
+
+    commit_us.sort_unstable();
+    let result = serde_json::json!({
+        "schema": "hepta.cognitive-store.perf-durable.v1",
+        "revisionCount": revision_count,
+        "journalMode": PRODUCTION_DURABLE_WRITER_JOURNAL_MODE,
+        "synchronous": PRODUCTION_DURABLE_WRITER_SYNCHRONOUS_FULL,
+        "openUs": open_us,
+        "commitUs": {
+            "p50": percentile(&commit_us, 50),
+            "p95": percentile(&commit_us, 95),
+            "p99": percentile(&commit_us, 99),
+            "max": commit_us.last().copied().unwrap_or(0),
+        },
+        "snapshotUs": snapshot_us,
+        "pageTraversalUs": paging_us,
+        "pageCount": page_count,
+        "recoveryAnchorUs": recovery_anchor_us,
+        "recoveryAnchorStatus": recovery_anchor_status,
+        "reopenUs": reopen_us,
+        "reopenedSnapshotUs": reopened_snapshot_us,
+        "databaseBytesBeforeClose": database_bytes_before_close,
+        "walBytesBeforeClose": wal_bytes_before_close,
+        "databaseBytesAfterReopen": database_bytes_after_reopen,
+    });
+    let rendered = serde_json::to_string_pretty(&result).expect("serialize PERF-DURABLE result");
+    println!("HEPTA_COGNITIVE_PERF_DURABLE={rendered}");
+    if let Some(path) = std::env::var_os("HEPTA_COGNITIVE_PERF_OUTPUT") {
+        std::fs::write(path, rendered).expect("write PERF-DURABLE output");
+    }
+}
+
+fn elapsed_us(started: Instant) -> u64 {
+    u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX)
+}
+
+fn percentile(sorted: &[u64], percentile: usize) -> u64 {
+    if sorted.is_empty() {
+        return 0;
+    }
+    let index = sorted
+        .len()
+        .saturating_sub(1)
+        .saturating_mul(percentile)
+        / 100;
+    sorted[index]
 }

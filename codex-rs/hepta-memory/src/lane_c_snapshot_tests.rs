@@ -359,3 +359,141 @@ async fn retained_cut_detects_old_valid_backup_after_ordinary_reopen() {
         Err(CognitiveStoreError::Conflict(_))
     ));
 }
+
+#[tokio::test]
+async fn paged_lane_c_keeps_complete_ancestry_and_rejects_mixed_cuts() {
+    let temp = TempDir::new().unwrap();
+    let owner = agent_id(107);
+    let store = CognitiveStore::open(&layout(&temp, &owner)).await.unwrap();
+    let access = CognitiveAccess::agent_private(owner);
+    let scope = CognitiveScope::AgentPrivate;
+    let citation = store
+        .append_source(
+            &access,
+            &source(scope.clone(), "page-source", "page evidence"),
+        )
+        .await
+        .unwrap();
+
+    let first = store
+        .remember_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: "page-first".to_string(),
+                revision: memory_revision(scope.clone(), "first-v1", citation.clone()),
+            },
+        )
+        .await
+        .unwrap();
+    store
+        .correct_memory(
+            &access,
+            &first.id.memory_id,
+            1,
+            &memory_revision(scope.clone(), "first-v2", citation.clone()),
+        )
+        .await
+        .unwrap();
+
+    let second = store
+        .remember_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: "page-second".to_string(),
+                revision: memory_revision(scope.clone(), "second-v1", citation.clone()),
+            },
+        )
+        .await
+        .unwrap();
+    store
+        .forget_memory(
+            &access,
+            &second.id.memory_id,
+            1,
+            &ForgetMemoryDraft {
+                scope: scope.clone(),
+                reason: "page delete".to_string(),
+                valid_from_unix_seconds: 200,
+                citations: vec![citation.clone()],
+            },
+        )
+        .await
+        .unwrap();
+
+    store
+        .remember_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: "page-third".to_string(),
+                revision: memory_revision(scope.clone(), "third-v1", citation),
+            },
+        )
+        .await
+        .unwrap();
+
+    let mut cursor = None;
+    let mut first_cursor = None;
+    let mut page_count = 0_usize;
+    let mut lineage_count = 0_usize;
+    let mut tombstone_heads = 0_usize;
+    let mut frozen_frontiers = None;
+    loop {
+        let page = store
+            .lane_c_snapshot_page(&access, &scope, 200, cursor.as_ref(), 1)
+            .await
+            .unwrap();
+        page_count += 1;
+        lineage_count += page.lineage_records().len();
+        tombstone_heads += page
+            .visible_heads()
+            .iter()
+            .filter(|record| record.state == RecordState::Tombstone)
+            .count();
+        if let Some(first) = page.lineage_records().first() {
+            assert!(
+                page.lineage_records()
+                    .iter()
+                    .all(|record| record.record_id == first.record_id),
+                "a record ancestry chain must never be split within a page"
+            );
+            assert_eq!(first.revision.get(), 1);
+            for window in page.lineage_records().windows(2) {
+                assert_eq!(
+                    window[1].predecessor_digest,
+                    Some(window[0].record_digest())
+                );
+            }
+        }
+        match &frozen_frontiers {
+            Some(frontiers) => assert_eq!(page.frontiers(), frontiers),
+            None => frozen_frontiers = Some(page.frontiers().clone()),
+        }
+        let next = page.next_cursor().cloned();
+        if first_cursor.is_none() {
+            first_cursor = next.clone();
+        }
+        match next {
+            Some(next) => cursor = Some(next),
+            None => break,
+        }
+    }
+
+    assert_eq!(page_count, 3);
+    assert_eq!(lineage_count, 5);
+    assert_eq!(tombstone_heads, 1);
+    assert_eq!(frozen_frontiers.unwrap().memory, 5);
+
+    store
+        .append_source(
+            &access,
+            &source(scope.clone(), "page-source-later", "changed owner cut"),
+        )
+        .await
+        .unwrap();
+    assert!(matches!(
+        store
+            .lane_c_snapshot_page(&access, &scope, 201, first_cursor.as_ref(), 1,)
+            .await,
+        Err(CognitiveStoreError::Conflict(_))
+    ));
+}

@@ -446,3 +446,68 @@ impl MetadataImage {
         }
     }
 }
+
+#[tokio::test]
+async fn recovery_verifies_exact_current_cut_and_independent_writer_fence_before_vfs_gate() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(199);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let expires = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("clock")
+        .as_secs()
+        + 3_600;
+    store
+        .acquire_host_bound_lease(
+            "lease:recovery-writer",
+            7,
+            11,
+            3,
+            "fence:recovery-writer",
+            expires,
+        )
+        .await
+        .expect("active host-bound lease");
+    let anchor = store.recovery_anchor().await.expect("current cut");
+    let fence = store
+        .recovery_writer_fence("lease:recovery-writer")
+        .await
+        .expect("writer fence");
+    assert_eq!(fence.owner_agent_id, owner);
+    assert_eq!(fence.authority_epoch, 7);
+    assert_eq!(fence.owner_epoch, 11);
+    assert_eq!(fence.generation, 3);
+    store.pool.close().await;
+
+    let result = CognitiveStore::open_with_recovery(
+        &layout(&temp, &owner),
+        CognitiveRecoveryRequirement::ExactCurrentCutAndWriterFence {
+            anchor: &anchor,
+            writer_fence: &fence,
+        },
+    )
+    .await;
+    assert!(
+        matches!(
+            &result,
+            Err(CognitiveRecoveryError::Unavailable(message))
+                if message.contains("current cut and writer fence verified")
+        ),
+        "unexpected writer-recovery gate result: {result:?}"
+    );
+
+    let mut stale = fence.clone();
+    stale.lease_sha256 = Sha256Digest::for_bytes(b"stale writer head");
+    let stale_result = CognitiveStore::open_with_recovery(
+        &layout(&temp, &owner),
+        CognitiveRecoveryRequirement::ExactCurrentCutAndWriterFence {
+            anchor: &anchor,
+            writer_fence: &stale,
+        },
+    )
+    .await;
+    assert!(
+        matches!(stale_result, Err(CognitiveRecoveryError::AccessDenied(_))),
+        "stale writer fence must fail before writable VFS admission"
+    );
+}

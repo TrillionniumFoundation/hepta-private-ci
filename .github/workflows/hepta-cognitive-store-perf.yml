@@ -1,0 +1,59 @@
+name: Cognitive store PERF-DURABLE
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-memory/**"
+      - ".github/workflows/hepta-cognitive-store-perf.yml"
+  workflow_dispatch:
+    inputs:
+      revisions:
+        description: Durable memory revisions to retain and measure
+        required: true
+        default: "16384"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cognitive-store-perf-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  perf-durable:
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      HEPTA_COGNITIVE_PERF_REVISIONS: ${{ github.event_name == 'workflow_dispatch' && inputs.revisions || '512' }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+      - name: Prepare native SQLite prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libcap-dev pkg-config
+      - name: Measure durable writer, WAL, snapshot, paging, recovery and reopen
+        working-directory: codex-rs
+        env:
+          HEPTA_COGNITIVE_PERF_OUTPUT: ${{ runner.temp }}/cognitive-store-perf.json
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-memory             perf_durable_cognitive_store_profile -- --ignored --exact --nocapture
+          test -s "$HEPTA_COGNITIVE_PERF_OUTPUT"
+          cat "$HEPTA_COGNITIVE_PERF_OUTPUT"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: cognitive-store-perf-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cognitive-store-perf.json
+          if-no-files-found: error
+          retention-days: 30

@@ -35,6 +35,90 @@ impl RecoveredCognitiveReadOnly {
             .lane_c_snapshot(access, scope, now_unix_seconds)
             .await
     }
+
+    pub(super) async fn verify_writer_fence(
+        &self,
+        expected: &CognitiveRecoveryWriterFence,
+    ) -> Result<(), CognitiveRecoveryError> {
+        expected.validate(self.store.owner_agent_id())?;
+        let row = sqlx::query(
+            "SELECT lease_sequence, generation, state, authority_epoch, owner_epoch,
+                    lease_expires_at_unix_seconds, lease_sha256
+             FROM cognitive_local_leases
+             WHERE lease_id = ? AND owner_agent_id = ?
+             ORDER BY lease_sequence DESC LIMIT 1",
+        )
+        .bind(&expected.lease_id)
+        .bind(self.store.owner_agent_id().as_str())
+        .fetch_optional(&self.store.pool)
+        .await
+        .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?
+        .ok_or_else(|| {
+            CognitiveRecoveryError::AccessDenied(
+                "current cognitive writer fence is missing from the verified cut".to_string(),
+            )
+        })?;
+        let lease_sequence = row
+            .try_get::<i64, _>("lease_sequence")
+            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+        let generation = row
+            .try_get::<i64, _>("generation")
+            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+        let state = row
+            .try_get::<String, _>("state")
+            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+        let authority_epoch = row
+            .try_get::<Option<i64>, _>("authority_epoch")
+            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+        let owner_epoch = row
+            .try_get::<Option<i64>, _>("owner_epoch")
+            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+        let expires = row
+            .try_get::<Option<i64>, _>("lease_expires_at_unix_seconds")
+            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+        let lease_sha256 = row
+            .try_get::<String, _>("lease_sha256")
+            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?;
+        let observed = (
+            u64::try_from(lease_sequence).ok(),
+            u64::try_from(generation).ok(),
+            state.as_str(),
+            authority_epoch.and_then(|value| u64::try_from(value).ok()),
+            owner_epoch.and_then(|value| u64::try_from(value).ok()),
+            expires.and_then(|value| u64::try_from(value).ok()),
+            Sha256Digest::parse(lease_sha256).ok(),
+        );
+        if observed
+            != (
+                Some(expected.lease_sequence),
+                Some(expected.generation),
+                "active",
+                Some(expected.authority_epoch),
+                Some(expected.owner_epoch),
+                Some(expected.lease_expires_at_unix_seconds),
+                Some(expected.lease_sha256.clone()),
+            )
+        {
+            return Err(CognitiveRecoveryError::AccessDenied(
+                "verified cognitive cut does not contain the independently retained current writer fence"
+                    .to_string(),
+            ));
+        }
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_err(|error| CognitiveRecoveryError::Indeterminate(error.to_string()))?
+            .as_secs();
+        if now >= expected.lease_expires_at_unix_seconds {
+            return Err(CognitiveRecoveryError::AccessDenied(
+                "cognitive recovery writer fence expired before recovery admission".to_string(),
+            ));
+        }
+        Ok(())
+    }
+
+    pub(super) async fn close(self) {
+        self.store.pool.close().await;
+    }
 }
 
 impl CognitiveStore {
@@ -58,7 +142,8 @@ impl CognitiveStore {
         layout: &HeptaAgentLayout,
         requirement: CognitiveRecoveryRequirement<'_>,
     ) -> Result<RecoveredCognitiveReadOnly, CognitiveRecoveryError> {
-        let expected = validate_requirement(layout, requirement)?;
+        let validated = validate_requirement(layout, requirement)?;
+        let expected = validated.anchor;
         let path = layout.cognitive_root().join(COGNITIVE_DB_FILENAME);
         let home = AbsolutePathBuf::try_from(layout.cognitive_root().to_path_buf())
             .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?;

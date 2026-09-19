@@ -32,7 +32,17 @@ use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
+/// Maximum non-tombstone revisions admitted by one V2 store.
 pub const MAX_V2_RECORD_REVISIONS: usize = 65_536;
+/// Terminal tombstones are safety records and do not consume the ordinary
+/// revision budget. At most one tombstone can follow each admitted history.
+pub const MAX_V2_TOTAL_REVISIONS: usize = MAX_V2_RECORD_REVISIONS * 2;
+/// Ordinary retry journal entries are bounded independently from record state.
+pub const MAX_V2_INTENT_JOURNAL_ENTRIES: usize = MAX_V2_RECORD_REVISIONS * 2;
+/// A terminal forget remains journalable even when ordinary retry traffic has
+/// exhausted its budget.
+pub const MAX_V2_TOTAL_INTENT_JOURNAL_ENTRIES: usize =
+    MAX_V2_INTENT_JOURNAL_ENTRIES + MAX_V2_RECORD_REVISIONS;
 pub const MAX_V2_SNAPSHOT_LEASE_MS: u64 = 300_000;
 const FORGET_DOMAIN: &[u8] = b"hepta.cognitive-store.forget-intent.v2";
 const STORE_SNAPSHOT_DOMAIN: &[u8] = b"hepta.cognitive-store.snapshot.v2";
@@ -63,6 +73,9 @@ pub struct AdmittedCognitiveStoreV2 {
     snapshot_key: CognitiveSnapshotKeyV1,
     writer_fence_digest: Digest32,
     maximum_record_revisions: usize,
+    maximum_intent_journal_entries: usize,
+    maximum_total_intent_journal_entries: usize,
+    intent_retention_floor: u64,
 }
 
 impl AdmittedCognitiveStoreV2 {
@@ -83,6 +96,13 @@ impl AdmittedCognitiveStoreV2 {
         }
         let sequence = LogicalSequence::new(/*value*/ 1)
             .map_err(|_| CognitiveStoreV2Error::SequenceOverflow)?;
+        let maximum_intent_journal_entries = maximum_record_revisions
+            .saturating_mul(2)
+            .min(MAX_V2_INTENT_JOURNAL_ENTRIES);
+        let maximum_total_intent_journal_entries = maximum_intent_journal_entries
+            .saturating_add(maximum_record_revisions)
+            .min(MAX_V2_TOTAL_INTENT_JOURNAL_ENTRIES);
+        let intent_retention_floor = snapshot_key.vector.memory_ledger_frontier;
         Ok(Self {
             histories: BTreeMap::new(),
             intent_journal: BTreeMap::new(),
@@ -90,6 +110,9 @@ impl AdmittedCognitiveStoreV2 {
             snapshot_key,
             writer_fence_digest,
             maximum_record_revisions,
+            maximum_intent_journal_entries,
+            maximum_total_intent_journal_entries,
+            intent_retention_floor,
         })
     }
 
@@ -115,6 +138,35 @@ impl AdmittedCognitiveStoreV2 {
         self.histories.get(record_id).map(Vec::as_slice)
     }
 
+    #[must_use]
+    pub const fn intent_retention_floor(&self) -> u64 {
+        self.intent_retention_floor
+    }
+
+    /// Drop retry receipts strictly older than one acknowledged memory frontier.
+    ///
+    /// Exact retries at or above the retained frontier preserve their original
+    /// receipts. Callers must not retry operations whose committed frontier is
+    /// below the returned floor; the record ledger remains intact.
+    pub fn retain_intents_at_or_after(
+        &mut self,
+        minimum_committed_frontier: u64,
+    ) -> Result<usize, CognitiveStoreV2Error> {
+        if minimum_committed_frontier == 0
+            || minimum_committed_frontier > self.snapshot_key.vector.memory_ledger_frontier
+        {
+            return Err(CognitiveStoreV2Error::InvalidIntentRetentionFrontier);
+        }
+        if minimum_committed_frontier < self.intent_retention_floor {
+            return Err(CognitiveStoreV2Error::IntentRetentionFrontierRegression);
+        }
+        let before = self.intent_journal.len();
+        self.intent_journal
+            .retain(|_, entry| entry.receipt.committed_frontier >= minimum_committed_frontier);
+        self.intent_retention_floor = minimum_committed_frontier;
+        Ok(before.saturating_sub(self.intent_journal.len()))
+    }
+
     pub fn append_admitted<V: StoreAuthorityVerifierV2>(
         &mut self,
         verifier: &V,
@@ -125,8 +177,17 @@ impl AdmittedCognitiveStoreV2 {
             .validate()
             .map_err(CognitiveStoreV2Error::Contract)?;
         intent.validate().map_err(CognitiveStoreV2Error::Contract)?;
-        if candidate.verification == MemoryVerificationState::Revoked {
-            return Err(CognitiveStoreV2Error::RevokedCandidate);
+        match candidate.verification {
+            MemoryVerificationState::Verified => {}
+            MemoryVerificationState::Unverified => {
+                return Err(CognitiveStoreV2Error::UnverifiedCandidate);
+            }
+            MemoryVerificationState::Contradicted => {
+                return Err(CognitiveStoreV2Error::ContradictedCandidate);
+            }
+            MemoryVerificationState::Revoked => {
+                return Err(CognitiveStoreV2Error::RevokedCandidate);
+            }
         }
         let candidate_digest = candidate.digest();
         if intent.candidate_digest != candidate_digest {
@@ -174,6 +235,7 @@ impl AdmittedCognitiveStoreV2 {
                     receipt
                         .validate()
                         .map_err(CognitiveStoreV2Error::Contract)?;
+                    self.ensure_intent_journal_capacity(/*terminal*/ false)?;
                     self.intent_journal.insert(
                         intent.intent_id,
                         IntentJournalEntryV2 {
@@ -333,6 +395,7 @@ impl AdmittedCognitiveStoreV2 {
             snapshot_key: self.snapshot_key.clone(),
             writer_fence_digest: self.writer_fence_digest,
             sequence: self.sequence,
+            intent_retention_floor: self.intent_retention_floor,
             records,
             journal,
             image_digest: Digest32::ZERO,
@@ -348,12 +411,25 @@ impl AdmittedCognitiveStoreV2 {
         maximum_record_revisions: usize,
     ) -> Result<Self, CognitiveStoreV2Error> {
         image.validate()?;
+        let content_revisions = image
+            .records
+            .iter()
+            .filter(|record| record.state != RecordState::Tombstone)
+            .count();
+        let maximum_intent_journal_entries = maximum_record_revisions
+            .saturating_mul(2)
+            .min(MAX_V2_INTENT_JOURNAL_ENTRIES);
+        let maximum_total_intent_journal_entries = maximum_intent_journal_entries
+            .saturating_add(maximum_record_revisions)
+            .min(MAX_V2_TOTAL_INTENT_JOURNAL_ENTRIES);
         if maximum_record_revisions == 0
             || maximum_record_revisions > MAX_V2_RECORD_REVISIONS
-            || image.records.len() > maximum_record_revisions
+            || content_revisions > maximum_record_revisions
+            || image.journal.len() > maximum_total_intent_journal_entries
         {
             return Err(CognitiveStoreV2Error::InvalidCapacity);
         }
+        let intent_retention_floor = image.intent_retention_floor;
         let mut histories = BTreeMap::<StableId, Vec<MemoryRecord>>::new();
         for record in image.records {
             histories
@@ -393,6 +469,9 @@ impl AdmittedCognitiveStoreV2 {
             snapshot_key: image.snapshot_key,
             writer_fence_digest: image.writer_fence_digest,
             maximum_record_revisions,
+            maximum_intent_journal_entries,
+            maximum_total_intent_journal_entries,
+            intent_retention_floor,
         })
     }
 
@@ -413,6 +492,18 @@ impl AdmittedCognitiveStoreV2 {
         Ok(())
     }
 
+    fn ensure_intent_journal_capacity(&self, terminal: bool) -> Result<(), CognitiveStoreV2Error> {
+        let limit = if terminal {
+            self.maximum_total_intent_journal_entries
+        } else {
+            self.maximum_intent_journal_entries
+        };
+        if self.intent_journal.len() >= limit {
+            return Err(CognitiveStoreV2Error::IntentJournalCapacityExceeded);
+        }
+        Ok(())
+    }
+
     fn commit_record(
         &mut self,
         intent_id: StableId,
@@ -420,10 +511,20 @@ impl AdmittedCognitiveStoreV2 {
         record: MemoryRecord,
         disposition: MemoryWriteDisposition,
     ) -> Result<MemoryWriteReceiptV1, CognitiveStoreV2Error> {
-        let current_count = self.histories.values().map(Vec::len).sum::<usize>();
-        if current_count >= self.maximum_record_revisions {
+        let content_count = self
+            .histories
+            .values()
+            .flatten()
+            .filter(|record| record.state != RecordState::Tombstone)
+            .count();
+        let total_count = self.histories.values().map(Vec::len).sum::<usize>();
+        let terminal = record.state == RecordState::Tombstone;
+        if (!terminal && content_count >= self.maximum_record_revisions)
+            || total_count >= MAX_V2_TOTAL_REVISIONS
+        {
             return Err(CognitiveStoreV2Error::CapacityExceeded);
         }
+        self.ensure_intent_journal_capacity(terminal)?;
         record
             .validate()
             .map_err(|error| CognitiveStoreV2Error::InvalidRecord(error.to_string()))?;
@@ -612,6 +713,7 @@ pub struct CognitiveStoreImageV2 {
     pub snapshot_key: CognitiveSnapshotKeyV1,
     pub writer_fence_digest: Digest32,
     pub sequence: LogicalSequence,
+    pub intent_retention_floor: u64,
     pub records: Vec<MemoryRecord>,
     pub journal: Vec<StoreIntentImageEntryV2>,
     pub image_digest: Digest32,
@@ -624,14 +726,30 @@ impl CognitiveStoreImageV2 {
             .validate()
             .map_err(CognitiveStoreV2Error::Contract)?;
         ensure_digest("writer_fence", self.writer_fence_digest)?;
-        if self.records.len() > MAX_V2_RECORD_REVISIONS {
+        let content_revisions = self
+            .records
+            .iter()
+            .filter(|record| record.state != RecordState::Tombstone)
+            .count();
+        if content_revisions > MAX_V2_RECORD_REVISIONS
+            || self.records.len() > MAX_V2_TOTAL_REVISIONS
+        {
             return Err(CognitiveStoreV2Error::CapacityExceeded);
         }
+        if self.journal.len() > MAX_V2_TOTAL_INTENT_JOURNAL_ENTRIES {
+            return Err(CognitiveStoreV2Error::IntentJournalCapacityExceeded);
+        }
+
         let mut histories = BTreeMap::<StableId, Vec<MemoryRecord>>::new();
+        let mut records_by_digest = BTreeMap::<Digest32, &MemoryRecord>::new();
         for record in &self.records {
             record
                 .validate()
                 .map_err(|error| CognitiveStoreV2Error::InvalidRecord(error.to_string()))?;
+            let digest = record.record_digest();
+            if records_by_digest.insert(digest, record).is_some() {
+                return Err(CognitiveStoreV2Error::ImageRecordDigestConflict);
+            }
             histories
                 .entry(record.record_id.clone())
                 .or_default()
@@ -641,19 +759,113 @@ impl CognitiveStoreImageV2 {
             history.sort_by_key(|record| record.revision);
             validate_record_history(record_id, history)?;
         }
+
+        let record_count = u64::try_from(self.records.len())
+            .map_err(|_| CognitiveStoreV2Error::ImageFrontierMismatch)?;
+        let final_frontier = self.snapshot_key.vector.memory_ledger_frontier;
+        let initial_frontier = final_frontier
+            .checked_sub(record_count)
+            .ok_or(CognitiveStoreV2Error::ImageFrontierMismatch)?;
+        if initial_frontier == 0
+            || self.intent_retention_floor < initial_frontier
+            || self.intent_retention_floor > final_frontier
+        {
+            return Err(CognitiveStoreV2Error::InvalidIntentRetentionFrontier);
+        }
+        let expected_sequence = record_count
+            .checked_add(1)
+            .ok_or(CognitiveStoreV2Error::ImageSequenceMismatch)?;
+        if self.sequence.get() != expected_sequence {
+            return Err(CognitiveStoreV2Error::ImageSequenceMismatch);
+        }
+
         let mut intent_ids = BTreeSet::new();
+        let mut inserted = BTreeMap::<u64, (&MemoryRecord, &MemoryWriteReceiptV1)>::new();
         for entry in &self.journal {
             ensure_digest("intent_semantic", entry.semantic_digest)?;
             entry
                 .receipt
                 .validate()
                 .map_err(CognitiveStoreV2Error::Contract)?;
+            if entry.intent_id != entry.receipt.intent_id {
+                return Err(CognitiveStoreV2Error::JournalReceiptMismatch(
+                    entry.intent_id.to_string(),
+                ));
+            }
             if !intent_ids.insert(entry.intent_id.clone()) {
                 return Err(CognitiveStoreV2Error::DuplicateIntentJournalEntry(
                     entry.intent_id.to_string(),
                 ));
             }
+            if entry.receipt.committed_frontier < self.intent_retention_floor
+                || entry.receipt.committed_frontier > final_frontier
+                || entry.receipt.snapshot_key.vector.memory_ledger_frontier
+                    != entry.receipt.committed_frontier
+                || !same_static_lane_c_context(&entry.receipt.snapshot_key, &self.snapshot_key)
+            {
+                return Err(CognitiveStoreV2Error::JournalReceiptMismatch(
+                    entry.intent_id.to_string(),
+                ));
+            }
+            let record = records_by_digest
+                .get(&entry.receipt.record_digest)
+                .copied()
+                .ok_or_else(|| {
+                    CognitiveStoreV2Error::JournalReceiptMismatch(entry.intent_id.to_string())
+                })?;
+            if record.record_id != entry.receipt.record_id {
+                return Err(CognitiveStoreV2Error::JournalReceiptMismatch(
+                    entry.intent_id.to_string(),
+                ));
+            }
+            match entry.receipt.disposition {
+                MemoryWriteDisposition::Inserted => {
+                    if inserted
+                        .insert(entry.receipt.committed_frontier, (record, &entry.receipt))
+                        .is_some()
+                    {
+                        return Err(CognitiveStoreV2Error::ImageFrontierMismatch);
+                    }
+                }
+                MemoryWriteDisposition::Unchanged => {}
+                MemoryWriteDisposition::Rejected => {
+                    return Err(CognitiveStoreV2Error::InvalidJournalDisposition);
+                }
+            }
         }
+
+        let first_retained_commit = self
+            .intent_retention_floor
+            .max(initial_frontier.saturating_add(1));
+        let expected_inserted = if first_retained_commit > final_frontier {
+            0
+        } else {
+            final_frontier
+                .checked_sub(first_retained_commit)
+                .and_then(|value| value.checked_add(1))
+                .ok_or(CognitiveStoreV2Error::ImageFrontierMismatch)?
+        };
+        if u64::try_from(inserted.len()).ok() != Some(expected_inserted) {
+            return Err(CognitiveStoreV2Error::ImageFrontierMismatch);
+        }
+
+        let mut previous: Option<(&MemoryRecord, &MemoryWriteReceiptV1)> = None;
+        for frontier in first_retained_commit..=final_frontier {
+            let current = inserted
+                .get(&frontier)
+                .copied()
+                .ok_or(CognitiveStoreV2Error::ImageFrontierMismatch)?;
+            if let Some(previous) = previous {
+                validate_receipt_transition(previous.1, current.1, current.0)?;
+            }
+            previous = Some(current);
+        }
+        if let Some((_, receipt)) = previous
+            && receipt.snapshot_key != self.snapshot_key
+        {
+            return Err(CognitiveStoreV2Error::ImageFrontierMismatch);
+        }
+
         if self.authority.grants_any() {
             return Err(CognitiveStoreV2Error::AuthorityGranted);
         }
@@ -678,6 +890,7 @@ impl CognitiveStoreImageV2 {
         push_digest(&mut bytes, self.snapshot_key.vector_digest);
         push_digest(&mut bytes, self.writer_fence_digest);
         push_u64(&mut bytes, self.sequence.get());
+        push_u64(&mut bytes, self.intent_retention_floor);
         push_len(&mut bytes, records.len());
         for record in records {
             push_digest(&mut bytes, record.record_digest());
@@ -686,11 +899,80 @@ impl CognitiveStoreImageV2 {
         for entry in journal {
             push_id(&mut bytes, &entry.intent_id);
             push_digest(&mut bytes, entry.semantic_digest);
+            push_id(&mut bytes, &entry.receipt.intent_id);
+            push_id(&mut bytes, &entry.receipt.record_id);
             push_digest(&mut bytes, entry.receipt.record_digest);
             push_digest(&mut bytes, entry.receipt.snapshot_key.vector_digest);
             push_u64(&mut bytes, entry.receipt.committed_frontier);
+            bytes.push(write_disposition_code(entry.receipt.disposition));
         }
         Digest32::of_bytes(&bytes)
+    }
+}
+
+fn same_static_lane_c_context(
+    left: &CognitiveSnapshotKeyV1,
+    right: &CognitiveSnapshotKeyV1,
+) -> bool {
+    let left = &left.vector;
+    let right = &right.vector;
+    left.scope_id == right.scope_id
+        && left.purpose_id == right.purpose_id
+        && left.source_ledger_frontier == right.source_ledger_frontier
+        && left.knowledge_graph_generation == right.knowledge_graph_generation
+        && left.compact_checkpoint_generation == right.compact_checkpoint_generation
+        && left.prompt_registry_revision == right.prompt_registry_revision
+        && left.retrieval_profile_digest == right.retrieval_profile_digest
+        && left.encoder_preprocessor_digest == right.encoder_preprocessor_digest
+        && left.authority_epoch == right.authority_epoch
+        && left.model_digest == right.model_digest
+        && left.tokenizer_digest == right.tokenizer_digest
+        && left.template_digest == right.template_digest
+        && left.tool_schema_digest == right.tool_schema_digest
+}
+
+fn validate_receipt_transition(
+    previous: &MemoryWriteReceiptV1,
+    current: &MemoryWriteReceiptV1,
+    record: &MemoryRecord,
+) -> Result<(), CognitiveStoreV2Error> {
+    let previous_vector = &previous.snapshot_key.vector;
+    let current_vector = &current.snapshot_key.vector;
+    if current.committed_frontier != previous.committed_frontier.saturating_add(1)
+        || current_vector.memory_ledger_frontier != current.committed_frontier
+        || !same_static_lane_c_context(&previous.snapshot_key, &current.snapshot_key)
+    {
+        return Err(CognitiveStoreV2Error::ImageFrontierMismatch);
+    }
+    let expected_tombstone = previous_vector
+        .tombstone_frontier
+        .checked_add(if record.state == RecordState::Tombstone {
+            1
+        } else {
+            0
+        })
+        .ok_or(CognitiveStoreV2Error::ImageFrontierMismatch)?;
+    let expected_fact = previous_vector
+        .knowledge_fact_frontier
+        .checked_add(if record.kind == MemoryKind::Fact {
+            1
+        } else {
+            0
+        })
+        .ok_or(CognitiveStoreV2Error::ImageFrontierMismatch)?;
+    if current_vector.tombstone_frontier != expected_tombstone
+        || current_vector.knowledge_fact_frontier != expected_fact
+    {
+        return Err(CognitiveStoreV2Error::ImageFrontierMismatch);
+    }
+    Ok(())
+}
+
+fn write_disposition_code(value: MemoryWriteDisposition) -> u8 {
+    match value {
+        MemoryWriteDisposition::Inserted => 0,
+        MemoryWriteDisposition::Unchanged => 1,
+        MemoryWriteDisposition::Rejected => 2,
     }
 }
 
@@ -757,12 +1039,12 @@ fn validate_record_history(
                 }
             }
         }
-        if tombstone_seen && record.state == RecordState::Live {
-            return Err(CognitiveStoreV2Error::ResurrectionDenied(
+        if tombstone_seen {
+            return Err(CognitiveStoreV2Error::PostTombstoneRevision(
                 record_id.to_string(),
             ));
         }
-        tombstone_seen |= record.state == RecordState::Tombstone;
+        tombstone_seen = record.state == RecordState::Tombstone;
         previous = Some(record);
     }
     Ok(())
@@ -791,14 +1073,25 @@ pub enum CognitiveStoreV2Error {
     StaleMemoryFrontier,
     StaleTombstoneFrontier,
     AuthorizationRejected,
+    UnverifiedCandidate,
+    ContradictedCandidate,
     RevokedCandidate,
     IntentIdentityConflict(String),
+    IntentJournalCapacityExceeded,
+    InvalidIntentRetentionFrontier,
+    IntentRetentionFrontierRegression,
     RecordNotFound(String),
     AlreadyTombstoned(String),
     ResurrectionDenied(String),
     BrokenLineage(String),
     DuplicateCitationSource(String),
     DuplicateIntentJournalEntry(String),
+    JournalReceiptMismatch(String),
+    InvalidJournalDisposition,
+    ImageRecordDigestConflict,
+    ImageFrontierMismatch,
+    ImageSequenceMismatch,
+    PostTombstoneRevision(String),
     InvalidRecord(String),
     SnapshotBuild(String),
     AuthorityGranted,
