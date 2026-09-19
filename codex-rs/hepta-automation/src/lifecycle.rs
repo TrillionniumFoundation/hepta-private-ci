@@ -1257,6 +1257,18 @@ async fn advance_schedule(
 ) -> Result<(), AutomationError> {
     ensure_schedule_metadata(tx, store, task_id).await?;
     let policy = load_schedule_policy(tx, store, task_id).await?;
+    if crate::schedule_v2::advance_calendar_schedule_v2(
+        tx,
+        store,
+        task_id,
+        scheduled_for_ms,
+        observed_at_ms,
+        policy,
+    )
+    .await?
+    {
+        return Ok(());
+    }
     let row = sqlx::query(
         "SELECT state, schedule_kind, interval_ms FROM automation_tasks
          WHERE task_id = ? AND owner_agent_id = ?",

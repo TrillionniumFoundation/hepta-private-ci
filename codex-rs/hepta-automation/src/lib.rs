@@ -7,8 +7,10 @@
 
 #![forbid(unsafe_code)]
 
-/// Reusable reference state machine; does not install a second runtime owner.
-pub mod effect_executor;
+/// Legacy reference reducer retained only for focused unit tests. Product
+/// execution uses the durable TaskFlow ledger/outbox and authorized effect seam.
+#[cfg(test)]
+mod effect_executor;
 
 mod authorized_effect;
 mod automation_taskflow;
@@ -17,6 +19,7 @@ mod effect_dispatch_ledger;
 mod lifecycle;
 mod model;
 mod scheduler;
+mod schedule_v2;
 mod store;
 mod taskflow;
 mod taskflow_execution_boundary;
@@ -57,6 +60,11 @@ pub use model::AutomationTick;
 pub use scheduler::AutomationFuture;
 pub use scheduler::AutomationScheduler;
 pub use scheduler::AutomationTurnQueue;
+pub use schedule_v2::AutomationCalendarScheduleV2;
+pub use schedule_v2::AutomationDstGapPolicy;
+pub use schedule_v2::AutomationDstOverlapPolicy;
+pub use schedule_v2::AutomationTimeZoneProfileV1;
+pub use schedule_v2::AutomationTimezoneTransitionV1;
 pub use store::AutomationStore;
 pub use taskflow::TASKFLOW_COMPOSED_CALLER;
 pub use taskflow::TASKFLOW_EXTERNAL_EFFECTS;
@@ -118,4 +126,4 @@ pub use taskflow_step::TaskFlowStepObservation;
 pub use taskflow_step::TaskFlowStepReceipt;
 pub use taskflow_step::TaskFlowStepState;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 11;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 12;
