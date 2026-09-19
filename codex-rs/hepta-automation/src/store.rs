@@ -3,6 +3,7 @@ use std::path::Path;
 use std::path::PathBuf;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -13,8 +14,13 @@ use crate::AUTOMATION_SCHEMA_VERSION;
 use crate::AutomationDispatchUncertainty;
 use crate::AutomationError;
 use crate::AutomationLease;
+use crate::AutomationMissedRunPolicy;
+use crate::AutomationOccurrenceId;
+use crate::AutomationOccurrenceTerminal;
+use crate::AutomationOverlapPolicy;
 use crate::AutomationQueueReceipt;
 use crate::AutomationSchedule;
+use crate::AutomationSchedulePolicy;
 use crate::AutomationTask;
 use crate::AutomationTaskDraft;
 use crate::AutomationTaskId;
@@ -99,11 +105,13 @@ impl AutomationStore {
     ) -> Result<AutomationTask, AutomationError> {
         draft.validate()?;
         let (schedule_kind, interval_ms) = schedule_columns(draft.schedule)?;
+        let (missed_run_policy, missed_run_limit) = draft.policy.missed_run.columns();
         let result = sqlx::query(
             "INSERT INTO automation_tasks (
                 task_id, owner_agent_id, thread_id, prompt, schedule_kind, interval_ms,
+                schedule_revision, overlap_policy, missed_run_policy, missed_run_limit,
                 state, next_run_at_ms, next_occurrence, created_at_ms, updated_at_ms
-             ) VALUES (?, ?, ?, ?, ?, ?, 'enabled', ?, 1, ?, ?)",
+             ) VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, ?, 'enabled', ?, 1, ?, ?)",
         )
         .bind(draft.task_id.to_string())
         .bind(self.owner_agent_id.as_str())
@@ -111,6 +119,9 @@ impl AutomationStore {
         .bind(&draft.prompt)
         .bind(schedule_kind)
         .bind(interval_ms.map(to_i64).transpose()?)
+        .bind(draft.policy.overlap.as_str())
+        .bind(missed_run_policy)
+        .bind(missed_run_limit.map(i64::from))
         .bind(to_i64(draft.first_run_at_ms)?)
         .bind(to_i64(draft.created_at_ms)?)
         .bind(to_i64(draft.created_at_ms)?)
@@ -145,6 +156,7 @@ impl AutomationStore {
         }
         let rows = sqlx::query(
             "SELECT task_id, owner_agent_id, thread_id, prompt, schedule_kind, interval_ms,
+                    schedule_revision, overlap_policy, missed_run_policy, missed_run_limit,
                     state, next_run_at_ms, next_occurrence, created_at_ms, updated_at_ms
              FROM automation_tasks ORDER BY created_at_ms, task_id LIMIT ?",
         )
@@ -992,6 +1004,7 @@ async fn advance_task_after_submission(
 
 const TASK_SELECT_BY_ID: &str =
     "SELECT task_id, owner_agent_id, thread_id, prompt, schedule_kind, interval_ms,
+            schedule_revision, overlap_policy, missed_run_policy, missed_run_limit,
             state, next_run_at_ms, next_occurrence, created_at_ms, updated_at_ms
      FROM automation_tasks WHERE task_id = ?";
 
@@ -1026,6 +1039,18 @@ fn task_from_row(
         thread_id: row.try_get("thread_id").map_err(unavailable)?,
         prompt: row.try_get("prompt").map_err(unavailable)?,
         schedule,
+        schedule_revision: to_u64(
+            row.try_get("schedule_revision").map_err(unavailable)?,
+        )?,
+        policy: AutomationSchedulePolicy {
+            overlap: AutomationOverlapPolicy::parse(
+                &row.try_get::<String, _>("overlap_policy").map_err(unavailable)?,
+            )?,
+            missed_run: AutomationMissedRunPolicy::parse(
+                &row.try_get::<String, _>("missed_run_policy").map_err(unavailable)?,
+                row.try_get("missed_run_limit").map_err(unavailable)?,
+            )?,
+        },
         state: AutomationTaskState::parse(
             &row.try_get::<String, _>("state").map_err(unavailable)?,
         )?,
