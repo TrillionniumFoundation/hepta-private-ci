@@ -313,7 +313,11 @@ mod tests {
         assert!(!trust.issuer_for(1, 100).unwrap().revoked);
         let registrations = trust.registrations(100).unwrap();
         assert_eq!(registrations.len(), 2);
-        assert!(registrations.iter().any(|issuer| issuer.key_epoch.get() == 1 && !issuer.revoked));
+        assert!(
+            registrations
+                .iter()
+                .any(|issuer| issuer.key_epoch.get() == 1 && !issuer.revoked)
+        );
     }
 
     #[test]
