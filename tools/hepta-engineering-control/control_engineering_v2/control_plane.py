@@ -902,10 +902,15 @@ class EngineeringStore:
             )
         return receipt
 
-    def register_worker(self, *args, **kwargs):
-        from .assignment import register_worker
+    def register_worker(self, identity, verifier, *, now_ns=None):
+        from .assignment import register_authenticated_worker
 
-        return register_worker(self, *args, **kwargs)
+        return register_authenticated_worker(
+            self,
+            identity,
+            verifier,
+            now_ns=now_ns,
+        )
 
     def heartbeat_worker(self, *args, **kwargs):
         from .assignment import heartbeat_worker
