@@ -330,6 +330,37 @@ impl FleetRegistry {
         sync_directory(record.layout.releases_root())
     }
 
+    /// Revoke one Agent's permission to select a release.
+    ///
+    /// Existing processes keep their frozen executable bytes, but every future
+    /// start/upgrade/rollback must resolve the current allowance again and
+    /// therefore fails closed after this durable removal.
+    pub fn revoke_release(
+        &self,
+        agent_id: &AgentId,
+        release_id: &ReleaseId,
+    ) -> Result<(), FleetRegistryError> {
+        let record = self.load()?.agent(agent_id).cloned().ok_or_else(|| {
+            FleetRegistryError::Invalid(format!("unknown fleet agent {agent_id}"))
+        })?;
+        let path = allowance_path(record.layout.releases_root(), release_id);
+        let allowance: ReleaseAllowance =
+            read_bounded_json(&path, MAX_RELEASE_MANIFEST_BYTES)?;
+        if !matches!(
+            allowance.schema_version,
+            1 | RELEASE_METADATA_SCHEMA_VERSION
+        ) || allowance.agent_id != *agent_id
+            || allowance.release_id != *release_id
+            || !is_sha256(&allowance.manifest_sha256)
+        {
+            return Err(FleetRegistryError::Corrupt(format!(
+                "invalid release allowance for agent {agent_id} release {release_id}"
+            )));
+        }
+        std::fs::remove_file(&path)?;
+        sync_directory(record.layout.releases_root())
+    }
+
     pub fn resolve_release(
         &self,
         agent_id: &AgentId,
