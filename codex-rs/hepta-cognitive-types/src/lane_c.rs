@@ -28,6 +28,7 @@ const GRAPH_GENERATION_DOMAIN: &[u8] = b"hepta.knowledge-graph.generation.v1";
 const PROJECTION_RECEIPT_DOMAIN: &[u8] = b"hepta.knowledge-graph.projection-receipt.v1";
 const COMPACT_CHECKPOINT_DOMAIN: &[u8] = b"hepta.compact.checkpoint.v1";
 const COMPACTION_PROOF_DOMAIN: &[u8] = b"hepta.compact.proof.v1";
+const COMPACTION_PROOF_V2_DOMAIN: &[u8] = b"hepta.compact.proof.v2";
 const PROMPT_REGISTRY_SNAPSHOT_DOMAIN: &[u8] = b"hepta.prompt-registry.snapshot-receipt.v1";
 const CONTEXT_DELIVERY_DOMAIN: &[u8] = b"hepta.context.delivery-observation.v1";
 
@@ -685,6 +686,77 @@ impl CompactionProofV1 {
     pub fn compute_proof_digest(&self) -> Digest32 {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(COMPACTION_PROOF_DOMAIN);
+        push_digest(&mut bytes, self.checkpoint_digest);
+        push_digest(&mut bytes, self.retained_query_suite_digest);
+        push_digest(&mut bytes, self.reconstruction_obligation_digest);
+        push_digest(&mut bytes, self.contradiction_holdout_digest);
+        push_u64(&mut bytes, self.deletion_cutoff);
+        push_u64(&mut bytes, self.source_count);
+        push_u64(&mut bytes, self.retained_count);
+        Digest32::of_bytes(&bytes)
+    }
+}
+
+
+/// Auditable compaction qualification proof.
+///
+/// V2 retains the V1 semantic checks while binding the independent evaluator,
+/// exact evaluation artifact and evaluator implementation, plus host-provided
+/// attestation/signature digests. The digests are provenance bindings; this
+/// authority-free contract does not itself authenticate a signer or grant
+/// selection, activation or release authority.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CompactionProofV2 {
+    pub evaluator_id: StableId,
+    pub evaluation_artifact_digest: Digest32,
+    pub evaluator_implementation_digest: Digest32,
+    pub attestation_digest: Digest32,
+    pub signature_digest: Digest32,
+    pub checkpoint_digest: Digest32,
+    pub retained_query_suite_digest: Digest32,
+    pub reconstruction_obligation_digest: Digest32,
+    pub contradiction_holdout_digest: Digest32,
+    pub deletion_cutoff: u64,
+    pub source_count: u64,
+    pub retained_count: u64,
+    pub proof_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
+impl CompactionProofV2 {
+    pub fn validate(&self) -> Result<(), LaneCContractError> {
+        for (name, digest) in [
+            ("evaluation_artifact", self.evaluation_artifact_digest),
+            ("evaluator_implementation", self.evaluator_implementation_digest),
+            ("attestation", self.attestation_digest),
+            ("signature", self.signature_digest),
+            ("proof_checkpoint", self.checkpoint_digest),
+            ("retained_query_suite", self.retained_query_suite_digest),
+            ("reconstruction_obligation", self.reconstruction_obligation_digest),
+            ("contradiction_holdout", self.contradiction_holdout_digest),
+        ] {
+            ensure_digest(name, digest)?;
+        }
+        if self.retained_count > self.source_count {
+            return Err(LaneCContractError::InvalidState(
+                "compaction_retained_count",
+            ));
+        }
+        if self.proof_digest != self.compute_proof_digest() {
+            return Err(LaneCContractError::DigestMismatch("compaction_proof_v2"));
+        }
+        ensure_deny_all(self.authority)
+    }
+
+    #[must_use]
+    pub fn compute_proof_digest(&self) -> Digest32 {
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(COMPACTION_PROOF_V2_DOMAIN);
+        push_id(&mut bytes, &self.evaluator_id);
+        push_digest(&mut bytes, self.evaluation_artifact_digest);
+        push_digest(&mut bytes, self.evaluator_implementation_digest);
+        push_digest(&mut bytes, self.attestation_digest);
+        push_digest(&mut bytes, self.signature_digest);
         push_digest(&mut bytes, self.checkpoint_digest);
         push_digest(&mut bytes, self.retained_query_suite_digest);
         push_digest(&mut bytes, self.reconstruction_obligation_digest);
