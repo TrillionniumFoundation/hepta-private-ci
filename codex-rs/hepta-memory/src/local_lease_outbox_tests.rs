@@ -37,6 +37,10 @@ use crate::LocalReplayFinalization;
 use crate::cognitive_test_support::agent_id;
 use crate::cognitive_test_support::layout;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_operations::OperationIntent;
+use codex_hepta_operations::OperationKey;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use codex_hepta_paths::HeptaFleetRoot;
 
 async fn opened_store(temp: &TempDir, number: u8) -> CognitiveStore {
@@ -2745,5 +2749,176 @@ async fn successor_reconciliation_never_upgrades_inherited_queued_to_terminal() 
             .await,
         Err(LocalLeaseOutboxError::IllegalTransition(message))
             if message.contains("queued")
+    ));
+}
+
+
+fn durable_operation(
+    owner: &codex_hepta_contracts::AgentId,
+    id: &str,
+    destination: &str,
+    payload: &str,
+) -> OperationIntent {
+    OperationIntent {
+        key: OperationKey {
+            id: StableId::new(id).expect("operation id"),
+            payload_digest: Digest32::of_bytes(payload.as_bytes()),
+        },
+        scope: StableId::new("scope:durable-operation-test").expect("scope"),
+        owner: StableId::new(owner.as_str()).expect("owner"),
+        destination: StableId::new(destination).expect("destination"),
+        expected_predecessor: Some(Digest32::of_bytes(b"predecessor")),
+    }
+}
+
+async fn operation_rows(store: &CognitiveStore, lease_id: &str) -> i64 {
+    sqlx::query_scalar(
+        "SELECT COUNT(*) FROM cognitive_operation_ledger WHERE lease_id = ?",
+    )
+    .bind(lease_id)
+    .fetch_one(&store.pool)
+    .await
+    .expect("operation row count")
+}
+
+#[tokio::test]
+async fn operation_event_and_outbox_are_one_atomic_transaction_across_every_fault_boundary() {
+    let temp = TempDir::new().expect("temp dir");
+    let store = opened_store(&temp, 153).await;
+    let expires_at = unix_seconds() + 3_600;
+    let lease_id = "lease:atomic-operation";
+    let handle = acquired(
+        store
+            .acquire_host_bound_lease(
+                lease_id,
+                21,
+                31,
+                1,
+                "fence:atomic-operation",
+                expires_at,
+            )
+            .await
+            .expect("bound lease"),
+    );
+    let payload = "{\"value\":\"atomic\"}";
+    for (index, fault) in [
+        LocalAdmissionFault::AfterEventBeforeOutbox,
+        LocalAdmissionFault::AfterOutboxBeforeCommit,
+        LocalAdmissionFault::AfterOperationBeforeCommit,
+    ]
+    .into_iter()
+    .enumerate()
+    {
+        let operation_id = format!("operation:atomic-fault:{index}");
+        let operation = durable_operation(
+            store.owner_agent_id(),
+            &operation_id,
+            "destination:cognitive-store",
+            payload,
+        );
+        assert!(matches!(
+            handle
+                .admit_operation_with_fault(
+                    operation,
+                    "memory.write",
+                    payload,
+                    fault,
+                )
+                .await,
+            Err(LocalLeaseOutboxError::TransactionAborted(_))
+        ));
+        let counts = handle.snapshot_counts().await.expect("counts after fault");
+        assert_eq!(counts.event_rows, 0);
+        assert_eq!(counts.outbox_rows, 0);
+        assert_eq!(operation_rows(&store, lease_id).await, 0);
+    }
+
+    let operation = durable_operation(
+        store.owner_agent_id(),
+        "operation:atomic-commit",
+        "destination:cognitive-store",
+        payload,
+    );
+    let first = handle
+        .admit_operation(operation.clone(), "memory.write", payload)
+        .await
+        .expect("atomic operation commit");
+    let replay = handle
+        .admit_operation(operation.clone(), "memory.write", payload)
+        .await
+        .expect("exact operation replay");
+    assert!(matches!(first, LocalAdmission::Queued(_)));
+    assert!(matches!(replay, LocalAdmission::Replay(_)));
+    let counts = handle.snapshot_counts().await.expect("committed counts");
+    assert_eq!(counts.event_rows, 1);
+    assert_eq!(counts.outbox_rows, 1);
+    assert_eq!(operation_rows(&store, lease_id).await, 1);
+
+    let mut drifted = operation;
+    drifted.destination = StableId::new("destination:other").expect("destination");
+    assert!(matches!(
+        handle
+            .admit_operation(drifted, "memory.write", payload)
+            .await,
+        Err(LocalLeaseOutboxError::CasConflict(message))
+            if message.contains("durable operation replay changed")
+    ));
+    assert_eq!(operation_rows(&store, lease_id).await, 1);
+}
+
+#[tokio::test]
+async fn legacy_admission_cannot_be_upgraded_to_operation_and_bound_operation_cannot_downgrade() {
+    let temp = TempDir::new().expect("temp dir");
+    let store = opened_store(&temp, 154).await;
+    let expires_at = unix_seconds() + 3_600;
+    let handle = acquired(
+        store
+            .acquire_host_bound_lease(
+                "lease:operation-downgrade",
+                22,
+                32,
+                1,
+                "fence:operation-downgrade",
+                expires_at,
+            )
+            .await
+            .expect("bound lease"),
+    );
+    let legacy_payload = "{\"legacy\":true}";
+    handle
+        .admit("operation:legacy-row", "memory.write", legacy_payload)
+        .await
+        .expect("legacy admission");
+    let legacy_operation = durable_operation(
+        store.owner_agent_id(),
+        "operation:legacy-row",
+        "destination:cognitive-store",
+        legacy_payload,
+    );
+    assert!(matches!(
+        handle
+            .admit_operation(legacy_operation, "memory.write", legacy_payload)
+            .await,
+        Err(LocalLeaseOutboxError::CasConflict(message))
+            if message.contains("legacy admission")
+    ));
+
+    let bound_payload = "{\"bound\":true}";
+    let bound_operation = durable_operation(
+        store.owner_agent_id(),
+        "operation:bound-row",
+        "destination:cognitive-store",
+        bound_payload,
+    );
+    handle
+        .admit_operation(bound_operation, "memory.write", bound_payload)
+        .await
+        .expect("bound operation");
+    assert!(matches!(
+        handle
+            .admit("operation:bound-row", "memory.write", bound_payload)
+            .await,
+        Err(LocalLeaseOutboxError::CasConflict(message))
+            if message.contains("legacy admission cannot replay")
     ));
 }
