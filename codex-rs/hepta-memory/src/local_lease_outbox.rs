@@ -3458,6 +3458,153 @@ async fn insert_outbox(
     Ok(())
 }
 
+async fn insert_operation(
+    transaction: &mut Transaction<'_, Sqlite>,
+    operation: &OperationIntent,
+    handle: &LocalLeaseOutbox,
+    event_id: &str,
+    outbox_id: &str,
+    payload_sha256: &Sha256Digest,
+    binding: &LocalLeaseBinding,
+) -> Result<(), LocalLeaseOutboxError> {
+    let prepared_at = now_unix_seconds()?;
+    sqlx::query(
+        "INSERT INTO cognitive_operation_ledger (
+            operation_id, semantic_sha256, scope_id, owner_id, destination_id,
+            payload_sha256, expected_predecessor_sha256, lease_id, event_id,
+            outbox_id, owner_agent_id, generation, fencing_token,
+            authority_epoch, owner_epoch, prepared_at_unix_seconds
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    )
+    .bind(operation.key.id.as_str())
+    .bind(operation.semantic_digest().to_string())
+    .bind(operation.scope.as_str())
+    .bind(operation.owner.as_str())
+    .bind(operation.destination.as_str())
+    .bind(payload_sha256.as_str())
+    .bind(
+        operation
+            .expected_predecessor
+            .map(|digest| digest.to_string()),
+    )
+    .bind(&handle.lease_id)
+    .bind(event_id)
+    .bind(outbox_id)
+    .bind(handle.owner_agent_id.as_str())
+    .bind(to_i64(handle.generation, "operation generation")?)
+    .bind(&handle.fencing_token)
+    .bind(to_i64(binding.authority_epoch, "operation authority epoch")?)
+    .bind(to_i64(binding.owner_epoch, "operation owner epoch")?)
+    .bind(prepared_at)
+    .execute(&mut **transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
+    Ok(())
+}
+
+async fn find_operation(
+    transaction: &mut Transaction<'_, Sqlite>,
+    operation_id: &str,
+) -> Result<Option<DurableOperationRow>, LocalLeaseOutboxError> {
+    let row = sqlx::query(
+        "SELECT operation_id, semantic_sha256, scope_id, owner_id,
+                destination_id, payload_sha256, expected_predecessor_sha256,
+                lease_id, event_id, outbox_id, owner_agent_id, generation,
+                fencing_token, authority_epoch, owner_epoch
+         FROM cognitive_operation_ledger
+         WHERE operation_id = ?",
+    )
+    .bind(operation_id)
+    .fetch_optional(&mut **transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
+    row.map(|row| {
+        Ok(DurableOperationRow {
+            operation_id: row
+                .try_get("operation_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            semantic_sha256: row
+                .try_get("semantic_sha256")
+                .map_err(crate::cognitive_store::unavailable)?,
+            scope_id: row
+                .try_get("scope_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            owner_id: row
+                .try_get("owner_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            destination_id: row
+                .try_get("destination_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            payload_sha256: row
+                .try_get("payload_sha256")
+                .map_err(crate::cognitive_store::unavailable)?,
+            expected_predecessor_sha256: row
+                .try_get("expected_predecessor_sha256")
+                .map_err(crate::cognitive_store::unavailable)?,
+            lease_id: row
+                .try_get("lease_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            event_id: row
+                .try_get("event_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            outbox_id: row
+                .try_get("outbox_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            owner_agent_id: parse_agent(&row, "owner_agent_id")?,
+            generation: read_u64(&row, "generation")?,
+            fencing_token: row
+                .try_get("fencing_token")
+                .map_err(crate::cognitive_store::unavailable)?,
+            authority_epoch: read_u64(&row, "authority_epoch")?,
+            owner_epoch: read_u64(&row, "owner_epoch")?,
+        })
+    })
+    .transpose()
+}
+
+fn verify_operation_row_binding(
+    operation: &OperationIntent,
+    stored: &DurableOperationRow,
+    handle: &LocalLeaseOutbox,
+    event: &EventRow,
+    outbox: &OutboxRow,
+    payload_sha256: &Sha256Digest,
+) -> Result<(), LocalLeaseOutboxError> {
+    let binding = handle.binding().ok_or_else(|| {
+        LocalLeaseOutboxError::Corrupt(
+            "durable operation row is attached to an unbound lease".to_string(),
+        )
+    })?;
+    if stored.operation_id != operation.key.id.as_str()
+        || stored.semantic_sha256 != operation.semantic_digest().to_string()
+        || stored.scope_id != operation.scope.as_str()
+        || stored.owner_id != operation.owner.as_str()
+        || stored.destination_id != operation.destination.as_str()
+        || stored.payload_sha256 != payload_sha256.as_str()
+        || stored.expected_predecessor_sha256
+            != operation
+                .expected_predecessor
+                .map(|digest| digest.to_string())
+        || stored.lease_id != handle.lease_id
+        || stored.event_id != event.event_id
+        || stored.outbox_id != outbox.outbox_id
+        || stored.owner_agent_id != handle.owner_agent_id
+        || stored.generation != handle.generation
+        || stored.fencing_token != handle.fencing_token
+        || stored.authority_epoch != binding.authority_epoch
+        || stored.owner_epoch != binding.owner_epoch
+        || event.occurrence_key != stored.operation_id
+        || outbox.occurrence_key != stored.operation_id
+        || event.payload_sha256.as_str() != stored.payload_sha256
+        || outbox.payload_sha256.as_str() != stored.payload_sha256
+    {
+        return Err(LocalLeaseOutboxError::CasConflict(
+            "durable operation replay changed semantic, fence, or outbox binding".to_string(),
+        ));
+    }
+    Ok(())
+}
+
 async fn verify_event_chain(
     transaction: &mut Transaction<'_, Sqlite>,
     lease_id: &str,
