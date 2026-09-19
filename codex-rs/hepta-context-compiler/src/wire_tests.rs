@@ -88,3 +88,40 @@ fn context_wire_rejects_unknown_fields_and_duplicate_id_partitions(
     ));
     Ok(())
 }
+
+#[test]
+fn context_wire_rejects_unregistered_producer_before_typed_use(
+) -> Result<(), Box<dyn StdError>> {
+    let request = CompilationRequest {
+        compilation_id: id("compile.producer-bound"),
+        run_snapshot_digest: Digest32::of_bytes(b"snapshot"),
+        objective_digest: Digest32::of_bytes(b"objective"),
+        token_budget: 10,
+        items: vec![ContextItem {
+            item_id: id("instruction.1"),
+            role: ContextRole::TrustedInstruction,
+            content_digest: Digest32::of_bytes(b"content"),
+            source_digest: Digest32::of_bytes(b"source"),
+            token_count: 3,
+            contains_secret: false,
+        }],
+    };
+    let (_, admitted) = compile_to_wire_v2(
+        request,
+        id(CONTEXT_COMPILATION_WIRE_PRODUCER),
+        Generation::new(1)?,
+    )?;
+    let foreign = WireEnvelopeV2::new(
+        admitted.schema().clone(),
+        id("foreign.compiler"),
+        admitted.generation(),
+        admitted.payload().to_vec(),
+    )?;
+    assert!(matches!(
+        decode_compilation_receipt_wire_v2(&foreign),
+        Err(ContextWireError::Codec(SchemaCodecError::Admission(
+            codex_hepta_wire::SchemaAdmissionError::ProducerDenied(producer)
+        ))) if producer.as_str() == "foreign.compiler"
+    ));
+    Ok(())
+}
