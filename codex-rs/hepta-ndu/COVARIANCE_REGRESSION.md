@@ -41,8 +41,16 @@ means, rate/duration conversion, identity covariance, singular/indefinite and
 poorly conditioned matrices, covariance collapse, invalid samples/profiles,
 zero sensitivity, deterministic replay and the full 32-driver/8-utility envelope.
 
-Remaining gates include production coefficient-profile registration and consumer
-integration, original/whitened coordinate conversion, Q24 conversion/error
-receipts, independent mathematical review, conditional identification,
-well-posedness/stochastic FBSDE qualification and named-host resource/latency
-measurements. Algebraic regression tests do not establish those capabilities.
+`admit_ndu_coefficient_profile` now provides owner-local source admission against
+the exact covariance/units/dimension profile and binds manifest, normalization,
+runtime, coordinate and expiry identities. `quantize_z_to_q24` emits original-
+coordinate signed-Q24 nearest/ties-even values with explicit source/output/error
+evidence and rejects expiry or unrepresentable ranges. These close the repository-
+controlled native admission/conversion gap, not external artifact authentication.
+
+Remaining gates include canonical external coefficient-profile registration and
+authenticated consumer selection, any separately qualified whitening transform,
+independent mathematical review, conditional identification, real perturbation/
+future-window evidence, well-posedness/stochastic FBSDE qualification and named-
+host resource/latency measurements. Algebraic and Q24 conversion tests do not
+establish those capabilities.
