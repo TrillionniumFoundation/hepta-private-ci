@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The historical registered compatibility source remains [apps/hepta-native/src/native.js](../../../apps/hepta-native/src/native.js), but the product-directed implementation is now Rust-first under `apps/hepta-native`: [src/main.rs](../../../apps/hepta-native/src/main.rs) is the named native application bootstrap, [src/runtime.rs](../../../apps/hepta-native/src/runtime.rs) owns the session/view/effect state machine, and [src/updater.rs](../../../apps/hepta-native/src/updater.rs) owns signed staging/activation mechanics. The JavaScript boundary remains a compatibility fixture until the closed-world registries are migrated; it is not the product host. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/ui.native.md#8-current-native-implementation) and [Rust development guide](../../../apps/hepta-native/DEVELOPMENT.md) together.
+The registered product source is Rust-only under `apps/hepta-native`: [src/main.rs](../../../apps/hepta-native/src/main.rs) is the named native application bootstrap, [src/runtime.rs](../../../apps/hepta-native/src/runtime.rs) owns the session/view/effect state machine, and [src/updater.rs](../../../apps/hepta-native/src/updater.rs) owns signed staging/activation mechanics. The former JavaScript boundary has been retired from the canonical source and test surface. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/ui.native.md#8-current-native-implementation) and [Rust development guide](../../../apps/hepta-native/DEVELOPMENT.md) together.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -141,7 +141,7 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current product limits belong to the Rust state machine and adapters under `apps/hepta-native/src`; the JavaScript files remain compatibility fixtures.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current product limits belong to the Rust state machine and adapters under `apps/hepta-native/src`; there is no parallel JavaScript native execution boundary.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
@@ -159,13 +159,11 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [apps/hepta-native/test/native.test.js](../../../apps/hepta-native/test/native.test.js); named case: `native intent requires exact payload binding`.
-- [apps/hepta-native/test/shell-runtime.test.js](../../../apps/hepta-native/test/shell-runtime.test.js); compatibility boundary coverage.
 - [apps/hepta-native/tests/runtime.rs](../../../apps/hepta-native/tests/runtime.rs); session-incarnation fencing, indeterminate retry/reconciliation, restart recovery and permission denial.
 - [apps/hepta-native/tests/security_updater.rs](../../../apps/hepta-native/tests/security_updater.rs); signed grants, live key revocation, stable update-channel admission, predecessor fencing, unsigned update refusal and rollback.
 - [.github/workflows/hepta-native-rust.yml](../../../.github/workflows/hepta-native-rust.yml); exact PR-head Linux execution plus Windows/macOS/Linux merge-candidate build/test/package/self-test and unsigned qualification receipts.
 
-From the repository root, run `node --test apps/hepta-native/test/native.test.js apps/hepta-native/test/shell-runtime.test.js`, then `cargo fmt --manifest-path apps/hepta-native/Cargo.toml --check`, `cargo clippy --manifest-path apps/hepta-native/Cargo.toml --all-targets --all-features -- -D warnings`, and `cargo test --manifest-path apps/hepta-native/Cargo.toml --all-targets`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) separately labels target acceptance designs.
+From the repository root, run `cargo fmt --manifest-path apps/hepta-native/Cargo.toml --check`, `cargo clippy --manifest-path apps/hepta-native/Cargo.toml --all-targets --all-features -- -D warnings`, and `cargo test --manifest-path apps/hepta-native/Cargo.toml --all-targets`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/ui.native.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -275,7 +273,7 @@ The source candidate is checked by `.github/workflows/hepta-consolidated-source.
 
 ## 18. Rust product candidate closure
 
-The current candidate extends the compatibility JavaScript boundary with a concrete Rust desktop product caller in the canonical `apps/hepta-native` root. This section records repository source/composition facts only; it does not turn unsigned CI artifacts into activation, independent acceptance, promotion or release authority.
+The current candidate is a concrete Rust desktop product caller in the canonical `apps/hepta-native` root; the former JavaScript native boundary is retired. This section records repository source/composition facts only; it does not turn unsigned CI artifacts into activation, independent acceptance, promotion or release authority.
 
 Repository-controlled implementation includes:
 
