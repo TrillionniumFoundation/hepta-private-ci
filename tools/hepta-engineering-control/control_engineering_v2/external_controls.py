@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from dataclasses import asdict, dataclass
+import hashlib
 import json
 import time
 
@@ -25,6 +26,74 @@ from .control_plane import (
 from .evidence import SignatureTrustStore
 
 MAX_KEY_CUSTODY_ROLES = 32
+
+_AUDIT_STATE_TABLES = (
+    "work_envelopes",
+    "path_leases",
+    "assignment_generations",
+    "assignment_generation_frontiers",
+    "integration_decisions",
+    "integration_decision_bindings",
+    "integration_decision_seals",
+    "engineering_schema_meta",
+)
+
+
+def _sql_value(value: object) -> object:
+    if value is None or isinstance(value, (str, int)):
+        return value
+    if isinstance(value, (bytes, bytearray, memoryview)):
+        raw = bytes(value)
+        return {
+            "byteLength": len(raw),
+            "sha256": hashlib.sha256(raw).hexdigest(),
+        }
+    raise EngineeringError("audit_anchor_store_value")
+
+
+def store_snapshot_digest(store: EngineeringStore) -> str:
+    """Digest durable owner facts independently of the in-file audit chain."""
+    if not isinstance(store, EngineeringStore):
+        raise EngineeringError("audit_anchor_store_required")
+    store.verify_audit_chain()
+    tables = {
+        str(row[0])
+        for row in store.connection.execute(
+            "SELECT name FROM sqlite_master WHERE type='table'"
+        )
+    }
+    if any(table not in tables for table in _AUDIT_STATE_TABLES):
+        raise EngineeringError("audit_anchor_store_incomplete")
+
+    digest = hashlib.sha256()
+    for table in _AUDIT_STATE_TABLES:
+        info = store.connection.execute(f'PRAGMA table_info("{table}")').fetchall()
+        columns = tuple(str(row[1]) for row in info)
+        primary = tuple(
+            str(row[1])
+            for row in sorted(
+                (row for row in info if int(row[5]) > 0),
+                key=lambda row: int(row[5]),
+            )
+        )
+        if not columns:
+            raise EngineeringError("audit_anchor_store_incomplete")
+        order_columns = primary or columns
+        order = ",".join(f'"{column}"' for column in order_columns)
+        digest.update(
+            semantic_digest({"table": table, "columns": columns}).encode("ascii")
+        )
+        digest.update(b"\n")
+        rows = store.connection.execute(
+            f'SELECT * FROM "{table}" ORDER BY {order}'
+        ).fetchall()
+        for row in rows:
+            body = {column: _sql_value(row[column]) for column in columns}
+            digest.update(
+                semantic_digest({"table": table, "row": body}).encode("ascii")
+            )
+            digest.update(b"\n")
+    return digest.hexdigest()
 
 
 @dataclass(frozen=True)
@@ -73,6 +142,7 @@ class AuditAnchorAttestation:
     envelope_id: str
     source_commit: str
     source_tree: str
+    store_snapshot_digest: str
     issuer: str
     signing_identity: str
     observed_unix_ns: int
@@ -92,6 +162,10 @@ class KeyCustodyReceipt:
     observed_unix_ns: int
     expires_unix_ns: int
     signature: str = ""
+    subject_signing_identity: str = ""
+    algorithm: str = ""
+    public_key_digest: str = ""
+    attestation_digest: str = ""
 
 
 @dataclass(frozen=True)
@@ -298,7 +372,12 @@ def verify_external_audit_anchor(
     if receipt.issuer != "audit_anchor_service":
         raise EngineeringError("audit_anchor_issuer_role")
     checked_id(receipt.envelope_id, "envelope_id")
+    checked_sha256(receipt.event_digest, "audit_event_digest")
+    checked_sha256(receipt.store_snapshot_digest, "store_snapshot_digest")
+    if receipt.store_snapshot_digest == "0" * 64:
+        raise EngineeringError("audit_anchor_store_snapshot")
     anchor = store.audit_anchor()
+    snapshot = store_snapshot_digest(store)
     if (
         type(anchor["sequence"]) is not int
         or anchor["sequence"] <= 0
@@ -314,9 +393,9 @@ def verify_external_audit_anchor(
         or receipt.envelope_id != envelope.envelope_id
         or receipt.source_commit != envelope.source_commit
         or receipt.source_tree != envelope.source_tree
+        or receipt.store_snapshot_digest != snapshot
     ):
         raise EngineeringError("audit_anchor_binding_mismatch")
-    checked_sha256(receipt.event_digest, "audit_event_digest")
     if not _window(receipt.observed_unix_ns, receipt.expires_unix_ns, now):
         raise EngineeringError("audit_anchor_stale")
     if receipt.expires_unix_ns > envelope.expires_unix_ns:
@@ -375,12 +454,24 @@ def verify_external_key_custody(
         raise EngineeringError("key_custody_receipts")
 
     required = set(required_roles)
-    bindings: dict[str, tuple[str, str]] = {}
+    bindings: dict[str, tuple[str, str, str]] = {}
     seen_receipt_keys: set[tuple[str, str]] = set()
+    seen_subject_identities: set[str] = set()
     canonical: list[KeyCustodyReceipt] = []
     for receipt in values:
         checked_id(receipt.provider, "key_provider")
         checked_id(receipt.key_id, "key_id")
+        checked_id(receipt.subject_signing_identity, "custodied_signing_identity")
+        checked_id(receipt.algorithm, "key_algorithm")
+        checked_sha256(receipt.public_key_digest, "public_key_digest")
+        checked_sha256(receipt.attestation_digest, "attestation_digest")
+        if (
+            receipt.public_key_digest == "0" * 64
+            or receipt.attestation_digest == "0" * 64
+        ):
+            raise EngineeringError("key_custody_attestation")
+        if receipt.subject_signing_identity == receipt.signing_identity:
+            raise EngineeringError("key_custody_attestor_collision")
         if receipt.issuer != "key_custody_authority":
             raise EngineeringError("key_custody_issuer_role")
         if (
@@ -415,10 +506,18 @@ def verify_external_key_custody(
             role = next(iter(critical_roles))
             if role in bindings:
                 raise EngineeringError("key_custody_roles")
-            if key in seen_receipt_keys:
+            if (
+                key in seen_receipt_keys
+                or receipt.subject_signing_identity in seen_subject_identities
+            ):
                 raise EngineeringError("key_custody_role_separation")
-            bindings[role] = key
+            bindings[role] = (
+                receipt.provider,
+                receipt.key_id,
+                receipt.subject_signing_identity,
+            )
             seen_receipt_keys.add(key)
+            seen_subject_identities.add(receipt.subject_signing_identity)
         canonical.append(receipt)
 
     if set(bindings) != required:
