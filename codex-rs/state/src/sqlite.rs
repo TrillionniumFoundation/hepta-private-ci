@@ -310,11 +310,14 @@ impl SqliteConfig {
             .await
     }
 
-    /// Retained only so pre-release callers fail closed instead of reopening a
-    /// lexical path with a reconnect-capable writer pool.
+    /// Retained only so callers fail closed instead of reopening a suspect
+    /// lexical source path with a reconnect-capable writer pool.
     ///
-    /// Recovery must use [`Self::bind_existing_recovery_database`] and remains
-    /// unavailable until a qualified descriptor-backed VFS exists.
+    /// Writable recovery binds [`Self::bind_existing_recovery_database`],
+    /// captures an identity-checked copy from retained descriptors, validates
+    /// that copy against an independently retained current-cut witness, and
+    /// opens only the new generation. This path-based source reopen therefore
+    /// remains deliberately unavailable.
     pub async fn open_existing_durable_evidence_pool(
         &self,
         path: &Path,

@@ -1,8 +1,12 @@
-//! A bounded copy of a retained cold descriptor, never a source-file writer.
+//! Descriptor-bound SQLite recovery-image helpers.
 //!
-//! Identity checks detect drift, not an atomic snapshot. The consumer MUST
-//! validate a complete independent current-cut witness on the immutable copy
-//! before trusting any result. No WAL/journal replay or source mutation occurs.
+//! Identity checks detect drift, not currentness. Read-only cold-image opening
+//! accepts only a single retained database descriptor with no sidecars. Writable
+//! recovery materialization may copy retained database, WAL, and rollback-journal
+//! bytes into a fresh private generation; SQLite is allowed to replay only that
+//! copy. The source path is never reopened by SQLite and is never mutated.
+//! Consumers still MUST authenticate a complete independently retained current
+//! cut before trusting or activating any recovered generation.
 
 use super::ExistingSqliteRecoveryGuard;
 use super::SqliteConfig;
@@ -10,17 +14,154 @@ use super::SqliteRecoveryError;
 use sqlx::SqlitePool;
 
 impl SqliteConfig {
-    /// Copy at most 128 MiB from the retained descriptor, with no sidecars
-    /// present, into a read-only SQLite memory image. Unix only.
+    /// Materialize one identity-bound writable recovery candidate from retained
+    /// descriptors into a new private path under this SQLite home.
     ///
-    /// This low-level pool does not authenticate its contents or grant recovery
-    /// authority. Every replacement connection receives the SAME copied bytes;
-    /// no connection ever reopens the source filename. Its main database cannot
-    /// be written even if query_only is disabled. The trusted consumer must keep
-    /// the pool private and compare the complete canonical cut before use.
-    /// The 128 MiB limit is on input bytes, not total memory: the retained copy
-    /// and SQLite-owned copy consume up to 256 MiB together, plus SQLite caches,
-    /// query results and validation allocations. It is not a latency guarantee.
+    /// The database descriptor is bounded to 128 MiB, each retained WAL or
+    /// rollback journal to 128 MiB, and the aggregate retained bundle to
+    /// 256 MiB. This helper does not authenticate currentness or grant writer
+    /// authority; the cognitive owner performs exact-cut, integrity, authority,
+    /// checkpoint, and activation checks before the copy can become active.
+    ///
+    /// The source filename is never reopened for SQLite access. Database, WAL,
+    /// and rollback-journal bytes are read from the retained descriptors into a
+    /// bounded immutable bundle, the guard is revalidated, and only then are
+    /// new files created. SHM is deliberately not copied: SQLite rebuilds it
+    /// from the copied database/WAL. The caller must open and authenticate the
+    /// copy against an independent current-cut witness before it can become an
+    /// authoritative writer.
+    pub fn materialize_identity_bound_recovery_copy(
+        &self,
+        guard: &ExistingSqliteRecoveryGuard,
+        target: &std::path::Path,
+    ) -> Result<(), SqliteRecoveryError> {
+        #[cfg(unix)]
+        {
+            use super::RetainedOptionalObject;
+            use std::fs::OpenOptions;
+            use std::io::Write;
+            use std::os::unix::fs::FileExt;
+            use std::os::unix::fs::OpenOptionsExt;
+
+            const MAX_DATABASE_BYTES: u64 = 128 * 1024 * 1024;
+            const MAX_SIDECAR_BYTES: u64 = 128 * 1024 * 1024;
+            const MAX_BUNDLE_BYTES: u64 = 256 * 1024 * 1024;
+
+            if target.parent() != Some(self.home())
+                || target == guard.inner.database_path
+                || target.file_name().is_none()
+            {
+                return Err(SqliteRecoveryError::Indeterminate);
+            }
+            guard.revalidate_for(self)?;
+
+            fn retained_bytes(
+                object: &super::RetainedObject,
+                maximum: u64,
+                allow_empty: bool,
+            ) -> Result<Vec<u8>, SqliteRecoveryError> {
+                let size = object
+                    .descriptor
+                    .metadata()
+                    .map_err(super::indeterminate)?
+                    .len();
+                if (!allow_empty && size == 0) || size > maximum {
+                    return Err(SqliteRecoveryError::Unavailable);
+                }
+                let size = usize::try_from(size).map_err(|_| SqliteRecoveryError::Unavailable)?;
+                let mut bytes = vec![0; size];
+                if !bytes.is_empty() {
+                    object
+                        .descriptor
+                        .read_exact_at(&mut bytes, 0)
+                        .map_err(super::indeterminate)?;
+                }
+                Ok(bytes)
+            }
+
+            fn optional_bytes(
+                object: &RetainedOptionalObject,
+            ) -> Result<Option<Vec<u8>>, SqliteRecoveryError> {
+                match object {
+                    RetainedOptionalObject::Absent(_) => Ok(None),
+                    RetainedOptionalObject::Present(object) => {
+                        retained_bytes(object, MAX_SIDECAR_BYTES, true).map(Some)
+                    }
+                }
+            }
+
+            let database = retained_bytes(&guard.inner.database, MAX_DATABASE_BYTES, false)?;
+            let wal = optional_bytes(&guard.inner.sidecars[0])?;
+            // sidecars[1] is SHM and is intentionally not copied.
+            let journal = optional_bytes(&guard.inner.sidecars[2])?;
+            let total = u64::try_from(database.len())
+                .ok()
+                .and_then(|value| {
+                    value.checked_add(
+                        wal.as_ref()
+                            .and_then(|bytes| u64::try_from(bytes.len()).ok())
+                            .unwrap_or(0),
+                    )
+                })
+                .and_then(|value| {
+                    value.checked_add(
+                        journal
+                            .as_ref()
+                            .and_then(|bytes| u64::try_from(bytes.len()).ok())
+                            .unwrap_or(0),
+                    )
+                })
+                .ok_or(SqliteRecoveryError::Unavailable)?;
+            if total > MAX_BUNDLE_BYTES {
+                return Err(SqliteRecoveryError::Unavailable);
+            }
+            guard.revalidate_for(self)?;
+
+            let target_wal = super::sqlite_sidecar_path(target, "-wal");
+            let target_journal = super::sqlite_sidecar_path(target, "-journal");
+            let mut created = Vec::new();
+            let write_private =
+                |path: &std::path::Path, bytes: &[u8]| -> Result<(), SqliteRecoveryError> {
+                    let mut file = OpenOptions::new()
+                        .write(true)
+                        .create_new(true)
+                        .mode(0o600)
+                        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
+                        .open(path)
+                        .map_err(super::indeterminate)?;
+                    file.write_all(bytes).map_err(super::indeterminate)?;
+                    file.sync_all().map_err(super::indeterminate)
+                };
+
+            let result = (|| {
+                write_private(target, &database)?;
+                created.push(target.to_path_buf());
+                if let Some(bytes) = wal.as_deref() {
+                    write_private(&target_wal, bytes)?;
+                    created.push(target_wal.clone());
+                }
+                if let Some(bytes) = journal.as_deref() {
+                    write_private(&target_journal, bytes)?;
+                    created.push(target_journal.clone());
+                }
+                let directory = std::fs::File::open(self.home()).map_err(super::indeterminate)?;
+                directory.sync_all().map_err(super::indeterminate)?;
+                Ok(())
+            })();
+            if result.is_err() {
+                for path in created.into_iter().rev() {
+                    let _ = std::fs::remove_file(path);
+                }
+            }
+            result
+        }
+        #[cfg(not(unix))]
+        {
+            let _ = (guard, target);
+            Err(SqliteRecoveryError::Unavailable)
+        }
+    }
+
     #[cfg_attr(
         unix,
         expect(

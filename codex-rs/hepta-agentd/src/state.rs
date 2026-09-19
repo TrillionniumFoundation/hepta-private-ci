@@ -2,9 +2,9 @@ use std::sync::Arc;
 use std::sync::Mutex;
 
 use codex_hepta_automation::AutomationStore;
+use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_memory::CognitiveStore;
 
 use crate::AgentdError;
 use crate::AgentdEventKind;

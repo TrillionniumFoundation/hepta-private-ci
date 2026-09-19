@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "911efd40a53af18026d68eb79f2cf7b5583422fc",
+    "tree": "d19365959a0f5153c04a014d1c486dac61ce39a9"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.store",
@@ -17,50 +17,90 @@
     "codex-rs/hepta-cognitive-store"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionImplementation": true,
+  "productCallerState": "named_agentd_product_caller_source_bound",
+  "productionWriterState": "canonical_durable_writer_source_bound",
   "operations": [
     {
-      "operation": "cognitivestore",
-      "nativeSymbol": "CognitiveStore",
-      "sourcePath": "codex-rs/hepta-cognitive-store/src/lib.rs",
-      "state": "source_implemented_not_product_composed",
+      "operation": "semantic_revision_ledger",
+      "nativeSymbol": "AdmittedCognitiveStoreV2",
+      "sourcePath": "codex-rs/hepta-cognitive-store/src/v2.rs",
+      "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-cognitive-store/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "cognitivestore",
+      "designOperation": "append_event_append_correction_forget_open_snapshot",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "cognitivestore",
-      "nativeSymbol": "CognitiveStore",
-      "sourcePath": "codex-rs/hepta-memory/src/cognitive_store.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "operation": "durable_owner",
+      "nativeSymbol": "DurableCognitiveStore",
+      "sourcePath": "codex-rs/hepta-cognitive-store/src/durable.rs",
+      "state": "production_facade_source_implemented",
+      "authority": "externally_verified",
+      "tests": [
+        "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "cognitivestore",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "designOperation": "authoritative_memory_knowledge_fact_storage",
+      "mappingClass": "canonical_facade",
+      "delegatedCallees": [
+        "hepta-memory::CognitiveStore"
+      ]
     },
     {
       "operation": "lane_c_snapshot",
-      "nativeSymbol": "lane_c_snapshot",
+      "nativeSymbol": "lane_c_snapshot_page",
       "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "state": "durable_snapshot_source_implemented",
+      "authority": "deny_all_read",
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "lane_c_snapshot",
+      "designOperation": "open_snapshot",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "writable_recovery",
+      "nativeSymbol": "open_with_recovery",
+      "sourcePath": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+      "state": "descriptor_bound_recovery_source_implemented",
+      "authority": "externally_verified",
+      "tests": [
+        "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "open_with_recovery",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "product_writer_host",
+      "nativeSymbol": "AgentdProductionWriterHost",
+      "sourcePath": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+      "state": "named_product_caller_source_bound",
+      "authority": "externally_verified",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "production_writer_host",
+      "mappingClass": "product_caller",
+      "delegatedCallees": [
+        "cognitive.store::DurableCognitiveStore",
+        "cognitive.store::ProductionDurableWriter"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Obtain current exact-head and deterministic synthetic-merge receipts for this candidate, including maximum-retained PERF-DURABLE artifacts.",
+    "Keep current-cut witness retention/authentication and product authority verification owned by the host; source code cannot self-issue those external facts."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -70,7 +110,7 @@
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,

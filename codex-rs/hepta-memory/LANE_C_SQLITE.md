@@ -58,17 +58,30 @@ durable rows. `cut_digest` can be retained independently and compared using
 or any other changed cut. The witness is an exact equality fence, not an
 ordering proof, signature, or proof that the latest witness was retained.
 Hosts must authenticate and preserve it independently if rollback protection is
-required. This adapter does not weaken `open_with_recovery`: its descriptor-safe
-SQLite VFS and independent currentness prerequisites remain required and that
-separate admission path still fails closed until implemented.
+required. Descriptor-bound writable `open_with_recovery` is now a distinct
+source-implemented admission path. It acquires an exclusive store fence, copies
+retained database/WAL/journal descriptors into a fresh private generation,
+requires an independently authenticated exact-current-cut anchor and externally
+verified production authority/fence, runs schema/integrity checks, checkpoints
+the copy, and atomically publishes the active-generation pointer. Ordinary
+`CognitiveStore::open` remains weaker because it has no independent currentness
+proof and must never be used as a recovery fallback after admission failure.
 
-Materialization is bounded to 16,384 immutable revisions, 65,536 citations, and
-65,536 source rows in one exact scope; exceeding a bound returns `Unavailable`
-without a partial snapshot. This first adapter does not promise a fixed latency
-or unbounded lifetime retention. Retention/paging must preserve predecessor
-proofs and deletion frontiers before those limits can be increased safely.
+Whole-scope `lane_c_snapshot` remains bounded to 16,384 immutable revisions,
+65,536 citations, and 65,536 source rows; exceeding those pilot bounds returns
+`Unavailable`. For larger scopes, `lane_c_snapshot_page` keyset-pages at most
+512 current heads and loads complete ancestry/citations only for the selected
+heads (16,384 ancestry revisions / 65,536 citations per page). Its continuation
+binds the global memory/source/tombstone/fact/KG frontiers, citation count,
+complete ordered head set and observation time. Any intervening owner mutation
+or validity-time change rejects the continuation rather than mixing cuts.
+Authoritative immutable history is retained; paging is bounded materialization,
+not destructive pruning.
 
 `lane_c_snapshot_tests.rs` exercises actual owner writes, correction ancestry,
-reopen, committed deletions, scope and verification/time filters, context
-binding, and restoration of an older valid SQLite backup. Run with
-`just test -p codex-hepta-memory`.
+proof-bound paging, committed deletions, scope and verification/time filters,
+context binding, and restoration of an older valid SQLite backup.
+`cognitive_store_recovery_tests.rs` exercises descriptor-bound writable
+recovery, exclusive fencing, stale/current anchors and hostile file identities.
+Run with `just test -p codex-hepta-memory`; exact-candidate CI also records the
+durable performance profiles described in the module guide.

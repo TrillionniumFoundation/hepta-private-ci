@@ -8,15 +8,15 @@
 use std::fmt;
 use std::sync::Arc;
 
-use codex_hepta_memory::CognitiveStore;
-use codex_hepta_memory::ProductionAuthorityLease;
-use codex_hepta_memory::ProductionAuthorityVerifier;
-use codex_hepta_memory::ProductionDispatchReceipt;
-use codex_hepta_memory::ProductionDurableWriter;
-use codex_hepta_memory::ProductionOutboxDispatcher;
-use codex_hepta_memory::ProductionOutboxTarget;
-use codex_hepta_memory::ProductionQueuedReceipt;
-use codex_hepta_memory::ProductionWriterError;
+use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
+use codex_hepta_cognitive_store::ProductionAuthorityLease;
+use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
+use codex_hepta_cognitive_store::ProductionDispatchReceipt;
+use codex_hepta_cognitive_store::ProductionDurableWriter;
+use codex_hepta_cognitive_store::ProductionOutboxDispatcher;
+use codex_hepta_cognitive_store::ProductionOutboxTarget;
+use codex_hepta_cognitive_store::ProductionQueuedReceipt;
+use codex_hepta_cognitive_store::ProductionWriterError;
 
 use crate::AgentdConfig;
 use crate::AgentdError;

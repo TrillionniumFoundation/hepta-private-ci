@@ -36,6 +36,11 @@ mod shadow_model_runtime;
 
 pub use lane_c_snapshot::CognitiveOwnerFrontiers;
 pub use lane_c_snapshot::DurableCognitiveSnapshot;
+pub use lane_c_snapshot::DurableCognitiveSnapshotCursor;
+pub use lane_c_snapshot::DurableCognitiveSnapshotPage;
+pub use lane_c_snapshot::MAX_LANE_C_PAGE_ANCESTRY_REVISIONS;
+pub use lane_c_snapshot::MAX_LANE_C_PAGE_CITATIONS;
+pub use lane_c_snapshot::MAX_LANE_C_SNAPSHOT_PAGE_HEADS;
 
 pub use cognitive_compact::COGNITIVE_COMPACT_HOOK_NAMESPACE;
 pub use cognitive_compact::COGNITIVE_COMPACT_HOOK_SCHEMA_VERSION;

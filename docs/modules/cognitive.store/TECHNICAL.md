@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-cognitive-store/src/lib.rs](../../../codex-rs/hepta-cognitive-store/src/lib.rs); observed identifiers include `CognitiveStore`, `append`, `get`, `snapshot_records`, `StoreReceipt`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.store.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-cognitive-store/src/lib.rs](../../../codex-rs/hepta-cognitive-store/src/lib.rs). The semantic V2 surface includes `AdmittedCognitiveStoreV2` and exact-cut snapshot paging; the canonical production façade re-exports `DurableCognitiveStore` and production writer/recovery types from [durable.rs](../../../codex-rs/hepta-cognitive-store/src/durable.rs) without creating a second database. The physical implementation remains [hepta-memory::CognitiveStore](../../../codex-rs/hepta-memory/src/cognitive_store.rs), and the named product caller is [AgentdProductionWriterHost](../../../codex-rs/hepta-agentd/src/production_writer_host.rs). These are source bindings; exact-candidate execution, independent acceptance, activation and release remain separate evidence states.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -58,9 +58,12 @@ add a second writer or synchronize a second database. The in-memory V2 store in
 this module is not a durable backend. See
 `codex-rs/hepta-memory/LANE_C_SQLITE.md` for exact ID/frontier mapping, bounded
 materialization, correction/deletion propagation, and reopen/rollback-witness
-behavior. The separate descriptor-safe `open_with_recovery` prerequisites
-remain unresolved; an ordinary reopen plus independently retained cut comparison
-must not be reported as full recovery admission.
+behavior. Writable `open_with_recovery` now uses retained file descriptors,
+a shared/exclusive store fence, bounded database/WAL/journal copying into a fresh
+private generation, exact current-cut comparison, SQLite integrity/checkpoint
+verification, an externally verified production-authority fence, and atomic active-
+generation publication. Ordinary `open` still has no independent current-cut
+proof and must not be reported as equivalent recovery admission.
 
 Direct dependencies:
 
@@ -147,7 +150,7 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.store.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.store.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md). Descriptor-bound writable recovery is source-implemented, but an independently authenticated current-cut witness and externally verified production authority remain mandatory host inputs; source fixtures cannot manufacture either fact or replace an external reconciler.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -163,13 +166,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-cognitive-store/src/lib.rs](../../../codex-rs/hepta-cognitive-store/src/lib.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) specifies the algorithm and pilot ceilings. Current native bounds are enforced in [hepta-cognitive-store](../../../codex-rs/hepta-cognitive-store/src/lib.rs) and [Lane C SQLite](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md). The durable measurement executable [cognitive_store_perf.rs](../../../codex-rs/hepta-memory/examples/cognitive_store_perf.rs) records cold-open, per-commit p50/p95/p99/max, database/WAL/journal bytes, snapshot materialization, recovery-anchor cost and reopen cost. Consolidated source CI runs both a 256-record latency sample and a 16,384-record maximum-retained profile when the durable owner changes. Measurements are exact-run artifacts, not prose claims or deployment thresholds.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-The physical writer remains hepta-memory::CognitiveStore and cognitive_1.sqlite3. The new crate supplies an in-memory semantic oracle and V2 types, not a replacement durable backend. Use the existing owner snapshot adapter and independent cut witness; descriptor-safe open_with_recovery still requires its unimplemented VFS/currentness prerequisites.
+The physical writer remains `hepta-memory::CognitiveStore` over `cognitive_1.sqlite3`; `hepta-cognitive-store::durable` is the canonical façade and does not duplicate state. Lane C exposes both bounded whole-scope snapshots and proof-bound durable pages that keyset-page current heads while reconstructing complete ancestry for each selected head. Writable `open_with_recovery` is descriptor-bound and fail-closed: it copies retained database/WAL/journal bytes into a private generation, verifies the independent exact current cut and production authority/fence, checkpoints the copy, and atomically publishes the active generation.
 
 Current operating and state-format references:
 
@@ -181,7 +184,10 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs); named case: `existing_sqlite_writes_are_readable_by_new_lane_c_after_reopen`.
+- [codex-rs/hepta-cognitive-store/src/v2_tests.rs](../../../codex-rs/hepta-cognitive-store/src/v2_tests.rs): verified-only admission, reserved tombstone capacity, bounded retry journal, cross-object image validation and exact-cut page cursors.
+- [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs): durable owner writes, correction/deletion ancestry, proof-bound paging, reopen and rollback-cut checks.
+- [codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs): descriptor-bound writable recovery, exclusive fencing, current-cut rejection and hostile filesystem identities.
+- [codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs](../../../codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs): named Agentd product host through the canonical cognitive-store façade.
 - [codex-rs/hepta-cognitive-store/src/lib_tests.rs](../../../codex-rs/hepta-cognitive-store/src/lib_tests.rs); named case: `append_and_correction_are_predecessor_fenced`.
 
 In `codex-rs`, run `just test -p codex-hepta-memory -p codex-hepta-cognitive-store`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.store.md) separately labels target acceptance designs.

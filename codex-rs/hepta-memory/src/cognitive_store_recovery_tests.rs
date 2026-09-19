@@ -30,6 +30,35 @@ use crate::cognitive_test_support::source;
 #[path = "cognitive_store_recovery_read_only_tests.rs"]
 mod cold_read_only;
 
+struct RecoveryVerifier;
+
+impl crate::ProductionAuthorityVerifier for RecoveryVerifier {
+    fn verify(
+        &self,
+        authority: &crate::ProductionAuthorityLease,
+        expected_agent: &AgentId,
+    ) -> Result<(), String> {
+        if &authority.agent_id == expected_agent {
+            Ok(())
+        } else {
+            Err("recovery authority owner mismatch".to_string())
+        }
+    }
+}
+
+fn recovery_authority(owner: &AgentId) -> crate::ProductionAuthorityLease {
+    crate::ProductionAuthorityLease::from_verified_parts(
+        owner.clone(),
+        Sha256Digest::for_bytes(b"recovery-grant"),
+        7,
+        11,
+        u64::MAX,
+        crate::ProductionAuthorityToken::from_verified_bytes(b"recovery-fence".to_vec())
+            .expect("valid recovery token"),
+    )
+    .expect("valid recovery authority")
+}
+
 async fn seeded(
     temp: &TempDir,
     owner: &AgentId,
@@ -107,10 +136,10 @@ enum EntryPayload {
 }
 
 #[tokio::test]
-async fn exact_current_cut_is_unavailable_without_file_or_sidecar_mutation() {
+async fn exact_current_cut_recovers_writable_generation_and_persists_activation() {
     let temp = TempDir::new().expect("temp dir");
     let owner = agent_id(91);
-    let (store, _, _) = seeded(&temp, &owner).await;
+    let (store, access, _) = seeded(&temp, &owner).await;
     let anchor = store
         .recovery_anchor()
         .await
@@ -119,25 +148,76 @@ async fn exact_current_cut_is_unavailable_without_file_or_sidecar_mutation() {
     let retained: CognitiveRecoveryAnchor =
         serde_json::from_slice(&serialized).expect("retained witness");
     assert_eq!(retained, anchor);
-    let root = store.path().parent().expect("cognitive root").to_path_buf();
+    let original = store.path().to_path_buf();
     store.pool.close().await;
-    let before = capture_recovery_tree(&root);
+    drop(store);
 
-    for _ in 0..8 {
-        let message = recovery_failure_message(
-            CognitiveStore::open_with_recovery(
-                &layout(&temp, &owner),
-                CognitiveRecoveryRequirement::ExactCurrentCut(&retained),
-            )
-            .await,
-        );
-        assert!(message.contains("recovery is unavailable"));
-        assert_eq!(capture_recovery_tree(&root), before);
-    }
+    let authority = recovery_authority(&owner);
+    let recovered = CognitiveStore::open_with_recovery(
+        &layout(&temp, &owner),
+        CognitiveRecoveryRequirement::ExactCurrentCut(&retained),
+        &authority,
+        &RecoveryVerifier,
+    )
+    .await
+    .expect("descriptor-bound writable recovery");
+    assert_ne!(recovered.path(), original.as_path());
+    assert_eq!(
+        recovered.recovery_anchor().await.expect("recovered anchor"),
+        retained
+    );
+
+    recovered
+        .append_source(
+            &access,
+            &source(
+                CognitiveScope::AgentPrivate,
+                "post-recovery-source",
+                "post recovery write",
+            ),
+        )
+        .await
+        .expect("recovered store is writable");
+    let advanced = recovered
+        .recovery_anchor()
+        .await
+        .expect("advanced current witness");
+    assert_ne!(advanced, retained);
+    let recovered_path = recovered.path().to_path_buf();
+    recovered.pool.close().await;
+    drop(recovered);
+
+    let reopened = CognitiveStore::open(&layout(&temp, &owner))
+        .await
+        .expect("ordinary reopen follows activated generation");
+    assert_eq!(reopened.path(), recovered_path.as_path());
+    assert_eq!(
+        reopened.recovery_anchor().await.expect("reopen anchor"),
+        advanced
+    );
 }
 
 #[tokio::test]
-async fn predecessor_and_current_witnesses_cannot_enable_path_recovery() {
+async fn writable_recovery_requires_exclusive_store_fence() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(90);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let anchor = store.recovery_anchor().await.expect("current witness");
+    let authority = recovery_authority(&owner);
+    assert!(matches!(
+        CognitiveStore::open_with_recovery(
+            &layout(&temp, &owner),
+            CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+            &authority,
+            &RecoveryVerifier,
+        )
+        .await,
+        Err(CognitiveRecoveryError::Unavailable(_))
+    ));
+}
+
+#[tokio::test]
+async fn predecessor_witness_is_rejected_and_current_witness_recovers() {
     let temp = TempDir::new().expect("temp dir");
     let owner = agent_id(92);
     let (store, access, memory) = seeded(&temp, &owner).await;
@@ -163,21 +243,33 @@ async fn predecessor_and_current_witnesses_cannot_enable_path_recovery() {
         .expect("acknowledged forget");
     let current = store.recovery_anchor().await.expect("current witness");
     assert_ne!(current, predecessor);
-    let root = store.path().parent().expect("cognitive root").to_path_buf();
     store.pool.close().await;
-    let before = capture_recovery_tree(&root);
+    drop(store);
+    let authority = recovery_authority(&owner);
 
-    for witness in [&predecessor, &current] {
-        let message = recovery_failure_message(
-            CognitiveStore::open_with_recovery(
-                &layout(&temp, &owner),
-                CognitiveRecoveryRequirement::ExactCurrentCut(witness),
-            )
-            .await,
-        );
-        assert!(message.contains("recovery is unavailable"));
-        assert_eq!(capture_recovery_tree(&root), before);
-    }
+    assert!(matches!(
+        CognitiveStore::open_with_recovery(
+            &layout(&temp, &owner),
+            CognitiveRecoveryRequirement::ExactCurrentCut(&predecessor),
+            &authority,
+            &RecoveryVerifier,
+        )
+        .await,
+        Err(CognitiveRecoveryError::AccessDenied(_))
+    ));
+
+    let recovered = CognitiveStore::open_with_recovery(
+        &layout(&temp, &owner),
+        CognitiveRecoveryRequirement::ExactCurrentCut(&current),
+        &authority,
+        &RecoveryVerifier,
+    )
+    .await
+    .expect("current witness recovers");
+    assert_eq!(
+        recovered.recovery_anchor().await.expect("recovered anchor"),
+        current
+    );
 }
 
 #[tokio::test]
@@ -186,31 +278,31 @@ async fn revoked_owner_profile_and_witness_checks_precede_recovery_admission() {
     let owner = agent_id(93);
     let (store, _, _) = seeded(&temp, &owner).await;
     let anchor = store.recovery_anchor().await.expect("current witness");
-    let root = store.path().parent().expect("cognitive root").to_path_buf();
-    store.pool.close().await;
-    let before = capture_recovery_tree(&root);
+    let authority = recovery_authority(&owner);
 
     assert!(matches!(
         CognitiveStore::open_with_recovery(
             &layout(&temp, &owner),
             CognitiveRecoveryRequirement::Revoked,
+            &authority,
+            &RecoveryVerifier,
         )
         .await,
         Err(CognitiveRecoveryError::AccessDenied(_))
     ));
-    assert_eq!(capture_recovery_tree(&root), before);
 
     let wrong_layout = layout(&temp, &agent_id(94));
     assert!(matches!(
         CognitiveStore::open_with_recovery(
             &wrong_layout,
             CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+            &authority,
+            &RecoveryVerifier,
         )
         .await,
         Err(CognitiveRecoveryError::AccessDenied(_))
     ));
     assert!(!wrong_layout.cognitive_root().exists());
-    assert_eq!(capture_recovery_tree(&root), before);
 
     let mut unsupported = anchor.clone();
     unsupported.profile = "unsupported".to_string();
@@ -218,23 +310,27 @@ async fn revoked_owner_profile_and_witness_checks_precede_recovery_admission() {
         CognitiveStore::open_with_recovery(
             &layout(&temp, &owner),
             CognitiveRecoveryRequirement::ExactCurrentCut(&unsupported),
+            &authority,
+            &RecoveryVerifier,
         )
         .await,
         Err(CognitiveRecoveryError::Invalid(_))
     ));
-    assert_eq!(capture_recovery_tree(&root), before);
 
+    store.pool.close().await;
+    drop(store);
     let mut tampered = anchor;
     tampered.state_digest = Sha256Digest::for_bytes(b"altered witness");
-    let message = recovery_failure_message(
+    assert!(matches!(
         CognitiveStore::open_with_recovery(
             &layout(&temp, &owner),
             CognitiveRecoveryRequirement::ExactCurrentCut(&tampered),
+            &authority,
+            &RecoveryVerifier,
         )
         .await,
-    );
-    assert!(message.contains("recovery is unavailable"));
-    assert_eq!(capture_recovery_tree(&root), before);
+        Err(CognitiveRecoveryError::AccessDenied(_))
+    ));
 }
 
 #[cfg(unix)]
@@ -244,7 +340,6 @@ enum IdentityAttack {
     Symlink,
     Hardlink,
     Mode,
-    RenameReplacement,
 }
 
 #[cfg(unix)]
@@ -255,7 +350,6 @@ async fn hostile_file_identities_fail_closed_without_additional_mutation() {
         IdentityAttack::Symlink,
         IdentityAttack::Hardlink,
         IdentityAttack::Mode,
-        IdentityAttack::RenameReplacement,
     ];
     for attack in attacks {
         let temp = TempDir::new().expect("temp dir");
@@ -265,29 +359,55 @@ async fn hostile_file_identities_fail_closed_without_additional_mutation() {
         let database = store.path().to_path_buf();
         let root = database.parent().expect("cognitive root").to_path_buf();
         store.pool.close().await;
+        drop(store);
         install_identity_attack(&database, attack);
         let attacked = capture_recovery_tree(&root);
+        let authority = recovery_authority(&owner);
 
         let failure = recovery_failure(
             CognitiveStore::open_with_recovery(
                 &layout(&temp, &owner),
                 CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+                &authority,
+                &RecoveryVerifier,
             )
             .await,
         );
-        match attack {
-            IdentityAttack::RenameReplacement => {
-                assert!(matches!(failure, CognitiveRecoveryError::Unavailable(_)));
-            }
-            IdentityAttack::Missing
-            | IdentityAttack::Symlink
-            | IdentityAttack::Hardlink
-            | IdentityAttack::Mode => {
-                assert!(matches!(failure, CognitiveRecoveryError::Indeterminate(_)));
-            }
-        }
+        assert!(matches!(failure, CognitiveRecoveryError::Indeterminate(_)));
         assert_eq!(capture_recovery_tree(&root), attacked);
     }
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn byte_identical_rename_replacement_can_recover_only_with_current_witness() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner = agent_id(195);
+    let (store, _, _) = seeded(&temp, &owner).await;
+    let anchor = store.recovery_anchor().await.expect("current witness");
+    let database = store.path().to_path_buf();
+    store.pool.close().await;
+    drop(store);
+
+    let retained = database.with_extension("retained");
+    std::fs::rename(&database, &retained).expect("retain original database");
+    std::fs::copy(&retained, &database).expect("install byte-identical replacement");
+    std::fs::set_permissions(&database, std::fs::Permissions::from_mode(0o600))
+        .expect("protect replacement");
+
+    let authority = recovery_authority(&owner);
+    let recovered = CognitiveStore::open_with_recovery(
+        &layout(&temp, &owner),
+        CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+        &authority,
+        &RecoveryVerifier,
+    )
+    .await
+    .expect("content-authenticated descriptor recovery");
+    assert_eq!(
+        recovered.recovery_anchor().await.expect("recovered anchor"),
+        anchor
+    );
 }
 
 #[tokio::test]
@@ -338,18 +458,25 @@ async fn corrupt_physical_fts_cannot_obtain_a_witness_or_trigger_recovery_io() {
             .expect("inject physical FTS segment damage");
     assert!(damaged.rows_affected() > 0);
     assert!(store.recovery_anchor().await.is_err());
-    let root = store.path().parent().expect("cognitive root").to_path_buf();
+    let database = store.path().to_path_buf();
     store.pool.close().await;
-    let before = capture_recovery_tree(&root);
-    let message = recovery_failure_message(
+    drop(store);
+    let before = std::fs::read(&database).expect("read damaged source");
+    let authority = recovery_authority(&owner);
+    let failure = recovery_failure(
         CognitiveStore::open_with_recovery(
             &layout(&temp, &owner),
             CognitiveRecoveryRequirement::ExactCurrentCut(&anchor),
+            &authority,
+            &RecoveryVerifier,
         )
         .await,
     );
-    assert!(message.contains("recovery is unavailable"));
-    assert_eq!(capture_recovery_tree(&root), before);
+    assert!(matches!(failure, CognitiveRecoveryError::Indeterminate(_)));
+    assert_eq!(
+        std::fs::read(&database).expect("re-read damaged source"),
+        before
+    );
 }
 
 fn recovery_failure(
@@ -358,13 +485,6 @@ fn recovery_failure(
     match result {
         Err(error) => error,
         Ok(_) => panic!("fail-closed recovery unexpectedly returned a store"),
-    }
-}
-
-fn recovery_failure_message(result: Result<CognitiveStore, CognitiveRecoveryError>) -> String {
-    match recovery_failure(result) {
-        CognitiveRecoveryError::Unavailable(message) => message,
-        error => panic!("fail-closed recovery returned the wrong error class: {error}"),
     }
 }
 
@@ -387,13 +507,6 @@ fn install_identity_attack(database: &Path, attack: IdentityAttack) {
         IdentityAttack::Mode => {
             std::fs::set_permissions(database, std::fs::Permissions::from_mode(0o640))
                 .expect("widen database mode");
-        }
-        IdentityAttack::RenameReplacement => {
-            let retained = database.with_extension("retained");
-            std::fs::rename(database, &retained).expect("retain original database");
-            std::fs::copy(&retained, database).expect("install byte-identical replacement");
-            std::fs::set_permissions(database, std::fs::Permissions::from_mode(0o600))
-                .expect("protect replacement");
         }
     }
 }

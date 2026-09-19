@@ -203,7 +203,10 @@ impl ProductionAuthorityLease {
         now_unix_seconds >= self.lease_expires_at_unix_seconds
     }
 
-    fn validate_for_agent(&self, agent_id: &AgentId) -> Result<(), ProductionWriterError> {
+    pub(crate) fn validate_for_agent(
+        &self,
+        agent_id: &AgentId,
+    ) -> Result<(), ProductionWriterError> {
         if &self.agent_id != agent_id {
             return Err(ProductionWriterError::AuthorityAgentMismatch(
                 agent_id.clone(),

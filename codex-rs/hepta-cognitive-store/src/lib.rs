@@ -5,6 +5,7 @@
 
 #![forbid(unsafe_code)]
 
+mod durable;
 mod v2;
 
 use std::collections::BTreeMap;
@@ -18,15 +19,48 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::StableId;
 
+pub use durable::CognitiveRecoveryAnchor;
+pub use durable::CognitiveRecoveryError;
+pub use durable::CognitiveRecoveryRequirement;
+pub use durable::DURABLE_BACKEND_ID;
+pub use durable::DURABLE_DATABASE_BASENAME;
+pub use durable::DURABLE_SINGLE_WRITER;
+pub use durable::DurableCognitiveSnapshot;
+pub use durable::DurableCognitiveSnapshotCursor;
+pub use durable::DurableCognitiveSnapshotPage;
+pub use durable::DurableCognitiveStore;
+pub use durable::DurableCognitiveStoreError;
+pub use durable::MAX_LANE_C_PAGE_ANCESTRY_REVISIONS;
+pub use durable::MAX_LANE_C_PAGE_CITATIONS;
+pub use durable::MAX_LANE_C_SNAPSHOT_PAGE_HEADS;
+pub use durable::ProductionAuthorityLease;
+pub use durable::ProductionAuthorityToken;
+pub use durable::ProductionAuthorityVerifier;
+pub use durable::ProductionDispatchFuture;
+pub use durable::ProductionDispatchReceipt;
+pub use durable::ProductionDispatchRequest;
+pub use durable::ProductionDurableWriter;
+pub use durable::ProductionOutboxDispatcher;
+pub use durable::ProductionOutboxTarget;
+pub use durable::ProductionQueuedReceipt;
+pub use durable::ProductionWriterError;
+pub use durable::RecoveredCognitiveReadOnly;
+
 pub use v2::AdmittedCognitiveStoreV2;
 pub use v2::CognitiveStoreImageV2;
 pub use v2::CognitiveStoreV2Error;
 pub use v2::ForgetIntentV2;
+pub use v2::MAX_V2_INTENT_JOURNAL_ENTRIES;
+pub use v2::MAX_V2_ORDINARY_RECORD_REVISIONS;
 pub use v2::MAX_V2_RECORD_REVISIONS;
 pub use v2::MAX_V2_SNAPSHOT_LEASE_MS;
+pub use v2::MAX_V2_SNAPSHOT_PAGE_RECORDS;
+pub use v2::SnapshotCursorV2;
 pub use v2::SnapshotOpenRequestV2;
+pub use v2::SnapshotPageOpenRequestV2;
 pub use v2::StoreAuthorityVerifierV2;
 pub use v2::StoreIntentImageEntryV2;
+pub use v2::StoreSnapshotPageV2;
 pub use v2::StoreSnapshotV2;
 
 const MAX_RECORDS: usize = 16_384;
