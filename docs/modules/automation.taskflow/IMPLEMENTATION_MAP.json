@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a3eff4e7399ed8650a088abbf4c6fd7d60b778fb",
-    "tree": "09b368cddd5583739bc7f1bed852d505eb1c936d"
+    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -182,5 +182,10 @@
   "technicalGuide": "docs/modules/automation.taskflow/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-automation"
-  ]
+  ],
+  "observedAtHead": {
+    "commit": "a3eff4e7399ed8650a088abbf4c6fd7d60b778fb",
+    "tree": "09b368cddd5583739bc7f1bed852d505eb1c936d",
+    "interpretation": "exact automation source-and-regression candidate observed by this map; qualification results remain separate"
+  }
 }
