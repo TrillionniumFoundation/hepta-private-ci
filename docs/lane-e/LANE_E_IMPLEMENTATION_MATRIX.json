@@ -92,6 +92,18 @@
           "nativeSymbol": "build_ledger_index_checkpoint",
           "source": "codex-rs/hepta-learning-ledger/src/index_checkpoint.rs",
           "status": "implemented"
+        },
+        {
+          "operation": "ProductionLedgerWriter::current_trust_digest",
+          "nativeSymbol": "ProductionLedgerWriter::current_trust_digest",
+          "source": "codex-rs/hepta-learning-ledger/src/production.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "measure_ledger_recovery_work",
+          "nativeSymbol": "measure_ledger_recovery_work",
+          "source": "codex-rs/hepta-learning-ledger/src/index_checkpoint.rs",
+          "status": "implemented"
         }
       ],
       "tests": [
@@ -108,7 +120,10 @@
         "production_writer_closes_signed_decision_outcome_credit_and_dataset_path",
         "witness_reopens_exact_acknowledged_frontier_and_rejects_regression",
         "checkpoint_verifies_four_thousand_record_history",
-        "canonical_decision_json_uses_registry_field_names_and_order"
+        "canonical_decision_json_uses_registry_field_names_and_order",
+        "production_writer_reloads_current_trust_and_rejects_rollback",
+        "canonical_protocols_reject_semantically_invalid_json",
+        "recovery_work_receipt_covers_full_single_segment_record_profile"
       ],
       "remainingRepositoryGaps": [],
       "remainingExternalEvidence": [
