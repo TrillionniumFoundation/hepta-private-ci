@@ -55,8 +55,7 @@ jobs:
       - name: Install Rust components
         run: rustup component add rustfmt clippy
 
-      - name: Format (diagnostic until compile closure)
-        continue-on-error: true
+      - name: Format
         run: cargo fmt --check
 
       - name: Clippy
@@ -132,9 +131,147 @@ jobs:
             -Path target/release/hepta-native.exe,target/release/hepta-native-updater.exe,target/release/hepta-native-credential.exe `
             -DestinationPath "dist/hepta-native-$env:RUNNER_OS-$env:RUNNER_ARCH-unsigned.zip"
 
+      - name: Smoke packaged macOS application
+        if: runner.os == 'macOS'
+        shell: bash
+        run: '"dist/Hepta Native.app/Contents/MacOS/hepta-native" --self-test'
+
+      - name: Smoke packaged Linux application
+        if: runner.os == 'Linux'
+        shell: bash
+        run: ./dist/HeptaNative.AppDir/usr/bin/hepta-native --self-test
+
+      - name: Smoke packaged Windows application
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force dist/smoke -ErrorAction SilentlyContinue
+          Expand-Archive -Force "dist/hepta-native-$env:RUNNER_OS-$env:RUNNER_ARCH-unsigned.zip" dist/smoke
+          .\\dist\\smoke\\hepta-native.exe --self-test
+
+      - name: Write merge-candidate qualification receipt (Unix)
+        if: runner.os != 'Windows'
+        shell: bash
+        env:
+          HEPTA_SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          HEPTA_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          root = pathlib.Path("target/release")
+          binaries = ["hepta-native", "hepta-native-updater", "hepta-native-credential"]
+          digests = {}
+          for name in binaries:
+              path = root / name
+              digests[name] = hashlib.sha256(path.read_bytes()).hexdigest()
+          receipt = {
+              "schema": "hepta.ui-native-qualification-receipt.v1",
+              "candidate_class": "merge_candidate" if os.environ.get("GITHUB_EVENT_NAME") == "pull_request" else "exact_head",
+              "checked_out_sha": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+              "source_head_sha": os.environ["HEPTA_SOURCE_HEAD_SHA"],
+              "base_sha": os.environ.get("HEPTA_BASE_SHA", ""),
+              "runner_os": os.environ["RUNNER_OS"],
+              "runner_arch": os.environ["RUNNER_ARCH"],
+              "unsigned_development_artifact": True,
+              "production_signing_observed": False,
+              "independent_accessibility_acceptance": False,
+              "release_authority": False,
+              "binary_sha256": digests,
+          }
+          pathlib.Path("dist/qualification-receipt.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+          PY
+
+      - name: Write merge-candidate qualification receipt (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          HEPTA_SOURCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          HEPTA_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+        run: |
+          @'
+          import hashlib, json, os, pathlib, subprocess
+          root = pathlib.Path("target/release")
+          binaries = ["hepta-native.exe", "hepta-native-updater.exe", "hepta-native-credential.exe"]
+          digests = {}
+          for name in binaries:
+              path = root / name
+              digests[name] = hashlib.sha256(path.read_bytes()).hexdigest()
+          receipt = {
+              "schema": "hepta.ui-native-qualification-receipt.v1",
+              "candidate_class": "merge_candidate" if os.environ.get("GITHUB_EVENT_NAME") == "pull_request" else "exact_head",
+              "checked_out_sha": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+              "source_head_sha": os.environ["HEPTA_SOURCE_HEAD_SHA"],
+              "base_sha": os.environ.get("HEPTA_BASE_SHA", ""),
+              "runner_os": os.environ["RUNNER_OS"],
+              "runner_arch": os.environ["RUNNER_ARCH"],
+              "unsigned_development_artifact": True,
+              "production_signing_observed": False,
+              "independent_accessibility_acceptance": False,
+              "release_authority": False,
+              "binary_sha256": digests,
+          }
+          pathlib.Path("dist/qualification-receipt.json").write_text(json.dumps(receipt, indent=2) + "\n", encoding="utf-8")
+          '@ | python -
+
       - name: Upload unsigned development artifact
         uses: actions/upload-artifact@v4
         with:
           name: hepta-native-${{ runner.os }}-${{ runner.arch }}-unsigned
           path: apps/hepta-native/dist/*
           if-no-files-found: error
+
+  source-head:
+    name: native-source-head-ubuntu
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/hepta-native
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - name: Install Linux native UI dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libxcb-render0-dev \
+            libxcb-shape0-dev \
+            libxcb-xfixes0-dev \
+            libxkbcommon-dev \
+            libxkbcommon-x11-dev \
+            libwayland-dev \
+            libgl1-mesa-dev \
+            libssl-dev \
+            desktop-file-utils
+
+      - name: Install Rust components
+        run: rustup component add rustfmt clippy
+
+      - name: Exact-head identity
+        shell: bash
+        env:
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+
+      - name: Format exact head
+        run: cargo fmt --check
+
+      - name: Clippy exact head
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Test exact head
+        run: cargo test --all-targets
+
+      - name: Clippy authenticated native gateway exact head
+        working-directory: codex-rs
+        run: cargo clippy -p codex-hepta-native-gateway --all-targets -- -D warnings
+
+      - name: Test authenticated native gateway exact head
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-native-gateway
+
+      - name: Headless exact-head product smoke
+        run: cargo run --bin hepta-native -- --self-test
