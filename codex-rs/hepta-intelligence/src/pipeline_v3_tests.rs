@@ -383,3 +383,24 @@ fn optional_rejection_is_terminal_and_cannot_be_downgraded_to_fallback() {
     );
     assert!(!ports.calls.contains(&LaneFStageV3::PromptPortfolioBuilt));
 }
+
+#[test]
+fn failed_host_handoff_stops_before_learning_record() {
+    let mut ports = Ports {
+        fail: Some((
+            LaneFStageV3::HostHandoffAccepted,
+            PortFailureClassV3::Rejected,
+        )),
+        ..Ports::default()
+    };
+    let receipt = run_composition_v3(request(false), &mut ports).expect("terminal receipt");
+    assert_eq!(
+        receipt.disposition,
+        PipelineDispositionV3::Failed(PortFailureClassV3::Rejected)
+    );
+    assert_eq!(
+        receipt.stages.last().map(|trace| trace.stage),
+        Some(LaneFStageV3::HostHandoffAccepted)
+    );
+    assert!(!ports.calls.contains(&LaneFStageV3::LearningRecorded));
+}
