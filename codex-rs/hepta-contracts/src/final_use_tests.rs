@@ -99,6 +99,30 @@ fn signed_claim_is_single_use_and_delivers_under_same_owner() {
 }
 
 #[test]
+fn verified_use_witness_binds_the_actual_consumer_entry() {
+    let (authority, signed, _directory) = fixture().unwrap();
+    let token = authority
+        .claim(&signed, &signed.grant.binding)
+        .unwrap();
+    let (value, witness) =
+        deliver_final_use_with_witness(&authority, token, &signed.grant.binding, || 11).unwrap();
+    assert_eq!(value, 11);
+    witness.validate().unwrap();
+    assert_eq!(witness.schema_version, VERIFIED_USE_TOKEN_WITNESS_SCHEMA_VERSION);
+    assert_eq!(witness.authority_epoch, signed.grant.authority_epoch);
+    assert_eq!(witness.boundary, VerifiedUseBoundaryV1::ConsumerEntry);
+    match witness.authority_ref {
+        VerifiedUseAuthorityRefV1::FinalUse(reference) => {
+            assert_eq!(reference.signer_id, signed.grant.signer_id);
+            assert_eq!(reference.grant_id, signed.grant.grant_id);
+            assert_eq!(reference.revocation_revision, 1);
+            assert_ne!(reference.binding_sha256, [0; 32]);
+        }
+        other => panic!("unexpected witness authority: {other:?}"),
+    }
+}
+
+#[test]
 fn changing_signed_data_or_substituting_a_key_does_not_authorize() {
     let (authority, mut signed, _directory) = fixture().unwrap();
     signed.grant.binding.request_sha256 = [6; 32];
