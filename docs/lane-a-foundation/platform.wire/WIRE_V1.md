@@ -37,10 +37,16 @@ success.
 
 ## Target-only design
 
-Version negotiation, streaming decode, multi-version adapters and an
-authenticated complete-envelope digest are target-only. A future version must
-use a new version value and frozen vectors; V1 bytes and meanings cannot be
-reinterpreted in place.
+V1 itself remains a fixed codec and never negotiates or changes semantics.
+`platform.wire` now implements negotiation, bounded multi-version streaming,
+schema admission and a distinct HPTA V2 frame with a complete semantic frame
+digest. Those capabilities live outside the V1 byte contract; V1 bytes and
+meanings remain frozen.
+
+Authenticated session establishment, signatures/MACs, key management and
+production transport activation remain outside V1 and outside the current
+`platform.wire` authority. Future wire changes must use a new version value
+and independent frozen vectors.
 
 ## Known limits and non-claims
 
