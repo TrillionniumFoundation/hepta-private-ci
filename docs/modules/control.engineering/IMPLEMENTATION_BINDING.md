@@ -3,7 +3,7 @@
 The canonical implementation guide is [IMPLEMENTATION.md](IMPLEMENTATION.md).
 Concrete source lives in `tools/hepta-engineering-control/control_engineering_v2/`;
 `__init__.py` exports the authenticated v2 public composition. `control_plane.py`
-directly owns the SQLite v5 schema/transactions; `orchestration.py` owns exact-source
+directly owns the SQLite v6 schema/transactions; `orchestration.py` owns exact-source
 admission and resource-aware planning; `candidate.py` is the sole candidate workspace
 owner; `sandbox_control.py` owns sandbox admission/retry ceilings; `mutation_testing.py`
 owns evaluator mutation testing; `external_controls.py` verifies distributed fencing,
