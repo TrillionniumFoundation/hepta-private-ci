@@ -1,12 +1,11 @@
 use codex_hepta_cognitive_read::ReadRequest;
 use codex_hepta_cognitive_read::ReadRequestV2;
+use codex_hepta_cognitive_read::SnapshotAcquisitionRequestV1;
 use codex_hepta_cognitive_read::SnapshotProviderError;
+use codex_hepta_cognitive_read::read_authoritative;
 use codex_hepta_cognitive_types::MemoryKind;
 use codex_hepta_cognitive_types::RecordState;
-use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
-use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
-use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
@@ -15,8 +14,9 @@ use crate::CognitiveAccess;
 use crate::CognitiveScope;
 use crate::CognitiveStore;
 use crate::CognitiveStoreError;
-use crate::DurableCognitiveSnapshot;
 use crate::ForgetMemoryDraft;
+use crate::LaneCAuthoritativeSnapshotProvider;
+use crate::LaneCAuthorityContextV1;
 use crate::MemoryDraft;
 use crate::MemoryVerification;
 use crate::cognitive_test_support::agent_id;
@@ -25,30 +25,44 @@ use crate::cognitive_test_support::memory_revision;
 use crate::cognitive_test_support::source;
 use crate::cognitive_test_support::workspace;
 
-fn vector(cut: &DurableCognitiveSnapshot) -> LaneCGenerationVectorV1 {
-    let digest = Digest32::of_bytes(b"test frozen external profile");
-    LaneCGenerationVectorV1 {
-        scope_id: cut.scope_id().clone(),
+fn authority_context(epoch: u64) -> LaneCAuthorityContextV1 {
+    LaneCAuthorityContextV1 {
         purpose_id: StableId::new("read-only-context").unwrap(),
-        memory_ledger_frontier: cut.frontiers().memory,
-        source_ledger_frontier: cut.frontiers().source,
-        tombstone_frontier: cut.frontiers().tombstone,
-        knowledge_fact_frontier: cut.frontiers().knowledge_facts,
-        knowledge_graph_generation: cut.frontiers().knowledge_graph,
-        compact_checkpoint_generation: Generation::new(1).unwrap(),
-        prompt_registry_revision: Revision::new(1).unwrap(),
-        retrieval_profile_digest: digest,
-        encoder_preprocessor_digest: digest,
-        authority_epoch: 1,
-        model_digest: digest,
-        tokenizer_digest: digest,
-        template_digest: digest,
-        tool_schema_digest: digest,
+        host_generation: Generation::new(1).unwrap(),
+        authority_epoch: epoch,
+    }
+}
+
+fn acquisition(provider: &LaneCAuthoritativeSnapshotProvider) -> SnapshotAcquisitionRequestV1 {
+    let vector = provider.envelope().generation_vector();
+    SnapshotAcquisitionRequestV1 {
+        request_id: StableId::new("lane-c-test-request").unwrap(),
+        scope_id: vector.scope_id.clone(),
+        purpose_id: vector.purpose_id.clone(),
+        minimum_memory_frontier: vector.memory_ledger_frontier,
+        minimum_source_frontier: vector.source_ledger_frontier,
+        minimum_tombstone_frontier: vector.tombstone_frontier,
+        minimum_knowledge_fact_frontier: vector.knowledge_fact_frontier,
+        host_generation: vector.host_generation,
+        authority_epoch: vector.authority_epoch,
+        deadline_unix_ms: provider.envelope().lease_expires_unix_ms(),
+    }
+}
+
+fn read_request(provider: &LaneCAuthoritativeSnapshotProvider) -> ReadRequestV2 {
+    ReadRequestV2 {
+        read_request: ReadRequest {
+            snapshot_digest: provider.envelope().snapshot().snapshot_digest,
+            allowed_kinds: vec![MemoryKind::Fact],
+            maximum_results: 10,
+            include_tombstones: false,
+        },
+        maximum_encoded_bytes: 8192,
     }
 }
 
 #[tokio::test]
-async fn existing_sqlite_writes_are_readable_by_new_lane_c_after_reopen() {
+async fn existing_sqlite_writes_are_readable_by_authoritative_lane_c_after_reopen() {
     let temp = TempDir::new().unwrap();
     let owner = agent_id(101);
     let layout = layout(&temp, &owner);
@@ -76,18 +90,17 @@ async fn existing_sqlite_writes_are_readable_by_new_lane_c_after_reopen() {
         before.snapshot().records[0].record_id.as_str(),
         first.id.memory_id.as_str()
     );
-    let result = before
-        .read(ReadRequestV2 {
-            read_request: ReadRequest {
-                snapshot_digest: before.snapshot().snapshot_digest,
-                allowed_kinds: vec![MemoryKind::Fact],
-                maximum_results: 10,
-                include_tombstones: false,
-            },
-            maximum_encoded_bytes: 8192,
-        })
+    let provider = before
+        .bind_authority_context(authority_context(1), 200_001, 210_000)
         .unwrap();
-    assert_eq!(result.records(), before.snapshot().records);
+    let result = read_authoritative(
+        &provider,
+        200_001,
+        acquisition(&provider),
+        read_request(&provider),
+    )
+    .unwrap();
+    assert_eq!(result.read_result.records(), before.snapshot().records);
     store.pool.close().await;
     let reopened = CognitiveStore::open(&layout).await.unwrap();
     let recovered = reopened
@@ -138,7 +151,7 @@ async fn existing_sqlite_writes_are_readable_by_new_lane_c_after_reopen() {
 }
 
 #[tokio::test]
-async fn tombstone_invalidates_prior_cut_and_survives_reopen() {
+async fn tombstone_invalidates_prior_authoritative_cut_and_survives_reopen() {
     let temp = TempDir::new().unwrap();
     let owner = agent_id(102);
     let layout = layout(&temp, &owner);
@@ -174,7 +187,6 @@ async fn tombstone_invalidates_prior_cut_and_survives_reopen() {
         )
         .await
         .unwrap();
-    // A committed deletion is immediate, even when its validity label is future-dated.
     let deleted = store.lane_c_snapshot(&access, &scope, 201).await.unwrap();
     assert_eq!(deleted.frontiers().tombstone, 1);
     assert_eq!(deleted.snapshot().records[0].state, RecordState::Tombstone);
@@ -184,18 +196,17 @@ async fn tombstone_invalidates_prior_cut_and_survives_reopen() {
             .await,
         Err(CognitiveStoreError::Conflict(_))
     ));
-    let result = deleted
-        .read(ReadRequestV2 {
-            read_request: ReadRequest {
-                snapshot_digest: deleted.snapshot().snapshot_digest,
-                allowed_kinds: vec![MemoryKind::Fact],
-                maximum_results: 10,
-                include_tombstones: false,
-            },
-            maximum_encoded_bytes: 8192,
-        })
+    let provider = deleted
+        .bind_authority_context(authority_context(1), 201_001, 210_000)
         .unwrap();
-    assert!(result.records().is_empty());
+    let result = read_authoritative(
+        &provider,
+        201_001,
+        acquisition(&provider),
+        read_request(&provider),
+    )
+    .unwrap();
+    assert!(result.read_result.records().is_empty());
     store.pool.close().await;
     let reopened = CognitiveStore::open(&layout).await.unwrap();
     assert_eq!(
@@ -282,23 +293,30 @@ async fn scope_provisional_and_time_filters_do_not_leak_unadmitted_facts() {
 }
 
 #[tokio::test]
-async fn context_binding_rejects_forged_owner_frontiers_and_clock_regression() {
+async fn authority_binding_is_owner_filled_and_rejects_clock_or_epoch_drift() {
     let temp = TempDir::new().unwrap();
     let owner = agent_id(105);
     let store = CognitiveStore::open(&layout(&temp, &owner)).await.unwrap();
     let access = CognitiveAccess::agent_private(owner);
     let scope = CognitiveScope::AgentPrivate;
     let cut = store.lane_c_snapshot(&access, &scope, 200).await.unwrap();
-    let bound = cut.bind_context(vector(&cut), 200_001, 210_000).unwrap();
-    assert_eq!(bound.snapshot(), cut.snapshot());
-    let mut forged = vector(&cut);
-    forged.tombstone_frontier += 1;
+    let provider = cut
+        .bind_authority_context(authority_context(1), 200_001, 210_000)
+        .unwrap();
+    let vector = provider.envelope().generation_vector();
+    assert_eq!(vector.memory_ledger_frontier, cut.frontiers().memory);
+    assert_eq!(vector.source_ledger_frontier, cut.frontiers().source);
+    assert_eq!(vector.tombstone_frontier, cut.frontiers().tombstone);
     assert_eq!(
-        cut.bind_context(forged, 200_001, 210_000),
-        Err(SnapshotProviderError::GenerationGone)
+        vector.knowledge_fact_frontier,
+        cut.frontiers().knowledge_facts
     );
     assert_eq!(
-        cut.bind_context(vector(&cut), 201_000, 210_000),
+        vector.knowledge_graph_generation,
+        cut.frontiers().knowledge_graph
+    );
+    assert_eq!(
+        cut.bind_authority_context(authority_context(1), 201_000, 210_000),
         Err(SnapshotProviderError::InvalidLeaseWindow)
     );
     assert!(matches!(
@@ -307,6 +325,82 @@ async fn context_binding_rejects_forged_owner_frontiers_and_clock_regression() {
             .await,
         Err(CognitiveStoreError::Invalid(_))
     ));
+
+    let result = read_authoritative(
+        &provider,
+        200_001,
+        acquisition(&provider),
+        read_request(&provider),
+    )
+    .unwrap();
+    let changed_epoch = cut
+        .bind_authority_context(authority_context(2), 200_002, 210_000)
+        .unwrap();
+    assert_eq!(
+        result.revalidate_for_current_snapshot(
+            200_002,
+            &acquisition(&provider),
+            changed_epoch.envelope()
+        ),
+        Err(SnapshotProviderError::AuthorityEpochMismatch)
+    );
+}
+
+#[tokio::test]
+async fn authoritative_final_use_revalidation_fails_after_owner_frontier_advance() {
+    let temp = TempDir::new().unwrap();
+    let owner = agent_id(107);
+    let store = CognitiveStore::open(&layout(&temp, &owner)).await.unwrap();
+    let access = CognitiveAccess::agent_private(owner);
+    let scope = CognitiveScope::AgentPrivate;
+    let provider = store
+        .lane_c_authoritative_provider(
+            &access,
+            &scope,
+            authority_context(1),
+            200_001,
+            210_000,
+        )
+        .await
+        .unwrap();
+    let request = acquisition(&provider);
+    let result = read_authoritative(
+        &provider,
+        200_001,
+        request.clone(),
+        read_request(&provider),
+    )
+    .unwrap();
+
+    store
+        .append_source(
+            &access,
+            &source(scope.clone(), "adversarial-advance", "new evidence"),
+        )
+        .await
+        .unwrap();
+
+    assert!(matches!(
+        store
+            .revalidate_lane_c_authoritative_provider(
+                &access,
+                &scope,
+                &provider,
+                authority_context(1),
+                200_002,
+            )
+            .await,
+        Err(CognitiveStoreError::Conflict(_))
+    ));
+
+    assert_eq!(
+        result.revalidate_for_current_snapshot(
+            210_000,
+            &request,
+            provider.envelope()
+        ),
+        Err(SnapshotProviderError::LeaseExpired)
+    );
 }
 
 #[tokio::test]
@@ -350,7 +444,6 @@ async fn retained_cut_detects_old_valid_backup_after_ordinary_reopen() {
     let retained_witness = current.cut_digest().to_string();
     store.pool.close().await;
     std::fs::copy(&backup, layout.cognitive_root().join("cognitive_1.sqlite3")).unwrap();
-    // Legacy open verifies internal integrity, but cannot know which backup is latest.
     let reopened = CognitiveStore::open(&layout).await.unwrap();
     assert!(matches!(
         reopened
