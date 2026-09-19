@@ -11,7 +11,6 @@ use codex_hepta_control_plane::RuntimeModuleAbiV1;
 use codex_hepta_control_plane::RuntimeModulePromotionWitnessV1;
 use codex_hepta_control_plane::RuntimeModuleRegistryError;
 use codex_hepta_control_plane::RuntimeModuleRegistryV1;
-use codex_hepta_control_plane::RuntimeModuleStateClassV1;
 use codex_hepta_control_plane::RuntimeTopologySnapshotV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -479,7 +478,7 @@ impl RuntimeModuleSupervisorV1 {
             .record(module_id, generation)
             .ok_or(RuntimeModuleSupervisorErrorV1::ModuleMismatch)?;
         if record.abi.predecessor_generation.is_some()
-            || record.abi.state_class == RuntimeModuleStateClassV1::Stateless
+            || record.abi.state_class == codex_hepta_control_plane::RuntimeModuleStateClassV1::Stateless
         {
             return Err(RuntimeModuleSupervisorErrorV1::PredecessorMismatch);
         }
