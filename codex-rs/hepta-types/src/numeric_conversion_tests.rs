@@ -1,6 +1,12 @@
 use super::*;
+use crate::ContractDefinitionKindV1;
+use crate::ContractDefinitionV1;
+use crate::ContractRegistryV1;
 use crate::FixedQ32;
+use crate::IdProfileV1;
+use crate::NonAuthorizingPosture;
 use crate::SignalUnitV1;
+use crate::validate_id;
 
 fn checked<T, E: std::fmt::Debug>(result: Result<T, E>) -> T {
     match result {
@@ -48,7 +54,7 @@ fn signed_half_ties_round_to_even_target_bins() {
             denominator: 1 << 56,
         }
     );
-    assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
+    assert_eq!(receipt.authority, NonAuthorizingPosture::DENY_ALL);
 }
 
 #[test]
@@ -87,7 +93,6 @@ fn ppm_q24_roundtrip_reports_exact_error_instead_of_byte_equality() {
     );
     assert_eq!(outward.output_digest, inward.source_digest);
     assert_ne!(outward.source_digest, inward.output_digest);
-    // Sum of exact bounds is 1 ppm, bounding every returned component.
     let bound_numerator =
         outward.absolute_error_bound.numerator + inward.absolute_error_bound.numerator;
     for (initial, final_value) in source.values.iter().zip(back.values) {
@@ -251,4 +256,34 @@ fn digest_binds_numerical_profile_shape_range_units_and_normalization() {
         assert_ne!(receipt.source_digest, result.1.source_digest);
         assert_ne!(receipt.evidence_digest, result.1.evidence_digest);
     }
+}
+
+#[test]
+fn registered_conversion_requires_resolvable_normalization() {
+    let normalization_id = checked(validate_id(
+        "normalization:unit-range-v1",
+        IdProfileV1::Stable,
+    ));
+    let normalization = checked(ContractDefinitionV1::new(
+        ContractDefinitionKindV1::Normalization,
+        normalization_id,
+        1,
+        b"offset=0;scale=1;range=closed",
+    ));
+    let normalization_digest = normalization.digest();
+    let registry = checked(ContractRegistryV1::new(vec![normalization]));
+
+    let mut source = signal(NumericProfileV1::HnmfPpmTowardZero, vec![1, 2]);
+    source.schema.normalization_digest = normalization_digest;
+    let target = NumericSignalSchemaV1 {
+        profile: NumericProfileV1::SignedQ24NearestTiesEven,
+        ..source.schema.clone()
+    };
+    assert!(rescale_signal_registered(&source, &target, &registry).is_ok());
+
+    source.schema.normalization_digest = Digest32::of_bytes(b"unknown-normalization");
+    assert_eq!(
+        rescale_signal_registered(&source, &source.schema, &registry),
+        Err(NumericConversionError::UnknownNormalization)
+    );
 }
