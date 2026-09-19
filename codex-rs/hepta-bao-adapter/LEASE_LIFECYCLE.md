@@ -51,6 +51,7 @@ The local state machine uses:
 - IssuePrepared
 - Issuing
 - IssuedPendingDelivery
+- Delivering
 - Active
 - RenewPrepared
 - Renewing
@@ -81,6 +82,8 @@ The dispatch ordering is deliberate:
 
 A crash before step 3 is safe to resume because no provider dispatch has begun.
 A crash or transport ambiguity after step 3 never triggers a blind provider retry.
+
+Before the trusted callback starts, the registry durably enters Delivering. A process death in that window recovers as ConsumerOutcomeUnknown rather than assuming the callback had not begun.
 
 When a valid issuance response exposes a provider lease_id, that identity is
 persisted **before** validating TTL and secret payload details. If later
