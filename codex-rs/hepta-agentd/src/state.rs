@@ -166,7 +166,10 @@ impl AgentdState {
         attachments.insert(stable_id, attachment)
     }
 
-    pub(crate) fn runtime_attachment<T>(&self, module_id: &str) -> Result<Option<Arc<T>>, AgentdError>
+    pub(crate) fn runtime_attachment<T>(
+        &self,
+        module_id: &str,
+    ) -> Result<Option<Arc<T>>, AgentdError>
     where
         T: Any + Send + Sync + 'static,
     {
