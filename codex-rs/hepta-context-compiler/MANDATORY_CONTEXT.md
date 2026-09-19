@@ -32,11 +32,42 @@ required-group semantics therefore invalidates that compilation digest even when
 the selected context items happen to be identical. It does not silently change
 the canonical serialized `ContextCompilationReceiptV1` protocol.
 
-The caller still authenticates instructions, source access and requirements, and
-supplies token counts. This implementation does not measure a real tokenizer,
-model/template/tool-schema tuple, independently current revocations or actual
-Codex payload delivery. Product attachment must bind those values and revalidate
-at the delivery boundary. Compilation grants no provider or effect authority.
+The V1 entrypoints above remain compatibility surfaces. They still rely on
+caller-authenticated instructions/source access and caller-supplied token counts
+and therefore are not the normative proof path for exact tokenizer, revocation
+or delivery semantics.
+
+The normative V2 path in `src/v2.rs` closes those source-level gaps without
+changing the V1 wire meaning:
+
+- every candidate carries `VerifiedAdmissionV2`, produced only by
+  `verify_admission_v2` from an admission record, an authenticated
+  `VerifiedAdmissionSnapshotV2` and the configured
+  `ContextAdmissionVerifierV2`;
+- candidate tokenization receipts are produced by
+  `TokenizationReceiptV2::from_exact_bytes`, which invokes the exact
+  profile-bound tokenizer over the actual candidate bytes;
+- canonical mandatory groups are included in
+  `mandatory_groups_digest`, so policy changes alter the compilation receipt
+  even when the same items happen to be selected;
+- `record_serialization` verifies the actual bytes for every selected item,
+  invokes the profile-bound serializer, hashes the actual final payload and then
+  invokes the exact tokenizer over that final payload, including framing,
+  template and tool-schema overhead;
+- `build_attachment` revalidates every selected admission against the current
+  verified admission/revocation snapshot;
+- `deliver_context_v2` revalidates again immediately before send, invokes a
+  `ContextTransportV2` with the exact serialized payload bytes, rejects a
+  transport-reported payload digest mismatch, and emits
+  `ContextDeliveryReceiptV2` binding transport identity, provider request id,
+  acknowledgement digest, terminal disposition and time.
+
+Verifier, tokenizer, serializer and transport implementations are explicit
+trusted adapter boundaries. Their identities are digest-bound, but this crate
+does not independently prove a malicious adapter honest. Production composition
+must qualify those concrete adapters and the authoritative admission/provider
+semantics. Compilation, attachment and delivery receipts remain
+`AuthorityPosture::DENY_ALL`.
 
 The additive owner-local, crate-native `compile_candidate_bound` and
 `compile_candidate_bound_with_requirements` entrypoints preserve the existing
@@ -44,17 +75,17 @@ V1 request, receipt and digest semantics. Their wrapper binds the complete
 bounded set supplied by the caller, including omitted item identities, content,
 source, role, cost and secret marker. It deliberately calls this a
 `caller_candidate_set_digest`: it cannot prove that the caller supplied every
-eligible item and is not a registered cross-module port or wire V2, source
-credential, freshness or revocation witness, delivery receipt, selection
-decision, or authority grant.
+eligible item and is not a source credential, freshness/revocation witness,
+delivery receipt, selection decision, or authority grant.
 
-Native acceptance cases are in `src/lib_tests.rs`,
-`src/requirements_tests.rs` and `src/candidate_bound_tests.rs`:
-trusted-instruction overflow, mandatory provenance at a tight budget, refusal
-rather than partial groups, shared provenance, permutation invariance, omitted
-candidate binding, exact binding drift, invalid identities, scope/objective
-drift, requirement digest changes and reference saturation.
+Native acceptance cases are in `src/v2_tests.rs`, `src/lib_tests.rs`,
+`src/requirements_tests.rs` and `src/candidate_bound_tests.rs`. V2 cases
+cover verifier rejection of otherwise well-formed admission records,
+role-binding confusion, compile-to-attach and attach-to-send revocation,
+mandatory-group provenance, actual realization-byte drift, exact final-payload
+tokenization and framing overflow, plus transport payload mismatch.
 
 Run with `just test --locked -p codex-hepta-context-compiler`. These are native
-contract tests; actual product CTX-01/03/04 and C1 delivery remain integration
-obligations. No runtime activation or independent acceptance is asserted here.
+contract tests. Concrete product caller composition, target-host adapter
+qualification, independent acceptance, activation and release remain separate
+integration obligations; no such state is asserted here.
