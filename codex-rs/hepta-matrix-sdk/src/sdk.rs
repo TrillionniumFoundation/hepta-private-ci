@@ -455,9 +455,9 @@ fn classify_http_error(error: &HttpError) -> MatrixTransportError {
 }
 
 fn classify_http_status(status: u16) -> MatrixTransportError {
-    if status == 408 || status == 429 {
+    if status == 429 {
         MatrixTransportError::Retryable
-    } else if (500..=599).contains(&status) {
+    } else if status == 408 || (500..=599).contains(&status) {
         MatrixTransportError::Indeterminate
     } else {
         MatrixTransportError::Permanent
@@ -667,6 +667,10 @@ mod tests {
         assert_eq!(classify_http_status(403), MatrixTransportError::Permanent);
         assert_eq!(classify_http_status(404), MatrixTransportError::Permanent);
         assert_eq!(classify_http_status(429), MatrixTransportError::Retryable);
+        assert_eq!(
+            classify_http_status(408),
+            MatrixTransportError::Indeterminate
+        );
         assert_eq!(
             classify_http_status(500),
             MatrixTransportError::Indeterminate
