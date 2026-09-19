@@ -561,7 +561,7 @@ impl AutomationStore {
     /// request failed before the external admission seam.  The uncertainty
     /// row and lease are removed in one transaction so a retry cannot race a
     /// crash between the two local updates.
-    pub async fn abort_dispatch_before_admission(
+    pub(crate) async fn abort_dispatch_before_admission(
         &self,
         lease: &AutomationLease,
         observed_at_ms: u64,
@@ -672,7 +672,7 @@ impl AutomationStore {
     /// Releases an uncertain occurrence only after an external check proves
     /// that the provider did not accept it.  The same client id is retained
     /// when the occurrence is claimed again.
-    pub async fn release_uncertain_for_retry(
+    pub(crate) async fn release_uncertain_for_retry(
         &self,
         task_id: AutomationTaskId,
         occurrence: u64,
