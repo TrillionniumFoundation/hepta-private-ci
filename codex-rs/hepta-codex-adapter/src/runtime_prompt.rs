@@ -728,10 +728,11 @@ pub fn install_prompt_runtime<C: Sync>(
 }
 
 fn rejection_reason(reason_code: &str) -> Result<PromptDeliveryRejectReasonV1, PromptRuntimeError> {
-    let id = StableId::new(reason_code.to_owned()).unwrap_or_else(|_| {
-        StableId::new(Digest32::of_bytes(reason_code.as_bytes()).to_string())
-            .expect("digest hex is a valid stable identifier")
-    });
+    let id = match StableId::new(reason_code.to_owned()) {
+        Ok(value) => value,
+        Err(_) => StableId::new(Digest32::of_bytes(reason_code.as_bytes()).to_string())
+            .map_err(|_| PromptRuntimeError::InvalidTerminalRecord)?,
+    };
     PromptDeliveryRejectReasonV1::new(id).map_err(|_| PromptRuntimeError::InvalidTerminalRecord)
 }
 
