@@ -29,7 +29,7 @@ EXPECTED_MODULES = {
 }
 EXPECTED_CASES = {
     *(f"LEDGER-{index:02d}" for index in range(1, 5)),
-    *(f"OP-{index:02d}" for index in range(1, 5)),
+    *(f"OP-{index:02d}" for index in range(1, 7)),
     *(f"EVAL-{index:02d}" for index in range(1, 5)),
     *(f"ART-{index:02d}" for index in range(1, 5)),
 }
