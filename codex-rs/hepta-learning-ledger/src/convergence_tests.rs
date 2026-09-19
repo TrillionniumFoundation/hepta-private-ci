@@ -167,6 +167,7 @@ fn unlearning_lineage_requires_revoked_source_and_linear_derived_head() {
     let mut ledger = LearningLedger::new();
     ledger.append(decision("decision-1", "episode-1")).expect("decision");
 
+    let source_digest = ledger.records()[0].event_digest;
     let base = UnlearningLineageEventV1 {
         record_id: id("unlearn-1"),
         source_record_id: id("decision-1"),
@@ -175,7 +176,7 @@ fn unlearning_lineage_requires_revoked_source_and_linear_derived_head() {
         predecessor: None,
         authority_id: id("privacy-owner"),
         reason_digest: digest("reason"),
-        source_digest: digest("source"),
+        source_digest,
         derived_digest: digest("dataset"),
     };
     assert_eq!(
