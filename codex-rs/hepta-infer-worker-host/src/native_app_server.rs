@@ -42,6 +42,9 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 #[path = "native_run_control.rs"]
 mod control;
 pub use control::NativeAdmission;
+
+#[path = "native_reconcile.rs"]
+mod reconcile;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
@@ -64,9 +67,11 @@ pub struct NativeWorkerConfig {
     pub timeout: Duration,
 }
 
-/// A real provider client. Each new request uses a fresh ephemeral thread
-/// behind the exact Agent identity. The control journal owns dispatch identity,
-/// local slot admission and settlement; duplicate requests never start a turn.
+/// A real provider client. Each new request uses a fresh dedicated durable
+/// thread behind the exact Agent identity. Persistence is required only so a
+/// dispatched request can be reconciled after worker restart without replay.
+/// The control journal owns dispatch identity, local slot admission and
+/// settlement; duplicate requests never start a replacement turn.
 pub struct AppServerModelDriver {
     config: NativeWorkerConfig,
 }
@@ -160,7 +165,11 @@ impl AppServerModelDriver {
                     cwd: health.workspace.to_str().map(str::to_string),
                     approval_policy: Some(AskForApproval::Never),
                     sandbox: Some(SandboxMode::ReadOnly),
-                    ephemeral: Some(true),
+                    // Reconciliation after a lost turn/start response requires
+                    // provider history. This dedicated thread is persisted in
+                    // the owning Agent's private store; it is never reused for
+                    // another inference request.
+                    ephemeral: Some(false),
                     environments: Some(Vec::new()),
                     ..Default::default()
                 },
