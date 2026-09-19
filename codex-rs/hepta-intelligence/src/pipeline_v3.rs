@@ -378,13 +378,16 @@ fn validate_host_envelope(receipt: &LaneFCompositionReceiptV3) -> Result<(), Pip
             .find(|trace| trace.stage == wanted)
             .ok_or(PipelineErrorV3::InvalidReceipt("missing host stage"))
     };
+    let objective = stage(LaneFStageV3::ObjectiveValidated)?;
     let legal = stage(LaneFStageV3::LegalSetBuilt)?;
     let utility = stage(LaneFStageV3::UtilityEvaluated)?;
     let evaluation = stage(LaneFStageV3::EvaluationAdmitted)?;
     let intuition = stage(LaneFStageV3::IntuitionDecided)?;
     let context = stage(LaneFStageV3::ContextCompiled)?;
     let host = stage(LaneFStageV3::HostEnvelopeBuilt)?;
-    if envelope.candidate_set_digest != legal.output_digest
+    if envelope.request_digest != objective.predecessor_digest
+        || envelope.objective_digest != objective.output_digest
+        || envelope.candidate_set_digest != legal.output_digest
         || envelope.utility_digest != utility.output_digest
         || envelope.evaluation_digest != evaluation.output_digest
         || envelope.neural_digest
