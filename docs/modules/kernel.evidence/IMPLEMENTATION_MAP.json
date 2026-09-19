@@ -17,17 +17,89 @@
     "codex-rs/hepta-evidence"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionImplementation": true,
+  "productCallerState": "composed_authenticated_checkpoint_guarded_cli",
+  "productionWriterState": "established_owner_store_writer",
   "operations": [
+    {
+      "operation": "append_receipt",
+      "nativeSymbol": "append_receipt",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/qualification_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "append_receipt",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "verify_chain",
+      "nativeSymbol": "verify_chain",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/qualification_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verify_chain",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "query_claim",
+      "nativeSymbol": "query_claim",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/qualification_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "query_claim",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "append_prepared_independent_decision",
+      "nativeSymbol": "append_prepared_independent_decision",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/qualification_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "append_prepared_independent_decision",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "verify_external_checkpoint",
+      "nativeSymbol": "verify_external_checkpoint",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-evidence/src/qualification_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verify_external_checkpoint",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
     {
       "operation": "append_provider_effect_intent",
       "nativeSymbol": "append_provider_effect_intent",
       "sourcePath": "codex-rs/hepta-evidence/src/provider_effect_store.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-evidence/src/provider_effect_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "append_provider_effect_intent",
       "mappingClass": "owner_native",
@@ -37,9 +109,11 @@
       "operation": "reconcile_provider_effect_lookup",
       "nativeSymbol": "reconcile_provider_effect_lookup",
       "sourcePath": "codex-rs/hepta-evidence/src/provider_effect_store.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-evidence/src/provider_effect_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "reconcile_provider_effect_lookup",
       "mappingClass": "owner_native",
@@ -47,18 +121,18 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run and retain exact-head plus deterministic synthetic-merge receipts for the final candidate.",
+    "Obtain an external independent exact-candidate decision and target-host checkpoint-retention observation before changing the acceptance boundary."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
+    "independent exact-candidate semantic review",
+    "target-host checkpoint retention and product qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
@@ -66,5 +140,12 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-evidence"
-  ]
+  ],
+  "exactCandidateEvidence": {
+    "sourceHead": ".hepta-evidence/kernel-evidence-source-head.json",
+    "syntheticMerge": ".hepta-evidence/kernel-evidence-merge-candidate.json",
+    "generation": "lane-a-foundation workflow after native tests",
+    "trackedSourceBaseIsNavigationOnly": true
+  },
+  "traceability": "docs/modules/kernel.evidence/TRACEABILITY.json"
 }
