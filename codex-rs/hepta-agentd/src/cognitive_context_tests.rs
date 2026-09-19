@@ -57,7 +57,7 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
         )
         .await
         .unwrap();
-    let context = read(&store, &owner, 1, "lemon", 4, None).await.unwrap();
+    let context = read(&store, &owner, 1, 1, "lemon", 4, None).await.unwrap();
     assert_eq!(context.items.len(), 1);
     assert!(context.plan.as_ref().unwrap().read_allowed);
     assert_eq!(context.items[0].memory_id, memory.id.memory_id.as_str());
@@ -76,7 +76,7 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
         )
         .await
         .unwrap();
-    let withdrawn = read(&store, &owner, 1, "lemon", 4, None).await.unwrap();
+    let withdrawn = read(&store, &owner, 1, 1, "lemon", 4, None).await.unwrap();
     assert!(withdrawn.items.is_empty());
     assert!(!withdrawn.plan.as_ref().unwrap().read_allowed);
     assert_ne!(withdrawn.snapshot_digest, context.snapshot_digest);
