@@ -7,7 +7,11 @@
 use std::error::Error as StdError;
 use std::fmt;
 
-use codex_hepta_types::Digest32;
+use codex_hepta_types::{Digest32, StableId};
+
+use crate::{
+    DurableTopologyAppendReceiptV1, GovernedTopologyProposalV1, TopologyCandidateKindV2,
+};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum StructuralCanaryStateV1 {
@@ -20,6 +24,11 @@ pub enum StructuralCanaryStateV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct StructuralCanaryPlanV1 {
     pub topology_admission_digest: Digest32,
+    /// Exact durable frame that admitted the governed proposal being canaried.
+    pub durable_registry_sequence: u64,
+    pub durable_registry_frame_digest: Digest32,
+    /// Exact content-addressed structural candidate under observation.
+    pub candidate_id: StableId,
     pub rollback_plan_digest: Digest32,
     pub writer_handoff_set_digest: Digest32,
     pub baseline_health_digest: Digest32,
@@ -53,6 +62,7 @@ pub struct StructuralCanaryReceiptV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum StructuralCanaryErrorV1 {
     InvalidPlan,
+    Binding,
     Terminal,
     Sequence,
     Observation,
@@ -76,20 +86,89 @@ pub struct StructuralCanaryControllerV1 {
     observation_chain_digest: Digest32,
 }
 
+/// Build a canary plan only for one exact structural candidate that has already
+/// crossed the governed durable topology-proposal boundary.
+///
+/// This does not apply the candidate. It prevents a caller from constructing a
+/// canary receipt for an arbitrary non-zero admission digest or for a different
+/// candidate than the one represented by the durable append receipt.
+pub fn build_structural_canary_plan_v1(
+    governed: &GovernedTopologyProposalV1,
+    durable: &DurableTopologyAppendReceiptV1,
+    candidate_id: StableId,
+    baseline_health_digest: Digest32,
+    maximum_steps: u32,
+    maximum_regressions: u32,
+    minimum_successful_steps: u32,
+) -> Result<StructuralCanaryPlanV1, StructuralCanaryErrorV1> {
+    if durable.authority.grants_any()
+        || durable.sequence == 0
+        || durable.frame_digest.is_zero()
+        || durable.proposal_id != governed.proposal.proposal_id
+        || durable.proposal_digest != governed.proposal.proposal_digest
+        || durable.admission_digest != governed.admission_digest
+    {
+        return Err(StructuralCanaryErrorV1::Binding);
+    }
+
+    let candidate = governed
+        .proposal
+        .candidates
+        .iter()
+        .find(|candidate| candidate.candidate_id == candidate_id)
+        .ok_or(StructuralCanaryErrorV1::Binding)?;
+    if candidate.kind != TopologyCandidateKindV2::Update || candidate.changes.len() != 1 {
+        return Err(StructuralCanaryErrorV1::Binding);
+    }
+    let change = &candidate.changes[0];
+    let handoff = governed
+        .handoffs
+        .iter()
+        .find(|handoff| handoff.module_id == change.module_id)
+        .ok_or(StructuralCanaryErrorV1::Binding)?;
+    if handoff.plan_digest != change.writer_handoff_digest
+        || handoff.rollback_digest != change.rollback_digest
+    {
+        return Err(StructuralCanaryErrorV1::Binding);
+    }
+
+    let plan = StructuralCanaryPlanV1 {
+        topology_admission_digest: governed.admission_digest,
+        durable_registry_sequence: durable.sequence,
+        durable_registry_frame_digest: durable.frame_digest,
+        candidate_id,
+        rollback_plan_digest: change.rollback_digest,
+        writer_handoff_set_digest: governed.handoff_set_digest,
+        baseline_health_digest,
+        maximum_steps,
+        maximum_regressions,
+        minimum_successful_steps,
+    };
+    validate_plan(&plan)?;
+    Ok(plan)
+}
+
+fn validate_plan(plan: &StructuralCanaryPlanV1) -> Result<(), StructuralCanaryErrorV1> {
+    if plan.topology_admission_digest.is_zero()
+        || plan.durable_registry_sequence == 0
+        || plan.durable_registry_frame_digest.is_zero()
+        || plan.rollback_plan_digest.is_zero()
+        || plan.writer_handoff_set_digest.is_zero()
+        || plan.baseline_health_digest.is_zero()
+        || plan.maximum_steps == 0
+        || plan.maximum_steps > 1_024
+        || plan.minimum_successful_steps == 0
+        || plan.minimum_successful_steps > plan.maximum_steps
+        || plan.maximum_regressions > plan.maximum_steps
+    {
+        return Err(StructuralCanaryErrorV1::InvalidPlan);
+    }
+    Ok(())
+}
+
 impl StructuralCanaryControllerV1 {
     pub fn new(plan: StructuralCanaryPlanV1) -> Result<Self, StructuralCanaryErrorV1> {
-        if plan.topology_admission_digest.is_zero()
-            || plan.rollback_plan_digest.is_zero()
-            || plan.writer_handoff_set_digest.is_zero()
-            || plan.baseline_health_digest.is_zero()
-            || plan.maximum_steps == 0
-            || plan.maximum_steps > 1_024
-            || plan.minimum_successful_steps == 0
-            || plan.minimum_successful_steps > plan.maximum_steps
-            || plan.maximum_regressions > plan.maximum_steps
-        {
-            return Err(StructuralCanaryErrorV1::InvalidPlan);
-        }
+        validate_plan(&plan)?;
         let plan_digest = digest_plan(&plan);
         Ok(Self {
             plan,
@@ -210,8 +289,13 @@ impl StructuralCanaryControllerV1 {
 }
 
 fn digest_plan(plan: &StructuralCanaryPlanV1) -> Digest32 {
-    let mut bytes = b"hepta.plasticity.structural-canary-plan.v1\0".to_vec();
+    let mut bytes = b"hepta.plasticity.structural-canary-plan.v2\0".to_vec();
     bytes.extend_from_slice(plan.topology_admission_digest.as_array());
+    bytes.extend_from_slice(&plan.durable_registry_sequence.to_be_bytes());
+    bytes.extend_from_slice(plan.durable_registry_frame_digest.as_array());
+    let candidate = plan.candidate_id.as_str().as_bytes();
+    bytes.extend_from_slice(&(candidate.len() as u64).to_be_bytes());
+    bytes.extend_from_slice(candidate);
     bytes.extend_from_slice(plan.rollback_plan_digest.as_array());
     bytes.extend_from_slice(plan.writer_handoff_set_digest.as_array());
     bytes.extend_from_slice(plan.baseline_health_digest.as_array());
@@ -228,9 +312,15 @@ mod tests {
     fn digest(value: &[u8]) -> Digest32 {
         Digest32::of_bytes(value)
     }
+    fn id(value: &str) -> StableId {
+        StableId::new(value).expect("valid id")
+    }
     fn plan() -> StructuralCanaryPlanV1 {
         StructuralCanaryPlanV1 {
             topology_admission_digest: digest(b"admission"),
+            durable_registry_sequence: 1,
+            durable_registry_frame_digest: digest(b"durable-frame"),
+            candidate_id: id("topology:candidate:1"),
             rollback_plan_digest: digest(b"rollback"),
             writer_handoff_set_digest: digest(b"handoffs"),
             baseline_health_digest: digest(b"baseline"),
