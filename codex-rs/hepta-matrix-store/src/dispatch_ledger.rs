@@ -114,7 +114,7 @@ impl MatrixDurableStore {
         if outbox.state != OutboxState::InFlight || outbox.attempts == 0 {
             return Err(MatrixDurableError::Conflict);
         }
-        let payload_digest = Sha256Digest::for_bytes(&outbox.payload).to_string();
+        let payload_digest = Sha256Digest::for_bytes(&outbox.payload).as_str().to_string();
         if authority
             .grant_payload_digest
             .as_deref()
@@ -478,6 +478,15 @@ impl MatrixDurableStore {
             now_ms,
         )
         .await?;
+        append_change_tx(
+            &mut tx,
+            "outbox_retry_scheduled",
+            &current.room_id,
+            None,
+            txn_id,
+            now_ms,
+        )
+        .await?;
         tx.commit().await.map_err(unavailable)?;
         self.matrix_dispatch(txn_id)
             .await?
@@ -522,7 +531,7 @@ impl MatrixDurableStore {
         .execute(&mut *tx)
         .await
         .map_err(unavailable)?;
-        sqlx::query(
+        let failed = sqlx::query(
             "UPDATE outbox_messages
              SET state = 'permanent_failure', lease_until_ms = NULL, updated_at_ms = ?
              WHERE stable_txn_id = ? AND state = 'in_flight' AND attempts = ?",
@@ -533,12 +542,24 @@ impl MatrixDurableStore {
         .execute(&mut *tx)
         .await
         .map_err(unavailable)?;
+        if failed.rows_affected() != 1 {
+            return Err(MatrixDurableError::Conflict);
+        }
         append_observation_tx(
             &mut tx,
             txn_id,
             "terminal_failure",
             observation_digest,
             None,
+            now_ms,
+        )
+        .await?;
+        append_change_tx(
+            &mut tx,
+            "outbox_failed",
+            &current.room_id,
+            None,
+            txn_id,
             now_ms,
         )
         .await?;
@@ -641,6 +662,15 @@ impl MatrixDurableStore {
             "terminal_success",
             observation_digest,
             Some(event_id),
+            now_ms,
+        )
+        .await?;
+        append_change_tx(
+            &mut tx,
+            "outbox_sent",
+            &current.room_id,
+            Some(event_id),
+            &current.stable_txn_id,
             now_ms,
         )
         .await?;
@@ -832,6 +862,29 @@ async fn append_observation_tx(
     .bind(digest)
     .bind(event_id.map(MatrixEventId::as_str))
     .bind(to_i64(observed_at_ms)?)
+    .execute(&mut **tx)
+    .await
+    .map_err(unavailable)?;
+    Ok(())
+}
+
+async fn append_change_tx(
+    tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+    kind: &str,
+    room_id: &MatrixRoomId,
+    event_id: Option<&MatrixEventId>,
+    txn_id: &MatrixTransactionId,
+    recorded_at_ms: u64,
+) -> Result<(), MatrixDurableError> {
+    sqlx::query(
+        "INSERT INTO change_log (kind, room_id, event_id, txn_id, recorded_at_ms)
+         VALUES (?, ?, ?, ?, ?)",
+    )
+    .bind(kind)
+    .bind(room_id.as_str())
+    .bind(event_id.map(MatrixEventId::as_str))
+    .bind(txn_id.as_str())
+    .bind(to_i64(recorded_at_ms)?)
     .execute(&mut **tx)
     .await
     .map_err(unavailable)?;
