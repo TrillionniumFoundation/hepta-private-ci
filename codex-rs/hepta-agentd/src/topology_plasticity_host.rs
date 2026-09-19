@@ -34,7 +34,7 @@ pub enum AgentdTopologyWriterStateV1 {
     Poisoned,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Debug)]
 pub enum AgentdTopologyHostErrorV1 {
     AnchorBusy,
     AnchorNotRegular,
