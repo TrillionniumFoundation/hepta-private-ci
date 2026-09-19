@@ -577,7 +577,7 @@ async fn load_reservation_by_identity(
 ) -> Result<Option<QuotaReservation>, AuthBusAuthorityError> {
     let row = sqlx::query(
         "SELECT reservation_id, quota_key, operation_id, amount, observed_cost,
-                expires_at_ms, quota_revision, state, reservation_digest
+                expires_at_ms, quota_revision, state, reservation_digest, settlement_digest
          FROM authbus_quota_reservations
          WHERE reservation_id = ? OR operation_id = ? LIMIT 1",
     )
@@ -595,7 +595,7 @@ async fn load_reservation(
 ) -> Result<QuotaReservation, AuthBusAuthorityError> {
     let row = sqlx::query(
         "SELECT reservation_id, quota_key, operation_id, amount, observed_cost,
-                expires_at_ms, quota_revision, state, reservation_digest
+                expires_at_ms, quota_revision, state, reservation_digest, settlement_digest
          FROM authbus_quota_reservations WHERE reservation_id = ?",
     )
     .bind(reservation_id.as_str())
@@ -633,6 +633,11 @@ fn decode_reservation(
             .map(i64_to_u64)
             .transpose()?,
         reservation_digest: digest(row.try_get("reservation_digest").map_err(classify_sqlx_error)?)?,
+        settlement_digest: row
+            .try_get::<Option<Vec<u8>>, _>("settlement_digest")
+            .map_err(classify_sqlx_error)?
+            .map(digest)
+            .transpose()?,
     })
 }
 
