@@ -152,13 +152,13 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/intuition.policy.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/intuition.policy.md#8-current-native-implementation-and-remaining-work) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md).
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/intuition.policy.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/intuition.policy.md#8-current-native-implementation-and-remaining-work) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intuition.policy.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
