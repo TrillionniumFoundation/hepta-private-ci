@@ -1,14 +1,15 @@
-//! Inference request and reservation primitives.
+//! Inference-control state machines.
 //!
-//! `InferenceLedger` below is a small non-durable reference/contract state
-//! machine. It does not dispatch a provider and is not the production hosted
-//! state owner. Provider-bound execution must use `durable_control::DurableInferenceControl`;
-//! the native App Server worker composes that owner before physical dispatch.
+//! The canonical durable runtime owner is [`DurableInferenceControl`]. The
+//! in-memory [`ReferenceInferenceLedger`] below is a contract/reference model;
+//! it never dispatches a provider and must not be composed as a production
+//! inference owner.
 
 #![forbid(unsafe_code)]
 
-/// Reusable state machine; does not install a second runtime owner.
+/// Canonical durable runtime owner and native provider-control journal.
 pub mod durable_control;
+pub use durable_control::DurableInferenceControl;
 
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
@@ -86,12 +87,12 @@ impl StdError for Error {}
 
 /// Non-durable reference state machine for contract-level request transitions.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct InferenceLedger {
+pub struct ReferenceInferenceLedger {
     records: BTreeMap<StableId, RequestRecord>,
     maximum_requests: usize,
 }
 
-impl InferenceLedger {
+impl ReferenceInferenceLedger {
     pub fn new(maximum_requests: usize) -> Result<Self, Error> {
         if maximum_requests == 0 {
             return Err(Error::ZeroCapacity);
@@ -185,6 +186,11 @@ impl InferenceLedger {
         self.records.get(request_id)
     }
 }
+
+#[deprecated(
+    note = "contract/reference model only; use ReferenceInferenceLedger explicitly, and DurableInferenceControl for the production runtime owner"
+)]
+pub type InferenceLedger = ReferenceInferenceLedger;
 
 #[must_use]
 pub fn request_digest(request: &InferenceRequest) -> Digest32 {
