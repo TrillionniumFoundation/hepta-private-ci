@@ -14,6 +14,9 @@ import { RuntimeClient } from "./runtime-client.js";
 
 const PERSISTENCE_DOMAIN_SCHEMA = "hepta.ui-control.persistence-domain.v1";
 const RUNTIME_BINDING_SCHEMA = "hepta.ui-control.runtime-binding.v1";
+const RECOVERY_RETRY_BASE_MS = 1_000;
+const RECOVERY_RETRY_MAX_MS = 30_000;
+const RECOVERY_RETRY_MAX_ATTEMPTS = 64;
 
 function boundedPoll(value, fallback) {
   const candidate = value == null ? fallback : value;
@@ -147,6 +150,8 @@ export async function startControlPlane({
   let refreshingPromise = null;
   let recoveryPromise = null;
   let activeRecoveryGeneration = null;
+  let recoveryRetryTimer = null;
+  let recoveryRetryAttempts = 0;
   let suspensionPromise = Promise.resolve();
   let writerLease = null;
   let lifecycleGeneration = 0;
@@ -277,6 +282,50 @@ export async function startControlPlane({
     timer = window.setInterval(() => void refresh().catch(() => {}), config.snapshotPollMs);
   };
 
+  const clearRecoveryRetry = ({ resetAttempts = true } = {}) => {
+    if (recoveryRetryTimer !== null && typeof window.clearTimeout === "function") {
+      window.clearTimeout(recoveryRetryTimer);
+    }
+    recoveryRetryTimer = null;
+    if (resetAttempts) recoveryRetryAttempts = 0;
+  };
+
+  const scheduleRecoveryRetry = (reason, error) => {
+    if (
+      disposed ||
+      suspended ||
+      error?.code !== ERROR_CODES.BACKEND_UNAVAILABLE ||
+      recoveryRetryTimer !== null ||
+      typeof window.setTimeout !== "function"
+    ) {
+      return;
+    }
+    if (recoveryRetryAttempts >= RECOVERY_RETRY_MAX_ATTEMPTS) {
+      blockMutations(
+        "Automatic runtime session recovery is exhausted; reload or explicitly reconnect before mutation.",
+      );
+      return;
+    }
+    const attempt = recoveryRetryAttempts;
+    recoveryRetryAttempts += 1;
+    const delay = Math.min(
+      RECOVERY_RETRY_BASE_MS * 2 ** Math.min(attempt, 5),
+      RECOVERY_RETRY_MAX_MS,
+    );
+    const expectedGeneration = lifecycleGeneration;
+    recoveryRetryTimer = window.setTimeout(() => {
+      recoveryRetryTimer = null;
+      if (
+        disposed ||
+        suspended ||
+        expectedGeneration !== lifecycleGeneration
+      ) {
+        return;
+      }
+      void recoverSession(reason).catch(() => {});
+    }, delay);
+  };
+
   const recoverSession = async (reason = "Runtime session is being re-established.") => {
     if (disposed || suspended) return null;
     if (recoveryPromise) {
@@ -394,12 +443,27 @@ export async function startControlPlane({
       if (lifecycleCurrent(recoveryGeneration)) startTimer();
       return view;
     })();
-    const trackedRecovery = recoveryWork.finally(() => {
-      if (recoveryPromise === trackedRecovery) {
-        recoveryPromise = null;
-        activeRecoveryGeneration = null;
-      }
-    });
+    const trackedRecovery = recoveryWork
+      .then(
+        (view) => {
+          if (view !== null && lifecycleCurrent(recoveryGeneration)) {
+            clearRecoveryRetry();
+          }
+          return view;
+        },
+        (error) => {
+          if (lifecycleCurrent(recoveryGeneration)) {
+            scheduleRecoveryRetry(reason, error);
+          }
+          throw error;
+        },
+      )
+      .finally(() => {
+        if (recoveryPromise === trackedRecovery) {
+          recoveryPromise = null;
+          activeRecoveryGeneration = null;
+        }
+      });
     recoveryPromise = trackedRecovery;
     return trackedRecovery;
   };
@@ -469,6 +533,7 @@ export async function startControlPlane({
     if (disposed || suspended) return suspensionPromise;
     suspended = true;
     lifecycleGeneration += 1;
+    clearRecoveryRetry();
     stopTimer();
     blockMutations(reason);
     const suspendedWriterLease = writerLease;
@@ -492,12 +557,14 @@ export async function startControlPlane({
   };
 
   const onOffline = () => {
+    clearRecoveryRetry();
     stopTimer();
     client?.pauseReconciliation?.();
     lifecycleGeneration += 1;
     blockMutations("Network connectivity is unavailable.");
   };
   const onOnline = () => {
+    clearRecoveryRetry();
     void recoverSession("Network connectivity was interrupted; reconnecting.").catch(() => {});
   };
   const onVisibilityChange = () => {
@@ -534,6 +601,7 @@ export async function startControlPlane({
     disposed = true;
     suspended = true;
     lifecycleGeneration += 1;
+    clearRecoveryRetry();
     stopTimer();
     window.removeEventListener?.("offline", onOffline);
     window.removeEventListener?.("online", onOnline);
