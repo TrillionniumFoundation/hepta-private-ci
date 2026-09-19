@@ -278,10 +278,14 @@ fn kernel_final_use_verifier_authenticates_one_exact_worker_generation() {
         grant: proposal,
         signature,
     };
-    let verifier =
-        FinalUseResourceGrantVerifier::new(&authority, &signed, "worker.1".to_string()).unwrap();
-
-    let verified = VerifiedResourceGrant::verify_with(100, resource.clone(), &verifier).unwrap();
+    let verified = VerifiedResourceGrant::verify_final_use(
+        100,
+        resource.clone(),
+        &authority,
+        &signed,
+        "worker.1".to_string(),
+    )
+    .unwrap();
     assert!(matches!(
         verified.verification(),
         GrantVerification::Authenticated {
@@ -303,12 +307,17 @@ fn kernel_final_use_verifier_authenticates_one_exact_worker_generation() {
     .expect("exact authenticated worker subject");
 
     assert_eq!(
-        VerifiedResourceGrant::verify_with(100, resource, &verifier),
+        VerifiedResourceGrant::verify_final_use(
+            100,
+            resource,
+            &authority,
+            &signed,
+            "worker.1".to_string(),
+        ),
         Err(Error::InvalidGrant),
         "final-use nonce must not authorize a second worker generation"
     );
 
-    drop(verifier);
     drop(authority);
     std::fs::remove_dir_all(root).unwrap();
 }
