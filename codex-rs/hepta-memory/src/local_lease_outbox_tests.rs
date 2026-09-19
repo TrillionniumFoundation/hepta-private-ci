@@ -2695,12 +2695,9 @@ async fn expired_owner_handoff_allows_successor_to_reconcile_indeterminate_witho
         .expect("successor reconciliation");
     assert_eq!(settled.state, LocalOutcomeState::Committed);
     assert_eq!(
-        next.status("occurrence:handoff").await,
-        Err(LocalLeaseOutboxError::StaleFence(
-            "occurrence was admitted under generation 1 and cannot be transitioned by generation 2"
-                .to_string()
-        )),
-        "ordinary attempt-scoped status remains fenced; successor reconciliation is explicit"
+        next.status("occurrence:handoff").await.expect("successor status"),
+        LocalOutcomeState::Committed,
+        "read-only status follows the reconciled append-only outcome after handoff"
     );
 }
 
