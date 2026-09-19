@@ -133,6 +133,7 @@ CREATE TABLE IF NOT EXISTS engineering_workers(
   registered_unix_ns INTEGER NOT NULL,
   last_heartbeat_unix_ns INTEGER NOT NULL,
   lease_expires_unix_ns INTEGER NOT NULL,
+  identity_expires_unix_ns INTEGER NOT NULL,
   semantic_digest TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_engineering_workers_state_expiry
