@@ -57,7 +57,7 @@
           "command": "node --test apps/hepta-control-ui/test/runtime-client.test.js"
         }
       ],
-      "sourceSemantics": "Submits an authenticated request bound to displayed revision, operation identity, and semantic digest.",
+      "sourceSemantics": "Builds the final authority-free proposal, binds the exact displayed session/snapshot and target revision, computes the client-owned SHA-256 semantic digest from the immutable final semantics, durably mirrors the unresolved identity before transport I/O, and carries the proposal over transport.",
       "operation": "submit_request",
       "nativeSymbol": "async submitRequest(",
       "sourcePath": "apps/hepta-control-ui/src/runtime-client.js",
@@ -80,7 +80,7 @@
           "command": "node --test apps/hepta-control-ui/test/runtime-client.test.js"
         }
       ],
-      "sourceSemantics": "Uses the same authenticated identity/revision path for stop while preserving backend terminality.",
+      "sourceSemantics": "Deep-snapshots an explicit bounded stop scope, binds it to the exact displayed session/snapshot, computes the client-owned semantic digest, persists the unresolved identity before transport I/O, and leaves terminality to backend observation.",
       "operation": "request_stop",
       "nativeSymbol": "async requestStop(",
       "sourcePath": "apps/hepta-control-ui/src/runtime-client.js",
