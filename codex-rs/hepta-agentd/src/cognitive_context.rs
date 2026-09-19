@@ -90,7 +90,7 @@ where
     let scope = CognitiveScope::AgentPrivate;
     let acquired_at_unix_ms = now_millis()?;
     let lease_expires_unix_ms = acquired_at_unix_ms
-        .checked_add(2_000)
+        .checked_add(30_000)
         .ok_or_else(|| CognitiveStoreError::Invalid("cognitive read lease overflow".to_string()))?;
     let authority_context = LaneCAuthorityContextV1 {
         purpose_id: StableId::new("agentd:cognitive-context")
