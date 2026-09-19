@@ -1891,3 +1891,17 @@ test("HTTP and bootstrap ingress reject duplicate JSON keys before semantic vali
     (error) => error.code === ERROR_CODES.PROTOCOL_VIOLATION,
   );
 });
+
+
+test("pending store rejects duplicate JSON keys including escaped aliases", () => {
+  const storage = new MemoryStorage();
+  storage.setItem(
+    "dup",
+    '{"schema":"hepta.ui-control.pending-store.v1","schema\\u0065":"hepta.ui-control.pending-store.v1","entries":[]}',
+  );
+  const store = new LocalStoragePendingStore({ storage, key: "dup" });
+  assert.throws(
+    () => store.load(),
+    (error) => error.code === ERROR_CODES.PERSISTENCE_UNAVAILABLE,
+  );
+});
