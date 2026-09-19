@@ -7,6 +7,7 @@ use codex_hepta_automation::AutomationStore;
 use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_automation::AutomationTaskState;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
@@ -65,12 +66,23 @@ fn receipt(lease: &AutomationLease) -> AutomationQueueReceipt {
     }
 }
 
+async fn prepare_dispatch_intent(
+    store: &AutomationStore,
+    lease: &AutomationLease,
+    now_ms: u64,
+) -> TestResult {
+    let occurrence = store.materialize_occurrence(lease, now_ms).await?;
+    store
+        .prepare_occurrence_taskflow(&occurrence, lease, now_ms, 60_000)
+        .await?;
+    store.record_dispatch_uncertain(lease, now_ms).await?;
+    Ok(())
+}
+
 #[tokio::test]
 async fn unknown_dispatch_cannot_be_released_as_a_pre_dispatch_retry() -> TestResult {
     let (_temp, layout, store, lease) = leased_store().await?;
-    store
-        .record_dispatch_uncertain(&lease, /*observed_at_ms*/ 101)
-        .await?;
+    prepare_dispatch_intent(&store, &lease, /*observed_at_ms*/ 101).await?;
     assert_eq!(
         store.release_for_retry(&lease).await,
         Err(AutomationError::Conflict)
@@ -100,8 +112,7 @@ async fn unknown_dispatch_cannot_be_released_as_a_pre_dispatch_retry() -> TestRe
 enum ReleasePath {
     PreDispatchRetry,
     StaleGeneration,
-    BeforeAdmission,
-    NegativeObservation,
+     NegativeObservation,
 }
 
 #[tokio::test]
@@ -113,17 +124,11 @@ async fn all_release_paths_preserve_disable_and_cancel_across_restart() -> TestR
         for release in [
             ReleasePath::PreDispatchRetry,
             ReleasePath::StaleGeneration,
-            ReleasePath::BeforeAdmission,
-            ReleasePath::NegativeObservation,
+             ReleasePath::NegativeObservation,
         ] {
             let (_temp, layout, store, lease) = leased_store().await?;
-            if matches!(
-                release,
-                ReleasePath::BeforeAdmission | ReleasePath::NegativeObservation
-            ) {
-                store
-                    .record_dispatch_uncertain(&lease, /*observed_at_ms*/ 101)
-                    .await?;
+            if matches!(release, ReleasePath::NegativeObservation) {
+                prepare_dispatch_intent(&store, &lease, /*observed_at_ms*/ 101).await?;
             }
             let task_id = lease.task.task_id;
             let retired = match retirement {
@@ -150,15 +155,15 @@ async fn all_release_paths_preserve_disable_and_cancel_across_restart() -> TestR
                         1
                     );
                 }
-                ReleasePath::BeforeAdmission => {
-                    store.abort_dispatch_before_admission(&lease).await?
-                }
-                ReleasePath::NegativeObservation => {
+                 ReleasePath::NegativeObservation => {
+                    let proof = Sha256Digest::for_bytes(b"retirement-provider-absence");
                     store
-                        .release_uncertain_for_retry(
+                        .reconcile_uncertain_occurrence_absent(
                             task_id,
                             lease.occurrence,
                             &lease.client_user_message_id,
+                            &proof,
+                            103,
                         )
                         .await?
                 }
@@ -214,20 +219,23 @@ async fn all_release_paths_preserve_disable_and_cancel_across_restart() -> TestR
 }
 
 #[tokio::test]
+#[allow(deprecated, reason = "explicitly qualifies the read-only legacy receipt replay shim")]
 async fn receipt_replay_retains_later_control_decisions_and_rejects_substitution() -> TestResult {
     let (_temp, layout, store, lease) = leased_store().await?;
-    store
-        .record_dispatch_uncertain(&lease, /*observed_at_ms*/ 101)
-        .await?;
+    prepare_dispatch_intent(&store, &lease, /*observed_at_ms*/ 101).await?;
     let receipt = receipt(&lease);
-    let observed = store
-        .reconcile_dispatch(
+    store
+        .reconcile_uncertain_occurrence_admitted(
             lease.task.task_id,
             lease.occurrence,
             &receipt,
             /*submitted_at_ms*/ 102,
         )
         .await?;
+    let observed = store
+        .task(lease.task.task_id)
+        .await?
+        .ok_or("missing reconciled task")?;
     assert_eq!(observed.next_run_at_ms, Some(5_100));
     let cancelled = store
         .cancel_task(lease.task.task_id, /*now_ms*/ 103)
@@ -282,11 +290,9 @@ async fn reopen_rejects_mismatched_durable_receipt_copies() -> TestResult {
         "submitted_at_ms = submitted_at_ms + 1",
     ] {
         let (_temp, layout, store, lease) = leased_store().await?;
+        prepare_dispatch_intent(&store, &lease, /*observed_at_ms*/ 101).await?;
         store
-            .record_dispatch_uncertain(&lease, /*observed_at_ms*/ 101)
-            .await?;
-        store
-            .reconcile_dispatch(
+            .reconcile_uncertain_occurrence_admitted(
                 lease.task.task_id,
                 lease.occurrence,
                 &receipt(&lease),
