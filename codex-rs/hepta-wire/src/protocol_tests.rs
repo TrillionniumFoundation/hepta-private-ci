@@ -100,9 +100,11 @@ fn schema_admission_rejects_missing_unknown_and_unregistered_payloads() {
         objective: "ndu".to_owned(),
         step: 1,
     };
-    let envelope = encode_typed(id("producer"), generation(2), &message).expect("encode typed");
     let mut registry = SchemaRegistry::new();
     registry.register(typed_schema()).expect("register schema");
+    let envelope = registry
+        .encode_typed(id("producer"), generation(2), &message)
+        .expect("encode typed");
     let decoded: TypedMessage = registry.decode_typed(&envelope).expect("decode typed");
     assert_eq!(decoded, message);
 
