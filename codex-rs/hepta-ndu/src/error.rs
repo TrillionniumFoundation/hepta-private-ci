@@ -31,7 +31,14 @@ pub enum NduError {
     InvalidEta,
     DimensionMismatch,
     StateDigestMismatch,
+    PreferenceDimensionLimitExceeded,
+    PreferenceValueOutOfRange(String),
+    IterationBoundReached,
+    SolverContextMismatch,
     SimultaneousHierarchyUpdate(u64),
+    InvalidHierarchyRelation { subject: String, parent: String },
+    DuplicateSubjectUpdate(String),
+    EmptyProfileSemanticDigest,
     Arithmetic,
 }
 
@@ -65,8 +72,16 @@ impl NduError {
             Self::MissingAbstainCandidate => "NDU-E006",
             Self::IncompleteScalarization | Self::InvalidWeight(_) => "NDU-E007",
             Self::InvalidEta | Self::DimensionMismatch | Self::StateDigestMismatch => "NDU-E008",
-            Self::SimultaneousHierarchyUpdate(_) => "NDU-E009",
+            Self::SimultaneousHierarchyUpdate(_)
+            | Self::InvalidHierarchyRelation { .. }
+            | Self::DuplicateSubjectUpdate(_) => "NDU-E009",
             Self::Arithmetic => "NDU-E010",
+            Self::PreferenceDimensionLimitExceeded | Self::PreferenceValueOutOfRange(_) => {
+                "NDU-E011"
+            }
+            Self::IterationBoundReached => "NDU-E012",
+            Self::SolverContextMismatch => "NDU-E013",
+            Self::EmptyProfileSemanticDigest => "NDU-E014",
         }
     }
 }
@@ -148,10 +163,33 @@ impl fmt::Display for NduError {
             }
             Self::DimensionMismatch => formatter.write_str("preference dimensions do not match"),
             Self::StateDigestMismatch => formatter.write_str("preference state digest mismatch"),
+            Self::PreferenceDimensionLimitExceeded => {
+                formatter.write_str("preference dimension must be in the closed interval [1, 64]")
+            }
+            Self::PreferenceValueOutOfRange(axis) => write!(
+                formatter,
+                "preference value must be in the closed interval [-1, 1]: {axis}"
+            ),
+            Self::IterationBoundReached => {
+                formatter.write_str("preference solver exhausted the 64-iteration bound")
+            }
+            Self::SolverContextMismatch => {
+                formatter.write_str("solver receipt context does not match publication context")
+            }
             Self::SimultaneousHierarchyUpdate(generation) => write!(
                 formatter,
-                "multiple hierarchy levels update in generation {generation}"
+                "parent and child hierarchy subjects update in generation {generation}"
             ),
+            Self::InvalidHierarchyRelation { subject, parent } => write!(
+                formatter,
+                "invalid hierarchy relation: subject {subject} cannot use parent {parent}"
+            ),
+            Self::DuplicateSubjectUpdate(subject) => {
+                write!(formatter, "subject {subject} appears more than once in one generation")
+            }
+            Self::EmptyProfileSemanticDigest => {
+                formatter.write_str("utility profile semantic manifest digest must not be zero")
+            }
             Self::Arithmetic => formatter.write_str("deterministic Q32 arithmetic failed"),
         }
     }
