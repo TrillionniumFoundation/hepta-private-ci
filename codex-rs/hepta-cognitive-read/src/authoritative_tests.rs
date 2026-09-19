@@ -4,7 +4,6 @@ use codex_hepta_cognitive_types::MemoryKind;
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_cognitive_types::build_snapshot;
-use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
 
@@ -24,24 +23,17 @@ fn revision(value: u64) -> Revision {
     Revision::new(value).unwrap_or_else(|error| panic!("valid revision: {error}"))
 }
 
-fn vector() -> LaneCGenerationVectorV1 {
-    LaneCGenerationVectorV1 {
+fn vector() -> CognitiveReadGenerationVectorV1 {
+    CognitiveReadGenerationVectorV1 {
         scope_id: id("scope:one"),
         purpose_id: id("purpose:read"),
         memory_ledger_frontier: 10,
-        knowledge_fact_frontier: 8,
-        tombstone_frontier: 4,
         source_ledger_frontier: 9,
+        tombstone_frontier: 4,
+        knowledge_fact_frontier: 8,
         knowledge_graph_generation: generation(2),
-        compact_checkpoint_generation: generation(1),
-        prompt_registry_revision: revision(3),
-        retrieval_profile_digest: digest("retrieval"),
-        encoder_preprocessor_digest: digest("encoder"),
+        host_generation: generation(3),
         authority_epoch: 7,
-        model_digest: digest("model"),
-        tokenizer_digest: digest("tokenizer"),
-        template_digest: digest("template"),
-        tool_schema_digest: digest("tool-schema"),
     }
 }
 
@@ -57,9 +49,7 @@ fn envelope() -> AuthoritativeSnapshotV1 {
     };
     let snapshot = build_snapshot(generation(1), vec![record])
         .unwrap_or_else(|error| panic!("valid snapshot: {error}"));
-    let key =
-        CognitiveSnapshotKeyV1::new(vector()).unwrap_or_else(|error| panic!("valid key: {error}"));
-    AuthoritativeSnapshotV1::new(id("provider:one"), key, snapshot, 5, 50)
+    AuthoritativeSnapshotV1::new(id("provider:one"), vector(), snapshot, 5, 50)
         .unwrap_or_else(|error| panic!("valid envelope: {error}"))
 }
 
@@ -69,7 +59,10 @@ fn acquisition_request() -> SnapshotAcquisitionRequestV1 {
         scope_id: id("scope:one"),
         purpose_id: id("purpose:read"),
         minimum_memory_frontier: 10,
+        minimum_source_frontier: 9,
         minimum_tombstone_frontier: 4,
+        minimum_knowledge_fact_frontier: 8,
+        host_generation: generation(3),
         authority_epoch: 7,
         deadline_unix_ms: 40,
     }
@@ -89,13 +82,8 @@ impl AuthoritativeCognitiveSnapshotProvider for FixtureProvider {
     }
 }
 
-#[test]
-fn authoritative_read_binds_provider_vector_and_query() {
-    let envelope = envelope();
-    let provider = FixtureProvider {
-        envelope: envelope.clone(),
-    };
-    let request = ReadRequestV2 {
+fn request_for(envelope: &AuthoritativeSnapshotV1) -> ReadRequestV2 {
+    ReadRequestV2 {
         read_request: crate::ReadRequest {
             snapshot_digest: envelope.snapshot().snapshot_digest,
             allowed_kinds: Vec::new(),
@@ -103,21 +91,36 @@ fn authoritative_read_binds_provider_vector_and_query() {
             include_tombstones: false,
         },
         maximum_encoded_bytes: crate::MAX_ENCODED_READ_RESULT_BYTES_V2,
+    }
+}
+
+#[test]
+fn authoritative_read_binds_provider_vector_query_and_lease() {
+    let envelope = envelope();
+    let provider = FixtureProvider {
+        envelope: envelope.clone(),
     };
-    let result = read_authoritative(&provider, 10, acquisition_request(), request)
-        .unwrap_or_else(|error| panic!("authoritative read: {error}"));
+    let result = read_authoritative(
+        &provider,
+        10,
+        acquisition_request(),
+        request_for(&envelope),
+    )
+    .unwrap_or_else(|error| panic!("authoritative read: {error}"));
     assert_eq!(result.read_result.records().len(), 1);
     assert_eq!(
         result.generation_vector_digest,
-        envelope.snapshot_key().vector_digest
+        envelope.generation_vector_digest()
     );
+    assert_eq!(result.provider_id, *envelope.provider_id());
+    assert_eq!(result.lease_expires_unix_ms, envelope.lease_expires_unix_ms());
     result
         .validate()
         .unwrap_or_else(|error| panic!("valid result: {error}"));
 }
 
 #[test]
-fn provider_rejects_scope_frontier_and_epoch_drift() {
+fn provider_rejects_scope_frontier_host_generation_and_epoch_drift() {
     let envelope = envelope();
 
     let mut request = acquisition_request();
@@ -132,6 +135,13 @@ fn provider_rejects_scope_frontier_and_epoch_drift() {
     assert_eq!(
         envelope.validate_for_request(10, &request),
         Err(SnapshotProviderError::StaleTombstoneFrontier)
+    );
+
+    let mut request = acquisition_request();
+    request.host_generation = generation(4);
+    assert_eq!(
+        envelope.validate_for_request(10, &request),
+        Err(SnapshotProviderError::HostGenerationMismatch)
     );
 
     let mut request = acquisition_request();
@@ -163,5 +173,60 @@ fn provider_rejects_expired_deadline_and_wrong_read_snapshot() {
     assert_eq!(
         read_authoritative(&provider, 10, acquisition_request(), request),
         Err(SnapshotProviderError::ReadSnapshotMismatch)
+    );
+}
+
+#[test]
+fn final_use_revalidation_fails_closed_on_generation_epoch_or_lease_change() {
+    let envelope = envelope();
+    let provider = FixtureProvider {
+        envelope: envelope.clone(),
+    };
+    let request = acquisition_request();
+    let result = read_authoritative(
+        &provider,
+        10,
+        request.clone(),
+        request_for(&envelope),
+    )
+    .unwrap_or_else(|error| panic!("authoritative read: {error}"));
+
+    result
+        .revalidate_for_current_snapshot(20, &request, &envelope)
+        .unwrap_or_else(|error| panic!("unchanged authoritative snapshot: {error}"));
+
+    let mut changed_vector = vector();
+    changed_vector.tombstone_frontier += 1;
+    let changed = AuthoritativeSnapshotV1::new(
+        id("provider:one"),
+        changed_vector,
+        envelope.snapshot().clone(),
+        20,
+        45,
+    )
+    .unwrap();
+    assert_eq!(
+        result.revalidate_for_current_snapshot(20, &request, &changed),
+        Err(SnapshotProviderError::GenerationGone)
+    );
+
+    let mut changed_epoch = vector();
+    changed_epoch.authority_epoch += 1;
+    let changed = AuthoritativeSnapshotV1::new(
+        id("provider:one"),
+        changed_epoch,
+        envelope.snapshot().clone(),
+        20,
+        45,
+    )
+    .unwrap();
+    assert_eq!(
+        result.revalidate_for_current_snapshot(20, &request, &changed),
+        Err(SnapshotProviderError::AuthorityEpochMismatch)
+    );
+
+    assert_eq!(
+        result.revalidate_for_current_snapshot(50, &request, &envelope),
+        Err(SnapshotProviderError::LeaseExpired)
     );
 }
