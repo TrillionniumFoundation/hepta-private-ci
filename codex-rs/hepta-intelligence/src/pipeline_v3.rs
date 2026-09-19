@@ -383,7 +383,9 @@ fn validate_host_envelope(receipt: &LaneFCompositionReceiptV3) -> Result<(), Pip
         || host.predecessor_digest != context.output_digest
         || host.output_digest != envelope.envelope_digest
     {
-        return Err(PipelineErrorV3::InvalidReceipt("host envelope stage binding"));
+        return Err(PipelineErrorV3::InvalidReceipt(
+            "host envelope stage binding",
+        ));
     }
     let context_index = receipt
         .stages
@@ -648,12 +650,7 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
             }
         };
         let context_digest = predecessor;
-        let prefix = digest_prefix(
-            &request.run_id,
-            snapshot_digest,
-            &stages,
-            predecessor,
-        )?;
+        let prefix = digest_prefix(&request.run_id, snapshot_digest, &stages, predecessor)?;
         let envelope = IntelligenceHostEnvelopeV1::new(
             request.run_id.clone(),
             snapshot_digest,
@@ -866,7 +863,12 @@ where
 {
     if request.snapshot.bound_owner(capability).is_none() {
         let evidence = absent_digest(snapshot_digest, capability);
-        let output = fallback_digest(stage, predecessor, PortFailureClassV3::Unavailable, evidence);
+        let output = fallback_digest(
+            stage,
+            predecessor,
+            PortFailureClassV3::Unavailable,
+            evidence,
+        );
         stages.push(StageTraceV3 {
             stage,
             producer: stable_id(producer)?,
@@ -1120,16 +1122,42 @@ fn valid_transition(
         }
         StageOutcomeV3::Completed | StageOutcomeV3::FallbackUsed(_) => matches!(
             (prior, next),
-            (LaneFStageV3::ObjectiveValidated, LaneFStageV3::LegalSetBuilt)
-                | (LaneFStageV3::LegalSetBuilt, LaneFStageV3::UtilityEvaluated)
-                | (LaneFStageV3::UtilityEvaluated, LaneFStageV3::EvaluationAdmitted)
-                | (LaneFStageV3::EvaluationAdmitted, LaneFStageV3::NeuralSignalCollected)
-                | (LaneFStageV3::NeuralSignalCollected, LaneFStageV3::PromptPortfolioBuilt)
-                | (LaneFStageV3::PromptPortfolioBuilt, LaneFStageV3::IntuitionDecided)
-                | (LaneFStageV3::IntuitionDecided, LaneFStageV3::ContextCompiled)
-                | (LaneFStageV3::ContextCompiled, LaneFStageV3::HostEnvelopeBuilt)
-                | (LaneFStageV3::HostEnvelopeBuilt, LaneFStageV3::HostHandoffAccepted)
-                | (LaneFStageV3::HostHandoffAccepted, LaneFStageV3::LearningRecorded)
+            (
+                LaneFStageV3::ObjectiveValidated,
+                LaneFStageV3::LegalSetBuilt
+            ) | (LaneFStageV3::LegalSetBuilt, LaneFStageV3::UtilityEvaluated)
+                | (
+                    LaneFStageV3::UtilityEvaluated,
+                    LaneFStageV3::EvaluationAdmitted
+                )
+                | (
+                    LaneFStageV3::EvaluationAdmitted,
+                    LaneFStageV3::NeuralSignalCollected
+                )
+                | (
+                    LaneFStageV3::NeuralSignalCollected,
+                    LaneFStageV3::PromptPortfolioBuilt
+                )
+                | (
+                    LaneFStageV3::PromptPortfolioBuilt,
+                    LaneFStageV3::IntuitionDecided
+                )
+                | (
+                    LaneFStageV3::IntuitionDecided,
+                    LaneFStageV3::ContextCompiled
+                )
+                | (
+                    LaneFStageV3::ContextCompiled,
+                    LaneFStageV3::HostEnvelopeBuilt
+                )
+                | (
+                    LaneFStageV3::HostEnvelopeBuilt,
+                    LaneFStageV3::HostHandoffAccepted
+                )
+                | (
+                    LaneFStageV3::HostHandoffAccepted,
+                    LaneFStageV3::LearningRecorded
+                )
         ),
         StageOutcomeV3::Failed(_) => false,
     }
