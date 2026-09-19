@@ -24,7 +24,7 @@ static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 #[derive(Clone)]
 pub struct AuthBusAuthorityStore {
-    pool: SqlitePool,
+    pub(crate) pool: SqlitePool,
 }
 
 impl AuthBusAuthorityStore {
@@ -246,11 +246,11 @@ impl AuthBusAuthorityStore {
     }
 }
 
-async fn begin(pool: &SqlitePool) -> Result<Transaction<'static, Sqlite>, AuthBusAuthorityError> {
+pub(crate) async pub(crate) fn begin(pool: &SqlitePool) -> Result<Transaction<'static, Sqlite>, AuthBusAuthorityError> {
     pool.begin_with("BEGIN IMMEDIATE").await.map_err(storage)
 }
 
-async fn advance_time(
+pub(crate) async pub(crate) fn advance_time(
     tx: &mut Transaction<'_, Sqlite>,
     sample: &TrustedTimeSample,
 ) -> Result<(), AuthBusAuthorityError> {
@@ -294,7 +294,7 @@ async fn advance_time(
     Ok(())
 }
 
-async fn load_policy_by_id(
+pub(crate) async pub(crate) fn load_policy_by_id(
     tx: &mut Transaction<'_, Sqlite>,
     policy_id: &StableId,
 ) -> Result<AuthPolicy, AuthBusAuthorityError> {
@@ -380,13 +380,13 @@ fn policy_effect(value: &str) -> Result<PolicyEffect, AuthBusAuthorityError> {
     }
 }
 
-fn next_revision(revision: u64) -> Result<u64, AuthBusAuthorityError> {
+pub(crate) fn next_revision(revision: u64) -> Result<u64, AuthBusAuthorityError> {
     revision
         .checked_add(1)
         .ok_or(AuthBusAuthorityError::CapacityExceeded)
 }
 
-fn nonzero_u64(
+pub(crate) fn nonzero_u64(
     row: &sqlx::sqlite::SqliteRow,
     column: &str,
 ) -> Result<u64, AuthBusAuthorityError> {
@@ -409,12 +409,12 @@ fn blob_array<const N: usize>(
         .map_err(|_| AuthBusAuthorityError::CorruptState("invalid fixed-width field"))
 }
 
-fn stable_id(value: String) -> Result<StableId, AuthBusAuthorityError> {
+pub(crate) fn stable_id(value: String) -> Result<StableId, AuthBusAuthorityError> {
     StableId::new(value)
         .map_err(|_| AuthBusAuthorityError::CorruptState("invalid stable identifier"))
 }
 
-fn u64_bytes(value: u64) -> [u8; 8] {
+pub(crate) fn u64_bytes(value: u64) -> [u8; 8] {
     value.to_be_bytes()
 }
 
@@ -424,7 +424,7 @@ fn is_unique_violation(error: &sqlx::Error) -> bool {
         .is_some_and(|database| database.is_unique_violation())
 }
 
-fn storage(error: impl ToString) -> AuthBusAuthorityError {
+pub(crate) fn storage(error: impl ToString) -> AuthBusAuthorityError {
     AuthBusAuthorityError::Storage(error.to_string())
 }
 
