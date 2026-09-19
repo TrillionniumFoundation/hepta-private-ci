@@ -497,6 +497,29 @@ impl NativeJournal {
         self.apply(event, /*replay*/ true)
     }
 
+    /// Build the canonical compaction image without provider/model text.
+    ///
+    /// This is a representation-only migration: request/turn/status/usage and
+    /// authority semantics are unchanged, while any historical retained output
+    /// is replaced by its exact SHA-256 receipt. The predecessor archive keeps
+    /// the original bytes only within the configured bounded retention window.
+    pub(super) fn redacted_for_compaction(&self) -> Result<Self, Error> {
+        let mut next = self.clone();
+        for record in next.records.values_mut() {
+            let Some(output) = record.observation.as_mut() else {
+                continue;
+            };
+            let digest = validate_output_payload(output)?;
+            if output.output_retained {
+                output.output.clear();
+                output.output_sha256 = Some(digest);
+                output.output_retained = false;
+            }
+            validate_output_payload(output)?;
+        }
+        Ok(next)
+    }
+
     pub(super) fn snapshot_lines(&self) -> Result<Vec<String>, Error> {
         let Some(maximum_in_flight) = self.maximum_in_flight else {
             return if self.records.is_empty() {
