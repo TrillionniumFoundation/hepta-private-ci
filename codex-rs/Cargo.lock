@@ -3747,6 +3747,7 @@ name = "codex-hepta-intelligence-eval"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-learning-ledger",
+ "codex-hepta-ndu",
  "codex-hepta-types",
  "ed25519-dalek",
  "pretty_assertions",
@@ -3944,6 +3945,7 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
  "pretty_assertions",
+ "tempfile",
 ]
 
 [[package]]
