@@ -114,7 +114,9 @@ impl MatrixDurableStore {
         if outbox.state != OutboxState::InFlight || outbox.attempts == 0 {
             return Err(MatrixDurableError::Conflict);
         }
-        let payload_digest = Sha256Digest::for_bytes(&outbox.payload).as_str().to_string();
+        let payload_digest = Sha256Digest::for_bytes(&outbox.payload)
+            .as_str()
+            .to_string();
         if authority
             .grant_payload_digest
             .as_deref()
@@ -235,9 +237,7 @@ impl MatrixDurableStore {
         let current = load_dispatch_tx(&mut tx, txn_id)
             .await?
             .ok_or(MatrixDurableError::Conflict)?;
-        if current.state == MatrixDispatchState::Dispatched
-            && current.attempt == expected_attempt
-        {
+        if current.state == MatrixDispatchState::Dispatched && current.attempt == expected_attempt {
             append_observation_tx(
                 &mut tx,
                 txn_id,
@@ -679,8 +679,7 @@ impl MatrixDurableStore {
             .fetch_optional(&mut *tx)
             .await
             .map_err(unavailable)?;
-            if existing.as_ref()
-                != Some(&("sent".to_string(), Some(event_id.as_str().to_string())))
+            if existing.as_ref() != Some(&("sent".to_string(), Some(event_id.as_str().to_string())))
             {
                 return Err(MatrixDurableError::Conflict);
             }
@@ -920,12 +919,16 @@ async fn append_change_tx(
     Ok(())
 }
 
-fn dispatch_from_row(row: &sqlx::sqlite::SqliteRow) -> Result<MatrixDispatchRecord, MatrixDurableError> {
+fn dispatch_from_row(
+    row: &sqlx::sqlite::SqliteRow,
+) -> Result<MatrixDispatchRecord, MatrixDurableError> {
     let state: String = row.try_get("state").map_err(unavailable)?;
     let stable_txn_id: String = row.try_get("stable_txn_id").map_err(unavailable)?;
     let room_id: String = row.try_get("room_id").map_err(unavailable)?;
-    let accepted_event_id: Option<String> = row.try_get("accepted_event_id").map_err(unavailable)?;
-    let terminal_event_id: Option<String> = row.try_get("terminal_event_id").map_err(unavailable)?;
+    let accepted_event_id: Option<String> =
+        row.try_get("accepted_event_id").map_err(unavailable)?;
+    let terminal_event_id: Option<String> =
+        row.try_get("terminal_event_id").map_err(unavailable)?;
     Ok(MatrixDispatchRecord {
         stable_txn_id: MatrixTransactionId::parse(stable_txn_id)
             .map_err(|_| MatrixDurableError::Corrupt)?,
@@ -934,7 +937,9 @@ fn dispatch_from_row(row: &sqlx::sqlite::SqliteRow) -> Result<MatrixDispatchReco
         session_generation: from_i64(row.try_get("session_generation").map_err(unavailable)?)?,
         payload_digest: row.try_get("payload_sha256").map_err(unavailable)?,
         authority_epoch: optional_u64(row.try_get("authority_epoch").map_err(unavailable)?)?,
-        authority_binding_digest: row.try_get("authority_binding_digest").map_err(unavailable)?,
+        authority_binding_digest: row
+            .try_get("authority_binding_digest")
+            .map_err(unavailable)?,
         grant_id: row.try_get("grant_id").map_err(unavailable)?,
         grant_payload_digest: row.try_get("grant_payload_sha256").map_err(unavailable)?,
         state: MatrixDispatchState::parse(&state).ok_or(MatrixDurableError::Corrupt)?,
@@ -947,7 +952,9 @@ fn dispatch_from_row(row: &sqlx::sqlite::SqliteRow) -> Result<MatrixDispatchReco
             .map(MatrixEventId::parse)
             .transpose()
             .map_err(|_| MatrixDurableError::Corrupt)?,
-        send_observation_digest: row.try_get("send_observation_digest").map_err(unavailable)?,
+        send_observation_digest: row
+            .try_get("send_observation_digest")
+            .map_err(unavailable)?,
         redaction_observation_digest: row
             .try_get("redaction_observation_digest")
             .map_err(unavailable)?,
@@ -955,7 +962,8 @@ fn dispatch_from_row(row: &sqlx::sqlite::SqliteRow) -> Result<MatrixDispatchReco
         dispatched_at_ms: optional_u64(row.try_get("dispatched_at_ms").map_err(unavailable)?)?,
         accepted_at_ms: optional_u64(row.try_get("accepted_at_ms").map_err(unavailable)?)?,
         terminal_observed_at_ms: optional_u64(
-            row.try_get("terminal_observed_at_ms").map_err(unavailable)?,
+            row.try_get("terminal_observed_at_ms")
+                .map_err(unavailable)?,
         )?,
         redacted_at_ms: optional_u64(row.try_get("redacted_at_ms").map_err(unavailable)?)?,
         archived_at_ms: optional_u64(row.try_get("archived_at_ms").map_err(unavailable)?)?,
@@ -969,7 +977,10 @@ fn validate_authority(value: &MatrixDispatchAuthority) -> Result<(), MatrixDurab
             .authority_binding_digest
             .as_deref()
             .is_some_and(|value| !valid_digest(value))
-        || value.grant_id.as_deref().is_some_and(|value| !valid_identity(value))
+        || value
+            .grant_id
+            .as_deref()
+            .is_some_and(|value| !valid_identity(value))
         || value
             .grant_payload_digest
             .as_deref()
