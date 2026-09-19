@@ -44,6 +44,7 @@ pub use v2::build_attachment;
 pub use v2::compile_v2;
 pub use v2::observe_delivery;
 pub use v2::record_serialization;
+pub use wire::CONTEXT_COMPILATION_WIRE_PRODUCER;
 pub use wire::CONTEXT_COMPILATION_WIRE_SCHEMA_V2;
 pub use wire::CompileWireError;
 pub use wire::ContextCompilationWireV2;
