@@ -183,7 +183,10 @@ impl fmt::Display for NduError {
                 "invalid hierarchy parent relation in generation {generation}"
             ),
             Self::DuplicateHierarchyArtifact(artifact) => {
-                write!(formatter, "duplicate hierarchy artifact in staged updates: {artifact}")
+                write!(
+                    formatter,
+                    "duplicate hierarchy artifact in staged updates: {artifact}"
+                )
             }
             Self::Arithmetic => formatter.write_str("deterministic Q32 arithmetic failed"),
         }
