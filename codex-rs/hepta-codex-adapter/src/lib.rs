@@ -5,6 +5,8 @@
 
 #![forbid(unsafe_code)]
 
+mod runtime_prompt;
+
 use std::error::Error as StdError;
 use std::fmt;
 
@@ -13,6 +15,18 @@ use codex_hepta_types::Digest32;
 pub use codex_hepta_types::PromptDeliveryObservationV1;
 pub use codex_hepta_types::PromptDeliveryRejectReasonV1;
 use codex_hepta_types::StableId;
+
+pub use runtime_prompt::PromptRuntimeAttachmentV1;
+pub use runtime_prompt::PromptRuntimeDeveloperFragmentV1;
+pub use runtime_prompt::PromptRuntimeError;
+pub use runtime_prompt::PromptRuntimeHost;
+pub use runtime_prompt::PromptRuntimeHostError;
+pub use runtime_prompt::PromptRuntimePrepareFuture;
+pub use runtime_prompt::PromptRuntimePrepareRequest;
+pub use runtime_prompt::PromptRuntimeRecordFuture;
+pub use runtime_prompt::PromptRuntimeTerminalOutcomeV1;
+pub use runtime_prompt::PromptRuntimeTerminalRecordV1;
+pub use runtime_prompt::install_prompt_runtime;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CodexOperationIntent {
