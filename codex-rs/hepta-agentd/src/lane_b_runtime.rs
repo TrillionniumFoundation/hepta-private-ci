@@ -32,7 +32,10 @@ impl RunPhase {
     }
 
     fn externally_uncertain(self) -> bool {
-        matches!(self, Self::Dispatched | Self::Cancelling | Self::Indeterminate)
+        matches!(
+            self,
+            Self::Dispatched | Self::Cancelling | Self::Indeterminate
+        )
     }
 }
 
@@ -188,9 +191,9 @@ impl AgentRunCoordinator {
         {
             return Err(AgentRunError::InvalidRecoveryState);
         }
-        let generation_changed =
-            recovery.composition.supervisor_generation != composition.supervisor_generation
-                || recovery.composition.agentd_generation != composition.agentd_generation;
+        let generation_changed = recovery.composition.supervisor_generation
+            != composition.supervisor_generation
+            || recovery.composition.agentd_generation != composition.agentd_generation;
 
         let mut runs = BTreeMap::new();
         for mut record in recovery.records {
@@ -211,7 +214,8 @@ impl AgentRunCoordinator {
                     if record.snapshot.deadline_ms <= now_ms =>
                 {
                     record.phase = RunPhase::Cancelled;
-                    record.cancellation_reason = Some("deadline_exceeded_during_restart".to_string());
+                    record.cancellation_reason =
+                        Some("deadline_exceeded_during_restart".to_string());
                     record.cancellation_ack_deadline_ms = None;
                     advance_revision(&mut record)?;
                 }
@@ -445,10 +449,7 @@ impl AgentRunCoordinator {
     /// Pre-dispatch work is safely cancelled locally. Once dispatch may have
     /// happened, deadline expiry becomes a cancellation intent and still
     /// requires an execution-owner terminal observation.
-    pub fn enforce_deadlines(
-        &mut self,
-        now_ms: u64,
-    ) -> Result<Vec<RunReceipt>, AgentRunError> {
+    pub fn enforce_deadlines(&mut self, now_ms: u64) -> Result<Vec<RunReceipt>, AgentRunError> {
         let cancellation_ack_timeout_ms = self.composition.cancellation_ack_timeout_ms;
         let mut changed = Vec::new();
         for record in self.runs.values_mut() {
