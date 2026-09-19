@@ -76,10 +76,8 @@ pub trait ContextSerializerV2 {
 
     fn tool_schema_digest(&self) -> Digest32;
 
-    fn serialize(
-        &self,
-        items: &[ContextRealizedItemV2],
-    ) -> Result<Vec<u8>, ContextCompilerV2Error>;
+    fn serialize(&self, items: &[ContextRealizedItemV2])
+        -> Result<Vec<u8>, ContextCompilerV2Error>;
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -234,10 +232,7 @@ impl ContextAdmissionRecordV2 {
     pub fn validate_shape(&self) -> Result<(), ContextCompilerV2Error> {
         ensure_digest("admission_content", self.content_digest)?;
         ensure_digest("admission_source", self.source_digest)?;
-        ensure_digest(
-            "admission_generation_vector",
-            self.generation_vector_digest,
-        )?;
+        ensure_digest("admission_generation_vector", self.generation_vector_digest)?;
         ensure_digest("admission_scope", self.scope_digest)?;
         if self.issued_unix_ms == 0 || self.expires_unix_ms <= self.issued_unix_ms {
             return Err(ContextCompilerV2Error::InvalidAdmissionTime(
@@ -314,9 +309,7 @@ impl ContextAdmissionSnapshotV2 {
             }
         }
         if self.snapshot_digest != self.compute_digest() {
-            return Err(ContextCompilerV2Error::DigestMismatch(
-                "admission_snapshot",
-            ));
+            return Err(ContextCompilerV2Error::DigestMismatch("admission_snapshot"));
         }
         Ok(())
     }
@@ -459,9 +452,7 @@ impl VerifiedAdmissionV2 {
             ));
         }
         if self.verification_digest != self.compute_verification_digest() {
-            return Err(ContextCompilerV2Error::DigestMismatch(
-                "verified_admission",
-            ));
+            return Err(ContextCompilerV2Error::DigestMismatch("verified_admission"));
         }
         Ok(())
     }
@@ -507,10 +498,7 @@ impl VerifiedAdmissionV2 {
         push_u64(&mut bytes, self.expires_unix_ms);
         push_digest(&mut bytes, self.verifier_digest);
         push_digest(&mut bytes, self.verified_snapshot_digest);
-        push_digest(
-            &mut bytes,
-            self.verified_snapshot_verification_digest,
-        );
+        push_digest(&mut bytes, self.verified_snapshot_verification_digest);
         push_u64(&mut bytes, self.verified_revocation_epoch);
         push_u64(&mut bytes, self.verified_at_unix_ms);
         push_digest(&mut bytes, self.record_digest);
@@ -603,9 +591,7 @@ impl ContextModelProfileV2 {
         ] {
             ensure_digest(name, digest)?;
         }
-        if self.maximum_context_tokens == 0
-            || self.maximum_context_tokens > MAX_CONTEXT_TOKENS_V2
-        {
+        if self.maximum_context_tokens == 0 || self.maximum_context_tokens > MAX_CONTEXT_TOKENS_V2 {
             return Err(ContextCompilerV2Error::InvalidModelContextLimit);
         }
         Ok(())
@@ -653,10 +639,7 @@ impl ContextCandidateV2 {
     ) -> Result<(), ContextCompilerV2Error> {
         ensure_digest("candidate_content", self.content_digest)?;
         ensure_digest("candidate_source", self.source_digest)?;
-        ensure_digest(
-            "candidate_generation_vector",
-            self.generation_vector_digest,
-        )?;
+        ensure_digest("candidate_generation_vector", self.generation_vector_digest)?;
         if self.generation_vector_digest != expected_generation_vector_digest {
             return Err(ContextCompilerV2Error::GenerationVectorMismatch(
                 self.item_id.to_string(),
@@ -971,8 +954,7 @@ pub fn compile_v2(
     }
 
     let candidate_set_digest = compute_candidate_set_digest(by_id.values());
-    let mandatory_groups_digest =
-        compute_mandatory_groups_digest(&request.mandatory_groups);
+    let mandatory_groups_digest = compute_mandatory_groups_digest(&request.mandatory_groups);
     let mut mandatory_ids = by_id
         .values()
         .filter(|candidate| {
@@ -1412,10 +1394,7 @@ impl ContextAttachmentV2 {
         push_digest(&mut bytes, self.generation_vector_digest);
         push_digest(&mut bytes, self.admission_verifier_digest);
         push_digest(&mut bytes, self.admission_snapshot_digest);
-        push_digest(
-            &mut bytes,
-            self.admission_snapshot_verification_digest,
-        );
+        push_digest(&mut bytes, self.admission_snapshot_verification_digest);
         push_u64(&mut bytes, self.admission_snapshot_observed_unix_ms);
         push_u64(&mut bytes, self.revocation_epoch);
         push_digest(&mut bytes, self.model_profile_digest);
@@ -1587,8 +1566,7 @@ pub fn prepare_delivery_v2(
 ) -> Result<ContextDeliveryPreparationV2, ContextCompilerV2Error> {
     attachment.validate_for(compiled, serialization, profile)?;
     if current_snapshot.revocation_epoch() < attachment.revocation_epoch
-        || current_snapshot.observed_unix_ms()
-            < attachment.admission_snapshot_observed_unix_ms
+        || current_snapshot.observed_unix_ms() < attachment.admission_snapshot_observed_unix_ms
     {
         return Err(ContextCompilerV2Error::StaleAdmissionSnapshot);
     }
