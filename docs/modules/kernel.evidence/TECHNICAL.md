@@ -175,7 +175,7 @@ Owned threat entries:
 
 None.
 
-The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
+The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. The production qualification writer provisions exactly one immutable Ed25519 trust policy into the owner SQLite lineage before the first qualification receipt. Every authenticated issuer and every external checkpoint is bound to that pinned policy digest; a caller-supplied replacement policy cannot authorize a write. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
 
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
@@ -187,7 +187,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Operate through the existing evidence store and migrations. Keep candidate, issuer and terminal-observer identities separate; verify the independently retained checkpoint before admitting restored evidence. Qualification dispatch observations must not be exposed as provider terminal receipts.
+Operate through the existing evidence store and migrations. Run the trust-root ceremony through `hepta-evidence-writer bootstrap-trust-policy` only while the qualification chain is empty, retain the returned checkpoint independently from SQLite, and keep the configured policy file under separate operator control. Keep candidate, issuer and terminal-observer identities separate; verify the independently retained checkpoint before admitting restored evidence. Qualification dispatch observations must not be exposed as provider terminal receipts.
 
 Current operating and state-format references:
 
