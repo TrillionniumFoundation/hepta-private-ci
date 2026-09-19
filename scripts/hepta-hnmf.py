@@ -51,7 +51,7 @@ PROTOCOLS = [
     "OutcomeSignalV1",
     "ReplaySelectionReceiptV1",
     "PlasticityBatchV1",
-    "TopologyProposalV1",
+    "MemoryTopologyProposalV1",
     "ForgetPropagationReceiptV1",
 ]
 
