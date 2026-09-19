@@ -434,14 +434,11 @@ def verify():
             else:
                 if actual_tree != tree:
                     failures.append(f"{mid}: source base commit/tree mismatch")
-                ancestor = subprocess.run(
-                    ["git", "merge-base", "--is-ancestor", commit, "HEAD"],
-                    cwd=ROOT,
-                    capture_output=True,
-                    check=False,
-                )
-                if ancestor.returncode != 0:
-                    failures.append(f"{mid}: source base is not an ancestor of HEAD")
+                # sourceBase is immutable generation provenance, not the
+                # freshness predicate. Requiring ancestry would make a valid
+                # map fail after squash/rebase merge even when every mapped
+                # source blob is byte-identical. Current source truth is
+                # enforced below by sourceFingerprints.
         if row.get("sourceBaseSemantics") != SOURCE_BASE_SEMANTICS:
             failures.append(f"{mid}: source base semantics")
         if row.get("sourceFingerprintPolicy") != SOURCE_FINGERPRINT_POLICY:
