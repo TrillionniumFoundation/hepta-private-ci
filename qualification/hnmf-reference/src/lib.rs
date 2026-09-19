@@ -1,6 +1,11 @@
 #![forbid(unsafe_code)]
 
-//! Algorithm-only HNMF qualification model.\n//!\n//! The `Reference*` values below are bounded internal algorithm fixtures, not\n//! canonical cognitive/memory contracts and not wire schemas. Canonical V1\n//! contract ownership lives exclusively in `codex-rs/hepta-cognitive-types`.\n
+//! Algorithm-only HNMF qualification model.
+//!
+//! The `Reference*` values below are bounded internal algorithm fixtures, not
+//! canonical cognitive/memory contracts and not wire schemas. Canonical V1
+//! contract ownership lives exclusively in `codex-rs/hepta-cognitive-types`.
+
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 
