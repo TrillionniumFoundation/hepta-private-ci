@@ -83,7 +83,9 @@ pub fn append_outcome_and_credit_v1(
         return Err(OutcomeCreditClosureErrorV1::Binding("outcome mismatch"));
     }
     if request.outcome.record_id == request.credit.record_id {
-        return Err(OutcomeCreditClosureErrorV1::Binding("record identity reuse"));
+        return Err(OutcomeCreditClosureErrorV1::Binding(
+            "record identity reuse",
+        ));
     }
 
     let outcome = ledger
@@ -93,10 +95,7 @@ pub fn append_outcome_and_credit_v1(
         )
         .map_err(OutcomeCreditClosureErrorV1::Ledger)?;
     let credit = ledger
-        .append(
-            outcome.chain_digest,
-            LedgerEvent::Credit(request.credit),
-        )
+        .append(outcome.chain_digest, LedgerEvent::Credit(request.credit))
         .map_err(OutcomeCreditClosureErrorV1::Ledger)?;
 
     let mut bytes = b"hepta.intelligence.outcome-credit-closure.v1\0".to_vec();
