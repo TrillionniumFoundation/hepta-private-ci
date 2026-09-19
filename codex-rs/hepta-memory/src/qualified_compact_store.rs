@@ -161,6 +161,7 @@ struct CheckpointImageV1 {
     checkpoint_id: String,
     generation: u64,
     source_snapshot: SnapshotImageV1,
+    source_memory_snapshot_digest: String,
     support_manifest_digest: String,
     algorithm_digest: String,
     payload_digest: String,
@@ -177,6 +178,7 @@ impl CheckpointImageV1 {
             checkpoint_id: checkpoint.checkpoint_id.to_string(),
             generation: checkpoint.generation.get(),
             source_snapshot: SnapshotImageV1::from_contract(&checkpoint.source_snapshot),
+            source_memory_snapshot_digest: checkpoint.source_memory_snapshot_digest.to_string(),
             support_manifest_digest: checkpoint.support_manifest_digest.to_string(),
             algorithm_digest: checkpoint.algorithm_digest.to_string(),
             payload_digest: checkpoint.payload_digest.to_string(),
@@ -193,6 +195,10 @@ impl CheckpointImageV1 {
             checkpoint_id: parse_id(&self.checkpoint_id, "checkpoint id")?,
             generation: parse_generation(self.generation, "checkpoint generation")?,
             source_snapshot: self.source_snapshot.to_contract()?,
+            source_memory_snapshot_digest: parse_digest(
+                &self.source_memory_snapshot_digest,
+                "source memory snapshot digest",
+            )?,
             support_manifest_digest: parse_digest(
                 &self.support_manifest_digest,
                 "support manifest digest",
@@ -367,7 +373,8 @@ impl CognitiveStore {
         let latest = sqlx::query(
             "SELECT generation, checkpoint_digest, predecessor_digest,
                     candidate_digest, proof_digest, source_snapshot_digest,
-                    tokenizer_digest, publication_digest, checkpoint_json, proof_json
+                    source_memory_snapshot_digest, tokenizer_digest, publication_digest,
+                    checkpoint_json, proof_json
              FROM cognitive_qualified_compact_checkpoints
              WHERE owner_agent_id = ? AND scope_id = ? AND purpose_id = ?
              ORDER BY generation DESC LIMIT 1",
@@ -437,9 +444,9 @@ impl CognitiveStore {
             "INSERT INTO cognitive_qualified_compact_checkpoints (
                 owner_agent_id, scope_id, purpose_id, generation,
                 checkpoint_digest, predecessor_digest, candidate_digest, proof_digest,
-                source_snapshot_digest, tokenizer_digest, publication_digest,
-                checkpoint_json, proof_json, published_at_unix_seconds
-             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                source_snapshot_digest, source_memory_snapshot_digest, tokenizer_digest,
+                publication_digest, checkpoint_json, proof_json, published_at_unix_seconds
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         )
         .bind(self.owner_agent_id.as_str())
         .bind(scope_id)
@@ -453,6 +460,7 @@ impl CognitiveStore {
         .bind(proof.candidate_digest.to_string())
         .bind(proof.proof_digest.to_string())
         .bind(checkpoint.source_snapshot.vector_digest.to_string())
+        .bind(checkpoint.source_memory_snapshot_digest.to_string())
         .bind(
             checkpoint
                 .source_snapshot
@@ -493,7 +501,8 @@ impl CognitiveStore {
         let rows = sqlx::query(
             "SELECT generation, checkpoint_digest, predecessor_digest,
                     candidate_digest, proof_digest, source_snapshot_digest,
-                    tokenizer_digest, publication_digest, checkpoint_json, proof_json
+                    source_memory_snapshot_digest, tokenizer_digest, publication_digest,
+                    checkpoint_json, proof_json
              FROM cognitive_qualified_compact_checkpoints
              WHERE owner_agent_id = ? AND scope_id = ? AND purpose_id = ?
              ORDER BY generation",
@@ -519,6 +528,7 @@ pub(crate) async fn verify_qualified_compact_store(
             "table",
             &[
                 "CREATE TABLE cognitive_qualified_compact_checkpoints",
+                "source_memory_snapshot_digest TEXT NOT NULL",
                 "PRIMARY KEY (owner_agent_id, scope_id, purpose_id, generation)",
                 "UNIQUE (owner_agent_id, scope_id, purpose_id, checkpoint_digest)",
                 ") STRICT",
@@ -597,7 +607,8 @@ pub(crate) async fn verify_qualified_compact_store(
     let rows = sqlx::query(
         "SELECT scope_id, purpose_id, generation, checkpoint_digest, predecessor_digest,
                 candidate_digest, proof_digest, source_snapshot_digest,
-                tokenizer_digest, publication_digest, checkpoint_json, proof_json
+                source_memory_snapshot_digest, tokenizer_digest, publication_digest,
+                checkpoint_json, proof_json
          FROM cognitive_qualified_compact_checkpoints
          WHERE owner_agent_id = ?
          ORDER BY scope_id, purpose_id, generation",
@@ -679,6 +690,9 @@ fn decode_row(
     let proof_digest_text: String = row.try_get("proof_digest").map_err(unavailable)?;
     let source_snapshot_digest_text: String =
         row.try_get("source_snapshot_digest").map_err(unavailable)?;
+    let source_memory_snapshot_digest_text: String = row
+        .try_get("source_memory_snapshot_digest")
+        .map_err(unavailable)?;
     let tokenizer_digest_text: String = row.try_get("tokenizer_digest").map_err(unavailable)?;
     let publication_digest_text: String = row.try_get("publication_digest").map_err(unavailable)?;
     let checkpoint_json: String = row.try_get("checkpoint_json").map_err(unavailable)?;
@@ -698,6 +712,8 @@ fn decode_row(
         || candidate_digest_text != proof.candidate_digest.to_string()
         || proof_digest_text != proof.proof_digest.to_string()
         || source_snapshot_digest_text != checkpoint.source_snapshot.vector_digest.to_string()
+        || source_memory_snapshot_digest_text
+            != checkpoint.source_memory_snapshot_digest.to_string()
         || tokenizer_digest_text
             != checkpoint
                 .source_snapshot
