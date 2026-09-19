@@ -41,6 +41,7 @@ use crate::CapabilityRequirementV2;
 use crate::CapabilitySnapshotRequestV2;
 use crate::CapabilitySnapshotV2;
 use crate::LaneFBudgetV3;
+use crate::LegalActionCandidateV1;
 use crate::LaneFRunRequestV3;
 use crate::PipelineDispositionV3;
 use crate::build_legal_candidates_v1;
