@@ -58,8 +58,11 @@ revisions, resolves exact principal/action/scope authorization, and owns a
 conservation-checked quota registry plus durable reservations. Reservation
 reconciliation distinguishes `Applied`, `NotApplied` and `Indeterminate`;
 unknown or expired effects keep their hold until authenticated terminal evidence
-arrives. The replay frontier can be hashed, compared to an externally retained
-checkpoint and safely retired only for revoked epochs with no active delivery.
+arrives. The replay frontier can be hashed and compared to an externally retained
+checkpoint. Replay-key retirement is two-phase: only revoked epochs with no
+active delivery can be removed; retirement then installs a durable
+`ExternalCheckpointRequired` fence, and all new replay admission remains blocked
+until the independently retained post-retirement root is acknowledged.
 
 ## Still external
 
@@ -70,8 +73,10 @@ responsibilities. SQLite cannot be its own anti-rollback oracle.
 ## Known limits and non-claims
 
 Issuer registration must come from the host trust store, never the incoming
-message. Current time uses the host clock; SQLite persistence is not protection
-against restoration of an older database. No managed key host or distributed
+message. The compatibility admission APIs still use the host wall clock, while
+managed admission/enqueue APIs accept bounded `TrustedTime` observations and
+resolve issuer/key state from the durable trust registry. SQLite persistence
+alone is not protection against restoration of an older database. No managed key host or distributed
 replay coordinator is provided. In the legacy API, a nonzero `signature_digest`
 is only a reference, and constructing `TrustedReplayContext` does not authenticate
 its contents.
