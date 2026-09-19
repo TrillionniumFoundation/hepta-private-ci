@@ -32,6 +32,7 @@ pub struct RuntimeComposition {
     pub agentd_generation: u64,
     pub configuration_digest: String,
     pub ports_digest: String,
+    pub fence_digest: String,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -42,6 +43,8 @@ pub struct RunSnapshot {
     pub body_digest: String,
     pub artifact_set_digest: String,
     pub authority_epoch: u64,
+    pub generation: u64,
+    pub fence_digest: String,
     pub deadline_ms: u64,
 }
 
@@ -78,6 +81,7 @@ pub enum AgentRunError {
     InvalidIdentity(&'static str),
     InvalidDigest(&'static str),
     InvalidGeneration,
+    RuntimeBindingMismatch,
     InvalidDeadline,
     CapacityExceeded,
     RunNotFound,
@@ -115,6 +119,7 @@ impl AgentRunCoordinator {
         validate_identity(&composition.agent_id, "agent")?;
         validate_digest(&composition.configuration_digest, "configuration")?;
         validate_digest(&composition.ports_digest, "ports")?;
+        validate_digest(&composition.fence_digest, "fence")?;
         if composition.supervisor_generation == 0 || composition.agentd_generation == 0 {
             return Err(AgentRunError::InvalidGeneration);
         }
@@ -134,6 +139,11 @@ impl AgentRunCoordinator {
         snapshot: RunSnapshot,
     ) -> Result<RunReceipt, AgentRunError> {
         validate_snapshot(now_ms, &snapshot)?;
+        if snapshot.generation != self.composition.agentd_generation
+            || snapshot.fence_digest != self.composition.fence_digest
+        {
+            return Err(AgentRunError::RuntimeBindingMismatch);
+        }
         if let Some(current) = self.runs.get(&snapshot.run_id) {
             if current.snapshot == snapshot {
                 return Ok(receipt(current, /*idempotent*/ true));
@@ -322,10 +332,11 @@ fn validate_snapshot(now_ms: u64, value: &RunSnapshot) -> Result<(), AgentRunErr
         (&value.objective_digest, "objective"),
         (&value.body_digest, "body"),
         (&value.artifact_set_digest, "artifact set"),
+        (&value.fence_digest, "fence"),
     ] {
         validate_digest(digest, field)?;
     }
-    if value.authority_epoch == 0 {
+    if value.authority_epoch == 0 || value.generation == 0 {
         return Err(AgentRunError::InvalidGeneration);
     }
     if value.deadline_ms <= now_ms {

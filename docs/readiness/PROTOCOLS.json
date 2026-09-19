@@ -641,7 +641,7 @@
               "type": "bounded_array",
               "required": true,
               "maxBytes": 16384,
-              "minItems": 1,
+              "minItems": 0,
               "maxItems": 128,
               "uniqueItems": true,
               "items": {
@@ -681,7 +681,7 @@
               "required": true,
               "maxBytes": 32768,
               "minItems": 1,
-              "maxItems": 256,
+              "maxItems": 246,
               "uniqueItems": true,
               "items": {
                 "type": "bounded_object",
@@ -981,7 +981,10 @@
         "canonical_field_order",
         "semantic_digest_stable",
         "unknown_critical_fields_rejected",
-        "authority_delta_none"
+        "authority_delta_none",
+        "source_constraints_reserve_10_generated_native_slots",
+        "success_terminal_evidence_aggregate_max_128",
+        "intrinsic_abstain_reserves_compiled_action_slot"
       ],
       "authorityDelta": "none"
     },

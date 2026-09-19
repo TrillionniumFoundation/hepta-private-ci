@@ -91,6 +91,11 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "schema": "hepta.module-implementation-map.v3",
         "schemaVersion": 3,
         "sourceBase": source_base,
+        "sourceBaseRole": "historical_mapping_baseline_not_exact_head_receipt",
+        "exactHeadQualificationPolicy": {
+            "state": "external_exact_candidate_receipt_required",
+            "verifier": "scripts/hepta-implementation-maps.py verify --expected-sha <candidate>",
+        },
         "laneId": lanes[mid],
         "module": mid,
         "owner": module["owner"],
@@ -181,7 +186,19 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
+            # A tracked map cannot contain the SHA/tree of the same commit that
+            # contains it without a Git hash self-reference. Keep this field as
+            # historical navigation provenance; exact-candidate identity is a
+            # runtime/CI receipt checked against the checked-out Git object.
             "sourceBase": row.get("sourceBase") or source_base,
+            "sourceBaseRole": "historical_mapping_baseline_not_exact_head_receipt",
+            "exactHeadQualificationPolicy": row.get(
+                "exactHeadQualificationPolicy",
+                {
+                    "state": "external_exact_candidate_receipt_required",
+                    "verifier": "scripts/hepta-implementation-maps.py verify --expected-sha <candidate>",
+                },
+            ),
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -283,11 +300,20 @@ def generate():
     print(json.dumps({"generated": len(written), "maps": written}, ensure_ascii=False))
 
 
-def verify():
+def verify(expected_sha: str | None = None, expected_tree: str | None = None):
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     failures = []
     source_bases = set()
+    current = current_source_base()
+    if expected_sha is not None and current["commit"] != expected_sha:
+        failures.append(
+            f"exact source commit: expected {expected_sha}, observed {current['commit']}"
+        )
+    if expected_tree is not None and current["tree"] != expected_tree:
+        failures.append(
+            f"exact source tree: expected {expected_tree}, observed {current['tree']}"
+        )
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -308,6 +334,11 @@ def verify():
             failures.append(f"{mid}: identity")
         if row.get("laneId") != lanes.get(mid):
             failures.append(f"{mid}: lane")
+        role = row.get(
+            "sourceBaseRole", "historical_mapping_baseline_not_exact_head_receipt"
+        )
+        if role != "historical_mapping_baseline_not_exact_head_receipt":
+            failures.append(f"{mid}: unsupported sourceBaseRole {role!r}")
         source_base = row.get("sourceBase")
         if (
             not isinstance(source_base, dict)
@@ -356,6 +387,10 @@ def verify():
                 "modules": len(modules),
                 "maps": len(modules),
                 "productionImplementationProved": False,
+                "mappingSourceBaseRole": "historical_mapping_baseline_not_exact_head_receipt",
+                "mappingBaselines": sorted(source_bases),
+                "currentSourceBase": current,
+                "exactCandidateVerified": expected_sha is not None,
             },
             sort_keys=True,
         )
@@ -365,8 +400,19 @@ def verify():
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("command", choices=["generate", "migrate", "verify"])
+    parser.add_argument("--expected-sha")
+    parser.add_argument("--expected-tree")
     args = parser.parse_args()
-    {"generate": generate, "migrate": migrate, "verify": verify}[args.command]()
+    if args.command == "verify":
+        if args.expected_sha is not None and not re.fullmatch(r"[0-9a-f]{40}", args.expected_sha):
+            parser.error("--expected-sha must be a 40-character lowercase Git SHA")
+        if args.expected_tree is not None and not re.fullmatch(r"[0-9a-f]{40}", args.expected_tree):
+            parser.error("--expected-tree must be a 40-character lowercase Git tree SHA")
+        verify(args.expected_sha, args.expected_tree)
+    elif args.command == "generate":
+        generate()
+    else:
+        migrate()
 
 
 if __name__ == "__main__":

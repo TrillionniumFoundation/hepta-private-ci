@@ -142,13 +142,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-objective/src/objective_admission.rs](../../../codex-rs/hepta-objective/src/objective_admission.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md) specifies this module's algorithm, admission-safe aggregate ceilings and capacity fixtures. The exact Source-V1-to-native support boundary is recorded in [`SEMANTIC_SUPPORT.md`](SEMANTIC_SUPPORT.md); syntactically accepted source operators that lack a lossless native representation are deterministic rejections, not implemented compiler semantics. Target ceilings are not measured latency. Current native limits belong to [codex-rs/hepta-objective/src/objective_admission.rs](../../../codex-rs/hepta-objective/src/objective_admission.rs), [source_envelope_validation.rs](../../../codex-rs/hepta-objective/src/source_envelope_validation.rs) and the linked implementation components. The executable named-host procedure is [OBJECTIVE_TARGET_HOST_MEASUREMENT.md](../../readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md) with recorder `scripts/hepta-objective-target-measure.py`; ordinary admission/compile and maximum-conflict extraction are measured separately.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Stateless compiler/admission library; embed it at a request boundary and preserve its immutable objective/run snapshot in the owning caller. No compiler daemon or private objective database is needed. Unsupported language, resource exhaustion and infeasibility remain different outcomes; changing goal semantics requires a new authorized revision.
+Stateless compiler/admission library with a named product-source composition in Agentd. `ObjectiveRuntimeHost::submit` authenticates the signed structured request against current AuthBus trust, derives the owner-local admission context/profile/generation/fence, and calls `compile_and_publish_objective_run_v1`; the destination-owned `DurableRunStartJournal` synchronously persists the admission binding, objective semantic bytes and `RunStartSnapshotV1` before a non-abstain run reaches `AgentRunCoordinator`. Restart recovery replays the journal and revalidates retained signatures against current trust. The compiler still owns no daemon or private objective database. This is source composition, not deployment activation. Unsupported language, resource exhaustion and infeasibility remain different outcomes; changing goal semantics requires a new authorized revision.
 
 Current operating and state-format references:
 
@@ -162,8 +162,10 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-objective/src/compiler_tests.rs](../../../codex-rs/hepta-objective/src/compiler_tests.rs); named case: `compilation_is_permutation_invariant`.
 - [codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs](../../../codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs); named case: `all_three_action_graphs_match_truth_table_and_have_minimal_conflicts`.
+- [codex-rs/hepta-agentd/src/objective_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/objective_runtime_tests.rs); signed ingress, replay frontier, restart/trust revalidation and runtime handoff.
+- [codex-rs/hepta-learning-ledger/src/run_start_tests.rs](../../../codex-rs/hepta-learning-ledger/src/run_start_tests.rs); durable append, exact replay, conflict and recovery.
 
-In `codex-rs`, run `just test -p codex-hepta-objective`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-objective`, plus the focused `codex-hepta-learning-ledger` run-start, `codex-hepta-intelligence` objective-run and `codex-hepta-agentd` objective-runtime tests. `.github/workflows/hepta-objective-admission.yml` executes those owner/caller checks, the exact-source verifier and measurement-recorder self-test. `.github/workflows/hepta-lane-d-semantic-conformance.yml` supplies cross-platform Lane-D package checks; the consolidated source workflow also carries `codex-hepta-objective` in this candidate. These commands/workflows are invocations and exact-candidate evidence surfaces, not permanent pass receipts.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -180,7 +182,7 @@ Source implementation completes only when the declared target root exists, publi
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+Source composition now names Agentd's signed objective ingress and durable run-start owner path. Activation remains separate: the deployed Agentd identity, current AuthBus trust distribution, selected store/host profile, crash/restart/backpressure behavior and target-host performance receipts must be qualified before activation. Shadow/qualification callers and source-composed fixtures are not deployment evidence.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
@@ -194,7 +196,7 @@ For `objective.compiler`, this document grants no runtime, production, model, pr
 
 #### `OBJ-0-OBJECTIVE-CONTRACTS`
 
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `1`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `intelligence-platform` / `kernel-contracts`.
 - Allowed write paths:
 - `codex-rs/hepta-objective/**`
@@ -223,7 +225,7 @@ For `objective.compiler`, this document grants no runtime, production, model, pr
 
 #### `OBJ-1-OBJECTIVE-COMPILER`
 
-- State: `planned`; priority: `1`; parallel class: `contract_coordinated`.
+- State: `source_implemented`; priority: `1`; parallel class: `contract_coordinated`.
 - Owner/deputy: `intelligence-platform` / `kernel-contracts`.
 - Allowed write paths:
 - `codex-rs/hepta-objective/**`
@@ -279,4 +281,4 @@ The bootstrap source-location obligation for `objective.compiler` is implemented
 
 - `codex-rs/hepta-objective`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-objective-admission.yml` for exact-candidate identity, owner and product-composition tests, strict Clippy, formatting, clean state and target-measurement recorder self-test; `.github/workflows/hepta-lane-d-semantic-conformance.yml` repeats Lane-D owner checks on Linux, macOS and Windows. `.github/workflows/hepta-consolidated-source.yml` also includes `codex-hepta-objective` in this candidate's shared source-owner package set. Committed implementation-map `sourceBase` values are historical navigation provenance and cannot be the SHA/tree of the same commit that contains them; exact candidate identity is therefore verified externally against the checked-out Git object by `scripts/hepta-implementation-maps.py verify --expected-sha ...`. These are execution gates, not stored pass receipts. This receipt grants no deployment, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.

@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "lane": "LANE-D-OBJECTIVE-VALUE",
   "authorityDelta": "none",
-  "repositoryControlledState": "candidate_complete_pending_exact_head_workflows",
+  "repositoryControlledState": "source_composed_candidate_pending_current_exact_head_and_synthetic_merge_workflows",
   "gaps": [
     {
       "id": "LANE-D-OBJ-ERR-001",
@@ -285,6 +285,97 @@
         "docs/readiness/NDU_SYSTEM_EXECUTION.md",
         "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json"
       ]
+    },
+    {
+      "id": "LANE-D-OBJ-API-029",
+      "severity": "P0",
+      "title": "Raw objective compiler API allowed callers to bypass authenticated admission",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-objective/src/lib.rs",
+        "codex-rs/hepta-objective/src/objective_admission.rs",
+        "codex-rs/hepta-objective/src/objective_admission_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-OBJ-CALLER-030",
+      "severity": "P0",
+      "title": "Objective compiler lacked a canonical authenticated product caller and durable run-start publication path",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-agentd/src/objective_runtime.rs",
+        "codex-rs/hepta-intelligence/src/objective_run.rs",
+        "codex-rs/hepta-learning-ledger/src/run_start.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-OBJ-AUTH-031",
+      "severity": "P0",
+      "title": "Production admission context was not bound to a current owner trust verification",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-agentd/src/objective_runtime.rs::ObjectiveRuntimeHost::submit",
+        "codex-rs/hepta-agentd/src/objective_runtime.rs::authentication_is_current",
+        "codex-rs/hepta-learning-ledger/src/run_start.rs::RunStartAuthenticationV1"
+      ]
+    },
+    {
+      "id": "LANE-D-OBJ-BOUNDS-032",
+      "severity": "P1",
+      "title": "Source grammar per-field bounds exceeded final native aggregate ceilings",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-objective/src/source_envelope_validation.rs",
+        "codex-rs/hepta-objective/src/source_envelope_v1_tests.rs",
+        "docs/readiness/PROTOCOLS.json",
+        "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md"
+      ]
+    },
+    {
+      "id": "LANE-D-OBJ-TRUTH-033",
+      "severity": "P1",
+      "title": "Implementation maps could agree on stale sourceBase values without an exact checked-out candidate receipt",
+      "state": "closed",
+      "closure": [
+        "scripts/hepta-implementation-maps.py",
+        ".github/workflows/hepta-contract-gate.yml",
+        ".github/workflows/hepta-objective-admission.yml",
+        "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json"
+      ]
+    },
+    {
+      "id": "LANE-D-OBJ-RETRY-034",
+      "severity": "P1",
+      "title": "OBJ-E007 treated unrelated unavailable variants as one blanket retry class",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-objective/src/error_policy.rs",
+        "docs/contracts/OBJECTIVE_ERRORS.json",
+        "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md"
+      ]
+    },
+    {
+      "id": "LANE-D-OBJ-CI-035",
+      "severity": "P2",
+      "title": "Objective CI and documentation did not directly qualify the complete product-source composition",
+      "state": "closed",
+      "closure": [
+        ".github/workflows/hepta-objective-admission.yml",
+        "docs/modules/objective.compiler/TECHNICAL.md",
+        "qualification/module-execution-dossiers/detail/objective.compiler.md"
+      ]
+    },
+    {
+      "id": "LANE-D-OBJ-MEASURE-036",
+      "severity": "P2",
+      "title": "No exact-source harness separately measured ordinary objective compilation and maximum conflict extraction",
+      "state": "closed",
+      "closure": [
+        "scripts/hepta-objective-target-measure.py",
+        "docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md",
+        "codex-rs/hepta-objective/src/objective_admission_tests.rs::measurement_ordinary_admission_compile_v1",
+        "codex-rs/hepta-objective/src/feasibility_tests.rs::measurement_conflict_extraction_v1"
+      ]
     }
   ],
   "externalGates": [
@@ -295,13 +386,13 @@
     },
     {
       "id": "LANE-D-EXT-COMPOSITION",
-      "state": "external_observation_required",
-      "owner": "product runtime and production store owners"
+      "state": "external_deployment_observation_required",
+      "owner": "deployed Agentd/AuthBus and durable-store owners"
     },
     {
       "id": "LANE-D-EXT-HOST-MEASUREMENT",
-      "state": "external_observation_required",
-      "owner": "target-host qualification"
+      "state": "external_target_host_observation_required",
+      "owner": "selected target-host qualification owner"
     },
     {
       "id": "LANE-D-EXT-ACTIVATION",
