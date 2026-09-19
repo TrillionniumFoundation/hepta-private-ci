@@ -177,6 +177,37 @@ impl AutomationStore {
         row.map(effect_attempt_from_row).transpose()
     }
 
+    pub(crate) async fn pending_effect_dispatch_attempts(
+        &self,
+        limit: usize,
+    ) -> Result<Vec<EffectDispatchAttempt>, TaskFlowError> {
+        if limit == 0 || limit > 1_024 {
+            return Err(TaskFlowError::Invalid(
+                "effect recovery scan limit".to_string(),
+            ));
+        }
+        let rows = sqlx::query(
+            "SELECT a.*, o.observation, o.evidence_digest, o.observed_at_ms
+             FROM taskflow_effect_dispatch_attempts a
+             LEFT JOIN taskflow_effect_dispatch_observations o
+               ON o.owner_agent_id = a.owner_agent_id
+              AND o.run_id = a.run_id
+              AND o.step_id = a.step_id
+              AND o.attempt = a.attempt
+             WHERE a.owner_agent_id = ? AND o.run_id IS NULL
+             ORDER BY a.started_at_ms, a.run_id, a.step_id, a.attempt
+             LIMIT ?",
+        )
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(i64::try_from(limit).map_err(|_| {
+            TaskFlowError::Invalid("effect recovery scan limit".to_string())
+        })?)
+        .fetch_all(self.taskflow_pool())
+        .await
+        .map_err(|_| TaskFlowError::Unavailable)?;
+        rows.into_iter().map(effect_attempt_from_row).collect()
+    }
+
     pub(crate) async fn record_effect_dispatch_observation(
         &self,
         run_id: &str,

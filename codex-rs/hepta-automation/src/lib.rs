@@ -28,10 +28,13 @@ mod taskflow_kernel;
 mod taskflow_recovery;
 mod taskflow_step;
 
+pub use authorized_effect::AuthorizedEffectDependency;
 pub use authorized_effect::AuthorizedEffectDriver;
 pub use authorized_effect::AuthorizedEffectDriverError;
 pub use authorized_effect::AuthorizedEffectError;
+pub use authorized_effect::AuthorizedEffectIntent;
 pub use authorized_effect::AuthorizedEffectOutcome;
+pub use authorized_effect::AuthorizedEffectPending;
 pub use authorized_effect::AuthorizedEffectProviderReceipt;
 pub use authorized_effect::AuthorizedEffectRecovery;
 pub use authorized_effect::AuthorizedEffectRecoveryResult;
