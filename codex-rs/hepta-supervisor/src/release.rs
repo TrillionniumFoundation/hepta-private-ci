@@ -11,8 +11,8 @@ use crate::SupervisorEventKind;
 use crate::runtime::AgentSlot;
 use crate::runtime::ReleaseChange;
 use crate::runtime::ReleaseChangePhase;
-use crate::signed_intent::SignedIntentStatus;
 use crate::release_selection::read_release_selection;
+use crate::signed_intent::SignedIntentStatus;
 
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn upgrade_slot(
