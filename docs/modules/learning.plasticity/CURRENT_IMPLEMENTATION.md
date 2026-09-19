@@ -39,7 +39,7 @@ override these machine status facts.
 | `durable_topology_registry` | `source_implemented_anchored_governed_topology_registry` | `codex-rs/hepta-plasticity/src/topology_registry.rs` | 1 |
 | `authenticated_topology_product_composition` | `adapter_implemented_called_by_agentd_host_entrypoint_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/topology_product.rs` | 2 |
 | `agentd_topology_host` | `host_adapter_entrypoint_source_implemented_external_anchor_not_runtime_executed_or_target_host_qualified` | `codex-rs/hepta-agentd/src/topology_plasticity_host.rs` | 2 |
-| `structural_canary_controller` | `source_implemented_plan_history_bound_observation_only_no_topology_apply_authority` | `codex-rs/hepta-plasticity/src/topology_canary.rs` | 5 |
+| `structural_canary_controller` | `source_implemented_plan_history_bound_observation_only_no_topology_apply_authority` | `codex-rs/hepta-plasticity/src/topology_canary.rs` | 6 |
 
 ### Repository-controlled gaps
 
