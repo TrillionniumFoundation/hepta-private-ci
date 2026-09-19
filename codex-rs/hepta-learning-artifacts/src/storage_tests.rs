@@ -425,8 +425,8 @@ fn contained_write_rejects_escape_and_validates_before_create() {
     register(&mut registry, "policy", None, b"policy-v1");
 
     assert_eq!(
-        CreateOnlyArtifactFile::create_beneath_trusted_root(&root.0, "../escape"),
-        Err(ArtifactStorageError::InvalidPath)
+        CreateOnlyArtifactFile::create_beneath_trusted_root(&root.0, "../escape").err(),
+        Some(ArtifactStorageError::InvalidPath)
     );
 
     let rejected = PathBuf::from("rejected-payload");
@@ -470,8 +470,8 @@ fn contained_write_rejects_symlink_ancestor() {
     symlink(&real, root.0.join("alias")).unwrap();
 
     assert_eq!(
-        CreateOnlyArtifactFile::create_beneath_trusted_root(&root.0, "alias/payload"),
-        Err(ArtifactStorageError::PathEscape)
+        CreateOnlyArtifactFile::create_beneath_trusted_root(&root.0, "alias/payload").err(),
+        Some(ArtifactStorageError::PathEscape)
     );
     assert!(!real.join("payload").exists());
     fs::remove_dir_all(&root.0).unwrap();
