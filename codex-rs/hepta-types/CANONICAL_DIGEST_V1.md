@@ -45,10 +45,11 @@ there is no truncation.
 
 `docs/lane-a-foundation/platform.types/CANONICAL_DIGEST_V1.json` freezes an
 independent conformance vector. Rust unit tests, Python and Node verifiers all
-reconstruct the same 218-byte encoding and SHA-256 digest
+reconstruct the same 254-byte encoding and SHA-256 digest
 `8ef482c0a0cd42aee59638898402103024004fbb0ea189d5673d4d6455c2a53d`.
 
-The vector deliberately includes Unicode UTF-8, signed and unsigned integers,
+The vector deliberately includes Unicode UTF-8, `u64::MAX`, `i64::MIN`,
 opaque bytes, a digest, an array and a map whose source order differs from its
-canonical order. A change that alters the frozen bytes is a protocol-version
+canonical order. Integer values are carried as decimal strings in the JSON
+fixture so JavaScript never passes full-width integers through IEEE-754 `Number`. A change that alters the frozen bytes is a protocol-version
 change, not a refactor.
