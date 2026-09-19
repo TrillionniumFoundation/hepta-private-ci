@@ -1707,6 +1707,8 @@ impl BaoClient {
             PrepareIssue::New | PrepareIssue::Resume => {}
         }
 
+        let url = dynamic_url(self, &request.mount, &request.path)?;
+        let network_request = authorized_request(self, self.client.get(url), &request.namespace)?;
         let verified = authority
             .claim(grant, &binding)
             .map_err(BaoLeaseError::Authority)?;
@@ -1715,9 +1717,6 @@ impl BaoClient {
             request_sha256,
             LeaseOperationKind::Issue,
         )?;
-
-        let url = dynamic_url(self, &request.mount, &request.path)?;
-        let network_request = authorized_request(self, self.client.get(url), &request.namespace)?;
         let response = match network_request.send().await {
             Ok(response) => response,
             Err(error) => {
@@ -1970,14 +1969,6 @@ impl BaoClient {
             }
             PrepareExisting::New | PrepareExisting::Resume => {}
         }
-        authority
-            .claim(grant, &binding)
-            .map_err(BaoLeaseError::Authority)?;
-        registry.mark_dispatching(
-            &request.operation_id,
-            binding.request_sha256,
-            LeaseOperationKind::Renew,
-        )?;
         let provider_id = registry.provider_identity(request.lease_handle_sha256)?;
         let url = system_url(self, &["leases", "renew"])?;
         let payload = RenewPayload {
@@ -1988,6 +1979,14 @@ impl BaoClient {
             self,
             self.client.post(url).json(&payload),
             &request.namespace,
+        )?;
+        authority
+            .claim(grant, &binding)
+            .map_err(BaoLeaseError::Authority)?;
+        registry.mark_dispatching(
+            &request.operation_id,
+            binding.request_sha256,
+            LeaseOperationKind::Renew,
         )?;
         let response = match network_request.send().await {
             Ok(response) => response,
@@ -2139,14 +2138,6 @@ impl BaoClient {
             }
             PrepareExisting::New | PrepareExisting::Resume => {}
         }
-        authority
-            .claim(grant, &binding)
-            .map_err(BaoLeaseError::Authority)?;
-        registry.mark_dispatching(
-            &request.operation_id,
-            binding.request_sha256,
-            LeaseOperationKind::Revoke,
-        )?;
         let provider_id = registry.provider_identity(request.lease_handle_sha256)?;
         let url = system_url(self, &["leases", "revoke"])?;
         let payload = RevokePayload {
@@ -2157,6 +2148,14 @@ impl BaoClient {
             self,
             self.client.post(url).json(&payload),
             &request.namespace,
+        )?;
+        authority
+            .claim(grant, &binding)
+            .map_err(BaoLeaseError::Authority)?;
+        registry.mark_dispatching(
+            &request.operation_id,
+            binding.request_sha256,
+            LeaseOperationKind::Revoke,
         )?;
         let response = match network_request.send().await {
             Ok(response) => response,
@@ -2249,14 +2248,6 @@ impl BaoClient {
             }
             PrepareExisting::New | PrepareExisting::Resume => {}
         }
-        let verified = authority
-            .claim(grant, &binding)
-            .map_err(BaoLeaseError::Authority)?;
-        registry.mark_dispatching(
-            &request.operation_id,
-            binding.request_sha256,
-            LeaseOperationKind::Reconcile,
-        )?;
         let provider_id = registry.provider_identity(request.lease_handle_sha256)?;
         let url = system_url(self, &["leases", "lookup"])?;
         let payload = LeaseLookupPayload {
@@ -2266,6 +2257,14 @@ impl BaoClient {
             self,
             self.client.post(url).json(&payload),
             &request.namespace,
+        )?;
+        let verified = authority
+            .claim(grant, &binding)
+            .map_err(BaoLeaseError::Authority)?;
+        registry.mark_dispatching(
+            &request.operation_id,
+            binding.request_sha256,
+            LeaseOperationKind::Reconcile,
         )?;
         let response = match network_request.send().await {
             Ok(response) => response,
