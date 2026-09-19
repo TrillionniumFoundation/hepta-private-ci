@@ -4876,6 +4876,9 @@ pub(crate) async fn verify_local_lease_outbox(
             .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
         verify_event_outbox_pairing(&events, &outbox)
             .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+        verify_operation_ledger(&mut transaction, &lease_id, owner, &events, &outbox)
+            .await
+            .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
     }
     let orphan_event_rows: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM cognitive_local_events AS e
@@ -4910,9 +4913,16 @@ pub(crate) async fn verify_local_lease_outbox(
             .fetch_one(&mut *transaction)
             .await
             .map_err(crate::cognitive_store::unavailable)?;
-    if foreign_event_rows != 0 || foreign_outbox_rows != 0 {
+    let foreign_operation_rows: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM cognitive_operation_ledger WHERE owner_agent_id != ? OR owner_id != ?")
+            .bind(owner.as_str())
+            .bind(owner.as_str())
+            .fetch_one(&mut *transaction)
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+    if foreign_event_rows != 0 || foreign_outbox_rows != 0 || foreign_operation_rows != 0 {
         return Err(CognitiveStoreError::Corrupt(
-            "local event/outbox journal contains a foreign owner".to_string(),
+            "local event/outbox/operation journal contains a foreign owner".to_string(),
         ));
     }
     transaction
