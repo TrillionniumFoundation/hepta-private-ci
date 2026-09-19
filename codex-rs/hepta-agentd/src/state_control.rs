@@ -608,8 +608,7 @@ fn cognitive_control_unavailable() -> AgentdPayload {
 
 fn agentd_capabilities() -> Result<crate::AgentdCapabilitySet, AgentdError> {
     crate::AgentdCapabilitySet::new(vec![
-        crate::AgentdCapability::new("run.lifecycle", 1, 1)
-            .map_err(AgentdError::Protocol)?,
+        crate::AgentdCapability::new("run.lifecycle", 1, 1).map_err(AgentdError::Protocol)?,
         crate::AgentdCapability::new("control.typed_backpressure", 1, 0)
             .map_err(AgentdError::Protocol)?,
     ])
@@ -628,9 +627,7 @@ fn run_snapshot_from_wire(value: crate::AgentdRunSnapshot) -> crate::RunSnapshot
     }
 }
 
-fn context_attachment_from_wire(
-    value: crate::AgentdContextAttachment,
-) -> crate::ContextAttachment {
+fn context_attachment_from_wire(value: crate::AgentdContextAttachment) -> crate::ContextAttachment {
     crate::ContextAttachment {
         run_id: value.run_id,
         request_digest: value.request_digest,
