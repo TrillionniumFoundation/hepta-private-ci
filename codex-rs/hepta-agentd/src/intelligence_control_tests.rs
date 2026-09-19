@@ -197,9 +197,9 @@ fn snapshot() -> CapabilitySnapshotV2 {
     .expect("snapshot")
 }
 
-fn composition(
+fn composition_request(
     decision: CompositionPortDecisionV3,
-) -> codex_hepta_intelligence::CompositionPipelineReceiptV3 {
+) -> (CompositionRunRequestV3, Ports) {
     let snapshot = snapshot();
     let legal = build_legal_candidates(LegalActionCandidateSetRequestV1 {
         candidate_set_id: id("candidate-set"),
@@ -214,10 +214,7 @@ fn composition(
         support_floor_ppm: 900_000,
     })
     .expect("candidate set");
-    let mut ports = Ports {
-        intuition: decision,
-    };
-    prepare_intelligence_run_v3(
+    (
         CompositionRunRequestV3 {
             run_id: id("run:agentd-intelligence"),
             request_digest: digest("request"),
@@ -238,10 +235,17 @@ fn composition(
             },
             deadline_unix_micros: 2_000_000,
         },
-        &mut ports,
-        &Control,
+        Ports {
+            intuition: decision,
+        },
     )
-    .expect("composition")
+}
+
+fn composition(
+    decision: CompositionPortDecisionV3,
+) -> codex_hepta_intelligence::CompositionPipelineReceiptV3 {
+    let (request, mut ports) = composition_request(decision);
+    prepare_intelligence_run_v3(request, &mut ports, &Control).expect("composition")
 }
 
 fn coordinator() -> AgentRunCoordinator {
@@ -253,6 +257,32 @@ fn coordinator() -> AgentRunCoordinator {
         ports_digest: digest("agentd-ports").to_string(),
     })
     .expect("coordinator")
+}
+
+#[test]
+fn agentd_directly_invokes_v3_before_host_admission() {
+    let (request, mut ports) = composition_request(CompositionPortDecisionV3::Continue);
+    let mut coordinator = coordinator();
+    let receipt = compose_and_admit_intelligence_run_v1(
+        &mut coordinator,
+        1_000,
+        request,
+        &mut ports,
+        &Control,
+    )
+    .expect("direct composition admission");
+
+    assert_eq!(
+        receipt.composition.disposition,
+        codex_hepta_intelligence::CompositionDispositionV3::HostEnvelopePrepared
+    );
+    let admission = receipt.admission.expect("host admission");
+    assert_eq!(admission.run.phase, RunPhase::ContextAttached);
+    assert!(
+        coordinator
+            .run("run:agentd-intelligence")
+            .is_some_and(|run| run.phase == RunPhase::ContextAttached)
+    );
 }
 
 #[test]
