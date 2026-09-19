@@ -6,6 +6,7 @@
 
 use std::error::Error as StdError;
 use std::fmt;
+use std::io;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -280,6 +281,16 @@ impl StdError for NeuronModelError {}
 pub enum WitnessStoreError {
     Unavailable,
     Conflict,
+    Busy,
+    InvalidLimit,
+    InvalidAnchor,
+    NotRegular,
+    Corrupt,
+    ContextMismatch,
+    Capacity,
+    Indeterminate,
+    Poisoned,
+    Io(io::ErrorKind),
 }
 
 impl fmt::Display for WitnessStoreError {
@@ -289,6 +300,12 @@ impl fmt::Display for WitnessStoreError {
 }
 
 impl StdError for WitnessStoreError {}
+
+impl From<io::Error> for WitnessStoreError {
+    fn from(error: io::Error) -> Self {
+        Self::Io(error.kind())
+    }
+}
 
 /// Durable witness storage is independent from the journal. Implementations
 /// must authenticate scope/generation and make compare-and-swap durable before
