@@ -67,22 +67,27 @@ pub struct CanonicalFieldV1<'a> {
 /// Encodes the language-neutral Platform Types V1 canonical byte sequence.
 ///
 /// Framing is:
-/// prefix || u16(domain_len) || domain || u16(field_count) || fields.
+/// prefix || u16(domain_len) || domain || u64(schema_version)
+/// || u16(field_count) || fields.
 /// Each field is u16(name_len) || name || u8(type_tag) || u32(value_len)
 /// || value. Integers are big-endian, booleans are 0/1, field names must be
 /// strictly byte-sorted, and the full collection is capped at 256 KiB.
 pub fn canonical_encode_v1(
     domain: &str,
+    schema_version: u64,
     fields: &[CanonicalFieldV1<'_>],
 ) -> Result<Vec<u8>, CanonicalDigestError> {
     validate_domain(domain)?;
+    if schema_version == 0 {
+        return Err(CanonicalDigestError::ZeroSchemaVersion);
+    }
     if fields.len() > MAX_FIELDS_V1 {
         return Err(CanonicalDigestError::TooManyFields(fields.len()));
     }
 
     let mut total = CANONICAL_PREFIX_V1
         .len()
-        .checked_add(2 + domain.len() + 2)
+        .checked_add(2 + domain.len() + 8 + 2)
         .ok_or(CanonicalDigestError::CollectionTooLarge)?;
     let mut previous_name: Option<&[u8]> = None;
     for field in fields {
@@ -107,6 +112,7 @@ pub fn canonical_encode_v1(
     output.extend_from_slice(CANONICAL_PREFIX_V1);
     output.extend_from_slice(&(domain.len() as u16).to_be_bytes());
     output.extend_from_slice(domain.as_bytes());
+    output.extend_from_slice(&schema_version.to_be_bytes());
     output.extend_from_slice(&(fields.len() as u16).to_be_bytes());
     for field in fields {
         output.extend_from_slice(&(field.name.len() as u16).to_be_bytes());
@@ -122,9 +128,11 @@ pub fn canonical_encode_v1(
 /// byte sequence returned by canonical_encode_v1.
 pub fn canonical_digest_v1(
     domain: &str,
+    schema_version: u64,
     fields: &[CanonicalFieldV1<'_>],
 ) -> Result<Digest32, CanonicalDigestError> {
-    canonical_encode_v1(domain, fields).map(|encoded| Digest32::of_bytes(&encoded))
+    canonical_encode_v1(domain, schema_version, fields)
+        .map(|encoded| Digest32::of_bytes(&encoded))
 }
 
 fn validate_domain(domain: &str) -> Result<(), CanonicalDigestError> {
@@ -166,6 +174,7 @@ pub enum CanonicalDigestError {
     EmptyDomain,
     DomainTooLarge(usize),
     InvalidDomain,
+    ZeroSchemaVersion,
     TooManyFields(usize),
     EmptyFieldName,
     FieldNameTooLarge(usize),
