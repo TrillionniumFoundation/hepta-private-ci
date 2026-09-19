@@ -3046,7 +3046,55 @@ async fn logical_stream_dependency_tx(
                 MatrixEventId::parse(event_id).map_err(|_| MatrixDurableError::Corrupt)?,
             ))
         }
-        OutboxState::PermanentFailure => Ok(LogicalStreamDependency::RootFailed),
+        OutboxState::PermanentFailure => {
+            let dispatch_state = sqlx::query_scalar::<_, Option<String>>(
+                "SELECT state FROM matrix_dispatch_ledger
+                 WHERE stable_txn_id = (
+                     SELECT root_txn.txn_id
+                     FROM outbox_txns AS root_txn
+                     JOIN outbox_txns AS current_txn
+                       ON current_txn.logical_outbox_id = root_txn.logical_outbox_id
+                     WHERE current_txn.txn_id = ?
+                     ORDER BY root_txn.revision ASC
+                     LIMIT 1
+                 )",
+            )
+            .bind(stable_txn_id.as_str())
+            .fetch_one(&mut **transaction)
+            .await
+            .map_err(unavailable)?;
+            match dispatch_state.as_deref() {
+                Some("failed") => Ok(LogicalStreamDependency::RootFailed),
+                Some("succeeded") | Some("redacted") => {
+                    let event_id = sqlx::query_scalar::<_, Option<String>>(
+                        "SELECT terminal_event_id FROM matrix_dispatch_ledger
+                         WHERE stable_txn_id = (
+                             SELECT root_txn.txn_id
+                             FROM outbox_txns AS root_txn
+                             JOIN outbox_txns AS current_txn
+                               ON current_txn.logical_outbox_id = root_txn.logical_outbox_id
+                             WHERE current_txn.txn_id = ?
+                             ORDER BY root_txn.revision ASC
+                             LIMIT 1
+                         )",
+                    )
+                    .bind(stable_txn_id.as_str())
+                    .fetch_one(&mut **transaction)
+                    .await
+                    .map_err(unavailable)?
+                    .ok_or(MatrixDurableError::Corrupt)?;
+                    Ok(LogicalStreamDependency::Replace(
+                        MatrixEventId::parse(event_id)
+                            .map_err(|_| MatrixDurableError::Corrupt)?,
+                    ))
+                }
+                Some("prepared" | "dispatched" | "accepted" | "indeterminate") => {
+                    Ok(LogicalStreamDependency::Waiting)
+                }
+                Some(_) => Err(MatrixDurableError::Corrupt),
+                None => Ok(LogicalStreamDependency::RootFailed),
+            }
+        }
         OutboxState::Pending | OutboxState::InFlight | OutboxState::RetryScheduled => {
             Ok(LogicalStreamDependency::Waiting)
         }
