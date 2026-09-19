@@ -755,10 +755,13 @@ fn copy_immutable_program(source: &Path, destination: &Path) -> Result<(), Fleet
         .create_new(true)
         .open(destination)?;
     std::io::copy(&mut input, &mut output)?;
-    set_mode(destination, /*mode*/ 0o555)?;
-    // Flush through the writing handle retained across the mode change.
-    // Windows cannot FlushFileBuffers on a separately opened read-only handle.
+    // Flush the complete program through the original writable handle before
+    // removing write permission. Darwin may reject synchronization after the
+    // pathname has been made read-only; Windows likewise needs the retained
+    // writable handle for FlushFileBuffers. The containing directories are
+    // synchronized by the caller after the immutable mode is installed.
     output.sync_all()?;
+    set_mode(destination, /*mode*/ 0o555)?;
     Ok(())
 }
 
