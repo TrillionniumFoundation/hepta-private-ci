@@ -91,7 +91,7 @@ External evidence gates:
 
 ## 6. `inference.control`
 
-The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, quota/resource/economic-budget holds, dispatch/final-use bindings, terminal observations and bounded native compaction archives.
+The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, quota/resource/economic-budget holds, dispatch/final-use bindings, digest-only provider observations and bounded native compaction archives. New product settlements never persist provider/model text; compaction redacts retained pre-upgrade native observations into SHA-256 receipts.
 
 The actual Agent-fenced App Server client supplies matching turn observations through a trusted in-process port. Live dispatch consumes a signed final-use grant bound to the exact serialized turn. Post-crash recovery is read-only: a persisted matching Completed/Failed turn can establish terminality and release local capacity, but cannot recreate the non-serializable final-use token or retroactively report authorized success.
 
@@ -100,12 +100,12 @@ The actual Agent-fenced App Server client supplies matching turn observations th
 | `reserve_request` | `owner_native` | `codex-rs/hepta-infer-core/src/native_control.rs` — `pub fn reserve_native(` |
 | `schedule` | `owner_native` | `codex-rs/hepta-infer-core/src/native_control.rs` — `pub fn dispatch_native(` |
 | `cancel` | `owner_native` | `codex-rs/hepta-infer-core/src/native_control.rs` — `pub fn cancel_native(` |
-| `settle` | `owner_native` | `codex-rs/hepta-infer-core/src/native_control.rs` — `pub fn settle_native(` |
+| `settle` | `owner_native` | `codex-rs/hepta-infer-core/src/native_control.rs` — `pub fn settle_native_receipt_only(` |
 
 External evidence gates:
 
 - activate the named hepta-infer-worker native-app-server entrypoint under the deployed Supervisor/Agentd composition with owner-issued current quota/resource evidence and signed final-use grants
-- real provider deployment, crash/cancellation/reconciliation acceptance and provider-side retention behavior
+- real provider deployment, crash/cancellation/reconciliation acceptance and predecessor-archive/backup secure-deletion behavior
 - real economic billing reconciliation and measured device-capacity authority/qualification; source budget units and ResourceAdvertisement bindings do not prove provider charges or hardware availability
 - independently operated final-use signer/revocation service and product activation
 - authenticated remote-worker transport if a separate process is introduced
