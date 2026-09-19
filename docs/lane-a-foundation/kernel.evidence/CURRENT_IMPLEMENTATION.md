@@ -34,11 +34,9 @@ rows, qualification canonical JSON/signatures/hash chain, independent decision
 projections and foreign keys on open. A read-only diagnostic open neither
 creates nor migrates.
 
-Qualification writers authenticate an Ed25519 issuer against a bounded,
-versioned trust policy before append. Every receipt binds candidate id, source
+Qualification writers first require one immutable trust policy to be provisioned into the owner SQLite store before any qualification receipt exists. They then authenticate every Ed25519 issuer against that pinned, bounded, versioned trust policy before append. Every receipt binds candidate id, source
 commit, source tree, claim class, payload digest, issuer role/principal/key,
-credential validity and signature. An external checkpoint binds the immutable
-store instance id plus an observed chain frontier. `open_with_checkpoint` and
+credential validity and signature. An external checkpoint binds the immutable store instance id, the pinned trust-policy digest and an observed chain frontier. `open_with_checkpoint` and
 its read-only counterpart reject rollback, replacement and frontier divergence.
 
 The named `hepta-evidence-writer` caller requires the previous external
