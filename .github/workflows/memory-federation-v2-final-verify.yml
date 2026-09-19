@@ -3,7 +3,7 @@ name: memory federation v2 final verify
 on:
   push:
     branches:
-      - fix/memory-federation-v2-hardening-final
+      - fix/memory-federation-v2-closure-20260920
     paths:
       - ".github/workflows/memory-federation-v2-final-verify.yml"
       - "codex-rs/hepta-memory-federation/**"
