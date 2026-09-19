@@ -293,6 +293,8 @@ pub(crate) struct MessageProcessorArgs {
     pub(crate) hepta_qualification_turn_writer_enabled: bool,
     pub(crate) hepta_qualification_turn_writer:
         Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
+    pub(crate) embedding_model_provider_policy_contributor:
+        Option<Arc<dyn codex_extension_api::ModelProviderPolicyContributor>>,
 }
 
 impl MessageProcessor {
@@ -323,6 +325,7 @@ impl MessageProcessor {
             hepta_local_development_policy,
             hepta_qualification_turn_writer_enabled,
             hepta_qualification_turn_writer,
+            embedding_model_provider_policy_contributor,
         } = args;
         // Only forward a host capability after every qualification gate has
         // been checked at the app-server boundary.  In particular, an
@@ -401,6 +404,8 @@ impl MessageProcessor {
                         hepta_local_development_policy,
                         hepta_qualification_turn_writer_enabled,
                         hepta_qualification_turn_writer: hepta_qualification_turn_writer.clone(),
+                        embedding_model_provider_policy_contributor:
+                            embedding_model_provider_policy_contributor.clone(),
                     },
                 ),
                 Arc::new(CodexHomeUserInstructionsProvider::new(
