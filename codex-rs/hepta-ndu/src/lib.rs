@@ -10,6 +10,7 @@
 #![forbid(unsafe_code)]
 
 mod conditional_moments;
+mod durable_projection_store;
 mod covariance;
 mod covariance_profile;
 mod error;
@@ -26,6 +27,13 @@ mod scoring;
 pub use conditional_moments::ConditionalMomentSampleV1;
 pub use conditional_moments::ConditionalMomentsV1;
 pub use conditional_moments::estimate_conditional_moments;
+pub use durable_projection_store::DurableNduProjectionError;
+pub use durable_projection_store::DurableNduProjectionStoreV1;
+pub use durable_projection_store::NduProjectionAppendDispositionV1;
+pub use durable_projection_store::NduProjectionAppendReceiptV1;
+pub use durable_projection_store::NduProjectionBackupV1;
+pub use durable_projection_store::NduProjectionRecoveryV1;
+pub use durable_projection_store::NduProjectionStoreAnchorV1;
 pub use covariance::ZEstimateV1;
 pub use covariance::solve_backward_regression;
 pub use covariance_profile::AdmittedCovarianceProfileV1;
