@@ -75,7 +75,6 @@ impl VerifiedUseTokenWitnessV1 {
     pub fn validate(&self) -> Result<(), VerifiedUseWitnessError> {
         if self.schema_version != VERIFIED_USE_TOKEN_WITNESS_SCHEMA_VERSION
             || self.authority_epoch == 0
-            || self.verified_at_unix_ms == 0
         {
             return Err(VerifiedUseWitnessError::Invalid);
         }
