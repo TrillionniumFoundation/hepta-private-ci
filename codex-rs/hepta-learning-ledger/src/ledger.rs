@@ -1,6 +1,8 @@
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
+use codex_hepta_objective::MAX_OBJECTIVE_RUN_START_PUBLICATION_BYTES;
+use codex_hepta_objective::decode_objective_run_start_publication_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::StableId;
@@ -14,6 +16,7 @@ use crate::LedgerError;
 use crate::LedgerEvent;
 use crate::LedgerRecord;
 use crate::LedgerSnapshot;
+use crate::ObjectiveRunStartRecordV1;
 use crate::OutcomeFinality;
 use crate::OutcomeObservation;
 use crate::Revocation;
@@ -190,11 +193,35 @@ impl LearningLedger {
     fn validate_event(&self, event: &LedgerEvent) -> Result<(), LedgerError> {
         validate_support_digests(event)?;
         match event {
+            LedgerEvent::RunStart(value) => self.validate_run_start(value),
             LedgerEvent::Decision(value) => self.validate_decision(value),
             LedgerEvent::Outcome(value) => self.validate_outcome(value),
             LedgerEvent::Credit(value) => self.validate_credit(value),
             LedgerEvent::Revocation(value) => self.validate_revocation(value),
         }
+    }
+
+    fn validate_run_start(&self, record: &ObjectiveRunStartRecordV1) -> Result<(), LedgerError> {
+        if record.record_id != record.run_id
+            || record.publication_bytes.is_empty()
+            || record.publication_bytes.len() > MAX_OBJECTIVE_RUN_START_PUBLICATION_BYTES
+            || record.objective_digest.is_zero()
+            || record.hard_constraint_digest.is_zero()
+            || record.publication_digest.is_zero()
+            || Digest32::of_bytes(&record.publication_bytes) != record.publication_digest
+        {
+            return Err(LedgerError::InvalidRunStartPublication);
+        }
+        let publication = decode_objective_run_start_publication_v1(&record.publication_bytes)
+            .map_err(|_| LedgerError::InvalidRunStartPublication)?;
+        if publication.publication_digest() != record.publication_digest
+            || publication.run_start().run_id != record.run_id
+            || publication.run_start().objective_digest != record.objective_digest
+            || publication.run_start().hard_constraint_digest != record.hard_constraint_digest
+        {
+            return Err(LedgerError::InvalidRunStartPublication);
+        }
+        Ok(())
     }
 
     fn validate_decision(&self, decision: &EpisodeDecision) -> Result<(), LedgerError> {
@@ -313,6 +340,7 @@ impl LearningLedger {
         self.record_kinds
             .insert(record_id, event_kind(&record.event));
         match &record.event {
+            LedgerEvent::RunStart(_) => {}
             LedgerEvent::Decision(value) => {
                 self.decisions.insert(
                     value.episode_id.clone(),
@@ -352,6 +380,7 @@ impl LearningLedger {
             return false;
         }
         match &record.event {
+            LedgerEvent::RunStart(_) => true,
             LedgerEvent::Decision(_) => true,
             LedgerEvent::Outcome(outcome) => self
                 .decisions
@@ -375,6 +404,11 @@ impl LearningLedger {
 
 fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
     match event {
+        LedgerEvent::RunStart(value) => {
+            if value.publication_digest.is_zero() {
+                return Err(LedgerError::EmptyDigest("objective run-start publication"));
+            }
+        }
         LedgerEvent::Decision(value) => {
             if value.objective_digest.is_zero() {
                 return Err(LedgerError::EmptyDigest("objective"));
@@ -433,6 +467,7 @@ enum EventKind {
     Outcome,
     Credit,
     Revocation,
+    RunStart,
 }
 
 const fn event_kind_code(kind: EventKind) -> u8 {
@@ -441,11 +476,13 @@ const fn event_kind_code(kind: EventKind) -> u8 {
         EventKind::Outcome => 1,
         EventKind::Credit => 2,
         EventKind::Revocation => 3,
+        EventKind::RunStart => 4,
     }
 }
 
 fn event_kind(event: &LedgerEvent) -> u8 {
     let kind = match event {
+        LedgerEvent::RunStart(_) => EventKind::RunStart,
         LedgerEvent::Decision(_) => EventKind::Decision,
         LedgerEvent::Outcome(_) => EventKind::Outcome,
         LedgerEvent::Credit(_) => EventKind::Credit,
@@ -463,6 +500,7 @@ pub(crate) fn encode_event(event: &LedgerEvent) -> Vec<u8> {
     bytes.extend_from_slice(EVENT_DIGEST_DOMAIN);
     bytes.push(event_kind(event));
     match event {
+        LedgerEvent::RunStart(value) => push_run_start(&mut bytes, value),
         LedgerEvent::Decision(value) => push_decision(&mut bytes, value),
         LedgerEvent::Outcome(value) => push_outcome(&mut bytes, value),
         LedgerEvent::Credit(value) => push_credit(&mut bytes, value),
@@ -482,6 +520,16 @@ fn digest_chain(
     bytes.extend_from_slice(&sequence.get().to_be_bytes());
     bytes.extend_from_slice(event_digest.as_array());
     Digest32::of_bytes(&bytes)
+}
+
+fn push_run_start(bytes: &mut Vec<u8>, value: &ObjectiveRunStartRecordV1) {
+    push_id(bytes, &value.record_id);
+    push_id(bytes, &value.run_id);
+    push_digest(bytes, value.objective_digest);
+    push_digest(bytes, value.hard_constraint_digest);
+    push_digest(bytes, value.publication_digest);
+    push_len(bytes, value.publication_bytes.len());
+    bytes.extend_from_slice(&value.publication_bytes);
 }
 
 fn push_decision(bytes: &mut Vec<u8>, value: &EpisodeDecision) {

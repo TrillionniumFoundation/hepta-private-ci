@@ -6,12 +6,14 @@
 
 #![forbid(unsafe_code)]
 
+mod canonical_protocol;
 mod compiler;
 mod error;
 mod feasibility;
 mod feasibility_model;
 mod model;
 mod objective_admission;
+mod publication;
 mod scalar_adapter;
 mod source_envelope_json;
 mod source_envelope_json_dto;
@@ -19,7 +21,11 @@ mod source_envelope_json_shape;
 mod source_envelope_v1;
 mod source_envelope_validation;
 
-pub use compiler::compile;
+pub use canonical_protocol::MAX_CANONICAL_OBJECTIVE_PROTOCOL_BYTES;
+pub use canonical_protocol::ObjectiveCanonicalArtifactsV1;
+pub use canonical_protocol::ObjectiveProtocolError;
+pub use canonical_protocol::build_canonical_objective_artifacts_v1;
+pub use canonical_protocol::encode_run_start_snapshot_v1;
 pub use error::ObjectiveError;
 pub use feasibility::check_feasibility_v1;
 pub use feasibility_model::AtomPrecedenceV1;
@@ -65,6 +71,22 @@ pub use objective_admission::ObjectiveSoftDimensionProfileV1;
 pub use objective_admission::ObjectiveSourceAuthenticationV1;
 pub use objective_admission::admit_and_compile_objective_v1;
 pub use objective_admission::canonical_objective_intent_digest_v1;
+pub use publication::MAX_OBJECTIVE_RUN_START_PUBLICATION_BYTES;
+pub use publication::ObjectivePublicationError;
+pub use publication::ObjectiveRunStartBindingsV1;
+pub use publication::ObjectiveRunStartPublicationV1;
+pub use publication::RunStartSnapshotV1;
+pub use publication::decode_objective_run_start_publication_v1;
+pub use publication::encode_objective_run_start_publication_v1;
+pub use publication::prepare_objective_run_start_v1;
+
+#[cfg(feature = "legacy-objective-qualification")]
+#[doc(hidden)]
+pub fn compile_prevalidated_legacy_objective_for_qualification(
+    source: ObjectiveSourceEnvelope,
+) -> Result<Result<ObjectiveCompileReceipt, ObjectiveConflictReceipt>, ObjectiveError> {
+    compiler::compile_prevalidated_legacy_objective(source)
+}
 pub use source_envelope_json::MAX_OBJECTIVE_SOURCE_JSON_INPUT_BYTES;
 pub use source_envelope_json::ObjectiveSourceJsonError;
 pub use source_envelope_json::decode_source_envelope_json_v1;

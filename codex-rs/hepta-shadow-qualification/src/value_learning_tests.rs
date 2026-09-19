@@ -34,7 +34,7 @@ use codex_hepta_objective::SoftDirection;
 use codex_hepta_objective::SoftPreference;
 use codex_hepta_objective::SourceTrust;
 use codex_hepta_objective::SuccessPredicate;
-use codex_hepta_objective::compile;
+use codex_hepta_objective::compile_prevalidated_legacy_objective_for_qualification as compile;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;

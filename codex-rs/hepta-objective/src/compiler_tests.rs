@@ -6,7 +6,7 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
 
-use super::compile;
+use super::compile_prevalidated_legacy_objective as compile;
 use crate::ActionClass;
 use crate::CompileDisposition;
 use crate::ConfirmationPolicy;

@@ -39,9 +39,22 @@ pub struct RunSnapshot {
     pub run_id: String,
     pub request_digest: String,
     pub objective_digest: String,
+    pub hard_constraint_digest: String,
+    pub preference_state_digest: String,
+    pub model_tuple_digest: String,
+    pub prompt_registry_digest: String,
     pub body_digest: String,
     pub artifact_set_digest: String,
     pub authority_epoch: u64,
+    pub generation: u64,
+    pub fence_digest: String,
+    pub deadline_ms: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ObjectiveRunStartRuntimeBindings {
+    pub request_digest: String,
+    pub body_digest: String,
     pub deadline_ms: u64,
 }
 
@@ -126,6 +139,40 @@ impl AgentRunCoordinator {
 
     pub fn composition(&self) -> &RuntimeComposition {
         &self.composition
+    }
+
+    pub fn preflight_objective_run(
+        &self,
+        now_ms: u64,
+        run_start: &RunStartSnapshotV1,
+        bindings: &ObjectiveRunStartRuntimeBindings,
+    ) -> Result<(), AgentRunError> {
+        let snapshot = objective_run_snapshot(run_start, bindings);
+        validate_snapshot(now_ms, &snapshot)?;
+        if snapshot.generation != self.composition.agentd_generation {
+            return Err(AgentRunError::InvalidGeneration);
+        }
+        if let Some(current) = self.runs.get(&snapshot.run_id) {
+            return if current.snapshot == snapshot {
+                Ok(())
+            } else {
+                Err(AgentRunError::Conflict)
+            };
+        }
+        if self.active_run_count() >= MAX_ACTIVE_RUNS || self.runs.len() >= MAX_RETAINED_RUNS {
+            return Err(AgentRunError::CapacityExceeded);
+        }
+        Ok(())
+    }
+
+    pub fn start_objective_run(
+        &mut self,
+        now_ms: u64,
+        run_start: &RunStartSnapshotV1,
+        bindings: ObjectiveRunStartRuntimeBindings,
+    ) -> Result<RunReceipt, AgentRunError> {
+        self.preflight_objective_run(now_ms, run_start, &bindings)?;
+        self.start_run(now_ms, objective_run_snapshot(run_start, &bindings))
     }
 
     pub fn start_run(
@@ -315,17 +362,43 @@ impl AgentRunCoordinator {
     }
 }
 
+fn objective_run_snapshot(
+    run_start: &RunStartSnapshotV1,
+    bindings: &ObjectiveRunStartRuntimeBindings,
+) -> RunSnapshot {
+    RunSnapshot {
+        run_id: run_start.run_id.to_string(),
+        request_digest: bindings.request_digest.clone(),
+        objective_digest: run_start.objective_digest.to_string(),
+        hard_constraint_digest: run_start.hard_constraint_digest.to_string(),
+        preference_state_digest: run_start.preference_state_digest.to_string(),
+        model_tuple_digest: run_start.model_tuple_digest.to_string(),
+        prompt_registry_digest: run_start.prompt_registry_digest.to_string(),
+        body_digest: bindings.body_digest.clone(),
+        artifact_set_digest: run_start.artifact_set_digest.to_string(),
+        authority_epoch: run_start.authority_epoch,
+        generation: run_start.generation,
+        fence_digest: run_start.fence_digest.to_string(),
+        deadline_ms: bindings.deadline_ms,
+    }
+}
+
 fn validate_snapshot(now_ms: u64, value: &RunSnapshot) -> Result<(), AgentRunError> {
     validate_identity(&value.run_id, "run")?;
     for (digest, field) in [
         (&value.request_digest, "request"),
         (&value.objective_digest, "objective"),
+        (&value.hard_constraint_digest, "hard constraint"),
+        (&value.preference_state_digest, "preference state"),
+        (&value.model_tuple_digest, "model tuple"),
+        (&value.prompt_registry_digest, "prompt registry"),
         (&value.body_digest, "body"),
         (&value.artifact_set_digest, "artifact set"),
+        (&value.fence_digest, "fence"),
     ] {
         validate_digest(digest, field)?;
     }
-    if value.authority_epoch == 0 {
+    if value.authority_epoch == 0 || value.generation == 0 {
         return Err(AgentRunError::InvalidGeneration);
     }
     if value.deadline_ms <= now_ms {

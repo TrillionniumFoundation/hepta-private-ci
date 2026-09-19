@@ -316,7 +316,6 @@ fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
     let original: Value = serde_json::from_str(SOURCE).unwrap();
     for (pointer, invalid) in [
         ("/locale", json!("é".repeat(17))),
-        ("/structuredIntent/legalActionClasses", json!([])),
         (
             "/structuredIntent/legalActionClasses",
             json!(vec!["read"; 129]),
@@ -333,6 +332,18 @@ fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
             Err(ObjectiveSourceJsonError::Structure(_))
         ));
     }
+    let mut abstain_only = original.clone();
+    *abstain_only
+        .pointer_mut("/structuredIntent/legalActionClasses")
+        .unwrap() = json!([]);
+    *abstain_only
+        .pointer_mut("/structuredIntent/confirmationActionClasses")
+        .unwrap() = json!([]);
+    assert!(
+        decode_source_envelope_json_v1(&serde_json::to_vec(&abstain_only).unwrap()).is_ok(),
+        "empty caller action set must be structurally valid so compile can produce ExplicitAbstain"
+    );
+
     let mut source = original;
     let predicates = source["structuredIntent"]["successPredicates"]
         .as_array_mut()
