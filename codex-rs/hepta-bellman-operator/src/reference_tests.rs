@@ -1,4 +1,13 @@
 use super::*;
+use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
+use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
+use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::TrustedLearningSignerV1;
+use codex_hepta_learning_ledger::VerifiedLearningEvidenceV1;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 
 fn id(value: &str) -> StableId {
     match StableId::new(value.to_owned()) {
@@ -9,6 +18,86 @@ fn id(value: &str) -> StableId {
 
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
+}
+
+fn trusted_signer(
+    name: &str,
+    credential: &str,
+    controller: &str,
+    seed: u8,
+    role: LearningEvidenceRoleV1,
+) -> TrustedLearningSignerV1 {
+    let verifying_key = SigningKey::from_bytes(&[seed; 32])
+        .verifying_key()
+        .to_bytes();
+    TrustedLearningSignerV1 {
+        principal: AuthenticatedPrincipalV1 {
+            principal_id: id(name),
+            credential_chain_digest: digest(credential),
+            signing_key_digest: Digest32::of_bytes(&verifying_key),
+            scope_digest: digest("operator-evidence-scope"),
+            authority_epoch: 7,
+            authenticated_at: 10,
+            expires_at: 100,
+        },
+        controller_id: id(controller),
+        verifying_key,
+        roles: vec![role],
+        revoked_at: None,
+    }
+}
+
+fn evidence_verifier() -> LearningEvidenceVerifierV1 {
+    LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+        scope_digest: digest("operator-evidence-scope"),
+        objective_digest: digest("objective"),
+        authority_epoch: 7,
+        signers: vec![
+            trusted_signer(
+                "generator",
+                "generator-credential",
+                "generator-controller",
+                1,
+                LearningEvidenceRoleV1::Generator,
+            ),
+            trusted_signer(
+                "evaluator",
+                "evaluator-credential",
+                "evaluator-controller",
+                2,
+                LearningEvidenceRoleV1::Evaluator,
+            ),
+        ],
+    })
+    .expect("host-owned trust")
+}
+
+fn verified_evidence(
+    verifier: &LearningEvidenceVerifierV1,
+    name: &str,
+    role: LearningEvidenceRoleV1,
+    seed: u8,
+    payload: &[u8],
+) -> VerifiedLearningEvidenceV1 {
+    let mut evidence = SignedLearningEvidenceV1 {
+        evidence_id: id(&format!("{name}-evidence")),
+        principal_id: id(name),
+        role,
+        trust_digest: verifier.trust_digest(),
+        scope_digest: digest("operator-evidence-scope"),
+        objective_digest: digest("objective"),
+        authority_epoch: 7,
+        issued_at: 20,
+        expires_at: 90,
+        payload_digest: Digest32::of_bytes(payload),
+        signature: [0; 64],
+    };
+    evidence.signature = SigningKey::from_bytes(&[seed; 32])
+        .sign(&evidence.signing_bytes())
+        .to_bytes();
+    verifier
+        .verify(role, &evidence, payload, 50)
+        .expect("verified evidence")
 }
 
 fn point(name: &str, raw: i64) -> SensorPointV1 {
@@ -162,4 +251,110 @@ fn op_02_regularity_admission_enforces_gain_shape_ood_and_error_budget() {
         admit_operator_regularity(excessive_gain),
         Err(OperatorClosureError::ReconstructionGain)
     );
+
+#[test]
+fn op_02_verified_applicability_requires_authenticated_independent_evaluator() {
+    let certificate = OperatorApplicabilityCertificateV1 {
+        certificate_id: id("verified-certificate"),
+        axis_partition_digest: digest("axis-partition"),
+        domain_digest: digest("domain"),
+        action_space_digest: digest("action-space"),
+        holder_exponents_digest: digest("holder-exponents"),
+        holder_constants_digest: digest("holder-constants"),
+        state_lipschitz_digest: digest("state-lipschitz"),
+        action_lipschitz_digest: digest("action-lipschitz"),
+        ellipticity_nu_lcb: FixedQ32::from_raw(1),
+        control_interval_millis: 100,
+        evaluator_id: id("evaluator"),
+        evaluator_credential_digest: digest("evaluator-credential"),
+        fallback_digest: digest("fallback"),
+        expires_at: 100,
+        decision: ApplicabilityDecisionV1::Pass,
+    };
+    let verifier = evidence_verifier();
+    let generator = verified_evidence(
+        &verifier,
+        "generator",
+        LearningEvidenceRoleV1::Generator,
+        1,
+        b"generator-plan",
+    );
+    let payload = encode_applicability_evidence_v1(&certificate, 50).expect("canonical payload");
+    let evaluator = verified_evidence(
+        &verifier,
+        "evaluator",
+        LearningEvidenceRoleV1::Evaluator,
+        2,
+        &payload,
+    );
+    assert_eq!(
+        validate_applicability_certificate_verified(&certificate, &generator, &evaluator, 50),
+        Ok(Digest32::of_bytes(&payload))
+    );
+
+    let mut detached = certificate;
+    detached.evaluator_credential_digest = digest("caller-invented-credential");
+    assert_eq!(
+        validate_applicability_certificate_verified(&detached, &generator, &evaluator, 50),
+        Err(OperatorClosureError::EvaluatorIdentityMismatch)
+    );
+}
+
+#[test]
+fn op_02_verified_regularity_binds_signed_approval_and_metrics() {
+    let assessment = OperatorRegularityAssessmentV1 {
+        artifact_id: id("verified-operator"),
+        measured_rank: 8,
+        reconstruction_gain_q32: FixedQ32::ONE,
+        monotonicity_violations: 0,
+        positivity_violations: 0,
+        holder_residual_q32: FixedQ32::from_raw(10),
+        action_lipschitz_residual_q32: FixedQ32::from_raw(10),
+        ood_false_acceptance_q32: FixedQ32::from_raw(10),
+        error_components: vec![
+            OperatorErrorComponentV1 {
+                component_id: id("model"),
+                normalized_error: FixedQ32::from_raw(10),
+                evidence_digest: digest("model-error"),
+            },
+            OperatorErrorComponentV1 {
+                component_id: id("sensor"),
+                normalized_error: FixedQ32::from_raw(10),
+                evidence_digest: digest("sensor-error"),
+            },
+        ],
+        dominant_component_approved: false,
+        evaluator_id: id("evaluator"),
+        evaluator_credential_digest: digest("evaluator-credential"),
+    };
+    let verifier = evidence_verifier();
+    let generator = verified_evidence(
+        &verifier,
+        "generator",
+        LearningEvidenceRoleV1::Generator,
+        1,
+        b"generator-plan",
+    );
+    let payload =
+        encode_operator_regularity_assessment_v1(assessment.clone()).expect("canonical assessment");
+    let evaluator = verified_evidence(
+        &verifier,
+        "evaluator",
+        LearningEvidenceRoleV1::Evaluator,
+        2,
+        &payload,
+    );
+    let admission =
+        admit_operator_regularity_verified(assessment.clone(), &generator, &evaluator, 50)
+            .expect("verified regularity");
+    assert_eq!(admission.assessment_digest, Digest32::of_bytes(&payload));
+
+    let mut edited = assessment;
+    edited.holder_residual_q32 = FixedQ32::from_raw(11);
+    assert_eq!(
+        admit_operator_regularity_verified(edited, &generator, &evaluator, 50),
+        Err(OperatorClosureError::EvidencePayloadMismatch)
+    );
+}
+
 }
