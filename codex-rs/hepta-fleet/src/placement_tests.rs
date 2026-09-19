@@ -67,7 +67,7 @@ fn policy() -> FleetPlacementPolicyV1 {
 }
 
 #[test]
-fn capacity_observation_requires_the_pinned_signer_and_exact_payload() {
+fn fleet_04_capacity_observation_requires_pinned_signer_and_exact_payload() {
     let signer = SigningKey::from_bytes(&[41; 32]);
     let verifier = FleetCapacityVerifierV1::new(
         "capacity-owner".to_string(),
@@ -105,7 +105,7 @@ fn capacity_observation_requires_the_pinned_signer_and_exact_payload() {
 }
 
 #[test]
-fn placement_selects_hosts_before_weighted_allocation_and_is_permutation_invariant() {
+fn fleet_03_request_and_host_permutations_produce_identical_plan_and_placement() {
     let mut hosts = vec![host("host-b", 8), host("host-a", 8)];
     let mut requests = vec![
         request("request-c", 3, 2, 8),
