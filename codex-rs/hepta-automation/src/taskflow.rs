@@ -584,6 +584,12 @@ pub enum TaskFlowTransition {
     RequeueProvenAbsent {
         proof_digest: Sha256Digest,
     },
+    /// Terminal cancellation used only when the registered owner has proved
+    /// that provider contact did not occur and the surrounding schedule no
+    /// longer permits a retry.
+    CancelProvenAbsent {
+        proof_digest: Sha256Digest,
+    },
     Cancel {
         reason: String,
     },
@@ -1098,9 +1104,10 @@ impl AutomationStore {
         if matches!(
             &command.transition,
             TaskFlowTransition::RequeueProvenAbsent { .. }
+                | TaskFlowTransition::CancelProvenAbsent { .. }
         ) {
             return Err(invalid(
-                "provider-absence requeue is restricted to automation recovery",
+                "provider-absence transitions are restricted to automation recovery",
             ));
         }
         self.apply_taskflow_command_inner(command, false, false)
@@ -1117,6 +1124,22 @@ impl AutomationStore {
         ) {
             return Err(invalid(
                 "internal requeue requires provider-absence transition",
+            ));
+        }
+        self.apply_taskflow_command_inner(command, true, false)
+            .await
+    }
+
+    pub(crate) async fn apply_taskflow_cancel_proven_absent(
+        &self,
+        command: &TaskFlowCommand,
+    ) -> Result<TaskFlowCommandResult, TaskFlowError> {
+        if !matches!(
+            &command.transition,
+            TaskFlowTransition::CancelProvenAbsent { .. }
+        ) {
+            return Err(invalid(
+                "internal cancellation requires provider-absence transition",
             ));
         }
         self.apply_taskflow_command_inner(command, true, false)
@@ -1222,11 +1245,12 @@ impl AutomationStore {
         }
         let explicit_reconcile = run.state == TaskFlowRunState::Indeterminate
             && matches!(&command.transition, TaskFlowTransition::Reconcile { .. });
-        let proven_absence_requeue = allow_proven_absence_requeue
+        let proven_absence_recovery = allow_proven_absence_requeue
             && run.state == TaskFlowRunState::Running
             && matches!(
                 &command.transition,
                 TaskFlowTransition::RequeueProvenAbsent { .. }
+                    | TaskFlowTransition::CancelProvenAbsent { .. }
             );
         let effect_observation_quarantine = allow_effect_observation_quarantine
             && run.state == TaskFlowRunState::Running
@@ -1234,7 +1258,7 @@ impl AutomationStore {
                 &command.transition,
                 TaskFlowTransition::Indeterminate { .. }
             );
-        if explicit_reconcile || proven_absence_requeue || effect_observation_quarantine {
+        if explicit_reconcile || proven_absence_recovery || effect_observation_quarantine {
             // Recovery evidence may arrive after the lease deadline. These
             // transitions still require the exact historical owner tuple and
             // are reachable only through their crate-private durable-evidence
@@ -1466,6 +1490,20 @@ fn apply_transition(
             run.terminal_reason = None;
             clear_lease(run);
         }
+        TaskFlowTransition::CancelProvenAbsent { proof_digest } => {
+            if run.state != TaskFlowRunState::Running {
+                return Err(invalid_transition(
+                    "provider-absence cancellation requires running state",
+                ));
+            }
+            validate_digest(proof_digest, "provider absence proof digest")?;
+            run.cancel_requested = true;
+            run.state = TaskFlowRunState::Cancelled;
+            run.wait_token = None;
+            run.retry_at_ms = None;
+            run.terminal_reason = Some("provider_proven_absent".to_string());
+            clear_lease(run);
+        }
         TaskFlowTransition::Cancel { reason } => {
             if run.state.terminal() {
                 return Err(invalid_transition("terminal run cannot be cancelled"));
@@ -1557,6 +1595,7 @@ fn transition_name(transition: &TaskFlowTransition) -> &'static str {
         TaskFlowTransition::Resume { .. } => "resumed",
         TaskFlowTransition::Retry { .. } => "retry_scheduled",
         TaskFlowTransition::RequeueProvenAbsent { .. } => "requeued_proven_absent",
+        TaskFlowTransition::CancelProvenAbsent { .. } => "cancelled_proven_absent",
         TaskFlowTransition::Cancel { .. } => "cancelled",
         TaskFlowTransition::Succeed { .. } => "succeeded",
         TaskFlowTransition::Fail { .. } => "failed",
