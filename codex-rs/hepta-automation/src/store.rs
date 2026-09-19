@@ -161,10 +161,10 @@ impl AutomationStore {
     /// Returns provider admissions whose terminal outcome is not known.
     ///
     /// An uncertain occurrence is deliberately not eligible for automatic
-    /// retry.  A provider-specific reconciler may call
-    /// [`Self::reconcile_dispatch`] after it obtains a receipt, or an operator
-    /// may call [`Self::release_uncertain_for_retry`] after independently
-    /// proving that no admission was accepted.
+    /// retry. A provider-specific reconciler must use
+    /// [`Self::reconcile_uncertain_occurrence_admitted`] with the exact queue
+    /// receipt, or [`Self::reconcile_uncertain_occurrence_absent`] with durable
+    /// proof that the stable dispatch identity was not accepted.
     pub async fn uncertain_dispatches(
         &self,
         limit: usize,
@@ -581,68 +581,24 @@ impl AutomationStore {
             return Err(AutomationError::Conflict);
         }
 
-        // The durable TaskFlow step/run was claimed before the queue seam. A
-        // proven pre-contact failure must requeue that same run before releasing
-        // the scheduler lease; otherwise a same-generation retry can collide
-        // with the old TaskFlow fence.
+        // The queue implementation has explicitly proved that provider contact
+        // did not occur. Feed that proof through the same durable absence
+        // reconciler used after process loss so both enabled retries and
+        // concurrently retired schedules converge through one causal path.
         let mut proof_bytes = b"hepta.automation.before-admission.v1\0".to_vec();
         proof_bytes.extend_from_slice(occurrence.occurrence_id.as_bytes());
         proof_bytes.push(0);
         proof_bytes.extend_from_slice(&lease.lease_generation.to_be_bytes());
         proof_bytes.extend_from_slice(lease.lease_token.as_bytes());
         let proof_digest = Sha256Digest::for_bytes(&proof_bytes);
-        self.requeue_occurrence_taskflow_after_proven_absence(
-            &occurrence,
+        self.reconcile_uncertain_occurrence_absent(
+            lease.task.task_id,
+            lease.occurrence,
+            &lease.client_user_message_id,
             &proof_digest,
             observed_at_ms,
         )
         .await
-        .map_err(map_taskflow_mutation_error)?;
-
-        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
-        let removed = sqlx::query(
-            "DELETE FROM automation_dispatch_outcomes
-             WHERE task_id = ? AND occurrence = ?
-               AND client_user_message_id = ? AND outcome = 'uncertain'",
-        )
-        .bind(lease.task.task_id.to_string())
-        .bind(to_i64(lease.occurrence)?)
-        .bind(&lease.client_user_message_id)
-        .execute(&mut *transaction)
-        .await
-        .map_err(|error| {
-            if is_constraint(&error) {
-                AutomationError::Conflict
-            } else {
-                unavailable(error)
-            }
-        })?;
-        if removed.rows_affected() != 1 {
-            return Err(AutomationError::Conflict);
-        }
-        let released = sqlx::query(
-            "UPDATE automation_runs
-             SET state = CASE WHEN EXISTS (
-                     SELECT 1 FROM automation_tasks t
-                     WHERE t.task_id = automation_runs.task_id AND t.state = 'enabled'
-                 ) THEN 'pending' ELSE 'cancelled' END,
-                 lease_generation = NULL, lease_token = NULL, lease_expires_at_ms = NULL
-             WHERE task_id = ? AND occurrence = ? AND state = 'leased'
-               AND lease_generation = ? AND lease_token = ?
-               AND client_user_message_id = ?",
-        )
-        .bind(lease.task.task_id.to_string())
-        .bind(to_i64(lease.occurrence)?)
-        .bind(to_i64(lease.lease_generation)?)
-        .bind(&lease.lease_token)
-        .bind(&lease.client_user_message_id)
-        .execute(&mut *transaction)
-        .await
-        .map_err(unavailable)?;
-        if released.rows_affected() != 1 {
-            return Err(AutomationError::Conflict);
-        }
-        transaction.commit().await.map_err(unavailable)
     }
 
     /// Reconciles an uncertain occurrence after an external/provider-specific
