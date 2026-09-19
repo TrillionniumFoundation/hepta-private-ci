@@ -106,7 +106,7 @@ fn durable_reopen_prevents_holdout_reuse() {
     } else {
         owned = Directory::new();
         let mut store = owned.create();
-        store.consume(store.anchor(), &plan("plan-1")).unwrap();
+        store.consume_single_host_trusted(store.anchor(), &plan("plan-1")).unwrap();
         (owned.path(), store.anchor())
     };
     let file = OpenOptions::new()
@@ -117,11 +117,11 @@ fn durable_reopen_prevents_holdout_reuse() {
     let mut store = DurableFinalHoldoutJournalV1::recover(file, digest("binding"), anchor).unwrap();
     assert_eq!(store.anchor(), anchor);
     assert_eq!(
-        store.consume(anchor, &plan("plan-2")),
+        store.consume_single_host_trusted(anchor, &plan("plan-2")),
         Err(DurableHoldoutError::Semantic)
     );
     assert_eq!(
-        store.consume(anchor, &plan("plan-1")).unwrap().disposition,
+        store.consume_single_host_trusted(anchor, &plan("plan-1")).unwrap().disposition,
         HoldoutUseDispositionV1::IdempotentReplay
     );
 }
@@ -130,7 +130,7 @@ fn durable_reopen_prevents_holdout_reuse() {
 fn consumption_survives_a_distinct_process() {
     let directory = Directory::new();
     let mut store = directory.create();
-    store.consume(store.anchor(), &plan("plan-1")).unwrap();
+    store.consume_single_host_trusted(store.anchor(), &plan("plan-1")).unwrap();
     let anchor = store.anchor();
     drop(store);
     let output = Command::new(std::env::current_exe().unwrap())
@@ -157,7 +157,7 @@ fn independent_anchor_rejects_old_backup_and_partial_tail() {
     let directory = Directory::new();
     let mut store = directory.create();
     let old = fs::read(directory.path()).unwrap();
-    store.consume(store.anchor(), &plan("plan-1")).unwrap();
+    store.consume_single_host_trusted(store.anchor(), &plan("plan-1")).unwrap();
     let anchor = store.anchor();
     drop(store);
     let current = fs::read(directory.path()).unwrap();
@@ -187,7 +187,7 @@ fn lock_binding_cas_and_invalid_plan_do_not_mutate_storage() {
     ));
     let before = fs::read(directory.path()).unwrap();
     assert_eq!(
-        store.consume(
+        store.consume_single_host_trusted(
             HoldoutAnchorV1 {
                 sequence: 1,
                 head: digest("wrong")
@@ -199,7 +199,7 @@ fn lock_binding_cas_and_invalid_plan_do_not_mutate_storage() {
     let mut invalid = plan("plan-1");
     invalid.candidate_id = id("mutated");
     assert_eq!(
-        store.consume(store.anchor(), &invalid),
+        store.consume_single_host_trusted(store.anchor(), &invalid),
         Err(DurableHoldoutError::Semantic)
     );
     assert_eq!(fs::read(directory.path()).unwrap(), before);
@@ -215,10 +215,10 @@ fn lock_binding_cas_and_invalid_plan_do_not_mutate_storage() {
 fn idempotent_retry_does_not_append_and_byte_corruption_rejects() {
     let directory = Directory::new();
     let mut store = directory.create();
-    store.consume(store.anchor(), &plan("plan-1")).unwrap();
+    store.consume_single_host_trusted(store.anchor(), &plan("plan-1")).unwrap();
     let anchor = store.anchor();
     let before = fs::read(directory.path()).unwrap();
-    store.consume(anchor, &plan("plan-1")).unwrap();
+    store.consume_single_host_trusted(anchor, &plan("plan-1")).unwrap();
     assert_eq!(fs::read(directory.path()).unwrap(), before);
     drop(store);
     let mut bad = before;
@@ -230,6 +230,123 @@ fn idempotent_retry_does_not_append_and_byte_corruption_rejects() {
     ));
 }
 
+#[derive(Clone, Copy)]
+struct TestAnchorAuthority {
+    binding: Digest32,
+    anchor: HoldoutAnchorV1,
+}
+impl HoldoutAnchorAuthorityV1 for TestAnchorAuthority {
+    fn current_anchor(
+        &mut self,
+        binding: Digest32,
+    ) -> Result<HoldoutAnchorV1, DurableHoldoutError> {
+        if binding != self.binding {
+            return Err(DurableHoldoutError::Binding);
+        }
+        Ok(self.anchor)
+    }
+
+    fn compare_and_swap_anchor(
+        &mut self,
+        binding: Digest32,
+        expected: HoldoutAnchorV1,
+        next: HoldoutAnchorV1,
+    ) -> Result<bool, DurableHoldoutError> {
+        if binding != self.binding {
+            return Err(DurableHoldoutError::Binding);
+        }
+        if self.anchor != expected {
+            return Ok(false);
+        }
+        self.anchor = next;
+        Ok(true)
+    }
+}
+
+#[test]
+fn fenced_anchor_cas_rejects_stale_replicas_without_mutation() {
+    let primary_directory = Directory::new();
+    let replica_directory = Directory::new();
+    let primary = primary_directory.create();
+    let initial = fs::read(primary_directory.path()).unwrap();
+    let start = primary.anchor();
+    drop(primary);
+    fs::write(replica_directory.path(), &initial).unwrap();
+
+    let mut authority = TestAnchorAuthority {
+        binding: digest("binding"),
+        anchor: start,
+    };
+    let mut primary = DurableFinalHoldoutJournalV1::recover(
+        primary_directory.file(),
+        digest("binding"),
+        start,
+    )
+    .unwrap();
+    primary
+        .consume_fenced(&mut authority, start, &plan("plan-1"))
+        .unwrap();
+    let committed = primary.anchor();
+    assert_eq!(authority.anchor, committed);
+
+    let mut stale = DurableFinalHoldoutJournalV1::recover(
+        replica_directory.file(),
+        digest("binding"),
+        start,
+    )
+    .unwrap();
+    let before = fs::read(replica_directory.path()).unwrap();
+    for index in 0..128 {
+        assert_eq!(
+            stale.consume_fenced(
+                &mut authority,
+                start,
+                &plan(&format!("stale-plan-{index}"))
+            ),
+            Err(DurableHoldoutError::Conflict)
+        );
+    }
+    assert_eq!(stale.anchor(), start);
+    assert_eq!(fs::read(replica_directory.path()).unwrap(), before);
+}
+
+#[cfg(unix)]
+#[test]
+fn fenced_reservation_with_failed_local_write_is_fail_closed() {
+    let directory = Directory::new();
+    let store = directory.create();
+    let start = store.anchor();
+    drop(store);
+
+    let mut authority = TestAnchorAuthority {
+        binding: digest("binding"),
+        anchor: start,
+    };
+    let mut read_only = DurableFinalHoldoutJournalV1::recover(
+        File::open(directory.path()).unwrap(),
+        digest("binding"),
+        start,
+    )
+    .unwrap();
+    assert_eq!(
+        read_only.consume_fenced(&mut authority, start, &plan("plan-1")),
+        Err(DurableHoldoutError::Indeterminate)
+    );
+    assert_eq!(authority.anchor.sequence, 1);
+    let advanced = authority.anchor;
+    assert_eq!(
+        read_only.consume_fenced(&mut authority, advanced, &plan("plan-1")),
+        Err(DurableHoldoutError::Poisoned)
+    );
+    assert!(matches!(
+        DurableFinalHoldoutJournalV1::recover(
+            directory.file(),
+            digest("binding"),
+            advanced
+        ),
+        Err(DurableHoldoutError::MissingAcknowledgedHistory)
+    ));
+}
 #[cfg(unix)]
 #[test]
 fn ambiguous_write_fences_the_handle() {
@@ -244,11 +361,11 @@ fn ambiguous_write_fences_the_handle() {
     )
     .unwrap();
     assert_eq!(
-        store.consume(anchor, &plan("plan-1")),
+        store.consume_single_host_trusted(anchor, &plan("plan-1")),
         Err(DurableHoldoutError::Indeterminate)
     );
     assert_eq!(
-        store.consume(anchor, &plan("plan-1")),
+        store.consume_single_host_trusted(anchor, &plan("plan-1")),
         Err(DurableHoldoutError::Poisoned)
     );
     assert_eq!(store.anchor(), anchor);
