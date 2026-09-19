@@ -1,7 +1,5 @@
 use std::error::Error;
 use std::fmt;
-use std::io;
-use std::io::Read;
 use std::str::FromStr;
 
 use sha2::Digest;
@@ -26,34 +24,17 @@ impl Digest32 {
         Self(value)
     }
 
-    /// Hash an already-authorized reader with fixed scratch space. Read at
-    /// most `maximum_bytes + 1` bytes; excess input and I/O errors never return
-    /// a digest of a silently truncated prefix. No path is opened here.
-    pub fn of_reader(mut reader: impl Read, maximum_bytes: u64) -> io::Result<Self> {
+    /// Hash several byte slices as one exact byte stream without concatenating
+    /// them into a temporary allocation.
+    pub fn of_parts(parts: &[&[u8]]) -> Self {
         let mut hasher = Sha256::new();
-        let mut buffer = [0_u8; 32 * 1024];
-        let mut remaining = maximum_bytes;
-        loop {
-            let limit = remaining.saturating_add(1).min(buffer.len() as u64) as usize;
-            let count = match reader.read(&mut buffer[..limit]) {
-                Err(error) if error.kind() == io::ErrorKind::Interrupted => continue,
-                result => result?,
-            };
-            if count == 0 {
-                let digest = hasher.finalize();
-                let mut value = [0; 32];
-                value.copy_from_slice(&digest);
-                return Ok(Self(value));
-            }
-            if count as u64 > remaining {
-                return Err(io::Error::new(
-                    io::ErrorKind::InvalidData,
-                    "digest input limit",
-                ));
-            }
-            remaining -= count as u64;
-            hasher.update(&buffer[..count]);
+        for part in parts {
+            hasher.update(part);
         }
+        let digest = hasher.finalize();
+        let mut value = [0; 32];
+        value.copy_from_slice(&digest);
+        Self(value)
     }
 
     pub const fn as_array(&self) -> &[u8; 32] {
@@ -135,7 +116,3 @@ impl Error for DigestParseError {}
 #[cfg(test)]
 #[path = "digest_tests.rs"]
 mod tests;
-
-#[cfg(test)]
-#[path = "digest_stream_tests.rs"]
-mod stream_tests;
