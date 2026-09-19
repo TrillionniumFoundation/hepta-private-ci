@@ -228,7 +228,10 @@ impl AgentRunCoordinator {
             .validate()
             .map_err(|_| AgentRunError::InvalidIntelligenceEnvelope)?;
         let run_id = envelope.run_id.as_str();
-        let record = self.runs.get_mut(run_id).ok_or(AgentRunError::RunNotFound)?;
+        let record = self
+            .runs
+            .get_mut(run_id)
+            .ok_or(AgentRunError::RunNotFound)?;
         if record.snapshot.objective_digest != envelope.objective_digest.to_string() {
             return Err(AgentRunError::MixedSnapshot);
         }
@@ -262,12 +265,7 @@ impl AgentRunCoordinator {
         request: LaneFRunRequestV3,
         ports: &mut P,
     ) -> Result<IntelligenceRunReceiptV3, AgentRunError> {
-        self.run_intelligence_v3_with_control(
-            expected_revision,
-            request,
-            ports,
-            &NeverCancelledV3,
-        )
+        self.run_intelligence_v3_with_control(expected_revision, request, ports, &NeverCancelledV3)
     }
 
     pub fn run_intelligence_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>(
