@@ -7,9 +7,13 @@
 use std::collections::BTreeMap;
 
 use codex_hepta_cognitive_read::AuthoritativeSnapshotV1;
+use codex_hepta_cognitive_read::ReadIdsError;
+use codex_hepta_cognitive_read::ReadIdsRequestV1;
+use codex_hepta_cognitive_read::ReadIdsResultV1;
 use codex_hepta_cognitive_read::ReadRequestV2;
 use codex_hepta_cognitive_read::ReadResultV2;
 use codex_hepta_cognitive_read::SnapshotProviderError;
+use codex_hepta_cognitive_read::read_ids_v1;
 use codex_hepta_cognitive_read::read_v2;
 use codex_hepta_cognitive_types::Citation;
 use codex_hepta_cognitive_types::CognitiveSnapshot;
@@ -93,6 +97,15 @@ impl DurableCognitiveSnapshot {
     /// Consume the new read module against an owner-acquired SQLite cut.
     pub fn read(&self, request: ReadRequestV2) -> Result<ReadResultV2, SnapshotProviderError> {
         read_v2(&self.snapshot, request).map_err(SnapshotProviderError::Read)
+    }
+
+    /// Resolve exact current heads from this owner-acquired cut without
+    /// truncating through the legacy global-prefix result window.
+    pub fn read_ids(
+        &self,
+        request: ReadIdsRequestV1,
+    ) -> Result<ReadIdsResultV1, ReadIdsError> {
+        read_ids_v1(&self.snapshot, request)
     }
 
     /// Attach a host-frozen external context without inventing other owners'
