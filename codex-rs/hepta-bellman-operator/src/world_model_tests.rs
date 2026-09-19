@@ -139,10 +139,7 @@ fn op_05_world_model_dataset_receipt_binds_rows() {
             correction_cut_digest: digest("correction-cut"),
             revocation_cut_digest: digest("revocation-cut"),
             inclusion_policy_digest: digest("inclusion-policy"),
-            source_record_digests: vec![
-                digest("evidence-sample-1"),
-                digest("evidence-sample-2"),
-            ],
+            source_record_digests: vec![digest("evidence-sample-1"), digest("evidence-sample-2")],
             pending_outcomes: 0,
             censored_outcomes: 0,
         },
@@ -175,4 +172,3 @@ fn op_05_world_model_dataset_receipt_binds_rows() {
         Err(WorldModelError::EvidenceOutsideDataset)
     );
 }
-
