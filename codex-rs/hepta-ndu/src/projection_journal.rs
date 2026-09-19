@@ -199,9 +199,7 @@ impl NduProjectionJournalV1 {
                 _ => {}
             }
         }
-        selected.filter(|digest| {
-            !revoked.contains(&(objective_digest, subject_digest, *digest))
-        })
+        selected.filter(|digest| !revoked.contains(&(objective_digest, subject_digest, *digest)))
     }
 
     fn append(
