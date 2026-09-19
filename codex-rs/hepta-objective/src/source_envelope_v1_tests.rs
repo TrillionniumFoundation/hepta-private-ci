@@ -198,7 +198,7 @@ fn every_collection_enforces_counts_and_duplicate_keys_before_semantic_compilati
             s.confirmation_action_classes
                 .resize(n, s.confirmation_action_classes[0].clone())
         }),
-        ("constraints", 1, 256, |s, n| {
+        ("constraints", 1, 246, |s, n| {
             s.constraints.resize(n, s.constraints[0].clone())
         }),
         ("softDimensions", 0, 64, |s, n| {
@@ -280,4 +280,36 @@ fn validation_preserves_order_cross_array_references_and_conflicts_for_the_seman
     assert_eq!(source, expected);
     source.structured_intent.constraints.reverse();
     assert_eq!(source.validate_structure(), Ok(()));
+}
+
+#[test]
+fn combined_predicate_budget_matches_native_compiler() {
+    let mut source = envelope();
+    let template = source.structured_intent.success_predicates[0].clone();
+    source.structured_intent.success_predicates = (0..126)
+        .map(|index| ObjectiveSourcePredicateV1 {
+            predicate_id: format!("success-{index:03}"),
+            ..template.clone()
+        })
+        .collect();
+    source.structured_intent.terminal_conditions[0].predicate_id = "terminal-000".into();
+    source.structured_intent.evidence_requirements[0].requirement_id = "evidence-000".into();
+    assert_eq!(source.validate_structure(), Ok(()));
+
+    source
+        .structured_intent
+        .evidence_requirements
+        .push(ObjectiveEvidenceRequirementV1 {
+            requirement_id: "evidence-001".into(),
+            ..source.structured_intent.evidence_requirements[0].clone()
+        });
+    assert_eq!(
+        source.validate_structure(),
+        Err(ObjectiveStructureError::CollectionCount {
+            field: "compiledPredicates",
+            actual: 129,
+            minimum: 3,
+            maximum: 128,
+        })
+    );
 }
