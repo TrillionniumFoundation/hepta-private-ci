@@ -12,6 +12,7 @@ mod feasibility;
 mod feasibility_model;
 mod model;
 mod objective_admission;
+mod run_start;
 mod scalar_adapter;
 mod source_envelope_json;
 mod source_envelope_json_dto;
@@ -19,7 +20,7 @@ mod source_envelope_json_shape;
 mod source_envelope_v1;
 mod source_envelope_validation;
 
-pub use compiler::compile;
+pub use compiler::validate_compiled_objective_v1;
 pub use error::ObjectiveError;
 pub use feasibility::check_feasibility_v1;
 pub use feasibility_model::AtomPrecedenceV1;
@@ -65,6 +66,8 @@ pub use objective_admission::ObjectiveSoftDimensionProfileV1;
 pub use objective_admission::ObjectiveSourceAuthenticationV1;
 pub use objective_admission::admit_and_compile_objective_v1;
 pub use objective_admission::canonical_objective_intent_digest_v1;
+pub use run_start::RunStartSnapshotError;
+pub use run_start::RunStartSnapshotV1;
 pub use source_envelope_json::MAX_OBJECTIVE_SOURCE_JSON_INPUT_BYTES;
 pub use source_envelope_json::ObjectiveSourceJsonError;
 pub use source_envelope_json::decode_source_envelope_json_v1;
@@ -84,3 +87,15 @@ pub use source_envelope_v1::ObjectiveSourcePredicateV1;
 pub use source_envelope_v1::ObjectiveSourceTrustV1;
 pub use source_envelope_v1::ObjectiveStructuredIntentV1;
 pub use source_envelope_validation::ObjectiveStructureError;
+
+#[cfg(feature = "qualification-legacy-compiler")]
+/// Qualification-only compatibility entrypoint for legacy typed fixtures.
+///
+/// Production consumers must use `admit_and_compile_objective_v1`; enabling
+/// this feature is an explicit acknowledgement that authentication, freshness
+/// and profile binding are supplied by the qualification harness.
+pub fn compile_qualification_fixture(
+    source: ObjectiveSourceEnvelope,
+) -> Result<Result<ObjectiveCompileReceipt, ObjectiveConflictReceipt>, ObjectiveError> {
+    compiler::compile(source)
+}

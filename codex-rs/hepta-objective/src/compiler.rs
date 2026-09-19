@@ -31,7 +31,7 @@ const CONSTRAINT_DIGEST_DOMAIN: &[u8] = b"hepta.objective.constraints.v1";
 /// `abstain` is an intrinsic, confirmation-free safety action. Callers may
 /// include it explicitly, but cannot forbid it or consume its reserved slot
 /// with another action.
-pub fn compile(
+pub(crate) fn compile(
     mut source: ObjectiveSourceEnvelope,
 ) -> Result<Result<ObjectiveCompileReceipt, ObjectiveConflictReceipt>, ObjectiveError> {
     validate_source(&source)?;
@@ -85,6 +85,7 @@ pub fn compile(
         request_id: source.request_id,
         principal_scope: source.principal_scope,
         revision: source.revision,
+        source_trust: source.source_trust,
         source_digest: source.source_digest,
         schema_digest: source.schema_digest,
         hard_constraint_digest,
@@ -225,6 +226,88 @@ fn validate_soft_preferences(source: &ObjectiveSourceEnvelope) -> Result<(), Obj
                 preference.dimension.to_string(),
             ));
         }
+    }
+    Ok(())
+}
+
+/// Revalidate a compiler output before durable publication or cross-module use.
+///
+/// The native compiler is stateless, so callers that persist an objective can
+/// independently reject manually constructed, reordered, or digest-drifted
+/// values instead of trusting type construction alone.
+pub fn validate_compiled_objective_v1(objective: &ObjectiveFunction) -> Result<(), ObjectiveError> {
+    let abstain = abstain_id()?;
+    let caller_actions = objective
+        .legal_actions
+        .iter()
+        .filter(|action| action.id != abstain)
+        .cloned()
+        .collect();
+    let mut source = ObjectiveSourceEnvelope {
+        request_id: objective.request_id.clone(),
+        principal_scope: objective.principal_scope.clone(),
+        revision: objective.revision,
+        source_trust: objective.source_trust,
+        source_digest: objective.source_digest,
+        schema_digest: objective.schema_digest,
+        constraints: objective.constraints.clone(),
+        success_predicates: objective.success_predicates.clone(),
+        allowed_actions: caller_actions,
+        forbidden_actions: Vec::new(),
+        soft_preferences: objective.soft_preferences.clone(),
+    };
+    // Source validation applies to caller-provided actions. The intrinsic
+    // abstain action is compiler-created and therefore excluded above.
+    validate_source(&source)?;
+    validate_count(
+        "compiled legal actions",
+        objective.legal_actions.len(),
+        MAX_ACTIONS,
+    )?;
+
+    let mut legal_actions = objective.legal_actions.clone();
+    let mut action_ids = BTreeSet::new();
+    let mut abstain_count = 0;
+    for action in &legal_actions {
+        if !action_ids.insert(action.id.clone()) {
+            return Err(ObjectiveError::DuplicateSemanticId(action.id.to_string()));
+        }
+        if action.id == abstain {
+            abstain_count += 1;
+            if action.confirmation != ConfirmationPolicy::NotRequired {
+                return Err(ObjectiveError::AbstainUnavailable);
+            }
+        }
+    }
+    if abstain_count != 1 {
+        return Err(ObjectiveError::AbstainUnavailable);
+    }
+
+    source.constraints.sort_by(constraint_order);
+    source.success_predicates.sort_by(predicate_order);
+    source.soft_preferences.sort_by(preference_order);
+    legal_actions.sort_by(action_order);
+
+    if source.constraints != objective.constraints {
+        return Err(ObjectiveError::NonCanonicalOutput("constraints"));
+    }
+    if source.success_predicates != objective.success_predicates {
+        return Err(ObjectiveError::NonCanonicalOutput("success predicates"));
+    }
+    if legal_actions != objective.legal_actions {
+        return Err(ObjectiveError::NonCanonicalOutput("legal actions"));
+    }
+    if source.soft_preferences != objective.soft_preferences {
+        return Err(ObjectiveError::NonCanonicalOutput("soft preferences"));
+    }
+
+    let hard_constraint_digest = digest_constraints(&source.constraints);
+    if hard_constraint_digest != objective.hard_constraint_digest {
+        return Err(ObjectiveError::DigestMismatch("hard constraint"));
+    }
+    let semantic_digest = digest_objective(&source, &legal_actions, hard_constraint_digest);
+    if semantic_digest != objective.semantic_digest {
+        return Err(ObjectiveError::DigestMismatch("objective semantic"));
     }
     Ok(())
 }

@@ -75,6 +75,22 @@
             "MAX_PROFILE_ENCODED_BYTES",
             "oversized_profile_mapping_set_is_rejected"
           ]
+        },
+        "productCallerCandidate": {
+          "state": "candidate_implemented_pending_exact_head_qualification",
+          "evidence": [
+            "codex-rs/hepta-intelligence/src/production_objective.rs",
+            "codex-rs/hepta-learning-ledger/src/model.rs",
+            "codex-rs/hepta-agentd/src/objective_host.rs",
+            ".github/workflows/hepta-objective-product-composition.yml"
+          ]
+        },
+        "semanticSupportBoundary": {
+          "state": "explicit_map_or_reject",
+          "evidence": [
+            "docs/modules/objective.compiler/SEMANTIC_SUPPORT.json",
+            "docs/modules/objective.compiler/SEMANTIC_SUPPORT.md"
+          ]
         }
       }
     },

@@ -18,7 +18,8 @@
         "ObjectiveAdmissionError::InvalidProfile",
         "ObjectiveAdmissionError::InvalidTimestamp",
         "ObjectiveAdmissionError::InvalidIdentifier",
-        "ObjectiveAdmissionError::ResourceOverflow"
+        "ObjectiveAdmissionError::ResourceOverflow",
+        "ObjectiveError::NonCanonicalOutput"
       ]
     },
     {
@@ -61,7 +62,8 @@
         "ObjectiveAdmissionError::InputSchemaMismatch",
         "ObjectiveAdmissionError::NormalizationProfileMismatch",
         "ObjectiveAdmissionError::SourceDigestMismatch",
-        "ObjectiveAdmissionError::IntentDigestMismatch"
+        "ObjectiveAdmissionError::IntentDigestMismatch",
+        "ObjectiveError::DigestMismatch"
       ]
     },
     {

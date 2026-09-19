@@ -13,6 +13,12 @@ doctest = false
 [lints]
 workspace = true
 
+[features]
+default = []
+# Explicitly opt-in compatibility surface for qualification fixtures only.
+# Production consumers must enter through authenticated admission.
+qualification-legacy-compiler = []
+
 [dependencies]
 codex-hepta-types = { path = "../hepta-types" }
 serde = { workspace = true, features = ["derive"] }

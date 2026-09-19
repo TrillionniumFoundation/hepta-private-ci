@@ -51,6 +51,7 @@ Direct dependencies:
 - `platform.types`
 - `cognitive.types`
 - `kernel.operations`
+- `objective.compiler`
 
 Authoritative write domains:
 
@@ -166,7 +167,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.ledger.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.ledger.md).
+`RunStartPublicationV1` extends the existing append-only journal with an atomic objective/run-start fact: one frame contains the deny-all objective admission receipt, compiled objective receipt and `RunStartSnapshotV1`. Existing durable event tags `0..3` are preserved; RunStart uses tag `4`. The same append+sync-before-memory and anchored replay rules apply, so a crash cannot expose only the objective or only the run snapshot. The remaining state owner and transaction boundaries are described by the [current native implementation](../../../qualification/module-execution-dossiers/detail/learning.ledger.md#8-current-native-implementation).
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -199,7 +200,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use DurableLedger with its native codec, owner lock and independently retained anchor. Inspect and reopen existing state before admitting new records; failure of anchored recovery is not permission to fall back to unanchored opening. Segment rotation, retention and backup must preserve acknowledged lineage.
+Use `DurableLedger` with its native codec, owner lock and independently retained anchor. RunStart frames are bounded and revalidated during replay against objective canonical ordering, hard/semantic digests, admitted source digest and run-snapshot bindings. Inspect and reopen existing state before admitting new records; failure of anchored recovery is not permission to fall back to unanchored opening. Segment rotation, retention and backup must preserve acknowledged lineage.
 
 Current operating and state-format references:
 
@@ -216,6 +217,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-learning-ledger/src/durable_tests.rs](../../../codex-rs/hepta-learning-ledger/src/durable_tests.rs); named case: `persisted_causal_events_replay_exact_core_and_revocation_excludes_descendants`.
 - [codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs](../../../codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs); named case: `ledger_03_rejects_shared_credential_chain`.
+- [codex-rs/hepta-intelligence/src/production_objective_tests.rs](../../../codex-rs/hepta-intelligence/src/production_objective_tests.rs); named case: `product_objective_is_one_durable_replayable_run_start`.
 
 In `codex-rs`, run `just test -p codex-hepta-learning-ledger`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.ledger.md) separately labels target acceptance designs.
 

@@ -56,6 +56,7 @@ Direct dependencies:
 
 - `runtime.supervisor`
 - `runtime.codex`
+- `intelligence.control`
 
 Authoritative write domains:
 
@@ -108,7 +109,7 @@ Consumed contracts:
 
 Critical protocol schemas:
 
-None.
+- `IntelligenceHostEnvelopeV1`
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
@@ -136,7 +137,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md).
+`prepare_and_start_intelligence_run_v1` is the named product-host candidate: it invokes authenticated objective preparation, requires the sealed owner journal to durably append the objective/run-start pair, and only then admits the runtime snapshot. If runtime admission fails after fsync, the returned error retains the opaque publication receipt for reconciliation. The lower-level `start_published_intelligence_run_v1` consumes that same opaque `ProductionObjectiveStartReceiptV1` and never accepts a raw envelope. The raw `IntelligenceHostEnvelopeV1` is not an Agentd public start surface. Agentd stores only the existing ephemeral `RunSnapshot` digest references and rejects authority-epoch, generation or fence drift against the active runtime composition; it does not copy or become the authoritative writer for objective facts. The remaining runtime state and transaction boundaries are described by the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.agentd.md#8-current-native-implementation).
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -164,7 +165,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-codex-hepta-agentd starts from AgentdConfig::from_process_environment; the optional --authbus-trust-file is protected host configuration. The supervisor supplies the owner identity/generation and existing memory store. Stop new admissions before owner drain; an App Server interruption acknowledgement alone is not terminal task completion.
+`codex-hepta-agentd` starts from `AgentdConfig::from_process_environment`; the optional `--authbus-trust-file` is protected host configuration. The objective handoff adapter first revalidates the opaque durable publication receipt, then derives request/objective/artifact/authority/deadline/generation/fence fields from its internal host envelope. A raw envelope cannot be submitted through the public Agentd API. The supervisor supplies the owner identity/generation and existing memory store. Stop new admissions before owner drain; an App Server interruption acknowledgement alone is not terminal task completion.
 
 Current operating and state-format references:
 
