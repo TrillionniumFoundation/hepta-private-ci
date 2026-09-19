@@ -65,7 +65,7 @@ TaskFlow persists schedule and occurrence identity, claims under a generation fe
 
 ## 8. Matrix path
 
-Ingress binds enrolled homeserver, user, device, room and encryption generation; deduplicates server event identity; applies correction/redaction; and advances a durable sync frontier. Send preparation binds room, session, payload, authority epoch and one Matrix transaction ID. HTTP acceptance, homeserver persistence and human reading are separate claims. Lost acknowledgement retains the same transaction for reconciliation.
+Ingress binds enrolled homeserver, user, device, room and encryption generation; deduplicates server event identity; applies correction/redaction; and advances a durable sync frontier. Send preparation uses the existing outbox `stable_txn_id`, persists payload/session plus available authority/grant identity in the same SQLite owner, and parks the row before the network effect. HTTP acceptance records only `accepted`; timeout/response loss is `indeterminate`; only a trusted homeserver `/sync` observation can settle `observed_succeeded`. Crash/reopen never converts uncertainty into permission to resend. Redaction is a later observation with its own evidence digest. The live production boundary still requires an independently issued final-use grant before external-effect activation.
 
 ## 9. Browser path
 
