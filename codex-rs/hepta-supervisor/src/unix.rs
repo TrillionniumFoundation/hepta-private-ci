@@ -75,6 +75,7 @@ pub struct UnixManagedProcess {
     handle: UnixProcessHandle,
     logs: Receiver<ProcessLog>,
     health_probe: HealthProbe,
+    drain_identity: Option<AgentHealthProbeIdentity>,
 }
 
 enum UnixProcessHandle {
@@ -130,7 +131,11 @@ impl ManagedProcess for UnixManagedProcess {
     }
 
     fn request_drain(&mut self) -> Result<(), ProcessDriverError> {
-        send_signal(self.handle.process_id(), libc::SIGTERM)
+        let identity = self
+            .drain_identity
+            .as_ref()
+            .ok_or_else(|| ProcessDriverError::new("process does not support Agentd drain"))?;
+        request_agent_drain(identity)
     }
 
     fn request_stop(&mut self) -> Result<(), ProcessDriverError> {
@@ -164,8 +169,9 @@ impl ProcessDriver for UnixProcessDriver {
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
         let mut child = command.spawn()?;
+        let drain_identity = AgentHealthProbeIdentity::from_spawn(spec, child.id());
         let health_probe = match HealthProbe::spawn(HealthProbeIdentity::Agentd(
-            AgentHealthProbeIdentity::from_spawn(spec, child.id()),
+            drain_identity.clone(),
         )) {
             Ok(probe) => probe,
             Err(error) => {
@@ -195,6 +201,7 @@ impl ProcessDriver for UnixProcessDriver {
                 handle: UnixProcessHandle::Child(child),
                 logs,
                 health_probe,
+                drain_identity: Some(drain_identity),
             },
         })
     }
@@ -205,8 +212,8 @@ impl ProcessDriver for UnixProcessDriver {
         }
         let process_id = u32::try_from(spec.identity.system_id())
             .map_err(|_| ProcessDriverError::new("stored child PID does not fit u32"))?;
-        let health_identity =
-            HealthProbeIdentity::Agentd(AgentHealthProbeIdentity::from_adopt(spec, process_id));
+        let drain_identity = AgentHealthProbeIdentity::from_adopt(spec, process_id);
+        let health_identity = HealthProbeIdentity::Agentd(drain_identity.clone());
         if prove_adoption_identity(&health_identity) {
             let health_probe = HealthProbe::spawn(health_identity)?;
             let (_sender, logs) = std::sync::mpsc::sync_channel(1);
@@ -214,6 +221,7 @@ impl ProcessDriver for UnixProcessDriver {
                 handle: UnixProcessHandle::Adopted { process_id },
                 logs,
                 health_probe,
+                drain_identity: Some(drain_identity),
             }));
         }
 
@@ -291,6 +299,7 @@ impl ProcessDriver for UnixProcessDriver {
                 handle: UnixProcessHandle::Child(child),
                 logs,
                 health_probe,
+                drain_identity: None,
             },
         })
     }
@@ -313,6 +322,7 @@ impl ProcessDriver for UnixProcessDriver {
                 handle: UnixProcessHandle::Adopted { process_id },
                 logs,
                 health_probe,
+                drain_identity: None,
             }));
         }
 
@@ -370,6 +380,7 @@ impl HealthProbeIdentity {
     }
 }
 
+#[derive(Clone)]
 struct AgentHealthProbeIdentity {
     agent_id: AgentId,
     spawn_generation: u64,
@@ -499,6 +510,47 @@ fn query_health_once(
     match identity {
         HealthProbeIdentity::Agentd(identity) => query_agent_health_once(identity, request_id),
         HealthProbeIdentity::Matrixd(identity) => query_matrix_health_once(identity, request_id),
+    }
+}
+
+fn request_agent_drain(
+    identity: &AgentHealthProbeIdentity,
+) -> Result<(), ProcessDriverError> {
+    let request = AgentdRequest::drain(/*request_id*/ 1, identity.spawn_generation);
+    let mut bytes = serde_json::to_vec(&request)?;
+    bytes.push(b'\n');
+    if bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES {
+        return Err(ProcessDriverError::new("Agentd drain request exceeds frame bound"));
+    }
+    let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
+    stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
+    stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
+    stream.write_all(&bytes)?;
+    stream.shutdown(Shutdown::Write)?;
+    let mut reader = BufReader::new(stream).take(MAX_CONTROL_FRAME_BYTES + 1);
+    let mut response_bytes = Vec::new();
+    let count = reader.read_until(b'\n', &mut response_bytes)?;
+    if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !response_bytes.ends_with(b"\n") {
+        return Err(ProcessDriverError::new("Agentd drain response is not a bounded frame"));
+    }
+    let response: AgentdResponse = serde_json::from_slice(&response_bytes)?;
+    if response.schema_version != AGENTD_CONTROL_SCHEMA_VERSION
+        || response.request_id != 1
+        || response.agent_id != identity.agent_id
+        || response.spawn_generation != identity.spawn_generation
+    {
+        return Err(ProcessDriverError::new("Agentd drain response identity mismatch"));
+    }
+    match response.payload {
+        AgentdPayload::DrainAccepted {
+            admission_stopped: true,
+        } => Ok(()),
+        AgentdPayload::Error { code, message } => Err(ProcessDriverError::new(format!(
+            "Agentd drain rejected ({code}): {message}"
+        ))),
+        _ => Err(ProcessDriverError::new(
+            "Agentd drain returned an unexpected response",
+        )),
     }
 }
 
