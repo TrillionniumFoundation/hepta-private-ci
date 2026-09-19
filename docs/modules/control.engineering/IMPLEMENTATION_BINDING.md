@@ -3,7 +3,7 @@
 The canonical implementation guide is [IMPLEMENTATION.md](IMPLEMENTATION.md).
 Concrete source lives in `tools/hepta-engineering-control/control_engineering_v2/`;
 `__init__.py` exports authenticated public composition, `control_plane.py` directly
-owns the SQLite v5 schema/transactions, `candidate.py` is the sole sandbox owner,
+owns the SQLite v6 schema/transactions, `candidate.py` is the sole sandbox owner,
 and `cli.py` exposes local scheduling and candidate qualification.
 
 [COMPONENTS.json](COMPONENTS.json) and [TRACEABILITY.json](TRACEABILITY.json) are
