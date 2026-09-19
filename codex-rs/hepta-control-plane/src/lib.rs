@@ -7,8 +7,10 @@
 
 #![forbid(unsafe_code)]
 
+mod authority_bridge;
 #[path = "embodiment/cart.rs"]
 mod cart;
+mod global_plane;
 #[path = "embodiment/io.rs"]
 mod io;
 mod organ_graph;
@@ -20,9 +22,15 @@ mod planner;
 mod planner_context;
 mod planner_journal;
 mod planner_ndu;
+mod planner_store;
 #[path = "embodiment/timing.rs"]
 mod timing;
 
+pub use authority_bridge::AuthorityBridgeError;
+pub use authority_bridge::claim_final_use_for_grant_request_v1;
+pub use authority_bridge::final_use_binding_for_grant_request_v1;
+pub use authority_bridge::grant_request_digest_v1;
+pub use authority_bridge::with_authorized_grant_request_v1;
 pub use cart::CART_Q24_SCALE;
 pub use cart::CartCommandV1;
 pub use cart::CartControlMode;
@@ -33,6 +41,20 @@ pub use cart::CartSimulatorV1;
 pub use cart::CartStateV1;
 pub use cart::SyntheticCartObservationV1;
 pub use cart::SyntheticCartPlant;
+pub use global_plane::AdmittedOwnerSummaryV1;
+pub use global_plane::FLEET_ACCELERATOR_MILLIS_AXIS;
+pub use global_plane::FLEET_CPU_MILLIS_AXIS;
+pub use global_plane::FLEET_MEMORY_MIB_AXIS;
+pub use global_plane::FleetEssentialFloorsV1;
+pub use global_plane::FleetOwnerAdmissionV1;
+pub use global_plane::GlobalControlPlanV1;
+pub use global_plane::GlobalPlaneError;
+pub use global_plane::admit_durable_owner_summary_v1;
+pub use global_plane::admit_fleet_allocation_owner_v1;
+pub use global_plane::authenticate_owner_summary_v1;
+pub use global_plane::compose_global_plan_with_fleet_v1;
+pub use global_plane::owner_summary_payload_digest_v1;
+pub use global_plane::owner_summary_scope_digest_v1;
 pub use io::EmbodimentIoError;
 pub use io::SyntheticActuatorReceiptV1;
 pub use io::SyntheticCartIoV1;
@@ -110,6 +132,7 @@ pub use planner::ResourceReservationV1;
 pub use planner::SearchDisclosureV1;
 pub use planner::SnapshotRequestV1;
 pub use planner::bind_ndu_plan_evaluation_v1;
+pub use planner::canonical_resource_profile_digest;
 pub use planner::collect_snapshot;
 pub use planner::finalize_plan;
 pub use planner::prepare_plan;
@@ -126,6 +149,8 @@ pub use planner_ndu::NduPlanningError;
 pub use planner_ndu::NduPlanningInputV1;
 pub use planner_ndu::canonical_ndu_planning_policy_digest;
 pub use planner_ndu::evaluate_prepared_plan_with_ndu;
+pub use planner_store::PlannerJournalStoreV1;
+pub use planner_store::PlannerStoreError;
 pub use timing::FixedPriorityTaskV1;
 pub use timing::TimingError;
 pub use timing::fixed_priority_response_times;

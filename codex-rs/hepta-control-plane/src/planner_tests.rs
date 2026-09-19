@@ -19,6 +19,7 @@ use super::PreparedPlanInputV1;
 use super::ResourceReservationV1;
 use super::SnapshotRequestV1;
 use super::bind_ndu_plan_evaluation_v1;
+use super::canonical_resource_profile_digest;
 use super::collect_snapshot;
 use super::finalize_plan;
 use super::prepare_plan;
@@ -97,18 +98,19 @@ fn candidate(name: &str, resource: i64) -> PlanCandidateV1 {
 }
 
 fn planning_request(work_resource: i64) -> PlanningRequestV1 {
+    let resource_reservations = vec![ResourceReservationV1 {
+        axis: id("compute"),
+        endowment: q32(10),
+        essential_floor: FixedQ32::ZERO,
+    }];
     PlanningRequestV1 {
         plan_id: id("plan-run-1"),
         now_micros: 1_000,
         deadline_micros: 1_900,
         evaluation_policy_digest: digest("policy"),
-        resource_profile_digest: digest("resource-profile"),
+        resource_profile_digest: must(canonical_resource_profile_digest(&resource_reservations)),
         candidates: vec![candidate("abstain", 0), candidate("work", work_resource)],
-        resource_reservations: vec![ResourceReservationV1 {
-            axis: id("compute"),
-            endowment: q32(10),
-            essential_floor: FixedQ32::ZERO,
-        }],
+        resource_reservations,
     }
 }
 
@@ -285,6 +287,21 @@ fn tampered_ndu_binding_is_rejected() {
     assert_eq!(
         must_err(finalize_plan(&snapshot, &prepared, &ndu, 1_100)),
         PlannerError::EvaluationBindingMismatch
+    );
+}
+
+#[test]
+fn resource_profile_digest_must_match_exact_reservations() {
+    let snapshot = must(collect_snapshot(
+        snapshot_request(),
+        vec![summary(OwnerReadinessV1::Ready, 950, 1_800)],
+    ));
+    let mut request = planning_request(1);
+    request.resource_reservations[0].essential_floor = q32(1);
+
+    assert_eq!(
+        must_err(prepare_plan(&snapshot, request)),
+        PlannerError::ResourceProfileMismatch
     );
 }
 
