@@ -17,7 +17,8 @@ use serde::Serialize;
 use crate::ProcessIdentity;
 use crate::SupervisorError;
 
-pub(crate) const PROCESS_LEASE_SCHEMA_VERSION: u32 = 2;
+const LEGACY_PROCESS_LEASE_SCHEMA_VERSION: u32 = 2;
+pub(crate) const PROCESS_LEASE_SCHEMA_VERSION: u32 = 3;
 pub(crate) const MATRIX_PROCESS_LEASE_SCHEMA_VERSION: u32 = 2;
 const PROCESS_LEASE_FILE: &str = "supervisor-process.json";
 const MAX_LEASE_BYTES: u64 = 4_096;
@@ -31,6 +32,17 @@ pub(crate) struct ProcessLease {
     pub spawn_generation: u64,
     pub release_id: ReleaseId,
     pub identity: ProcessIdentity,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fleet_allocation: Option<FleetAllocationProcessBinding>,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub(crate) struct FleetAllocationProcessBinding {
+    pub allocation_id: String,
+    pub lease_generation: u64,
+    pub authority_epoch: u64,
+    pub plan_sha256: Sha256Digest,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -61,10 +73,21 @@ pub(crate) fn validate_lease(
         AgentLifecycle::Failed => matches!(distance, Some(1..=3)),
         AgentLifecycle::Stopped => matches!(distance, Some(0..=4)),
     };
-    if lease.schema_version != PROCESS_LEASE_SCHEMA_VERSION
-        || &lease.agent_id != agent_id
-        || !generation_matches
-    {
+    let schema_matches = match lease.schema_version {
+        LEGACY_PROCESS_LEASE_SCHEMA_VERSION => lease.fleet_allocation.is_none(),
+        PROCESS_LEASE_SCHEMA_VERSION => lease.fleet_allocation.as_ref().is_some_and(|binding| {
+            !binding.allocation_id.is_empty()
+                && binding.allocation_id.len() <= 128
+                && binding
+                    .allocation_id
+                    .bytes()
+                    .all(|byte| byte.is_ascii_alphanumeric() || b"._:-".contains(&byte))
+                && binding.lease_generation > 0
+                && binding.authority_epoch > 0
+        }),
+        _ => false,
+    };
+    if !schema_matches || &lease.agent_id != agent_id || !generation_matches {
         return Err(SupervisorError::CorruptLease(format!(
             "lease does not match agent {agent_id} generation {registry_generation}"
         )));
