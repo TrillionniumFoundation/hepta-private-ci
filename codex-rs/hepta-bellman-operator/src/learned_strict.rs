@@ -166,6 +166,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(deprecated)]
     fn op_05_indexed_prediction_uses_canonical_grid() {
         let artifact = fit_tabular_operator_strict_v2(plan()).expect("strict fit succeeds");
         let prediction =
