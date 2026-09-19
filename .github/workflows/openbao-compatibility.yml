@@ -2,9 +2,23 @@ name: OpenBao compatibility blocker
 
 on:
   pull_request:
+    paths:
+      - "codex-rs/hepta-bao-adapter/**"
+      - "codex-rs/hepta-contracts/src/final_use*.rs"
+      - "codex-rs/hepta-contracts/FINAL_USE*.md"
+      - "codex-rs/hepta-agentd/**"
+      - "scripts/verify_openbao_compatibility.py"
+      - ".github/workflows/openbao-compatibility.yml"
   push:
     branches:
       - main
+    paths:
+      - "codex-rs/hepta-bao-adapter/**"
+      - "codex-rs/hepta-contracts/src/final_use*.rs"
+      - "codex-rs/hepta-contracts/FINAL_USE*.md"
+      - "codex-rs/hepta-agentd/**"
+      - "scripts/verify_openbao_compatibility.py"
+      - ".github/workflows/openbao-compatibility.yml"
   workflow_dispatch:
 
 permissions:
