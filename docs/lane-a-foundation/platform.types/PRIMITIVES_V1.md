@@ -33,7 +33,8 @@ hexadecimal characters. `ZERO` exists as a structural sentinel; capability and
 effect protocols must reject it where evidence is required.
 
 `canonical_encode_v1` freezes `HEPTA-CANONICAL-DIGEST-V1\0`, an ASCII domain,
-strictly byte-sorted unique field names, explicit type tags and length framing.
+a mandatory nonzero `u64` semantic schema version, strictly byte-sorted unique
+field names, explicit type tags and length framing.
 Integers are big-endian and the complete collection is bounded to 256 KiB.
 `canonical_digest_v1` is SHA-256 of those exact bytes. The frozen JSON vectors
 are the cross-language oracle.
