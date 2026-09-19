@@ -141,7 +141,65 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
         "real Agentd verifier did not accept exact authenticated source evidence"
     );
 
-    let source_set_digest = evidence_set_digest(&exact_refs)?;
+    let registry = base_evidence(
+        "evidence:product-registry-snapshot",
+        candidate.clone(),
+        EvidenceClaimClassV1::RegistrySnapshot,
+        EvidenceIssuerRoleV1::Architecture,
+        observed,
+        None,
+        json!({
+            "registry_digest": Sha256Digest::for_bytes(b"kernel-evidence-registry-v1").as_str()
+        }),
+    );
+    control
+        .append_kernel_evidence(signed_request(
+            ARCHITECTURE_ISSUER,
+            &architecture_key,
+            /*sequence*/ 2,
+            &registry,
+        )?)
+        .await?;
+
+    let mandatory_tests = base_evidence(
+        "evidence:product-mandatory-tests",
+        candidate.clone(),
+        EvidenceClaimClassV1::MandatoryTests,
+        EvidenceIssuerRoleV1::Security,
+        observed,
+        None,
+        json!({
+            "test_evidence_digest": Sha256Digest::for_bytes(b"kernel-evidence-tests-v1").as_str(),
+            "passed": true
+        }),
+    );
+    control
+        .append_kernel_evidence(signed_request(
+            SECURITY_ISSUER,
+            &security_key,
+            /*sequence*/ 1,
+            &mandatory_tests,
+        )?)
+        .await?;
+
+    let mut reviewed_evidence = exact_refs;
+    reviewed_evidence.extend(
+        control
+            .query_kernel_evidence(KernelEvidenceQueryV1 {
+                candidate: wire_candidate(&candidate),
+                claim_class: EvidenceClaimClassV1::RegistrySnapshot.as_str().to_string(),
+            })
+            .await?,
+    );
+    reviewed_evidence.extend(
+        control
+            .query_kernel_evidence(KernelEvidenceQueryV1 {
+                candidate: wire_candidate(&candidate),
+                claim_class: EvidenceClaimClassV1::MandatoryTests.as_str().to_string(),
+            })
+            .await?,
+    );
+    let source_set_digest = evidence_set_digest(&reviewed_evidence)?;
     let decision_expiry = observed.saturating_add(60_000);
     let architecture_decision = independent_decision(
         "decision:product-architecture",
@@ -158,7 +216,7 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
         .append_kernel_evidence(signed_request(
             ARCHITECTURE_ISSUER,
             &architecture_key,
-            /*sequence*/ 2,
+            /*sequence*/ 3,
             &architecture_decision,
         )?)
         .await?;
@@ -178,7 +236,7 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
         .append_kernel_evidence(signed_request(
             SECURITY_ISSUER,
             &security_key,
-            /*sequence*/ 1,
+            /*sequence*/ 2,
             &security_decision,
         )?)
         .await?;
@@ -272,7 +330,7 @@ async fn real_agentd_composes_authenticated_evidence_writer_query_verifier_and_t
         .append_kernel_evidence(signed_request(
             ARCHITECTURE_ISSUER,
             &architecture_key,
-            /*sequence*/ 3,
+            /*sequence*/ 4,
             &after_revoke,
         )?)
         .await
