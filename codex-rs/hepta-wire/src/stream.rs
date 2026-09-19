@@ -98,7 +98,7 @@ impl<R: Read> FramedReader<R> {
             header[payload_offset + 3],
         ]))
         .map_err(|_| StreamError::PayloadLength)?;
-        if payload_length == 0 || payload_length > crate::MAX_WIRE_PAYLOAD_BYTES {
+        if !(1..=crate::MAX_WIRE_PAYLOAD_BYTES).contains(&payload_length) {
             return Err(StreamError::PayloadLength);
         }
 
