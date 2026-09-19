@@ -61,7 +61,7 @@ Every transition uses the same semantic identity. A successful predecessor canno
 
 ## 7. Automation path
 
-TaskFlow persists schedule and occurrence identity, claims under a generation fence, writes durable pre-dispatch intent, enters the Codex/effect seam with final-use authority, and waits for a trusted terminal observer. Unknown effects block dependent mutation. Compensation has a new operation identity and separate authorization.
+TaskFlow persists legacy or Calendar V2 schedule revision and deterministic occurrence identity, claims under a generation fence, writes durable run/step intent and immutable provider-attempt identity before contact, and enters the Codex/effect seam with final-use authority. Agentd is the existing non-test caller for App Server automation activity and uses stable queue reconciliation plus persisted-turn terminal observation. External effects use an owner-computed canonical intent and append terminal reconciliation after an initial indeterminate receipt. Unknown effects block dependent mutation; compensation has a new operation identity and separate authorization. A concrete external provider is not inferred merely because this generic seam exists.
 
 ## 8. Matrix path
 
@@ -104,7 +104,7 @@ Stop new admission; persist drain intent; cancel only provably pre-effect work; 
 
 ## 15. Source maturity
 
-The truth registry records source-boundary mappings for all 39 operations. Supervisor and Codex are native runtime spines; Fleet, inference, TaskFlow and Matrix include native owner ledgers/adapters; Agentd now owns its own run coordinator; Browser/Web/Native provide bounded driver/client boundaries. The component mappings do not close repository-controlled integration work. Durable owner wiring, actual local model/browser drivers and runtime composition remain implementation tasks in addition to external qualification.
+The truth registry records source-boundary mappings for all 39 operations. Supervisor and Codex are native runtime spines; Agentd owns its run coordinator and the automation TaskFlow Codex-activity caller. `automation.taskflow` now has repository-complete durable schedule/occurrence/run/step/effect-attempt wiring, Calendar V2 source semantics and restart reconciliation. This does not close concrete external-effect provider activation, target-host/tzdb qualification or independent acceptance. Fleet, inference, Matrix, Browser/Web/Native retain their separately recorded repository/external gaps; one module's closure cannot certify another owner.
 
 ## 16. Evidence package required for activation
 

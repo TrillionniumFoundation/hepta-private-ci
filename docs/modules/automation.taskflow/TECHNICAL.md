@@ -73,7 +73,7 @@ External TaskFlow effect
   -> provider-specific reconciliation when required
 ```
 
-The old `effect_executor.rs` remains a bounded reference state machine/test component; it is not a second durable runtime owner.
+The old `effect_executor.rs` is now compiled only under `cfg(test)` as a legacy reducer fixture; it is not a public/product surface and cannot become a second runtime owner.
 
 ## 5. Contracts, ports and compatibility
 
@@ -92,21 +92,25 @@ Consumed contracts:
 - `OperationIntentV1`
 - kernel final-use authority/grant binding at the registered effect seam
 
-The compatibility timer API keeps `AutomationTick::Submitted`; its meaning is explicitly narrowed to **durable Core queue admission**, not occurrence or effect completion. Existing `Once`/`FixedInterval` callers keep their historical overlap behavior through an explicit default `overlap=allow`; callers requiring serial execution set `overlap=forbid` before the first occurrence is materialized.
+The compatibility timer API keeps `AutomationTick::Submitted`; its meaning is explicitly narrowed to **durable Core queue admission**, not occurrence or effect completion. Existing `Once`/`FixedInterval` callers keep their historical overlap behavior through an explicit default `overlap=allow`. Calendar V2 is additive: it stores an immutable versioned schedule with timezone ID, tzdb digest, bounded transition profile, start/end, local civil time, cadence and explicit DST gap/overlap policy. The compatibility `automation_tasks.schedule_kind='once'` marker for a Calendar V2 task is not the authoritative calendar definition; callers read `calendar_schedule_v2()`.
 
 ## 6. Data authority, persistence and migrations
 
-Schema v11 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables and adds:
+Schema v13 retains the original `automation_tasks`, `automation_runs` and dispatch-outcome tables and adds:
 
 - `automation_schedule_metadata`: revision, missed-run policy, bounded catch-up state and overlap policy.
 - `automation_occurrence_lifecycle`: deterministic occurrence identity, frozen schedule revision, claim generation/token, TaskFlow run ID, queue/turn identity, recovery phase and terminal receipt.
 - `automation_occurrence_events`: append-only hash-chained occurrence history.
 - `taskflow_step_outbox`: normal-schema durable `prepared -> claimed -> recorded -> reconciled` per-step receipt chain.
+- `taskflow_effect_dispatch_attempts`: immutable pre-provider attempt identity including intent/payload/binding/destination/grant lineage.
+- `taskflow_effect_dispatch_observations`: immutable first provider observation.
+- `taskflow_effect_dispatch_reconciliations`: immutable terminal reconciliation after a first `indeterminate` observation.
+- `automation_calendar_schedule_versions`: append-only Calendar V2 bytes and digest per schedule revision.
 - `automation_schedule` / `automation_occurrence` read views for canonical domain naming.
 
 `taskflow_definitions`, `taskflow_runs` and `taskflow_events` remain the durable TaskFlow ledger. A materialized occurrence freezes its schedule revision until it becomes terminal. Safe generation reclaim preserves occurrence/client identity and allocates a new step attempt; an indeterminate provider outcome does not.
 
-Migrations are additive from v3 through v11. An older binary that only understands automation schema v3 must not be started against a v11 owner store.
+Migrations are additive from v3 through v13. Migration v12 adds Calendar V2 history; v13 adds terminal reconciliation after an initial indeterminate external-effect observation. A binary that does not understand schema v13 must not replace the current owner against an upgraded store.
 
 ## 7. Runtime, concurrency and transaction model
 
@@ -114,7 +118,7 @@ One Agent generation owns the per-Agent writer. Scheduler lease generation/token
 
 `DispatchUnknown` no longer authorizes retry or permanently kills the scheduler. The next tick first performs bounded `ReconcileOnly` recovery for the same identity. Only an explicit `Missing` result may append `requeued_proven_absent`, release that same occurrence/client identity, and allocate a new durable step attempt on reclaim.
 
-For external effects, `FinalUseAuthority::claim` durably consumes the signed grant nonce and `with_verified_use` revalidates current authority while the registered driver crosses the provider boundary. Driver errors are allowed only before provider contact; ambiguous contact must return `Indeterminate` so the outbox can quarantine the step.
+For external effects, automation computes `AuthorizedEffectIntent` itself over run/step/attempt/operation/subject/destination/payload/final-use-scope/policy-generation/dependency-state/compensation identity. `FinalUseAuthority::claim` durably consumes the signed grant nonce, and `with_verified_use` revalidates current authority while the registered driver crosses the provider boundary. The immutable dispatch attempt separately records the concrete grant ID, authority epoch and nonce digest. Driver errors are allowed only before provider contact; ambiguous contact returns `Indeterminate` and is later closed only by append-only provider reconciliation.
 
 ## 8. Failure semantics, recovery and rollback
 
@@ -125,13 +129,13 @@ Crash boundaries are explicit:
 - after possible App Server admission: stable-id `ReconcileOnly`; no blind duplicate;
 - after persisted turn: store turn identity, then observe terminal status from persisted turn history;
 - after terminal provider observation but before run projection settlement: reconcile the historical step first, then a newer Agent generation may re-fence only the TaskFlow run projection for `Indeterminate -> Reconcile`; it does not replay the effect;
-- indeterminate external effect: dependent mutation remains blocked until the effect owner supplies reconciliation.
+- indeterminate external effect: dependent mutation remains blocked; restart scanning returns both never-observed attempts and attempts whose first observation is `indeterminate`. A later terminal/proven-absent owner receipt is appended as separate reconciliation evidence and never overwrites or redispatches the first attempt.
 
 Rollback preserves schedule revision, deterministic occurrence identity, stable queue identity and provider reconciliation state.
 
 ## 9. Security, privacy and threat controls
 
-Authority is operation-bound, payload-bound, destination-bound, short-lived and revocation-aware. `authorized_effect.rs` verifies that the signed final-use binding's `request_sha256` matches the durable TaskFlow intent digest and `payload_sha256` matches the durable payload before the effect driver can run. Automation never owns the signing key.
+Authority is operation-bound, subject-bound, scope-bound, payload-bound, destination-bound, short-lived and revocation-aware. `authorized_effect.rs` computes the canonical effect-intent digest inside the owner and verifies that the signed final-use binding's subject, destination, request digest, scope digest and payload digest all match that exact intent before the effect driver can run. Automation never owns the signing key.
 
 Credentials and provider secrets remain outside general TaskFlow receipts; durable records carry stable identifiers and digests. Stale generation, changed payload, changed stable-client input, reused final-use nonce and revoked grant fail closed.
 
@@ -140,6 +144,7 @@ Credentials and provider secrets remain outside general TaskFlow receipts; durab
 Current source bounds include:
 
 - schedule catch-up ceiling <=1024 occurrences;
+- Calendar V2 timezone transition profile <=512 transitions and bounded calendar search <=1032 candidate days;
 - occurrence recovery query <=1024 rows;
 - Agentd terminal scan <=16 pages × 100 persisted turns per recovery pass;
 - one historical occurrence reconciliation plus at most one new scheduler admission per Agentd tick;
@@ -162,14 +167,17 @@ Focused source tests include:
 - `codex-rs/hepta-automation/tests/taskflow.rs`
 - `codex-rs/hepta-automation/tests/taskflow_kernel.rs`
 - `codex-rs/hepta-automation/tests/taskflow_step.rs`
-- `codex-rs/hepta-automation/src/effect_executor_tests.rs`
+- `codex-rs/hepta-automation/src/schedule_v2.rs`
+- `codex-rs/hepta-automation/src/authorized_effect.rs`
+- `codex-rs/hepta-automation/src/effect_dispatch_ledger.rs`
+- legacy `src/effect_executor_tests.rs` only through the test-only reducer
 - Agentd automation/recovery unit and process qualification paths.
 
-In `codex-rs`, the focused package command remains `just test -p codex-hepta-automation`; exact-head CI output is the result receipt. Documentation, source mapping and fixture presence are not substitutes for an executed provider/host qualification.
+In `codex-rs`, exact-head CI runs the full `codex-hepta-automation` package, repeats it with `taskflow-structural-qualification`, and executes the explicit TaskFlow kernel/step Bazel targets. The deterministic synthetic merge runs the same TaskFlow qualification set. Documentation, source mapping and fixture presence are not substitutes for those receipts or for provider/host qualification.
 
 ## 13. Implementation sequence and work packages
 
-Applicable package: `TASKFLOW-1-EXECUTION-BOUNDARY`.
+Applicable package: `TASKFLOW-1-EXECUTION-BOUNDARY` (`source_implemented_execution_pending`).
 
 Implemented convergence sequence:
 
@@ -180,8 +188,10 @@ Implemented convergence sequence:
 5. replace ordinary queue-add with stable-id reconcile semantics;
 6. add bounded lost-reply and persisted-turn terminal reconciliation;
 7. propagate TaskFlow terminal state before occurrence terminal state;
-8. expose final-use-authorized external-effect driver seam;
-9. keep product activation/evidence gates independent.
+8. expose the final-use-authorized external-effect driver seam with owner-computed canonical intent identity;
+9. add append-only restart reconciliation for initially indeterminate provider attempts;
+10. add Calendar V2 with explicit timezone/tzdb and DST gap/overlap semantics without changing legacy schedule meaning;
+11. keep concrete provider activation, target-host qualification and independent evidence gates separate.
 
 No second TaskFlow engine or scheduler is admitted by this work package.
 
@@ -213,7 +223,7 @@ This overlay changes no acceptance, activation, promotion or release authority.
 
 | Operation | Native source | Composition / observation |
 |---|---|---|
-| `register_schedule` | `codex-rs/hepta-automation/src/store.rs`, `src/lifecycle.rs` | durable revision/policy metadata |
+| `register_schedule` | `codex-rs/hepta-automation/src/schedule_v2.rs`, `src/store.rs`, `src/lifecycle.rs` | append-only Calendar V2/legacy schedule revision and policy metadata |
 | `materialize_due` | `codex-rs/hepta-automation/src/scheduler.rs` | deterministic occurrence before provider contact |
 | `claim_occurrence` | `src/lifecycle.rs` | Agent generation/token + durable occurrence event |
 | `taskflow_run` | `src/automation_taskflow.rs`, `src/taskflow.rs` | deterministic durable run and transition ledger |
@@ -221,7 +231,7 @@ This overlay changes no acceptance, activation, promotion or release authority.
 | `queue_dispatch` | `codex-rs/hepta-agentd/src/automation.rs` | App Server `thread/queue/reconcile(AllowIfAbsent)` |
 | `queue_recovery` | `codex-rs/hepta-agentd/src/automation_recovery.rs` | `ReconcileOnly`, bounded persisted-turn terminal observer |
 | `run_recovery` | `src/taskflow_recovery.rs` | historical-step-first, projection-only re-fence |
-| `external_effect` | `src/authorized_effect.rs` | kernel final-use verification + registered driver + durable observation |
+| `external_effect` | `src/authorized_effect.rs`, `src/effect_dispatch_ledger.rs` | owner-computed canonical intent + kernel final-use + immutable attempt/observation/reconciliation |
 | `occurrence_terminal` | `src/lifecycle.rs` | occurs after TaskFlow reconciliation; advances forbidden-overlap recurrence |
 
-Current repository source work still does **not** claim calendar/IANA-timezone recurrence support, a concrete arbitrary downstream effect provider, deployment, independent acceptance, activation or release. Those claims remain false until their own evidence gates close.
+Current repository source implements bounded Calendar V2 semantics from an explicitly supplied timezone/tzdb transition profile; it does **not** prove that a selected host supplied a current authentic IANA tzdb profile, nor does it prove multi-scheduler/DST target behavior. The Agentd/App Server Codex automation activity has a real source composition path. A concrete arbitrary downstream effect provider/terminal observer, deployment, independent acceptance, activation, promotion and release remain separate evidence gates and stay false.
