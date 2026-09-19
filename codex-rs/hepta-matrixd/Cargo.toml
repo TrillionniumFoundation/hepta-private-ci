@@ -60,6 +60,7 @@ tokio-util = { workspace = true, features = ["rt"] }
 rustix = { workspace = true, features = ["fs", "process"] }
 
 [dev-dependencies]
+ed25519-dalek = { workspace = true }
 anyhow = { workspace = true }
 app_test_support = { workspace = true }
 codex-hepta-paths = { workspace = true }
