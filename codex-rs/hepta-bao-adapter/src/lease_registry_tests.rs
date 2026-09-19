@@ -27,7 +27,13 @@ async fn issue_unknown_reconciles_without_blind_retry() {
 
     assert_eq!(
         registry
-            .begin_operation("op:issue:1", LeaseOperationKind::Issue, None, digest(1), 1_000)
+            .begin_operation(
+                "op:issue:1",
+                LeaseOperationKind::Issue,
+                None,
+                digest(1),
+                1_000
+            )
             .await,
         Ok(OperationAdmission::New)
     );
@@ -41,7 +47,13 @@ async fn issue_unknown_reconciles_without_blind_retry() {
         .unwrap_or_else(|error| panic!("unknown: {error}"));
 
     let duplicate = registry
-        .begin_operation("op:issue:1", LeaseOperationKind::Issue, None, digest(1), 1_003)
+        .begin_operation(
+            "op:issue:1",
+            LeaseOperationKind::Issue,
+            None,
+            digest(1),
+            1_003,
+        )
         .await
         .unwrap_or_else(|error| panic!("duplicate: {error}"));
     let OperationAdmission::Existing(record) = duplicate else {

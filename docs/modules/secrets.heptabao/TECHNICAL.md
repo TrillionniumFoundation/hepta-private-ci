@@ -48,7 +48,7 @@ None.
 
 ### Native source and scope
 
-The registered native source spans [https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs), [lease_client.rs](../../../codex-rs/hepta-bao-adapter/src/lease_client.rs), and [lease_registry.rs](../../../codex-rs/hepta-bao-adapter/src/lease_registry.rs). Current entrypoints include `consume_kv_v2`, `request_secret_lease`, `renew_secret_lease`, `revoke_secret_lease`, and `reconcile_issue_observation`. The latter is an authenticated-host reconciliation seam because the currently pinned HeptaBao runtime does not expose its operation-outcome ledger through a direct HTTP endpoint. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md#8-current-native-implementation) for exact source/non-claim boundaries.
+The registered native source spans [https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs), [lease_client.rs](../../../codex-rs/hepta-bao-adapter/src/lease_client.rs), and [lease_registry.rs](../../../codex-rs/hepta-bao-adapter/src/lease_registry.rs). Current entrypoints include `consume_kv_v2`, `request_secret_lease`, `renew_secret_lease`, `revoke_secret_lease`, and `reconcile_issue_observation`. The latter is an authenticated-host reconciliation seam because the currently pinned HeptaBao runtime does not expose its operation-outcome ledger through a direct HTTP endpoint. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md#8-current-native-implementation-and-remaining-gates) for exact source/non-claim boundaries.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -135,13 +135,13 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md#8-current-native-implementation) identifies the actual state owners and transaction boundaries. `LeaseRegistry` is the SQLite/WAL metadata owner for local lease/operation state; provider secret values remain external. `FinalUseAuthority` owns trust, replay and revocation state. Lease operations persist durable intent before provider dispatch and retain `Unknown` for ambiguous entered effects.
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md#8-current-native-implementation-and-remaining-gates) identifies the actual state owners and transaction boundaries. `LeaseRegistry` is the SQLite/WAL metadata owner for local lease/operation state; provider secret values remain external. `FinalUseAuthority` owns trust, replay and revocation state. Lease operations persist durable intent before provider dispatch and retain `Unknown` for ambiguous entered effects.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md#8-current-native-implementation). `Prepared/InFlight/Applied/Rejected/Unknown` is the durable operation truth. Once a provider effect may have been entered, timeout, connection loss or malformed success cannot be converted into `NotApplied`; the operation remains `Unknown` until authenticated provider observation reconciles it. The current HeptaBao runtime still lacks the direct outcome/readback endpoint needed for automatic lost-issuance reconciliation.
+Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md#8-current-native-implementation-and-remaining-gates). `Prepared/InFlight/Applied/Rejected/Unknown` is the durable operation truth. Once a provider effect may have been entered, timeout, connection loss or malformed success cannot be converted into `NotApplied`; the operation remains `Unknown` until authenticated provider observation reconciles it. The current HeptaBao runtime still lacks the direct outcome/readback endpoint needed for automatic lost-issuance reconciliation.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 

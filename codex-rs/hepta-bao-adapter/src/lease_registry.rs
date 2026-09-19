@@ -159,12 +159,12 @@ impl fmt::Debug for LeaseRegistry {
 impl LeaseRegistry {
     pub async fn open(path: &Path) -> Result<Self, LeaseRegistryError> {
         let options = SqliteConnectOptions::new()
-        .filename(path)
-        .create_if_missing(true)
-        .journal_mode(SqliteJournalMode::Wal)
-        .synchronous(SqliteSynchronous::Full)
-        .foreign_keys(true)
-        .busy_timeout(Duration::from_secs(5));
+            .filename(path)
+            .create_if_missing(true)
+            .journal_mode(SqliteJournalMode::Wal)
+            .synchronous(SqliteSynchronous::Full)
+            .foreign_keys(true)
+            .busy_timeout(Duration::from_secs(5));
         let pool = SqlitePoolOptions::new()
             .max_connections(4)
             .acquire_timeout(Duration::from_secs(5))
@@ -198,12 +198,11 @@ impl LeaseRegistry {
         .execute(&self.pool)
         .await
         .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
-        let version: i64 = sqlx::query_scalar(
-            "SELECT value FROM heptabao_meta WHERE key='schema_version'",
-        )
-        .fetch_one(&self.pool)
-        .await
-        .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
+        let version: i64 =
+            sqlx::query_scalar("SELECT value FROM heptabao_meta WHERE key='schema_version'")
+                .fetch_one(&self.pool)
+                .await
+                .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
         if version != SCHEMA_VERSION {
             return Err(LeaseRegistryError::UnsupportedSchema);
         }
@@ -325,7 +324,11 @@ impl LeaseRegistry {
         now_ms: u64,
     ) -> Result<(), LeaseRegistryError> {
         validate_metadata(lease)?;
-        let mut tx = self.pool.begin().await.map_err(|_| LeaseRegistryError::StoreUnavailable)?;
+        let mut tx = self
+            .pool
+            .begin()
+            .await
+            .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
         ensure_operation_state(
             &mut tx,
             operation_id,
@@ -372,7 +375,9 @@ impl LeaseRegistry {
         .execute(&mut *tx)
         .await
         .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
-        tx.commit().await.map_err(|_| LeaseRegistryError::StoreUnavailable)?;
+        tx.commit()
+            .await
+            .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
         Ok(())
     }
 
@@ -389,7 +394,11 @@ impl LeaseRegistry {
         }
         validate_id(operation_id)?;
         validate_id(lease_id)?;
-        let mut tx = self.pool.begin().await.map_err(|_| LeaseRegistryError::StoreUnavailable)?;
+        let mut tx = self
+            .pool
+            .begin()
+            .await
+            .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
         if let Some(row) = sqlx::query(
             "SELECT kind,lease_id,semantic_sha256,state,observed_at_ms FROM lease_operations WHERE operation_id=?",
         )
@@ -438,7 +447,9 @@ impl LeaseRegistry {
         .execute(&mut *tx)
         .await
         .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
-        tx.commit().await.map_err(|_| LeaseRegistryError::StoreUnavailable)?;
+        tx.commit()
+            .await
+            .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
         Ok(OperationAdmission::New)
     }
 
@@ -450,7 +461,11 @@ impl LeaseRegistry {
         renewable: bool,
         now_ms: u64,
     ) -> Result<(), LeaseRegistryError> {
-        let mut tx = self.pool.begin().await.map_err(|_| LeaseRegistryError::StoreUnavailable)?;
+        let mut tx = self
+            .pool
+            .begin()
+            .await
+            .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
         ensure_operation_state(
             &mut tx,
             operation_id,
@@ -472,7 +487,9 @@ impl LeaseRegistry {
             return Err(LeaseRegistryError::LeaseNotFound);
         }
         mark_operation_applied(&mut tx, operation_id, now_ms).await?;
-        tx.commit().await.map_err(|_| LeaseRegistryError::StoreUnavailable)?;
+        tx.commit()
+            .await
+            .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
         Ok(())
     }
 
@@ -482,7 +499,11 @@ impl LeaseRegistry {
         lease_id: &str,
         now_ms: u64,
     ) -> Result<(), LeaseRegistryError> {
-        let mut tx = self.pool.begin().await.map_err(|_| LeaseRegistryError::StoreUnavailable)?;
+        let mut tx = self
+            .pool
+            .begin()
+            .await
+            .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
         ensure_operation_state(
             &mut tx,
             operation_id,
@@ -502,7 +523,9 @@ impl LeaseRegistry {
             return Err(LeaseRegistryError::LeaseNotFound);
         }
         mark_operation_applied(&mut tx, operation_id, now_ms).await?;
-        tx.commit().await.map_err(|_| LeaseRegistryError::StoreUnavailable)?;
+        tx.commit()
+            .await
+            .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
         Ok(())
     }
 
@@ -512,7 +535,11 @@ impl LeaseRegistry {
         now_ms: u64,
     ) -> Result<(), LeaseRegistryError> {
         validate_id(operation_id)?;
-        let mut tx = self.pool.begin().await.map_err(|_| LeaseRegistryError::StoreUnavailable)?;
+        let mut tx = self
+            .pool
+            .begin()
+            .await
+            .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
         let row = sqlx::query("SELECT lease_id,state FROM lease_operations WHERE operation_id=?")
             .bind(operation_id)
             .fetch_optional(&mut *tx)
@@ -548,7 +575,9 @@ impl LeaseRegistry {
             .await
             .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
         }
-        tx.commit().await.map_err(|_| LeaseRegistryError::StoreUnavailable)?;
+        tx.commit()
+            .await
+            .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
         Ok(())
     }
 
@@ -558,31 +587,45 @@ impl LeaseRegistry {
         now_ms: u64,
     ) -> Result<(), LeaseRegistryError> {
         validate_id(operation_id)?;
-        let mut tx = self.pool.begin().await.map_err(|_| LeaseRegistryError::StoreUnavailable)?;
-        let row = sqlx::query(
-            "SELECT kind,lease_id,state FROM lease_operations WHERE operation_id=?",
-        )
-        .bind(operation_id)
-        .fetch_optional(&mut *tx)
-        .await
-        .map_err(|_| LeaseRegistryError::StoreUnavailable)?
-        .ok_or(LeaseRegistryError::OperationNotFound)?;
-        let kind = LeaseOperationKind::parse(
-            row.try_get::<String, _>("kind").map_err(|_| LeaseRegistryError::CorruptState)?.as_str(),
-        )?;
-        let state = LeaseOperationState::parse(
-            row.try_get::<String, _>("state").map_err(|_| LeaseRegistryError::CorruptState)?.as_str(),
-        )?;
-        if !matches!(state, LeaseOperationState::Prepared | LeaseOperationState::InFlight) {
-            return Err(LeaseRegistryError::InvalidOperationState);
-        }
-        let lease_id: Option<String> = row.try_get("lease_id").map_err(|_| LeaseRegistryError::CorruptState)?;
-        sqlx::query("UPDATE lease_operations SET state='rejected',observed_at_ms=? WHERE operation_id=?")
-            .bind(to_i64(now_ms)?)
-            .bind(operation_id)
-            .execute(&mut *tx)
+        let mut tx = self
+            .pool
+            .begin()
             .await
             .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
+        let row =
+            sqlx::query("SELECT kind,lease_id,state FROM lease_operations WHERE operation_id=?")
+                .bind(operation_id)
+                .fetch_optional(&mut *tx)
+                .await
+                .map_err(|_| LeaseRegistryError::StoreUnavailable)?
+                .ok_or(LeaseRegistryError::OperationNotFound)?;
+        let kind = LeaseOperationKind::parse(
+            row.try_get::<String, _>("kind")
+                .map_err(|_| LeaseRegistryError::CorruptState)?
+                .as_str(),
+        )?;
+        let state = LeaseOperationState::parse(
+            row.try_get::<String, _>("state")
+                .map_err(|_| LeaseRegistryError::CorruptState)?
+                .as_str(),
+        )?;
+        if !matches!(
+            state,
+            LeaseOperationState::Prepared | LeaseOperationState::InFlight
+        ) {
+            return Err(LeaseRegistryError::InvalidOperationState);
+        }
+        let lease_id: Option<String> = row
+            .try_get("lease_id")
+            .map_err(|_| LeaseRegistryError::CorruptState)?;
+        sqlx::query(
+            "UPDATE lease_operations SET state='rejected',observed_at_ms=? WHERE operation_id=?",
+        )
+        .bind(to_i64(now_ms)?)
+        .bind(operation_id)
+        .execute(&mut *tx)
+        .await
+        .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
         if let Some(lease_id) = lease_id {
             let transitional = match kind {
                 LeaseOperationKind::Renew => Some(LeaseState::Renewing),
@@ -601,7 +644,9 @@ impl LeaseRegistry {
                 .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
             }
         }
-        tx.commit().await.map_err(|_| LeaseRegistryError::StoreUnavailable)?;
+        tx.commit()
+            .await
+            .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
         Ok(())
     }
 
@@ -674,15 +719,13 @@ impl LeaseRegistry {
         if !allowed.contains(&current) {
             return Err(LeaseRegistryError::InvalidOperationState);
         }
-        sqlx::query(
-            "UPDATE lease_operations SET state=?,observed_at_ms=? WHERE operation_id=?",
-        )
-        .bind(next.as_str())
-        .bind(to_i64(now_ms)?)
-        .bind(operation_id)
-        .execute(&self.pool)
-        .await
-        .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
+        sqlx::query("UPDATE lease_operations SET state=?,observed_at_ms=? WHERE operation_id=?")
+            .bind(next.as_str())
+            .bind(to_i64(now_ms)?)
+            .bind(operation_id)
+            .execute(&self.pool)
+            .await
+            .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
         Ok(())
     }
 }
@@ -720,12 +763,14 @@ async fn mark_operation_applied(
     operation_id: &str,
     now_ms: u64,
 ) -> Result<(), LeaseRegistryError> {
-    sqlx::query("UPDATE lease_operations SET state='applied',observed_at_ms=? WHERE operation_id=?")
-        .bind(to_i64(now_ms)?)
-        .bind(operation_id)
-        .execute(&mut **tx)
-        .await
-        .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
+    sqlx::query(
+        "UPDATE lease_operations SET state='applied',observed_at_ms=? WHERE operation_id=?",
+    )
+    .bind(to_i64(now_ms)?)
+    .bind(operation_id)
+    .execute(&mut **tx)
+    .await
+    .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
     Ok(())
 }
 
@@ -733,19 +778,28 @@ fn decode_operation(
     operation_id: &str,
     row: &sqlx::sqlite::SqliteRow,
 ) -> Result<LeaseOperationRecord, LeaseRegistryError> {
-    let digest: Vec<u8> = row.try_get("semantic_sha256").map_err(|_| LeaseRegistryError::CorruptState)?;
+    let digest: Vec<u8> = row
+        .try_get("semantic_sha256")
+        .map_err(|_| LeaseRegistryError::CorruptState)?;
     Ok(LeaseOperationRecord {
         operation_id: operation_id.to_owned(),
         kind: LeaseOperationKind::parse(
-            row.try_get::<String, _>("kind").map_err(|_| LeaseRegistryError::CorruptState)?.as_str(),
+            row.try_get::<String, _>("kind")
+                .map_err(|_| LeaseRegistryError::CorruptState)?
+                .as_str(),
         )?,
-        lease_id: row.try_get("lease_id").map_err(|_| LeaseRegistryError::CorruptState)?,
+        lease_id: row
+            .try_get("lease_id")
+            .map_err(|_| LeaseRegistryError::CorruptState)?,
         semantic_sha256: to_digest(&digest)?,
         state: LeaseOperationState::parse(
-            row.try_get::<String, _>("state").map_err(|_| LeaseRegistryError::CorruptState)?.as_str(),
+            row.try_get::<String, _>("state")
+                .map_err(|_| LeaseRegistryError::CorruptState)?
+                .as_str(),
         )?,
         observed_at_ms: to_u64(
-            row.try_get::<i64, _>("observed_at_ms").map_err(|_| LeaseRegistryError::CorruptState)?,
+            row.try_get::<i64, _>("observed_at_ms")
+                .map_err(|_| LeaseRegistryError::CorruptState)?,
         )?,
     })
 }
@@ -754,21 +808,34 @@ fn decode_lease(
     lease_id: &str,
     row: &sqlx::sqlite::SqliteRow,
 ) -> Result<LeaseMetadata, LeaseRegistryError> {
-    let digest: Vec<u8> = row.try_get("scope_sha256").map_err(|_| LeaseRegistryError::CorruptState)?;
+    let digest: Vec<u8> = row
+        .try_get("scope_sha256")
+        .map_err(|_| LeaseRegistryError::CorruptState)?;
     Ok(LeaseMetadata {
         lease_id: lease_id.to_owned(),
-        provider_path: row.try_get("provider_path").map_err(|_| LeaseRegistryError::CorruptState)?,
-        consumer_id: row.try_get("consumer_id").map_err(|_| LeaseRegistryError::CorruptState)?,
+        provider_path: row
+            .try_get("provider_path")
+            .map_err(|_| LeaseRegistryError::CorruptState)?,
+        consumer_id: row
+            .try_get("consumer_id")
+            .map_err(|_| LeaseRegistryError::CorruptState)?,
         scope_sha256: to_digest(&digest)?,
-        renewable: row.try_get::<i64, _>("renewable").map_err(|_| LeaseRegistryError::CorruptState)? == 1,
+        renewable: row
+            .try_get::<i64, _>("renewable")
+            .map_err(|_| LeaseRegistryError::CorruptState)?
+            == 1,
         expires_at_ms: to_u64(
-            row.try_get::<i64, _>("expires_at_ms").map_err(|_| LeaseRegistryError::CorruptState)?,
+            row.try_get::<i64, _>("expires_at_ms")
+                .map_err(|_| LeaseRegistryError::CorruptState)?,
         )?,
         state: LeaseState::parse(
-            row.try_get::<String, _>("state").map_err(|_| LeaseRegistryError::CorruptState)?.as_str(),
+            row.try_get::<String, _>("state")
+                .map_err(|_| LeaseRegistryError::CorruptState)?
+                .as_str(),
         )?,
         revision: to_u64(
-            row.try_get::<i64, _>("revision").map_err(|_| LeaseRegistryError::CorruptState)?,
+            row.try_get::<i64, _>("revision")
+                .map_err(|_| LeaseRegistryError::CorruptState)?,
         )?,
     })
 }
@@ -802,7 +869,9 @@ fn to_u64(value: i64) -> Result<u64, LeaseRegistryError> {
 }
 
 fn to_digest(value: &[u8]) -> Result<[u8; 32], LeaseRegistryError> {
-    value.try_into().map_err(|_| LeaseRegistryError::CorruptState)
+    value
+        .try_into()
+        .map_err(|_| LeaseRegistryError::CorruptState)
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

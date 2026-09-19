@@ -158,11 +158,15 @@ impl BaoClient {
             network_request = network_request.header("X-Vault-Namespace", &request.namespace);
         }
 
-        registry.mark_in_flight(&request.operation_id, now_ms).await?;
+        registry
+            .mark_in_flight(&request.operation_id, now_ms)
+            .await?;
         let verified = match authority.claim(grant, &binding) {
             Ok(value) => value,
             Err(error) => {
-                registry.reject_operation(&request.operation_id, now_ms).await?;
+                registry
+                    .reject_operation(&request.operation_id, now_ms)
+                    .await?;
                 return Err(SecretLeaseClientError::Authority(error));
             }
         };
@@ -181,7 +185,9 @@ impl BaoClient {
                 | StatusCode::FORBIDDEN
                 | StatusCode::NOT_FOUND
         ) {
-            registry.reject_operation(&request.operation_id, now_ms).await?;
+            registry
+                .reject_operation(&request.operation_id, now_ms)
+                .await?;
             return Err(provider_rejection(status));
         }
         if status != StatusCode::OK {
@@ -312,11 +318,15 @@ impl BaoClient {
             network_request = network_request.header("X-Vault-Namespace", &request.namespace);
         }
 
-        registry.mark_in_flight(&request.operation_id, now_ms).await?;
+        registry
+            .mark_in_flight(&request.operation_id, now_ms)
+            .await?;
         let _verified = match authority.claim(grant, &binding) {
             Ok(value) => value,
             Err(error) => {
-                registry.reject_operation(&request.operation_id, now_ms).await?;
+                registry
+                    .reject_operation(&request.operation_id, now_ms)
+                    .await?;
                 return Err(SecretLeaseClientError::Authority(error));
             }
         };
@@ -332,7 +342,9 @@ impl BaoClient {
             status,
             StatusCode::BAD_REQUEST | StatusCode::UNAUTHORIZED | StatusCode::FORBIDDEN
         ) {
-            registry.reject_operation(&request.operation_id, now_ms).await?;
+            registry
+                .reject_operation(&request.operation_id, now_ms)
+                .await?;
             return Err(provider_rejection(status));
         }
         if status != StatusCode::OK {
@@ -437,11 +449,15 @@ impl BaoClient {
             network_request = network_request.header("X-Vault-Namespace", &request.namespace);
         }
 
-        registry.mark_in_flight(&request.operation_id, now_ms).await?;
+        registry
+            .mark_in_flight(&request.operation_id, now_ms)
+            .await?;
         let _verified = match authority.claim(grant, &binding) {
             Ok(value) => value,
             Err(error) => {
-                registry.reject_operation(&request.operation_id, now_ms).await?;
+                registry
+                    .reject_operation(&request.operation_id, now_ms)
+                    .await?;
                 return Err(SecretLeaseClientError::Authority(error));
             }
         };
@@ -457,7 +473,9 @@ impl BaoClient {
             status,
             StatusCode::BAD_REQUEST | StatusCode::UNAUTHORIZED | StatusCode::FORBIDDEN
         ) {
-            registry.reject_operation(&request.operation_id, now_ms).await?;
+            registry
+                .reject_operation(&request.operation_id, now_ms)
+                .await?;
             return Err(provider_rejection(status));
         }
         if !matches!(status, StatusCode::OK | StatusCode::NO_CONTENT) {
@@ -668,7 +686,9 @@ fn validate_revoke(request: &BaoLeaseRevokeRequest) -> Result<(), SecretLeaseCli
     Ok(())
 }
 
-fn validate_dynamic_response(response: &DynamicLeaseResponse) -> Result<(), SecretLeaseClientError> {
+fn validate_dynamic_response(
+    response: &DynamicLeaseResponse,
+) -> Result<(), SecretLeaseClientError> {
     if response.lease_id.is_empty()
         || response.lease_id.len() > 512
         || response.lease_duration == 0
@@ -758,9 +778,7 @@ fn ambiguous_transport(error: HttpError) -> SecretLeaseClientError {
 
 fn provider_rejection(status: StatusCode) -> SecretLeaseClientError {
     match status {
-        StatusCode::UNAUTHORIZED | StatusCode::FORBIDDEN => {
-            SecretLeaseClientError::ProviderDenied
-        }
+        StatusCode::UNAUTHORIZED | StatusCode::FORBIDDEN => SecretLeaseClientError::ProviderDenied,
         StatusCode::NOT_FOUND => SecretLeaseClientError::ProviderNotFound,
         _ => SecretLeaseClientError::ProviderRejected,
     }
