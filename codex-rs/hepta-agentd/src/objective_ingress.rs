@@ -15,7 +15,6 @@ use codex_hepta_evidence::AuthBusDeliveryState;
 use codex_hepta_evidence::AuthBusDeliveryStatus;
 use codex_hepta_learning_ledger::DurableLearningJournal;
 use codex_hepta_learning_ledger::DurableLedger;
-use codex_hepta_learning_ledger::LedgerAnchor;
 use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::LedgerRecovery;
 use codex_hepta_learning_ledger::LedgerWitnessStore;
@@ -227,7 +226,10 @@ impl ObjectiveIngressHost {
 
         match result {
             codex_hepta_intelligence::ProductionObjectiveDispositionV1::Published(receipt) => {
-                reconcile_witness(&state.ledger, &mut state.witness)?;
+                {
+                    let ObjectiveOwnerState { ledger, witness, .. } = &mut *state;
+                    reconcile_witness(ledger, witness)?;
+                }
                 // The durable publication may outlive an authority/generation
                 // change. Revalidate the host and signed issuer after both
                 // ledger and independent witness fsync, immediately before
