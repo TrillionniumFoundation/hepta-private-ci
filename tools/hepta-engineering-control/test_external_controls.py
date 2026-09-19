@@ -20,6 +20,7 @@ from control_engineering_v2.external_controls import (
     verify_external_audit_anchor,
     verify_external_key_custody,
     verify_production_controls,
+    store_snapshot_digest,
 )
 
 
@@ -281,6 +282,7 @@ class ExternalControlTests(unittest.TestCase):
                         envelope_id=self.envelope.envelope_id,
                         source_commit=self.envelope.source_commit,
                         source_tree=self.envelope.source_tree,
+                        store_snapshot_digest=store_snapshot_digest(store),
                         issuer="audit_anchor_service",
                         signing_identity="audit-key",
                         observed_unix_ns=self.now - 1,
@@ -314,6 +316,42 @@ class ExternalControlTests(unittest.TestCase):
                         store,
                         self.envelope,
                         drifted,
+                        self.trust,
+                        now_ns=self.now,
+                    )
+
+    def test_audit_anchor_detects_owner_table_tampering_without_audit_event(self):
+        with tempfile.TemporaryDirectory() as temp:
+            with EngineeringStore(Path(temp) / "store.db") as store:
+                store.issue_work_envelope(self.envelope, now_ns=self.now)
+                anchor = store.audit_anchor()
+                receipt = self.sign(
+                    AuditAnchorAttestation(
+                        sequence=anchor["sequence"],
+                        event_digest=anchor["eventDigest"],
+                        envelope_id=self.envelope.envelope_id,
+                        source_commit=self.envelope.source_commit,
+                        source_tree=self.envelope.source_tree,
+                        store_snapshot_digest=store_snapshot_digest(store),
+                        issuer="audit_anchor_service",
+                        signing_identity="audit-key",
+                        observed_unix_ns=self.now - 1,
+                        expires_unix_ns=self.now + 100,
+                    )
+                )
+                store.connection.execute(
+                    "UPDATE work_envelopes SET owner=? WHERE envelope_id=?",
+                    ("tampered-owner", self.envelope.envelope_id),
+                )
+                store.connection.commit()
+                with self.assertRaisesRegex(
+                    ValueError,
+                    "audit_anchor_binding_mismatch",
+                ):
+                    verify_external_audit_anchor(
+                        store,
+                        self.envelope,
+                        receipt,
                         self.trust,
                         now_ns=self.now,
                     )
@@ -404,6 +442,14 @@ class ExternalControlTests(unittest.TestCase):
                 "custody-key",
                 self.now - 1,
                 self.now + 100,
+                subject_signing_identity=f"subject-{role}",
+                algorithm="ed25519",
+                public_key_digest=semantic_digest(
+                    {"role": role, "keyId": key_id, "kind": "public-key"}
+                ),
+                attestation_digest=semantic_digest(
+                    {"provider": "hsm-provider", "role": role, "keyId": key_id}
+                ),
             )
         )
 
@@ -476,6 +522,10 @@ class ExternalControlTests(unittest.TestCase):
                 "custody-key",
                 self.now - 1,
                 self.now + 100,
+                subject_signing_identity="subject-omnipotent",
+                algorithm="ed25519",
+                public_key_digest="a" * 64,
+                attestation_digest="b" * 64,
             )
         )
         with self.assertRaisesRegex(ValueError, "key_custody_role_separation"):
@@ -490,6 +540,21 @@ class ExternalControlTests(unittest.TestCase):
             replace(
                 receipts[1],
                 key_id=receipts[0].key_id,
+                signature="",
+            )
+        )
+        with self.assertRaisesRegex(ValueError, "key_custody_role_separation"):
+            verify_external_key_custody(
+                tuple(receipts),
+                self.trust,
+                now_ns=self.now,
+            )
+
+        receipts = list(self.custody_set())
+        receipts[1] = self.sign(
+            replace(
+                receipts[1],
+                subject_signing_identity=receipts[0].subject_signing_identity,
                 signature="",
             )
         )
