@@ -1,7 +1,7 @@
 # intelligence.control: implementation design
 
 Parent: `docs/modules/intelligence.control/TECHNICAL.md`. Lane: `LANE-F-ADAPTIVE-POLICY`.
-Status: read-only vertical and signed evaluated-shadow composition implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: read-only vertical, signed evaluated-shadow and independent-evidence NDU stochastic admission composition implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -12,7 +12,7 @@ Operation signatures below describe the target contract. Section 8 identifies th
 
 ## 2. Public operations and contract details
 
-`prepare_intelligence_run(request, owner_ports, frozen_snapshot) -> IntelligenceHostEnvelopeV1`; `build_legal_candidates(objective, body, supported_skills) -> LegalActionCandidateSetV1`; `decide_boundary(run, observations) -> AdvisoryDecision`; `assemble_context(decision, evidence) -> ContextCompilationReceiptV1`. These are composition operations; facts and execution remain with their registered owners.
+`prepare_intelligence_run(request, owner_ports, frozen_snapshot) -> IntelligenceHostEnvelopeV1`; `build_legal_candidates(objective, body, supported_skills) -> LegalActionCandidateSetV1`; `decide_boundary(run, observations) -> AdvisoryDecision`; `assemble_context(decision, evidence) -> ContextCompilationReceiptV1`; `admit_ndu_stochastic_candidate_v1(request, now) -> NduStochasticAdmissionReceiptV1`. These are composition operations; facts and execution remain with their registered owners.
 
 ## 3. State records and transaction design
 
@@ -20,7 +20,7 @@ Ephemeral orchestration state only: run/boundary identity, frozen owner snapshot
 
 ## 4. Deterministic algorithm and scheduling
 
-Compile immutable objective; acquire coherent memory/body evidence; build the complete bounded legal set; obtain NDU and qualified neural signals; price/select prompt portfolio; run calibrated intuition or deterministic slow path; compile source-aware context; hand to agentd/Codex; route independent outcomes to the ledger. Each stage has typed unavailable/conflict/abstain fallbacks; no stage converts missing evidence into a successful result.
+For a stochastic NDU candidate, first bind the admitted coefficient/Q24 solver identity, then require opaque `learning.eval` convergence and well-posedness certificates to accept the same objective/domain/solver/manifest before producing a `DENY_ALL` admission receipt. This receipt is qualification evidence only and never selects the artifact. Compile immutable objective; acquire coherent memory/body evidence; build the complete bounded legal set; obtain NDU and qualified neural signals; price/select prompt portfolio; run calibrated intuition or deterministic slow path; compile source-aware context; hand to agentd/Codex; route independent outcomes to the ledger. Each stage has typed unavailable/conflict/abstain fallbacks; no stage converts missing evidence into a successful result.
 
 ## 5. Capacity and performance profile
 
@@ -34,6 +34,9 @@ Pilot ceilings are design targets, not measurements. Stricter canonical limits p
 - IC-02: each dependency outage triggers the declared bounded fallback or abstention.
 - IC-03: mixed snapshot or compiled-but-undelivered prompt cannot produce a valid success/learning receipt.
 - IC-04: new-process selected-artifact load changes future behavior and an exact compatible rollback restores the predecessor behavior under current revocations.
+- IC-NDU-01: accepted convergence + accepted well-posedness for the exact coefficient/Q24 solver identity compose to a deny-all stochastic admission.
+- IC-NDU-02: solver identity, manifest, objective or operating-domain mismatch rejects even when each independent certificate is individually accepted.
+- IC-NDU-03: rejected/unavailable evaluator decisions never compose to an admitted stochastic candidate.
 
 These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
 
@@ -45,8 +48,8 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `run_read_only_vertical` in [codex-rs/hepta-intelligence/src/vertical.rs](../../../codex-rs/hepta-intelligence/src/vertical.rs); `run_evaluated_shadow_v1` in [codex-rs/hepta-intelligence/src/evaluated_shadow.rs](../../../codex-rs/hepta-intelligence/src/evaluated_shadow.rs). Read-only vertical and signed evaluated-shadow composition implemented.
+- **Implemented entrypoints:** `run_read_only_vertical` in [codex-rs/hepta-intelligence/src/vertical.rs](../../../codex-rs/hepta-intelligence/src/vertical.rs); `run_evaluated_shadow_v1` in [codex-rs/hepta-intelligence/src/evaluated_shadow.rs](../../../codex-rs/hepta-intelligence/src/evaluated_shadow.rs); `admit_ndu_stochastic_candidate_v1` in [codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs](../../../codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs). Read-only vertical and signed evaluated-shadow composition implemented.
 - **State and recovery:** The vertical derives cross-stage objective/read/context/NDU bindings in one call. Evaluated shadow additionally verifies signed evidence and appends a decision through the existing DurableLedger; it does not create another model loop or cognitive writer.
-- **Source tests:** [codex-rs/hepta-intelligence/src/vertical_tests.rs](../../../codex-rs/hepta-intelligence/src/vertical_tests.rs), [codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs](../../../codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Source tests:** [codex-rs/hepta-intelligence/src/vertical_tests.rs](../../../codex-rs/hepta-intelligence/src/vertical_tests.rs), [codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs](../../../codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs), [codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs](../../../codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [codex-rs/hepta-intelligence/EVALUATED_SHADOW.md](../../../codex-rs/hepta-intelligence/EVALUATED_SHADOW.md).
 - **Remaining work:** Supply the seven real host ports, trusted current keys, observed evaluations/calibration and valid assignment draw; live model/effect execution and long-term benefits are not implemented by these shadow calls.
