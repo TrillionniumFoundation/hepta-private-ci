@@ -796,7 +796,9 @@ impl AutomationStore {
             AutomationOccurrenceState::Admitted
                 | AutomationOccurrenceState::Running
                 | AutomationOccurrenceState::Indeterminate
-        ) {
+        ) && !(current.state == AutomationOccurrenceState::Claimed
+            && terminal == AutomationOccurrenceTerminalState::Cancelled)
+        {
             return Err(AutomationError::Conflict);
         }
         let event_kind = terminal_state.as_str();
@@ -805,7 +807,7 @@ impl AutomationStore {
              SET state = ?, terminal_receipt_digest = ?, recovery_phase = 'terminal',
                  updated_at_ms = ?, terminal_at_ms = ?
              WHERE task_id = ? AND occurrence = ?
-               AND state IN ('admitted', 'running', 'indeterminate')",
+               AND state IN ('claimed', 'admitted', 'running', 'indeterminate')",
         )
         .bind(event_kind)
         .bind(receipt_digest.as_str())
