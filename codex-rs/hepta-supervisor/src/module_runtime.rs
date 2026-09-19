@@ -217,6 +217,7 @@ mod tests {
             owner_id: id("memory-team"),
             generation: generation(generation_value),
             implementation_digest: digest(implementation),
+            candidate_artifact_digest: digest(implementation),
             predecessor_generation: predecessor.map(|(value, _)| generation(value)),
             rollback_predecessor_digest: predecessor.map_or(Digest32::ZERO, |(_, value)| digest(value)),
             state_class: RuntimeModuleStateClassV1::Stateful,
