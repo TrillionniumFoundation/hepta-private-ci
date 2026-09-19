@@ -59,6 +59,9 @@ from .evidence import (
     EvaluatorIndependenceReceipt,
     ExecutionReceipt,
     HmacTrustStore,
+    OpenSslTrustStore,
+    SignatureVerifier,
+    TrustedPublicKey,
     verify_integration_evidence,
 )
 from .facade import (
@@ -115,6 +118,7 @@ __all__ = [
     "ExecutionReceipt",
     "ExternalManifestCandidate",
     "HmacTrustStore",
+    "OpenSslTrustStore",
     "LeaseReceipt",
     "Mutation",
     "OwnerConsentAttestation",
@@ -126,6 +130,8 @@ __all__ = [
     "SandboxReceipt",
     "ScheduleReceipt",
     "SealedCandidateEvidence",
+    "SignatureVerifier",
+    "TrustedPublicKey",
     "TypedOperation",
     "WorkEnvelope",
     "WorkerReceipt",
