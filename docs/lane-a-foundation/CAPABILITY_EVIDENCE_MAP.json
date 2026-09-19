@@ -658,6 +658,78 @@
       "receiptStatus": "native_workflow_required"
     },
     {
+      "capabilityId": "kernel.evidence.qualification-store.v1",
+      "module": "kernel.evidence",
+      "summary": "authenticated exact-candidate qualification evidence append query and verification",
+      "publicSymbols": [
+        "QualificationEvidenceStore::append_receipt",
+        "QualificationEvidenceStore::query_claim",
+        "QualificationEvidenceStore::verify_chain",
+        "AgentdClient::append_kernel_evidence",
+        "AgentdClient::query_kernel_evidence",
+        "AgentdClient::verify_kernel_evidence"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification.rs",
+          "mustContain": [
+            "pub async fn append_receipt",
+            "pub async fn query_claim",
+            "pub async fn verify_chain"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/evidence_host.rs",
+          "mustContain": [
+            "EvidenceHost",
+            "kernel_evidence_claims"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0011_qualification_evidence.sql",
+          "mustContain": [
+            "CREATE TABLE qualification_evidence",
+            "qualification_evidence_no_update"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+          "mustContain": [
+            "evid_01_distinct_authenticated_principals_satisfy_independence",
+            "independent_decision_binds_candidate_principal_key_role_and_evidence_set"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+          "mustContain": [
+            "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+          "mustContain": [
+            "evid_01_one_principal_cannot_satisfy_generator_and_evaluator_independence",
+            "evid_02_wrong_tree_and_expired_candidate_are_unavailable",
+            "evid_04_fixture_cannot_satisfy_hardware_claim"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+          "mustContain": [
+            "revoked evidence writer was accepted"
+          ]
+        }
+      ],
+      "durability": "sqlite_migrations_0001_0011",
+      "activation": "agentd_product_composed_feature_gated",
+      "productionCaller": "runtime.agentd",
+      "receiptStatus": "native_workflow_required"
+    },
+    {
       "capabilityId": "auth.authbus.sqlite-replay-admission.v1",
       "module": "auth.authbus",
       "summary": "bounded SQLite replay admission keyed by issuer epoch subject and scope",
@@ -976,78 +1048,6 @@
       "durability": "external_authority_plus_local_final_use_state",
       "activation": "host_composition_required",
       "productionCaller": null,
-      "receiptStatus": "native_workflow_required"
-    },
-    {
-      "capabilityId": "kernel.evidence.qualification-store.v1",
-      "module": "kernel.evidence",
-      "summary": "authenticated exact-candidate qualification evidence append query and verification",
-      "publicSymbols": [
-        "QualificationEvidenceStore::append_receipt",
-        "QualificationEvidenceStore::query_claim",
-        "QualificationEvidenceStore::verify_chain",
-        "AgentdClient::append_kernel_evidence",
-        "AgentdClient::query_kernel_evidence",
-        "AgentdClient::verify_kernel_evidence"
-      ],
-      "sourceEvidence": [
-        {
-          "path": "codex-rs/hepta-evidence/src/qualification.rs",
-          "mustContain": [
-            "pub async fn append_receipt",
-            "pub async fn query_claim",
-            "pub async fn verify_chain"
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-agentd/src/evidence_host.rs",
-          "mustContain": [
-            "EvidenceHost",
-            "kernel_evidence_claims"
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-evidence/migrations/0011_qualification_evidence.sql",
-          "mustContain": [
-            "CREATE TABLE qualification_evidence",
-            "qualification_evidence_no_update"
-          ]
-        }
-      ],
-      "positiveTests": [
-        {
-          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
-          "mustContain": [
-            "evid_01_distinct_authenticated_principals_satisfy_independence",
-            "independent_decision_binds_candidate_principal_key_role_and_evidence_set"
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
-          "mustContain": [
-            "real_agentd_composes_authenticated_evidence_writer_query_verifier_and_terminal_observer"
-          ]
-        }
-      ],
-      "negativeTests": [
-        {
-          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
-          "mustContain": [
-            "evid_01_one_principal_cannot_satisfy_generator_and_evaluator_independence",
-            "evid_02_wrong_tree_and_expired_candidate_are_unavailable",
-            "evid_04_fixture_cannot_satisfy_hardware_claim"
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
-          "mustContain": [
-            "revoked evidence writer was accepted"
-          ]
-        }
-      ],
-      "durability": "sqlite_migrations_0001_0011",
-      "activation": "agentd_product_composed_feature_gated",
-      "productionCaller": "runtime.agentd",
       "receiptStatus": "native_workflow_required"
     }
   ]
