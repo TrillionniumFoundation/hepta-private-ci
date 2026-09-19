@@ -116,6 +116,20 @@
       "delegatedCallees": []
     },
     {
+      "operation": "expire_authbus_reservations",
+      "nativeSymbol": "expire_authbus_reservations",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control.rs",
+      "state": "source_candidate_not_product_composed",
+      "authority": "quota_expiry_recovery",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "expiry-recovery",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
       "operation": "pending_authbus_effect_reservations",
       "nativeSymbol": "pending_authbus_effect_reservations",
       "sourcePath": "codex-rs/hepta-evidence/src/authbus_control.rs",
