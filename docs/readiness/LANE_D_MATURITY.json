@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "lane": "LANE-D-OBJECTIVE-VALUE",
   "authorityDelta": "none",
-  "interpretation": "Each dimension is independent. A materialized source root does not imply a production caller, independent qualification, activation or release.",
+  "interpretation": "Each dimension is independent. A materialized source root or durable writer candidate does not imply a production caller, independent qualification, activation or release.",
   "modules": [
     {
       "module": "objective.compiler",
@@ -119,10 +119,24 @@
             "solve_backward_regression"
           ]
         },
-        "durability": {
-          "state": "owner_local_reference_implemented_not_production_writer",
+        "stochasticCoordinateQ24Conversion": {
+          "state": "candidate_implemented_not_production_admitted",
           "evidence": [
-            "NduProjectionJournalV1"
+            "admit_z_conversion_profile",
+            "convert_z_to_original_q24",
+            "whitened_head_is_converted_back_to_original_increment_coordinates",
+            "original_coordinates_quantize_q24_with_nearest_ties_even"
+          ]
+        },
+        "durability": {
+          "state": "durable_writer_candidate_implemented_not_activated",
+          "evidence": [
+            "NduProjectionJournalV1",
+            "NduProjectionStoreV1",
+            "durable_writer_round_trips_selected_and_revoked_state",
+            "older_valid_backup_cannot_remove_a_later_revocation",
+            "revocation_is_scoped_to_objective_and_subject",
+            "indeterminate_handle_fails_closed_until_reopen"
           ]
         },
         "independentConvergenceDecision": {
@@ -136,12 +150,30 @@
           "evidence": []
         },
         "productCaller": {
+          "state": "request_local_established_authenticated_production_not_established",
+          "evidence": [
+            "codex-rs/hepta-control-plane/src/planner_context.rs",
+            "codex-rs/hepta-control-plane/src/planner_ndu.rs",
+            "codex-rs/hepta-intelligence/src/vertical.rs"
+          ]
+        },
+        "requestLocalReadOnlyCaller": {
+          "state": "established",
+          "evidence": [
+            "codex-rs/hepta-control-plane/src/planner_context.rs",
+            "codex-rs/hepta-control-plane/src/planner_ndu.rs",
+            "codex-rs/hepta-intelligence/src/vertical.rs"
+          ]
+        },
+        "authenticatedProductionCaller": {
           "state": "not_established",
           "evidence": []
         },
         "productionWriter": {
           "state": "not_established",
-          "evidence": []
+          "evidence": [
+            "NduProjectionStoreV1 source candidate is not activation evidence"
+          ]
         },
         "independentAcceptance": {
           "state": "not_established",
@@ -273,11 +305,12 @@
   },
   "externalGates": [
     "independent non-author review",
-    "production caller and production writer composition",
-    "named-host resource and recovery measurements",
+    "authenticated production caller and selected production writer composition",
+    "named-host resource, filesystem and recovery measurements",
     "operator acceptance",
     "deployment and activation",
-    "future-window efficacy",
+    "future-window efficacy and conditional identification",
+    "production stochastic coefficient provenance/consumer admission",
     "promotion, signing and release"
   ]
 }
