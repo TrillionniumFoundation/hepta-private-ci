@@ -1492,27 +1492,39 @@
         "## 17. Source implementation receipt"
       ],
       "producedContracts": [
+        "CrossModalBindingV1",
+        "EngramNodeV1",
+        "ForgetPropagationReceiptV1",
+        "MemoryCueV1",
+        "MemoryEventV1",
+        "MemoryTopologyProposalV1",
+        "ModalitySpanRefV1",
         "ModulePort::cognitive.types::cognitive.read",
         "ModulePort::cognitive.types::cognitive.store",
         "ModulePort::cognitive.types::knowledge.graph",
-        "ModulePort::cognitive.types::learning.ledger"
+        "ModulePort::cognitive.types::learning.ledger",
+        "OutcomeSignalV1",
+        "PlasticityBatchV1",
+        "RecallPacketV1",
+        "ReplaySelectionReceiptV1",
+        "SynapseV1"
       ],
       "consumedContracts": [
         "ModulePort::platform.types::cognitive.types"
       ],
       "protocols": [
-        "ModalitySpanRefV1",
-        "MemoryEventV1",
         "CrossModalBindingV1",
         "EngramNodeV1",
-        "SynapseV1",
+        "ForgetPropagationReceiptV1",
         "MemoryCueV1",
-        "RecallPacketV1",
-        "OutcomeSignalV1",
-        "ReplaySelectionReceiptV1",
-        "PlasticityBatchV1",
+        "MemoryEventV1",
         "MemoryTopologyProposalV1",
-        "ForgetPropagationReceiptV1"
+        "ModalitySpanRefV1",
+        "OutcomeSignalV1",
+        "PlasticityBatchV1",
+        "RecallPacketV1",
+        "ReplaySelectionReceiptV1",
+        "SynapseV1"
       ],
       "ownedDomains": [],
       "readDomains": [],
