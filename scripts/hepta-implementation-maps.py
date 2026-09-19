@@ -347,6 +347,37 @@ def verify():
             failures.append(f"{mid}: claim boundary")
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+    else:
+        source_commit, source_tree = next(iter(source_bases))
+        try:
+            actual_tree = git("rev-parse", f"{source_commit}^{{tree}}")
+        except subprocess.CalledProcessError:
+            failures.append("maps: source base commit is unavailable")
+        else:
+            if actual_tree != source_tree:
+                failures.append("maps: source base tree mismatch")
+            ancestor = subprocess.run(
+                ["git", "merge-base", "--is-ancestor", source_commit, "HEAD"],
+                cwd=ROOT,
+                check=False,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            if ancestor.returncode != 0:
+                failures.append("maps: source base is not an ancestor of HEAD")
+            else:
+                for module in modules:
+                    mid = module["id"]
+                    for root_binding in module["rootBindings"]:
+                        root = root_binding["path"]
+                        try:
+                            source_object = git("rev-parse", f"{source_commit}:{root}")
+                            head_object = git("rev-parse", f"HEAD:{root}")
+                        except subprocess.CalledProcessError:
+                            failures.append(f"{mid}: source root unavailable at receipt {root}")
+                            continue
+                        if source_object != head_object:
+                            failures.append(f"{mid}: source root drift after receipt {root}")
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(

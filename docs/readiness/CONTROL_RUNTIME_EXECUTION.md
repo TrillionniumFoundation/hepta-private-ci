@@ -98,7 +98,7 @@ available_for_plan(axis) = endowment(axis) - essential_floor(axis)
 
 Both terms are non-negative fixed-point values, and the floor cannot exceed the endowment. Every candidate must explicitly report each registered resource axis; missing axes are unavailable rather than zero. Unknown axes reject rather than widening the budget.
 
-The evaluation-policy digest and resource-profile digest are frozen in the planning request before candidate filtering. At least one explicit resource reservation is required in the pilot; an empty collection cannot silently mean an unbounded or zero-resource profile.
+The evaluation-policy digest and resource-profile digest are frozen in the planning request before candidate filtering. `canonical_resource_profile_digest` now derives the resource-profile digest from the exact canonical `(axis, endowment, essential_floor)` reservation set, and `prepare_plan` rejects any caller-supplied digest that does not match those reservations. At least one explicit resource reservation is required in the pilot; an empty collection cannot silently mean an unbounded or zero-resource profile.
 
 `prepare_plan` filters resource-infeasible candidates before NDU evaluation and records their IDs in `resource_rejected_candidate_ids`. The intrinsic `abstain` candidate must remain feasible after this filter. The digest of the source candidate set and the digest of the feasible candidate set are both retained, so resource filtering cannot be hidden.
 
@@ -183,7 +183,7 @@ Each entry contains sequence, kind, idempotency identity, payload digest, predec
 - selected-plan projection;
 - revocation edges that prevent reselection and restart resurrection.
 
-A selected plan must already have a decision record. A revoked decision cannot be reselected merely because an older process or backup contains the predecessor record. Production composition still requires an owner-approved store, schema migration, fsync/durability profile, retention policy and backup/restore qualification.
+A selected plan must already have a decision record. `append` and `reopen` now apply the same selection/revocation semantic checks, so a hash-valid journal containing a selection without a prior decision is rejected. A revoked decision cannot be reselected merely because an older process or backup contains the predecessor record. `PlannerJournalStoreV1` supplies the repository's local-Unix owner-store profile: owner-only directory and files, no-follow opens, single-process lock, same-directory atomic replacement, file plus directory `fsync`, V1-to-V2 migration, append-only history checks and a caller-supplied current revocation recovery floor that rejects restoration of a pre-revocation backup. A named product host, retention/archival policy and target-filesystem qualification remain separate composition evidence.
 
 ## 9. Failure and degradation semantics
 
@@ -240,12 +240,17 @@ Target metrics include snapshot age, stale/missing owner counts, candidate and r
 - `RCP-13`: operation, payload, resource or required-owner mutation after finalization rejects before grant-request construction.
 - `RCP-14`: grant-request construction revalidates snapshot masks and digest.
 - `RCP-15`: the NDU evaluation policy and resource profile are frozen before evaluation and bound through the final receipt.
+- `RCP-16`: the resource-profile digest must equal the canonical exact reservation set, including essential floors.
+- `RCP-17`: hash-valid journal bytes with an impossible selection sequence fail semantic replay.
+- `RCP-18`: V1 planner-store state migrates atomically, failed migration preserves predecessor bytes, and current revocation floors reject older restored backups.
+- `RCP-19`: one admitted `runtime.fleet` allocation plus independently authenticated owner summaries execute the real NDU evaluator and produce only deny-all grant requests.
+- `RCP-20`: an independently signed `kernel.authority` final-use grant is bound to the exact planner request/final payload; payload drift rejects claim.
 
 Native mappings and tests are recorded in `docs/modules/control.runtime/IMPLEMENTATION_MAP.json`.
 
 ## 12. Implementation sequence and completion state
 
-The source sequence is snapshot types and validation, resource-floor preparation, NDU owner-port binding, plan finalization, grant-request construction, journal integrity and restart fixtures, semantic conformance and exact-head CI.
+The current source sequence is snapshot validation, canonical resource-profile binding, authenticated/admitted owner projection, real NDU composition, plan finalization, grant-request construction, semantic journal replay, durable local-Unix owner-store recovery fixtures, independent final-use authority binding, semantic conformance and exact-head CI.
 
 Repository source completion requires every mapped native test, package check, strict lint, clean worktree, exact-head workflow and synthetic merge check to pass. Composition requires a named product caller and selected production store. Independent qualification, activation and release remain separate governed states and cannot be advanced by this document.
 
@@ -292,9 +297,24 @@ abstain candidates, and returns the real NDU evaluation and sealed plan. Empty
 records, ties and insufficient budget do not authorize context delivery. This is
 an observed digital task, not an estimate of model quality or memory capacity.
 
+The live Agentd caller owns one `MonotonicClockV1` epoch per process generation and supplies elapsed microseconds to the planner; wall-clock `SystemTime` is no longer used for request-local planning freshness or expiry. Durable store timestamps remain in their separately owned domains.
+
 The single-observation owner summary has its own initial revision and an explicit
 request-local generation fence. It does not impersonate a database revision or
 global revocation frontier. Existing host authorization and generation checks
 remain required before and after the read. Context bytes exclude the planning
 metadata to avoid a self-referential digest; the host separately bounds the final
 response envelope. Neither helper grants effects or proves long-term improvement.
+
+
+## Current global source composition
+
+`global_plane.rs` now provides a closed source composition for the broader control path without granting activation:
+
+1. non-fleet owner summaries enter either through `authenticate_owner_summary_v1` for bounded in-process replay fixtures or through `admit_durable_owner_summary_v1` after `HeptaEvidenceStore::admit_authbus_message` durably consumes the replay sequence; both paths re-verify the AuthBus Ed25519 message over a domain-separated owner scope and exact summary payload;
+2. `runtime.fleet` enters through `admit_fleet_allocation_owner_v1`, which reads an already committed `LeaseLedger::AllocationGrant`, verifies principal/revocation/expiry, and projects CPU, memory and accelerator endowments plus essential floors into the canonical planner resource profile;
+3. `compose_global_plan_with_fleet_v1` requires the admitted-owner set to equal the snapshot required-owner set, then runs `collect_snapshot -> prepare_plan -> evaluate_prepared_plan_with_ndu -> request_execution_grants`;
+4. the NDU step calls the real `utility.ndu` implementation; no caller-supplied selected candidate is accepted;
+5. `authority_bridge.rs` maps each deny-all `GrantRequestV1` to an exact `FinalUseBinding`. `with_authorized_grant_request_v1` accepts only an independently signed grant, durably claims its single-use nonce, then runs the effect closure only inside `FinalUseAuthority::with_verified_use`, which performs the final live time/revocation fence immediately before callback entry. `claim_final_use_for_grant_request_v1` remains the lower-level token-returning primitive.
+
+`runtime.supervisor::GlobalControlHostV1` is the named typed product host for this global composition. It durably consumes AuthBus replay through `HeptaEvidenceStore`, admits the exact fleet allocation, executes the real NDU/global planner, persists planner snapshot/decision/selection through `PlannerJournalStoreV1`, and exposes effect dispatch only through the independently configured final-use authority fence. This is source composition inside the product supervisor crate; the existing supervisord network protocol is unchanged and global planning is not activated by default. Exact-head and deterministic synthetic-merge qualification for the canonical convergence candidate, selected deployment ingress, named-host performance/fault evidence, independent acceptance, activation and release remain separate.
