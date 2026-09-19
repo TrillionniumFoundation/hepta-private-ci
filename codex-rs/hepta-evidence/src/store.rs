@@ -25,7 +25,7 @@ use crate::governance_store::verify_decision;
 use crate::governance_store::verify_receipt;
 use crate::governance_validation::validate_decision;
 use crate::governance_validation::validate_receipt_binding;
-use crate::provider_effect_store::verify_provider_effect_rows;
+use crate::provider_effect_store::verify_provider_effect_rows;\nuse crate::qualification::verify_qualification_evidence_rows;
 use crate::schema_validation::classify_migrate_error;
 use crate::schema_validation::classify_sqlx_error;
 use crate::schema_validation::verify_foreign_keys;
