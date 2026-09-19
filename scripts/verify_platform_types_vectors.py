@@ -33,9 +33,9 @@ def encode_value(value: dict[str, Any]) -> bytes:
     if kind == "text":
         return b"\x02" + u32_bytes(value["value"].encode("utf-8"))
     if kind == "u64":
-        return b"\x03" + struct.pack(">Q", value["value"])
+        return b"\x03" + struct.pack(">Q", int(value["value"]))
     if kind == "i64":
-        return b"\x04" + struct.pack(">q", value["value"])
+        return b"\x04" + struct.pack(">q", int(value["value"]))
     if kind == "bool":
         return b"\x05" + bytes([1 if value["value"] else 0])
     if kind == "digest":
