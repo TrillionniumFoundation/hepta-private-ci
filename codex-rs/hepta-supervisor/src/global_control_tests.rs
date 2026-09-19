@@ -290,10 +290,7 @@ fn plan_request(summary: OwnerSummaryV1, message: SignedMessage) -> GlobalContro
             deadline_micros: 180,
             evaluation_policy_digest,
             resource_profile_digest: digest("overwritten-by-fleet"),
-            candidates: vec![
-                candidate("abstain", &owners),
-                candidate("work", &owners),
-            ],
+            candidates: vec![candidate("abstain", &owners), candidate("work", &owners)],
             resource_reservations: Vec::new(),
         },
         ndu_input: ndu,
@@ -393,9 +390,8 @@ async fn named_host_releases_effect_only_inside_final_use_fence() {
     let subject = id("agent:alpha");
     let destination = id("provider:effect");
     let scope = digest("effect-scope");
-    let binding =
-        final_use_binding_for_grant_request_v1(&request, &subject, &destination, scope)
-            .expect("binding");
+    let binding = final_use_binding_for_grant_request_v1(&request, &subject, &destination, scope)
+        .expect("binding");
     let now_ms = u64::try_from(
         SystemTime::now()
             .duration_since(UNIX_EPOCH)
@@ -445,7 +441,6 @@ async fn named_host_releases_effect_only_inside_final_use_fence() {
         Err(GlobalControlHostError::Authority(_))
     ));
 }
-
 
 #[tokio::test]
 #[ignore = "profiled separately by the Lane B exact-head workflow"]
@@ -521,10 +516,7 @@ async fn named_host_profile_emits_exact_runner_measurements() {
     .expect("fault probe host");
     let replay_rejected = matches!(
         reopened
-            .plan(
-                &fleet_ledger(),
-                plan_request(summary, replayed_message),
-            )
+            .plan(&fleet_ledger(), plan_request(summary, replayed_message))
             .await,
         Err(GlobalControlHostError::Evidence(_))
     );

@@ -150,8 +150,13 @@ impl GlobalControlHostV1 {
             if binding.owner_id.as_str() == FLEET_OWNER_ID {
                 return Err(GlobalControlHostError::FleetOwnerTrustReserved);
             }
-            if trusted.insert(binding.owner_id.clone(), binding.issuer).is_some() {
-                return Err(GlobalControlHostError::DuplicateOwnerTrust(binding.owner_id));
+            if trusted
+                .insert(binding.owner_id.clone(), binding.issuer)
+                .is_some()
+            {
+                return Err(GlobalControlHostError::DuplicateOwnerTrust(
+                    binding.owner_id,
+                ));
             }
         }
         let (planner_store, journal) =

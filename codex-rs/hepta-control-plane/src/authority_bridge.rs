@@ -107,12 +107,8 @@ pub fn with_authorized_grant_request_v1<T>(
     scope_digest: Digest32,
     dispatch: impl FnOnce() -> T,
 ) -> Result<T, AuthorityBridgeError> {
-    let binding = final_use_binding_for_grant_request_v1(
-        request,
-        subject_id,
-        destination_id,
-        scope_digest,
-    )?;
+    let binding =
+        final_use_binding_for_grant_request_v1(request, subject_id, destination_id, scope_digest)?;
     let token = authority.claim(signed_grant, &binding)?;
     authority
         .with_verified_use(token, &binding, dispatch)

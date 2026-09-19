@@ -314,14 +314,9 @@ fn durable_owner_admission_requires_the_exact_store_receipt() {
         .expect("signature admission");
     let receipt = authenticated.receipt().clone();
 
-    let admitted = admit_durable_owner_summary_v1(
-        summary.clone(),
-        &signed,
-        &issuer,
-        &receipt,
-        1_100,
-    )
-    .expect("durable receipt admission");
+    let admitted =
+        admit_durable_owner_summary_v1(summary.clone(), &signed, &issuer, &receipt, 1_100)
+            .expect("durable receipt admission");
     assert_eq!(admitted.summary().owner_id, summary.owner_id);
 
     let mut wrong = receipt;
