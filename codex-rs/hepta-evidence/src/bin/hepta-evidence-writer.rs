@@ -88,6 +88,11 @@ async fn run() -> Result<(), String> {
             let store = HeptaEvidenceStore::open_with_checkpoint(&sqlite, &previous)
                 .await
                 .map_err(|error| error.to_string())?;
+            store
+                .qualification()
+                .verify_current_checkpoint(&previous)
+                .await
+                .map_err(|error| error.to_string())?;
             let issuer = store
                 .qualification()
                 .authenticate_issuer(&policy, &envelope, &proof)
@@ -130,6 +135,11 @@ async fn run() -> Result<(), String> {
             .map_err(|error| error.to_string())?;
             store
                 .qualification()
+                .verify_current_checkpoint(&checkpoint)
+                .await
+                .map_err(|error| error.to_string())?;
+            store
+                .qualification()
                 .verify_provisioned_trust_policy(&policy)
                 .await
                 .map_err(|error| error.to_string())?;
@@ -156,6 +166,11 @@ async fn run() -> Result<(), String> {
             let proof: EvidenceIssuerProof = read_json(Path::new(&args[5]))?;
             let previous: EvidenceCheckpoint = read_json(Path::new(&args[6]))?;
             let store = HeptaEvidenceStore::open_with_checkpoint(&sqlite, &previous)
+                .await
+                .map_err(|error| error.to_string())?;
+            store
+                .qualification()
+                .verify_current_checkpoint(&previous)
                 .await
                 .map_err(|error| error.to_string())?;
             let disposition = store
