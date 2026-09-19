@@ -90,10 +90,26 @@
       "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "append_outcome_credit_v1",
+      "nativeSymbol": "append_outcome_credit_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/outcome_credit.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/outcome_credit.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "post_execution_outcome_credit_closure",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "learning.ledger"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind the V3 graph to an authenticated runtime callsite with real owner adapters and durable outcome/credit observations.",
+    "Bind the V3 graph to authenticated runtime owner adapters and measured Codex delivery/terminal observations.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
