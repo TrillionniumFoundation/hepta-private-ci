@@ -97,8 +97,10 @@ the signed evaluation + durable Decision qualification path. They must not be
 reported as product execution merely because V3 exists.
 
 Source completion for V3 requires package/workspace tests, strict lint and
-synthetic-merge qualification on the exact candidate. Product execution additionally
-requires a named runtime callsite that supplies authenticated current owner facts,
-real calibration/evaluation observations, Codex delivery evidence and durable
+synthetic-merge qualification on the exact candidate. Agentd now provides the named
+`AgentRunCoordinator::run_native_intelligence_v3` runtime callsite over
+`NativeV3OwnerPorts` and the typed Agentd host consumer. Product execution still
+requires that callsite to run with authenticated current owner facts, real
+calibration/evaluation observations, Codex delivery evidence and durable
 outcome/credit handling. Independent acceptance, canary, promotion and release
 remain external gates.
