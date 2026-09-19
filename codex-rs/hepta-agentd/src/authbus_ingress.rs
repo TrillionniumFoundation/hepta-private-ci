@@ -164,9 +164,7 @@ fn status_response(
 
 pub(crate) fn attached(state: &AgentdState) -> Result<Arc<TextIngress>, AgentdError> {
     state
-        .authbus
-        .get()
-        .cloned()
+        .authbus()?
         .ok_or_else(|| invalid("no explicit host trust configuration"))
 }
 
