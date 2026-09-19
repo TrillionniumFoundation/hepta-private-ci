@@ -7,6 +7,7 @@ use sqlx::Row;
 use sqlx::sqlite::SqliteRow;
 
 use crate::AuthBusAdmissionError;
+use crate::AuthBusAuthorityError;
 use crate::EvidenceError;
 use crate::schema_validation::classify_sqlx_error;
 
@@ -23,6 +24,8 @@ pub(crate) const TERMINAL_RETAINED_ROWS: i64 = 1024;
 pub enum AuthBusOutboxError {
     #[error(transparent)]
     Admission(#[from] AuthBusAdmissionError),
+    #[error(transparent)]
+    Authority(#[from] AuthBusAuthorityError),
     #[error(transparent)]
     Storage(#[from] EvidenceError),
     #[error("AuthBus outbox is full; active messages are never evicted")]
