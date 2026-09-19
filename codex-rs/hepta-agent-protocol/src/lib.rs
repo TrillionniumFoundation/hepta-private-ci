@@ -272,6 +272,15 @@ pub enum AgentdMethod {
     AuthBusTextStatus {
         delivery_id: String,
     },
+    KernelEvidenceAppend {
+        request: KernelEvidenceAppendIngress,
+    },
+    KernelEvidenceQuery {
+        request: KernelEvidenceQueryV1,
+    },
+    KernelEvidenceVerify {
+        request: KernelEvidenceVerifyV1,
+    },
     CognitiveContext {
         query: String,
         limit: u16,
@@ -330,6 +339,7 @@ pub enum AgentdPayload {
     SessionIngress(SessionIngress),
     CognitiveContext(CognitiveContextSnapshot),
     AuthBusTextStatus(AuthBusTextStatus),
+    KernelEvidenceResult(KernelEvidenceResult),
     Events(EventBatch),
     AutomationTask(AutomationTask),
     AutomationTasks {
