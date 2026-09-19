@@ -90,11 +90,19 @@ impl ContextTransportV2 for TestTransport {
         payload: &[u8],
         _model_profile_digest: Digest32,
     ) -> Result<ContextTransportEvidenceV2, ContextCompilerV2Error> {
+        let transmitted_payload_digest = self
+            .transmitted_override
+            .unwrap_or_else(|| Digest32::of_bytes(payload));
         Ok(ContextTransportEvidenceV2 {
             provider_request_id: id("provider:request:1"),
-            transmitted_payload_digest: self
-                .transmitted_override
-                .unwrap_or_else(|| Digest32::of_bytes(payload)),
+            transmitted_payload_digest,
+            provider_acknowledged_payload_digest: if self.acknowledgement
+                && self.disposition == ContextDeliveryDispositionV2::Delivered
+            {
+                Some(transmitted_payload_digest)
+            } else {
+                None
+            },
             acknowledgement_digest: if self.acknowledgement {
                 digest("provider-ack")
             } else {
@@ -259,12 +267,12 @@ fn deterministic_value_per_token_preserves_mandatory_floors() {
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
 
     assert_eq!(left, right);
-    assert_eq!(left.receipt.used_tokens, 80);
+    assert_eq!(left.receipt().used_tokens(), 80);
     assert_eq!(
-        left.receipt.selected_item_ids,
+        left.receipt().selected_item_ids(),
         vec![trusted.item_id, schema.item_id, high_ratio.item_id]
     );
-    assert_eq!(left.receipt.omitted_item_ids, vec![low_ratio.item_id]);
+    assert_eq!(left.receipt().omitted_item_ids(), vec![low_ratio.item_id]);
 }
 
 #[test]
@@ -323,14 +331,14 @@ fn mandatory_group_policy_is_bound_even_when_selected_set_is_identical() {
         .unwrap_or_else(|error| panic!("valid grouped compilation: {error}"));
 
     assert_eq!(
-        ungrouped.receipt.selected_item_ids,
-        grouped.receipt.selected_item_ids
+        ungrouped.receipt().selected_item_ids(),
+        grouped.receipt().selected_item_ids()
     );
     assert_ne!(
-        ungrouped.receipt.mandatory_groups_digest,
-        grouped.receipt.mandatory_groups_digest
+        ungrouped.receipt().mandatory_groups_digest(),
+        grouped.receipt().mandatory_groups_digest()
     );
-    assert_ne!(ungrouped.receipt.receipt_digest, grouped.receipt.receipt_digest);
+    assert_ne!(ungrouped.receipt().receipt_digest(), grouped.receipt().receipt_digest());
 }
 
 #[test]
@@ -443,7 +451,7 @@ fn serialization_validates_real_bytes_and_tokenizes_final_payload() {
     )
     .unwrap_or_else(|error| panic!("valid exact serialization: {error}"));
 
-    assert_eq!(compiled.receipt.used_tokens, 20);
+    assert_eq!(compiled.receipt().used_tokens(), 20);
     assert_eq!(serialization.receipt().serialized_token_count(), 27);
     assert_eq!(
         serialization.receipt().payload_digest(),
@@ -562,6 +570,10 @@ fn delivery_receipt_is_created_only_from_transport_invoked_with_exact_payload() 
         Digest32::of_bytes(serialization.payload())
     );
     assert!(!delivery.acknowledgement_digest().is_zero());
+    assert_eq!(
+        delivery.provider_acknowledged_payload_digest(),
+        Some(Digest32::of_bytes(serialization.payload()))
+    );
     assert_eq!(delivery.revocation_epoch(), snapshot.revocation_epoch());
     assert_eq!(
         delivery.admission_snapshot_digest(),
