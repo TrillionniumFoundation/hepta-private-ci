@@ -403,7 +403,7 @@ impl AppServerModelDriver {
             Ok(path) => path,
             Err(_) => return Ok(None),
         };
-        let mut client = match timeout(
+        let client = match timeout(
             RPC_TIMEOUT,
             RemoteAppServerClient::connect_with_bounded_events(
                 RemoteAppServerConnectArgs {
@@ -459,11 +459,7 @@ impl AppServerModelDriver {
         let mut binding_mismatch = false;
         let mut matching_turns = Vec::new();
         for turn in response.thread.turns {
-            match recovered_user_binding(
-                &turn.items,
-                &record.request.request_id,
-                expected_prompt,
-            ) {
+            match recovered_user_binding(&turn.items, &record.request.request_id, expected_prompt) {
                 RecoveredUserBinding::Exact => matching_turns.push(turn),
                 RecoveredUserBinding::Mismatch => binding_mismatch = true,
                 RecoveredUserBinding::NotPresent => {}
@@ -893,8 +889,7 @@ impl AppServerModelDriver {
         // Preserve the original absolute runtime.codex deadline. Authority
         // acquisition and turn/start acknowledgement already consumed part of
         // this budget; they must not reset a fresh full model timeout here.
-        let deadline =
-            Instant::now() + observation_budget_from(unix_now_ms()?, codex_deadline_ms);
+        let deadline = Instant::now() + observation_budget_from(unix_now_ms()?, codex_deadline_ms);
         let result = self
             .observe(
                 &mut client,
