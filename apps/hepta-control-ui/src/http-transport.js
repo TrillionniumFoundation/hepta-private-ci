@@ -211,7 +211,7 @@ export class SameOriginHttpTransport {
         credentials: "same-origin",
         cache: "no-store",
         redirect: "error",
-        referrerPolicy: "same-origin",
+        referrerPolicy: "no-referrer",
         signal: controller?.signal,
       });
 
