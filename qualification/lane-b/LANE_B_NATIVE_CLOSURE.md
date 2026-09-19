@@ -53,7 +53,7 @@ External evidence gates:
 
 ## 4. `runtime.agentd`
 
-Owns only ephemeral run admission, immutable snapshot references, and runtime-health composition state.
+Owns bounded owner-local run admission/reconciliation metadata and runtime-health composition state; canonical objective, prompt, context, artifact and execution facts remain with their registered owners.
 
 Agentd preserves dispatch-boundary uncertainty and accepts terminal state only from the delegated execution/effect owner.
 
@@ -64,11 +64,15 @@ Agentd preserves dispatch-boundary uncertainty and accepts terminal state only f
 | `cancel_run` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn cancel_run(` |
 | `attach_context` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn attach_context(` |
 
+Remaining repository implementation gaps:
+
+- Bind at least one named non-test Codex caller to the typed Agentd run lifecycle API using authentic frozen-tuple and context-compilation receipts; exposed daemon APIs alone are not product composition.
+
 External evidence gates:
 
 - deployed Agentd process and authenticated socket identity
-- non-test caller through the full Codex turn path
-- target backpressure/restart measurements
+- target-host graceful-drain, overload and restart measurements
+- independent acceptance, operator canary, promotion and release
 
 ## 5. `runtime.codex`
 
