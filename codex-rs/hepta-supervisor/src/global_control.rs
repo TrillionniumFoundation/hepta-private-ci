@@ -35,6 +35,7 @@ use codex_hepta_control_plane::admit_fleet_allocation_owner_v1;
 use codex_hepta_control_plane::compose_global_plan_with_fleet_v1;
 use codex_hepta_control_plane::owner_summary_payload_digest_v1;
 use codex_hepta_control_plane::owner_summary_scope_digest_v1;
+use codex_hepta_control_plane::revalidate_fleet_allocation_for_plan_v1;
 use codex_hepta_control_plane::with_authorized_grant_request_v1;
 use codex_hepta_evidence::HeptaEvidenceStore;
 use codex_hepta_fleet::lease_ledger::LeaseLedger;
@@ -268,6 +269,8 @@ impl GlobalControlHostV1 {
     /// after durable nonce claim and the final live revocation/time fence.
     pub fn with_authorized_request<T>(
         &self,
+        fleet_ledger: &LeaseLedger,
+        plan: &GlobalControlPlanV1,
         signed_grant: &SignedFinalUseGrant,
         request: &GrantRequestV1,
         subject_id: &StableId,
@@ -275,6 +278,12 @@ impl GlobalControlHostV1 {
         scope_digest: Digest32,
         dispatch: impl FnOnce() -> T,
     ) -> Result<T, GlobalControlHostError> {
+        revalidate_fleet_allocation_for_plan_v1(
+            fleet_ledger,
+            plan,
+            request,
+            host_wall_now_ms()?,
+        )?;
         with_authorized_grant_request_v1(
             &self.authority,
             signed_grant,

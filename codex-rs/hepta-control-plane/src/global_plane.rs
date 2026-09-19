@@ -19,6 +19,7 @@ use codex_hepta_types::StableId;
 use crate::EvaluatedPlanV1;
 use crate::GlobalStateSnapshotV1;
 use crate::GrantRequestSetV1;
+use crate::GrantRequestV1;
 use crate::NduPlanningError;
 use crate::NduPlanningInputV1;
 use crate::OwnerReadinessV1;
@@ -65,11 +66,39 @@ pub struct FleetEssentialFloorsV1 {
     pub accelerator_millis: u64,
 }
 
+/// Exact runtime.fleet lease observed while constructing a global plan.
+/// The full grant digest includes generation, authority epoch, expiry,
+/// resources and revoked state; final-use revalidation requires it unchanged.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct FleetExecutionFenceV1 {
+    allocation_id: String,
+    principal_id: String,
+    grant_digest: Digest32,
+}
+
+impl FleetExecutionFenceV1 {
+    #[must_use]
+    pub fn allocation_id(&self) -> &str {
+        &self.allocation_id
+    }
+
+    #[must_use]
+    pub fn principal_id(&self) -> &str {
+        &self.principal_id
+    }
+
+    #[must_use]
+    pub const fn grant_digest(&self) -> Digest32 {
+        self.grant_digest
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct FleetOwnerAdmissionV1 {
     owner: AdmittedOwnerSummaryV1,
     resource_reservations: Vec<ResourceReservationV1>,
     resource_profile_digest: Digest32,
+    execution_fence: FleetExecutionFenceV1,
 }
 
 impl FleetOwnerAdmissionV1 {
@@ -87,6 +116,11 @@ impl FleetOwnerAdmissionV1 {
     pub const fn resource_profile_digest(&self) -> Digest32 {
         self.resource_profile_digest
     }
+
+    #[must_use]
+    pub fn execution_fence(&self) -> &FleetExecutionFenceV1 {
+        &self.execution_fence
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -95,6 +129,7 @@ pub struct GlobalControlPlanV1 {
     pub prepared: PreparedPlanInputV1,
     pub evaluation: EvaluatedPlanV1,
     pub grant_requests: Option<GrantRequestSetV1>,
+    pub fleet_execution_fence: FleetExecutionFenceV1,
 }
 
 #[derive(Debug)]
@@ -111,6 +146,7 @@ pub enum GlobalPlaneError {
     FleetAllocationExpired,
     FleetSemanticDigest,
     FleetResourceFloor,
+    FleetExecutionBindingMismatch,
     Arithmetic,
 }
 
@@ -301,6 +337,11 @@ pub fn admit_fleet_allocation_owner_v1(
     let revision =
         Revision::new(grant.lease_generation).map_err(|_| GlobalPlaneError::InvalidOwnerBinding)?;
     let admission_digest = fleet_grant_digest_v1(grant);
+    let execution_fence = FleetExecutionFenceV1 {
+        allocation_id: grant.allocation_id.clone(),
+        principal_id: grant.principal_id.clone(),
+        grant_digest: admission_digest,
+    };
     let owner = AdmittedOwnerSummaryV1 {
         summary: OwnerSummaryV1 {
             owner_id,
@@ -349,6 +390,7 @@ pub fn admit_fleet_allocation_owner_v1(
         owner,
         resource_reservations,
         resource_profile_digest,
+        execution_fence,
     })
 }
 
@@ -388,6 +430,7 @@ pub fn compose_global_plan_with_fleet_v1(
         return Err(GlobalPlaneError::OwnerSetMismatch);
     }
 
+    let fleet_execution_fence = fleet.execution_fence.clone();
     planning_request.now_micros = now_micros;
     planning_request.resource_reservations = fleet.resource_reservations;
     planning_request.resource_profile_digest =
@@ -413,7 +456,64 @@ pub fn compose_global_plan_with_fleet_v1(
         prepared,
         evaluation,
         grant_requests,
+        fleet_execution_fence,
     })
+}
+
+/// Revalidate the exact runtime.fleet allocation immediately before an effect.
+///
+/// This closes the planning-to-use TOCTOU: revocation, renewal, generation,
+/// authority-epoch, resource, host or expiry drift invalidates the old plan.
+/// The exact request must also come from the plan's sealed grant-request set.
+pub fn revalidate_fleet_allocation_for_plan_v1(
+    ledger: &LeaseLedger,
+    plan: &GlobalControlPlanV1,
+    request: &GrantRequestV1,
+    now_unix_ms: u64,
+) -> Result<(), GlobalPlaneError> {
+    let fence = &plan.fleet_execution_fence;
+    let grant = ledger
+        .get(&fence.allocation_id)
+        .ok_or(GlobalPlaneError::FleetAllocationMissing)?;
+    if grant.principal_id != fence.principal_id {
+        return Err(GlobalPlaneError::FleetPrincipalMismatch);
+    }
+    if grant.revoked {
+        return Err(GlobalPlaneError::FleetAllocationRevoked);
+    }
+    if now_unix_ms >= grant.expires_at_ms {
+        return Err(GlobalPlaneError::FleetAllocationExpired);
+    }
+    if fleet_grant_digest_v1(grant) != fence.grant_digest {
+        return Err(GlobalPlaneError::FleetExecutionBindingMismatch);
+    }
+
+    let fleet_owner_id =
+        StableId::new("runtime.fleet").map_err(|_| GlobalPlaneError::InvalidOwnerBinding)?;
+    let fleet_summary = plan
+        .snapshot
+        .owner_summaries()
+        .iter()
+        .find(|summary| summary.owner_id == fleet_owner_id)
+        .ok_or(GlobalPlaneError::FleetExecutionBindingMismatch)?;
+    let semantic_digest = Digest32::from_str(&grant.semantic_digest)
+        .map_err(|_| GlobalPlaneError::FleetSemanticDigest)?;
+    if fleet_summary.revision.get() != grant.lease_generation
+        || fleet_summary.source_frontier_digest != semantic_digest
+        || fleet_summary.support_digest
+            != bind_admission_support(semantic_digest, fence.grant_digest)
+        || request.snapshot_digest != plan.snapshot.snapshot_digest()
+    {
+        return Err(GlobalPlaneError::FleetExecutionBindingMismatch);
+    }
+    let requests = plan
+        .grant_requests
+        .as_ref()
+        .ok_or(GlobalPlaneError::FleetExecutionBindingMismatch)?;
+    if requests.authority().grants_any() || !requests.requests().contains(request) {
+        return Err(GlobalPlaneError::FleetExecutionBindingMismatch);
+    }
+    Ok(())
 }
 
 fn fleet_grant_digest_v1(grant: &codex_hepta_fleet::lease_ledger::AllocationGrant) -> Digest32 {

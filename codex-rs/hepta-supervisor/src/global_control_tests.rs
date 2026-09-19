@@ -14,6 +14,7 @@ use codex_hepta_control_plane::FLEET_ACCELERATOR_MILLIS_AXIS;
 use codex_hepta_control_plane::FLEET_CPU_MILLIS_AXIS;
 use codex_hepta_control_plane::FLEET_MEMORY_MIB_AXIS;
 use codex_hepta_control_plane::FleetEssentialFloorsV1;
+use codex_hepta_control_plane::GlobalPlaneError;
 use codex_hepta_control_plane::GrantRequestV1;
 use codex_hepta_control_plane::NduPlanningInputV1;
 use codex_hepta_control_plane::OwnerReadinessV1;
@@ -29,6 +30,7 @@ use codex_hepta_control_plane::owner_summary_scope_digest_v1;
 use codex_hepta_evidence::HeptaEvidenceStore;
 use codex_hepta_fleet::lease_ledger::AllocationGrant;
 use codex_hepta_fleet::lease_ledger::HostObservation;
+use codex_hepta_fleet::lease_ledger::LeaseDisposition;
 use codex_hepta_fleet::lease_ledger::LeaseLedger;
 use codex_hepta_fleet::lease_ledger::Resources;
 use codex_hepta_ndu::AxisDirection;
@@ -264,6 +266,43 @@ fn authority(path: &std::path::Path, signing: &SigningKey) -> FinalUseAuthority 
     .expect("final-use authority")
 }
 
+fn signed_final_use_grant(
+    request: &GrantRequestV1,
+    subject: &StableId,
+    destination: &StableId,
+    scope: Digest32,
+    signing: &SigningKey,
+    grant_id: &str,
+    nonce: [u8; 32],
+) -> SignedFinalUseGrant {
+    let binding = final_use_binding_for_grant_request_v1(request, subject, destination, scope)
+        .expect("binding");
+    let now_ms = u64::try_from(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("wall clock")
+            .as_millis(),
+    )
+    .expect("wall millis");
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "planner-grant-issuer".to_string(),
+        authority_epoch: 7,
+        grant_id: grant_id.to_string(),
+        nonce,
+        binding,
+        not_before_unix_ms: now_ms.saturating_sub(1_000),
+        expires_at_unix_ms: now_ms + 60_000,
+    };
+    SignedFinalUseGrant {
+        signature: signing
+            .sign(&grant.signing_bytes().expect("signing bytes"))
+            .to_bytes()
+            .to_vec(),
+        grant,
+    }
+}
+
 fn plan_request(summary: OwnerSummaryV1, message: SignedMessage) -> GlobalControlHostRequestV1 {
     let objective = summary.objective_digest;
     let generation = summary.body_generation;
@@ -369,56 +408,52 @@ async fn named_host_persists_plan_and_durable_owner_replay_survives_restart() {
 async fn named_host_releases_effect_only_inside_final_use_fence() {
     let temporary = tempfile::tempdir().expect("tempdir");
     let authority_signing = SigningKey::from_bytes(&[41; 32]);
-    let host = GlobalControlHostV1::open(
+    let objective = digest("global-objective");
+    let configuration = digest("global-configuration");
+    let generation = Generation::new(11).expect("generation");
+    let summary = evidence_owner(objective, generation, configuration);
+    let (message, issuer) = sign_owner(&summary);
+    let mut host = GlobalControlHostV1::open(
         evidence_store(&temporary.path().join("evidence")).await,
         &temporary.path().join("planner"),
         &[],
         authority(&temporary.path().join("authority"), &authority_signing),
-        Vec::new(),
+        vec![GlobalOwnerTrustV1 {
+            owner_id: id("kernel.evidence"),
+            issuer,
+        }],
     )
     .expect("global host");
-    let request = GrantRequestV1 {
-        operation_id: id("operation:send"),
-        candidate_id: id("candidate:send"),
-        plan_digest: digest("plan"),
-        final_payload_digest: digest("payload"),
-        objective_digest: digest("objective"),
-        snapshot_digest: digest("snapshot"),
-        revocation_frontier_digest: digest("revocation-frontier"),
-        expires_at_micros: 10_000,
-    };
+    let mut ledger = fleet_ledger();
+    let plan = host
+        .plan(&ledger, plan_request(summary, message))
+        .await
+        .expect("global plan");
+    let request = plan
+        .grant_requests
+        .as_ref()
+        .expect("grant requests")
+        .requests()
+        .first()
+        .expect("effect request")
+        .clone();
     let subject = id("agent:alpha");
     let destination = id("provider:effect");
     let scope = digest("effect-scope");
-    let binding = final_use_binding_for_grant_request_v1(&request, &subject, &destination, scope)
-        .expect("binding");
-    let now_ms = u64::try_from(
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("wall clock")
-            .as_millis(),
-    )
-    .expect("wall millis");
-    let grant = FinalUseGrant {
-        schema_version: 1,
-        signer_id: "planner-grant-issuer".to_string(),
-        authority_epoch: 7,
-        grant_id: "grant-1".to_string(),
-        nonce: [51; 32],
-        binding,
-        not_before_unix_ms: now_ms.saturating_sub(1_000),
-        expires_at_unix_ms: now_ms + 60_000,
-    };
-    let signed = SignedFinalUseGrant {
-        signature: authority_signing
-            .sign(&grant.signing_bytes().expect("signing bytes"))
-            .to_bytes()
-            .to_vec(),
-        grant,
-    };
+    let signed = signed_final_use_grant(
+        &request,
+        &subject,
+        &destination,
+        scope,
+        &authority_signing,
+        "grant-1",
+        [51; 32],
+    );
 
     assert_eq!(
         host.with_authorized_request(
+            &ledger,
+            &plan,
             &signed,
             &request,
             &subject,
@@ -431,6 +466,8 @@ async fn named_host_releases_effect_only_inside_final_use_fence() {
     );
     assert!(matches!(
         host.with_authorized_request(
+            &ledger,
+            &plan,
             &signed,
             &request,
             &subject,
@@ -439,6 +476,45 @@ async fn named_host_releases_effect_only_inside_final_use_fence() {
             || "must-not-run",
         ),
         Err(GlobalControlHostError::Authority(_))
+    ));
+
+    let current = ledger
+        .get("allocation:global-1")
+        .expect("current allocation")
+        .clone();
+    ledger
+        .renew_or_revoke(
+            1_001,
+            &current.allocation_id,
+            current.lease_generation,
+            current.authority_epoch,
+            &current.semantic_digest,
+            LeaseDisposition::Revoke,
+        )
+        .expect("revoke allocation");
+    let signed_after_revoke = signed_final_use_grant(
+        &request,
+        &subject,
+        &destination,
+        scope,
+        &authority_signing,
+        "grant-2",
+        [52; 32],
+    );
+    assert!(matches!(
+        host.with_authorized_request(
+            &ledger,
+            &plan,
+            &signed_after_revoke,
+            &request,
+            &subject,
+            &destination,
+            scope,
+            || "must-not-run",
+        ),
+        Err(GlobalControlHostError::Plane(
+            GlobalPlaneError::FleetAllocationRevoked
+        ))
     ));
 }
 
