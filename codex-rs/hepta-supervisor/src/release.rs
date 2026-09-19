@@ -2,6 +2,7 @@ use std::time::Instant;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
+use codex_hepta_fleet::ReleaseId;
 
 use crate::AgentRelease;
 use crate::ProcessDriver;
@@ -206,7 +207,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                 target: change.origin.identity().to_string(),
             },
         );
-        let rollback = change.origin.clone();
+        let rollback_id = ReleaseId::parse(change.origin.identity().to_string())?;
+        let rollback =
+            AgentRelease::try_from(self.registry.resolve_release(agent_id, &rollback_id)?)?;
         change.phase = ReleaseChangePhase::AutomaticRollbackStarting;
         slot.release_change = Some(change);
         slot.active_release = None;
