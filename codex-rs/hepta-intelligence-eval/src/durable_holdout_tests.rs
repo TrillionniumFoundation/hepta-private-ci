@@ -341,6 +341,7 @@ fn fenced_reservation_with_failed_local_write_is_fail_closed() {
         read_only.consume_fenced(&mut authority, advanced, &plan("plan-1")),
         Err(DurableHoldoutError::Poisoned)
     );
+    drop(read_only);
     assert!(matches!(
         DurableFinalHoldoutJournalV1::recover(directory.file(), digest("binding"), advanced),
         Err(DurableHoldoutError::MissingAcknowledgedHistory)
