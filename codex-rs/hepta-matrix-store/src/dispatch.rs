@@ -66,6 +66,7 @@ pub struct MatrixDispatchRecord {
     pub binding_revision: u64,
     pub generation: u64,
     pub authority_epoch: Option<u64>,
+    pub grant_id: Option<String>,
     pub grant_payload_sha256: Option<String>,
     pub deadline_ms: Option<u64>,
     pub state: MatrixDispatchState,
@@ -144,6 +145,7 @@ impl MatrixDurableStore {
         device_id: &str,
         session_generation: u64,
         authority_epoch: u64,
+        grant_id: &str,
         grant_payload_sha256: &str,
         deadline_ms: u64,
         now_ms: u64,
@@ -151,6 +153,7 @@ impl MatrixDurableStore {
         validate_identity(operation_id)?;
         validate_identity(homeserver_id)?;
         validate_identity(device_id)?;
+        validate_identity(grant_id)?;
         validate_digest(grant_payload_sha256)?;
         if session_generation == 0 || authority_epoch == 0 || deadline_ms <= now_ms {
             return Err(MatrixDurableError::Invalid);
@@ -172,8 +175,8 @@ impl MatrixDurableStore {
         sqlx::query(
             "UPDATE matrix_dispatch_ledger
              SET operation_id = ?, homeserver_id = ?, device_id = ?,
-                 session_generation = ?, authority_epoch = ?, grant_payload_sha256 = ?,
-                 deadline_ms = ?, updated_at_ms = ?
+                 session_generation = ?, authority_epoch = ?, grant_id = ?,
+                 grant_payload_sha256 = ?, deadline_ms = ?, updated_at_ms = ?
              WHERE stable_txn_id = ?",
         )
         .bind(operation_id)
@@ -181,6 +184,7 @@ impl MatrixDurableStore {
         .bind(device_id)
         .bind(to_i64(session_generation)?)
         .bind(to_i64(authority_epoch)?)
+        .bind(grant_id)
         .bind(grant_payload_sha256)
         .bind(to_i64(deadline_ms)?)
         .bind(to_i64(now_ms)?)
@@ -727,7 +731,7 @@ async fn dispatch_by_txn_tx(
     let row = sqlx::query(
         "SELECT stable_txn_id, operation_id, room_id, homeserver_id, device_id,
                 session_generation, payload_sha256,
-                binding_revision, generation, authority_epoch, grant_payload_sha256,
+                binding_revision, generation, authority_epoch, grant_id, grant_payload_sha256,
                 deadline_ms, state, transport_event_id, terminal_event_id,
                 send_observation_digest, redaction_observation_digest,
                 prepared_at_ms, updated_at_ms, terminal_at_ms
@@ -762,6 +766,7 @@ fn dispatch_from_row(row: sqlx::sqlite::SqliteRow) -> Result<MatrixDispatchRecor
         binding_revision: to_u64(row.try_get("binding_revision").map_err(|_| MatrixDurableError::Unavailable)?)?,
         generation: to_u64(row.try_get("generation").map_err(|_| MatrixDurableError::Unavailable)?)?,
         authority_epoch: row.try_get::<Option<i64>, _>("authority_epoch").map_err(|_| MatrixDurableError::Unavailable)?.map(to_u64).transpose()?,
+        grant_id: row.try_get("grant_id").map_err(|_| MatrixDurableError::Unavailable)?,
         grant_payload_sha256: row.try_get("grant_payload_sha256").map_err(|_| MatrixDurableError::Unavailable)?,
         deadline_ms: row.try_get::<Option<i64>, _>("deadline_ms").map_err(|_| MatrixDurableError::Unavailable)?.map(to_u64).transpose()?,
         state,
@@ -869,7 +874,8 @@ pub(crate) async fn verify_dispatch_schema(
             OR (
                 authority_epoch IS NULL
                 AND (
-                    grant_payload_sha256 IS NOT NULL
+                    grant_id IS NOT NULL
+                    OR grant_payload_sha256 IS NOT NULL
                     OR deadline_ms IS NOT NULL
                     OR homeserver_id IS NOT NULL
                     OR device_id IS NOT NULL
@@ -879,7 +885,8 @@ pub(crate) async fn verify_dispatch_schema(
             OR (
                 authority_epoch IS NOT NULL
                 AND (
-                    grant_payload_sha256 IS NULL
+                    grant_id IS NULL
+                    OR grant_payload_sha256 IS NULL
                     OR deadline_ms IS NULL
                     OR homeserver_id IS NULL
                     OR device_id IS NULL
