@@ -591,12 +591,7 @@ async fn reconcile_lifecycle_observation(
     let revision = current.revision;
     match output {
         Some(output) if output.terminal_observed => {
-            let phase = match output.status {
-                NativeRunStatus::Completed => AgentdRunPhase::Succeeded,
-                NativeRunStatus::Failed => AgentdRunPhase::Failed,
-                NativeRunStatus::Interrupted => AgentdRunPhase::Cancelled,
-                NativeRunStatus::Indeterminate => AgentdRunPhase::Indeterminate,
-            };
+            let phase = lifecycle_phase_for_output(output.status);
             owner
                 .run_observe_terminal(run_id.to_string(), revision, phase, true)
                 .await
@@ -611,6 +606,15 @@ async fn reconcile_lifecycle_observation(
                 )
                 .await
         }
+    }
+}
+
+fn lifecycle_phase_for_output(status: NativeRunStatus) -> AgentdRunPhase {
+    match status {
+        NativeRunStatus::Completed => AgentdRunPhase::Succeeded,
+        NativeRunStatus::Failed => AgentdRunPhase::Failed,
+        NativeRunStatus::Interrupted => AgentdRunPhase::Cancelled,
+        NativeRunStatus::Indeterminate => AgentdRunPhase::Indeterminate,
     }
 }
 
