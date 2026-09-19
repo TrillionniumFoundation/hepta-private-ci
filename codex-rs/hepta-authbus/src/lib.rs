@@ -1,15 +1,23 @@
-//! Replay fencing for envelopes that were authenticated by a trusted upstream
-//! boundary.
+//! Replay fencing and durable authority primitives for independently authenticated
+//! AuthBus messages.
 //!
-//! The signed admission API verifies issuer-bound Ed25519 messages. The legacy
-//! replay model accepts preverified input. Neither evaluates effect
-//! authorization policy, reserves quota or dispatches an effect. Neither mints a
-//! grant, widen scope, select, promote, merge or release. Successful receipts
-//! always carry `AuthorityPosture::DENY_ALL`.
+//! Signed admission verifies issuer-bound Ed25519 messages. Durable authorization,
+//! quota and reservation state is owned by the existing evidence SQLite store;
+//! these types carry the deterministic policy, accounting and trust semantics.
+//! Authentication receipts never grant an external effect capability.
 
 #![forbid(unsafe_code)]
 
+mod authority;
 mod signed;
+pub use authority::AuthPolicy;
+pub use authority::Error as AuthorityError;
+pub use authority::PolicyDecision;
+pub use authority::QuotaDefinition;
+pub use authority::QuotaReservation;
+pub use authority::ReplayCheckpoint;
+pub use authority::ReservationState;
+pub use authority::TrustedTime;
 pub use signed::AuthenticatedMessage;
 pub use signed::IssuerRegistration;
 pub use signed::SignedMessage;
@@ -73,6 +81,7 @@ pub enum Error {
     Expired,
     ScopeMismatch,
     PayloadMismatch,
+    SubjectMismatch,
     Replay,
     CapacityExceeded,
     InvalidSignature,
