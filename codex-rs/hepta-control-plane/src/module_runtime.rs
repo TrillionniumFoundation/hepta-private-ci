@@ -83,6 +83,9 @@ impl RuntimeModuleAbiV1 {
         {
             return Err(RuntimeModuleRegistryError::DuplicatePort);
         }
+        if self.dependencies.contains(&self.module_id) {
+            return Err(RuntimeModuleRegistryError::SelfDependency);
+        }
         match self.predecessor_generation {
             None => {
                 if !self.rollback_predecessor_digest.is_zero() {
@@ -161,6 +164,8 @@ pub enum RuntimeModuleRegistryError {
     EmptyImplementationDigest,
     EmptyCandidateArtifactDigest,
     DuplicatePort,
+    SelfDependency,
+    SelectedDependent(StableId),
     InvalidGeneration,
     MissingPredecessorDigest,
     UnexpectedPredecessorDigest,
@@ -391,6 +396,11 @@ impl RuntimeModuleRegistryV1 {
         if self.active.get(module_id) != Some(&generation) {
             return Err(RuntimeModuleRegistryError::InvalidLifecycleTransition);
         }
+        // Disabling new dispatch is not proof that a dependent has stopped
+        // using this provider. Draining and quarantined selected generations
+        // retain their dependency reservation until finish_retire succeeds.
+        // Check before mutation so a rejected retirement leaves routing intact.
+        self.ensure_no_selected_dependents(module_id)?;
         let record = self
             .records
             .get_mut(&(module_id.clone(), generation))
@@ -410,6 +420,9 @@ impl RuntimeModuleRegistryV1 {
         module_id: &StableId,
         generation: Generation,
     ) -> Result<RuntimeTopologySnapshotV1, RuntimeModuleRegistryError> {
+        // Recheck at completion: a consumer may have been selected between
+        // begin_retire and the host's observed drain/reconciliation result.
+        self.ensure_no_selected_dependents(module_id)?;
         self.transition(
             module_id,
             generation,
@@ -591,8 +604,7 @@ impl RuntimeModuleRegistryV1 {
             // Quarantined selected writers retain their reservation and full
             // ABI until finish_retire proves drain/reconciliation. Unselected
             // quarantined candidates hold no writer reservation.
-            let selected = self.active.get(&record.abi.module_id)
-                == Some(&record.abi.generation);
+            let selected = self.active.get(&record.abi.module_id) == Some(&record.abi.generation);
             if selected
                 || matches!(
                     record.lifecycle,
@@ -610,6 +622,27 @@ impl RuntimeModuleRegistryV1 {
             }
         }
         self.records.retain(|key, _| pinned.contains(key));
+    }
+
+    fn ensure_no_selected_dependents(
+        &self,
+        module_id: &StableId,
+    ) -> Result<(), RuntimeModuleRegistryError> {
+        for (dependent_id, generation) in &self.active {
+            if dependent_id == module_id {
+                continue;
+            }
+            let dependent = self
+                .records
+                .get(&(dependent_id.clone(), *generation))
+                .ok_or(RuntimeModuleRegistryError::UnknownCandidate)?;
+            if dependent.abi.dependencies.contains(module_id) {
+                return Err(RuntimeModuleRegistryError::SelectedDependent(
+                    dependent_id.clone(),
+                ));
+            }
+        }
+        Ok(())
     }
 
     fn transition(
@@ -693,8 +726,7 @@ mod tests {
             generation: Generation::new(generation).expect("generation"),
             implementation_digest: digest(implementation),
             candidate_artifact_digest: digest(implementation),
-            predecessor_generation: predecessor
-                .map(|(g, _)| Generation::new(g).expect("generation")),
+            predecessor_generation: predecessor.map(|(g, _)| Generation::new(g).expect("generation")),
             rollback_predecessor_digest: predecessor.map_or(Digest32::ZERO, |(_, d)| digest(d)),
             state_class: RuntimeModuleStateClassV1::Stateful,
             dependencies: Vec::new(),
@@ -705,10 +737,7 @@ mod tests {
         }
     }
 
-    fn promote(
-        registry: &mut RuntimeModuleRegistryV1,
-        generation: u64,
-    ) -> RuntimeTopologySnapshotV1 {
+    fn promote(registry: &mut RuntimeModuleRegistryV1, generation: u64) -> RuntimeTopologySnapshotV1 {
         let module = id("memory.retrieval");
         let generation = Generation::new(generation).expect("generation");
         registry.enter_shadow(&module, generation).expect("shadow");
