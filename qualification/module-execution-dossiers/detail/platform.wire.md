@@ -1,7 +1,7 @@
 # platform.wire: implementation design
 
 Parent: `docs/modules/platform.wire/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: HPTA V1 envelope codec implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: HPTA V1 remains immutable; HPTA V2 framing, negotiation, schema admission, bounded streaming and source composition are implemented. Execution receipts, authenticated transport qualification, production activation and independent acceptance remain separate gates. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -35,7 +35,7 @@ Pilot ceilings are design targets, not measurements. Stricter canonical limits p
 - WIRE-03: maximum-size round trip and cross-language golden encodings are exact.
 - WIRE-04: a serialized authority witness never constructs a consumable token.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+The source implementation now supplies native tests for WIRE-01 through WIRE-04, including a frozen V2 vector, property corpus, source-composed adapters and a live Rust↔Python TCP oracle. Test source is still not an exact-head execution receipt or independent external acceptance.
 
 ## 7. Integration, rollback and capability ceiling
 
@@ -45,8 +45,13 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `WireEnvelope` in [codex-rs/hepta-wire/src/envelope.rs](../../../codex-rs/hepta-wire/src/envelope.rs). HPTA V1 envelope codec implemented.
-- **State and recovery:** Stateless HPTA binary V1 framing uses big-endian lengths/generation and a payload digest; decode rejects unsupported versions, trailing bytes, invalid IDs and payloads outside 1..1048576 bytes.
-- **Source tests:** [codex-rs/hepta-wire/src/envelope_tests.rs](../../../codex-rs/hepta-wire/src/envelope_tests.rs), [codex-rs/hepta-wire/src/boundary_tests.rs](../../../codex-rs/hepta-wire/src/boundary_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [docs/lane-a-foundation/platform.wire/WIRE_V1.md](../../../docs/lane-a-foundation/platform.wire/WIRE_V1.md).
-- **Remaining work:** The target negotiate operation is not implemented by this fixed-version codec; transport negotiation and production schema admission need their owning integration.
+- **V1:** `WireEnvelope` in `codex-rs/hepta-wire/src/envelope.rs` remains the immutable fixed HPTA V1 codec.
+- **V2:** `WireEnvelopeV2` in `src/v2.rs` adds payload digest plus a domain-separated complete semantic frame digest. `decode_bound` can require an expected digest delivered through an authenticated out-of-band channel.
+- **Negotiation:** `negotiate` in `src/negotiation.rs` selects the highest explicitly common implemented version and refuses fallback that loses a caller-declared critical capability.
+- **Schema admission:** `SchemaRegistry` in `src/schema.rs` binds exact schema IDs, required/optional fields, unknown-field policy, byte limits, nesting <= 32 and object-field count <= 1024 before typed JSON decode.
+- **Streaming:** `FramedReader` in `src/stream.rs` admits the fixed header and advertised limits before allocating the body, then dispatches to the immutable V1/V2 decoder.
+- **Source composition:** `hepta-context-compiler/src/wire.rs` produces a V2 transport DTO after real compilation; `hepta-codex-adapter/src/wire.rs` admits a V2 DTO before the existing runtime.codex binding/deadline/terminal checks. Serialized DTOs carry no authority.
+- **Cross-runtime evidence source:** `hepta-shadow-qualification/tests/cross_runtime_wire_v2.rs` runs a separate Python process over TCP and verifies HPTA V2 framing, both digests and strict schema admission.
+- **Property/fuzz:** `protocol_tests.rs` includes a deterministic round-trip/arbitrary-byte corpus; `hepta-wire/fuzz/fuzz_targets/decode.rs` provides a cargo-fuzz target.
+- **Normative current references:** `docs/lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md`, `WIRE_V1.md`, `WIRE_V2.md`, and both conformance JSON vectors.
+- **Remaining gates:** authenticated session establishment is owned by the selected transport/security boundary; exact-head and merge-candidate execution receipts, target-host product qualification, operator acceptance, production activation, promotion and release are not claimed by source implementation.

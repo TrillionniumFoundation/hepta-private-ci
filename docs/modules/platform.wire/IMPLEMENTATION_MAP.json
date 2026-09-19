@@ -18,29 +18,91 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "source_composed_unactivated",
   "productionWriterState": "not_established",
   "operations": [
     {
-      "operation": "wireenvelope",
+      "operation": "wireenvelope_v1",
       "nativeSymbol": "WireEnvelope",
       "sourcePath": "codex-rs/hepta-wire/src/envelope.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_immutable_v1",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-wire/src/envelope_tests.rs",
+        "codex-rs/hepta-wire/src/boundary_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "wireenvelope",
+      "designOperation": "decode_envelope",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "wireenvelope_v2",
+      "nativeSymbol": "WireEnvelopeV2",
+      "sourcePath": "codex-rs/hepta-wire/src/v2.rs",
+      "state": "source_implemented_source_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/protocol_tests.rs",
+        "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_v2.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "decode_envelope",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "negotiate",
+      "nativeSymbol": "negotiate",
+      "sourcePath": "codex-rs/hepta-wire/src/negotiation.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/protocol_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "negotiate",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "schema_admission",
+      "nativeSymbol": "SchemaRegistry::admit",
+      "sourcePath": "codex-rs/hepta-wire/src/schema.rs",
+      "state": "source_implemented_source_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/protocol_tests.rs",
+        "codex-rs/hepta-codex-adapter/src/wire_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "decode_envelope",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "streaming_decode",
+      "nativeSymbol": "FramedReader::read_next",
+      "sourcePath": "codex-rs/hepta-wire/src/stream.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/protocol_tests.rs",
+        "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_v2.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "decode_envelope",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge tests for the changed V1/V2 protocol candidate.",
+    "Keep source-composed consumers inactive until their owning product activation and authority gates pass."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
+    "independent semantic and security review",
+    "target-host product execution and authenticated transport qualification",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
