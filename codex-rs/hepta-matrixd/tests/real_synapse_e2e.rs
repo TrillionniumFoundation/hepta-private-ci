@@ -16,6 +16,8 @@ use std::process::Command;
 use std::process::Stdio;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::Instant;
 
@@ -37,7 +39,10 @@ use codex_app_server_protocol::ThreadResumeParams;
 use codex_app_server_protocol::ThreadResumeResponse;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::FinalUseGrant;
+use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
@@ -63,6 +68,7 @@ use codex_hepta_matrix_protocol::MatrixdRequest;
 use codex_hepta_matrix_protocol::MatrixdResponse;
 use codex_hepta_matrix_protocol::client_user_message_id;
 use codex_hepta_matrix_protocol::matrix_binding_digest;
+use codex_hepta_matrix_sdk::MatrixFinalUseRequest;
 use codex_hepta_matrix_sdk::arm_post_send_pre_mark_ack_drop_once;
 use codex_hepta_matrix_store::InboxDispatchState;
 use codex_hepta_matrix_store::MatrixDurableConfig;
@@ -78,6 +84,8 @@ use codex_hepta_supervisor::UnixProcessDriver;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use core_test_support::responses;
 use core_test_support::responses::ResponseMock;
+use ed25519_dalek::Signer;
+use ed25519_dalek::SigningKey;
 use matrix_sdk::Client as MatrixE2eSdkClient;
 use matrix_sdk::config::SyncSettings;
 use matrix_sdk::ruma::OwnedRoomId;
@@ -101,6 +109,7 @@ use tokio::io::AsyncWriteExt;
 use tokio::io::BufReader;
 use tokio::net::TcpListener;
 use tokio::net::TcpStream;
+use tokio::net::UnixListener;
 use tokio::net::UnixStream;
 use tokio::sync::oneshot;
 use tokio::sync::watch;
@@ -132,6 +141,239 @@ const MATRIX_MEMBERSHIP_TIMEOUT: Duration = Duration::from_secs(45);
 const PAIRED_RELEASE_ID: &str = "r2-g4-synapse-paired-v1";
 const OUTBOUND_ACK_LOSS_INPUT: &str = "prove Matrix outbound response-loss exactly once";
 const OUTBOUND_ACK_LOSS_BODY: &str = "agent-a-outbound-ack-loss";
+const FINAL_USE_SIGNER_ID: &str = "matrix-r4-authority";
+const FINAL_USE_AUTHORITY_EPOCH: u64 = 31;
+const FINAL_USE_REVOCATION_REVISION: u64 = 1;
+const FINAL_USE_BROKER_SCHEMA_VERSION: u32 = 1;
+const FINAL_USE_BROKER_MAX_FRAME_BYTES: usize = 128 * 1024;
+
+#[derive(Clone, Debug)]
+struct QualificationGrantIssue {
+    subject_id: String,
+    stable_txn_id: String,
+    attempt: u64,
+    grant_id: String,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct QualificationGrantBrokerRequest {
+    schema_version: u32,
+    request: MatrixFinalUseRequest,
+}
+
+#[derive(Serialize)]
+#[serde(deny_unknown_fields)]
+struct QualificationGrantBrokerResponse {
+    schema_version: u32,
+    grant: SignedFinalUseGrant,
+}
+
+struct QualificationFinalUseBroker {
+    socket: PathBuf,
+    verifying_key: [u8; 32],
+    issued: Arc<Mutex<Vec<QualificationGrantIssue>>>,
+    shutdown: Option<oneshot::Sender<()>>,
+    task: JoinHandle<Result<()>>,
+}
+
+impl QualificationFinalUseBroker {
+    async fn start(runtime_root: &Path) -> Result<Self> {
+        let root = runtime_root.join("matrix-final-use-broker");
+        std::fs::create_dir_all(&root)?;
+        std::fs::set_permissions(&root, std::fs::Permissions::from_mode(0o700))?;
+        let root = root.canonicalize()?;
+        let socket = root.join("broker.sock");
+        if let Err(error) = std::fs::remove_file(&socket)
+            && error.kind() != std::io::ErrorKind::NotFound
+        {
+            return Err(error.into());
+        }
+        let listener = UnixListener::bind(&socket)?;
+        std::fs::set_permissions(&socket, std::fs::Permissions::from_mode(0o600))?;
+
+        let signer = SigningKey::from_bytes(&[83; 32]);
+        let verifying_key = signer.verifying_key().to_bytes();
+        let issued = Arc::new(Mutex::new(Vec::new()));
+        let issued_task = Arc::clone(&issued);
+        let sequence = Arc::new(AtomicU64::new(0));
+        let sequence_task = Arc::clone(&sequence);
+        let (shutdown_tx, mut shutdown_rx) = oneshot::channel();
+        let task = tokio::spawn(async move {
+            loop {
+                tokio::select! {
+                    _ = &mut shutdown_rx => return Ok(()),
+                    accepted = listener.accept() => {
+                        let (stream, _) = accepted?;
+                        handle_final_use_broker_connection(
+                            stream,
+                            &signer,
+                            &issued_task,
+                            &sequence_task,
+                        )
+                        .await?;
+                    }
+                }
+            }
+        });
+        Ok(Self {
+            socket,
+            verifying_key,
+            issued,
+            shutdown: Some(shutdown_tx),
+            task,
+        })
+    }
+
+    fn configure_agent(&self, layout: &HeptaAgentLayout) -> Result<()> {
+        std::fs::create_dir_all(layout.matrix_secrets_root())?;
+        std::fs::set_permissions(
+            layout.matrix_secrets_root(),
+            std::fs::Permissions::from_mode(0o700),
+        )?;
+        write_private_json(
+            &layout.matrix_secrets_root().join("final-use.json"),
+            &json!({
+                "schema_version": FINAL_USE_BROKER_SCHEMA_VERSION,
+                "signer_id": FINAL_USE_SIGNER_ID,
+                "verifying_key": self.verifying_key,
+                "broker_socket": self.socket.to_string_lossy(),
+                "request_timeout_ms": 5_000_u64,
+            }),
+        )?;
+        write_private_json(
+            &layout
+                .matrix_secrets_root()
+                .join("final-use-revocations.json"),
+            &FinalUseRevocations {
+                authority_epoch: FINAL_USE_AUTHORITY_EPOCH,
+                revision: FINAL_USE_REVOCATION_REVISION,
+                revoked_grant_ids: BTreeSet::new(),
+            },
+        )?;
+        Ok(())
+    }
+
+    fn issues_for(&self, stable_txn_id: &str) -> Result<Vec<QualificationGrantIssue>> {
+        Ok(self
+            .issued
+            .lock()
+            .map_err(|_| anyhow::anyhow!("final-use issue log lock poisoned"))?
+            .iter()
+            .filter(|issue| issue.stable_txn_id == stable_txn_id)
+            .cloned()
+            .collect())
+    }
+
+    async fn shutdown(mut self) -> Result<()> {
+        if let Some(shutdown) = self.shutdown.take() {
+            let _ = shutdown.send(());
+        }
+        self.task
+            .await
+            .context("final-use broker task failed to join")??;
+        if let Err(error) = std::fs::remove_file(&self.socket)
+            && error.kind() != std::io::ErrorKind::NotFound
+        {
+            return Err(error.into());
+        }
+        Ok(())
+    }
+}
+
+async fn handle_final_use_broker_connection(
+    stream: UnixStream,
+    signer: &SigningKey,
+    issued: &Arc<Mutex<Vec<QualificationGrantIssue>>>,
+    sequence: &Arc<AtomicU64>,
+) -> Result<()> {
+    let mut reader = BufReader::new(stream);
+    let mut frame = Vec::new();
+    let read = timeout(
+        Duration::from_secs(5),
+        reader.read_until(b'\n', &mut frame),
+    )
+    .await
+    .context("final-use broker request timed out")??;
+    if read == 0 {
+        return Ok(());
+    }
+    ensure!(
+        frame.len() <= FINAL_USE_BROKER_MAX_FRAME_BYTES,
+        "final-use broker request exceeded bound"
+    );
+    let request: QualificationGrantBrokerRequest = serde_json::from_slice(&frame)?;
+    ensure!(
+        request.schema_version == FINAL_USE_BROKER_SCHEMA_VERSION,
+        "final-use broker schema drifted"
+    );
+    request.request.validate().map_err(anyhow::Error::msg)?;
+    ensure!(
+        matches!(request.request.subject_id.as_str(), AGENT_A | AGENT_B),
+        "final-use broker received an unknown Matrix subject"
+    );
+    ensure!(
+        request.request.operation_id
+            == format!("matrix.send:{}", request.request.stable_txn_id),
+        "final-use broker operation identity drifted"
+    );
+
+    let grant_sequence = sequence.fetch_add(1, Ordering::SeqCst) + 1;
+    let mut nonce = [0_u8; 32];
+    nonce[..8].copy_from_slice(&grant_sequence.to_be_bytes());
+    nonce[8..16].copy_from_slice(&request.request.attempt.to_be_bytes());
+    let now = now_ms()?;
+    let grant = FinalUseGrant {
+        schema_version: 1,
+        signer_id: FINAL_USE_SIGNER_ID.to_string(),
+        authority_epoch: FINAL_USE_AUTHORITY_EPOCH,
+        grant_id: format!("matrix-r4-grant-{grant_sequence}"),
+        nonce,
+        binding: request.request.binding.clone(),
+        not_before_unix_ms: now.saturating_sub(1_000),
+        expires_at_unix_ms: now.saturating_add(30_000),
+    };
+    let signature = signer.sign(&grant.signing_bytes()?).to_bytes().to_vec();
+    let grant_id = grant.grant_id.clone();
+    let response = QualificationGrantBrokerResponse {
+        schema_version: FINAL_USE_BROKER_SCHEMA_VERSION,
+        grant: SignedFinalUseGrant { grant, signature },
+    };
+    let bytes = serde_json::to_vec(&response)?;
+    ensure!(
+        bytes.len() <= FINAL_USE_BROKER_MAX_FRAME_BYTES,
+        "final-use broker response exceeded bound"
+    );
+    let mut stream = reader.into_inner();
+    stream.write_all(&bytes).await?;
+    stream.write_all(b"\n").await?;
+    stream.shutdown().await?;
+    issued
+        .lock()
+        .map_err(|_| anyhow::anyhow!("final-use issue log lock poisoned"))?
+        .push(QualificationGrantIssue {
+            subject_id: request.request.subject_id,
+            stable_txn_id: request.request.stable_txn_id,
+            attempt: request.request.attempt,
+            grant_id,
+        });
+    Ok(())
+}
+
+fn write_private_json(path: &Path, value: &impl Serialize) -> Result<()> {
+    let bytes = serde_json::to_vec(value)?;
+    let mut file = OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .mode(0o600)
+        .open(path)?;
+    file.write_all(&bytes)?;
+    file.sync_all()?;
+    if let Some(parent) = path.parent() {
+        std::fs::File::open(parent)?.sync_all()?;
+    }
+    Ok(())
+}
 
 /// Keeps exact wiremock verification on successful qualification runs while
 /// preventing an early-return verification panic from masking the primary
