@@ -60,13 +60,50 @@ impl AdmittedNduCoefficientProfileV1 {
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct NduZQ24ProjectionV1 {
-    pub values: Vec<Vec<i64>>,
-    pub source_evidence_digest: Digest32,
-    pub coefficient_profile_digest: Digest32,
-    pub output_digest: Digest32,
-    pub maximum_absolute_error: f64,
-    pub conversion_evidence_digest: Digest32,
-    pub authority: AuthorityPosture,
+    values: Vec<Vec<i64>>,
+    source_evidence_digest: Digest32,
+    coefficient_profile_digest: Digest32,
+    output_digest: Digest32,
+    maximum_absolute_error: f64,
+    conversion_evidence_digest: Digest32,
+    authority: AuthorityPosture,
+}
+
+impl NduZQ24ProjectionV1 {
+    #[must_use]
+    pub fn values(&self) -> &[Vec<i64>] {
+        &self.values
+    }
+
+    #[must_use]
+    pub const fn source_evidence_digest(&self) -> Digest32 {
+        self.source_evidence_digest
+    }
+
+    #[must_use]
+    pub const fn coefficient_profile_digest(&self) -> Digest32 {
+        self.coefficient_profile_digest
+    }
+
+    #[must_use]
+    pub const fn output_digest(&self) -> Digest32 {
+        self.output_digest
+    }
+
+    #[must_use]
+    pub const fn maximum_absolute_error(&self) -> f64 {
+        self.maximum_absolute_error
+    }
+
+    #[must_use]
+    pub const fn conversion_evidence_digest(&self) -> Digest32 {
+        self.conversion_evidence_digest
+    }
+
+    #[must_use]
+    pub const fn authority(&self) -> AuthorityPosture {
+        self.authority
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -148,18 +185,18 @@ pub fn quantize_z_to_q24(
     profile: &AdmittedNduCoefficientProfileV1,
     now_unix_ms: u64,
 ) -> Result<NduZQ24ProjectionV1, NduCoefficientProfileError> {
-    if estimate.authority.grants_any() {
+    if estimate.authority().grants_any() {
         return Err(NduCoefficientProfileError::Authority);
     }
     if now_unix_ms >= profile.specification.expires_unix_ms {
         return Err(NduCoefficientProfileError::Expiry);
     }
-    if estimate.evidence_digest.is_zero() {
+    if estimate.evidence_digest().is_zero() {
         return Err(NduCoefficientProfileError::MissingDigest);
     }
-    if estimate.z.len() != profile.specification.utility_dimension
+    if estimate.z().len() != profile.specification.utility_dimension
         || estimate
-            .z
+            .z()
             .iter()
             .any(|row| row.len() != profile.specification.driver_dimension)
     {
@@ -168,7 +205,7 @@ pub fn quantize_z_to_q24(
 
     let mut values = Vec::with_capacity(estimate.z.len());
     let mut maximum_absolute_error = 0.0_f64;
-    for row in &estimate.z {
+    for row in estimate.z() {
         let mut converted = Vec::with_capacity(row.len());
         for value in row {
             if !value.is_finite() {
@@ -210,7 +247,7 @@ pub fn quantize_z_to_q24(
     let output_digest = Digest32::of_bytes(&output_bytes);
 
     let mut evidence = b"hepta.ndu.z-q24-conversion-evidence.v1".to_vec();
-    evidence.extend_from_slice(estimate.evidence_digest.as_array());
+    evidence.extend_from_slice(estimate.evidence_digest().as_array());
     evidence.extend_from_slice(profile.digest.as_array());
     evidence.extend_from_slice(output_digest.as_array());
     evidence.extend_from_slice(&maximum_absolute_error.to_bits().to_be_bytes());
@@ -218,7 +255,7 @@ pub fn quantize_z_to_q24(
 
     Ok(NduZQ24ProjectionV1 {
         values,
-        source_evidence_digest: estimate.evidence_digest,
+        source_evidence_digest: estimate.evidence_digest(),
         coefficient_profile_digest: profile.digest,
         output_digest,
         maximum_absolute_error,
