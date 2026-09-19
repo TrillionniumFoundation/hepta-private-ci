@@ -136,6 +136,12 @@ async fn terminal_and_redaction_evidence_survive_reopen_without_overwrite() -> T
     assert_eq!(succeeded.state, MatrixDispatchState::Succeeded);
     assert_eq!(succeeded.send_observation_digest.as_deref(), Some(send_digest.as_str()));
     assert_eq!(succeeded.redaction_observation_digest, None);
+    assert_eq!(
+        reopened
+            .dispatch_archive_segment_count(&outbox.stable_txn_id)
+            .await?,
+        1
+    );
 
     let redaction_digest = "b".repeat(64);
     assert!(
@@ -158,6 +164,12 @@ async fn terminal_and_redaction_evidence_survive_reopen_without_overwrite() -> T
         redacted.redaction_observation_digest.as_deref(),
         Some(redaction_digest.as_str())
     );
+    assert_eq!(
+        reopened
+            .dispatch_archive_segment_count(&outbox.stable_txn_id)
+            .await?,
+        2
+    );
     reopened.close().await;
 
     let reopened_again =
@@ -171,6 +183,12 @@ async fn terminal_and_redaction_evidence_survive_reopen_without_overwrite() -> T
     assert_eq!(
         durable.redaction_observation_digest.as_deref(),
         Some(redaction_digest.as_str())
+    );
+    assert_eq!(
+        reopened_again
+            .dispatch_archive_segment_count(&outbox.stable_txn_id)
+            .await?,
+        2
     );
     reopened_again.close().await;
     Ok(())
