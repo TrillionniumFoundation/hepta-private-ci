@@ -34,7 +34,7 @@ fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> 
         fleet_root: fleet_path,
         workspace,
         resources: record.manifest.resources,
-            fleet_allocation: None,
+        fleet_allocation: None,
         home_root: record.layout.home_root().to_path_buf(),
         run_root: record.layout.run_root().to_path_buf(),
         control_socket: record.layout.agentd_control_socket().to_path_buf(),
