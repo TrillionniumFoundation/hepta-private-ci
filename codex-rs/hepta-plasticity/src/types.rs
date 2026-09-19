@@ -372,6 +372,8 @@ pub enum Error {
     RegistryCapacityExceeded,
     ProposalConflict(String),
     RegistrySlotConflict(String),
+    UnknownTopologyCandidate(String),
+    RuntimeTopologyContract,
 }
 
 impl fmt::Display for Error {
