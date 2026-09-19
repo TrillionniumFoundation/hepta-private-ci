@@ -551,7 +551,7 @@ fn valid_identifier(value: &str) -> bool {
         && value.len() <= 128
         && value
             .bytes()
-            .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
+            .all(|byte| byte.is_ascii_alphanumeric() || b"._:-".contains(&byte))
 }
 
 #[cfg(test)]
