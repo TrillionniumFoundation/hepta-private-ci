@@ -106,11 +106,13 @@ impl<D: ProcessDriver> Supervisor<D> {
         release: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
-        let store = FleetAllocationStore::open(&self.registry).map_err(allocation_error)?;
-        let Some(grant) = store
-            .active_grant_for_agent(agent_id)
-            .map_err(allocation_error)?
-        else {
+        let grant = {
+            let store = FleetAllocationStore::open(&self.registry).map_err(allocation_error)?;
+            store
+                .active_grant_for_agent(agent_id)
+                .map_err(allocation_error)?
+        };
+        let Some(grant) = grant else {
             return self.start_release(agent_id, release, now);
         };
         self.start_allocated(
