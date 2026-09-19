@@ -32,7 +32,9 @@ fn abi(module: &str, epoch: u64) -> RuntimeModuleAbiV1 {
 #[test]
 fn draining_writer_is_not_dispatchable_but_keeps_its_domain() {
     let mut registry = RuntimeModuleRegistryV1::new();
-    registry.register_candidate(abi("old", 1)).expect("register");
+    registry
+        .register_candidate(abi("old", 1))
+        .expect("register");
     registry
         .activate_bootstrap(&id("old"), generation(1))
         .expect("bootstrap");
@@ -61,7 +63,9 @@ fn draining_writer_is_not_dispatchable_but_keeps_its_domain() {
 #[test]
 fn quarantined_active_writer_requires_reconciliation_before_domain_reuse() {
     let mut registry = RuntimeModuleRegistryV1::new();
-    registry.register_candidate(abi("old", 1)).expect("register");
+    registry
+        .register_candidate(abi("old", 1))
+        .expect("register");
     registry
         .activate_bootstrap(&id("old"), generation(1))
         .expect("bootstrap");
