@@ -53,10 +53,31 @@
       "designOperation": "decide_ndu_convergence_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "decide_ndu_well_posedness_v1",
+      "nativeSymbol": "codex_hepta_intelligence_eval::decide_ndu_well_posedness_v1",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness.rs",
+      "state": "source_implemented_independent_ndu_well_posedness_decision",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness_tests.rs",
+          "symbol": "complete_independent_well_posedness_evidence_can_be_accepted_without_authority"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness_tests.rs",
+          "symbol": "evaluator_cannot_self_certify_well_posedness"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "decide_ndu_well_posedness_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind independent NDU convergence evidence to authenticated product inputs and durable evaluation publication.",
+    "Bind independent NDU convergence and well-posedness evidence to authenticated product inputs and durable evaluation publication.",
     "Bind temporal/holdout evaluation to the product nuisance-model scheduler and owner store.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
