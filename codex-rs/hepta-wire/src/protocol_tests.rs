@@ -244,3 +244,42 @@ fn v2_matches_independent_frozen_vector() {
     assert_eq!(envelope.encode(), golden);
     assert_eq!(WireEnvelopeV2::decode(&golden), Ok(envelope));
 }
+
+#[test]
+fn rejected_duplicate_schema_registration_does_not_replace_original_policy() {
+    let schema_id = id("hepta.duplicate-schema.v1");
+    let original = SchemaDefinition::new(
+        schema_id.clone(),
+        &["required"],
+        &[],
+        UnknownFieldPolicy::Reject,
+        128,
+    )
+    .expect("original schema");
+    let replacement = SchemaDefinition::new(
+        schema_id.clone(),
+        &["different"],
+        &[],
+        UnknownFieldPolicy::Allow,
+        256,
+    )
+    .expect("replacement schema");
+    let mut registry = SchemaRegistry::new();
+    registry.register(original.clone()).expect("register original");
+    assert_eq!(
+        registry.register(replacement),
+        Err(SchemaError::DuplicateSchema(schema_id.to_string()))
+    );
+    assert_eq!(registry.definition(&schema_id), Some(&original));
+}
+
+#[test]
+fn unknown_critical_capability_reports_capability_failure_not_version_failure() {
+    let unknown = id("hpta.future-critical.v1");
+    assert_eq!(
+        negotiate(&[HPTA_V2], &[HPTA_V2], &[unknown.clone()]),
+        Err(NegotiationError::MissingCriticalCapability(
+            unknown.to_string()
+        ))
+    );
+}
