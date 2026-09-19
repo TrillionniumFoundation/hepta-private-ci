@@ -333,9 +333,6 @@ impl<J: DurableLearningJournal, T: LearningEvidenceTrustProviderV1>
         if revocation.authority_id != authority.principal().principal_id {
             return Err(ProductionLedgerError::PrincipalMismatch);
         }
-        if revocation.reason_digest != evidence.payload_digest {
-            return Err(ProductionLedgerError::SupportDigestMismatch);
-        }
         self.append_event(
             expected_anchor.chain_digest,
             LedgerEvent::Revocation(revocation),
@@ -359,10 +356,6 @@ impl<J: DurableLearningJournal, T: LearningEvidenceTrustProviderV1>
         if lineage.authority_id != authority.principal().principal_id {
             return Err(ProductionLedgerError::PrincipalMismatch);
         }
-        if lineage.reason_digest != evidence.payload_digest {
-            return Err(ProductionLedgerError::SupportDigestMismatch);
-        }
-
         let record_id = lineage.record_id.clone();
         let source_record_id = lineage.source_record_id.clone();
         let derived_id = lineage.derived_id.clone();
