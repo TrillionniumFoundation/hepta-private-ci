@@ -261,6 +261,7 @@ async fn sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deleti
     let directory = tempfile::tempdir().unwrap();
     let fleet = directory.path().join("fleet");
     std::fs::create_dir(&fleet).unwrap();
+    let fleet = fleet.canonicalize().unwrap();
     let layout = HeptaFleetRoot::parse(fleet)
         .unwrap()
         .layout()
