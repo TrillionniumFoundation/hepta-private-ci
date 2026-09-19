@@ -658,7 +658,6 @@ pub fn collect_snapshot(
     request.required_owner_ids.sort();
     reject_duplicate_ids(&request.required_owner_ids, PlannerError::DuplicateOwner)?;
     let required_owner_set_digest = digest_owner_set(&request.required_owner_ids);
-    let required_owner_ids: BTreeSet<_> = request.required_owner_ids.iter().cloned().collect();
     owner_summaries.sort_by(|left, right| left.owner_id.cmp(&right.owner_id));
     for window in owner_summaries.windows(2) {
         if window[0].owner_id == window[1].owner_id {
@@ -691,15 +690,12 @@ pub fn collect_snapshot(
             .collected_at_micros
             .checked_sub(summary.observed_at_micros)
             .ok_or(PlannerError::Arithmetic)?;
-        if required_owner_ids.contains(&summary.owner_id)
-            && (summary.expires_at_micros <= request.collected_at_micros
-                || age > request.maximum_owner_age_micros)
+        if summary.expires_at_micros <= request.collected_at_micros
+            || age > request.maximum_owner_age_micros
         {
             stale_owner_ids.push(summary.owner_id.clone());
         }
-        if required_owner_ids.contains(&summary.owner_id)
-            && summary.readiness != OwnerReadinessV1::Ready
-        {
+        if summary.readiness != OwnerReadinessV1::Ready {
             unavailable_owner_ids.push(summary.owner_id.clone());
         }
         expiry = expiry.min(summary.expires_at_micros);
