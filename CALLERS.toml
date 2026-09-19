@@ -16,8 +16,10 @@ required_boundary_ids = [
   "final_use_claim",
   "final_use_claim_raw",
   "final_use_delivery",
+  "final_use_delivery_witness",
   "final_use_delivery_raw",
   "final_use_dispatch",
+  "final_use_dispatch_witness",
   "final_use_dispatch_raw",
   "final_use_revocation_update",
   "final_use_approval_trust",
@@ -38,6 +40,7 @@ required_boundary_ids = [
   "authority_lease_epoch_advance",
   "authority_lease_verify_use",
   "authority_lease_delivery",
+  "authority_lease_delivery_witness",
 ]
 
 [[boundary]]
@@ -114,6 +117,14 @@ product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs"]
 caller_markers = ["deliver_final_use", "deliver_final_use(authority, verified, &binding", "ConsumerIndeterminate"]
 
 [[boundary]]
+id = "final_use_delivery_witness"
+symbol = "deliver_final_use_with_witness"
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn deliver_final_use_with_witness", "VerifiedUseTokenWitnessV1", "ConsumerEntry"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
 id = "final_use_delivery_raw"
 symbol = "FinalUseAuthority::with_verified_use"
 call_pattern = "authority\\s*\\.\\s*with_verified_use\\s*\\("
@@ -127,6 +138,14 @@ id = "final_use_dispatch"
 symbol = "dispatch_final_use"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn dispatch_final_use", "HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DISPATCH", "with_dispatch_boundary"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "final_use_dispatch_witness"
+symbol = "dispatch_final_use_with_witness"
+definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
+definition_markers = ["pub fn dispatch_final_use_with_witness", "VerifiedUseTokenWitnessV1", "DispatchEntry"]
 product_callers = []
 caller_markers = []
 
@@ -298,6 +317,14 @@ definition_markers = ["pub fn with_verified_use", "Arc::ptr_eq", "drop(state)"]
 product_callers = ["codex-rs/hepta-fleet/src/authority_port.rs"]
 caller_markers = ["AuthorityLeaseVerifier", ".with_verified_use(", "FleetAuthorityPort"]
 
+[[boundary]]
+id = "authority_lease_delivery_witness"
+symbol = "deliver_authority_lease_with_witness"
+definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
+definition_markers = ["pub fn deliver_authority_lease_with_witness", "VerifiedUseTokenWitnessV1", "validate_token_live_witness"]
+product_callers = []
+caller_markers = []
+
 [[protected_file]]
 path = "codex-rs/hepta-supervisor/src/main.rs"
 required = ["run_supervisord_with_grant_verifier", "H7H89ProductionGrantVerifier", "run_supervisord"]
@@ -315,7 +342,7 @@ forbidden = ["impl Default for HttpProviderEffectAdapter"]
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/final_use.rs"
-required = ["pub fn open_state_dir(", "pub fn open_state_dir_with_trust(", "pub fn open_state_dir_with_issuer_keys(", "FinalUseIssuerTrustKey", "pub fn claim_final_use(", "pub fn deliver_final_use", "pub fn dispatch_final_use", "pub fn claim(", "pub fn with_verified_use", "pub fn with_dispatch_boundary", "FinalUseFrontier", "verify_strict", "validate_live"]
+required = ["pub fn open_state_dir(", "pub fn open_state_dir_with_trust(", "pub fn open_state_dir_with_issuer_keys(", "FinalUseIssuerTrustKey", "pub fn claim_final_use(", "pub fn deliver_final_use", "pub fn deliver_final_use_with_witness", "pub fn dispatch_final_use", "pub fn dispatch_final_use_with_witness", "pub fn claim(", "pub fn with_verified_use", "pub fn with_dispatch_boundary", "FinalUseFrontier", "VerifiedUseTokenWitnessV1", "verify_strict", "validate_live"]
 forbidden = ["impl Default for FinalUseAuthority", "pub fn permit_all"]
 
 [[protected_file]]
@@ -325,7 +352,7 @@ forbidden = ["impl Default for FinalUseApprovalVerifier", "impl Default for Fina
 
 [[protected_file]]
 path = "codex-rs/hepta-contracts/src/authority_lease.rs"
-required = ["pub struct AuthorityLeaseRegistry", "pub struct AuthorityLeaseVerifier", "pub fn open_state_dir_with_trust(", "pub fn verifier(", "pub fn verify_use(", "pub fn revoke(", "pub fn prune_expired_leases(", "AntiRollbackViolation", "pub fn advance_epoch("]
+required = ["pub struct AuthorityLeaseRegistry", "pub struct AuthorityLeaseVerifier", "pub fn open_state_dir_with_trust(", "pub fn verifier(", "pub fn verify_use(", "pub fn deliver_authority_lease_with_witness", "VerifiedUseTokenWitnessV1", "pub fn revoke(", "pub fn prune_expired_leases(", "AntiRollbackViolation", "pub fn advance_epoch("]
 forbidden = ["impl Default for AuthorityLeaseRegistry", "permit_all"]
 
 [[protected_file]]
