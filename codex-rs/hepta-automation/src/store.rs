@@ -373,9 +373,9 @@ impl AutomationStore {
         }
         let rows = sqlx::query(
             "SELECT r.task_id, r.occurrence, r.occurrence_id, r.schedule_revision,
-                    r.scheduled_for_ms, r.client_user_message_id,
-                    r.queued_submission_id, r.taskflow_run_id, r.provider_turn_id,
-                    r.submitted_at_ms, t.thread_id, t.prompt
+                    r.taskflow_step_attempt, r.scheduled_for_ms, r.client_user_message_id,
+                    r.queued_submission_id, r.taskflow_run_id, r.taskflow_step_attempt,
+                    r.provider_turn_id, r.submitted_at_ms, t.thread_id, t.prompt
              FROM automation_runs r
              JOIN automation_tasks t ON t.task_id = r.task_id
              WHERE t.owner_agent_id = ? AND r.state = 'submitted'
@@ -394,6 +394,10 @@ impl AutomationStore {
                 let occurrence = to_u64(row.try_get("occurrence").map_err(unavailable)?)?;
                 let schedule_revision =
                     to_u64(row.try_get("schedule_revision").map_err(unavailable)?)?;
+                let taskflow_step_attempt = u32::try_from(to_u64(
+                    row.try_get("taskflow_step_attempt").map_err(unavailable)?,
+                )?)
+                .map_err(|_| AutomationError::Corrupt)?;
                 let scheduled_for_ms =
                     to_u64(row.try_get("scheduled_for_ms").map_err(unavailable)?)?;
                 let raw_occurrence_id: String =
@@ -427,6 +431,13 @@ impl AutomationStore {
                         .try_get::<Option<String>, _>("taskflow_run_id")
                         .map_err(unavailable)?
                         .ok_or(AutomationError::Corrupt)?,
+                    taskflow_step_attempt: u32::try_from(
+                        to_u64(
+                            row.try_get("taskflow_step_attempt")
+                                .map_err(unavailable)?,
+                        )?,
+                    )
+                    .map_err(|_| AutomationError::Corrupt)?,
                     provider_turn_id: row.try_get("provider_turn_id").map_err(unavailable)?,
                     submitted_at_ms: submitted_at_ms
                         .map(to_u64)
@@ -762,8 +773,15 @@ impl AutomationStore {
         .await
         .map_err(unavailable)?;
 
-        let (task_id, occurrence, occurrence_id, schedule_revision, scheduled_for_ms, client_id) =
-            if let Some(row) = reclaim {
+        let (
+            task_id,
+            occurrence,
+            occurrence_id,
+            schedule_revision,
+            taskflow_step_attempt,
+            scheduled_for_ms,
+            client_id,
+        ) = if let Some(row) = reclaim {
                 let task_id = AutomationTaskId::parse(
                     &row.try_get::<String, _>("task_id").map_err(unavailable)?,
                 )
@@ -804,6 +822,7 @@ impl AutomationStore {
                     occurrence,
                     occurrence_id,
                     schedule_revision,
+                    taskflow_step_attempt,
                     scheduled_for_ms,
                     row.try_get("client_user_message_id").map_err(unavailable)?,
                 )
@@ -897,6 +916,7 @@ impl AutomationStore {
                     occurrence,
                     occurrence_id,
                     schedule_revision,
+                    1,
                     scheduled_for_ms,
                     client_id,
                 )
@@ -933,6 +953,7 @@ impl AutomationStore {
             occurrence,
             occurrence_id,
             schedule_revision,
+            taskflow_step_attempt,
             scheduled_for_ms,
             client_user_message_id: client_id,
             lease_generation: generation,
