@@ -346,7 +346,18 @@ impl AgentRunCoordinator {
             .runs
             .get_mut(run_id)
             .ok_or(AgentRunError::RunNotFound)?;
-        if record.snapshot.objective_digest != envelope.objective_digest.to_string() {
+        let deadline_ms = envelope
+            .deadline_unix_micros
+            .checked_add(999)
+            .ok_or(AgentRunError::ArithmeticOverflow)?
+            / 1_000;
+        if record.snapshot.request_digest != envelope.request_digest.to_string()
+            || record.snapshot.objective_digest != envelope.objective_digest.to_string()
+            || record.snapshot.body_digest != envelope.body_digest.to_string()
+            || record.snapshot.artifact_set_digest != envelope.artifact_set_digest.to_string()
+            || record.snapshot.authority_epoch != envelope.authority_epoch
+            || record.snapshot.deadline_ms != deadline_ms
+        {
             return Err(AgentRunError::MixedSnapshot);
         }
         let context_digest = envelope.context_digest.to_string();
