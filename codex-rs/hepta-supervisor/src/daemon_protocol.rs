@@ -51,6 +51,7 @@ impl SupervisordRequest {
                 }
             }
             SupervisordMethod::Start { fence, .. }
+            | SupervisordMethod::StartAllocated { fence, .. }
             | SupervisordMethod::Drain { fence }
             | SupervisordMethod::Stop { fence }
             | SupervisordMethod::Kill { fence }
@@ -86,6 +87,13 @@ pub enum SupervisordMethod {
     Start {
         fence: SupervisordControlFence,
         release_id: ReleaseId,
+    },
+    /// Start only after the supervisor revalidates the named durable
+    /// runtime.fleet allocation grant against the registered Agent budget.
+    StartAllocated {
+        fence: SupervisordControlFence,
+        release_id: ReleaseId,
+        allocation_id: String,
     },
     Drain {
         fence: SupervisordControlFence,
