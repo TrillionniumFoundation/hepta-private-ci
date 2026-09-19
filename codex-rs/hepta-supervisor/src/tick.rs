@@ -19,6 +19,10 @@ use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
+use crate::restart_budget::RestartDecision;
+use crate::restart_budget::clear_pending;
+use crate::restart_budget::restore_pending;
+use crate::restart_budget::schedule;
 
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn tick_slot(
@@ -57,6 +61,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         {
             slot.auto_restart_pending = false;
             slot.restart_retry_at = None;
+            let record = self.record(agent_id)?;
+            clear_pending(record.layout.run_root(), &agent_id.to_string())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             let release = match slot.active_release.as_ref() {
                 Some(active) if active.identity() != "unversioned" => {
                     let release_id = ReleaseId::parse(active.identity().to_string())?;
@@ -251,43 +258,65 @@ impl<D: ProcessDriver> Supervisor<D> {
         Ok(())
     }
 
-    fn schedule_auto_restart(
+    pub(crate) fn schedule_auto_restart(
         &self,
-        _agent_id: &AgentId,
+        agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
         generation: u64,
         now: Instant,
     ) -> Result<(), SupervisorError> {
-        while slot
-            .restart_attempts
-            .front()
-            .is_some_and(|attempt| now.duration_since(*attempt) >= self.config.restart_window)
+        let record = self.record(agent_id)?;
+        match schedule(
+            record.layout.run_root(),
+            &agent_id.to_string(),
+            self.config.restart_window,
+            self.config.restart_backoff_base,
+            self.config.max_restart_attempts,
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         {
-            slot.restart_attempts.pop_front();
+            RestartDecision::Exhausted => {
+                slot.auto_restart_pending = false;
+                slot.restart_retry_at = None;
+                slot.event(generation, SupervisorEventKind::RestartBudgetExhausted);
+            }
+            RestartDecision::Scheduled { attempt, delay } => {
+                slot.restart_retry_at = Some(deadline(now, delay)?);
+                slot.auto_restart_pending = true;
+                let delay_ms = u64::try_from(delay.as_millis()).unwrap_or(u64::MAX);
+                slot.event(
+                    generation,
+                    SupervisorEventKind::AutoRestartQueued { attempt, delay_ms },
+                );
+            }
         }
-        if slot.restart_attempts.len() >= usize::from(self.config.max_restart_attempts) {
+        Ok(())
+    }
+
+    pub(crate) fn restore_restart_budget(
+        &self,
+        agent_id: &AgentId,
+        slot: &mut AgentSlot<D::Process>,
+        now: Instant,
+    ) -> Result<(), SupervisorError> {
+        let record = self.record(agent_id)?;
+        if slot.runtime.is_some() || record.lifecycle.lifecycle != AgentLifecycle::Failed {
+            clear_pending(record.layout.run_root(), &agent_id.to_string())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             slot.auto_restart_pending = false;
             slot.restart_retry_at = None;
-            slot.event(generation, SupervisorEventKind::RestartBudgetExhausted);
             return Ok(());
         }
-        slot.restart_attempts.push_back(now);
-        let attempt = u8::try_from(slot.restart_attempts.len()).unwrap_or(u8::MAX);
-        let shift = u32::from(attempt.saturating_sub(1)).min(10);
-        let factor = 1_u32 << shift;
-        let delay = self
-            .config
-            .restart_backoff_base
-            .checked_mul(factor)
-            .unwrap_or(self.config.restart_window)
-            .min(self.config.restart_window);
-        slot.restart_retry_at = Some(deadline(now, delay)?);
-        slot.auto_restart_pending = true;
-        let delay_ms = u64::try_from(delay.as_millis()).unwrap_or(u64::MAX);
-        slot.event(
-            generation,
-            SupervisorEventKind::AutoRestartQueued { attempt, delay_ms },
-        );
+        if let Some(remaining) = restore_pending(
+            record.layout.run_root(),
+            &agent_id.to_string(),
+            self.config.restart_window,
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        {
+            slot.auto_restart_pending = true;
+            slot.restart_retry_at = Some(deadline(now, remaining)?);
+        }
         Ok(())
     }
 
