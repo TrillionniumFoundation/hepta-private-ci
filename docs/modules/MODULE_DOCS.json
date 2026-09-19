@@ -946,6 +946,7 @@
         "NduBoundaryConditionV1",
         "NduWellPosednessCertificateV1",
         "ObjectiveFunctionV1",
+        "OutcomeSignalV1",
         "OutcomeWatermarkV1",
         "RandomStreamManifestV1",
         "RunStartSnapshotV1"
@@ -959,6 +960,7 @@
         "NduUpdateReceiptV1",
         "NduWellPosednessCertificateV1",
         "ObjectiveFunctionV1",
+        "OutcomeSignalV1",
         "OutcomeWatermarkV1",
         "RandomStreamManifestV1",
         "RunStartSnapshotV1"
@@ -1034,21 +1036,25 @@
         "DomainRead::inference_reservationV1",
         "DomainRead::learning_artifact_registryV1",
         "DomainRead::operator_sensor_core_registryV1",
+        "EngramNodeV1",
         "GoldenFixtureManifestV1",
         "ModulePort::cognitive.read::neuron.runtime",
         "ModulePort::inference.control::neuron.runtime",
         "ModulePort::learning.artifacts::neuron.runtime",
         "ModulePort::platform.types::neuron.runtime",
         "RandomStreamManifestV1",
-        "RunStartSnapshotV1"
+        "RunStartSnapshotV1",
+        "SynapseV1"
       ],
       "protocols": [
+        "EngramNodeV1",
         "GoldenFixtureManifestV1",
         "LocalModelRuntimeReceiptV1",
         "NeuronCheckpointV1",
         "NeuronSignalReceiptV1",
         "RandomStreamManifestV1",
-        "RunStartSnapshotV1"
+        "RunStartSnapshotV1",
+        "SynapseV1"
       ],
       "ownedDomains": [
         "eligibility_trace_checkpoint",
@@ -1364,6 +1370,7 @@
         "PromptPortfolioReceiptV1",
         "PromptPricingReceiptV1",
         "PromptRealizationV1",
+        "RecallPacketV1",
         "RunStartSnapshotV1"
       ],
       "protocols": [
@@ -1374,6 +1381,7 @@
         "PromptPortfolioReceiptV1",
         "PromptPricingReceiptV1",
         "PromptRealizationV1",
+        "RecallPacketV1",
         "RunStartSnapshotV1"
       ],
       "ownedDomains": [],
@@ -1568,13 +1576,22 @@
         "ModulePort::cognitive.store::knowledge.graph"
       ],
       "consumedContracts": [
+        "CrossModalBindingV1",
         "DomainRead::cross_owner_outboxV1",
         "DomainRead::operation_ledgerV1",
+        "ForgetPropagationReceiptV1",
+        "MemoryEventV1",
+        "ModalitySpanRefV1",
         "ModulePort::cognitive.types::cognitive.store",
         "ModulePort::kernel.operations::cognitive.store",
         "OperationIntentV1"
       ],
-      "protocols": [],
+      "protocols": [
+        "CrossModalBindingV1",
+        "ForgetPropagationReceiptV1",
+        "MemoryEventV1",
+        "ModalitySpanRefV1"
+      ],
       "ownedDomains": [
         "knowledge_fact_ledger",
         "memory_ledger"
@@ -1628,9 +1645,14 @@
         "ModulePort::cognitive.read::utility.ndu"
       ],
       "consumedContracts": [
+        "MemoryEventV1",
+        "ModalitySpanRefV1",
         "ModulePort::cognitive.types::cognitive.read"
       ],
-      "protocols": [],
+      "protocols": [
+        "MemoryEventV1",
+        "ModalitySpanRefV1"
+      ],
       "ownedDomains": [],
       "readDomains": [],
       "workPackages": [
@@ -1673,10 +1695,19 @@
       "consumedContracts": [
         "DomainRead::knowledge_graph_projectionV1",
         "DomainRead::prompt_factor_graph_projectionV1",
+        "EngramNodeV1",
+        "MemoryCueV1",
         "ModulePort::cognitive.read::memory.retrieval",
-        "ModulePort::knowledge.graph::memory.retrieval"
+        "ModulePort::knowledge.graph::memory.retrieval",
+        "RecallPacketV1",
+        "SynapseV1"
       ],
-      "protocols": [],
+      "protocols": [
+        "EngramNodeV1",
+        "MemoryCueV1",
+        "RecallPacketV1",
+        "SynapseV1"
+      ],
       "ownedDomains": [],
       "readDomains": [
         "knowledge_graph_projection",
@@ -1768,18 +1799,28 @@
         "ModulePort::knowledge.graph::memory.retrieval"
       ],
       "consumedContracts": [
+        "CrossModalBindingV1",
         "DomainRead::knowledge_fact_ledgerV1",
         "DomainRead::memory_ledgerV1",
         "DomainRead::prompt_factor_lifecycleV1",
         "DomainRead::prompt_factor_registryV1",
         "DomainRead::prompt_realization_registryV1",
+        "EngramNodeV1",
+        "ForgetPropagationReceiptV1",
+        "MemoryEventV1",
         "ModulePort::cognitive.store::knowledge.graph",
         "ModulePort::cognitive.types::knowledge.graph",
         "ModulePort::prompt.registry::knowledge.graph",
-        "PromptFactorV1"
+        "PromptFactorV1",
+        "SynapseV1"
       ],
       "protocols": [
-        "PromptFactorV1"
+        "CrossModalBindingV1",
+        "EngramNodeV1",
+        "ForgetPropagationReceiptV1",
+        "MemoryEventV1",
+        "PromptFactorV1",
+        "SynapseV1"
       ],
       "ownedDomains": [
         "knowledge_graph_projection",
@@ -1831,10 +1872,15 @@
       "consumedContracts": [
         "DomainRead::cross_owner_outboxV1",
         "DomainRead::operation_ledgerV1",
+        "ForgetPropagationReceiptV1",
         "ModulePort::cognitive.read::compact.engine",
-        "ModulePort::kernel.operations::compact.engine"
+        "ModulePort::kernel.operations::compact.engine",
+        "ReplaySelectionReceiptV1"
       ],
-      "protocols": [],
+      "protocols": [
+        "ForgetPropagationReceiptV1",
+        "ReplaySelectionReceiptV1"
+      ],
       "ownedDomains": [
         "compact_checkpoint"
       ],
@@ -1894,8 +1940,10 @@
         "ContextCompilationReceiptV1",
         "DomainRead::cross_owner_outboxV1",
         "DomainRead::operation_ledgerV1",
+        "ForgetPropagationReceiptV1",
         "IntuitionDecisionReceiptV1",
         "LegalActionCandidateSetV1",
+        "MemoryTopologyProposalV1",
         "ModulePort::cognitive.types::learning.ledger",
         "ModulePort::kernel.operations::learning.ledger",
         "ModulePort::platform.types::learning.ledger",
@@ -1904,11 +1952,14 @@
         "NduUpdateReceiptV1",
         "NeuronSignalReceiptV1",
         "ObjectiveFunctionV1",
+        "OutcomeSignalV1",
+        "PlasticityBatchV1",
         "PromptCandidateSetReceiptV1",
         "PromptDeliveryObservationV1",
         "PromptExerciseDecisionV1",
         "PromptPortfolioReceiptV1",
         "PromptPricingReceiptV1",
+        "ReplaySelectionReceiptV1",
         "RunStartSnapshotV1"
       ],
       "protocols": [
@@ -1916,22 +1967,27 @@
         "ContextCompilationReceiptV1",
         "CreditAssignmentReceiptV1",
         "DatasetSnapshotV1",
+        "ForgetPropagationReceiptV1",
         "IntuitionDecisionReceiptV1",
         "LearningDecisionV1",
         "LearningEpisodeV1",
         "LegalActionCandidateSetV1",
+        "MemoryTopologyProposalV1",
         "NduPreferenceStateV1",
         "NduSummaryReceiptV1",
         "NduUpdateReceiptV1",
         "NeuronSignalReceiptV1",
         "ObjectiveFunctionV1",
         "OutcomeReceiptV1",
+        "OutcomeSignalV1",
         "OutcomeWatermarkV1",
+        "PlasticityBatchV1",
         "PromptCandidateSetReceiptV1",
         "PromptDeliveryObservationV1",
         "PromptExerciseDecisionV1",
         "PromptPortfolioReceiptV1",
         "PromptPricingReceiptV1",
+        "ReplaySelectionReceiptV1",
         "RunStartSnapshotV1"
       ],
       "ownedDomains": [
@@ -2010,6 +2066,7 @@
         "OperatorApplicabilityCertificateV1",
         "OperatorSensorCoreManifestV1",
         "OutcomeReceiptV1",
+        "OutcomeSignalV1",
         "OutcomeWatermarkV1",
         "RandomStreamManifestV1",
         "RegularityProfileV1",
@@ -2025,6 +2082,7 @@
         "OperatorApplicabilityCertificateV1",
         "OperatorSensorCoreManifestV1",
         "OutcomeReceiptV1",
+        "OutcomeSignalV1",
         "OutcomeWatermarkV1",
         "RandomStreamManifestV1",
         "RegularityProfileV1",
@@ -2268,6 +2326,7 @@
         "NduCoefficientManifestV1",
         "NduWellPosednessCertificateV1",
         "OperatorApplicabilityCertificateV1",
+        "PlasticityBatchV1",
         "PlasticityProposalV1",
         "RegularityProfileV1",
         "SupportAuditReceiptV1",
@@ -2288,6 +2347,7 @@
         "NduWellPosednessCertificateV1",
         "OperatorApplicabilityCertificateV1",
         "OperatorSensorCoreManifestV1",
+        "PlasticityBatchV1",
         "PlasticityProposalV1",
         "RegularityProfileV1",
         "SupportAuditReceiptV1",
@@ -2365,16 +2425,20 @@
         "DomainRead::operator_sensor_core_registryV1",
         "DomainRead::qualification_evidenceV1",
         "IterationEnvelopeV1",
+        "MemoryTopologyProposalV1",
         "ModulePort::kernel.evidence::learning.plasticity",
         "ModulePort::learning.artifacts::learning.plasticity",
         "ModulePort::learning.eval::learning.plasticity",
         "NeuronCheckpointV1",
+        "PlasticityBatchV1",
         "RandomStreamManifestV1"
       ],
       "protocols": [
         "IterationCandidateV1",
         "IterationEnvelopeV1",
+        "MemoryTopologyProposalV1",
         "NeuronCheckpointV1",
+        "PlasticityBatchV1",
         "PlasticityProposalV1",
         "RandomStreamManifestV1",
         "TopologyProposalV1"
@@ -2768,6 +2832,7 @@
         "DomainRead::qualification_evidenceV1",
         "IndependentDecisionReceiptV1",
         "IterationCandidateV1",
+        "MemoryTopologyProposalV1",
         "ModulePort::kernel.evidence::control.engineering",
         "PlasticityProposalV1",
         "TopologyProposalV1"
@@ -2778,6 +2843,7 @@
         "IndependentDecisionReceiptV1",
         "IterationCandidateV1",
         "IterationEnvelopeV1",
+        "MemoryTopologyProposalV1",
         "PlasticityProposalV1",
         "TopologyProposalV1"
       ],
