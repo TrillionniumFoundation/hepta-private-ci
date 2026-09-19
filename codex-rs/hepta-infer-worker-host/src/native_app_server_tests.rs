@@ -389,3 +389,31 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     output.status = NativeRunStatus::Interrupted;
     assert!(!output.succeeded());
 }
+
+
+#[test]
+fn late_completed_cannot_upgrade_cancelled_or_timed_out_boundary() {
+    for boundary_status in [
+        NativeBoundaryStatus::Cancelled,
+        NativeBoundaryStatus::TimedOut,
+    ] {
+        let mut value = output();
+        value.boundary_status = boundary_status;
+        value.stop_reason = Some(match boundary_status {
+            NativeBoundaryStatus::Cancelled => LOCAL_CANCELLED.to_string(),
+            NativeBoundaryStatus::TimedOut => LOCAL_DEADLINE_ELAPSED.to_string(),
+            _ => unreachable!(),
+        });
+        assert!(
+            observe_for_test(
+                &mut value,
+                terminal("thread-a", "turn-a", TurnStatus::Completed),
+            )
+            .unwrap()
+        );
+        assert_eq!(value.status, NativeRunStatus::Completed);
+        assert_eq!(value.boundary_status, boundary_status);
+        assert!(value.terminal_observed);
+        assert!(!value.succeeded());
+    }
+}
