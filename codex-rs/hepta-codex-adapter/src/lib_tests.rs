@@ -1,57 +1,148 @@
+use codex_app_server_client::AppServerEvent;
+use codex_app_server_client::RemoteAppServerObservedEvent;
+use codex_app_server_client::RemoteAppServerObservedServerError;
+use codex_app_server_protocol::JSONRPCErrorError;
+use codex_app_server_protocol::RequestId;
+use codex_app_server_protocol::ServerNotification;
+use codex_app_server_protocol::Turn;
+use codex_app_server_protocol::TurnCompletedNotification;
+use codex_app_server_protocol::TurnItemsView;
+use serde_json::json;
+
 use super::*;
 
-fn id(value: &str) -> StableId {
-    let Ok(value) = StableId::new(value) else {
-        panic!("test identifier must be valid");
-    };
-    value
-}
+const CONNECTION_ID: u64 = 17;
+const SERVER_VERSION: &str = "1.2.3";
+const CODEX_HOME: &str = "/tmp/hepta-agent-home";
 
-fn digest(value: &[u8]) -> Digest32 {
-    Digest32::of_bytes(value)
-}
+fn id(v: &str) -> StableId { StableId::new(v).expect("valid id") }
+fn digest(v: &[u8]) -> Digest32 { Digest32::of_bytes(v) }
 
-fn intent() -> CodexOperationIntent {
+pub(super) fn product_intent() -> CodexOperationIntent {
+    let payload = digest(b"physical-turn-start-payload");
     CodexOperationIntent {
-        operation_id: id("operation:1"),
-        thread_id: id("thread:1"),
-        method_id: id("method:1"),
-        payload_digest: digest(b"payload"),
-        lease_payload_digest: digest(b"payload"),
-        deadline_ms: 2_000,
+        operation_id: id("operation:test"),
+        thread_id: id("thread:test"),
+        method_id: id(TURN_START_METHOD_ID),
+        payload_digest: payload,
+        lease_payload_digest: payload,
+        deadline_ms: 10_000,
+        app_server_binding: Some(AppServerRequestBinding {
+            source_admission_digest: digest(b"durable-source-admission"),
+            agent_generation: Generation::new(7).expect("generation"),
+            protocol_id: id(APP_SERVER_V2_PROTOCOL_ID),
+            app_server_version: SERVER_VERSION.to_string(),
+            codex_home_digest: digest(CODEX_HOME.as_bytes()),
+            connection_id: CONNECTION_ID,
+        }),
+    }
+}
+
+pub(super) fn terminal(status: TurnStatus) -> RemoteAppServerObservedEvent {
+    RemoteAppServerObservedEvent::from_test_event(
+        AppServerEvent::ServerNotification(Box::new(ServerNotification::TurnCompleted(
+            TurnCompletedNotification {
+                thread_id: "thread:test".to_string(),
+                turn: Turn {
+                    id: "turn:test".to_string(),
+                    items: Vec::new(),
+                    items_view: TurnItemsView::NotLoaded,
+                    error: None,
+                    status,
+                    started_at: None,
+                    completed_at: None,
+                    duration_ms: None,
+                },
+            },
+        ))),
+        CONNECTION_ID,
+        Some(SERVER_VERSION.to_string()),
+        Some(CODEX_HOME.to_string()),
+    )
+}
+
+#[test]
+fn terminal_outcomes_remain_distinct_and_authority_free() {
+    for (turn_status, expected) in [
+        (TurnStatus::Completed, AdapterStatus::Succeeded),
+        (TurnStatus::Failed, AdapterStatus::Failed),
+        (TurnStatus::Interrupted, AdapterStatus::Interrupted),
+    ] {
+        let receipt = adapt_observed_event(&product_intent(), &id("turn:test"), &terminal(turn_status))
+            .unwrap().unwrap();
+        assert_eq!(receipt.status, expected);
+        assert!(receipt.correlation_digest.is_some());
+        assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
     }
 }
 
 #[test]
-fn exact_terminal_observation_maps_without_authority() {
-    let observation = AppServerObservation {
-        terminal_observed: true,
-        response_digest: digest(b"response"),
-    };
-    let Ok(receipt) = adapt(1_000, intent(), Some(observation)) else {
-        panic!("terminal observation must succeed");
-    };
-    assert_eq!(receipt.status, AdapterStatus::Succeeded);
-    assert!(!receipt.model_authority);
-    assert!(!receipt.provider_authority);
-    assert!(!receipt.authority.grants_any());
+fn payload_drift_fails_closed() {
+    let mut intent = product_intent();
+    intent.lease_payload_digest = digest(b"other");
+    assert_eq!(adapt_request(1, intent), Err(Error::PayloadBindingMismatch));
 }
 
 #[test]
-fn missing_observation_is_indeterminate() {
-    let Ok(receipt) = adapt(1_000, intent(), None) else {
-        panic!("unknown outcome must be represented");
-    };
-    assert_eq!(receipt.status, AdapterStatus::Indeterminate);
-    assert_eq!(receipt.response_digest, None);
-}
-
-#[test]
-fn payload_drift_is_rejected() {
-    let mut value = intent();
-    value.lease_payload_digest = digest(b"other");
-    assert_eq!(
-        adapt(1_000, value, None),
-        Err(Error::PayloadBindingMismatch)
+fn terminal_witness_binds_connection_server_home_and_turn() {
+    let intent = product_intent();
+    let wrong = RemoteAppServerObservedEvent::from_test_event(
+        terminal(TurnStatus::Completed).event().clone(),
+        CONNECTION_ID + 1,
+        Some(SERVER_VERSION.to_string()),
+        Some(CODEX_HOME.to_string()),
     );
+    assert_eq!(
+        adapt_observed_event(&intent, &id("turn:test"), &wrong),
+        Err(Error::CorrelationMismatch("connection"))
+    );
+    assert_eq!(
+        adapt_observed_event(&intent, &id("turn:other"), &terminal(TurnStatus::Completed)),
+        Err(Error::CorrelationMismatch("turn"))
+    );
+}
+
+#[test]
+fn unbound_wire_intent_cannot_consume_terminal_witness() {
+    let mut intent = product_intent();
+    intent.app_server_binding = None;
+    assert_eq!(
+        adapt_observed_event(&intent, &id("turn:test"), &terminal(TurnStatus::Completed)),
+        Err(Error::ProductBindingRequired)
+    );
+}
+
+#[test]
+fn only_observed_overload_is_retry_safe() {
+    let overloaded = RemoteAppServerObservedServerError::from_test_error(
+        TURN_START_RPC_METHOD.to_string(),
+        RequestId::Integer(2),
+        JSONRPCErrorError {
+            code: OVERLOADED_ERROR_CODE,
+            message: "Server overloaded; retry later.".to_string(),
+            data: None,
+        },
+        CONNECTION_ID,
+        Some(SERVER_VERSION.to_string()),
+        Some(CODEX_HOME.to_string()),
+    );
+    let receipt = adapt_observed_server_rejection(&product_intent(), &overloaded).unwrap();
+    assert_eq!(receipt.status, AdapterStatus::Overloaded);
+    assert_eq!(receipt.retry_posture, RetryPosture::SafeBeforeAdmission);
+
+    let generic = RemoteAppServerObservedServerError::from_test_error(
+        TURN_START_RPC_METHOD.to_string(),
+        RequestId::Integer(2),
+        JSONRPCErrorError {
+            code: -32_602,
+            message: "invalid request".to_string(),
+            data: Some(json!({"field": "threadId"})),
+        },
+        CONNECTION_ID,
+        Some(SERVER_VERSION.to_string()),
+        Some(CODEX_HOME.to_string()),
+    );
+    let receipt = adapt_observed_server_rejection(&product_intent(), &generic).unwrap();
+    assert_eq!(receipt.status, AdapterStatus::Rejected);
+    assert_eq!(receipt.retry_posture, RetryPosture::Never);
 }
