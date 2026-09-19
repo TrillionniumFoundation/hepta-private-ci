@@ -50,6 +50,7 @@ pub enum RuntimeTopologyContractErrorV1 {
     RollbackPredecessorMismatch,
     CandidateShape,
     DeltaCount,
+    CandidateDigestMismatch,
     DuplicateModule(StableId),
     DuplicateRelatedModule(StableId),
     InvalidDelta(StableId),
@@ -93,6 +94,9 @@ impl RuntimeTopologyCandidateV1 {
 
         let mut by_module = BTreeMap::new();
         for delta in &self.deltas {
+            if delta.related_module_ids.len() > MAX_RUNTIME_TOPOLOGY_DELTAS_V1 {
+                return Err(RuntimeTopologyContractErrorV1::DeltaCount);
+            }
             if by_module.insert(delta.module_id.clone(), delta).is_some() {
                 return Err(RuntimeTopologyContractErrorV1::DuplicateModule(
                     delta.module_id.clone(),
@@ -182,8 +186,59 @@ impl RuntimeTopologyCandidateV1 {
                 _ => {}
             }
         }
+        // This DTO has public fields: callers must not be able to keep a
+        // selected digest while substituting a different implementation/delta.
+        if self.candidate_digest != self.content_digest()? {
+            return Err(RuntimeTopologyContractErrorV1::CandidateDigestMismatch);
+        }
         Ok(())
     }
+
+    /// Recompute the exact V3 proposal-candidate byte binding at the runtime
+    /// boundary. This is integrity verification, not selection authority.
+    pub fn content_digest(&self) -> Result<Digest32, RuntimeTopologyContractErrorV1> {
+        if self.deltas.len() > MAX_RUNTIME_TOPOLOGY_DELTAS_V1 {
+            return Err(RuntimeTopologyContractErrorV1::DeltaCount);
+        }
+        let mut bytes = b"hepta.plasticity.topology-candidate.v3".to_vec();
+        push_text(&mut bytes, self.candidate_id.as_str())?;
+        bytes.push(u8::from(self.changed));
+        push_length(&mut bytes, self.deltas.len())?;
+        for delta in &self.deltas {
+            if delta.related_module_ids.len() > MAX_RUNTIME_TOPOLOGY_DELTAS_V1 {
+                return Err(RuntimeTopologyContractErrorV1::DeltaCount);
+            }
+            push_text(&mut bytes, delta.module_id.as_str())?;
+            bytes.push(match delta.operation {
+                RuntimeTopologyOperationV1::Add => 0,
+                RuntimeTopologyOperationV1::Replace => 1,
+                RuntimeTopologyOperationV1::Retire => 2,
+                RuntimeTopologyOperationV1::Rewire => 3,
+                RuntimeTopologyOperationV1::Split => 4,
+                RuntimeTopologyOperationV1::Merge => 5,
+            });
+            push_length(&mut bytes, delta.related_module_ids.len())?;
+            for related in &delta.related_module_ids {
+                push_text(&mut bytes, related.as_str())?;
+            }
+            bytes.extend_from_slice(delta.predecessor_digest.as_array());
+            bytes.extend_from_slice(delta.candidate_digest.as_array());
+            bytes.extend_from_slice(delta.evidence_digest.as_array());
+        }
+        Ok(Digest32::of_bytes(&bytes))
+    }
+}
+
+fn push_length(bytes: &mut Vec<u8>, value: usize) -> Result<(), RuntimeTopologyContractErrorV1> {
+    let length = u32::try_from(value).map_err(|_| RuntimeTopologyContractErrorV1::DeltaCount)?;
+    bytes.extend_from_slice(&length.to_be_bytes());
+    Ok(())
+}
+
+fn push_text(bytes: &mut Vec<u8>, value: &str) -> Result<(), RuntimeTopologyContractErrorV1> {
+    push_length(bytes, value.len())?;
+    bytes.extend_from_slice(value.as_bytes());
+    Ok(())
 }
 
 #[cfg(test)]
@@ -199,7 +254,7 @@ mod tests {
     }
 
     fn candidate(deltas: Vec<RuntimeTopologyDeltaV1>) -> RuntimeTopologyCandidateV1 {
-        RuntimeTopologyCandidateV1 {
+        let mut value = RuntimeTopologyCandidateV1 {
             proposal_digest: digest("proposal"),
             candidate_id: id("candidate"),
             candidate_digest: digest("candidate"),
@@ -210,7 +265,9 @@ mod tests {
             rollback_predecessor_digest: digest("topology-7"),
             changed: !deltas.is_empty(),
             deltas,
-        }
+        };
+        value.candidate_digest = value.content_digest().expect("digest");
+        value
     }
 
     #[test]
@@ -240,5 +297,58 @@ mod tests {
         candidate(vec![split, added])
             .validate()
             .expect("bound split");
+    }
+
+    #[test]
+    fn selected_digest_cannot_hide_substituted_delta_content() {
+        let original = candidate(vec![RuntimeTopologyDeltaV1 {
+            module_id: id("module"),
+            operation: RuntimeTopologyOperationV1::Add,
+            related_module_ids: Vec::new(),
+            predecessor_digest: Digest32::ZERO,
+            candidate_digest: digest("reviewed-implementation"),
+            evidence_digest: digest("reviewed-evidence"),
+        }]);
+        original.validate().expect("original");
+        let mut changed = original.clone();
+        changed.deltas[0].candidate_digest = digest("substituted-implementation");
+        assert_eq!(
+            changed.validate(),
+            Err(RuntimeTopologyContractErrorV1::CandidateDigestMismatch)
+        );
+        changed = original.clone();
+        changed.deltas[0].evidence_digest = digest("other-evidence");
+        assert_eq!(
+            changed.validate(),
+            Err(RuntimeTopologyContractErrorV1::CandidateDigestMismatch)
+        );
+        changed = original;
+        changed.candidate_id = id("other-candidate");
+        assert_eq!(
+            changed.validate(),
+            Err(RuntimeTopologyContractErrorV1::CandidateDigestMismatch)
+        );
+    }
+
+    #[test]
+    fn related_module_bounds_are_checked_before_digest_allocation() {
+        let mut value = candidate(Vec::new());
+        value.changed = true;
+        value.deltas.push(RuntimeTopologyDeltaV1 {
+            module_id: id("module"),
+            operation: RuntimeTopologyOperationV1::Split,
+            related_module_ids: vec![id("child"); MAX_RUNTIME_TOPOLOGY_DELTAS_V1 + 1],
+            predecessor_digest: digest("old"),
+            candidate_digest: digest("new"),
+            evidence_digest: digest("evidence"),
+        });
+        assert_eq!(
+            value.validate(),
+            Err(RuntimeTopologyContractErrorV1::DeltaCount)
+        );
+        assert_eq!(
+            value.content_digest(),
+            Err(RuntimeTopologyContractErrorV1::DeltaCount)
+        );
     }
 }

@@ -56,6 +56,8 @@ pub enum RuntimeModuleSupervisorErrorV1 {
     SelectionArtifactMismatch,
     SelectionGenerationMismatch,
     SelectionPredecessorMismatch,
+    TopologyBaselineMismatch,
+    IncompleteWriterHandoff,
     MissingVerifiedSelection,
     RollbackSelectionMismatch,
     TopologyContract(RuntimeTopologyContractErrorV1),
@@ -112,8 +114,11 @@ impl RuntimeModuleSupervisorV1 {
     ) -> Result<RuntimeTopologySnapshotV1, RuntimeModuleSupervisorErrorV1> {
         let module_id = abi.module_id.clone();
         let generation = abi.generation;
-        self.registry.register_candidate(abi)?;
-        Ok(self.registry.activate_bootstrap(&module_id, generation)?)
+        let mut staged = self.registry.clone();
+        staged.register_candidate(abi)?;
+        let snapshot = staged.activate_bootstrap(&module_id, generation)?;
+        self.registry = staged;
+        Ok(snapshot)
     }
 
     /// Register a candidate into shadow only after consuming the opaque token
@@ -165,6 +170,16 @@ impl RuntimeModuleSupervisorV1 {
         }
 
         let receipt = selection.receipt();
+        // A valid historical selection is not authority over today's topology.
+        // Bind both the DTO and independent receipt to the exact serving graph.
+        if candidate.selected_topology_digest != self.registry.snapshot().digest
+            || receipt.predecessor_artifact_digest != candidate.selected_topology_digest
+        {
+            return Err(RuntimeModuleSupervisorErrorV1::TopologyBaselineMismatch);
+        }
+        if receipt.candidate_id != candidate.candidate_id {
+            return Err(RuntimeModuleSupervisorErrorV1::SelectionArtifactMismatch);
+        }
         if receipt.candidate_generation != candidate.candidate_generation {
             return Err(RuntimeModuleSupervisorErrorV1::SelectionGenerationMismatch);
         }
@@ -493,6 +508,25 @@ impl RuntimeModuleSupervisorV1 {
         canary_digest: Digest32,
         handoff: &WriterHandoffCheckpointV1,
     ) -> Result<RuntimeTopologySnapshotV1, RuntimeModuleSupervisorErrorV1> {
+        self.promote_after_writer_handoffs(
+            module_id,
+            generation,
+            canary_digest,
+            std::slice::from_ref(handoff),
+        )
+    }
+
+    /// Publish a same-owner replacement only after every owned domain has an
+    /// independently observed terminal handoff. One domain's receipt cannot
+    /// stand in for another. Domain-set changes require topology transfer /
+    /// initialization admission rather than silently dropping a writer fence.
+    pub fn promote_after_writer_handoffs(
+        &mut self,
+        module_id: &StableId,
+        generation: Generation,
+        canary_digest: Digest32,
+        handoffs: &[WriterHandoffCheckpointV1],
+    ) -> Result<RuntimeTopologySnapshotV1, RuntimeModuleSupervisorErrorV1> {
         let record = self
             .registry
             .record(module_id, generation)
@@ -501,33 +535,60 @@ impl RuntimeModuleSupervisorV1 {
             .abi
             .predecessor_generation
             .ok_or(RuntimeModuleSupervisorErrorV1::PredecessorMismatch)?;
-        if handoff.plan.target_writer != *module_id {
-            return Err(RuntimeModuleSupervisorErrorV1::ModuleMismatch);
-        }
-        if handoff.plan.new_generation != generation || handoff.plan.old_generation != predecessor {
-            return Err(RuntimeModuleSupervisorErrorV1::GenerationMismatch);
-        }
-        if handoff.rollback_predecessor() != record.abi.rollback_predecessor_digest {
-            return Err(RuntimeModuleSupervisorErrorV1::HandoffDigestMismatch);
-        }
-        if !record
-            .abi
-            .authoritative_domains
-            .contains(&handoff.plan.domain_id)
+        let previous = self
+            .registry
+            .record(module_id, predecessor)
+            .ok_or(RuntimeModuleSupervisorErrorV1::PredecessorMismatch)?;
+        if record.abi.authoritative_domains.is_empty()
+            || previous.abi.authoritative_domains != record.abi.authoritative_domains
+            || handoffs.len() != record.abi.authoritative_domains.len()
         {
-            return Err(RuntimeModuleSupervisorErrorV1::HandoffDomainMismatch);
+            return Err(RuntimeModuleSupervisorErrorV1::IncompleteWriterHandoff);
         }
-        if !handoff.new_writer_admission_open() || handoff.unknown_effect_count != 0 {
-            return Err(RuntimeModuleSupervisorErrorV1::HandoffNotTerminal);
+        let mut by_domain = BTreeMap::new();
+        for handoff in handoffs {
+            if handoff.plan.target_writer != *module_id || handoff.plan.source_writer != *module_id {
+                return Err(RuntimeModuleSupervisorErrorV1::ModuleMismatch);
+            }
+            if handoff.plan.new_generation != generation
+                || handoff.plan.old_generation != predecessor
+            {
+                return Err(RuntimeModuleSupervisorErrorV1::GenerationMismatch);
+            }
+            if handoff.rollback_predecessor() != record.abi.rollback_predecessor_digest {
+                return Err(RuntimeModuleSupervisorErrorV1::HandoffDigestMismatch);
+            }
+            if !record
+                .abi
+                .authoritative_domains
+                .contains(&handoff.plan.domain_id)
+                || by_domain
+                    .insert(handoff.plan.domain_id.clone(), handoff.receipt_digest)
+                    .is_some()
+            {
+                return Err(RuntimeModuleSupervisorErrorV1::HandoffDomainMismatch);
+            }
+            if !handoff.new_writer_admission_open()
+                || handoff.unknown_effect_count != 0
+                || handoff.receipt_digest.is_zero()
+            {
+                return Err(RuntimeModuleSupervisorErrorV1::HandoffNotTerminal);
+            }
         }
         let selection_digest = self.selection_digest(module_id, generation)?;
+        let mut bytes = b"hepta.runtime-module-handoff-set.v1".to_vec();
+        for (domain, receipt) in by_domain {
+            bytes.extend_from_slice(&(domain.as_str().len() as u32).to_be_bytes());
+            bytes.extend_from_slice(domain.as_str().as_bytes());
+            bytes.extend_from_slice(receipt.as_array());
+        }
         Ok(self.registry.promote_after_handoff(
             module_id,
             generation,
             RuntimeModulePromotionWitnessV1 {
                 selection_digest,
                 canary_digest,
-                handoff_digest: handoff.receipt_digest,
+                handoff_digest: Digest32::of_bytes(&bytes),
             },
         )?)
     }
@@ -724,3 +785,7 @@ mod tests {
         assert_eq!(snapshot.active[0].generation, generation(2));
     }
 }
+
+#[cfg(test)]
+#[path = "module_runtime_safety_tests.rs"]
+mod safety_tests;

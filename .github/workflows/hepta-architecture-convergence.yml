@@ -81,6 +81,16 @@ jobs:
           git diff --check
           printf 'TESTED_SHA=%s\n' "$CANDIDATE" >> "$GITHUB_ENV"
           printf 'HEPTA_CI_LANE=%s\n' "$LANE" >> "$GITHUB_ENV"
+      - name: Select exact-tree native execution
+        id: execution
+        env:
+          LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-command-records"
+          python3 -m unittest -v scripts.tests.test_hepta_ci_candidate
+          python3 scripts/hepta_ci_candidate.py --source "$SOURCE_SHA" --tested "$TESTED_SHA" --base "$BASE_SHA" --lane "$LANE" --github-output "$GITHUB_OUTPUT" | tee "$RUNNER_TEMP/hepta-command-records/candidate-tree.json"
       - name: Select affected architecture boundaries
         id: scope
         env:
@@ -133,7 +143,7 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/repository-controls.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_repository_controls
       - name: Inference owner regressions and streaming digest
-        if: matrix.lane == 'source-head' && steps.scope.outputs.inference == 'true'
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-types
@@ -141,13 +151,13 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-multiwriter-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core alternating_writers_replay_only_peer_deltas -- --ignored --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-maintenance-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --nocapture --test-threads=1
       - name: Durable operation and external-effect recovery
-        if: matrix.lane == 'source-head' && steps.scope.outputs.effects == 'true'
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/operations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operations
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/retirement.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --test retirement_recovery
       - name: Module lifecycle generations and migration rollback
-        if: matrix.lane == 'source-head' && steps.scope.outputs.lifecycle == 'true'
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/stateless-lifecycle.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane repeated_read_only_add_replace_retire_preserves_dispatch_and_generation_fences
@@ -158,16 +168,17 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-abi.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane module_runtime
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-supervisor.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor module_runtime
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/writer-handoff-generations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor writer_handoff
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-contract.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-types topology
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-proposal.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-plasticity topology_v3
       - name: Objective and prompt policy convergence
-        if: matrix.lane == 'source-head' && steps.scope.outputs.objective == 'true'
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.objective == 'true'
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/objective-contract.json" --minimum-tests 1 -- python3 -m unittest -v scripts.test_hepta_objective_contracts
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/objective.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-objective
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/prompt.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-prompt-optimizer
       - name: Prepare native prerequisites
-        if: matrix.lane == 'source-head' && steps.scope.outputs.native == 'true'
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
         run: |
           set -euo pipefail
           sudo apt-get update
@@ -177,22 +188,22 @@ jobs:
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           fi
       - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
-        if: matrix.lane == 'source-head' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
+        if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
       - name: Expose DotSlash for existing integration tests
-        if: matrix.lane == 'source-head' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
+        if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
         run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
-        if: matrix.lane == 'source-head' && steps.scope.outputs.native == 'true'
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
         with:
           tool: just@1.51.0,nextest@0.9.103
       - name: Resolve verified V8 artifacts
-        if: matrix.lane == 'source-head' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
+        if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
       - name: Verify Cargo lock resolution and print exact resolver drift
-        if: matrix.lane == 'source-head' && steps.scope.outputs.native == 'true'
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
         working-directory: codex-rs
         shell: bash
         run: |
@@ -216,13 +227,13 @@ jobs:
           fi
           exit "$locked_status"
       - name: Converged authority and browser semantics
-        if: matrix.lane == 'source-head' && steps.scope.outputs.effects == 'true'
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/final-use.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts --test final_use_linearization
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/browser.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd browser_servo
       - name: Selected-artifact adoption and explicit rollback
-        if: matrix.lane == 'source-head' && steps.scope.outputs.learning == 'true'
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.learning == 'true'
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selected-ranker.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it
@@ -230,11 +241,6 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/self-evolution-selection.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval self_evolution_selection
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selector-role.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger selector_role_is_explicit_and_independent_from_evaluator
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ledger.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger
-      - name: Prospective-merge structural compile
-        if: matrix.lane == 'base-merge' && steps.scope.outputs.native == 'true'
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/base-merge-structural.json" -- cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-fleet -p codex-hepta-control-plane -p codex-hepta-supervisor -p codex-hepta-plasticity -p codex-hepta-agentd
       - name: Derived-view drift
         if: steps.scope.outputs.derived == 'true'
         run: |
@@ -260,3 +266,17 @@ jobs:
           path: ${{ runner.temp }}/hepta-command-records/*
           if-no-files-found: error
           retention-days: 30
+
+  required:
+    name: Architecture required
+    if: ${{ always() }}
+    needs: qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require both exact-candidate lanes
+        env:
+          RESULT: ${{ needs.qualification.result }}
+        run: |
+          test "$RESULT" = success
+          echo "All applicable exact-candidate lanes succeeded; identical-tree reuse includes source-head success."

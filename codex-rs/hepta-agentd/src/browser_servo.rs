@@ -846,8 +846,11 @@ mod tests {
     fn harness() -> Harness {
         let state = tempfile::tempdir().expect("authority tempdir");
         let signing = SigningKey::from_bytes(&[7u8; 32]);
+        // Let the authority create its own private (0700) directory. The
+        // outer test workspace follows the process umask and is not authority
+        // storage; weakening the production directory check is not a fixture fix.
         let authority = FinalUseAuthority::open_state_dir(
-            state.path(),
+            &state.path().join("authority"),
             "browser-test-issuer".to_string(),
             signing.verifying_key().to_bytes(),
             FinalUseRevocations {

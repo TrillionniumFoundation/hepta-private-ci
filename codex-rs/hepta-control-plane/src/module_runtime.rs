@@ -111,7 +111,11 @@ impl RuntimeModulePromotionWitnessV1 {
         if self.selection_digest.is_zero() || self.canary_digest.is_zero() {
             return Err(RuntimeModuleRegistryError::MissingPromotionEvidence);
         }
-        if !abi.authoritative_domains.is_empty() && self.handoff_digest.is_zero() {
+        if (abi.state_class != RuntimeModuleStateClassV1::Stateless
+            || !abi.authoritative_domains.is_empty()
+            || !abi.effect_scope.is_empty())
+            && self.handoff_digest.is_zero()
+        {
             return Err(RuntimeModuleRegistryError::MissingWriterHandoff);
         }
         Ok(())
@@ -200,6 +204,13 @@ impl RuntimeModuleRegistryV1 {
         if self.records.contains_key(&key) {
             return Err(RuntimeModuleRegistryError::DuplicateCandidate);
         }
+        // Candidate epochs are monotone even after retirement or quarantine.
+        // A removed route is not permission to resurrect an older identity.
+        if self.records.keys().any(|(module_id, generation)| {
+            module_id == &abi.module_id && *generation >= abi.generation
+        }) {
+            return Err(RuntimeModuleRegistryError::InvalidGeneration);
+        }
         if let Some(predecessor_generation) = abi.predecessor_generation {
             let predecessor = self
                 .records
@@ -238,6 +249,10 @@ impl RuntimeModuleRegistryV1 {
         if candidate.lifecycle != RuntimeModuleLifecycleV1::Registered
             || candidate.abi.predecessor_generation.is_some()
             || self.active.contains_key(module_id)
+            || self
+                .records
+                .keys()
+                .any(|(id, epoch)| id == module_id && *epoch != generation)
         {
             return Err(RuntimeModuleRegistryError::InvalidLifecycleTransition);
         }
@@ -289,9 +304,9 @@ impl RuntimeModuleRegistryV1 {
             return Err(RuntimeModuleRegistryError::InvalidLifecycleTransition);
         }
         record.lifecycle = RuntimeModuleLifecycleV1::Quarantined;
-        if self.active.get(module_id) == Some(&generation) {
-            self.active.remove(module_id);
-        }
+        // Preserve the selected writer reservation until an observed drain /
+        // reconciliation completes retirement. snapshot() stops dispatch now;
+        // quarantine alone cannot prove that pending effects or a writer ceased.
         Ok(())
     }
 
@@ -344,12 +359,21 @@ impl RuntimeModuleRegistryV1 {
         module_id: &StableId,
         generation: Generation,
     ) -> Result<(), RuntimeModuleRegistryError> {
-        self.transition(
-            module_id,
-            generation,
-            RuntimeModuleLifecycleV1::Active,
-            RuntimeModuleLifecycleV1::Quiescing,
-        )
+        if self.active.get(module_id) != Some(&generation) {
+            return Err(RuntimeModuleRegistryError::InvalidLifecycleTransition);
+        }
+        let record = self
+            .records
+            .get_mut(&(module_id.clone(), generation))
+            .ok_or(RuntimeModuleRegistryError::UnknownCandidate)?;
+        if !matches!(
+            record.lifecycle,
+            RuntimeModuleLifecycleV1::Active | RuntimeModuleLifecycleV1::Quarantined
+        ) {
+            return Err(RuntimeModuleRegistryError::InvalidLifecycleTransition);
+        }
+        record.lifecycle = RuntimeModuleLifecycleV1::Quiescing;
+        Ok(())
     }
 
     pub fn finish_retire(
@@ -440,6 +464,9 @@ impl RuntimeModuleRegistryV1 {
         self.records.get(&(module_id.clone(), generation))
     }
 
+    /// Selected generation, including a draining/quarantined writer reservation.
+    /// Only snapshot().active is eligible for new dispatch. The reservation is
+    /// released by finish_retire, not by merely disabling a route.
     pub fn active_generation(&self, module_id: &StableId) -> Option<Generation> {
         self.active.get(module_id).copied()
     }
@@ -451,6 +478,7 @@ impl RuntimeModuleRegistryV1 {
             .filter_map(|(module_id, generation)| {
                 self.records
                     .get(&(module_id.clone(), *generation))
+                    .filter(|record| record.lifecycle == RuntimeModuleLifecycleV1::Active)
                     .map(|record| ActiveRuntimeModuleV1 {
                         module_id: module_id.clone(),
                         generation: *generation,
@@ -526,7 +554,7 @@ impl RuntimeModuleRegistryV1 {
         predecessor: Option<Generation>,
     ) -> Result<(), RuntimeModuleRegistryError> {
         for record in self.records.values() {
-            if record.lifecycle != RuntimeModuleLifecycleV1::Active {
+            if self.active.get(&record.abi.module_id) != Some(&record.abi.generation) {
                 continue;
             }
             if record.abi.module_id == candidate.module_id
@@ -689,3 +717,7 @@ mod tests {
         ));
     }
 }
+
+#[cfg(test)]
+#[path = "module_runtime_safety_tests.rs"]
+mod safety_tests;
