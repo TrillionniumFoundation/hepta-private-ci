@@ -30,6 +30,7 @@ STORE_TABLES = frozenset(
         "work_envelopes",
         "path_leases",
         "assignment_generations",
+        "distributed_cluster_frontiers",
         "distributed_fence_frontiers",
         "integration_decisions",
         "audit_events",
