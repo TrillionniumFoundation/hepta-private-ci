@@ -62,9 +62,13 @@ changing the V1 wire meaning:
   `ContextDeliveryReceiptV2` binding transport identity, provider request id,
   acknowledgement digest, terminal disposition, time, and the verified
   admission snapshot/revocation epoch used at send time;
-- serialization, attachment and delivery proof artifacts are construction-closed
-  outside the module, so external callers cannot synthesize a receipt with a
-  struct literal and skip exact tokenization or current-revocation checks.
+- compilation, serialization, attachment and delivery proof artifacts are
+  construction-closed outside the module, so external callers cannot synthesize
+  receipts with struct literals and skip mandatory-group selection, exact
+  tokenization or current-revocation checks;
+- `Delivered` additionally requires provider/transport acknowledgement of the
+  exact transmitted payload digest; an opaque acknowledgement for another
+  payload cannot be promoted to successful delivery.
 
 Verifier, tokenizer, serializer and transport implementations are explicit
 trusted adapter boundaries. Their identities are digest-bound, but this crate
