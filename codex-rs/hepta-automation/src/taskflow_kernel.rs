@@ -462,6 +462,17 @@ fn apply_replay_transition(
             };
             state.terminal_reason = Some("explicit_reconciliation".to_string());
         }
+        TaskFlowTransition::ReconcileRetry { receipt_digest } => {
+            if state.state != TaskFlowRunState::Indeterminate {
+                return Err(invalid_transition(
+                    "retry reconciliation requires indeterminate state",
+                ));
+            }
+            validate_digest(receipt_digest.as_str(), "retry reconciliation receipt")?;
+            state.state = TaskFlowRunState::Running;
+            state.retry_at_ms = None;
+            state.terminal_reason = Some("negative_provider_observation".to_string());
+        }
     }
     Ok(())
 }
@@ -501,6 +512,7 @@ fn transition_name(transition: &TaskFlowTransition) -> &'static str {
         TaskFlowTransition::Fail { .. } => "failed",
         TaskFlowTransition::Indeterminate { .. } => "indeterminate",
         TaskFlowTransition::Reconcile { .. } => "reconciled",
+        TaskFlowTransition::ReconcileRetry { .. } => "reconciled_retry",
     }
 }
 
