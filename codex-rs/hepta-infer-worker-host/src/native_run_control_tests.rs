@@ -2,6 +2,7 @@ use super::*;
 use crate::native_app_server::NativeWorkerConfig;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+use codex_hepta_types::Digest32;
 use std::path::PathBuf;
 use std::time::Duration;
 use std::time::SystemTime;
@@ -18,35 +19,46 @@ fn fixture(label: &str) -> (AppServerModelDriver, PathBuf) {
         agent_id: AgentId::parse("00000000-0000-4000-8000-000000000001").unwrap(),
         generation: 1,
         model: "model".to_string(),
+        model_provider: "provider".to_string(),
         timeout: Duration::from_secs(5),
     })
     .unwrap();
     (driver, path)
 }
 
-fn request(driver: &AppServerModelDriver) -> NativeRequest {
-    NativeRequest {
+fn admission() -> NativeAdmission {
+    NativeAdmission {
+        operation_id: "operation-r1".to_string(),
         request_id: "r1".to_string(),
+        maximum_in_flight: 1,
+        quota_reservation_digest: Digest32::of_bytes(b"quota-r1"),
+        resource_snapshot_digest: Digest32::of_bytes(b"resource-r1"),
+    }
+}
+
+fn request(driver: &AppServerModelDriver) -> NativeRequest {
+    let admission = admission();
+    NativeRequest {
+        request_id: admission.request_id.clone(),
         principal_id: driver.config.agent_id.to_string(),
         worker_generation: 1,
         model: "model".to_string(),
         payload_digest: digest(
             &serde_json::to_vec(&(
-                "hepta.native-request.v1",
+                "hepta.native-request.v2",
+                &admission.operation_id,
                 "prompt",
                 Option::<String>::None,
                 &driver.config.agentd_socket,
                 driver.config.timeout.as_millis(),
+                admission.quota_reservation_digest.to_string(),
+                admission.resource_snapshot_digest.to_string(),
             ))
             .unwrap(),
         ),
-    }
-}
-
-fn admission() -> NativeAdmission {
-    NativeAdmission {
-        request_id: "r1".to_string(),
-        maximum_in_flight: 1,
+        operation_id: Some(admission.operation_id),
+        quota_reservation_digest: Some(admission.quota_reservation_digest.to_string()),
+        resource_snapshot_digest: Some(admission.resource_snapshot_digest.to_string()),
     }
 }
 
@@ -62,6 +74,7 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
                 thread_id: "thread-1".to_string(),
                 model_provider: "provider".to_string(),
                 context_digest: "a".repeat(64),
+                authority_binding_digest: Some("b".repeat(64)),
             },
         )
         .unwrap();
@@ -73,6 +86,7 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
         .run(
             &mut control,
             admission(),
+            None,
             "prompt".to_string(),
             None,
             &cancellation,
@@ -91,6 +105,7 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
             .run(
                 &mut control,
                 admission(),
+                None,
                 "prompt".to_string(),
                 None,
                 &cancellation
@@ -104,6 +119,7 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
             .run(
                 &mut control,
                 admission(),
+                None,
                 "changed prompt".to_string(),
                 None,
                 &cancellation
@@ -127,6 +143,7 @@ async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
             .run(
                 &mut control,
                 admission(),
+                None,
                 "prompt".to_string(),
                 None,
                 &cancellation
@@ -153,6 +170,7 @@ async fn pre_dispatch_cancellation_and_connection_failure_release_without_usage_
                 .run(
                     &mut control,
                     admission(),
+                    None,
                     "prompt".to_string(),
                     None,
                     &cancellation
@@ -171,6 +189,7 @@ async fn pre_dispatch_cancellation_and_connection_failure_release_without_usage_
                 .run(
                     &mut control,
                     admission(),
+                    None,
                     "prompt".to_string(),
                     None,
                     &CancellationToken::new()
