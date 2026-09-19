@@ -1,4 +1,4 @@
-"""Schema-v5 non-forgeable evidence seal for Lane G.
+"""Schema-v6 non-forgeable evidence seal for Lane G.
 
 A Python dataclass is not an authority capability: callers can instantiate one.
 This layer therefore requires a separately authenticated evidence-binder seal at
@@ -20,7 +20,12 @@ from . import control_plane as _control
 from . import facade as _facade
 from . import hardening as _hardening
 from .candidate import Candidate, SandboxReceipt
-from .evidence import EvidenceDecision, ExecutionReceipt, HmacTrustStore
+from .evidence import (
+    EvidenceDecision,
+    ExecutionReceipt,
+    SignatureSigner,
+    SignatureVerifier,
+)
 
 _SEAL_ISSUER = "engineering_evidence_binder"
 
@@ -87,7 +92,7 @@ def _checked_now(now_ns: int | None) -> int:
 
 def verify_sealed_candidate_evidence(
     value: SealedCandidateEvidence,
-    trust_store: HmacTrustStore,
+    trust_store: SignatureVerifier,
     *,
     now_ns: int | None = None,
 ) -> None:
@@ -140,9 +145,10 @@ def bind_candidate_evidence(
     source_execution: ExecutionReceipt,
     merge_execution: ExecutionReceipt,
     binding: _hardening.CandidateEvidenceBindingReceipt,
-    trust_store: HmacTrustStore,
+    trust_store: SignatureVerifier,
     *,
     seal_signing_identity: str,
+    seal_signer: SignatureSigner | None = None,
     now_ns: int | None = None,
 ) -> SealedCandidateEvidence:
     now = _checked_now(now_ns)
@@ -204,11 +210,16 @@ def bind_candidate_evidence(
         unsigned.observed_unix_ns,
         unsigned.expires_unix_ns,
     )
+    signer = seal_signer
+    if signer is None and hasattr(trust_store, "sign"):
+        signer = trust_store
+    if signer is None or not hasattr(signer, "sign"):
+        raise _control.EngineeringError("sealed_evidence_signer_required")
     try:
-        signature = trust_store.sign(
+        signature = signer.sign(
             unsigned, unsigned.issuer, unsigned.signing_identity
         )
-    except (KeyError, ValueError):
+    except (KeyError, ValueError, OSError):
         raise _control.EngineeringError("sealed_evidence_signing_key") from None
     sealed = SealedCandidateEvidence(
         unsigned.eligible_for_independent_review,
@@ -236,7 +247,7 @@ def request_independent_review(
     evidence: SealedCandidateEvidence,
     requested_role: str,
     *,
-    trust_store: HmacTrustStore,
+    trust_store: SignatureVerifier,
     now_ns: int | None = None,
 ) -> _facade.ReviewRequest:
     now = _checked_now(now_ns)
@@ -303,7 +314,7 @@ def record_integration_decision(
     decision_id: str,
     evidence: EvidenceDecision | SealedCandidateEvidence,
     *,
-    trust_store: HmacTrustStore | None = None,
+    trust_store: SignatureVerifier | None = None,
     now_ns: int | None = None,
 ) -> None:
     now = store._now(now_ns)
