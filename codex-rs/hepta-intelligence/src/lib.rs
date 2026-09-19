@@ -15,6 +15,7 @@ pub use evaluated_shadow::evaluated_candidate_signing_payload_v1;
 pub use evaluated_shadow::run_evaluated_shadow_v1;
 
 mod capability_snapshot;
+mod contracts_v1;
 
 pub use capability_snapshot::CapabilityBindingV2;
 pub use capability_snapshot::CapabilityNecessityV2;
@@ -22,13 +23,37 @@ pub use capability_snapshot::CapabilityRequirementV2;
 pub use capability_snapshot::CapabilitySnapshotErrorV2;
 pub use capability_snapshot::CapabilitySnapshotRequestV2;
 pub use capability_snapshot::CapabilitySnapshotV2;
+pub use contracts_v1::IntelligenceContractErrorV1;
+pub use contracts_v1::IntelligenceHostEnvelopeV1;
+pub use contracts_v1::LegalActionCandidateSetV1;
+pub use contracts_v1::LegalActionCandidateV1;
+pub use contracts_v1::build_legal_candidates_v1;
 
 mod pipeline_v2;
+mod pipeline_v3;
 
 pub use pipeline_v2::LaneFRunRequestV2;
 pub use pipeline_v2::LaneFShadowPipelineReceiptV2;
 pub use pipeline_v2::PipelineErrorV2;
 pub use pipeline_v2::run_shadow_pipeline_v2;
+pub use pipeline_v3::CompositionControlV3;
+pub use pipeline_v3::LaneFBudgetV3;
+pub use pipeline_v3::LaneFCompositionReceiptV3;
+pub use pipeline_v3::LaneFRunRequestV3;
+pub use pipeline_v3::LaneFStageV3;
+pub use pipeline_v3::LaneFV3Ports;
+pub use pipeline_v3::NeverCancelledV3;
+pub use pipeline_v3::PipelineDispositionV3;
+pub use pipeline_v3::PipelineErrorV3;
+pub use pipeline_v3::PortDecisionV3;
+pub use pipeline_v3::PortFailureClassV3;
+pub use pipeline_v3::PortFailureV3;
+pub use pipeline_v3::PortInputV3;
+pub use pipeline_v3::PortReceiptV3;
+pub use pipeline_v3::StageOutcomeV3;
+pub use pipeline_v3::StageTraceV3;
+pub use pipeline_v3::run_composition_v3;
+pub use pipeline_v3::run_composition_v3_with_control;
 
 mod pipeline;
 
