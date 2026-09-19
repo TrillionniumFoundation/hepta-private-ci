@@ -18,7 +18,7 @@ pub enum NduProjectionKindV1 {
 }
 
 impl NduProjectionKindV1 {
-    const fn tag(self) -> u8 {
+    pub(crate) const fn tag(self) -> u8 {
         match self {
             Self::Preference => 0,
             Self::Utility => 1,
@@ -27,7 +27,7 @@ impl NduProjectionKindV1 {
         }
     }
 
-    fn from_tag(value: u8) -> Result<Self, NduProjectionJournalError> {
+    pub(crate) fn from_tag(value: u8) -> Result<Self, NduProjectionJournalError> {
         match value {
             0 => Ok(Self::Preference),
             1 => Ok(Self::Utility),
