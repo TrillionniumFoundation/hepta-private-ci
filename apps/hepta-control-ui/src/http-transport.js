@@ -202,7 +202,6 @@ export class SameOriginHttpTransport {
     const timer = controller
       ? setTimeout(() => controller.abort(new Error("control transport timeout")), this.#timeoutMs)
       : null;
-    timer?.unref?.();
     try {
       const response = await this.#fetch(target.href, {
         method,
