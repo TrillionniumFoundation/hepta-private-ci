@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs); observed identifiers include `CompactCheckpoint`, `compact`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs); its public checkpoint surface is the single canonical Lane C `CompactCheckpointV1`, with `build_qualified_candidate` and `prove_compaction` implemented in [qualified.rs](../../../codex-rs/hepta-compact-engine/src/qualified.rs). The weaker legacy `compact()/CompactCheckpoint` API is removed. Durable owner-store publication/reload is implemented in [codex-rs/hepta-memory/src/production_compact.rs](../../../codex-rs/hepta-memory/src/production_compact.rs), and the explicit product consumer is [AgentdProductionWriterHost::qualify_and_publish_compaction](../../../codex-rs/hepta-agentd/src/production_writer_host.rs). These cross-owner files are covered by the explicit co-owner paths in `MEM-5-COMPACT`; they do not transfer their owning modules' wider authority.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -71,10 +71,13 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
-- `bounded input stage`
-- `deterministic algorithm core`
-- `generation publisher`
-- `checkpoint and recovery layer`
+- `bounded input and lineage normalizer`;
+- `deterministic count/byte/token retention core`;
+- `independent qualification/proof binder`;
+- `owner-store generation publisher`;
+- `checkpoint reload and corruption-verification layer`.
+
+The retention core binds the exact tokenizer from the coherent Lane C snapshot. Every input carries caller-observed canonical serialized bytes and tokenizer-derived token count. Protected live references must fit all policy budgets; optional references are selected deterministically by protected status, retention priority, stable ID and revision. The support manifest binds record digest, priority, retention-reason digest, byte cost and token cost.
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -101,7 +104,7 @@ None.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+Rust types and the durable publication DTO represent identical checkpoint/proof semantics. `CompactionProofV2` binds evaluator identity, evaluation artifact, evaluator implementation, attestation and signature digests in addition to retained-query, reconstruction, contradiction and deletion obligations. The proof remains authority-free: attestation/signature digests are provenance bindings and authentication still belongs to the independent evidence/host gate. Tests cover deterministic ordering, tombstone non-resurrection, resource budgets, proof binding, owner-store replay/CAS, restart reload and corruption rejection.
 
 ## 6. Data authority, persistence and migrations
 
@@ -114,21 +117,25 @@ Read-only data dependencies:
 - `cross_owner_outbox`
 - `operation_ledger`
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+For the `compact_checkpoint` domain, semantic authorship remains with `compact.engine`; physical durability is delegated to the existing cognitive owner store through `ProductionDurableWriter`. No parallel database or authority spine is introduced. The dedicated production compact journal reuses the immutable `cognitive_compact_events` table and binds every row to the externally verified production lease/head, authority and owner epochs, checkpoint generation, predecessor row digest and a lease/event binding digest.
 
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
+Publication is generation/predecessor-CAS protected and idempotent for identical same-generation semantics. A changed replay conflicts. Store reload verifies the complete row chain, canonical checkpoint/proof digests and publication artifact digest before returning a current checkpoint. A failed construction or failed transaction leaves the prior committed generation current.
 
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+Existing migrations and store-open integrity checks remain authoritative for the physical table. Retention and deletion preserve lineage and the qualified builder rejects any `Live -> Tombstone -> Live` resurrection.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md).
+Candidate construction and proof binding are pure deterministic functions. Production publication is composed only through `AgentdProductionWriterHost::qualify_and_publish_compaction`, which builds and proves the candidate before crossing the owner-store boundary. The host still requires an externally verified `ProductionAuthorityLease`; default Agentd startup does not silently acquire this capability.
+
+The physical linearization point is the owner-store `BEGIN IMMEDIATE` transaction. The current production lease is revalidated inside that transaction before any compact row is appended. Concurrent same-generation publications therefore have one winner; the other observes a CAS conflict. Reload is read-only but revalidates the current production lease and complete compact chain.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/compact.engine.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+The qualified builder fails closed on broken lineage, resurrection, tokenizer drift, invalid resource costs, protected-reference overflow/loss, digest mismatch or failed qualification obligations. Production publication fails closed on stale/revoked authority, generation/predecessor conflict, malformed/corrupt durable rows, invalid lease/event binding or canonical checkpoint/proof mismatch.
+
+Restart recovery reopens the same WAL/FULL cognitive store and calls `load_current_compaction`; no in-memory checkpoint is trusted as the durable head. Rollback means selecting/revalidating a compatible predecessor generation, never restoring deleted source material. A corrupt chain is quarantined by returning an error rather than skipping damaged rows.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -144,18 +151,25 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs) and the linked implementation components.
+The native candidate builder enforces at most 65,536 input records and 4,096 protected references. Policy-bound retained limits must also be non-zero and no larger than 64 MiB serialized bytes or 16,777,216 tokens; callers may choose stricter budgets. The policy tokenizer digest must exactly match the coherent source snapshot tokenizer digest.
+
+The source suite includes a deterministic 10,000-record batch fixture and bounded retained set. This proves algorithmic boundedness/order stability, not target-host latency, CPU, memory or foreground-interference SLOs. Those measurements remain qualification work for the selected host.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Checkpoint/projection library. Keep source lineage, omissions and deletion frontiers with every compact result and retain the prior complete generation on failed construction. A compact receipt does not implement the entire replay or learned-skill pipeline; lifecycle/storage publication belongs to the composed owner.
+Checkpoint/qualification library plus explicit owner-store publication. Keep source snapshot lineage, support manifest, omissions, deletion frontier, resource accounting, independent proof provenance and predecessor generation with every durable publication. The owner store retains the prior complete generation when a new transaction fails.
+
+Semantic compaction responsibility is explicit: the current engine performs deterministic selection/checkpoint compaction, not unregistered generative summarization. A future semantic merge/summary revision must carry a registered algorithm digest, canonical byte/token observations, source support/citations and contradiction preservation, and must pass the same independent reconstruction/holdout proof before publication.
 
 Current operating and state-format references:
 
 - [codex-rs/hepta-compact-engine/src/lib.rs](../../../codex-rs/hepta-compact-engine/src/lib.rs).
 - [codex-rs/hepta-compact-engine/src/qualified.rs](../../../codex-rs/hepta-compact-engine/src/qualified.rs).
+- [codex-rs/hepta-memory/src/production_compact.rs](../../../codex-rs/hepta-memory/src/production_compact.rs).
+- [codex-rs/hepta-agentd/src/production_writer_host.rs](../../../codex-rs/hepta-agentd/src/production_writer_host.rs).
+- [CALLERS.toml](../../../CALLERS.toml).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -163,10 +177,10 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-compact-engine/src/lib_tests.rs](../../../codex-rs/hepta-compact-engine/src/lib_tests.rs); named case: `latest_revision_and_tombstone_are_preserved`.
-- [codex-rs/hepta-compact-engine/src/qualified_tests.rs](../../../codex-rs/hepta-compact-engine/src/qualified_tests.rs); named case: `protected_live_reference_is_retained_before_higher_priority_optional_record`.
+- [codex-rs/hepta-compact-engine/src/qualified_tests.rs](../../../codex-rs/hepta-compact-engine/src/qualified_tests.rs): tombstone non-resurrection, protected references, count/byte/token budgets, tokenizer binding, payload/omission cross-checks, proof V2 provenance, input-order invariance and the 10,000-record deterministic batch.
+- [codex-rs/hepta-memory/src/production_compact.rs](../../../codex-rs/hepta-memory/src/production_compact.rs): durable publish/replay, restart reload, generation/predecessor CAS, concurrent same-generation publication and deliberate durable-row corruption.
 
-In `codex-rs`, run `just test -p codex-hepta-compact-engine`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/compact.engine.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-compact-engine` and the `codex-hepta-memory` focused production-compaction tests. The exact source-head and deterministic synthetic-merge jobs generate `hepta.module-implementation-exact-head-evidence.v1`, binding every declared source/test path to the checked-out commit/tree and git blob identities. Commands and source identities are not acceptance receipts until CI executes them.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -178,7 +192,7 @@ Applicable work packages:
 
 The bootstrap package is `MEM-5-COMPACT`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+The source candidate now includes the canonical builder/proof, owner-store publisher/reloader and explicit Agentd product callsite. This document records that source composition, but the repository-level production implementation fact is promoted only after focused/package/all-target/lint checks and exact source-head plus merge-candidate evidence pass. Later activation/acceptance/release gates remain independent.
 
 ## 14. Activation, compatibility and retirement
 
@@ -190,16 +204,23 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
-For `compact.engine`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
+For `compact.engine`, this source composition consumes an externally verified production-writer lease at the owner-store boundary; the document itself grants no runtime, model, provider, external-effect, selection, acceptance, promotion or release authority. The product callsite being present is not independent semantic acceptance or activation.
 
 ### Work-package execution envelopes
 
 #### `MEM-5-COMPACT`
 
 - State: `planned`; priority: `3`; parallel class: `contract_coordinated`.
-- Owner/deputy: `cognitive-platform` / `durability-kernel`.
+- Owner/deputy: `cognitive-platform` / `durability-kernel`; explicit co-owner modules for this integration revision: `cognitive.types`, `cognitive.store`, `runtime.agentd`.
 - Allowed write paths:
 - `codex-rs/hepta-compact-engine/**`
+- `codex-rs/hepta-cognitive-types/src/lane_c.rs`
+- `codex-rs/hepta-memory/Cargo.toml`
+- `codex-rs/hepta-memory/src/lib.rs`
+- `codex-rs/hepta-memory/src/production_writer.rs`
+- `codex-rs/hepta-memory/src/production_compact.rs`
+- `codex-rs/hepta-agentd/Cargo.toml`
+- `codex-rs/hepta-agentd/src/production_writer_host.rs`
 - Development predecessors:
 - `MEM-0-TYPES`
 - Activation predecessors:
