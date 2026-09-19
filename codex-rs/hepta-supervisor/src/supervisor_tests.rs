@@ -588,6 +588,43 @@ fn restart_drains_one_agent_and_spawns_a_new_generation() -> Result<(), Supervis
 }
 
 #[test]
+fn startup_health_timeout_uses_durable_auto_restart_budget() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start(&fleet.first, command()?, now)?;
+
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(11)),
+        TickReport::default()
+    );
+    let failed = supervisor.snapshot(&fleet.first).expect("failed startup");
+    assert!(failed.active);
+    assert!(failed.events.iter().any(|event| {
+        matches!(
+            event.kind,
+            SupervisorEventKind::AutoRestartQueued { attempt: 1, .. }
+        )
+    }));
+
+    control.set_exit(&fleet.first);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(12)),
+        TickReport::default()
+    );
+    assert!(!supervisor.snapshot(&fleet.first).unwrap().active);
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(17)),
+        TickReport::default()
+    );
+    assert!(supervisor.snapshot(&fleet.first).unwrap().active);
+    assert_eq!(control.spawn_count(&fleet.first), 2);
+    Ok(())
+}
+
+#[test]
 fn recovery_adopts_one_orphan_and_rejects_another() -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
     let control = FakeControl::default();
