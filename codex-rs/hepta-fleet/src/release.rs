@@ -403,14 +403,26 @@ impl FleetRegistry {
 
     /// Resolve the exact immutable bytes admitted for one Agent release.
     ///
-    /// This first executes the normal allowance/catalog validation, then
-    /// returns digests that an external release-selection grant can bind.
+    /// Target selection uses this method so a revoked allowance cannot be
+    /// reintroduced by a signed request.
     pub fn release_binding(
         &self,
         agent_id: &AgentId,
         release_id: &ReleaseId,
     ) -> Result<ReleaseBinding, FleetRegistryError> {
         let _ = self.resolve_release(agent_id, release_id)?;
+        self.installed_release_binding(release_id)
+    }
+
+    /// Resolve exact immutable catalog bytes without requiring a current Agent
+    /// allowance. This is used only to bind the source release that is already
+    /// running: revoking an unsafe current release must not prevent selecting a
+    /// safe allowed target to leave it.
+    pub fn installed_release_binding(
+        &self,
+        release_id: &ReleaseId,
+    ) -> Result<ReleaseBinding, FleetRegistryError> {
+        let _ = resolve_catalog_release(self.layout().releases_root(), release_id)?;
         let manifest_path = release_manifest_path(self.layout().releases_root(), release_id);
         let manifest_sha256 = sha256_file(&manifest_path)?;
         let metadata: CatalogReleaseMetadata =
