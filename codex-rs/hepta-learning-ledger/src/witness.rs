@@ -148,7 +148,8 @@ impl DurableAnchorWitness {
         let mut row = Vec::with_capacity(RECORD);
         row.extend_from_slice(&anchor.sequence.to_be_bytes());
         row.extend_from_slice(anchor.chain_digest.as_array());
-        row.extend_from_slice(Digest32::of_bytes(&row).as_array());
+        let checksum = Digest32::of_bytes(&row);
+        row.extend_from_slice(checksum.as_array());
         if row.len() != RECORD {
             return Err(AnchorWitnessError::Corrupt);
         }
