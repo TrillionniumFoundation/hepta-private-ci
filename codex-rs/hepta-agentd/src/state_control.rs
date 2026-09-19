@@ -149,7 +149,7 @@ impl AgentdState {
             } => {
                 require_run_observation_ready(fenced)?;
                 let (disposition, receipt) =
-                    self.run_cancel(&run_id, expected_revision, &reason)?;
+                    self.run_cancel(now_ms()?, &run_id, expected_revision, &reason)?;
                 AgentdPayload::RunCancellation {
                     disposition: cancellation_disposition_to_wire(disposition),
                     receipt: run_receipt_to_wire(receipt),
@@ -608,7 +608,7 @@ fn cognitive_control_unavailable() -> AgentdPayload {
 
 fn agentd_capabilities() -> Result<crate::AgentdCapabilitySet, AgentdError> {
     crate::AgentdCapabilitySet::new(vec![
-        crate::AgentdCapability::new("run.lifecycle", 1, 0)
+        crate::AgentdCapability::new("run.lifecycle", 1, 1)
             .map_err(AgentdError::Protocol)?,
         crate::AgentdCapability::new("control.typed_backpressure", 1, 0)
             .map_err(AgentdError::Protocol)?,
@@ -677,6 +677,7 @@ fn run_receipt_to_wire(value: crate::RunReceipt) -> crate::AgentdRunReceipt {
         phase: run_phase_to_wire(value.phase),
         context_digest: value.context_digest,
         cancellation_reason: value.cancellation_reason,
+        cancellation_ack_deadline_ms: value.cancellation_ack_deadline_ms,
         terminal_observed: value.terminal_observed,
         idempotent: value.idempotent,
     }
