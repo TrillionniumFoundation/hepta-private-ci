@@ -7,12 +7,13 @@ release claim.
 
 ## 1. Canonical digest bytes
 
-`canonical_encode_v1(domain, fields)` emits:
+`canonical_encode_v1(domain, schema_version, fields)` emits:
 
 1. ASCII bytes `HEPTA-CANONICAL-DIGEST-V1` followed by one NUL byte;
 2. `u16be(domain_length)` and the lowercase ASCII domain;
-3. `u16be(field_count)`;
-4. for each field, in strictly byte-sorted unique name order:
+3. `u64be(schema_version)`, which must be nonzero;
+4. `u16be(field_count)`;
+5. for each field, in strictly byte-sorted unique name order:
    `u16be(name_length) || name || u8(type_tag) || u32be(value_length) || value`.
 
 V1 type tags are: bytes=1, UTF-8 text=2, u64=3, i64=4, bool=5,
@@ -21,7 +22,8 @@ applicable; bool is exactly `00` or `01`; digests are 32 raw bytes. Domain and
 field names use `[a-z0-9._-]+`. Domain/name length is <=128 bytes, field count
 is <=1024, and the complete canonical collection is <=256 KiB.
 
-`canonical_digest_v1` is SHA-256 of exactly those bytes. Raw
+`canonical_digest_v1` is SHA-256 of exactly those bytes; the semantic schema
+version is therefore mandatory digest input, not ambient configuration. Raw
 `Digest32::of_bytes` remains available as a low-level primitive but does not
 provide semantic domain separation or field framing.
 
@@ -59,7 +61,8 @@ authority value by caller convention or struct mutation.
 `RegistryDefinitionV1` contains a registry kind, matching profiled ID, bounded
 media type, nonzero schema version and <=64 KiB canonical body. Its key is the
 `canonical_digest_v1` of those fields under domain
-`platform.types.registry-definition`.
+`platform.types.registry-definition`, with the definition's nonzero
+`schema_version` in the mandatory V1 schema-version frame.
 
 `SchemaNormalizationRegistryV1` is bounded to 256 entries. Re-registering the
 same digest/definition is idempotent; unknown digests, kind mismatches, capacity
