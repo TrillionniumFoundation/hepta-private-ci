@@ -13,6 +13,7 @@ mod allocation_model;
 mod allocation_validation;
 mod error;
 mod model;
+mod module_catalog;
 mod registry;
 mod release;
 
@@ -39,6 +40,9 @@ pub use model::AgentLifecycleState;
 pub use model::AgentManifest;
 pub use model::ResourceBudget;
 pub use model::WorkspaceBinding;
+pub use module_catalog::RuntimeModuleCatalogErrorV1;
+pub use module_catalog::RuntimeModuleCatalogV1;
+pub use module_catalog::RuntimeModuleDefinitionV1;
 pub use registry::AgentRecord;
 pub use registry::FleetRegistry;
 pub use registry::FleetSnapshot;
