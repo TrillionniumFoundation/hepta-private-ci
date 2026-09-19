@@ -193,3 +193,43 @@ fn canonical_order_is_invariant_across_deterministic_permutations() {
         );
     }
 }
+
+
+#[test]
+fn deterministic_fuzz_corpus_preserves_text_field_framing() {
+    let type_id = checked(validate_id("platform.types:fuzz-framing", IdProfileV1::Stable));
+    let mut state = 0x6a09_e667_f3bc_c909_u64;
+    for _ in 0..2048 {
+        state = state
+            .wrapping_mul(6_364_136_223_846_793_005)
+            .wrapping_add(1_442_695_040_888_963_407);
+        let len = 3 + usize::try_from(state % 61).unwrap_or(3);
+        let mut payload = String::with_capacity(len);
+        for index in 0..len {
+            let shift = (index % 8) * 8;
+            let byte = b'a' + (((state >> shift) as u8) % 26);
+            payload.push(char::from(byte));
+        }
+        let split_a = 1 + usize::try_from((state >> 8) % u64::try_from(len - 1).unwrap_or(1))
+            .unwrap_or(1);
+        let mut split_b =
+            1 + usize::try_from((state >> 24) % u64::try_from(len - 1).unwrap_or(1))
+                .unwrap_or(1);
+        if split_b == split_a {
+            split_b = if split_b + 1 < len { split_b + 1 } else { split_b - 1 };
+        }
+
+        let left = [
+            CanonicalFieldV1::new("first", CanonicalValueV1::Text(&payload[..split_a])),
+            CanonicalFieldV1::new("second", CanonicalValueV1::Text(&payload[split_a..])),
+        ];
+        let right = [
+            CanonicalFieldV1::new("first", CanonicalValueV1::Text(&payload[..split_b])),
+            CanonicalFieldV1::new("second", CanonicalValueV1::Text(&payload[split_b..])),
+        ];
+        assert_ne!(
+            checked(canonical_digest_v1(&type_id, 1, &left)),
+            checked(canonical_digest_v1(&type_id, 1, &right))
+        );
+    }
+}
