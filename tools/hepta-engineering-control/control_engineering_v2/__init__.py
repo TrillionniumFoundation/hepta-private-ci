@@ -50,6 +50,7 @@ from .external_controls import (
     verify_external_audit_anchor,
     verify_external_key_custody,
     verify_production_controls,
+    store_snapshot_digest,
 )
 from .evidence import (
     CanonicalSourceReceipt,
@@ -222,4 +223,5 @@ __all__ = [
     "verify_production_controls",
     "verify_product_receipt_pair",
     "verify_sealed_candidate_evidence",
+    "store_snapshot_digest",
 ]
