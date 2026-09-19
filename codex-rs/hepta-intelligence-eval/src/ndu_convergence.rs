@@ -22,8 +22,7 @@ const MAX_RESOURCE_RESIDUAL_RAW: i64 = 1;
 const MAX_RISK_RESIDUAL_PPM: u32 = 10;
 const MAX_BOUNDARY_RESIDUAL_PPM: u32 = 10_000;
 const MAX_STANDARDIZED_MARTINGALE_MEAN_PPM: u32 = 20_000;
-const SPECTRAL_RADIUS_95_Q32_RAW: i64 =
-    (((1_i128 << 32) * 95_i128) / 100_i128) as i64;
+const SPECTRAL_RADIUS_95_Q32_RAW: i64 = (((1_i128 << 32) * 95_i128) / 100_i128) as i64;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum NduMultipleSolutionDispositionV1 {
@@ -135,8 +134,7 @@ pub fn evaluate_ndu_convergence_v1(
         || absolute_raw(evaluation.resource_residual_q32)? > MAX_RESOURCE_RESIDUAL_RAW as u64
         || evaluation.risk_residual_ppm > MAX_RISK_RESIDUAL_PPM
         || evaluation.boundary_residual_p99_ppm > MAX_BOUNDARY_RESIDUAL_PPM
-        || evaluation.standardized_martingale_mean_abs_ppm
-            >= MAX_STANDARDIZED_MARTINGALE_MEAN_PPM
+        || evaluation.standardized_martingale_mean_abs_ppm >= MAX_STANDARDIZED_MARTINGALE_MEAN_PPM
     {
         NduConvergenceDecisionV1::Rejected
     } else {
@@ -176,9 +174,7 @@ fn validate_termination(
     Ok(())
 }
 
-fn validate_metrics(
-    evaluation: &NduConvergenceEvaluationV1,
-) -> Result<(), NduConvergenceError> {
+fn validate_metrics(evaluation: &NduConvergenceEvaluationV1) -> Result<(), NduConvergenceError> {
     if evaluation.spectral_radius_upper_95_q32.raw() < 0 {
         return Err(NduConvergenceError::InvalidMetric("spectral_radius"));
     }
