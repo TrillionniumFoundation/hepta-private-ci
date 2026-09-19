@@ -50,9 +50,9 @@ pub use model::SoftDirection;
 pub use model::SoftPreference;
 pub use model::SourceTrust;
 pub use model::SuccessPredicate;
+pub use objective_admission::AdmittedObjectiveV1;
 pub use objective_admission::ObjectiveAbstentionRuleProfileV1;
 pub use objective_admission::ObjectiveActionProfileV1;
-pub use objective_admission::AdmittedObjectiveV1;
 pub use objective_admission::ObjectiveAdmissionContextV1;
 pub use objective_admission::ObjectiveAdmissionError;
 pub use objective_admission::ObjectiveAdmissionOutcomeV1;
@@ -68,8 +68,8 @@ pub use objective_admission::ObjectiveSoftDimensionProfileV1;
 pub use objective_admission::ObjectiveSourceAuthenticationV1;
 pub use objective_admission::admit_and_compile_objective_v1;
 pub use objective_admission::admit_objective_v1;
-pub use objective_admission::compile_admitted_objective_v1;
 pub use objective_admission::canonical_objective_intent_digest_v1;
+pub use objective_admission::compile_admitted_objective_v1;
 pub use source_envelope_json::MAX_OBJECTIVE_SOURCE_JSON_INPUT_BYTES;
 pub use source_envelope_json::ObjectiveSourceJsonError;
 pub use source_envelope_json::decode_source_envelope_json_v1;
@@ -100,5 +100,5 @@ pub use source_envelope_validation::ObjectiveStructureError;
 pub fn compile_prevalidated_legacy_objective_v1(
     source: ObjectiveSourceEnvelope,
 ) -> Result<Result<ObjectiveCompileReceipt, ObjectiveConflictReceipt>, ObjectiveError> {
-    crate::compile(source)
+    crate::compiler::compile(source)
 }
