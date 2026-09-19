@@ -324,26 +324,38 @@ fn production_writer_closes_signed_decision_outcome_credit_and_dataset_path() {
     assert_eq!(retained.sequence, credit_receipt.sequence.get());
     assert_eq!(retained.chain_digest, credit_receipt.chain_digest);
 
+    let dataset_anchor = LedgerAnchor {
+        sequence: credit_receipt.sequence.get(),
+        chain_digest: credit_receipt.chain_digest,
+    };
+    let dataset_request = writer
+        .prepare_dataset_freeze_request(
+            dataset_anchor,
+            id("dataset-1"),
+            trust().signers[2].principal.clone(),
+            digest("objective"),
+            50,
+            digest("inclusion-policy"),
+        )
+        .expect("prepare dataset");
+    let dataset_payload = dataset_freeze_admission_payload(&dataset_request);
     let dataset_signed = sign(
         &verifier,
         "evidence-dataset",
         "evaluator",
         LearningEvidenceRoleV1::Evaluator,
         3,
-        b"dataset",
+        &dataset_payload,
     );
     let dataset = writer
         .freeze_dataset_from_ledger(
-            LedgerAnchor {
-                sequence: credit_receipt.sequence.get(),
-                chain_digest: credit_receipt.chain_digest,
-            },
+            dataset_anchor,
             id("dataset-1"),
             digest("objective"),
             50,
             digest("inclusion-policy"),
             &dataset_signed,
-            b"dataset",
+            &dataset_payload,
             50,
         )
         .expect("dataset");
