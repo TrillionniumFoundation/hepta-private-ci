@@ -750,6 +750,36 @@ impl AutomationStore {
         if run_state != expected_terminal {
             return Err(AutomationError::Conflict);
         }
+        let claimed_absence_cancel =
+            current.state == AutomationOccurrenceState::Claimed
+                && terminal == AutomationOccurrenceTerminalState::Cancelled;
+        if claimed_absence_cancel {
+            let command_id = format!(
+                "automation:run:cancel-absent:{}:{}",
+                current.occurrence_id, current.step_attempt
+            );
+            let payload: String = sqlx::query_scalar(
+                "SELECT payload_json FROM taskflow_events
+                 WHERE owner_agent_id = ? AND run_id = ? AND command_id = ?",
+            )
+            .bind(self.taskflow_owner_agent_id().as_str())
+            .bind(&current.taskflow_run_id)
+            .bind(command_id)
+            .fetch_optional(&mut *transaction)
+            .await
+            .map_err(unavailable)?
+            .ok_or(AutomationError::Conflict)?;
+            let transition: crate::TaskFlowTransition =
+                serde_json::from_str(&payload).map_err(|_| AutomationError::Corrupt)?;
+            if !matches!(
+                transition,
+                crate::TaskFlowTransition::CancelProvenAbsent { proof_digest }
+                    if proof_digest == *receipt_digest
+            ) {
+                return Err(AutomationError::Conflict);
+            }
+        }
+
         let step = sqlx::query(
             "SELECT event_kind, receipt_digest, observation, final_outcome
              FROM taskflow_step_outbox
@@ -762,32 +792,40 @@ impl AutomationStore {
         .bind(i64::from(current.step_attempt))
         .fetch_optional(&mut *transaction)
         .await
-        .map_err(unavailable)?
-        .ok_or(AutomationError::Conflict)?;
-        let step_event: String = step
-            .try_get("event_kind")
-            .map_err(|_| AutomationError::Corrupt)?;
-        let step_receipt: Option<String> = step
-            .try_get("receipt_digest")
-            .map_err(|_| AutomationError::Corrupt)?;
-        let step_observation: Option<String> = step
-            .try_get("observation")
-            .map_err(|_| AutomationError::Corrupt)?;
-        let step_outcome: Option<String> = step
-            .try_get("final_outcome")
-            .map_err(|_| AutomationError::Corrupt)?;
-        let terminal_step_matches = match step_event.as_str() {
-            "reconciled" => {
-                step_outcome.as_deref() == Some(expected_terminal) && step_observation.is_none()
+        .map_err(unavailable)?;
+        if let Some(step) = step {
+            let step_event: String = step
+                .try_get("event_kind")
+                .map_err(|_| AutomationError::Corrupt)?;
+            let step_receipt: Option<String> = step
+                .try_get("receipt_digest")
+                .map_err(|_| AutomationError::Corrupt)?;
+            let step_observation: Option<String> = step
+                .try_get("observation")
+                .map_err(|_| AutomationError::Corrupt)?;
+            let step_outcome: Option<String> = step
+                .try_get("final_outcome")
+                .map_err(|_| AutomationError::Corrupt)?;
+            let terminal_step_matches = match step_event.as_str() {
+                "reconciled" => {
+                    step_outcome.as_deref() == Some(expected_terminal)
+                        && step_observation.is_none()
+                }
+                "recorded" => {
+                    matches!(expected_terminal, "succeeded" | "failed")
+                        && step_observation.as_deref() == Some(expected_terminal)
+                        && step_outcome.is_none()
+                }
+                _ => false,
+            };
+            if step_receipt.as_deref() != Some(receipt_digest.as_str()) || !terminal_step_matches {
+                return Err(AutomationError::Conflict);
             }
-            "recorded" => {
-                matches!(expected_terminal, "succeeded" | "failed")
-                    && step_observation.as_deref() == Some(expected_terminal)
-                    && step_outcome.is_none()
-            }
-            _ => false,
-        };
-        if step_receipt.as_deref() != Some(receipt_digest.as_str()) || !terminal_step_matches {
+        } else if !claimed_absence_cancel {
+            // The only terminal path without a durable step is the tiny crash
+            // window after the run was started but before the step intent was
+            // appended. It is accepted only by the exact proof-bound
+            // CancelProvenAbsent event verified above.
             return Err(AutomationError::Conflict);
         }
 
