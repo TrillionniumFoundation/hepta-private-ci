@@ -15,6 +15,7 @@ ordered and checksum-bound:
 8. `0008_provider_effect_ack_source.sql`
 9. `0009_authbus_replay.sql`
 10. `0010_authbus_outbox.sql`
+11. `0011_authbus_authority.sql`
 
 Unknown, missing, incomplete, failed or checksum-mismatched migration rows cause
 store open to **fail closed**. They are never treated as an empty, current or
@@ -40,12 +41,19 @@ store. This mutex does not serialize other processes or independent opens.
 
 AuthBus signed admission uses `BEGIN IMMEDIATE` to serialize replay and capacity
 checks across independent handles. Its sequence update commits before a receipt
-returns. `enqueue_authbus_message` replaces direct admission for durable delivery: one transaction advances that same replay registry and inserts the immutable message. Its fenced lease/retry/ack operations redeliver messages, never unknown provider effects. See `hepta-authbus/SIGNED_ADMISSION.md` for retention and delivery semantics.
+returns. `enqueue_authbus_message` replaces direct admission for durable delivery:
+one transaction advances that same replay registry and inserts the immutable
+message. Migration 0011 adds append-only policy/trust revisions, the
+conservation-checked quota ledger, reservation/settlement state and the local
+record of externally retained replay checkpoints. Its fenced lease/retry/ack
+operations redeliver messages, never unknown provider effects. See
+`hepta-authbus/SIGNED_ADMISSION.md` for retention and delivery semantics.
 
 ## Backup, restore and retention requirements
 
-Current source does not implement an external monotonic checkpoint or managed
-retention service. A production operator must therefore:
+Current source exposes replay-root/checkpoint verification and records the latest
+externally acknowledged checkpoint, but the independent retention service itself
+is deliberately outside this SQLite lineage. A production operator must therefore:
 
 - copy a transactionally consistent database and associated checkpoint;
 - verify migration checksums and integrity after restore;
