@@ -1,0 +1,167 @@
+name: Inference worker exact-revision qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "docs/modules/inference.worker/**"
+      - "qualification/module-execution-dossiers/detail/inference.worker.md"
+      - "docs/readiness/LANE_B_NATIVE_HOST.md"
+      - ".github/workflows/inference-worker-qualification.yml"
+  push:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-infer-worker-host/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "docs/modules/inference.worker/**"
+      - "qualification/module-execution-dossiers/detail/inference.worker.md"
+      - "docs/readiness/LANE_B_NATIVE_HOST.md"
+      - ".github/workflows/inference-worker-qualification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: inference-worker-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  source-head:
+    name: Exact source worker/core qualification
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+
+      - name: Prepare native prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+
+      - name: Resolve verified sandboxed V8 artifacts for Cargo
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Test inference control and worker
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/inference-worker-target
+        run: |
+          mkdir -p "$RUNNER_TEMP/inference-worker-evidence"
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/inference-worker-evidence/tests.json" -- \
+            just test --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host
+
+      - name: Strict lint inference worker
+        working-directory: codex-rs
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/inference-worker-target
+        run: |
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/inference-worker-evidence/clippy.json" -- \
+            cargo clippy --locked -p codex-hepta-infer-worker-host --all-targets --no-deps -- -D warnings
+
+      - name: Bind qualification receipt to exact revision
+        env:
+          RECEIPT_DIR: ${{ runner.temp }}/inference-worker-evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          python3 - <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import subprocess
+
+          root = pathlib.Path(os.environ["RECEIPT_DIR"])
+          source_sha = subprocess.check_output(
+              ["git", "rev-parse", "HEAD"], text=True
+          ).strip()
+          tree_sha = subprocess.check_output(
+              ["git", "rev-parse", "HEAD^{tree}"], text=True
+          ).strip()
+
+          commands = {}
+          for name in ("tests.json", "clippy.json"):
+              path = root / name
+              data = path.read_bytes()
+              commands[name] = {
+                  "sha256": hashlib.sha256(data).hexdigest(),
+                  "bytes": len(data),
+              }
+
+          receipt = {
+              "schema": "hepta.inference-worker-qualification.v1",
+              "source_sha": source_sha,
+              "tree_sha": tree_sha,
+              "commands": commands,
+              "repository_source_qualification": "executed",
+              "hardware_qualification": "not_executed_by_this_workflow",
+              "independent_acceptance": "not_granted_by_this_workflow",
+              "activation": "not_granted_by_this_workflow",
+              "release": "not_granted_by_this_workflow",
+          }
+          (root / "receipt.json").write_text(
+              json.dumps(receipt, sort_keys=True, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          PY
+          python3 - <<'PY'
+          import json
+          import os
+          import pathlib
+          import subprocess
+
+          receipt = json.loads(
+              (pathlib.Path(os.environ["RECEIPT_DIR"]) / "receipt.json").read_text()
+          )
+          assert receipt["source_sha"] == subprocess.check_output(
+              ["git", "rev-parse", "HEAD"], text=True
+          ).strip()
+          assert receipt["tree_sha"] == subprocess.check_output(
+              ["git", "rev-parse", "HEAD^{tree}"], text=True
+          ).strip()
+          PY
+
+      - name: Retain exact worker qualification receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: inference-worker-qualification-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/inference-worker-evidence/*.json
+          if-no-files-found: error
+          retention-days: 30
