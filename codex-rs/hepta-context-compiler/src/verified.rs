@@ -170,7 +170,6 @@ pub fn compile_verified_v2(
         evidence.push(current);
     }
     evidence.sort_by(|left, right| left.item_id.cmp(&right.item_id));
-    let admission_manifest_digest = digest_admission_manifest(&evidence);
     let compiled = compile_v2(request).map_err(ContextClosureErrorV2::Compilation)?;
     let selected = compiled
         .receipt
