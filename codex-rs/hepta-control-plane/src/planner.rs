@@ -550,6 +550,7 @@ pub enum PlannerError {
     SnapshotExpired,
     UnknownCandidateOwner { candidate: String, owner: String },
     InvalidResourceReservation(String),
+    ResourceProfileMismatch,
     MissingResourceAxis { candidate: String, axis: String },
     UnknownResourceAxis { candidate: String, axis: String },
     AbstainUnavailable,
@@ -598,6 +599,9 @@ impl fmt::Display for PlannerError {
                     "invalid essential resource reservation for {axis}"
                 )
             }
+            Self::ResourceProfileMismatch => formatter.write_str(
+                "planner resource-profile digest does not match canonical reservations",
+            ),
             Self::MissingResourceAxis { candidate, axis } => {
                 write!(
                     formatter,
@@ -654,6 +658,7 @@ pub fn collect_snapshot(
     request.required_owner_ids.sort();
     reject_duplicate_ids(&request.required_owner_ids, PlannerError::DuplicateOwner)?;
     let required_owner_set_digest = digest_owner_set(&request.required_owner_ids);
+    let required_owner_ids: BTreeSet<_> = request.required_owner_ids.iter().cloned().collect();
     owner_summaries.sort_by(|left, right| left.owner_id.cmp(&right.owner_id));
     for window in owner_summaries.windows(2) {
         if window[0].owner_id == window[1].owner_id {
@@ -686,12 +691,15 @@ pub fn collect_snapshot(
             .collected_at_micros
             .checked_sub(summary.observed_at_micros)
             .ok_or(PlannerError::Arithmetic)?;
-        if summary.expires_at_micros <= request.collected_at_micros
-            || age > request.maximum_owner_age_micros
+        if required_owner_ids.contains(&summary.owner_id)
+            && (summary.expires_at_micros <= request.collected_at_micros
+                || age > request.maximum_owner_age_micros)
         {
             stale_owner_ids.push(summary.owner_id.clone());
         }
-        if summary.readiness != OwnerReadinessV1::Ready {
+        if required_owner_ids.contains(&summary.owner_id)
+            && summary.readiness != OwnerReadinessV1::Ready
+        {
             unavailable_owner_ids.push(summary.owner_id.clone());
         }
         expiry = expiry.min(summary.expires_at_micros);
@@ -732,6 +740,18 @@ pub fn collect_snapshot(
     Ok(snapshot)
 }
 
+pub fn canonical_resource_profile_digest(
+    reservations: &[ResourceReservationV1],
+) -> Result<Digest32, PlannerError> {
+    if reservations.is_empty() || reservations.len() > MAX_RESOURCE_RESERVATIONS {
+        return Err(PlannerError::LimitExceeded("resource reservations"));
+    }
+    let mut normalized = reservations.to_vec();
+    normalized.sort_by(|left, right| left.axis.cmp(&right.axis));
+    validate_reservations(&normalized)?;
+    Ok(digest_resource_profile(&normalized))
+}
+
 pub fn prepare_plan(
     snapshot: &GlobalStateSnapshotV1,
     mut request: PlanningRequestV1,
@@ -759,6 +779,11 @@ pub fn prepare_plan(
         .resource_reservations
         .sort_by(|left, right| left.axis.cmp(&right.axis));
     validate_reservations(&request.resource_reservations)?;
+    if request.resource_profile_digest
+        != canonical_resource_profile_digest(&request.resource_reservations)?
+    {
+        return Err(PlannerError::ResourceProfileMismatch);
+    }
 
     let source_candidate_set_digest = digest_candidates(&request.candidates);
     let reservation_map: BTreeMap<_, _> = request
@@ -1298,6 +1323,17 @@ fn digest_candidates(candidates: &[PlanCandidateV1]) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
+fn digest_resource_profile(reservations: &[ResourceReservationV1]) -> Digest32 {
+    let mut bytes = b"hepta.control.resource-profile.v1".to_vec();
+    push_len(&mut bytes, reservations.len());
+    for reservation in reservations {
+        push_id(&mut bytes, &reservation.axis);
+        bytes.extend_from_slice(&reservation.endowment.raw().to_be_bytes());
+        bytes.extend_from_slice(&reservation.essential_floor.raw().to_be_bytes());
+    }
+    Digest32::of_bytes(&bytes)
+}
+
 fn digest_prepared_plan(prepared: &PreparedPlanInputV1) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(b"hepta.control.prepared-plan.v1");
@@ -1430,3 +1466,7 @@ fn push_len(bytes: &mut Vec<u8>, value: usize) {
 #[cfg(test)]
 #[path = "planner_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "planner_perf_tests.rs"]
+mod perf_tests;
