@@ -33,7 +33,9 @@ fn canonical_decision_json_uses_registry_field_names_and_order() {
     );
     let encoded = wire.to_canonical_json().expect("encode");
     let text = std::str::from_utf8(&encoded).expect("utf8");
-    assert!(text.starts_with("{\"decisionId\":\"decision-1\",\"episodeId\":\"episode-1\",\"candidateSetDigest\":"));
+    assert!(text.starts_with(
+        "{\"decisionId\":\"decision-1\",\"episodeId\":\"episode-1\",\"candidateSetDigest\":"
+    ));
     assert!(text.contains("\"policyDigest\":"));
     assert!(text.contains("\"chosenId\":\"choice\""));
     assert!(text.contains("\"propensityPpm\":500000"));
@@ -89,10 +91,9 @@ fn credit_batch_adapter_preserves_allocations_and_residual() {
     assert_eq!(wire.credit_id, id("credit-batch"));
     assert_eq!(wire.allocations.len(), 2);
     assert_eq!(wire.conservation_residual_q32, 10);
-    let roundtrip = CreditAssignmentReceiptV1::from_canonical_json(
-        &wire.to_canonical_json().expect("encode"),
-    )
-    .expect("decode");
+    let roundtrip =
+        CreditAssignmentReceiptV1::from_canonical_json(&wire.to_canonical_json().expect("encode"))
+            .expect("decode");
     assert_eq!(roundtrip, wire);
 }
 
@@ -125,11 +126,7 @@ fn dataset_adapter_binds_revocation_cut_as_deletion_cutoff() {
         revocation_cut_digest: digest("revocation"),
         inclusion_policy_digest: digest("policy"),
     };
-    let wire = DatasetSnapshotV1::from_dataset_receipt(
-        &receipt,
-        digest("schema"),
-        digest("split"),
-    );
+    let wire = DatasetSnapshotV1::from_dataset_receipt(&receipt, digest("schema"), digest("split"));
     assert_eq!(wire.deletion_cutoff_digest, digest("revocation"));
     assert_eq!(wire.content_digest, digest("content"));
     assert_eq!(wire.row_count, 2);
