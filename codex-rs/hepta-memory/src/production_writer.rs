@@ -2072,3 +2072,227 @@ mod takeover_regression_tests {
         );
     }
 }
+
+
+#[cfg(all(test, unix))]
+mod final_use_dispatch_tests {
+    use super::*;
+    use codex_hepta_contracts::FinalUseGrant;
+    use codex_hepta_contracts::FinalUseRevocations;
+    use codex_hepta_paths::HeptaFleetRoot;
+    use ed25519_dalek::Signer;
+    use ed25519_dalek::SigningKey;
+    use std::collections::BTreeSet;
+    use std::os::unix::fs::PermissionsExt;
+    use std::sync::atomic::AtomicUsize;
+    use std::sync::atomic::Ordering;
+    use tempfile::TempDir;
+
+    fn agent() -> AgentId {
+        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cff").expect("agent")
+    }
+
+    async fn store(temp: &TempDir) -> CognitiveStore {
+        let root = temp.path().join("fleet-final-use");
+        std::fs::create_dir_all(&root).expect("fleet root");
+        let fleet = HeptaFleetRoot::parse(root.canonicalize().expect("canonical root"))
+            .expect("fleet root");
+        CognitiveStore::open(&fleet.layout().agent(&agent()))
+            .await
+            .expect("store")
+    }
+
+    struct FinalUseVerifier;
+
+    impl ProductionAuthorityVerifier for FinalUseVerifier {
+        fn verify(
+            &self,
+            _authority: &ProductionAuthorityLease,
+            _expected_agent: &AgentId,
+        ) -> Result<(), String> {
+            Ok(())
+        }
+    }
+
+    #[derive(Debug)]
+    struct CountingTarget {
+        calls: AtomicUsize,
+        destination: String,
+    }
+
+    impl CountingTarget {
+        fn new(destination: &str) -> Self {
+            Self {
+                calls: AtomicUsize::new(0),
+                destination: destination.to_string(),
+            }
+        }
+
+        fn calls(&self) -> usize {
+            self.calls.load(Ordering::SeqCst)
+        }
+    }
+
+    impl ProductionOutboxTarget for CountingTarget {
+        fn dispatch<'a>(
+            &'a self,
+            _request: ProductionDispatchRequest,
+        ) -> ProductionDispatchFuture<'a> {
+            self.calls.fetch_add(1, Ordering::SeqCst);
+            Box::pin(async {
+                ProductionTargetOutcome::Committed {
+                    receipt: "target:committed".to_string(),
+                }
+            })
+        }
+    }
+
+    impl FinalUseProductionOutboxTarget for CountingTarget {
+        fn destination_id(&self) -> &str {
+            &self.destination
+        }
+    }
+
+    fn production_authority(owner: AgentId) -> ProductionAuthorityLease {
+        ProductionAuthorityLease::from_verified_parts(
+            owner,
+            Sha256Digest::for_bytes(b"production-grant"),
+            31,
+            41,
+            now_unix_seconds().expect("clock") + 3_600,
+            ProductionAuthorityToken::from_verified_bytes(b"production-token".to_vec())
+                .expect("token"),
+        )
+        .expect("authority")
+    }
+
+    fn signed_final_use(
+        issuer: &SigningKey,
+        binding: FinalUseBinding,
+        grant_id: &str,
+        nonce: [u8; 32],
+    ) -> SignedFinalUseGrant {
+        let now_ms = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .expect("clock")
+            .as_millis() as u64;
+        let grant = FinalUseGrant {
+            schema_version: 1,
+            signer_id: "final-use-owner".to_string(),
+            authority_epoch: 71,
+            grant_id: grant_id.to_string(),
+            nonce,
+            binding,
+            not_before_unix_ms: now_ms.saturating_sub(1_000),
+            expires_at_unix_ms: now_ms + 30_000,
+        };
+        let signature = issuer
+            .sign(&grant.signing_bytes().expect("signing bytes"))
+            .to_bytes()
+            .to_vec();
+        SignedFinalUseGrant { grant, signature }
+    }
+
+    #[tokio::test]
+    async fn final_use_is_consumed_at_target_entry_and_binding_mismatch_never_calls_target() {
+        let temp = TempDir::new().expect("temp");
+        let store = store(&temp).await;
+        let owner = store.owner_agent_id().clone();
+        let writer = ProductionDurableWriter::open(
+            store,
+            production_authority(owner.clone()),
+            &FinalUseVerifier,
+            "production:h4:final-use",
+            1,
+        )
+        .await
+        .expect("writer");
+
+        let authority_dir = temp.path().join("final-use-authority");
+        std::fs::create_dir(&authority_dir).expect("authority dir");
+        std::fs::set_permissions(
+            &authority_dir,
+            std::fs::Permissions::from_mode(0o700),
+        )
+        .expect("authority permissions");
+        let issuer = SigningKey::from_bytes(&[83; 32]);
+        let final_use = FinalUseAuthority::open_state_dir(
+            &authority_dir,
+            "final-use-owner".to_string(),
+            issuer.verifying_key().to_bytes(),
+            FinalUseRevocations {
+                authority_epoch: 71,
+                revision: 1,
+                revoked_grant_ids: BTreeSet::new(),
+            },
+        )
+        .expect("final-use authority");
+        let target = Arc::new(CountingTarget::new("destination:cognitive-store"));
+        let dispatcher =
+            ProductionFinalUseOutboxDispatcher::attach(final_use.clone(), target.clone());
+
+        let queued = writer
+            .admit(
+                "occurrence:final-use:1",
+                "memory.write",
+                "{\"fact\":\"one\"}",
+            )
+            .await
+            .expect("queued");
+        let binding = FinalUseBinding {
+            subject_id: owner.as_str().to_string(),
+            destination_id: target.destination_id().to_string(),
+            request_sha256: digest_bytes(&operation_digest(writer.authority(), &queued))
+                .expect("request digest"),
+            scope_sha256: [7; 32],
+            payload_sha256: digest_bytes(&queued.payload_sha256).expect("payload digest"),
+        };
+        let signed = signed_final_use(&issuer, binding.clone(), "final-use-good", [11; 32]);
+        let dispatched = dispatcher
+            .dispatch(&writer, &signed, &binding, queued)
+            .await
+            .expect("authorized dispatch");
+        assert_eq!(dispatched.state, LocalOutcomeState::Committed);
+        assert_eq!(target.calls(), 1);
+
+        let queued_bad = writer
+            .admit(
+                "occurrence:final-use:2",
+                "memory.write",
+                "{\"fact\":\"two\"}",
+            )
+            .await
+            .expect("second queued");
+        let bad_binding = FinalUseBinding {
+            subject_id: owner.as_str().to_string(),
+            destination_id: "destination:substituted".to_string(),
+            request_sha256: digest_bytes(&operation_digest(writer.authority(), &queued_bad))
+                .expect("request digest"),
+            scope_sha256: [8; 32],
+            payload_sha256: digest_bytes(&queued_bad.payload_sha256).expect("payload digest"),
+        };
+        let bad_signed =
+            signed_final_use(&issuer, bad_binding.clone(), "final-use-bad-destination", [12; 32]);
+        assert!(matches!(
+            dispatcher
+                .dispatch(&writer, &bad_signed, &bad_binding, queued_bad.clone())
+                .await,
+            Err(ProductionWriterError::FinalUse(FinalUseError::BindingMismatch))
+        ));
+        assert_eq!(target.calls(), 1, "mismatched destination never enters target");
+        assert_eq!(
+            writer
+                .status("occurrence:final-use:2")
+                .await
+                .expect("queued status"),
+            LocalOutcomeState::Queued,
+            "preflight binding rejection happens before durable dispatch claim"
+        );
+
+        // Preflight rejection did not consume the owner-signed nonce.
+        let token = final_use
+            .claim(&bad_signed, &bad_binding)
+            .expect("nonce remains unused");
+        drop(token);
+    }
+}
