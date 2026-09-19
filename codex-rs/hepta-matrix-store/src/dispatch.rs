@@ -543,6 +543,136 @@ impl MatrixDurableStore {
         Ok(true)
     }
 
+    pub async fn compact_dispatch_observations(
+        &self,
+        txn_id: &MatrixTransactionId,
+        archived_at_ms: u64,
+    ) -> Result<bool, MatrixDurableError> {
+        let mut transaction = self
+            .sqlite_pool()
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(|_| MatrixDurableError::Unavailable)?;
+        let current = dispatch_by_txn_tx(&mut transaction, txn_id)
+            .await?
+            .ok_or(MatrixDurableError::Conflict)?;
+        if !current.state.is_terminal() {
+            return Err(MatrixDurableError::Conflict);
+        }
+        let prior_archive_digest = sqlx::query(
+            "SELECT segment_digest
+             FROM matrix_dispatch_observation_archives
+             WHERE stable_txn_id = ?
+             ORDER BY archive_seq DESC LIMIT 1",
+        )
+        .bind(txn_id.as_str())
+        .fetch_optional(&mut *transaction)
+        .await
+        .map_err(|_| MatrixDurableError::Unavailable)?
+        .map(|row| row.try_get::<String, _>("segment_digest"))
+        .transpose()
+        .map_err(|_| MatrixDurableError::Unavailable)?
+        .unwrap_or_else(|| "0".repeat(64));
+        let rows = sqlx::query(
+            "SELECT observation_seq, kind, event_id, evidence_digest, observed_at_ms
+             FROM matrix_dispatch_observations
+             WHERE stable_txn_id = ?
+             ORDER BY observation_seq",
+        )
+        .bind(txn_id.as_str())
+        .fetch_all(&mut *transaction)
+        .await
+        .map_err(|_| MatrixDurableError::Unavailable)?;
+        if rows.is_empty() {
+            transaction
+                .commit()
+                .await
+                .map_err(|_| MatrixDurableError::Unavailable)?;
+            return Ok(false);
+        }
+        let mut encoded = Vec::new();
+        encoded.extend_from_slice(b"hepta.matrix.dispatch-observation-archive.v1");
+        encode_field(&mut encoded, prior_archive_digest.as_bytes());
+        let mut first_observed_at_ms = None;
+        let mut last_observed_at_ms = 0_u64;
+        let mut last_sequence = 0_i64;
+        for row in &rows {
+            let sequence: i64 = row
+                .try_get("observation_seq")
+                .map_err(|_| MatrixDurableError::Unavailable)?;
+            let kind: String = row
+                .try_get("kind")
+                .map_err(|_| MatrixDurableError::Unavailable)?;
+            let event_id: String = row
+                .try_get("event_id")
+                .map_err(|_| MatrixDurableError::Unavailable)?;
+            let evidence_digest: String = row
+                .try_get("evidence_digest")
+                .map_err(|_| MatrixDurableError::Unavailable)?;
+            let observed_at_ms = to_u64(
+                row.try_get("observed_at_ms")
+                    .map_err(|_| MatrixDurableError::Unavailable)?,
+            )?;
+            encode_field(&mut encoded, kind.as_bytes());
+            encode_field(&mut encoded, event_id.as_bytes());
+            encode_field(&mut encoded, evidence_digest.as_bytes());
+            encoded.extend_from_slice(&observed_at_ms.to_be_bytes());
+            first_observed_at_ms.get_or_insert(observed_at_ms);
+            last_observed_at_ms = observed_at_ms;
+            last_sequence = sequence;
+        }
+        if archived_at_ms < last_observed_at_ms {
+            return Err(MatrixDurableError::Invalid);
+        }
+        let segment_digest = Sha256Digest::for_bytes(&encoded).as_str().to_string();
+        sqlx::query(
+            "INSERT INTO matrix_dispatch_observation_archives (
+                stable_txn_id, prior_archive_digest, segment_digest,
+                observation_count, first_observed_at_ms, last_observed_at_ms,
+                archived_at_ms
+             ) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        )
+        .bind(txn_id.as_str())
+        .bind(&prior_archive_digest)
+        .bind(&segment_digest)
+        .bind(to_i64(rows.len() as u64)?)
+        .bind(to_i64(first_observed_at_ms.ok_or(MatrixDurableError::Corrupt)?)?)
+        .bind(to_i64(last_observed_at_ms)?)
+        .bind(to_i64(archived_at_ms)?)
+        .execute(&mut *transaction)
+        .await
+        .map_err(|_| MatrixDurableError::Unavailable)?;
+        sqlx::query(
+            "DELETE FROM matrix_dispatch_observations
+             WHERE stable_txn_id = ? AND observation_seq <= ?",
+        )
+        .bind(txn_id.as_str())
+        .bind(last_sequence)
+        .execute(&mut *transaction)
+        .await
+        .map_err(|_| MatrixDurableError::Unavailable)?;
+        transaction
+            .commit()
+            .await
+            .map_err(|_| MatrixDurableError::Unavailable)?;
+        Ok(true)
+    }
+
+    pub async fn dispatch_archive_segment_count(
+        &self,
+        txn_id: &MatrixTransactionId,
+    ) -> Result<u64, MatrixDurableError> {
+        let count: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM matrix_dispatch_observation_archives
+             WHERE stable_txn_id = ?",
+        )
+        .bind(txn_id.as_str())
+        .fetch_one(self.sqlite_pool())
+        .await
+        .map_err(|_| MatrixDurableError::Unavailable)?;
+        u64::try_from(count).map_err(|_| MatrixDurableError::Corrupt)
+    }
+
     pub async fn dispatch_record(
         &self,
         txn_id: &MatrixTransactionId,
@@ -667,6 +797,11 @@ async fn append_observation(
     Ok(())
 }
 
+fn encode_field(target: &mut Vec<u8>, value: &[u8]) {
+    target.extend_from_slice(&(value.len() as u64).to_be_bytes());
+    target.extend_from_slice(value);
+}
+
 fn validate_identity(value: &str) -> Result<(), MatrixDurableError> {
     if value.is_empty()
         || value.len() > 255
@@ -710,13 +845,16 @@ pub(crate) async fn verify_dispatch_schema(
             'matrix_dispatch_observations',
             'matrix_dispatch_observations_by_txn',
             'matrix_dispatch_observations_no_update',
-            'matrix_dispatch_observations_no_delete'
+            'matrix_dispatch_observation_archives',
+            'matrix_dispatch_observation_archives_by_txn',
+            'matrix_dispatch_observation_archives_no_update',
+            'matrix_dispatch_observation_archives_no_delete'
          )",
     )
     .fetch_one(pool)
     .await
     .map_err(|_| MatrixDurableError::Unavailable)?;
-    if count != 7 {
+    if count != 10 {
         return Err(MatrixDurableError::Corrupt);
     }
     Ok(())
