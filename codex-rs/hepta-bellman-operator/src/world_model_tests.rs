@@ -82,7 +82,7 @@ fn op_04_prediction_is_synthetic_and_unsupported_pairs_abstain() {
 
 #[test]
 fn world_model_rejects_relabelled_duplicate_evidence() {
-    let mut first = sample("sample-1", "state-b", 10);
+    let first = sample("sample-1", "state-b", 10);
     let mut second = sample("sample-2", "state-c", 20);
     second.evidence_digest = first.evidence_digest;
     assert_eq!(
