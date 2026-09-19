@@ -16,6 +16,7 @@ use codex_hepta_types::StableId;
 
 pub const MAX_RUNTIME_MODULES: usize = 128;
 pub const MAX_MODULE_PORTS: usize = 64;
+pub const MAX_MODULE_DEPENDENCIES: usize = 64;
 pub const MAX_MODULE_DOMAINS: usize = 32;
 pub const MAX_MODULE_EFFECTS: usize = 32;
 
@@ -50,6 +51,7 @@ pub struct RuntimeModuleAbiV1 {
     pub predecessor_generation: Option<Generation>,
     pub rollback_predecessor_digest: Digest32,
     pub state_class: RuntimeModuleStateClassV1,
+    pub dependencies: Vec<StableId>,
     pub input_ports: Vec<StableId>,
     pub output_ports: Vec<StableId>,
     pub authoritative_domains: BTreeSet<StableId>,
@@ -64,14 +66,16 @@ impl RuntimeModuleAbiV1 {
         if self.candidate_artifact_digest.is_zero() {
             return Err(RuntimeModuleRegistryError::EmptyCandidateArtifactDigest);
         }
-        if self.input_ports.len() > MAX_MODULE_PORTS
+        if self.dependencies.len() > MAX_MODULE_DEPENDENCIES
+            || self.input_ports.len() > MAX_MODULE_PORTS
             || self.output_ports.len() > MAX_MODULE_PORTS
             || self.authoritative_domains.len() > MAX_MODULE_DOMAINS
             || self.effect_scope.len() > MAX_MODULE_EFFECTS
         {
             return Err(RuntimeModuleRegistryError::Bounds);
         }
-        if self.input_ports.iter().collect::<BTreeSet<_>>().len() != self.input_ports.len()
+        if self.dependencies.iter().collect::<BTreeSet<_>>().len() != self.dependencies.len()
+            || self.input_ports.iter().collect::<BTreeSet<_>>().len() != self.input_ports.len()
             || self.output_ports.iter().collect::<BTreeSet<_>>().len() != self.output_ports.len()
         {
             return Err(RuntimeModuleRegistryError::DuplicatePort);
@@ -131,6 +135,7 @@ pub struct ActiveRuntimeModuleV1 {
     pub candidate_artifact_digest: Digest32,
     pub owner_id: StableId,
     pub state_class: RuntimeModuleStateClassV1,
+    pub dependencies: Vec<StableId>,
     pub input_ports: Vec<StableId>,
     pub output_ports: Vec<StableId>,
     pub authoritative_domains: BTreeSet<StableId>,
@@ -386,6 +391,7 @@ impl RuntimeModuleRegistryV1 {
             predecessor_generation: Some(active_generation),
             rollback_predecessor_digest: active_record.abi.implementation_digest,
             state_class: predecessor.abi.state_class,
+            dependencies: predecessor.abi.dependencies,
             input_ports: predecessor.abi.input_ports,
             output_ports: predecessor.abi.output_ports,
             authoritative_domains: predecessor.abi.authoritative_domains,
@@ -431,6 +437,7 @@ impl RuntimeModuleRegistryV1 {
                         candidate_artifact_digest: record.abi.candidate_artifact_digest,
                         owner_id: record.abi.owner_id.clone(),
                         state_class: record.abi.state_class,
+                        dependencies: record.abi.dependencies.clone(),
                         input_ports: record.abi.input_ports.clone(),
                         output_ports: record.abi.output_ports.clone(),
                         authoritative_domains: record.abi.authoritative_domains.clone(),
@@ -452,6 +459,7 @@ impl RuntimeModuleRegistryV1 {
                 RuntimeModuleStateClassV1::Stateful => 1,
                 RuntimeModuleStateClassV1::ExternalStateful => 2,
             });
+            push_ids(&mut bytes, &module.dependencies);
             push_ids(&mut bytes, &module.input_ports);
             push_ids(&mut bytes, &module.output_ports);
             push_ids(&mut bytes, &module.authoritative_domains.iter().cloned().collect::<Vec<_>>());
@@ -547,6 +555,7 @@ mod tests {
             predecessor_generation: predecessor.map(|(g, _)| Generation::new(g).expect("generation")),
             rollback_predecessor_digest: predecessor.map_or(Digest32::ZERO, |(_, d)| digest(d)),
             state_class: RuntimeModuleStateClassV1::Stateful,
+            dependencies: Vec::new(),
             input_ports: vec![id("query")],
             output_ports: vec![id("result")],
             authoritative_domains: [id("memory-ledger")].into_iter().collect(),
