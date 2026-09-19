@@ -125,9 +125,12 @@ impl LaneFBudgetV3 {
 pub struct LaneFRunRequestV3 {
     pub run_id: StableId,
     pub request_digest: Digest32,
+    pub body_digest: Digest32,
+    pub artifact_set_digest: Digest32,
     pub snapshot: CapabilitySnapshotV2,
     pub legal_candidates: LegalActionCandidateSetV1,
     pub budget: LaneFBudgetV3,
+    pub deadline_unix_micros: u64,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -407,6 +410,7 @@ fn validate_host_envelope(receipt: &LaneFCompositionReceiptV3) -> Result<(), Pip
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum PipelineErrorV3 {
     InvalidBudget,
+    InvalidDeadline,
     EmptyDigest(&'static str),
     MissingCapability(&'static str),
     OwnerMismatch(&'static str),
@@ -451,8 +455,17 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
     ports: &mut P,
     control: &C,
 ) -> Result<LaneFCompositionReceiptV3, PipelineErrorV3> {
-    if request.request_digest.is_zero() {
-        return Err(PipelineErrorV3::EmptyDigest("request"));
+    for (name, digest) in [
+        ("request", request.request_digest),
+        ("body", request.body_digest),
+        ("artifact set", request.artifact_set_digest),
+    ] {
+        if digest.is_zero() {
+            return Err(PipelineErrorV3::EmptyDigest(name));
+        }
+    }
+    if request.deadline_unix_micros == 0 {
+        return Err(PipelineErrorV3::InvalidDeadline);
     }
     request.budget.validate()?;
     request.legal_candidates.validate()?;
@@ -687,8 +700,12 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
         let prefix = digest_prefix(&request.run_id, snapshot_digest, &stages, predecessor)?;
         let envelope = IntelligenceHostEnvelopeV1::new(
             request.run_id.clone(),
+            request.request_digest,
             snapshot_digest,
             objective_digest,
+            request.snapshot.authority_epoch(),
+            request.body_digest,
+            request.artifact_set_digest,
             legal_set_digest,
             utility_digest,
             evaluation_digest,
@@ -697,6 +714,7 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
             intuition_digest,
             context_digest,
             prefix,
+            request.deadline_unix_micros,
             request.budget.total_micros,
         )?;
         predecessor = internal_stage(
