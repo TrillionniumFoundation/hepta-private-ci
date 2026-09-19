@@ -90,7 +90,6 @@ export async function loadBrowserBootstrap({
   const timer = controller
     ? setTimeout(() => controller.abort(new Error("control bootstrap timeout")), timeoutMs)
     : null;
-  timer?.unref?.();
   try {
     const response = await fetchImpl(target.href, {
       method: "GET",
