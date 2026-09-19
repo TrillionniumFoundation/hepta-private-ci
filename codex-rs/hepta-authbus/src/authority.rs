@@ -118,6 +118,7 @@ pub struct QuotaReservation {
     pub state: ReservationState,
     pub observed_cost: Option<u64>,
     pub reservation_digest: Digest32,
+    pub settlement_digest: Option<Digest32>,
 }
 
 impl QuotaReservation {
@@ -152,6 +153,7 @@ impl QuotaReservation {
             state: ReservationState::Held,
             observed_cost: None,
             reservation_digest: Digest32::of_bytes(&bytes),
+            settlement_digest: None,
         })
     }
 
