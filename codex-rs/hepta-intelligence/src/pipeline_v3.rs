@@ -471,8 +471,6 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
     };
 
     predecessor = internal_stage(
-        &request,
-        snapshot_digest,
         predecessor,
         LaneFStageV3::LegalSetBuilt,
         request.legal_candidates.candidate_set_digest,
@@ -658,8 +656,6 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
             request.budget.total_micros,
         )?;
         predecessor = internal_stage(
-            &request,
-            snapshot_digest,
             predecessor,
             LaneFStageV3::HostEnvelopeBuilt,
             envelope.envelope_digest,
@@ -912,8 +908,6 @@ where
 }
 
 fn internal_stage(
-    request: &LaneFRunRequestV3,
-    snapshot_digest: Digest32,
     predecessor: Digest32,
     stage: LaneFStageV3,
     output_digest: Digest32,
@@ -922,7 +916,6 @@ fn internal_stage(
     if output_digest.is_zero() {
         return Err(PipelineErrorV3::EmptyDigest("internal stage"));
     }
-    let _ = port_input(request, snapshot_digest, predecessor, stage);
     stages.push(StageTraceV3 {
         stage,
         producer: stable_id("intelligence.control")?,
