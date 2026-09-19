@@ -1,6 +1,9 @@
 use super::*;
 
+use std::collections::BTreeMap;
+
 use codex_hepta_cognitive_types::MemoryKind;
+use codex_hepta_cognitive_types::build_snapshot;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_types::Revision;
 
@@ -92,9 +95,13 @@ fn policy(maximum: u32, protected: Vec<StableId>) -> CompactionPolicyV2 {
     }
 }
 
-fn semantic_payload(snapshot: &CognitiveSnapshotKeyV1) -> CompactionSemanticPayloadV2 {
+fn semantic_payload(
+    snapshot: &CognitiveSnapshotKeyV1,
+    source_memory_snapshot: &CognitiveSnapshot,
+) -> CompactionSemanticPayloadV2 {
     CompactionSemanticPayloadV2 {
         source_snapshot_digest: snapshot.vector_digest,
+        source_memory_snapshot_digest: source_memory_snapshot.snapshot_digest,
         payload_digest: digest("semantic-payload"),
         generator_implementation_digest: digest("semantic-generator"),
         generator_receipt_digest: digest("semantic-generator-receipt"),
@@ -104,14 +111,32 @@ fn semantic_payload(snapshot: &CognitiveSnapshotKeyV1) -> CompactionSemanticPayl
     }
 }
 
+fn source_memory_snapshot(inputs: &[CompactionInputRecordV2]) -> CognitiveSnapshot {
+    let mut heads = BTreeMap::<StableId, MemoryRecord>::new();
+    for input in inputs {
+        heads
+            .entry(input.record.record_id.clone())
+            .and_modify(|record| {
+                if input.record.revision > record.revision {
+                    *record = input.record.clone();
+                }
+            })
+            .or_insert_with(|| input.record.clone());
+    }
+    build_snapshot(generation(21), heads.into_values().collect())
+        .unwrap_or_else(|error| panic!("valid source memory snapshot: {error}"))
+}
+
 fn build(
     policy: &CompactionPolicyV2,
     inputs: Vec<CompactionInputRecordV2>,
 ) -> Result<QualifiedCompactionCandidateV2, QualifiedCompactionError> {
     let snapshot = snapshot_key();
-    let semantic = semantic_payload(&snapshot);
+    let source_memory_snapshot = source_memory_snapshot(&inputs);
+    let semantic = semantic_payload(&snapshot, &source_memory_snapshot);
     build_qualified_candidate(
         snapshot,
+        &source_memory_snapshot,
         generation(2),
         Some(digest("predecessor-checkpoint")),
         policy,
@@ -205,15 +230,18 @@ fn canonical_path_rejects_live_tombstone_live_resurrection() {
 #[test]
 fn checkpoint_generation_must_succeed_source_snapshot_generation() {
     let source_snapshot = snapshot_key();
-    let semantic = semantic_payload(&source_snapshot);
+    let inputs = vec![input(record("memory:a", 1, None, RecordState::Live), 1)];
+    let source_memory_snapshot = source_memory_snapshot(&inputs);
+    let semantic = semantic_payload(&source_snapshot, &source_memory_snapshot);
     assert_eq!(
         build_qualified_candidate(
             source_snapshot,
+            &source_memory_snapshot,
             generation(3),
             Some(digest("skipped-predecessor")),
             &policy(2, Vec::new()),
             &semantic,
-            vec![input(record("memory:a", 1, None, RecordState::Live), 1)],
+            inputs,
         ),
         Err(QualifiedCompactionError::CheckpointGenerationMismatch)
     );
@@ -344,16 +372,19 @@ fn protected_record_must_fit_combined_resource_budget() {
 #[test]
 fn semantic_payload_is_snapshot_and_tokenizer_bound() {
     let snapshot = snapshot_key();
-    let mut semantic = semantic_payload(&snapshot);
+    let inputs = vec![input(record("memory:a", 1, None, RecordState::Live), 1)];
+    let source_memory_snapshot = source_memory_snapshot(&inputs);
+    let mut semantic = semantic_payload(&snapshot, &source_memory_snapshot);
     semantic.tokenizer_digest = digest("different-tokenizer");
     assert_eq!(
         build_qualified_candidate(
             snapshot,
+            &source_memory_snapshot,
             generation(2),
             Some(digest("predecessor-checkpoint")),
             &policy(2, Vec::new()),
             &semantic,
-            vec![input(record("memory:a", 1, None, RecordState::Live), 1)],
+            inputs,
         ),
         Err(QualifiedCompactionError::TokenizerMismatch)
     );
@@ -364,17 +395,89 @@ fn semantic_payload_output_budget_is_enforced() {
     let snapshot = snapshot_key();
     let mut bounded = policy(2, Vec::new());
     bounded.maximum_payload_bytes = 128;
-    let semantic = semantic_payload(&snapshot);
+    let inputs = vec![input(record("memory:a", 1, None, RecordState::Live), 1)];
+    let source_memory_snapshot = source_memory_snapshot(&inputs);
+    let semantic = semantic_payload(&snapshot, &source_memory_snapshot);
     assert_eq!(
         build_qualified_candidate(
             snapshot,
+            &source_memory_snapshot,
             generation(2),
             Some(digest("predecessor-checkpoint")),
             &bounded,
             &semantic,
-            vec![input(record("memory:a", 1, None, RecordState::Live), 1)],
+            inputs,
         ),
         Err(QualifiedCompactionError::PayloadBudgetExceeded)
+    );
+}
+
+#[test]
+fn source_snapshot_coverage_must_match_input_heads() {
+    let snapshot = snapshot_key();
+    let source_inputs = vec![input(record("memory:a", 1, None, RecordState::Live), 1)];
+    let source_memory_snapshot = source_memory_snapshot(&source_inputs);
+    let semantic = semantic_payload(&snapshot, &source_memory_snapshot);
+    let inputs = vec![
+        input(record("memory:a", 1, None, RecordState::Live), 1),
+        input(record("memory:b", 1, None, RecordState::Live), 1),
+    ];
+    assert_eq!(
+        build_qualified_candidate(
+            snapshot,
+            &source_memory_snapshot,
+            generation(2),
+            Some(digest("predecessor-checkpoint")),
+            &policy(2, Vec::new()),
+            &semantic,
+            inputs,
+        ),
+        Err(QualifiedCompactionError::SourceSnapshotCoverageMismatch)
+    );
+}
+
+#[test]
+fn source_snapshot_head_must_match_lineage_head() {
+    let snapshot = snapshot_key();
+    let source_inputs = vec![input(record("memory:a", 1, None, RecordState::Live), 1)];
+    let source_memory_snapshot = source_memory_snapshot(&source_inputs);
+    let semantic = semantic_payload(&snapshot, &source_memory_snapshot);
+    let mut changed = record("memory:a", 1, None, RecordState::Live);
+    changed.content_digest = digest("different-content");
+    assert_eq!(
+        build_qualified_candidate(
+            snapshot,
+            &source_memory_snapshot,
+            generation(2),
+            Some(digest("predecessor-checkpoint")),
+            &policy(2, Vec::new()),
+            &semantic,
+            vec![input(changed, 1)],
+        ),
+        Err(QualifiedCompactionError::SourceSnapshotRecordMismatch(
+            "memory:a".to_string()
+        ))
+    );
+}
+
+#[test]
+fn semantic_payload_binds_source_memory_snapshot_digest() {
+    let snapshot = snapshot_key();
+    let inputs = vec![input(record("memory:a", 1, None, RecordState::Live), 1)];
+    let source_memory_snapshot = source_memory_snapshot(&inputs);
+    let mut semantic = semantic_payload(&snapshot, &source_memory_snapshot);
+    semantic.source_memory_snapshot_digest = digest("different-source-memory-snapshot");
+    assert_eq!(
+        build_qualified_candidate(
+            snapshot,
+            &source_memory_snapshot,
+            generation(2),
+            Some(digest("predecessor-checkpoint")),
+            &policy(2, Vec::new()),
+            &semantic,
+            inputs,
+        ),
+        Err(QualifiedCompactionError::SemanticMemorySnapshotMismatch)
     );
 }
 
