@@ -16,6 +16,7 @@ pub mod send_observer;
 
 mod config;
 mod control;
+mod final_use;
 mod runner;
 
 use std::collections::BTreeMap;
