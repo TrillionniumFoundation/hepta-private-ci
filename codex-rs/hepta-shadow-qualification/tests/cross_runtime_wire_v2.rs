@@ -83,7 +83,7 @@ fn id(value: &str) -> Result<StableId, Box<dyn Error>> {
 fn run_python_tcp(frame: &[u8]) -> Result<(std::process::ExitStatus, String, String), Box<dyn Error>> {
     let listener = TcpListener::bind(("127.0.0.1", 0))?;
     let port = listener.local_addr()?.port();
-    let mut child = Command::new(std::env::var_os("PYTHON").unwrap_or_else(|| "python3".into()))
+    let child = Command::new(std::env::var_os("PYTHON").unwrap_or_else(|| "python3".into()))
         .args(["-c", PYTHON_TCP_CONSUMER, &port.to_string()])
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
