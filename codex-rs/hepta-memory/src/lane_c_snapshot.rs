@@ -6,8 +6,10 @@
 
 use std::collections::BTreeMap;
 
+use codex_hepta_cognitive_read::AuthoritativeCognitiveSnapshotProvider;
 use codex_hepta_cognitive_read::AuthoritativeSnapshotV1;
 use codex_hepta_cognitive_read::ReadRequestV2;
+use codex_hepta_cognitive_read::SnapshotAcquisitionRequestV1;
 use codex_hepta_cognitive_read::ReadResultV2;
 use codex_hepta_cognitive_read::SnapshotProviderError;
 use codex_hepta_cognitive_read::read_v2;
@@ -50,11 +52,36 @@ pub struct CognitiveOwnerFrontiers {
 /// This value has no writer, SQL handle or effect authority. It is a historical
 /// cut, not an assertion that revocation remained unchanged after acquisition.
 #[derive(Clone, Debug, Eq, PartialEq)]
+
 pub struct DurableCognitiveSnapshot {
     scope_id: StableId,
     frontiers: CognitiveOwnerFrontiers,
     snapshot: CognitiveSnapshot,
     observed_at_unix_seconds: i64,
+}
+
+/// Production adapter from one immutable SQLite owner cut to the authoritative
+/// cognitive-read provider contract. The adapter owns no currentness policy:
+/// callers must reacquire and rebuild it before final consumption.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LaneCAuthoritativeSnapshotProvider {
+    envelope: AuthoritativeSnapshotV1,
+}
+
+impl LaneCAuthoritativeSnapshotProvider {
+    #[must_use]
+    pub const fn envelope(&self) -> &AuthoritativeSnapshotV1 {
+        &self.envelope
+    }
+}
+
+impl AuthoritativeCognitiveSnapshotProvider for LaneCAuthoritativeSnapshotProvider {
+    fn acquire(
+        &self,
+        _request: &SnapshotAcquisitionRequestV1,
+    ) -> Result<AuthoritativeSnapshotV1, SnapshotProviderError> {
+        Ok(self.envelope.clone())
+    }
 }
 
 impl DurableCognitiveSnapshot {
@@ -133,6 +160,25 @@ impl DurableCognitiveSnapshot {
             acquired_at_unix_ms,
             lease_expires_unix_ms,
         )
+    }
+
+    /// Convert this exact immutable owner cut into the production authoritative
+    /// provider expected by `cognitive.read`. External generation fields must
+    /// already have been frozen by their real owners in `vector`; this adapter
+    /// fills no defaults and grants no authority.
+    pub fn authoritative_provider(
+        &self,
+        vector: LaneCGenerationVectorV1,
+        acquired_at_unix_ms: u64,
+        lease_expires_unix_ms: u64,
+    ) -> Result<LaneCAuthoritativeSnapshotProvider, SnapshotProviderError> {
+        Ok(LaneCAuthoritativeSnapshotProvider {
+            envelope: self.bind_context(
+                vector,
+                acquired_at_unix_ms,
+                lease_expires_unix_ms,
+            )?,
+        })
     }
 }
 
