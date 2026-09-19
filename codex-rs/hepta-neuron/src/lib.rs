@@ -20,6 +20,7 @@ mod journal_lock;
 mod runtime;
 mod runtime_types;
 mod sparse;
+mod witness;
 
 pub use journal::JournalAnchor;
 pub use journal::JournalError;
@@ -51,6 +52,7 @@ pub use sparse::SparseError;
 pub use sparse::SparseSignalReceipt;
 pub use sparse::SparseTick;
 pub use sparse::sparse_tick;
+pub use witness::FileAnchorWitnessStore;
 
 const MAX_FEATURES: usize = 4_096;
 
