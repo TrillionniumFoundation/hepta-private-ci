@@ -43,6 +43,16 @@ impl AdmittedNduCoefficientProfileV1 {
     }
 
     #[must_use]
+    pub const fn manifest_digest(&self) -> Digest32 {
+        self.specification.manifest_digest
+    }
+
+    #[must_use]
+    pub const fn coordinate_digest(&self) -> Digest32 {
+        self.specification.coordinate_digest
+    }
+
+    #[must_use]
     pub const fn expires_unix_ms(&self) -> u64 {
         self.specification.expires_unix_ms
     }
