@@ -402,9 +402,7 @@ fn validate_preference_values(values: &[AxisValue]) -> Result<(), NduError> {
     let lower = FixedQ32::from_raw(-FixedQ32::ONE.raw());
     for value in values {
         if value.value < lower || value.value > FixedQ32::ONE {
-            return Err(NduError::PreferenceValueOutOfRange(
-                value.axis.to_string(),
-            ));
+            return Err(NduError::PreferenceValueOutOfRange(value.axis.to_string()));
         }
     }
     Ok(())
