@@ -233,7 +233,7 @@
       "states": {
         "source": "implemented",
         "implementation": "sqlite_store",
-        "durability": "sqlite_migrations_0001_0010",
+        "durability": "sqlite_migrations_0001_0011",
         "qualification": "source_tests_present",
         "activation": "feature_gated",
         "acceptance": "not_granted"
@@ -285,12 +285,21 @@
             "CREATE TABLE authbus_outbox",
             "authbus_outbox_active_no_delete"
           ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0011_authbus_authority.sql",
+          "mustContain": [
+            "CREATE TABLE authbus_policy_revisions",
+            "CREATE TABLE authbus_quota_registry",
+            "CREATE TABLE authbus_quota_reservations",
+            "CREATE TABLE authbus_replay_checkpoint_state"
+          ]
         }
       ]
     },
     {
       "module": "auth.authbus",
-      "profile": "signed_admission_with_legacy_replay",
+      "profile": "signed_admission_with_durable_authority",
       "formalGuide": "docs/modules/auth.authbus/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/auth.authbus/CURRENT_IMPLEMENTATION.md",
@@ -298,8 +307,8 @@
       "implementationDetail": "codex-rs/hepta-authbus/SIGNED_ADMISSION.md",
       "states": {
         "source": "implemented",
-        "implementation": "signed_admission_with_legacy_replay",
-        "durability": "sqlite_admission_outbox_and_process_local_legacy",
+        "implementation": "signed_admission_policy_quota_reservation",
+        "durability": "sqlite_replay_outbox_policy_quota_reservation_and_process_local_legacy",
         "qualification": "source_tests_present",
         "activation": "host_composition_required",
         "acceptance": "not_granted"
@@ -308,14 +317,19 @@
         "bounded SQLite replay admission keyed by issuer epoch subject and scope",
         "strict Ed25519 authentication with trusted issuer expiry revocation scope and payload checks",
         "deny-all admission receipts and legacy preverified in-process replay",
-        "transactional bounded AuthBus message outbox with recoverable fenced delivery"
+        "transactional bounded AuthBus message outbox with recoverable fenced delivery",
+        "append-only durable authorization policy revisions and fail-closed evaluation",
+        "conservation-checked quota registry with atomic durable reservations",
+        "terminal settlement reconciliation that retains indeterminate holds",
+        "durable issuer/key revisions with monotone revocation",
+        "replay-root checkpoint verification and revoked-epoch retirement"
       ],
       "targetOnlyCapabilities": [
-        "host trust provisioning and key lifecycle management",
-        "external replay-store rollback protection",
-        "authorization policy evaluation",
-        "quota registry",
-        "quota reservation and settlement"
+        "independently governed trusted-time service",
+        "independently retained replay checkpoint service",
+        "production key enrollment and distribution ceremony",
+        "real effect caller composition with final-use authority",
+        "independent product acceptance and release"
       ],
       "sourceAnchors": [
         {
@@ -374,6 +388,36 @@
             "pub async fn renew_authbus_delivery(",
             "pub async fn retry_authbus_delivery(",
             "pub async fn ack_authbus_delivery("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/authbus_authority_store.rs",
+          "mustContain": [
+            "pub async fn publish_authbus_policy(",
+            "pub async fn authorize_authbus(",
+            "pub async fn reserve_authbus_quota(",
+            "pub async fn reconcile_authbus_reservation(",
+            "available",
+            "reserved",
+            "consumed"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/authbus_trust_store.rs",
+          "mustContain": [
+            "pub async fn publish_authbus_trust(",
+            "pub async fn verify_authbus_replay_checkpoint(",
+            "pub async fn retire_authbus_replay_key("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0011_authbus_authority.sql",
+          "mustContain": [
+            "CREATE TABLE authbus_policy_revisions",
+            "CREATE TABLE authbus_quota_registry",
+            "CREATE TABLE authbus_quota_reservations",
+            "CREATE TABLE authbus_trust_epochs",
+            "available + reserved + consumed = limit_value"
           ]
         }
       ]
