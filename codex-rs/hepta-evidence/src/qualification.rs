@@ -832,6 +832,13 @@ fn validate_independent_decision(
                 .to_string(),
         ));
     }
+    if receipt.decision == IndependentDecisionV1::Accept
+        && *expected_evidence_set_digest == evidence_set_digest(&[])?
+    {
+        return Err(EvidenceError::InvalidRecord(
+            "independent acceptance requires a non-empty exact evidence set".to_string(),
+        ));
+    }
     if receipt.conditions.len() > MAX_INDEPENDENT_CONDITIONS
         || receipt
             .conditions
