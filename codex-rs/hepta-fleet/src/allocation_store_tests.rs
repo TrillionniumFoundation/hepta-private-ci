@@ -9,6 +9,7 @@ use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use codex_hepta_paths::HeptaFleetRoot;
 use tempfile::TempDir;
 
 use super::*;
