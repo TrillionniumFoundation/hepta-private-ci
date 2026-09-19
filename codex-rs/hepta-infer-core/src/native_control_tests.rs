@@ -353,10 +353,11 @@ fn journal_compaction_preserves_exact_state_and_bounds_archives() {
     start(&mut control, "r1");
     let mut observed = output(NativeRunStatus::Completed, Some(0));
     observed.output = "x".repeat(1024 * 1024);
-    for tokens in 0..80 {
-        observed.observed_output_tokens = Some(tokens);
-        control.settle_native("r1", observed.clone()).unwrap();
-    }
+    let sensitive_text = observed.output.clone();
+
+    // Simulate one pre-upgrade retained observation, then compact it into the
+    // canonical receipt-only representation.
+    control.settle_native("r1", observed.clone()).unwrap();
     let before = std::fs::metadata(&path).unwrap().len();
     let receipt = control
         .compact_native_journal(/*retain_archives*/ 2)
@@ -365,16 +366,35 @@ fn journal_compaction_preserves_exact_state_and_bounds_archives() {
     assert!(receipt.after_bytes < receipt.before_bytes);
     assert_eq!(receipt.archive_sha256.len(), 64);
     assert!(receipt.archive_path.is_file());
+    let compacted_bytes = std::fs::read(&path).unwrap();
+    assert!(
+        !compacted_bytes
+            .windows(sensitive_text.len())
+            .any(|window| window == sensitive_text.as_bytes())
+    );
+    let compacted_observation = control.native_record("r1").unwrap().observation.as_ref().unwrap();
+    assert!(!compacted_observation.output_retained);
+    assert!(compacted_observation.output.is_empty());
+    let expected_output_sha256 = Digest32::of_bytes(sensitive_text.as_bytes()).to_string();
+    assert_eq!(
+        compacted_observation.output_sha256.as_deref(),
+        Some(expected_output_sha256.as_str())
+    );
 
-    // Exercise retention rather than merely creating one archive.
-    for tokens in 80..84 {
+    // Exercise retention rather than merely creating one archive. All new
+    // observations are receipt-only and can refine terminal usage.
+    for tokens in 1..5 {
         observed.observed_output_tokens = Some(tokens);
-        control.settle_native("r1", observed.clone()).unwrap();
+        control
+            .settle_native_receipt_only("r1", observed.clone())
+            .unwrap();
     }
     control.compact_native_journal(/*retain_archives*/ 2).unwrap();
-    for tokens in 84..88 {
+    for tokens in 5..9 {
         observed.observed_output_tokens = Some(tokens);
-        control.settle_native("r1", observed.clone()).unwrap();
+        control
+            .settle_native_receipt_only("r1", observed.clone())
+            .unwrap();
     }
     control.compact_native_journal(/*retain_archives*/ 2).unwrap();
     let expected = control.native_record("r1").unwrap().clone();
@@ -639,9 +659,10 @@ fn receipt_only_settlement_never_persists_provider_text() {
     let persisted = settled.observation.as_ref().unwrap();
     assert!(persisted.output.is_empty());
     assert!(!persisted.output_retained);
+    let expected_output_sha256 = Digest32::of_bytes(live_text.as_bytes()).to_string();
     assert_eq!(
         persisted.output_sha256.as_deref(),
-        Some(Digest32::of_bytes(live_text.as_bytes()).to_string().as_str())
+        Some(expected_output_sha256.as_str())
     );
 
     let bytes = std::fs::read(&path).unwrap();
