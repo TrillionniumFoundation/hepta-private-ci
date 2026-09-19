@@ -21,7 +21,7 @@ fn stable_id_ascii_alphabet_is_exhaustive() {
         let value = format!("x{}", char::from(byte));
         let accepted = StableId::new(value).is_ok();
         let expected =
-            byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-' | b':');
+            byte.is_ascii_alphanumeric() || matches!(*byte, b'.' | b'_' | b'-' | b':');
         assert_eq!(accepted, expected, "unexpected classification for ASCII {byte}");
     }
 }
