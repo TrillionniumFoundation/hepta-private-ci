@@ -138,10 +138,11 @@ impl NduProjectionJournalV1 {
         }) {
             return Err(NduProjectionJournalError::ProjectionNotRecorded);
         }
-        if self
-            .revoked_projection_keys()
-            .contains(&(objective_digest, subject_digest, projection_digest))
-        {
+        if self.revoked_projection_keys().contains(&(
+            objective_digest,
+            subject_digest,
+            projection_digest,
+        )) {
             return Err(NduProjectionJournalError::RevokedProjection);
         }
         self.append(
@@ -197,9 +198,7 @@ impl NduProjectionJournalV1 {
                 _ => {}
             }
         }
-        selected.filter(|digest| {
-            !revoked.contains(&(objective_digest, subject_digest, *digest))
-        })
+        selected.filter(|digest| !revoked.contains(&(objective_digest, subject_digest, *digest)))
     }
 
     fn append(
@@ -387,7 +386,9 @@ impl NduProjectionJournalV1 {
         Ok(journal)
     }
 
-    fn revoked_projection_keys(&self) -> std::collections::BTreeSet<(Digest32, Digest32, Digest32)> {
+    fn revoked_projection_keys(
+        &self,
+    ) -> std::collections::BTreeSet<(Digest32, Digest32, Digest32)> {
         self.entries
             .iter()
             .filter(|entry| entry.kind == NduProjectionKindV1::Revocation)
