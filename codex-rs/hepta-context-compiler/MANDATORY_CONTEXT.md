@@ -60,7 +60,11 @@ changing the V1 wire meaning:
   `ContextTransportV2` with the exact serialized payload bytes, rejects a
   transport-reported payload digest mismatch, and emits
   `ContextDeliveryReceiptV2` binding transport identity, provider request id,
-  acknowledgement digest, terminal disposition and time.
+  acknowledgement digest, terminal disposition, time, and the verified
+  admission snapshot/revocation epoch used at send time;
+- serialization, attachment and delivery proof artifacts are construction-closed
+  outside the module, so external callers cannot synthesize a receipt with a
+  struct literal and skip exact tokenization or current-revocation checks.
 
 Verifier, tokenizer, serializer and transport implementations are explicit
 trusted adapter boundaries. Their identities are digest-bound, but this crate
