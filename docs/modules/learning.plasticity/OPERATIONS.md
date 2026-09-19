@@ -41,10 +41,15 @@ proposal is persisted in `DurableTopologyProposalRegistryV1`, with the same
 lock-before-bootstrap and external-anchor posture as parameter proposals.
 
 `StructuralCanaryControllerV1` is an observation-only bounded state machine. It
-cannot apply topology. Safety violation, lineage mismatch, excess regression or an
-unverified rollback causes terminal abort. The receipt binds a digest of the complete
-canary plan and a rolling chain over every observation; reaching the minimum
-successful-step threshold remains `Running` until an explicit `finish()` transition.
+cannot apply topology. `build_structural_canary_plan_v1` requires the exact governed
+proposal, its `DurableTopologyAppendReceiptV1`, and the content-addressed update
+candidate ID; it rejects proposal/admission/frame/candidate/handoff/rollback drift.
+The plan binds that durable sequence/frame and candidate identity in addition to the
+rollback, writer-handoff set, baseline health and thresholds. Safety violation,
+lineage mismatch, excess regression or an unverified rollback causes terminal abort.
+The receipt binds the complete plan and a rolling chain over every observation;
+reaching the minimum successful-step threshold remains `Running` until an explicit
+`finish()` transition.
 An Accepted source receipt is still not activation authority and is not evidence of a
 real host canary run.
 
