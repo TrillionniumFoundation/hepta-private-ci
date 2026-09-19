@@ -12,7 +12,11 @@ higher-level session logic.
 
 use std::collections::HashMap;
 use std::collections::VecDeque;
+use std::error::Error as StdError;
+use std::fmt;
 use std::io::Error as IoError;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 use std::io::ErrorKind;
 use std::io::Result as IoResult;
 use std::sync::Arc;
@@ -67,6 +71,7 @@ const CONNECT_TIMEOUT: Duration = Duration::from_secs(10);
 const INITIALIZE_TIMEOUT: Duration = Duration::from_secs(10);
 const REMOTE_APP_SERVER_MAX_WEBSOCKET_MESSAGE_SIZE: usize = 128 << 20;
 const MAX_REMOTE_EVENT_CHANNEL_CAPACITY: usize = 65_536;
+static NEXT_REMOTE_CONNECTION_ID: AtomicU64 = AtomicU64::new(1);
 // Tungstenite still needs an HTTP request URI for the WebSocket handshake;
 // the bytes travel over the Unix socket, not TCP.
 const UDS_WEBSOCKET_HANDSHAKE_URL: &str = "ws://localhost/rpc";
@@ -151,12 +156,107 @@ enum RemoteClientCommand {
     },
 }
 
+/// Process-local proof that an event was read from an initialized remote
+/// App Server connection. The private fields prevent arbitrary protocol DTOs
+/// from being promoted into runtime.codex terminal evidence.
+#[derive(Debug)]
+pub struct RemoteAppServerObservedEvent {
+    event: AppServerEvent,
+    connection_id: u64,
+    server_version: Option<String>,
+    codex_home: Option<String>,
+}
+
+impl RemoteAppServerObservedEvent {
+    pub fn event(&self) -> &AppServerEvent { &self.event }
+    pub const fn connection_id(&self) -> u64 { self.connection_id }
+    pub fn server_version(&self) -> Option<&str> { self.server_version.as_deref() }
+    pub fn codex_home(&self) -> Option<&str> { self.codex_home.as_deref() }
+
+    #[cfg(feature = "test-support")]
+    #[doc(hidden)]
+    pub fn from_test_event(
+        event: AppServerEvent,
+        connection_id: u64,
+        server_version: Option<String>,
+        codex_home: Option<String>,
+    ) -> Self {
+        Self { event, connection_id, server_version, codex_home }
+    }
+}
+
+/// Process-local proof that an explicit JSON-RPC error was returned by the
+/// initialized remote request path.
+#[derive(Debug)]
+pub struct RemoteAppServerObservedServerError {
+    method: String,
+    request_id: RequestId,
+    error: JSONRPCErrorError,
+    connection_id: u64,
+    server_version: Option<String>,
+    codex_home: Option<String>,
+}
+
+impl RemoteAppServerObservedServerError {
+    pub fn method(&self) -> &str { &self.method }
+    pub fn request_id(&self) -> &RequestId { &self.request_id }
+    pub fn error(&self) -> &JSONRPCErrorError { &self.error }
+    pub const fn connection_id(&self) -> u64 { self.connection_id }
+    pub fn server_version(&self) -> Option<&str> { self.server_version.as_deref() }
+    pub fn codex_home(&self) -> Option<&str> { self.codex_home.as_deref() }
+
+    #[cfg(feature = "test-support")]
+    #[doc(hidden)]
+    pub fn from_test_error(
+        method: String,
+        request_id: RequestId,
+        error: JSONRPCErrorError,
+        connection_id: u64,
+        server_version: Option<String>,
+        codex_home: Option<String>,
+    ) -> Self {
+        Self { method, request_id, error, connection_id, server_version, codex_home }
+    }
+}
+
+#[derive(Debug)]
+pub enum RemoteObservedTypedRequestError {
+    Transport { method: String, source: IoError },
+    Server { observed: RemoteAppServerObservedServerError },
+    Deserialize { method: String, source: serde_json::Error },
+}
+
+impl fmt::Display for RemoteObservedTypedRequestError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Transport { method, source } => write!(f, "{method} transport error: {source}"),
+            Self::Server { observed } => write!(
+                f,
+                "{} failed: {} (code {})",
+                observed.method, observed.error.message, observed.error.code
+            ),
+            Self::Deserialize { method, source } => write!(f, "{method} response decode error: {source}"),
+        }
+    }
+}
+
+impl StdError for RemoteObservedTypedRequestError {
+    fn source(&self) -> Option<&(dyn StdError + 'static)> {
+        match self {
+            Self::Transport { source, .. } => Some(source),
+            Self::Server { .. } => None,
+            Self::Deserialize { source, .. } => Some(source),
+        }
+    }
+}
+
 pub struct RemoteAppServerClient {
     command_tx: mpsc::Sender<RemoteClientCommand>,
     event_rx: RemoteEventReceiver,
     pending_events: VecDeque<AppServerEvent>,
     server_version: Option<String>,
     codex_home: Option<String>,
+    connection_id: u64,
     worker_handle: tokio::task::JoinHandle<()>,
 }
 
@@ -349,6 +449,10 @@ impl RemoteAppServerClient {
 
     pub fn codex_home(&self) -> Option<&str> {
         self.codex_home.as_deref()
+    }
+
+    pub const fn connection_id(&self) -> u64 {
+        self.connection_id
     }
 
     async fn connect_with_stream<S>(
@@ -668,12 +772,20 @@ impl RemoteAppServerClient {
             }
         });
 
+        let connection_id = NEXT_REMOTE_CONNECTION_ID.fetch_add(1, Ordering::Relaxed);
+        let connection_id = if connection_id == 0 {
+            NEXT_REMOTE_CONNECTION_ID.store(2, Ordering::Relaxed);
+            1
+        } else {
+            connection_id
+        };
         Ok(Self {
             command_tx,
             event_rx,
             pending_events: pending_events.into(),
             server_version,
             codex_home,
+            connection_id,
             worker_handle,
         })
     }
@@ -708,6 +820,35 @@ impl RemoteAppServerClient {
             method: method.to_string(),
             source,
         })
+    }
+
+    pub async fn request_typed_observed<T>(
+        &self,
+        request: ClientRequest,
+    ) -> Result<T, RemoteObservedTypedRequestError>
+    where
+        T: DeserializeOwned,
+    {
+        let method = request.method_name().to_string();
+        let request_id = request.id().clone();
+        let response = self.request(request).await.map_err(|source| {
+            RemoteObservedTypedRequestError::Transport {
+                method: method.clone(),
+                source,
+            }
+        })?;
+        let result = response.map_err(|error| RemoteObservedTypedRequestError::Server {
+            observed: RemoteAppServerObservedServerError {
+                method: method.clone(),
+                request_id,
+                error,
+                connection_id: self.connection_id,
+                server_version: self.server_version.clone(),
+                codex_home: self.codex_home.clone(),
+            },
+        })?;
+        serde_json::from_value(result)
+            .map_err(|source| RemoteObservedTypedRequestError::Deserialize { method, source })
     }
 
     pub async fn notify(&self, notification: ClientNotification) -> IoResult<()> {
@@ -793,6 +934,16 @@ impl RemoteAppServerClient {
         self.event_rx.recv().await
     }
 
+    pub async fn next_observed_event(&mut self) -> Option<RemoteAppServerObservedEvent> {
+        let event = self.next_event().await?;
+        Some(RemoteAppServerObservedEvent {
+            event,
+            connection_id: self.connection_id,
+            server_version: self.server_version.clone(),
+            codex_home: self.codex_home.clone(),
+        })
+    }
+
     pub async fn shutdown(self) -> IoResult<()> {
         let Self {
             command_tx,
@@ -800,6 +951,7 @@ impl RemoteAppServerClient {
             pending_events: _pending_events,
             server_version: _server_version,
             codex_home: _codex_home,
+            connection_id: _connection_id,
             worker_handle,
         } = self;
         let mut worker_handle = worker_handle;

@@ -1964,6 +1964,13 @@ pub(crate) async fn built_tools(
     step_store: &ExtensionData,
     prepared_recommendations: PreparedToolRecommendations,
 ) -> CodexResult<Arc<ToolRouter>> {
+    // The Hepta native inference worker is model-only. Fence it before MCP,
+    // connector discovery, dynamic tools, extensions, or core tool planning so
+    // this path cannot create an external effect that bypasses VerifiedUse.
+    if let Some(router) = crate::tools::spec_plan::hepta_model_only_tool_router(turn_context) {
+        return Ok(Arc::new(router));
+    }
+
     let all_mcp_tools = mcp.tools();
     let connector_snapshot = mcp.config().connector_snapshot.clone();
 

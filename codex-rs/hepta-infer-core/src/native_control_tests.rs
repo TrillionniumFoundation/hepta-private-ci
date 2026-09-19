@@ -26,6 +26,13 @@ fn dispatch() -> NativeDispatch {
         thread_id: "thread-1".to_string(),
         model_provider: "provider".to_string(),
         context_digest: "b".repeat(64),
+        codex_payload_digest: Some("e".repeat(64)),
+        codex_request_digest: Some("c".repeat(64)),
+        app_server_version: Some("1.2.3".to_string()),
+        protocol_id: Some("codex.app-server.v2".to_string()),
+        codex_source_admission_digest: Some("f".repeat(64)),
+        codex_home_digest: Some("1".repeat(64)),
+        codex_connection_id: Some(7),
     }
 }
 
@@ -36,11 +43,19 @@ fn output(status: NativeRunStatus, tokens: Option<u64>) -> NativeRunOutput {
         model: "actual-model".to_string(),
         model_provider: "provider".to_string(),
         terminal_observed: status != NativeRunStatus::Indeterminate,
+        boundary_status: match status {
+            NativeRunStatus::Completed => NativeBoundaryStatus::Succeeded,
+            NativeRunStatus::Failed => NativeBoundaryStatus::Failed,
+            NativeRunStatus::Interrupted => NativeBoundaryStatus::Interrupted,
+            NativeRunStatus::Indeterminate => NativeBoundaryStatus::Indeterminate,
+        },
         status,
         output: "observed text".to_string(),
         observed_output_tokens: tokens,
         stop_reason: None,
         owner_authority: NativeOwnerAuthority::Unverified,
+        codex_terminal_correlation_digest: (status != NativeRunStatus::Indeterminate)
+            .then(|| "d".repeat(64)),
     }
 }
 
@@ -48,6 +63,17 @@ fn start(control: &mut DurableInferenceControl, id: &str) {
     control.reserve_native(request(id), 1).unwrap();
     control.dispatch_native(id, dispatch()).unwrap();
     control.native_started(id, "turn-1".to_string()).unwrap();
+}
+
+#[test]
+fn completed_owner_ready_without_codex_witness_is_not_success() {
+    let mut observed = output(NativeRunStatus::Completed, Some(1));
+    observed.owner_authority = NativeOwnerAuthority::ObservedReady;
+    observed.codex_terminal_correlation_digest = None;
+    assert!(!observed.succeeded());
+
+    observed.codex_terminal_correlation_digest = Some("d".repeat(64));
+    assert!(observed.succeeded());
 }
 
 #[test]
@@ -198,6 +224,75 @@ fn pre_dispatch_stop_releases_without_claiming_provider_terminal() {
 }
 
 #[test]
+fn explicit_dispatch_rejection_releases_without_claiming_provider_terminal() {
+    let path = path("dispatch-rejected");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    control.dispatch_native("r1", dispatch()).unwrap();
+    let rejection = NativeDispatchRejection {
+        status: NativeDispatchRejectionStatus::Overloaded,
+        reason: "Server overloaded; retry later.".to_string(),
+        response_digest: "e".repeat(64),
+        retry_safe_before_admission: true,
+    };
+    let rejected = control
+        .reject_native_before_start("r1", rejection.clone())
+        .unwrap();
+    assert_eq!(rejected.state, NativeReservationState::Released);
+    assert_eq!(rejected.dispatch_rejection, Some(rejection));
+    assert_eq!(rejected.observation, None);
+    assert_eq!(rejected.turn_id, None);
+    control.reserve_native(request("r2"), 1).unwrap();
+    drop(control);
+
+    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(control.native_record("r1"), Some(&rejected));
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn generic_dispatch_rejection_holds_slot_when_pre_admission_is_not_proven() {
+    let path = path("dispatch-rejected-unknown");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    control.dispatch_native("r1", dispatch()).unwrap();
+    let rejection = NativeDispatchRejection {
+        status: NativeDispatchRejectionStatus::Rejected,
+        reason: "application error after dispatch".to_string(),
+        response_digest: "f".repeat(64),
+        retry_safe_before_admission: false,
+    };
+    let rejected = control
+        .reject_native_before_start("r1", rejection.clone())
+        .unwrap();
+    assert_eq!(rejected.state, NativeReservationState::Indeterminate);
+    assert_eq!(rejected.dispatch_rejection, Some(rejection));
+    assert_eq!(rejected.observation, None);
+    assert_eq!(
+        control.reserve_native(request("r2"), 1),
+        Err(Error::CapacityExceeded)
+    );
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn codex_bound_terminal_requires_adapter_correlation_witness() {
+    let path = path("terminal-witness");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    start(&mut control, "r1");
+    let mut dishonest = output(NativeRunStatus::Completed, Some(1));
+    dishonest.codex_terminal_correlation_digest = None;
+    assert_eq!(
+        control.settle_native("r1", dishonest),
+        Err(Error::TerminalObservationMissing)
+    );
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes() {
     use std::io::Write;
     let path = path("byte-budget");
@@ -291,6 +386,7 @@ fn late_completed_releases_slot_without_erasing_authority_loss() {
         .unwrap();
     let mut terminal = interrupted_observation;
     terminal.status = NativeRunStatus::Completed;
+    terminal.boundary_status = NativeBoundaryStatus::Quarantined;
     terminal.terminal_observed = true;
     let settled = control.settle_native("r1", terminal.clone()).unwrap();
     assert_eq!(settled.state, NativeReservationState::Released);
