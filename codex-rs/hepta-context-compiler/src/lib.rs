@@ -16,6 +16,7 @@ use codex_hepta_types::StableId;
 mod candidate_bound;
 mod requirements;
 mod v2;
+mod verified;
 mod wire;
 
 pub use candidate_bound::CandidateBoundContextCompilationReceipt;
@@ -40,10 +41,29 @@ pub use v2::MAX_CONTEXT_GROUPS_V2;
 pub use v2::MAX_CONTEXT_TOKENS_V2;
 pub use v2::MandatoryContextGroupV2;
 pub use v2::TokenizationReceiptV2;
+/// Compatibility-only V2 surfaces. New security-sensitive callers must use
+/// compile_verified_v2 -> record_verified_serialization_v2 ->
+/// build_revalidated_attachment_v2 -> observe_verified_delivery_v2.
 pub use v2::build_attachment;
 pub use v2::compile_v2;
 pub use v2::observe_delivery;
 pub use v2::record_serialization;
+pub use verified::AttachmentRevalidationReceiptV2;
+pub use verified::ContextAdmissionVerifierV2;
+pub use verified::ContextClosureErrorV2;
+pub use verified::ExactContextTokenizerV2;
+pub use verified::ProviderDeliveryEvidenceV2;
+pub use verified::ProviderDeliveryEvidenceVerifierV2;
+pub use verified::SerializedContextSegmentV2;
+pub use verified::VerifiedAdmissionEvidenceV2;
+pub use verified::VerifiedCompiledContextV2;
+pub use verified::VerifiedContextAttachmentV2;
+pub use verified::VerifiedContextDeliveryReceiptV2;
+pub use verified::VerifiedContextSerializationV2;
+pub use verified::build_revalidated_attachment_v2;
+pub use verified::compile_verified_v2;
+pub use verified::observe_verified_delivery_v2;
+pub use verified::record_verified_serialization_v2;
 pub use wire::CONTEXT_COMPILATION_WIRE_SCHEMA_V2;
 pub use wire::CompileWireError;
 pub use wire::ContextCompilationWireV2;
