@@ -36,6 +36,43 @@ fn terminal(thread: &str, turn: &str, status: TurnStatus) -> ServerNotification 
 }
 
 #[test]
+fn lifecycle_terminal_mapping_preserves_provider_terminality() {
+    assert_eq!(
+        lifecycle_phase_for_output(NativeRunStatus::Completed),
+        AgentdRunPhase::Succeeded
+    );
+    assert_eq!(
+        lifecycle_phase_for_output(NativeRunStatus::Failed),
+        AgentdRunPhase::Failed
+    );
+    assert_eq!(
+        lifecycle_phase_for_output(NativeRunStatus::Interrupted),
+        AgentdRunPhase::Cancelled
+    );
+    assert_eq!(
+        lifecycle_phase_for_output(NativeRunStatus::Indeterminate),
+        AgentdRunPhase::Indeterminate
+    );
+}
+
+#[test]
+fn lifecycle_cancel_reason_is_bounded_and_nonempty() {
+    assert_eq!(bounded_lifecycle_reason("   "), "native_worker_cancel");
+    let bounded = bounded_lifecycle_reason(&"x".repeat(1024));
+    assert_eq!(bounded.len(), 128);
+}
+
+#[test]
+fn lifecycle_deadline_uses_a_future_absolute_millisecond_epoch() {
+    let before = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("system time")
+        .as_millis();
+    let deadline = deadline_unix_ms(Duration::from_secs(1)).expect("deadline");
+    assert!(u128::from(deadline) >= before + 1_000);
+}
+
+#[test]
 fn only_the_bound_turn_can_complete_the_native_request() {
     let mut output = output();
     assert!(
