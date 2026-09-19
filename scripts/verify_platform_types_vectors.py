@@ -34,7 +34,7 @@ def value_bytes(field: dict[str, object]) -> bytes:
     if kind == "bool":
         if not isinstance(value, bool):
             raise AssertionError("bool vector value must be JSON boolean")
-        return b"\\x01" if value else b"\\x00"
+        return bytes([1]) if value else bytes([0])
     if kind == "digest32":
         decoded = bytes.fromhex(str(value))
         if len(decoded) != 32:
