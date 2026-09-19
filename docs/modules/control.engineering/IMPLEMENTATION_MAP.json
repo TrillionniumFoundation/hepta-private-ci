@@ -146,6 +146,25 @@
       ]
     },
     {
+      "operation": "admit_distributed_fence",
+      "designOperation": "production_distributed_fence_admission",
+      "nativeSymbol": "admit_distributed_fence",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/external_controls.py",
+      "state": "source_implemented_external_receipts_required",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "tools/hepta-engineering-control/test_external_controls.py"
+        }
+      ],
+      "sourcePathExists": true,
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "EngineeringStore._transaction",
+        "EngineeringStore._append_audit"
+      ]
+    },
+    {
       "operation": "verify_production_controls",
       "designOperation": "production_control_admission",
       "nativeSymbol": "verify_production_controls",
@@ -159,7 +178,11 @@
       ],
       "sourcePathExists": true,
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "verify_persisted_distributed_fence",
+        "verify_external_audit_anchor",
+        "verify_external_key_custody"
+      ]
     },
     {
       "operation": "build_product_receipt",
