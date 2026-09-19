@@ -107,8 +107,9 @@ pub fn build_legal_candidates(
     let value = LegalActionCandidateSetV1 {
         candidate_set_id: request.candidate_set_id,
         state_digest: request.state_digest,
-        generator_id: StableId::new(INTELLIGENCE_CONTROL)
-            .map_err(|_| LegalActionCandidateSetErrorV1::InvalidCandidate(INTELLIGENCE_CONTROL.into()))?,
+        generator_id: StableId::new(INTELLIGENCE_CONTROL).map_err(|_| {
+            LegalActionCandidateSetErrorV1::InvalidCandidate(INTELLIGENCE_CONTROL.into())
+        })?,
         grammar_digest: request.grammar_digest,
         candidates: request.candidates,
         support_floor_ppm: request.support_floor_ppm,
@@ -272,7 +273,9 @@ impl IntelligenceHostEnvelopeV1 {
             }
         }
         if self.authority_epoch == 0 {
-            return Err(CompositionErrorV3::InvalidPipelineReceipt("authority epoch"));
+            return Err(CompositionErrorV3::InvalidPipelineReceipt(
+                "authority epoch",
+            ));
         }
         if self.deadline_unix_micros == 0 {
             return Err(CompositionErrorV3::InvalidDeadline);
@@ -570,10 +573,12 @@ impl CompositionPipelineReceiptV3 {
                         "prepared disposition",
                     ));
                 }
-                let envelope = self
-                    .envelope
-                    .as_ref()
-                    .ok_or(CompositionErrorV3::InvalidPipelineReceipt("missing envelope"))?;
+                let envelope =
+                    self.envelope
+                        .as_ref()
+                        .ok_or(CompositionErrorV3::InvalidPipelineReceipt(
+                            "missing envelope",
+                        ))?;
                 envelope.validate()?;
                 if envelope.run_id != self.run_id
                     || envelope.request_digest != self.request_digest
@@ -624,9 +629,10 @@ impl CompositionPipelineReceiptV3 {
             }
             CompositionDispositionV3::Cancelled | CompositionDispositionV3::DeadlineExceeded => {
                 if self.envelope.is_some()
-                    || self.stages.iter().any(|stage| {
-                        matches!(stage.outcome, CompositionStageOutcomeV3::Failed(_))
-                    })
+                    || self
+                        .stages
+                        .iter()
+                        .any(|stage| matches!(stage.outcome, CompositionStageOutcomeV3::Failed(_)))
                 {
                     return Err(CompositionErrorV3::InvalidPipelineReceipt(
                         "control disposition",
@@ -751,12 +757,7 @@ where
             predecessor = output;
         }
         AdvanceV3::Terminal(disposition) => {
-            return finish_without_envelope(
-                &request,
-                snapshot_digest,
-                disposition,
-                stages,
-            );
+            return finish_without_envelope(&request, snapshot_digest, disposition, stages);
         }
     }
 
@@ -765,7 +766,9 @@ where
     }
     let legal_deadline = stage_deadline(
         control.now_unix_micros(),
-        request.budget.for_stage(CompositionStageV3::LegalCandidatesBuilt),
+        request
+            .budget
+            .for_stage(CompositionStageV3::LegalCandidatesBuilt),
         request.deadline_unix_micros,
     );
     if control.now_unix_micros() >= legal_deadline {
@@ -799,12 +802,7 @@ where
     )? {
         AdvanceV3::Continue(output) => predecessor = output,
         AdvanceV3::Terminal(disposition) => {
-            return finish_without_envelope(
-                &request,
-                snapshot_digest,
-                disposition,
-                stages,
-            );
+            return finish_without_envelope(&request, snapshot_digest, disposition, stages);
         }
     }
 
@@ -820,12 +818,7 @@ where
     )? {
         AdvanceV3::Continue(output) => predecessor = output,
         AdvanceV3::Terminal(disposition) => {
-            return finish_without_envelope(
-                &request,
-                snapshot_digest,
-                disposition,
-                stages,
-            );
+            return finish_without_envelope(&request, snapshot_digest, disposition, stages);
         }
     }
 
@@ -842,12 +835,7 @@ where
     )? {
         AdvanceV3::Continue(output) => predecessor = output,
         AdvanceV3::Terminal(disposition) => {
-            return finish_without_envelope(
-                &request,
-                snapshot_digest,
-                disposition,
-                stages,
-            );
+            return finish_without_envelope(&request, snapshot_digest, disposition, stages);
         }
     }
 
@@ -864,12 +852,7 @@ where
     )? {
         AdvanceV3::Continue(output) => predecessor = output,
         AdvanceV3::Terminal(disposition) => {
-            return finish_without_envelope(
-                &request,
-                snapshot_digest,
-                disposition,
-                stages,
-            );
+            return finish_without_envelope(&request, snapshot_digest, disposition, stages);
         }
     }
 
@@ -944,12 +927,7 @@ where
     )? {
         AdvanceV3::Continue(_) => {}
         AdvanceV3::Terminal(disposition) => {
-            return finish_without_envelope(
-                &request,
-                snapshot_digest,
-                disposition,
-                stages,
-            );
+            return finish_without_envelope(&request, snapshot_digest, disposition, stages);
         }
     }
 
@@ -1050,9 +1028,7 @@ where
             validate_failure(&failure)?;
             let class = failure.class;
             append_failure_trace(traces, stage, predecessor, failure)?;
-            Ok(AdvanceV3::Terminal(CompositionDispositionV3::Failed(
-                class,
-            )))
+            Ok(AdvanceV3::Terminal(CompositionDispositionV3::Failed(class)))
         }
     }
 }
@@ -1170,9 +1146,7 @@ where
             } else {
                 let class = failure.class;
                 append_failure_trace(traces, stage, predecessor, failure)?;
-                Ok(AdvanceV3::Terminal(CompositionDispositionV3::Failed(
-                    class,
-                )))
+                Ok(AdvanceV3::Terminal(CompositionDispositionV3::Failed(class)))
             }
         }
     }
@@ -1352,18 +1326,12 @@ fn finish_prepared(
         utility_receipt_digest: utility.evidence_digest,
         evaluation_digest: evaluation.output_digest,
         evaluation_receipt_digest: evaluation.evidence_digest,
-        neural_signal_digest: if matches!(
-            neural.outcome,
-            CompositionStageOutcomeV3::Completed
-        ) {
+        neural_signal_digest: if matches!(neural.outcome, CompositionStageOutcomeV3::Completed) {
             Some(neural.output_digest)
         } else {
             None
         },
-        prompt_portfolio_digest: if matches!(
-            prompt.outcome,
-            CompositionStageOutcomeV3::Completed
-        ) {
+        prompt_portfolio_digest: if matches!(prompt.outcome, CompositionStageOutcomeV3::Completed) {
             Some(prompt.output_digest)
         } else {
             None
@@ -1398,12 +1366,9 @@ fn trace_for(
     stages: &[CompositionStageTraceV3],
     stage: CompositionStageV3,
 ) -> Result<&CompositionStageTraceV3, CompositionErrorV3> {
-    stages
-        .iter()
-        .find(|value| value.stage == stage)
-        .ok_or(CompositionErrorV3::InvalidPipelineReceipt(
-            "missing required trace",
-        ))
+    stages.iter().find(|value| value.stage == stage).ok_or(
+        CompositionErrorV3::InvalidPipelineReceipt("missing required trace"),
+    )
 }
 
 fn producer_for_stage(stage: CompositionStageV3) -> &'static str {
