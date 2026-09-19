@@ -349,3 +349,63 @@ fn solver_context_must_match_preference_subject() {
         NduError::ProtocolContextMismatch
     );
 }
+
+#[test]
+fn artifact_identity_cannot_cross_subjects() {
+    let graph = hierarchy(vec![
+        SubjectHierarchyEdgeV1 {
+            parent_subject_id: id("domain-a"),
+            parent_subject_class: SubjectClass::Domain,
+            child_subject_id: id("agent-a"),
+            child_subject_class: SubjectClass::Agent,
+        },
+        SubjectHierarchyEdgeV1 {
+            parent_subject_id: id("domain-b"),
+            parent_subject_class: SubjectClass::Domain,
+            child_subject_id: id("agent-b"),
+            child_subject_class: SubjectClass::Agent,
+        },
+    ]);
+    assert!(matches!(
+        must_err(validate_staged_updates(
+            &[
+                UpdateGeneration {
+                    generation: generation(7),
+                    subject_id: id("agent-a"),
+                    subject_class: SubjectClass::Agent,
+                    artifact_id: id("shared-artifact"),
+                },
+                UpdateGeneration {
+                    generation: generation(7),
+                    subject_id: id("agent-b"),
+                    subject_class: SubjectClass::Agent,
+                    artifact_id: id("shared-artifact"),
+                },
+            ],
+            &graph,
+        )),
+        NduError::InvalidHierarchyRelation(_)
+    ));
+}
+
+#[test]
+fn hierarchy_subject_class_drift_fails_closed() {
+    let graph = hierarchy(vec![SubjectHierarchyEdgeV1 {
+        parent_subject_id: id("domain-a"),
+        parent_subject_class: SubjectClass::Domain,
+        child_subject_id: id("agent-a"),
+        child_subject_class: SubjectClass::Agent,
+    }]);
+    assert!(matches!(
+        must_err(validate_staged_updates(
+            &[UpdateGeneration {
+                generation: generation(7),
+                subject_id: id("domain-a"),
+                subject_class: SubjectClass::System,
+                artifact_id: id("domain-candidate"),
+            }],
+            &graph,
+        )),
+        NduError::InvalidHierarchyRelation(_)
+    ));
+}
