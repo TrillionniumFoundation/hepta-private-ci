@@ -85,6 +85,9 @@ impl AgentdIntelligenceHostV1 {
         if input.stage != LaneFStageV3::HostHandoffAccepted {
             return Err(rejection());
         }
+        if input.run_id != envelope.run_id {
+            return Err(rejection());
+        }
         if input.snapshot_digest != envelope.snapshot_digest {
             return Err(rejection());
         }
