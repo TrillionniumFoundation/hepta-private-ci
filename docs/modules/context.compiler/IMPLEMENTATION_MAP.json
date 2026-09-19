@@ -27,7 +27,9 @@
       "sourcePath": "codex-rs/hepta-context-compiler/src/lib.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "compile",
       "mappingClass": "owner_native",
@@ -39,7 +41,9 @@
       "sourcePath": "codex-rs/hepta-context-compiler/src/requirements.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "compile_with_requirements",
       "mappingClass": "owner_native",
@@ -51,15 +55,75 @@
       "sourcePath": "codex-rs/hepta-context-compiler/src/candidate_bound.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "compile_candidate_bound",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "compile_verified_v2",
+      "nativeSymbol": "compile_verified_v2",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/verified.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/verified_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compile_verified_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "record_verified_serialization_v2",
+      "nativeSymbol": "record_verified_serialization_v2",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/verified.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/verified_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "record_verified_serialization_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "build_revalidated_attachment_v2",
+      "nativeSymbol": "build_revalidated_attachment_v2",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/verified.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/verified_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "build_revalidated_attachment_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "observe_verified_delivery_v2",
+      "nativeSymbol": "observe_verified_delivery_v2",
+      "sourcePath": "codex-rs/hepta-context-compiler/src/verified.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/verified_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "observe_verified_delivery_v2",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Compose authenticated current admission/revocation owner adapters into the named product caller.",
+    "Compose the selected exact tokenizer and runtime.codex/provider transport evidence verifier; source tests use deterministic injected adapters only.",
+    "Migrate all callers from compatibility V1/legacy-V2 helpers to the normative verified V2 path, then retire the weak surfaces.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
