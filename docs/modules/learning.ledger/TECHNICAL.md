@@ -222,7 +222,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use `ProductionLedgerWriter` for product-facing mutation so a host-owned `LearningEvidenceTrustProviderV1` is queried for the current trust revision before every signed mutation; trust rollback/same-revision drift, signed role admission, exact-anchor CAS and V2 semantic validation all fail before the durable append. `DurableLedger` / `SegmentedLedger` remain the storage engines. Retain acknowledgement frontiers independently with `DurableAnchorWitness` or an externally qualified equivalent; inspect and reopen existing state before admitting new records, and never turn failed anchored recovery into unanchored opening. Segment rotation, retention and backup must preserve acknowledged lineage. `LedgerIndexCheckpointV1` is a verifiable optimization/evidence artifact, not permission to skip journal validation.
+Use `ProductionLedgerWriter` for product-facing mutation so a host-owned `LearningEvidenceTrustProviderV1` is queried for the current trust revision before every signed mutation; trust rollback/same-revision drift, signed role admission, exact-anchor CAS and V2 semantic validation all fail before the durable append. `RootedLearningEvidenceTrustProviderV1` is the native pinned-root implementation: a root public key supplied out of band verifies complete predecessor-bound signer/controller manifests, while the root private key remains outside this module. `DurableLedger` / `SegmentedLedger` remain the storage engines. Retain acknowledgement frontiers independently with `DurableAnchorWitness` or an externally qualified equivalent; inspect and reopen existing state before admitting new records, and never turn failed anchored recovery into unanchored opening. Segment rotation, retention and backup must preserve acknowledged lineage. `LedgerIndexCheckpointV1` is a verifiable optimization/evidence artifact, not permission to skip journal validation.
 
 Current operating and state-format references:
 
@@ -232,6 +232,7 @@ Current operating and state-format references:
 - [codex-rs/hepta-learning-ledger/NATIVE_MAPPING.md](../../../codex-rs/hepta-learning-ledger/NATIVE_MAPPING.md).
 - `codex-rs/hepta-learning-ledger/src/production.rs` — signed + anchored product writer.
 - `codex-rs/hepta-learning-ledger/src/witness.rs` — independent durable anchor witness.
+- `codex-rs/hepta-learning-ledger/src/trust_root.rs` — pinned-root signed signer distribution and predecessor-bound rotation.
 - `codex-rs/hepta-learning-ledger/src/protocol.rs` — canonical registry protocol adapters.
 - `codex-rs/hepta-learning-ledger/src/index_checkpoint.rs` — verifiable long-history index checkpoint.
 
