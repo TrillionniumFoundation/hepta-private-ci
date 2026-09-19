@@ -533,6 +533,63 @@ async fn post_send_ack_loss_reuses_stable_txn_until_sync_reconciliation() -> Tes
 }
 
 #[tokio::test]
+async fn indeterminate_retransmission_stops_at_retry_budget_without_claiming_failure() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent(FIRST_AGENT)?;
+    let layout = layout(&temp, &agent_id)?;
+    let store = prepared_store(&layout).await?;
+    let original = enqueue_final(&store, &agent_id, 10).await?;
+    let transport = FakeTransport::new([
+        Err(MatrixTransportError::Indeterminate),
+        Err(MatrixTransportError::Indeterminate),
+        Err(MatrixTransportError::Indeterminate),
+    ]);
+    let config = OutboxDispatchConfig {
+        lease_ms: 20,
+        retry_delay_ms: 10,
+        max_retry_delay_ms: 40,
+        max_attempts: 3,
+        claim_limit: 1,
+        idle_poll: Duration::from_millis(10),
+    };
+    let cancel = CancellationToken::new();
+
+    for now_ms in [10, 31, 52] {
+        assert_eq!(
+            dispatch_outbox_once(&store, &transport, &config, &cancel, now_ms)
+                .await?
+                .indeterminate,
+            1
+        );
+    }
+    assert_eq!(
+        transport.txn_ids()?,
+        vec![
+            original.stable_txn_id.clone(),
+            original.stable_txn_id.clone(),
+            original.stable_txn_id.clone(),
+        ]
+    );
+    let parked = store
+        .outbox_for_txn(&original.stable_txn_id)
+        .await?
+        .ok_or("bounded indeterminate outbox disappeared")?;
+    assert_eq!(parked.state, OutboxState::InFlight);
+    assert_eq!(parked.attempts, 3);
+    assert!(
+        store.claim_outbox(u64::MAX / 4, 20, 1).await?.is_empty(),
+        "retry budget exhaustion must park uncertainty instead of inventing failure"
+    );
+    let dispatch = store
+        .matrix_dispatch(&original.stable_txn_id)
+        .await?
+        .ok_or("bounded indeterminate dispatch disappeared")?;
+    assert_eq!(dispatch.state, MatrixDispatchState::Indeterminate);
+    store.close().await;
+    Ok(())
+}
+
+#[tokio::test]
 async fn transient_failures_use_bounded_backoff_and_then_become_terminal() -> TestResult {
     let temp = TempDir::new()?;
     let agent_id = agent(FIRST_AGENT)?;
