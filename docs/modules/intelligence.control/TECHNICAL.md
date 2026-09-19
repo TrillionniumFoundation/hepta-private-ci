@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-intelligence/src/vertical.rs](../../../codex-rs/hepta-intelligence/src/vertical.rs); observed identifiers include `ReadOnlyVerticalRequest`, `ReadOnlyVerticalReceipt`, `ReadOnlyVerticalError`, `run_read_only_vertical`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/intelligence.control.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intelligence.control.md) for the implemented subset and remaining product work.
+The registered source root is `codex-rs/hepta-intelligence`. Current native entrypoints include `run_read_only_vertical`, `run_evaluated_shadow_v1`, and the V3 convergence entrypoint `run_composition_v3`; the named Agentd host caller is `run_agentd_intelligence_v3` in `codex-rs/hepta-agentd`. V3 is the target convergence graph for objective/evaluation/legal-set/NDU/neuron/prompt/intuition/context/handoff/learning receipt lineage, while older entrypoints remain compatibility surfaces. This is source navigation, not proof that every upstream owner adapter or production execution boundary is qualified. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/intelligence.control.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intelligence.control.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -169,7 +169,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Composition library over injected owner ports. The read-only vertical and evaluated shadow entrypoints have distinct scopes; they do not install model weights or self-issue observations. Connect actual owner stages before naming a production closed loop, and retain unavailable/abstain outcomes instead of fabricating stage receipts.
+Composition library over injected owner ports. The V3 graph is the convergence surface and Agentd now owns the typed host-handoff receipt, but upstream owner adapters are still injected and therefore do not establish a complete production closed loop. The read-only vertical and evaluated shadow entrypoints remain narrower compatibility surfaces; none of these paths installs model weights or self-issues observations. Connect authenticated current owner stages and the existing Codex execution spine before naming a production closed loop, and retain unavailable/abstain outcomes instead of fabricating stage receipts.
 
 Current operating and state-format references:
 
@@ -183,6 +183,8 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs](../../../codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs); named case: `durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes`.
+- [codex-rs/hepta-intelligence/src/pipeline_v3_tests.rs](../../../codex-rs/hepta-intelligence/src/pipeline_v3_tests.rs); covers evaluation/NDU predecessor binding, optional capability fallback, abstention, and native legal-candidate contract stability.
+- [codex-rs/hepta-agentd/src/intelligence_v3_tests.rs](../../../codex-rs/hepta-agentd/src/intelligence_v3_tests.rs); proves the named Agentd caller is the `runtime.agentd` handoff producer without widening authority.
 - [codex-rs/hepta-intelligence/src/lib_tests.rs](../../../codex-rs/hepta-intelligence/src/lib_tests.rs); named case: `highest_eligible_candidate_is_selected_without_effect_authority`.
 
 In `codex-rs`, run `just test -p codex-hepta-intelligence`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intelligence.control.md) separately labels target acceptance designs.
