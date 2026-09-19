@@ -67,13 +67,17 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
         parts = PurePosixPath(path).parts
         if not path or path.startswith("/") or ".." in parts or "\\" in path or "\x00" in path:
             raise ValueError(f"invalid repository path: {path!r}")
+        # Generated projections are still derived inputs even when they are
+        # Markdown. Classify them before the ordinary prose fast path so they
+        # get drift verification without acquiring native build scope.
+        if path in DERIVED_ONLY_DOCS:
+            derived = True
+            continue
         # Only established prose roots are exempt; a .md elsewhere may be an
         # include_str! input and therefore defaults to the conservative path.
         if path in {"README.md", "CONTRIBUTING.md"} or (path.startswith("docs/") and path.endswith(".md")):
             continue
-        if path in DERIVED_ONLY_DOCS:
-            derived = True
-        elif path in ARCHITECTURE_REGISTRY_FILES or path.startswith(ARCHITECTURE_REGISTRY_PREFIXES):
+        if path in ARCHITECTURE_REGISTRY_FILES or path.startswith(ARCHITECTURE_REGISTRY_PREFIXES):
             derived = True
             selected.update(GROUPS)
         elif path.startswith("docs/"):
