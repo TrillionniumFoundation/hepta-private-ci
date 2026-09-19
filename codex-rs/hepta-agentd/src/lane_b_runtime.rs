@@ -30,7 +30,6 @@ pub struct RuntimeComposition {
     pub agent_id: String,
     pub supervisor_generation: u64,
     pub agentd_generation: u64,
-    pub authority_epoch: u64,
     pub configuration_digest: String,
     pub ports_digest: String,
     pub fence_digest: String,
@@ -121,10 +120,7 @@ impl AgentRunCoordinator {
         validate_digest(&composition.configuration_digest, "configuration")?;
         validate_digest(&composition.ports_digest, "ports")?;
         validate_digest(&composition.fence_digest, "fence")?;
-        if composition.supervisor_generation == 0
-            || composition.agentd_generation == 0
-            || composition.authority_epoch == 0
-        {
+        if composition.supervisor_generation == 0 || composition.agentd_generation == 0 {
             return Err(AgentRunError::InvalidGeneration);
         }
         Ok(Self {
@@ -144,7 +140,6 @@ impl AgentRunCoordinator {
     ) -> Result<RunReceipt, AgentRunError> {
         validate_snapshot(now_ms, &snapshot)?;
         if snapshot.generation != self.composition.agentd_generation
-            || snapshot.authority_epoch != self.composition.authority_epoch
             || snapshot.fence_digest != self.composition.fence_digest
         {
             return Err(AgentRunError::RuntimeBindingMismatch);
