@@ -10,6 +10,8 @@ use crate::AuthorityClock;
 use crate::AuthorityFrontierStore;
 use crate::AuthorityTrustError;
 use crate::SystemAuthorityClock;
+use crate::VerifiedUseBoundaryV1;
+use crate::VerifiedUseTokenWitnessV1;
 use serde::Deserialize;
 use serde::Serialize;
 use sha2::Digest;
@@ -653,6 +655,15 @@ impl AuthorityLeaseVerifier {
         expected: &AuthorityLeaseBinding,
         consumer: impl FnOnce() -> T,
     ) -> Result<T, AuthorityLeaseError> {
+        let _witness = self.validate_token_live_witness(&token, expected)?;
+        Ok(consumer())
+    }
+
+    fn validate_token_live_witness(
+        &self,
+        token: &LeaseVerifiedUseToken,
+        expected: &AuthorityLeaseBinding,
+    ) -> Result<VerifiedUseTokenWitnessV1, AuthorityLeaseError> {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.lease.binding != expected {
             return Err(AuthorityLeaseError::BindingMismatch);
         }
@@ -665,8 +676,16 @@ impl AuthorityLeaseVerifier {
             expected,
             now_unix_ms,
         )?;
-        drop(state);
-        Ok(consumer())
+        Ok(VerifiedUseTokenWitnessV1::authority_lease(
+            self.0.owner_id.clone(),
+            token.lease.lease_id.clone(),
+            state.authority_epoch,
+            token.lease.revision,
+            state.store_revision,
+            now_unix_ms,
+            VerifiedUseBoundaryV1::ConsumerEntry,
+            authority_lease_binding_witness_sha256(expected)?,
+        ))
     }
 
     fn lock_state(&self) -> Result<std::sync::MutexGuard<'_, State>, AuthorityLeaseError> {
@@ -680,6 +699,29 @@ impl AuthorityLeaseVerifier {
         }
         Ok(state)
     }
+}
+
+/// Consume one live general lease at the final synchronous boundary and emit a
+/// serializable, non-authorizing audit witness for that exact linearization
+/// point. The witness cannot be converted back into a lease token.
+pub fn deliver_authority_lease_with_witness<T>(
+    verifier: &AuthorityLeaseVerifier,
+    token: LeaseVerifiedUseToken,
+    expected: &AuthorityLeaseBinding,
+    consumer: impl FnOnce() -> T,
+) -> Result<(T, VerifiedUseTokenWitnessV1), AuthorityLeaseError> {
+    let witness = verifier.validate_token_live_witness(&token, expected)?;
+    Ok((consumer(), witness))
+}
+
+fn authority_lease_binding_witness_sha256(
+    binding: &AuthorityLeaseBinding,
+) -> Result<[u8; 32], AuthorityLeaseError> {
+    let encoded = serde_json::to_vec(binding).map_err(|_| AuthorityLeaseError::InvalidLease)?;
+    let mut hash = Sha256::new();
+    hash.update(b"hepta.kernel.authority.verified-use-binding.authority-lease.v1\0");
+    hash.update(encoded);
+    Ok(hash.finalize().into())
 }
 
 fn receipt(revocation: &CapabilityRevocation, previous: u64) -> RevocationReceipt {
