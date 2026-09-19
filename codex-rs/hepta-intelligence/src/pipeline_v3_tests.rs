@@ -407,3 +407,32 @@ fn failed_host_handoff_stops_before_learning_record() {
     );
     assert!(!ports.calls.contains(&LaneFStageV3::LearningRecorded));
 }
+
+#[derive(Default)]
+struct ExpiredDeadline;
+
+impl CompositionControlV3 for ExpiredDeadline {
+    fn cancelled(&self) -> bool {
+        false
+    }
+
+    fn now_unix_micros(&self) -> u64 {
+        4_000_000_000_000_000
+    }
+}
+
+#[test]
+fn absolute_run_deadline_fails_before_any_owner_call() {
+    let mut ports = Ports::default();
+    let receipt = run_composition_v3_with_control(request(false), &mut ports, &ExpiredDeadline)
+        .expect("deadline receipt");
+    assert_eq!(
+        receipt.disposition,
+        PipelineDispositionV3::Failed(PortFailureClassV3::TimedOut)
+    );
+    assert!(ports.calls.is_empty());
+    assert_eq!(
+        receipt.stages.last().map(|trace| trace.stage),
+        Some(LaneFStageV3::ObjectiveValidated)
+    );
+}
