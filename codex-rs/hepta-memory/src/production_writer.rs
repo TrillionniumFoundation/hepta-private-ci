@@ -2491,14 +2491,10 @@ mod final_use_dispatch_tests {
             )
             .await
             .expect("queued");
-        let binding = FinalUseBinding {
-            subject_id: owner.as_str().to_string(),
-            destination_id: target.destination_id().to_string(),
-            request_sha256: digest_bytes(&operation_digest(writer.authority(), &queued))
-                .expect("request digest"),
-            scope_sha256: [7; 32],
-            payload_sha256: digest_bytes(&queued.payload_sha256).expect("payload digest"),
-        };
+        let binding = writer
+            .final_use_binding(&queued, target.destination_id())
+            .await
+            .expect("canonical final-use binding");
         let signed = signed_final_use(&issuer, binding.clone(), "final-use-good", [11; 32]);
         let dispatched = dispatcher
             .dispatch(&writer, &signed, &binding, queued)
@@ -2521,14 +2517,11 @@ mod final_use_dispatch_tests {
             )
             .await
             .expect("second queued");
-        let bad_binding = FinalUseBinding {
-            subject_id: owner.as_str().to_string(),
-            destination_id: "destination:substituted".to_string(),
-            request_sha256: digest_bytes(&operation_digest(writer.authority(), &queued_bad))
-                .expect("request digest"),
-            scope_sha256: [8; 32],
-            payload_sha256: digest_bytes(&queued_bad.payload_sha256).expect("payload digest"),
-        };
+        let mut bad_binding = writer
+            .final_use_binding(&queued_bad, target.destination_id())
+            .await
+            .expect("canonical bad-case binding");
+        bad_binding.destination_id = "destination:substituted".to_string();
         let bad_signed =
             signed_final_use(&issuer, bad_binding.clone(), "final-use-bad-destination", [12; 32]);
         assert!(matches!(
@@ -2640,14 +2633,10 @@ mod final_use_dispatch_tests {
         let target = Arc::new(CountingTarget::new("destination:cognitive-store"));
         let dispatcher =
             ProductionFinalUseOutboxDispatcher::attach(final_use, target.clone());
-        let binding = FinalUseBinding {
-            subject_id: owner.as_str().to_string(),
-            destination_id: target.destination_id().to_string(),
-            request_sha256: digest_bytes(&operation_digest(successor.authority(), &inherited))
-                .expect("request digest"),
-            scope_sha256: [9; 32],
-            payload_sha256: digest_bytes(&inherited.payload_sha256).expect("payload digest"),
-        };
+        let binding = successor
+            .final_use_binding(&inherited, target.destination_id())
+            .await
+            .expect("canonical handoff binding");
         let signed =
             signed_final_use(&issuer, binding.clone(), "final-use-handoff", [13; 32]);
         let result = dispatcher
