@@ -62,6 +62,26 @@ pub struct MatrixDispatchAuthority {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct MatrixDispatchAuthorityClaim {
+    pub operation_id: String,
+    pub subject_id: String,
+    pub destination_id: String,
+    pub homeserver_id: String,
+    pub matrix_user_id: String,
+    pub device_id: String,
+    pub session_generation: u64,
+    pub authority_epoch: u64,
+    pub revocation_revision: u64,
+    pub grant_id: String,
+    pub request_digest: String,
+    pub scope_digest: String,
+    pub payload_digest: String,
+    pub attempt: u64,
+    pub expires_at_ms: u64,
+    pub claimed_at_ms: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct MatrixDispatchRecord {
     pub operation_id: String,
     pub stable_txn_id: MatrixTransactionId,
@@ -86,6 +106,92 @@ pub struct MatrixDispatchRecord {
 }
 
 impl MatrixDurableStore {
+    pub async fn record_dispatch_authority_claim(
+        &self,
+        txn_id: &MatrixTransactionId,
+        claim: &MatrixDispatchAuthorityClaim,
+    ) -> Result<(), MatrixDurableError> {
+        validate_authority_claim(claim)?;
+        let mut transaction = self
+            .sqlite_pool()
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(unavailable)?;
+        let dispatch = dispatch_by_txn_tx(&mut transaction, txn_id)
+            .await?
+            .ok_or(MatrixDurableError::Conflict)?;
+        if dispatch.state.is_terminal()
+            || dispatch.operation_id != claim.operation_id
+            || dispatch.payload_digest != claim.payload_digest
+            || dispatch.attempts != claim.attempt
+            || claim.claimed_at_ms < dispatch.updated_at_ms
+        {
+            return Err(MatrixDurableError::Conflict);
+        }
+        let existing = authority_claim_by_attempt_tx(&mut transaction, txn_id, claim.attempt).await?;
+        if let Some(existing) = existing {
+            if &existing == claim {
+                transaction.commit().await.map_err(unavailable)?;
+                return Ok(());
+            }
+            return Err(MatrixDurableError::Conflict);
+        }
+        let reused_grant: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM matrix_dispatch_authority_claims WHERE grant_id = ?",
+        )
+        .bind(&claim.grant_id)
+        .fetch_one(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        if reused_grant != 0 {
+            return Err(MatrixDurableError::Conflict);
+        }
+        sqlx::query(
+            "INSERT INTO matrix_dispatch_authority_claims (
+                stable_txn_id, attempt, operation_id, subject_id, destination_id,
+                homeserver_id, matrix_user_id, device_id, session_generation,
+                authority_epoch, revocation_revision, grant_id, request_sha256,
+                scope_sha256, payload_sha256, expires_at_ms, claimed_at_ms
+             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        )
+        .bind(txn_id.as_str())
+        .bind(to_i64(claim.attempt)?)
+        .bind(&claim.operation_id)
+        .bind(&claim.subject_id)
+        .bind(&claim.destination_id)
+        .bind(&claim.homeserver_id)
+        .bind(&claim.matrix_user_id)
+        .bind(&claim.device_id)
+        .bind(to_i64(claim.session_generation)?)
+        .bind(to_i64(claim.authority_epoch)?)
+        .bind(to_i64(claim.revocation_revision)?)
+        .bind(&claim.grant_id)
+        .bind(&claim.request_digest)
+        .bind(&claim.scope_digest)
+        .bind(&claim.payload_digest)
+        .bind(to_i64(claim.expires_at_ms)?)
+        .bind(to_i64(claim.claimed_at_ms)?)
+        .execute(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        transaction.commit().await.map_err(unavailable)?;
+        Ok(())
+    }
+
+    pub async fn dispatch_authority_claim(
+        &self,
+        txn_id: &MatrixTransactionId,
+        attempt: u64,
+    ) -> Result<Option<MatrixDispatchAuthorityClaim>, MatrixDurableError> {
+        if attempt == 0 {
+            return Err(MatrixDurableError::Invalid);
+        }
+        let mut transaction = self.sqlite_pool().begin().await.map_err(unavailable)?;
+        let claim = authority_claim_by_attempt_tx(&mut transaction, txn_id, attempt).await?;
+        transaction.commit().await.map_err(unavailable)?;
+        Ok(claim)
+    }
+
     pub async fn prepare_outbox_dispatch(
         &self,
         record: &OutboxRecord,
@@ -828,6 +934,55 @@ async fn settle_outbox_sent_tx(
     Ok(())
 }
 
+async fn authority_claim_by_attempt_tx(
+    transaction: &mut Transaction<'_, Sqlite>,
+    txn_id: &MatrixTransactionId,
+    attempt: u64,
+) -> Result<Option<MatrixDispatchAuthorityClaim>, MatrixDurableError> {
+    sqlx::query(
+        "SELECT operation_id, subject_id, destination_id, homeserver_id,
+                matrix_user_id, device_id, session_generation, authority_epoch,
+                revocation_revision, grant_id, request_sha256, scope_sha256,
+                payload_sha256, attempt, expires_at_ms, claimed_at_ms
+         FROM matrix_dispatch_authority_claims
+         WHERE stable_txn_id = ? AND attempt = ?",
+    )
+    .bind(txn_id.as_str())
+    .bind(to_i64(attempt)?)
+    .fetch_optional(&mut **transaction)
+    .await
+    .map_err(unavailable)?
+    .map(|row| authority_claim_from_row(&row))
+    .transpose()
+}
+
+fn authority_claim_from_row(
+    row: &sqlx::sqlite::SqliteRow,
+) -> Result<MatrixDispatchAuthorityClaim, MatrixDurableError> {
+    let claim = MatrixDispatchAuthorityClaim {
+        operation_id: row.try_get("operation_id").map_err(unavailable)?,
+        subject_id: row.try_get("subject_id").map_err(unavailable)?,
+        destination_id: row.try_get("destination_id").map_err(unavailable)?,
+        homeserver_id: row.try_get("homeserver_id").map_err(unavailable)?,
+        matrix_user_id: row.try_get("matrix_user_id").map_err(unavailable)?,
+        device_id: row.try_get("device_id").map_err(unavailable)?,
+        session_generation: to_u64(row.try_get("session_generation").map_err(unavailable)?)?,
+        authority_epoch: to_u64(row.try_get("authority_epoch").map_err(unavailable)?)?,
+        revocation_revision: to_u64(
+            row.try_get("revocation_revision").map_err(unavailable)?,
+        )?,
+        grant_id: row.try_get("grant_id").map_err(unavailable)?,
+        request_digest: row.try_get("request_sha256").map_err(unavailable)?,
+        scope_digest: row.try_get("scope_sha256").map_err(unavailable)?,
+        payload_digest: row.try_get("payload_sha256").map_err(unavailable)?,
+        attempt: to_u64(row.try_get("attempt").map_err(unavailable)?)?,
+        expires_at_ms: to_u64(row.try_get("expires_at_ms").map_err(unavailable)?)?,
+        claimed_at_ms: to_u64(row.try_get("claimed_at_ms").map_err(unavailable)?)?,
+    };
+    validate_authority_claim(&claim).map_err(|_| MatrixDurableError::Corrupt)?;
+    Ok(claim)
+}
+
 async fn dispatch_by_txn_tx(
     transaction: &mut Transaction<'_, Sqlite>,
     txn_id: &MatrixTransactionId,
@@ -1000,6 +1155,50 @@ fn transport_observation_digest(
 
 fn operation_id(txn_id: &MatrixTransactionId) -> String {
     format!("matrix.send:{}", txn_id.as_str())
+}
+
+fn validate_authority_claim(
+    claim: &MatrixDispatchAuthorityClaim,
+) -> Result<(), MatrixDurableError> {
+    validate_identity(&claim.operation_id)?;
+    for value in [&claim.subject_id, &claim.destination_id, &claim.grant_id] {
+        if value.is_empty()
+            || value.len() > 128
+            || !value
+                .bytes()
+                .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
+        {
+            return Err(MatrixDurableError::Invalid);
+        }
+    }
+    for (value, maximum) in [
+        (claim.homeserver_id.as_str(), 2048_usize),
+        (claim.matrix_user_id.as_str(), 255_usize),
+        (claim.device_id.as_str(), 255_usize),
+    ] {
+        if value.is_empty()
+            || value.len() > maximum
+            || value.chars().any(char::is_control)
+        {
+            return Err(MatrixDurableError::Invalid);
+        }
+    }
+    for digest in [
+        &claim.request_digest,
+        &claim.scope_digest,
+        &claim.payload_digest,
+    ] {
+        validate_digest(digest)?;
+    }
+    if claim.attempt == 0
+        || claim.session_generation == 0
+        || claim.authority_epoch == 0
+        || claim.revocation_revision == 0
+        || claim.expires_at_ms <= claim.claimed_at_ms
+    {
+        return Err(MatrixDurableError::Invalid);
+    }
+    Ok(())
 }
 
 fn validate_authority(
