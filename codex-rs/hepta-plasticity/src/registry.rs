@@ -7,6 +7,7 @@ use codex_hepta_types::StableId;
 
 use crate::legacy::validate_legacy_v1_read;
 use crate::parameter_v2::verify_parameter_proposal_v2;
+use crate::topology_v3::verify_topology_proposal_v3;
 use crate::types::*;
 
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
@@ -20,6 +21,8 @@ pub struct ProposalRegistry {
     legacy_v1: BTreeMap<StableId, PlasticityProposal>,
     parameter_v2: BTreeMap<ProposalRegistrySlotV2, ParameterProposalV2>,
     parameter_v2_ids: BTreeMap<StableId, ProposalRegistrySlotV2>,
+    topology_v3: BTreeMap<StableId, TopologyProposalV3>,
+    topology_v3_slots: BTreeMap<(Digest32, u64), StableId>,
     maximum_records: usize,
 }
 
@@ -29,6 +32,8 @@ impl ProposalRegistry {
             legacy_v1: BTreeMap::new(),
             parameter_v2: BTreeMap::new(),
             parameter_v2_ids: BTreeMap::new(),
+            topology_v3: BTreeMap::new(),
+            topology_v3_slots: BTreeMap::new(),
             maximum_records: maximum_records.min(MAX_PROPOSALS),
         }
     }
@@ -96,6 +101,46 @@ impl ProposalRegistry {
         Ok(AppendDisposition::Inserted)
     }
 
+    /// Retain a verified topology V3 record. One baseline topology/generation
+    /// slot may have only one canonical proposal; competing bytes conflict.
+    pub fn append_v3(&mut self, proposal: TopologyProposalV3) -> Result<AppendDisposition, Error> {
+        verify_topology_proposal_v3(&proposal)?;
+        let slot = (
+            proposal.selected_topology_digest,
+            proposal.baseline_generation.get(),
+        );
+        if let Some(existing_id) = self.topology_v3_slots.get(&slot) {
+            let existing = self
+                .topology_v3
+                .get(existing_id)
+                .expect("topology slot index must resolve");
+            if existing == &proposal {
+                return Ok(AppendDisposition::Unchanged);
+            }
+            return Err(Error::RegistrySlotConflict(format!(
+                "{}:{}",
+                proposal.selected_topology_digest,
+                proposal.baseline_generation.get()
+            )));
+        }
+        if self.legacy_v1.contains_key(&proposal.proposal_id)
+            || self.has_v2_proposal_id(&proposal.proposal_id)
+            || self.topology_v3.contains_key(&proposal.proposal_id)
+        {
+            return Err(Error::ProposalConflict(proposal.proposal_id.to_string()));
+        }
+        if self.record_count() >= self.maximum_records {
+            return Err(Error::RegistryCapacityExceeded);
+        }
+        self.topology_v3_slots.insert(slot, proposal.proposal_id.clone());
+        self.topology_v3.insert(proposal.proposal_id.clone(), proposal);
+        Ok(AppendDisposition::Inserted)
+    }
+
+    pub fn get_v3(&self, proposal_id: &StableId) -> Option<&TopologyProposalV3> {
+        self.topology_v3.get(proposal_id)
+    }
+
     /// Return a structurally checked V1 record whose historical digest is opaque.
     pub fn get(&self, proposal_id: &StableId) -> Option<&PlasticityProposal> {
         self.legacy_v1.get(proposal_id)
@@ -118,7 +163,7 @@ impl ProposalRegistry {
     }
 
     pub fn record_count(&self) -> usize {
-        self.legacy_v1.len() + self.parameter_v2.len()
+        self.legacy_v1.len() + self.parameter_v2.len() + self.topology_v3.len()
     }
 
     fn has_v2_proposal_id(&self, proposal_id: &StableId) -> bool {
