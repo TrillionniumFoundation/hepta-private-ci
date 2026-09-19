@@ -7,34 +7,32 @@
 //! ephemeral runtime coordinator. No effect authority is granted here.
 
 use std::collections::BTreeMap;
-use std::fs::File;
 use std::fs::OpenOptions;
-use std::io::Read;
-use std::io::Write;
 use std::path::Path;
-use std::path::PathBuf;
 use std::str::FromStr;
 use std::sync::Mutex;
 
+use codex_hepta_authbus::Error as AuthBusError;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
-use codex_hepta_objective::CompileDisposition;
+use codex_hepta_intelligence::ObjectiveRunBindingsV1;
+use codex_hepta_intelligence::ObjectiveRunError;
+use codex_hepta_intelligence::compile_and_publish_objective_run_v1;
+use codex_hepta_learning_ledger::DurableRunStartJournal;
+use codex_hepta_learning_ledger::RunStartAppendDisposition;
+use codex_hepta_learning_ledger::RunStartAuthenticationV1;
+use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
+use codex_hepta_learning_ledger::RunStartRecordV1;
+use codex_hepta_learning_ledger::RunStartRecovery;
 use codex_hepta_objective::ObjectiveAdmissionContextV1;
 use codex_hepta_objective::ObjectiveAdmissionProfileV1;
-use codex_hepta_objective::ObjectiveRunPublicationV1;
 use codex_hepta_objective::ObjectiveSourceAuthenticationV1;
-use codex_hepta_objective::RunStartBindingsV1;
-use codex_hepta_objective::RunStartSnapshotV1;
-use codex_hepta_objective::admit_and_compile_objective_v1;
 use codex_hepta_objective::decode_admission_profile_json_v1;
 use codex_hepta_objective::decode_source_envelope_json_v1;
-use codex_hepta_objective::objective_run_publication_digest_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
-use serde::Deserialize;
-use serde::Serialize;
 
 use crate::AgentRunCoordinator;
 use crate::AgentRunError;
@@ -53,8 +51,9 @@ use crate::authbus_trust::read_private_owner_file;
 
 const PRODUCT_SOURCE_JSON_BYTES: usize = 32 * 1024;
 const PRODUCT_BODY_JSON_BYTES: usize = 48 * 1024;
-const MAX_STORED_RUNS: usize = 1_024;
-const STORE_SCHEMA_VERSION: u32 = 1;
+const MAX_RUN_START_RECORDS: usize = 4_096;
+const RUN_START_DIRECTORY: &str = "objective-run-start-v1";
+const RUN_START_FILE: &str = "journal.bin";
 
 pub(crate) enum ObjectiveStartResult {
     Admitted(ObjectiveRunAdmission),
@@ -67,12 +66,13 @@ pub(crate) enum ObjectiveStartResult {
 pub(crate) struct ObjectiveRuntimeHost {
     profile: ObjectiveAdmissionProfileV1,
     profile_digest: Digest32,
-    root: PathBuf,
     state: Mutex<ObjectiveHostState>,
 }
 
 struct ObjectiveHostState {
-    coordinator: AgentRunCoordinator,
+    journal: DurableRunStartJournal,
+    coordinator_generation: Option<u64>,
+    coordinator: Option<AgentRunCoordinator>,
     highest_sequences: BTreeMap<(String, u64), u64>,
 }
 
@@ -80,7 +80,6 @@ impl ObjectiveRuntimeHost {
     pub(crate) fn open(
         identity: &AgentdIdentity,
         profile_file: &Path,
-        now_ms: u64,
     ) -> Result<Self, AgentdError> {
         let bytes = read_private_owner_file(profile_file, identity, 262_144)?;
         let profile = decode_admission_profile_json_v1(&bytes)
@@ -93,27 +92,39 @@ impl ObjectiveRuntimeHost {
         let profile_digest = profile
             .digest()
             .map_err(|error| invalid(&format!("objective profile: {error}")))?;
-        let root = identity.home_root.join("objective-runs-v1");
-        prepare_store(&root)?;
-        let composition = RuntimeComposition {
-            agent_id: identity.agent_id.as_str().to_string(),
-            supervisor_generation: identity.spawn_generation,
-            agentd_generation: identity.spawn_generation,
-            configuration_digest: profile_digest.to_string(),
-            ports_digest: Digest32::of_bytes(b"hepta.agentd.objective-start.v1").to_string(),
-        };
-        let mut state = ObjectiveHostState {
-            coordinator: AgentRunCoordinator::compose_runtime(composition)
-                .map_err(runtime_error)?,
-            highest_sequences: BTreeMap::new(),
-        };
-        recover_store(&root, now_ms, &mut state)?;
+        let journal = open_run_start_journal(identity, profile_digest)?;
+        let highest_sequences = replay_frontier(&journal)?;
         Ok(Self {
             profile,
             profile_digest,
-            root,
-            state: Mutex::new(state),
+            state: Mutex::new(ObjectiveHostState {
+                journal,
+                coordinator_generation: None,
+                coordinator: None,
+                highest_sequences,
+            }),
         })
+    }
+
+    pub(crate) fn reconcile(
+        &self,
+        agentd: &AgentdState,
+        current_generation: u64,
+        now_ms: u64,
+    ) -> Result<(), AgentdError> {
+        let trust = authbus_ingress::attached(agentd)?.trust(agentd)?;
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| AgentdError::Protocol("objective runtime mutex is poisoned".to_string()))?;
+        ensure_coordinator(
+            &mut state,
+            agentd.identity(),
+            self.profile_digest,
+            &trust,
+            current_generation,
+            now_ms,
+        )
     }
 
     pub(crate) fn submit(
