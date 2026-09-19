@@ -123,6 +123,8 @@ The transport receives:
 }
 ```
 
+The existing `codex-hepta-native-gateway --serve-ui` live shell is intentionally loopback-only and read-only: its published contract keeps operator mutation closed and rejects POST. It MUST NOT be treated as the `ui.control` mutation backend or widened implicitly to satisfy this package. A future product mutation gateway requires its own authenticated composition, final-use authority consumption and owner/effect adapters.
+
 A separately authorized backend adapter remains responsible for current-state
 validation and construction/admission of any canonical effect-bearing contract.
 
