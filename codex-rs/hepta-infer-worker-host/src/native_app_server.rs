@@ -209,6 +209,47 @@ fn bind_codex_receipt(output: &mut NativeRunOutput, receipt: &CodexAdapterReceip
     output.codex_receipt_digest = Some(receipt.receipt_digest.to_string());
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum RecoveredUserBinding {
+    NotPresent,
+    Exact,
+    Mismatch,
+}
+
+fn recovered_user_binding(
+    items: &[ThreadItem],
+    expected_client_id: &str,
+    expected_prompt: &str,
+) -> RecoveredUserBinding {
+    let expected_content = vec![UserInput::Text {
+        text: expected_prompt.to_string(),
+        text_elements: Vec::new(),
+    }];
+    let mut exact = false;
+    for item in items {
+        let ThreadItem::UserMessage {
+            client_id: Some(client_id),
+            content,
+            ..
+        } = item
+        else {
+            continue;
+        };
+        if client_id != expected_client_id {
+            continue;
+        }
+        if content != &expected_content {
+            return RecoveredUserBinding::Mismatch;
+        }
+        exact = true;
+    }
+    if exact {
+        RecoveredUserBinding::Exact
+    } else {
+        RecoveredUserBinding::NotPresent
+    }
+}
+
 fn native_status_from_pre_turn_receipt(receipt: &CodexAdapterReceipt) -> Result<NativeRunStatus> {
     match receipt.status {
         AdapterStatus::Rejected => Ok(NativeRunStatus::Rejected),
@@ -313,6 +354,7 @@ impl AppServerModelDriver {
     pub(super) async fn reconcile_existing(
         &self,
         record: &NativeRunRecord,
+        expected_prompt: &str,
     ) -> Result<Option<NativeRunOutput>> {
         if matches!(
             record.state,
@@ -408,24 +450,42 @@ impl AppServerModelDriver {
             return Err("reconciled App Server thread/session correlation mismatch".into());
         }
 
+        // A stable client id is necessary but not sufficient for recovery:
+        // bind it to the original user input as well. The current prompt was
+        // already checked by reserve_native against the durable NativeRequest
+        // payload digest, so a same-id/different-content history entry is a
+        // hard correlation conflict, never evidence for settlement.
+        let mut binding_mismatch = false;
         let mut matching_turns = response.thread.turns.into_iter().filter(|turn| {
-            turn.items.iter().any(|item| {
-                matches!(
-                    item,
-                    ThreadItem::UserMessage {
-                        client_id: Some(client_id),
-                        ..
-                    } if client_id == &record.request.request_id
-                )
-            })
+            match recovered_user_binding(
+                &turn.items,
+                &record.request.request_id,
+                expected_prompt,
+            ) {
+                RecoveredUserBinding::Exact => true,
+                RecoveredUserBinding::Mismatch => {
+                    binding_mismatch = true;
+                    false
+                }
+                RecoveredUserBinding::NotPresent => false,
+            }
         });
         let Some(turn) = matching_turns.next() else {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            if binding_mismatch {
+                return Err(
+                    "App Server recovery client id matched different user input".into(),
+                );
+            }
             return Ok(None);
         };
         if matching_turns.next().is_some() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("multiple App Server turns share one native request id".into());
+        }
+        if binding_mismatch {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("App Server recovery client id matched different user input".into());
         }
 
         let intent = codex_intent(
