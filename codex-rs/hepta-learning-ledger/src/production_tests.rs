@@ -121,6 +121,11 @@ impl Fixture {
             .write(true)
             .open(root.join("ledger"))
             .expect("create ledger");
+        OpenOptions::new()
+            .create_new(true)
+            .write(true)
+            .open(root.join("witness"))
+            .expect("create witness");
         Self { root }
     }
     fn file(&self) -> std::fs::File {
@@ -129,6 +134,14 @@ impl Fixture {
             .write(true)
             .open(self.root.join("ledger"))
             .expect("open ledger")
+    }
+
+    fn witness_file(&self) -> std::fs::File {
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(self.root.join("witness"))
+            .expect("open witness")
     }
 }
 impl Drop for Fixture {
@@ -281,6 +294,15 @@ fn production_writer_closes_signed_decision_outcome_credit_and_dataset_path() {
             50,
         )
         .expect("credit");
+
+    let mut witness =
+        DurableAnchorWitness::create(fixture.witness_file(), digest("witness-binding"))
+            .expect("witness");
+    let retained = writer
+        .retain_acknowledgement(&mut witness, &credit_receipt)
+        .expect("retain acknowledgement");
+    assert_eq!(retained.sequence, credit_receipt.sequence.get());
+    assert_eq!(retained.chain_digest, credit_receipt.chain_digest);
 
     let dataset_signed = sign(
         &verifier,
