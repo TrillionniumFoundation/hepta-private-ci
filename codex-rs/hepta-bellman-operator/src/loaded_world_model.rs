@@ -186,7 +186,7 @@ pub(crate) fn validate_world_model_v1(
         if estimate
             .branches
             .windows(2)
-            .any(|pair| pair[0].next_state_id >= pair[1].next_state_id)
+            .any(|pair| &pair[0].next_state_id >= &pair[1].next_state_id)
         {
             return Err(WorldModelPayloadError::Grid);
         }
