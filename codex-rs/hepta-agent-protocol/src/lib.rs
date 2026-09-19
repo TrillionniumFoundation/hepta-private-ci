@@ -31,6 +31,8 @@ pub const AGENTD_CONTROL_SCHEMA_VERSION: u32 = 2;
 /// runtime yet; it gives a future host/supervisor seam one strict wire shape.
 pub const HOST_TURN_AUTHORITY_BINDING_SCHEMA_VERSION: u32 = 1;
 pub const MAX_CONTROL_FRAME_BYTES: u64 = 65_536;
+/// Maximum serialized cognitive context accepted by both Agentd and the final model consumer.
+pub const MAX_COGNITIVE_CONTEXT_BYTES: usize = 8 * 1024;
 pub const MAX_EVENT_BATCH: u16 = 256;
 pub const MAX_FEDERATION_CONTROL_LIST: u16 = 128;
 const FEDERATION_CAPABILITY_ID_PREFIX: &str = "federation:v1:";
