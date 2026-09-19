@@ -116,12 +116,11 @@ async fn terminal_and_redaction_evidence_survive_reopen_without_overwrite() -> T
     store.close().await;
 
     let reopened = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
-    let terminal_event = MatrixEventId::parse("$terminal")?;
+    let terminal_event = transport_event.clone();
     let send_digest = "a".repeat(64);
     assert!(
         reopened
-            .observe_dispatch_terminal_success_if_known(
-                &outbox.stable_txn_id,
+            .observe_dispatch_terminal_success_by_event_if_known(
                 &room()?,
                 &terminal_event,
                 &send_digest,
