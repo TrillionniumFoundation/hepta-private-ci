@@ -103,7 +103,8 @@ fn contribution(
 
 #[test]
 fn objective_to_ndu_to_independent_learning_ledger_is_replayable_and_revocable() {
-    let compiled = must(must(compile_prevalidated_legacy_objective_v1(ObjectiveSourceEnvelope {
+    let compiled = must(must(compile_prevalidated_legacy_objective_v1(
+        ObjectiveSourceEnvelope {
         request_id: id("request-value-learning-1"),
         principal_scope: id("principal:alpha"),
         revision: must(Revision::new(1)),
@@ -142,7 +143,8 @@ fn objective_to_ndu_to_independent_learning_ledger_is_replayable_and_revocable()
             direction: SoftDirection::Maximize,
             weight: FixedQ32::ONE,
         }],
-    })));
+        },
+    )));
     let objective_digest = compiled.objective.semantic_digest;
 
     let mut artifacts = ArtifactRegistry::new();
