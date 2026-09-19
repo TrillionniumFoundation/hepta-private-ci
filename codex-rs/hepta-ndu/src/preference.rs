@@ -35,16 +35,46 @@ pub struct PreferenceState {
 /// step to the frozen iteration context used when the solver ran.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduSolverIterationReceipt {
-    pub iteration: u32,
-    pub predecessor_revision: Revision,
-    pub next_revision: Revision,
-    pub residual_raw: i64,
-    pub projection_count: u32,
-    pub state_digest: Digest32,
-    context_digest: Digest32,
+    pub(crate) iteration: u32,
+    pub(crate) predecessor_revision: Revision,
+    pub(crate) next_revision: Revision,
+    pub(crate) residual_raw: i64,
+    pub(crate) projection_count: u32,
+    pub(crate) state_digest: Digest32,
+    pub(crate) context_digest: Digest32,
 }
 
 impl NduSolverIterationReceipt {
+    #[must_use]
+    pub const fn iteration(&self) -> u32 {
+        self.iteration
+    }
+
+    #[must_use]
+    pub const fn predecessor_revision(&self) -> Revision {
+        self.predecessor_revision
+    }
+
+    #[must_use]
+    pub const fn next_revision(&self) -> Revision {
+        self.next_revision
+    }
+
+    #[must_use]
+    pub const fn residual_raw(&self) -> i64 {
+        self.residual_raw
+    }
+
+    #[must_use]
+    pub const fn projection_count(&self) -> u32 {
+        self.projection_count
+    }
+
+    #[must_use]
+    pub const fn state_digest(&self) -> Digest32 {
+        self.state_digest
+    }
+
     #[must_use]
     pub const fn context_digest(&self) -> Digest32 {
         self.context_digest
@@ -62,17 +92,52 @@ pub enum SolveDisposition {
 /// requires independent stability, conservation and evaluator evidence.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduSolverTerminationReceipt {
-    pub disposition: SolveDisposition,
-    pub iterations: u32,
-    pub terminal_residual_raw: i64,
-    pub maximum_residual_raw: i64,
-    pub projection_count: u32,
-    pub predecessor_digest: Digest32,
-    pub terminal_state_digest: Digest32,
+    pub(crate) disposition: SolveDisposition,
+    pub(crate) iterations: u32,
+    pub(crate) terminal_residual_raw: i64,
+    pub(crate) maximum_residual_raw: i64,
+    pub(crate) projection_count: u32,
+    pub(crate) predecessor_digest: Digest32,
+    pub(crate) terminal_state_digest: Digest32,
     pub(crate) context_digest: Digest32,
 }
 
 impl NduSolverTerminationReceipt {
+    #[must_use]
+    pub const fn disposition(&self) -> SolveDisposition {
+        self.disposition
+    }
+
+    #[must_use]
+    pub const fn iterations(&self) -> u32 {
+        self.iterations
+    }
+
+    #[must_use]
+    pub const fn terminal_residual_raw(&self) -> i64 {
+        self.terminal_residual_raw
+    }
+
+    #[must_use]
+    pub const fn maximum_residual_raw(&self) -> i64 {
+        self.maximum_residual_raw
+    }
+
+    #[must_use]
+    pub const fn projection_count(&self) -> u32 {
+        self.projection_count
+    }
+
+    #[must_use]
+    pub const fn predecessor_digest(&self) -> Digest32 {
+        self.predecessor_digest
+    }
+
+    #[must_use]
+    pub const fn terminal_state_digest(&self) -> Digest32 {
+        self.terminal_state_digest
+    }
+
     #[must_use]
     pub const fn context_digest(&self) -> Digest32 {
         self.context_digest
