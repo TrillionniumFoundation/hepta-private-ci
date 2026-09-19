@@ -127,7 +127,7 @@ impl AppServerModelDriver {
                 return Err("reconciliation returned a different thread/provider".into());
             }
 
-            if let Some(turn) = select_turn(&read, record)? {
+            if let Some(turn) = select_turn(&read.thread.turns, record)? {
                 if turn.status != TurnStatus::InProgress {
                     let mut output = terminal_output(record, turn)?;
                     // A prior observed authority loss is sticky: verify_owner_health
@@ -151,18 +151,18 @@ impl AppServerModelDriver {
 }
 
 fn select_turn<'a>(
-    read: &'a ThreadReadResponse,
+    turns: &'a [Turn],
     record: &NativeRunRecord,
 ) -> Result<Option<&'a Turn>> {
     if let Some(turn_id) = record.turn_id.as_deref() {
-        return Ok(read.thread.turns.iter().find(|turn| turn.id == turn_id));
+        return Ok(turns.iter().find(|turn| turn.id == turn_id));
     }
 
     // turn/start may have reached the App Server while its response was lost.
     // The thread is dedicated to exactly one inference request, and the stable
     // request id was sent as client_user_message_id. Use that persisted binding
     // instead of guessing from turn order.
-    let mut matches = read.thread.turns.iter().filter(|turn| {
+    let mut matches = turns.iter().filter(|turn| {
         turn.items.iter().any(|item| {
             matches!(
                 item,
@@ -231,15 +231,10 @@ fn terminal_output(record: &NativeRunRecord, turn: &Turn) -> Result<NativeRunOut
 #[cfg(test)]
 mod tests {
     use super::*;
-    use codex_app_server_protocol::Thread;
-    use codex_app_server_protocol::ThreadHistoryMode;
-    use codex_app_server_protocol::ThreadStatus;
     use codex_app_server_protocol::TurnItemsView;
     use codex_hepta_infer_core::durable_control::native::NativeDispatch;
     use codex_hepta_infer_core::durable_control::native::NativeRequest;
     use codex_hepta_infer_core::durable_control::native::NativeReservationState;
-    use codex_utils_absolute_path::AbsolutePathBuf;
-    use codex_app_server_protocol::SessionSource;
 
     fn record(turn_id: Option<&str>) -> NativeRunRecord {
         NativeRunRecord {
@@ -281,51 +276,14 @@ mod tests {
         }
     }
 
-    fn response(turns: Vec<Turn>) -> ThreadReadResponse {
-        ThreadReadResponse {
-            thread: Thread {
-                id: "thread-1".to_string(),
-                extra: None,
-                session_id: "session-1".to_string(),
-                forked_from_id: None,
-                parent_thread_id: None,
-                preview: String::new(),
-                ephemeral: false,
-                section: None,
-                section_entered_at: None,
-                project_id: None,
-                history_mode: ThreadHistoryMode::Legacy,
-                model_provider: "provider".to_string(),
-                created_at: 0,
-                updated_at: 0,
-                recency_at: None,
-                status: ThreadStatus::Idle,
-                path: None,
-                cwd: AbsolutePathBuf::from_absolute_path(
-                    std::env::temp_dir().canonicalize().expect("temp path"),
-                )
-                .expect("absolute cwd"),
-                cli_version: "test".to_string(),
-                source: SessionSource::AppServer,
-                can_accept_direct_input: Some(true),
-                thread_source: None,
-                agent_nickname: None,
-                agent_role: None,
-                git_info: None,
-                name: None,
-                turns,
-            },
-        }
-    }
-
     #[test]
     fn unknown_turn_id_reconciles_only_by_stable_client_request_id() {
-        let read = response(vec![
+        let turns = vec![
             turn("turn-other", Some("other-request"), TurnStatus::Completed),
             turn("turn-1", Some("request-1"), TurnStatus::Completed),
-        ]);
+        ];
         assert_eq!(
-            select_turn(&read, &record(None))
+            select_turn(&turns, &record(None))
                 .expect("selection")
                 .expect("turn")
                 .id,
@@ -335,13 +293,13 @@ mod tests {
 
     #[test]
     fn known_turn_id_uses_durable_turn_binding() {
-        let read = response(vec![turn(
+        let turns = vec![turn(
             "turn-1",
             Some("old-client-field"),
             TurnStatus::Failed,
-        )]);
+        )];
         assert_eq!(
-            select_turn(&read, &record(Some("turn-1")))
+            select_turn(&turns, &record(Some("turn-1")))
                 .expect("selection")
                 .expect("turn")
                 .status,
