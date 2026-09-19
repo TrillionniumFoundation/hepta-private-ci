@@ -55,6 +55,8 @@ pub struct UnlearningLineageEventV1 {
     pub derived_id: StableId,
     pub derived_kind: UnlearningDerivedKindV1,
     pub predecessor: Option<StableId>,
+    pub upstream_derived_id: Option<StableId>,
+    pub upstream_derived_digest: Option<Digest32>,
     pub authority_id: StableId,
     pub reason_digest: Digest32,
     pub source_digest: Digest32,
@@ -66,6 +68,7 @@ pub struct UnlearningLineageReceiptV1 {
     pub record_id: StableId,
     pub source_record_id: StableId,
     pub derived_id: StableId,
+    pub upstream_derived_id: Option<StableId>,
     pub event_digest: Digest32,
     pub chain_digest: Digest32,
 }
