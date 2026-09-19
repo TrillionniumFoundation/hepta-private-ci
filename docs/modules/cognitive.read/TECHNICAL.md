@@ -46,12 +46,43 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-cognitive-read/src/v2.rs](../../../codex-rs/hepta-cognitive-read/src/v2.rs); observed identifiers include `ReadRequestV2`, `ReadResultV2`, `read_v2`, `binding_digest`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.read.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md) for the implemented subset and remaining product work.
+The public production source is [codex-rs/hepta-cognitive-read/src/authoritative.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative.rs), with `read_authoritative`, `AuthoritativeSnapshotV1`, `AuthoritativeReadResultV1`, `CognitiveReadGenerationVectorV1` and final-use revalidation. [v2.rs](../../../codex-rs/hepta-cognitive-read/src/v2.rs) remains the crate-internal deterministic projection primitive. The canonical production provider is implemented by [hepta-memory Lane C](../../../codex-rs/hepta-memory/src/lane_c_snapshot.rs) and consumed by [agentd cognitive context](../../../codex-rs/hepta-agentd/src/cognitive_context.rs).
+
+### Current production status
+
+The product-facing read contract is now `read_authoritative`, backed by
+`LaneCAuthoritativeSnapshotProvider` from the canonical SQLite owner. The
+lower-level `read_v2` function is crate-internal and remains only the bounded,
+deterministic projection primitive beneath that boundary.
+
+`hepta-agentd::cognitive_context` acquires an immutable authoritative provider,
+binds the exact scope/purpose, owner frontiers, knowledge-graph generation,
+serving host generation and authority epoch, performs the bounded read, and
+revalidates the same owner cut and original lease before context consumption.
+`state_control` then refreshes lifecycle state and requires the authority epoch
+to remain unchanged before response publication.
+
+The module deliberately binds an explicitly documented cognitive-read subset of
+the broader Lane-C generation vector. The SQLite owner supplies memory, source,
+tombstone and knowledge-fact frontiers plus graph generation; the host supplies
+purpose, serving generation and authority epoch. Prompt/model/compact identities
+are not invented by this module.
+
+| Invariant | Implemented | Product-wired | Adversarial test |
+| --- | --- | --- | --- |
+| Immutable SQLite owner cut and exact snapshot digest | yes | yes | yes |
+| Memory/source/tombstone/fact frontiers + graph generation | yes | yes | yes |
+| Scope and purpose binding | yes | yes | yes |
+| Host generation and authority epoch binding | yes | yes | yes |
+| Bounded lease + snapshot/provider receipt digest | yes | yes | yes |
+| Final-use owner-cut/vector/lease revalidation | yes | yes | yes |
+| Final response-publication authority-epoch fence | yes | yes | covered by lifecycle fencing; target-host CI receipt pending |
+| Cross-module wire registration | no | not applicable to current crate-native path | pending only if a wire protocol is introduced |
 
 ## 3. Boundary, responsibilities and non-goals
 
 The SQLite owner now exposes `CognitiveStore::lane_c_snapshot` and
-`DurableCognitiveSnapshot::read(ReadRequestV2)` through `hepta-memory`. This is a
+`CognitiveStore::lane_c_authoritative_provider` through `hepta-memory`, followed by `read_authoritative`. This is a
 native read-through adapter to the existing durable store. It authorizes the
 exact scope, preserves record and citation IDs, includes committed tombstones,
 and admits only verified, currently valid live heads. Consumers must compare
@@ -161,7 +192,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Acquire a cut through the existing SQLite owner, then call the crate-native ReadRequestV2 reader. Before delivery compare exact revision/content digests and revalidate time as well as frontiers. Release snapshot handles on completion/cancel; the historical cut does not lease future external effects.
+Acquire `LaneCAuthoritativeSnapshotProvider` through the existing SQLite owner, execute `read_authoritative`, intersect only exact revision/content digests with retrieval output, then revalidate the same owner cut, generation-vector digest and original lease before consumption. `state_control` separately refreshes and fences the host authority epoch before publication. Snapshot handles are immutable and read-only; the historical cut never grants future effect authority.
 
 Current operating and state-format references:
 
