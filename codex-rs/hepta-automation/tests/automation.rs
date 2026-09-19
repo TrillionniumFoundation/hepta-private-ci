@@ -420,7 +420,7 @@ async fn pre_admission_dispatch_error_clears_intent_and_allows_next_generation_r
         .expect("reopen store");
     assert_eq!(
         restarted
-            .recover_stale_generation(2)
+            .recover_stale_generation(2, 100_000)
             .await
             .expect("recover generation"),
         0,
@@ -537,7 +537,7 @@ async fn crash_after_external_acceptance_keeps_unknown_intent_across_reopen() {
         .expect("reopen store");
     assert_eq!(
         reopened
-            .recover_stale_generation(2)
+            .recover_stale_generation(2, 100_000)
             .await
             .expect("recover generation"),
         0,
@@ -595,7 +595,7 @@ async fn in_flight_unknown_intent_fences_stale_generation_and_second_claim() {
 
     assert_eq!(
         store
-            .recover_stale_generation(2)
+            .recover_stale_generation(2, 100_000)
             .await
             .expect("recover while request is in flight"),
         0,
@@ -673,7 +673,7 @@ async fn unknown_provider_outcome_is_quarantined_across_store_recovery_until_rec
         .expect("reopen store");
     assert_eq!(
         reopened
-            .recover_stale_generation(2)
+            .recover_stale_generation(2, 100_000)
             .await
             .expect("recover generation"),
         0,
@@ -778,7 +778,7 @@ async fn stale_generation_recovery_is_owner_fenced() {
 
     assert_eq!(
         store
-            .recover_stale_generation(2)
+            .recover_stale_generation(2, 100_000)
             .await
             .expect("recover stale generation"),
         1,
@@ -1214,7 +1214,7 @@ async fn restart_reclaims_same_occurrence_with_same_core_client_id_and_fences_ol
         .expect("reopen");
     assert_eq!(
         restarted
-            .recover_stale_generation(2)
+            .recover_stale_generation(2, 100_000)
             .await
             .expect("recover"),
         1
