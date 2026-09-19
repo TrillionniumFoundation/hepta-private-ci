@@ -355,7 +355,6 @@ fn journal_compaction_preserves_exact_state_and_bounds_archives() {
         observed.observed_output_tokens = Some(tokens);
         control.settle_native("r1", observed.clone()).unwrap();
     }
-    let expected = control.native_record("r1").unwrap().clone();
     let before = std::fs::metadata(&path).unwrap().len();
     let receipt = control
         .compact_native_journal(/*retain_archives*/ 2)
@@ -364,6 +363,19 @@ fn journal_compaction_preserves_exact_state_and_bounds_archives() {
     assert!(receipt.after_bytes < receipt.before_bytes);
     assert_eq!(receipt.archive_sha256.len(), 64);
     assert!(receipt.archive_path.is_file());
+
+    // Exercise retention rather than merely creating one archive.
+    for tokens in 80..84 {
+        observed.observed_output_tokens = Some(tokens);
+        control.settle_native("r1", observed.clone()).unwrap();
+    }
+    control.compact_native_journal(/*retain_archives*/ 2).unwrap();
+    for tokens in 84..88 {
+        observed.observed_output_tokens = Some(tokens);
+        control.settle_native("r1", observed.clone()).unwrap();
+    }
+    control.compact_native_journal(/*retain_archives*/ 2).unwrap();
+    let expected = control.native_record("r1").unwrap().clone();
 
     let parent = path.parent().unwrap();
     let file_name = path.file_name().unwrap().to_string_lossy();
