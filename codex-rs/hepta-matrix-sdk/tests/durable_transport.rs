@@ -163,7 +163,7 @@ struct FakeTransport {
 
 /// Models the exact response-loss window qualified against real Synapse: the
 /// first PUT is accepted under the stable transaction ID, but its successful
-/// response is hidden from the dispatcher before `mark_outbox_sent`.
+/// response is hidden from the dispatcher before durable acceptance can be recorded.
 struct PostSendAckLossTransport {
     accepted_event_id: MatrixEventId,
     txn_ids: Mutex<Vec<MatrixTransactionId>>,
