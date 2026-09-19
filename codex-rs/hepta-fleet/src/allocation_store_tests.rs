@@ -293,7 +293,7 @@ fn fleet_02_new_host_generation_never_reallocates_uncertain_old_capacity()
 }
 
 #[test]
-fn immutable_generation_cas_rejects_stale_writers_and_unregistered_agents()
+fn fleet_04_unregistered_agents_and_stale_writers_cannot_mint_placement()
 -> Result<(), Box<dyn std::error::Error>> {
     let fixture = Fixture::new()?;
     let now = now_ms();
