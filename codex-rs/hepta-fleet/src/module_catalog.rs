@@ -87,9 +87,10 @@ impl RuntimeModuleCatalogV1 {
             if row.uses.len() > MAX_DEPENDENCIES || row.writes.len() > MAX_DOMAINS {
                 return Err(RuntimeModuleCatalogErrorV1::Bounds);
             }
+            let encoded =
+                serde_json::to_vec(&row).map_err(|_| RuntimeModuleCatalogErrorV1::Decode)?;
             let dependencies = canonical_ids(&row.id, row.uses, true)?;
             let authoritative_domains = canonical_ids(&row.id, row.writes, false)?;
-            let encoded = serde_json::to_vec(&row).map_err(|_| RuntimeModuleCatalogErrorV1::Decode)?;
             let definition = RuntimeModuleDefinitionV1 {
                 id: row.id.clone(),
                 owner: row.owner,
