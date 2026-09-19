@@ -60,9 +60,15 @@ impl fmt::Display for AgentdPromptRuntimeError {
 
 impl std::error::Error for AgentdPromptRuntimeError {}
 
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+struct PromptRuntimeKey {
+    thread_id: String,
+    turn_id: String,
+}
+
 #[derive(Default)]
 struct PromptRuntimeState {
-    staged: BTreeMap<String, PromptRuntimeAttachmentV1>,
+    staged: BTreeMap<PromptRuntimeKey, PromptRuntimeAttachmentV1>,
     terminal_records: BTreeMap<String, PromptRuntimeTerminalRecordV1>,
     terminal_order: VecDeque<String>,
 }
@@ -94,11 +100,13 @@ impl AgentdPromptRuntimeOwner {
     /// real Codex turn. Only DeveloperInstruction is activated in this profile.
     pub fn stage_compiled_prompt_context(
         &self,
+        thread_id: &str,
         turn_id: &str,
         model: &str,
         requested_deadline_ms: u64,
         compiled: &PromptRegistryCompiledContextV2,
     ) -> Result<PromptRuntimeStageDisposition, AgentdPromptRuntimeError> {
+        validate_thread_id(thread_id)?;
         validate_turn_id(turn_id)?;
         validate_model(model)?;
         if requested_deadline_ms == 0 {
@@ -141,8 +149,12 @@ impl AgentdPromptRuntimeOwner {
         )
         .map_err(|error| AgentdPromptRuntimeError::Adapter(error.to_string()))?;
 
+        let key = PromptRuntimeKey {
+            thread_id: thread_id.to_owned(),
+            turn_id: turn_id.to_owned(),
+        };
         let mut state = self.state.lock().map_err(|_| AgentdPromptRuntimeError::StatePoisoned)?;
-        if let Some(existing) = state.staged.get(turn_id) {
+        if let Some(existing) = state.staged.get(&key) {
             return if existing == &attachment {
                 Ok(PromptRuntimeStageDisposition::Unchanged)
             } else {
@@ -152,20 +164,29 @@ impl AgentdPromptRuntimeOwner {
         if state.staged.len() >= MAX_STAGED_TURNS {
             return Err(AgentdPromptRuntimeError::CapacityExceeded);
         }
-        state.staged.insert(turn_id.to_owned(), attachment);
+        state.staged.insert(key, attachment);
         Ok(PromptRuntimeStageDisposition::Inserted)
     }
 
     /// Explicit cleanup for aborted turns or owners that know no further
     /// physical provider attempt can occur.
-    pub fn clear_turn(&self, turn_id: &str) -> Result<bool, AgentdPromptRuntimeError> {
+    pub fn clear_turn(
+        &self,
+        thread_id: &str,
+        turn_id: &str,
+    ) -> Result<bool, AgentdPromptRuntimeError> {
+        validate_thread_id(thread_id)?;
         validate_turn_id(turn_id)?;
+        let key = PromptRuntimeKey {
+            thread_id: thread_id.to_owned(),
+            turn_id: turn_id.to_owned(),
+        };
         Ok(self
             .state
             .lock()
             .map_err(|_| AgentdPromptRuntimeError::StatePoisoned)?
             .staged
-            .remove(turn_id)
+            .remove(&key)
             .is_some())
     }
 
@@ -212,7 +233,12 @@ impl AgentdPromptRuntimeOwner {
         &self,
         request: PromptRuntimePrepareRequest,
     ) -> Result<Option<PromptRuntimeAttachmentV1>, PromptRuntimeHostError> {
+        validate_thread_id(&request.thread_id).map_err(host_error)?;
         validate_turn_id(&request.turn_id).map_err(host_error)?;
+        let key = PromptRuntimeKey {
+            thread_id: request.thread_id,
+            turn_id: request.turn_id,
+        };
         self.state
             .lock()
             .map_err(|_| {
@@ -221,7 +247,7 @@ impl AgentdPromptRuntimeOwner {
                     "Agentd prompt runtime state lock is poisoned",
                 )
             })
-            .map(|state| state.staged.get(&request.turn_id).cloned())
+            .map(|state| state.staged.get(&key).cloned())
     }
 
     fn record(
@@ -249,7 +275,11 @@ impl AgentdPromptRuntimeOwner {
             };
         }
 
-        let Some(staged) = state.staged.get(&record.turn_id) else {
+        let key = PromptRuntimeKey {
+            thread_id: record.thread_id.clone(),
+            turn_id: record.turn_id.clone(),
+        };
+        let Some(staged) = state.staged.get(&key) else {
             return Err(host_error(AgentdPromptRuntimeError::TerminalWithoutStage));
         };
         if staged.compilation_id != record.compilation_id
@@ -275,14 +305,20 @@ impl AgentdPromptRuntimeOwner {
         ) || (record.outcome == PromptRuntimeTerminalOutcomeV1::Delivered
             && record.end_turn == Some(true));
         let attempt_id = record.attempt_id.clone();
-        let turn_id = record.turn_id.clone();
         state.terminal_records.insert(attempt_id.clone(), record);
         state.terminal_order.push_back(attempt_id);
         if should_clear {
-            state.staged.remove(&turn_id);
+            state.staged.remove(&key);
         }
         Ok(())
     }
+}
+
+fn validate_thread_id(thread_id: &str) -> Result<(), AgentdPromptRuntimeError> {
+    if thread_id.is_empty() || thread_id.len() > 256 || thread_id.as_bytes().contains(&0) {
+        return Err(AgentdPromptRuntimeError::InvalidTurnId);
+    }
+    Ok(())
 }
 
 fn validate_turn_id(turn_id: &str) -> Result<(), AgentdPromptRuntimeError> {
