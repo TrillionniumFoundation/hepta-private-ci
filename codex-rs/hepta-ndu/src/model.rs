@@ -56,6 +56,10 @@ pub struct RequiredOrganSet {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct UtilityProfile {
     pub profile_id: StableId,
+    /// Digest of the immutable normalization/units/scales/clipping manifest
+    /// selected for these axes. The manifest artifact is external to this
+    /// authority-free crate, but its identity is part of every profile digest.
+    pub normalization_manifest_digest: Digest32,
     pub dimensions: Vec<(StableId, AxisDirection)>,
     pub risk_ceilings: Vec<AxisLimit>,
     pub resource_ceilings: Vec<AxisLimit>,
