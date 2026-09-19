@@ -287,7 +287,6 @@ def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     failures = []
-    source_bases = set()
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -321,7 +320,6 @@ def verify():
         else:
             source_commit = source_base["commit"]
             source_tree = source_base["tree"]
-            source_bases.add((source_commit, source_tree))
             try:
                 actual_tree = git("rev-parse", f"{source_commit}^{{tree}}")
             except subprocess.CalledProcessError:
