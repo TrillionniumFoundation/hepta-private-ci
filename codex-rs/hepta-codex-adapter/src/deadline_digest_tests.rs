@@ -7,6 +7,10 @@ fn id(value: &str) -> StableId {
     value
 }
 
+fn method(value: &str) -> AppServerWireMethod {
+    AppServerWireMethod::new(value.to_string()).expect("test wire method must be bounded")
+}
+
 fn digest(value: &[u8]) -> Digest32 {
     Digest32::of_bytes(value)
 }
@@ -16,7 +20,7 @@ fn intent(deadline_ms: u64) -> CodexOperationIntent {
         operation_id: id("operation:deadline"),
         session_id: id("session:deadline"),
         thread_id: id("thread:deadline"),
-        method_id: id(TURN_START_METHOD_ID),
+        method: method(TURN_START_METHOD_ID),
         payload_digest: digest(b"payload"),
         lease_payload_digest: digest(b"payload"),
         owner_generation: 11,
