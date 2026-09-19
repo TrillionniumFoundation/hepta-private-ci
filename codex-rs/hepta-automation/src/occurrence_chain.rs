@@ -162,6 +162,14 @@ impl AutomationStore {
         {
             return Err(AutomationError::Invalid);
         }
+
+        // Schema-v4 upgrade recovery: rows admitted by an older binary have a
+        // deterministic occurrence id after migration but no TaskFlow link.
+        // Adopt them into the same durable run identity before the normal
+        // queued-run start sweep. This never re-dispatches the App Server turn.
+        self.link_unbound_submitted_taskflows(generation, now_ms, limit)
+            .await?;
+
         let rows = sqlx::query(
             "SELECT r.taskflow_run_id
              FROM automation_runs r
@@ -220,6 +228,80 @@ impl AutomationStore {
             }
         }
         Ok(started)
+    }
+
+    async fn link_unbound_submitted_taskflows(
+        &self,
+        generation: u64,
+        now_ms: u64,
+        limit: usize,
+    ) -> Result<u64, AutomationError> {
+        let fence = TaskFlowFence::new(
+            self.owner_agent_id().clone(),
+            RECOVERY_OWNER_ID,
+            generation,
+            generation,
+            format!("recovery-definition-{generation}"),
+        )
+        .map_err(map_taskflow_error)?;
+        let definition = automation_occurrence_definition().map_err(map_taskflow_error)?;
+        self.register_taskflow_definition(&definition, &fence, now_ms)
+            .await
+            .map_err(map_taskflow_error)?;
+
+        let rows = sqlx::query(
+            "SELECT r.occurrence_id, t.thread_id
+             FROM automation_runs r
+             JOIN automation_tasks t ON t.task_id = r.task_id
+             WHERE t.owner_agent_id = ? AND r.state = 'submitted'
+               AND r.terminal_state IS NULL AND r.taskflow_run_id IS NULL
+             ORDER BY r.scheduled_for_ms, r.task_id, r.occurrence
+             LIMIT ?",
+        )
+        .bind(self.owner_agent_id().as_str())
+        .bind(i64::try_from(limit).map_err(|_| AutomationError::Invalid)?)
+        .fetch_all(self.taskflow_pool())
+        .await
+        .map_err(|_| AutomationError::Unavailable)?;
+
+        let mut linked = 0_u64;
+        for row in rows {
+            let run_id: String = row
+                .try_get("occurrence_id")
+                .map_err(|_| AutomationError::Corrupt)?;
+            let thread_id: String = row
+                .try_get("thread_id")
+                .map_err(|_| AutomationError::Corrupt)?;
+            let run = self
+                .create_taskflow_run(
+                    run_id.clone(),
+                    AUTOMATION_OCCURRENCE_WORKFLOW_ID,
+                    AUTOMATION_OCCURRENCE_WORKFLOW_VERSION,
+                    definition.definition_digest(),
+                    thread_id,
+                    now_ms,
+                )
+                .await
+                .map_err(map_taskflow_error)?;
+            if run.run_id != run_id {
+                return Err(AutomationError::Corrupt);
+            }
+            let updated = sqlx::query(
+                "UPDATE automation_runs
+                 SET taskflow_run_id = ?
+                 WHERE occurrence_id = ? AND taskflow_run_id IS NULL
+                   AND state = 'submitted' AND terminal_state IS NULL",
+            )
+            .bind(&run_id)
+            .bind(&run_id)
+            .execute(self.taskflow_pool())
+            .await
+            .map_err(|_| AutomationError::Unavailable)?;
+            if updated.rows_affected() == 1 {
+                linked = linked.saturating_add(1);
+            }
+        }
+        Ok(linked)
     }
 
     pub async fn occurrence(
