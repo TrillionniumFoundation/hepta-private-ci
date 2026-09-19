@@ -48,6 +48,24 @@ CREATE TABLE matrix_dispatch_ledger (
     CHECK (
         (state = 'redacted' AND redaction_observation_digest IS NOT NULL)
         OR state != 'redacted'
+    ),
+    CHECK (
+        grant_payload_sha256 IS NULL OR grant_payload_sha256 = payload_sha256
+    ),
+    CHECK (
+        (authority_epoch IS NULL
+            AND grant_payload_sha256 IS NULL
+            AND deadline_ms IS NULL
+            AND homeserver_id IS NULL
+            AND device_id IS NULL
+            AND session_generation IS NULL)
+        OR
+        (authority_epoch IS NOT NULL
+            AND grant_payload_sha256 IS NOT NULL
+            AND deadline_ms IS NOT NULL
+            AND homeserver_id IS NOT NULL
+            AND device_id IS NOT NULL
+            AND session_generation IS NOT NULL)
     )
 ) STRICT;
 
