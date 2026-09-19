@@ -32,7 +32,7 @@ use serde::Deserialize;
 use serde::Serialize;
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("fixture identity")
+    StableId::new(value).unwrap_or_else(|error| panic!("fixture identity: {error:?}"))
 }
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
@@ -41,7 +41,7 @@ fn fit(generation: u64, value: i64) -> TabularOperatorArtifactV1 {
     fit_tabular_operator_strict_v2(TabularOperatorPlanV1 {
         artifact_id: id(&format!("tabular-{generation}")),
         producer_id: id("fixture-trainer"),
-        generation: Generation::new(generation).expect("generation"),
+        generation: Generation::new(generation).unwrap_or_else(|error| panic!("generation: {error:?}")),
         objective_digest: digest("fixed-external-task"),
         dataset_digest: digest(&format!("dataset-{generation}")),
         sensor_core_digest: digest("fixed-grid"),
@@ -61,7 +61,7 @@ fn fit(generation: u64, value: i64) -> TabularOperatorArtifactV1 {
             })
             .collect(),
     })
-    .expect("strict learner")
+    .unwrap_or_else(|error| panic!("strict learner: {error:?}"))
 }
 
 /// The parent retains these expected values independently of inspected files.
@@ -91,9 +91,9 @@ impl Request {
         ArtifactManifest {
             artifact_id: id(&format!("tabular-{}", self.generation)),
             kind: ArtifactKind::Policy,
-            generation: Generation::new(self.generation).expect("generation"),
+            generation: Generation::new(self.generation).unwrap_or_else(|error| panic!("generation: {error:?}")),
             predecessor_id: (self.generation == 2).then(|| id("tabular-1")),
-            content_digest: self.payload_digest.parse().expect("payload digest"),
+            content_digest: self.payload_digest.parse().unwrap_or_else(|error| panic!("payload digest: {error:?}")),
             objective_digest: digest("fixed-external-task"),
             support_digest: digest(&format!("dataset-{}", self.generation)),
             producer_id: id("fixture-trainer"),
@@ -118,15 +118,15 @@ fn worker() {
         return;
     };
     assert!(raw.len() <= 16384);
-    let request: Request = serde_json::from_str(&raw).expect("host fixture request");
+    let request: Request = serde_json::from_str(&raw).unwrap_or_else(|error| panic!("host fixture request: {error:?}"));
     let loaded = load_pinned_candidate(
-        File::open(&request.snapshot).expect("read-only registry"),
-        File::open(&request.payload).expect("read-only payload"),
+        File::open(&request.snapshot).unwrap_or_else(|error| panic!("read-only registry: {error:?}")),
+        File::open(&request.payload).unwrap_or_else(|error| panic!("read-only payload: {error:?}")),
         PinnedCandidateSpec {
             registry_receipt: RegistrySnapshotReceipt {
-                binding: request.binding.parse().expect("binding"),
-                head_digest: request.head.parse().expect("head"),
-                file_digest: request.snapshot_digest.parse().expect("snapshot digest"),
+                binding: request.binding.parse().unwrap_or_else(|error| panic!("binding: {error:?}")),
+                head_digest: request.head.parse().unwrap_or_else(|error| panic!("head: {error:?}")),
+                file_digest: request.snapshot_digest.parse().unwrap_or_else(|error| panic!("snapshot digest: {error:?}")),
                 records: request.records,
                 encoded_bytes: request.snapshot_bytes,
             },
@@ -139,24 +139,24 @@ fn worker() {
             "revoked candidate must not reach predictor"
         ),
         Expected::Value(expected) => {
-            let bytes = loaded.expect("existing artifact owner pin");
+            let bytes = loaded.unwrap_or_else(|error| panic!("existing artifact owner pin: {error:?}"));
             let model = LoadedTabularOperatorV1::from_pinned_payload(
                 bytes.bytes(),
                 &TabularPayloadPinV1 {
-                    payload_digest: request.payload_digest.parse().expect("payload digest"),
-                    artifact_digest: request.artifact_digest.parse().expect("artifact digest"),
+                    payload_digest: request.payload_digest.parse().unwrap_or_else(|error| panic!("payload digest: {error:?}")),
+                    artifact_digest: request.artifact_digest.parse().unwrap_or_else(|error| panic!("artifact digest: {error:?}")),
                     objective_digest: digest("fixed-external-task"),
                     dataset_digest: digest(&format!("dataset-{}", request.generation)),
                     sensor_core_digest: digest("fixed-grid"),
                     training_profile_digest: digest("strict-tabular"),
-                    generation: Generation::new(request.generation).expect("generation"),
+                    generation: Generation::new(request.generation).unwrap_or_else(|error| panic!("generation: {error:?}")),
                 },
             )
-            .expect("loaded model binding");
+            .unwrap_or_else(|error| panic!("loaded model binding: {error:?}"));
             assert_eq!(
                 model
                     .predict(&id("state"), &id("read"))
-                    .expect("prediction")
+                    .unwrap_or_else(|error| panic!("prediction: {error:?}"))
                     .value
                     .raw(),
                 expected
@@ -167,8 +167,8 @@ fn worker() {
 }
 
 fn run(request: &Request) -> u32 {
-    let raw = serde_json::to_string(request).expect("fixture request");
-    let child = Command::new(std::env::current_exe().expect("test executable"))
+    let raw = serde_json::to_string(request).unwrap_or_else(|error| panic!("fixture request: {error:?}"));
+    let child = Command::new(std::env::current_exe().unwrap_or_else(|error| panic!("test executable: {error:?}")))
         .args([
             "--exact",
             "tabular_reload::worker",
@@ -179,11 +179,11 @@ fn run(request: &Request) -> u32 {
         .stdout(std::process::Stdio::piped())
         .stderr(std::process::Stdio::piped())
         .spawn()
-        .expect("new host process");
+        .unwrap_or_else(|error| panic!("new host process: {error:?}"));
     let pid = child.id();
-    let output = child.wait_with_output().expect("process terminality");
+    let output = child.wait_with_output().unwrap_or_else(|error| panic!("process terminality: {error:?}"));
     assert!(output.status.success(), "{output:?}");
-    let stdout = String::from_utf8(output.stdout).expect("utf8");
+    let stdout = String::from_utf8(output.stdout).unwrap_or_else(|error| panic!("utf8: {error:?}"));
     let observations: Vec<_> = stdout
         .lines()
         .filter_map(|line| {
@@ -198,13 +198,13 @@ fn run(request: &Request) -> u32 {
 
 #[test]
 fn existing_artifact_owner_new_process_predictions_and_revoked_rollback() {
-    let directory = tempfile::tempdir().expect("private fixture namespace");
+    let directory = tempfile::tempdir().unwrap_or_else(|error| panic!("private fixture namespace: {error:?}"));
     let snapshot = directory.path().join("registry");
     let mut registry = ArtifactRegistry::new();
     let mut requests = Vec::new();
     for (generation, target) in [(1, 1), (2, 7)] {
         let model = fit(generation, target);
-        let bytes = encode_tabular_payload_v1(&model).expect("encode model");
+        let bytes = encode_tabular_payload_v1(&model).unwrap_or_else(|error| panic!("encode model: {error:?}"));
         let request = Request {
             snapshot: snapshot.clone(),
             payload: directory.path().join(format!("payload-{generation}")),
@@ -225,22 +225,22 @@ fn existing_artifact_owner_new_process_predictions_and_revoked_rollback() {
                 event_id: id(&format!("register-{generation}")),
                 manifest: manifest.clone(),
             })
-            .expect("owner registration");
+            .unwrap_or_else(|error| panic!("owner registration: {error:?}"));
         write_candidate_payload(
-            CreateOnlyArtifactFile::create(&request.payload).expect("create-only payload"),
+            CreateOnlyArtifactFile::create(&request.payload).unwrap_or_else(|error| panic!("create-only payload: {error:?}")),
             &registry,
             &manifest.artifact_id,
             &bytes,
         )
-        .expect("owner payload sync");
+        .unwrap_or_else(|error| panic!("owner payload sync: {error:?}"));
         requests.push(request);
     }
     let receipt = write_registry_snapshot(
-        CreateOnlyArtifactFile::create(&snapshot).expect("create-only registry"),
+        CreateOnlyArtifactFile::create(&snapshot).unwrap_or_else(|error| panic!("create-only registry: {error:?}")),
         &registry,
         digest("fixture-current-host-binding"),
     )
-    .expect("owner snapshot sync");
+    .unwrap_or_else(|error| panic!("owner snapshot sync: {error:?}"));
     for request in &mut requests {
         request.set_snapshot(receipt);
     }
@@ -258,14 +258,14 @@ fn existing_artifact_owner_new_process_predictions_and_revoked_rollback() {
             evaluator_id: id("fixture-independent-evaluator"),
             reason_digest: digest("withdrawn-support"),
         }))
-        .expect("owner revoke");
+        .unwrap_or_else(|error| panic!("owner revoke: {error:?}"));
     let revoked_snapshot = directory.path().join("registry-revoked");
     let current = write_registry_snapshot(
-        CreateOnlyArtifactFile::create(&revoked_snapshot).expect("new registry"),
+        CreateOnlyArtifactFile::create(&revoked_snapshot).unwrap_or_else(|error| panic!("new registry: {error:?}")),
         &registry,
         receipt.binding,
     )
-    .expect("current revocation sync");
+    .unwrap_or_else(|error| panic!("current revocation sync: {error:?}"));
     for request in &mut requests {
         request.snapshot = revoked_snapshot.clone();
         request.set_snapshot(current);
