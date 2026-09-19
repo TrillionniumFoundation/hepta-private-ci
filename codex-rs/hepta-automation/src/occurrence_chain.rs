@@ -92,7 +92,10 @@ impl AutomationStore {
         lease_duration_ms: u64,
     ) -> Result<TaskFlowRun, AutomationError> {
         let run = self.ensure_occurrence_taskflow(lease, now_ms).await?;
-        if run.state.terminal() || run.state == TaskFlowRunState::Running {
+        if matches!(
+            run.state,
+            TaskFlowRunState::Succeeded | TaskFlowRunState::Failed | TaskFlowRunState::Cancelled
+        ) || run.state == TaskFlowRunState::Running {
             return Ok(run);
         }
         if run.state != TaskFlowRunState::Queued {
