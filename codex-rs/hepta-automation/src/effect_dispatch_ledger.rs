@@ -340,7 +340,8 @@ impl AutomationStore {
             }
             Err(_) => Err(TaskFlowError::Unavailable),
         }
-    }}
+    }
+}
 
 fn effect_attempt_from_row(
     row: sqlx::sqlite::SqliteRow,

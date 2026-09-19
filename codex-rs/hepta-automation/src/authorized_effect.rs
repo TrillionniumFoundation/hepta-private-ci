@@ -804,7 +804,8 @@ impl AutomationStore {
         )?;
         self.apply_taskflow_requeue_proven_absent(&command).await?;
         Ok(())
-    }}
+    }
+}
 
 fn validate_effect_id(
     value: &str,
