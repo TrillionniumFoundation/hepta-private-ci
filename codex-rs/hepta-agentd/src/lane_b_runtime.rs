@@ -151,7 +151,7 @@ pub struct RunRecoveryState {
 /// This type owns only bounded lifecycle admission and immutable snapshot
 /// references. Codex remains the thread/turn execution owner, and durable
 /// product-domain facts remain with their canonical modules.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct AgentRunCoordinator {
     composition: RuntimeComposition,
     runs: BTreeMap<String, RunRecord>,
