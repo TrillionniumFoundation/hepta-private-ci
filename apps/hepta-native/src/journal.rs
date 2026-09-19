@@ -229,6 +229,7 @@ impl OperationJournal {
         file.commit()?;
         Ok(())
     }
+}
 
 fn phase_transition_allowed(from: OperationPhase, to: OperationPhase) -> bool {
     match from {
