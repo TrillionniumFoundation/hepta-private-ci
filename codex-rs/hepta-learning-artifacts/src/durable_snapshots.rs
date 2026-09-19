@@ -272,9 +272,9 @@ fn decode_withdrawal_snapshot(
     }
 
     let mut registry = DatasetWithdrawalRegistry::new_scoped(scope);
+    let mut observed_records = 0usize;
     for line in lines {
-        if line.len() > MAX_AUX_LINE_BYTES || registry.snapshot().records().len() >= expected_records
-        {
+        if line.len() > MAX_AUX_LINE_BYTES || observed_records >= expected_records {
             return Err(ArtifactStorageError::Corrupt);
         }
         let fields: Vec<_> = line.split('|').collect();
@@ -295,8 +295,9 @@ fn decode_withdrawal_snapshot(
                 issued_at: parse_u64(issued_at)?,
             })
             .map_err(|_| ArtifactStorageError::Semantic)?;
+        observed_records += 1;
     }
-    if registry.snapshot().records().len() != expected_records {
+    if observed_records != expected_records {
         return Err(ArtifactStorageError::Corrupt);
     }
     Ok(registry)
@@ -359,8 +360,9 @@ fn decode_lifecycle_snapshot(
     }
 
     let mut journal = ArtifactLifecycleJournalV2::new();
+    let mut observed_records = 0usize;
     for line in lines {
-        if line.len() > MAX_AUX_LINE_BYTES || journal.records().len() >= expected_records {
+        if line.len() > MAX_AUX_LINE_BYTES || observed_records >= expected_records {
             return Err(ArtifactStorageError::Corrupt);
         }
         let fields: Vec<_> = line.split('|').collect();
@@ -414,8 +416,9 @@ fn decode_lifecycle_snapshot(
                 event.occurred_at,
             )
             .map_err(|_| ArtifactStorageError::Semantic)?;
+        observed_records += 1;
     }
-    if journal.records().len() != expected_records {
+    if observed_records != expected_records {
         return Err(ArtifactStorageError::Corrupt);
     }
     Ok(journal)
