@@ -1058,6 +1058,38 @@ mod tests {
     }
 
     #[test]
+    fn release_binding_is_exact_and_revocation_blocks_future_resolution()
+    -> Result<(), FleetRegistryError> {
+        let fixture = Fixture::new()?;
+        let release_id = ReleaseId::parse("bound-v1")?;
+        fixture
+            .registry
+            .install_release(release_id.clone(), &fixture.source, vec!["--bound".to_string()])?;
+        fixture
+            .registry
+            .allow_release(&fixture.first, &release_id)?;
+        let binding = fixture
+            .registry
+            .release_binding(&fixture.first, &release_id)?;
+        assert_eq!(binding.release_id, release_id);
+        assert!(is_sha256(&binding.manifest_sha256));
+        assert!(is_sha256(&binding.agentd_sha256));
+        assert_eq!(binding.matrixd_sha256, None);
+
+        fixture
+            .registry
+            .revoke_release(&fixture.first, &binding.release_id)?;
+        assert!(matches!(
+            fixture
+                .registry
+                .resolve_release(&fixture.first, &binding.release_id),
+            Err(FleetRegistryError::ReleaseNotAllowed { .. })
+                | Err(FleetRegistryError::Io(_))
+        ));
+        Ok(())
+    }
+
+    #[test]
     fn schema_v2_bundle_binds_both_exact_programs_and_closed_world()
     -> Result<(), FleetRegistryError> {
         let fixture = Fixture::new()?;
