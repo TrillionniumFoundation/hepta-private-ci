@@ -37,7 +37,9 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         Ok(status) if status.success() => {
             if !manager.confirm_current_digest(&target)? {
                 manager.rollback_unconfirmed()?;
-                return Err("activated binary passed smoke test but update confirmation was absent".into());
+                return Err(
+                    "activated binary passed smoke test but update confirmation was absent".into(),
+                );
             }
         }
         Ok(status) => {
