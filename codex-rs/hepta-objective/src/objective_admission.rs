@@ -238,6 +238,15 @@ impl AdmittedObjectiveV1 {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ObjectiveRetryDispositionV1 {
+    NeverUnchangedRequest,
+    RequestMutationRequired,
+    FreshSourceRequired,
+    ClockAdvanceMayHelp,
+    FreshFeasibilityBudgetAllowed,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ObjectiveAdmissionError {
     Structure(ObjectiveStructureError),
@@ -310,6 +319,22 @@ impl ObjectiveAdmissionError {
             | Self::DeadlineExpired => "OBJ-E007",
             Self::InvalidTerminality => "OBJ-E008",
             Self::Compiler(error) => error.code(),
+        }
+    }
+
+    #[must_use]
+    pub const fn retry_disposition(&self) -> ObjectiveRetryDispositionV1 {
+        match self {
+            Self::SourceFromFuture => ObjectiveRetryDispositionV1::ClockAdvanceMayHelp,
+            Self::SourceStale => ObjectiveRetryDispositionV1::FreshSourceRequired,
+            Self::LocaleNotAllowed
+            | Self::DeadlineMissing
+            | Self::DeadlineBeforeObservation
+            | Self::DeadlineExpired => ObjectiveRetryDispositionV1::RequestMutationRequired,
+            Self::Compiler(ObjectiveError::FeasibilityBudgetExhausted) => {
+                ObjectiveRetryDispositionV1::FreshFeasibilityBudgetAllowed
+            }
+            _ => ObjectiveRetryDispositionV1::NeverUnchangedRequest,
         }
     }
 }
@@ -662,6 +687,23 @@ fn adapt_source(
             },
         });
     }
+    let abstain = stable_id("abstain", "intrinsicAbstain")?;
+    let maximum_legal_actions = if allowed_actions.iter().any(|action| action.id == abstain) {
+        128
+    } else {
+        127
+    };
+    if allowed_actions.len() > maximum_legal_actions {
+        return Err(ObjectiveAdmissionError::Structure(
+            ObjectiveStructureError::CollectionCount {
+                field: "legalActionClasses",
+                actual: allowed_actions.len(),
+                minimum: 1,
+                maximum: maximum_legal_actions,
+            },
+        ));
+    }
+
     let mut forbidden_actions = Vec::new();
     for source in &envelope.structured_intent.forbidden_action_classes {
         forbidden_actions.push(action_mapping(profile, source)?.action_id.clone());
