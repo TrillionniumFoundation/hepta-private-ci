@@ -49,6 +49,32 @@ events, so these commits are not treated as proof of a Hepta bug. They are
 treated as evidence that WebView/input lifecycle code changed materially and
 must be covered by the candidate E2E before promotion.
 
+### 3.1 Post-freeze upstream review (2026-09-19)
+
+At review time Servo `main` is `c34536fd90687e36c062cab708545affacb8694b`,
+six commits ahead of the frozen `5cc5bd32d02619acdec5736055515e38c5840ce1`
+candidate and zero commits behind. The six post-freeze commits are:
+
+- `561bb95631374bb4323e54ac1cc67dd91cdd73d1` — servoshell context-menu stroke only;
+- `1c6b500494f3359350641fb28fe3891a1d6bb07f` — safer rooting for ByteLengthQueuingStrategy callback values;
+- `55c0e7698f72e0733b9628bf9a36dc7ac2a7d85c` — rustls-native `TlsSecurityInfo` types and related net/devtools serialization;
+- `58c86d000a0a8ec1e5ba8c52ba8ac736d26b52d2` — visible image selection;
+- `b820a9679a784877f91b4acc90c2c6e849f18d3b` — Android Kotlin build-output ignore;
+- `c34536fd90687e36c062cab708545affacb8694b` — safe sequence conversion for tee cancellation reasons.
+
+The compare touches `Cargo.lock`/workspace dependency metadata, layout/script
+code and net files including `components/net/connector.rs`,
+`components/net/http_loader.rs` and shared net types. The TLS change alters
+security-info representation/serialization, not the public proxy-preference
+surface used by Hepta, and none of the six commits supersedes the
+`InputEventsHandled` deadlock fix at the frozen candidate.
+
+The freeze therefore remains at `5cc5bd32...` for this qualification cycle.
+Moving the pin now would invalidate the already reviewed candidate lock and
+restart locked-build, real-E2E, reproducibility and SBOM evidence. The next pin
+refresh must rerun the complete promotion oracle below; this review is not a
+claim that arbitrary future upstream commits are compatible.
+
 ## 4. Proxy compatibility
 
 The selected Servo source exposes `Preferences.network_http_proxy_uri`,

@@ -47,7 +47,7 @@ Worker stderr is always drained but is not copied into receipts or journals, avo
 
 ## Capacity and backpressure
 
-Browser service process/profile admission is bounded globally by a profile-affine worker pool (default 16 active profiles/workers, hard configurable ceiling 64). Each current one-WebView subprocess worker permits one outstanding effect. Profile mutations use a bounded serialization queue (64 queued operations per key by default) and fail with `BrowserBackpressureError` on overload. Separate ceilings cover origins, grants, active operations, terminal in-memory replay cache, action fields, semantic observations, frames, journal size and call deadlines.
+Browser service process/profile admission is bounded globally by a profile-affine worker pool (default 16 active profiles/workers, hard configurable ceiling 64). This is resident capacity rather than parent-RPC parallelism: the current Agentd private Browser port admits one in-flight call at a time. Each current one-WebView subprocess worker permits one outstanding effect. Profile mutations use a bounded serialization queue (64 queued operations per key by default) and fail with `BrowserBackpressureError` on overload. Separate ceilings cover origins, grants, active operations, terminal in-memory replay cache, action fields, semantic observations, frames, journal size and call deadlines.
 
 ## Verification
 
@@ -74,10 +74,12 @@ listener is added.
 Servo has no direct external namespace. Its proxy preferences point at a
 loopback relay inside the sandbox, which can reach only a profile-private Unix
 socket. The host-side `GrantScopedEgressBroker` revalidates exact origin, DNS
-answers and destination IP for every HTTP request/CONNECT. Production denies
-private/special address ranges. The real worker gate verifies both a granted
-local fixture path (test-only private-range override) and denial of an
-ungranted subresource origin.
+answers and destination IP for every HTTP request/CONNECT. For HTTPS CONNECT to
+a DNS host it also requires bounded ClientHello SNI to match the granted host
+before any upstream TCP connection. Production denies private/special address
+ranges. The real worker gate verifies both a granted local fixture path
+(test-only private-range override) and denial of an ungranted subresource
+origin.
 
 After worker admission the response remains attached as a terminal-settlement
 future and Browser records any terminal result durably. A process restart may

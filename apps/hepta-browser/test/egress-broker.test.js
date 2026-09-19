@@ -26,40 +26,100 @@ function rawProxy(socketPath, request) {
   });
 }
 
-function connectTunnel(socketPath, authority, payload = "probe") {
+function tlsClientHello(serverName) {
+  const name = Buffer.from(serverName, "ascii");
+  const serverNameEntry = Buffer.concat([
+    Buffer.from([0]),
+    Buffer.from([(name.length >>> 8) & 0xff, name.length & 0xff]),
+    name,
+  ]);
+  const serverNameList = Buffer.concat([
+    Buffer.from([
+      (serverNameEntry.length >>> 8) & 0xff,
+      serverNameEntry.length & 0xff,
+    ]),
+    serverNameEntry,
+  ]);
+  const extension = Buffer.concat([
+    Buffer.from([0, 0, (serverNameList.length >>> 8) & 0xff, serverNameList.length & 0xff]),
+    serverNameList,
+  ]);
+  const body = Buffer.concat([
+    Buffer.from([0x03, 0x03]),
+    Buffer.alloc(32, 7),
+    Buffer.from([0]),
+    Buffer.from([0, 2, 0x13, 0x01]),
+    Buffer.from([1, 0]),
+    Buffer.from([(extension.length >>> 8) & 0xff, extension.length & 0xff]),
+    extension,
+  ]);
+  const handshake = Buffer.concat([
+    Buffer.from([
+      1,
+      (body.length >>> 16) & 0xff,
+      (body.length >>> 8) & 0xff,
+      body.length & 0xff,
+    ]),
+    body,
+  ]);
+  return Buffer.concat([
+    Buffer.from([
+      22,
+      0x03,
+      0x01,
+      (handshake.length >>> 8) & 0xff,
+      handshake.length & 0xff,
+    ]),
+    handshake,
+  ]);
+}
+
+function connectTunnel(socketPath, authority, hello) {
   return new Promise((resolve, reject) => {
     const socket = net.createConnection(socketPath);
-    let buffered = Buffer.alloc(0);
+    let header = "";
+    let body = Buffer.alloc(0);
+    let response = Buffer.alloc(0);
     let tunneled = false;
+    let settled = false;
+    const finish = () => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve({ header, body });
+    };
+    const timer = setTimeout(() => {
+      socket.destroy();
+      reject(new Error("CONNECT fixture timed out"));
+    }, 5_000);
     socket.on("connect", () => {
       socket.write(
         `CONNECT ${authority} HTTP/1.1\r\nHost: ${authority}\r\nConnection: close\r\n\r\n`,
       );
     });
     socket.on("data", (chunk) => {
-      buffered = Buffer.concat([buffered, chunk]);
-      if (!tunneled) {
-        const split = buffered.indexOf("\r\n\r\n");
-        if (split >= 0) {
-          const header = buffered.subarray(0, split + 4).toString("utf8");
-          if (!header.startsWith("HTTP/1.1 200")) {
-            socket.end();
-            resolve({ header, body: buffered.subarray(split + 4).toString("utf8") });
-            return;
-          }
-          tunneled = true;
-          buffered = buffered.subarray(split + 4);
-          socket.write(payload);
-        }
-      } else if (buffered.toString("utf8").includes(`echo:${payload}`)) {
-        socket.end();
+      if (tunneled) {
+        body = Buffer.concat([body, chunk]);
+        return;
       }
+      response = Buffer.concat([response, chunk]);
+      const split = response.indexOf("\r\n\r\n");
+      if (split < 0) return;
+      header = response.subarray(0, split + 4).toString("utf8");
+      body = response.subarray(split + 4);
+      if (!header.startsWith("HTTP/1.1 200")) {
+        socket.end();
+        return;
+      }
+      tunneled = true;
+      socket.write(hello);
     });
-    socket.on("end", () => {
-      const text = buffered.toString("utf8");
-      resolve({ header: tunneled ? "HTTP/1.1 200" : text, body: text });
+    socket.on("end", finish);
+    socket.on("close", finish);
+    socket.on("error", (error) => {
+      if (tunneled) finish();
+      else reject(error);
     });
-    socket.on("error", reject);
   });
 }
 
@@ -149,15 +209,13 @@ test("production broker fails closed on IPv4-mapped IPv6 destinations", async ()
 });
 
 
-test("HTTPS CONNECT is bound to the exact granted authority and port", async () => {
+test("HTTPS CONNECT binds exact authority, port, and TLS ClientHello SNI before upstream connect", async () => {
   const root = await mkdtemp(join(tmpdir(), "hepta-egress-connect-"));
   let allowedHits = 0;
   let deniedHits = 0;
   const allowedServer = net.createServer((socket) => {
-    socket.once("data", (chunk) => {
-      allowedHits += 1;
-      socket.end(`echo:${chunk.toString("utf8")}`);
-    });
+    allowedHits += 1;
+    socket.end("accepted");
   });
   const deniedServer = net.createServer((socket) => {
     deniedHits += 1;
@@ -165,7 +223,7 @@ test("HTTPS CONNECT is bound to the exact granted authority and port", async () 
   });
   await new Promise((resolve) => allowedServer.listen(0, "127.0.0.1", resolve));
   await new Promise((resolve) => deniedServer.listen(0, "127.0.0.1", resolve));
-  const allowedAuthority = `127.0.0.1:${allowedServer.address().port}`;
+  const allowedAuthority = `localhost:${allowedServer.address().port}`;
   const deniedAuthority = `127.0.0.1:${deniedServer.address().port}`;
   const broker = new GrantScopedEgressBroker({
     socketPath: join(root, "proxy.sock"),
@@ -174,12 +232,15 @@ test("HTTPS CONNECT is bound to the exact granted authority and port", async () 
   });
   await broker.start();
   try {
-    const allowed = await connectTunnel(join(root, "proxy.sock"), allowedAuthority, "tls-bytes");
+    const allowed = await connectTunnel(join(root, "proxy.sock"), allowedAuthority, tlsClientHello("localhost"));
     assert.match(allowed.header, /200/);
-    assert.match(allowed.body, /echo:tls-bytes/);
     assert.equal(allowedHits, 1);
 
-    const denied = await connectTunnel(join(root, "proxy.sock"), deniedAuthority, "blocked");
+    const mismatchedSni = await connectTunnel(join(root, "proxy.sock"), allowedAuthority, tlsClientHello("example.invalid"));
+    assert.match(mismatchedSni.header, /200/);
+    assert.equal(allowedHits, 1, "SNI drift must be rejected before any additional upstream connection");
+
+    const denied = await connectTunnel(join(root, "proxy.sock"), deniedAuthority, tlsClientHello("127.0.0.1"));
     assert.doesNotMatch(denied.header, /200/);
     assert.equal(deniedHits, 0);
   } finally {

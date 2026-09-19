@@ -352,15 +352,31 @@ fn response_result(frame: DecodedFrame, request_id: &str) -> Result<Value, Brows
     }
     let payload = require_plain_object(&frame.payload, "Browser response payload")?;
     match payload.get("ok") {
-        Some(Value::Bool(true)) => payload
-            .get("result")
-            .cloned()
-            .ok_or_else(|| BrowserServoError::Protocol("Browser response lacks result".into())),
+        Some(Value::Bool(true)) => {
+            require_exact_object_keys(
+                payload,
+                &["ok", "result"],
+                "Browser success response",
+            )?;
+            payload
+                .get("result")
+                .cloned()
+                .ok_or_else(|| BrowserServoError::Protocol("Browser response lacks result".into()))
+        }
         Some(Value::Bool(false)) => {
+            require_exact_object_keys(
+                payload,
+                &["error", "ok"],
+                "Browser failure response",
+            )?;
             let message = payload
                 .get("error")
                 .and_then(Value::as_str)
-                .unwrap_or("Browser service rejected request");
+                .ok_or_else(|| {
+                    BrowserServoError::Protocol(
+                        "Browser failure response error must be a string".into(),
+                    )
+                })?;
             Err(BrowserServoError::Rejected(
                 message.chars().take(512).collect(),
             ))
@@ -1778,6 +1794,54 @@ mod tests {
             harness.outbound.recv_timeout(Duration::from_millis(25)),
             Err(mpsc::RecvTimeoutError::Timeout)
         ));
+    }
+
+    #[test]
+    fn browser_response_payloads_are_exact_key_closed() {
+        let request_id = "browser.agentd.1";
+
+        let success = response_result(
+            DecodedFrame {
+                sequence: 1,
+                kind: "response".to_string(),
+                request_id: request_id.to_string(),
+                payload: json!({"ok":true,"result":{"status":"ok"}}),
+            },
+            request_id,
+        )
+        .expect("exact success response");
+        assert_eq!(success["status"], "ok");
+
+        let rejected = response_result(
+            DecodedFrame {
+                sequence: 1,
+                kind: "response".to_string(),
+                request_id: request_id.to_string(),
+                payload: json!({"ok":false,"error":"denied"}),
+            },
+            request_id,
+        )
+        .expect_err("exact failure response must be rejected by the service");
+        assert!(matches!(rejected, BrowserServoError::Rejected(_)));
+
+        for payload in [
+            json!({"ok":true,"result":{},"error":"smuggled"}),
+            json!({"ok":false,"error":"denied","result":{}}),
+            json!({"ok":false}),
+            json!({"ok":false,"error":7}),
+        ] {
+            let error = response_result(
+                DecodedFrame {
+                    sequence: 1,
+                    kind: "response".to_string(),
+                    request_id: request_id.to_string(),
+                    payload,
+                },
+                request_id,
+            )
+            .expect_err("non-canonical response payload must fail closed");
+            assert!(matches!(error, BrowserServoError::Protocol(_)));
+        }
     }
 
     #[test]

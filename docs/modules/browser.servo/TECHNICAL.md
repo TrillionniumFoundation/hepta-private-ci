@@ -74,7 +74,7 @@ Critical package-local protocols are explicit:
 - `hepta.browser.agentd-stdio-frame.v1` — Agentd <-> Browser private parent frames;
 - `hepta.browser.semantic-observation.v1` — bounded page semantic observation carried inside `PageObservationV1`.
 
-The worker frame binds protocol version, session, generation, monotonic sequence, request identity and canonical payload digest. Before a new effect, the worker emits a dedicated `dispatch_boundary` frame only after stale-snapshot/action-surface revalidation and operation reservation; ordinary responses echo the original request kind, request payload digest and original request sequence, and success/error payloads reject unknown fields. A mismatch kills/fails the private channel. The parent protocol carries a secret-minimized authority challenge containing only request digest plus authority epoch, then authority enter plus `dispatch_boundary` or a proven `dispatch_rejected`; it does not duplicate typed actions into the authority plane or serialize a reusable `VerifiedUseToken`.
+The worker frame binds protocol version, session, generation, monotonic sequence, request identity and canonical payload digest. Before a new effect, the worker emits a dedicated `dispatch_boundary` frame only after stale-snapshot/action-surface revalidation and operation reservation; ordinary responses echo the original request kind, request payload digest and original request sequence, and success/error payloads reject unknown fields. A mismatch kills/fails the private channel. The parent protocol carries a secret-minimized authority challenge containing only request digest plus authority epoch, then authority enter plus `dispatch_boundary` or a proven `dispatch_rejected`; it does not duplicate typed actions into the authority plane or serialize a reusable `VerifiedUseToken`. Final Browser-to-Agentd responses are exact-key closed as either `{ok,result}` or `{ok,error}`; mixed success/error shapes, missing fields and unknown fields fail closed.
 
 The currently admitted effect actions are closed-world: `navigate`, `click`, `type`, `focus`, `scroll`, and `wait`. `credential`, `upload`, and `download` are explicit future capabilities and fail at Browser ingress before final-use authority or worker admission. Navigation binds normalized URL, `policyDigest` and `expectedRevision`; the bridge uses the proposal `navigationId` as the operation identity.
 
@@ -86,7 +86,7 @@ Admission additionally rejects reopening a profile generation that still has any
 
 `type { selector, text }` may contain sensitive user-entered text at the live effect boundary, but the durable journal stores only the typed action's final payload digest and immutable effect semantics. Raw `type.text`, credential values, upload bytes and page contents are not journal fields.
 
-Each worker generation receives a fresh random private profile directory. Browser keeps the mode-0600 `hepta.browser.profile-owner.v1` manifest in the host-private profile root, outside the profile directory mounted read/write into the worker sandbox; the manifest binds profile ID, principal ID, generation, Browser manifest digest and profile grant digest. Only its digest crosses the session boundary. Stale profile bytes are never implicitly reopened under a different principal; successful close removes both host-private metadata and the private profile directory, then retires that journal generation.
+Each worker generation receives a fresh random private profile directory. Browser keeps the mode-0600 `hepta.browser.profile-owner.v1` manifest in the host-private profile root, outside the profile directory mounted read/write into the worker sandbox; the manifest binds profile ID, principal ID, generation, Browser manifest digest and profile grant digest. Only its digest crosses the session boundary, and the Browser owner independently recomputes that digest from the admitted profile/principal/generation/manifest/grant tuple before accepting driver startup. If the driver returns a mismatched post-start ownership observation, Browser requests immediate containment before returning the startup failure. Stale profile bytes are never implicitly reopened under a different principal; successful close removes both host-private metadata and the private profile directory, then retires that journal generation.
 
 ## 7. Runtime, concurrency and transaction model
 
@@ -131,7 +131,7 @@ Security controls include final payload/provenance binding, live revocation line
 
 Current hard source bounds include a profile-affine worker pool with 16 active profiles/workers by default and a hard configured ceiling of 64; each current one-WebView subprocess worker permits 1 outstanding effect; <=128 origins/profile; <=1024 effect grants/profile; a generic owner ceiling of <=1024 nonterminal operation identities/profile for alternate compatible drivers; <=256 terminal operations retained in host memory; <=64 queued mutations per serialization key; <=1 MiB host observation request; <=256 KiB semantic observation returned by the real Servo worker; <=1 MiB private worker frame; <=64 MiB file journal with automatic compaction beginning at 48 MiB; bounded action fields; explicit Browser driver/authority deadlines; and Linux worker defaults of 8 GiB RLIMIT_AS, 300 seconds RLIMIT_CPU, 4096 RLIMIT_NOFILE and 256 RLIMIT_NPROC. Agentd binds the exact `prlimit` path/digest and these numeric ceilings into the Browser child environment.
 
-The current worker is one WebView/profile generation. The dossier's <=16 concurrent-tab pilot target is not a current claim and requires a later measured scheduler/profile.
+The current worker is one WebView/profile generation. The 16-profile pool is resident process/profile capacity, not a claim of 16 parallel Agentd RPCs: the current private parent port intentionally admits one in-flight Browser call at a time, so cross-profile calls can head-of-line block behind a bounded long operation. Parallel parent-channel multiplexing requires a separately versioned/qualified protocol. The dossier's <=16 concurrent-tab pilot target is not a current claim and requires a later measured scheduler/profile.
 
 ## 11. Observability and operations
 
@@ -214,8 +214,10 @@ separated the hardened owner boundary from a usable browser lifecycle:
   Its HTTP(S) proxy preferences point to a sandbox-loopback relay which can only
   reach a private Unix socket in the profile bind. The host-side
   `GrantScopedEgressBroker` revalidates exact origin, DNS answers and
-  destination IP on every HTTP request/CONNECT; production denies
-  loopback/private/link-local/special destinations.
+  destination IP on every HTTP request/CONNECT. For HTTPS CONNECT to a DNS
+  destination it also parses a bounded TLS ClientHello and requires SNI to
+  match the granted host before opening any upstream TCP connection; production
+  denies loopback/private/link-local/special destinations.
 - **Terminal pipeline:** final-use authority ends at the worker admission
   boundary, but the driver retains the bound worker response. Terminal
   settlement is persisted without holding the revocation fence; bounded late

@@ -219,14 +219,46 @@ export class BrowserProfileHost {
           ),
           "driver start observation",
         );
-        if (observed.started !== true) {
-          throw new TypeError("driver did not observe profile start");
+        let processId;
+        let profileOwnerDigest;
+        try {
+          if (observed.started !== true) {
+            throw new TypeError("driver did not observe profile start");
+          }
+          processId = stableId(observed.processId, "processId");
+          profileOwnerDigest = digest(
+            observed.profileOwnerDigest,
+            "profileOwnerDigest",
+          );
+          const expectedProfileOwnerDigest = canonicalDigest({
+            schema: "hepta.browser.profile-owner.v1",
+            profileId,
+            principalId,
+            generation,
+            manifestDigest,
+            grantDigest,
+          });
+          if (profileOwnerDigest !== expectedProfileOwnerDigest) {
+            throw new TypeError(
+              "driver profile ownership observation does not bind the admitted identity",
+            );
+          }
+        } catch (error) {
+          try {
+            await this.#callDriver(
+              "contain",
+              {
+                profileId,
+                generation,
+                reason: "startup_observation_rejected",
+              },
+              this.#clock() + this.#driverCallTimeoutMs,
+            );
+          } catch {
+            // Startup remains failed closed even if containment is uncertain.
+          }
+          throw error;
         }
-        const processId = stableId(observed.processId, "processId");
-        const profileOwnerDigest = digest(
-          observed.profileOwnerDigest,
-          "profileOwnerDigest",
-        );
         const state = {
           profileId,
           principalId,

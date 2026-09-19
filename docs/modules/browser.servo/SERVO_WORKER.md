@@ -132,7 +132,7 @@ The launcher separately binds the exact host `prlimit` executable by SHA-256 and
 
 ## 9. Resource and backpressure policy
 
-Profile mutations use a bounded single-writer queue. The product pool admits up to 16 active profile/worker processes by default with a hard configurable ceiling of 64; each current one-WebView subprocess worker advertises one outstanding effect. Alternate injected drivers must explicitly declare compatible active-profile and outstanding-effect ceilings. No more than 64 operations may be queued for one serialization key; overload fails with `BrowserBackpressureError` rather than allowing unbounded promise growth.
+Profile mutations use a bounded single-writer queue. The product pool admits up to 16 active profile/worker processes by default with a hard configurable ceiling of 64; each current one-WebView subprocess worker advertises one outstanding effect. That pool bound is resident capacity rather than parent-RPC parallelism: the current Agentd private Browser port is deliberately one-in-flight, so cross-profile UDS calls serialize at the parent channel until a multiplexed protocol is separately designed and qualified. Alternate injected drivers must explicitly declare compatible active-profile and outstanding-effect ceilings. No more than 64 operations may be queued for one serialization key; overload fails with `BrowserBackpressureError` rather than allowing unbounded promise growth.
 
 Independent hard bounds cover origins, admitted grants, nonterminal operations, terminal in-memory replay cache, action fields, semantic observation bytes, protocol frame bytes, journal bytes and driver/authority call deadlines. Linux launch also carries exact RLIMIT_AS/RLIMIT_CPU/RLIMIT_NOFILE/RLIMIT_NPROC ceilings; these are source defaults until the real probe observes them on the selected target. The current worker is one-WebView/one-profile-generation; the <=16-tab pilot target remains a future measured capability, not a current claim.
 
@@ -166,10 +166,13 @@ Servo still receives no direct external namespace. A profile-local Unix socket
 is mounted through the writable profile bind. Inside the sandbox a loopback-only
 relay forwards Servo's HTTP/HTTPS proxy traffic to that socket; the host
 `GrantScopedEgressBroker` admits only an exact granted origin and independently
-resolves/validates the destination before connect. Every redirect/subresource
-request is rechecked. Production rejects private, loopback, link-local,
-documentation and multicast/special ranges; the private-network override exists
-only for repository E2E fixtures.
+resolves/validates the destination before connect. HTTPS CONNECT to a DNS host
+is additionally bound to a bounded TLS ClientHello: the broker requires SNI to
+match the granted CONNECT host before opening any upstream TCP connection.
+IP-literal grants may omit SNI, while any supplied server name must still match.
+Every redirect/subresource request is rechecked. Production rejects private,
+loopback, link-local, documentation and multicast/special ranges; the
+private-network override exists only for repository E2E fixtures.
 
 Worker `dispatch_boundary` remains the final-use linearization point. After
 that boundary the worker response stays attached as a settlement future.
@@ -196,7 +199,8 @@ with the durable no-redispatch journal: a later
 executing it again.
 
 The egress qualification suite separately checks exact HTTP origin admission,
-HTTPS CONNECT authority+port binding, forbidden subresource denial, redirect
-escape denial, production denial of mapped/private address classes, and
-two-profile cookie isolation. The broker does not terminate TLS; Servo retains
-certificate/SNI validation inside the CONNECT tunnel.
+HTTPS CONNECT authority+port+ClientHello-SNI binding, forbidden subresource
+denial, redirect escape denial, production denial of mapped/private address
+classes, and two-profile cookie isolation. The broker does not terminate TLS;
+after the pre-connect SNI admission check, Servo still performs end-to-end
+certificate and TLS validation inside the CONNECT tunnel.
