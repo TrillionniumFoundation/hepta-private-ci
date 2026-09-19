@@ -699,4 +699,3 @@ def plan_engineering_work(
         generation_digest,
         completion_frontier_digest,
     )
-
