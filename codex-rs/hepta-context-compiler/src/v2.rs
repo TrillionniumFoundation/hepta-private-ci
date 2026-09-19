@@ -453,7 +453,7 @@ impl VerifiedAdmissionV2 {
         {
             return Err(ContextCompilerV2Error::StaleAdmissionSnapshot);
         }
-        if current_snapshot.observed_unix_ms() > self.expires_unix_ms {
+        if current_snapshot.observed_unix_ms() >= self.expires_unix_ms {
             return Err(ContextCompilerV2Error::AdmissionExpired(
                 self.admission_id.to_string(),
             ));
@@ -512,7 +512,7 @@ pub fn verify_admission_v2(
             record.admission_id.to_string(),
         ));
     }
-    if snapshot.observed_unix_ms() > record.expires_unix_ms {
+    if snapshot.observed_unix_ms() >= record.expires_unix_ms {
         return Err(ContextCompilerV2Error::AdmissionExpired(
             record.admission_id.to_string(),
         ));
@@ -1264,6 +1264,7 @@ pub struct ContextAttachmentV2 {
     admission_verifier_digest: Digest32,
     admission_snapshot_digest: Digest32,
     admission_snapshot_verification_digest: Digest32,
+    admission_snapshot_observed_unix_ms: u64,
     revocation_epoch: u64,
     model_profile_digest: Digest32,
     payload_digest: Digest32,
@@ -1286,6 +1287,11 @@ impl ContextAttachmentV2 {
     #[must_use]
     pub const fn admission_snapshot_digest(&self) -> Digest32 {
         self.admission_snapshot_digest
+    }
+
+    #[must_use]
+    pub const fn admission_snapshot_observed_unix_ms(&self) -> u64 {
+        self.admission_snapshot_observed_unix_ms
     }
 
     #[must_use]
@@ -1322,6 +1328,9 @@ impl ContextAttachmentV2 {
         ] {
             ensure_digest(name, digest)?;
         }
+        if self.admission_snapshot_observed_unix_ms == 0 {
+            return Err(ContextCompilerV2Error::InvalidAdmissionSnapshotTime);
+        }
         if self.compilation_receipt_digest != compiled.receipt.receipt_digest
             || self.serialization_receipt_digest != serialization.receipt.receipt_digest
             || self.generation_vector_digest != compiled.receipt.generation_vector_digest
@@ -1355,6 +1364,7 @@ impl ContextAttachmentV2 {
             &mut bytes,
             self.admission_snapshot_verification_digest,
         );
+        push_u64(&mut bytes, self.admission_snapshot_observed_unix_ms);
         push_u64(&mut bytes, self.revocation_epoch);
         push_digest(&mut bytes, self.model_profile_digest);
         push_digest(&mut bytes, self.payload_digest);
@@ -1380,6 +1390,7 @@ pub fn build_attachment(
         admission_verifier_digest: compiled.receipt.admission_verifier_digest,
         admission_snapshot_digest: current_snapshot.snapshot_digest(),
         admission_snapshot_verification_digest: current_snapshot.verification_digest(),
+        admission_snapshot_observed_unix_ms: current_snapshot.observed_unix_ms(),
         revocation_epoch: current_snapshot.revocation_epoch(),
         model_profile_digest: compiled.receipt.model_profile_digest,
         payload_digest: serialization.receipt.payload_digest,
@@ -1420,6 +1431,7 @@ pub struct ContextDeliveryReceiptV2 {
     admission_verifier_digest: Digest32,
     admission_snapshot_digest: Digest32,
     admission_snapshot_verification_digest: Digest32,
+    admission_snapshot_observed_unix_ms: u64,
     revocation_epoch: u64,
     transport_digest: Digest32,
     provider_request_id: StableId,
@@ -1443,6 +1455,11 @@ impl ContextDeliveryReceiptV2 {
     #[must_use]
     pub const fn admission_snapshot_digest(&self) -> Digest32 {
         self.admission_snapshot_digest
+    }
+
+    #[must_use]
+    pub const fn admission_snapshot_observed_unix_ms(&self) -> u64 {
+        self.admission_snapshot_observed_unix_ms
     }
 
     #[must_use]
@@ -1502,6 +1519,8 @@ impl ContextDeliveryReceiptV2 {
             || self.payload_digest != serialization.receipt.payload_digest
             || self.model_profile_digest != attachment.model_profile_digest
             || self.admission_verifier_digest != attachment.admission_verifier_digest
+            || self.admission_snapshot_observed_unix_ms
+                < attachment.admission_snapshot_observed_unix_ms
             || self.revocation_epoch < attachment.revocation_epoch
         {
             return Err(ContextCompilerV2Error::DeliveryMismatch);
@@ -1556,6 +1575,7 @@ impl ContextDeliveryReceiptV2 {
             &mut bytes,
             self.admission_snapshot_verification_digest,
         );
+        push_u64(&mut bytes, self.admission_snapshot_observed_unix_ms);
         push_u64(&mut bytes, self.revocation_epoch);
         push_digest(&mut bytes, self.transport_digest);
         push_id(&mut bytes, &self.provider_request_id);
@@ -1584,7 +1604,10 @@ pub fn deliver_context_v2(
     transport: &impl ContextTransportV2,
 ) -> Result<ContextDeliveryReceiptV2, ContextCompilerV2Error> {
     attachment.validate_for(compiled, serialization, profile)?;
-    if current_snapshot.revocation_epoch() < attachment.revocation_epoch {
+    if current_snapshot.revocation_epoch() < attachment.revocation_epoch
+        || current_snapshot.observed_unix_ms()
+            < attachment.admission_snapshot_observed_unix_ms
+    {
         return Err(ContextCompilerV2Error::StaleAdmissionSnapshot);
     }
     revalidate_selected_admissions(compiled, current_snapshot)?;
@@ -1610,6 +1633,7 @@ pub fn deliver_context_v2(
         admission_verifier_digest: current_snapshot.verifier_digest(),
         admission_snapshot_digest: current_snapshot.snapshot_digest(),
         admission_snapshot_verification_digest: current_snapshot.verification_digest(),
+        admission_snapshot_observed_unix_ms: current_snapshot.observed_unix_ms(),
         revocation_epoch: current_snapshot.revocation_epoch(),
         transport_digest,
         provider_request_id: evidence.provider_request_id,
