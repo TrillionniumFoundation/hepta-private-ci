@@ -44,7 +44,7 @@ Cross-organ aggregation is never implicit for a new integration. `EvaluationPoli
 
 Missing rules, duplicate rules, unknown axes and `RequireEqual` disagreement reject. Overflow rejects rather than saturating outside a named mathematical projection.
 
-The compatibility API `evaluate_candidates` remains available, but its prior behavior is now explicitly materialized as `legacy-sum-max-zero-tolerance-v1`:
+The compatibility API `evaluate_candidates` remains available only as a deprecated compatibility entry. New non-test integrations must use `evaluate_candidates_with_policy`; strict lint makes new legacy callsites visible. Its prior behavior is explicitly materialized as `legacy-sum-max-zero-tolerance-v1`:
 
 - utility: sum;
 - risk: sum;
@@ -95,7 +95,7 @@ P_next = (1 - eta) * P_k + eta * P_candidate
 U_k = project(instant_utility + discount * continuation_utility)
 ```
 
-`eta` is in `[1/16,1/4]`. The preference target solver emits immutable revisions and at most 64 local iteration receipts. Parent and child artifact updates cannot share one generation.
+`eta` is in `[1/16,1/4]`. Preference state and targets are rejected unless they contain 1–64 axes and every value is in `[-1,1]`. An already-converged target is a true no-op: it emits zero iterations and does not advance revision. The preference target solver emits at most 64 local iteration receipts; failure to reach the residual tolerance within that budget returns unavailable rather than a usable terminal state. Parent and child artifact updates cannot share one generation when the explicit subject lineage identifies a direct parent/child relation; unrelated subjects at different hierarchy levels are not rejected merely because their enum classes differ.
 
 ## 5. Convergence, infeasibility and multiple solutions
 
@@ -112,7 +112,7 @@ These local records are not an activation certificate. They deliberately do not 
 
 The canonical `NduConvergenceCertificateV1` remains owned by `learning.eval`. It additionally binds independent evaluator identity, operating region, residuals, resource/risk conservation, perturbation evidence and the spectral-radius upper confidence bound. A certificate with a spectral-radius upper 95% bound `>=0.95`, stale objective, unsupported dimension or missing independent decision cannot activate an adaptive artifact.
 
-`bind_solver_iteration_receipt_v1` converts one local step into an owner-local protocol representation only after binding:
+`bind_solver_iteration_receipt_v1` converts one local step into an owner-local protocol representation only when the solver step was created with the canonical digest of the same immutable context. Context-free local solver evidence and evidence rebound to another subject/objective/generation/event/coefficient context reject before publication. The bound context includes:
 
 - subject ID and class;
 - immutable objective digest;
@@ -157,7 +157,7 @@ Preference and utility projections are append-only revisions owned by `utility.n
 - projection payload digest;
 - predecessor-entry and entry digests.
 
-The journal enforces equal-identity/equal-semantics replay, rejects identity drift, validates exact length and hashes on reopen, rejects truncation/unknown kind/tampering, reconstructs selected projection state and prevents revocation resurrection after restart.
+The journal enforces equal-identity/equal-semantics replay, rejects identity drift, validates exact length and hashes on reopen, rejects truncation/unknown kind/tampering, reconstructs selected projection state and prevents revocation resurrection after restart. Revocation identity is scoped by objective + subject + projection rather than a global payload digest. `checkpoint_digest`/`reopen_with_checkpoint` allow the complete journal bytes to be checked against an independently protected external anchor; an anchor stored beside attacker-rewritable journal bytes is not independent evidence.
 
 This reference does not claim an activated production writer, operating-system durability, fsync, schema migration, retention or backup qualification. Product composition must bind a selected store and prove those properties independently.
 
@@ -201,7 +201,7 @@ Pilot ceilings are:
 | deterministic iterations | 64 |
 | projection-journal records per file | 4096 |
 
-All normalization, units, scales, clipping locations and tolerances are manifest-bound. NaN/infinity equivalents, unknown units, dimension drift, excessive projection, covariance failure or conservation failure reject or quarantine the candidate.
+`UtilityProfile` directly binds a nonzero axis-registry digest and normalization/scale/clipping manifest digest, and both participate in the canonical utility-profile/evaluation digest. All normalization, units, scales, clipping locations and tolerances are therefore manifest-bound rather than inferred from `profile_id`. NaN/infinity equivalents, unknown units, dimension drift, excessive projection, covariance failure or conservation failure reject or quarantine the candidate.
 
 Reference-host p95/p99, transient memory and persistent projection targets remain design targets until bound to a named host, compiler, build profile, exact source and fixture. A solver residual is not a statistical-error or efficacy proof.
 
@@ -219,6 +219,10 @@ Reference-host p95/p99, transient memory and persistent projection targets remai
 - `NDU-SYS-GV-010`: termination receipt reports terminal and true maximum residual separately.
 - `NDU-SYS-GV-011`: canonical iteration publication rejects missing objective/event/coefficient context.
 - `NDU-SYS-GV-012`: projection-journal reopen, tamper, truncation and revocation non-resurrection fixtures pass.
+- `NDU-SYS-GV-013`: preference dimension/value bounds reject before state mutation; a converged target is a zero-revision no-op and iteration-budget exhaustion is unavailable.
+- `NDU-SYS-GV-014`: a context-free solver receipt and a receipt rebound to a different event/context both reject before protocol publication.
+- `NDU-SYS-GV-015`: revoking one objective/subject/projection tuple does not revoke an identical payload digest in another scope; a mismatched externally retained checkpoint rejects a fully rewritten journal.
+- `NDU-SYS-GV-016`: changing axis-registry or normalization-manifest identity changes the canonical utility profile digest; zero semantic-manifest digests reject.
 
 Exact native mappings are registered in `docs/modules/utility.ndu/IMPLEMENTATION_MAP.json`. The same implementation cannot be the sole oracle for a critical numerical claim; analytic or independent scalar fixtures remain required.
 
