@@ -97,4 +97,82 @@ fn world_model_rejects_duplicate_samples_and_invalid_outcomes() {
         fit_transition_model(id("world-model-2"), digest("dataset"), vec![invalid],),
         Err(WorldModelError::InvalidOutcome)
     );
+
+#[test]
+fn op_05_world_model_rejects_relabelled_duplicate_evidence() {
+    let first = sample("sample-1", "state-b", 10);
+    let mut relabelled = sample("sample-2", "state-c", 20);
+    relabelled.evidence_digest = first.evidence_digest;
+    assert_eq!(
+        fit_transition_model(
+            id("world-model-duplicate-evidence"),
+            digest("dataset"),
+            vec![first, relabelled],
+        ),
+        Err(WorldModelError::DuplicateEvidence)
+    );
+}
+
+#[test]
+fn op_05_world_model_dataset_receipt_binds_rows() {
+    use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
+    use codex_hepta_learning_ledger::DatasetFreezeRequestV1;
+    use codex_hepta_learning_ledger::freeze_dataset_receipt_v3;
+
+    let receipt = freeze_dataset_receipt_v3(
+        DatasetFreezeRequestV1 {
+            snapshot_id: id("world-model-snapshot"),
+            producer: AuthenticatedPrincipalV1 {
+                principal_id: id("dataset-owner"),
+                credential_chain_digest: digest("dataset-credential"),
+                signing_key_digest: digest("dataset-key"),
+                scope_digest: digest("dataset-scope"),
+                authority_epoch: 4,
+                authenticated_at: 10,
+                expires_at: 100,
+            },
+            ledger_head_digest: digest("ledger-head"),
+            objective_digest: digest("objective"),
+            eligible_frontier: 2,
+            outcome_watermark: 40,
+            correction_cut_digest: digest("correction-cut"),
+            revocation_cut_digest: digest("revocation-cut"),
+            inclusion_policy_digest: digest("inclusion-policy"),
+            source_record_digests: vec![
+                digest("evidence-sample-1"),
+                digest("evidence-sample-2"),
+            ],
+            pending_outcomes: 0,
+            censored_outcomes: 0,
+        },
+        50,
+    )
+    .expect("frozen dataset");
+
+    let rows = vec![
+        sample("sample-1", "state-b", 10),
+        sample("sample-2", "state-c", 20),
+    ];
+    let model = fit_transition_model_from_dataset_receipt_v3(
+        id("world-model-bound"),
+        &receipt,
+        rows.clone(),
+        50,
+    )
+    .expect("bound world model");
+    assert_eq!(model.dataset_digest, receipt.snapshot.dataset_digest);
+
+    let mut detached = rows;
+    detached[1].evidence_digest = digest("detached-evidence");
+    assert_eq!(
+        fit_transition_model_from_dataset_receipt_v3(
+            id("world-model-detached"),
+            &receipt,
+            detached,
+            50,
+        ),
+        Err(WorldModelError::EvidenceOutsideDataset)
+    );
+}
+
 }
