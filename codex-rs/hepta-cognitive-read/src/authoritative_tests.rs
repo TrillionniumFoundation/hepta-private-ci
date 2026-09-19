@@ -112,7 +112,7 @@ fn authoritative_read_binds_provider_vector_query_and_lease() {
         result.generation_vector_digest,
         envelope.generation_vector_digest()
     );
-    assert_eq!(result.provider_id, *envelope.provider_id());
+    assert_eq!(&result.provider_id, envelope.provider_id());
     assert_eq!(result.lease_expires_unix_ms, envelope.lease_expires_unix_ms());
     result
         .validate()
