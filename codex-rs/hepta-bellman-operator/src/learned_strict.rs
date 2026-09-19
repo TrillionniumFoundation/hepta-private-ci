@@ -19,7 +19,7 @@ use crate::LearnedOperatorError;
 use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorPlanV1;
 use crate::TabularOperatorPredictionV1;
-use crate::fit_tabular_operator;
+use crate::learned::fit_tabular_operator_core;
 
 pub fn fit_tabular_operator_strict_v2(
     plan: TabularOperatorPlanV1,
@@ -36,7 +36,7 @@ pub fn fit_tabular_operator_strict_v2(
     {
         return Err(StrictLearnedOperatorError::DuplicateEvidence);
     }
-    Ok(fit_tabular_operator(plan)?)
+    Ok(fit_tabular_operator_core(plan)?)
 }
 
 /// Qualification entrypoint for a strict tabular fit. The frozen V3 dataset
