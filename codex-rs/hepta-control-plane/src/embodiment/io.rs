@@ -225,16 +225,7 @@ mod tests {
             )
             .expect("controller command");
         let before = io.read_sensor(0).expect("sensor reread");
-        let mut authority = AuthorityPosture::DENY_ALL;
-        authority.runtime = true;
-        assert_eq!(
-            io.dispatch(TypedActuatorDispatchV1 {
-                actuator_id: StableId::new("actuator.cart").expect("actuator id"),
-                command,
-                authority,
-            }),
-            Err(EmbodimentIoError::AuthorityNotDenied)
-        );
+        assert!(AuthorityPosture::from_untrusted_bits(1).is_err());
         assert_eq!(io.read_sensor(0).expect("sensor reread"), before);
 
         assert_eq!(
