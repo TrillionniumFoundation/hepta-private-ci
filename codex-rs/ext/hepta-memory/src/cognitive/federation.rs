@@ -861,6 +861,10 @@ mod tests {
             1
         );
         assert_eq!(memories[1]["q"][0]["h"], "55".repeat(32));
+        assert_eq!(payload["f"]["r"], 2);
+        assert_eq!(payload["f"]["c"], 1);
+        assert_eq!(payload["f"]["f"], 1);
+        assert_eq!(payload["f"]["i"], 0);
 
         let changed = combine_cognitive_materials(
             &input,
@@ -921,8 +925,14 @@ mod tests {
         padding: usize,
     ) -> CognitiveProposalMaterial {
         let content = serde_json::to_string(&serde_json::json!({
-            "schema_version": 1,
+            "schema_version": 2,
             "source": "explicit_federated_verified_memory",
+            "coverage": {
+                "requested_sources": 2,
+                "completed_sources": 1,
+                "failed_sources": 1,
+                "indeterminate_sources": 0,
+            },
             "memories": [{
                 "source_agent_id": owner_agent_id,
                 "capability_id": capability_id,
