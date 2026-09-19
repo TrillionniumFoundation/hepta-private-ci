@@ -691,36 +691,36 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<(), SupervisorError> {
         let intent = read_intent(record.layout.run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        let Some(intent) = intent else {
-            return Ok(());
+        let selection = read_selection(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        let (Some(intent), Some(selection)) = (intent, selection) else {
+            if intent.is_none() && selection.is_none() {
+                return Ok(());
+            }
+            return Err(SupervisorError::SignedIntentRecoveryRequired(
+                agent_id.clone(),
+            ));
         };
-        if intent.agent_id != agent_id.to_string() {
-            return Err(SupervisorError::Invalid(
-                "signed supervisor intent agent binding mismatch".to_string(),
+        if intent.agent_id != agent_id.to_string()
+            || selection.agent_id != agent_id.to_string()
+            || selection.grant_sha256 != intent.grant_sha256
+            || selection.source_release != intent.source_release
+            || selection.target_release != intent.target_release
+            || selection.status != intent.status
+        {
+            return Err(SupervisorError::SignedIntentRecoveryRequired(
+                agent_id.clone(),
             ));
         }
         slot.signed_intent = Some(intent.clone());
-        if matches!(intent.status, SignedIntentStatus::Committed) {
+        if intent.status.is_terminal() {
             return Ok(());
         }
         // A restart has no durable proof that an apparently matching target
-        // was produced by this exact signed mutation.  In particular, the
-        // one-file intent does not carry an independently committed source /
-        // target release-state revision, control-revision successor,
-        // lifecycle-generation transition, or continuity of the daemon's
-        // authority epoch.  Treating `Running + target` as Committed would
-        // therefore let an unrelated/manual upgrade close an old grant.
-        // Every non-terminal intent must remain fail-closed until an explicit
-        // recovery ceremony supplies those witnesses.
-        //
-        // Fence and kill any adopted child before surfacing the recovery
-        // requirement; normal ticking must not continue an ambiguous
-        // external transition.
+        // was produced by this exact signed mutation. Selection + intent are
+        // both durable and must agree, but a non-terminal pair still cannot
+        // be inferred as committed from process liveness alone.
         if let Some(runtime) = slot.runtime.as_mut() {
-            // A failed fence/kill is still an unresolved signed intent.  Do
-            // not downgrade it to a recoverable driver fault: the caller
-            // must fail closed at daemon startup and require explicit
-            // operator recovery.
             let _ = runtime.process.kill();
             runtime.fenced = true;
             runtime.phase = RuntimePhase::Killing;
