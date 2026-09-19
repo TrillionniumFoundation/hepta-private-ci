@@ -1690,31 +1690,191 @@ impl LocalLeaseOutbox {
         Ok(Some(state))
     }
 
-    /// Reconcile an indeterminate local intent.  `StillIndeterminate` keeps
-    /// the quarantine state and can itself be replayed idempotently.
+    /// Reconcile an indeterminate local intent.
+    ///
+    /// Reconciliation is the only outcome transition allowed to cross a lease
+    /// generation.  A successor may settle an occurrence admitted by an older
+    /// generation only after that exact source fence is terminal in the
+    /// verified append-only lease chain.  This deliberately does *not* make an
+    /// inherited queued occurrence dispatchable: unknown external effects are
+    /// reconciled, never blindly resent.
+    ///
+    /// `StillIndeterminate` remains an idempotent observation. If an earlier
+    /// generation already recorded that observation, a successor may return
+    /// the existing receipt and later record the terminal observation under
+    /// its current fence.
     pub async fn reconcile(
         &self,
         occurrence_key: impl Into<String>,
         outcome: LocalReconcileOutcome,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
-        let (kind, state) = match outcome {
+        self.append_reconciliation(occurrence_key.into(), outcome).await
+    }
+
+    async fn append_reconciliation(
+        &self,
+        occurrence_key: String,
+        outcome: LocalReconcileOutcome,
+    ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
+        let (kind, resulting_state) = match outcome {
             LocalReconcileOutcome::Committed => {
                 ("reconcile_committed", LocalOutcomeState::Committed)
             }
-            LocalReconcileOutcome::Rejected => ("reconcile_rejected", LocalOutcomeState::Rejected),
+            LocalReconcileOutcome::Rejected => {
+                ("reconcile_rejected", LocalOutcomeState::Rejected)
+            }
             LocalReconcileOutcome::StillIndeterminate => (
                 "reconcile_still_indeterminate",
                 LocalOutcomeState::Indeterminate,
             ),
         };
-        self.append_outcome(
-            occurrence_key.into(),
-            kind,
-            outcome.as_str().to_string(),
-            &[LocalOutcomeState::Indeterminate],
-            state,
+        let payload = outcome.as_str().to_string();
+        let payload_sha256 = Sha256Digest::for_bytes(payload.as_bytes());
+
+        let mut transaction = self
+            .store
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        let lease = self.current_lease(&mut transaction).await?;
+        ensure_current_active(&lease, self)?;
+        let events =
+            verify_event_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
+        let outbox_rows =
+            verify_outbox_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
+        verify_event_outbox_pairing(&events, &outbox_rows)?;
+
+        let admission = events
+            .iter()
+            .find(|event| {
+                event.occurrence_key == occurrence_key && event.kind == "admitted"
+            })
+            .ok_or_else(|| {
+                LocalLeaseOutboxError::IllegalTransition(format!(
+                    "occurrence {occurrence_key} has no admitted event"
+                ))
+            })?;
+        let outbox = outbox_rows
+            .iter()
+            .find(|row| row.occurrence_key == occurrence_key)
+            .ok_or_else(|| corrupt("event admission has no paired outbox row"))?;
+        if admission.event_id != outbox.event_id
+            || admission.owner_agent_id != self.owner_agent_id
+            || outbox.owner_agent_id != self.owner_agent_id
+        {
+            return Err(corrupt("event/outbox reconciliation binding mismatch"));
+        }
+
+        let current = current_outcome(
+            &mut transaction,
+            &self.lease_id,
+            &occurrence_key,
+            &self.owner_agent_id,
         )
-        .await
+        .await?;
+        if current != LocalOutcomeState::Indeterminate {
+            return Err(LocalLeaseOutboxError::IllegalTransition(format!(
+                "occurrence is already in {} state",
+                current.as_str()
+            )));
+        }
+
+        let latest = events
+            .iter()
+            .rev()
+            .find(|event| event.occurrence_key == occurrence_key)
+            .ok_or_else(|| corrupt("occurrence event chain is missing"))?;
+        let current_fence = latest.generation == self.generation
+            && latest.fencing_token == self.fencing_token;
+        let admission_fence = admission.generation == self.generation
+            && admission.fencing_token == self.fencing_token
+            && outbox.generation == self.generation
+            && outbox.fencing_token == self.fencing_token;
+        if !current_fence && !admission_fence {
+            if latest.generation >= self.generation
+                || !lease_fence_is_terminal(
+                    &mut transaction,
+                    &self.lease_id,
+                    latest.generation,
+                    &latest.fencing_token,
+                )
+                .await?
+            {
+                return Err(LocalLeaseOutboxError::StaleFence(
+                    "indeterminate occurrence source fence is not terminal for successor reconciliation"
+                        .to_string(),
+                ));
+            }
+        }
+
+        if let Some(existing) = events
+            .iter()
+            .find(|event| event.occurrence_key == occurrence_key && event.kind == kind)
+        {
+            if existing.payload_sha256 != payload_sha256 {
+                return Err(LocalLeaseOutboxError::CasConflict(
+                    "reconciliation replay changed its outcome payload".to_string(),
+                ));
+            }
+            transaction
+                .commit()
+                .await
+                .map_err(crate::cognitive_store::unavailable)?;
+            return Ok(LocalOutcomeReceipt {
+                lease_id: self.lease_id.clone(),
+                occurrence_key,
+                state: resulting_state,
+                event_id: existing.event_id.clone(),
+                external_effect: false,
+            });
+        }
+
+        let sequence = next_event_sequence(&mut transaction, &self.lease_id).await?;
+        let previous = event_head(&mut transaction, &self.lease_id).await?;
+        let event_id = journal_row_id("event", &self.lease_id, sequence);
+        let digest = event_digest(
+            &self.lease_id,
+            sequence,
+            &event_id,
+            &occurrence_key,
+            &self.owner_agent_id,
+            self.generation,
+            &self.fencing_token,
+            kind,
+            &payload_sha256,
+            &previous,
+        );
+        insert_event(
+            &mut transaction,
+            EventInsert {
+                lease_id: &self.lease_id,
+                sequence,
+                event_id: &event_id,
+                occurrence_key: &occurrence_key,
+                owner: &self.owner_agent_id,
+                generation: self.generation,
+                fencing_token: &self.fencing_token,
+                kind,
+                payload_json: &payload,
+                payload_sha256: &payload_sha256,
+                previous_sha256: &previous,
+                event_sha256: &digest,
+            },
+        )
+        .await?;
+        transaction
+            .commit()
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        Ok(LocalOutcomeReceipt {
+            lease_id: self.lease_id.clone(),
+            occurrence_key,
+            state: resulting_state,
+            event_id,
+            external_effect: false,
+        })
     }
 
     /// Append an explicit local rollback marker.  This does not delete the
@@ -3370,6 +3530,29 @@ async fn find_outbox(
     Ok(rows
         .into_iter()
         .find(|row| row.occurrence_key == occurrence_key))
+}
+
+async fn lease_fence_is_terminal(
+    transaction: &mut Transaction<'_, Sqlite>,
+    lease_id: &str,
+    generation: u64,
+    fencing_token: &str,
+) -> Result<bool, LocalLeaseOutboxError> {
+    let state: Option<String> = sqlx::query_scalar(
+        "SELECT state FROM cognitive_local_leases
+         WHERE lease_id = ? AND generation = ? AND fencing_token = ?
+         ORDER BY lease_sequence DESC LIMIT 1",
+    )
+    .bind(lease_id)
+    .bind(to_i64(generation, "lease generation")?)
+    .bind(fencing_token)
+    .fetch_optional(&mut **transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
+    match state {
+        Some(state) => Ok(LocalLeaseState::parse(&state)? != LocalLeaseState::Active),
+        None => Ok(false),
+    }
 }
 
 async fn current_outcome(
