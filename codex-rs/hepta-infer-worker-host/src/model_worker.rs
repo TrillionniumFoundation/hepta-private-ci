@@ -4,9 +4,13 @@ use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
 
+use codex_hepta_types::Digest32;
+
 const MAX_MODELS: usize = 8;
 const MAX_ACTIVE_REQUESTS: usize = 256;
 const MAX_TOKENS: u32 = 1_000_000;
+const MAX_NEURON_FEATURES: usize = 512;
+const Q24_STATE_LIMIT: i64 = 8 * (1_i64 << 24);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ModelManifest {
@@ -121,6 +125,8 @@ pub enum Error {
     DriverFailure(String),
     MissingTerminalOutput,
     ArithmeticOverflow,
+    FeatureLimit,
+    FeatureOutputMismatch,
 }
 
 impl fmt::Display for Error {
@@ -420,6 +426,210 @@ fn validate_digest(value: &str, field: &'static str) -> Result<(), Error> {
     {
         return Err(Error::InvalidDigest(field));
     }
+    Ok(())
+}
+
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NeuronFeatureRequest {
+    pub authorization: WorkerRequest,
+    pub encoder_digest: String,
+    pub head_digest: String,
+    pub input_digest: String,
+    pub feature_vector_q24: Vec<i64>,
+    pub expected_output_width: usize,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct DriverNeuronFeatureObservation {
+    pub terminal_observed: bool,
+    pub succeeded: bool,
+    pub encoder_digest: String,
+    pub head_digest: String,
+    pub drive_q24: Vec<i64>,
+    pub prediction_q24: Vec<i64>,
+    pub observed_memory_bytes: u64,
+    pub transient_allocation_bytes: u64,
+    pub queue_age_micros: u64,
+    pub latency_micros: u64,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NeuronFeatureExecutionObservation {
+    pub request_id: String,
+    pub reservation_id: String,
+    pub worker_generation: u64,
+    pub manifest: ModelManifest,
+    pub encoder_digest: String,
+    pub head_digest: String,
+    pub input_digest: String,
+    pub status: ExecutionStatus,
+    pub drive_q24: Vec<i64>,
+    pub prediction_q24: Vec<i64>,
+    pub observed_memory_bytes: u64,
+    pub transient_allocation_bytes: u64,
+    pub queue_age_micros: u64,
+    pub latency_micros: u64,
+    pub terminal_observed: bool,
+}
+
+/// Executes the frozen encoder/head feature path for an already loaded model.
+/// The driver must report the actual encoder/head identities and resource
+/// measurements observed for this invocation.
+pub trait NeuronFeatureDriver: ModelDriver {
+    fn run_neuron_features(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &NeuronFeatureRequest,
+    ) -> Result<DriverNeuronFeatureObservation, Error>;
+}
+
+impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
+    pub fn run_neuron_features(
+        &mut self,
+        now_ms: u64,
+        model_id: &str,
+        request: NeuronFeatureRequest,
+    ) -> Result<NeuronFeatureExecutionObservation, Error> {
+        self.validate_current_grant(now_ms)?;
+        validate_identity(model_id, "model")?;
+        validate_request(now_ms, &request.authorization)?;
+        validate_neuron_feature_request(&request)?;
+        if self
+            .active_requests
+            .contains_key(&request.authorization.request_id)
+        {
+            return Err(Error::RequestCapacity);
+        }
+        let request_limit = self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS);
+        if self.active_requests.len() >= request_limit {
+            return Err(Error::RequestCapacity);
+        }
+        let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if request.authorization.model_digest != loaded.manifest.model_digest
+            || request.authorization.reservation_model_digest != loaded.manifest.model_digest
+        {
+            return Err(Error::ModelMismatch);
+        }
+        let payload_digest = canonical_neuron_feature_payload_digest(&request);
+        if request.authorization.payload_digest != payload_digest
+            || request.authorization.lease_payload_digest != payload_digest
+        {
+            return Err(Error::PayloadMismatch);
+        }
+        if request.authorization.cancelled {
+            return Ok(NeuronFeatureExecutionObservation {
+                request_id: request.authorization.request_id,
+                reservation_id: request.authorization.reservation_id,
+                worker_generation: self.generation,
+                manifest: loaded.manifest.clone(),
+                encoder_digest: request.encoder_digest,
+                head_digest: request.head_digest,
+                input_digest: request.input_digest,
+                status: ExecutionStatus::Cancelled,
+                drive_q24: Vec::new(),
+                prediction_q24: Vec::new(),
+                observed_memory_bytes: loaded.handle.observed_memory_bytes,
+                transient_allocation_bytes: 0,
+                queue_age_micros: 0,
+                latency_micros: 0,
+                terminal_observed: true,
+            });
+        }
+
+        loaded.active_requests = loaded
+            .active_requests
+            .checked_add(1)
+            .ok_or(Error::ArithmeticOverflow)?;
+        self.active_requests.insert(
+            request.authorization.request_id.clone(),
+            model_id.to_string(),
+        );
+        let observed = self.driver.run_neuron_features(&loaded.handle, &request);
+        self.active_requests.remove(&request.authorization.request_id);
+        loaded.active_requests = loaded.active_requests.saturating_sub(1);
+        let observed = observed?;
+        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+            return Err(Error::ModelCapacity);
+        }
+        let status = if !observed.terminal_observed {
+            ExecutionStatus::Indeterminate
+        } else if observed.succeeded {
+            validate_neuron_feature_output(&request, &observed)?;
+            ExecutionStatus::Succeeded
+        } else {
+            ExecutionStatus::Failed
+        };
+        Ok(NeuronFeatureExecutionObservation {
+            request_id: request.authorization.request_id,
+            reservation_id: request.authorization.reservation_id,
+            worker_generation: self.generation,
+            manifest: loaded.manifest.clone(),
+            encoder_digest: observed.encoder_digest,
+            head_digest: observed.head_digest,
+            input_digest: request.input_digest,
+            status,
+            drive_q24: observed.drive_q24,
+            prediction_q24: observed.prediction_q24,
+            observed_memory_bytes: observed.observed_memory_bytes,
+            transient_allocation_bytes: observed.transient_allocation_bytes,
+            queue_age_micros: observed.queue_age_micros,
+            latency_micros: observed.latency_micros,
+            terminal_observed: observed.terminal_observed,
+        })
+    }
+}
+
+pub fn canonical_neuron_feature_payload_digest(request: &NeuronFeatureRequest) -> String {
+    let mut bytes = b"hepta.infer-worker.neuron-feature-request.v1".to_vec();
+    bytes.extend_from_slice(request.authorization.model_digest.as_bytes());
+    bytes.extend_from_slice(request.encoder_digest.as_bytes());
+    bytes.extend_from_slice(request.head_digest.as_bytes());
+    bytes.extend_from_slice(request.input_digest.as_bytes());
+    bytes.extend_from_slice(&(request.feature_vector_q24.len() as u64).to_be_bytes());
+    for value in &request.feature_vector_q24 {
+        bytes.extend_from_slice(&value.to_be_bytes());
+    }
+    bytes.extend_from_slice(&(request.expected_output_width as u64).to_be_bytes());
+    Digest32::of_bytes(&bytes).to_string()
+}
+
+fn validate_neuron_feature_request(value: &NeuronFeatureRequest) -> Result<(), Error> {
+    validate_digest(&value.encoder_digest, "encoder")?;
+    validate_digest(&value.head_digest, "head")?;
+    validate_digest(&value.input_digest, "neuron input")?;
+    if value.feature_vector_q24.is_empty()
+        || value.feature_vector_q24.len() > MAX_NEURON_FEATURES
+        || value.expected_output_width == 0
+        || value.expected_output_width > MAX_NEURON_FEATURES
+        || value
+            .feature_vector_q24
+            .iter()
+            .any(|item| !(-Q24_STATE_LIMIT..=Q24_STATE_LIMIT).contains(item))
+    {
+        return Err(Error::FeatureLimit);
+    }
+    Ok(())
+}
+
+fn validate_neuron_feature_output(
+    request: &NeuronFeatureRequest,
+    value: &DriverNeuronFeatureObservation,
+) -> Result<(), Error> {
+    if value.encoder_digest != request.encoder_digest
+        || value.head_digest != request.head_digest
+        || value.drive_q24.len() != request.expected_output_width
+        || value.prediction_q24.len() != request.expected_output_width
+        || value
+            .drive_q24
+            .iter()
+            .chain(&value.prediction_q24)
+            .any(|item| !(-Q24_STATE_LIMIT..=Q24_STATE_LIMIT).contains(item))
+    {
+        return Err(Error::FeatureOutputMismatch);
+    }
+    validate_digest(&value.encoder_digest, "encoder")?;
+    validate_digest(&value.head_digest, "head")?;
     Ok(())
 }
 
