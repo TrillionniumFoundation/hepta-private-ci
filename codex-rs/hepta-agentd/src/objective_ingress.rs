@@ -368,9 +368,7 @@ pub(crate) fn attached(
     state: &AgentdState,
 ) -> Result<std::sync::Arc<ObjectiveIngressHost>, AgentdError> {
     state
-        .objective_ingress
-        .get()
-        .cloned()
+        .objective_ingress()?
         .ok_or_else(|| objective_invalid("no owner Objective profile is configured"))
 }
 
