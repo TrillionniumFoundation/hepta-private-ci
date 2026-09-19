@@ -53,22 +53,27 @@ External evidence gates:
 
 ## 4. `runtime.agentd`
 
-Owns only ephemeral run admission, immutable snapshot references, and runtime-health composition state.
+Owns a bounded owner-private crash-recovery lifecycle journal, immutable run snapshot references and runtime-health composition state; product-domain facts remain with their canonical owners.
 
-Agentd preserves dispatch-boundary uncertainty and accepts terminal state only from the delegated execution/effect owner.
+Agentd preserves dispatch-boundary uncertainty, never redispatches an unobserved external run after restart, and accepts success/failure/cancel terminality only from the delegated execution owner.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
-| `compose_runtime` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn compose_runtime(` |
-| `start_run` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn start_run(` |
-| `cancel_run` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn cancel_run(` |
-| `attach_context` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn attach_context(` |
+| `compose_runtime` | `owner_native` | `codex-rs/hepta-agentd/src/state.rs` — `pub(crate) fn new(` |
+| `start_run` | `owner_native` | `codex-rs/hepta-agentd/src/state.rs` — `pub(crate) fn run_start(` |
+| `cancel_run` | `owner_native` | `codex-rs/hepta-agentd/src/state.rs` — `pub(crate) fn run_cancel(` |
+| `attach_context` | `owner_native` | `codex-rs/hepta-agentd/src/state.rs` — `pub(crate) fn run_attach_context(` |
+
+Remaining repository implementation gaps:
+
+- Bind the normal non-test Codex turn path to Agentd RunStart/RunAttachContext/RunMarkDispatched/RunObserveTerminal so actual turn execution, rather than only the local control API, drives lifecycle state.
+- Bind RunCancel and deadline-triggered cancellation intent to the actual Codex App Server interrupt and matching terminal acknowledgement path; do not equate a recorded cancelling state with a physical interrupt.
 
 External evidence gates:
 
-- deployed Agentd process and authenticated socket identity
-- non-test caller through the full Codex turn path
-- target backpressure/restart measurements
+- deployed Agentd process and authenticated socket/generation identity
+- target-host backpressure/restart measurements
+- independent operational acceptance of drain/restart behavior
 
 ## 5. `runtime.codex`
 
