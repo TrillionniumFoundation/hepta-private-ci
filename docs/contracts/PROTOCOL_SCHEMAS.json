@@ -3281,6 +3281,1801 @@
         "current_run_artifact_immutable",
         "correction_deletion_and_revocation_lineage_preserved"
       ]
+    },
+    {
+      "id": "ModalitySpanRefV1",
+      "contractId": "ModalitySpanRefV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 32768,
+      "digestScope": "schema_id_and_all_semantic_fields",
+      "fields": [
+        {
+          "name": "spanId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "modality",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 64,
+          "values": [
+            "text",
+            "image",
+            "audio",
+            "video",
+            "code_ast",
+            "gui_state",
+            "tool_trajectory",
+            "structured_data",
+            "sensor"
+          ]
+        },
+        {
+          "name": "assetSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "range",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 8192,
+          "minProperties": 1,
+          "maxProperties": 14,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "enum",
+              "required": true,
+              "maxBytes": 64,
+              "values": [
+                "byte_range",
+                "pixel_rect",
+                "sample_range",
+                "frame_range",
+                "ast_path",
+                "gui_node",
+                "event_range",
+                "json_pointer",
+                "sensor_range"
+              ]
+            },
+            {
+              "name": "start",
+              "type": "u64",
+              "required": false
+            },
+            {
+              "name": "end",
+              "type": "u64",
+              "required": false
+            },
+            {
+              "name": "x",
+              "type": "u32",
+              "required": false
+            },
+            {
+              "name": "y",
+              "type": "u32",
+              "required": false
+            },
+            {
+              "name": "width",
+              "type": "u32",
+              "required": false
+            },
+            {
+              "name": "height",
+              "type": "u32",
+              "required": false
+            },
+            {
+              "name": "sampleRateHz",
+              "type": "u32",
+              "required": false
+            },
+            {
+              "name": "timebaseNum",
+              "type": "u32",
+              "required": false
+            },
+            {
+              "name": "timebaseDen",
+              "type": "u32",
+              "required": false
+            },
+            {
+              "name": "path",
+              "type": "utf8",
+              "required": false,
+              "maxBytes": 4096
+            },
+            {
+              "name": "stableNodeId",
+              "type": "utf8",
+              "required": false,
+              "maxBytes": 512
+            },
+            {
+              "name": "pointer",
+              "type": "utf8",
+              "required": false,
+              "maxBytes": 4096
+            },
+            {
+              "name": "unit",
+              "type": "utf8",
+              "required": false,
+              "maxBytes": 128
+            }
+          ]
+        },
+        {
+          "name": "preprocessorManifestSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "featureBlobSha256",
+          "type": "sha256",
+          "required": false,
+          "maxBytes": 64
+        },
+        {
+          "name": "symbolicProjectionSha256",
+          "type": "sha256",
+          "required": false,
+          "maxBytes": 64
+        },
+        {
+          "name": "uncertaintyPpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "privacyClass",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 64,
+          "values": [
+            "agent_private",
+            "workspace_private"
+          ]
+        },
+        {
+          "name": "redactionMaskSha256",
+          "type": "sha256",
+          "required": false,
+          "maxBytes": 64
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "authority_delta_none",
+        "tagged_range_matches_modality",
+        "asset_extent_revalidated_before_use"
+      ]
+    },
+    {
+      "id": "MemoryEventV1",
+      "contractId": "MemoryEventV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "schema_id_and_all_semantic_fields",
+      "fields": [
+        {
+          "name": "eventId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "episodeId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "scope",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 4096,
+          "minProperties": 2,
+          "maxProperties": 3,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "kind",
+              "type": "enum",
+              "required": true,
+              "maxBytes": 64,
+              "values": [
+                "agent_private",
+                "workspace_private"
+              ]
+            },
+            {
+              "name": "agentId",
+              "type": "id128",
+              "required": true,
+              "maxBytes": 128
+            },
+            {
+              "name": "workspaceSha256",
+              "type": "sha256",
+              "required": false,
+              "maxBytes": 64
+            }
+          ]
+        },
+        {
+          "name": "observedInterval",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 1024,
+          "minProperties": 1,
+          "maxProperties": 2,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "startUnixMs",
+              "type": "u64",
+              "required": true
+            },
+            {
+              "name": "endUnixMs",
+              "type": "u64",
+              "required": false
+            }
+          ]
+        },
+        {
+          "name": "modalitySpans",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 196608,
+          "minItems": 1,
+          "maxItems": 32,
+          "uniqueItems": false,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 16384,
+            "minProperties": 7,
+            "maxProperties": 10,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "spanId",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "modality",
+                "type": "enum",
+                "required": true,
+                "maxBytes": 64,
+                "values": [
+                  "text",
+                  "image",
+                  "audio",
+                  "video",
+                  "code_ast",
+                  "gui_state",
+                  "tool_trajectory",
+                  "structured_data",
+                  "sensor"
+                ]
+              },
+              {
+                "name": "assetSha256",
+                "type": "sha256",
+                "required": true,
+                "maxBytes": 64
+              },
+              {
+                "name": "range",
+                "type": "bounded_object",
+                "required": true,
+                "maxBytes": 8192,
+                "minProperties": 1,
+                "maxProperties": 14,
+                "additionalProperties": false,
+                "properties": [
+                  {
+                    "name": "kind",
+                    "type": "enum",
+                    "required": true,
+                    "maxBytes": 64,
+                    "values": [
+                      "byte_range",
+                      "pixel_rect",
+                      "sample_range",
+                      "frame_range",
+                      "ast_path",
+                      "gui_node",
+                      "event_range",
+                      "json_pointer",
+                      "sensor_range"
+                    ]
+                  },
+                  {
+                    "name": "start",
+                    "type": "u64",
+                    "required": false
+                  },
+                  {
+                    "name": "end",
+                    "type": "u64",
+                    "required": false
+                  },
+                  {
+                    "name": "x",
+                    "type": "u32",
+                    "required": false
+                  },
+                  {
+                    "name": "y",
+                    "type": "u32",
+                    "required": false
+                  },
+                  {
+                    "name": "width",
+                    "type": "u32",
+                    "required": false
+                  },
+                  {
+                    "name": "height",
+                    "type": "u32",
+                    "required": false
+                  },
+                  {
+                    "name": "sampleRateHz",
+                    "type": "u32",
+                    "required": false
+                  },
+                  {
+                    "name": "timebaseNum",
+                    "type": "u32",
+                    "required": false
+                  },
+                  {
+                    "name": "timebaseDen",
+                    "type": "u32",
+                    "required": false
+                  },
+                  {
+                    "name": "path",
+                    "type": "utf8",
+                    "required": false,
+                    "maxBytes": 4096
+                  },
+                  {
+                    "name": "stableNodeId",
+                    "type": "utf8",
+                    "required": false,
+                    "maxBytes": 512
+                  },
+                  {
+                    "name": "pointer",
+                    "type": "utf8",
+                    "required": false,
+                    "maxBytes": 4096
+                  },
+                  {
+                    "name": "unit",
+                    "type": "utf8",
+                    "required": false,
+                    "maxBytes": 128
+                  }
+                ]
+              },
+              {
+                "name": "preprocessorManifestSha256",
+                "type": "sha256",
+                "required": true,
+                "maxBytes": 64
+              },
+              {
+                "name": "featureBlobSha256",
+                "type": "sha256",
+                "required": false,
+                "maxBytes": 64
+              },
+              {
+                "name": "symbolicProjectionSha256",
+                "type": "sha256",
+                "required": false,
+                "maxBytes": 64
+              },
+              {
+                "name": "uncertaintyPpm",
+                "type": "u32",
+                "required": true
+              },
+              {
+                "name": "privacyClass",
+                "type": "enum",
+                "required": true,
+                "maxBytes": 64,
+                "values": [
+                  "agent_private",
+                  "workspace_private"
+                ]
+              },
+              {
+                "name": "redactionMaskSha256",
+                "type": "sha256",
+                "required": false,
+                "maxBytes": 64
+              }
+            ]
+          }
+        },
+        {
+          "name": "crossModalBindings",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 65536,
+          "minItems": 0,
+          "maxItems": 32,
+          "uniqueItems": false,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 8192,
+            "minProperties": 6,
+            "maxProperties": 6,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "bindingId",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "eventId",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "spanRefs",
+                "type": "bounded_array",
+                "required": true,
+                "maxBytes": 4096,
+                "minItems": 2,
+                "maxItems": 16,
+                "uniqueItems": true,
+                "items": {
+                  "type": "id128",
+                  "maxBytes": 128
+                }
+              },
+              {
+                "name": "alignmentKind",
+                "type": "enum",
+                "required": true,
+                "maxBytes": 64,
+                "values": [
+                  "same_observation",
+                  "temporal_overlap",
+                  "entity_coreference",
+                  "action_outcome",
+                  "derived_symbolic",
+                  "alternative_observation"
+                ]
+              },
+              {
+                "name": "confidencePpm",
+                "type": "u32",
+                "required": true
+              },
+              {
+                "name": "producerManifestSha256",
+                "type": "sha256",
+                "required": true,
+                "maxBytes": 64
+              }
+            ]
+          }
+        },
+        {
+          "name": "semanticKeys",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 16384,
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "type": "utf8",
+            "maxBytes": 128
+          }
+        },
+        {
+          "name": "causalParents",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 8192,
+          "minItems": 0,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "type": "id128",
+            "maxBytes": 128
+          }
+        },
+        {
+          "name": "temporalNeighbors",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 8192,
+          "minItems": 0,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "type": "id128",
+            "maxBytes": 128
+          }
+        },
+        {
+          "name": "provenance",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 65536,
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 2048,
+            "minProperties": 4,
+            "maxProperties": 4,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "sourceId",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "sourceRevision",
+                "type": "u64",
+                "required": true
+              },
+              {
+                "name": "sourceSha256",
+                "type": "sha256",
+                "required": true,
+                "maxBytes": 64
+              },
+              {
+                "name": "observedAtUnixMs",
+                "type": "u64",
+                "required": true
+              }
+            ]
+          }
+        },
+        {
+          "name": "verification",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 64,
+          "values": [
+            "unverified",
+            "verified",
+            "contradicted",
+            "revoked"
+          ]
+        },
+        {
+          "name": "retentionPolicy",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 4096,
+          "minProperties": 2,
+          "maxProperties": 3,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "policyId",
+              "type": "id128",
+              "required": true,
+              "maxBytes": 128
+            },
+            {
+              "name": "expiresUnixMs",
+              "type": "u64",
+              "required": false
+            },
+            {
+              "name": "legalHold",
+              "type": "bool",
+              "required": true
+            }
+          ]
+        },
+        {
+          "name": "objectiveDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "nduStateDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "lifecycle",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 4096,
+          "minProperties": 1,
+          "maxProperties": 4,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "state",
+              "type": "enum",
+              "required": true,
+              "maxBytes": 64,
+              "values": [
+                "active",
+                "correction",
+                "tombstone"
+              ]
+            },
+            {
+              "name": "predecessorEventId",
+              "type": "id128",
+              "required": false,
+              "maxBytes": 128
+            },
+            {
+              "name": "targetEventId",
+              "type": "id128",
+              "required": false,
+              "maxBytes": 128
+            },
+            {
+              "name": "reasonSha256",
+              "type": "sha256",
+              "required": false,
+              "maxBytes": 64
+            }
+          ]
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "authority_delta_none",
+        "immutable_event",
+        "correction_tombstone_distinct",
+        "span_scope_exact",
+        "tagged_union_variant_fields_exact"
+      ]
+    },
+    {
+      "id": "CrossModalBindingV1",
+      "contractId": "CrossModalBindingV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 65536,
+      "digestScope": "schema_id_and_all_semantic_fields",
+      "fields": [
+        {
+          "name": "bindingId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "eventId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "spanRefs",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 4096,
+          "minItems": 2,
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "type": "id128",
+            "maxBytes": 128
+          }
+        },
+        {
+          "name": "alignmentKind",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 64,
+          "values": [
+            "same_observation",
+            "temporal_overlap",
+            "entity_coreference",
+            "action_outcome",
+            "derived_symbolic",
+            "alternative_observation"
+          ]
+        },
+        {
+          "name": "confidencePpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "producerManifestSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "authority_delta_none",
+        "at_least_two_distinct_modalities"
+      ]
+    },
+    {
+      "id": "EngramNodeV1",
+      "contractId": "EngramNodeV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 65536,
+      "digestScope": "schema_id_and_all_semantic_fields",
+      "fields": [
+        {
+          "name": "nodeId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "population",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 64,
+          "values": [
+            "sensory_trace",
+            "episodic_binding",
+            "semantic_concept",
+            "procedural_skill",
+            "predictive_world",
+            "utility_salience",
+            "meta_memory"
+          ]
+        },
+        {
+          "name": "modalityMask",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 4096,
+          "minItems": 1,
+          "maxItems": 9,
+          "uniqueItems": true,
+          "items": {
+            "type": "enum",
+            "maxBytes": 64,
+            "values": [
+              "text",
+              "image",
+              "audio",
+              "video",
+              "code_ast",
+              "gui_state",
+              "tool_trajectory",
+              "structured_data",
+              "sensor"
+            ]
+          }
+        },
+        {
+          "name": "semanticKeys",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 16384,
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "type": "utf8",
+            "maxBytes": 128
+          }
+        },
+        {
+          "name": "supportManifestSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "thresholdQ16",
+          "type": "i64",
+          "required": true
+        },
+        {
+          "name": "targetActivityPpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "confidencePpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "snapshotGeneration",
+          "type": "u64",
+          "required": true
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "authority_delta_none",
+        "support_manifest_required",
+        "generation_nonzero"
+      ]
+    },
+    {
+      "id": "SynapseV1",
+      "contractId": "SynapseV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 65536,
+      "digestScope": "schema_id_and_all_semantic_fields",
+      "fields": [
+        {
+          "name": "sourceNodeId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "targetNodeId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "relation",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 64,
+          "values": [
+            "associative",
+            "temporal",
+            "causal",
+            "procedural",
+            "predictive",
+            "supports",
+            "inhibitory",
+            "contradicts"
+          ]
+        },
+        {
+          "name": "weightQ16",
+          "type": "i64",
+          "required": true
+        },
+        {
+          "name": "delaySteps",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "plasticityClass",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "supportManifestSha256",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "snapshotGeneration",
+          "type": "u64",
+          "required": true
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "authority_delta_none",
+        "distinct_endpoints",
+        "fixed_point_weight_bounded",
+        "delay_bounded"
+      ]
+    },
+    {
+      "id": "MemoryCueV1",
+      "contractId": "MemoryCueV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 65536,
+      "digestScope": "schema_id_and_all_semantic_fields",
+      "fields": [
+        {
+          "name": "cueId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "objectiveDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "nduStateDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "modalities",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 4096,
+          "minItems": 1,
+          "maxItems": 9,
+          "uniqueItems": true,
+          "items": {
+            "type": "enum",
+            "maxBytes": 64,
+            "values": [
+              "text",
+              "image",
+              "audio",
+              "video",
+              "code_ast",
+              "gui_state",
+              "tool_trajectory",
+              "structured_data",
+              "sensor"
+            ]
+          }
+        },
+        {
+          "name": "semanticKeys",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 16384,
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "type": "utf8",
+            "maxBytes": 128
+          }
+        },
+        {
+          "name": "seedNodeIds",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 8192,
+          "minItems": 0,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "type": "id128",
+            "maxBytes": 128
+          }
+        },
+        {
+          "name": "nowUnixMs",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "resourceBudget",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 4096,
+          "minProperties": 5,
+          "maxProperties": 5,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "candidateEvents",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "engramNodes",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "synapses",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "settlingSteps",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "finalRecalledEvents",
+              "type": "u32",
+              "required": true
+            }
+          ]
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "authority_delta_none",
+        "resource_budget_hard_bounded"
+      ]
+    },
+    {
+      "id": "RecallPacketV1",
+      "contractId": "RecallPacketV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "schema_id_and_all_semantic_fields",
+      "fields": [
+        {
+          "name": "cueDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "eventSnapshotDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "engramSnapshotDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "selectedEvents",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 65536,
+          "minItems": 0,
+          "maxItems": 16,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 1024,
+            "minProperties": 3,
+            "maxProperties": 3,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "eventId",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "revision",
+                "type": "u64",
+                "required": true
+              },
+              {
+                "name": "eventDigest",
+                "type": "sha256",
+                "required": true,
+                "maxBytes": 64
+              }
+            ]
+          }
+        },
+        {
+          "name": "activeNodes",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 65536,
+          "minItems": 0,
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 512,
+            "minProperties": 2,
+            "maxProperties": 2,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "nodeId",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "activationPpm",
+                "type": "u32",
+                "required": true
+              }
+            ]
+          }
+        },
+        {
+          "name": "activationPaths",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 65536,
+          "minItems": 0,
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 8192,
+            "minProperties": 2,
+            "maxProperties": 2,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "nodeIds",
+                "type": "bounded_array",
+                "required": true,
+                "maxBytes": 8192,
+                "minItems": 2,
+                "maxItems": 64,
+                "uniqueItems": false,
+                "items": {
+                  "type": "id128",
+                  "maxBytes": 128
+                }
+              },
+              {
+                "name": "supportDigest",
+                "type": "sha256",
+                "required": true,
+                "maxBytes": 64
+              }
+            ]
+          }
+        },
+        {
+          "name": "contradictions",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768,
+          "minItems": 0,
+          "maxItems": 32,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 8192,
+            "minProperties": 2,
+            "maxProperties": 2,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "eventIds",
+                "type": "bounded_array",
+                "required": true,
+                "maxBytes": 8192,
+                "minItems": 2,
+                "maxItems": 64,
+                "uniqueItems": true,
+                "items": {
+                  "type": "id128",
+                  "maxBytes": 128
+                }
+              },
+              {
+                "name": "supportDigest",
+                "type": "sha256",
+                "required": true,
+                "maxBytes": 64
+              }
+            ]
+          }
+        },
+        {
+          "name": "coveragePpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "confidencePpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "oodPpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "abstain",
+          "type": "enum",
+          "required": false,
+          "maxBytes": 64,
+          "values": [
+            "contradiction",
+            "low_coverage",
+            "low_confidence",
+            "out_of_distribution",
+            "resource_limit",
+            "stale_snapshot"
+          ]
+        },
+        {
+          "name": "resourceReceipt",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 4096,
+          "minProperties": 6,
+          "maxProperties": 6,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "candidateEventsSeen",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "engramNodesVisited",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "synapsesVisited",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "settlingSteps",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "recalledEvents",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "truncated",
+              "type": "bool",
+              "required": true
+            }
+          ]
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "authority_delta_none",
+        "bounded_recall",
+        "non_abstain_requires_supported_output"
+      ]
+    },
+    {
+      "id": "OutcomeSignalV1",
+      "contractId": "OutcomeSignalV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 32768,
+      "digestScope": "schema_id_and_all_semantic_fields",
+      "fields": [
+        {
+          "name": "episodeId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "utilityDeltaPpm",
+          "type": "i64",
+          "required": true
+        },
+        {
+          "name": "predictionErrorPpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "noveltyPpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "riskPpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "oodPpm",
+          "type": "u32",
+          "required": true
+        },
+        {
+          "name": "observerDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "authority_delta_none",
+        "ppm_ranges_bounded"
+      ]
+    },
+    {
+      "id": "ReplaySelectionReceiptV1",
+      "contractId": "ReplaySelectionReceiptV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 65536,
+      "digestScope": "schema_id_and_all_semantic_fields",
+      "fields": [
+        {
+          "name": "candidateSetDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "selectedEventIds",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768,
+          "minItems": 0,
+          "maxItems": 256,
+          "uniqueItems": true,
+          "items": {
+            "type": "id128",
+            "maxBytes": 128
+          }
+        },
+        {
+          "name": "sourceBucketCounts",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 16384,
+          "minItems": 0,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 512,
+            "minProperties": 2,
+            "maxProperties": 2,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "sourceId",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "selectedCount",
+                "type": "u32",
+                "required": true
+              }
+            ]
+          }
+        },
+        {
+          "name": "selectionPolicyDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "resourceReceipt",
+          "type": "bounded_object",
+          "required": true,
+          "maxBytes": 4096,
+          "minProperties": 6,
+          "maxProperties": 6,
+          "additionalProperties": false,
+          "properties": [
+            {
+              "name": "candidateEventsSeen",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "engramNodesVisited",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "synapsesVisited",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "settlingSteps",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "recalledEvents",
+              "type": "u32",
+              "required": true
+            },
+            {
+              "name": "truncated",
+              "type": "bool",
+              "required": true
+            }
+          ]
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "authority_delta_none",
+        "source_bucket_counts_equal_selection",
+        "source_quota_bounded"
+      ]
+    },
+    {
+      "id": "PlasticityBatchV1",
+      "contractId": "PlasticityBatchV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "schema_id_and_all_semantic_fields",
+      "fields": [
+        {
+          "name": "predecessorGeneration",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "nextGeneration",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "outcomeSignalDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "weightProposals",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 196608,
+          "minItems": 0,
+          "maxItems": 32768,
+          "uniqueItems": false,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 1024,
+            "minProperties": 5,
+            "maxProperties": 5,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "sourceNodeId",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "targetNodeId",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "proposedWeightQ16",
+                "type": "i64",
+                "required": true
+              },
+              {
+                "name": "deltaPpm",
+                "type": "i64",
+                "required": true
+              },
+              {
+                "name": "supportDigest",
+                "type": "sha256",
+                "required": true,
+                "maxBytes": 64
+              }
+            ]
+          }
+        },
+        {
+          "name": "thresholdProposals",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 65536,
+          "minItems": 0,
+          "maxItems": 4096,
+          "uniqueItems": false,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 1024,
+            "minProperties": 4,
+            "maxProperties": 4,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "nodeId",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "proposedThresholdQ16",
+                "type": "i64",
+                "required": true
+              },
+              {
+                "name": "deltaPpm",
+                "type": "i64",
+                "required": true
+              },
+              {
+                "name": "supportDigest",
+                "type": "sha256",
+                "required": true,
+                "maxBytes": 64
+              }
+            ]
+          }
+        },
+        {
+          "name": "currentSnapshotImmutable",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "productionActivationAllowed",
+          "type": "bool",
+          "required": true
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "authority_delta_none",
+        "exact_next_generation",
+        "current_snapshot_immutable",
+        "production_activation_false",
+        "weight_delta_bounded"
+      ]
+    },
+    {
+      "id": "MemoryTopologyProposalV1",
+      "contractId": "MemoryTopologyProposalV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 65536,
+      "digestScope": "schema_id_and_all_semantic_fields",
+      "fields": [
+        {
+          "name": "predecessorGeneration",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "nextGeneration",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "operation",
+          "type": "enum",
+          "required": true,
+          "maxBytes": 64,
+          "values": [
+            "add",
+            "split",
+            "merge",
+            "retire",
+            "rewire"
+          ]
+        },
+        {
+          "name": "subjectIds",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 8192,
+          "minItems": 1,
+          "maxItems": 64,
+          "uniqueItems": true,
+          "items": {
+            "type": "id128",
+            "maxBytes": 128
+          }
+        },
+        {
+          "name": "capabilityTyped",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "sandboxOnly",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "operatorAccepted",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "productionActivationAllowed",
+          "type": "bool",
+          "required": true
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "authority_delta_none",
+        "exact_next_generation",
+        "capability_typed",
+        "sandbox_only",
+        "production_activation_false"
+      ]
+    },
+    {
+      "id": "ForgetPropagationReceiptV1",
+      "contractId": "ForgetPropagationReceiptV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 65536,
+      "digestScope": "schema_id_and_all_semantic_fields",
+      "fields": [
+        {
+          "name": "eventId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "predecessorGeneration",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "nextGeneration",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "retiredNodeIds",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768,
+          "minItems": 0,
+          "maxItems": 4096,
+          "uniqueItems": true,
+          "items": {
+            "type": "id128",
+            "maxBytes": 128
+          }
+        },
+        {
+          "name": "retiredSynapses",
+          "type": "bounded_array",
+          "required": true,
+          "maxBytes": 32768,
+          "minItems": 0,
+          "maxItems": 32768,
+          "uniqueItems": true,
+          "items": {
+            "type": "bounded_object",
+            "maxBytes": 512,
+            "minProperties": 3,
+            "maxProperties": 3,
+            "additionalProperties": false,
+            "properties": [
+              {
+                "name": "sourceNodeId",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "targetNodeId",
+                "type": "id128",
+                "required": true,
+                "maxBytes": 128
+              },
+              {
+                "name": "relation",
+                "type": "enum",
+                "required": true,
+                "maxBytes": 64,
+                "values": [
+                  "associative",
+                  "temporal",
+                  "causal",
+                  "procedural",
+                  "predictive",
+                  "supports",
+                  "inhibitory",
+                  "contradicts"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "projectionRebuildRequired",
+          "type": "bool",
+          "required": true
+        },
+        {
+          "name": "artifactRevocationRequired",
+          "type": "bool",
+          "required": true
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected",
+        "authority_delta_none",
+        "exact_next_generation",
+        "non_resurrection",
+        "projection_rebuild_required",
+        "artifact_revocation_required"
+      ]
     }
   ],
   "subordinateProtocolRegistries": [
