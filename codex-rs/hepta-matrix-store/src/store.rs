@@ -3650,7 +3650,14 @@ async fn verify_store(
             ('outbox_messages_by_room_active', 'index'),
             ('matrix_visible_inbox_events_v2', 'view'),
             ('matrix_actionable_inbox_dispatches_v2', 'view'),
-            ('matrix_sendable_outbox_v2', 'view')
+            ('matrix_sendable_outbox_v2', 'view'),
+            ('matrix_dispatch_ledger', 'table'),
+            ('matrix_dispatch_observations', 'table'),
+            ('matrix_dispatch_unresolved', 'index'),
+            ('matrix_dispatch_terminal_event', 'index'),
+            ('matrix_dispatch_observations_no_update', 'trigger'),
+            ('matrix_dispatch_observations_no_delete', 'trigger'),
+            ('matrix_dispatch_ledger_no_delete', 'trigger')
          )
          SELECT COUNT(*) FROM required
          JOIN sqlite_schema USING (name) WHERE sqlite_schema.type = required.type",
@@ -3658,7 +3665,7 @@ async fn verify_store(
     .fetch_one(pool)
     .await
     .map_err(unavailable)?;
-    if required_objects != 31 {
+    if required_objects != 38 {
         return Err(MatrixDurableError::Corrupt);
     }
     verify_matrix_v2_schema(pool).await?;
