@@ -2,6 +2,7 @@ use std::error::Error;
 use std::fs;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_matrix_protocol::MatrixEventId;
 use codex_hepta_matrix_protocol::MatrixRoomId;
 use codex_hepta_matrix_protocol::MatrixUserId;
@@ -10,6 +11,7 @@ use codex_hepta_matrix_protocol::transaction_id;
 use codex_hepta_matrix_store::MatrixDispatchAuthority;
 use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixDurableConfig;
+use codex_hepta_matrix_store::MatrixDurableError;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::OutboxDisposition;
 use codex_hepta_matrix_store::OutboxDraft;
@@ -246,6 +248,57 @@ async fn crash_after_dispatch_prepare_reuses_only_stable_txn() -> TestResult {
         .await?;
     assert_eq!(retried.state, MatrixDispatchState::Dispatched);
     assert_eq!(retried.attempt, reclaimed.attempts);
+    reopened.close().await;
+    Ok(())
+}
+
+#[tokio::test]
+async fn authority_and_grant_identity_are_frozen_before_first_effect() -> TestResult {
+    let temp = TempDir::new()?;
+    let (layout, store, claimed) = store_and_outbox(&temp).await?;
+    let authority = MatrixDispatchAuthority {
+        operation_id: claimed.stable_txn_id.as_str().to_string(),
+        authority_epoch: Some(7),
+        authority_binding_digest: Some(digest('a')),
+        grant_id: Some("grant.1".to_string()),
+        grant_payload_digest: Some(
+            Sha256Digest::for_bytes(&claimed.payload).as_str().to_string(),
+        ),
+    };
+    prepare_send(&store, &claimed, &authority, 10).await?;
+    store
+        .mark_matrix_dispatch_dispatched(&claimed.stable_txn_id, claimed.attempts, &digest('1'), 11)
+        .await?;
+    store
+        .mark_matrix_dispatch_indeterminate(
+            &claimed.stable_txn_id,
+            claimed.attempts,
+            &digest('2'),
+            12,
+        )
+        .await?;
+    store.close().await;
+
+    let reopened = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
+    let mut reclaimed = reopened.claim_outbox(41, 30, 1).await?;
+    let reclaimed = reclaimed.pop().ok_or("authorized uncertain send was not reclaimed")?;
+    assert_eq!(
+        prepare_send(
+            &reopened,
+            &reclaimed,
+            &MatrixDispatchAuthority::owner_local(&reclaimed.stable_txn_id),
+            41,
+        )
+        .await,
+        Err(MatrixDurableError::Conflict)
+    );
+    let preserved = reopened
+        .matrix_dispatch(&reclaimed.stable_txn_id)
+        .await?
+        .ok_or("frozen authority dispatch disappeared")?;
+    assert_eq!(preserved.authority_epoch, Some(7));
+    assert_eq!(preserved.authority_binding_digest, Some(digest('a')));
+    assert_eq!(preserved.grant_id.as_deref(), Some("grant.1"));
     reopened.close().await;
     Ok(())
 }
