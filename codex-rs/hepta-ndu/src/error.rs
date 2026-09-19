@@ -104,7 +104,10 @@ impl fmt::Display for NduError {
             }
             Self::EmptyObjectiveDigest => formatter.write_str("objective digest must not be zero"),
             Self::EmptyProfileDigest(field) => {
-                write!(formatter, "utility profile digest must not be zero: {field}")
+                write!(
+                    formatter,
+                    "utility profile digest must not be zero: {field}"
+                )
             }
             Self::EmptyProtocolDigest(field) => {
                 write!(formatter, "protocol digest must not be zero: {field}")
@@ -181,7 +184,10 @@ impl fmt::Display for NduError {
                 "preference solver exhausted its bounded iteration budget with residual {residual}"
             ),
             Self::InvalidHierarchyLink(subject) => {
-                write!(formatter, "invalid explicit hierarchy parent for subject {subject}")
+                write!(
+                    formatter,
+                    "invalid explicit hierarchy parent for subject {subject}"
+                )
             }
             Self::DuplicateHierarchySubjectUpdate(subject) => write!(
                 formatter,
