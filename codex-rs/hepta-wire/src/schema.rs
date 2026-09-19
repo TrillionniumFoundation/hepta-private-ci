@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::error::Error;
 use std::fmt;
 
@@ -6,6 +7,9 @@ use codex_hepta_types::StableId;
 
 use crate::MAX_WIRE_PAYLOAD_BYTES;
 use crate::WireVersion;
+
+pub const MAX_REGISTERED_SCHEMAS: usize = 128;
+pub const MAX_ADMITTED_PRODUCERS: usize = 128;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SchemaDescriptor {
@@ -81,8 +85,19 @@ impl SchemaRegistry {
                 descriptor.schema().clone(),
             ));
         }
+        if self.schemas.len() >= MAX_REGISTERED_SCHEMAS {
+            return Err(SchemaAdmissionError::RegistryLimitExceeded);
+        }
         self.schemas.insert(descriptor.schema().clone(), descriptor);
         Ok(())
+    }
+
+    pub fn len(&self) -> usize {
+        self.schemas.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.schemas.is_empty()
     }
 
     pub fn descriptor(&self, schema: &StableId) -> Option<&SchemaDescriptor> {
@@ -113,6 +128,35 @@ impl SchemaRegistry {
             });
         }
         Ok(descriptor)
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum ProducerAdmission {
+    AnyCanonical,
+    AllowList(BTreeSet<StableId>),
+}
+
+impl ProducerAdmission {
+    pub fn allow_list(
+        producers: impl IntoIterator<Item = StableId>,
+    ) -> Result<Self, SchemaAdmissionError> {
+        let producers = producers.into_iter().collect::<BTreeSet<_>>();
+        if producers.is_empty() {
+            return Err(SchemaAdmissionError::EmptyProducerSet);
+        }
+        if producers.len() > MAX_ADMITTED_PRODUCERS {
+            return Err(SchemaAdmissionError::ProducerLimitExceeded);
+        }
+        Ok(Self::AllowList(producers))
+    }
+
+    pub fn admit(&self, producer: &StableId) -> Result<(), SchemaAdmissionError> {
+        match self {
+            Self::AnyCanonical => Ok(()),
+            Self::AllowList(producers) if producers.contains(producer) => Ok(()),
+            Self::AllowList(_) => Err(SchemaAdmissionError::ProducerDenied(producer.clone())),
+        }
     }
 }
 
@@ -162,6 +206,21 @@ pub fn decode_typed<C: PayloadCodec>(
     codec.decode_value(payload)
 }
 
+pub fn decode_typed_for_producer<C: PayloadCodec>(
+    registry: &SchemaRegistry,
+    producers: &ProducerAdmission,
+    version: WireVersion,
+    schema: &StableId,
+    producer: &StableId,
+    codec: &C,
+    payload: &[u8],
+) -> Result<C::Value, SchemaCodecError> {
+    producers
+        .admit(producer)
+        .map_err(SchemaCodecError::Admission)?;
+    decode_typed(registry, version, schema, codec, payload)
+}
+
 fn require_registered_descriptor(
     registry: &SchemaRegistry,
     descriptor: &SchemaDescriptor,
@@ -181,6 +240,10 @@ fn require_registered_descriptor(
 pub enum SchemaAdmissionError {
     InvalidVersionRange,
     InvalidPayloadLimit(usize),
+    RegistryLimitExceeded,
+    EmptyProducerSet,
+    ProducerLimitExceeded,
+    ProducerDenied(StableId),
     UnknownSchema(StableId),
     ConflictingRegistration(StableId),
     UnsupportedSchemaVersion {
@@ -200,6 +263,18 @@ impl fmt::Display for SchemaAdmissionError {
             Self::InvalidVersionRange => formatter.write_str("schema wire version range is invalid"),
             Self::InvalidPayloadLimit(limit) => {
                 write!(formatter, "schema payload limit is invalid: {limit}")
+            }
+            Self::RegistryLimitExceeded => {
+                formatter.write_str("wire schema registry exceeds its bound")
+            }
+            Self::EmptyProducerSet => {
+                formatter.write_str("wire producer allow-list is empty")
+            }
+            Self::ProducerLimitExceeded => {
+                formatter.write_str("wire producer allow-list exceeds its bound")
+            }
+            Self::ProducerDenied(producer) => {
+                write!(formatter, "wire producer is not admitted: {producer}")
             }
             Self::UnknownSchema(schema) => write!(formatter, "unknown wire schema {schema}"),
             Self::ConflictingRegistration(schema) => {
