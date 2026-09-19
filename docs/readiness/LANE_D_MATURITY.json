@@ -129,14 +129,12 @@
           ]
         },
         "durability": {
-          "state": "durable_writer_candidate_implemented_not_activated",
+          "state": "durable_writer_source_candidate_with_v1_migration_retention_not_production_selected",
           "evidence": [
-            "NduProjectionJournalV1",
             "NduProjectionStoreV1",
-            "durable_writer_round_trips_selected_and_revoked_state",
-            "older_valid_backup_cannot_remove_a_later_revocation",
-            "revocation_is_scoped_to_objective_and_subject",
-            "indeterminate_handle_fails_closed_until_reopen"
+            "legacy_raw_journal_migrates_to_schema_v1_store_image",
+            "retention_policy_reserves_revocation_capacity_without_destructive_compaction",
+            "older_valid_backup_cannot_remove_a_later_revocation"
           ]
         },
         "independentConvergenceDecision": {
@@ -192,6 +190,13 @@
           "evidence": [
             "missing_uncertainty_axis_is_unavailable",
             "candidate_support_digest_binds_organ_and_contribution_semantics"
+          ]
+        },
+        "deletionSemantics": {
+          "state": "scoped_revocation_audit_implemented_external_payload_deletion_owned_elsewhere",
+          "evidence": [
+            "NduProjectionJournalV1::revoke_projection",
+            "retention_policy_cannot_discard_revocation_history"
           ]
         }
       }
