@@ -193,7 +193,11 @@ Read-only policy library; inject the complete legal candidate set and exact cali
 
 Current operating and state-format references:
 
-- [codex-rs/hepta-intuition/src/calibrated.rs](../../../codex-rs/hepta-intuition/src/calibrated.rs).
+- [codex-rs/hepta-intuition/src/calibrated.rs](../../../codex-rs/hepta-intuition/src/calibrated.rs) — calibrated V1/V2 kernel and request binding;
+- [codex-rs/hepta-intuition/src/qualified.rs](../../../codex-rs/hepta-intuition/src/qualified.rs) — canonical profile, scoring commitment and V3 kernel;
+- [codex-rs/hepta-intelligence/src/intuition_qualification.rs](../../../codex-rs/hepta-intelligence/src/intuition_qualification.rs) — five-role authenticated host admission;
+- [SCORER_CONTRACT.md](SCORER_CONTRACT.md) — learned-scorer ownership and score-provenance contract;
+- [QUALIFICATION_V3.md](QUALIFICATION_V3.md) — reusable profile qualification, exact-request/RNG admission and performance qualification.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
