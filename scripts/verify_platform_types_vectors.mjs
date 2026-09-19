@@ -64,8 +64,14 @@ function encodeValue(value) {
         framed32(Buffer.from(value.value, "utf8")),
       ]);
     case "u64":
+      if (typeof value.value !== "string" || !/^(0|[1-9][0-9]*)$/.test(value.value)) {
+        throw new Error("u64 vector value must be an unsigned decimal string");
+      }
       return Buffer.concat([Buffer.from([3]), u64(value.value)]);
     case "i64":
+      if (typeof value.value !== "string" || !/^-?(0|[1-9][0-9]*)$/.test(value.value)) {
+        throw new Error("i64 vector value must be a signed decimal string");
+      }
       return Buffer.concat([Buffer.from([4]), i64(value.value)]);
     case "bool":
       return Buffer.from([5, value.value ? 1 : 0]);
