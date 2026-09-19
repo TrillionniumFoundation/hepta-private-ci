@@ -36,13 +36,25 @@ source/conditioning digests, solution and diagnostics, and always use `DENY_ALL`
 No fallback artifact is selected here; an owner integration must consult current
 revocations and its compatible deterministic predecessor.
 
+`admit_stochastic_evidence_binding_v1` is the owner-local gate for taking this
+numeric kernel beyond an algebra-only shadow call. It requires nonzero,
+digest-bound coefficient-manifest, normalization/runtime, conditioning, Q24
+conversion, conditional-identification, well-posedness, independent convergence
+and rollback evidence; it also binds objective class, expiry and the exact
+admitted covariance profile. `solve_backward_regression_with_admission` refuses
+expired or profile-drifted admission before invoking the same numeric kernel.
+These digests identify evidence; the caller/registry must authenticate that
+evidence and prove that it applies to the current candidate.
+
 The native tests cover scaled and correlated analytic oracles, nonzero sample
 means, rate/duration conversion, identity covariance, singular/indefinite and
 poorly conditioned matrices, covariance collapse, invalid samples/profiles,
 zero sensitivity, deterministic replay and the full 32-driver/8-utility envelope.
 
-Remaining gates include production coefficient-profile registration and consumer
-integration, original/whitened coordinate conversion, Q24 conversion/error
-receipts, independent mathematical review, conditional identification,
-well-posedness/stochastic FBSDE qualification and named-host resource/latency
-measurements. Algebraic regression tests do not establish those capabilities.
+The source now contains the local evidence-binding/consumer-admission boundary,
+but remaining external gates include canonical coefficient-profile registration,
+authenticated original/whitened coordinate and Q24 conversion evidence,
+independent mathematical review, conditional identification, independently
+issued well-posedness/convergence evidence, product caller selection and
+named-host resource/latency qualification. Algebraic regression tests and digest
+binding do not establish those capabilities.

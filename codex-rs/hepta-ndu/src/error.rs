@@ -8,8 +8,12 @@ pub enum NduError {
     CandidateLimitExceeded,
     DimensionLimitExceeded,
     RequiredOrganLimitExceeded,
+    PreferenceDimensionLimitExceeded,
+    PreferenceValueOutOfRange(String),
+    EmptyProfileSemanticsDigest,
     EmptyObjectiveDigest,
     EmptyProtocolDigest(&'static str),
+    SolverContextMismatch,
     EmptySupportDigest { candidate: String, organ: String },
     MixedObjective,
     MixedGeneration,
@@ -31,6 +35,10 @@ pub enum NduError {
     InvalidEta,
     DimensionMismatch,
     StateDigestMismatch,
+    IterationBoundReached,
+    DuplicateHierarchySubject(String),
+    HierarchySelfParent(String),
+    InvalidHierarchyParent { parent: String, child: String },
     SimultaneousHierarchyUpdate(u64),
     Arithmetic,
 }
@@ -43,9 +51,12 @@ impl NduError {
             | Self::ContributionLimitExceeded
             | Self::CandidateLimitExceeded
             | Self::DimensionLimitExceeded
-            | Self::RequiredOrganLimitExceeded => "NDU-E001",
-            Self::EmptyObjectiveDigest
+            | Self::RequiredOrganLimitExceeded
+            | Self::PreferenceDimensionLimitExceeded => "NDU-E001",
+            Self::EmptyProfileSemanticsDigest
+            | Self::EmptyObjectiveDigest
             | Self::EmptyProtocolDigest(_)
+            | Self::SolverContextMismatch
             | Self::EmptySupportDigest { .. }
             | Self::MixedObjective
             | Self::MixedGeneration => "NDU-E002",
@@ -64,8 +75,15 @@ impl NduError {
             Self::AbstainInfeasible => "NDU-E005",
             Self::MissingAbstainCandidate => "NDU-E006",
             Self::IncompleteScalarization | Self::InvalidWeight(_) => "NDU-E007",
-            Self::InvalidEta | Self::DimensionMismatch | Self::StateDigestMismatch => "NDU-E008",
-            Self::SimultaneousHierarchyUpdate(_) => "NDU-E009",
+            Self::InvalidEta
+            | Self::DimensionMismatch
+            | Self::StateDigestMismatch
+            | Self::PreferenceValueOutOfRange(_)
+            | Self::IterationBoundReached => "NDU-E008",
+            Self::DuplicateHierarchySubject(_)
+            | Self::HierarchySelfParent(_)
+            | Self::InvalidHierarchyParent { .. }
+            | Self::SimultaneousHierarchyUpdate(_) => "NDU-E009",
             Self::Arithmetic => "NDU-E010",
         }
     }
@@ -83,9 +101,21 @@ impl fmt::Display for NduError {
             Self::RequiredOrganLimitExceeded => {
                 formatter.write_str("required organ set exceeds 32 entries")
             }
+            Self::PreferenceDimensionLimitExceeded => {
+                formatter.write_str("preference dimension must be in 1..=64")
+            }
+            Self::PreferenceValueOutOfRange(axis) => {
+                write!(formatter, "preference value must be in [-1,1]: {axis}")
+            }
+            Self::EmptyProfileSemanticsDigest => {
+                formatter.write_str("utility profile axis semantics digest must not be zero")
+            }
             Self::EmptyObjectiveDigest => formatter.write_str("objective digest must not be zero"),
             Self::EmptyProtocolDigest(field) => {
                 write!(formatter, "protocol digest must not be zero: {field}")
+            }
+            Self::SolverContextMismatch => {
+                formatter.write_str("solver receipt context does not match publication context")
             }
             Self::EmptySupportDigest { candidate, organ } => write!(
                 formatter,
@@ -148,6 +178,25 @@ impl fmt::Display for NduError {
             }
             Self::DimensionMismatch => formatter.write_str("preference dimensions do not match"),
             Self::StateDigestMismatch => formatter.write_str("preference state digest mismatch"),
+            Self::IterationBoundReached => {
+                formatter.write_str("preference solver exhausted 64 iterations without convergence")
+            }
+            Self::DuplicateHierarchySubject(subject) => {
+                write!(
+                    formatter,
+                    "duplicate hierarchy subject in one generation: {subject}"
+                )
+            }
+            Self::HierarchySelfParent(subject) => {
+                write!(
+                    formatter,
+                    "hierarchy subject cannot be its own parent: {subject}"
+                )
+            }
+            Self::InvalidHierarchyParent { parent, child } => write!(
+                formatter,
+                "invalid direct hierarchy relation: parent {parent}, child {child}"
+            ),
             Self::SimultaneousHierarchyUpdate(generation) => write!(
                 formatter,
                 "multiple hierarchy levels update in generation {generation}"

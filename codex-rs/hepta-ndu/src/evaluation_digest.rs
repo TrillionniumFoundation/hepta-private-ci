@@ -10,7 +10,7 @@ use crate::EvaluationDisposition;
 use crate::RejectedCandidate;
 use crate::UtilityProfile;
 
-const PROFILE_DIGEST_DOMAIN: &[u8] = b"hepta.ndu.utility-profile.v1";
+const PROFILE_DIGEST_DOMAIN: &[u8] = b"hepta.ndu.utility-profile.v2";
 const EVALUATION_DIGEST_DOMAIN: &[u8] = b"hepta.ndu.evaluation.v1";
 
 pub(crate) struct EvaluationDigestInput<'a> {
@@ -62,6 +62,7 @@ pub(crate) fn digest_profile(profile: &UtilityProfile) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(PROFILE_DIGEST_DOMAIN);
     push_id(&mut bytes, &profile.profile_id);
+    bytes.extend_from_slice(profile.axis_semantics_digest.as_array());
     push_len(&mut bytes, profile.dimensions.len());
     for (axis, direction) in &profile.dimensions {
         push_id(&mut bytes, axis);
