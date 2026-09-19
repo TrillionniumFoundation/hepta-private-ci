@@ -840,24 +840,78 @@ pub(crate) async fn verify_dispatch_schema(
     pool: &sqlx::SqlitePool,
 ) -> Result<(), MatrixDurableError> {
     let count: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM sqlite_schema
-         WHERE name IN (
-            'matrix_dispatch_ledger',
-            'matrix_dispatch_ledger_unresolved',
-            'matrix_dispatch_ledger_terminal_event',
-            'matrix_dispatch_observations',
-            'matrix_dispatch_observations_by_txn',
-            'matrix_dispatch_observations_no_update',
-            'matrix_dispatch_observation_archives',
-            'matrix_dispatch_observation_archives_by_txn',
-            'matrix_dispatch_observation_archives_no_update',
-            'matrix_dispatch_observation_archives_no_delete'
-         )",
+        "WITH required(name, type) AS (VALUES
+            ('matrix_dispatch_ledger', 'table'),
+            ('matrix_dispatch_ledger_unresolved', 'index'),
+            ('matrix_dispatch_ledger_terminal_event', 'index'),
+            ('matrix_dispatch_observations', 'table'),
+            ('matrix_dispatch_observations_by_txn', 'index'),
+            ('matrix_dispatch_observations_no_update', 'trigger'),
+            ('matrix_dispatch_observation_archives', 'table'),
+            ('matrix_dispatch_observation_archives_by_txn', 'index'),
+            ('matrix_dispatch_observation_archives_no_update', 'trigger'),
+            ('matrix_dispatch_observation_archives_no_delete', 'trigger')
+         )
+         SELECT COUNT(*) FROM required
+         JOIN sqlite_schema USING (name)
+         WHERE sqlite_schema.type = required.type",
     )
     .fetch_one(pool)
     .await
     .map_err(|_| MatrixDurableError::Unavailable)?;
     if count != 10 {
+        return Err(MatrixDurableError::Corrupt);
+    }
+
+    let invalid_authority_rows: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM matrix_dispatch_ledger
+         WHERE (grant_payload_sha256 IS NOT NULL AND grant_payload_sha256 != payload_sha256)
+            OR (
+                authority_epoch IS NULL
+                AND (
+                    grant_payload_sha256 IS NOT NULL
+                    OR deadline_ms IS NOT NULL
+                    OR homeserver_id IS NOT NULL
+                    OR device_id IS NOT NULL
+                    OR session_generation IS NOT NULL
+                )
+            )
+            OR (
+                authority_epoch IS NOT NULL
+                AND (
+                    grant_payload_sha256 IS NULL
+                    OR deadline_ms IS NULL
+                    OR homeserver_id IS NULL
+                    OR device_id IS NULL
+                    OR session_generation IS NULL
+                )
+            )",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(|_| MatrixDurableError::Unavailable)?;
+    if invalid_authority_rows != 0 {
+        return Err(MatrixDurableError::Corrupt);
+    }
+
+    let zero_digest = "0".repeat(64);
+    let broken_archive_links: i64 = sqlx::query_scalar(
+        "WITH ordered AS (
+            SELECT stable_txn_id, archive_seq, prior_archive_digest, segment_digest,
+                   LAG(segment_digest) OVER (
+                       PARTITION BY stable_txn_id ORDER BY archive_seq
+                   ) AS previous_segment_digest
+            FROM matrix_dispatch_observation_archives
+         )
+         SELECT COUNT(*) FROM ordered
+         WHERE prior_archive_digest
+               != COALESCE(previous_segment_digest, ?)",
+    )
+    .bind(zero_digest)
+    .fetch_one(pool)
+    .await
+    .map_err(|_| MatrixDurableError::Unavailable)?;
+    if broken_archive_links != 0 {
         return Err(MatrixDurableError::Corrupt);
     }
     Ok(())
