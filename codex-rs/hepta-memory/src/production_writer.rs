@@ -2409,7 +2409,19 @@ mod final_use_dispatch_tests {
         .expect("authority")
     }
 
-    fn signed_final_use(
+    fn test_nonce(label: &str) -> [u8; 32] {
+    let now_nanos = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("clock")
+        .as_nanos();
+    let material = format!("{label}:{now_nanos}:{}", std::process::id());
+    let digest = <sha2::Sha256 as sha2::Digest>::digest(material.as_bytes());
+    let mut nonce = [0_u8; 32];
+    nonce.copy_from_slice(&digest);
+    nonce
+}
+
+fn signed_final_use(
         issuer: &SigningKey,
         binding: FinalUseBinding,
         grant_id: &str,
@@ -2489,7 +2501,7 @@ mod final_use_dispatch_tests {
             .final_use_binding(&queued, target.destination_id())
             .await
             .expect("canonical final-use binding");
-        let signed = signed_final_use(&issuer, binding.clone(), "final-use-good", [11; 32]);
+        let signed = signed_final_use(&issuer, binding.clone(), "final-use-good", test_nonce("final-use-good"));
         let dispatched = dispatcher
             .dispatch(&writer, &signed, &binding, queued)
             .await
@@ -2520,7 +2532,7 @@ mod final_use_dispatch_tests {
             &issuer,
             bad_binding.clone(),
             "final-use-bad-destination",
-            [12; 32],
+            test_nonce("final-use-bad-destination"),
         );
         assert!(matches!(
             dispatcher
@@ -2637,7 +2649,12 @@ mod final_use_dispatch_tests {
             .final_use_binding(&inherited, target.destination_id())
             .await
             .expect("canonical handoff binding");
-        let signed = signed_final_use(&issuer, binding.clone(), "final-use-handoff", [13; 32]);
+        let signed = signed_final_use(
+            &issuer,
+            binding.clone(),
+            "final-use-handoff",
+            test_nonce("final-use-handoff"),
+        );
         let result = dispatcher
             .dispatch(&successor, &signed, &binding, inherited)
             .await

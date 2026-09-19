@@ -92,6 +92,18 @@ fn operation(owner: &AgentId, operation_id: &str, payload: &str) -> OperationInt
     }
 }
 
+fn test_nonce(label: &str) -> [u8; 32] {
+    let now_nanos = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("clock")
+        .as_nanos();
+    let material = format!("{label}:{now_nanos}:{}", std::process::id());
+    let digest = <sha2::Sha256 as sha2::Digest>::digest(material.as_bytes());
+    let mut nonce = [0_u8; 32];
+    nonce.copy_from_slice(&digest);
+    nonce
+}
+
 fn signed_final_use(
     issuer: &SigningKey,
     binding: FinalUseBinding,
@@ -273,7 +285,12 @@ async fn full_durable_final_use_slice_reconciles_lost_ack_from_real_destination(
         .final_use_binding(&queued, COGNITIVE_SOURCE_DESTINATION_V1)
         .await
         .expect("canonical binding");
-    let signed = signed_final_use(&issuer, binding.clone(), "real-target-grant", [41; 32]);
+    let signed = signed_final_use(
+        &issuer,
+        binding.clone(),
+        "real-target-grant",
+        test_nonce("real-target-grant"),
+    );
     let dispatched = dispatcher
         .dispatch(&writer, &signed, &binding, queued)
         .await
