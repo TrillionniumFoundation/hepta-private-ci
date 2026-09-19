@@ -1,7 +1,7 @@
 # control.runtime: implementation design
 
 Parent: `docs/modules/control.runtime/TECHNICAL.md`. Lane: `LANE-D-OBJECTIVE-VALUE`.
-Status: source candidate global planner and owner-local decision journal implemented; product composition and independent acceptance remain separate. Common requirements: `../EXECUTION_SEMANTICS.md`, `../TECHNICAL.md` and `docs/readiness/CONTROL_RUNTIME_EXECUTION.md`.
+Status: source candidate global planner, semantic decision journal and versioned owner-local file store implemented; one bounded Agentd product caller is composed, while general global product composition and independent acceptance remain separate. Common requirements: `../EXECUTION_SEMANTICS.md`, `../TECHNICAL.md` and `docs/readiness/CONTROL_RUNTIME_EXECUTION.md`.
 
 ## 1. Source and work envelope
 
@@ -92,3 +92,18 @@ This candidate grants no model, provider, tool, network, filesystem, secret, Mat
 - **Source tests:** [codex-rs/hepta-control-plane/src/planner_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_tests.rs), [codex-rs/hepta-control-plane/src/planner_journal_tests.rs](../../../codex-rs/hepta-control-plane/src/planner_journal_tests.rs), [codex-rs/hepta-control-plane/src/organ_runtime_tests.rs](../../../codex-rs/hepta-control-plane/src/organ_runtime_tests.rs), [codex-rs/hepta-control-plane/src/organ_wire_tests.rs](../../../codex-rs/hepta-control-plane/src/organ_wire_tests.rs), [codex-rs/hepta-control-plane/src/embodiment/io.rs](../../../codex-rs/hepta-control-plane/src/embodiment/io.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [docs/readiness/CONTROL_RUNTIME_EXECUTION.md](../../../docs/readiness/CONTROL_RUNTIME_EXECUTION.md), [codex-rs/hepta-control-plane/src/ORGAN_RUNTIME.md](../../../codex-rs/hepta-control-plane/src/ORGAN_RUNTIME.md), [codex-rs/hepta-control-plane/src/ORGAN_WIRE.md](../../../codex-rs/hepta-control-plane/src/ORGAN_WIRE.md), [docs/readiness/EMBODIED_TYPED_IO.md](../../../docs/readiness/EMBODIED_TYPED_IO.md).
 - **Remaining work:** Compose authenticated owner ports and durable product publication; a grant request remains DENY_ALL and the planner does not issue execution authority or an independent NDU convergence decision. Authenticated canonical producer wiring, durable stateful handoff, real simulator/HIL/device adapters and physical terminal reconciliation remain separate implementations and qualification.
+
+
+## 9. Current hardening and composition delta
+
+The current source adds the following repository-controlled closure beyond the original Lane-D candidate:
+
+1. Resource reservations are no longer bound only by a caller-supplied label. `canonical_resource_profile_digest` commits every sorted axis, endowment and essential floor, and `prepare_plan` fails closed on mismatch.
+2. The measured Agentd caller uses a process-local monotonic `Instant` domain for planner times. The host no longer derives planner expiry from `SystemTime`.
+3. Journal reopen performs semantic replay as well as hash replay. Snapshot/decision semantic identities are checked; a selection requires an earlier decision and cannot follow revocation.
+4. `PlannerJournalStoreV1` wraps canonical journal bytes in a versioned digest-bound envelope and writes through same-directory temporary state, file fsync, atomic rename on the qualified Unix host and parent-directory fsync. Opening raw `HCPJNL01` bytes deterministically migrates them; restore bytes are fully revalidated before replacement.
+5. `execute_authenticated_global_plan_v1` supplies the general integration order: external owner proof verification -> coherent snapshot -> canonical resource profile -> real `utility.ndu` evaluation -> sealed plan -> deny-all grant-request set -> separately supplied authority admission. There is intentionally no allow-all verifier and no capability type returned to control.runtime.
+6. `plan_observed_context` remains the named bounded product caller through Agentd. The general global host seam has no production caller yet, so this change does not claim fleet-wide activation or production effect authority.
+7. The ignored `planner_named_host_profile` fixture exercises the pilot maxima (32 owners, 128 candidates, 32 resource axes and a 4096-entry journal) and emits p50/p95/p99 measurements when the dedicated qualification workflow runs on a named host.
+
+Remaining external/product work is now narrower: bind the general host seam to registered production owner-proof implementations and the existing kernel.authority final-use verifier, choose the deployment-owned journal-store path/backup policy, qualify real target-host recovery and load evidence, and complete independent acceptance/activation. None of those are inferred from the source fixtures.
