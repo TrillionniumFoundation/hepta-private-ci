@@ -11,6 +11,8 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::time::Duration;
 use std::time::Instant;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -139,6 +141,7 @@ pub struct PortInputV3 {
     pub snapshot_digest: Digest32,
     pub predecessor_digest: Digest32,
     pub budget_micros: u64,
+    pub deadline_unix_micros: u64,
     pub stage: LaneFStageV3,
 }
 
@@ -183,6 +186,13 @@ pub trait LaneFV3Ports {
 
 pub trait CompositionControlV3 {
     fn cancelled(&self) -> bool;
+
+    fn now_unix_micros(&self) -> u64 {
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map(|duration| u64::try_from(duration.as_micros()).unwrap_or(u64::MAX))
+            .unwrap_or(0)
+    }
 }
 
 #[derive(Clone, Copy, Debug, Default)]
@@ -623,6 +633,7 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
         snapshot_digest,
         predecessor,
         LaneFStageV3::IntuitionDecided,
+        control.now_unix_micros(),
     );
     let intuition = timed_call(
         &request,
@@ -728,6 +739,7 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
             snapshot_digest,
             predecessor,
             LaneFStageV3::HostHandoffAccepted,
+            control.now_unix_micros(),
         );
         let accepted = timed_call(
             &request,
@@ -853,7 +865,13 @@ where
     C: CompositionControlV3,
     F: FnOnce(&PortInputV3) -> Result<PortReceiptV3, PortFailureV3>,
 {
-    let input = port_input(request, snapshot_digest, predecessor, stage);
+    let input = port_input(
+        request,
+        snapshot_digest,
+        predecessor,
+        stage,
+        control.now_unix_micros(),
+    );
     match timed_call(
         request,
         snapshot_digest,
@@ -931,7 +949,13 @@ where
         });
         return Ok(StageAdvanceV3::Continue(output));
     }
-    let input = port_input(request, snapshot_digest, predecessor, stage);
+    let input = port_input(
+        request,
+        snapshot_digest,
+        predecessor,
+        stage,
+        control.now_unix_micros(),
+    );
     match timed_call(
         request,
         snapshot_digest,
@@ -1025,7 +1049,11 @@ where
             PortFailureClassV3::Cancelled,
         )));
     }
-    if started.elapsed() > Duration::from_micros(request.budget.total_micros) {
+    let now_unix_micros = control.now_unix_micros();
+    if now_unix_micros >= request.deadline_unix_micros
+        || now_unix_micros >= input.deadline_unix_micros
+        || started.elapsed() > Duration::from_micros(request.budget.total_micros)
+    {
         return Ok(Err(control_failure(
             input.stage,
             snapshot_digest,
@@ -1043,7 +1071,10 @@ where
             PortFailureClassV3::Cancelled,
         )));
     }
-    if stage_started.elapsed() > Duration::from_micros(input.budget_micros)
+    let now_unix_micros = control.now_unix_micros();
+    if now_unix_micros >= request.deadline_unix_micros
+        || now_unix_micros >= input.deadline_unix_micros
+        || stage_started.elapsed() > Duration::from_micros(input.budget_micros)
         || started.elapsed() > Duration::from_micros(request.budget.total_micros)
     {
         return Ok(Err(control_failure(
@@ -1120,12 +1151,16 @@ fn port_input(
     snapshot_digest: Digest32,
     predecessor_digest: Digest32,
     stage: LaneFStageV3,
+    now_unix_micros: u64,
 ) -> PortInputV3 {
+    let budget_micros = request.budget.for_stage(stage);
+    let stage_deadline = now_unix_micros.saturating_add(budget_micros);
     PortInputV3 {
         run_id: request.run_id.clone(),
         snapshot_digest,
         predecessor_digest,
-        budget_micros: request.budget.for_stage(stage),
+        budget_micros,
+        deadline_unix_micros: stage_deadline.min(request.deadline_unix_micros),
         stage,
     }
 }
