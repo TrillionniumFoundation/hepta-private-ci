@@ -184,7 +184,9 @@ async fn indeterminate_dispatch_survives_reopen_and_reuses_only_stable_txn() -> 
     assert_eq!(pending.state, MatrixDispatchState::Indeterminate);
 
     let mut reclaimed = reopened.claim_outbox(41, 30, 1).await?;
-    let reclaimed = reclaimed.pop().ok_or("expired uncertain send was not reclaimed")?;
+    let reclaimed = reclaimed
+        .pop()
+        .ok_or("expired uncertain send was not reclaimed")?;
     assert_eq!(reclaimed.stable_txn_id, claimed.stable_txn_id);
     assert_eq!(reclaimed.attempts, claimed.attempts + 1);
     prepare_send(&reopened, &reclaimed, &authority, 41).await?;
@@ -261,7 +263,11 @@ async fn authority_and_grant_identity_are_frozen_before_first_effect() -> TestRe
         authority_epoch: Some(7),
         authority_binding_digest: Some(digest('a')),
         grant_id: Some("grant.1".to_string()),
-        grant_payload_digest: Some(Sha256Digest::for_bytes(&claimed.payload).as_str().to_string()),
+        grant_payload_digest: Some(
+            Sha256Digest::for_bytes(&claimed.payload)
+                .as_str()
+                .to_string(),
+        ),
     };
     prepare_send(&store, &claimed, &authority, 10).await?;
     store
@@ -279,7 +285,9 @@ async fn authority_and_grant_identity_are_frozen_before_first_effect() -> TestRe
 
     let reopened = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
     let mut reclaimed = reopened.claim_outbox(41, 30, 1).await?;
-    let reclaimed = reclaimed.pop().ok_or("authorized uncertain send was not reclaimed")?;
+    let reclaimed = reclaimed
+        .pop()
+        .ok_or("authorized uncertain send was not reclaimed")?;
     assert_eq!(
         prepare_send(
             &reopened,
