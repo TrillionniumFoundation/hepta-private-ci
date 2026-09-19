@@ -6,7 +6,8 @@ use serde::Serialize;
 const MAX_ACTIVE_RUNS: usize = 256;
 const MAX_RETAINED_RUNS: usize = 1_024;
 const MAX_CANCELLATION_REASON_BYTES: usize = 512;
-pub const RUN_RECOVERY_SCHEMA_VERSION: u32 = 1;
+const MAX_CANCELLATION_ACK_TIMEOUT_MS: u64 = 60_000;
+pub const RUN_RECOVERY_SCHEMA_VERSION: u32 = 2;
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -43,6 +44,7 @@ pub struct RuntimeComposition {
     pub agentd_generation: u64,
     pub configuration_digest: String,
     pub ports_digest: String,
+    pub cancellation_ack_timeout_ms: u64,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -79,6 +81,7 @@ pub struct RunReceipt {
     pub phase: RunPhase,
     pub context_digest: Option<String>,
     pub cancellation_reason: Option<String>,
+    pub cancellation_ack_deadline_ms: Option<u64>,
     pub terminal_observed: bool,
     pub idempotent: bool,
 }
@@ -136,6 +139,7 @@ struct RunRecord {
     context_digest: Option<String>,
     compilation_receipt_digest: Option<String>,
     cancellation_reason: Option<String>,
+    cancellation_ack_deadline_ms: Option<u64>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -198,6 +202,7 @@ impl AgentRunCoordinator {
                     record.phase = RunPhase::Cancelled;
                     record.cancellation_reason =
                         Some("generation_changed_during_restart".to_string());
+                    record.cancellation_ack_deadline_ms = None;
                     advance_revision(&mut record)?;
                 }
                 RunPhase::Admitted | RunPhase::ContextAttached
@@ -205,6 +210,7 @@ impl AgentRunCoordinator {
                 {
                     record.phase = RunPhase::Cancelled;
                     record.cancellation_reason = Some("deadline_exceeded_during_restart".to_string());
+                    record.cancellation_ack_deadline_ms = None;
                     advance_revision(&mut record)?;
                 }
                 RunPhase::Dispatched | RunPhase::Cancelling => {
@@ -212,6 +218,7 @@ impl AgentRunCoordinator {
                     // reached a terminal state. Never redispatch after restart,
                     // including when the supervisor assigned a newer generation.
                     record.phase = RunPhase::Indeterminate;
+                    record.cancellation_ack_deadline_ms = None;
                     advance_revision(&mut record)?;
                 }
                 _ => {}
@@ -263,6 +270,7 @@ impl AgentRunCoordinator {
             context_digest: None,
             compilation_receipt_digest: None,
             cancellation_reason: None,
+            cancellation_ack_deadline_ms: None,
         };
         let result = receipt(&record, /*idempotent*/ false);
         self.runs.insert(snapshot.run_id, record);
@@ -338,12 +346,14 @@ impl AgentRunCoordinator {
 
     pub fn cancel_run(
         &mut self,
+        now_ms: u64,
         run_id: &str,
         expected_revision: u64,
         reason: &str,
     ) -> Result<(CancellationDisposition, RunReceipt), AgentRunError> {
         validate_identity(run_id, "run")?;
         validate_cancellation_reason(reason)?;
+        let cancellation_ack_timeout_ms = self.composition.cancellation_ack_timeout_ms;
         let record = self
             .runs
             .get_mut(run_id)
@@ -366,12 +376,18 @@ impl AgentRunCoordinator {
             RunPhase::Admitted | RunPhase::ContextAttached => {
                 record.phase = RunPhase::Cancelled;
                 record.cancellation_reason = Some(reason.to_string());
+                record.cancellation_ack_deadline_ms = None;
                 advance_revision(record)?;
                 CancellationDisposition::CancelledBeforeDispatch
             }
             RunPhase::Dispatched => {
                 record.phase = RunPhase::Cancelling;
                 record.cancellation_reason = Some(reason.to_string());
+                record.cancellation_ack_deadline_ms = Some(
+                    now_ms
+                        .checked_add(cancellation_ack_timeout_ms)
+                        .ok_or(AgentRunError::ArithmeticOverflow)?,
+                );
                 advance_revision(record)?;
                 CancellationDisposition::CancellingAfterDispatch
             }
@@ -417,6 +433,7 @@ impl AgentRunCoordinator {
             return Err(AgentRunError::TerminalObservationRequired);
         }
         record.phase = phase;
+        record.cancellation_ack_deadline_ms = None;
         advance_revision(record)?;
         Ok(receipt(record, /*idempotent*/ false))
     }
@@ -430,8 +447,21 @@ impl AgentRunCoordinator {
         &mut self,
         now_ms: u64,
     ) -> Result<Vec<RunReceipt>, AgentRunError> {
+        let cancellation_ack_timeout_ms = self.composition.cancellation_ack_timeout_ms;
         let mut changed = Vec::new();
         for record in self.runs.values_mut() {
+            if record.phase == RunPhase::Cancelling
+                && record
+                    .cancellation_ack_deadline_ms
+                    .is_some_and(|deadline| deadline <= now_ms)
+            {
+                record.phase = RunPhase::Indeterminate;
+                record.cancellation_ack_deadline_ms = None;
+                advance_revision(record)?;
+                changed.push(receipt(record, /*idempotent*/ false));
+                continue;
+            }
+
             if record.snapshot.deadline_ms > now_ms {
                 continue;
             }
@@ -439,12 +469,18 @@ impl AgentRunCoordinator {
                 RunPhase::Admitted | RunPhase::ContextAttached => {
                     record.phase = RunPhase::Cancelled;
                     record.cancellation_reason = Some("deadline_exceeded".to_string());
+                    record.cancellation_ack_deadline_ms = None;
                     advance_revision(record)?;
                     changed.push(receipt(record, /*idempotent*/ false));
                 }
                 RunPhase::Dispatched => {
                     record.phase = RunPhase::Cancelling;
                     record.cancellation_reason = Some("deadline_exceeded".to_string());
+                    record.cancellation_ack_deadline_ms = Some(
+                        now_ms
+                            .checked_add(cancellation_ack_timeout_ms)
+                            .ok_or(AgentRunError::ArithmeticOverflow)?,
+                    );
                     advance_revision(record)?;
                     changed.push(receipt(record, /*idempotent*/ false));
                 }
@@ -466,6 +502,7 @@ impl AgentRunCoordinator {
                 RunPhase::Admitted | RunPhase::ContextAttached => {
                     record.phase = RunPhase::Cancelled;
                     record.cancellation_reason = Some(reason.to_string());
+                    record.cancellation_ack_deadline_ms = None;
                     advance_revision(record)?;
                     changed.push(receipt(record, /*idempotent*/ false));
                 }
@@ -495,6 +532,7 @@ impl AgentRunCoordinator {
         for record in self.runs.values_mut() {
             if matches!(record.phase, RunPhase::Dispatched | RunPhase::Cancelling) {
                 record.phase = RunPhase::Indeterminate;
+                record.cancellation_ack_deadline_ms = None;
                 advance_revision(record)?;
                 changed.push(receipt(record, /*idempotent*/ false));
             }
@@ -546,6 +584,9 @@ fn validate_composition(value: &RuntimeComposition) -> Result<(), AgentRunError>
     if value.supervisor_generation == 0 || value.agentd_generation == 0 {
         return Err(AgentRunError::InvalidGeneration);
     }
+    if !(1..=MAX_CANCELLATION_ACK_TIMEOUT_MS).contains(&value.cancellation_ack_timeout_ms) {
+        return Err(AgentRunError::InvalidDeadline);
+    }
     Ok(())
 }
 
@@ -590,6 +631,13 @@ fn validate_recovery_record(record: &RunRecord) -> Result<(), AgentRunError> {
     }
     if let Some(reason) = record.cancellation_reason.as_deref() {
         validate_cancellation_reason(reason)?;
+    }
+    if record.phase == RunPhase::Cancelling {
+        if record.cancellation_ack_deadline_ms.is_none() {
+            return Err(AgentRunError::InvalidRecoveryState);
+        }
+    } else if record.cancellation_ack_deadline_ms.is_some() {
+        return Err(AgentRunError::InvalidRecoveryState);
     }
     match record.phase {
         RunPhase::Admitted => {
@@ -668,6 +716,7 @@ fn receipt(record: &RunRecord, idempotent: bool) -> RunReceipt {
         phase: record.phase,
         context_digest: record.context_digest.clone(),
         cancellation_reason: record.cancellation_reason.clone(),
+        cancellation_ack_deadline_ms: record.cancellation_ack_deadline_ms,
         terminal_observed: record.phase.terminal_observed(),
         idempotent,
     }
