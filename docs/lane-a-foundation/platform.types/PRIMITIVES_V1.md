@@ -8,9 +8,9 @@ performs no case folding or Unicode normalization.
 
 `IdProfileV1` makes semantic namespace grammar explicit. `Stable` preserves
 the historical StableId grammar; `Namespaced` requires exactly one nonempty
-namespace separator; `Execution`, `Schema`, `Receipt` and `Artifact`
-require the corresponding `execution:`, `schema:`, `receipt:` and
-`artifact:` namespace. `validate_id` validates borrowed input before
+namespace separator; `Execution`, `Schema`, `Normalization`, `Receipt` and `Artifact`
+require the corresponding `execution:`, `schema:`, `normalization:`, `receipt:`
+and `artifact:` namespace. `validate_id` validates borrowed input before
 allocating the bounded owned identifier. No profile makes an ID safe for
 filesystem, URI, SQL or other unrelated contexts.
 
@@ -59,7 +59,7 @@ caller-owned immutable collection that resolves those digests and enforces
 definition kind. It is bounded to 256 entries, 16 KiB per definition and 256
 KiB aggregate definition bytes.
 
-There is deliberately no process-global mutable registry. Trust provisioning,
+Definition kind and identifier namespace are bound at construction: schema definitions require `schema:*`, and normalization definitions require `normalization:*`. There is deliberately no process-global mutable registry. Trust provisioning,
 network discovery, mutable registration and production admission are outside
 this primitive contract.
 
