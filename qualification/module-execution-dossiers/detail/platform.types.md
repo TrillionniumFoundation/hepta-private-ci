@@ -45,8 +45,27 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `rescale_signal` in [codex-rs/hepta-types/src/numeric_conversion.rs](../../../codex-rs/hepta-types/src/numeric_conversion.rs); `StableId` in [codex-rs/hepta-types/src/identity.rs](../../../codex-rs/hepta-types/src/identity.rs). Bounded identity, digest and numeric-conversion source implemented.
-- **State and recovery:** Stateless native values. NumericSignalV1 digests bind profile, unit, shape, normalization and raw values; conversion checks i128 intermediates and returns an exact rational error bound, with no saturation.
-- **Source tests:** [codex-rs/hepta-types/src/numeric_conversion_tests.rs](../../../codex-rs/hepta-types/src/numeric_conversion_tests.rs), [codex-rs/hepta-types/src/identity_tests.rs](../../../codex-rs/hepta-types/src/identity_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [codex-rs/hepta-types/NUMERIC_SIGNAL_CONVERSION.md](../../../codex-rs/hepta-types/NUMERIC_SIGNAL_CONVERSION.md).
-- **Remaining work:** Admit production numeric profiles and verify actual consumer/wire compatibility; numerical equivalence alone does not establish byte compatibility.
+- **Implemented entrypoints:** `rescale_signal`, `StableId`, `validate_id`,
+  `canonical_encode_v1`, `canonical_digest_v1`, deny-all
+  `AuthorityPosture::from_untrusted_bits`, and the bounded
+  `SchemaNormalizationRegistryV1` register/resolve contract.
+- **Canonical semantics:** V1 domain separation, named/type-tagged length framing,
+  sorted unique field names, big-endian integers and a 256 KiB collection ceiling
+  are executable in `src/canonical.rs`.
+- **Identity semantics:** `IdProfileV1` binds exact execution/schema/receipt/
+  artifact/producer/normalization namespaces without normalization or nested
+  namespace separators.
+- **State and recovery:** No authoritative state or recovery surface. The
+  schema/normalization registry is bounded host-owned memory only; durability
+  remains a separate host concern.
+- **Source tests:** canonical, identity, bounded, digest, fixed-point, registry and
+  numeric conversion unit suites. Frozen canonical vectors live at
+  `codex-rs/hepta-types/testdata/canonical_digest_v1_vectors.json` and are
+  independently reconstructed by Python and Node/TypeScript-compatible scripts.
+- **Qualification:** `.github/workflows/lane-a-foundation.yml` runs exact-head
+  source/native checks and a deterministic synthetic-merge job, retaining both
+  receipt sets as Actions artifacts. Source documents do not self-assert those
+  execution receipts.
+- **Remaining work:** generated bindings, durable/runtime registry integration,
+  product consumer composition, independent acceptance, activation, promotion
+  and release remain outside this native library closure.

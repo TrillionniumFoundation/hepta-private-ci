@@ -554,9 +554,14 @@ This receipt records repository source bindings for the current documentation ca
 
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
-| `rescale_signal` | `rescale_signal` | `codex-rs/hepta-types/src/numeric_conversion.rs` | `pending` |
-| `stableid` | `StableId` | `codex-rs/hepta-types/src/identity.rs` | `pending` |
+| `rescale_signal` | `rescale_signal` | `codex-rs/hepta-types/src/numeric_conversion.rs` | `src/numeric_conversion_tests.rs` |
+| `stableid` | `StableId` | `codex-rs/hepta-types/src/identity.rs` | `src/identity_tests.rs` |
+| `validate_id` | `validate_id` | `codex-rs/hepta-types/src/identity.rs` | `src/identity_tests.rs` |
+| `canonical_digest` | `canonical_digest_v1` | `codex-rs/hepta-types/src/canonical.rs` | `src/canonical_tests.rs` + cross-language vectors |
+| `deny_all_authority_posture` | `AuthorityPosture::from_untrusted_bits` | `codex-rs/hepta-types/src/identity.rs` | `src/identity_tests.rs` |
+| `schema_normalization_registry` | `SchemaNormalizationRegistryV1::register` | `codex-rs/hepta-types/src/registry.rs` | `src/registry_tests.rs` |
 
+- Executable V1 details: `docs/lane-a-foundation/platform.types/CANONICAL_CONTRACTS_V1.md`.
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.

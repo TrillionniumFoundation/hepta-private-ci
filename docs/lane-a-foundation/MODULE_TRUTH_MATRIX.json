@@ -42,11 +42,16 @@
       "currentCapabilities": [
         "bounded identity and byte/text values",
         "digest and monotonic revision/generation primitives",
-        "fixed-point probability and numeric-signal conversion"
+        "fixed-point probability and numeric-signal conversion",
+        "namespaced V1 identifier validation",
+        "domain-separated canonical digest and framed encoding",
+        "unforgeable deny-all qualification authority posture",
+        "bounded schema and normalization definition registry"
       ],
       "targetOnlyCapabilities": [
         "cross-language generated bindings",
-        "runtime schema registry"
+        "durable or process-global schema and normalization registry",
+        "production profile admission and product composition"
       ],
       "sourceAnchors": [
         {
@@ -55,7 +60,11 @@
             "#![forbid(unsafe_code)]",
             "pub use identity::StableId;",
             "pub use identity::IdentityError;",
-            "pub use numeric_conversion::rescale_signal;"
+            "pub use numeric_conversion::rescale_signal;",
+            "pub use canonical::canonical_digest_v1;",
+            "pub use identity::validate_id;",
+            "pub use registry::SchemaNormalizationRegistryV1;",
+            "pub use identity::AuthorityPostureError;"
           ]
         },
         {
@@ -63,6 +72,29 @@
           "mustContain": [
             "Native numeric signal conversion V1",
             "Unknown profile IDs reject"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-types/src/canonical.rs",
+          "mustContain": [
+            "pub fn canonical_encode_v1(",
+            "pub fn canonical_digest_v1(",
+            "MAX_CANONICAL_COLLECTION_BYTES_V1"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-types/src/registry.rs",
+          "mustContain": [
+            "pub struct RegistryDefinitionV1",
+            "pub struct SchemaNormalizationRegistryV1",
+            "pub fn register("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-types/testdata/canonical_digest_v1_vectors.json",
+          "mustContain": [
+            "hepta.platform-types.canonical-digest-v1.vectors",
+            "mixed-scalars-v1"
           ]
         }
       ]

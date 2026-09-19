@@ -27,7 +27,9 @@
       "sourcePath": "codex-rs/hepta-types/src/numeric_conversion.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-types/src/numeric_conversion_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "rescale_signal",
       "mappingClass": "owner_native",
@@ -39,15 +41,74 @@
       "sourcePath": "codex-rs/hepta-types/src/identity.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-types/src/identity_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "stableid",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "validate_id",
+      "nativeSymbol": "validate_id",
+      "sourcePath": "codex-rs/hepta-types/src/identity.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/identity_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "validate_id",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "canonical_digest",
+      "nativeSymbol": "canonical_digest_v1",
+      "sourcePath": "codex-rs/hepta-types/src/canonical.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/canonical_tests.rs",
+        "codex-rs/hepta-types/testdata/canonical_digest_v1_vectors.json"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical_digest",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "deny_all_authority_posture",
+      "nativeSymbol": "AuthorityPosture::from_untrusted_bits",
+      "sourcePath": "codex-rs/hepta-types/src/identity.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/identity_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "deny_all_authority_posture",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "schema_normalization_registry",
+      "nativeSymbol": "SchemaNormalizationRegistryV1::register",
+      "sourcePath": "codex-rs/hepta-types/src/registry.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/registry_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "schema_normalization_registry",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Bind product-facing consumers to the declared ID profiles, canonical encoding and stable registry definitions.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
