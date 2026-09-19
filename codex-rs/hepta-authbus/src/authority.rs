@@ -155,6 +155,18 @@ pub enum AuthBusAuthorityError {
     QuotaExceeded,
     #[error("AuthBus quota reservation is missing")]
     ReservationMissing,
+    #[error("AuthBus settlement issuer does not match the signed evidence")]
+    SettlementIssuerMismatch,
+    #[error("AuthBus settlement issuer is revoked")]
+    SettlementIssuerRevoked,
+    #[error("AuthBus settlement evidence does not match the reservation")]
+    SettlementEvidenceMismatch,
+    #[error("AuthBus settlement evidence is invalid or outside its validity window")]
+    InvalidSettlementEvidence,
+    #[error("AuthBus settlement evidence signature is invalid")]
+    InvalidSettlementSignature,
+    #[error("observed settlement cost exceeds the held reservation")]
+    ObservedCostExceedsReservation,
     #[error("invalid AuthBus authority state transition")]
     InvalidTransition,
     #[error("trusted AuthBus time moved backwards")]
