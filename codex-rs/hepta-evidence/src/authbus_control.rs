@@ -727,13 +727,7 @@ impl HeptaEvidenceStore {
             if reservation.expires_at_ms > now {
                 break;
             }
-            release_active_in_tx(
-                &mut tx,
-                &reservation,
-                ReservationState::Expired,
-                now_i64,
-            )
-            .await?;
+            release_active_in_tx(&mut tx, &reservation, ReservationState::Expired, now_i64).await?;
             expired = expired
                 .checked_add(1)
                 .ok_or(AuthBusControlError::Invalid("expiry count overflow"))?;
