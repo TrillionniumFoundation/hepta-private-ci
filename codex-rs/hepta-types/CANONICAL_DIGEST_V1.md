@@ -46,7 +46,7 @@ there is no truncation.
 `docs/lane-a-foundation/platform.types/CANONICAL_DIGEST_V1.json` freezes an
 independent conformance vector. Rust unit tests, Python and Node verifiers all
 reconstruct the same 218-byte encoding and SHA-256 digest
-`b2dd7cbfbd9b6d6635f32ca616beadb135c7f7c5a62c7b6eea8a12071251394d`.
+`8ef482c0a0cd42aee59638898402103024004fbb0ea189d5673d4d6455c2a53d`.
 
 The vector deliberately includes Unicode UTF-8, signed and unsigned integers,
 opaque bytes, a digest, an array and a map whose source order differs from its
