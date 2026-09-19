@@ -1,5 +1,6 @@
 use super::*;
 
+use crate::InhibitoryEdge;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
