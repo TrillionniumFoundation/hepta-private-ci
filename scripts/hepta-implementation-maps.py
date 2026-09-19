@@ -309,14 +309,35 @@ def verify():
         if row.get("laneId") != lanes.get(mid):
             failures.append(f"{mid}: lane")
         source_base = row.get("sourceBase")
+        source_commit: str | None = None
         if (
             not isinstance(source_base, dict)
+            or not isinstance(source_base.get("commit"), str)
             or not source_base.get("commit")
+            or not isinstance(source_base.get("tree"), str)
             or not source_base.get("tree")
         ):
             failures.append(f"{mid}: source base")
         else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
+            source_commit = source_base["commit"]
+            source_tree = source_base["tree"]
+            source_bases.add((source_commit, source_tree))
+            try:
+                actual_tree = git("rev-parse", f"{source_commit}^{{tree}}")
+            except subprocess.CalledProcessError:
+                failures.append(f"{mid}: source base commit is unavailable")
+            else:
+                if actual_tree != source_tree:
+                    failures.append(f"{mid}: source base tree mismatch")
+                ancestor = subprocess.run(
+                    ["git", "merge-base", "--is-ancestor", source_commit, "HEAD"],
+                    cwd=ROOT,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                if ancestor.returncode != 0:
+                    failures.append(f"{mid}: source base is not an ancestor of HEAD")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -324,8 +345,21 @@ def verify():
         if declared != roots:
             failures.append(f"{mid}: declared roots")
         try:
-            if row.get("resolvedRoots") != resolve_source_roots(ROOT, module):
+            resolved = resolve_source_roots(ROOT, module)
+            if row.get("resolvedRoots") != resolved:
                 failures.append(f"{mid}: resolved source roots")
+            if source_commit is not None and resolved:
+                drift = subprocess.run(
+                    ["git", "diff", "--quiet", source_commit, "HEAD", "--", *resolved],
+                    cwd=ROOT,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                if drift.returncode == 1:
+                    failures.append(f"{mid}: native source changed after source base")
+                elif drift.returncode != 0:
+                    failures.append(f"{mid}: cannot compare source base to HEAD")
         except (ValueError, OSError) as exc:
             failures.append(f"{mid}: source alias: {exc}")
         ops = row.get("operations")
