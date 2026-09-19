@@ -1,10 +1,12 @@
 //! Connect the canonical SQLite owner to the newer bounded cognitive read port.
 
+use std::collections::BTreeMap;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use codex_hepta_cognitive_read::ReadRequest;
-use codex_hepta_cognitive_read::ReadRequestV2;
+use codex_hepta_cognitive_read::ReadFieldV1;
+use codex_hepta_cognitive_read::ReadIdsError;
+use codex_hepta_cognitive_read::ReadIdsRequestV1;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_control_plane::ObservedContextV1;
 use codex_hepta_control_plane::plan_observed_context;
@@ -20,7 +22,7 @@ use crate::CognitiveContextItem;
 use crate::CognitiveContextPlan;
 use crate::CognitiveContextSnapshot;
 
-const MAX_CONTEXT_JSON_BYTES: usize = 24 * 1024;
+const MAX_CONTEXT_JSON_BYTES: usize = 8 * 1024;
 
 /// Only storage failures may invalidate the canonical SQLite owner. A revoked
 /// or unavailable optional ranker closes the ranked read, not other store ports.
@@ -57,24 +59,35 @@ pub(crate) async fn read(
     let cut = store
         .lane_c_snapshot(&access, &scope, now_seconds()?)
         .await?;
-    let read = cut
-        .read(ReadRequestV2 {
-            read_request: ReadRequest {
-                snapshot_digest: cut.snapshot().snapshot_digest,
-                allowed_kinds: Vec::new(),
-                maximum_results: 1024,
-                include_tombstones: false,
-            },
-            maximum_encoded_bytes: 1024 * 1024,
-        })
-        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
     let candidates = store
         .retrieve_memory_candidates(&access, &RetrievalRequest::new(query, now_seconds()?))
         .await?;
+    let record_ids = candidates
+        .candidates
+        .iter()
+        .map(|candidate| {
+            StableId::new(candidate.memory.id.memory_id.as_str())
+                .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let read = cut
+        .read_ids(ReadIdsRequestV1 {
+            snapshot_digest: cut.snapshot().snapshot_digest,
+            record_ids,
+            fields: vec![ReadFieldV1::ContentDigest],
+            maximum_encoded_bytes: 16 * 1024,
+        })
+        .map_err(map_read_ids_error)?;
+    let admitted_by_id = read
+        .records()
+        .iter()
+        .map(|record| (record.record_id.as_str(), record))
+        .collect::<BTreeMap<_, _>>();
     let mut response = CognitiveContextSnapshot {
+        cut_digest: cut.cut_digest().to_string(),
         snapshot_digest: read.snapshot_digest().to_string(),
         read_digest: read.receipt_digest().to_string(),
-        omitted_records: read.omitted_count() as u64,
+        omitted_records: 0,
         items: Vec::new(),
         plan: None,
     };
@@ -86,12 +99,16 @@ pub(crate) async fn read(
         let memory = candidate.memory;
         // The legacy search ranks candidates; the new owner cut admits only
         // the exact verified revision and content bound by the read port.
-        let accepted = read.records().iter().any(|record| {
-            record.record_id.as_str() == memory.id.memory_id.as_str()
-                && record.revision.get() == memory.id.revision
-                && record.content_digest.to_string() == memory.content_sha256.as_str()
-                && memory.scope == scope
-        });
+        let accepted = admitted_by_id
+            .get(memory.id.memory_id.as_str())
+            .is_some_and(|record| {
+                record.is_live()
+                    && record.revision.get() == memory.id.revision
+                    && record
+                        .content_digest
+                        .is_some_and(|digest| digest.to_string() == memory.content_sha256.as_str())
+                    && memory.scope == scope
+            });
         if !accepted {
             continue;
         }
@@ -193,6 +210,23 @@ pub(crate) async fn read(
             .map_err(|_| CognitiveContextError::RankerUnavailable)?;
     }
     Ok(response)
+}
+
+fn map_read_ids_error(error: ReadIdsError) -> CognitiveStoreError {
+    match error {
+        ReadIdsError::Read(error) | ReadIdsError::InvalidCanonicalEncoding => {
+            CognitiveStoreError::Corrupt(error.to_string())
+        }
+        ReadIdsError::TooManyRecordIds { .. }
+        | ReadIdsError::DuplicateRecordId
+        | ReadIdsError::DuplicateField
+        | ReadIdsError::InvalidMaximumEncodedBytes { .. } => {
+            CognitiveStoreError::Invalid(error.to_string())
+        }
+        ReadIdsError::EncodedResultTooLarge { .. } => {
+            CognitiveStoreError::Unavailable(error.to_string())
+        }
+    }
 }
 
 fn now_seconds() -> Result<i64, CognitiveStoreError> {
