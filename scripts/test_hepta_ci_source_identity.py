@@ -26,6 +26,9 @@ def load_module(name: str, filename: str):
 
 LANE_B = load_module("ci_source_lane_b", "hepta-lane-b-truth.py")
 LANE_E = load_module("ci_source_lane_e", "hepta-lane-e-closure.py")
+IMPLEMENTATION_MAPS = load_module(
+    "ci_source_implementation_maps", "hepta-implementation-maps.py"
+)
 
 
 class GitSourceIdentityTests(unittest.TestCase):
@@ -160,6 +163,67 @@ class GitSourceIdentityTests(unittest.TestCase):
         unrelated = self.git("commit-tree", self.source_tree, input_text="unrelated\n")
         with self.assertRaises(LANE_B.Invalid):
             self.maps_at({"commit": unrelated, "tree": self.source_tree})
+
+    def test_implementation_map_source_head_rejects_owner_root_drift(self) -> None:
+        module = {
+            "id": "test.module",
+            "owner": "test-owner",
+            "deputy": "test-deputy",
+            "technicalDocument": "docs/modules/test.module/TECHNICAL.md",
+            "rootBindings": [{"path": "owned"}],
+        }
+        map_path = self.root / "docs/modules/test.module/IMPLEMENTATION_MAP.json"
+        map_path.parent.mkdir(parents=True, exist_ok=True)
+        row = {
+            "schema": "hepta.module-implementation-map.v3",
+            "schemaVersion": 3,
+            "sourceBase": copy.deepcopy(self.truth["sourceBase"]),
+            "sourceHead": self.head,
+            "laneId": "TEST-LANE",
+            "module": "test.module",
+            "owner": "test-owner",
+            "deputy": "test-deputy",
+            "technicalGuide": module["technicalDocument"],
+            "declaredRoots": ["owned"],
+            "resolvedRoots": ["owned"],
+            "sourceRootPresent": True,
+            "productionImplementation": False,
+            "operations": [
+                {
+                    "operation": "provider",
+                    "nativeSymbol": "provider",
+                    "sourcePath": "owned/provider.py",
+                }
+            ],
+            "claimBoundary": {"productionImplementation": False},
+        }
+        map_path.write_text(json.dumps(row), encoding="utf-8")
+        with (
+            mock.patch.object(IMPLEMENTATION_MAPS, "ROOT", self.root),
+            mock.patch.object(
+                IMPLEMENTATION_MAPS,
+                "load",
+                side_effect=lambda path: {"modules": [module]}
+                if path == "docs/modules/MODULES.json"
+                else {},
+            ),
+            mock.patch.object(
+                IMPLEMENTATION_MAPS,
+                "lane_by_module",
+                return_value={"test.module": "TEST-LANE"},
+            ),
+            mock.patch.object(
+                IMPLEMENTATION_MAPS,
+                "resolve_source_roots",
+                return_value=["owned"],
+            ),
+        ):
+            IMPLEMENTATION_MAPS.verify()
+            self.commit("owned/provider.py", "changed", "owner source drifts")
+            with self.assertRaisesRegex(
+                SystemExit, "owner source root changed after sourceHead"
+            ):
+                IMPLEMENTATION_MAPS.verify()
 
     def test_lane_a_uses_event_and_git_without_body_registration(self) -> None:
         result = self.lane_a()

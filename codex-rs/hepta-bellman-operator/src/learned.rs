@@ -88,6 +88,7 @@ pub enum LearnedOperatorError {
     EmptyDigest(&'static str),
     InvalidGrid,
     DuplicateIdentity(String),
+    DuplicateEvidence,
     SampleLimit,
     UnknownSensor(String),
     UnknownAction(String),
@@ -114,6 +115,10 @@ struct CellAccumulator {
     evidence: Vec<Digest32>,
 }
 
+/// Pure deterministic fitting kernel. It rejects duplicate underlying evidence,
+/// but does not itself prove that the caller-supplied dataset digest names these
+/// rows. Product/qualification callers use
+/// `fit_tabular_operator_from_dataset_receipt`.
 pub fn fit_tabular_operator(
     mut plan: TabularOperatorPlanV1,
 ) -> Result<TabularOperatorArtifactV1, LearnedOperatorError> {
@@ -158,10 +163,14 @@ pub fn fit_tabular_operator(
 
     let sensors = plan.sensor_ids.iter().collect::<BTreeSet<_>>();
     let actions = plan.action_ids.iter().collect::<BTreeSet<_>>();
+    let mut seen_evidence = BTreeSet::new();
     let mut groups: BTreeMap<(StableId, StableId), CellAccumulator> = BTreeMap::new();
     let mut sample_binding = b"hepta.bellman-operator.tabular-samples.v1".to_vec();
     for sample in &plan.samples {
         require_digest(sample.evidence_digest, "operator training sample")?;
+        if !seen_evidence.insert(sample.evidence_digest) {
+            return Err(LearnedOperatorError::DuplicateEvidence);
+        }
         if !sensors.contains(&sample.sensor_id) {
             return Err(LearnedOperatorError::UnknownSensor(
                 sample.sensor_id.to_string(),

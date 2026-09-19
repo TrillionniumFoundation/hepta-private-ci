@@ -25,7 +25,7 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  BASE_SHA: ${{ github.event.pull_request.base.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
 
 jobs:
   rust-closure:
@@ -154,8 +154,11 @@ jobs:
           SOURCE_COMMIT="$(git rev-parse HEAD)"
           test "${SOURCE_COMMIT}" = "${SOURCE_SHA}"
           test -n "${BASE_SHA}"
-          git cat-file -e "${BASE_SHA}^{commit}"
           BASE_COMMIT="${BASE_SHA}"
+          if [[ "${BASE_COMMIT}" =~ ^0+$ ]]; then
+            BASE_COMMIT="$(git rev-parse "${SOURCE_COMMIT}^1")"
+          fi
+          git cat-file -e "${BASE_COMMIT}^{commit}"
           git checkout --detach "${BASE_COMMIT}"
           git -c user.name=hepta-lane-e-ci \
             -c user.email=hepta-lane-e-ci@users.noreply.github.com \

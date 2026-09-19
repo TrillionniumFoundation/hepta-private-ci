@@ -78,6 +78,25 @@ fn op_05_tabular_operator_fits_complete_grid_deterministically() {
 }
 
 #[test]
+fn op_05_default_fit_rejects_relabelled_duplicate_evidence() {
+    let mut samples = vec![
+        sample("s1", "sensor-a", "action-a", 10),
+        sample("s2", "sensor-a", "action-a", 20),
+        sample("s3", "sensor-a", "action-b", 10),
+        sample("s4", "sensor-a", "action-b", 20),
+        sample("s5", "sensor-b", "action-a", 10),
+        sample("s6", "sensor-b", "action-a", 20),
+        sample("s7", "sensor-b", "action-b", 10),
+        sample("s8", "sensor-b", "action-b", 20),
+    ];
+    samples[1].evidence_digest = samples[0].evidence_digest;
+    assert_eq!(
+        fit_tabular_operator(plan(samples)),
+        Err(LearnedOperatorError::DuplicateEvidence)
+    );
+}
+
+#[test]
 fn op_05_tabular_operator_rejects_missing_or_underfilled_cells() {
     let missing = vec![
         sample("s1", "sensor-a", "action-a", 10),

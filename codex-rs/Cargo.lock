@@ -3566,7 +3566,9 @@ dependencies = [
 name = "codex-hepta-bellman-operator"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-learning-ledger",
  "codex-hepta-types",
+ "ed25519-dalek",
 ]
 
 [[package]]

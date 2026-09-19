@@ -76,6 +76,7 @@ pub enum WorldModelError {
     EmptyDataset,
     SampleLimit,
     DuplicateSample(String),
+    DuplicateEvidence,
     InvalidOutcome,
     StateActionLimit,
     BranchLimit,
@@ -99,6 +100,9 @@ struct Group {
     evidence_digests: BTreeSet<Digest32>,
 }
 
+/// Pure deterministic fitting kernel. It rejects duplicate underlying evidence
+/// but trusts the caller-supplied dataset digest. Product/qualification callers
+/// use `fit_transition_model_from_dataset_receipt`.
 pub fn fit_transition_model(
     model_id: StableId,
     dataset_digest: Digest32,
@@ -121,9 +125,13 @@ pub fn fit_transition_model(
         ));
     }
 
+    let mut seen_evidence = BTreeSet::new();
     let mut groups: BTreeMap<(StableId, StableId), Group> = BTreeMap::new();
     for sample in &samples {
         require_digest(sample.evidence_digest, "world-model sample evidence")?;
+        if !seen_evidence.insert(sample.evidence_digest) {
+            return Err(WorldModelError::DuplicateEvidence);
+        }
         if !(-FixedQ32::ONE.raw()..=FixedQ32::ONE.raw()).contains(&sample.outcome.raw()) {
             return Err(WorldModelError::InvalidOutcome);
         }

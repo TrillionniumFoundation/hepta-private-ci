@@ -91,6 +91,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "schema": "hepta.module-implementation-map.v3",
         "schemaVersion": 3,
         "sourceBase": source_base,
+        "sourceHead": source_base["commit"],
         "laneId": lanes[mid],
         "module": mid,
         "owner": module["owner"],
@@ -182,6 +183,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
             "sourceBase": row.get("sourceBase") or source_base,
+            "sourceHead": source_base["commit"],
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -342,11 +344,54 @@ def verify():
             source = op.get("sourcePath")
             if source and not (ROOT / source).is_file():
                 failures.append(f"{mid}: missing source {source}")
+        source_head = row.get("sourceHead")
+        if not isinstance(source_head, str) or not source_head:
+            failures.append(f"{mid}: missing sourceHead")
+        else:
+            try:
+                git("merge-base", "--is-ancestor", source_head, "HEAD")
+            except subprocess.CalledProcessError:
+                failures.append(f"{mid}: sourceHead is not an ancestor of HEAD")
+            source_paths = sorted(
+                {
+                    value
+                    for value in row.get("resolvedRoots", [])
+                    if isinstance(value, str) and value
+                }
+            )
+            if not source_paths:
+                source_paths = sorted(
+                    {
+                        op.get("sourcePath")
+                        for op in ops
+                        if isinstance(op.get("sourcePath"), str) and op.get("sourcePath")
+                    }
+                )
+            if source_paths:
+                drift = subprocess.run(
+                    ["git", "diff", "--quiet", source_head, "HEAD", "--", *source_paths],
+                    cwd=ROOT,
+                    check=False,
+                )
+                if drift.returncode == 1:
+                    failures.append(
+                        f"{mid}: owner source root changed after sourceHead; refresh map"
+                    )
+                elif drift.returncode not in (0, 1):
+                    failures.append(f"{mid}: cannot compare owner source with sourceHead")
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+    elif source_bases:
+        source_commit, source_tree = next(iter(source_bases))
+        try:
+            if git("rev-parse", f"{source_commit}^{{tree}}") != source_tree:
+                failures.append("maps: source base tree does not match commit")
+            git("merge-base", "--is-ancestor", source_commit, "HEAD")
+        except subprocess.CalledProcessError:
+            failures.append("maps: source base is not an ancestor of HEAD")
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(

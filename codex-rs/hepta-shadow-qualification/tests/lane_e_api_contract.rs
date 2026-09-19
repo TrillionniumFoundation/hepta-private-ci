@@ -16,12 +16,16 @@ fn lane_e_public_operation_surface_is_linkable() {
 
     let _ = codex_hepta_bellman_operator::build_targets;
     let _ = codex_hepta_bellman_operator::validate_applicability_certificate;
+    let _ = codex_hepta_bellman_operator::validate_applicability_certificate_authenticated;
     let _ = codex_hepta_bellman_operator::build_sensor_core;
     let _ = codex_hepta_bellman_operator::evaluate_bellman_reference;
     let _ = codex_hepta_bellman_operator::admit_operator_regularity;
+    let _ = codex_hepta_bellman_operator::admit_operator_regularity_authenticated;
     let _ = codex_hepta_bellman_operator::fit_transition_model;
+    let _ = codex_hepta_bellman_operator::fit_transition_model_from_dataset_receipt;
     let _ = codex_hepta_bellman_operator::predict_transition;
     let _ = codex_hepta_bellman_operator::fit_tabular_operator;
+    let _ = codex_hepta_bellman_operator::fit_tabular_operator_from_dataset_receipt;
     let _ = codex_hepta_bellman_operator::predict_tabular_operator;
     let _ = codex_hepta_bellman_operator::fit_tabular_operator_strict_v2;
     let _ = codex_hepta_bellman_operator::predict_tabular_operator_indexed_v2;

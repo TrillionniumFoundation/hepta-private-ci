@@ -16,18 +16,28 @@ The complete regularity gate uses `OperatorRegularityAssessmentV1`; the legacy
 `RegularityProfile` contains only target-builder diagnostics and must not be
 interpreted as the Hölder/operator qualification profile.
 
+The pure structural V1 kernels remain public for deterministic fixtures and
+compatibility. Product and qualification composition uses the additive
+`admission.rs` surface: frozen `DatasetSnapshotReceiptV3` binding for training
+rows and cryptographically verified evaluator evidence for applicability and
+regularity. Structural validation alone is not independent acceptance.
+
 ## Design operation to Rust symbol
 
 | Design operation | Native symbol | Source | Status |
 |---|---|---|---|
 | build deterministic Bellman targets | `build_targets` (`train` compatibility alias) | `src/lib.rs` | implemented |
-| admit smooth-axis applicability | `validate_applicability_certificate` | `src/reference.rs` | implemented |
+| admit smooth-axis applicability structurally | `validate_applicability_certificate` | `src/reference.rs` | implemented |
+| bind applicability to authenticated independent evaluator | `validate_applicability_certificate_authenticated` | `src/admission.rs` | implemented |
 | build fixed sensor core | `build_sensor_core` | `src/reference.rs` | implemented |
 | execute tabular Bellman reference | `evaluate_bellman_reference` | `src/reference.rs` | implemented |
-| fit complete simplest-sufficient operator | `fit_tabular_operator` | `src/learned.rs` | implemented |
+| fit complete simplest-sufficient operator | `fit_tabular_operator` | `src/learned.rs` | implemented; duplicate evidence rejected |
+| fit operator from verified frozen dataset | `fit_tabular_operator_from_dataset_receipt` | `src/admission.rs` | implemented |
 | predict only a fitted sensor/action cell | `predict_tabular_operator` | `src/learned.rs` | implemented |
-| admit rank/gain/shape/OOD/error budget | `admit_operator_regularity` | `src/reference.rs` | implemented |
-| fit action-conditioned tabular dynamics | `fit_transition_model` | `src/world_model.rs` | implemented |
+| admit rank/gain/shape/OOD/error budget structurally | `admit_operator_regularity` | `src/reference.rs` | implemented |
+| bind regularity to authenticated independent evaluator | `admit_operator_regularity_authenticated` | `src/admission.rs` | implemented |
+| fit action-conditioned tabular dynamics | `fit_transition_model` | `src/world_model.rs` | implemented; duplicate evidence rejected |
+| fit world model from verified frozen dataset | `fit_transition_model_from_dataset_receipt` | `src/admission.rs` | implemented |
 | predict supported transition distribution | `predict_transition` | `src/world_model.rs` | implemented |
 
 ## Applicability and sensor core
@@ -53,7 +63,8 @@ computes Q32 targets, deterministic greedy actions and action gaps; ties break b
 canonical action ID. This reference is the oracle for any later learned model.
 
 `fit_tabular_operator` is the first source-complete trainable operator profile.
-It canonicalizes a frozen sensor-by-action grid, validates every sample and
+It canonicalizes a frozen sensor-by-action grid, validates every sample,
+rejects duplicate underlying evidence even when callers relabel sample IDs and
 requires a configurable positive minimum sample count for every grid cell. The
 artifact stores each cell's mean, minimum, maximum, sample count and evidence
 digest. Caller order cannot change the result. `predict_tabular_operator`
@@ -79,16 +90,39 @@ baselines.
 
 Unmeasured components are not silently omitted. A learned implementation must
 publish every required component under a separately reviewed model/runtime
-profile.
+profile. `admit_operator_regularity` remains a structural kernel; the canonical
+product/qualification wrapper `admit_operator_regularity_authenticated` also
+requires an evaluator-role `VerifiedLearningEvidenceV1`, controller/principal/
+credential separation from the generator, exact evaluator identity binding and
+a signature-bound structural receipt.
 
 ## World-model baseline
 
 `fit_transition_model` builds a deterministic action-conditioned tabular model
-from an immutable dataset. For every supported `(state, action)` it records the
+from an immutable dataset and rejects duplicate underlying evidence across
+relabelled samples. For every supported `(state, action)` it records the
 mean bounded outcome and a branch distribution whose Q32 probabilities sum
 exactly to one. `predict_transition` rejects unsupported pairs rather than
 extrapolating and marks every prediction synthetic with deny-all authority.
 Synthetic predictions cannot become independent factual outcomes.
+
+## Frozen-dataset and authenticated-evaluator admission
+
+`fit_tabular_operator_from_dataset_receipt` and
+`fit_transition_model_from_dataset_receipt` first verify
+`DatasetSnapshotReceiptV3`. Dataset identity is taken from that receipt and every
+training sample's evidence digest must name one of its canonical frozen source
+records. A caller-claimed digest, semantic drift in the receipt or a row outside
+the frozen dataset fails before fitting.
+
+`validate_applicability_certificate_authenticated` and
+`admit_operator_regularity_authenticated` consume already cryptographically
+verified learning evidence. The evaluator must hold the evaluator role, match
+the certificate/assessment identity and credential chain, remain independent
+from the generator through principal, credential, key and controller checks,
+and sign the exact 32-byte structural receipt digest. These checks authenticate
+who attested to the exact bytes; they do not prove the scientific truth of the
+assessment or grant selection/promotion authority.
 
 ## Host and external obligations
 
@@ -113,7 +147,9 @@ Focused tests live in:
 - `src/lib_tests.rs`;
 - `src/reference_tests.rs`;
 - `src/learned_tests.rs`;
-- `src/world_model_tests.rs`.
+- `src/world_model_tests.rs`;
+- `src/admission_tests.rs`;
+- `src/loaded_tests.rs`.
 
 Cross-crate composition is exercised by
 `../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. Exact dossier IDs,
