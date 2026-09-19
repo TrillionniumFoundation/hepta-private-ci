@@ -49,8 +49,9 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
   `canonical_encode_v1`, `canonical_digest_v1`, deny-all
   `AuthorityPosture::from_untrusted_bits`, and the bounded
   `SchemaNormalizationRegistryV1` register/resolve contract.
-- **Canonical semantics:** V1 domain separation, named/type-tagged length framing,
-  sorted unique field names, big-endian integers and a 256 KiB collection ceiling
+- **Canonical semantics:** V1 domain separation, mandatory nonzero semantic schema
+  version, named/type-tagged length framing, sorted unique field names,
+  big-endian integers and a 256 KiB collection ceiling
   are executable in `src/canonical.rs`.
 - **Identity semantics:** `IdProfileV1` binds exact execution/schema/receipt/
   artifact/producer/normalization namespaces without normalization or nested
