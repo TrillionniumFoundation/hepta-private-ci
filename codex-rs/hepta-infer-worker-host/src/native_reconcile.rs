@@ -19,6 +19,7 @@ use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnStatus;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
+use codex_protocol::models::MessagePhase;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use tokio::time::Instant;
 use tokio::time::sleep;
@@ -192,14 +193,24 @@ fn terminal_output(record: &NativeRunRecord, turn: &Turn) -> Result<NativeRunOut
         TurnStatus::InProgress => return Err("cannot settle an in-progress turn".into()),
     };
 
-    let mut output = String::new();
-    for item in &turn.items {
-        if let ThreadItem::AgentMessage { text, .. } = item {
-            if text.len() > MAX_OUTPUT_BYTES.saturating_sub(output.len()) {
-                return Err("persisted provider output exceeds worker bound".into());
-            }
-            output.push_str(text);
-        }
+    // Match App Server's own terminal transcript semantics: commentary is
+    // progress text, not the final inference answer. The latest final-answer
+    // item (or legacy phase-less item) is the terminal model-visible output.
+    let output = turn
+        .items
+        .iter()
+        .rev()
+        .find_map(|item| match item {
+            ThreadItem::AgentMessage {
+                text,
+                phase: Some(MessagePhase::FinalAnswer) | None,
+                ..
+            } => Some(text.clone()),
+            _ => None,
+        })
+        .unwrap_or_default();
+    if output.len() > MAX_OUTPUT_BYTES {
+        return Err("persisted provider output exceeds worker bound".into());
     }
 
     let previous = record.observation.as_ref();
@@ -305,5 +316,41 @@ mod tests {
                 .status,
             TurnStatus::Failed
         );
+    }
+
+    #[test]
+    fn terminal_reconciliation_uses_latest_final_answer_not_commentary() {
+        let mut record = record(Some("turn-1"));
+        record.observation = Some(NativeRunOutput {
+            thread_id: "thread-1".to_string(),
+            turn_id: "turn-1".to_string(),
+            model: "model".to_string(),
+            model_provider: "provider".to_string(),
+            status: NativeRunStatus::Indeterminate,
+            output: String::new(),
+            observed_output_tokens: None,
+            terminal_observed: false,
+            owner_authority: NativeOwnerAuthority::Unverified,
+            stop_reason: None,
+        });
+        let mut recovered = turn("turn-1", Some("request-1"), TurnStatus::Completed);
+        recovered.items.push(ThreadItem::AgentMessage {
+            id: "commentary".to_string(),
+            text: "working".to_string(),
+            phase: Some(MessagePhase::Commentary),
+            memory_citation: None,
+            delivery: None,
+        });
+        recovered.items.push(ThreadItem::AgentMessage {
+            id: "final".to_string(),
+            text: "final answer".to_string(),
+            phase: Some(MessagePhase::FinalAnswer),
+            memory_citation: None,
+            delivery: None,
+        });
+
+        let output = terminal_output(&record, &recovered).expect("terminal output");
+        assert_eq!(output.output, "final answer");
+        assert_eq!(output.status, NativeRunStatus::Completed);
     }
 }
