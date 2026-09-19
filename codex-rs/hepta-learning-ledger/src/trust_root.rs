@@ -382,4 +382,49 @@ mod tests {
             Err(TrustRootError::RootMismatch)
         ));
     }
+
+    #[test]
+    fn rooted_provider_rotates_only_predecessor_bound_manifests() {
+        let (root, first_manifest) = signed_manifest();
+        let first_verified = verify_learning_trust_manifest(
+            &root,
+            first_manifest.clone(),
+            None,
+            50,
+        )
+        .expect("first manifest");
+        let provider =
+            RootedLearningEvidenceTrustProviderV1::new(root.clone(), first_manifest, 50)
+                .expect("provider");
+
+        let root_key = SigningKey::from_bytes(&[9_u8; 32]);
+        let mut second = signed_manifest().1;
+        second.manifest_id = id("manifest-2");
+        second.generation = 2;
+        second.predecessor_manifest_digest = Some(first_verified.manifest_digest);
+        second.issued_at = 20;
+        second.expires_at = 120;
+        second.trust.authority_epoch = 4;
+        for signer in &mut second.trust.signers {
+            signer.principal.authority_epoch = 4;
+            signer.principal.expires_at = 120;
+        }
+        let payload = trust_manifest_signing_bytes(&second).expect("second payload");
+        second.signature = root_key.sign(&payload).to_bytes();
+        let second_digest = provider.rotate(second.clone(), 50).expect("rotation");
+        assert_eq!(provider.current_manifest_digest().expect("digest"), second_digest);
+        let current = provider.current_trust(50).expect("current trust");
+        assert_eq!(current.revision, 2);
+        assert_eq!(current.trust.authority_epoch, 4);
+
+        let mut stale = second;
+        stale.manifest_id = id("manifest-stale");
+        stale.predecessor_manifest_digest = Some(first_verified.manifest_digest);
+        let payload = trust_manifest_signing_bytes(&stale).expect("stale payload");
+        stale.signature = root_key.sign(&payload).to_bytes();
+        assert_eq!(
+            provider.rotate(stale, 50),
+            Err(TrustRootError::GenerationRollback)
+        );
+    }
 }
