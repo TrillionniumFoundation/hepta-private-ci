@@ -494,6 +494,13 @@ impl LearningLedger {
         if outcome.episode_id != batch.episode_id {
             return Err(LedgerError::OutcomeEpisodeMismatch);
         }
+        if !self
+            .outcome_heads
+            .get(&batch.episode_id)
+            .is_some_and(|head| head == &batch.outcome_id)
+        {
+            return Err(LedgerError::OutcomeNotCurrent(batch.outcome_id.to_string()));
+        }
         if !outcome.terminal {
             return Err(LedgerError::OutcomeNotTerminal);
         }
