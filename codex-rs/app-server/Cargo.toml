@@ -27,6 +27,7 @@ workspace = true
 [dependencies]
 codex-hepta-paths = { path = "../hepta-paths" }
 codex-hepta-contracts = { path = "../hepta-contracts" }
+codex-hepta-codex-adapter = { workspace = true }
 anyhow = { workspace = true }
 base64 = { workspace = true }
 axum = { workspace = true, default-features = false, features = [
