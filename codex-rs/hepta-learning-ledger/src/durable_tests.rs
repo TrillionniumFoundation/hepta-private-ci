@@ -10,12 +10,20 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
 
+use crate::AuthenticatedOutcomeV1;
+use crate::AuthenticatedPrincipalV1;
 use crate::CandidateSetCompleteness;
+use crate::CreditAllocationBatchV1;
+use crate::CreditAllocationV1;
 use crate::CreditAssignment;
 use crate::EpisodeDecision;
 use crate::OutcomeFinality;
 use crate::OutcomeObservation;
+use crate::OutcomeTerminalityV1;
+use crate::OutcomeWatermarkV1;
 use crate::Revocation;
+use crate::UnlearningDerivedKindV1;
+use crate::UnlearningLineageEventV1;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
 
@@ -162,6 +170,111 @@ fn persisted_causal_events_replay_exact_core_and_revocation_excludes_descendants
             .all(|row| matches!(row.event, LedgerEvent::Revocation(_)))
     );
     assert_eq!(must(reopened.records()).len(), 4); // Logical exclusion, not physical erasure.
+}
+
+#[test]
+fn additive_causal_events_roundtrip_through_file_recovery() {
+    let fixture = Fixture::new();
+    let mut ledger = fixture.create();
+
+    let decision_receipt = must(ledger.append(Digest32::ZERO, decision()));
+    let observer = AuthenticatedPrincipalV1 {
+        principal_id: id("observer-v2"),
+        credential_chain_digest: Digest32::of_bytes(b"observer-credential"),
+        signing_key_digest: Digest32::of_bytes(b"observer-key"),
+        scope_digest: Digest32::of_bytes(b"scope"),
+        authority_epoch: 1,
+        authenticated_at: 1,
+        expires_at: 100,
+    };
+    let outcome = LedgerEvent::AuthenticatedOutcome(AuthenticatedOutcomeV1 {
+        record_id: id("outcome-record-v2"),
+        outcome_id: id("outcome-v2"),
+        episode_id: id("episode-1"),
+        observer,
+        observed_at: Some(40),
+        value: Some(FixedQ32::from_raw(100)),
+        unit_profile_digest: Digest32::of_bytes(b"unit"),
+        support_digest: Digest32::of_bytes(b"outcome-support-v2"),
+        watermark: OutcomeWatermarkV1 {
+            latest_observable_at: 40,
+            expected_delay_profile_digest: Digest32::of_bytes(b"delay"),
+            terminality: OutcomeTerminalityV1::Terminal,
+            censoring_reason: None,
+            correction_predecessor: None,
+            finalized_at: Some(41),
+        },
+    });
+    let outcome_receipt = must(ledger.append(decision_receipt.chain_digest, outcome));
+
+    let allocator = AuthenticatedPrincipalV1 {
+        principal_id: id("allocator-v2"),
+        credential_chain_digest: Digest32::of_bytes(b"allocator-credential"),
+        signing_key_digest: Digest32::of_bytes(b"allocator-key"),
+        scope_digest: Digest32::of_bytes(b"scope"),
+        authority_epoch: 1,
+        authenticated_at: 1,
+        expires_at: 100,
+    };
+    let credit_receipt = must(ledger.append(
+        outcome_receipt.chain_digest,
+        LedgerEvent::CreditBatch(CreditAllocationBatchV1 {
+            batch_id: id("credit-batch-v2"),
+            episode_id: id("episode-1"),
+            outcome_id: id("outcome-v2"),
+            allocator,
+            terminal_outcome: FixedQ32::from_raw(100),
+            allocations: vec![
+                CreditAllocationV1 {
+                    target_id: id("artifact-a"),
+                    credit: FixedQ32::from_raw(60),
+                },
+                CreditAllocationV1 {
+                    target_id: id("artifact-b"),
+                    credit: FixedQ32::from_raw(30),
+                },
+            ],
+            conservation_residual: FixedQ32::from_raw(10),
+            support_digest: Digest32::of_bytes(b"credit-support-v2"),
+            finalized: true,
+        }),
+    ));
+
+    let revoke_receipt = must(ledger.append(
+        credit_receipt.chain_digest,
+        LedgerEvent::Revocation(Revocation {
+            record_id: id("revocation-v2"),
+            target_record_id: id("decision-1"),
+            authority_id: id("privacy-owner"),
+            reason_digest: Digest32::of_bytes(b"authorized-revocation"),
+        }),
+    ));
+    let source_digest = must(ledger.records())[0].event_digest;
+    let lineage_receipt = must(ledger.append(
+        revoke_receipt.chain_digest,
+        LedgerEvent::UnlearningLineage(UnlearningLineageEventV1 {
+            record_id: id("unlearning-v2"),
+            source_record_id: id("decision-1"),
+            derived_id: id("dataset-v2"),
+            derived_kind: UnlearningDerivedKindV1::Dataset,
+            predecessor: None,
+            authority_id: id("privacy-owner"),
+            reason_digest: Digest32::of_bytes(b"authorized-revocation"),
+            source_digest,
+            derived_digest: Digest32::of_bytes(b"dataset-v2"),
+        }),
+    ));
+
+    let snapshot = must(ledger.snapshot());
+    assert_eq!(snapshot.records().len(), 5);
+    assert_eq!(snapshot.head_digest, lineage_receipt.chain_digest);
+    assert_eq!(must(ledger.active_records()).len(), 2);
+    let recovery = anchored(&snapshot);
+    drop(ledger);
+
+    let reopened = must(fixture.recover(recovery));
+    assert_eq!(must(reopened.snapshot()), snapshot);
+    assert_eq!(must(reopened.active_records()).len(), 2);
 }
 
 #[test]
