@@ -55,13 +55,34 @@ pub struct KnowledgeSupportV2 {
     pub source_revision: Revision,
     pub source_fact_digest: Digest32,
     pub validity_digest: Digest32,
+    /// Inclusive temporal visibility bound when this support is time-scoped.
+    /// `None` means the source contract does not impose a clock lower bound.
+    pub valid_from_unix_seconds: Option<i64>,
+    /// Exclusive temporal visibility bound. `None` means no time expiry.
+    pub valid_to_unix_seconds: Option<i64>,
     pub tombstoned: bool,
 }
 
 impl KnowledgeSupportV2 {
     fn validate(&self) -> Result<(), KnowledgeGenerationErrorV2> {
         ensure_digest("support_fact", self.source_fact_digest)?;
-        ensure_digest("support_validity", self.validity_digest)
+        ensure_digest("support_validity", self.validity_digest)?;
+        if self
+            .valid_from_unix_seconds
+            .zip(self.valid_to_unix_seconds)
+            .is_some_and(|(valid_from, valid_to)| valid_to <= valid_from)
+        {
+            return Err(KnowledgeGenerationErrorV2::InvalidValidityWindow);
+        }
+        Ok(())
+    }
+
+    fn visible_at(&self, unix_seconds: i64) -> bool {
+        self.valid_from_unix_seconds
+            .is_none_or(|valid_from| valid_from <= unix_seconds)
+            && self
+                .valid_to_unix_seconds
+                .is_none_or(|valid_to| unix_seconds < valid_to)
     }
 }
 
@@ -309,6 +330,9 @@ pub struct KnowledgeRelationQueryV2 {
     pub generation_digest: Digest32,
     pub seed_node_ids: Vec<StableId>,
     pub relation_kinds: Vec<KnowledgeRelationKindV2>,
+    /// Optional query-time validity cut. `None` performs a structural query;
+    /// `Some(t)` returns only nodes/edge supports visible at `t`.
+    pub valid_at_unix_seconds: Option<i64>,
     pub maximum_edges: u32,
 }
 
@@ -316,6 +340,7 @@ pub struct KnowledgeRelationQueryV2 {
 pub struct KnowledgeRelationResultV2 {
     pub query_id: StableId,
     pub generation_digest: Digest32,
+    pub valid_at_unix_seconds: Option<i64>,
     pub edges: Vec<KnowledgeEdgeV2>,
     pub omitted_count: u32,
     pub result_digest: Digest32,
@@ -344,6 +369,14 @@ pub fn query_relations(
         return Err(KnowledgeGenerationErrorV2::InvalidQueryLimit);
     }
     let seeds = query.seed_node_ids.into_iter().collect::<BTreeSet<_>>();
+    let visible_nodes = query.valid_at_unix_seconds.map(|at| {
+        generation
+            .nodes
+            .iter()
+            .filter(|node| node.supports.iter().any(|support| support.visible_at(at)))
+            .map(|node| node.node_id.clone())
+            .collect::<BTreeSet<_>>()
+    });
     let mut edges = generation
         .edges
         .iter()
@@ -351,14 +384,28 @@ pub fn query_relations(
             (seeds.contains(&edge.identity.source_node_id)
                 || seeds.contains(&edge.identity.target_node_id))
                 && (relation_kinds.is_empty() || relation_kinds.contains(&edge.identity.relation))
+                && visible_nodes.as_ref().is_none_or(|visible| {
+                    visible.contains(&edge.identity.source_node_id)
+                        && visible.contains(&edge.identity.target_node_id)
+                })
         })
-        .cloned()
+        .filter_map(|edge| {
+            let mut edge = edge.clone();
+            if let Some(at) = query.valid_at_unix_seconds {
+                edge.supports.retain(|support| support.visible_at(at));
+                if edge.supports.is_empty() {
+                    return None;
+                }
+            }
+            Some(edge)
+        })
         .collect::<Vec<_>>();
     let omitted_count = edges.len().saturating_sub(maximum_edges);
     edges.truncate(maximum_edges);
     let mut result = KnowledgeRelationResultV2 {
         query_id: query.query_id,
         generation_digest: generation.generation_digest,
+        valid_at_unix_seconds: query.valid_at_unix_seconds,
         edges,
         omitted_count: u32::try_from(omitted_count).unwrap_or(u32::MAX),
         result_digest: Digest32::ZERO,
@@ -568,6 +615,13 @@ fn compute_query_result_digest(result: &KnowledgeRelationResultV2) -> Digest32 {
     bytes.extend_from_slice(QUERY_DOMAIN);
     push_id(&mut bytes, &result.query_id);
     push_digest(&mut bytes, result.generation_digest);
+    match result.valid_at_unix_seconds {
+        Some(valid_at) => {
+            bytes.push(1);
+            push_i64(&mut bytes, valid_at);
+        }
+        None => bytes.push(0),
+    }
     push_u64(&mut bytes, u64::from(result.omitted_count));
     push_len(&mut bytes, result.edges.len());
     for edge in &result.edges {
@@ -592,6 +646,20 @@ fn push_supports(bytes: &mut Vec<u8>, supports: &[KnowledgeSupportV2]) {
         push_u64(bytes, support.source_revision.get());
         push_digest(bytes, support.source_fact_digest);
         push_digest(bytes, support.validity_digest);
+        match support.valid_from_unix_seconds {
+            Some(valid_from) => {
+                bytes.push(1);
+                push_i64(bytes, valid_from);
+            }
+            None => bytes.push(0),
+        }
+        match support.valid_to_unix_seconds {
+            Some(valid_to) => {
+                bytes.push(1);
+                push_i64(bytes, valid_to);
+            }
+            None => bytes.push(0),
+        }
     }
 }
 
@@ -635,6 +703,7 @@ pub enum KnowledgeGenerationErrorV2 {
     DuplicateDeltaIdentity,
     UnknownEdgeNode,
     InvalidSupportSet,
+    InvalidValidityWindow,
     TombstonedSupportVisible,
     NonCanonicalSupportOrder,
     InvalidPredecessor,
@@ -674,6 +743,10 @@ fn push_len(bytes: &mut Vec<u8>, value: usize) {
 }
 
 fn push_u64(bytes: &mut Vec<u8>, value: u64) {
+    bytes.extend_from_slice(&value.to_be_bytes());
+}
+
+fn push_i64(bytes: &mut Vec<u8>, value: i64) {
     bytes.extend_from_slice(&value.to_be_bytes());
 }
 
