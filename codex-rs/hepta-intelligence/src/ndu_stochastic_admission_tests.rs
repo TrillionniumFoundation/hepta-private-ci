@@ -9,14 +9,15 @@ use codex_hepta_intelligence_eval::NduWellPosednessDecisionV1;
 use codex_hepta_intelligence_eval::NduWellPosednessEvidenceV1;
 use codex_hepta_intelligence_eval::decide_ndu_convergence_v1;
 use codex_hepta_intelligence_eval::decide_ndu_well_posedness_v1;
+use codex_hepta_ndu::ConditionalMomentSampleV1;
 use codex_hepta_ndu::CovarianceConventionV1;
 use codex_hepta_ndu::NduCoefficientProfileV1;
 use codex_hepta_ndu::NduCovarianceProfileV1;
-use codex_hepta_ndu::ZEstimateV1;
+use codex_hepta_ndu::estimate_conditional_moments;
 use codex_hepta_ndu::admit_covariance_profile;
 use codex_hepta_ndu::admit_ndu_coefficient_profile;
 use codex_hepta_ndu::quantize_z_to_q24;
-use codex_hepta_types::AuthorityPosture;
+use codex_hepta_ndu::solve_backward_regression;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
@@ -66,19 +67,67 @@ fn coefficient_profile() -> codex_hepta_ndu::AdmittedNduCoefficientProfileV1 {
 fn z_projection(
     profile: &codex_hepta_ndu::AdmittedNduCoefficientProfileV1,
 ) -> codex_hepta_ndu::NduZQ24ProjectionV1 {
-    quantize_z_to_q24(
-        &ZEstimateV1 {
-            z: vec![vec![3.0, -1.0]],
-            condition_estimate: 1.0,
-            increment_eigenvalue_lower_estimate: 1.0,
-            maximum_relative_residual: 0.0,
-            evidence_digest: digest("z-estimate"),
-            authority: AuthorityPosture::DENY_ALL,
+    let covariance = admit_covariance_profile(NduCovarianceProfileV1 {
+        units_digest: digest("driver-units"),
+        driver_dimension: 2,
+        utility_dimension: 1,
+        convention: CovarianceConventionV1::Increment,
+        minimum_increment_eigenvalue: 1e-8,
+        maximum_condition: 1e6,
+        maximum_absolute_sample: 10.0,
+        maximum_absolute_z: 100.0,
+        maximum_relative_residual: 1e-10,
+    })
+    .expect("matching covariance profile");
+    // The coefficient profile binds a digest of the same numeric specification.
+    assert_eq!(covariance.digest(), profile_digest_for_fixture());
+    let samples = [
+        ConditionalMomentSampleV1 {
+            conditioning_digest: digest("conditioning"),
+            duration_micros: 1_000_000,
+            increment: vec![1.0, 0.0],
+            utility: vec![3.0],
         },
-        profile,
-        5_000,
-    )
-    .expect("q24 projection")
+        ConditionalMomentSampleV1 {
+            conditioning_digest: digest("conditioning"),
+            duration_micros: 1_000_000,
+            increment: vec![-1.0, 0.0],
+            utility: vec![-3.0],
+        },
+        ConditionalMomentSampleV1 {
+            conditioning_digest: digest("conditioning"),
+            duration_micros: 1_000_000,
+            increment: vec![0.0, 1.0],
+            utility: vec![-1.0],
+        },
+        ConditionalMomentSampleV1 {
+            conditioning_digest: digest("conditioning"),
+            duration_micros: 1_000_000,
+            increment: vec![0.0, -1.0],
+            utility: vec![1.0],
+        },
+    ];
+    let moments = estimate_conditional_moments(&samples, digest("source"), &covariance)
+        .expect("centered conditional moments");
+    let estimate =
+        solve_backward_regression(&moments, &covariance).expect("bounded regression estimate");
+    quantize_z_to_q24(&estimate, profile, 5_000).expect("q24 projection")
+}
+
+fn profile_digest_for_fixture() -> Digest32 {
+    admit_covariance_profile(NduCovarianceProfileV1 {
+        units_digest: digest("driver-units"),
+        driver_dimension: 2,
+        utility_dimension: 1,
+        convention: CovarianceConventionV1::Increment,
+        minimum_increment_eigenvalue: 1e-8,
+        maximum_condition: 1e6,
+        maximum_absolute_sample: 1e6,
+        maximum_absolute_z: 100.0,
+        maximum_relative_residual: 1e-10,
+    })
+    .expect("fixture covariance profile")
+    .digest()
 }
 
 fn assumption(name: &str, satisfied: bool) -> NduAssumptionEvidenceV1 {
@@ -174,7 +223,7 @@ fn independently_accepted_fbsde_evidence_composes_to_deny_all_admission() {
     .expect("independently qualified source admission");
 
     assert_eq!(receipt.solver_digest, solver);
-    assert_eq!(receipt.z_output_digest, projection.output_digest);
+    assert_eq!(receipt.z_output_digest, projection.output_digest());
     assert!(!receipt.admission_digest.is_zero());
     assert!(!receipt.authority.grants_any());
 }
