@@ -33,13 +33,23 @@ ALTER TABLE automation_runs ADD COLUMN terminal_receipt_digest TEXT
 ALTER TABLE automation_runs ADD COLUMN terminal_at_ms INTEGER
     CHECK (terminal_at_ms IS NULL OR terminal_at_ms >= 0);
 
+-- Legacy rows predate schedule revisions. Preserve their immutable ordering
+-- by assigning each historical occurrence its old monotonic occurrence number
+-- as a migration revision. The current schedule contract starts after that
+-- history, so repeated resume instants cannot collide with historical ids.
+UPDATE automation_tasks
+SET schedule_revision = CASE
+    WHEN next_occurrence > 1 THEN next_occurrence
+    ELSE 1
+END;
+
 UPDATE automation_runs
-SET occurrence_id = (
+SET schedule_revision = occurrence,
+    occurrence_id = (
         'hepta.automation.occurrence.v1:' ||
         (SELECT owner_agent_id FROM automation_tasks t WHERE t.task_id = automation_runs.task_id) ||
-        ':' || task_id || ':1:' || scheduled_for_ms
-    ),
-    schedule_revision = 1
+        ':' || task_id || ':' || occurrence || ':' || scheduled_for_ms
+    )
 WHERE occurrence_id IS NULL OR schedule_revision IS NULL;
 
 CREATE UNIQUE INDEX automation_runs_occurrence_identity
