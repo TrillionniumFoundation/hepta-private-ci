@@ -102,7 +102,7 @@ pub enum EvidenceClaimClassV1 {
 }
 
 impl EvidenceClaimClassV1 {
-    fn as_str(self) -> &'static str {
+    pub fn as_str(self) -> &'static str {
         match self {
             Self::ExactSource => "exact_source",
             Self::SyntheticMerge => "synthetic_merge",
@@ -122,6 +122,30 @@ impl EvidenceClaimClassV1 {
             Self::Unlearning => "unlearning",
             Self::OperatorAcceptance => "operator_acceptance",
             Self::RegistrySnapshot => "registry_snapshot",
+        }
+    }
+
+    pub fn parse(value: &str) -> Result<Self, String> {
+        match value {
+            "exact_source" => Ok(Self::ExactSource),
+            "synthetic_merge" => Ok(Self::SyntheticMerge),
+            "mandatory_tests" => Ok(Self::MandatoryTests),
+            "fixture" => Ok(Self::Fixture),
+            "hardware" => Ok(Self::Hardware),
+            "causal" => Ok(Self::Causal),
+            "longitudinal" => Ok(Self::Longitudinal),
+            "security_resource" => Ok(Self::SecurityResource),
+            "provider_effect" => Ok(Self::ProviderEffect),
+            "independent_decision" => Ok(Self::IndependentDecision),
+            "conformance" => Ok(Self::Conformance),
+            "algorithm_fault" => Ok(Self::AlgorithmFault),
+            "runtime" => Ok(Self::Runtime),
+            "outbox" => Ok(Self::Outbox),
+            "reconciliation" => Ok(Self::Reconciliation),
+            "unlearning" => Ok(Self::Unlearning),
+            "operator_acceptance" => Ok(Self::OperatorAcceptance),
+            "registry_snapshot" => Ok(Self::RegistrySnapshot),
+            _ => Err("unknown qualification evidence claim class".to_string()),
         }
     }
 }
@@ -178,6 +202,25 @@ impl EvidenceIssuerRoleV1 {
             Self::ProductWriter => "product_writer",
             Self::Selector => "selector",
             Self::Loader => "loader",
+        }
+    }
+
+    pub fn parse(value: &str) -> Result<Self, String> {
+        match value {
+            "generator" => Ok(Self::Generator),
+            "evaluator" => Ok(Self::Evaluator),
+            "reviewer" => Ok(Self::Reviewer),
+            "architecture" => Ok(Self::Architecture),
+            "durability" => Ok(Self::Durability),
+            "learning" => Ok(Self::Learning),
+            "security" => Ok(Self::Security),
+            "operator" => Ok(Self::Operator),
+            "documentation" => Ok(Self::Documentation),
+            "terminal_observer" => Ok(Self::TerminalObserver),
+            "product_writer" => Ok(Self::ProductWriter),
+            "selector" => Ok(Self::Selector),
+            "loader" => Ok(Self::Loader),
+            _ => Err("unknown qualification evidence issuer role".to_string()),
         }
     }
 }
@@ -378,12 +421,7 @@ impl QualificationEvidenceStore<'_> {
         envelope: &QualificationEvidenceEnvelopeV1,
     ) -> Result<EvidenceId, EvidenceError> {
         envelope.validate().map_err(EvidenceError::InvalidRecord)?;
-        let envelope_bytes = canonical_json(envelope)?;
-        if envelope_bytes.len() > QUALIFICATION_EVIDENCE_MAX_RECEIPT_BYTES {
-            return Err(EvidenceError::InvalidRecord(
-                "qualification evidence exceeds 256 KiB".to_string(),
-            ));
-        }
+        let envelope_bytes = qualification_envelope_bytes(envelope)?;
         let payload_bytes = canonical_json(&envelope.payload)?;
         let payload_sha256 = Sha256Digest::for_bytes(&payload_bytes);
         let envelope_sha256 = Sha256Digest::for_bytes(&envelope_bytes);
@@ -644,6 +682,19 @@ impl QualificationEvidenceStore<'_> {
                 .collect(),
         })
     }
+}
+
+pub fn qualification_envelope_bytes(
+    envelope: &QualificationEvidenceEnvelopeV1,
+) -> Result<Vec<u8>, EvidenceError> {
+    envelope.validate().map_err(EvidenceError::InvalidRecord)?;
+    let bytes = canonical_json(envelope)?;
+    if bytes.len() > QUALIFICATION_EVIDENCE_MAX_RECEIPT_BYTES {
+        return Err(EvidenceError::InvalidRecord(
+            "qualification evidence exceeds 256 KiB".to_string(),
+        ));
+    }
+    Ok(bytes)
 }
 
 pub fn qualification_append_scope_digest() -> Digest32 {
