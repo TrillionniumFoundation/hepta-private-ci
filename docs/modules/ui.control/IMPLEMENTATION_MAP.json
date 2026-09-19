@@ -7,14 +7,14 @@
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "ui.control",
-  "sourceMaturity": "native_web_client_boundary",
+  "sourceMaturity": "native_web_client_and_application_shell",
   "declaredRoots": [
     "apps/hepta-control-ui"
   ],
   "resolvedRoots": [
     "apps/hepta-control-ui"
   ],
-  "stateOwnerDisposition": "Owns presentation/session state and pending request identities only; backend modules retain authority and durable facts.",
+  "stateOwnerDisposition": "Owns presentation/session state plus a bounded non-authoritative durable mirror of unresolved request identities; backend modules retain authority and durable domain facts.",
   "terminalObserverDisposition": "The authenticated backend observation establishes terminal state; local acknowledgement or disconnect never does.",
   "operations": [
     {
@@ -57,7 +57,7 @@
           "command": "node --test apps/hepta-control-ui/test/runtime-client.test.js"
         }
       ],
-      "sourceSemantics": "Submits an authenticated request bound to displayed revision, operation identity, and semantic digest.",
+      "sourceSemantics": "Builds the final authority-free proposal, binds the exact displayed session/snapshot and target revision, computes the client-owned SHA-256 semantic digest from the immutable final semantics, durably mirrors the unresolved identity before transport I/O, and carries the proposal over transport.",
       "operation": "submit_request",
       "nativeSymbol": "async submitRequest(",
       "sourcePath": "apps/hepta-control-ui/src/runtime-client.js",
@@ -80,7 +80,7 @@
           "command": "node --test apps/hepta-control-ui/test/runtime-client.test.js"
         }
       ],
-      "sourceSemantics": "Uses the same authenticated identity/revision path for stop while preserving backend terminality.",
+      "sourceSemantics": "Deep-snapshots an explicit bounded stop scope, binds it to the exact displayed session/snapshot, computes the client-owned semantic digest, persists the unresolved identity before transport I/O, and leaves terminality to backend observation.",
       "operation": "request_stop",
       "nativeSymbol": "async requestStop(",
       "sourcePath": "apps/hepta-control-ui/src/runtime-client.js",
@@ -89,9 +89,9 @@
   ],
   "repositoryControlledGaps": [],
   "externalEvidenceGates": [
-    "selected Web framework/build artifact and browser support matrix",
-    "deployed authentication/CSP/CSRF/WebSocket topology",
-    "end-to-end accessibility and backend deployment qualification"
+    "real authenticated backend authority/RBAC/effect integration",
+    "selected TLS/session/reverse-proxy deployment applying generated security-header and CSRF/CORS/cookie policy",
+    "independent selected-browser/screen-reader and real-backend deployment qualification"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,

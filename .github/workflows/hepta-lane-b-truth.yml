@@ -3,9 +3,11 @@ name: Hepta Lane B source closure
 on:
   pull_request:
     paths:
+      - "apps/hepta-control-ui/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
       - "docs/memory/**"
+      - "docs/modules/ui.control/**"
       - "docs/modules/**/IMPLEMENTATION_MAP.json"
       - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
       - "qualification/**"
@@ -17,9 +19,11 @@ on:
     branches:
       - main
     paths:
+      - "apps/hepta-control-ui/**"
       - "codex-rs/hepta-memory/**"
       - "codex-rs/hepta-retrieval/**"
       - "docs/memory/**"
+      - "docs/modules/ui.control/**"
       - "docs/modules/**/IMPLEMENTATION_MAP.json"
       - "docs/readiness/LANE_B_RUNTIME_COMPOSITION.md"
       - "qualification/**"
@@ -68,7 +72,8 @@ jobs:
         run: |
           set -euo pipefail
           node --test apps/hepta-browser/test/runtime.test.js
-          node --test apps/hepta-control-ui/test/runtime-client.test.js
+          npm --prefix apps/hepta-control-ui run check
+          npm --prefix apps/hepta-control-ui run build
           node --test apps/hepta-native/test/shell-runtime.test.js
 
       - name: Verify Rust formatting
@@ -130,7 +135,8 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/hepta-lane-b-path-guard.py verify
           python3 scripts/hepta-lane-b-truth.py verify
-          cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
-          cd ..
+          npm --prefix apps/hepta-control-ui run check
+          npm --prefix apps/hepta-control-ui run build
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-matrixd --bin hepta-matrix-send-observer
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
