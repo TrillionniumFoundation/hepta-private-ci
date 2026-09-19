@@ -60,27 +60,36 @@ changing the V1 wire meaning:
 - `build_attachment` revalidates every selected admission against the current
   verified admission/revocation snapshot; expiry is exclusive, so an admission
   is already invalid when the snapshot time equals `expires_unix_ms`;
-- `deliver_context_v2` rejects revocation-epoch or snapshot-time rollback from
-  the attachment boundary, revalidates again immediately before send, invokes a
-  `ContextTransportV2` with the exact serialized payload bytes, rejects a
-  transport-reported payload digest mismatch, and emits
-  `ContextDeliveryReceiptV2` binding transport identity, provider request id,
-  acknowledgement digest, terminal disposition, time, and the verified
-  admission snapshot/time/revocation epoch used at send time; terminal transport
-  observation time must not predate that send-time safety snapshot;
-- compilation, serialization, attachment and delivery proof artifacts are
-  construction-closed outside the module, so external callers cannot synthesize
-  receipts with struct literals and skip mandatory-group selection, exact
-  tokenization or current-revocation checks;
-- `Delivered` additionally requires provider/transport acknowledgement of the
-  exact transmitted payload digest; an opaque acknowledgement for another
-  payload cannot be promoted to successful delivery.
+- `prepare_delivery_v2` rejects revocation-epoch or snapshot-time rollback
+  from the attachment boundary, revalidates every selected admission again
+  immediately before dispatch, and emits a construction-closed
+  `ContextDeliveryPreparationV2` safety witness binding the exact serialized
+  payload, provider/model profile and current verified admission snapshot;
+- the runtime/provider owner, not this compiler, performs the physical model
+  request and consumes any required final-use authority. Its canonical
+  `ProviderRequestBinding` must carry the exact payload SHA-256 in
+  `ephemeral_input_sha256` and the delivery-preparation witness SHA-256 in
+  `ephemeral_input_witness_sha256`;
+- `observe_delivery` accepts only a structurally valid
+  `ProviderInvocationReceipt` plus an independent
+  `ContextProviderDeliveryVerifierV2` decision, verifies the exact payload
+  binding, pre-dispatch witness, provider/model identity, attempt and terminal
+  evidence, and emits a deny-all `ContextDeliveryReceiptV2`;
+- compilation, serialization, attachment, preparation and delivery proof
+  artifacts are construction-closed outside the module, so external callers
+  cannot synthesize receipts with struct literals and skip mandatory-group
+  selection, exact tokenization or current-revocation checks;
+- `Delivered` means the canonical provider receipt reached a completed terminal
+  observation for the exact bound input. It does not claim exactly-once external
+  execution or independent provider truth beyond the qualified evidence owner.
 
-Verifier, tokenizer, serializer and transport implementations are explicit
-trusted adapter boundaries. Their identities are digest-bound, but this crate
-does not independently prove a malicious adapter honest. Production composition
-must qualify those concrete adapters and the authoritative admission/provider
-semantics. Compilation, attachment and delivery receipts remain
+Admission-verifier, tokenizer, serializer and provider-evidence verifier
+implementations are explicit trusted adapter boundaries. Their identities are
+digest-bound, but this crate does not independently prove a malicious adapter
+honest. Production composition must qualify those concrete adapters, bind the
+runtime provider owner to the opaque pre-dispatch witness, and consume any
+required `VerifiedUseToken` at the actual effect boundary. Compilation,
+attachment, preparation and delivery receipts remain
 `AuthorityPosture::DENY_ALL`.
 
 The additive owner-local, crate-native `compile_candidate_bound` and
