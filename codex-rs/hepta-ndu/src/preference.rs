@@ -1,5 +1,4 @@
 use std::collections::BTreeMap;
-use std::collections::BTreeSet;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
@@ -16,6 +15,8 @@ const ETA_MIN_RAW: i64 = 1_i64 << 28;
 const ETA_MAX_RAW: i64 = 1_i64 << 30;
 const RESIDUAL_TOLERANCE_RAW: i64 = 1_i64 << 12;
 const MAX_ITERATIONS: u32 = 64;
+const MAX_PREFERENCE_DIMENSIONS: usize = 64;
+const PREFERENCE_STATE_DIGEST_DOMAIN: &[u8] = b"hepta.ndu.preference-state.v1";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PreferenceState {
@@ -27,9 +28,10 @@ pub struct PreferenceState {
     pub state_digest: Digest32,
 }
 
-/// Local deterministic solver step. This is not the canonical
-/// `NduIterationReceiptV1` until bound through the protocol adapter with the
-/// frozen objective, subject, event, coefficient and generation context.
+/// Local deterministic solver step. The receipt is created with an immutable
+/// context digest and cannot be constructed by external crates because that
+/// field is crate-private. Protocol publication must verify that digest against
+/// the complete frozen context.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduSolverIterationReceipt {
     pub iteration: u32,
@@ -38,6 +40,14 @@ pub struct NduSolverIterationReceipt {
     pub residual_raw: i64,
     pub projection_count: u32,
     pub state_digest: Digest32,
+    pub(crate) context_digest: Digest32,
+}
+
+impl NduSolverIterationReceipt {
+    #[must_use]
+    pub const fn context_digest(&self) -> Digest32 {
+        self.context_digest
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -60,50 +70,101 @@ pub struct NduSolverTerminationReceipt {
     pub terminal_state_digest: Digest32,
 }
 
+/// A converged result carries a usable state. Iteration exhaustion deliberately
+/// omits the terminal state so callers cannot accidentally treat a bounded but
+/// unconverged numerical iterate as an accepted preference state.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum PreferenceSolveOutcome {
+    Converged {
+        state: PreferenceState,
+        termination: NduSolverTerminationReceipt,
+        receipts: Vec<NduSolverIterationReceipt>,
+    },
+    Unavailable {
+        termination: NduSolverTerminationReceipt,
+        receipts: Vec<NduSolverIterationReceipt>,
+    },
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct UpdateGeneration {
     pub generation: Generation,
     pub subject_class: SubjectClass,
     pub artifact_id: StableId,
+    /// Immutable identity of the direct parent artifact in the
+    /// system -> domain -> agent -> episode hierarchy, when one exists.
+    pub parent_artifact_id: Option<StableId>,
 }
 
-/// Rejects parent and child hierarchy updates in one generation.
+/// Rejects only actual parent/child updates in one generation. Unrelated
+/// subjects may update in the same generation even when their classes differ.
 pub fn validate_staged_updates(updates: &[UpdateGeneration]) -> Result<(), NduError> {
-    let mut classes: BTreeMap<u64, BTreeSet<SubjectClass>> = BTreeMap::new();
+    let mut by_generation: BTreeMap<u64, BTreeMap<StableId, SubjectClass>> = BTreeMap::new();
     for update in updates {
-        classes
-            .entry(update.generation.get())
-            .or_default()
-            .insert(update.subject_class);
-    }
-    for (generation, values) in classes {
-        if values.len() > 1 {
-            return Err(NduError::SimultaneousHierarchyUpdate(generation));
+        let artifacts = by_generation.entry(update.generation.get()).or_default();
+        if artifacts
+            .insert(update.artifact_id.clone(), update.subject_class)
+            .is_some()
+        {
+            return Err(NduError::DuplicateHierarchyArtifact(
+                update.artifact_id.to_string(),
+            ));
         }
+    }
+
+    for update in updates {
+        let Some(parent_id) = update.parent_artifact_id.as_ref() else {
+            continue;
+        };
+        if parent_id == &update.artifact_id {
+            return Err(NduError::InvalidHierarchyRelation(update.generation.get()));
+        }
+        let Some(parent_class) = by_generation
+            .get(&update.generation.get())
+            .and_then(|artifacts| artifacts.get(parent_id))
+        else {
+            continue;
+        };
+        if expected_parent_class(update.subject_class) != Some(*parent_class) {
+            return Err(NduError::InvalidHierarchyRelation(update.generation.get()));
+        }
+        return Err(NduError::SimultaneousHierarchyUpdate(
+            update.generation.get(),
+        ));
     }
     Ok(())
 }
 
+const fn expected_parent_class(subject_class: SubjectClass) -> Option<SubjectClass> {
+    match subject_class {
+        SubjectClass::System => None,
+        SubjectClass::Domain => Some(SubjectClass::System),
+        SubjectClass::Agent => Some(SubjectClass::Domain),
+        SubjectClass::Episode => Some(SubjectClass::Agent),
+    }
+}
+
 /// Iterates a bounded damped preference update toward a deterministic target.
-/// The previous state remains immutable and every step emits a new revision.
+/// Inputs are validated against the public P<=64 and [-1,1] contract before any
+/// revision is created. A state already within residual tolerance is returned
+/// unchanged with zero iterations. Exhaustion returns `Unavailable` without a
+/// usable terminal state.
 pub fn solve_preference_target(
     initial: PreferenceState,
     mut target: Vec<AxisValue>,
     eta: FixedQ32,
-) -> Result<
-    (
-        PreferenceState,
-        NduSolverTerminationReceipt,
-        Vec<NduSolverIterationReceipt>,
-    ),
-    NduError,
-> {
+    context_digest: Digest32,
+) -> Result<PreferenceSolveOutcome, NduError> {
     if !(ETA_MIN_RAW..=ETA_MAX_RAW).contains(&eta.raw()) {
         return Err(NduError::InvalidEta);
     }
-    normalize_values(&mut target)?;
+    if context_digest.is_zero() {
+        return Err(NduError::EmptyProtocolDigest("solver_context"));
+    }
+
+    normalize_preference_values(&mut target)?;
     let mut state = initial;
-    normalize_values(&mut state.values)?;
+    normalize_preference_values(&mut state.values)?;
     if state
         .values
         .iter()
@@ -122,13 +183,31 @@ pub fn solve_preference_target(
     if expected_state_digest != state.state_digest {
         return Err(NduError::StateDigestMismatch);
     }
+
     let predecessor_digest = state.state_digest;
+    let initial_residual_raw = maximum_residual(&state.values, &target)?;
+    if initial_residual_raw <= RESIDUAL_TOLERANCE_RAW {
+        return Ok(PreferenceSolveOutcome::Converged {
+            termination: NduSolverTerminationReceipt {
+                disposition: SolveDisposition::Converged,
+                iterations: 0,
+                terminal_residual_raw: initial_residual_raw,
+                maximum_residual_raw: initial_residual_raw,
+                projection_count: 0,
+                predecessor_digest,
+                terminal_state_digest: state.state_digest,
+            },
+            state,
+            receipts: Vec::new(),
+        });
+    }
+
     let mut receipts = Vec::new();
     let mut total_projection_count = 0_u32;
     let mut maximum_residual_raw = 0_i64;
 
     for iteration in 1..=MAX_ITERATIONS {
-        let (next, receipt) = update_once(&state, &target, eta, iteration)?;
+        let (next, receipt) = update_once(&state, &target, eta, iteration, context_digest)?;
         let terminal_residual_raw = receipt.residual_raw;
         maximum_residual_raw = maximum_residual_raw.max(terminal_residual_raw);
         total_projection_count = total_projection_count
@@ -138,32 +217,37 @@ pub fn solve_preference_target(
         state = next;
         receipts.push(receipt);
         if converged {
-            let termination = NduSolverTerminationReceipt {
-                disposition: SolveDisposition::Converged,
-                iterations: iteration,
-                terminal_residual_raw,
-                maximum_residual_raw,
-                projection_count: total_projection_count,
-                predecessor_digest,
-                terminal_state_digest: state.state_digest,
-            };
-            return Ok((state, termination, receipts));
+            return Ok(PreferenceSolveOutcome::Converged {
+                termination: NduSolverTerminationReceipt {
+                    disposition: SolveDisposition::Converged,
+                    iterations: iteration,
+                    terminal_residual_raw,
+                    maximum_residual_raw,
+                    projection_count: total_projection_count,
+                    predecessor_digest,
+                    terminal_state_digest: state.state_digest,
+                },
+                state,
+                receipts,
+            });
         }
     }
 
     let terminal_residual_raw = receipts
         .last()
         .map_or(i64::MAX, |receipt| receipt.residual_raw);
-    let termination = NduSolverTerminationReceipt {
-        disposition: SolveDisposition::IterationBoundReached,
-        iterations: MAX_ITERATIONS,
-        terminal_residual_raw,
-        maximum_residual_raw,
-        projection_count: total_projection_count,
-        predecessor_digest,
-        terminal_state_digest: state.state_digest,
-    };
-    Ok((state, termination, receipts))
+    Ok(PreferenceSolveOutcome::Unavailable {
+        termination: NduSolverTerminationReceipt {
+            disposition: SolveDisposition::IterationBoundReached,
+            iterations: MAX_ITERATIONS,
+            terminal_residual_raw,
+            maximum_residual_raw,
+            projection_count: total_projection_count,
+            predecessor_digest,
+            terminal_state_digest: state.state_digest,
+        },
+        receipts,
+    })
 }
 
 fn update_once(
@@ -171,6 +255,7 @@ fn update_once(
     target: &[AxisValue],
     eta: FixedQ32,
     iteration: u32,
+    context_digest: Digest32,
 ) -> Result<(PreferenceState, NduSolverIterationReceipt), NduError> {
     let mut next_values = Vec::with_capacity(state.values.len());
     let mut residual_raw = 0_i64;
@@ -229,6 +314,7 @@ fn update_once(
         residual_raw,
         projection_count,
         state_digest,
+        context_digest,
     };
     Ok((next, receipt))
 }
@@ -239,7 +325,7 @@ impl PreferenceState {
         subject_class: SubjectClass,
         mut values: Vec<AxisValue>,
     ) -> Result<Self, NduError> {
-        normalize_values(&mut values)?;
+        normalize_preference_values(&mut values)?;
         let revision = Revision::new(/*value*/ 1).map_err(|_| NduError::Arithmetic)?;
         let state_digest = digest_state(
             &subject_id,
@@ -259,7 +345,18 @@ impl PreferenceState {
     }
 }
 
-fn normalize_values(values: &mut [AxisValue]) -> Result<(), NduError> {
+fn normalize_preference_values(values: &mut [AxisValue]) -> Result<(), NduError> {
+    if values.len() > MAX_PREFERENCE_DIMENSIONS {
+        return Err(NduError::PreferenceDimensionLimitExceeded);
+    }
+    let minimum = FixedQ32::from_raw(-FixedQ32::ONE.raw());
+    for value in values.iter() {
+        if value.value < minimum || value.value > FixedQ32::ONE {
+            return Err(NduError::PreferenceValueOutOfRange(
+                value.axis.to_string(),
+            ));
+        }
+    }
     values.sort();
     for window in values.windows(2) {
         if window[0].axis == window[1].axis {
@@ -267,6 +364,21 @@ fn normalize_values(values: &mut [AxisValue]) -> Result<(), NduError> {
         }
     }
     Ok(())
+}
+
+fn maximum_residual(current: &[AxisValue], target: &[AxisValue]) -> Result<i64, NduError> {
+    let mut maximum = 0_i64;
+    for (current, desired) in current.iter().zip(target) {
+        let residual = desired
+            .value
+            .checked_sub(current.value)
+            .map_err(|_| NduError::Arithmetic)?
+            .raw()
+            .checked_abs()
+            .ok_or(NduError::Arithmetic)?;
+        maximum = maximum.max(residual);
+    }
+    Ok(maximum)
 }
 
 fn digest_state(
@@ -277,6 +389,7 @@ fn digest_state(
     values: &[AxisValue],
 ) -> Digest32 {
     let mut bytes = Vec::new();
+    bytes.extend_from_slice(PREFERENCE_STATE_DIGEST_DOMAIN);
     push_id(&mut bytes, subject_id);
     bytes.push(subject_class.tag());
     bytes.extend_from_slice(&revision.get().to_be_bytes());
