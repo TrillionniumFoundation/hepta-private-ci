@@ -120,19 +120,18 @@ impl SqliteConfig {
             let target_wal = super::sqlite_sidecar_path(target, "-wal");
             let target_journal = super::sqlite_sidecar_path(target, "-journal");
             let mut created = Vec::new();
-            let write_private = |path: &std::path::Path,
-                                 bytes: &[u8]|
-             -> Result<(), SqliteRecoveryError> {
-                let mut file = OpenOptions::new()
-                    .write(true)
-                    .create_new(true)
-                    .mode(0o600)
-                    .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
-                    .open(path)
-                    .map_err(super::indeterminate)?;
-                file.write_all(bytes).map_err(super::indeterminate)?;
-                file.sync_all().map_err(super::indeterminate)
-            };
+            let write_private =
+                |path: &std::path::Path, bytes: &[u8]| -> Result<(), SqliteRecoveryError> {
+                    let mut file = OpenOptions::new()
+                        .write(true)
+                        .create_new(true)
+                        .mode(0o600)
+                        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW)
+                        .open(path)
+                        .map_err(super::indeterminate)?;
+                    file.write_all(bytes).map_err(super::indeterminate)?;
+                    file.sync_all().map_err(super::indeterminate)
+                };
 
             let result = (|| {
                 write_private(target, &database)?;

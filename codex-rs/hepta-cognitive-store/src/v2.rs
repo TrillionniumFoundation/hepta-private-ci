@@ -367,11 +367,11 @@ impl AdmittedCognitiveStoreV2 {
             {
                 return Err(CognitiveStoreV2Error::SnapshotCursorMismatch);
             }
-            let Some(record) = self
-                .histories
-                .get(&after.record_id)
-                .and_then(|history| history.iter().find(|record| record.revision == after.revision))
-            else {
+            let Some(record) = self.histories.get(&after.record_id).and_then(|history| {
+                history
+                    .iter()
+                    .find(|record| record.revision == after.revision)
+            }) else {
                 return Err(CognitiveStoreV2Error::SnapshotCursorMismatch);
             };
             if record.record_digest() != after.record_digest {
@@ -952,8 +952,8 @@ impl CognitiveStoreImageV2 {
             validate_record_history(record_id, history)?;
         }
 
-        let record_count =
-            u64::try_from(self.records.len()).map_err(|_| CognitiveStoreV2Error::FrontierOverflow)?;
+        let record_count = u64::try_from(self.records.len())
+            .map_err(|_| CognitiveStoreV2Error::FrontierOverflow)?;
         let expected_sequence = record_count
             .checked_add(1)
             .ok_or(CognitiveStoreV2Error::SequenceOverflow)?;
@@ -1228,10 +1228,7 @@ fn journal_capacity_for(maximum_record_revisions: usize) -> usize {
         .max(1)
 }
 
-fn same_snapshot_context(
-    left: &CognitiveSnapshotKeyV1,
-    right: &CognitiveSnapshotKeyV1,
-) -> bool {
+fn same_snapshot_context(left: &CognitiveSnapshotKeyV1, right: &CognitiveSnapshotKeyV1) -> bool {
     let left = &left.vector;
     let right = &right.vector;
     left.scope_id == right.scope_id

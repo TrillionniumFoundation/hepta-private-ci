@@ -488,10 +488,9 @@ impl CognitiveStore {
                 )));
             }
 
-            let citation_limit =
-                i64::try_from(MAX_LANE_C_PAGE_CITATIONS + 1).map_err(|_| {
-                    CognitiveStoreError::Invalid("Lane C citation limit exceeds i64".to_string())
-                })?;
+            let citation_limit = i64::try_from(MAX_LANE_C_PAGE_CITATIONS + 1).map_err(|_| {
+                CognitiveStoreError::Invalid("Lane C citation limit exceeds i64".to_string())
+            })?;
             let mut citation_query = QueryBuilder::<Sqlite>::new(
                 "SELECT c.memory_id, c.memory_revision, s.source_id, s.content_sha256
                  FROM memory_citations c
@@ -943,10 +942,7 @@ fn push_frontiers(bytes: &mut Vec<u8>, value: &CognitiveOwnerFrontiers) {
     }
 }
 
-fn push_optional_page_cursor(
-    bytes: &mut Vec<u8>,
-    value: Option<&DurableCognitiveSnapshotCursor>,
-) {
+fn push_optional_page_cursor(bytes: &mut Vec<u8>, value: Option<&DurableCognitiveSnapshotCursor>) {
     match value {
         Some(cursor) => {
             bytes.push(1);

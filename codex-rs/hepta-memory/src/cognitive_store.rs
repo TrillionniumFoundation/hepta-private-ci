@@ -255,7 +255,6 @@ impl CognitiveStoreOpenGuard {
         })?;
         Ok(Self { file, _path: path })
     }
-
 }
 
 impl CognitiveStore {
@@ -1212,16 +1211,12 @@ fn bounded_limit(maximum: usize) -> Result<i64, CognitiveStoreError> {
         })
 }
 
-
 pub(crate) fn recovered_database_filename(
     anchor: &CognitiveRecoveryAnchor,
     writer_fence: &Sha256Digest,
 ) -> String {
     let mut hasher = Sha256::new();
-    frame_part(
-        &mut hasher,
-        b"hepta:cognitive:recovered-generation:v1",
-    );
+    frame_part(&mut hasher, b"hepta:cognitive:recovered-generation:v1");
     frame_part(&mut hasher, anchor.state_digest.as_str().as_bytes());
     frame_part(&mut hasher, writer_fence.as_str().as_bytes());
     frame_part(&mut hasher, &std::process::id().to_be_bytes());

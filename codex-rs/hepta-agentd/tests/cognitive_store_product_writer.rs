@@ -15,8 +15,8 @@ use codex_hepta_paths::HeptaFleetRoot;
 use tempfile::TempDir;
 
 #[tokio::test]
-async fn agentd_product_host_commits_through_canonical_cognitive_store() -> Result<(), Box<dyn Error>>
-{
+async fn agentd_product_host_commits_through_canonical_cognitive_store()
+-> Result<(), Box<dyn Error>> {
     let temp = TempDir::new()?;
     let fleet_root = temp.path().join("fleet");
     fs::create_dir_all(&fleet_root)?;
@@ -36,18 +36,15 @@ async fn agentd_product_host_commits_through_canonical_cognitive_store() -> Resu
             b"agentd-product-writer-test-fence".to_vec(),
         )?,
     )?;
-    let verifier =
-        |lease: &ProductionAuthorityLease, expected: &AgentId| -> Result<(), String> {
-            if lease.agent_id != *expected {
-                return Err("authority owner mismatch".to_string());
-            }
-            if lease.grant_digest
-                != Sha256Digest::for_bytes(b"agentd-product-writer-test-grant")
-            {
-                return Err("unexpected grant digest".to_string());
-            }
-            Ok(())
-        };
+    let verifier = |lease: &ProductionAuthorityLease, expected: &AgentId| -> Result<(), String> {
+        if lease.agent_id != *expected {
+            return Err("authority owner mismatch".to_string());
+        }
+        if lease.grant_digest != Sha256Digest::for_bytes(b"agentd-product-writer-test-grant") {
+            return Err("unexpected grant digest".to_string());
+        }
+        Ok(())
+    };
 
     let host = AgentdProductionWriterHost::open_with_store(
         store,

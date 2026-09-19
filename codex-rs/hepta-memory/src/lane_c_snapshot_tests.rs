@@ -111,7 +111,10 @@ async fn durable_lane_c_pages_preserve_ancestry_and_global_tombstone_frontier() 
     assert_eq!(first_page.frontiers(), full.frontiers());
     assert_eq!(first_page.frontiers().tombstone, 1);
     assert!(!first_page.is_complete());
-    assert_eq!(first_page.authority(), codex_hepta_types::AuthorityPosture::DENY_ALL);
+    assert_eq!(
+        first_page.authority(),
+        codex_hepta_types::AuthorityPosture::DENY_ALL
+    );
     let cursor = first_page.next().cloned().expect("continuation");
 
     let second_page = store
@@ -127,9 +130,11 @@ async fn durable_lane_c_pages_preserve_ancestry_and_global_tombstone_frontier() 
     let mut expected = full.snapshot().records.clone();
     expected.sort_by(|left, right| left.record_id.cmp(&right.record_id));
     assert_eq!(records, expected);
-    assert!(records.iter().any(|record| {
-        record.revision.get() == 2 && record.predecessor_digest.is_some()
-    }));
+    assert!(
+        records
+            .iter()
+            .any(|record| { record.revision.get() == 2 && record.predecessor_digest.is_some() })
+    );
 }
 
 #[tokio::test]

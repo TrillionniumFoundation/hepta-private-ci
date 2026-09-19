@@ -267,7 +267,6 @@ fn export_reopen_and_snapshot_preserve_history_and_tombstones() {
         .unwrap_or_else(|error| panic!("validate snapshot: {error}"));
 }
 
-
 #[test]
 fn admission_rejects_unverified_and_contradicted_candidates_before_materialization() {
     for (index, (verification, expected)) in [
@@ -290,11 +289,7 @@ fn admission_rejects_unverified_and_contradicted_candidates_before_materializati
             MemoryAdmissionKind::Inference,
         );
         value.verification = verification;
-        let write_intent = intent(
-            &store,
-            &format!("intent:verification:{index}"),
-            &value,
-        );
+        let write_intent = intent(&store, &format!("intent:verification:{index}"), &value);
         let record_id = value.candidate_id.clone();
         assert_eq!(
             store.append_admitted(&Verifier, value, write_intent),
@@ -306,16 +301,23 @@ fn admission_rejects_unverified_and_contradicted_candidates_before_materializati
 
 #[test]
 fn tombstone_uses_reserved_capacity_after_ordinary_capacity_is_full() {
-    let mut store =
-        AdmittedCognitiveStoreV2::new(snapshot_key(), digest("writer-fence"), 1)
-            .unwrap_or_else(|error| panic!("valid one-record store: {error}"));
-    let first = candidate("memory:capacity:1", "content:v1", MemoryAdmissionKind::Observation);
+    let mut store = AdmittedCognitiveStoreV2::new(snapshot_key(), digest("writer-fence"), 1)
+        .unwrap_or_else(|error| panic!("valid one-record store: {error}"));
+    let first = candidate(
+        "memory:capacity:1",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
     let first_intent = intent(&store, "intent:capacity:1", &first);
     store
         .append_admitted(&Verifier, first, first_intent)
         .unwrap_or_else(|error| panic!("append within ordinary capacity: {error}"));
 
-    let second = candidate("memory:capacity:2", "content:v1", MemoryAdmissionKind::Observation);
+    let second = candidate(
+        "memory:capacity:2",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
     let second_intent = intent(&store, "intent:capacity:2", &second);
     assert_eq!(
         store.append_admitted(&Verifier, second, second_intent),
@@ -344,10 +346,13 @@ fn tombstone_uses_reserved_capacity_after_ordinary_capacity_is_full() {
 
 #[test]
 fn saturated_retry_journal_blocks_new_admission_but_not_forget() {
-    let mut store =
-        AdmittedCognitiveStoreV2::new(snapshot_key(), digest("writer-fence"), 1)
-            .unwrap_or_else(|error| panic!("valid one-record store: {error}"));
-    let value = candidate("memory:journal:1", "content:v1", MemoryAdmissionKind::Observation);
+    let mut store = AdmittedCognitiveStoreV2::new(snapshot_key(), digest("writer-fence"), 1)
+        .unwrap_or_else(|error| panic!("valid one-record store: {error}"));
+    let value = candidate(
+        "memory:journal:1",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
     let first_intent = intent(&store, "intent:journal:1", &value);
     store
         .append_admitted(&Verifier, value.clone(), first_intent)
@@ -385,7 +390,11 @@ fn saturated_retry_journal_blocks_new_admission_but_not_forget() {
 #[test]
 fn image_rejects_cross_object_receipt_tampering_even_with_recomputed_digest() {
     let mut store = store();
-    let value = candidate("memory:image:1", "content:v1", MemoryAdmissionKind::Inference);
+    let value = candidate(
+        "memory:image:1",
+        "content:v1",
+        MemoryAdmissionKind::Inference,
+    );
     let write_intent = intent(&store, "intent:image:1", &value);
     store
         .append_admitted(&Verifier, value, write_intent)
@@ -414,7 +423,11 @@ fn image_rejects_cross_object_receipt_tampering_even_with_recomputed_digest() {
 #[test]
 fn image_rejects_sequence_and_frontier_claims_not_derived_from_history() {
     let mut store = store();
-    let value = candidate("memory:image:2", "content:v1", MemoryAdmissionKind::Observation);
+    let value = candidate(
+        "memory:image:2",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
     let write_intent = intent(&store, "intent:image:2", &value);
     store
         .append_admitted(&Verifier, value, write_intent)
@@ -436,15 +449,14 @@ fn image_rejects_sequence_and_frontier_claims_not_derived_from_history() {
     wrong_frontier.journal.clear();
     let mut vector = wrong_frontier.snapshot_key.vector.clone();
     vector.memory_ledger_frontier = 1;
-    wrong_frontier.snapshot_key = CognitiveSnapshotKeyV1::new(vector)
-        .unwrap_or_else(|error| panic!("snapshot key: {error}"));
+    wrong_frontier.snapshot_key =
+        CognitiveSnapshotKeyV1::new(vector).unwrap_or_else(|error| panic!("snapshot key: {error}"));
     wrong_frontier.image_digest = wrong_frontier.compute_image_digest();
     assert_eq!(
         wrong_frontier.validate(),
         Err(CognitiveStoreV2Error::ImageFrontierMismatch("memory"))
     );
 }
-
 
 fn page_request(
     store: &AdmittedCognitiveStoreV2,
@@ -469,7 +481,11 @@ fn page_request(
 #[test]
 fn paged_snapshot_preserves_exact_ancestry_across_page_boundaries() {
     let mut store = store();
-    let first = candidate("memory:page:a", "content:v1", MemoryAdmissionKind::Observation);
+    let first = candidate(
+        "memory:page:a",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
     let first_intent = intent(&store, "intent:page:1", &first);
     store
         .append_admitted(&Verifier, first, first_intent)
@@ -483,7 +499,11 @@ fn paged_snapshot_preserves_exact_ancestry_across_page_boundaries() {
     store
         .append_admitted(&Verifier, correction, correction_intent)
         .unwrap_or_else(|error| panic!("append correction: {error}"));
-    let second = candidate("memory:page:b", "content:v1", MemoryAdmissionKind::Observation);
+    let second = candidate(
+        "memory:page:b",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
     let second_intent = intent(&store, "intent:page:3", &second);
     store
         .append_admitted(&Verifier, second, second_intent)
@@ -562,10 +582,7 @@ fn paged_snapshot_rejects_continuation_after_store_cut_changes() {
         .unwrap_or_else(|error| panic!("append intervening mutation: {error}"));
 
     assert_eq!(
-        store.open_snapshot_page(
-            10,
-            page_request(&store, "page:stable:2", Some(cursor), 1),
-        ),
+        store.open_snapshot_page(10, page_request(&store, "page:stable:2", Some(cursor), 1),),
         Err(CognitiveStoreV2Error::SnapshotCursorMismatch)
     );
 }
@@ -573,7 +590,11 @@ fn paged_snapshot_rejects_continuation_after_store_cut_changes() {
 #[test]
 fn paged_snapshot_rejects_forged_cursor_and_broken_page_ancestry() {
     let mut store = store();
-    let first = candidate("memory:page:forged", "content:v1", MemoryAdmissionKind::Observation);
+    let first = candidate(
+        "memory:page:forged",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
     let first_intent = intent(&store, "intent:page:forged:1", &first);
     store
         .append_admitted(&Verifier, first, first_intent)
@@ -594,10 +615,7 @@ fn paged_snapshot_rejects_forged_cursor_and_broken_page_ancestry() {
     let mut forged = first_page.next.clone().expect("cursor");
     forged.record_digest = digest("forged-cursor");
     assert_eq!(
-        store.open_snapshot_page(
-            10,
-            page_request(&store, "page:forged:2", Some(forged), 1),
-        ),
+        store.open_snapshot_page(10, page_request(&store, "page:forged:2", Some(forged), 1),),
         Err(CognitiveStoreV2Error::SnapshotCursorMismatch)
     );
 

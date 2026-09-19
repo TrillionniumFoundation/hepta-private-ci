@@ -85,11 +85,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let snapshot_started = Instant::now();
     let snapshot = store
-        .lane_c_snapshot(
-            &access,
-            &CognitiveScope::AgentPrivate,
-            now_unix_seconds()?,
-        )
+        .lane_c_snapshot(&access, &CognitiveScope::AgentPrivate, now_unix_seconds()?)
         .await?;
     let snapshot_us = elapsed_us(snapshot_started);
     let snapshot_records = snapshot.snapshot().records.len();
@@ -170,11 +166,7 @@ fn percentile(sorted: &[u64], percentile: usize) -> u64 {
     if sorted.is_empty() {
         return 0;
     }
-    let index = sorted
-        .len()
-        .saturating_mul(percentile)
-        .saturating_add(99)
-        / 100;
+    let index = sorted.len().saturating_mul(percentile).saturating_add(99) / 100;
     sorted[index.saturating_sub(1).min(sorted.len() - 1)]
 }
 
