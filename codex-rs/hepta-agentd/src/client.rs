@@ -82,9 +82,7 @@ impl AgentdClient {
     ///
     /// The client spawn generation identifies the process. Run authority binds
     /// to the current supervisor lifecycle generation carried by the response.
-    pub async fn health_with_generation(
-        &self,
-    ) -> Result<(HealthSnapshot, u64), AgentdError> {
+    pub async fn health_with_generation(&self) -> Result<(HealthSnapshot, u64), AgentdError> {
         let response = self
             .send(AgentdRequest::health(
                 self.request_id(),
