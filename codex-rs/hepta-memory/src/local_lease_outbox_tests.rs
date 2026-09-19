@@ -2637,3 +2637,116 @@ fn qualification_durable_writer_crash_reopen_probe() {
         serde_json::to_string(&decoded).expect("render H4 receipt")
     );
 }
+
+
+#[tokio::test]
+async fn expired_owner_handoff_allows_successor_to_reconcile_indeterminate_without_resend() {
+    let temp = TempDir::new().expect("temp dir");
+    let store = opened_store(&temp, 151).await;
+    let expires_at = unix_seconds() + 3_600;
+    let old = acquired(
+        store
+            .acquire_host_bound_lease(
+                "lease:handoff-indeterminate",
+                10,
+                20,
+                1,
+                "fence:handoff-1",
+                expires_at,
+            )
+            .await
+            .expect("old host-bound lease"),
+    );
+    old.admit(
+        "occurrence:handoff",
+        "destination.write",
+        "{\"value\":1}",
+    )
+    .await
+    .expect("atomic admission");
+    old.mark_indeterminate("occurrence:handoff", "ack-lost")
+        .await
+        .expect("indeterminate");
+
+    let expired = old
+        .expire_lease_at_unix_seconds(expires_at)
+        .await
+        .expect("explicit expiry");
+    assert_eq!(expired.state, LocalLeaseState::RolledBack);
+
+    let next_expiry = expires_at + 3_600;
+    let next = acquired(
+        store
+            .acquire_host_bound_lease_after_head(
+                "lease:handoff-indeterminate",
+                expired,
+                10,
+                21,
+                2,
+                "fence:handoff-2",
+                next_expiry,
+            )
+            .await
+            .expect("successor lease"),
+    );
+    let settled = next
+        .reconcile("occurrence:handoff", LocalReconcileOutcome::Committed)
+        .await
+        .expect("successor reconciliation");
+    assert_eq!(settled.state, LocalOutcomeState::Committed);
+    assert_eq!(
+        next.status("occurrence:handoff").await,
+        Err(LocalLeaseOutboxError::StaleFence(
+            "occurrence was admitted under generation 1 and cannot be transitioned by generation 2"
+                .to_string()
+        )),
+        "ordinary attempt-scoped status remains fenced; successor reconciliation is explicit"
+    );
+}
+
+#[tokio::test]
+async fn successor_reconciliation_never_upgrades_inherited_queued_to_terminal() {
+    let temp = TempDir::new().expect("temp dir");
+    let store = opened_store(&temp, 152).await;
+    let expires_at = unix_seconds() + 3_600;
+    let old = acquired(
+        store
+            .acquire_host_bound_lease(
+                "lease:handoff-queued",
+                11,
+                30,
+                1,
+                "fence:queued-1",
+                expires_at,
+            )
+            .await
+            .expect("old lease"),
+    );
+    old.admit("occurrence:queued", "destination.write", "payload")
+        .await
+        .expect("queued admission");
+    let expired = old
+        .expire_lease_at_unix_seconds(expires_at)
+        .await
+        .expect("expire queued lease");
+    let next = acquired(
+        store
+            .acquire_host_bound_lease_after_head(
+                "lease:handoff-queued",
+                expired,
+                11,
+                31,
+                2,
+                "fence:queued-2",
+                expires_at + 3_600,
+            )
+            .await
+            .expect("successor"),
+    );
+    assert!(matches!(
+        next.reconcile("occurrence:queued", LocalReconcileOutcome::Committed)
+            .await,
+        Err(LocalLeaseOutboxError::IllegalTransition(message))
+            if message.contains("queued")
+    ));
+}
