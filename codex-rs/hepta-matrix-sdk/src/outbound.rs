@@ -7,9 +7,15 @@ use std::time::UNIX_EPOCH;
 use codex_hepta_matrix_protocol::MatrixEventId;
 use codex_hepta_matrix_store::MatrixDurableError;
 use codex_hepta_matrix_store::MatrixDurableStore;
+use codex_hepta_matrix_store::MatrixDispatchAuthorityClaim;
 use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::OutboxRecord;
 use tokio_util::sync::CancellationToken;
+
+use crate::authority::MatrixAuthorityError;
+use crate::authority::MatrixOutboundAuthorizer;
+use crate::authority::MatrixOutboundIdentity;
+use crate::authority::build_matrix_final_use_request;
 
 const PARKED_RECONCILIATION_AT_MS: u64 = i64::MAX as u64;
 
@@ -17,6 +23,13 @@ pub type MatrixSendFuture<'a> =
     Pin<Box<dyn Future<Output = Result<MatrixEventId, MatrixTransportError>> + Send + 'a>>;
 
 pub trait MatrixOutboundTransport: Send + Sync {
+    /// Return the exact authenticated Matrix transport/session identity.
+    fn identity(&self) -> Result<MatrixOutboundIdentity, MatrixTransportError>;
+
+    /// Enter the physical Matrix adapter.
+    ///
+    /// Implementations must be lazy: this method may construct a future but
+    /// must not perform external I/O until the returned future is polled.
     fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a>;
 }
 
@@ -83,11 +96,19 @@ pub enum OutboxDispatchError {
     Invalid,
     #[error("Matrix durable outbox is unavailable")]
     Store,
+    #[error("Matrix final-use authority rejected or was unavailable")]
+    Authority,
+    #[error("Matrix transport identity is unavailable")]
+    TransportIdentity,
 }
 
-pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
+pub async fn dispatch_outbox_once<
+    T: MatrixOutboundTransport + ?Sized,
+    A: MatrixOutboundAuthorizer + ?Sized,
+>(
     store: &MatrixDurableStore,
     transport: &T,
+    authorizer: &A,
     config: &OutboxDispatchConfig,
     cancel: &CancellationToken,
     now_ms: u64,
@@ -118,15 +139,74 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
             }
             continue;
         }
+        if cancel.is_cancelled() {
+            stats.cancelled = true;
+            break;
+        }
 
-        let result = tokio::select! {
+        let identity = transport
+            .identity()
+            .map_err(|_| OutboxDispatchError::TransportIdentity)?;
+        let request = build_matrix_final_use_request(
+            store.owner_agent_id().as_str(),
+            &prepared,
+            &record,
+            &identity,
+        )
+        .map_err(authority_error)?;
+        let signed = tokio::select! {
             biased;
             _ = cancel.cancelled() => {
                 stats.cancelled = true;
                 break;
             }
-            result = transport.send(&record) => result,
+            result = authorizer.signed_grant(&request) => result.map_err(authority_error)?,
         };
+        let token = authorizer
+            .authority()
+            .claim(&signed, &request.binding)
+            .map_err(|_| OutboxDispatchError::Authority)?;
+
+        // Enter the physical adapter under the exact live revocation fence.
+        // MatrixOutboundTransport::send is required to be lazy, so no external
+        // I/O occurs until the future is polled below.
+        let (send_future, frontier) = authorizer
+            .authority()
+            .with_verified_use_at_frontier(token, &request.binding, || transport.send(&record))
+            .map_err(|_| OutboxDispatchError::Authority)?;
+        if frontier.authority_epoch != signed.grant.authority_epoch {
+            return Err(OutboxDispatchError::Authority);
+        }
+        let claimed_at_ms = system_time_ms()?;
+        store
+            .record_dispatch_authority_claim(
+                &record.stable_txn_id,
+                &MatrixDispatchAuthorityClaim {
+                    operation_id: request.operation_id.clone(),
+                    subject_id: request.subject_id.clone(),
+                    destination_id: request.destination_id.clone(),
+                    homeserver_id: request.homeserver_id.clone(),
+                    matrix_user_id: request.matrix_user_id.clone(),
+                    device_id: request.device_id.clone(),
+                    session_generation: request.session_generation,
+                    authority_epoch: frontier.authority_epoch,
+                    revocation_revision: frontier.revision,
+                    grant_id: signed.grant.grant_id.clone(),
+                    request_digest: request.request_digest.clone(),
+                    scope_digest: request.scope_digest.clone(),
+                    payload_digest: request.payload_digest.clone(),
+                    attempt: record.attempts,
+                    expires_at_ms: signed.grant.expires_at_unix_ms,
+                    claimed_at_ms,
+                },
+            )
+            .await
+            .map_err(store_error)?;
+
+        // After final-use adapter entry, do not cancel the future: the external
+        // effect may already have crossed the boundary. Transport timeout and
+        // reconciliation semantics own its terminal/indeterminate result.
+        let result = send_future.await;
         match result {
             Ok(event_id) => {
                 let observed = store
@@ -221,9 +301,13 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
     Ok(stats)
 }
 
-pub async fn run_outbox_sender<T: MatrixOutboundTransport + ?Sized>(
+pub async fn run_outbox_sender<
+    T: MatrixOutboundTransport + ?Sized,
+    A: MatrixOutboundAuthorizer + ?Sized,
+>(
     store: &MatrixDurableStore,
     transport: &T,
+    authorizer: &A,
     config: &OutboxDispatchConfig,
     cancel: &CancellationToken,
 ) -> Result<(), OutboxDispatchError> {
@@ -231,8 +315,15 @@ pub async fn run_outbox_sender<T: MatrixOutboundTransport + ?Sized>(
         if cancel.is_cancelled() {
             return Ok(());
         }
-        let stats =
-            dispatch_outbox_once(store, transport, config, cancel, system_time_ms()?).await?;
+        let stats = dispatch_outbox_once(
+            store,
+            transport,
+            authorizer,
+            config,
+            cancel,
+            system_time_ms()?,
+        )
+        .await?;
         if stats.cancelled {
             return Ok(());
         }
@@ -276,6 +367,10 @@ fn retry_delay_ms(
         .retry_delay_ms
         .saturating_mul(1_u64.checked_shl(exponent).unwrap_or(u64::MAX))
         .min(config.max_retry_delay_ms))
+}
+
+fn authority_error(_: MatrixAuthorityError) -> OutboxDispatchError {
+    OutboxDispatchError::Authority
 }
 
 fn store_error(_: MatrixDurableError) -> OutboxDispatchError {
