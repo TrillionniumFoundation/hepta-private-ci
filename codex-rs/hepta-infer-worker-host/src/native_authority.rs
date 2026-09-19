@@ -310,3 +310,7 @@ fn valid_digest(value: &str) -> bool {
 fn digest_array(bytes: &[u8]) -> [u8; 32] {
     Sha256::digest(bytes).into()
 }
+
+#[cfg(test)]
+#[path = "native_authority_tests.rs"]
+mod tests;
