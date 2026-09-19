@@ -15,7 +15,7 @@
     "codex-rs/hepta-infer-worker-host"
   ],
   "stateOwnerDisposition": "Owns live local-runtime/provider client handles and bounded in-process execution state. Persistent reservation/dispatch/observation facts remain in the canonical inference.control journal; App Server/Core own provider thread/queue truth; artifact/cache owners retain model bytes.",
-  "terminalObserverDisposition": "Hosted execution observes exact provider turn/output/optional-token facts after one-shot final-use admission. The named product root resolves signed authority from an independent issuer socket only after exact runtime binding, then local verification/revocation state guards synchronous bounded queue admission. Reopen reconciles the journaled client-message identity through Core without replay; Missing/Cancelled proves no admission, while missing authoritative usage remains unknown. Local execution observes a resident runtime protocol with explicit reserved/observed memory.",
+  "terminalObserverDisposition": "Hosted execution observes exact provider turn/output/optional-token facts after one-shot final-use admission. Live output is returned only to the current caller; DurableInferenceControl persists digest-only output receipts and replay/duplicates expose the receipt rather than reconstructing text. The named product root resolves signed authority from an independent issuer socket only after exact runtime binding, then local verification/revocation state guards synchronous bounded queue admission. Reopen reconciles the journaled client-message identity through Core without replay; Missing/Cancelled proves no admission, while missing authoritative usage remains unknown. Local execution observes a resident runtime protocol with explicit reserved/observed memory.",
   "operations": [
     {
       "designOperation": "load_model",
@@ -121,7 +121,7 @@
           "command": "just test -p codex-hepta-inferd --lib"
         }
       ],
-      "sourceSemantics": "Reserves through durable inference.control with quota/resource/token/economic holds. A fresh request freezes exact provider/context/TurnStartParams, resolves a signed grant for only that binding from the independent issuer seam, consumes the one-shot token while durable dispatch and synchronous bounded queue admission cross one revocation fence, then settles matching observations. Reopen uses Core ReconcileOnly to recover the original turn or prove NoAdmission and never submits a replacement turn.",
+      "sourceSemantics": "Reserves through durable inference.control with quota/resource/token/economic holds. A fresh request freezes exact provider/context/TurnStartParams, resolves a signed grant for only that binding from the independent issuer seam, consumes the one-shot token while durable dispatch and synchronous bounded queue admission cross one revocation fence, then settles matching observations. Reopen uses Core ReconcileOnly to recover the original turn or prove NoAdmission and never submits a replacement turn. Provider observations are journaled through settle_native_receipt_only; current live output is not part of the durable receipt and redaction cannot be reversed by later refinement.",
       "operation": "run",
       "nativeSymbol": "pub async fn run(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
