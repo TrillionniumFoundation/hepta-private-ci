@@ -8,6 +8,7 @@ on:
       - "docs/contracts/**"
       - "scripts/verify_hepta_callers.py"
       - "scripts/verify_kernel_authority_map_freshness.py"
+      - "qualification/kernel-authority/**"
       - ".github/workflows/lane-a-foundation.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   push:
@@ -50,6 +51,7 @@ jobs:
           python3 scripts/verify_lane_a_foundation.py self-test
           python3 scripts/verify_lane_a_foundation.py verify
           python3 scripts/verify_kernel_authority_map_freshness.py --expected-sha "$EXPECTED_SHA"
+          python3 qualification/kernel-authority/verify.py self-test
           python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
           (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
           git diff --check
@@ -118,6 +120,7 @@ jobs:
           python3 scripts/verify_lane_a_foundation.py self-test
           python3 scripts/verify_lane_a_foundation.py verify
           python3 scripts/verify_kernel_authority_map_freshness.py --expected-sha "$EXPECTED_SHA"
+          python3 qualification/kernel-authority/verify.py self-test
           python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
           (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
           git diff --check
