@@ -6,7 +6,7 @@ import {
   projectRuntimeFromLocalCanonicalJson,
 } from "../src/control.js";
 import { RuntimeClient } from "../src/runtime-client.js";
-import { snapshotCanonical } from "../src/protocol.js";
+import { parseJsonNoDuplicateKeys, snapshotCanonical } from "../src/protocol.js";
 
 const D1 = "1".repeat(64);
 const D2 = "2".repeat(64);
@@ -236,5 +236,21 @@ test("canonical snapshot treats __proto__ as data instead of mutating prototypes
   assert.equal(
     JSON.stringify(snapshot),
     '{"__proto__":{"polluted":true},"safe":1}',
+  );
+});
+
+
+test("network JSON parser rejects duplicate critical keys including escaped aliases", () => {
+  assert.throws(
+    () =>
+      parseJsonNoDuplicateKeys(
+        '{"sessionId":"session.a","session\\u0049d":"session.b"}',
+        "network response",
+      ),
+    (error) => error.code === "PROTOCOL_VIOLATION",
+  );
+  assert.deepEqual(
+    parseJsonNoDuplicateKeys('{"accepted":true,"operationId":"operation.1"}', "network response"),
+    { accepted: true, operationId: "operation.1" },
   );
 });
