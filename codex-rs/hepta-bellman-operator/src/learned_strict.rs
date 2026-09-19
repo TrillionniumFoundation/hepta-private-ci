@@ -35,11 +35,16 @@ pub fn fit_tabular_operator_strict_v2(
     Ok(fit_tabular_operator(plan)?)
 }
 
+#[deprecated(
+    note = "compatibility-only raw artifact prediction; use LoadedTabularOperatorV1::from_pinned_payload(...).predict(...) for independently pinned inference"
+)]
 pub fn predict_tabular_operator_indexed_v2(
     artifact: &TabularOperatorArtifactV1,
     sensor_id: &StableId,
     action_id: &StableId,
 ) -> Result<TabularOperatorPredictionV1, StrictLearnedOperatorError> {
+    crate::loaded::validate_tabular_artifact_v1(artifact)
+        .map_err(|_| StrictLearnedOperatorError::InvalidArtifact)?;
     if artifact.cells.windows(2).any(|adjacent| {
         (&adjacent[0].sensor_id, &adjacent[0].action_id)
             >= (&adjacent[1].sensor_id, &adjacent[1].action_id)
@@ -67,6 +72,7 @@ pub fn predict_tabular_operator_indexed_v2(
 pub enum StrictLearnedOperatorError {
     Learned(LearnedOperatorError),
     DuplicateEvidence,
+    InvalidArtifact,
     NonCanonicalArtifact,
     UnsupportedCell,
 }
@@ -81,7 +87,10 @@ impl StdError for StrictLearnedOperatorError {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self {
             Self::Learned(error) => Some(error),
-            Self::DuplicateEvidence | Self::NonCanonicalArtifact | Self::UnsupportedCell => None,
+            Self::DuplicateEvidence
+            | Self::InvalidArtifact
+            | Self::NonCanonicalArtifact
+            | Self::UnsupportedCell => None,
         }
     }
 }
