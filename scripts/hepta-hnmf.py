@@ -92,6 +92,8 @@ REQUIRED_FILES = [
     "docs/hnmf/MIGRATION.md",
     "docs/hnmf/HNMF.json",
     "docs/hnmf/GAPS.json",
+    "docs/contracts/CONTRACTS.json",
+    "docs/contracts/PROTOCOL_SCHEMAS.json",
     "codex-rs/hepta-cognitive-types/src/hnmf.rs",
     "codex-rs/hepta-cognitive-types/src/hnmf_learning.rs",
     "codex-rs/hepta-cognitive-types/src/wire.rs",
@@ -227,6 +229,8 @@ def verify() -> int:
 
     spec = load_json("docs/hnmf/HNMF.json")
     gaps = load_json("docs/hnmf/GAPS.json")
+    contracts = load_json("docs/contracts/CONTRACTS.json")
+    protocol_schemas = load_json("docs/contracts/PROTOCOL_SCHEMAS.json")
 
     need(spec.get("schema") == "hepta.hnmf.qualification.v1", "spec schema")
     need(has_schema_version(spec, 1), "spec schema version")
@@ -245,6 +249,36 @@ def verify() -> int:
         [item.get("id") for item in spec.get("protocols", [])] == PROTOCOLS,
         "protocol closure",
     )
+    canonical_protocols = {
+        item.get("id"): item for item in protocol_schemas.get("protocols", [])
+    }
+    contract_rows = {item.get("id"): item for item in contracts.get("contracts", [])}
+    for item in spec["protocols"]:
+        protocol_id = item["id"]
+        canonical = canonical_protocols.get(protocol_id)
+        need(canonical is not None, protocol_id + " global protocol registration")
+        required_fields = [
+            field["name"] for field in canonical.get("fields", []) if field.get("required")
+        ]
+        need(
+            item.get("maximumEncodedBytes") == canonical.get("maximumEncodedBytes"),
+            protocol_id + " encoded-byte bound projection",
+        )
+        need(
+            item.get("requiredFields") == required_fields,
+            protocol_id + " required-field projection",
+        )
+        contract = contract_rows.get(protocol_id)
+        need(contract is not None, protocol_id + " typed-contract registration")
+        expected_producer = (
+            "learning.plasticity"
+            if protocol_id == "TopologyProposalV1"
+            else "cognitive.types"
+        )
+        need(
+            contract.get("producer") == expected_producer,
+            protocol_id + " canonical producer",
+        )
     need(
         [item.get("id") for item in spec.get("workPackages", [])] == WORK_PACKAGES,
         "work-package closure",
