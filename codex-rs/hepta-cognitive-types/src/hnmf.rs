@@ -288,6 +288,7 @@ impl MemoryScopeV1 {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ObservedIntervalV1 {
     pub start_unix_ms: u64,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub end_unix_ms: Option<u64>,
 }
 
@@ -509,10 +510,13 @@ pub struct ModalitySpanRefV1 {
     pub asset_sha256: Sha256DigestV1,
     pub range: SpanRangeV1,
     pub preprocessor_manifest_sha256: Sha256DigestV1,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub feature_blob_sha256: Option<Sha256DigestV1>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub symbolic_projection_sha256: Option<Sha256DigestV1>,
     pub uncertainty_ppm: u32,
     pub privacy_class: PrivacyClassV1,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub redaction_mask_sha256: Option<Sha256DigestV1>,
 }
 
@@ -709,6 +713,7 @@ pub enum MemoryVerificationV1 {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct RetentionPolicyV1 {
     pub policy_id: CanonicalIdV1,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub expires_unix_ms: Option<u64>,
     pub legal_hold: bool,
 }
@@ -1120,6 +1125,7 @@ pub struct RecallPacketV1 {
     pub coverage_ppm: u32,
     pub confidence_ppm: u32,
     pub ood_ppm: u32,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub abstain: Option<AbstainReasonV1>,
     pub resource_receipt: ResourceReceiptV1,
 }
