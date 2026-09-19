@@ -955,15 +955,16 @@ impl FederationTransportV2 for CognitiveFederationTransport<'_> {
             )
             .map_err(|_| FederationV2Error::TransportRejected)?;
             let owner_access = owner_access(&self.reader.capability);
-            let mut batch = self
+            let (batch, observed_frontier) = self
                 .reader
                 .owner
-                .retrieve_memory_candidates(&owner_access, self.request)
+                .retrieve_memory_candidates_for_scope(
+                    &owner_access,
+                    self.reader.capability.scope.owner_scope(),
+                    self.request,
+                )
                 .await
                 .map_err(|_| FederationV2Error::TransportRejected)?;
-            batch.candidates.retain(|candidate| {
-                candidate.memory.scope == *self.reader.capability.scope.owner_scope()
-            });
             require_authorized(
                 self.reader
                     .validate_capability(self.access, self.request.now_unix_seconds())
@@ -982,12 +983,7 @@ impl FederationTransportV2 for CognitiveFederationTransport<'_> {
                     )
                 })
                 .collect::<Result<Vec<_>, _>>()?;
-            let observed_frontier = items
-                .iter()
-                .map(|item| item.record_revision.get())
-                .max()
-                .unwrap_or(self.reader.capability.revision)
-                .max(1);
+            let observed_frontier = observed_frontier.max(1);
             let completeness = if items.is_empty() {
                 codex_hepta_memory_federation::FederatedCompletenessV2::Empty
             } else {
