@@ -151,6 +151,14 @@ pub struct RegisteredRelease {
     pub matrixd: Option<RegisteredProgram>,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ReleaseBinding {
+    pub release_id: ReleaseId,
+    pub manifest_sha256: String,
+    pub agentd_sha256: String,
+    pub matrixd_sha256: Option<String>,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct AgentReleaseState {
@@ -360,6 +368,41 @@ impl FleetRegistry {
             )));
         }
         resolve_catalog_release(self.layout().releases_root(), release_id)
+    }
+
+    /// Resolve the exact immutable bytes admitted for one Agent release.
+    ///
+    /// This first executes the normal allowance/catalog validation, then
+    /// returns digests that an external release-selection grant can bind.
+    pub fn release_binding(
+        &self,
+        agent_id: &AgentId,
+        release_id: &ReleaseId,
+    ) -> Result<ReleaseBinding, FleetRegistryError> {
+        let _ = self.resolve_release(agent_id, release_id)?;
+        let manifest_path = release_manifest_path(self.layout().releases_root(), release_id);
+        let manifest_sha256 = sha256_file(&manifest_path)?;
+        let metadata: CatalogReleaseMetadata =
+            read_bounded_json(&manifest_path, MAX_RELEASE_MANIFEST_BYTES)?;
+        let (agentd_sha256, matrixd_sha256) = match metadata {
+            CatalogReleaseMetadata::V2(metadata) => {
+                validate_metadata(&metadata, release_id)?;
+                (
+                    metadata.agentd.program_sha256,
+                    metadata.matrixd.map(|program| program.program_sha256),
+                )
+            }
+            CatalogReleaseMetadata::V1(metadata) => {
+                validate_legacy_metadata(&metadata, release_id)?;
+                (metadata.program_sha256, None)
+            }
+        };
+        Ok(ReleaseBinding {
+            release_id: release_id.clone(),
+            manifest_sha256,
+            agentd_sha256,
+            matrixd_sha256,
+        })
     }
 
     pub fn allowed_releases(
