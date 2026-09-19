@@ -193,10 +193,9 @@ impl ObjectiveRuntimeHost {
             signature: message.signature,
         };
 
-        let mut state = self
-            .state
-            .lock()
-            .map_err(|_| AgentdError::Protocol("objective runtime mutex is poisoned".to_string()))?;
+        let mut state = self.state.lock().map_err(|_| {
+            AgentdError::Protocol("objective runtime mutex is poisoned".to_string())
+        })?;
         ensure_coordinator(
             &mut state,
             agentd.identity(),
