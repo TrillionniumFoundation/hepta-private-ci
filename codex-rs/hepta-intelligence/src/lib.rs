@@ -29,11 +29,20 @@ pub use contracts_v1::LegalActionCandidateSetV1;
 pub use contracts_v1::LegalActionCandidateV1;
 pub use contracts_v1::build_legal_candidates_v1;
 
+mod native_ports_v3;
+mod outcome_credit;
 mod pipeline_v2;
 mod pipeline_v3;
-mod outcome_credit;
-mod native_ports_v3;
 
+pub use codex_hepta_learning_ledger::DurableLearningJournal;
+pub use native_ports_v3::HostEnvelopePortV3;
+pub use native_ports_v3::LearningDecisionTemplateV3;
+pub use native_ports_v3::NativeV3OwnerInputs;
+pub use native_ports_v3::NativeV3OwnerPorts;
+pub use outcome_credit::OutcomeCreditClosureErrorV1;
+pub use outcome_credit::OutcomeCreditClosureReceiptV1;
+pub use outcome_credit::OutcomeCreditClosureRequestV1;
+pub use outcome_credit::append_outcome_credit_v1;
 pub use pipeline_v2::LaneFRunRequestV2;
 pub use pipeline_v2::LaneFShadowPipelineReceiptV2;
 pub use pipeline_v2::PipelineErrorV2;
@@ -56,16 +65,6 @@ pub use pipeline_v3::StageOutcomeV3;
 pub use pipeline_v3::StageTraceV3;
 pub use pipeline_v3::run_composition_v3;
 pub use pipeline_v3::run_composition_v3_with_control;
-pub use outcome_credit::OutcomeCreditClosureErrorV1;
-pub use outcome_credit::OutcomeCreditClosureReceiptV1;
-pub use outcome_credit::OutcomeCreditClosureRequestV1;
-pub use outcome_credit::append_outcome_credit_v1;
-pub use codex_hepta_learning_ledger::DurableLearningJournal;
-pub use native_ports_v3::HostEnvelopePortV3;
-pub use native_ports_v3::LearningDecisionTemplateV3;
-pub use native_ports_v3::NativeV3OwnerInputs;
-pub use native_ports_v3::NativeV3OwnerPorts;
-
 mod pipeline;
 
 pub use pipeline::CoherentLaneFSnapshotV1;
