@@ -109,3 +109,7 @@ pub use witness::DurableAnchorWitness;
 #[cfg(test)]
 #[path = "shadow_tests.rs"]
 mod shadow_tests;
+
+#[cfg(test)]
+#[path = "convergence_tests.rs"]
+mod convergence_tests;
