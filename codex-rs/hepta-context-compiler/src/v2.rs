@@ -670,25 +670,65 @@ pub struct ContextCompilationRequestV2 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ContextCompilationReceiptV2 {
-    pub compilation_id: StableId,
-    pub objective_digest: Digest32,
-    pub prompt_portfolio_digest: Digest32,
-    pub generation_vector_digest: Digest32,
-    pub admission_verifier_digest: Digest32,
-    pub model_profile_digest: Digest32,
-    pub candidate_set_digest: Digest32,
-    pub mandatory_groups_digest: Digest32,
-    pub selected_item_ids: Vec<StableId>,
-    pub omitted_item_ids: Vec<StableId>,
-    pub used_tokens: u64,
-    pub token_upper_bound: u64,
-    pub truncation_policy_digest: Digest32,
-    pub context_digest: Digest32,
-    pub receipt_digest: Digest32,
-    pub authority: AuthorityPosture,
+    compilation_id: StableId,
+    objective_digest: Digest32,
+    prompt_portfolio_digest: Digest32,
+    generation_vector_digest: Digest32,
+    admission_verifier_digest: Digest32,
+    model_profile_digest: Digest32,
+    candidate_set_digest: Digest32,
+    mandatory_groups_digest: Digest32,
+    selected_item_ids: Vec<StableId>,
+    omitted_item_ids: Vec<StableId>,
+    used_tokens: u64,
+    token_upper_bound: u64,
+    truncation_policy_digest: Digest32,
+    context_digest: Digest32,
+    receipt_digest: Digest32,
+    authority: AuthorityPosture,
 }
 
 impl ContextCompilationReceiptV2 {
+    #[must_use]
+    pub fn selected_item_ids(&self) -> &[StableId] {
+        &self.selected_item_ids
+    }
+
+    #[must_use]
+    pub fn omitted_item_ids(&self) -> &[StableId] {
+        &self.omitted_item_ids
+    }
+
+    #[must_use]
+    pub const fn used_tokens(&self) -> u64 {
+        self.used_tokens
+    }
+
+    #[must_use]
+    pub const fn token_upper_bound(&self) -> u64 {
+        self.token_upper_bound
+    }
+
+    #[must_use]
+    pub const fn mandatory_groups_digest(&self) -> Digest32 {
+        self.mandatory_groups_digest
+    }
+
+    #[must_use]
+    pub const fn context_digest(&self) -> Digest32 {
+        self.context_digest
+    }
+
+    #[must_use]
+    pub const fn receipt_digest(&self) -> Digest32 {
+        self.receipt_digest
+    }
+
+    #[must_use]
+    pub const fn authority(&self) -> AuthorityPosture {
+        self.authority
+    }
+
     pub fn validate(&self) -> Result<(), ContextCompilerV2Error> {
         for (name, digest) in [
             ("objective", self.objective_digest),
@@ -721,7 +761,7 @@ impl ContextCompilationReceiptV2 {
     }
 
     #[must_use]
-    pub fn compute_receipt_digest(&self) -> Digest32 {
+    fn compute_receipt_digest(&self) -> Digest32 {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(COMPILATION_RECEIPT_DOMAIN);
         push_id(&mut bytes, &self.compilation_id);
@@ -748,11 +788,21 @@ impl ContextCompilationReceiptV2 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CompiledContextV2 {
-    pub receipt: ContextCompilationReceiptV2,
-    pub selected_candidates: Vec<ContextCandidateV2>,
+    receipt: ContextCompilationReceiptV2,
+    selected_candidates: Vec<ContextCandidateV2>,
 }
 
 impl CompiledContextV2 {
+    #[must_use]
+    pub const fn receipt(&self) -> &ContextCompilationReceiptV2 {
+        &self.receipt
+    }
+
+    #[must_use]
+    pub fn selected_candidates(&self) -> &[ContextCandidateV2] {
+        &self.selected_candidates
+    }
+
     pub fn validate(&self) -> Result<(), ContextCompilerV2Error> {
         self.receipt.validate()?;
         let selected_ids = self
@@ -1348,6 +1398,7 @@ pub enum ContextDeliveryDispositionV2 {
 pub struct ContextTransportEvidenceV2 {
     pub provider_request_id: StableId,
     pub transmitted_payload_digest: Digest32,
+    pub provider_acknowledged_payload_digest: Option<Digest32>,
     pub acknowledgement_digest: Digest32,
     pub terminal_observed: bool,
     pub disposition: ContextDeliveryDispositionV2,
@@ -1367,6 +1418,7 @@ pub struct ContextDeliveryReceiptV2 {
     revocation_epoch: u64,
     transport_digest: Digest32,
     provider_request_id: StableId,
+    provider_acknowledged_payload_digest: Option<Digest32>,
     acknowledgement_digest: Digest32,
     terminal_observed: bool,
     disposition: ContextDeliveryDispositionV2,
@@ -1396,6 +1448,11 @@ impl ContextDeliveryReceiptV2 {
     #[must_use]
     pub const fn acknowledgement_digest(&self) -> Digest32 {
         self.acknowledgement_digest
+    }
+
+    #[must_use]
+    pub const fn provider_acknowledged_payload_digest(&self) -> Option<Digest32> {
+        self.provider_acknowledged_payload_digest
     }
 
     #[must_use]
@@ -1445,7 +1502,15 @@ impl ContextDeliveryReceiptV2 {
             return Err(ContextCompilerV2Error::DeliveryMismatch);
         }
         match self.disposition {
-            ContextDeliveryDispositionV2::Delivered | ContextDeliveryDispositionV2::Rejected => {
+            ContextDeliveryDispositionV2::Delivered => {
+                if !self.terminal_observed
+                    || self.acknowledgement_digest.is_zero()
+                    || self.provider_acknowledged_payload_digest != Some(self.payload_digest)
+                {
+                    return Err(ContextCompilerV2Error::MissingTerminalAcknowledgement);
+                }
+            }
+            ContextDeliveryDispositionV2::Rejected => {
                 if !self.terminal_observed || self.acknowledgement_digest.is_zero() {
                     return Err(ContextCompilerV2Error::MissingTerminalAcknowledgement);
                 }
@@ -1486,6 +1551,13 @@ impl ContextDeliveryReceiptV2 {
         push_u64(&mut bytes, self.revocation_epoch);
         push_digest(&mut bytes, self.transport_digest);
         push_id(&mut bytes, &self.provider_request_id);
+        match self.provider_acknowledged_payload_digest {
+            Some(digest) => {
+                bytes.push(1);
+                push_digest(&mut bytes, digest);
+            }
+            None => bytes.push(0),
+        }
         push_digest(&mut bytes, self.acknowledgement_digest);
         bytes.push(u8::from(self.terminal_observed));
         bytes.push(delivery_disposition_code(self.disposition));
@@ -1533,6 +1605,7 @@ pub fn deliver_context_v2(
         revocation_epoch: current_snapshot.revocation_epoch(),
         transport_digest,
         provider_request_id: evidence.provider_request_id,
+        provider_acknowledged_payload_digest: evidence.provider_acknowledged_payload_digest,
         acknowledgement_digest: evidence.acknowledgement_digest,
         terminal_observed: evidence.terminal_observed,
         disposition: evidence.disposition,
