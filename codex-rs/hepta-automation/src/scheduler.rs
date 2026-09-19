@@ -103,7 +103,7 @@ where
         let receipt = match result {
             Ok(Ok(receipt)) => receipt,
             Ok(Err(AutomationError::AccessDenied)) => {
-                self.store.abort_dispatch_before_admission(&lease).await?;
+                self.store.abort_dispatch_before_admission(&lease, now_ms).await?;
                 return Err(AutomationError::AccessDenied);
             }
             Ok(Err(AutomationError::DispatchUnknown)) | Err(_) => {
@@ -114,7 +114,7 @@ where
                 });
             }
             Ok(Err(_)) => {
-                self.store.abort_dispatch_before_admission(&lease).await?;
+                self.store.abort_dispatch_before_admission(&lease, now_ms).await?;
                 return Ok(AutomationTick::RetryScheduled {
                     task_id: lease.task.task_id,
                     occurrence: lease.occurrence,
