@@ -38,6 +38,9 @@ use crate::cognitive_store::unavailable;
 const MAX_REVISIONS: usize = 16_384;
 const MAX_CITATIONS: usize = 65_536;
 const MAX_SOURCES: i64 = 65_536;
+/// The current durable SQLite memory schema has no persisted kind discriminator.
+/// Its admitted memory revisions therefore project only as Fact until a schema migration adds one.
+pub const DURABLE_SQLITE_MEMORY_KIND: MemoryKind = MemoryKind::Fact;
 
 /// Owner-observed frontiers in one exact scope. Counters count immutable rows;
 /// graph generation is the existing SQLite generation plus one (empty = one).
@@ -291,7 +294,7 @@ impl CognitiveStore {
                 record_id,
                 revision: Revision::new(u64::try_from(revision).map_err(corrupt)?)
                     .map_err(corrupt)?,
-                kind: MemoryKind::Fact,
+                kind: DURABLE_SQLITE_MEMORY_KIND,
                 content_digest: digest.parse().map_err(corrupt)?,
                 predecessor_digest: prior.map(MemoryRecord::record_digest),
                 citations: citations
