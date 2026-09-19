@@ -75,7 +75,8 @@ impl AgentdControlServer {
                     let state = Arc::clone(&self.state);
                     tokio::spawn(async move {
                         let _permit = overload_permit;
-                        let _ = timeout(IO_TIMEOUT, serve_overloaded_connection(stream, state)).await;
+                        let _ =
+                            timeout(IO_TIMEOUT, serve_overloaded_connection(stream, state)).await;
                     });
                     continue;
                 }
