@@ -186,8 +186,8 @@ impl IntelligenceHostEnvelopeV1 {
                 return Err(IntelligenceContractErrorV1::EmptyDigest(name));
             }
         }
-        if neural_digest.is_some_and(Digest32::is_zero)
-            || prompt_digest.is_some_and(Digest32::is_zero)
+        if neural_digest.is_some_and(|value| value.is_zero())
+            || prompt_digest.is_some_and(|value| value.is_zero())
         {
             return Err(IntelligenceContractErrorV1::EmptyDigest(
                 "optional stage",
