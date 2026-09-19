@@ -143,6 +143,7 @@ pub enum SecretLeaseState {
     IssuePrepared,
     Issuing,
     IssuedPendingDelivery,
+    Delivering,
     Active,
     RenewPrepared,
     Renewing,
@@ -653,6 +654,41 @@ impl SecretLeaseRegistry {
         Ok(lease)
     }
 
+    fn mark_delivering(
+        &self,
+        operation_id: &str,
+        request_sha256: [u8; 32],
+    ) -> Result<StoredLease, LeaseRegistryError> {
+        let mut state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| LeaseRegistryError::Unavailable)?;
+        ensure_registry_live(&state)?;
+        let mut lease = lease_for_operation(&state, operation_id)?.clone();
+        require_pending(
+            &lease,
+            operation_id,
+            request_sha256,
+            LeaseOperationKind::Issue,
+        )?;
+        if lease.state != SecretLeaseState::IssuedPendingDelivery {
+            return Err(LeaseRegistryError::InvalidTransition);
+        }
+        lease.state = SecretLeaseState::Delivering;
+        append_event(
+            &self.0.store,
+            &mut state,
+            operation_id,
+            request_sha256,
+            LeaseOperationKind::Issue,
+            OperationPhase::ProviderObserved,
+            None,
+            lease.clone(),
+        )?;
+        Ok(lease)
+    }
+
     fn complete_issue(
         &self,
         operation_id: &str,
@@ -663,7 +699,7 @@ impl SecretLeaseRegistry {
             request_sha256,
             LeaseOperationKind::Issue,
             |lease| {
-                if lease.state != SecretLeaseState::IssuedPendingDelivery {
+                if lease.state != SecretLeaseState::Delivering {
                     return Err(LeaseRegistryError::InvalidTransition);
                 }
                 lease.state = SecretLeaseState::Active;
@@ -1363,6 +1399,7 @@ fn normalize_recovery(state: &mut RegistryState) {
             SecretLeaseState::IssuedPendingDelivery => {
                 Some(ReconciliationReason::SecretDeliveryLost)
             }
+            SecretLeaseState::Delivering => Some(ReconciliationReason::ConsumerOutcomeUnknown),
             SecretLeaseState::Renewing => Some(ReconciliationReason::RenewOutcomeUnknown),
             SecretLeaseState::RevokePending => Some(ReconciliationReason::RevokeOutcomeUnknown),
             _ => None,
@@ -1904,6 +1941,7 @@ impl BaoClient {
             required_fields: &fields,
             data: &data,
         };
+        registry.mark_delivering(&request.operation_id, request_sha256)?;
         let delivery = match authority.with_verified_use(verified, &binding, || consumer(&view)) {
             Ok(Ok(())) => LeaseDelivery::Delivered,
             Ok(Err(())) => {
