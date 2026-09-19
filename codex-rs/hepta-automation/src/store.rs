@@ -717,46 +717,81 @@ impl AutomationStore {
         client_user_message_id: &str,
     ) -> Result<(), AutomationError> {
         let mut transaction = self.pool.begin().await.map_err(unavailable)?;
-        let updated = sqlx::query(
-            "UPDATE automation_runs
-             SET state = CASE WHEN EXISTS (
-                     SELECT 1 FROM automation_tasks t
-                     WHERE t.task_id = automation_runs.task_id AND t.state = 'enabled'
-                 ) THEN 'pending' ELSE 'cancelled' END,
-                 lease_generation = NULL, lease_token = NULL, lease_expires_at_ms = NULL
-             WHERE task_id = ? AND occurrence = ? AND state = 'leased'
-               AND client_user_message_id = ?
-               AND EXISTS (
-                   SELECT 1 FROM automation_dispatch_outcomes o
-                   WHERE o.task_id = automation_runs.task_id
-                     AND o.occurrence = automation_runs.occurrence
-                     AND o.outcome = 'uncertain'
-               )
-               AND EXISTS (
-                   SELECT 1 FROM automation_tasks t
-                   WHERE t.task_id = automation_runs.task_id
-                     AND t.owner_agent_id = ?
-               )",
+        let row = sqlx::query(
+            "SELECT r.state, r.client_user_message_id, t.state AS task_state,
+                    d.outcome AS dispatch_outcome
+             FROM automation_runs r
+             JOIN automation_tasks t ON t.task_id = r.task_id
+             LEFT JOIN automation_dispatch_outcomes d
+               ON d.task_id = r.task_id AND d.occurrence = r.occurrence
+             WHERE r.task_id = ? AND r.occurrence = ?
+               AND t.owner_agent_id = ?",
         )
         .bind(task_id.to_string())
         .bind(to_i64(occurrence)?)
-        .bind(client_user_message_id)
         .bind(self.owner_agent_id.as_str())
+        .fetch_optional(&mut *transaction)
+        .await
+        .map_err(unavailable)?
+        .ok_or(AutomationError::Conflict)?;
+        let run_state: String = row.try_get("state").map_err(unavailable)?;
+        let run_client_id: String = row
+            .try_get("client_user_message_id")
+            .map_err(unavailable)?;
+        let task_state: String = row.try_get("task_state").map_err(unavailable)?;
+        let dispatch_outcome: Option<String> =
+            row.try_get("dispatch_outcome").map_err(unavailable)?;
+        if run_client_id != client_user_message_id {
+            return Err(AutomationError::Conflict);
+        }
+        let released_state = if task_state == "enabled" {
+            "pending"
+        } else {
+            "cancelled"
+        };
+
+        // Phase-2 cleanup is exact-idempotent. A crash after clearing the
+        // uncertainty row but before the reconciler acknowledgement may replay
+        // only the same stable client identity and resulting run state.
+        if run_state == released_state && dispatch_outcome.is_none() {
+            transaction.commit().await.map_err(unavailable)?;
+            return Ok(());
+        }
+        if run_state != "leased" || dispatch_outcome.as_deref() != Some("uncertain") {
+            return Err(AutomationError::Conflict);
+        }
+
+        let updated = sqlx::query(
+            "UPDATE automation_runs
+             SET state = ?, lease_generation = NULL, lease_token = NULL,
+                 lease_expires_at_ms = NULL
+             WHERE task_id = ? AND occurrence = ? AND state = 'leased'
+               AND client_user_message_id = ?",
+        )
+        .bind(released_state)
+        .bind(task_id.to_string())
+        .bind(to_i64(occurrence)?)
+        .bind(client_user_message_id)
         .execute(&mut *transaction)
         .await
         .map_err(unavailable)?;
         if updated.rows_affected() != 1 {
             return Err(AutomationError::Conflict);
         }
-        sqlx::query(
+        let deleted = sqlx::query(
             "DELETE FROM automation_dispatch_outcomes
-             WHERE task_id = ? AND occurrence = ? AND outcome = 'uncertain'",
+             WHERE task_id = ? AND occurrence = ? AND outcome = 'uncertain'
+               AND client_user_message_id = ?",
         )
         .bind(task_id.to_string())
         .bind(to_i64(occurrence)?)
+        .bind(client_user_message_id)
         .execute(&mut *transaction)
         .await
         .map_err(unavailable)?;
+        if deleted.rows_affected() != 1 {
+            return Err(AutomationError::Conflict);
+        }
         transaction.commit().await.map_err(unavailable)
     }
 
