@@ -154,6 +154,8 @@ fn redacted_send_cannot_be_resurrected_by_delayed_observations() {
         .apply_redaction("$event:example.org", &"4".repeat(64))
         .expect("redaction");
     assert_eq!(redacted.state, SendState::Redacted);
+    assert_eq!(redacted.observation_digest.as_deref(), Some("3333333333333333333333333333333333333333333333333333333333333333"));
+    assert_eq!(redacted.redaction_observation_digest.as_deref(), Some("4444444444444444444444444444444444444444444444444444444444444444"));
 
     for changed in [
         observation.clone(),
@@ -195,4 +197,24 @@ fn redaction_replay_is_idempotent_without_replacing_original_evidence() {
         Err(Error::AlreadyTerminal)
     );
     assert_eq!(observer.receipt("operation.1"), Some(&redacted));
+}
+
+#[test]
+fn terminal_history_does_not_consume_unresolved_capacity() {
+    let mut observer = MatrixSendObserver::default();
+    for index in 0..MAX_PENDING_SENDS {
+        let mut value = intent();
+        value.operation_id = format!("operation.{index}");
+        value.transaction_id = format!("transaction.{index}");
+        observer.prepare_send(100, value).expect("prepare");
+        let mut observation = successful_observation();
+        observation.operation_id = format!("operation.{index}");
+        observation.transaction_id = format!("transaction.{index}");
+        observation.server_event_id = Some(format!("$event{index}:example.org"));
+        observer.observe_send(observation).expect("terminal");
+    }
+    let mut next = intent();
+    next.operation_id = "operation.after-history".to_string();
+    next.transaction_id = "transaction.after-history".to_string();
+    observer.prepare_send(100, next).expect("terminal history must not exhaust unresolved capacity");
 }
