@@ -7,8 +7,11 @@ use std::time::UNIX_EPOCH;
 use codex_hepta_matrix_protocol::MatrixEventId;
 use codex_hepta_matrix_store::MatrixDurableError;
 use codex_hepta_matrix_store::MatrixDurableStore;
+use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::OutboxRecord;
 use tokio_util::sync::CancellationToken;
+
+const PARKED_RECONCILIATION_AT_MS: u64 = i64::MAX as u64;
 
 pub type MatrixSendFuture<'a> =
     Pin<Box<dyn Future<Output = Result<MatrixEventId, MatrixTransportError>> + Send + 'a>>;
@@ -63,7 +66,12 @@ impl OutboxDispatchConfig {
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct OutboxDispatchStats {
     pub claimed: u64,
+    /// Terminal success already observed by the durable sync reconciler.
     pub sent: u64,
+    /// Matrix transport returned an event id, but terminality still waits for /sync.
+    pub transport_accepted: u64,
+    /// Delivery crossed or may have crossed the boundary and is parked/retrying.
+    pub indeterminate: u64,
     pub retry_scheduled: u64,
     pub permanent_failure: u64,
     pub cancelled: bool,
@@ -96,6 +104,21 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
         ..OutboxDispatchStats::default()
     };
     for record in records {
+        let prepared = store
+            .prepare_outbox_dispatch(&record, now_ms)
+            .await
+            .map_err(store_error)?;
+        if prepared.state.is_terminal() {
+            if prepared.state == MatrixDispatchState::Succeeded
+                || prepared.state == MatrixDispatchState::Redacted
+            {
+                stats.sent += 1;
+            } else {
+                stats.permanent_failure += 1;
+            }
+            continue;
+        }
+
         let result = tokio::select! {
             biased;
             _ = cancel.cancelled() => {
@@ -106,14 +129,82 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
         };
         match result {
             Ok(event_id) => {
-                store
-                    .mark_outbox_sent(&record.stable_txn_id, record.attempts, &event_id, now_ms)
+                let observed = store
+                    .record_outbox_transport_accepted(
+                        &record.stable_txn_id,
+                        record.attempts,
+                        &event_id,
+                        now_ms,
+                    )
                     .await
                     .map_err(store_error)?;
-                stats.sent += 1;
+                stats.transport_accepted += 1;
+                if observed.state.is_terminal() {
+                    stats.sent += 1;
+                    continue;
+                }
+                let next_attempt_at_ms = reconciliation_attempt_at(config, &record, now_ms)?;
+                store
+                    .mark_outbox_retry(
+                        &record.stable_txn_id,
+                        record.attempts,
+                        now_ms,
+                        next_attempt_at_ms,
+                    )
+                    .await
+                    .map_err(store_error)?;
+                if next_attempt_at_ms == PARKED_RECONCILIATION_AT_MS {
+                    stats.indeterminate += 1;
+                } else {
+                    stats.retry_scheduled += 1;
+                }
             }
             Err(MatrixTransportError::Retryable) => {
-                if record.attempts >= config.max_attempts {
+                store
+                    .record_outbox_transport_indeterminate(
+                        &record.stable_txn_id,
+                        record.attempts,
+                        now_ms,
+                    )
+                    .await
+                    .map_err(store_error)?;
+                let next_attempt_at_ms = reconciliation_attempt_at(config, &record, now_ms)?;
+                store
+                    .mark_outbox_retry(
+                        &record.stable_txn_id,
+                        record.attempts,
+                        now_ms,
+                        next_attempt_at_ms,
+                    )
+                    .await
+                    .map_err(store_error)?;
+                if next_attempt_at_ms == PARKED_RECONCILIATION_AT_MS {
+                    stats.indeterminate += 1;
+                } else {
+                    stats.retry_scheduled += 1;
+                }
+            }
+            Err(MatrixTransportError::Permanent) => {
+                let observed = store
+                    .record_outbox_transport_rejected(
+                        &record.stable_txn_id,
+                        record.attempts,
+                        now_ms,
+                    )
+                    .await
+                    .map_err(store_error)?;
+                if observed.state == MatrixDispatchState::Accepted {
+                    store
+                        .mark_outbox_retry(
+                            &record.stable_txn_id,
+                            record.attempts,
+                            now_ms,
+                            PARKED_RECONCILIATION_AT_MS,
+                        )
+                        .await
+                        .map_err(store_error)?;
+                    stats.indeterminate += 1;
+                } else {
                     store
                         .mark_outbox_permanent_failure(
                             &record.stable_txn_id,
@@ -123,28 +214,7 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
                         .await
                         .map_err(store_error)?;
                     stats.permanent_failure += 1;
-                } else {
-                    let next_attempt_at_ms = now_ms
-                        .checked_add(retry_delay_ms(config, record.attempts)?)
-                        .ok_or(OutboxDispatchError::Invalid)?;
-                    store
-                        .mark_outbox_retry(
-                            &record.stable_txn_id,
-                            record.attempts,
-                            now_ms,
-                            next_attempt_at_ms,
-                        )
-                        .await
-                        .map_err(store_error)?;
-                    stats.retry_scheduled += 1;
                 }
-            }
-            Err(MatrixTransportError::Permanent) => {
-                store
-                    .mark_outbox_permanent_failure(&record.stable_txn_id, record.attempts, now_ms)
-                    .await
-                    .map_err(store_error)?;
-                stats.permanent_failure += 1;
             }
         }
     }
@@ -181,6 +251,19 @@ fn system_time_ms() -> Result<u64, OutboxDispatchError> {
         .map_err(|_| OutboxDispatchError::Invalid)?
         .as_millis();
     u64::try_from(millis).map_err(|_| OutboxDispatchError::Invalid)
+}
+
+fn reconciliation_attempt_at(
+    config: &OutboxDispatchConfig,
+    record: &OutboxRecord,
+    now_ms: u64,
+) -> Result<u64, OutboxDispatchError> {
+    if record.attempts >= config.max_attempts {
+        return Ok(PARKED_RECONCILIATION_AT_MS);
+    }
+    now_ms
+        .checked_add(retry_delay_ms(config, record.attempts)?)
+        .ok_or(OutboxDispatchError::Invalid)
 }
 
 fn retry_delay_ms(
