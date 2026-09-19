@@ -14,21 +14,6 @@
   },
   "contracts": [
     {
-      "id": "AlgorithmFaultReceiptV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "learning.eval",
-      "consumers": [
-        "kernel.evidence",
-        "learning.artifacts"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
       "id": "BellmanOperatorArtifactV1",
       "version": 1,
       "kind": "typed_protocol",
@@ -44,60 +29,12 @@
       "compatibility": "deny_unknown_critical_fields"
     },
     {
-      "id": "CandidateEvaluationReceiptV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "learning.eval",
-      "consumers": [
-        "control.engineering",
-        "learning.artifacts",
-        "kernel.evidence"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
-      "id": "CandidateSetCompletenessReceiptV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "learning.ledger",
-      "consumers": [
-        "learning.eval",
-        "learning.operator",
-        "prompt.optimizer",
-        "intuition.policy"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
       "id": "CodexContextAttachmentV1",
       "version": 1,
       "kind": "typed_protocol",
       "producer": "runtime.agentd",
       "consumers": [
         "runtime.codex"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
-      "id": "ConformanceReceiptV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "learning.eval",
-      "consumers": [
-        "kernel.evidence",
-        "learning.artifacts"
       ],
       "transport": "canonical_json_or_in_process_typed",
       "bounded": true,
@@ -128,22 +65,6 @@
       "consumers": [
         "learning.operator",
         "learning.eval"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
-      "id": "CrossModalBindingV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "cognitive.types",
-      "consumers": [
-        "cognitive.store",
-        "cognitive.read",
-        "knowledge.graph"
       ],
       "transport": "canonical_json_or_in_process_typed",
       "bounded": true,
@@ -906,80 +827,12 @@
       "compatibility": "versioned"
     },
     {
-      "id": "EngramNodeV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "cognitive.types",
-      "consumers": [
-        "memory.retrieval",
-        "knowledge.graph",
-        "neuron.runtime",
-        "learning.artifacts"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
       "id": "EvaluationReceiptV1",
       "version": 1,
       "kind": "typed_protocol",
       "producer": "learning.eval",
       "consumers": [
         "kernel.evidence",
-        "learning.artifacts"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
-      "id": "ForgetPropagationReceiptV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "cognitive.types",
-      "consumers": [
-        "cognitive.store",
-        "cognitive.read",
-        "memory.retrieval",
-        "knowledge.graph",
-        "compact.engine",
-        "learning.artifacts"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
-      "id": "GoldenFixtureManifestV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "control.engineering",
-      "consumers": [
-        "utility.ndu",
-        "neuron.runtime",
-        "learning.operator",
-        "learning.eval"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
-      "id": "IndependentDecisionReceiptV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "kernel.evidence",
-      "consumers": [
-        "control.engineering",
         "learning.artifacts"
       ],
       "transport": "canonical_json_or_in_process_typed",
@@ -1010,37 +863,6 @@
       "consumers": [
         "context.compiler",
         "learning.ledger"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
-      "id": "IterationCandidateV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "learning.plasticity",
-      "consumers": [
-        "control.engineering",
-        "learning.eval",
-        "learning.artifacts"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
-      "id": "IterationEnvelopeV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "control.engineering",
-      "consumers": [
-        "learning.plasticity",
-        "learning.eval"
       ],
       "transport": "canonical_json_or_in_process_typed",
       "bounded": true,
@@ -1131,57 +953,6 @@
       "consumers": [
         "kernel.evidence",
         "learning.artifacts"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
-      "id": "MemoryCueV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "cognitive.types",
-      "consumers": [
-        "memory.retrieval",
-        "neuron.runtime"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
-      "id": "MemoryEventV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "cognitive.types",
-      "consumers": [
-        "cognitive.store",
-        "cognitive.read",
-        "memory.retrieval",
-        "knowledge.graph",
-        "compact.engine",
-        "context.compiler",
-        "learning.ledger"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
-      "id": "ModalitySpanRefV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "cognitive.types",
-      "consumers": [
-        "cognitive.store",
-        "cognitive.read",
-        "context.compiler"
       ],
       "transport": "canonical_json_or_in_process_typed",
       "bounded": true,
@@ -2521,22 +2292,6 @@
       "compatibility": "deny_unknown_critical_fields"
     },
     {
-      "id": "NduCoefficientManifestV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "utility.ndu",
-      "consumers": [
-        "learning.artifacts",
-        "learning.eval",
-        "intelligence.control"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
       "id": "NduPreferenceStateV1",
       "version": 1,
       "kind": "typed_protocol",
@@ -2560,54 +2315,6 @@
       "consumers": [
         "control.runtime",
         "learning.ledger"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
-      "id": "NduUpdateReceiptV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "utility.ndu",
-      "consumers": [
-        "learning.ledger",
-        "learning.eval",
-        "intelligence.control"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
-      "id": "NduWellPosednessCertificateV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "learning.eval",
-      "consumers": [
-        "utility.ndu",
-        "learning.artifacts",
-        "intelligence.control"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
-      "id": "NeuronCheckpointV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "neuron.runtime",
-      "consumers": [
-        "intuition.policy",
-        "learning.eval",
-        "learning.plasticity"
       ],
       "transport": "canonical_json_or_in_process_typed",
       "bounded": true,
@@ -2666,22 +2373,6 @@
       "compatibility": "deny_unknown_critical_fields"
     },
     {
-      "id": "OperatorApplicabilityCertificateV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "learning.eval",
-      "consumers": [
-        "learning.operator",
-        "learning.artifacts",
-        "intuition.policy"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
       "id": "OperatorSensorCoreManifestV1",
       "version": 1,
       "kind": "typed_protocol",
@@ -2720,55 +2411,6 @@
       "consumers": [
         "learning.operator",
         "learning.eval"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
-      "id": "OutcomeSignalV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "cognitive.types",
-      "consumers": [
-        "compact.engine",
-        "learning.ledger",
-        "learning.operator",
-        "learning.plasticity"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
-      "id": "OutcomeWatermarkV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "learning.ledger",
-      "consumers": [
-        "learning.eval",
-        "learning.operator",
-        "utility.ndu"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
-      "id": "PlasticityBatchV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "cognitive.types",
-      "consumers": [
-        "learning.plasticity",
-        "learning.artifacts",
-        "neuron.runtime"
       ],
       "transport": "canonical_json_or_in_process_typed",
       "bounded": true,
@@ -2898,41 +2540,6 @@
       "compatibility": "deny_unknown_critical_fields"
     },
     {
-      "id": "RandomStreamManifestV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "platform.types",
-      "consumers": [
-        "utility.ndu",
-        "neuron.runtime",
-        "learning.operator",
-        "learning.eval",
-        "learning.plasticity"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
-      "id": "RecallPacketV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "cognitive.types",
-      "consumers": [
-        "memory.retrieval",
-        "context.compiler",
-        "intuition.policy",
-        "learning.ledger"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
       "id": "ReconciliationReceiptV1",
       "version": 1,
       "kind": "typed_protocol",
@@ -2964,21 +2571,6 @@
       "compatibility": "deny_unknown_critical_fields"
     },
     {
-      "id": "ReplaySelectionReceiptV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "cognitive.types",
-      "consumers": [
-        "compact.engine",
-        "learning.ledger"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
       "id": "RunStartSnapshotV1",
       "version": 1,
       "kind": "typed_protocol",
@@ -2997,47 +2589,14 @@
       "compatibility": "deny_unknown_critical_fields"
     },
     {
-      "id": "SupportAuditReceiptV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "learning.eval",
-      "consumers": [
-        "learning.operator",
-        "learning.artifacts",
-        "intelligence.control"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
-      "id": "SynapseV1",
-      "version": 1,
-      "kind": "typed_protocol",
-      "producer": "cognitive.types",
-      "consumers": [
-        "memory.retrieval",
-        "knowledge.graph",
-        "neuron.runtime",
-        "learning.artifacts"
-      ],
-      "transport": "canonical_json_or_in_process_typed",
-      "bounded": true,
-      "authorityDelta": "none",
-      "payloadClass": "contract_specific",
-      "compatibility": "deny_unknown_critical_fields"
-    },
-    {
       "id": "TopologyProposalV1",
       "version": 1,
       "kind": "typed_protocol",
-      "producer": "cognitive.types",
+      "producer": "learning.plasticity",
       "consumers": [
-        "learning.plasticity",
-        "control.engineering",
-        "learning.artifacts"
+        "learning.eval",
+        "learning.artifacts",
+        "control.engineering"
       ],
       "transport": "canonical_json_or_in_process_typed",
       "bounded": true,
@@ -3071,6 +2630,447 @@
         "inference.control",
         "channel.matrix",
         "browser.servo"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "NduCoefficientManifestV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "utility.ndu",
+      "consumers": [
+        "learning.artifacts",
+        "learning.eval",
+        "intelligence.control"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "NduWellPosednessCertificateV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "learning.eval",
+      "consumers": [
+        "utility.ndu",
+        "learning.artifacts",
+        "intelligence.control"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "NduUpdateReceiptV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "utility.ndu",
+      "consumers": [
+        "learning.ledger",
+        "learning.eval",
+        "intelligence.control"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "OperatorApplicabilityCertificateV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "learning.eval",
+      "consumers": [
+        "learning.operator",
+        "learning.artifacts",
+        "intuition.policy"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "CandidateSetCompletenessReceiptV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "learning.ledger",
+      "consumers": [
+        "learning.eval",
+        "learning.operator",
+        "prompt.optimizer",
+        "intuition.policy"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "OutcomeWatermarkV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "learning.ledger",
+      "consumers": [
+        "learning.eval",
+        "learning.operator",
+        "utility.ndu"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "SupportAuditReceiptV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "learning.eval",
+      "consumers": [
+        "learning.operator",
+        "learning.artifacts",
+        "intelligence.control"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "NeuronCheckpointV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "neuron.runtime",
+      "consumers": [
+        "intuition.policy",
+        "learning.eval",
+        "learning.plasticity"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "IterationEnvelopeV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "control.engineering",
+      "consumers": [
+        "learning.plasticity",
+        "learning.eval"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "IterationCandidateV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "learning.plasticity",
+      "consumers": [
+        "control.engineering",
+        "learning.eval",
+        "learning.artifacts"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "CandidateEvaluationReceiptV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "learning.eval",
+      "consumers": [
+        "control.engineering",
+        "learning.artifacts",
+        "kernel.evidence"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "IndependentDecisionReceiptV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "kernel.evidence",
+      "consumers": [
+        "control.engineering",
+        "learning.artifacts"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "GoldenFixtureManifestV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "control.engineering",
+      "consumers": [
+        "utility.ndu",
+        "neuron.runtime",
+        "learning.operator",
+        "learning.eval"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "ConformanceReceiptV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "learning.eval",
+      "consumers": [
+        "kernel.evidence",
+        "learning.artifacts"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "RandomStreamManifestV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "platform.types",
+      "consumers": [
+        "utility.ndu",
+        "neuron.runtime",
+        "learning.operator",
+        "learning.eval",
+        "learning.plasticity"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "AlgorithmFaultReceiptV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "learning.eval",
+      "consumers": [
+        "kernel.evidence",
+        "learning.artifacts"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "ModalitySpanRefV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "cognitive.types",
+      "consumers": [
+        "cognitive.store",
+        "cognitive.read",
+        "context.compiler"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "MemoryEventV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "cognitive.types",
+      "consumers": [
+        "cognitive.store",
+        "cognitive.read",
+        "memory.retrieval",
+        "knowledge.graph",
+        "compact.engine",
+        "context.compiler",
+        "learning.ledger"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "CrossModalBindingV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "cognitive.types",
+      "consumers": [
+        "cognitive.store",
+        "cognitive.read",
+        "knowledge.graph"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "EngramNodeV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "cognitive.types",
+      "consumers": [
+        "memory.retrieval",
+        "knowledge.graph",
+        "neuron.runtime",
+        "learning.artifacts"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "SynapseV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "cognitive.types",
+      "consumers": [
+        "memory.retrieval",
+        "knowledge.graph",
+        "neuron.runtime",
+        "learning.artifacts"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "MemoryCueV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "cognitive.types",
+      "consumers": [
+        "memory.retrieval",
+        "neuron.runtime"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "RecallPacketV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "cognitive.types",
+      "consumers": [
+        "memory.retrieval",
+        "context.compiler",
+        "intuition.policy",
+        "learning.ledger"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "OutcomeSignalV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "cognitive.types",
+      "consumers": [
+        "compact.engine",
+        "learning.ledger",
+        "learning.operator",
+        "learning.plasticity"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "ReplaySelectionReceiptV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "cognitive.types",
+      "consumers": [
+        "compact.engine",
+        "learning.ledger"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "PlasticityBatchV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "cognitive.types",
+      "consumers": [
+        "learning.plasticity",
+        "learning.artifacts",
+        "neuron.runtime"
+      ],
+      "transport": "canonical_json_or_in_process_typed",
+      "bounded": true,
+      "authorityDelta": "none",
+      "payloadClass": "contract_specific",
+      "compatibility": "deny_unknown_critical_fields"
+    },
+    {
+      "id": "ForgetPropagationReceiptV1",
+      "version": 1,
+      "kind": "typed_protocol",
+      "producer": "cognitive.types",
+      "consumers": [
+        "cognitive.store",
+        "cognitive.read",
+        "memory.retrieval",
+        "knowledge.graph",
+        "compact.engine",
+        "learning.artifacts"
       ],
       "transport": "canonical_json_or_in_process_typed",
       "bounded": true,
