@@ -43,7 +43,7 @@ pub fn build_ledger_index_checkpoint(
     let mut unlearning_count = 0_u64;
 
     for record in ledger.records() {
-        match record.event {
+        match &record.event {
             LedgerEvent::Decision(_) => decision_count += 1,
             LedgerEvent::Outcome(_) | LedgerEvent::AuthenticatedOutcome(_) => outcome_count += 1,
             LedgerEvent::Credit(_) | LedgerEvent::CreditBatch(_) => credit_count += 1,
