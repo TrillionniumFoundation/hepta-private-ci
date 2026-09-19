@@ -497,22 +497,10 @@ impl AutomationStore {
         .execute(&mut *transaction)
         .await
         .map_err(constraint_or_unavailable)?;
-        if dispatch.rows_affected() == 0 {
-            sqlx::query(
-                "INSERT INTO automation_dispatch_outcomes (
-                    task_id, occurrence, client_user_message_id, queued_submission_id,
-                    outcome, observed_at_ms, submitted_at_ms
-                 ) VALUES (?, ?, ?, ?, 'submitted', ?, ?)",
-            )
-            .bind(lease.task.task_id.to_string())
-            .bind(to_i64(lease.occurrence)?)
-            .bind(&lease.client_user_message_id)
-            .bind(&receipt.queued_submission_id)
-            .bind(to_i64(admitted_at_ms)?)
-            .bind(to_i64(admitted_at_ms)?)
-            .execute(&mut *transaction)
-            .await
-            .map_err(constraint_or_unavailable)?;
+        if dispatch.rows_affected() != 1 {
+            // Provider admission may only settle a dispatch intent that was
+            // durably quarantined before crossing the provider boundary.
+            return Err(AutomationError::Conflict);
         }
         let lifecycle = sqlx::query(
             "UPDATE automation_occurrence_lifecycle
