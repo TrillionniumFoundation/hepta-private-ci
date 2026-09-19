@@ -165,6 +165,26 @@ outstanding token also keeps its owner and process lock alive. Mutex poisoning
 inside authority code or persistence failure refuses further operations;
 callback panics occur after the final authority lock has been released.
 
+## VerifiedUseTokenWitnessV1
+
+The opaque `VerifiedUseToken` and `LeaseVerifiedUseToken` remain the only
+in-process capabilities accepted by final authority boundaries. The separate
+`VerifiedUseTokenWitnessV1` is a serializable evidence protocol with
+`authorityDelta = none`: no authority API accepts it as authorization input
+and there is no conversion from a witness back into either opaque token.
+
+`deliver_final_use_with_witness`,
+`dispatch_final_use_with_witness` and
+`authority_lease::deliver_authority_lease_with_witness` emit the witness only
+after the same live check that linearizes consumer/dispatch entry. The record
+binds authority family, owner/grant or lease identity, authority epoch, current
+revocation/store revision, verification time, boundary kind and a
+domain-separated digest of the exact binding. Unknown fields are rejected.
+
+This closes the typed/canonical-JSON witness contract without turning an audit
+receipt into a portable bearer grant. Product code that does not need the
+serialized evidence may continue to use the opaque-token APIs.
+
 ## APIs and failure semantics
 
 | API / result | Host action |
@@ -178,7 +198,9 @@ callback panics occur after the final authority lock has been released.
 | `update_revocations` | Apply only a newer trusted revision; same-epoch revocations cannot be removed |
 | `claim` | Burn one valid nonce before effect dispatch; never reuse the grant on retry |
 | `with_verified_use` | Revalidate, linearize entry, release the authority lock, then consume the token at the final synchronous boundary |
+| `deliver_final_use_with_witness` | Same consumer-entry check, plus a serializable non-authorizing `VerifiedUseTokenWitnessV1` |
 | `dispatch_final_use` / `with_dispatch_boundary` | Revalidate and hold the lock only across one short local irreversible dispatch boundary |
+| `dispatch_final_use_with_witness` | Same dispatch-entry fence, plus a serializable non-authorizing witness |
 | `InvalidGrant`, `InvalidSignature`, `BindingMismatch` | Reject the proposal; do not dispatch |
 | `EpochMismatch`, `Revoked`, `NotYetValid`, `Expired` | Reject stale or currently unauthorized use |
 | `AlreadyClaimed`, `CapacityExceeded` | Require owner reconciliation/new authorization or an epoch transition |
