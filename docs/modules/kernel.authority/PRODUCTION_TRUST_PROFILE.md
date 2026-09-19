@@ -81,7 +81,25 @@ custody identity and record:
 Repository signer utilities consume externally provisioned keys and are not a key
 custody system.
 
-## 5. Required deployment receipt
+## 5. Machine-checkable evidence admission
+
+The repository provides a fail-closed admission verifier for the external facts
+in this profile:
+
+```bash
+python3 qualification/kernel-authority/verify.py self-test
+python3 qualification/kernel-authority/verify.py verify \
+  --evidence /secure/evidence/kernel-authority/production-evidence.json \
+  --expected-sha <exact-candidate-commit>
+```
+
+The bundle contract is defined in
+[`qualification/kernel-authority/README.md`](../../../qualification/kernel-authority/README.md).
+Admission checks exact commit/tree identity and content-addresses every retained
+external receipt. It does not make the repository the issuer of TPM/HSM/KMS/cloud
+attestation, and a pass explicitly does not grant activation or release.
+
+## 6. Required deployment receipt
 
 A production evidence bundle MUST contain, at minimum:
 
