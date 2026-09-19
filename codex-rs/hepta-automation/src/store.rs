@@ -430,11 +430,15 @@ impl AutomationStore {
             .ok_or(AutomationError::Invalid)?;
         let mut transaction = self.pool.begin().await.map_err(unavailable)?;
 
+        // Reclaim an already-materialized occurrence first. Its deterministic
+        // identity, revision and scheduled instant never change across retries.
         let reclaim = sqlx::query(
-            "SELECT r.task_id, r.occurrence, r.scheduled_for_ms, r.client_user_message_id
+            "SELECT r.task_id, r.occurrence, r.occurrence_id, r.schedule_revision,
+                    r.scheduled_for_ms, r.client_user_message_id
              FROM automation_runs r
              JOIN automation_tasks t ON t.task_id = r.task_id
              WHERE t.owner_agent_id = ? AND t.state = 'enabled'
+               AND r.terminal_state IS NULL
                AND (r.state = 'pending'
                     OR (r.state = 'leased' AND r.lease_expires_at_ms <= ?))
                AND NOT EXISTS (
@@ -450,75 +454,171 @@ impl AutomationStore {
         .await
         .map_err(unavailable)?;
 
-        let (task_id, occurrence, scheduled_for_ms, client_id) = if let Some(row) = reclaim {
-            let task_id =
-                AutomationTaskId::parse(&row.try_get::<String, _>("task_id").map_err(unavailable)?)
-                    .map_err(|_| AutomationError::Corrupt)?;
-            (
-                task_id,
-                to_u64(row.try_get("occurrence").map_err(unavailable)?)?,
-                to_u64(row.try_get("scheduled_for_ms").map_err(unavailable)?)?,
-                row.try_get("client_user_message_id").map_err(unavailable)?,
-            )
-        } else {
-            let row = sqlx::query(
-                "SELECT t.task_id, t.next_occurrence, t.next_run_at_ms
-                 FROM automation_tasks t
-                 WHERE t.owner_agent_id = ? AND t.state = 'enabled'
-                   AND t.next_run_at_ms IS NOT NULL AND t.next_run_at_ms <= ?
-                   AND NOT EXISTS (
-                       SELECT 1 FROM automation_runs r
-                       WHERE r.task_id = t.task_id AND r.state IN ('pending', 'leased')
-                   )
-                 ORDER BY t.next_run_at_ms, t.task_id LIMIT 1",
-            )
-            .bind(self.owner_agent_id.as_str())
-            .bind(to_i64(now_ms)?)
-            .fetch_optional(&mut *transaction)
-            .await
-            .map_err(unavailable)?;
-            let Some(row) = row else {
-                transaction.commit().await.map_err(unavailable)?;
-                return Ok(None);
+        let (task_id, occurrence, occurrence_id, schedule_revision, scheduled_for_ms, client_id) =
+            if let Some(row) = reclaim {
+                let task_id = AutomationTaskId::parse(
+                    &row.try_get::<String, _>("task_id").map_err(unavailable)?,
+                )
+                .map_err(|_| AutomationError::Corrupt)?;
+                (
+                    task_id,
+                    to_u64(row.try_get("occurrence").map_err(unavailable)?)?,
+                    row.try_get("occurrence_id").map_err(unavailable)?,
+                    to_u64(row.try_get("schedule_revision").map_err(unavailable)?)?,
+                    to_u64(row.try_get("scheduled_for_ms").map_err(unavailable)?)?,
+                    row.try_get("client_user_message_id").map_err(unavailable)?,
+                )
+            } else {
+                // The schedule frontier is advanced when an occurrence is
+                // materialized (or explicitly skipped), never when a queue
+                // accepts it. Forbid-overlap schedules wait for the preceding
+                // occurrence to reach an automation terminal state.
+                let row = sqlx::query(
+                    "SELECT t.*
+                     FROM automation_tasks t
+                     WHERE t.owner_agent_id = ? AND t.state = 'enabled'
+                       AND t.next_run_at_ms IS NOT NULL AND t.next_run_at_ms <= ?
+                       AND (
+                           t.overlap_policy = 'allow'
+                           OR NOT EXISTS (
+                               SELECT 1 FROM automation_runs r
+                               WHERE r.task_id = t.task_id
+                                 AND r.terminal_state IS NULL
+                                 AND r.state != 'cancelled'
+                           )
+                       )
+                       AND NOT EXISTS (
+                           SELECT 1 FROM automation_runs r
+                           WHERE r.task_id = t.task_id
+                             AND r.state IN ('pending', 'leased')
+                       )
+                     ORDER BY t.next_run_at_ms, t.task_id LIMIT 1",
+                )
+                .bind(self.owner_agent_id.as_str())
+                .bind(to_i64(now_ms)?)
+                .fetch_optional(&mut *transaction)
+                .await
+                .map_err(unavailable)?;
+                let Some(row) = row else {
+                    transaction.commit().await.map_err(unavailable)?;
+                    return Ok(None);
+                };
+                let task = task_from_row(&row, &self.owner_agent_id)?;
+                let occurrence = task.next_occurrence;
+                let nominal = task.next_run_at_ms.ok_or(AutomationError::Corrupt)?;
+                let catch_up_remaining = u16::try_from(
+                    row.try_get::<i64, _>("catch_up_remaining")
+                        .map_err(unavailable)?,
+                )
+                .map_err(|_| AutomationError::Corrupt)?;
+                let plan = materialization_plan(
+                    task.schedule,
+                    task.policy,
+                    catch_up_remaining,
+                    nominal,
+                    now_ms,
+                )?;
+
+                // Skip is itself a durable schedule-frontier decision. No
+                // occurrence is invented for an instant that policy says did
+                // not execute.
+                let Some(scheduled_for_ms) = plan.scheduled_for_ms else {
+                    let next_state = if plan.complete_schedule {
+                        AutomationTaskState::Completed
+                    } else {
+                        task.state
+                    };
+                    let changed = sqlx::query(
+                        "UPDATE automation_tasks
+                         SET state = ?, next_run_at_ms = ?, catch_up_remaining = ?,
+                             updated_at_ms = ?
+                         WHERE task_id = ? AND owner_agent_id = ?
+                           AND schedule_revision = ? AND next_run_at_ms = ?",
+                    )
+                    .bind(next_state.as_str())
+                    .bind(plan.next_run_at_ms.map(to_i64).transpose()?)
+                    .bind(i64::from(plan.catch_up_remaining))
+                    .bind(to_i64(now_ms)?)
+                    .bind(task.task_id.to_string())
+                    .bind(self.owner_agent_id.as_str())
+                    .bind(to_i64(task.schedule_revision)?)
+                    .bind(to_i64(nominal)?)
+                    .execute(&mut *transaction)
+                    .await
+                    .map_err(unavailable)?;
+                    if changed.rows_affected() != 1 {
+                        return Err(AutomationError::Conflict);
+                    }
+                    transaction.commit().await.map_err(unavailable)?;
+                    return Ok(None);
+                };
+
+                let occurrence_id = deterministic_occurrence_id(
+                    &self.owner_agent_id,
+                    task.task_id,
+                    task.schedule_revision,
+                    scheduled_for_ms,
+                )?;
+                let client_id =
+                    client_message_id(&self.owner_agent_id, task.task_id, occurrence);
+                sqlx::query(
+                    "INSERT INTO automation_runs (
+                        task_id, occurrence, occurrence_id, schedule_revision,
+                        graph_generation, scheduled_for_ms, client_user_message_id, state
+                     ) VALUES (?, ?, ?, ?, 1, ?, ?, 'pending')",
+                )
+                .bind(task.task_id.to_string())
+                .bind(to_i64(occurrence)?)
+                .bind(&occurrence_id)
+                .bind(to_i64(task.schedule_revision)?)
+                .bind(to_i64(scheduled_for_ms)?)
+                .bind(&client_id)
+                .execute(&mut *transaction)
+                .await
+                .map_err(|error| {
+                    if is_constraint(&error) {
+                        AutomationError::Conflict
+                    } else {
+                        unavailable(error)
+                    }
+                })?;
+                let advanced = sqlx::query(
+                    "UPDATE automation_tasks
+                     SET next_occurrence = next_occurrence + 1,
+                         next_run_at_ms = ?, catch_up_remaining = ?, updated_at_ms = ?
+                     WHERE task_id = ? AND owner_agent_id = ?
+                       AND schedule_revision = ? AND next_occurrence = ?
+                       AND next_run_at_ms = ?",
+                )
+                .bind(plan.next_run_at_ms.map(to_i64).transpose()?)
+                .bind(i64::from(plan.catch_up_remaining))
+                .bind(to_i64(now_ms)?)
+                .bind(task.task_id.to_string())
+                .bind(self.owner_agent_id.as_str())
+                .bind(to_i64(task.schedule_revision)?)
+                .bind(to_i64(occurrence)?)
+                .bind(to_i64(nominal)?)
+                .execute(&mut *transaction)
+                .await
+                .map_err(unavailable)?;
+                if advanced.rows_affected() != 1 {
+                    return Err(AutomationError::Conflict);
+                }
+                (
+                    task.task_id,
+                    occurrence,
+                    occurrence_id,
+                    task.schedule_revision,
+                    scheduled_for_ms,
+                    client_id,
+                )
             };
-            let task_id =
-                AutomationTaskId::parse(&row.try_get::<String, _>("task_id").map_err(unavailable)?)
-                    .map_err(|_| AutomationError::Corrupt)?;
-            let occurrence = to_u64(row.try_get("next_occurrence").map_err(unavailable)?)?;
-            let scheduled_for_ms = to_u64(row.try_get("next_run_at_ms").map_err(unavailable)?)?;
-            let client_id = client_message_id(&self.owner_agent_id, task_id, occurrence);
-            sqlx::query(
-                "INSERT INTO automation_runs (
-                    task_id, occurrence, scheduled_for_ms, client_user_message_id, state
-                 ) VALUES (?, ?, ?, ?, 'pending')",
-            )
-            .bind(task_id.to_string())
-            .bind(to_i64(occurrence)?)
-            .bind(to_i64(scheduled_for_ms)?)
-            .bind(&client_id)
-            .execute(&mut *transaction)
-            .await
-            .map_err(unavailable)?;
-            let advanced = sqlx::query(
-                "UPDATE automation_tasks SET next_occurrence = next_occurrence + 1
-                 WHERE task_id = ? AND next_occurrence = ?",
-            )
-            .bind(task_id.to_string())
-            .bind(to_i64(occurrence)?)
-            .execute(&mut *transaction)
-            .await
-            .map_err(unavailable)?;
-            if advanced.rows_affected() != 1 {
-                return Err(AutomationError::Conflict);
-            }
-            (task_id, occurrence, scheduled_for_ms, client_id)
-        };
 
         let lease_token = uuid::Uuid::now_v7().to_string();
         let leased = sqlx::query(
             "UPDATE automation_runs
              SET state = 'leased', lease_generation = ?, lease_token = ?, lease_expires_at_ms = ?
-             WHERE task_id = ? AND occurrence = ?
+             WHERE task_id = ? AND occurrence = ? AND terminal_state IS NULL
                AND (state = 'pending' OR (state = 'leased' AND lease_expires_at_ms <= ?))",
         )
         .bind(to_i64(generation)?)
@@ -543,6 +643,8 @@ impl AutomationStore {
         Ok(Some(AutomationLease {
             task,
             occurrence,
+            occurrence_id,
+            schedule_revision,
             scheduled_for_ms,
             client_user_message_id: client_id,
             lease_generation: generation,
@@ -1068,6 +1170,139 @@ async fn advance_task_after_submission(
         return Err(AutomationError::Corrupt);
     }
     Ok(())
+}
+
+#[derive(Clone, Copy, Debug)]
+struct MaterializationPlan {
+    scheduled_for_ms: Option<u64>,
+    next_run_at_ms: Option<u64>,
+    catch_up_remaining: u16,
+    complete_schedule: bool,
+}
+
+fn materialization_plan(
+    schedule: AutomationSchedule,
+    policy: AutomationSchedulePolicy,
+    catch_up_remaining: u16,
+    nominal_ms: u64,
+    now_ms: u64,
+) -> Result<MaterializationPlan, AutomationError> {
+    if nominal_ms > now_ms || catch_up_remaining > policy.catch_up_limit {
+        return Err(AutomationError::Corrupt);
+    }
+    match schedule {
+        AutomationSchedule::Once => {
+            if policy.missed_run == AutomationMissedRunPolicy::Skip && nominal_ms < now_ms {
+                return Ok(MaterializationPlan {
+                    scheduled_for_ms: None,
+                    next_run_at_ms: None,
+                    catch_up_remaining: 0,
+                    complete_schedule: true,
+                });
+            }
+            Ok(MaterializationPlan {
+                scheduled_for_ms: Some(nominal_ms),
+                next_run_at_ms: None,
+                catch_up_remaining: 0,
+                complete_schedule: false,
+            })
+        }
+        AutomationSchedule::FixedInterval { interval_ms } => {
+            let latest_due = latest_due_slot(nominal_ms, now_ms, interval_ms)?;
+            match policy.missed_run {
+                AutomationMissedRunPolicy::Skip if nominal_ms < now_ms => {
+                    Ok(MaterializationPlan {
+                        scheduled_for_ms: None,
+                        next_run_at_ms: Some(
+                            latest_due
+                                .checked_add(interval_ms)
+                                .ok_or(AutomationError::Invalid)?,
+                        ),
+                        catch_up_remaining: 0,
+                        complete_schedule: false,
+                    })
+                }
+                AutomationMissedRunPolicy::Skip | AutomationMissedRunPolicy::Coalesce => {
+                    let materialized = if policy.missed_run == AutomationMissedRunPolicy::Coalesce {
+                        latest_due
+                    } else {
+                        nominal_ms
+                    };
+                    Ok(MaterializationPlan {
+                        scheduled_for_ms: Some(materialized),
+                        next_run_at_ms: Some(
+                            materialized
+                                .checked_add(interval_ms)
+                                .ok_or(AutomationError::Invalid)?,
+                        ),
+                        catch_up_remaining: 0,
+                        complete_schedule: false,
+                    })
+                }
+                AutomationMissedRunPolicy::BoundedCatchUp => {
+                    if catch_up_remaining == 1 {
+                        // The final budget slot coalesces all remaining due
+                        // instants so one downtime episode is strictly bounded.
+                        return Ok(MaterializationPlan {
+                            scheduled_for_ms: Some(latest_due),
+                            next_run_at_ms: Some(
+                                latest_due
+                                    .checked_add(interval_ms)
+                                    .ok_or(AutomationError::Invalid)?,
+                            ),
+                            catch_up_remaining: 0,
+                            complete_schedule: false,
+                        });
+                    }
+                    let remaining = if catch_up_remaining > 1 {
+                        catch_up_remaining - 1
+                    } else {
+                        let due_count = now_ms
+                            .checked_sub(nominal_ms)
+                            .ok_or(AutomationError::Corrupt)?
+                            / interval_ms
+                            + 1;
+                        let budget = due_count.min(u64::from(policy.catch_up_limit));
+                        u16::try_from(budget.saturating_sub(1))
+                            .map_err(|_| AutomationError::Corrupt)?
+                    };
+                    let materialized = if remaining == 0 {
+                        latest_due
+                    } else {
+                        nominal_ms
+                    };
+                    Ok(MaterializationPlan {
+                        scheduled_for_ms: Some(materialized),
+                        next_run_at_ms: Some(
+                            materialized
+                                .checked_add(interval_ms)
+                                .ok_or(AutomationError::Invalid)?,
+                        ),
+                        catch_up_remaining: remaining,
+                        complete_schedule: false,
+                    })
+                }
+            }
+        }
+    }
+}
+
+fn latest_due_slot(
+    nominal_ms: u64,
+    now_ms: u64,
+    interval_ms: u64,
+) -> Result<u64, AutomationError> {
+    let steps = now_ms
+        .checked_sub(nominal_ms)
+        .ok_or(AutomationError::Corrupt)?
+        / interval_ms;
+    nominal_ms
+        .checked_add(
+            steps
+                .checked_mul(interval_ms)
+                .ok_or(AutomationError::Invalid)?,
+        )
+        .ok_or(AutomationError::Invalid)
 }
 
 const TASK_SELECT_BY_ID: &str =
