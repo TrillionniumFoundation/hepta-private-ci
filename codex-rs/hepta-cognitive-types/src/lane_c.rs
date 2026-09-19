@@ -580,6 +580,7 @@ pub struct CompactCheckpointV1 {
     pub checkpoint_id: StableId,
     pub generation: Generation,
     pub source_snapshot: CognitiveSnapshotKeyV1,
+    pub source_memory_snapshot_digest: Digest32,
     pub support_manifest_digest: Digest32,
     pub algorithm_digest: Digest32,
     pub payload_digest: Digest32,
@@ -595,6 +596,10 @@ impl CompactCheckpointV1 {
     pub fn validate(&self) -> Result<(), LaneCContractError> {
         self.source_snapshot.validate()?;
         for (name, digest) in [
+            (
+                "compact_source_memory_snapshot",
+                self.source_memory_snapshot_digest,
+            ),
             ("compact_support_manifest", self.support_manifest_digest),
             ("compact_algorithm", self.algorithm_digest),
             ("compact_payload", self.payload_digest),
@@ -628,6 +633,7 @@ impl CompactCheckpointV1 {
         push_id(&mut bytes, &self.checkpoint_id);
         push_generation(&mut bytes, self.generation);
         push_digest(&mut bytes, self.source_snapshot.vector_digest);
+        push_digest(&mut bytes, self.source_memory_snapshot_digest);
         push_digest(&mut bytes, self.support_manifest_digest);
         push_digest(&mut bytes, self.algorithm_digest);
         push_digest(&mut bytes, self.payload_digest);
