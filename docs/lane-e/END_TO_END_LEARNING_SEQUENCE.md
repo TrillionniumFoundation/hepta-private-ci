@@ -70,29 +70,42 @@ that judges the same candidate.
 ## 3. Artifact publication and latest-head admission
 
 ```text
-host reserves a create-only artifact identity
-  -> payload bytes are written and synchronized
+host authenticates a scoped withdrawal authority/domain/registry
   -> LearningArtifactManifestV2 binds bytes, datasets, complete lineage,
      predecessors, training code, runtime, device, objective, schema,
      normalization, compatibility, expiry and rollback predecessor
-  -> DatasetWithdrawalRegistry is checked before admission
-  -> registry event is staged against the exact predecessor head
-  -> registry snapshot is durably published
+  -> admit_manifest_at_withdrawal_head_v3 binds the exact scoped withdrawal head
+  -> ArtifactPublicationTransactionV1 begins at the exact V1 registry predecessor
+  -> payload bytes are validated, created and synchronized
+  -> transaction records PayloadDurable
+  -> V1 compatibility registration is appended and its snapshot is durable
+  -> transaction verifies the V1 projection and records RegistryDurable
   -> independent RegistryHeadWitnessV1 binds generation, predecessor head and
      authority epoch
-  -> producer is acknowledged only after the witness is durable
+  -> transaction verifies the exact witness receipt and records WitnessDurable
+  -> producer acknowledgement is permitted only from WitnessDurable
 ```
+
+`DatasetWithdrawalScopeV1` binds `authority_domain_id + registry_id + scope_id`.
+A scoped registry has a scope-specific genesis/head, and the scope digest is
+included in V3 admission. An unscoped registry cannot issue a V3 admission and
+cross-scope publication fails even when two scopes otherwise have equal event
+content.
+
+The V1 registry is a compatibility index. It cannot encode every V2 dataset,
+lineage digest or predecessor. The publication transaction therefore keeps the
+complete V3 admission as the authoritative V2 sidecar and checks only fields V1
+can faithfully represent.
 
 Readers must use a current independently retained head witness. A self-consistent
 old snapshot is not sufficient. Generation rollback, authority-epoch rollback,
-predecessor mismatch and expired witnesses fail closed.
+predecessor mismatch and expired current-head witnesses fail closed.
 
-Payload publication and registry publication are a bounded saga rather than an
-assumed distributed transaction. A crash after payload synchronization but
-before registry publication leaves an orphan candidate. It does not create a
-selected artifact. Orphan collection requires a separately fenced retention
-operation and must not delete bytes referenced by any current or historical
-registry head.
+Publication is an ordered crash-recovery protocol rather than an assumed
+distributed transaction. The host persists each transaction snapshot under its
+writer fence before treating a phase as durable. A crash after payload
+synchronization or registry publication cannot be relabelled acknowledged until
+the exact witness phase is recovered and completed.
 
 ## 4. Evaluation and independent decision
 
@@ -149,7 +162,10 @@ bounded early state -> quarantined
 
 The producer may record training completion but cannot evaluate, accept or
 select its own candidate. Each state change binds an actor credential, evidence,
-authority epoch and time. Skipping mandatory states fails.
+authority epoch and time. Skipping mandatory states fails. New mutations
+validate the actor at current time; historical recovery validates the same
+credential at the immutable event occurrence time, so a credential expiring
+after a valid event does not make old lifecycle state unrecoverable.
 
 Selection is consumed by a different supervisor or selector. A new process
 loads an exact manifest and payload against the current registry head and current
@@ -162,7 +178,8 @@ is never an implicit reuse of an expired grant or a stale backup marker.
 ```text
 source owner appends correction or deletion tombstone
   -> learning.ledger advances the correction/revocation cut
-  -> DatasetWithdrawalRegistry durably records the withdrawn dataset digest
+  -> scoped DatasetWithdrawalRegistry durably records the withdrawn dataset digest
+     with a scope-bound canonical snapshot receipt
   -> all directly matching artifacts are revoked
   -> lineage eligibility makes descendants unavailable
   -> new artifact admission rejects every withdrawn dataset
@@ -180,7 +197,10 @@ still require the responsible storage owner and independent evidence.
 
 ## 7. Crash matrix
 
-Every state-changing adapter must test at least these boundaries:
+Every state-changing adapter must test at least these boundaries. The
+publication transaction has source regressions that recover from prepared,
+payload-durable and registry-durable snapshots and prove that none can skip to
+acknowledgement:
 
 1. before local validation;
 2. after validation but before durable write;
