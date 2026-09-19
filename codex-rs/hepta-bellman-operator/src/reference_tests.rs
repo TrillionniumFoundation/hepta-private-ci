@@ -251,6 +251,7 @@ fn op_02_regularity_admission_enforces_gain_shape_ood_and_error_budget() {
         admit_operator_regularity(excessive_gain),
         Err(OperatorClosureError::ReconstructionGain)
     );
+}
 
 #[test]
 fn op_02_verified_applicability_requires_authenticated_independent_evaluator() {
@@ -357,4 +358,3 @@ fn op_02_verified_regularity_binds_signed_approval_and_metrics() {
     );
 }
 
-}
