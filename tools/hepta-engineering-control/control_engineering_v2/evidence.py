@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 import base64
+import binascii
 import hashlib
 import hmac
 import os
@@ -124,6 +125,8 @@ class OpenSslTrustStore:
     ):
         self._keys = dict(keys)
         self._openssl = openssl
+        if not self._keys:
+            raise EngineeringError("empty_trust_store")
         for identity, key in self._keys.items():
             if (
                 not isinstance(identity, tuple)
@@ -149,7 +152,7 @@ class OpenSslTrustStore:
             return False
         try:
             signature_bytes = base64.b64decode(signature, validate=True)
-        except (ValueError, TypeError):
+        except (ValueError, TypeError, binascii.Error):
             return False
         if not signature_bytes or len(signature_bytes) > 16_384:
             return False
