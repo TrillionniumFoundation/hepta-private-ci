@@ -468,12 +468,12 @@
       ],
       "guide": "docs/modules/runtime.agentd/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/runtime.agentd.md",
-      "implementationState": "native_lifecycle_daemon_repository_integration_pending",
+      "implementationState": "native_lifecycle_daemon_named_inference_caller_universal_composition_pending",
       "apiContract": "compose_runtime(supervisorSnapshot,ownerPorts,config); start_run(request,objective,body,artifacts); cancel_run(id,reason); attach_context(run,receipt). Agentd owns the bounded lifecycle journal and local control API; Codex remains the sole thread/turn execution spine.",
       "stateAndEncoding": "Agentd owns a bounded crash-recovery lifecycle journal containing run handles, immutable snapshot references, revision, cancellation reason and observed phase. It does not persist objective, memory, prompt, artifact or provider-domain authority bytes.",
       "linearizationAndRecovery": "Freeze request/objective/body/artifact/authority/deadline before start. Context attachment must bind that complete tuple. Deadline/drain stops new admission; pre-dispatch work can terminate locally. Any dispatch whose external terminality is unobserved across shutdown/restart becomes indeterminate and is never redispatched.",
       "algorithmAndBounds": "Active runs<=256; retained lifecycle records<=1024; lifecycle journal<=4 MiB; control connections<=32 plus <=4 bounded overload responders. Deadline enforcement runs from the daemon generation monitor. Missing critical owner blocks readiness; optional advice has a bounded read-only/abstain fallback.",
-      "acceptanceOracle": "The local Agentd wire API must drive the daemon-owned coordinator, survive restart without redispatch, reject mixed authority/deadline tuples, and preserve terminal/indeterminate truth. Full C1 additionally requires the normal non-test Codex turn caller and actual interrupt/terminal acknowledgement wiring.",
+      "acceptanceOracle": "The local Agentd wire API drives the daemon-owned coordinator, survives restart without redispatch, rejects mixed authority/deadline tuples, and preserves terminal/indeterminate truth. The native-app-server inference caller must drive lifecycle around a real App Server turn and pair post-dispatch cancellation with TurnInterrupt. Universal per-Agent lifecycle additionally requires remaining direct SessionIngress product callers to compose the same lifecycle or an equivalent host-side hook.",
       "nativeMappingRequired": true,
       "productTestsExecuted": false,
       "deploymentQualified": false,
@@ -508,15 +508,16 @@
         "testFiles": [
           "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
           "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
-          "codex-rs/hepta-agentd/src/cognitive_context_tests.rs"
+          "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+          "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs"
         ],
         "runtimeDocuments": [
           "docs/readiness/LANE_B_NATIVE_HOST.md",
           "codex-rs/hepta-agentd/AUTHBUS_TEXT.md"
         ],
         "remainingWork": [
-          "Bind the normal non-test Codex turn path to RunStart/RunAttachContext/RunMarkDispatched/RunObserveTerminal so actual turn execution drives the lifecycle API.",
-          "Bind RunCancel and deadline-triggered cancellation intent to the actual App Server interrupt plus matching terminal acknowledgement path.",
+          "Compose remaining direct SessionIngress product consumers, notably hepta-matrixd queue/turn execution, into the Agentd lifecycle API or an equivalent host-side lifecycle hook before claiming universal per-Agent lifecycle coverage.",
+          "Define the bare RunCancel contract for callers outside native inference; the native-app-server inference caller pairs it with real TurnInterrupt/terminal observation, while a standalone RunCancel remains durable intent.",
           "Prove deployed socket/generation identity and target-host backpressure/restart behavior."
         ]
       }
