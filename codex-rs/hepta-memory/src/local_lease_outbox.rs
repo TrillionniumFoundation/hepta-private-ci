@@ -15,6 +15,7 @@ use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_operations::OperationIntent;
 use serde::Deserialize;
 use serde::Serialize;
 use sha2::Digest;
@@ -70,6 +71,7 @@ pub enum LocalLeaseOutboxError {
 pub enum LocalAdmissionFault {
     AfterEventBeforeOutbox,
     AfterOutboxBeforeCommit,
+    AfterOperationBeforeCommit,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -255,6 +257,25 @@ pub(crate) struct InheritedQueuedReceipt {
     pub topic: String,
     pub payload_json: String,
     pub payload_sha256: Sha256Digest,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct DurableOperationRow {
+    operation_id: String,
+    semantic_sha256: String,
+    scope_id: String,
+    owner_id: String,
+    destination_id: String,
+    payload_sha256: String,
+    expected_predecessor_sha256: Option<String>,
+    lease_id: String,
+    event_id: String,
+    outbox_id: String,
+    owner_agent_id: AgentId,
+    generation: u64,
+    fencing_token: String,
+    authority_epoch: u64,
+    owner_epoch: u64,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -1259,7 +1280,10 @@ impl LocalLeaseOutbox {
         Ok(lease)
     }
 
-    /// Atomically admit one local event and its paired local outbox intent.
+    /// Atomically admit one legacy local event and its paired local outbox
+    /// intent. Production cross-owner operations use `admit_operation`,
+    /// which additionally persists the complete semantic operation identity in
+    /// the same SQLite transaction.
     pub async fn admit(
         &self,
         occurrence_key: impl Into<String>,
@@ -1270,13 +1294,32 @@ impl LocalLeaseOutbox {
             occurrence_key.into(),
             topic.into(),
             payload_json.into(),
+            /*operation*/ None,
             /*fault*/ None,
         )
         .await
     }
 
-    /// Test/qualification fault hook proving that event+outbox are one
-    /// transaction.  It is local-only and intentionally cannot dispatch.
+    /// Atomically prepare a complete kernel operation and publish its local
+    /// outbox row. The operation id is the occurrence/idempotency key.
+    pub async fn admit_operation(
+        &self,
+        operation: OperationIntent,
+        topic: impl Into<String>,
+        payload_json: impl Into<String>,
+    ) -> Result<LocalAdmission, LocalLeaseOutboxError> {
+        let occurrence_key = operation.key.id.as_str().to_string();
+        self.admit_inner(
+            occurrence_key,
+            topic.into(),
+            payload_json.into(),
+            Some(operation),
+            /*fault*/ None,
+        )
+        .await
+    }
+
+    /// Test/qualification fault hook proving legacy event+outbox atomicity.
     pub async fn admit_with_fault(
         &self,
         occurrence_key: impl Into<String>,
@@ -1288,6 +1331,27 @@ impl LocalLeaseOutbox {
             occurrence_key.into(),
             topic.into(),
             payload_json.into(),
+            /*operation*/ None,
+            Some(fault),
+        )
+        .await
+    }
+
+    /// Fault hook for the full operation-ledger + event + outbox transaction.
+    #[cfg(test)]
+    pub(crate) async fn admit_operation_with_fault(
+        &self,
+        operation: OperationIntent,
+        topic: impl Into<String>,
+        payload_json: impl Into<String>,
+        fault: LocalAdmissionFault,
+    ) -> Result<LocalAdmission, LocalLeaseOutboxError> {
+        let occurrence_key = operation.key.id.as_str().to_string();
+        self.admit_inner(
+            occurrence_key,
+            topic.into(),
+            payload_json.into(),
+            Some(operation),
             Some(fault),
         )
         .await
@@ -1298,12 +1362,33 @@ impl LocalLeaseOutbox {
         occurrence_key: String,
         topic: String,
         payload_json: String,
+        operation: Option<OperationIntent>,
         fault: Option<LocalAdmissionFault>,
     ) -> Result<LocalAdmission, LocalLeaseOutboxError> {
         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
         validate_text(&topic, "outbox topic", /*max_bytes*/ 256)?;
         validate_text(&payload_json, "event payload", /*max_bytes*/ 65_536)?;
         let payload_sha256 = Sha256Digest::for_bytes(payload_json.as_bytes());
+        if let Some(operation) = operation.as_ref() {
+            operation
+                .validate()
+                .map_err(|error| LocalLeaseOutboxError::Invalid(error.to_string()))?;
+            if operation.key.id.as_str() != occurrence_key
+                || operation.owner.as_str() != self.owner_agent_id.as_str()
+                || operation.key.payload_digest.to_string() != payload_sha256.as_str()
+            {
+                return Err(LocalLeaseOutboxError::CasConflict(
+                    "operation id, owner, or payload is not bound to the local admission"
+                        .to_string(),
+                ));
+            }
+            if self.binding().is_none() {
+                return Err(LocalLeaseOutboxError::Invalid(
+                    "durable operation admission requires an authority/owner/expiry-bound lease"
+                        .to_string(),
+                ));
+            }
+        }
         let mut transaction = self
             .store
             .pool
@@ -1356,6 +1441,32 @@ impl LocalLeaseOutbox {
                     "occurrence was admitted under generation {} and cannot be retried by generation {}",
                     existing.generation, self.generation
                 )));
+            }
+            let durable_operation =
+                find_operation(&mut transaction, &occurrence_key).await?;
+            match (operation.as_ref(), durable_operation.as_ref()) {
+                (Some(expected), Some(stored)) => {
+                    verify_operation_row_binding(
+                        expected,
+                        stored,
+                        self,
+                        &existing,
+                        &outbox,
+                        &payload_sha256,
+                    )?;
+                }
+                (Some(_), None) => {
+                    return Err(LocalLeaseOutboxError::CasConflict(
+                        "operation replay targets a legacy admission without a durable operation row"
+                            .to_string(),
+                    ));
+                }
+                (None, Some(_)) => {
+                    return Err(LocalLeaseOutboxError::CasConflict(
+                        "legacy admission cannot replay a bound durable operation".to_string(),
+                    ));
+                }
+                (None, None) => {}
             }
             let outcome = current_outcome(
                 &mut transaction,
@@ -1458,7 +1569,29 @@ impl LocalLeaseOutbox {
         .await?;
         if fault == Some(LocalAdmissionFault::AfterOutboxBeforeCommit) {
             return Err(LocalLeaseOutboxError::TransactionAborted(
-                "fault injected after outbox before commit".to_string(),
+                "fault injected after outbox before operation/commit".to_string(),
+            ));
+        }
+        if let Some(operation) = operation.as_ref() {
+            let binding = self.binding().ok_or_else(|| {
+                LocalLeaseOutboxError::Invalid(
+                    "durable operation admission requires a bound lease".to_string(),
+                )
+            })?;
+            insert_operation(
+                &mut transaction,
+                operation,
+                self,
+                &event_id,
+                &outbox_id,
+                &payload_sha256,
+                &binding,
+            )
+            .await?;
+        }
+        if fault == Some(LocalAdmissionFault::AfterOperationBeforeCommit) {
+            return Err(LocalLeaseOutboxError::TransactionAborted(
+                "fault injected after operation ledger before commit".to_string(),
             ));
         }
         transaction
