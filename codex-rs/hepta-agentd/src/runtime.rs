@@ -141,8 +141,6 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         Arc::clone(&state),
         cancellation.clone(),
     ));
-    let drain_cancellation = state.drain_token();
-
     let (outcome, completed_task) = tokio::select! {
         result = &mut authbus_task => (
             joined("AuthBus text relay", result),
@@ -164,10 +162,6 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             joined("automation scheduler", result),
             Some(CompletedRuntimeTask::Automation),
         ),
-        _ = drain_cancellation.cancelled() => {
-            state.mark_draining()?;
-            (Ok(()), None)
-        }
         signal = shutdown_signal() => {
             signal?;
             state.mark_draining()?;
