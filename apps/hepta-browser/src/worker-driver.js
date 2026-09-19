@@ -966,3 +966,125 @@ export class SubprocessBrowserDriver {
     }
   }
 }
+
+
+export class PooledSubprocessBrowserDriver {
+  supportsAbort = true;
+  maxOutstandingOperations = 1;
+
+  #config;
+  #maxProfiles;
+  #sessions = new Map();
+  #starting = new Set();
+  #reconciliationDriver;
+
+  constructor({
+    workerPath,
+    workerDigest,
+    profileRoot,
+    launcher,
+    persistedReconciler = null,
+    maxProfiles = 16,
+  }) {
+    positiveInteger(maxProfiles, "maxProfiles");
+    if (maxProfiles > 64) {
+      throw new TypeError("maxProfiles exceeds the Browser worker-pool ceiling");
+    }
+    this.maxActiveProfiles = maxProfiles;
+    this.#maxProfiles = maxProfiles;
+    this.#config = {
+      workerPath,
+      workerDigest,
+      profileRoot,
+      launcher,
+      persistedReconciler,
+    };
+    this.#reconciliationDriver = new SubprocessBrowserDriver(this.#config);
+  }
+
+  async start(input, options = {}) {
+    requireRecord(input, "browser worker start input");
+    const profileId = stableId(input.profileId, "profileId");
+    const generation = positiveInteger(input.generation, "generation");
+    if (this.#sessions.has(profileId) || this.#starting.has(profileId)) {
+      throw new TypeError("browser worker profile is already started or starting");
+    }
+    if (this.#sessions.size + this.#starting.size >= this.#maxProfiles) {
+      const error = new Error("browser worker pool capacity is exhausted");
+      error.name = "BrowserBackpressureError";
+      error.code = "BROWSER_PROFILE_CAPACITY";
+      throw error;
+    }
+    this.#starting.add(profileId);
+    const driver = new SubprocessBrowserDriver(this.#config);
+    try {
+      const observed = await driver.start(input, options);
+      this.#sessions.set(profileId, {
+        driver,
+        generation,
+        processId: observed.processId,
+      });
+      return observed;
+    } finally {
+      this.#starting.delete(profileId);
+    }
+  }
+
+  observe(input, options = {}) {
+    return this.#session(input).driver.observe(input, options);
+  }
+
+  dispatch(input, options = {}) {
+    return this.#session(input).driver.dispatch(input, options);
+  }
+
+  reconcile(input, options = {}) {
+    return this.#session(input).driver.reconcile(input, options);
+  }
+
+  reconcilePersisted(input, options = {}) {
+    return this.#reconciliationDriver.reconcilePersisted(input, options);
+  }
+
+  async contain(input) {
+    requireRecord(input, "browser worker containment input");
+    const profileId = stableId(input.profileId, "profileId");
+    const session = this.#sessions.get(profileId);
+    if (!session) return { contained: true };
+    this.#validateSessionIdentity(input, session);
+    // Keep the reservation until close/stop cleans the private profile root.
+    return session.driver.contain(input);
+  }
+
+  async stop(input, options = {}) {
+    requireRecord(input, "browser worker stop input");
+    const profileId = stableId(input.profileId, "profileId");
+    const session = this.#sessions.get(profileId);
+    if (!session) return { stopped: true };
+    this.#validateSessionIdentity(input, session);
+    try {
+      return await session.driver.stop(input, options);
+    } finally {
+      this.#sessions.delete(profileId);
+    }
+  }
+
+  #session(input) {
+    requireRecord(input, "browser worker request");
+    const profileId = stableId(input.profileId, "profileId");
+    const session = this.#sessions.get(profileId);
+    if (!session) throw new TypeError("browser worker profile is not started");
+    this.#validateSessionIdentity(input, session);
+    return session;
+  }
+
+  #validateSessionIdentity(input, session) {
+    const generation = input.generation ?? input.profileGeneration;
+    if (generation !== session.generation) {
+      throw new TypeError("browser worker profile generation mismatch");
+    }
+    if (input.processId !== undefined && input.processId !== session.processId) {
+      throw new TypeError("browser worker process identity mismatch");
+    }
+  }
+}

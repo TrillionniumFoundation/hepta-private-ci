@@ -11,7 +11,7 @@ import { FileBrowserOperationJournal } from "./journal.js";
 import { BrowserProfileHost } from "./runtime.js";
 import {
   LinuxBubblewrapLauncher,
-  SubprocessBrowserDriver,
+  PooledSubprocessBrowserDriver,
 } from "./worker-driver.js";
 
 function required(name) {
@@ -56,6 +56,7 @@ const driver = new SubprocessBrowserDriver({
   workerPath: requiredAbsolutePath("HEPTA_BROWSER_WORKER_PATH"),
   workerDigest: requiredDigest("HEPTA_BROWSER_WORKER_SHA256"),
   profileRoot: requiredAbsolutePath("HEPTA_BROWSER_PROFILE_ROOT"),
+  maxProfiles,
   launcher: new LinuxBubblewrapLauncher({
     bwrapPath: process.env.HEPTA_BROWSER_BWRAP_PATH ?? "/usr/bin/bwrap",
     bwrapDigest: requiredDigest("HEPTA_BROWSER_BWRAP_SHA256"),
@@ -78,6 +79,7 @@ const host = new BrowserProfileHost({
   authority,
   journal,
   driverCallTimeoutMs: optionalPositiveInteger("HEPTA_BROWSER_DRIVER_TIMEOUT_MS", 30_000),
+  maxActiveProfiles: maxProfiles,
 });
 const service = new BrowserAgentdService({ host, channel, authority });
 

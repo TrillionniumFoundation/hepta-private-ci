@@ -17,6 +17,7 @@ import { join, sep } from "node:path";
 
 import {
   LinuxBubblewrapLauncher,
+  PooledSubprocessBrowserDriver,
   SubprocessBrowserDriver,
 } from "../src/worker-driver.js";
 import {
@@ -774,3 +775,45 @@ test(
     await assert.rejects(mismatchedPrlimit.verify(), /prlimit launcher digest mismatch/);
   },
 );
+
+
+test("pooled subprocess driver keeps isolated profile workers and enforces the process cap", async () => {
+  const root = await mkdtemp(join(tmpdir(), "hepta-worker-pool-"));
+  const workerPath = join(root, "worker.bin");
+  const workerBytes = Buffer.from("fake-qualified-worker", "utf8");
+  await writeFile(workerPath, workerBytes, { mode: 0o700 });
+  const pooled = new PooledSubprocessBrowserDriver({
+    workerPath,
+    workerDigest: digest(workerBytes),
+    profileRoot: join(root, "profiles"),
+    launcher: fakeLauncher(),
+    maxProfiles: 2,
+  });
+
+  const first = await pooled.start(startInput({ profileId: "profile.1" }));
+  const second = await pooled.start(startInput({
+    profileId: "profile.2",
+    principalId: "principal.2",
+  }));
+  assert.notEqual(first.processId, second.processId);
+  await assert.rejects(
+    pooled.start(startInput({
+      profileId: "profile.3",
+      principalId: "principal.3",
+    })),
+    /pool capacity is exhausted/,
+  );
+
+  await pooled.stop({
+    profileId: "profile.1",
+    processId: first.processId,
+    generation: 1,
+  });
+  const third = await pooled.start(startInput({
+    profileId: "profile.3",
+    principalId: "principal.3",
+  }));
+  assert.match(third.processId, /^servo\.pid\./);
+  await pooled.stop({ profileId: "profile.2", processId: second.processId, generation: 1 });
+  await pooled.stop({ profileId: "profile.3", processId: third.processId, generation: 1 });
+});
