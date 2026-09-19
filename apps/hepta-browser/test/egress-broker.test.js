@@ -19,7 +19,7 @@ function rawProxy(socketPath, request) {
   return new Promise((resolve, reject) => {
     const socket = net.createConnection(socketPath);
     const chunks = [];
-    socket.on("connect", () => socket.end(request));
+    socket.on("connect", () => socket.write(request));
     socket.on("data", (chunk) => chunks.push(chunk));
     socket.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
     socket.on("error", reject);
