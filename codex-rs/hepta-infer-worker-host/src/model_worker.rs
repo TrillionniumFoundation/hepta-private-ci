@@ -54,6 +54,9 @@ pub enum GrantVerification {
     Authenticated {
         authority_id: String,
         evidence_digest: String,
+        /// Exact worker subject authenticated by the verifier. The worker
+        /// constructor must match this value before accepting the capability.
+        worker_id: String,
     },
 }
 
@@ -116,6 +119,7 @@ impl ResourceGrantVerifier for FinalUseResourceGrantVerifier<'_> {
             .with_verified_use(token, &binding, || GrantVerification::Authenticated {
                 authority_id,
                 evidence_digest,
+                worker_id: self.worker_id.clone(),
             })
             .map_err(map_final_use_error)
     }
@@ -206,9 +210,11 @@ impl VerifiedResourceGrant {
             GrantVerification::Authenticated {
                 authority_id,
                 evidence_digest,
+                worker_id,
             } => {
                 validate_identity(authority_id, "grant authority")?;
                 validate_digest(evidence_digest, "grant evidence")?;
+                validate_identity(worker_id, "grant worker")?;
             }
             GrantVerification::TrustedInProcess => {
                 return Err(Error::InvalidGrant);
@@ -380,6 +386,14 @@ impl<D: ModelDriver> InferenceWorker<D> {
         validate_identity(&worker_id, "worker")?;
         validate_grant(now_ms, grant.grant())?;
         if generation == 0 || generation != grant.grant().generation {
+            return Err(Error::InvalidGrant);
+        }
+        if let GrantVerification::Authenticated {
+            worker_id: authenticated_worker,
+            ..
+        } = grant.verification()
+            && authenticated_worker != &worker_id
+        {
             return Err(Error::InvalidGrant);
         }
         let VerifiedResourceGrant {
