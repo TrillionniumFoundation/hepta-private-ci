@@ -1,5 +1,4 @@
 use std::collections::BTreeMap;
-use std::collections::BTreeSet;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
@@ -16,6 +15,7 @@ const ETA_MIN_RAW: i64 = 1_i64 << 28;
 const ETA_MAX_RAW: i64 = 1_i64 << 30;
 const RESIDUAL_TOLERANCE_RAW: i64 = 1_i64 << 12;
 const MAX_ITERATIONS: u32 = 64;
+const MAX_PREFERENCE_DIMENSIONS: usize = 64;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PreferenceState {
@@ -27,17 +27,56 @@ pub struct PreferenceState {
     pub state_digest: Digest32,
 }
 
-/// Local deterministic solver step. This is not the canonical
-/// `NduIterationReceiptV1` until bound through the protocol adapter with the
-/// frozen objective, subject, event, coefficient and generation context.
+/// Local deterministic solver step. Construction is restricted to this module
+/// so a caller cannot fabricate a receipt and later attach arbitrary protocol
+/// context. Protocol publication additionally requires a matching nonzero
+/// context digest.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduSolverIterationReceipt {
-    pub iteration: u32,
-    pub predecessor_revision: Revision,
-    pub next_revision: Revision,
-    pub residual_raw: i64,
-    pub projection_count: u32,
-    pub state_digest: Digest32,
+    iteration: u32,
+    predecessor_revision: Revision,
+    next_revision: Revision,
+    residual_raw: i64,
+    projection_count: u32,
+    state_digest: Digest32,
+    context_digest: Digest32,
+}
+
+impl NduSolverIterationReceipt {
+    #[must_use]
+    pub const fn iteration(&self) -> u32 {
+        self.iteration
+    }
+
+    #[must_use]
+    pub const fn predecessor_revision(&self) -> Revision {
+        self.predecessor_revision
+    }
+
+    #[must_use]
+    pub const fn next_revision(&self) -> Revision {
+        self.next_revision
+    }
+
+    #[must_use]
+    pub const fn residual_raw(&self) -> i64 {
+        self.residual_raw
+    }
+
+    #[must_use]
+    pub const fn projection_count(&self) -> u32 {
+        self.projection_count
+    }
+
+    #[must_use]
+    pub const fn state_digest(&self) -> Digest32 {
+        self.state_digest
+    }
+
+    #[must_use]
+    pub const fn context_digest(&self) -> Digest32 {
+        self.context_digest
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -61,35 +100,105 @@ pub struct NduSolverTerminationReceipt {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct HierarchyParentV1 {
+    pub subject_id: StableId,
+    pub subject_class: SubjectClass,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct UpdateGeneration {
     pub generation: Generation,
+    pub subject_id: StableId,
     pub subject_class: SubjectClass,
+    pub parent: Option<HierarchyParentV1>,
     pub artifact_id: StableId,
 }
 
-/// Rejects parent and child hierarchy updates in one generation.
+/// Validates explicit hierarchy lineage and rejects a direct parent and child
+/// update in the same generation. Unrelated subjects at different hierarchy
+/// levels are not rejected merely because their enum classes differ.
 pub fn validate_staged_updates(updates: &[UpdateGeneration]) -> Result<(), NduError> {
-    let mut classes: BTreeMap<u64, BTreeSet<SubjectClass>> = BTreeMap::new();
+    let mut by_generation_subject = BTreeMap::new();
     for update in updates {
-        classes
-            .entry(update.generation.get())
-            .or_default()
-            .insert(update.subject_class);
+        validate_parent_shape(update)?;
+        let key = (update.generation.get(), update.subject_id.clone());
+        if by_generation_subject
+            .insert(key, update.subject_class)
+            .is_some()
+        {
+            return Err(NduError::DuplicateHierarchySubjectUpdate(
+                update.subject_id.to_string(),
+            ));
+        }
     }
-    for (generation, values) in classes {
-        if values.len() > 1 {
-            return Err(NduError::SimultaneousHierarchyUpdate(generation));
+
+    for update in updates {
+        let Some(parent) = &update.parent else {
+            continue;
+        };
+        let key = (update.generation.get(), parent.subject_id.clone());
+        if let Some(observed_parent_class) = by_generation_subject.get(&key) {
+            if *observed_parent_class != parent.subject_class {
+                return Err(NduError::InvalidHierarchyLink(
+                    update.subject_id.to_string(),
+                ));
+            }
+            return Err(NduError::SimultaneousHierarchyUpdate(
+                update.generation.get(),
+            ));
         }
     }
     Ok(())
 }
 
 /// Iterates a bounded damped preference update toward a deterministic target.
-/// The previous state remains immutable and every step emits a new revision.
+///
+/// This local entry point deliberately emits receipts with no protocol context.
+/// Such receipts are valid local numerical evidence but cannot be published as
+/// `NduIterationReceiptV1`. Use `solve_preference_target_with_context` when
+/// protocol publication is required.
 pub fn solve_preference_target(
+    initial: PreferenceState,
+    target: Vec<AxisValue>,
+    eta: FixedQ32,
+) -> Result<
+    (
+        PreferenceState,
+        NduSolverTerminationReceipt,
+        Vec<NduSolverIterationReceipt>,
+    ),
+    NduError,
+> {
+    solve_preference_target_internal(initial, target, eta, Digest32::ZERO)
+}
+
+/// Runs the deterministic preference solver with an immutable protocol-context
+/// digest. The digest must be the canonical digest of the exact
+/// `NduIterationContextV1` later supplied to the protocol adapter.
+pub fn solve_preference_target_with_context(
+    initial: PreferenceState,
+    target: Vec<AxisValue>,
+    eta: FixedQ32,
+    context_digest: Digest32,
+) -> Result<
+    (
+        PreferenceState,
+        NduSolverTerminationReceipt,
+        Vec<NduSolverIterationReceipt>,
+    ),
+    NduError,
+> {
+    if context_digest.is_zero() {
+        return Err(NduError::EmptyProtocolDigest("solver_context"));
+    }
+    solve_preference_target_internal(initial, target, eta, context_digest)
+}
+
+fn solve_preference_target_internal(
     initial: PreferenceState,
     mut target: Vec<AxisValue>,
     eta: FixedQ32,
+    context_digest: Digest32,
 ) -> Result<
     (
         PreferenceState,
@@ -102,8 +211,10 @@ pub fn solve_preference_target(
         return Err(NduError::InvalidEta);
     }
     normalize_values(&mut target)?;
+    validate_preference_values(&target)?;
     let mut state = initial;
     normalize_values(&mut state.values)?;
+    validate_preference_values(&state.values)?;
     if state
         .values
         .iter()
@@ -122,13 +233,28 @@ pub fn solve_preference_target(
     if expected_state_digest != state.state_digest {
         return Err(NduError::StateDigestMismatch);
     }
+
     let predecessor_digest = state.state_digest;
+    let initial_residual_raw = residual_raw(&state.values, &target)?;
+    if initial_residual_raw <= RESIDUAL_TOLERANCE_RAW {
+        let termination = NduSolverTerminationReceipt {
+            disposition: SolveDisposition::Converged,
+            iterations: 0,
+            terminal_residual_raw: initial_residual_raw,
+            maximum_residual_raw: initial_residual_raw,
+            projection_count: 0,
+            predecessor_digest,
+            terminal_state_digest: state.state_digest,
+        };
+        return Ok((state, termination, Vec::new()));
+    }
+
     let mut receipts = Vec::new();
     let mut total_projection_count = 0_u32;
-    let mut maximum_residual_raw = 0_i64;
+    let mut maximum_residual_raw = initial_residual_raw;
 
     for iteration in 1..=MAX_ITERATIONS {
-        let (next, receipt) = update_once(&state, &target, eta, iteration)?;
+        let (next, receipt) = update_once(&state, &target, eta, iteration, context_digest)?;
         let terminal_residual_raw = receipt.residual_raw;
         maximum_residual_raw = maximum_residual_raw.max(terminal_residual_raw);
         total_projection_count = total_projection_count
@@ -153,17 +279,8 @@ pub fn solve_preference_target(
 
     let terminal_residual_raw = receipts
         .last()
-        .map_or(i64::MAX, |receipt| receipt.residual_raw);
-    let termination = NduSolverTerminationReceipt {
-        disposition: SolveDisposition::IterationBoundReached,
-        iterations: MAX_ITERATIONS,
-        terminal_residual_raw,
-        maximum_residual_raw,
-        projection_count: total_projection_count,
-        predecessor_digest,
-        terminal_state_digest: state.state_digest,
-    };
-    Ok((state, termination, receipts))
+        .map_or(i64::MAX, NduSolverIterationReceipt::residual_raw);
+    Err(NduError::ConvergenceUnavailable(terminal_residual_raw))
 }
 
 fn update_once(
@@ -171,6 +288,7 @@ fn update_once(
     target: &[AxisValue],
     eta: FixedQ32,
     iteration: u32,
+    context_digest: Digest32,
 ) -> Result<(PreferenceState, NduSolverIterationReceipt), NduError> {
     let mut next_values = Vec::with_capacity(state.values.len());
     let mut residual_raw = 0_i64;
@@ -229,6 +347,7 @@ fn update_once(
         residual_raw,
         projection_count,
         state_digest,
+        context_digest,
     };
     Ok((next, receipt))
 }
@@ -240,6 +359,7 @@ impl PreferenceState {
         mut values: Vec<AxisValue>,
     ) -> Result<Self, NduError> {
         normalize_values(&mut values)?;
+        validate_preference_values(&values)?;
         let revision = Revision::new(/*value*/ 1).map_err(|_| NduError::Arithmetic)?;
         let state_digest = digest_state(
             &subject_id,
@@ -257,6 +377,52 @@ impl PreferenceState {
             state_digest,
         })
     }
+}
+
+fn validate_parent_shape(update: &UpdateGeneration) -> Result<(), NduError> {
+    let expected = match update.subject_class {
+        SubjectClass::System => None,
+        SubjectClass::Domain => Some(SubjectClass::System),
+        SubjectClass::Agent => Some(SubjectClass::Domain),
+        SubjectClass::Episode => Some(SubjectClass::Agent),
+    };
+    match (expected, &update.parent) {
+        (None, None) => Ok(()),
+        (Some(expected_class), Some(parent)) if parent.subject_class == expected_class => Ok(()),
+        _ => Err(NduError::InvalidHierarchyLink(
+            update.subject_id.to_string(),
+        )),
+    }
+}
+
+fn validate_preference_values(values: &[AxisValue]) -> Result<(), NduError> {
+    if values.is_empty() || values.len() > MAX_PREFERENCE_DIMENSIONS {
+        return Err(NduError::PreferenceDimensionLimitExceeded);
+    }
+    let lower = FixedQ32::from_raw(-FixedQ32::ONE.raw());
+    for value in values {
+        if value.value < lower || value.value > FixedQ32::ONE {
+            return Err(NduError::PreferenceValueOutOfRange(
+                value.axis.to_string(),
+            ));
+        }
+    }
+    Ok(())
+}
+
+fn residual_raw(current: &[AxisValue], target: &[AxisValue]) -> Result<i64, NduError> {
+    let mut residual = 0_i64;
+    for (current, desired) in current.iter().zip(target) {
+        let component = desired
+            .value
+            .checked_sub(current.value)
+            .map_err(|_| NduError::Arithmetic)?
+            .raw()
+            .checked_abs()
+            .ok_or(NduError::Arithmetic)?;
+        residual = residual.max(component);
+    }
+    Ok(residual)
 }
 
 fn normalize_values(values: &mut [AxisValue]) -> Result<(), NduError> {
