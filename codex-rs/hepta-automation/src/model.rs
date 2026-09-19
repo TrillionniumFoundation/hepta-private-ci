@@ -317,6 +317,11 @@ impl AutomationTaskDraft {
     pub(crate) fn validate(&self) -> Result<(), AutomationError> {
         self.schedule.validate()?;
         self.policy.validate()?;
+        if self.schedule == AutomationSchedule::Once
+            && self.policy.overlap == AutomationOverlapPolicy::Allow
+        {
+            return Err(AutomationError::Invalid);
+        }
         let prompt_len = self.prompt.len();
         if prompt_len == 0 || prompt_len > MAX_PROMPT_BYTES || self.prompt.contains('\0') {
             return Err(AutomationError::Invalid);
