@@ -109,6 +109,17 @@ const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
         ],
     },
     SchemaObjectSpec {
+        name: "authbus_replay_checkpoint_pending",
+        object_type: "table",
+        table_name: "authbus_replay_checkpoint_pending",
+        required_sql_fragments: &[
+            "create table",
+            "minimum_generation",
+            "replay_root",
+            "singleton = 1",
+        ],
+    },
+    SchemaObjectSpec {
         name: "authbus_trust_epochs",
         object_type: "table",
         table_name: "authbus_trust_epochs",
