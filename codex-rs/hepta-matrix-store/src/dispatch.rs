@@ -7,6 +7,7 @@ use crate::MatrixDurableError;
 use crate::MatrixDurableStore;
 use crate::MatrixEventId;
 use crate::MatrixTransactionId;
+use crate::MatrixRoomId;
 use crate::OutboxRecord;
 
 const MAX_UNRESOLVED_DISPATCHES: i64 = 4_096;
@@ -277,6 +278,7 @@ impl MatrixDurableStore {
     pub async fn observe_dispatch_terminal_success_if_known(
         &self,
         txn_id: &MatrixTransactionId,
+        room_id: &MatrixRoomId,
         event_id: &MatrixEventId,
         observation_digest: &str,
         observed_at_ms: u64,
@@ -307,7 +309,7 @@ impl MatrixDurableStore {
             return Err(MatrixDurableError::Conflict);
         }
         if matches!(current.state, MatrixDispatchState::Failed | MatrixDispatchState::Redacted)
-            || current.room_id.is_empty()
+            || current.room_id != room_id.as_str()
             || observed_at_ms < current.updated_at_ms
         {
             return Err(MatrixDurableError::Conflict);
@@ -356,6 +358,7 @@ impl MatrixDurableStore {
 
     pub async fn observe_dispatch_redaction_if_known(
         &self,
+        room_id: &MatrixRoomId,
         target_event_id: &MatrixEventId,
         redaction_digest: &str,
         observed_at_ms: u64,
@@ -399,7 +402,10 @@ impl MatrixDurableStore {
             }
             return Err(MatrixDurableError::Conflict);
         }
-        if current.state != MatrixDispatchState::Succeeded || observed_at_ms < current.updated_at_ms {
+        if current.state != MatrixDispatchState::Succeeded
+            || current.room_id != room_id.as_str()
+            || observed_at_ms < current.updated_at_ms
+        {
             return Err(MatrixDurableError::Conflict);
         }
         sqlx::query(
