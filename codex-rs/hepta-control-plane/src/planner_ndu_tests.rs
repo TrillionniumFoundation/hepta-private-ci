@@ -1,9 +1,11 @@
+use codex_hepta_ndu::AggregationOperator;
+use codex_hepta_ndu::AxisAggregationRule;
 use codex_hepta_ndu::AxisDirection;
 use codex_hepta_ndu::AxisValue;
+use codex_hepta_ndu::EvaluationPolicyV1;
 use codex_hepta_ndu::FeasibilityPosture;
 use codex_hepta_ndu::RequiredOrganSet;
 use codex_hepta_ndu::UtilityContribution;
-use codex_hepta_ndu::legacy_evaluation_policy;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
@@ -74,7 +76,23 @@ fn fixture() -> (
         },
     };
     let input = NduPlanningInputV1 {
-        policy: legacy_evaluation_policy(&profile).expect("valid policy"),
+        policy: EvaluationPolicyV1 {
+            policy_id: id("available-context-policy-v1"),
+            utility_rules: vec![AxisAggregationRule {
+                axis: id("coverage"),
+                operator: AggregationOperator::Sum,
+            }],
+            risk_rules: vec![],
+            resource_rules: vec![],
+            uncertainty_rules: vec![AxisAggregationRule {
+                axis: id("coverage"),
+                operator: AggregationOperator::Maximum,
+            }],
+            pareto_absolute_tolerances: vec![AxisValue {
+                axis: id("coverage"),
+                value: FixedQ32::ZERO,
+            }],
+        },
         profile,
         scalarization: None,
         contributions: ContributionSet {
