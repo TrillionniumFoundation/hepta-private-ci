@@ -12,6 +12,7 @@ impl ModelDriver for Driver {
         &mut self,
         manifest: &ModelManifest,
         _grant: &ResourceGrant,
+        _maximum_memory_bytes: u64,
     ) -> Result<DriverModelHandle, Error> {
         self.loaded += 1;
         Ok(DriverModelHandle {
