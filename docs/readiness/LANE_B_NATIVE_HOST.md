@@ -20,10 +20,11 @@ The standalone `hepta-taskflow-runtime`, `hepta-fleet-leased`, `hepta-infer-cont
 
 `AgentdMethod::CognitiveContext { query, limit }` and `AgentdClient::cognitive_context` use the normal owner/generation-fenced local protocol. The host selects its own Agent identity and private scope; callers cannot supply another scope or a success receipt.
 
-1. Obtain a read transaction cut through `CognitiveStore::lane_c_snapshot`.
-2. Execute the new bounded `ReadRequestV2` port on that cut.
-3. Rank with the existing SQLite retrieval provider and accept only exact record ID, revision and content digest matches admitted by the cut.
-4. Return the original verified memory text, then revalidate the owner cut and runtime generation before response publication.
+1. Acquire `LaneCAuthoritativeSnapshotProvider` through `CognitiveStore::lane_c_authoritative_provider`, binding the owner cut to the current purpose, body generation and authority epoch.
+2. Execute `read_authoritative`; the lower-level `ReadRequestV2` projection is crate-internal and cannot serve as the product correctness boundary.
+3. Rank with the existing SQLite retrieval provider and accept only exact record ID, revision and content digest matches admitted by the authoritative cut.
+4. Revalidate the exact owner cut, all bound owner frontiers, generation-vector digest and original lease before context consumption.
+5. Refresh lifecycle authority and require the original authority epoch to remain current before response publication.
 
 The query is 1–2048 bytes and the requested result limit is 1–4. The Lane C read admits at most 1024 records and 1 MiB of canonical encoding. Intersecting that bounded record prefix with search candidates can omit relevant records outside the prefix; `omitted_records` reports the read truncation. The complete context payload is bounded to 24 KiB of JSON encoding, including escaping and its envelope. Oversized items are omitted, not silently truncated. This is verified memory retrieval, not evidence of learned model weights or complete recall.
 
