@@ -27,7 +27,32 @@ use crate::NduProjectionKindV1;
 const LOCK_FILE: &str = ".ndu-projection.lock";
 const JOURNAL_FILE: &str = "projection.journal";
 const TEMP_FILE: &str = ".projection.journal.tmp";
-const MAX_BACKUP_BYTES: usize = 12 + 4096 * (8 + 1 + 32 + 32 + 32 + 32 + 32 + 32);
+const STORE_MAGIC: &[u8; 8] = b"HNDUPS01";
+const STORE_SCHEMA_V1: u32 = 1;
+const STORE_HEADER_BYTES: usize = 8 + 4 + 4 + 32;
+const MAX_JOURNAL_RECORDS: usize = 4096;
+const MAX_BACKUP_BYTES: usize = 12 + MAX_JOURNAL_RECORDS * (8 + 1 + 32 + 32 + 32 + 32 + 32 + 32);
+const MAX_STORE_BYTES: usize = STORE_HEADER_BYTES + MAX_BACKUP_BYTES;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct NduProjectionRetentionPolicyV1 {
+    /// Non-revocation history is bounded below the journal hard ceiling so
+    /// safety revocations retain reserved append capacity.
+    pub maximum_non_revocation_records: usize,
+    pub minimum_revocation_reserve: usize,
+    /// V1 never permits compaction that discards revocation history.
+    pub retain_revocation_history: bool,
+}
+
+impl Default for NduProjectionRetentionPolicyV1 {
+    fn default() -> Self {
+        Self {
+            maximum_non_revocation_records: 3072,
+            minimum_revocation_reserve: 1024,
+            retain_revocation_history: true,
+        }
+    }
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum NduProjectionStoreError {
@@ -38,6 +63,10 @@ pub enum NduProjectionStoreError {
     Symlink,
     BackupTooLarge,
     BackupRegression,
+    UnsupportedSchema,
+    CorruptStoreImage,
+    InvalidRetentionPolicy,
+    RetentionExceeded,
     Journal(NduProjectionJournalError),
     Io(io::ErrorKind),
     /// A rename may have committed but directory durability was not
@@ -76,6 +105,7 @@ pub struct NduProjectionStoreV1 {
     root: PathBuf,
     lock: File,
     journal: NduProjectionJournalV1,
+    retention_policy: NduProjectionRetentionPolicyV1,
     indeterminate: bool,
 }
 
@@ -85,6 +115,14 @@ impl NduProjectionStoreV1 {
     /// deliberately unavailable on non-Unix targets rather than silently using
     /// weaker replacement or directory-durability semantics.
     pub fn open(root: impl AsRef<Path>) -> Result<Self, NduProjectionStoreError> {
+        Self::open_with_retention_policy(root, NduProjectionRetentionPolicyV1::default())
+    }
+
+    pub fn open_with_retention_policy(
+        root: impl AsRef<Path>,
+        retention_policy: NduProjectionRetentionPolicyV1,
+    ) -> Result<Self, NduProjectionStoreError> {
+        validate_retention_policy(retention_policy)?;
         if !cfg!(unix) {
             return Err(NduProjectionStoreError::UnsupportedPlatform);
         }
@@ -130,13 +168,19 @@ impl NduProjectionStoreV1 {
                 }
                 let mut bytes = Vec::new();
                 file.read_to_end(&mut bytes)?;
-                if bytes.len() > MAX_BACKUP_BYTES {
+                if bytes.len() > MAX_STORE_BYTES {
                     return Err(NduProjectionStoreError::BackupTooLarge);
                 }
-                NduProjectionJournalV1::reopen(&bytes)?
+                let (journal, requires_migration) = decode_store_or_legacy_image(&bytes)?;
+                validate_retention_state(&journal, retention_policy)?;
+                if requires_migration {
+                    persist_image(&root, &journal)?;
+                }
+                journal
             }
             Err(error) if error.kind() == io::ErrorKind::NotFound => {
                 let journal = NduProjectionJournalV1::new();
+                validate_retention_state(&journal, retention_policy)?;
                 persist_image(&root, &journal)?;
                 journal
             }
@@ -147,6 +191,7 @@ impl NduProjectionStoreV1 {
             root,
             lock,
             journal,
+            retention_policy,
             indeterminate: false,
         })
     }
@@ -154,6 +199,16 @@ impl NduProjectionStoreV1 {
     #[must_use]
     pub const fn is_indeterminate(&self) -> bool {
         self.indeterminate
+    }
+
+    #[must_use]
+    pub const fn schema_version(&self) -> u32 {
+        STORE_SCHEMA_V1
+    }
+
+    #[must_use]
+    pub const fn retention_policy(&self) -> NduProjectionRetentionPolicyV1 {
+        self.retention_policy
     }
 
     pub fn entries(&self) -> Result<&[NduProjectionEntryV1], NduProjectionStoreError> {
@@ -243,6 +298,7 @@ impl NduProjectionStoreV1 {
             return Err(NduProjectionStoreError::BackupTooLarge);
         }
         let restored = NduProjectionJournalV1::reopen(bytes)?;
+        validate_retention_state(&restored, self.retention_policy)?;
         let current_len = self.journal.entries().len();
         if restored.entries().len() < current_len
             || &restored.entries()[..current_len] != self.journal.entries()
@@ -279,6 +335,7 @@ impl NduProjectionStoreV1 {
         self.ensure_authoritative()?;
         let mut candidate = self.journal.clone();
         let entry = mutation(&mut candidate)?;
+        validate_retention_state(&candidate, self.retention_policy)?;
         match persist_image(&self.root, &candidate) {
             Ok(()) => {
                 self.journal = candidate;
@@ -310,6 +367,91 @@ fn reject_existing_symlink(path: &Path) -> Result<(), NduProjectionStoreError> {
     }
 }
 
+fn validate_retention_policy(
+    policy: NduProjectionRetentionPolicyV1,
+) -> Result<(), NduProjectionStoreError> {
+    if !policy.retain_revocation_history
+        || policy.maximum_non_revocation_records == 0
+        || policy.minimum_revocation_reserve == 0
+        || policy.maximum_non_revocation_records > MAX_JOURNAL_RECORDS
+        || policy.minimum_revocation_reserve > MAX_JOURNAL_RECORDS
+        || policy
+            .maximum_non_revocation_records
+            .checked_add(policy.minimum_revocation_reserve)
+            .is_none_or(|value| value > MAX_JOURNAL_RECORDS)
+    {
+        return Err(NduProjectionStoreError::InvalidRetentionPolicy);
+    }
+    Ok(())
+}
+
+fn validate_retention_state(
+    journal: &NduProjectionJournalV1,
+    policy: NduProjectionRetentionPolicyV1,
+) -> Result<(), NduProjectionStoreError> {
+    let non_revocation = journal
+        .entries()
+        .iter()
+        .filter(|entry| entry.kind != NduProjectionKindV1::Revocation)
+        .count();
+    if non_revocation > policy.maximum_non_revocation_records {
+        return Err(NduProjectionStoreError::RetentionExceeded);
+    }
+    Ok(())
+}
+
+fn encode_store_image(journal: &NduProjectionJournalV1) -> Vec<u8> {
+    let payload = journal.export_bytes();
+    let mut bytes = Vec::with_capacity(STORE_HEADER_BYTES + payload.len());
+    bytes.extend_from_slice(STORE_MAGIC);
+    bytes.extend_from_slice(&STORE_SCHEMA_V1.to_be_bytes());
+    bytes.extend_from_slice(&u32::try_from(payload.len()).unwrap_or(u32::MAX).to_be_bytes());
+    bytes.extend_from_slice(Digest32::of_bytes(&payload).as_array());
+    bytes.extend_from_slice(&payload);
+    bytes
+}
+
+fn decode_store_or_legacy_image(
+    bytes: &[u8],
+) -> Result<(NduProjectionJournalV1, bool), NduProjectionStoreError> {
+    if !bytes.starts_with(STORE_MAGIC) {
+        return Ok((NduProjectionJournalV1::reopen(bytes)?, true));
+    }
+    if bytes.len() < STORE_HEADER_BYTES {
+        return Err(NduProjectionStoreError::CorruptStoreImage);
+    }
+    let version = u32::from_be_bytes(
+        bytes[8..12]
+            .try_into()
+            .map_err(|_| NduProjectionStoreError::CorruptStoreImage)?,
+    );
+    if version != STORE_SCHEMA_V1 {
+        return Err(NduProjectionStoreError::UnsupportedSchema);
+    }
+    let payload_len = usize::try_from(u32::from_be_bytes(
+        bytes[12..16]
+            .try_into()
+            .map_err(|_| NduProjectionStoreError::CorruptStoreImage)?,
+    ))
+    .map_err(|_| NduProjectionStoreError::CorruptStoreImage)?;
+    let expected_len = STORE_HEADER_BYTES
+        .checked_add(payload_len)
+        .ok_or(NduProjectionStoreError::CorruptStoreImage)?;
+    if bytes.len() != expected_len || payload_len > MAX_BACKUP_BYTES {
+        return Err(NduProjectionStoreError::CorruptStoreImage);
+    }
+    let expected_digest = Digest32::from_array(
+        bytes[16..48]
+            .try_into()
+            .map_err(|_| NduProjectionStoreError::CorruptStoreImage)?,
+    );
+    let payload = &bytes[STORE_HEADER_BYTES..];
+    if Digest32::of_bytes(payload) != expected_digest {
+        return Err(NduProjectionStoreError::CorruptStoreImage);
+    }
+    Ok((NduProjectionJournalV1::reopen(payload)?, false))
+}
+
 fn persist_image(
     root: &Path,
     journal: &NduProjectionJournalV1,
@@ -319,8 +461,8 @@ fn persist_image(
     }
     let temp_path = root.join(TEMP_FILE);
     let journal_path = root.join(JOURNAL_FILE);
-    let bytes = journal.export_bytes();
-    if bytes.len() > MAX_BACKUP_BYTES {
+    let bytes = encode_store_image(journal);
+    if bytes.len() > MAX_STORE_BYTES {
         return Err(NduProjectionStoreError::BackupTooLarge);
     }
 
