@@ -97,6 +97,9 @@ pub struct RunReceipt {
 pub struct IntelligenceRunReceiptV3 {
     pub composition: LaneFCompositionReceiptV3,
     pub runtime: Option<RunReceipt>,
+    /// Present only for the native product caller after the real durable
+    /// LearningRecorded append succeeds.
+    pub durable_decision_chain_digest: Option<Digest32>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -457,6 +460,7 @@ impl AgentRunCoordinator {
         Ok(IntelligenceRunReceiptV3 {
             composition,
             runtime,
+            durable_decision_chain_digest: None,
         })
     }
 
@@ -496,7 +500,11 @@ impl AgentRunCoordinator {
             expected_ledger_head,
             AgentdIntelligenceHostV1,
         );
-        self.run_intelligence_v3_with_control(expected_revision, request, &mut ports, control)
+        let mut receipt =
+            self.run_intelligence_v3_with_control(expected_revision, request, &mut ports, control)?;
+        receipt.durable_decision_chain_digest =
+            ports.learning_append().map(|append| append.chain_digest);
+        Ok(receipt)
     }
 
     pub fn mark_dispatched(
