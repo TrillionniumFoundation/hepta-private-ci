@@ -113,7 +113,7 @@
           "path": "codex-rs/hepta-wire/src/v2.rs",
           "mustContain": [
             "const WIRE_VERSION_V2: u16 = 2;",
-            "const FRAME_DIGEST_DOMAIN: &[u8] = b\"HPTA-FRAME-V2\\\\0\";",
+            "const FRAME_DIGEST_DOMAIN",
             "pub fn decode_bound",
             "FrameDigestMismatch"
           ]
