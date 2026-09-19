@@ -172,8 +172,7 @@ impl HeptaEvidenceStore {
             return Err(AuthBusAuthorityError::Conflict);
         }
         let local_row = sqlx::query(
-            "SELECT checkpoint_id, generation, replay_root, observed_at_ms
-             FROM authbus_replay_checkpoint_state WHERE singleton = 1",
+            "SELECT generation FROM authbus_replay_checkpoint_state WHERE singleton = 1",
         )
         .fetch_optional(&self.pool)
         .await
@@ -182,6 +181,24 @@ impl HeptaEvidenceStore {
             let generation = positive_u64(row.try_get("generation").map_err(classify_sqlx_error)?)?;
             if generation > checkpoint.generation {
                 return Err(AuthBusAuthorityError::StaleRevision);
+            }
+        }
+        let pending = sqlx::query(
+            "SELECT minimum_generation, replay_root
+             FROM authbus_replay_checkpoint_pending WHERE singleton = 1",
+        )
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(classify_sqlx_error)?;
+        if let Some(row) = pending {
+            let minimum_generation =
+                positive_u64(row.try_get("minimum_generation").map_err(classify_sqlx_error)?)?;
+            let expected_root = digest(row.try_get("replay_root").map_err(classify_sqlx_error)?)?;
+            if checkpoint.generation < minimum_generation {
+                return Err(AuthBusAuthorityError::StaleRevision);
+            }
+            if checkpoint.replay_root != expected_root {
+                return Err(AuthBusAuthorityError::Conflict);
             }
         }
         Ok(())
@@ -200,18 +217,31 @@ impl HeptaEvidenceStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
-        let previous: Option<i64> = sqlx::query_scalar(
-            "SELECT generation FROM authbus_replay_checkpoint_state WHERE singleton = 1",
+        let previous = sqlx::query(
+            "SELECT checkpoint_id, generation, replay_root
+             FROM authbus_replay_checkpoint_state WHERE singleton = 1",
         )
         .fetch_optional(&mut *tx)
         .await
         .map_err(classify_sqlx_error)?;
-        if previous
-            .map(positive_u64)
-            .transpose()?
-            .is_some_and(|generation| generation >= checkpoint.generation)
-        {
-            return Err(AuthBusAuthorityError::StaleRevision);
+        if let Some(row) = previous {
+            let generation = positive_u64(row.try_get("generation").map_err(classify_sqlx_error)?)?;
+            let previous_root = digest(row.try_get("replay_root").map_err(classify_sqlx_error)?)?;
+            let previous_id: String = row.try_get("checkpoint_id").map_err(classify_sqlx_error)?;
+            if generation == checkpoint.generation
+                && previous_root == checkpoint.replay_root
+                && previous_id == checkpoint.checkpoint_id.as_str()
+            {
+                sqlx::query("DELETE FROM authbus_replay_checkpoint_pending WHERE singleton = 1")
+                    .execute(&mut *tx)
+                    .await
+                    .map_err(classify_sqlx_error)?;
+                tx.commit().await.map_err(classify_sqlx_error)?;
+                return Ok(());
+            }
+            if generation >= checkpoint.generation {
+                return Err(AuthBusAuthorityError::StaleRevision);
+            }
         }
         sqlx::query(
             "INSERT INTO authbus_replay_checkpoint_state
@@ -230,6 +260,10 @@ impl HeptaEvidenceStore {
         .execute(&mut *tx)
         .await
         .map_err(classify_sqlx_error)?;
+        sqlx::query("DELETE FROM authbus_replay_checkpoint_pending WHERE singleton = 1")
+            .execute(&mut *tx)
+            .await
+            .map_err(classify_sqlx_error)?;
         tx.commit().await.map_err(classify_sqlx_error)?;
         Ok(())
     }
@@ -254,6 +288,19 @@ impl HeptaEvidenceStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
+        let pending: bool = sqlx::query_scalar(
+            "SELECT EXISTS(
+                SELECT 1 FROM authbus_replay_checkpoint_pending WHERE singleton = 1
+             )",
+        )
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(classify_sqlx_error)?;
+        if pending {
+            return Err(AuthBusAuthorityError::Invalid(
+                "a replay checkpoint handoff is already pending",
+            ));
+        }
         let active: bool = sqlx::query_scalar(
             "SELECT EXISTS(
                 SELECT 1 FROM authbus_outbox
@@ -282,9 +329,39 @@ impl HeptaEvidenceStore {
         .execute(&mut *tx)
         .await
         .map_err(classify_sqlx_error)?;
+        let new_root = replay_root_from_transaction(&mut tx).await?;
+        let minimum_generation = checkpoint
+            .generation
+            .checked_add(1)
+            .ok_or(AuthBusAuthorityError::StaleRevision)?;
+        sqlx::query(
+            "INSERT INTO authbus_replay_checkpoint_pending
+             (singleton, minimum_generation, replay_root, created_at_ms)
+             VALUES (1, ?, ?, ?)",
+        )
+        .bind(to_i64(minimum_generation)?)
+        .bind(new_root.as_array().as_slice())
+        .bind(to_i64(checkpoint.observed_at_ms)?)
+        .execute(&mut *tx)
+        .await
+        .map_err(classify_sqlx_error)?;
         tx.commit().await.map_err(classify_sqlx_error)?;
-        self.authbus_replay_root().await
+        Ok(new_root)
     }
+}
+
+async fn replay_root_from_transaction(
+    tx: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+) -> Result<Digest32, AuthBusAuthorityError> {
+    let rows = sqlx::query(
+        "SELECT issuer_id, key_epoch, subject_id, scope_digest, sequence, envelope_digest
+         FROM authbus_replay_sequences
+         ORDER BY issuer_id, key_epoch, subject_id, scope_digest",
+    )
+    .fetch_all(&mut **tx)
+    .await
+    .map_err(classify_sqlx_error)?;
+    replay_root_from_rows(rows)
 }
 
 async fn replay_root_from_executor<'e, E>(executor: E) -> Result<Digest32, AuthBusAuthorityError>
@@ -299,6 +376,12 @@ where
     .fetch_all(executor)
     .await
     .map_err(classify_sqlx_error)?;
+    replay_root_from_rows(rows)
+}
+
+fn replay_root_from_rows(
+    rows: Vec<sqlx::sqlite::SqliteRow>,
+) -> Result<Digest32, AuthBusAuthorityError> {
     let mut bytes = b"hepta.authbus.replay-root.v1\0".to_vec();
     for row in rows {
         push_text(
@@ -333,6 +416,13 @@ where
         );
     }
     Ok(Digest32::of_bytes(&bytes))
+}
+
+fn digest(value: Vec<u8>) -> Result<Digest32, AuthBusAuthorityError> {
+    let bytes: [u8; 32] = value
+        .try_into()
+        .map_err(|_| EvidenceError::Corrupt("invalid AuthBus replay root width".into()))?;
+    Ok(Digest32::from_array(bytes))
 }
 
 fn push_text(bytes: &mut Vec<u8>, value: &str) {
