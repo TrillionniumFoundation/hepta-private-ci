@@ -633,6 +633,7 @@ test("same-origin transport enforces CSRF, credential mode and origin policy", a
   assert.equal(calls.length, 2);
   assert.equal(calls[1].options.credentials, "same-origin");
   assert.equal(calls[1].options.redirect, "error");
+  assert.equal(calls[1].options.referrerPolicy, "no-referrer");
   assert.equal(calls[1].options.headers.get("x-hepta-csrf"), "csrf-token");
   assert.throws(
     () => new SameOriginHttpTransport({ baseUrl: "https://evil.example/api", origin: "https://control.example", fetchImpl }),
@@ -1904,4 +1905,29 @@ test("pending store rejects duplicate JSON keys including escaped aliases", () =
     () => store.load(),
     (error) => error.code === ERROR_CODES.PERSISTENCE_UNAVAILABLE,
   );
+});
+
+
+test("bootstrap uses no-referrer request policy", async () => {
+  let observedOptions = null;
+  const bootstrap = {
+    endpointId: "runtime.1",
+    protocolVersion: 1,
+    manifestDigest: D1,
+    basePath: "/api/ui-control",
+    persistenceNamespace: "principal.a",
+  };
+  await loadBrowserBootstrap({
+    origin: "https://control.example",
+    fetchImpl: async (_url, options) => {
+      observedOptions = options;
+      return new Response(JSON.stringify(bootstrap), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    },
+  });
+  assert.equal(observedOptions.referrerPolicy, "no-referrer");
+  assert.equal(observedOptions.credentials, "same-origin");
+  assert.equal(observedOptions.redirect, "error");
 });
