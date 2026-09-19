@@ -50,6 +50,7 @@ impl Store {
             _lock: lock,
         };
         let has_state = entry_exists(&store.root, "authority.json")?;
+        let mut needs_claim_migration = false;
         let mut state = if has_state {
             let mut bytes = Vec::new();
             open_private(&store.root, "authority.json", Access::Read)?
@@ -68,6 +69,7 @@ impl Store {
             {
                 return Err(FinalUseError::InvalidTrust);
             }
+            needs_claim_migration = !stored.state.used_nonces.is_empty();
             stored.state
         } else {
             // Once initialized, absence is data loss, never permission to
@@ -87,6 +89,15 @@ impl Store {
         // below may compact the journal only after those durable claims have
         // been merged into the snapshot.
         store.replay_claims(&mut state)?;
+
+        // Legacy v1 snapshots serialized used_nonces inside authority.json.
+        // Materialize those claims into the complete fixed-record journal
+        // before publishing a compact snapshot. This ordering preserves replay
+        // truth across a crash during the one-time migration.
+        if needs_claim_migration {
+            store.rewrite_claim_log(&state)?;
+            store.persist_snapshot(&state)?;
+        }
 
         if has_state {
             if initial.authority_epoch >= state.head.authority_epoch
@@ -134,10 +145,19 @@ impl Store {
             .map_err(|_| FinalUseError::Unavailable)
     }
 
-    /// Checkpoint the complete in-memory replay set together with the current
-    /// revocation head. Only after the snapshot rename and parent fsync succeed
-    /// may the append journal be truncated.
+    /// Checkpoint trust/revocation metadata and compact the complete replay
+    /// journal. authority.json deliberately excludes the unbounded nonce set;
+    /// claims.log is the durable replay truth for the current epoch.
     pub(super) fn persist(&self, state: &State) -> Result<(), FinalUseError> {
+        // Once this store has been opened by the journal-aware implementation,
+        // claims.log already contains the complete replay set. Publishing the
+        // head first is safe: same-epoch old journal contents are complete,
+        // while old-epoch records are ignored after an epoch transition.
+        self.persist_snapshot(state)?;
+        self.rewrite_claim_log(state)
+    }
+
+    fn persist_snapshot(&self, state: &State) -> Result<(), FinalUseError> {
         let stored = Stored {
             schema: 1,
             signer_id: self.signer_id.clone(),
@@ -151,8 +171,7 @@ impl Store {
             .and_then(|()| file.sync_all())
             .map_err(|_| FinalUseError::Unavailable)?;
         replace_state(&self.root)?;
-        self.root.sync_all().map_err(|_| FinalUseError::Unavailable)?;
-        self.reset_claim_log()
+        self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
     }
 
     fn replay_claims(&self, state: &mut State) -> Result<(), FinalUseError> {
@@ -185,10 +204,17 @@ impl Store {
         }
     }
 
-    fn reset_claim_log(&self) -> Result<(), FinalUseError> {
-        let file = open_private(&self.root, "claims.log", Access::Create)?;
+    fn rewrite_claim_log(&self, state: &State) -> Result<(), FinalUseError> {
+        let mut file = open_private(&self.root, "claims.next", Access::Create)?;
         file.set_len(0).map_err(|_| FinalUseError::Unavailable)?;
+        for nonce in &state.used_nonces {
+            file.write_all(&state.head.authority_epoch.to_be_bytes())
+                .and_then(|()| file.write_all(nonce))
+                .map_err(|_| FinalUseError::Unavailable)?;
+        }
         file.sync_all().map_err(|_| FinalUseError::Unavailable)?;
+        rustix::fs::renameat(&self.root, "claims.next", &self.root, "claims.log")
+            .map_err(|_| FinalUseError::Unavailable)?;
         self.root.sync_all().map_err(|_| FinalUseError::Unavailable)
     }
 }
