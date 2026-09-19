@@ -9,6 +9,7 @@
 use std::collections::BTreeSet;
 use std::fs;
 use std::io::Read;
+use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::time::Duration;
 
@@ -31,6 +32,7 @@ use tokio_util::sync::CancellationToken;
 
 const MAX_HOST_CONFIG_BYTES: usize = 64 * 1024;
 const MAX_GRANT_BYTES: usize = 32 * 1024;
+const ISSUER_TIMEOUT: Duration = Duration::from_secs(5);
 const MAX_POLICY_BYTES: usize = 64 * 1024;
 const MAX_PROMPT_BYTES: u64 = 32 * 1024 + 1;
 const JOURNAL_CAPACITY: usize = 16_384;
@@ -51,6 +53,7 @@ struct HostConfig {
     authority_epoch: u64,
     revocation_revision: u64,
     revoked_grant_ids: BTreeSet<String>,
+    final_use_issuer_socket: PathBuf,
 }
 
 #[tokio::main]
@@ -67,7 +70,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let host_path = args.next().ok_or(usage())?;
     let quota_path = args.next().ok_or(usage())?;
     let resource_path = args.next().ok_or(usage())?;
-    let grant_path = args.next().ok_or(usage())?;
     let request_id = args.next().ok_or(usage())?;
     let maximum_output_tokens: u64 = args.next().ok_or(usage())?.parse()?;
     let maximum_budget_units: u64 = args.next().ok_or(usage())?.parse()?;
@@ -85,7 +87,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         Path::new(&resource_path),
         MAX_POLICY_BYTES,
     )?)?;
-    let grant_bytes = read_request_evidence(Path::new(&grant_path), MAX_GRANT_BYTES)?;
 
     let authority = FinalUseAuthority::open_state_dir(
         &host.authority_state_dir,
@@ -97,6 +98,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             revoked_grant_ids: host.revoked_grant_ids,
         },
     )?;
+    let issuer_socket = host.final_use_issuer_socket;
     let port = NativeWorkerPort::new(NativeWorkerConfig {
         agentd_socket: host.agentd_socket,
         agent_id: AgentId::parse(host.agent_id)?,
@@ -131,8 +133,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         policy: NativeExecutionPolicy { quota, resource },
     };
     let grant_resolver =
-        |_binding: &FinalUseBinding| -> Result<SignedFinalUseGrant, GrantResolveError> {
-            serde_json::from_slice(&grant_bytes).map_err(Into::into)
+        |binding: &FinalUseBinding| -> Result<SignedFinalUseGrant, GrantResolveError> {
+            resolve_final_use_grant(&issuer_socket, binding)
         };
     let result = port
         .execute(
@@ -160,8 +162,12 @@ fn validate_host_config(config: &HostConfig) -> Result<(), Box<dyn std::error::E
     if !config.agentd_socket.is_absolute()
         || !config.journal.is_absolute()
         || !config.authority_state_dir.is_absolute()
+        || !config.final_use_issuer_socket.is_absolute()
     {
-        return Err("host-owned socket, journal and authority state paths must be absolute".into());
+        return Err(
+            "host-owned socket, journal, authority state and final-use issuer socket paths must be absolute"
+                .into(),
+        );
     }
     if config.maximum_in_flight == 0 || config.maximum_in_flight > JOURNAL_CAPACITY {
         return Err("maximum_in_flight is outside the journal capacity".into());
@@ -188,6 +194,49 @@ fn read_host_config(path: &Path) -> Result<Vec<u8>, Box<dyn std::error::Error + 
         }
     }
     bounded_regular_file(path, MAX_HOST_CONFIG_BYTES)
+}
+
+#[cfg(unix)]
+fn resolve_final_use_grant(
+    socket: &Path,
+    binding: &FinalUseBinding,
+) -> Result<SignedFinalUseGrant, GrantResolveError> {
+    use std::os::unix::net::UnixStream;
+
+    if !socket.is_absolute() {
+        return Err("final-use issuer socket must be absolute".into());
+    }
+    let payload = serde_json::to_vec(binding)?;
+    if payload.len() > MAX_GRANT_BYTES {
+        return Err("final-use binding exceeds issuer protocol bound".into());
+    }
+    let request_len = u32::try_from(payload.len())
+        .map_err(|_| "final-use binding exceeds issuer protocol length")?
+        .to_be_bytes();
+    let mut stream = UnixStream::connect(socket)?;
+    stream.set_read_timeout(Some(ISSUER_TIMEOUT))?;
+    stream.set_write_timeout(Some(ISSUER_TIMEOUT))?;
+    stream.write_all(&request_len)?;
+    stream.write_all(&payload)?;
+    stream.flush()?;
+
+    let mut response_len = [0_u8; 4];
+    stream.read_exact(&mut response_len)?;
+    let response_len = u32::from_be_bytes(response_len) as usize;
+    if response_len == 0 || response_len > MAX_GRANT_BYTES {
+        return Err("final-use issuer response exceeds protocol bound".into());
+    }
+    let mut response = vec![0_u8; response_len];
+    stream.read_exact(&mut response)?;
+    serde_json::from_slice(&response).map_err(Into::into)
+}
+
+#[cfg(not(unix))]
+fn resolve_final_use_grant(
+    _socket: &Path,
+    _binding: &FinalUseBinding,
+) -> Result<SignedFinalUseGrant, GrantResolveError> {
+    Err("production final-use issuer socket is supported only on Unix".into())
 }
 
 fn read_request_evidence(
@@ -219,7 +268,7 @@ fn bounded_regular_file(
 }
 
 fn usage() -> &'static str {
-    "usage: hepta-inference-runtime-host execute ABS_HOST_CONFIG.json ABS_QUOTA.json ABS_RESOURCE.json SIGNED_GRANT.json REQUEST_ID MAX_OUTPUT_TOKENS MAX_BUDGET_UNITS < PROMPT"
+    "usage: hepta-inference-runtime-host execute ABS_HOST_CONFIG.json ABS_QUOTA.json ABS_RESOURCE.json REQUEST_ID MAX_OUTPUT_TOKENS MAX_BUDGET_UNITS < PROMPT"
 }
 
 #[cfg(test)]
@@ -241,6 +290,7 @@ mod tests {
             authority_epoch: 9,
             revocation_revision: 11,
             revoked_grant_ids: BTreeSet::new(),
+            final_use_issuer_socket: PathBuf::from("/run/hepta/final-use-issuer.sock"),
         }
     }
 
