@@ -1729,3 +1729,116 @@ mod tests {
         assert_eq!(head.head.unwrap().owner_epoch, Some(original.owner_epoch));
     }
 }
+
+
+#[cfg(test)]
+mod takeover_regression_tests {
+    use super::*;
+    use codex_hepta_paths::HeptaFleetRoot;
+    use std::time::Duration;
+    use tempfile::TempDir;
+    use tokio::time::sleep;
+
+    fn test_agent() -> AgentId {
+        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cfe").expect("agent")
+    }
+
+    async fn test_store(temp: &TempDir) -> CognitiveStore {
+        let fleet_root = temp.path().join("fleet-takeover");
+        std::fs::create_dir_all(&fleet_root).expect("fleet root");
+        let fleet = HeptaFleetRoot::parse(fleet_root.canonicalize().expect("canonical fleet"))
+            .expect("fleet");
+        CognitiveStore::open(&fleet.layout().agent(&test_agent()))
+            .await
+            .expect("store")
+    }
+
+    fn authority_for(
+        owner: AgentId,
+        grant: &[u8],
+        authority_epoch: u64,
+        owner_epoch: u64,
+        expiry: u64,
+        token: &[u8],
+    ) -> ProductionAuthorityLease {
+        ProductionAuthorityLease::from_verified_parts(
+            owner,
+            Sha256Digest::for_bytes(grant),
+            authority_epoch,
+            owner_epoch,
+            expiry,
+            ProductionAuthorityToken::from_verified_bytes(token.to_vec()).expect("token"),
+        )
+        .expect("authority")
+    }
+
+    #[tokio::test]
+    async fn expired_active_writer_is_terminalized_and_successor_reconciles_unknown_effect() {
+        let temp = TempDir::new().expect("temp");
+        let store = test_store(&temp).await;
+        let owner = store.owner_agent_id().clone();
+        let old_expiry = now_unix_seconds().expect("clock") + 2;
+        let old_authority =
+            authority_for(owner.clone(), b"grant-old", 9, 40, old_expiry, b"token-old");
+        let old = ProductionDurableWriter::open(
+            store.clone(),
+            old_authority,
+            &AllowVerifier,
+            "production:h4:takeover",
+            1,
+        )
+        .await
+        .expect("old writer");
+        old.admit("occurrence:takeover", "destination.write", "{\"value\":1}")
+            .await
+            .expect("admission");
+        old.mark_indeterminate("occurrence:takeover", "ack-lost")
+            .await
+            .expect("indeterminate");
+        drop(old);
+
+        sleep(Duration::from_millis(2_100)).await;
+
+        let new_authority = authority_for(
+            owner,
+            b"grant-new",
+            9,
+            41,
+            now_unix_seconds().expect("clock") + 3_600,
+            b"token-new",
+        );
+        let successor = ProductionDurableWriter::open(
+            store,
+            new_authority,
+            &AllowVerifier,
+            "production:h4:takeover",
+            2,
+        )
+        .await
+        .expect("successor writer");
+        assert_eq!(successor.generation(), 2);
+        assert_eq!(
+            successor
+                .status("occurrence:takeover")
+                .await
+                .expect("inherited status"),
+            LocalOutcomeState::Indeterminate
+        );
+
+        let settled = successor
+            .reconcile(
+                "occurrence:takeover",
+                LocalReconcileOutcome::Committed,
+            )
+            .await
+            .expect("successor reconciliation");
+        assert_eq!(settled.state, LocalOutcomeState::Committed);
+        assert_eq!(
+            successor
+                .status("occurrence:takeover")
+                .await
+                .expect("terminal status"),
+            LocalOutcomeState::Committed
+        );
+    }
+}
