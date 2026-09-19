@@ -6,8 +6,10 @@
 //! generation and predecessor content.
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 
 use codex_hepta_control_plane::RuntimeModuleAbiV1;
+use codex_hepta_control_plane::RuntimeModuleLifecycleV1;
 use codex_hepta_control_plane::RuntimeModulePromotionWitnessV1;
 use codex_hepta_control_plane::RuntimeModuleRegistryError;
 use codex_hepta_control_plane::RuntimeModuleRegistryV1;
@@ -22,6 +24,10 @@ use codex_hepta_types::RuntimeTopologyOperationV1;
 use codex_hepta_types::StableId;
 
 use crate::WriterHandoffCheckpointV1;
+
+// Bound in-flight topology work independently of module admission: a retire-only
+// proposal consumes no module candidate slots but still occupies host memory.
+const MAX_PENDING_TOPOLOGIES: usize = 128;
 
 #[derive(Debug)]
 pub struct RuntimeModuleSupervisorV1 {
@@ -64,6 +70,8 @@ pub enum RuntimeModuleSupervisorErrorV1 {
     TopologyContract(RuntimeTopologyContractErrorV1),
     NoChangeTopologyCandidate,
     DuplicateTopologyCandidate,
+    UnknownTopologyCandidate,
+    PendingTopologyCapacity,
     MissingTopologyAbi(StableId),
     UnexpectedTopologyAbi(StableId),
     TopologyAbiMismatch(StableId),
@@ -125,6 +133,7 @@ impl RuntimeModuleSupervisorV1 {
         staged.register_candidate(abi)?;
         let snapshot = staged.activate_bootstrap(&module_id, generation)?;
         self.registry = staged;
+        self.prune_lifecycle_metadata();
         Ok(snapshot)
     }
 
@@ -153,6 +162,7 @@ impl RuntimeModuleSupervisorV1 {
         self.registry.enter_shadow(&module_id, generation)?;
         self.selections
             .insert((module_id, generation), selection.selection_digest());
+        self.prune_lifecycle_metadata();
         Ok(())
     }
 
@@ -175,6 +185,7 @@ impl RuntimeModuleSupervisorV1 {
         {
             return Err(RuntimeModuleSupervisorErrorV1::DuplicateTopologyCandidate);
         }
+        self.ensure_topology_capacity()?;
 
         let receipt = selection.receipt();
         // A valid historical selection is not authority over today's topology.
@@ -322,6 +333,7 @@ impl RuntimeModuleSupervisorV1 {
         self.selections = staged_selections;
         self.pending_topologies
             .insert(candidate.candidate_digest, candidate);
+        self.prune_lifecycle_metadata();
         Ok(())
     }
 
@@ -335,8 +347,11 @@ impl RuntimeModuleSupervisorV1 {
         let candidate = self
             .pending_topologies
             .get(&candidate_digest)
-            .ok_or(RuntimeModuleSupervisorErrorV1::DuplicateTopologyCandidate)?
+            .ok_or(RuntimeModuleSupervisorErrorV1::UnknownTopologyCandidate)?
             .clone();
+        if candidate.selected_topology_digest != self.registry.snapshot().digest {
+            return Err(RuntimeModuleSupervisorErrorV1::TopologyBaselineMismatch);
+        }
         let mut staged = self.registry.clone();
         for delta in &candidate.deltas {
             if delta.operation != RuntimeTopologyOperationV1::Retire {
@@ -359,99 +374,148 @@ impl RuntimeModuleSupervisorV1 {
         let candidate = self
             .pending_topologies
             .get(&candidate_digest)
-            .ok_or(RuntimeModuleSupervisorErrorV1::DuplicateTopologyCandidate)?
+            .ok_or(RuntimeModuleSupervisorErrorV1::UnknownTopologyCandidate)?
             .clone();
+        // Admission and publication can be separated by arbitrarily long
+        // evaluation work. Never apply a previously selected delta to a graph
+        // changed by another promotion, retirement, or rollback in the meantime.
+        if candidate.selected_topology_digest != self.registry.snapshot().digest {
+            return Err(RuntimeModuleSupervisorErrorV1::TopologyBaselineMismatch);
+        }
 
         let mut promotion_witnesses = BTreeMap::new();
+        let mut retirements = BTreeMap::new();
         for delta in &candidate.deltas {
             if delta.operation == RuntimeTopologyOperationV1::Retire {
-                continue;
-            }
-            let key = (candidate_digest, delta.module_id.clone());
-            let witness = self
-                .pending_promotions
-                .get(&key)
-                .cloned()
-                .ok_or_else(|| {
-                    RuntimeModuleSupervisorErrorV1::TopologyNotReady(delta.module_id.clone())
-                })?;
-            promotion_witnesses.insert(delta.module_id.clone(), witness);
-        }
-
-        // Verify all explicit retirements before mutating the staged registry.
-        // They are committed first only inside the private staged copy, so a
-        // cross-module writer transfer can release an old domain and acquire it
-        // in the same externally visible topology generation.
-        for delta in &candidate.deltas {
-            if delta.operation != RuntimeTopologyOperationV1::Retire {
-                continue;
-            }
-            let generation = self
-                .registry
-                .active_generation(&delta.module_id)
-                .ok_or_else(|| {
-                    RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
+                let generation = self
+                    .registry
+                    .active_generation(&delta.module_id)
+                    .ok_or_else(|| {
+                        RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
+                            delta.module_id.clone(),
+                        )
+                    })?;
+                let record = self
+                    .registry
+                    .record(&delta.module_id, generation)
+                    .ok_or_else(|| {
+                        RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
+                            delta.module_id.clone(),
+                        )
+                    })?;
+                if record.abi.implementation_digest != delta.predecessor_digest {
+                    return Err(RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
                         delta.module_id.clone(),
-                    )
-                })?;
-            if !self
-                .retirement_ready
-                .contains_key(&(delta.module_id.clone(), generation))
-            {
-                return Err(RuntimeModuleSupervisorErrorV1::InvalidRetirementWitness);
+                    ));
+                }
+                if !self
+                    .retirement_ready
+                    .contains_key(&(delta.module_id.clone(), generation))
+                {
+                    return Err(RuntimeModuleSupervisorErrorV1::InvalidRetirementWitness);
+                }
+                retirements.insert(delta.module_id.clone(), generation);
+            } else {
+                let key = (candidate_digest, delta.module_id.clone());
+                let witness = self
+                    .pending_promotions
+                    .get(&key)
+                    .cloned()
+                    .ok_or_else(|| {
+                        RuntimeModuleSupervisorErrorV1::TopologyNotReady(delta.module_id.clone())
+                    })?;
+                promotion_witnesses.insert(delta.module_id.clone(), witness);
             }
         }
 
+        // Work only on a private registry. A rewire may have to run before its
+        // old provider retires; a writer transfer or a full roster may require
+        // retirement before addition. Retry only these bounded ordering blocks,
+        // without disabling dependency, writer, or capacity checks.
         let mut staged = self.registry.clone();
-        let mut retired = Vec::new();
-        for delta in &candidate.deltas {
-            if delta.operation != RuntimeTopologyOperationV1::Retire {
-                continue;
+        while !promotion_witnesses.is_empty() || !retirements.is_empty() {
+            let mut progressed = false;
+            let mut blocked = None;
+            for (module_id, witness) in promotion_witnesses.clone() {
+                match staged.promote_after_handoff(
+                    &module_id,
+                    candidate.candidate_generation,
+                    witness,
+                ) {
+                    Ok(_) => {
+                        promotion_witnesses.remove(&module_id);
+                        progressed = true;
+                    }
+                    Err(error @ RuntimeModuleRegistryError::AuthoritativeWriterConflict(_))
+                    | Err(error @ RuntimeModuleRegistryError::Bounds) => {
+                        blocked.get_or_insert(error);
+                    }
+                    Err(error) => return Err(error.into()),
+                }
             }
-            let generation = staged.active_generation(&delta.module_id).ok_or_else(|| {
-                RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(delta.module_id.clone())
-            })?;
-            let record = staged.record(&delta.module_id, generation).ok_or_else(|| {
-                RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(delta.module_id.clone())
-            })?;
-            if record.abi.implementation_digest != delta.predecessor_digest {
-                return Err(RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
-                    delta.module_id.clone(),
-                ));
+            for (module_id, generation) in retirements.clone() {
+                match staged.begin_retire(&module_id, generation) {
+                    Ok(()) => {
+                        staged.finish_retire(&module_id, generation)?;
+                        retirements.remove(&module_id);
+                        progressed = true;
+                    }
+                    Err(error @ RuntimeModuleRegistryError::SelectedDependent(_)) => {
+                        blocked.get_or_insert(error);
+                    }
+                    Err(error) => return Err(error.into()),
+                }
             }
-            staged.begin_retire(&delta.module_id, generation)?;
-            staged.finish_retire(&delta.module_id, generation)?;
-            retired.push((delta.module_id.clone(), generation));
-        }
-
-        for delta in &candidate.deltas {
-            if delta.operation == RuntimeTopologyOperationV1::Retire {
-                continue;
+            if !progressed {
+                return Err(blocked
+                    .unwrap_or(RuntimeModuleRegistryError::InvalidLifecycleTransition)
+                    .into());
             }
-            let witness = promotion_witnesses
-                .remove(&delta.module_id)
-                .ok_or_else(|| {
-                    RuntimeModuleSupervisorErrorV1::TopologyNotReady(delta.module_id.clone())
-                })?;
-            staged.promote_after_handoff(
-                &delta.module_id,
-                candidate.candidate_generation,
-                witness,
-            )?;
         }
 
         let snapshot = staged.snapshot();
         validate_runtime_dependency_graph(&snapshot)?;
         self.registry = staged;
-        for key in retired {
-            self.retirement_ready.remove(&key);
-        }
         for delta in &candidate.deltas {
             self.pending_promotions
                 .remove(&(candidate_digest, delta.module_id.clone()));
         }
         self.pending_topologies.remove(&candidate_digest);
+        self.prune_lifecycle_metadata();
         Ok(snapshot)
+    }
+
+    /// Withdraw an uncommitted proposal and release its admission budget.
+    /// This removes selection references, not durable audit history or generation
+    /// fences. It does not claim to stop a worker, drain effects, or authorize a
+    /// replacement. Hosts must separately cancel their isolated candidate work.
+    pub fn discard_topology_candidate(
+        &mut self,
+        candidate_digest: Digest32,
+    ) -> Result<(), RuntimeModuleSupervisorErrorV1> {
+        let candidate = self
+            .pending_topologies
+            .get(&candidate_digest)
+            .ok_or(RuntimeModuleSupervisorErrorV1::UnknownTopologyCandidate)?
+            .clone();
+        let mut staged = self.registry.clone();
+        for delta in &candidate.deltas {
+            if delta.operation == RuntimeTopologyOperationV1::Retire {
+                continue;
+            }
+            if staged.active_generation(&delta.module_id) == Some(candidate.candidate_generation) {
+                return Err(RuntimeModuleSupervisorErrorV1::TopologyNotReady(
+                    delta.module_id.clone(),
+                ));
+            }
+            staged.quarantine(&delta.module_id, candidate.candidate_generation)?;
+        }
+        self.registry = staged;
+        self.pending_promotions
+            .retain(|(digest, _), _| *digest != candidate_digest);
+        self.pending_topologies.remove(&candidate_digest);
+        self.prune_lifecycle_metadata();
+        Ok(())
     }
 
     #[cfg(test)]
@@ -466,6 +530,7 @@ impl RuntimeModuleSupervisorV1 {
         self.registry.enter_shadow(&module_id, generation)?;
         self.selections
             .insert((module_id, generation), selection_digest);
+        self.prune_lifecycle_metadata();
         Ok(())
     }
 
@@ -662,13 +727,14 @@ impl RuntimeModuleSupervisorV1 {
         generation: Generation,
         witness: RuntimeModuleRetirementWitnessV1,
     ) -> Result<RuntimeTopologySnapshotV1, RuntimeModuleSupervisorErrorV1> {
-        self.record_retirement_ready(module_id, generation, witness)?;
         let mut staged = self.registry.clone();
         staged.begin_retire(module_id, generation)?;
         let snapshot = staged.finish_retire(module_id, generation)?;
+        // Invalid drain evidence or dependency checks must leave both serving
+        // state and bookkeeping untouched, rather than leaking a ready marker.
+        self.record_retirement_ready(module_id, generation, witness)?;
         self.registry = staged;
-        self.retirement_ready
-            .remove(&(module_id.clone(), generation));
+        self.prune_lifecycle_metadata();
         Ok(snapshot)
     }
 
@@ -686,12 +752,19 @@ impl RuntimeModuleSupervisorV1 {
         if admitted != selection.selection_digest() {
             return Err(RuntimeModuleSupervisorErrorV1::RollbackSelectionMismatch);
         }
-        Ok(self.registry.rollback_active_to_predecessor_content(
+        let mut staged = self.registry.clone();
+        let snapshot = staged.rollback_active_to_predecessor_content(
             module_id,
             active_generation,
             rollback.rollback_generation(),
             rollback.regression_evidence_digest(),
-        )?)
+        )?;
+        // Predecessor content may reference a provider retired since upgrade.
+        // A valid rollback receipt cannot make that missing dependency exist.
+        validate_runtime_dependency_graph(&snapshot)?;
+        self.registry = staged;
+        self.prune_lifecycle_metadata();
+        Ok(snapshot)
     }
 
     fn promote_or_stage(
@@ -704,19 +777,25 @@ impl RuntimeModuleSupervisorV1 {
             .registry
             .record(module_id, generation)
             .ok_or(RuntimeModuleSupervisorErrorV1::ModuleMismatch)?;
+        if record.lifecycle != RuntimeModuleLifecycleV1::Canary {
+            return Err(RuntimeModuleRegistryError::InvalidLifecycleTransition.into());
+        }
         witness.validate_for(&record.abi)?;
         let candidate_digest = record.abi.candidate_artifact_digest;
-        let belongs_to_pending_topology = self
+        let pending_topology = self
             .pending_topologies
             .get(&candidate_digest)
-            .is_some_and(|candidate| {
+            .filter(|candidate| {
                 candidate.candidate_generation == generation
                     && candidate.deltas.iter().any(|delta| {
                         delta.module_id == *module_id
                             && delta.operation != RuntimeTopologyOperationV1::Retire
                     })
             });
-        if belongs_to_pending_topology {
+        if let Some(candidate) = pending_topology {
+            if candidate.selected_topology_digest != self.registry.snapshot().digest {
+                return Err(RuntimeModuleSupervisorErrorV1::TopologyBaselineMismatch);
+            }
             let key = (candidate_digest, module_id.clone());
             if let Some(existing) = self.pending_promotions.get(&key) {
                 if existing != &witness {
@@ -729,9 +808,40 @@ impl RuntimeModuleSupervisorV1 {
             self.pending_promotions.insert(key, witness);
             return Ok(self.registry.snapshot());
         }
-        Ok(self
-            .registry
-            .promote_after_handoff(module_id, generation, witness)?)
+        let mut staged = self.registry.clone();
+        let snapshot = staged.promote_after_handoff(module_id, generation, witness)?;
+        validate_runtime_dependency_graph(&snapshot)?;
+        self.registry = staged;
+        self.prune_lifecycle_metadata();
+        Ok(snapshot)
+    }
+
+    fn ensure_topology_capacity(&self) -> Result<(), RuntimeModuleSupervisorErrorV1> {
+        if self.pending_topologies.len() >= MAX_PENDING_TOPOLOGIES {
+            return Err(RuntimeModuleSupervisorErrorV1::PendingTopologyCapacity);
+        }
+        Ok(())
+    }
+
+    fn prune_lifecycle_metadata(&mut self) {
+        // Durable audit/selection evidence belongs to its owning ledger. These
+        // maps are only the selected and in-flight host working set; retaining
+        // one entry for every historical upgrade defeats registry compaction.
+        let registry = &self.registry;
+        self.selections.retain(|(module_id, generation), _| {
+            registry.active_generation(module_id) == Some(*generation)
+                || registry.record(module_id, *generation).is_some_and(|record| {
+                    matches!(
+                        record.lifecycle,
+                        RuntimeModuleLifecycleV1::Registered
+                            | RuntimeModuleLifecycleV1::Shadow
+                            | RuntimeModuleLifecycleV1::Canary
+                    )
+                })
+        });
+        self.retirement_ready.retain(|(module_id, generation), _| {
+            registry.active_generation(module_id) == Some(*generation)
+        });
     }
 
     fn selection_digest(
