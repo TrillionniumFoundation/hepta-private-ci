@@ -58,14 +58,24 @@ the product purpose, consumer-profile digest and host authority epoch. It does
 not invent prompt, compact, model, tokenizer, template or tool-schema
 generations owned elsewhere.
 
-Agentd is the named production caller. Its default path is now
-`lane_c_snapshot -> authoritative_provider -> read_authoritative -> final
-owner-cut reacquisition -> revalidate_authoritative_read`. StateControl also
-binds the fleet lifecycle generation as the authority epoch and requires the
-same epoch after the asynchronous read completes. Exact Lane-C revision/cut
-revalidation is therefore implemented; broader scope/purpose, authority epoch,
-frontier, generation-vector, lease and receipt/digest revalidation is composed
-at the final cognitive-context consumption boundary. Any drift fails closed.
+Agentd is the named production caller. Its default read path is
+`lane_c_snapshot -> authoritative_provider -> read_authoritative -> immediate
+owner-cut reacquisition -> revalidate_authoritative_read -> issue one-shot
+guard`. StateControl binds the fleet lifecycle generation as the authority
+epoch and requires the same epoch after asynchronous read work. The native
+model worker then syncs durable dispatch intent and calls
+`CognitiveContextFinalize` immediately before provider `TurnStart`. Agentd
+consumes the retained guard exactly once, reacquires the canonical owner cut,
+revalidates the original lease/request/vector/snapshot/receipt and the current
+host epoch/frontiers, and revalidates the optional ranker witness. Any drift
+fails closed before the provider effect is sent.
+
+This finalization is a fresh pre-effect observation, not a write-blocking memory
+lease. It removes the former Agentd-response-to-model-dispatch freshness gap but
+does not claim atomic exclusion of a writer that commits after finalization has
+returned and before `TurnStart`; a stronger no-intervening-write guarantee
+would require the memory owner and writers to participate in an explicit
+short-lived consumption lease/fence.
 
 The adapter preserves record/citation identities, includes committed
 tombstones, and admits only verified currently-valid live heads. Snapshot
@@ -100,8 +110,10 @@ The bounded components are:
 - `read-specific generation vector`: binds scope, purpose, five cognitive owner frontiers/generations, consumer profile and authority epoch.
 - `typed projection`: internal `read_v2` validates selectors, kinds, ordering, deduplication, stale/missing diagnostics and byte/result caps.
 - `receipt binding`: `read_authoritative` binds acquisition request, generation vector, snapshot receipt and low-level read receipt.
-- `consume-time verifier`: reacquires the owner cut and validates the original lease/receipt/vector plus current owner state immediately before context return.
-- `host authority fence`: Agentd StateControl verifies the same lifecycle generation before and after asynchronous I/O.
+- `publication verifier`: reacquires the owner cut and validates the original lease/receipt/vector plus current owner state before Agentd publishes context.
+- `one-shot guard registry`: Agentd retains the exact authoritative guard server-side under the read binding digest, with bounded capacity and original lease expiry; caller-supplied authority metadata is never trusted.
+- `final-use verifier`: the native worker calls `CognitiveContextFinalize` after durable dispatch intent and immediately before `TurnStart`; Agentd removes the guard before asynchronous revalidation so replay, disconnect, timeout or failed validation cannot reuse it.
+- `host authority fence`: Agentd StateControl verifies the same lifecycle generation around read issuance and finalization.
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -157,9 +169,9 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 ## 8. Failure semantics, recovery and rollback
 
-All authority and freshness failures are fail-closed. Acquisition rejects invalid scope/purpose/epoch, stale minimum frontiers, invalid lease windows, snapshot-integrity failures and request/snapshot mismatch. Consume-time revalidation rejects an expired original lease, changed provider, changed generation vector, changed owner snapshot, authority-epoch drift or receipt/digest mismatch. Agentd maps an authoritative-read failure to unavailable rather than falling back to raw `read_v2` or an unfenced SQLite read. StateControl separately fences if the fleet lifecycle generation changes across the asynchronous operation.
+All authority and freshness failures are fail-closed. Acquisition rejects invalid scope/purpose/epoch, stale minimum frontiers, invalid lease windows, snapshot-integrity failures and request/snapshot mismatch. Publication-time and final-use revalidation reject an expired original lease, changed provider, changed generation vector, changed owner snapshot, authority-epoch drift or receipt/digest mismatch. Missing, expired, mismatched or replayed finalization receipts are rejected. Agentd never falls back to raw `read_v2` or an unfenced SQLite read, and the native worker records a durable pre-`TurnStart` stop instead of pretending provider terminality when finalization fails.
 
-The exact Lane-C cut/revision revalidation gap is closed in the production source path. Remaining recovery/qualification work is not another revision check; it is exact-candidate and target-host evidence, plus independently governed activation/release gates. A source library or fixture cannot stand in for those external receipts.
+The exact Lane-C cut/revision gap and the broader authoritative re-observation at the real model-dispatch boundary are source-composed. The remaining semantic caveat is explicit: this is immediate pre-effect revalidation, not a cross-process write-blocking lease. Exact-candidate/target-host evidence and independently governed activation/release gates remain separate; a source library or fixture cannot stand in for those receipts.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -181,7 +193,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Acquire a cut through the existing SQLite owner, bind the product request with `AuthoritativeReadGenerationVectorV1`, construct the request-bound Lane-C authoritative provider, and call `read_authoritative`. The authoritative result's binding digest is the read digest passed into context planning. Immediately before returning context, reacquire/revalidate the owner cut and call `revalidate_authoritative_read`; StateControl then confirms the same host authority epoch after I/O. The original lease is intentionally short and expiry is a hard failure. No historical snapshot grants future effect authority.
+Acquire a cut through the existing SQLite owner, bind the product request with `AuthoritativeReadGenerationVectorV1`, construct the request-bound Lane-C authoritative provider, and call `read_authoritative`. The authoritative result's binding digest is the read digest passed into context planning and keys Agentd's bounded one-shot guard registry. Agentd revalidates before publication; the native model worker then syncs durable dispatch intent and invokes `CognitiveContextFinalize` immediately before `TurnStart`. Finalization consumes the retained guard, reacquires/revalidates the owner cut and host epoch, and rejects expiry, replay or any authoritative drift. The original lease is intentionally short and expiry is a hard failure. No historical snapshot grants future effect authority.
 
 Current operating and state-format references:
 
@@ -197,8 +209,9 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-cognitive-read/src/v2_tests.rs](../../../codex-rs/hepta-cognitive-read/src/v2_tests.rs): typed exact/prefix projection, missing/stale behavior, deterministic ordering and resource caps.
 - [codex-rs/hepta-cognitive-read/src/authoritative_tests.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative_tests.rs): provider/request/vector/query binding, lease/deadline checks and consume-time generation/authority drift.
 - [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs): real SQLite cut acquisition, freeze/reopen/tombstone behavior and authoritative provider frontier binding.
-- [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs): named product caller plus deterministic adversarial mid-flight source-frontier advance and tombstone revocation before final consume-time revalidation.
-- [codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs](../../../codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs): process-level cognitive/federation revalidation behavior.
+- [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs): named product caller, post-publication source-frontier drift, authority-epoch drift, lease expiry and one-shot/replay denial at finalization.
+- [codex-rs/hepta-infer-core/src/native_control_tests.rs](../../../codex-rs/hepta-infer-core/src/native_control_tests.rs): durable pre-`TurnStart` stop releases local capacity without fabricating provider terminality and rejects a stop after the turn is started.
+- [codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs](../../../codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs): process-level cognitive/federation and physical-send revalidation behavior.
 
 In `codex-rs`, run the focused cognitive-read, memory and Agentd tests, then the repository's exact-head qualification workflows. A command listed here is not a stored pass receipt; inspect the exact candidate output for passes, failures and skips.
 
@@ -208,12 +221,13 @@ In `codex-rs`, run the focused cognitive-read, memory and Agentd tests, then the
 | --- | --- | --- | --- | --- |
 | Immutable owner cut / no mixed moving view | yes | yes | yes | pending exact-candidate workflow |
 | Typed bounded projection / deterministic receipt | yes | yes through authoritative wrapper | yes | pending exact-candidate workflow |
-| Exact revision/cut revalidation before consume | yes | yes | yes | pending exact-candidate workflow |
+| Exact revision/cut revalidation before publication and immediately before model dispatch | yes | yes | yes | pending exact-candidate workflow |
 | Scope + purpose binding | yes | yes | yes | pending exact-candidate workflow |
 | Memory/source/tombstone/KG frontiers | yes | yes | source and tombstone mid-flight cases | pending exact-candidate workflow |
-| Authority epoch pre/post I/O | yes | yes through StateControl | unit + host fence source coverage | pending exact-candidate workflow |
+| Authority epoch at read issuance and final-use gate | yes | yes through StateControl/finalize | unit + host fence source coverage | pending exact-candidate workflow |
 | Generation-vector digest + snapshot receipt | yes | yes | yes | pending exact-candidate workflow |
-| Short lease/deadline enforcement | yes | yes | authoritative tests | pending exact-candidate workflow |
+| Short lease/deadline + one-shot finalization | yes | yes | authoritative + Agentd replay/expiry tests | pending exact-candidate workflow |
+| No intervening owner write after finalize returns | not claimed; requires writer-participating lease/fence | no | no | open repository architecture choice |
 | Independent acceptance / canary / release | repository cannot self-certify | not claimed | not applicable | open external gate |
 
 This matrix deliberately separates source implementation, product composition, executable test presence and exact-candidate/external qualification.

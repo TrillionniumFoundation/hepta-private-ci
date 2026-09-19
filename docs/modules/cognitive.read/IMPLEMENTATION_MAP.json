@@ -58,7 +58,7 @@
     },
     {
       "operation": "agentd_cognitive_context",
-      "nativeSymbol": "cognitive_context::read",
+      "nativeSymbol": "cognitive_context::issue",
       "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
       "state": "production_composed",
       "authority": "deny_all",
@@ -67,11 +67,47 @@
         "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs"
       ],
       "sourcePathExists": true,
-      "designOperation": "product_consume_with_revalidation",
+      "designOperation": "product_issue_with_publication_revalidation",
       "mappingClass": "product_caller",
       "delegatedCallees": [
         "codex-rs/hepta-cognitive-read/src/authoritative.rs::read_authoritative",
+        "codex-rs/hepta-cognitive-read/src/authoritative.rs::revalidate_authoritative_read",
+        "codex-rs/hepta-agentd/src/cognitive_context.rs::PendingCognitiveContexts::issue"
+      ]
+    },
+    {
+      "operation": "agentd_cognitive_context_finalize",
+      "nativeSymbol": "cognitive_context::finalize",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "state": "production_composed",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "one_shot_final_use_revalidation",
+      "mappingClass": "product_finalizer",
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot.rs::CognitiveStore::revalidate_lane_c_snapshot",
         "codex-rs/hepta-cognitive-read/src/authoritative.rs::revalidate_authoritative_read"
+      ]
+    },
+    {
+      "operation": "native_worker_cognitive_finalize_gate",
+      "nativeSymbol": "AgentdClient::finalize_cognitive_context",
+      "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "state": "production_composed",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+        "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "durable_dispatch_then_finalize_before_turn_start",
+      "mappingClass": "product_consumer",
+      "delegatedCallees": [
+        "codex-rs/hepta-agentd/src/client.rs::AgentdClient::finalize_cognitive_context",
+        "codex-rs/hepta-infer-core/src/native_control.rs::DurableInferenceControl::stop_native_before_turn_start"
       ]
     },
     {
@@ -91,7 +127,8 @@
   ],
   "repositoryControlledGaps": [
     "Exact-candidate CI and merge-candidate qualification must pass for this branch before product-execution evidence is claimed.",
-    "Any future cognitive backend must materialize one immutable owner cut before constructing an authoritative provider; moving/current-state adapters are not an admissible product boundary."
+    "Any future cognitive backend must materialize one immutable owner cut before constructing an authoritative provider; moving/current-state adapters are not an admissible product boundary.",
+    "The final-use gate is an immediate pre-TurnStart re-observation, not a writer-participating lock. If strict no-intervening-write linearization is required, add an explicit bounded consumption lease/fence honored by cognitive writers."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
