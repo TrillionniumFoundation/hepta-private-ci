@@ -38,6 +38,7 @@ class WorkerReceipt:
     registered_unix_ns: int
     last_heartbeat_unix_ns: int
     lease_expires_unix_ns: int
+    identity_expires_unix_ns: int
 
 
 @dataclass(frozen=True)
@@ -49,6 +50,7 @@ class WorkerIdentityReceipt:
     maximum_concurrency: int
     authority_epoch: int
     observed_unix_ns: int
+    lease_expires_unix_ns: int
     expires_unix_ns: int
     issuer: str
     signing_identity: str
@@ -114,6 +116,7 @@ def _worker_receipt(row) -> WorkerReceipt:
         int(row["registered_unix_ns"]),
         int(row["last_heartbeat_unix_ns"]),
         int(row["lease_expires_unix_ns"]),
+        int(row["identity_expires_unix_ns"]),
     )
 
 
@@ -223,6 +226,8 @@ def register_authenticated_worker(
         type(identity.observed_unix_ns) is not int
         or type(identity.expires_unix_ns) is not int
         or not identity.observed_unix_ns <= now < identity.expires_unix_ns
+        or type(identity.lease_expires_unix_ns) is not int
+        or not now < identity.lease_expires_unix_ns <= identity.expires_unix_ns
     ):
         raise _control.EngineeringError("worker_identity_stale")
     if (
@@ -246,7 +251,8 @@ def register_authenticated_worker(
         identity.capabilities,
         maximum_concurrency=identity.maximum_concurrency,
         authority_epoch=identity.authority_epoch,
-        expires_unix_ns=identity.expires_unix_ns,
+        expires_unix_ns=identity.lease_expires_unix_ns,
+        identity_expires_unix_ns=identity.expires_unix_ns,
         now_ns=now,
     )
 
@@ -282,6 +288,7 @@ def register_worker(
     maximum_concurrency: int,
     authority_epoch: int,
     expires_unix_ns: int,
+    identity_expires_unix_ns: int | None = None,
     now_ns: int | None = None,
 ) -> WorkerReceipt:
     _control.checked_id(worker_id, "worker_id")
@@ -297,6 +304,16 @@ def register_worker(
     now = store._now(now_ns)
     if type(expires_unix_ns) is not int or expires_unix_ns <= now:
         raise _control.EngineeringError("invalid_worker_expiry")
+    identity_expiry = (
+        expires_unix_ns
+        if identity_expires_unix_ns is None
+        else identity_expires_unix_ns
+    )
+    if (
+        type(identity_expiry) is not int
+        or identity_expiry < expires_unix_ns
+    ):
+        raise _control.EngineeringError("invalid_worker_identity_expiry")
     semantic = _control.semantic_digest(
         {
             "workerId": worker_id,
@@ -306,6 +323,7 @@ def register_worker(
             "maximumConcurrency": maximum_concurrency,
             "authorityEpoch": authority_epoch,
             "leaseExpiresUnixNs": expires_unix_ns,
+            "identityExpiresUnixNs": identity_expiry,
         }
     )
     with store._transaction():
@@ -321,8 +339,9 @@ def register_worker(
             "INSERT INTO engineering_workers("
             "worker_id,principal,credential_chain_digest,capabilities_json,"
             "maximum_concurrency,state,authority_epoch,revision,registered_unix_ns,"
-            "last_heartbeat_unix_ns,lease_expires_unix_ns,semantic_digest"
-            ") VALUES(?,?,?,?,?,'active',?,1,?,?,?,?)",
+            "last_heartbeat_unix_ns,lease_expires_unix_ns,identity_expires_unix_ns,"
+            "semantic_digest"
+            ") VALUES(?,?,?,?,?,'active',?,1,?,?,?,?,?)",
             (
                 worker_id,
                 principal,
@@ -333,6 +352,7 @@ def register_worker(
                 now,
                 now,
                 expires_unix_ns,
+                identity_expiry,
                 semantic,
             ),
         )
@@ -379,6 +399,7 @@ def heartbeat_worker(
         if (
             type(new_expiry_unix_ns) is not int
             or new_expiry_unix_ns <= max(now, int(row["lease_expires_unix_ns"]))
+            or new_expiry_unix_ns > int(row["identity_expires_unix_ns"])
         ):
             raise _control.EngineeringError("invalid_worker_expiry")
         revision = expected_revision + 1
