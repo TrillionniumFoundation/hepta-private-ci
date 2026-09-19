@@ -19,7 +19,7 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionWriterState": "source_facade_implemented_not_product_bound",
   "operations": [
     {
       "operation": "durableledger",
@@ -44,16 +44,74 @@
       "designOperation": "learningevidenceverifierv1",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "productionledgerwriter",
+      "designOperation": "productionledgerwriter",
+      "nativeSymbol": "ProductionLedgerWriter",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/production.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        "production_writer_closes_signed_decision_outcome_credit_and_dataset_path"
+      ],
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "durableanchorwitness",
+      "designOperation": "durableanchorwitness",
+      "nativeSymbol": "DurableAnchorWitness",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/witness.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        "witness_reopens_exact_acknowledged_frontier_and_rejects_regression"
+      ],
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "canonicalprotocoladapters",
+      "designOperation": "canonicalprotocoladapters",
+      "nativeSymbol": "CanonicalLearningProtocol",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/protocol.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        "canonical_decision_json_uses_registry_field_names_and_order"
+      ],
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "ledgerindexcheckpointv1",
+      "designOperation": "ledgerindexcheckpointv1",
+      "nativeSymbol": "LedgerIndexCheckpointV1",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/index_checkpoint.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        "checkpoint_verifies_four_thousand_record_history"
+      ],
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Current candidate must pass exact-head and deterministic synthetic-merge qualification before source-complete status can advance from ci_pending.",
+    "Bind ProductionLedgerWriter and DurableAnchorWitness to one named product process, exclusive writer identity and durable directories before productionImplementation may become true."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "live trust-root and signer/controller distribution",
+    "live independent outcome observers",
+    "target-host durability, latency, storage-growth and power-loss qualification",
+    "independent semantic review and operator acceptance",
+    "canary, selection, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -66,5 +124,19 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-learning-ledger"
-  ]
+  ],
+  "statusAxes": {
+    "packageRegistry": {
+      "LRN-0-CAUSAL-LEARNING-CONTRACTS": "planned",
+      "LRN-1-DURABLE-EPISODE-LEDGER": "planned"
+    },
+    "sourceImplementation": "converged_candidate_ci_pending",
+    "productComposition": "not_composed",
+    "productionWriter": "source_facade_implemented_not_product_bound",
+    "exactCandidateQualification": "pending_current_ci",
+    "targetHostQualification": "not_proved",
+    "independentAcceptance": "not_proved",
+    "activation": false,
+    "release": false
+  }
 }
