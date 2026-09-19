@@ -11,7 +11,7 @@
     "codex-rs/hepta-objective"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
+  "productCallerState": "source_composed_agentd_authenticated_not_activated",
   "productionWriterState": "not_applicable_stateless",
   "operations": [
     {
@@ -97,7 +97,7 @@
         "ObjectiveCompileReceipt",
         "ObjectiveConflictReceipt"
       ],
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_with_authenticated_product_caller",
       "authority": "deny_all",
       "tests": [
         {
@@ -153,7 +153,7 @@
     },
     {
       "operation": "compile",
-      "nativeSymbol": "codex_hepta_objective::compile",
+      "nativeSymbol": "crate::compiler::compile",
       "sourcePath": "codex-rs/hepta-objective/src/compiler.rs",
       "inputs": [
         "ObjectiveSourceEnvelope"
@@ -162,7 +162,7 @@
         "ObjectiveCompileReceipt",
         "ObjectiveConflictReceipt"
       ],
-      "state": "source_implemented",
+      "state": "source_implemented_internal_opaque_admission_only",
       "authority": "none",
       "tests": [
         {
@@ -181,7 +181,9 @@
       "designOperation": "compile",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "publicCompatibilityEntrypoint": "compile_prevalidated_legacy_objective_v1",
+      "publicCompatibilityFeature": "qualification-legacy-compile"
     }
   ],
   "canonicalReadinessProtocols": [
@@ -194,7 +196,7 @@
     "specification": "complete",
     "source": "candidate_implemented",
     "exactHeadQualification": "required",
-    "productComposition": "not_established",
+    "productComposition": "source_composed_not_activated",
     "independentAcceptance": "not_established",
     "activation": "not_established",
     "release": "not_established"
@@ -215,19 +217,46 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "productSourceComposition": true
   },
   "sourceBase": {
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for the canonical candidate.",
+    "Run the named target-host objective measurement harness and qualify Agentd crash/restart/backpressure behavior on the selected deployment host."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
+  ],
+  "sourceBaseRole": "historical_mapping_baseline_not_exact_head_receipt",
+  "exactHeadQualificationPolicy": {
+    "state": "external_exact_candidate_receipt_required",
+    "verifier": "scripts/hepta-implementation-maps.py verify --expected-sha <candidate>",
+    "workflows": [
+      ".github/workflows/hepta-objective-admission.yml",
+      ".github/workflows/hepta-lane-d-semantic-conformance.yml"
+    ]
+  },
+  "productCallerEvidence": [
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "symbol": "ObjectiveRuntimeHost::submit",
+      "semantics": "signed AuthBus message -> current trust authentication -> owner-local admission context -> durable publication -> current-trust revalidation -> generation/fence-bound runtime admission"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/objective_run.rs",
+      "symbol": "compile_and_publish_objective_run_v1",
+      "semantics": "opaque objective admission -> compile -> destination-owned atomic run-start journal append before runtime consumption"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
+      "symbol": "DurableRunStartJournal",
+      "semantics": "locked bounded append-only objective/run-start publication with exact replay, semantic conflict and recovery semantics"
+    }
   ]
 }
