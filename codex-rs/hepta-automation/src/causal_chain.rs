@@ -13,8 +13,10 @@ use sqlx::Row;
 use crate::AutomationError;
 use crate::AutomationLease;
 use crate::AutomationOccurrenceTerminal;
+use crate::AutomationProviderObservationKind;
 use crate::AutomationStore;
 use crate::AutomationSubmittedOccurrence;
+use crate::AutomationTaskId;
 use crate::TaskFlowCommand;
 use crate::TaskFlowError;
 use crate::TaskFlowFence;
@@ -607,6 +609,191 @@ impl AutomationStore {
             observed_at_ms,
         )
         .await
+    }
+
+    /// Re-arms an uncertain occurrence only after provider-specific evidence
+    /// proves that the previous attempt was never admitted. The negative
+    /// receipt closes the old durable step attempt and, when necessary,
+    /// receipt-bound reconciles the run out of Indeterminate before the store
+    /// releases the occurrence for a fresh attempt.
+    pub async fn reconcile_non_admission_for_retry(
+        &self,
+        task_id: AutomationTaskId,
+        occurrence: u64,
+        client_user_message_id: &str,
+        receipt_digest: &Sha256Digest,
+        observed_at_ms: u64,
+    ) -> Result<(), AutomationError> {
+        let row = sqlx::query(
+            "SELECT r.occurrence_id, r.schedule_revision, r.scheduled_for_ms,
+                    r.taskflow_run_id, r.taskflow_step_attempt,
+                    r.client_user_message_id, t.thread_id, t.prompt
+             FROM automation_runs r
+             JOIN automation_tasks t ON t.task_id = r.task_id
+             JOIN automation_dispatch_outcomes o
+               ON o.task_id = r.task_id AND o.occurrence = r.occurrence
+             WHERE r.task_id = ? AND r.occurrence = ?
+               AND t.owner_agent_id = ?
+               AND r.state = 'leased' AND r.terminal_state IS NULL
+               AND o.outcome = 'uncertain'",
+        )
+        .bind(task_id.to_string())
+        .bind(i64::try_from(occurrence).map_err(|_| AutomationError::Invalid)?)
+        .bind(self.owner_agent_id().as_str())
+        .fetch_optional(self.taskflow_pool())
+        .await
+        .map_err(|_| AutomationError::Unavailable)?
+        .ok_or(AutomationError::Conflict)?;
+
+        let stored_client_id: String = row
+            .try_get("client_user_message_id")
+            .map_err(|_| AutomationError::Corrupt)?;
+        if stored_client_id != client_user_message_id {
+            return Err(AutomationError::Conflict);
+        }
+        let occurrence_id = crate::AutomationOccurrenceId::parse(
+            &row.try_get::<String, _>("occurrence_id")
+                .map_err(|_| AutomationError::Corrupt)?,
+        )
+        .map_err(|_| AutomationError::Corrupt)?;
+        let schedule_revision = u64::try_from(
+            row.try_get::<i64, _>("schedule_revision")
+                .map_err(|_| AutomationError::Corrupt)?,
+        )
+        .map_err(|_| AutomationError::Corrupt)?;
+        let scheduled_for_ms = u64::try_from(
+            row.try_get::<i64, _>("scheduled_for_ms")
+                .map_err(|_| AutomationError::Corrupt)?,
+        )
+        .map_err(|_| AutomationError::Corrupt)?;
+        let attempt = u32::try_from(
+            row.try_get::<i64, _>("taskflow_step_attempt")
+                .map_err(|_| AutomationError::Corrupt)?,
+        )
+        .map_err(|_| AutomationError::Corrupt)?;
+        let run_id: String = row
+            .try_get::<Option<String>, _>("taskflow_run_id")
+            .map_err(|_| AutomationError::Corrupt)?
+            .ok_or(AutomationError::Corrupt)?;
+        let thread_id: String = row
+            .try_get("thread_id")
+            .map_err(|_| AutomationError::Corrupt)?;
+        let prompt: String = row.try_get("prompt").map_err(|_| AutomationError::Corrupt)?;
+        let (intent_digest, payload_digest) = digests(
+            occurrence_id.as_str(),
+            schedule_revision,
+            scheduled_for_ms,
+            &thread_id,
+            &prompt,
+            &stored_client_id,
+        );
+
+        let run = self
+            .taskflow_run(&run_id)
+            .await
+            .map_err(map_taskflow_error)?
+            .ok_or(AutomationError::Corrupt)?;
+        let fence = fence_from_run(self, &run)?;
+        let step = self
+            .read_taskflow_step(&run_id, AUTOMATION_EFFECT_NODE, attempt, &fence)
+            .await
+            .map_err(map_taskflow_error)?
+            .ok_or(AutomationError::Corrupt)?;
+
+        match step.state {
+            TaskFlowStepState::Claimed => {
+                self.record_taskflow_step(
+                    &run_id,
+                    AUTOMATION_EFFECT_NODE,
+                    attempt,
+                    &fence,
+                    &intent_digest,
+                    &payload_digest,
+                    &format!(
+                        "automation:{}:step:{}:not-admitted:{}",
+                        occurrence_id,
+                        attempt,
+                        receipt_digest.as_str()
+                    ),
+                    receipt_digest,
+                    TaskFlowStepObservation::Failed,
+                    observed_at_ms,
+                )
+                .await
+                .map_err(map_taskflow_error)?;
+            }
+            TaskFlowStepState::Recorded
+                if step.observation == Some(TaskFlowStepObservation::Indeterminate) =>
+            {
+                self.reconcile_taskflow_step(
+                    &run_id,
+                    AUTOMATION_EFFECT_NODE,
+                    attempt,
+                    &fence,
+                    &intent_digest,
+                    &payload_digest,
+                    &format!(
+                        "automation:{}:step:{}:not-admitted-reconcile:{}",
+                        occurrence_id,
+                        attempt,
+                        receipt_digest.as_str()
+                    ),
+                    receipt_digest,
+                    TaskFlowReconcileOutcome::Cancelled,
+                    observed_at_ms,
+                )
+                .await
+                .map_err(map_taskflow_error)?;
+            }
+            TaskFlowStepState::Recorded
+                if step.observation == Some(TaskFlowStepObservation::Failed)
+                    && step.receipt_digest.as_ref() == Some(receipt_digest) => {}
+            TaskFlowStepState::Reconciled
+                if step.final_outcome == Some(TaskFlowReconcileOutcome::Cancelled)
+                    && step.receipt_digest.as_ref() == Some(receipt_digest) => {}
+            _ => return Err(AutomationError::Conflict),
+        }
+
+        let run = self
+            .taskflow_run(&run_id)
+            .await
+            .map_err(map_taskflow_error)?
+            .ok_or(AutomationError::Corrupt)?;
+        match run.state {
+            TaskFlowRunState::Running => {}
+            TaskFlowRunState::Indeterminate => {
+                let command = TaskFlowCommand::new(
+                    run_id,
+                    format!(
+                        "automation:{}:run:not-admitted:{}",
+                        occurrence_id,
+                        receipt_digest.as_str()
+                    ),
+                    fence,
+                    run.revision,
+                    TaskFlowTransition::ReconcileRetry {
+                        receipt_digest: receipt_digest.clone(),
+                    },
+                    observed_at_ms,
+                )
+                .map_err(map_taskflow_error)?;
+                self.apply_taskflow_command(&command)
+                    .await
+                    .map_err(map_taskflow_error)?;
+            }
+            _ => return Err(AutomationError::Conflict),
+        }
+
+        self.record_provider_reconciliation_observation(
+            task_id,
+            occurrence,
+            AutomationProviderObservationKind::ReconciledMissing,
+            receipt_digest,
+            observed_at_ms,
+        )
+        .await?;
+        self.release_uncertain_for_retry(task_id, occurrence, client_user_message_id)
+            .await
     }
 }
 
