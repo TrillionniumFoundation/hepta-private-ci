@@ -382,9 +382,7 @@ impl AgentdState {
     }
 
     pub(crate) fn begin_run_drain(&self, reason: &str) -> Result<usize, AgentdError> {
-        self.mutate_runs(|coordinator| {
-            coordinator.begin_drain(reason).map(|changed| changed.len())
-        })
+        self.mutate_runs(|coordinator| coordinator.begin_drain(reason).map(|changed| changed.len()))
     }
 
     pub(crate) fn mark_unobserved_runs_indeterminate(&self) -> Result<usize, AgentdError> {
