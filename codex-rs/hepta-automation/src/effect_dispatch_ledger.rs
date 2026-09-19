@@ -205,7 +205,9 @@ impl AutomationStore {
         let current = self
             .effect_dispatch_attempt(run_id, step_id, attempt)
             .await?
-            .ok_or_else(|| TaskFlowError::Conflict("effect dispatch attempt is missing".to_string()))?;
+            .ok_or_else(|| {
+                TaskFlowError::Conflict("effect dispatch attempt is missing".to_string())
+            })?;
         match inserted {
             Ok(_) => Ok(current),
             Err(error) if is_constraint(&error) => {
@@ -214,9 +216,7 @@ impl AutomationStore {
                         "effect observation conflicts with durable evidence".to_string(),
                     ));
                 };
-                if observation.kind != kind
-                    || observation.evidence_digest != *evidence_digest
-                {
+                if observation.kind != kind || observation.evidence_digest != *evidence_digest {
                     return Err(TaskFlowError::Conflict(
                         "effect observation is already bound to different bytes".to_string(),
                     ));
