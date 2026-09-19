@@ -1,10 +1,12 @@
 #![forbid(unsafe_code)]
 
 use hnmf_reference::{
-    ReferenceActivationPath, ReferenceActiveNode, ReferenceContradiction, ReferenceEngramState, ReferenceEngramPopulation, EventId, ReferenceFabricConfig,
-    ReferenceFabricError, ReferenceForgetPlan, ReferenceCueFeatures, ReferenceEventFeatures, NodeId, ReferenceOutcomeFeatures, PPM, ReferencePlasticityProposalSet,
-    ReferenceRecallAbstainReason, ReferenceRecallState, ReferenceReplayCandidate, ReferenceReplaySelection, ReferenceSynapseState,
-    ReferenceSynapseRelation, ReferenceThresholdProposal, ReferenceWeightProposal,
+    EventId, NodeId, PPM, ReferenceActivationPath, ReferenceActiveNode, ReferenceContradiction,
+    ReferenceCueFeatures, ReferenceEngramPopulation, ReferenceEngramState, ReferenceEventFeatures,
+    ReferenceFabricConfig, ReferenceFabricError, ReferenceForgetPlan, ReferenceOutcomeFeatures,
+    ReferencePlasticityProposalSet, ReferenceRecallAbstainReason, ReferenceRecallState,
+    ReferenceReplayCandidate, ReferenceReplaySelection, ReferenceSynapseRelation,
+    ReferenceSynapseState, ReferenceThresholdProposal, ReferenceWeightProposal,
 };
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
