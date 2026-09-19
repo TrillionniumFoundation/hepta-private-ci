@@ -401,3 +401,42 @@ The bootstrap source-location obligation for `intelligence.control` is implement
 - `codex-rs/hepta-intelligence`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+## 18. V3 unified composition source profile
+
+The V3 source profile converges the previously separate read-only vertical, generic Lane F stage engine and evaluated-shadow admission into one additional compatibility-preserving composition graph. It does not remove V1/V2 APIs. The source entrypoint is \`prepare_intelligence_run_v3\` in \`codex-rs/hepta-intelligence/src/composition_v3.rs\`.
+
+The ordered V3 graph is:
+
+\`\`\`text
+objective.compiler
+-> intelligence.control legal candidate set
+-> utility.ndu
+-> learning.eval
+-> neuron.runtime (optional, explicit bounded fallback)
+-> prompt.optimizer (optional, explicit bounded fallback)
+-> intuition.policy
+-> context.compiler
+-> IntelligenceHostEnvelopeV1
+-> runtime.agentd host admission
+\`\`\`
+
+Every stage is bound to one admitted \`CapabilitySnapshotV2\` digest and to the predecessor output digest. Required producer identity, snapshot identity, predecessor identity, non-zero output/evidence digest and zero authority widening are revalidated by the facade. The legal-set stage is local to \`intelligence.control\`; all other facts remain owned by the registered modules. Missing optional neuron or prompt capability is represented by an explicit facade-produced fallback digest and never by a fabricated owner receipt. Rejected, quarantined or indeterminate optional results do not fall back.
+
+\`LegalActionCandidateSetV1\` is now represented natively with bounded candidate count, canonical candidate ordering at construction, unique candidate identifiers, support floor, state binding, grammar binding and \`intelligence.control\` generator identity. \`IntelligenceHostEnvelopeV1\` is represented natively and binds run/request/snapshot/objective/authority epoch/body/artifact set/legal candidates/utility/evaluation/optional neuron/optional prompt/intuition/context/composition trace/deadline plus an envelope digest. Both contracts remain authority-free.
+
+V3 deadline enforcement is cooperative at the synchronous port boundary. The facade checks cancellation and the run deadline between stages, derives one absolute per-stage deadline, and refuses to accept a required owner result returned after that stage budget. This prevents a late synchronous return from being reported as success, but it cannot interrupt an adapter blocked inside I/O. A product host therefore still must apply a cancellable timeout/fence around blocking owner calls and must reconcile indeterminate external work before retry.
+
+Agentd contains the named source-level consumer \`admit_intelligence_run_v1\`. It validates the V3 receipt and envelope, admits the immutable tuple through the existing \`AgentRunCoordinator\`, attaches the context, and stops at \`ContextAttached\`. It does not mark the run dispatched. Codex/App Server remains the execution spine; the intelligence facade does not gain model, provider, tool or effect authority.
+
+Post-dispatch learning closure is separate. \`append_outcome_and_credit_v1\` accepts a host-authenticated terminal \`OutcomeObservation\`, a separately supplied \`CreditAssignment\` and the exact durable Decision predecessor, then appends Outcome and Credit through the sealed \`DurableLearningJournal\`. It does not observe outcomes or compute credit itself. If the second append fails, the durable Outcome remains valid and an exact retry relies on journal idempotency.
+
+Focused V3 source tests are:
+
+- \`codex-rs/hepta-intelligence/src/composition_v3_tests.rs\` for capability admission, predecessor/producer semantics, optional fallback, timeout, cancellation, abstention and envelope integrity;
+- \`codex-rs/hepta-intelligence/tests/composition_v3_native.rs\` for one graph using the actual objective, NDU, evaluation, neuron, prompt, intuition and context owner algorithms rather than fake owner digests;
+- \`codex-rs/hepta-intelligence/src/learning_closure_tests.rs\` for real-file durable Decision -> Outcome -> Credit lineage;
+- \`codex-rs/hepta-agentd/src/intelligence_control_tests.rs\` for the named Agentd caller and the no-dispatch handoff boundary.
+
+This source profile does not by itself change \`productionImplementation\`, product execution, independent acceptance, activation or release. Those claims require the current exact-head and merge-candidate checks plus target-host evidence, current trust/calibration/evaluation inputs, live execution evidence and the separately governed operator gates.
