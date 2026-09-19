@@ -47,7 +47,7 @@ let binding = client.binding(&request)?; // metadata for the external issuer
 let receipt = client.consume_kv_v2(&authority, &grant, &request, |secret| {
     registered_consumer.use_credential(secret)
 }).await?;
-// Publish only receipt: request/body/secret digests, version and byte count.
+// Publish only receipt: exact signed request digest, version and byte count.
 ```
 
 The example `cargo run -p codex-hepta-bao-adapter --example consume_secret --
@@ -88,13 +88,13 @@ five minutes. Signing material remains outside the adapter and normal runtime.
 `FinalUseAuthority::update_revocations` accepts only monotonic trusted host
 updates. Within one epoch, revoked IDs cannot be removed. `open_state_dir`
 requires a Unix owner-only state directory (0700), creates private regular
-files (0600), and holds an operating-system process lock until exit. Revocation checkpoints are synced and atomically replaced before success. Hot-path nonce claims are fixed-size records appended and fsynced to `claims.log`; `authority.json` remains the compact checkpoint. Restart replays the journal, and a successful revocation/head checkpoint incorporates the replay set before truncating the journal. The example automatically reopens this state: used nonces remain rejected after restart without a manual epoch change. Corrupt, missing previously
+files (0600), and holds an operating-system process lock until exit. Revocation checkpoints are synced and atomically replaced before success. Hot-path nonce claims are fixed-size records appended and fsynced to `claims.log`; `authority.json` remains a compact trust/revocation checkpoint and deliberately does not serialize the unbounded nonce set. Restart replays the complete journal. A revocation/head checkpoint may rewrite the journal from the in-memory set, but this O(N) compaction is outside the per-claim hot path. The example automatically reopens this state: used nonces remain rejected after restart without a manual epoch change. Corrupt, missing previously
 initialized state, unsafe permissions, or a concurrent owner cause denial.
 Storage errors fence that authority instance until recovery. Preserve this
 state across deployments; deleting or restoring it from an old backup is an
 authority reset and requires an independently changed issuer trust/epoch.
 Other platforms fail closed until an equivalent owner ACL store exists.
-The former 16,384 nonce-claim ceiling is removed; nonce claims are retained for the authority epoch and never silently evicted. The independent revoked-grant-ID set remains bounded at 16,384. A failed/timeout request does not refund its nonce or retry automatically. A new grant requires owner action after effect reconciliation.
+The former 16,384 nonce-claim ceiling is removed; nonce claims are retained for the authority epoch in the complete fixed-record journal and never silently evicted. Long-lived epochs still require capacity measurement and an owner-controlled epoch-rotation policy because memory and journal size grow with unique claims. The independent revoked-grant-ID set remains bounded at 16,384. A failed/timeout request does not refund its nonce or retry automatically. A new grant requires owner action after effect reconciliation.
 
 Provider 401/403 is denied; missing data, invalid TLS, timeout, oversize,
 malformed response, wrong version and digest mismatch never invoke the
