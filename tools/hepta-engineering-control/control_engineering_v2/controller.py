@@ -29,6 +29,7 @@ from .control_plane import (
     WorkPackage,
     checked_id,
     checked_sha256,
+    semantic_digest,
 )
 from .evidence import (
     CanonicalSourceReceipt,
@@ -75,6 +76,47 @@ class EngineeringController:
         self.writer_credential_chain_digest = writer_credential_chain_digest
         self.verifier = verifier
         self.store = EngineeringStore(database)
+        try:
+            self._bind_writer()
+        except BaseException:
+            self.store.close()
+            raise
+
+    def _bind_writer(self) -> None:
+        now = self.store._now(None)
+        payload = {
+            "repositoryFullName": self.repository_full_name,
+            "writerInstanceId": self.writer_instance_id,
+            "writerCredentialChainDigest": self.writer_credential_chain_digest,
+        }
+        digest = semantic_digest(payload)
+        with self.store._transaction():
+            row = self.store.connection.execute(
+                "SELECT * FROM engineering_writer_bindings WHERE singleton=1"
+            ).fetchone()
+            if row is not None:
+                if str(row["semantic_digest"]) != digest:
+                    raise EngineeringError("writer_binding_conflict")
+                return
+            self.store.connection.execute(
+                "INSERT INTO engineering_writer_bindings VALUES(1,?,?,?,?,?)",
+                (
+                    self.repository_full_name,
+                    self.writer_instance_id,
+                    self.writer_credential_chain_digest,
+                    now,
+                    digest,
+                ),
+            )
+            self.store._append_audit(
+                "engineering_writer_bound",
+                {
+                    "repositoryFullName": self.repository_full_name,
+                    "writerInstanceId": self.writer_instance_id,
+                    "writerCredentialChainDigest": self.writer_credential_chain_digest,
+                },
+                now,
+            )
 
     def __enter__(self) -> "EngineeringController":
         return self
