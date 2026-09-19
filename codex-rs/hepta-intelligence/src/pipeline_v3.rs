@@ -434,8 +434,6 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
         LaneFStageV3::LegalSetBuilt,
         request.legal_candidates.candidate_set_digest,
         &mut stages,
-        started,
-        control,
     )?;
     let legal_set_digest = predecessor;
 
@@ -623,8 +621,6 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
             LaneFStageV3::HostEnvelopeBuilt,
             envelope.envelope_digest,
             &mut stages,
-            started,
-            control,
         )?;
         let host_input = port_input(
             &request,
@@ -872,29 +868,18 @@ where
     }
 }
 
-fn internal_stage<C: CompositionControlV3>(
+fn internal_stage(
     request: &LaneFRunRequestV3,
     snapshot_digest: Digest32,
     predecessor: Digest32,
     stage: LaneFStageV3,
     output_digest: Digest32,
     stages: &mut Vec<StageTraceV3>,
-    started: Instant,
-    control: &C,
 ) -> Result<Digest32, PipelineErrorV3> {
     if output_digest.is_zero() {
         return Err(PipelineErrorV3::EmptyDigest("internal stage"));
     }
-    let input = port_input(request, snapshot_digest, predecessor, stage);
-    let stage_started = Instant::now();
-    if control.cancelled() {
-        return Err(PipelineErrorV3::InvalidReceipt("cancelled internal stage"));
-    }
-    if started.elapsed() > Duration::from_micros(request.budget.total_micros)
-        || stage_started.elapsed() > Duration::from_micros(input.budget_micros)
-    {
-        return Err(PipelineErrorV3::InvalidReceipt("timed out internal stage"));
-    }
+    let _ = port_input(request, snapshot_digest, predecessor, stage);
     stages.push(StageTraceV3 {
         stage,
         producer: stable_id("intelligence.control")?,
