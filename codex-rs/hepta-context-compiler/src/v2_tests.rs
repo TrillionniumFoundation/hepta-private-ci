@@ -182,6 +182,7 @@ fn candidate(
             content_digest: tokenization.content_digest(),
             source_digest: source_digest,
             generation_vector_digest: digest("generation-vector"),
+            scope_digest: digest("scope"),
             contains_secret: false,
         },
         1,
@@ -218,6 +219,7 @@ fn request(
         objective_digest: digest("objective"),
         prompt_portfolio_digest: digest("portfolio"),
         generation_vector_digest: digest("generation-vector"),
+        scope_digest: digest("scope"),
         admission_verifier_digest: digest("admission-verifier"),
         model_profile: profile(),
         token_budget,
@@ -359,6 +361,7 @@ fn well_formed_admission_digest_is_not_enough_without_verifier_acceptance() {
             content_digest: Digest32::of_bytes(&content),
             source_digest: digest("source:item:trusted"),
             generation_vector_digest: digest("generation-vector"),
+            scope_digest: digest("scope"),
             contains_secret: false,
         },
         1,
@@ -410,6 +413,7 @@ fn admission_expires_at_the_exact_expiry_instant() {
             content_digest: Digest32::of_bytes(&content),
             source_digest: digest("source:item:expiry"),
             generation_vector_digest: digest("generation-vector"),
+            scope_digest: digest("scope"),
             contains_secret: false,
         },
         1,
@@ -421,6 +425,27 @@ fn admission_expires_at_the_exact_expiry_instant() {
         verify_admission_v2(record, &snapshot, &verifier()),
         Err(ContextCompilerV2Error::AdmissionExpired(
             "admission:item:expiry".to_string()
+        ))
+    );
+}
+
+#[test]
+fn verified_admission_cannot_be_reused_across_request_scope() {
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let (candidate, _) = candidate(
+        "item:scoped",
+        ContextRoleV2::UntrustedEvidence,
+        20,
+        FixedQ32::ONE,
+        &snapshot,
+    );
+    let mut scoped_request = request(vec![candidate], 100);
+    scoped_request.scope_digest = digest("other-scope");
+
+    assert_eq!(
+        compile_v2(scoped_request),
+        Err(ContextCompilerV2Error::AdmissionBindingMismatch(
+            "item:scoped".to_string()
         ))
     );
 }
@@ -866,6 +891,7 @@ fn tokenizer_generation_secret_and_profile_drift_fail_closed() {
             content_digest: Digest32::of_bytes(&secret_content),
             source_digest: digest("source:item:secret"),
             generation_vector_digest: digest("generation-vector"),
+            scope_digest: digest("scope"),
             contains_secret: true,
         },
         1,
