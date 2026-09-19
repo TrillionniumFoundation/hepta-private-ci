@@ -246,11 +246,11 @@ impl AuthBusAuthorityStore {
     }
 }
 
-pub(crate) async pub(crate) fn begin(pool: &SqlitePool) -> Result<Transaction<'static, Sqlite>, AuthBusAuthorityError> {
+pub(crate) async fn begin(pool: &SqlitePool) -> Result<Transaction<'static, Sqlite>, AuthBusAuthorityError> {
     pool.begin_with("BEGIN IMMEDIATE").await.map_err(storage)
 }
 
-pub(crate) async pub(crate) fn advance_time(
+pub(crate) async fn advance_time(
     tx: &mut Transaction<'_, Sqlite>,
     sample: &TrustedTimeSample,
 ) -> Result<(), AuthBusAuthorityError> {
@@ -294,7 +294,7 @@ pub(crate) async pub(crate) fn advance_time(
     Ok(())
 }
 
-pub(crate) async pub(crate) fn load_policy_by_id(
+pub(crate) async fn load_policy_by_id(
     tx: &mut Transaction<'_, Sqlite>,
     policy_id: &StableId,
 ) -> Result<AuthPolicy, AuthBusAuthorityError> {
@@ -399,7 +399,7 @@ pub(crate) fn nonzero_u64(
     Ok(value)
 }
 
-fn blob_array<const N: usize>(
+pub(crate) fn blob_array<const N: usize>(
     row: &sqlx::sqlite::SqliteRow,
     column: &str,
 ) -> Result<[u8; N], AuthBusAuthorityError> {
