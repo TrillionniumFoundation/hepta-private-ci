@@ -1,7 +1,7 @@
 # Hepta engineering control
 
 The canonical implementation is `control_engineering_v2`. It provides exact-source
-envelope admission, durable SQLite v5 work coordination, resource-aware orchestration,
+envelope admission, durable SQLite v6 work coordination, resource-aware orchestration,
 atomic candidate change sets, strong sandbox qualification, mutation testing, sealed
 integration evidence and fail-closed external production-control contracts. The legacy
 `hepta_engineering_control.py` module is compatibility-only for historical fixtures
