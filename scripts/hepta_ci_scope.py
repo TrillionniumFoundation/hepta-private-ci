@@ -78,9 +78,11 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
             selected.update(GROUPS)
         elif path.startswith("docs/"):
             # Machine-readable navigation/readiness/evidence projections are
-            # verified as derived metadata. They do not force unrelated native
-            # package builds unless they change an architectural contract.
+            # verified as derived metadata. Executable or unfamiliar file
+            # types remain conservative.
             derived = True
+            if Path(path).suffix not in {".json", ".yaml", ".yml"}:
+                selected.update(GROUPS)
         elif path.startswith("apps/hepta-browser/"):
             selected.add("effects")
         elif len(parts) > 2 and parts[0] == "codex-rs" and parts[1] in PACKAGE_GROUPS:
