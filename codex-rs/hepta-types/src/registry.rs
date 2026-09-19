@@ -133,7 +133,7 @@ pub struct SchemaNormalizationRegistryV1 {
 }
 
 impl SchemaNormalizationRegistryV1 {
-    pub const fn new() -> Self {
+    pub fn new() -> Self {
         Self {
             entries: BTreeMap::new(),
         }
