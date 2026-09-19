@@ -11,7 +11,7 @@
 
 `control.runtime` constructs one bounded global planning snapshot, preserves essential resource floors, consumes one independently produced NDU evaluation through a typed owner port, and emits an immutable plan receipt plus optional execution-grant requests. It neither evaluates utility on behalf of `utility.ndu` nor issues capabilities on behalf of `kernel.authority`.
 
-The repository implementation is a deterministic, authority-free reference suitable for source qualification. It does not establish a production caller, production writer, independently accepted deployment, hardware control, operator acceptance, activation, promotion or release. Every output produced by this module carries `AuthorityPosture::DENY_ALL`.
+The repository implementation is a deterministic, authority-free reference suitable for source qualification. One bounded read-only Agentd product caller is composed for measured cognitive-context delivery; this does not establish a general global control-plane product caller, production writer, independently accepted deployment, hardware control, operator acceptance, activation, promotion or release. Every control-runtime planning output remains `AuthorityPosture::DENY_ALL`.
 
 The global planner is distinct from:
 
