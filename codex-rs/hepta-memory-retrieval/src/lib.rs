@@ -2,7 +2,10 @@
 
 #![forbid(unsafe_code)]
 
+mod decision;
+mod engram;
 mod generation_bound;
+mod generator;
 mod v2;
 
 use std::collections::BTreeSet;
@@ -16,6 +19,33 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+pub use decision::AssignmentErrorV1;
+pub use decision::RetrievalAssignmentCompletenessV1;
+pub use decision::RetrievalAssignmentObservationV1;
+pub use decision::RetrievalCandidateIdentityV1;
+pub use decision::observe_retrieval_assignment;
+pub use engram::ActiveEngramNodeV1;
+pub use engram::EngramActivationPathV1;
+pub use engram::EngramContradictionV1;
+pub use engram::EngramDynamicsPolicyV1;
+pub use engram::EngramErrorV1;
+pub use engram::EngramNodeV1;
+pub use engram::EngramPopulationV1;
+pub use engram::EngramRecallReceiptV1;
+pub use engram::EngramResourceReceiptV1;
+pub use engram::EngramSnapshotV1;
+pub use engram::EngramSupportV1;
+pub use engram::MAX_ACTIVATION_PATHS;
+pub use engram::MAX_ACTIVE_NODES;
+pub use engram::MAX_ACTIVE_PER_POPULATION;
+pub use engram::MAX_ENGRAM_GRAPH_HOPS;
+pub use engram::MAX_ENGRAM_NODES;
+pub use engram::MAX_ENGRAM_SETTLING_STEPS;
+pub use engram::MAX_ENGRAM_SYNAPSES;
+pub use engram::SynapseRelationV1;
+pub use engram::SynapseV1;
+pub use engram::recall_with_engram;
+pub use engram::settle_engram;
 pub use generation_bound::CandidateUnionEntryV1;
 pub use generation_bound::CandidateUnionV1;
 pub use generation_bound::MAX_GENERATION_BOUND_CANDIDATES;
@@ -32,6 +62,19 @@ pub use generation_bound::RetrievalChannelWeightV1;
 pub use generation_bound::RetrievalPolicyV1;
 pub use generation_bound::build_candidate_union;
 pub use generation_bound::recall;
+pub use generator::GeneratedCandidateInputV1;
+pub use generator::GeneratedCandidateUnionV1;
+pub use generator::GeneratedRecallV1;
+pub use generator::GeneratorErrorV1;
+pub use generator::MAX_RETRIEVAL_GENERATORS;
+pub use generator::RetrievalGeneratorBatchV1;
+pub use generator::RetrievalGeneratorOwnerV1;
+pub use generator::RetrievalGeneratorReceiptV1;
+pub use generator::RetrievalSourceCompletenessV1;
+pub use generator::build_candidate_union_from_generated;
+pub use generator::compile_cue;
+pub use generator::recall_generated;
+pub use generator::recall_generated_with_engram;
 pub use v2::RetrievalReceiptV2;
 pub use v2::retrieve_v2;
 

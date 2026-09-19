@@ -50,6 +50,35 @@ pub struct EpisodeDecision {
     pub support_digest: Digest32,
 }
 
+/// Durable retrieval-native assignment fact.
+///
+/// Candidate identities are stored as canonical 32-byte digests to retain the
+/// complete 512-candidate retrieval profile within the existing bounded
+/// learning-ledger frame. legal_candidate_indices and
+/// selected_candidate_indices index the sorted enumerated digest vector.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RetrievalAssignmentFact {
+    pub record_id: StableId,
+    pub episode_id: StableId,
+    pub cue_digest: Digest32,
+    pub policy_digest: Digest32,
+    pub source_completeness_digest: Digest32,
+    pub candidate_union_digest: Digest32,
+    pub recall_packet_digest: Digest32,
+    pub enumerated_candidate_digests: Vec<Digest32>,
+    pub legal_candidate_indices: Vec<u32>,
+    pub selected_candidate_indices: Vec<u32>,
+    /// Actual subset that survived downstream learned reranking, response
+    /// budget, NDU planning and final owner/currentness fences.
+    pub delivered_candidate_indices: Vec<u32>,
+    pub context_exposed: bool,
+    pub omitted_by_policy_limits: u32,
+    pub assignment_propensity: ProbabilityQ32,
+    pub completeness: CandidateSetCompleteness,
+    /// Digest of the complete retrieval-native assignment observation.
+    pub support_digest: Digest32,
+}
+
 /// Outcome observed by an identity independent from the evaluated policy.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct OutcomeObservation {
@@ -85,15 +114,17 @@ pub struct Revocation {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum LedgerEvent {
     Decision(EpisodeDecision),
+    RetrievalAssignment(RetrievalAssignmentFact),
     Outcome(OutcomeObservation),
     Credit(CreditAssignment),
     Revocation(Revocation),
 }
 
 impl LedgerEvent {
-    pub(crate) fn record_id(&self) -> &StableId {
+    pub fn record_id(&self) -> &StableId {
         match self {
             Self::Decision(value) => &value.record_id,
+            Self::RetrievalAssignment(value) => &value.record_id,
             Self::Outcome(value) => &value.record_id,
             Self::Credit(value) => &value.record_id,
             Self::Revocation(value) => &value.record_id,

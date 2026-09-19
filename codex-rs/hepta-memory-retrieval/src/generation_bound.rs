@@ -22,8 +22,10 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
-pub const MAX_GENERATION_BOUND_CANDIDATES: usize = 16_384;
-pub const MAX_GENERATION_BOUND_RESULTS: usize = 256;
+use crate::engram::EngramRecallReceiptV1;
+
+pub const MAX_GENERATION_BOUND_CANDIDATES: usize = 512;
+pub const MAX_GENERATION_BOUND_RESULTS: usize = 16;
 const CUE_DOMAIN: &[u8] = b"hepta.memory-cue.v1";
 const POLICY_DOMAIN: &[u8] = b"hepta.retrieval-policy.v1";
 const CANDIDATE_UNION_DOMAIN: &[u8] = b"hepta.retrieval-candidate-union.v1";
@@ -38,6 +40,9 @@ pub enum RetrievalChannelV1 {
     Causal,
     Procedural,
     ContradictionSupport,
+    /// Owner-native associative knowledge-graph expansion. This is not a
+    /// claim that the relation is causal or procedural.
+    Graph,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -45,6 +50,7 @@ pub struct MemoryCueV1 {
     pub cue_id: StableId,
     pub objective_digest: Digest32,
     pub approved_context_digest: Digest32,
+    pub request_digest: Digest32,
     pub snapshot_key: CognitiveSnapshotKeyV1,
     pub cue_profile_digest: Digest32,
 }
@@ -56,6 +62,7 @@ impl MemoryCueV1 {
             .map_err(RecallErrorV1::Contract)?;
         ensure_digest("objective", self.objective_digest)?;
         ensure_digest("approved_context", self.approved_context_digest)?;
+        ensure_digest("request", self.request_digest)?;
         ensure_digest("cue_profile", self.cue_profile_digest)
     }
 
@@ -66,6 +73,7 @@ impl MemoryCueV1 {
         push_id(&mut bytes, &self.cue_id);
         push_digest(&mut bytes, self.objective_digest);
         push_digest(&mut bytes, self.approved_context_digest);
+        push_digest(&mut bytes, self.request_digest);
         push_digest(&mut bytes, self.snapshot_key.vector_digest);
         push_digest(&mut bytes, self.cue_profile_digest);
         Digest32::of_bytes(&bytes)
@@ -99,14 +107,8 @@ impl RetrievalPolicyV1 {
         if self.minimum_total_score < FixedQ32::ZERO || self.minimum_total_score > FixedQ32::ONE {
             return Err(RecallErrorV1::ScoreOutOfRange("minimum_total_score"));
         }
-        if self.minimum_distinct_channels == 0
-            || usize::try_from(self.minimum_distinct_channels).unwrap_or(usize::MAX)
-                > self.channel_weights.len()
-        {
-            return Err(RecallErrorV1::InvalidMinimumCoverage);
-        }
         let mut channels = BTreeSet::new();
-        let mut positive_weight = false;
+        let mut positive_weight_channels = 0_usize;
         for row in &self.channel_weights {
             if !channels.insert(row.channel) {
                 return Err(RecallErrorV1::DuplicateChannelPolicy(row.channel));
@@ -114,14 +116,23 @@ impl RetrievalPolicyV1 {
             if row.weight < FixedQ32::ZERO || row.weight > FixedQ32::ONE {
                 return Err(RecallErrorV1::ScoreOutOfRange("channel_weight"));
             }
-            positive_weight |= row.weight > FixedQ32::ZERO;
+            if row.weight > FixedQ32::ZERO {
+                positive_weight_channels = positive_weight_channels
+                    .checked_add(1)
+                    .ok_or(RecallErrorV1::Arithmetic)?;
+            }
             let maximum_candidates = usize::try_from(row.maximum_candidates).unwrap_or(usize::MAX);
             if maximum_candidates == 0 || maximum_candidates > MAX_GENERATION_BOUND_CANDIDATES {
                 return Err(RecallErrorV1::InvalidChannelLimit(row.channel));
             }
         }
-        if self.channel_weights.is_empty() || !positive_weight {
+        if self.channel_weights.is_empty() || positive_weight_channels == 0 {
             return Err(RecallErrorV1::EmptyChannelPolicy);
+        }
+        let minimum_distinct_channels =
+            usize::try_from(self.minimum_distinct_channels).unwrap_or(usize::MAX);
+        if minimum_distinct_channels == 0 || minimum_distinct_channels > positive_weight_channels {
+            return Err(RecallErrorV1::InvalidMinimumCoverage);
         }
         Ok(())
     }
@@ -229,17 +240,64 @@ impl CandidateUnionV1 {
             return Err(RecallErrorV1::AuthorityGranted);
         }
         let mut identities = BTreeSet::new();
+        let mut observed_channels = BTreeSet::new();
+        let mut previous: Option<&CandidateUnionEntryV1> = None;
         for entry in &self.entries {
+            entry
+                .record
+                .validate()
+                .map_err(|error| RecallErrorV1::InvalidRecord(error.to_string()))?;
+            if entry.record.state != RecordState::Live {
+                return Err(RecallErrorV1::TombstoneCandidate(
+                    entry.record.record_id.to_string(),
+                ));
+            }
             if !identities.insert((entry.record.record_id.clone(), entry.record.revision)) {
                 return Err(RecallErrorV1::DuplicateUnionIdentity(
                     entry.record.record_id.to_string(),
                 ));
+            }
+            if entry.weighted_score < FixedQ32::ZERO || entry.weighted_score > FixedQ32::ONE {
+                return Err(RecallErrorV1::ScoreOutOfRange("union_weighted_score"));
             }
             if entry.channels.is_empty() || entry.support_digests.is_empty() {
                 return Err(RecallErrorV1::InvalidUnionEntry(
                     entry.record.record_id.to_string(),
                 ));
             }
+            if !is_strictly_sorted_unique(&entry.channels) {
+                return Err(RecallErrorV1::NonCanonicalCollection("union_channels"));
+            }
+            if !is_strictly_sorted_unique(&entry.support_digests)
+                || entry.support_digests.iter().any(|digest| digest.is_zero())
+            {
+                return Err(RecallErrorV1::NonCanonicalCollection("union_support"));
+            }
+            if !is_strictly_sorted_unique(&entry.contradiction_group_digests)
+                || entry
+                    .contradiction_group_digests
+                    .iter()
+                    .any(|digest| digest.is_zero())
+            {
+                return Err(RecallErrorV1::NonCanonicalCollection(
+                    "union_contradiction_groups",
+                ));
+            }
+            observed_channels.extend(entry.channels.iter().copied());
+            if let Some(left) = previous {
+                let ordered = left.weighted_score > entry.weighted_score
+                    || (left.weighted_score == entry.weighted_score
+                        && (left.record.record_id < entry.record.record_id
+                            || (left.record.record_id == entry.record.record_id
+                                && left.record.revision < entry.record.revision)));
+                if !ordered {
+                    return Err(RecallErrorV1::NonCanonicalCollection("union_entries"));
+                }
+            }
+            previous = Some(entry);
+        }
+        if u32::try_from(observed_channels.len()).unwrap_or(u32::MAX) != self.distinct_channels {
+            return Err(RecallErrorV1::InvalidUnionChannelCount);
         }
         if self.union_digest != self.compute_union_digest() {
             return Err(RecallErrorV1::DigestMismatch("candidate_union"));
@@ -317,6 +375,7 @@ pub struct RecallPacketV1 {
     pub selections: Vec<RecallSelectionV1>,
     pub omitted_count: u32,
     pub distinct_channels: u32,
+    pub engram: Option<EngramRecallReceiptV1>,
     pub packet_digest: Digest32,
     pub authority: AuthorityPosture,
 }
@@ -339,6 +398,12 @@ impl RecallPacketV1 {
             RecallDispositionV1::Abstained(_) if !self.selections.is_empty() => {
                 return Err(RecallErrorV1::InvalidRecallDisposition);
             }
+            RecallDispositionV1::Abstained(_) if self.omitted_count != 0 => {
+                return Err(RecallErrorV1::InvalidRecallDisposition);
+            }
+            RecallDispositionV1::Recalled if self.distinct_channels == 0 => {
+                return Err(RecallErrorV1::InvalidRecallDisposition);
+            }
             _ => {}
         }
         if self.selections.len() > MAX_GENERATION_BOUND_RESULTS {
@@ -346,6 +411,93 @@ impl RecallPacketV1 {
         }
         if self.authority.grants_any() {
             return Err(RecallErrorV1::AuthorityGranted);
+        }
+        if let Some(engram) = &self.engram {
+            engram
+                .validate()
+                .map_err(|error| RecallErrorV1::InvalidEngram(error.to_string()))?;
+            if engram.generation_vector_digest != self.generation_vector_digest {
+                return Err(RecallErrorV1::InvalidEngram(
+                    "engram generation differs from recall packet".to_string(),
+                ));
+            }
+        }
+        let mut identities = BTreeSet::new();
+        let mut previous: Option<&RecallSelectionV1> = None;
+        for selection in &self.selections {
+            ensure_digest("selection_record", selection.record_digest)?;
+            if selection.weighted_score < FixedQ32::ZERO || selection.weighted_score > FixedQ32::ONE
+            {
+                return Err(RecallErrorV1::ScoreOutOfRange("selection_weighted_score"));
+            }
+            if selection.channels.is_empty() || selection.support_digests.is_empty() {
+                return Err(RecallErrorV1::InvalidRecallSelection(
+                    selection.record_id.to_string(),
+                ));
+            }
+            if !is_strictly_sorted_unique(&selection.channels)
+                || !is_strictly_sorted_unique(&selection.support_digests)
+                || selection
+                    .support_digests
+                    .iter()
+                    .any(|digest| digest.is_zero())
+                || !is_strictly_sorted_unique(&selection.contradiction_group_digests)
+                || selection
+                    .contradiction_group_digests
+                    .iter()
+                    .any(|digest| digest.is_zero())
+            {
+                return Err(RecallErrorV1::NonCanonicalCollection("recall_selection"));
+            }
+            if !identities.insert((selection.record_id.clone(), selection.record_revision)) {
+                return Err(RecallErrorV1::DuplicateRecallSelection(
+                    selection.record_id.to_string(),
+                ));
+            }
+            if let Some(left) = previous {
+                let ordered = if let Some(engram) = &self.engram {
+                    let left_activation = engram
+                        .support_strength(&left.record_id, left.record_revision)
+                        .ok_or_else(|| {
+                            RecallErrorV1::InvalidEngram(
+                                "selected record has no active engram support".to_string(),
+                            )
+                        })?;
+                    let right_activation = engram
+                        .support_strength(&selection.record_id, selection.record_revision)
+                        .ok_or_else(|| {
+                            RecallErrorV1::InvalidEngram(
+                                "selected record has no active engram support".to_string(),
+                            )
+                        })?;
+                    left_activation > right_activation
+                        || (left_activation == right_activation
+                            && (left.weighted_score > selection.weighted_score
+                                || (left.weighted_score == selection.weighted_score
+                                    && (left.record_id < selection.record_id
+                                        || (left.record_id == selection.record_id
+                                            && left.record_revision < selection.record_revision)))))
+                } else {
+                    left.weighted_score > selection.weighted_score
+                        || (left.weighted_score == selection.weighted_score
+                            && (left.record_id < selection.record_id
+                                || (left.record_id == selection.record_id
+                                    && left.record_revision < selection.record_revision)))
+                };
+                if !ordered {
+                    return Err(RecallErrorV1::NonCanonicalCollection("recall_selections"));
+                }
+            } else if let Some(engram) = &self.engram {
+                if engram
+                    .support_strength(&selection.record_id, selection.record_revision)
+                    .is_none()
+                {
+                    return Err(RecallErrorV1::InvalidEngram(
+                        "selected record has no active engram support".to_string(),
+                    ));
+                }
+            }
+            previous = Some(selection);
         }
         if self.packet_digest != self.compute_packet_digest() {
             return Err(RecallErrorV1::DigestMismatch("recall_packet"));
@@ -364,6 +516,13 @@ impl RecallPacketV1 {
         push_recall_disposition(&mut bytes, self.disposition);
         push_u64(&mut bytes, u64::from(self.omitted_count));
         push_u64(&mut bytes, u64::from(self.distinct_channels));
+        match &self.engram {
+            Some(engram) => {
+                bytes.push(1);
+                push_digest(&mut bytes, engram.receipt_digest);
+            }
+            None => bytes.push(0),
+        }
         push_len(&mut bytes, self.selections.len());
         for selection in &self.selections {
             push_id(&mut bytes, &selection.record_id);
@@ -441,6 +600,9 @@ pub fn build_candidate_union(
             continue;
         }
         *count += 1;
+        if policy_row.weight == FixedQ32::ZERO {
+            continue;
+        }
         distinct_channels.insert(candidate.channel);
         let weighted = candidate
             .normalized_score
@@ -524,7 +686,11 @@ pub fn recall(
         Some(RecallAbstentionReasonV1::ContradictoryEvidence)
     } else if maximum_ood > policy.maximum_ood {
         Some(RecallAbstentionReasonV1::OutOfDistribution)
-    } else if union.entries[0].weighted_score < policy.minimum_total_score {
+    } else if !union
+        .entries
+        .iter()
+        .any(|entry| entry.weighted_score >= policy.minimum_total_score)
+    {
         Some(RecallAbstentionReasonV1::ScoreBelowFloor)
     } else {
         None
@@ -534,10 +700,10 @@ pub fn recall(
     let (disposition, selections, omitted_count) = match reason {
         Some(reason) => (RecallDispositionV1::Abstained(reason), Vec::new(), 0),
         None => {
-            let omitted_count = union.entries.len().saturating_sub(maximum_results);
             let selections = union
                 .entries
                 .iter()
+                .filter(|entry| entry.weighted_score >= policy.minimum_total_score)
                 .take(maximum_results)
                 .map(|entry| RecallSelectionV1 {
                     record_id: entry.record.record_id.clone(),
@@ -549,7 +715,8 @@ pub fn recall(
                     support_digests: entry.support_digests.clone(),
                     contradiction_group_digests: entry.contradiction_group_digests.clone(),
                 })
-                .collect();
+                .collect::<Vec<_>>();
+            let omitted_count = union.entries.len().saturating_sub(selections.len());
             (
                 RecallDispositionV1::Recalled,
                 selections,
@@ -566,6 +733,7 @@ pub fn recall(
         selections,
         omitted_count,
         distinct_channels: union.distinct_channels,
+        engram: None,
         packet_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
     };
@@ -626,7 +794,12 @@ pub enum RecallErrorV1 {
     ScoreOutOfRange(&'static str),
     DuplicateUnionIdentity(String),
     InvalidUnionEntry(String),
+    InvalidUnionChannelCount,
     InvalidRecallDisposition,
+    InvalidRecallSelection(String),
+    DuplicateRecallSelection(String),
+    NonCanonicalCollection(&'static str),
+    InvalidEngram(String),
     DigestMismatch(&'static str),
     AuthorityGranted,
     Arithmetic,
@@ -645,6 +818,10 @@ fn ensure_digest(name: &'static str, digest: Digest32) -> Result<(), RecallError
         return Err(RecallErrorV1::EmptyDigest(name));
     }
     Ok(())
+}
+
+fn is_strictly_sorted_unique<T: Ord>(values: &[T]) -> bool {
+    values.windows(2).all(|pair| pair[0] < pair[1])
 }
 
 fn push_recall_disposition(bytes: &mut Vec<u8>, value: RecallDispositionV1) {
@@ -688,6 +865,7 @@ const fn channel_code(value: RetrievalChannelV1) -> u8 {
         RetrievalChannelV1::Causal => 4,
         RetrievalChannelV1::Procedural => 5,
         RetrievalChannelV1::ContradictionSupport => 6,
+        RetrievalChannelV1::Graph => 7,
     }
 }
 

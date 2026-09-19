@@ -86,16 +86,57 @@ read-only files, and a `CurrentCognitiveRegistry` implementation. There is no
 implicit CLI selection, trusted file generator or evaluator self-authorization.
 The operator and artifact registry retain their existing owners.
 
-The consumer ranks only records admitted by the same SQLite snapshot. Query
-sensors are exact query hashes; actions bind memory ID, revision and content
-hash. It scores before the result limit, keeps original order for ties, and
-abstains for the entire ranking when any cell is unsupported. A missing or
-revoked current view closes the consumer instead of falling back to a stale
-model. Registry I/O runs on the blocking pool; the trusted host must bound it.
-The memory cut and artifact view are rechecked before returning context.
+The ranker can only permute records already admitted by the current memory
+retrieval path. Query sensors are exact query hashes; actions bind memory ID,
+revision and content hash. When HNMF retrieval is configured, HNMF first narrows
+the owner-generated legal set and the learned ranker then permutes that selected
+set before response-count and JSON-byte limits. A missing/revoked current model
+view closes the ranked read instead of falling back to a stale model. Registry
+I/O runs on the blocking pool; the trusted host must bound it. The memory cut and
+artifact view are rechecked before returning context.
 
 The fitted-model/SQLite tests prove changed control-read ordering, not improved
-task utility. This control port is not the App Server's automatic memory tool
-path. Full C1 still needs the actual prompt/turn consumer, externally observed
-outcomes, the durable causal-learning path, independent selection, and a new
-process using the selected tuple. No production or longitudinal gate changes.
+task utility. The deterministic HNMF assignment propensity is not the propensity
+of this separately learned reranker; causal claims about learned ranking require
+their own selected-policy propensity and independently observed outcomes.
+
+## Explicit HNMF memory retrieval composition
+
+`AgentdConfig::with_memory_retrieval_context` attaches an externally supplied
+`CurrentMemoryRetrievalContext` for one Agent/body generation. The provider
+must return a current Lane C generation vector, objective/context/cue bindings,
+retrieval policy, immutable engram snapshot and dynamics policy. Agentd does not
+invent missing generation fields, and `RetrievalExecutionContextV1::validate`
+requires the actual retrieval policy digest to equal the Lane C
+`retrieval_profile_digest`.
+
+For this opt-in path, `cognitive_context`:
+
+1. acquires the authorized Lane C SQLite cut;
+2. calls `CognitiveStore::observe_memory_retrieval` so ranking sees the bounded
+   owner generator output before legacy top-four truncation;
+3. converts only owner-observed rows into generator batches, preserving exact
+   revision/content/source bindings, channel rank and
+   `Exhausted`/`LimitReached` completeness;
+4. requires every positive-weight policy channel to have its actual owner batch
+   and rejects policy-external batches;
+5. runs bounded HNMF union, local engram expansion, recurrent settling and
+   sparse competition;
+6. intersects HNMF selections with the coherent read cut, optionally applies the
+   separately selected learned ranker, then enforces response count/byte limits
+   and NDU context planning;
+7. revalidates the Lane C cut, exact selected memory/source support, current
+   retrieval context and optional learned model before returning.
+
+If a `CognitiveRetrievalLearningSink` is configured, the durable
+`learning.ledger` owner receives the full generator-relative enumerated/legal
+set, HNMF-selected set and the final delivered subset after downstream packing,
+planning and final currentness checks. An empty delivered subset is recorded as
+`context_exposed=false`; this prevents an HNMF selection that was later
+abstained or omitted from being mislabeled as exposure.
+
+This is a named product-host source candidate, not automatic activation. The
+ordinary CLI still does not synthesize or select an HNMF generation, vector
+encoder, causal/procedural generator, learned model or release decision. Target
+host timing/resource measurements, independent semantic review, longitudinal
+outcomes, canary/promotion and release remain separate gates.

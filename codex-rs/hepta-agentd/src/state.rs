@@ -16,6 +16,10 @@ mod control;
 
 pub(crate) struct AgentdState {
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
+    pub(crate) cognitive_retrieval_context:
+        std::sync::OnceLock<Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    pub(crate) cognitive_retrieval_learning:
+        std::sync::OnceLock<Arc<crate::CognitiveRetrievalLearningSink>>,
     pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
@@ -47,6 +51,8 @@ impl AgentdState {
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
+            cognitive_retrieval_context: std::sync::OnceLock::new(),
+            cognitive_retrieval_learning: std::sync::OnceLock::new(),
             runtime: Mutex::new(RuntimeState {
                 current_generation: identity.spawn_generation,
                 lifecycle: AgentLifecycle::Starting,

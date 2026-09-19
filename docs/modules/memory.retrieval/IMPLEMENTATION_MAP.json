@@ -18,53 +18,105 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "source_composed_opt_in_not_product_qualified",
   "productionWriterState": "not_established",
   "operations": [
     {
       "operation": "retrieve_v2",
       "nativeSymbol": "retrieve_v2",
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_not_product_qualified",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "retrieve_v2",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "build_candidate_union",
-      "nativeSymbol": "build_candidate_union",
-      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
-      "state": "source_implemented_not_product_composed",
+      "operation": "compile_cue",
+      "nativeSymbol": "compile_cue",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generator.rs",
+      "state": "source_implemented_not_product_qualified",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generator_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "build_candidate_union",
+      "designOperation": "compile_cue",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "recall",
-      "nativeSymbol": "recall",
-      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
-      "state": "source_implemented_not_product_composed",
+      "operation": "build_candidate_union_from_generated",
+      "nativeSymbol": "build_candidate_union_from_generated",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generator.rs",
+      "state": "source_implemented_not_product_qualified",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generator_tests.rs",
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "retrieve",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "settle_engram",
+      "nativeSymbol": "settle_engram",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/engram.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/engram_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "engram_settle",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "recall_generated_with_engram",
+      "nativeSymbol": "recall_generated_with_engram",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/generator.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generator_tests.rs",
+        "codex-rs/hepta-memory-retrieval/src/engram_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "recall",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "observe_retrieval_assignment",
+      "nativeSymbol": "observe_retrieval_assignment",
+      "sourcePath": "codex-rs/hepta-memory-retrieval/src/decision.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/decision_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "assignment_observation",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Obtain green exact-head and ordered-parent synthetic-merge receipts for the converged candidate, including package tests, all-target Clippy and clean source.",
+    "Keep Agentd HNMF composition opt-in and fail closed until its current retrieval context, owner cut and optional learned ranker are independently qualified."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
+    "independent semantic review and acceptance",
+    "named target-host p50/p95/p99 latency, throughput, CPU, RSS/peak-memory, allocation and SQLite/revalidation measurements",
+    "actual vector/causal/procedural/contradiction generator-owner qualification when those policy channels are enabled",
+    "independently observed learned-ranker propensity/outcome evidence for causal utility claims",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {

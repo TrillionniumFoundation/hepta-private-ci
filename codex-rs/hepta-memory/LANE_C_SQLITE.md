@@ -43,6 +43,39 @@ evidence, projection changes, and changes caused by validity time. It rejects
 clock regression. A subsequent concurrent write remains possible: this API
 returns a historical read cut and does not grant a lease over future effects.
 
+## Owner-bound retrieval observation
+
+`CognitiveStore::observe_memory_retrieval` is the owner-side seam for the new
+generation-bound retrieval engine. It executes the existing SQLite memory FTS,
+entity FTS, graph one-hop and recency channels in one read transaction, before
+legacy top-four truncation. Each owner channel is bounded to 32 observed rows and
+reports whether that bound exhausted the query or was reached. The observation
+retains every distinct revalidated candidate available inside those channel
+limits, including candidates that the compatibility top-four API would omit.
+
+Each observed candidate binds its exact memory revision, content hash, citation
+source revisions/hashes, KG projection generation, reciprocal-rank score,
+participating channels and the original per-channel rank. The observation
+digest also binds channel saturation and the omitted final top-k count. It
+contains no new write authority and does not assert complete recall beyond the
+explicit owner channel limits.
+
+`cognitive_retrieval_adapter` converts that observation into
+`memory.retrieval` generator batches. The adapter does not accept caller-authored
+source scores: normalized rank values are derived deterministically from the
+owner-observed channel ranks, and generator receipts bind the owner observation,
+Lane C generation vector and `Exhausted`/`LimitReached` state. Total
+generation-bound input remains capped at 512 candidate events even when future
+owners add channels.
+
+The retrieval execution context additionally requires its
+`RetrievalPolicyV1::digest()` to equal the Lane C
+`retrieval_profile_digest`. This prevents a current SQLite cut from being
+combined with a different retrieval policy while retaining the old generation
+identity. Actual vector, causal, procedural and contradiction-support batches
+must come from their own current owners; the SQLite adapter does not fabricate
+them.
+
 `bind_context` optionally binds an externally frozen
 `LaneCGenerationVectorV1`. All five cognitive-owned components must exactly
 match the cut. The host must obtain prompt, compact, model, retrieval-profile,
@@ -64,11 +97,14 @@ separate admission path still fails closed until implemented.
 
 Materialization is bounded to 16,384 immutable revisions, 65,536 citations, and
 65,536 source rows in one exact scope; exceeding a bound returns `Unavailable`
-without a partial snapshot. This first adapter does not promise a fixed latency
-or unbounded lifetime retention. Retention/paging must preserve predecessor
-proofs and deletion frontiers before those limits can be increased safely.
+without a partial snapshot. Owner retrieval additionally caps each current
+SQLite channel at 32 rows and the generation-bound adapter rejects more than
+512 total candidate events. These bounds are enforced capacity limits, not a
+fixed-latency claim. Retention/paging must preserve predecessor proofs and
+deletion frontiers before materialization limits can be increased safely.
 
-`lane_c_snapshot_tests.rs` exercises actual owner writes, correction ancestry,
-reopen, committed deletions, scope and verification/time filters, context
-binding, and restoration of an older valid SQLite backup. Run with
-`just test -p codex-hepta-memory`.
+`lane_c_snapshot_tests.rs`, `cognitive_retrieval_observation_tests.rs` and
+`cognitive_retrieval_adapter_tests.rs` exercise actual owner writes, correction
+ancestry, reopen, committed deletion, scope/time filtering, channel saturation,
+pre-top-four observation, policy-generation binding and stale-source
+revalidation. Run with `just test --locked -p codex-hepta-memory`.

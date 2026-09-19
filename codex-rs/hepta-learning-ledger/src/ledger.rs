@@ -16,10 +16,12 @@ use crate::LedgerRecord;
 use crate::LedgerSnapshot;
 use crate::OutcomeFinality;
 use crate::OutcomeObservation;
+use crate::RetrievalAssignmentFact;
 use crate::Revocation;
 
 const MAX_RECORDS: usize = 1_000_000;
 const MAX_CANDIDATES: usize = 128;
+const MAX_RETRIEVAL_CANDIDATES: usize = 512;
 const EVENT_DIGEST_DOMAIN: &[u8] = b"hepta.learning-ledger.event.v1";
 const CHAIN_DIGEST_DOMAIN: &[u8] = b"hepta.learning-ledger.chain.v1";
 
@@ -191,6 +193,7 @@ impl LearningLedger {
         validate_support_digests(event)?;
         match event {
             LedgerEvent::Decision(value) => self.validate_decision(value),
+            LedgerEvent::RetrievalAssignment(value) => self.validate_retrieval_assignment(value),
             LedgerEvent::Outcome(value) => self.validate_outcome(value),
             LedgerEvent::Credit(value) => self.validate_credit(value),
             LedgerEvent::Revocation(value) => self.validate_revocation(value),
@@ -229,6 +232,57 @@ impl LearningLedger {
             return Err(LedgerError::EpisodeAlreadyExists(
                 decision.episode_id.to_string(),
             ));
+        }
+        Ok(())
+    }
+
+    fn validate_retrieval_assignment(
+        &self,
+        assignment: &RetrievalAssignmentFact,
+    ) -> Result<(), LedgerError> {
+        if assignment.enumerated_candidate_digests.len() > MAX_RETRIEVAL_CANDIDATES {
+            return Err(LedgerError::RetrievalCandidateLimitExceeded);
+        }
+        if assignment.assignment_propensity.raw() == 0 {
+            return Err(LedgerError::ZeroSelectedPropensity);
+        }
+        let candidate_count = assignment.enumerated_candidate_digests.len();
+        for index in assignment
+            .legal_candidate_indices
+            .iter()
+            .chain(assignment.selected_candidate_indices.iter())
+            .chain(assignment.delivered_candidate_indices.iter())
+        {
+            if usize::try_from(*index).unwrap_or(usize::MAX) >= candidate_count {
+                return Err(LedgerError::RetrievalIndexOutOfRange);
+            }
+        }
+        let legal = assignment
+            .legal_candidate_indices
+            .iter()
+            .copied()
+            .collect::<BTreeSet<_>>();
+        if assignment
+            .selected_candidate_indices
+            .iter()
+            .any(|index| !legal.contains(index))
+        {
+            return Err(LedgerError::RetrievalSelectionOutsideLegal);
+        }
+        let selected = assignment
+            .selected_candidate_indices
+            .iter()
+            .copied()
+            .collect::<BTreeSet<_>>();
+        if assignment
+            .delivered_candidate_indices
+            .iter()
+            .any(|index| !selected.contains(index))
+        {
+            return Err(LedgerError::RetrievalDeliveryOutsideSelection);
+        }
+        if assignment.context_exposed != !assignment.delivered_candidate_indices.is_empty() {
+            return Err(LedgerError::RetrievalExposureStateMismatch);
         }
         Ok(())
     }
@@ -322,6 +376,7 @@ impl LearningLedger {
                     },
                 );
             }
+            LedgerEvent::RetrievalAssignment(_) => {}
             LedgerEvent::Outcome(value) => {
                 self.outcomes.insert(
                     value.outcome_id.clone(),
@@ -352,7 +407,7 @@ impl LearningLedger {
             return false;
         }
         match &record.event {
-            LedgerEvent::Decision(_) => true,
+            LedgerEvent::Decision(_) | LedgerEvent::RetrievalAssignment(_) => true,
             LedgerEvent::Outcome(outcome) => self
                 .decisions
                 .get(&outcome.episode_id)
@@ -383,6 +438,30 @@ fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
                 return Err(LedgerError::EmptyDigest("decision support"));
             }
         }
+        LedgerEvent::RetrievalAssignment(value) => {
+            for (name, digest) in [
+                ("retrieval cue", value.cue_digest),
+                ("retrieval policy", value.policy_digest),
+                (
+                    "retrieval source completeness",
+                    value.source_completeness_digest,
+                ),
+                ("retrieval candidate union", value.candidate_union_digest),
+                ("retrieval recall packet", value.recall_packet_digest),
+                ("retrieval assignment support", value.support_digest),
+            ] {
+                if digest.is_zero() {
+                    return Err(LedgerError::EmptyDigest(name));
+                }
+            }
+            if value
+                .enumerated_candidate_digests
+                .iter()
+                .any(|digest| digest.is_zero())
+            {
+                return Err(LedgerError::EmptyDigest("retrieval candidate identity"));
+            }
+        }
         LedgerEvent::Outcome(value) => {
             if value.support_digest.is_zero() {
                 return Err(LedgerError::EmptyDigest("outcome support"));
@@ -403,17 +482,52 @@ fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
 }
 
 fn normalize_event(event: &mut LedgerEvent) -> Result<(), LedgerError> {
-    let LedgerEvent::Decision(decision) = event else {
-        return Ok(());
-    };
-    if decision.candidate_ids.len() > MAX_CANDIDATES {
-        return Err(LedgerError::CandidateLimitExceeded);
-    }
-    decision.candidate_ids.sort();
-    for window in decision.candidate_ids.windows(2) {
-        if window[0] == window[1] {
-            return Err(LedgerError::DuplicateCandidate(window[0].to_string()));
+    match event {
+        LedgerEvent::Decision(decision) => {
+            if decision.candidate_ids.len() > MAX_CANDIDATES {
+                return Err(LedgerError::CandidateLimitExceeded);
+            }
+            decision.candidate_ids.sort();
+            for window in decision.candidate_ids.windows(2) {
+                if window[0] == window[1] {
+                    return Err(LedgerError::DuplicateCandidate(window[0].to_string()));
+                }
+            }
         }
+        LedgerEvent::RetrievalAssignment(assignment) => {
+            if assignment.enumerated_candidate_digests.len() > MAX_RETRIEVAL_CANDIDATES {
+                return Err(LedgerError::RetrievalCandidateLimitExceeded);
+            }
+            assignment.enumerated_candidate_digests.sort();
+            if assignment
+                .enumerated_candidate_digests
+                .windows(2)
+                .any(|pair| pair[0] == pair[1])
+            {
+                return Err(LedgerError::DuplicateCandidate(
+                    "retrieval-candidate-digest".to_string(),
+                ));
+            }
+            assignment.legal_candidate_indices.sort_unstable();
+            assignment.selected_candidate_indices.sort_unstable();
+            assignment.delivered_candidate_indices.sort_unstable();
+            if assignment
+                .legal_candidate_indices
+                .windows(2)
+                .any(|pair| pair[0] == pair[1])
+                || assignment
+                    .selected_candidate_indices
+                    .windows(2)
+                    .any(|pair| pair[0] == pair[1])
+                || assignment
+                    .delivered_candidate_indices
+                    .windows(2)
+                    .any(|pair| pair[0] == pair[1])
+            {
+                return Err(LedgerError::DuplicateRetrievalIndex);
+            }
+        }
+        LedgerEvent::Outcome(_) | LedgerEvent::Credit(_) | LedgerEvent::Revocation(_) => {}
     }
     Ok(())
 }
@@ -433,6 +547,7 @@ enum EventKind {
     Outcome,
     Credit,
     Revocation,
+    RetrievalAssignment,
 }
 
 const fn event_kind_code(kind: EventKind) -> u8 {
@@ -441,12 +556,14 @@ const fn event_kind_code(kind: EventKind) -> u8 {
         EventKind::Outcome => 1,
         EventKind::Credit => 2,
         EventKind::Revocation => 3,
+        EventKind::RetrievalAssignment => 4,
     }
 }
 
 fn event_kind(event: &LedgerEvent) -> u8 {
     let kind = match event {
         LedgerEvent::Decision(_) => EventKind::Decision,
+        LedgerEvent::RetrievalAssignment(_) => EventKind::RetrievalAssignment,
         LedgerEvent::Outcome(_) => EventKind::Outcome,
         LedgerEvent::Credit(_) => EventKind::Credit,
         LedgerEvent::Revocation(_) => EventKind::Revocation,
@@ -464,6 +581,7 @@ pub(crate) fn encode_event(event: &LedgerEvent) -> Vec<u8> {
     bytes.push(event_kind(event));
     match event {
         LedgerEvent::Decision(value) => push_decision(&mut bytes, value),
+        LedgerEvent::RetrievalAssignment(value) => push_retrieval_assignment(&mut bytes, value),
         LedgerEvent::Outcome(value) => push_outcome(&mut bytes, value),
         LedgerEvent::Credit(value) => push_credit(&mut bytes, value),
         LedgerEvent::Revocation(value) => push_revocation(&mut bytes, value),
@@ -492,6 +610,37 @@ fn push_decision(bytes: &mut Vec<u8>, value: &EpisodeDecision) {
     push_ids(bytes, &value.candidate_ids);
     push_id(bytes, &value.selected_candidate_id);
     bytes.extend_from_slice(&value.selected_propensity.raw().to_be_bytes());
+    bytes.push(value.completeness.tag());
+    push_digest(bytes, value.support_digest);
+}
+
+fn push_retrieval_assignment(bytes: &mut Vec<u8>, value: &RetrievalAssignmentFact) {
+    push_id(bytes, &value.record_id);
+    push_id(bytes, &value.episode_id);
+    push_digest(bytes, value.cue_digest);
+    push_digest(bytes, value.policy_digest);
+    push_digest(bytes, value.source_completeness_digest);
+    push_digest(bytes, value.candidate_union_digest);
+    push_digest(bytes, value.recall_packet_digest);
+    push_len(bytes, value.enumerated_candidate_digests.len());
+    for digest in &value.enumerated_candidate_digests {
+        push_digest(bytes, *digest);
+    }
+    push_len(bytes, value.legal_candidate_indices.len());
+    for index in &value.legal_candidate_indices {
+        bytes.extend_from_slice(&index.to_be_bytes());
+    }
+    push_len(bytes, value.selected_candidate_indices.len());
+    for index in &value.selected_candidate_indices {
+        bytes.extend_from_slice(&index.to_be_bytes());
+    }
+    push_len(bytes, value.delivered_candidate_indices.len());
+    for index in &value.delivered_candidate_indices {
+        bytes.extend_from_slice(&index.to_be_bytes());
+    }
+    bytes.push(u8::from(value.context_exposed));
+    bytes.extend_from_slice(&value.omitted_by_policy_limits.to_be_bytes());
+    bytes.extend_from_slice(&value.assignment_propensity.raw().to_be_bytes());
     bytes.push(value.completeness.tag());
     push_digest(bytes, value.support_digest);
 }

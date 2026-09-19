@@ -44,6 +44,8 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
     let ranker = config.cognitive_ranker();
+    let retrieval_context = config.cognitive_retrieval_context();
+    let retrieval_learning = config.cognitive_retrieval_learning();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -63,6 +65,19 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             .cognitive_ranker
             .set(ranker)
             .map_err(|_| AgentdError::Invalid("cognitive ranker already attached".to_string()))?;
+    }
+    if let Some(current) = retrieval_context {
+        state
+            .cognitive_retrieval_context
+            .set(current)
+            .map_err(|_| {
+                AgentdError::Invalid("cognitive retrieval context already attached".to_string())
+            })?;
+    }
+    if let Some(sink) = retrieval_learning {
+        state.cognitive_retrieval_learning.set(sink).map_err(|_| {
+            AgentdError::Invalid("cognitive retrieval learning sink already attached".to_string())
+        })?;
     }
     if let Some(path) = trust_file {
         state.refresh_generation()?;

@@ -116,13 +116,16 @@ impl AgentdState {
                 };
                 // The model and context plan bind to the body that was launched.
                 // Current lifecycle authority remains fenced before and after I/O.
-                let result = crate::cognitive_context::read(
+                let result = crate::cognitive_context::read_with_retrieval_context_and_learning(
                     &store,
                     &self.identity.agent_id,
                     self.identity.spawn_generation,
                     &query,
                     limit,
                     self.cognitive_ranker.get(),
+                    self.cognitive_retrieval_context.get(),
+                    self.cognitive_retrieval_learning.get(),
+                    Some(request_id),
                 )
                 .await;
                 self.refresh_generation()?;
@@ -148,6 +151,18 @@ impl AgentdState {
                         message: "selected ranker is unavailable; explicit reload required"
                             .to_string(),
                     },
+                    Err(CognitiveContextError::RetrievalContextUnavailable) => {
+                        AgentdPayload::Error {
+                            code: "cognitive_retrieval_context_unavailable".to_string(),
+                            message: "selected retrieval context is unavailable or no longer current; explicit reload required".to_string(),
+                        }
+                    }
+                    Err(CognitiveContextError::RetrievalLearningUnavailable) => {
+                        AgentdPayload::Error {
+                            code: "cognitive_retrieval_learning_unavailable".to_string(),
+                            message: "retrieval assignment could not be durably recorded by the learning ledger owner".to_string(),
+                        }
+                    }
                 }
             }
             crate::AgentdMethod::Events {
