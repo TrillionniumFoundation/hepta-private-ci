@@ -10,6 +10,8 @@ use crate::AuthorityClock;
 use crate::AuthorityFrontierStore;
 use crate::AuthorityTrustError;
 use crate::SystemAuthorityClock;
+use crate::VerifiedUseBoundaryV1;
+use crate::VerifiedUseTokenWitnessV1;
 use ed25519_dalek::Signature;
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
@@ -27,7 +29,11 @@ const MAX_ISSUER_TRUST_KEYS: usize = 8;
 /// Source-visible markers consumed by the closed-world B4 caller proof.
 pub const HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_CLAIM: &str = "claim_final_use";
 pub const HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DELIVERY: &str = "deliver_final_use";
+pub const HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DELIVERY_WITNESS: &str =
+    "deliver_final_use_with_witness";
 pub const HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DISPATCH: &str = "dispatch_final_use";
+pub const HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DISPATCH_WITNESS: &str =
+    "dispatch_final_use_with_witness";
 
 /// Exact operation identity signed by the authority owner. Digests must bind
 /// destination instance, resource, operation, payload and consumer identity.
@@ -512,7 +518,11 @@ impl FinalUseAuthority {
         expected: &FinalUseBinding,
         consumer: impl FnOnce() -> T,
     ) -> Result<T, FinalUseError> {
-        self.validate_token_live(&token, expected)?;
+        let _witness = self.validate_token_live_witness(
+            &token,
+            expected,
+            VerifiedUseBoundaryV1::ConsumerEntry,
+        )?;
         Ok(consumer())
     }
 
@@ -530,28 +540,17 @@ impl FinalUseAuthority {
         expected: &FinalUseBinding,
         dispatch_boundary: impl FnOnce() -> T,
     ) -> Result<T, FinalUseError> {
-        if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
-            return Err(FinalUseError::BindingMismatch);
-        }
-        let state = self
-            .0
-            .state
-            .lock()
-            .map_err(|_| FinalUseError::Unavailable)?;
-        if state.failed {
-            return Err(FinalUseError::Unavailable);
-        }
-        validate_live(&token.grant, &state.head, self.now_unix_ms()?)?;
-        let result = dispatch_boundary();
-        drop(state);
+        let (result, _witness) =
+            self.with_dispatch_boundary_witness(token, expected, dispatch_boundary)?;
         Ok(result)
     }
 
-    fn validate_token_live(
+    fn validate_token_live_witness(
         &self,
         token: &VerifiedUseToken,
         expected: &FinalUseBinding,
-    ) -> Result<(), FinalUseError> {
+        boundary: VerifiedUseBoundaryV1,
+    ) -> Result<VerifiedUseTokenWitnessV1, FinalUseError> {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
         }
@@ -563,7 +562,50 @@ impl FinalUseAuthority {
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
-        validate_live(&token.grant, &state.head, self.now_unix_ms()?)
+        let now_unix_ms = self.now_unix_ms()?;
+        validate_live(&token.grant, &state.head, now_unix_ms)?;
+        Ok(VerifiedUseTokenWitnessV1::final_use(
+            self.0.signer_id.clone(),
+            token.grant.grant_id.clone(),
+            state.head.authority_epoch,
+            state.head.revision,
+            now_unix_ms,
+            boundary,
+            final_use_binding_witness_sha256(expected)?,
+        ))
+    }
+
+    fn with_dispatch_boundary_witness<T>(
+        &self,
+        token: VerifiedUseToken,
+        expected: &FinalUseBinding,
+        dispatch_boundary: impl FnOnce() -> T,
+    ) -> Result<(T, VerifiedUseTokenWitnessV1), FinalUseError> {
+        if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
+            return Err(FinalUseError::BindingMismatch);
+        }
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        let now_unix_ms = self.now_unix_ms()?;
+        validate_live(&token.grant, &state.head, now_unix_ms)?;
+        let witness = VerifiedUseTokenWitnessV1::final_use(
+            self.0.signer_id.clone(),
+            token.grant.grant_id.clone(),
+            state.head.authority_epoch,
+            state.head.revision,
+            now_unix_ms,
+            VerifiedUseBoundaryV1::DispatchEntry,
+            final_use_binding_witness_sha256(expected)?,
+        );
+        let result = dispatch_boundary();
+        drop(state);
+        Ok((result, witness))
     }
 
     fn now_unix_ms(&self) -> Result<u64, FinalUseError> {
@@ -616,6 +658,23 @@ pub fn deliver_final_use<T>(
     authority.with_verified_use(token, expected, consumer)
 }
 
+/// Final synchronous effect boundary plus a non-authorizing audit witness.
+/// The witness is emitted only after the same live check that linearizes entry.
+pub fn deliver_final_use_with_witness<T>(
+    authority: &FinalUseAuthority,
+    token: VerifiedUseToken,
+    expected: &FinalUseBinding,
+    consumer: impl FnOnce() -> T,
+) -> Result<(T, VerifiedUseTokenWitnessV1), FinalUseError> {
+    let _boundary = HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DELIVERY_WITNESS;
+    let witness = authority.validate_token_live_witness(
+        &token,
+        expected,
+        VerifiedUseBoundaryV1::ConsumerEntry,
+    )?;
+    Ok((consumer(), witness))
+}
+
 /// Closed-world B4 entrypoint for a bounded local irreversible dispatch fence.
 /// Unlike deliver_final_use, this keeps the authority mutex across only the
 /// short local boundary supplied by the caller.
@@ -627,6 +686,27 @@ pub fn dispatch_final_use<T>(
 ) -> Result<T, FinalUseError> {
     let _boundary = HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DISPATCH;
     authority.with_dispatch_boundary(token, expected, dispatch_boundary)
+}
+
+/// Bounded local irreversible dispatch fence plus a non-authorizing witness.
+pub fn dispatch_final_use_with_witness<T>(
+    authority: &FinalUseAuthority,
+    token: VerifiedUseToken,
+    expected: &FinalUseBinding,
+    dispatch_boundary: impl FnOnce() -> T,
+) -> Result<(T, VerifiedUseTokenWitnessV1), FinalUseError> {
+    let _boundary = HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DISPATCH_WITNESS;
+    authority.with_dispatch_boundary_witness(token, expected, dispatch_boundary)
+}
+
+fn final_use_binding_witness_sha256(
+    binding: &FinalUseBinding,
+) -> Result<[u8; 32], FinalUseError> {
+    let encoded = serde_json::to_vec(binding).map_err(|_| FinalUseError::InvalidGrant)?;
+    let mut hash = Sha256::new();
+    hash.update(b"hepta.kernel.authority.verified-use-binding.final-use.v1\0");
+    hash.update(encoded);
+    Ok(hash.finalize().into())
 }
 
 fn valid_head(head: &FinalUseRevocations) -> bool {
