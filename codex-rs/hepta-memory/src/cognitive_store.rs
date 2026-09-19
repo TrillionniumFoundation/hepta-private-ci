@@ -27,6 +27,7 @@ use crate::cognitive_kg_store::ProjectionEdge;
 use crate::cognitive_kg_store::ProjectionHead;
 use crate::cognitive_kg_store::ProjectionNode;
 use crate::cognitive_kg_store::canonical_generation_from_projection;
+use crate::cognitive_kg_store::graph_source_vector_digest_tx;
 use crate::cognitive_kg_store::input_heads_digest;
 use crate::cognitive_kg_store::output_digest;
 use crate::cognitive_model::COGNITIVE_SCHEMA_VERSION;
@@ -816,6 +817,13 @@ async fn verify_current_projection_contents(
         let projection_scope: String = current.try_get("projection_scope").map_err(unavailable)?;
         let generation: i64 = current.try_get("generation").map_err(unavailable)?;
         let (scope_kind, workspace_sha256) = projection_scope_database_parts(&projection_scope)?;
+        let cognitive_scope = match workspace_sha256.as_ref() {
+            None => CognitiveScope::AgentPrivate,
+            Some(workspace_sha256) => CognitiveScope::WorkspacePrivate {
+                workspace_sha256: Sha256Digest::parse(workspace_sha256.clone())
+                    .map_err(CognitiveStoreError::Corrupt)?,
+            },
+        };
 
         let head_rows = sqlx::query(
             "SELECT r.memory_id, r.revision, r.content_sha256,
@@ -1152,13 +1160,29 @@ async fn verify_current_projection_contents(
                 let generation_u64 = u64::try_from(generation).map_err(|_| {
                     CognitiveStoreError::Corrupt("negative KG generation".to_string())
                 })?;
+                let expected_generation_vector = graph_source_vector_digest_tx(
+                    &mut transaction,
+                    owner.as_str(),
+                    &cognitive_scope,
+                    expected_input
+                        .as_str()
+                        .parse::<codex_hepta_types::Digest32>()
+                        .map_err(|error| {
+                            CognitiveStoreError::Corrupt(format!(
+                                "invalid recomputed KG source snapshot digest: {error}"
+                            ))
+                        })?,
+                )
+                .await?;
                 let canonical = canonical_generation_from_projection(
                     generation_u64,
                     &expected_input,
+                    expected_generation_vector,
                     &expected_nodes,
                     &expected_edges,
                 )?;
                 if source_snapshot != canonical.source_snapshot_digest.to_string()
+                    || generation_vector != expected_generation_vector.to_string()
                     || generation_vector != canonical.generation_vector_digest.to_string()
                     || graph_profile != canonical.graph_profile_digest.to_string()
                     || generation_sha256 != canonical.generation_digest.to_string()
