@@ -92,6 +92,16 @@ impl<D: ProcessDriver> Supervisor<D> {
                 record.lifecycle.lifecycle
             )));
         }
+        // Any explicit/manual start supersedes a previously scheduled automatic
+        // retry. Clear the durable pending deadline before acquiring a new
+        // process generation so a crash cannot later replay the old retry.
+        crate::restart_budget::clear_pending(
+            record.layout.run_root(),
+            &agent_id.to_string(),
+        )
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        slot.auto_restart_pending = false;
+        slot.restart_retry_at = None;
         let starting = self.registry.compare_and_transition(
             agent_id,
             record.lifecycle.generation,
@@ -143,13 +153,6 @@ impl<D: ProcessDriver> Supervisor<D> {
         }
         slot.last_command = Some(release.command().clone());
         slot.active_release = Some(release);
-        slot.auto_restart_pending = false;
-        slot.restart_retry_at = None;
-        crate::restart_budget::clear_pending(
-            record.layout.run_root(),
-            &agent_id.to_string(),
-        )
-        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         slot.runtime = Some(AgentRuntime {
             process: spawned.process,
             identity: spawned.identity,
