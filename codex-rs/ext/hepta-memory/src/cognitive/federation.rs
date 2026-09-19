@@ -19,9 +19,10 @@ use codex_extension_api::TurnInputContext;
 use codex_extension_api::TurnInputContributor;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_memory::CognitiveRuntime;
+use codex_hepta_memory::CognitiveStoreError;
 use codex_hepta_memory::FederatedMemoryExplanation;
 use codex_hepta_memory::FederatedMemoryRevalidationBinding;
-use codex_hepta_memory::FederatedRecallSet;
 use codex_hepta_memory::FederatedRetrievalBatch;
 use codex_hepta_memory::FederatedRevalidationStatus;
 use codex_hepta_memory::FederationConsumerAccess;
@@ -54,6 +55,7 @@ struct PreparedFederatedAttachment {
     turn_id: String,
     workspace: std::path::PathBuf,
     query_sha256: Sha256Digest,
+    coverage: [u32; 4],
     bindings: Vec<FederatedMemoryRevalidationBinding>,
     source_binding_sha256: Sha256Digest,
     content_sha256: Sha256Digest,
@@ -61,12 +63,44 @@ struct PreparedFederatedAttachment {
 }
 
 pub(crate) struct FederatedCognitiveExtension {
-    federation: Arc<FederatedRecallSet>,
+    runtime: CognitiveRuntime,
 }
 
 impl FederatedCognitiveExtension {
-    pub(crate) fn new(federation: Arc<FederatedRecallSet>) -> Self {
-        Self { federation }
+    pub(crate) fn from_runtime(runtime: CognitiveRuntime) -> Self {
+        Self { runtime }
+    }
+
+    fn consumer_agent_id(&self) -> Option<AgentId> {
+        self.runtime.federation_consumer_agent_id().cloned()
+    }
+
+    async fn retrieve(
+        &self,
+        access: &FederationConsumerAccess,
+        request: &RetrievalRequest,
+    ) -> Result<(FederatedRetrievalBatch, [u32; 4]), CognitiveStoreError> {
+        let (batch, coverage) = self.runtime.retrieve_federated(access, request).await?;
+        Ok((
+            batch,
+            [
+                coverage.requested_peers,
+                coverage.completed_peers,
+                coverage.failed_peers,
+                coverage.truncated_items,
+            ],
+        ))
+    }
+
+    async fn revalidate(
+        &self,
+        access: &FederationConsumerAccess,
+        binding: &FederatedMemoryRevalidationBinding,
+        now_unix_seconds: i64,
+    ) -> Result<FederatedRevalidationStatus, CognitiveStoreError> {
+        self.runtime
+            .revalidate_federated(access, binding, now_unix_seconds)
+            .await
     }
 
     fn has_prepared_attachment(
@@ -114,13 +148,11 @@ impl FederatedCognitiveExtension {
             return None;
         }
         let now = now_unix_seconds()?;
-        let access = FederationConsumerAccess::new(
-            self.federation.consumer_agent_id().clone(),
-            workspace_digest(input.cwd),
-        );
+        let access =
+            FederationConsumerAccess::new(self.consumer_agent_id()?, workspace_digest(input.cwd));
         let mut explanations = Vec::with_capacity(prepared.bindings.len());
         for binding in &prepared.bindings {
-            let Ok(status) = self.federation.revalidate(&access, binding, now).await else {
+            let Ok(status) = self.revalidate(&access, binding, now).await else {
                 return None;
             };
             let FederatedRevalidationStatus::Current(explanation) = status else {
@@ -139,13 +171,14 @@ impl FederatedCognitiveExtension {
             }
             explanations.push(*explanation);
         }
-        let content = compile_explanations(&explanations)?;
+        let content = compile_explanations(&explanations, prepared.coverage)?;
         let content_sha256 = Sha256Digest::for_bytes(content.as_bytes());
         let source_binding_sha256 = federation_source_binding(
             input.thread_id,
             input.turn_id,
             input.cwd,
             &prepared.query_sha256,
+            &prepared.coverage,
             &prepared.bindings,
             &content_sha256,
         )?;
@@ -258,12 +291,14 @@ impl TurnInputContributor for FederatedCognitiveExtension {
             let Some(now) = now_unix_seconds() else {
                 return Vec::new();
             };
+            let Some(consumer_agent_id) = self.consumer_agent_id() else {
+                return Vec::new();
+            };
             let access = FederationConsumerAccess::new(
-                self.federation.consumer_agent_id().clone(),
+                consumer_agent_id,
                 workspace_digest(workspace.as_path()),
             );
-            let Ok(batch) = self
-                .federation
+            let Ok((batch, coverage)) = self
                 .retrieve(&access, &RetrievalRequest::new(query, now))
                 .await
             else {
@@ -279,7 +314,7 @@ impl TurnInputContributor for FederatedCognitiveExtension {
             let item_budget =
                 usize::try_from(thread_state.limits.max_item_tokens()).unwrap_or(usize::MAX);
             let Some((bindings, content)) =
-                compile_retrieval_batch(&batch, byte_budget, item_budget)
+                compile_retrieval_batch(&batch, byte_budget, item_budget, coverage)
             else {
                 return Vec::new();
             };
@@ -289,6 +324,7 @@ impl TurnInputContributor for FederatedCognitiveExtension {
                 input.turn_id.as_str(),
                 workspace.as_path(),
                 &batch.query_sha256,
+                &coverage,
                 &bindings,
                 &content_sha256,
             ) else {
@@ -302,6 +338,7 @@ impl TurnInputContributor for FederatedCognitiveExtension {
                 turn_id: input.turn_id,
                 workspace,
                 query_sha256: batch.query_sha256,
+                coverage,
                 bindings,
                 source_binding_sha256,
                 content_sha256,
@@ -367,13 +404,14 @@ impl EphemeralModelInputContributor for FederatedCognitiveExtension {
             let Some(now) = now_unix_seconds() else {
                 return Ok(None);
             };
-            let access = FederationConsumerAccess::new(
-                self.federation.consumer_agent_id().clone(),
-                workspace_digest(input.cwd),
-            );
+            let Some(consumer_agent_id) = self.consumer_agent_id() else {
+                return Ok(None);
+            };
+            let access =
+                FederationConsumerAccess::new(consumer_agent_id, workspace_digest(input.cwd));
             let mut explanations = Vec::with_capacity(prepared.bindings.len());
             for binding in &prepared.bindings {
-                let Ok(status) = self.federation.revalidate(&access, binding, now).await else {
+                let Ok(status) = self.revalidate(&access, binding, now).await else {
                     return Ok(None);
                 };
                 let FederatedRevalidationStatus::Current(explanation) = status else {
@@ -392,7 +430,7 @@ impl EphemeralModelInputContributor for FederatedCognitiveExtension {
                 }
                 explanations.push(*explanation);
             }
-            let Some(content) = compile_explanations(&explanations) else {
+            let Some(content) = compile_explanations(&explanations, prepared.coverage) else {
                 return Ok(None);
             };
             let content_sha256 = Sha256Digest::for_bytes(content.as_bytes());
@@ -401,6 +439,7 @@ impl EphemeralModelInputContributor for FederatedCognitiveExtension {
                 input.turn_id,
                 input.cwd,
                 &prepared.query_sha256,
+                &prepared.coverage,
                 &prepared.bindings,
                 &content_sha256,
             ) else {
@@ -437,6 +476,7 @@ impl EphemeralModelInputContributor for FederatedCognitiveExtension {
 struct FederatedAttachment<'a> {
     schema_version: u32,
     source: &'static str,
+    coverage: [u32; 4],
     memories: &'a [FederatedAttachmentMemory],
 }
 
@@ -471,8 +511,17 @@ fn combine_cognitive_materials(
     let local_memory = compact_local_memory(local_value.get("memories")?.as_array()?.first()?)?;
     let federated_memory =
         compact_federated_memory(federated_value.get("memories")?.as_array()?.first()?)?;
+    let federation_coverage = federated_value.get("coverage")?.as_array()?;
+    if federation_coverage.len() != 4
+        || federation_coverage
+            .iter()
+            .any(|value| value.as_u64().is_none())
+    {
+        return None;
+    }
     let content = serde_json::to_string(&json!({
         "s": "verified_cognitive_v1",
+        "f": federation_coverage,
         "m": [local_memory, federated_memory],
     }))
     .ok()?;
@@ -571,6 +620,7 @@ fn compile_retrieval_batch(
     batch: &FederatedRetrievalBatch,
     max_bytes: usize,
     max_item_bytes: usize,
+    coverage: [u32; 4],
 ) -> Option<(Vec<FederatedMemoryRevalidationBinding>, String)> {
     let max_bytes = max_bytes
         .min(EPHEMERAL_MODEL_INPUT_MAX_CONTENT_BYTES as usize)
@@ -593,7 +643,7 @@ fn compile_retrieval_batch(
         );
         let mut proposed = selected_memories.clone();
         proposed.push(record);
-        let Ok(content) = serialize_attachment(&proposed) else {
+        let Ok(content) = serialize_attachment(&proposed, coverage) else {
             continue;
         };
         if content.len() > max_bytes {
@@ -605,11 +655,14 @@ fn compile_retrieval_batch(
     if selected_bindings.is_empty() {
         return None;
     }
-    let content = serialize_attachment(&selected_memories).ok()?;
+    let content = serialize_attachment(&selected_memories, coverage).ok()?;
     Some((selected_bindings, content))
 }
 
-fn compile_explanations(explanations: &[FederatedMemoryExplanation]) -> Option<String> {
+fn compile_explanations(
+    explanations: &[FederatedMemoryExplanation],
+    coverage: [u32; 4],
+) -> Option<String> {
     let memories = explanations
         .iter()
         .map(|explanation| {
@@ -644,7 +697,7 @@ fn compile_explanations(explanations: &[FederatedMemoryExplanation]) -> Option<S
             )
         })
         .collect::<Vec<_>>();
-    serialize_attachment(&memories).ok()
+    serialize_attachment(&memories, coverage).ok()
 }
 
 fn attachment_record(
@@ -678,10 +731,12 @@ fn attachment_record(
 
 fn serialize_attachment(
     memories: &[FederatedAttachmentMemory],
+    coverage: [u32; 4],
 ) -> Result<String, serde_json::Error> {
     serde_json::to_string(&FederatedAttachment {
         schema_version: FEDERATED_ATTACHMENT_SCHEMA_VERSION,
         source: "explicit_federated_verified_memory",
+        coverage,
         memories,
     })
 }
@@ -691,10 +746,12 @@ fn federation_source_binding(
     turn_id: &str,
     workspace: &Path,
     query_sha256: &Sha256Digest,
+    coverage: &[u32; 4],
     bindings: &[FederatedMemoryRevalidationBinding],
     content_sha256: &Sha256Digest,
 ) -> Option<Sha256Digest> {
     let serialized = serde_json::to_vec(bindings).ok()?;
+    let serialized_coverage = serde_json::to_vec(coverage).ok()?;
     Some(digest_many(
         b"hepta:cognitive:federated-ephemeral-source-binding:v1",
         &[
@@ -702,6 +759,7 @@ fn federation_source_binding(
             turn_id.as_bytes(),
             path_identity_bytes(workspace).as_slice(),
             query_sha256.as_str().as_bytes(),
+            serialized_coverage.as_slice(),
             serialized.as_slice(),
             content_sha256.as_str().as_bytes(),
         ],
@@ -730,10 +788,9 @@ mod tests {
     use codex_hepta_contracts::AgentId;
     use codex_hepta_contracts::Sha256Digest;
     use codex_hepta_memory::CognitiveAccess;
-    use codex_hepta_memory::CognitiveScope;
+
+    use codex_hepta_memory::CognitiveRuntime;
     use codex_hepta_memory::CognitiveStore;
-    use codex_hepta_memory::FederatedMemoryReader;
-    use codex_hepta_memory::FederatedRecallSet;
     use codex_hepta_memory::FederationGrantRequest;
     use codex_hepta_memory::FederationGrantScope;
     use codex_hepta_memory::LedgerSourceKind;
@@ -750,6 +807,7 @@ mod tests {
     use super::FEDERATED_COGNITIVE_SOURCE;
     use super::FederatedCognitiveExtension;
     use super::combine_cognitive_materials;
+    use super::federation_source_binding;
     use super::now_unix_seconds;
     use crate::cognitive::CognitiveProposalMaterial;
     use crate::extension::HeptaMemoryThreadState;
@@ -758,6 +816,35 @@ mod tests {
     const THREAD_ID: &str = "00000000-0000-4000-8000-000000000711";
     const OWNER_ID: &str = "00000000-0000-4000-8000-000000000712";
     const CONSUMER_ID: &str = "00000000-0000-4000-8000-000000000713";
+
+    #[test]
+    fn federated_source_binding_changes_when_coverage_changes() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let workspace = temp.path().canonicalize().expect("workspace");
+        let query_sha256 = Sha256Digest::for_bytes(b"same query");
+        let content_sha256 = Sha256Digest::for_bytes(b"same content");
+        let complete = federation_source_binding(
+            "thread",
+            "turn",
+            &workspace,
+            &query_sha256,
+            &[1, 1, 0, 0],
+            &[],
+            &content_sha256,
+        )
+        .expect("complete binding");
+        let partial = federation_source_binding(
+            "thread",
+            "turn",
+            &workspace,
+            &query_sha256,
+            &[2, 1, 1, 0],
+            &[],
+            &content_sha256,
+        )
+        .expect("partial binding");
+        assert_ne!(complete, partial);
+    }
 
     #[test]
     fn combined_proposal_is_exact_bounded_and_owner_capability_sensitive() {
@@ -818,6 +905,11 @@ mod tests {
         );
         let payload =
             serde_json::from_str::<serde_json::Value>(&boundary.content).expect("combined payload");
+        assert_eq!(
+            payload["f"],
+            serde_json::json!([2, 1, 1, 0]),
+            "combined payload must preserve explicit federated coverage",
+        );
         let memories = payload["m"].as_array().expect("combined memories");
         assert_eq!(memories.len(), 2);
         assert_eq!(memories[0]["h"], "22".repeat(32));
@@ -897,6 +989,7 @@ mod tests {
         let content = serde_json::to_string(&serde_json::json!({
             "schema_version": 1,
             "source": "explicit_federated_verified_memory",
+            "coverage": [2, 1, 1, 0],
             "memories": [{
                 "source_agent_id": owner_agent_id,
                 "capability_id": capability_id,
@@ -940,9 +1033,13 @@ mod tests {
         let owner_id = AgentId::parse(OWNER_ID).expect("owner id");
         let consumer_id = AgentId::parse(CONSUMER_ID).expect("consumer id");
         let owner_layout = fleet.agent(&owner_id);
+        let consumer_layout = fleet.agent(&consumer_id);
         let owner = CognitiveStore::open(&owner_layout)
             .await
             .expect("owner store");
+        let consumer = CognitiveStore::open(&consumer_layout)
+            .await
+            .expect("consumer store");
         let owner_access = CognitiveAccess::agent_private(owner_id.clone());
         let now = now_unix_seconds().expect("time");
         let citation = owner
@@ -994,12 +1091,9 @@ mod tests {
             )
             .await
             .expect("grant");
-        let readers = FederatedMemoryReader::discover(&owner_layout, &consumer_id, now)
-            .await
-            .expect("discover");
-        let extension = FederatedCognitiveExtension::new(std::sync::Arc::new(
-            FederatedRecallSet::new(consumer_id, readers).expect("recall set"),
-        ));
+        let runtime = CognitiveRuntime::from_open_result(Ok(consumer))
+            .with_federation_sources(consumer_id.clone(), vec![owner_layout.clone()]);
+        let extension = FederatedCognitiveExtension::from_runtime(runtime);
         let session_store = ExtensionData::new("session-federation");
         let thread_store = ExtensionData::new(THREAD_ID);
         thread_store.insert(HeptaMemoryThreadState::for_cognitive_test(true));
@@ -1060,7 +1154,9 @@ mod tests {
         .expect("contributor")
         .expect("proposal before revoke");
         assert_eq!(first.source().as_str(), FEDERATED_COGNITIVE_SOURCE);
-        assert!(first.into_content().contains(OWNER_ID));
+        let first_content = first.into_content();
+        assert!(first_content.contains(OWNER_ID));
+        assert!(first_content.contains("\"coverage\":[1,1,0,0]"));
 
         owner
             .revoke_federated_recall(&owner_access, &capability, now)
