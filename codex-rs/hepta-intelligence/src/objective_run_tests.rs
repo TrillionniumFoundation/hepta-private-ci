@@ -9,6 +9,7 @@ use std::sync::atomic::Ordering;
 
 use codex_hepta_learning_ledger::DurableRunStartJournal;
 use codex_hepta_learning_ledger::RunStartAppendDisposition;
+use codex_hepta_learning_ledger::RunStartAuthenticationV1;
 use codex_hepta_learning_ledger::RunStartAnchor;
 use codex_hepta_learning_ledger::RunStartRecovery;
 use codex_hepta_objective::ConstraintClass;
@@ -242,7 +243,15 @@ fn context(
 
 fn bindings(run: &str, expected: Digest32) -> ObjectiveRunBindingsV1 {
     ObjectiveRunBindingsV1 {
+        authentication: RunStartAuthenticationV1 {
+            issuer_id: id("issuer.objective"),
+            key_epoch: 3,
+            message_id: id(&format!("message.{run}")),
+            sequence: 5,
+            signed_body_digest: digest("signed-body"),
+        },
         run_id: id(run),
+        runtime_body_digest: digest("runtime-body"),
         preference_state_digest: digest("preference-state"),
         model_tuple_digest: digest("model-tuple"),
         prompt_registry_digest: digest("prompt-registry"),
@@ -338,6 +347,11 @@ fn authenticated_objective_is_durable_before_product_receipt_returns() {
         .expect("read")
         .expect("record");
     assert_eq!(durable.snapshot, receipt.run_start);
+    assert_eq!(
+        durable.admission.admitted_source_digest,
+        receipt.admission.admitted_source_digest
+    );
+    assert_eq!(durable.runtime_body_digest, digest("runtime-body"));
     assert_eq!(
         Digest32::of_bytes(&durable.objective_semantic_bytes),
         receipt.objective.objective.semantic_digest
