@@ -119,7 +119,13 @@ impl IterationCandidateV1 {
     ) -> Result<(), String> {
         self.validate(envelope)?;
         validate_iteration_transition(self.state, next)?;
-        self.state = next;
+        // Validate the proposed state before committing it. A valid Drafted
+        // record may lack a predecessor; that does not make a later state valid.
+        // Failure must leave the entire candidate, not just its enum, unchanged.
+        let mut proposed = self.clone();
+        proposed.state = next;
+        proposed.validate(envelope)?;
+        *self = proposed;
         Ok(())
     }
 }
@@ -233,5 +239,68 @@ mod tests {
             )
             .is_err()
         );
+    }
+
+    fn candidate(state: IterationCandidateStateV1, predecessor: bool) -> IterationCandidateV1 {
+        IterationCandidateV1 {
+            candidate_id: id("candidate-1"),
+            envelope_id: id("envelope-1"),
+            generator_identity: id("generator-1"),
+            semantic_diff_digest: digest(5),
+            test_plan_digest: digest(6),
+            rollback_digest: digest(7),
+            predecessor: predecessor.then(|| id("predecessor-1")),
+            state,
+        }
+    }
+
+    #[test]
+    fn failed_draft_promotion_does_not_mutate_the_candidate() {
+        let mut value = candidate(IterationCandidateStateV1::Drafted, false);
+        let before = value.clone();
+        assert!(value.validate(&envelope()).is_ok());
+        assert!(value.transition(&envelope(), IterationCandidateStateV1::StaticallyValidated).is_err());
+        assert_eq!(value, before);
+    }
+
+    #[test]
+    fn every_successful_transition_preserves_the_candidate_invariant() {
+        use IterationCandidateStateV1::*;
+        let states = [
+            Drafted, StaticallyValidated, SandboxTested, IndependentlyEvaluated,
+            ReviewRequested, AcceptedCandidate, Selected, Promoted, Released,
+            Rejected, Quarantined, Superseded,
+        ];
+        for from in states {
+            for to in states {
+                for predecessor in [false, true] {
+                    let mut value = candidate(from, predecessor);
+                    let before = value.clone();
+                    match value.transition(&envelope(), to) {
+                        Ok(()) => {
+                            assert_eq!(value.state, to);
+                            assert!(value.validate(&envelope()).is_ok());
+                        }
+                        Err(_) => assert_eq!(value, before),
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn bound_candidate_traverses_the_complete_recorded_path() {
+        use IterationCandidateStateV1::*;
+        let mut value = candidate(Drafted, true);
+        for next in [
+            StaticallyValidated, SandboxTested, IndependentlyEvaluated,
+            ReviewRequested, AcceptedCandidate, Selected, Promoted, Released,
+        ] {
+            value.transition(&envelope(), next).expect("valid recorded transition");
+            value.validate(&envelope()).expect("preserved invariant");
+        }
+        let before = value.clone();
+        assert!(value.transition(&envelope(), Rejected).is_err());
+        assert_eq!(value, before);
     }
 }

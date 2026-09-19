@@ -14,7 +14,10 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+/// Concurrent selected modules, including draining/quarantined writer reservations.
 pub const MAX_RUNTIME_MODULES: usize = 128;
+/// Concurrent unselected candidates. Historical generations consume neither quota.
+const MAX_PENDING_RUNTIME_MODULES: usize = 128;
 pub const MAX_MODULE_PORTS: usize = 64;
 pub const MAX_MODULE_DEPENDENCIES: usize = 64;
 pub const MAX_MODULE_DOMAINS: usize = 32;
@@ -185,6 +188,11 @@ impl StdError for RuntimeModuleRegistryError {}
 pub struct RuntimeModuleRegistryV1 {
     records: BTreeMap<(StableId, Generation), RuntimeModuleRecordV1>,
     active: BTreeMap<StableId, Generation>,
+    // First admitted and greatest admitted generation per identity. These small
+    // fences outlive payload compaction, including complete module retirement.
+    // They must travel with the registry when a host persists/restores it; a
+    // dispatch-only RuntimeTopologySnapshotV1 is NOT a recovery checkpoint.
+    generation_fences: BTreeMap<StableId, (Generation, Generation)>,
 }
 
 impl RuntimeModuleRegistryV1 {
@@ -196,19 +204,26 @@ impl RuntimeModuleRegistryV1 {
         &mut self,
         abi: RuntimeModuleAbiV1,
     ) -> Result<(), RuntimeModuleRegistryError> {
+        self.register_with_pending_limit(abi, MAX_PENDING_RUNTIME_MODULES)
+    }
+
+    fn register_with_pending_limit(
+        &mut self,
+        abi: RuntimeModuleAbiV1,
+        pending_limit: usize,
+    ) -> Result<(), RuntimeModuleRegistryError> {
         abi.validate()?;
-        if self.records.len() >= MAX_RUNTIME_MODULES {
-            return Err(RuntimeModuleRegistryError::Bounds);
-        }
         let key = (abi.module_id.clone(), abi.generation);
         if self.records.contains_key(&key) {
             return Err(RuntimeModuleRegistryError::DuplicateCandidate);
         }
         // Candidate epochs are monotone even after retirement or quarantine.
         // A removed route is not permission to resurrect an older identity.
-        if self.records.keys().any(|(module_id, generation)| {
-            module_id == &abi.module_id && *generation >= abi.generation
-        }) {
+        if self
+            .generation_fences
+            .get(&abi.module_id)
+            .is_some_and(|(_, greatest)| *greatest >= abi.generation)
+        {
             return Err(RuntimeModuleRegistryError::InvalidGeneration);
         }
         if let Some(predecessor_generation) = abi.predecessor_generation {
@@ -220,6 +235,13 @@ impl RuntimeModuleRegistryV1 {
                 return Err(RuntimeModuleRegistryError::PredecessorDigestMismatch);
             }
         }
+        if self.pending_candidate_count() >= pending_limit {
+            return Err(RuntimeModuleRegistryError::Bounds);
+        }
+        self.generation_fences
+            .entry(abi.module_id.clone())
+            .and_modify(|(_, greatest)| *greatest = abi.generation)
+            .or_insert((abi.generation, abi.generation));
         self.records.insert(
             key,
             RuntimeModuleRecordV1 {
@@ -230,6 +252,7 @@ impl RuntimeModuleRegistryV1 {
                 handoff_digest: None,
             },
         );
+        self.compact_terminal_payloads();
         Ok(())
     }
 
@@ -249,12 +272,12 @@ impl RuntimeModuleRegistryV1 {
         if candidate.lifecycle != RuntimeModuleLifecycleV1::Registered
             || candidate.abi.predecessor_generation.is_some()
             || self.active.contains_key(module_id)
-            || self
-                .records
-                .keys()
-                .any(|(id, epoch)| id == module_id && *epoch != generation)
+            || self.generation_fences.get(module_id) != Some(&(generation, generation))
         {
             return Err(RuntimeModuleRegistryError::InvalidLifecycleTransition);
+        }
+        if self.active.len() >= MAX_RUNTIME_MODULES {
+            return Err(RuntimeModuleRegistryError::Bounds);
         }
         self.ensure_writer_domains_available(&candidate.abi, None)?;
         self.records
@@ -325,9 +348,15 @@ impl RuntimeModuleRegistryV1 {
             return Err(RuntimeModuleRegistryError::InvalidLifecycleTransition);
         }
         witness.validate_for(&candidate.abi)?;
+        if !self.active.contains_key(module_id) && self.active.len() >= MAX_RUNTIME_MODULES {
+            return Err(RuntimeModuleRegistryError::Bounds);
+        }
         self.ensure_writer_domains_available(&candidate.abi, candidate.abi.predecessor_generation)?;
 
         if let Some(predecessor_generation) = candidate.abi.predecessor_generation {
+            if self.active.get(module_id) != Some(&predecessor_generation) {
+                return Err(RuntimeModuleRegistryError::ActiveGenerationConflict);
+            }
             let predecessor_key = (module_id.clone(), predecessor_generation);
             let predecessor = self
                 .records
@@ -442,10 +471,15 @@ impl RuntimeModuleRegistryV1 {
             authoritative_domains: predecessor.abi.authoritative_domains,
             effect_scope: predecessor.abi.effect_scope,
         };
-        self.register_candidate(rollback_abi)?;
-        self.enter_shadow(module_id, rollback_generation)?;
-        self.enter_canary(module_id, rollback_generation)?;
-        self.promote_after_handoff(
+        // A full ordinary candidate queue must not disable rollback. Stage its
+        // one extra slot transactionally: success consumes that slot by making
+        // it active; any failed validation leaves even the generation fence
+        // unchanged. This path still enforces all identity and writer checks.
+        let mut staged = self.clone();
+        staged.register_with_pending_limit(rollback_abi, MAX_PENDING_RUNTIME_MODULES + 1)?;
+        staged.enter_shadow(module_id, rollback_generation)?;
+        staged.enter_canary(module_id, rollback_generation)?;
+        let snapshot = staged.promote_after_handoff(
             module_id,
             rollback_generation,
             RuntimeModulePromotionWitnessV1 {
@@ -453,9 +487,15 @@ impl RuntimeModuleRegistryV1 {
                 canary_digest: evidence_digest,
                 handoff_digest: evidence_digest,
             },
-        )
+        )?;
+        *self = staged;
+        Ok(snapshot)
     }
 
+    /// Look up a retained lifecycle payload, not an unbounded audit history.
+    /// Registration may release terminal payloads that are no longer pinned by
+    /// a selected/pending generation. Hosts retain durable transition evidence
+    /// in their owned journals; compact generation fences prevent resurrection.
     pub fn record(
         &self,
         module_id: &StableId,
@@ -528,6 +568,48 @@ impl RuntimeModuleRegistryV1 {
             active,
             digest: Digest32::of_bytes(&bytes),
         }
+    }
+
+    /// Count only unselected work, never retired history or selected writers.
+    fn pending_candidate_count(&self) -> usize {
+        self.records
+            .values()
+            .filter(|record| {
+                matches!(
+                    record.lifecycle,
+                    RuntimeModuleLifecycleV1::Registered
+                        | RuntimeModuleLifecycleV1::Shadow
+                        | RuntimeModuleLifecycleV1::Canary
+                )
+            })
+            .count()
+    }
+
+    fn compact_terminal_payloads(&mut self) {
+        let mut pinned = BTreeSet::new();
+        for (key, record) in &self.records {
+            // Quarantined selected writers retain their reservation and full
+            // ABI until finish_retire proves drain/reconciliation. Unselected
+            // quarantined candidates hold no writer reservation.
+            let selected = self.active.get(&record.abi.module_id)
+                == Some(&record.abi.generation);
+            if selected
+                || matches!(
+                    record.lifecycle,
+                    RuntimeModuleLifecycleV1::Registered
+                        | RuntimeModuleLifecycleV1::Shadow
+                        | RuntimeModuleLifecycleV1::Canary
+                )
+            {
+                pinned.insert(key.clone());
+                // Pin the immediate rollback payload, not the transitive
+                // predecessor chain (which would retain the entire history).
+                if let Some(predecessor) = record.abi.predecessor_generation {
+                    pinned.insert((record.abi.module_id.clone(), predecessor));
+                }
+            }
+        }
+        self.records.retain(|key, _| pinned.contains(key));
     }
 
     fn transition(
@@ -721,3 +803,7 @@ mod tests {
 #[cfg(test)]
 #[path = "module_runtime_safety_tests.rs"]
 mod safety_tests;
+
+#[cfg(test)]
+#[path = "module_runtime_retention_tests.rs"]
+mod retention_tests;
