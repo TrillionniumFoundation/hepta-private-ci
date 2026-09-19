@@ -20,8 +20,25 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def current_source_base() -> dict[str, str]:
-    """Return the immutable source identity used by generated maps."""
-    return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
+    """Return the latest commit/tree that changed any registered module source root.
+
+    Implementation maps live in the same Git tree they describe, so embedding
+    the map-containing HEAD would be self-referential.  The latest source-root
+    commit is stable across documentation-only/map-refresh commits, but changes
+    immediately whenever any registered module source changes.
+    """
+    modules = load("docs/modules/MODULES.json")["modules"]
+    roots = sorted(
+        {
+            binding["path"]
+            for module in modules
+            for binding in module["rootBindings"]
+        }
+    )
+    commit = git("log", "-1", "--format=%H", "--", *roots)
+    if not commit:
+        commit = git("rev-parse", "HEAD")
+    return {"commit": commit, "tree": git("rev-parse", f"{commit}^{{tree}}")}
 
 
 def load(rel: str):
@@ -181,7 +198,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
-            "sourceBase": row.get("sourceBase") or source_base,
+            "sourceBase": source_base,
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -266,10 +283,7 @@ def migrate():
 def generate():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
-    source_base = {
-        "commit": git("rev-parse", "HEAD"),
-        "tree": git("rev-parse", "HEAD^{tree}"),
-    }
+    source_base = current_source_base()
     written = []
     for module in modules:
         path = ROOT / f"docs/modules/{module['id']}/IMPLEMENTATION_MAP.json"
@@ -288,6 +302,7 @@ def verify():
     lanes = lane_by_module()
     failures = []
     source_bases = set()
+    expected_source_base = current_source_base()
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -317,6 +332,10 @@ def verify():
             failures.append(f"{mid}: source base")
         else:
             source_bases.add((source_base["commit"], source_base["tree"]))
+            if source_base != expected_source_base:
+                failures.append(
+                    f"{mid}: stale source base {source_base!r}; expected {expected_source_base!r}"
+                )
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
