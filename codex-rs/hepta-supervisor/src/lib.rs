@@ -20,6 +20,7 @@ mod runtime;
 mod signed_authority;
 mod signed_intent;
 mod supervisor;
+#[cfg(test)]
 mod supervisor_qualification;
 mod tick;
 
@@ -107,27 +108,49 @@ pub use signed_authority::SIGNED_AUTHORITY_NAMESPACE;
 pub use signed_authority::SIGNED_AUTHORITY_SCHEMA_VERSION;
 pub use signed_authority::authority_epoch_for_supervisor_epoch;
 pub use supervisor::Supervisor;
+#[cfg(test)]
 pub use supervisor_qualification::H8_H9_SHADOW_EFFECT_AUTHORITY;
+#[cfg(test)]
 pub use supervisor_qualification::H8_H9_SHADOW_EXECUTE_ALLOWED;
+#[cfg(test)]
 pub use supervisor_qualification::H8_H9_SHADOW_EXTERNAL_EFFECTS;
+#[cfg(test)]
 pub use supervisor_qualification::H8_H9_SHADOW_G5_ALLOWED;
+#[cfg(test)]
 pub use supervisor_qualification::H8_H9_SHADOW_GOVERNANCE_BYPASS;
+#[cfg(test)]
 pub use supervisor_qualification::H8_H9_SHADOW_NAMESPACE;
+#[cfg(test)]
 pub use supervisor_qualification::H8_H9_SHADOW_OPERATOR_ACCEPTANCE;
+#[cfg(test)]
 pub use supervisor_qualification::H8_H9_SHADOW_PRODUCTION_AUTHORITY;
+#[cfg(test)]
 pub use supervisor_qualification::H8_H9_SHADOW_PRODUCTION_CALLER;
+#[cfg(test)]
 pub use supervisor_qualification::H8_H9_SHADOW_PRODUCTION_WRITER;
+#[cfg(test)]
 pub use supervisor_qualification::H8_H9_SHADOW_PROMOTION;
+#[cfg(test)]
 pub use supervisor_qualification::H8_H9_SHADOW_PROMOTION_ELIGIBLE;
+#[cfg(test)]
 pub use supervisor_qualification::H8_H9_SHADOW_SCHEMA_VERSION;
+#[cfg(test)]
 pub use supervisor_qualification::H8H9PendingRollback;
+#[cfg(test)]
 pub use supervisor_qualification::H8H9RecoveryOutcome;
+#[cfg(test)]
 pub use supervisor_qualification::H8H9RollbackPhase;
+#[cfg(test)]
 pub use supervisor_qualification::H8H9ShadowSupervisor;
+#[cfg(test)]
 pub use supervisor_qualification::H8H9SupervisorError;
+#[cfg(test)]
 pub use supervisor_qualification::H8H9SupervisorState;
+#[cfg(test)]
 pub use supervisor_qualification::H8ShadowSupervisor;
+#[cfg(test)]
 pub use supervisor_qualification::H9ShadowRollbackMachine;
+#[cfg(test)]
 pub use supervisor_qualification::QualificationSupervisor;
 
 #[cfg(unix)]
