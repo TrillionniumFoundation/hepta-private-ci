@@ -44,15 +44,9 @@ Cross-organ aggregation is never implicit for a new integration. `EvaluationPoli
 
 Missing rules, duplicate rules, unknown axes and `RequireEqual` disagreement reject. Overflow rejects rather than saturating outside a named mathematical projection.
 
-The compatibility API `evaluate_candidates` remains available, but its prior behavior is now explicitly materialized as `legacy-sum-max-zero-tolerance-v1`:
+The legacy sum/sum/sum/maximum, zero-tolerance behavior remains only as a crate-local compatibility helper for historical unit coverage. It is no longer exported from `codex-hepta-ndu`, and repository CI rejects new external callers of either `evaluate_candidates` or `legacy_evaluation_policy`.
 
-- utility: sum;
-- risk: sum;
-- resource: sum;
-- uncertainty: maximum;
-- Pareto absolute tolerance: zero.
-
-New integrations call `evaluate_candidates_with_policy`. `NduEvaluationReceiptV2` binds the normalized policy digest in addition to the legacy evaluation digest, preventing a future aggregation change from silently reinterpreting an old result.
+All source integrations call `evaluate_candidates_with_policy`. `NduEvaluationReceiptV2` binds the normalized policy digest in addition to the base evaluation digest, preventing a future aggregation change from silently reinterpreting an old result. `UtilityProfile` also carries a mandatory nonzero `normalization_manifest_digest`; the canonical profile digest therefore binds the immutable units/scales/normalization/clipping manifest rather than relying on a reusable profile ID alone.
 
 ### 3.1 Feasibility, Pareto and scalarization
 
@@ -95,7 +89,9 @@ P_next = (1 - eta) * P_k + eta * P_candidate
 U_k = project(instant_utility + discount * continuation_utility)
 ```
 
-`eta` is in `[1/16,1/4]`. The preference target solver emits immutable revisions and at most 64 local iteration receipts. Parent and child artifact updates cannot share one generation.
+Preference admission enforces `dim(P) <= 64` and every state/target value in `[-1,1]` before solving. `eta` is in `[1/16,1/4]`. The target solver receives the full `NduIterationContextV1`, verifies subject/class, and binds its canonical context digest into every local step. A state already within tolerance returns a zero-iteration no-op with no revision churn. At most 64 iteration receipts are emitted; exhaustion returns `PreferenceSolveOutcome::Unavailable` and does not expose the unconverged state as a successful persistence candidate.
+
+Hierarchy staging is lineage-aware. A same-generation rejection requires an actual `parent_artifact_id` edge between staged records; unrelated subjects may share a generation, while malformed direct-parent class relations fail closed.
 
 ## 5. Convergence, infeasibility and multiple solutions
 
@@ -122,7 +118,7 @@ The canonical `NduConvergenceCertificateV1` remains owned by `learning.eval`. It
 - predecessor/next revisions;
 - residual, projection count and state digest.
 
-The receipt has a semantic digest and `AuthorityPosture::DENY_ALL`. Missing context fails before publication.
+The receipt has a semantic digest and `AuthorityPosture::DENY_ALL`. Missing context fails before publication. The local solver receipt itself carries a crate-private canonical context digest from creation time; the binder recomputes it, so a valid receipt cannot be rebound to a different objective/event/coefficient/generation context after the fact.
 
 ## 6. State, persistence and scheduling
 
@@ -144,22 +140,19 @@ The full-rank pilot rejects singular or ill-conditioned covariance. A pseudoinve
 
 A numeric covariance fixture proves algebra only. It does not prove conditional identification, a complete FBSDE solution, adaptive efficacy or activation safety.
 
-### 6.2 Projection state and owner-local durability reference
+The repository now provides a qualified-consumption seam rather than treating nonzero digests as admission. `admit_fbsde_evidence_v1` requires an embedding-supplied verifier to approve immutable evidence for the coefficient artifact/profile, source data, conditioning stratum, conditional identification, coordinate manifest, signed-Q24 conversion profile, consumer admission and independent qualification. `solve_qualified_backward_regression_v1` then requires exact source/conditioning/profile identity, runs the bounded native solve, converts Z to signed Q24 nearest/ties-to-even, records the maximum conversion error and emits only `DENY_ALL` evidence. NDU does not implement the verifier or issue its own independent qualification.
+
+### 6.2 Projection state and durable owner candidate
 
 Preference and utility projections are append-only revisions owned by `utility.ndu`. The full semantic identity includes subject, principal scope, objective, predecessor, event and coefficient. A selected pointer changes only after the immutable projection and required independent evidence exist.
 
-`NduProjectionJournalV1` is an owner-local bounded reference implementation. Each entry binds:
+`NduProjectionJournalV1` remains the pure bounded semantic reducer. Each entry binds monotone sequence, kind, idempotency identity, objective/subject, payload, predecessor and entry digest. Revocation is keyed by the full `(objective_digest, subject_digest, payload_digest)` tuple; identical payload bytes in another scope remain independent.
 
-- monotone sequence;
-- preference, utility, selection or revocation kind;
-- idempotency identity digest;
-- objective and subject digests;
-- projection payload digest;
-- predecessor-entry and entry digests.
+`NduProjectionDurableJournalV1` is the repository's durable owner source candidate around that reducer. It acquires an exclusive crash-released file lock, binds a versioned file header to a nonzero owner digest, enforces a caller-selected retention ceiling no larger than 4096, appends one canonical record, calls `sync_all`, and only then asks an externally owned anchor store to compare-and-set the exact new chain head. Memory is published only after that external acknowledgement.
 
-The journal enforces equal-identity/equal-semantics replay, rejects identity drift, validates exact length and hashes on reopen, rejects truncation/unknown kind/tampering, reconstructs selected projection state and prevents revocation resurrection after restart.
+An ambiguous anchor update poisons the handle. Recovery re-reads the independent anchor, validates that exact acknowledged prefix and truncates any complete or partial unwitnessed tail before reopening. Checkpoints contain byte-exact durable bytes plus binding/anchor; restore rejects a checkpoint whose external anchor no longer matches. Migration from the old reference snapshot is permitted only when an external witness already authenticates that exact chain head, so local bytes cannot mint their own trust.
 
-This reference does not claim an activated production writer, operating-system durability, fsync, schema migration, retention or backup qualification. Product composition must bind a selected store and prove those properties independently.
+The NDU crate intentionally does not implement the anchor store, product path, containing-directory provisioning or target-host backup policy. Those remain composition and qualification gates; therefore this is a production-writer source candidate, not an activated production writer.
 
 ## 7. Goodhart and wireheading controls
 
