@@ -171,9 +171,10 @@ pub fn validate_iteration_transition(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_support::FixtureValue;
 
     fn id(value: &str) -> StableId {
-        StableId::new(value).expect("valid id")
+        StableId::new(value).fixture("valid id")
     }
 
     fn digest(value: u8) -> Digest32 {
