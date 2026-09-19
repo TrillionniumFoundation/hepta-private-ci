@@ -970,23 +970,58 @@ pub struct ContextRealizedItemV2 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ContextSerializationReceiptV2 {
-    pub serialization_id: StableId,
-    pub compilation_receipt_digest: Digest32,
-    pub context_digest: Digest32,
-    pub model_profile_digest: Digest32,
-    pub selected_item_ids: Vec<StableId>,
-    pub realization_manifest_digest: Digest32,
-    pub template_digest: Digest32,
-    pub tool_schema_digest: Digest32,
-    pub tokenizer_digest: Digest32,
-    pub payload_digest: Digest32,
-    pub serialized_payload_bytes: u64,
-    pub serialized_token_count: u64,
-    pub receipt_digest: Digest32,
-    pub authority: AuthorityPosture,
+    serialization_id: StableId,
+    compilation_receipt_digest: Digest32,
+    context_digest: Digest32,
+    model_profile_digest: Digest32,
+    selected_item_ids: Vec<StableId>,
+    realization_manifest_digest: Digest32,
+    template_digest: Digest32,
+    tool_schema_digest: Digest32,
+    tokenizer_digest: Digest32,
+    payload_digest: Digest32,
+    serialized_payload_bytes: u64,
+    serialized_token_count: u64,
+    receipt_digest: Digest32,
+    authority: AuthorityPosture,
 }
 
 impl ContextSerializationReceiptV2 {
+    #[must_use]
+    pub const fn payload_digest(&self) -> Digest32 {
+        self.payload_digest
+    }
+
+    #[must_use]
+    pub const fn serialized_payload_bytes(&self) -> u64 {
+        self.serialized_payload_bytes
+    }
+
+    #[must_use]
+    pub const fn serialized_token_count(&self) -> u64 {
+        self.serialized_token_count
+    }
+
+    #[must_use]
+    pub const fn realization_manifest_digest(&self) -> Digest32 {
+        self.realization_manifest_digest
+    }
+
+    #[must_use]
+    pub fn selected_item_ids(&self) -> &[StableId] {
+        &self.selected_item_ids
+    }
+
+    #[must_use]
+    pub const fn receipt_digest(&self) -> Digest32 {
+        self.receipt_digest
+    }
+
+    #[must_use]
+    pub const fn authority(&self) -> AuthorityPosture {
+        self.authority
+    }
+
     pub fn validate_for(
         &self,
         compiled: &CompiledContextV2,
@@ -1045,7 +1080,7 @@ impl ContextSerializationReceiptV2 {
     }
 
     #[must_use]
-    pub fn compute_receipt_digest(&self) -> Digest32 {
+    fn compute_receipt_digest(&self) -> Digest32 {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(SERIALIZATION_DOMAIN);
         push_id(&mut bytes, &self.serialization_id);
@@ -1066,11 +1101,21 @@ impl ContextSerializationReceiptV2 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SerializedContextV2 {
-    pub receipt: ContextSerializationReceiptV2,
-    pub payload: Vec<u8>,
+    receipt: ContextSerializationReceiptV2,
+    payload: Vec<u8>,
 }
 
 impl SerializedContextV2 {
+    #[must_use]
+    pub const fn receipt(&self) -> &ContextSerializationReceiptV2 {
+        &self.receipt
+    }
+
+    #[must_use]
+    pub fn payload(&self) -> &[u8] {
+        &self.payload
+    }
+
     pub fn validate_for(
         &self,
         compiled: &CompiledContextV2,
@@ -1157,22 +1202,52 @@ pub fn record_serialization(
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ContextAttachmentV2 {
-    pub attachment_id: StableId,
-    pub compilation_receipt_digest: Digest32,
-    pub serialization_receipt_digest: Digest32,
-    pub generation_vector_digest: Digest32,
-    pub admission_verifier_digest: Digest32,
-    pub admission_snapshot_digest: Digest32,
-    pub admission_snapshot_verification_digest: Digest32,
-    pub revocation_epoch: u64,
-    pub model_profile_digest: Digest32,
-    pub payload_digest: Digest32,
-    pub selected_item_ids: Vec<StableId>,
-    pub attachment_digest: Digest32,
-    pub authority: AuthorityPosture,
+    attachment_id: StableId,
+    compilation_receipt_digest: Digest32,
+    serialization_receipt_digest: Digest32,
+    generation_vector_digest: Digest32,
+    admission_verifier_digest: Digest32,
+    admission_snapshot_digest: Digest32,
+    admission_snapshot_verification_digest: Digest32,
+    revocation_epoch: u64,
+    model_profile_digest: Digest32,
+    payload_digest: Digest32,
+    selected_item_ids: Vec<StableId>,
+    attachment_digest: Digest32,
+    authority: AuthorityPosture,
 }
 
 impl ContextAttachmentV2 {
+    #[must_use]
+    pub const fn attachment_digest(&self) -> Digest32 {
+        self.attachment_digest
+    }
+
+    #[must_use]
+    pub const fn payload_digest(&self) -> Digest32 {
+        self.payload_digest
+    }
+
+    #[must_use]
+    pub const fn admission_snapshot_digest(&self) -> Digest32 {
+        self.admission_snapshot_digest
+    }
+
+    #[must_use]
+    pub const fn revocation_epoch(&self) -> u64 {
+        self.revocation_epoch
+    }
+
+    #[must_use]
+    pub fn selected_item_ids(&self) -> &[StableId] {
+        &self.selected_item_ids
+    }
+
+    #[must_use]
+    pub const fn authority(&self) -> AuthorityPosture {
+        self.authority
+    }
+
     pub fn validate_for(
         &self,
         compiled: &CompiledContextV2,
@@ -1212,7 +1287,7 @@ impl ContextAttachmentV2 {
     }
 
     #[must_use]
-    pub fn compute_attachment_digest(&self) -> Digest32 {
+    fn compute_attachment_digest(&self) -> Digest32 {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(ATTACHMENT_DOMAIN);
         push_id(&mut bytes, &self.attachment_id);
@@ -1281,24 +1356,63 @@ pub struct ContextTransportEvidenceV2 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ContextDeliveryReceiptV2 {
-    pub delivery_id: StableId,
-    pub attachment_digest: Digest32,
-    pub serialization_receipt_digest: Digest32,
-    pub payload_digest: Digest32,
-    pub model_profile_digest: Digest32,
-    pub transport_digest: Digest32,
-    pub provider_request_id: StableId,
-    pub acknowledgement_digest: Digest32,
-    pub terminal_observed: bool,
-    pub disposition: ContextDeliveryDispositionV2,
-    pub observed_unix_ms: u64,
-    pub receipt_digest: Digest32,
-    pub authority: AuthorityPosture,
+    delivery_id: StableId,
+    attachment_digest: Digest32,
+    serialization_receipt_digest: Digest32,
+    payload_digest: Digest32,
+    model_profile_digest: Digest32,
+    admission_verifier_digest: Digest32,
+    admission_snapshot_digest: Digest32,
+    admission_snapshot_verification_digest: Digest32,
+    revocation_epoch: u64,
+    transport_digest: Digest32,
+    provider_request_id: StableId,
+    acknowledgement_digest: Digest32,
+    terminal_observed: bool,
+    disposition: ContextDeliveryDispositionV2,
+    observed_unix_ms: u64,
+    receipt_digest: Digest32,
+    authority: AuthorityPosture,
 }
 
 pub type ContextDeliveryObservationV2 = ContextDeliveryReceiptV2;
 
 impl ContextDeliveryReceiptV2 {
+    #[must_use]
+    pub const fn payload_digest(&self) -> Digest32 {
+        self.payload_digest
+    }
+
+    #[must_use]
+    pub const fn admission_snapshot_digest(&self) -> Digest32 {
+        self.admission_snapshot_digest
+    }
+
+    #[must_use]
+    pub const fn revocation_epoch(&self) -> u64 {
+        self.revocation_epoch
+    }
+
+    #[must_use]
+    pub const fn acknowledgement_digest(&self) -> Digest32 {
+        self.acknowledgement_digest
+    }
+
+    #[must_use]
+    pub const fn disposition(&self) -> ContextDeliveryDispositionV2 {
+        self.disposition
+    }
+
+    #[must_use]
+    pub const fn receipt_digest(&self) -> Digest32 {
+        self.receipt_digest
+    }
+
+    #[must_use]
+    pub const fn authority(&self) -> AuthorityPosture {
+        self.authority
+    }
+
     pub fn validate_for(
         &self,
         attachment: &ContextAttachmentV2,
@@ -1309,6 +1423,12 @@ impl ContextDeliveryReceiptV2 {
             ("serialization_receipt", self.serialization_receipt_digest),
             ("payload", self.payload_digest),
             ("model_profile", self.model_profile_digest),
+            ("admission_verifier", self.admission_verifier_digest),
+            ("admission_snapshot", self.admission_snapshot_digest),
+            (
+                "admission_snapshot_verification",
+                self.admission_snapshot_verification_digest,
+            ),
             ("transport", self.transport_digest),
             ("delivery_receipt", self.receipt_digest),
         ] {
@@ -1319,6 +1439,8 @@ impl ContextDeliveryReceiptV2 {
             || self.payload_digest != attachment.payload_digest
             || self.payload_digest != serialization.receipt.payload_digest
             || self.model_profile_digest != attachment.model_profile_digest
+            || self.admission_verifier_digest != attachment.admission_verifier_digest
+            || self.revocation_epoch < attachment.revocation_epoch
         {
             return Err(ContextCompilerV2Error::DeliveryMismatch);
         }
@@ -1347,7 +1469,7 @@ impl ContextDeliveryReceiptV2 {
     }
 
     #[must_use]
-    pub fn compute_receipt_digest(&self) -> Digest32 {
+    fn compute_receipt_digest(&self) -> Digest32 {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(DELIVERY_DOMAIN);
         push_id(&mut bytes, &self.delivery_id);
@@ -1355,6 +1477,13 @@ impl ContextDeliveryReceiptV2 {
         push_digest(&mut bytes, self.serialization_receipt_digest);
         push_digest(&mut bytes, self.payload_digest);
         push_digest(&mut bytes, self.model_profile_digest);
+        push_digest(&mut bytes, self.admission_verifier_digest);
+        push_digest(&mut bytes, self.admission_snapshot_digest);
+        push_digest(
+            &mut bytes,
+            self.admission_snapshot_verification_digest,
+        );
+        push_u64(&mut bytes, self.revocation_epoch);
         push_digest(&mut bytes, self.transport_digest);
         push_id(&mut bytes, &self.provider_request_id);
         push_digest(&mut bytes, self.acknowledgement_digest);
@@ -1398,6 +1527,10 @@ pub fn deliver_context_v2(
         serialization_receipt_digest: serialization.receipt.receipt_digest,
         payload_digest: actual_payload_digest,
         model_profile_digest: profile.digest(),
+        admission_verifier_digest: current_snapshot.verifier_digest(),
+        admission_snapshot_digest: current_snapshot.snapshot_digest(),
+        admission_snapshot_verification_digest: current_snapshot.verification_digest(),
+        revocation_epoch: current_snapshot.revocation_epoch(),
         transport_digest,
         provider_request_id: evidence.provider_request_id,
         acknowledgement_digest: evidence.acknowledgement_digest,
