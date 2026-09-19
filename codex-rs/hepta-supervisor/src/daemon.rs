@@ -741,9 +741,8 @@ async fn handle_mutation<D: ProcessDriver>(
     }
 
     let mutation = match prepared {
-        PreparedMutation::Start(target) => {
-            supervisor.start_release(&agent_id, target, Instant::now())
-        }
+        PreparedMutation::Start(target) => supervisor
+            .start_release_consuming_allocation_if_present(&agent_id, target, Instant::now()),
         PreparedMutation::Drain => supervisor.drain(&agent_id, Instant::now()),
         PreparedMutation::Stop => supervisor.stop(&agent_id, Instant::now()),
         PreparedMutation::Kill => supervisor.kill(&agent_id),

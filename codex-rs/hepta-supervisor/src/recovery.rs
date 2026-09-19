@@ -92,6 +92,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 record.lifecycle.lifecycle
             )));
         }
+        let fleet_allocation = self.current_fleet_allocation_for_start(agent_id)?;
         let starting = self.registry.compare_and_transition(
             agent_id,
             record.lifecycle.generation,
@@ -156,6 +157,9 @@ impl<D: ProcessDriver> Supervisor<D> {
             fenced: false,
         });
         slot.event(starting.generation, SupervisorEventKind::Spawned);
+        if let Some(grant) = fleet_allocation.as_ref() {
+            self.observe_fleet_allocation_holding(agent_id, grant)?;
+        }
         Ok(())
     }
 

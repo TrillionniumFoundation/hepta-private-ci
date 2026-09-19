@@ -9,6 +9,7 @@ mod daemon_client;
 mod daemon_protocol;
 mod driver;
 mod error;
+mod fleet_allocation;
 mod lease;
 mod matrix;
 mod model;

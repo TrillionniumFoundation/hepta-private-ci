@@ -104,7 +104,7 @@ Stop new admission; persist drain intent; cancel only provably pre-effect work; 
 
 ## 15. Source maturity
 
-The truth registry records source-boundary mappings for all 39 operations. Supervisor and Codex are native runtime spines; Fleet, inference, TaskFlow and Matrix include native owner ledgers/adapters; Agentd now owns its own run coordinator; Browser/Web/Native provide bounded driver/client boundaries. The component mappings do not close repository-controlled integration work. Durable owner wiring, actual local model/browser drivers and runtime composition remain implementation tasks in addition to external qualification.
+The truth registry records source-boundary mappings for all 39 operations. Supervisor and Codex are native runtime spines; Fleet now includes a crash-recoverable allocation owner, final-use-authorized grant commit, deterministic placement and a named Supervisor consumer; inference, TaskFlow and Matrix include their native owner ledgers/adapters; Agentd owns its run coordinator; Browser/Web/Native provide bounded driver/client boundaries. Other module mappings do not automatically close their repository-controlled integration work. Fleet remote-host enrollment/measurement and all target-host acceptance remain external qualification rather than source claims.
 
 ## 16. Evidence package required for activation
 

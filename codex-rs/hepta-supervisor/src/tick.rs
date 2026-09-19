@@ -165,6 +165,7 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
         let fenced = runtime.fenced || record.lifecycle.generation != runtime.generation;
+        self.release_fleet_allocation_after_exit(agent_id)?;
         let lease = ProcessLease {
             schema_version: PROCESS_LEASE_SCHEMA_VERSION,
             agent_id: agent_id.clone(),

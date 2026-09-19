@@ -126,6 +126,16 @@ impl fmt::Debug for VerifiedUseToken {
     }
 }
 
+impl VerifiedUseToken {
+    /// Authority epoch authenticated by the independently signed grant.
+    ///
+    /// Exposing this metadata does not make the token cloneable, serializable or
+    /// forgeable; final use still requires consuming the token through its owner.
+    pub const fn authority_epoch(&self) -> u64 {
+        self.grant.authority_epoch
+    }
+}
+
 impl FinalUseAuthority {
     pub fn open_state_dir(
         directory: &std::path::Path,

@@ -161,7 +161,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-FleetRegistry is operated by the existing supervisor owner. Open the same registry and preserve generation/fence identity during lifecycle changes. The separate lease_ledger is an in-memory component; durable resource grants and real capacity observations remain implementation work. Do not launch a second fleet writer.
+FleetRegistry remains the existing fleet control root. `FleetAllocationStore` is the single durable allocation writer under that root: it holds a writer lock, publishes fsync+rename immutable generations, rejects corrupt/unsafe state, and retains unresolved expired/revoked/indeterminate holders as capacity until a trusted `Released` observation arrives. `lease_ledger` is now compatibility-only and uses the canonical resource vector. `LocalCapacityObserverV1` supplies bounded Linux kernel memory/parallelism observations for the local enrolled host; remote/enrolled-host adapters remain separately authenticated deployment work. Supervisor is the named runtime consumer and records `Holding` at the unique physical spawn seam and `Released` only after observed process exit. Do not launch a second fleet writer.
 
 Current operating and state-format references:
 
@@ -174,8 +174,10 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-fleet/src/allocation_tests.rs](../../../codex-rs/hepta-fleet/src/allocation_tests.rs); named case: `weighted_allocation_reserves_minimums_and_conserves_capacity`.
-- [codex-rs/hepta-fleet/src/lease_ledger_tests.rs](../../../codex-rs/hepta-fleet/src/lease_ledger_tests.rs); named case: `conserves_capacity_and_reuses_identical_grant`.
+- [codex-rs/hepta-fleet/src/allocation_tests.rs](../../../codex-rs/hepta-fleet/src/allocation_tests.rs); weighted max-min conservation, permutation stability and hostile input coverage.
+- [codex-rs/hepta-fleet/src/allocation_store_tests.rs](../../../codex-rs/hepta-fleet/src/allocation_store_tests.rs); FLEET-01..04 durable conservation, signed final-use admission, restart/expiry quarantine, deterministic placement and enrollment/authority denial.
+- [codex-rs/hepta-supervisor/src/supervisor_tests.rs](../../../codex-rs/hepta-supervisor/src/supervisor_tests.rs); named product-call case: `durable_fleet_grant_is_consumed_by_spawn_and_released_by_observed_exit`.
+- [codex-rs/hepta-fleet/src/lease_ledger_tests.rs](../../../codex-rs/hepta-fleet/src/lease_ledger_tests.rs); compatibility reducer conservation, fencing and bounded churn.
 
 In `codex-rs`, run `just test -p codex-hepta-fleet`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md) separately labels target acceptance designs.
 
@@ -258,10 +260,10 @@ This receipt records repository source bindings for the current documentation ca
 
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
-| `admit_host` | `pub fn admit_host(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
-| `allocate` | `pub fn issue(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
-| `renew_or_revoke` | `pub fn renew_or_revoke(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
+| `admit_host` | `pub fn admit_host(` | `codex-rs/hepta-fleet/src/allocation_store.rs` | `codex-rs/hepta-fleet/src/allocation_store_tests.rs` |
+| `allocate` | `pub fn commit_prepared(` | `codex-rs/hepta-fleet/src/allocation_store.rs` | `codex-rs/hepta-fleet/src/allocation_store_tests.rs`; `codex-rs/hepta-supervisor/src/supervisor_tests.rs` |
+| `renew_or_revoke` | `pub fn renew_verified(` / `pub fn revoke(` | `codex-rs/hepta-fleet/src/allocation_store.rs` | `codex-rs/hepta-fleet/src/allocation_store_tests.rs` |
 
-- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
-- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+- Source identity is frozen by `IMPLEMENTATION_MAP.json` to the source-closure commit/tree.
+- The named source-composed runtime consumer is `codex-rs/hepta-supervisor/src/fleet_allocation.rs`; every physical spawn route passes the same durable grant check in `start_release_slot`.
+- Deployment activation, remote enrolled-host observation, target partition measurements, independent acceptance, promotion and release remain separate evidence gates.

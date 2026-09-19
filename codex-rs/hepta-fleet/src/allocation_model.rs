@@ -1,32 +1,46 @@
-//! Authority-free model for bounded calculations over caller-supplied inputs.
+//! Canonical bounded fleet resource model and authority-free local calculation types.
 //!
-//! These types are an in-process calculation surface, not a registered wire
-//! schema, fleet-view attestation, allocation grant, lease, scheduling
-//! decision, or effect receipt.
+//! The V1 resource vector is shared by placement, allocation, durable grants and
+//! runtime consumption. Historical Local names remain aliases so existing
+//! callers cannot accidentally keep a second resource model alive.
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
+use serde::Deserialize;
+use serde::Serialize;
 use thiserror::Error;
 
-/// Version of this in-process calculation, not a registered wire schema.
+use crate::ResourceBudget;
+
 pub const LOCAL_ALLOCATION_CALCULATOR_VERSION: u32 = 1;
-/// Pilot ceiling inherited from the runtime.fleet technical contract.
 pub const MAX_LOCAL_HOST_CANDIDATES: usize = 256;
-/// Pilot ceiling inherited from the runtime.fleet technical contract.
 pub const MAX_LOCAL_ALLOCATION_CANDIDATES: usize = 4_096;
-/// Bound on caller-supplied relative weights.
 pub const MAX_LOCAL_ALLOCATION_WEIGHT: u32 = 1_000_000;
 
-/// The fixed resource axes supported by the V1 local calculator.
-#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub enum LocalResourceAxisV1 {
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum FleetResourceClassV1 {
+    Hard,
+    Soft,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum FleetResourceUnitV1 {
+    Count,
+    Mebibytes,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum FleetResourceAxisV1 {
     ConcurrentTurns,
     MemoryMib,
     ToolProcesses,
     TurnQueueSlots,
 }
 
-impl LocalResourceAxisV1 {
+impl FleetResourceAxisV1 {
     pub(crate) const ALL: [Self; 4] = [
         Self::ConcurrentTurns,
         Self::MemoryMib,
@@ -34,7 +48,25 @@ impl LocalResourceAxisV1 {
         Self::TurnQueueSlots,
     ];
 
-    pub(crate) const fn read(self, vector: LocalResourceVectorV1) -> u64 {
+    pub const fn unit(self) -> FleetResourceUnitV1 {
+        match self {
+            Self::MemoryMib => FleetResourceUnitV1::Mebibytes,
+            Self::ConcurrentTurns | Self::ToolProcesses | Self::TurnQueueSlots => {
+                FleetResourceUnitV1::Count
+            }
+        }
+    }
+
+    pub const fn class(self) -> FleetResourceClassV1 {
+        match self {
+            Self::ConcurrentTurns | Self::MemoryMib | Self::ToolProcesses => {
+                FleetResourceClassV1::Hard
+            }
+            Self::TurnQueueSlots => FleetResourceClassV1::Soft,
+        }
+    }
+
+    pub(crate) const fn read(self, vector: FleetResourceVectorV1) -> u64 {
         match self {
             Self::ConcurrentTurns => vector.concurrent_turns,
             Self::MemoryMib => vector.memory_mib,
@@ -43,7 +75,7 @@ impl LocalResourceAxisV1 {
         }
     }
 
-    pub(crate) fn write(self, vector: &mut LocalResourceVectorV1, value: u64) {
+    pub(crate) fn write(self, vector: &mut FleetResourceVectorV1, value: u64) {
         match self {
             Self::ConcurrentTurns => vector.concurrent_turns = value,
             Self::MemoryMib => vector.memory_mib = value,
@@ -53,41 +85,85 @@ impl LocalResourceAxisV1 {
     }
 }
 
-/// Four fixed-width resource quantities. The algorithm never loops per unit.
-#[derive(Clone, Copy, Debug, Default, Eq, Ord, PartialEq, PartialOrd)]
-pub struct LocalResourceVectorV1 {
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct FleetResourceVectorV1 {
     pub concurrent_turns: u64,
     pub memory_mib: u64,
     pub tool_processes: u64,
     pub turn_queue_slots: u64,
 }
 
-/// Untrusted local description of one host's allocatable capacity.
-#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+impl FleetResourceVectorV1 {
+    pub fn from_manifest_budget(budget: &ResourceBudget) -> Self {
+        Self {
+            concurrent_turns: u64::from(budget.max_concurrent_turns),
+            memory_mib: u64::from(budget.memory_limit_mib),
+            tool_processes: u64::from(budget.max_tool_processes),
+            turn_queue_slots: u64::from(budget.turn_queue_capacity),
+        }
+    }
+
+    pub fn checked_add(self, other: Self) -> Option<Self> {
+        Some(Self {
+            concurrent_turns: self.concurrent_turns.checked_add(other.concurrent_turns)?,
+            memory_mib: self.memory_mib.checked_add(other.memory_mib)?,
+            tool_processes: self.tool_processes.checked_add(other.tool_processes)?,
+            turn_queue_slots: self.turn_queue_slots.checked_add(other.turn_queue_slots)?,
+        })
+    }
+
+    pub fn checked_sub(self, other: Self) -> Option<Self> {
+        Some(Self {
+            concurrent_turns: self.concurrent_turns.checked_sub(other.concurrent_turns)?,
+            memory_mib: self.memory_mib.checked_sub(other.memory_mib)?,
+            tool_processes: self.tool_processes.checked_sub(other.tool_processes)?,
+            turn_queue_slots: self.turn_queue_slots.checked_sub(other.turn_queue_slots)?,
+        })
+    }
+
+    pub const fn fits_within(self, capacity: Self) -> bool {
+        self.concurrent_turns <= capacity.concurrent_turns
+            && self.memory_mib <= capacity.memory_mib
+            && self.tool_processes <= capacity.tool_processes
+            && self.turn_queue_slots <= capacity.turn_queue_slots
+    }
+
+    pub const fn is_zero(self) -> bool {
+        self.concurrent_turns == 0
+            && self.memory_mib == 0
+            && self.tool_processes == 0
+            && self.turn_queue_slots == 0
+    }
+}
+
+pub type LocalResourceAxisV1 = FleetResourceAxisV1;
+pub type LocalResourceVectorV1 = FleetResourceVectorV1;
+
+#[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct LocalHostCapacityCandidateV1 {
     pub host_id: String,
     pub failure_domain_id: String,
-    pub caller_supplied_allocatable: LocalResourceVectorV1,
+    pub caller_supplied_allocatable: FleetResourceVectorV1,
 }
 
-/// Untrusted local request already bound by the caller to one candidate host.
-#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct LocalAllocationCandidateV1 {
     pub request_id: String,
     pub agent_id: AgentId,
     pub host_id: String,
     pub caller_supplied_weight: u32,
-    pub caller_supplied_minimum: LocalResourceVectorV1,
-    pub caller_supplied_desired: LocalResourceVectorV1,
+    pub caller_supplied_minimum: FleetResourceVectorV1,
+    pub caller_supplied_desired: FleetResourceVectorV1,
 }
 
-/// Scope disclosure carried by every successful calculation.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LocalAllocationInputScopeV1 {
     CallerSuppliedCandidatesAndCapacityOnly,
 }
 
-/// Every claim category this local calculator explicitly denies.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LocalAllocationClaimV1 {
     CompleteFleetView,
@@ -100,7 +176,6 @@ pub enum LocalAllocationClaimV1 {
     ExternalEffect,
 }
 
-/// Immutable denial of view, grant, scheduling, start, and effect claims.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct LocalAllocationClaimBoundaryV1 {
     _deny_all: (),
@@ -127,22 +202,19 @@ impl LocalAllocationClaimBoundaryV1 {
     }
 }
 
-/// One deterministic share; this is not an allocation grant or lease.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct LocalAllocationShareV1 {
     pub request_id: String,
     pub agent_id: AgentId,
     pub host_id: String,
     pub failure_domain_id: String,
-    pub resources: LocalResourceVectorV1,
+    pub resources: FleetResourceVectorV1,
 }
 
-/// Authority-free result in canonical `(host_id, request_id, agent_id)` order.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct LocalAllocationCalculationV1 {
     calculator_version: u32,
     input_scope: LocalAllocationInputScopeV1,
-    /// Unkeyed local content hash; it is not provenance, authentication, or a receipt.
     calculation_content_sha256: Sha256Digest,
     shares: Vec<LocalAllocationShareV1>,
     claim_boundary: LocalAllocationClaimBoundaryV1,
@@ -199,6 +271,8 @@ pub enum LocalAllocationError {
     DuplicateHost(String),
     #[error("duplicate local request: {0}")]
     DuplicateRequest(String),
+    #[error("duplicate active agent request: {0}")]
+    DuplicateAgent(String),
     #[error("unknown local host: {0}")]
     UnknownHost(String),
     #[error("invalid local weight for request: {0}")]
@@ -208,13 +282,15 @@ pub enum LocalAllocationError {
     #[error("local minimum exceeds desired resources for request {request_id} on {axis:?}")]
     MinimumExceedsDesired {
         request_id: String,
-        axis: LocalResourceAxisV1,
+        axis: FleetResourceAxisV1,
     },
     #[error("insufficient caller-supplied capacity on host {host_id} for {axis:?}")]
     InsufficientCapacity {
         host_id: String,
-        axis: LocalResourceAxisV1,
+        axis: FleetResourceAxisV1,
     },
+    #[error("no eligible host can satisfy minimum resources for request: {0}")]
+    NoEligibleHost(String),
     #[error("local allocation arithmetic invariant: {0}")]
     ArithmeticInvariant(&'static str),
 }
