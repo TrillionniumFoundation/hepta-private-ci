@@ -8615,7 +8615,8 @@
         "codex-rs/hepta-matrixd/**",
         "codex-rs/hepta-matrix-store/**",
         "codex-rs/hepta-matrix-protocol/**",
-        ".github/workflows/hepta-lane-b-truth.yml"
+        ".github/workflows/hepta-lane-b-truth.yml",
+        ".github/workflows/hepta-matrix-real-synapse.yml"
       ],
       "coOwnerModules": [],
       "consumesContracts": [
@@ -8645,8 +8646,8 @@
         "clean_worktree"
       ],
       "resourceBudget": {
-        "maxChangedPaths": 8,
-        "maxCiMinutes": 30,
+        "maxChangedPaths": 24,
+        "maxCiMinutes": 150,
         "maxParallelAgents": 2
       },
       "rollback": {

@@ -7,7 +7,7 @@
 # bind the actual interpreter to a canonical regular executable, require
 # modern Bash semantics, hash it, and re-exec exactly that path once.
 if [[ ${HEPTA_R4_CANONICAL_BASH_REEXEC:-0} != 1 ]]; then
-  bootstrap_python=/opt/homebrew/bin/python3
+  bootstrap_python=${HEPTA_R4_BOOTSTRAP_PYTHON:-/opt/homebrew/bin/python3}
   qualification_bash=${HEPTA_R4_QUALIFICATION_BASH:-/opt/homebrew/bin/bash}
   [[ "$qualification_bash" == /* \
     && -f "$bootstrap_python" && -x "$bootstrap_python" ]] || {
@@ -102,7 +102,7 @@ if [[ -n "${HEPTA_R4_PRESERVE_ROOT+x}" ]]; then
   echo 'qualification forbids HEPTA_R4_PRESERVE_ROOT in every source mode' >&2
   exit 65
 fi
-python_bootstrap=/opt/homebrew/bin/python3
+python_bootstrap=${HEPTA_R4_BOOTSTRAP_PYTHON:-/opt/homebrew/bin/python3}
 [[ -f "$python_bootstrap" && -x "$python_bootstrap" ]] || {
   echo 'fixed bootstrap Python is not a regular executable file' >&2
   exit 69
@@ -242,9 +242,9 @@ bind_runner_control_tool ln ln_bin
 bind_runner_control_tool env env_bin
 bind_absolute_runner_control_tool kill /bin/kill kill_bin
 bind_absolute_runner_control_tool ps /bin/ps ps_bin
-rustup_bin=/opt/homebrew/opt/rustup/bin/rustup
-[[ -L "$rustup_bin" && -x "$rustup_bin" ]] || {
-  echo 'fixed rustup shim is absent or not executable' >&2
+rustup_bin=${HEPTA_R4_RUSTUP_BIN:-/opt/homebrew/opt/rustup/bin/rustup}
+[[ "$rustup_bin" == /* && -e "$rustup_bin" && -x "$rustup_bin" ]] || {
+  echo 'fixed rustup executable is absent or not executable' >&2
   exit 69
 }
 rustc_toolchain_bin=$("$rustup_bin" which rustc)

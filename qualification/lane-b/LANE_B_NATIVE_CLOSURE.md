@@ -170,12 +170,8 @@ A homeserver event observation settles send terminality; App Server turn complet
 | Operation | Class | Owner entrypoint |
 |---|---|---|
 | `admit_event` | `owner_native` | `codex-rs/hepta-matrixd/src/runtime.rs` — `pub async fn process_event(` |
-| `prepare_send` | `owner_native` | `codex-rs/hepta-matrixd/src/send_observer.rs` — `pub fn prepare_send(` |
-| `observe_send` | `owner_native` | `codex-rs/hepta-matrixd/src/send_observer.rs` — `pub fn observe_send(` |
-
-Remaining repository implementation gaps:
-
-- Integrate any new send-observer state with the existing MatrixDurableStore transaction identity; the component alone is not a second durable sender.
+| `prepare_send` | `owner_native` | `codex-rs/hepta-matrix-sdk/src/outbound.rs` — `pub async fn dispatch_outbox_once(` |
+| `observe_send` | `owner_native` | `codex-rs/hepta-matrix-sdk/src/sync.rs` — `pub async fn commit_response(` |
 
 External evidence gates:
 

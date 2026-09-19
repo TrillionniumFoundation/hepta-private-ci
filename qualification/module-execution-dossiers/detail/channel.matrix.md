@@ -1,7 +1,7 @@
 # channel.matrix: implementation design
 
 Parent: `docs/modules/channel.matrix/TECHNICAL.md`. Lane: `LANE-B-RUNTIME`.
-Status: durable Matrix runtime plus a separate send-observer component implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: durable Matrix runtime, durable dispatch ledger, transport/terminal reconciliation and separate redaction evidence implemented at the repository source boundary; external target qualification and independent acceptance remain listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -45,8 +45,8 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `process_event` in [codex-rs/hepta-matrixd/src/runtime.rs](../../../codex-rs/hepta-matrixd/src/runtime.rs); `recover_pending` in [codex-rs/hepta-matrixd/src/runtime.rs](../../../codex-rs/hepta-matrixd/src/runtime.rs); `observe_send` in [codex-rs/hepta-matrixd/src/send_observer.rs](../../../codex-rs/hepta-matrixd/src/send_observer.rs). Durable Matrix runtime plus a separate send-observer component implemented.
-- **State and recovery:** MatrixRuntime uses MatrixDurableStore for inbox/thread/outbox recovery. The send-observer BTreeMap separately binds operation/transaction/server/session and keeps unknown sends indeterminate; its state is not a replacement durable sender.
-- **Source tests:** [codex-rs/hepta-matrixd/src/runtime/tests.rs](../../../codex-rs/hepta-matrixd/src/runtime/tests.rs), [codex-rs/hepta-matrixd/src/send_observer_tests.rs](../../../codex-rs/hepta-matrixd/src/send_observer_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implemented entrypoints:** `process_event` and `recover_pending` in [codex-rs/hepta-matrixd/src/runtime.rs](../../../codex-rs/hepta-matrixd/src/runtime.rs); durable send claim/transport handling in [codex-rs/hepta-matrix-sdk/src/outbound.rs](../../../codex-rs/hepta-matrix-sdk/src/outbound.rs); homeserver terminal reconciliation in [codex-rs/hepta-matrix-sdk/src/sync.rs](../../../codex-rs/hepta-matrix-sdk/src/sync.rs). The compatibility `send_observer` facade owns no second ledger.
+- **State and recovery:** MatrixRuntime and the SDK sender share MatrixDurableStore. `matrix_dispatch_ledger` binds the stable transaction identity, logical operation, room/generation fence, current payload digest, transport disposition, terminal homeserver event, and distinct send/redaction evidence. Transport acceptance leaves the outbox non-terminal; lease expiry reuses the same stable transaction. `/sync` observes the server event before checkpoint advancement, so crash/reopen replay is idempotent and cannot lose terminality behind a cursor.
+- **Source tests:** [codex-rs/hepta-matrixd/src/runtime/tests.rs](../../../codex-rs/hepta-matrixd/src/runtime/tests.rs), [codex-rs/hepta-matrix-sdk/tests/durable_transport.rs](../../../codex-rs/hepta-matrix-sdk/tests/durable_transport.rs), and [codex-rs/hepta-matrix-sdk/src/sync_tests.rs](../../../codex-rs/hepta-matrix-sdk/src/sync_tests.rs). These are test identities; the exact real-Synapse workflow emits a candidate-bound qualification receipt separately.
 - **Implementation and operating references:** [docs/modules/channel.matrix/IMPLEMENTATION_MAP.json](../../../docs/modules/channel.matrix/IMPLEMENTATION_MAP.json), [docs/readiness/LANE_B_RUNTIME_COMPOSITION.md](../../../docs/readiness/LANE_B_RUNTIME_COMPOSITION.md).
-- **Remaining work:** Integrate send-observer state with the canonical durable transaction identity, then qualify enrolled homeserver/device transport, encryption, reconnect/redaction and restore.
+- **Remaining work:** No repository-controlled dispatch-ledger integration gap remains. Qualify the exact candidate against the enrolled homeserver/device transport, encryption, rate limits, reconnect/redaction/restore, then obtain independent acceptance.

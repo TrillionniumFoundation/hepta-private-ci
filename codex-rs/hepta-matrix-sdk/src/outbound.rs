@@ -5,6 +5,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_matrix_protocol::MatrixEventId;
+use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixDurableError;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::OutboxRecord;
@@ -63,7 +64,10 @@ impl OutboxDispatchConfig {
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct OutboxDispatchStats {
     pub claimed: u64,
-    pub sent: u64,
+    /// Transport returned a Matrix event id. This is not terminal delivery;
+    /// terminality is settled only by a trusted homeserver timeline observation.
+    pub accepted: u64,
+    pub terminal_reconciled: u64,
     pub retry_scheduled: u64,
     pub permanent_failure: u64,
     pub cancelled: bool,
@@ -106,16 +110,51 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
         };
         match result {
             Ok(event_id) => {
-                store
-                    .mark_outbox_sent(&record.stable_txn_id, record.attempts, &event_id, now_ms)
+                let dispatch = store
+                    .record_transport_accepted(
+                        &record.stable_txn_id,
+                        record.attempts,
+                        &event_id,
+                        now_ms,
+                    )
                     .await
                     .map_err(store_error)?;
-                stats.sent += 1;
+                if matches!(
+                    dispatch.state,
+                    MatrixDispatchState::ObservedTerminal | MatrixDispatchState::Redacted
+                ) {
+                    stats.terminal_reconciled += 1;
+                } else {
+                    stats.accepted += 1;
+                }
             }
             Err(MatrixTransportError::Retryable) => {
+                let dispatch = store
+                    .record_transport_indeterminate(
+                        &record.stable_txn_id,
+                        record.attempts,
+                        now_ms,
+                    )
+                    .await
+                    .map_err(store_error)?;
+                if matches!(
+                    dispatch.state,
+                    MatrixDispatchState::ObservedTerminal | MatrixDispatchState::Redacted
+                ) {
+                    stats.terminal_reconciled += 1;
+                    continue;
+                }
                 if record.attempts >= config.max_attempts {
                     store
                         .mark_outbox_permanent_failure(
+                            &record.stable_txn_id,
+                            record.attempts,
+                            now_ms,
+                        )
+                        .await
+                        .map_err(store_error)?;
+                    store
+                        .record_transport_terminal_failure(
                             &record.stable_txn_id,
                             record.attempts,
                             now_ms,
@@ -142,6 +181,14 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
             Err(MatrixTransportError::Permanent) => {
                 store
                     .mark_outbox_permanent_failure(&record.stable_txn_id, record.attempts, now_ms)
+                    .await
+                    .map_err(store_error)?;
+                store
+                    .record_transport_terminal_failure(
+                        &record.stable_txn_id,
+                        record.attempts,
+                        now_ms,
+                    )
                     .await
                     .map_err(store_error)?;
                 stats.permanent_failure += 1;
