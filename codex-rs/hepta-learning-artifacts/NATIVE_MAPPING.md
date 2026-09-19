@@ -88,9 +88,12 @@ producer, compatibility digest and exact byte count. Multiple V2 datasets,
 lineage digests and predecessor IDs are **not** collapsed into V1 fields.
 
 The exact V1 registry snapshot receipt and independently validated head-witness
-receipt are then bound into the transaction state digest. Acknowledgement before
+receipt are then bound into the transaction state digest. Registry durability,
+witness durability and acknowledgement revalidate the live scoped withdrawal
+frontier, so an intervening withdrawal blocks completion. Acknowledgement before
 witness durability fails. Snapshot replay rejects shape/digest drift and
-revalidates the embedded admission.
+revalidates the embedded admission. `status()` exposes the current transaction
+state as a deny-all observation surface for service/admin tooling.
 
 The host must durably persist each transaction snapshot under its writer fence
 before treating that phase as durable. This is an ordered crash-recovery
