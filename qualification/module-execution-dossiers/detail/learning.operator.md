@@ -12,9 +12,9 @@ Concrete source mappings are recorded in `../../../codex-rs/hepta-bellman-operat
 
 ## 2. Public operations and contract details
 
-`build_sensor_core(design) -> OperatorSensorCoreManifestV1`; `fit_transition_model(dataset) -> TabularWorldModelV1`; `build_targets(dataset, objective) -> BellmanOperatorArtifact`; `fit_tabular_operator(dataset, sensor_core, profile) -> TabularOperatorArtifactV1`; `predict_transition(model, state, legal_action) -> WorldModelPredictionV1`; `predict_tabular_operator(artifact, sensor, legal_action) -> TabularOperatorPredictionV1`; `admit_operator_regularity(assessment) -> OperatorRegularityAdmissionV1`.
+`build_sensor_core(design) -> OperatorSensorCoreManifestV1`; `fit_transition_model(dataset) -> TabularWorldModelV1`; `build_targets(dataset, objective) -> BellmanOperatorArtifact`; `fit_tabular_operator(dataset, sensor_core, profile) -> TabularOperatorArtifactV1`; `fit_tabular_operator_from_dataset_receipt(plan, receipt, now)`; `fit_transition_model_from_dataset_receipt(model, receipt, samples, now)`; `predict_transition(model, state, legal_action) -> WorldModelPredictionV1`; `predict_tabular_operator(artifact, sensor, legal_action) -> TabularOperatorPredictionV1`; `validate_applicability_certificate_authenticated(...)`; `admit_operator_regularity_authenticated(...)`.
 
-The original `train` function remains a compatibility alias for `build_targets`; it is explicitly a target builder, not a neural trainer. Transition/dynamics estimation and continuation-value estimation have separate artifacts and evidence.
+The original `train` function remains a compatibility alias for `build_targets`; it is explicitly a target builder, not a neural trainer. The default tabular fit now rejects duplicate underlying evidence even when sample IDs differ. Product and qualification integrations use the receipt-bound fitting wrappers and authenticated applicability/regularity wrappers; the pure V1 kernels remain available for deterministic fixtures and compatibility. Transition/dynamics estimation and continuation-value estimation have separate artifacts and evidence.
 
 ## 3. State records and transaction design
 
@@ -41,7 +41,11 @@ These are source bounds, not target-host measurements. A coordinate failing assu
 - OP-01: analytic sensor/Bellman table reproduces canonical Q32 goldens.
 - OP-02: degenerate diffusion, bad mesh ratio or excessive reconstruction gain disables the learned path.
 - OP-03: a high in-sample fit with poor future calibration/retention fails evaluation.
-- OP-04: model-generated rollouts remain synthetic and cannot become independent factual outcome evidence.
+- OP-04: model-generated rollouts remain synthetic, duplicate underlying evidence is rejected and rollouts cannot become independent factual outcome evidence.
+- OP-05: default and compatibility tabular fitting require complete bounded grids and reject relabelled duplicate evidence.
+- OP-06: persisted candidates are independently pinned, byte-exact and reload/rollback only through current artifact-owner lineage in a separate process.
+- OP-07: product/qualification fitting consumes a self-verifying `DatasetSnapshotReceiptV3`; caller-claimed dataset digests or rows outside that receipt reject.
+- OP-08: applicability and regularity product admission consume cryptographically verified evaluator evidence bound to the exact structural receipt and independent from the generator.
 
 Every case is mapped to concrete Rust test functions in `../../lane-e/TEST_TRACEABILITY.json`. Additional learned-grid tests verify order independence, complete-cell admission, minimum samples and domain-bounded prediction.
 
@@ -53,7 +57,7 @@ Use all eighteen dossier receipt fields. Immediate revocation and stop remain ef
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `build_targets` in [codex-rs/hepta-bellman-operator/src/lib.rs](../../../codex-rs/hepta-bellman-operator/src/lib.rs); `fit_tabular_operator` in [codex-rs/hepta-bellman-operator/src/learned.rs](../../../codex-rs/hepta-bellman-operator/src/learned.rs); `fit_transition_model` in [codex-rs/hepta-bellman-operator/src/world_model.rs](../../../codex-rs/hepta-bellman-operator/src/world_model.rs). Deterministic targets, tabular operator fitting and action-conditioned world-model baseline implemented.
+- **Implemented entrypoints:** `build_targets` in [codex-rs/hepta-bellman-operator/src/lib.rs](../../../codex-rs/hepta-bellman-operator/src/lib.rs); `fit_tabular_operator` in [codex-rs/hepta-bellman-operator/src/learned.rs](../../../codex-rs/hepta-bellman-operator/src/learned.rs); `fit_transition_model` in [codex-rs/hepta-bellman-operator/src/world_model.rs](../../../codex-rs/hepta-bellman-operator/src/world_model.rs); receipt-bound and authenticated product/qualification admission in [codex-rs/hepta-bellman-operator/src/admission.rs](../../../codex-rs/hepta-bellman-operator/src/admission.rs). Deterministic targets, strict-evidence tabular fitting, action-conditioned world-model baseline, frozen-dataset binding and authenticated evaluator admission are implemented.
 - **State and recovery:** Pure candidate artifacts bind immutable data/profile/sensor identities. encode_tabular_payload_v1 and LoadedTabularOperatorV1 add bounded persisted candidate encoding and independently pinned, once-validated prediction. Storage and selection remain with learning.artifacts and its host. train is a compatibility alias for target construction; the separate tabular learner requires a complete supported sensor/action grid and retains per-cell sample statistics.
 - **Source tests:** [codex-rs/hepta-bellman-operator/src/learned_tests.rs](../../../codex-rs/hepta-bellman-operator/src/learned_tests.rs), [codex-rs/hepta-bellman-operator/src/world_model_tests.rs](../../../codex-rs/hepta-bellman-operator/src/world_model_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md](../../../codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md), [docs/learning/HOLDER_BELLMAN_SPEC.md](../../../docs/learning/HOLDER_BELLMAN_SPEC.md).
