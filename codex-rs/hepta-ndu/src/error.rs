@@ -10,12 +10,24 @@ pub enum NduError {
     RequiredOrganLimitExceeded,
     EmptyObjectiveDigest,
     EmptyProtocolDigest(&'static str),
-    EmptySupportDigest { candidate: String, organ: String },
+    EmptySupportDigest {
+        candidate: String,
+        organ: String,
+    },
     MixedObjective,
     MixedGeneration,
-    DuplicateOrganContribution { candidate: String, organ: String },
-    MissingRequiredOrgan { candidate: String, organ: String },
-    MissingAxis { candidate: String, axis: String },
+    DuplicateOrganContribution {
+        candidate: String,
+        organ: String,
+    },
+    MissingRequiredOrgan {
+        candidate: String,
+        organ: String,
+    },
+    MissingAxis {
+        candidate: String,
+        axis: String,
+    },
     UnknownAxis(String),
     DuplicateAxis(String),
     NegativeCeiling(String),
