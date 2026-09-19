@@ -210,15 +210,18 @@
     },
     {
       "id": "TopologyProposalV1",
-      "maximumEncodedBytes": 65536,
+      "maximumEncodedBytes": 262144,
       "requiredFields": [
-        "predecessorGeneration",
-        "nextGeneration",
+        "proposalId",
+        "predecessorTopologyDigest",
         "operation",
-        "capabilityTyped",
-        "sandboxOnly",
-        "operatorAccepted",
-        "productionActivationAllowed"
+        "typedNodesEdges",
+        "compatibilityPlanDigest",
+        "resourceDelta",
+        "securityReviewDigest",
+        "lesionPlanDigest",
+        "rollbackPlanDigest",
+        "state"
       ]
     },
     {
@@ -447,7 +450,7 @@
       "source-aware multimodal recall packet compilation"
     ],
     "intelligence.control": [
-      "composition fa\u00e7ade only; no durable fact or model execution ownership"
+      "composition façade only; no durable fact or model execution ownership"
     ]
   },
   "prohibitedSubstitutions": [
