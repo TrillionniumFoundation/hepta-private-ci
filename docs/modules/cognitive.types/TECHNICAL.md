@@ -114,7 +114,7 @@ The global field/bound registry is `docs/contracts/PROTOCOL_SCHEMAS.json`. Exact
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+For the registered critical protocols above, the Rust definitions in `hnmf.rs` and canonical JSON in `wire.rs` represent identical semantics. Owner-native Lane C structs that are not registered critical protocols remain in-process-only and must not be serialized ad hoc. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability for the registered wire surface. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
 ## 6. Data authority, persistence and migrations
 
