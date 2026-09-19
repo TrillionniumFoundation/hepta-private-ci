@@ -18,7 +18,7 @@ use serde::Serialize;
 const USAGE: &str = "usage:
   hepta-evidence-writer bootstrap-checkpoint <sqlite-home> <checkpoint-out>
   hepta-evidence-writer signing-bytes <envelope-json> <signing-bytes-out>
-  hepta-evidence-writer admit <sqlite-home> <trust-policy-json> <envelope-json> <issuer-proof-json> <previous-checkpoint-json> <next-checkpoint-out>
+  hepta-evidence-writer admit <sqlite-home> <trust-policy-json> <envelope-json> <issuer-proof-json> <previous-checkpoint-json> <next-checkpoint-out> <terminal-receipt-out>
   hepta-evidence-writer prepare-independent <sqlite-home> <trust-policy-json> <input-json> <checkpoint-json> <prepared-out> <signing-bytes-out>
   hepta-evidence-writer append-independent <sqlite-home> <trust-policy-json> <prepared-json> <issuer-proof-json> <previous-checkpoint-json> <next-checkpoint-out> <terminal-receipt-out>
   hepta-evidence-writer verify-checkpoint <sqlite-home> <checkpoint-json>";
@@ -65,7 +65,7 @@ async fn run() -> Result<(), String> {
             write_new(Path::new(&args[3]), &bytes)?;
             Ok(())
         }
-        "admit" if args.len() == 8 => {
+        "admit" if args.len() == 9 => {
             let sqlite = sqlite_config(&args[2])?;
             let policy: EvidenceTrustPolicy = read_json(Path::new(&args[3]))?;
             let envelope: QualificationEvidenceEnvelope = read_json(Path::new(&args[4]))?;
@@ -92,13 +92,16 @@ async fn run() -> Result<(), String> {
                 Path::new(&args[7]),
                 &next.canonical_bytes().map_err(|error| error.to_string())?,
             )?;
-            print_json(&WriterResult {
+            let result = WriterResult {
                 disposition: match disposition {
                     codex_hepta_evidence::AppendDisposition::Inserted => "inserted",
                     codex_hepta_evidence::AppendDisposition::AlreadyPresent => "already_present",
                 },
+                receipt_id: envelope.receipt_id,
                 checkpoint: next,
-            })
+            };
+            write_new(Path::new(&args[8]), &canonical_json(&result)?)?;
+            print_json(&result)
         }
         "prepare-independent" if args.len() == 8 => {
             let sqlite = sqlite_config(&args[2])?;
@@ -197,6 +200,7 @@ async fn run() -> Result<(), String> {
 #[serde(rename_all = "camelCase")]
 struct WriterResult {
     disposition: &'static str,
+    receipt_id: String,
     checkpoint: EvidenceCheckpoint,
 }
 
