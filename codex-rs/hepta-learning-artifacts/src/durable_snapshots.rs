@@ -256,9 +256,10 @@ fn decode_withdrawal_snapshot(
 ) -> Result<DatasetWithdrawalRegistry, ArtifactStorageError> {
     let text = std::str::from_utf8(bytes).map_err(|_| ArtifactStorageError::Corrupt)?;
     let mut lines = text.lines();
-    if lines.next() != Some(WITHDRAWAL_MAGIC)
-        || lines.next() != Some(expected_binding.to_string().as_str())
-    {
+    if lines.next() != Some(WITHDRAWAL_MAGIC) {
+        return Err(ArtifactStorageError::Corrupt);
+    }
+    if parse_digest(required_line(&mut lines)?)? != expected_binding {
         return Err(ArtifactStorageError::Corrupt);
     }
     let scope = DatasetWithdrawalScopeV1 {
@@ -349,9 +350,10 @@ fn decode_lifecycle_snapshot(
 ) -> Result<ArtifactLifecycleJournalV2, ArtifactStorageError> {
     let text = std::str::from_utf8(bytes).map_err(|_| ArtifactStorageError::Corrupt)?;
     let mut lines = text.lines();
-    if lines.next() != Some(LIFECYCLE_MAGIC)
-        || lines.next() != Some(expected_binding.to_string().as_str())
-    {
+    if lines.next() != Some(LIFECYCLE_MAGIC) {
+        return Err(ArtifactStorageError::Corrupt);
+    }
+    if parse_digest(required_line(&mut lines)?)? != expected_binding {
         return Err(ArtifactStorageError::Corrupt);
     }
     let expected_records = parse_usize(required_line(&mut lines)?)?;
@@ -407,13 +409,14 @@ fn decode_lifecycle_snapshot(
             authority_epoch: parse_u64(event_epoch)?,
             occurred_at: parse_u64(occurred_at)?,
         };
+        let occurred_at = event.occurred_at;
         journal
             .append(
                 journal.head_digest(),
                 &parse_id(producer_id)?,
                 actor,
-                event.clone(),
-                event.occurred_at,
+                event,
+                occurred_at,
             )
             .map_err(|_| ArtifactStorageError::Semantic)?;
         observed_records += 1;
@@ -600,8 +603,8 @@ mod tests {
         let mut wrong_scope = receipt;
         wrong_scope.scope_digest = scope("b").digest();
         assert_eq!(
-            read_dataset_withdrawal_snapshot(file.open(), wrong_scope),
-            Err(ArtifactStorageError::ScopeMismatch)
+            read_dataset_withdrawal_snapshot(file.open(), wrong_scope).err(),
+            Some(ArtifactStorageError::ScopeMismatch)
         );
     }
 
