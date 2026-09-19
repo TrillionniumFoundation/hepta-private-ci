@@ -178,8 +178,49 @@ def verify() -> int:
         "digest_contribution",
         "uncertainty:{axis}",
         "support_digests.push(contribution_digest)",
+        "axis_registry_digest",
+        "normalization_manifest_digest",
     ]:
         need(token in ndu, "NDU hardening " + token)
+
+    preference = (ROOT / "codex-rs/hepta-ndu/src/preference.rs").read_text(
+        encoding="utf-8"
+    )
+    for token in [
+        "MAX_PREFERENCE_DIMENSIONS",
+        "PreferenceValueOutOfRange",
+        "PreferenceSolveOutcome::Unavailable",
+        "context_digest",
+        "parent_subject_id",
+    ]:
+        need(token in preference, "NDU preference hardening " + token)
+
+    protocol = (ROOT / "codex-rs/hepta-ndu/src/protocol.rs").read_text(
+        encoding="utf-8"
+    )
+    for token in [
+        "canonical_iteration_context_digest",
+        "SolverContextMismatch",
+    ]:
+        need(token in protocol, "NDU protocol hardening " + token)
+
+    journal = (ROOT / "codex-rs/hepta-ndu/src/projection_journal.rs").read_text(
+        encoding="utf-8"
+    )
+    need(
+        "revoked_digests(objective_digest, subject_digest)" in journal,
+        "NDU revocation scope",
+    )
+
+    legacy_definition = (ROOT / "codex-rs/hepta-ndu/src/evaluator.rs").resolve()
+    for path in (ROOT / "codex-rs").glob("**/*.rs"):
+        if path.resolve() == legacy_definition:
+            continue
+        source = path.read_text(encoding="utf-8")
+        need(
+            re.search(r"\bevaluate_candidates\s*\(", source) is None,
+            f"legacy NDU evaluator caller remains: {path.relative_to(ROOT)}",
+        )
 
     planner = (ROOT / "codex-rs/hepta-control-plane/src/planner.rs").read_text(
         encoding="utf-8"
@@ -270,8 +311,18 @@ def verify() -> int:
         {row["module"] for row in maturity["modules"]} == set(MODULES),
         "maturity module closure",
     )
+    source_composed = {"utility.ndu", "control.runtime"}
     for row in maturity["modules"]:
-        for key in ["productCaller", "independentAcceptance", "activation", "release"]:
+        expected_product_caller = (
+            "source_composed_unqualified"
+            if row["module"] in source_composed
+            else "not_established"
+        )
+        need(
+            row["dimensions"]["productCaller"]["state"] == expected_product_caller,
+            f"truth boundary {row['module']} productCaller",
+        )
+        for key in ["independentAcceptance", "activation", "release"]:
             need(
                 row["dimensions"][key]["state"] == "not_established",
                 f"truth boundary {row['module']} {key}",
