@@ -5,6 +5,7 @@
 //! service without creating a second execution spine. It still grants no model
 //! installation, selection, topology mutation, promotion or release authority.
 
+use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error as StdError;
 use std::fmt;
 use std::fs::File;
@@ -45,6 +46,7 @@ pub enum AgentdPlasticityHostErrorV1 {
     Product(ParameterPlasticityProductErrorV1),
     AdmissionDrift,
     OwnerEvidence(PlasticityOwnerEvidenceErrorV1),
+    OwnerEvidencePolicy(PlasticityOwnerEvidencePolicyErrorV1),
 }
 
 impl fmt::Display for AgentdPlasticityHostErrorV1 {
@@ -74,6 +76,11 @@ impl From<PlasticityOwnerEvidenceErrorV1> for AgentdPlasticityHostErrorV1 {
         Self::OwnerEvidence(value)
     }
 }
+impl From<PlasticityOwnerEvidencePolicyErrorV1> for AgentdPlasticityHostErrorV1 {
+    fn from(value: PlasticityOwnerEvidencePolicyErrorV1) -> Self {
+        Self::OwnerEvidencePolicy(value)
+    }
+}
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub enum PlasticityOwnerEvidenceKindV1 {
@@ -97,6 +104,84 @@ impl PlasticityOwnerEvidenceKindV1 {
             Self::ParameterSignal => 5,
             Self::MutationPolicy => 6,
         }
+    }
+}
+
+const PLASTICITY_OWNER_EVIDENCE_KINDS_V1: [PlasticityOwnerEvidenceKindV1; 7] = [
+    PlasticityOwnerEvidenceKindV1::Dataset,
+    PlasticityOwnerEvidenceKindV1::UpdateRule,
+    PlasticityOwnerEvidenceKindV1::Modulator,
+    PlasticityOwnerEvidenceKindV1::ModulatorBroadcast,
+    PlasticityOwnerEvidenceKindV1::Eligibility,
+    PlasticityOwnerEvidenceKindV1::ParameterSignal,
+    PlasticityOwnerEvidenceKindV1::MutationPolicy,
+];
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum PlasticityOwnerEvidencePolicyErrorV1 {
+    EmptyPolicy,
+    MissingKind(PlasticityOwnerEvidenceKindV1),
+}
+impl fmt::Display for PlasticityOwnerEvidencePolicyErrorV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
+    }
+}
+impl StdError for PlasticityOwnerEvidencePolicyErrorV1 {}
+
+/// Host-owned policy mapping every plasticity evidence class to the authoritative
+/// owner identities allowed to attest it. The resolver proves a store receipt;
+/// this policy independently prevents a valid receipt from the wrong owner from
+/// satisfying the request.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PlasticityOwnerEvidencePolicyV1 {
+    allowed_owners: BTreeMap<PlasticityOwnerEvidenceKindV1, BTreeSet<StableId>>,
+}
+impl PlasticityOwnerEvidencePolicyV1 {
+    pub fn from_rules(
+        rules: Vec<(PlasticityOwnerEvidenceKindV1, StableId)>,
+    ) -> Result<Self, PlasticityOwnerEvidencePolicyErrorV1> {
+        if rules.is_empty() {
+            return Err(PlasticityOwnerEvidencePolicyErrorV1::EmptyPolicy);
+        }
+        let mut allowed_owners =
+            BTreeMap::<PlasticityOwnerEvidenceKindV1, BTreeSet<StableId>>::new();
+        for (kind, owner_id) in rules {
+            allowed_owners.entry(kind).or_default().insert(owner_id);
+        }
+        for kind in PLASTICITY_OWNER_EVIDENCE_KINDS_V1 {
+            if allowed_owners.get(&kind).is_none_or(BTreeSet::is_empty) {
+                return Err(PlasticityOwnerEvidencePolicyErrorV1::MissingKind(kind));
+            }
+        }
+        Ok(Self { allowed_owners })
+    }
+
+    fn allows(&self, kind: PlasticityOwnerEvidenceKindV1, owner_id: &StableId) -> bool {
+        self.allowed_owners
+            .get(&kind)
+            .is_some_and(|owners| owners.contains(owner_id))
+    }
+
+    #[must_use]
+    pub fn digest(&self) -> Digest32 {
+        let mut bytes = b"hepta.agentd.plasticity-owner-evidence-policy.v1\0".to_vec();
+        for kind in PLASTICITY_OWNER_EVIDENCE_KINDS_V1 {
+            bytes.push(kind.tag());
+            let owners = self
+                .allowed_owners
+                .get(&kind)
+                .expect("validated policy contains every evidence kind");
+            bytes.extend_from_slice(&u32::try_from(owners.len()).unwrap_or(u32::MAX).to_be_bytes());
+            for owner in owners {
+                let raw = owner.as_str().as_bytes();
+                bytes.extend_from_slice(
+                    &u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes(),
+                );
+                bytes.extend_from_slice(raw);
+            }
+        }
+        Digest32::of_bytes(&bytes)
     }
 }
 
@@ -163,6 +248,7 @@ pub trait PlasticityOwnerEvidenceResolverV1 {
 
 pub fn verify_agentd_plasticity_owner_evidence_v1(
     resolver: &dyn PlasticityOwnerEvidenceResolverV1,
+    policy: &PlasticityOwnerEvidencePolicyV1,
     query: &PlasticityOwnerEvidenceQueryV1,
 ) -> Result<Digest32, PlasticityOwnerEvidenceErrorV1> {
     validate_owner_evidence_query(query)?;
@@ -181,6 +267,9 @@ pub fn verify_agentd_plasticity_owner_evidence_v1(
     }
     if receipt.owner_store_head_digest.is_zero() || receipt.owner_receipt_digest.is_zero() {
         return Err(PlasticityOwnerEvidenceErrorV1::InvalidReceipt);
+    }
+    if !policy.allows(query.kind, &receipt.owner_id) {
+        return Err(PlasticityOwnerEvidenceErrorV1::Unauthorized);
     }
     if receipt.observed_at > receipt.expires_at
         || query.now < receipt.observed_at
@@ -489,6 +578,7 @@ pub struct AgentdPlasticityAdmissionInputV1 {
 pub fn resolve_agentd_plasticity_owner_evidence_set_v1(
     input: &AgentdPlasticityAdmissionInputV1,
     resolver: &dyn PlasticityOwnerEvidenceResolverV1,
+    policy: &PlasticityOwnerEvidencePolicyV1,
     now: u64,
 ) -> Result<Digest32, AgentdPlasticityHostErrorV1> {
     if input.generator_profile.selected_artifact_digest != input.generated.selected_artifact_digest
@@ -523,6 +613,7 @@ pub fn resolve_agentd_plasticity_owner_evidence_set_v1(
     ] {
         digests.push(verify_agentd_plasticity_owner_evidence_v1(
             resolver,
+            policy,
             &owner_evidence_query(input, kind, evidence_digest, None, None, now),
         )?);
     }
@@ -536,6 +627,7 @@ pub fn resolve_agentd_plasticity_owner_evidence_set_v1(
     for signal in signals {
         digests.push(verify_agentd_plasticity_owner_evidence_v1(
             resolver,
+            policy,
             &owner_evidence_query(
                 input,
                 PlasticityOwnerEvidenceKindV1::ParameterSignal,
@@ -548,6 +640,7 @@ pub fn resolve_agentd_plasticity_owner_evidence_set_v1(
     }
 
     let mut bytes = b"hepta.agentd.plasticity-owner-evidence-set.v1\0".to_vec();
+    bytes.extend_from_slice(policy.digest().as_array());
     let count =
         u32::try_from(digests.len()).map_err(|_| PlasticityOwnerEvidenceErrorV1::InvalidReceipt)?;
     bytes.extend_from_slice(&count.to_be_bytes());
@@ -589,6 +682,7 @@ pub fn resolve_agentd_plasticity_admission_v1(
     artifacts: &ArtifactRegistry,
     ledger: &DurableLedger,
     owner_evidence_resolver: &dyn PlasticityOwnerEvidenceResolverV1,
+    owner_evidence_policy: &PlasticityOwnerEvidencePolicyV1,
     now: u64,
 ) -> Result<PlasticityAdmissionEvidenceV1, AgentdPlasticityHostErrorV1> {
     let manifest = artifacts
@@ -613,7 +707,12 @@ pub fn resolve_agentd_plasticity_admission_v1(
         return Err(AgentdPlasticityHostErrorV1::ArtifactBinding);
     }
     let owner_evidence_set_digest =
-        resolve_agentd_plasticity_owner_evidence_set_v1(input, owner_evidence_resolver, now)?;
+        resolve_agentd_plasticity_owner_evidence_set_v1(
+            input,
+            owner_evidence_resolver,
+            owner_evidence_policy,
+            now,
+        )?;
     Ok(PlasticityAdmissionEvidenceV1 {
         baseline_id: input.baseline_id.clone(),
         objective_digest: input.objective_digest,
@@ -642,6 +741,7 @@ pub fn propose_agentd_plasticity_v1(
     artifacts: &ArtifactRegistry,
     ledger: &DurableLedger,
     owner_evidence_resolver: &dyn PlasticityOwnerEvidenceResolverV1,
+    owner_evidence_policy: &PlasticityOwnerEvidencePolicyV1,
     verifier: &LearningEvidenceVerifierV1,
     writer: &mut AnchoredPlasticityWriterV1,
     anchor_store: &mut AgentdPlasticityAnchorStoreV1,
@@ -664,6 +764,7 @@ pub fn propose_agentd_plasticity_v1(
         artifacts,
         ledger,
         owner_evidence_resolver,
+        owner_evidence_policy,
         now,
     )?;
     if resolved != request.admission {
@@ -755,6 +856,17 @@ mod tests {
         }
     }
 
+    fn owner_policy() -> PlasticityOwnerEvidencePolicyV1 {
+        let owner = StableId::new("owner:learning").expect("id");
+        PlasticityOwnerEvidencePolicyV1::from_rules(
+            PLASTICITY_OWNER_EVIDENCE_KINDS_V1
+                .into_iter()
+                .map(|kind| (kind, owner.clone()))
+                .collect(),
+        )
+        .expect("owner policy")
+    }
+
     fn owner_query() -> PlasticityOwnerEvidenceQueryV1 {
         PlasticityOwnerEvidenceQueryV1 {
             kind: PlasticityOwnerEvidenceKindV1::UpdateRule,
@@ -778,6 +890,7 @@ mod tests {
         assert!(
             !verify_agentd_plasticity_owner_evidence_v1(
                 &EchoOwnerEvidenceResolver,
+                &owner_policy(),
                 &owner_query(),
             )
             .expect("verified owner evidence")
@@ -826,6 +939,7 @@ mod tests {
         };
         let mutation_policy = codex_hepta_plasticity::build_parameter_mutation_policy_v1(
             StableId::new("policy:set").expect("id"),
+            digest(b"mutation-grammar"),
             selected_artifact_digest,
             window.clone(),
             Vec::new(),
@@ -862,8 +976,13 @@ mod tests {
         let resolver = RecordingResolver {
             seen: RefCell::new(Vec::new()),
         };
-        let set_digest = resolve_agentd_plasticity_owner_evidence_set_v1(&input, &resolver, 50)
-            .expect("owner evidence set");
+        let set_digest = resolve_agentd_plasticity_owner_evidence_set_v1(
+            &input,
+            &resolver,
+            &owner_policy(),
+            50,
+        )
+        .expect("owner evidence set");
         assert!(!set_digest.is_zero());
 
         let seen = resolver.seen.borrow();
@@ -879,9 +998,34 @@ mod tests {
         assert_eq!(
             verify_agentd_plasticity_owner_evidence_v1(
                 &MismatchedOwnerEvidenceResolver,
+                &owner_policy(),
                 &owner_query(),
             ),
             Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch)
+        );
+    }
+
+    struct WrongOwnerResolver;
+    impl PlasticityOwnerEvidenceResolverV1 for WrongOwnerResolver {
+        fn resolve(
+            &self,
+            query: &PlasticityOwnerEvidenceQueryV1,
+        ) -> Result<VerifiedPlasticityOwnerEvidenceV1, PlasticityOwnerEvidenceErrorV1> {
+            let mut receipt = EchoOwnerEvidenceResolver.resolve(query)?;
+            receipt.owner_id = StableId::new("owner:wrong").expect("id");
+            Ok(receipt)
+        }
+    }
+
+    #[test]
+    fn owner_evidence_policy_rejects_authenticated_wrong_owner() {
+        assert_eq!(
+            verify_agentd_plasticity_owner_evidence_v1(
+                &WrongOwnerResolver,
+                &owner_policy(),
+                &owner_query(),
+            ),
+            Err(PlasticityOwnerEvidenceErrorV1::Unauthorized)
         );
     }
 

@@ -81,6 +81,8 @@ pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
 pub use plasticity_host::AgentdPlasticityHostErrorV1;
 pub use plasticity_host::PlasticityOwnerEvidenceErrorV1;
 pub use plasticity_host::PlasticityOwnerEvidenceKindV1;
+pub use plasticity_host::PlasticityOwnerEvidencePolicyErrorV1;
+pub use plasticity_host::PlasticityOwnerEvidencePolicyV1;
 pub use plasticity_host::PlasticityOwnerEvidenceQueryV1;
 pub use plasticity_host::PlasticityOwnerEvidenceResolverV1;
 pub use plasticity_host::VerifiedPlasticityOwnerEvidenceV1;

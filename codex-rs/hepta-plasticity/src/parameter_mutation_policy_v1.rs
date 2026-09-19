@@ -1,8 +1,10 @@
 //! Typed parameter mutation policy for governed parameter plasticity.
 //!
-//! The policy is an explicit allowlist/protected-surface boundary. A digest alone
-//! is never treated as authorization: every generated signal must match one typed
-//! rule bound to the exact selected artifact and proposal window.
+//! The policy is an explicit allowlist/protected-surface boundary. It is an
+//! executable projection of the canonical control.engineering-owned
+//! MutationGrammarManifestV1 and therefore binds that manifest's semantic digest.
+//! A digest alone is never treated as authorization: every generated signal must
+//! match one typed rule bound to the exact selected artifact and proposal window.
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
@@ -49,6 +51,9 @@ pub struct ParameterMutationRuleV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ParameterMutationPolicyV1 {
     pub policy_id: StableId,
+    /// Semantic digest of the canonical control.engineering-owned
+    /// MutationGrammarManifestV1 used to derive this parameter projection.
+    pub mutation_grammar_digest: Digest32,
     pub selected_artifact_digest: Digest32,
     pub window: ProposalWindowV2,
     pub rules: Vec<ParameterMutationRuleV1>,
@@ -57,6 +62,7 @@ pub struct ParameterMutationPolicyV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ParameterMutationPolicyErrorV1 {
+    EmptyMutationGrammar,
     EmptyArtifact,
     EmptyWindow,
     RuleLimit,
@@ -81,13 +87,18 @@ impl StdError for ParameterMutationPolicyErrorV1 {}
 
 pub fn build_parameter_mutation_policy_v1(
     policy_id: StableId,
+    mutation_grammar_digest: Digest32,
     selected_artifact_digest: Digest32,
     window: ProposalWindowV2,
     mut rules: Vec<ParameterMutationRuleV1>,
 ) -> Result<ParameterMutationPolicyV1, ParameterMutationPolicyErrorV1> {
+    if mutation_grammar_digest.is_zero() {
+        return Err(ParameterMutationPolicyErrorV1::EmptyMutationGrammar);
+    }
     validate_context(selected_artifact_digest, &window, &mut rules)?;
     let mut policy = ParameterMutationPolicyV1 {
         policy_id,
+        mutation_grammar_digest,
         selected_artifact_digest,
         window,
         rules,
@@ -100,6 +111,9 @@ pub fn build_parameter_mutation_policy_v1(
 pub fn verify_parameter_mutation_policy_v1(
     policy: &ParameterMutationPolicyV1,
 ) -> Result<(), ParameterMutationPolicyErrorV1> {
+    if policy.mutation_grammar_digest.is_zero() {
+        return Err(ParameterMutationPolicyErrorV1::EmptyMutationGrammar);
+    }
     let mut rules = policy.rules.clone();
     validate_context(policy.selected_artifact_digest, &policy.window, &mut rules)?;
     if rules != policy.rules || policy.policy_digest.is_zero() {
@@ -187,6 +201,7 @@ fn digest_policy(
 ) -> Result<Digest32, ParameterMutationPolicyErrorV1> {
     let mut bytes = b"hepta.plasticity.parameter-mutation-policy.v1\0".to_vec();
     push_id(&mut bytes, &policy.policy_id)?;
+    bytes.extend_from_slice(policy.mutation_grammar_digest.as_array());
     bytes.extend_from_slice(policy.selected_artifact_digest.as_array());
     push_id(&mut bytes, &policy.window.window_id)?;
     bytes.extend_from_slice(policy.window.window_digest.as_array());
@@ -247,6 +262,7 @@ mod tests {
         let artifact = digest(b"artifact");
         let policy = build_parameter_mutation_policy_v1(
             id("policy:1"),
+            digest(b"mutation-grammar"),
             artifact,
             window(),
             vec![rule(ParameterMutationSurfaceV1::LearnableParameter)],
@@ -265,10 +281,44 @@ mod tests {
     }
 
     #[test]
+    fn canonical_mutation_grammar_digest_is_mandatory_and_bound() {
+        let artifact = digest(b"artifact");
+        assert_eq!(
+            build_parameter_mutation_policy_v1(
+                id("policy:missing-grammar"),
+                Digest32::ZERO,
+                artifact,
+                window(),
+                vec![rule(ParameterMutationSurfaceV1::LearnableParameter)],
+            ),
+            Err(ParameterMutationPolicyErrorV1::EmptyMutationGrammar)
+        );
+
+        let first = build_parameter_mutation_policy_v1(
+            id("policy:grammar-bound"),
+            digest(b"mutation-grammar:a"),
+            artifact,
+            window(),
+            vec![rule(ParameterMutationSurfaceV1::LearnableParameter)],
+        )
+        .expect("policy");
+        let second = build_parameter_mutation_policy_v1(
+            id("policy:grammar-bound"),
+            digest(b"mutation-grammar:b"),
+            artifact,
+            window(),
+            vec![rule(ParameterMutationSurfaceV1::LearnableParameter)],
+        )
+        .expect("policy");
+        assert_ne!(first.policy_digest, second.policy_digest);
+    }
+
+    #[test]
     fn protected_surface_fails_closed() {
         let artifact = digest(b"artifact");
         let policy = build_parameter_mutation_policy_v1(
             id("policy:1"),
+            digest(b"mutation-grammar"),
             artifact,
             window(),
             vec![rule(ParameterMutationSurfaceV1::Authority)],

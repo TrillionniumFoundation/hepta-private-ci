@@ -490,6 +490,7 @@ mod tests {
             }],
             mutation_policy: build_parameter_mutation_policy_v1(
                 id("policy:generator-test"),
+                digest(b"mutation-grammar"),
                 digest(b"artifact"),
                 ProposalWindowV2 {
                     window_id: id("window:1"),

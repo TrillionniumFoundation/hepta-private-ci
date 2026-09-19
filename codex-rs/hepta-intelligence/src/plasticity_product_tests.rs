@@ -94,6 +94,7 @@ impl Fixture {
             }],
             mutation_policy: build_parameter_mutation_policy_v1(
                 id("grammar:product"),
+                digest("mutation-grammar-manifest"),
                 selected_artifact_digest,
                 window.clone(),
                 vec![ParameterMutationRuleV1 {
