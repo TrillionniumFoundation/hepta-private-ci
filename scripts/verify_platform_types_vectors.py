@@ -33,9 +33,24 @@ def encode_value(value: dict[str, Any]) -> bytes:
     if kind == "text":
         return b"\x02" + u32_bytes(value["value"].encode("utf-8"))
     if kind == "u64":
-        return b"\x03" + struct.pack(">Q", int(value["value"]))
+        raw = value["value"]
+        if not isinstance(raw, str) or not raw.isascii() or not raw.isdecimal():
+            raise ValueError("u64 vector value must be an unsigned decimal string")
+        number = int(raw)
+        if not 0 <= number <= (1 << 64) - 1:
+            raise ValueError("u64 vector value out of range")
+        return b"\x03" + struct.pack(">Q", number)
     if kind == "i64":
-        return b"\x04" + struct.pack(">q", int(value["value"]))
+        raw = value["value"]
+        if not isinstance(raw, str):
+            raise ValueError("i64 vector value must be a signed decimal string")
+        body = raw[1:] if raw.startswith("-") else raw
+        if not body or not body.isascii() or not body.isdecimal():
+            raise ValueError("i64 vector value must be a signed decimal string")
+        number = int(raw)
+        if not -(1 << 63) <= number <= (1 << 63) - 1:
+            raise ValueError("i64 vector value out of range")
+        return b"\x04" + struct.pack(">q", number)
     if kind == "bool":
         return b"\x05" + bytes([1 if value["value"] else 0])
     if kind == "digest":
