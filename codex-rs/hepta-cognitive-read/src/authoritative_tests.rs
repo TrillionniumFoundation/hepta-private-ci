@@ -165,3 +165,86 @@ fn provider_rejects_expired_deadline_and_wrong_read_snapshot() {
         Err(SnapshotProviderError::ReadSnapshotMismatch)
     );
 }
+
+#[test]
+fn completed_authoritative_read_revalidates_full_current_generation_before_consumption() {
+    let envelope = envelope();
+    let provider = FixtureProvider {
+        envelope: envelope.clone(),
+    };
+    let acquisition = acquisition_request();
+    let request = ReadRequestV2 {
+        read_request: crate::ReadRequest {
+            snapshot_digest: envelope.snapshot().snapshot_digest,
+            allowed_kinds: Vec::new(),
+            maximum_results: 8,
+            include_tombstones: false,
+        },
+        maximum_encoded_bytes: crate::MAX_ENCODED_READ_RESULT_BYTES_V2,
+    };
+    let result = read_authoritative(&provider, 10, acquisition.clone(), request)
+        .unwrap_or_else(|error| panic!("authoritative read: {error}"));
+
+    result
+        .validate_for_consumption(11, &acquisition, &envelope)
+        .unwrap_or_else(|error| panic!("current authoritative consumption: {error}"));
+
+    let mut drifted_vector = vector();
+    drifted_vector.prompt_registry_revision = revision(4);
+    let drifted = AuthoritativeSnapshotV1::new(
+        id("provider:one"),
+        CognitiveSnapshotKeyV1::new(drifted_vector).unwrap(),
+        envelope.snapshot().clone(),
+        5,
+        50,
+    )
+    .unwrap();
+    assert_eq!(
+        result.validate_for_consumption(11, &acquisition, &drifted),
+        Err(SnapshotProviderError::GenerationGone)
+    );
+
+    let other_provider = AuthoritativeSnapshotV1::new(
+        id("provider:other"),
+        CognitiveSnapshotKeyV1::new(vector()).unwrap(),
+        envelope.snapshot().clone(),
+        5,
+        50,
+    )
+    .unwrap();
+    assert_eq!(
+        result.validate_for_consumption(11, &acquisition, &other_provider),
+        Err(SnapshotProviderError::ProviderMismatch)
+    );
+
+    assert_eq!(
+        result.validate_for_consumption(50, &acquisition, &envelope),
+        Err(SnapshotProviderError::LeaseExpired)
+    );
+}
+
+#[test]
+fn completed_authoritative_read_is_bound_to_the_original_acquisition_request() {
+    let envelope = envelope();
+    let provider = FixtureProvider {
+        envelope: envelope.clone(),
+    };
+    let acquisition = acquisition_request();
+    let request = ReadRequestV2 {
+        read_request: crate::ReadRequest {
+            snapshot_digest: envelope.snapshot().snapshot_digest,
+            allowed_kinds: Vec::new(),
+            maximum_results: 8,
+            include_tombstones: false,
+        },
+        maximum_encoded_bytes: crate::MAX_ENCODED_READ_RESULT_BYTES_V2,
+    };
+    let result = read_authoritative(&provider, 10, acquisition.clone(), request).unwrap();
+
+    let mut other = acquisition;
+    other.request_id = id("request:other");
+    assert_eq!(
+        result.validate_for_consumption(11, &other, &envelope),
+        Err(SnapshotProviderError::AcquisitionRequestMismatch)
+    );
+}
