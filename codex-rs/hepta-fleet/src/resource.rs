@@ -61,6 +61,33 @@ impl FleetResourceVectorV1 {
             && self.turn_queue_slots <= capacity.turn_queue_slots
     }
 
+    pub fn try_into_resource_budget(self) -> Result<ResourceBudget, crate::FleetRegistryError> {
+        let budget = ResourceBudget {
+            max_concurrent_turns: u16::try_from(self.concurrent_turns).map_err(|_| {
+                crate::FleetRegistryError::Invalid(
+                    "fleet grant concurrent-turn limit exceeds ResourceBudget".to_string(),
+                )
+            })?,
+            memory_limit_mib: u32::try_from(self.memory_mib).map_err(|_| {
+                crate::FleetRegistryError::Invalid(
+                    "fleet grant memory limit exceeds ResourceBudget".to_string(),
+                )
+            })?,
+            max_tool_processes: u16::try_from(self.tool_processes).map_err(|_| {
+                crate::FleetRegistryError::Invalid(
+                    "fleet grant tool-process limit exceeds ResourceBudget".to_string(),
+                )
+            })?,
+            turn_queue_capacity: u32::try_from(self.turn_queue_slots).map_err(|_| {
+                crate::FleetRegistryError::Invalid(
+                    "fleet grant queue limit exceeds ResourceBudget".to_string(),
+                )
+            })?,
+        };
+        budget.validate()?;
+        Ok(budget)
+    }
+
     pub fn dominant_utilization_ppm(self, capacity: Self) -> Option<u64> {
         if !self.fits(capacity) {
             return None;
