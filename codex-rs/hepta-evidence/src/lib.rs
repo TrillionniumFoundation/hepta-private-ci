@@ -111,3 +111,7 @@ mod authbus_outbox_quarantine_tests;
 #[cfg(test)]
 #[path = "authbus_authority_store_tests.rs"]
 mod authbus_authority_store_tests;
+
+#[cfg(test)]
+#[path = "authbus_trust_store_tests.rs"]
+mod authbus_trust_store_tests;
