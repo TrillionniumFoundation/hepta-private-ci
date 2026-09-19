@@ -624,11 +624,6 @@ fn decode_reservation(
         quota_key: stable_id(row.try_get("quota_key").map_err(classify_sqlx_error)?)?,
         operation_id: stable_id(row.try_get("operation_id").map_err(classify_sqlx_error)?)?,
         amount: i64_to_u64(row.try_get("amount").map_err(classify_sqlx_error)?)?,
-        observed_cost: row
-            .try_get::<Option<i64>, _>("observed_cost")
-            .map_err(classify_sqlx_error)?
-            .map(i64_to_u64)
-            .transpose()?,
         expires_at_ms: i64_to_u64(row.try_get("expires_at_ms").map_err(classify_sqlx_error)?)?,
         quota_revision: i64_to_u64(row.try_get("quota_revision").map_err(classify_sqlx_error)?)?,
         state,
