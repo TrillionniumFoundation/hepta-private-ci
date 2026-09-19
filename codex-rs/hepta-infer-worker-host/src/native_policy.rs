@@ -15,6 +15,7 @@ use codex_hepta_contracts::QuotaReservationState;
 use codex_hepta_contracts::ResourceAdvertisement;
 use codex_hepta_contracts::ResourceAdvertisementState;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_contracts::VerifiedUseReceipt;
 use codex_hepta_contracts::VerifiedUseToken;
 use codex_hepta_infer_core::durable_control::native::NativeAdmissionBinding;
 use codex_hepta_infer_core::durable_control::native::NativeFinalUseAuthority;
@@ -38,6 +39,12 @@ pub type FinalUseGrantResolver<'a> =
 
 pub(crate) struct ClaimedFinalUse {
     pub token: VerifiedUseToken,
+    pub binding: FinalUseBinding,
+    pub witness: NativeFinalUseWitness,
+}
+
+pub(crate) struct AdmittedFinalUse {
+    pub receipt: VerifiedUseReceipt,
     pub binding: FinalUseBinding,
     pub witness: NativeFinalUseWitness,
 }
@@ -244,13 +251,35 @@ impl NativeExecutionPolicy {
         })
     }
 
-    pub(crate) fn finalize(
+    pub(crate) fn admit<T>(
         authority: &FinalUseAuthority,
         claimed: ClaimedFinalUse,
+        consumer: impl FnOnce() -> T,
+    ) -> Result<(T, AdmittedFinalUse), NativePolicyError> {
+        let ClaimedFinalUse {
+            token,
+            binding,
+            witness,
+        } = claimed;
+        let (result, receipt) =
+            authority.with_verified_use_receipt(token, &binding, consumer)?;
+        Ok((
+            result,
+            AdmittedFinalUse {
+                receipt,
+                binding,
+                witness,
+            },
+        ))
+    }
+
+    pub(crate) fn finalize(
+        authority: &FinalUseAuthority,
+        admitted: AdmittedFinalUse,
     ) -> NativeFinalUseAuthority {
-        let grant_id = claimed.witness.grant_id.clone();
-        let authority_epoch = claimed.witness.authority_epoch;
-        match authority.with_verified_use(claimed.token, &claimed.binding, || ()) {
+        let grant_id = admitted.witness.grant_id.clone();
+        let authority_epoch = admitted.witness.authority_epoch;
+        match authority.revalidate_used(&admitted.receipt, &admitted.binding) {
             Ok(()) => NativeFinalUseAuthority::VerifiedAtTerminal {
                 grant_id,
                 authority_epoch,
