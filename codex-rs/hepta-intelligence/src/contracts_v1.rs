@@ -191,9 +191,7 @@ impl IntelligenceHostEnvelopeV1 {
         if neural_digest.is_some_and(|value| value.is_zero())
             || prompt_digest.is_some_and(|value| value.is_zero())
         {
-            return Err(IntelligenceContractErrorV1::EmptyDigest(
-                "optional stage",
-            ));
+            return Err(IntelligenceContractErrorV1::EmptyDigest("optional stage"));
         }
         if total_budget_micros == 0 {
             return Err(IntelligenceContractErrorV1::InvalidBudget);
@@ -281,7 +279,8 @@ fn digest_candidate_set(
     push_id(&mut bytes, generator_id)?;
     bytes.extend_from_slice(grammar_digest.as_array());
     bytes.extend_from_slice(&support_floor_ppm.to_be_bytes());
-    let count = u32::try_from(candidates.len()).map_err(|_| IntelligenceContractErrorV1::Arithmetic)?;
+    let count =
+        u32::try_from(candidates.len()).map_err(|_| IntelligenceContractErrorV1::Arithmetic)?;
     bytes.extend_from_slice(&count.to_be_bytes());
     for candidate in candidates {
         push_id(&mut bytes, &candidate.candidate_id)?;
@@ -345,10 +344,7 @@ fn stable_id(value: &str) -> Result<StableId, IntelligenceContractErrorV1> {
     StableId::new(value).map_err(|_| IntelligenceContractErrorV1::Arithmetic)
 }
 
-fn push_id(
-    bytes: &mut Vec<u8>,
-    value: &StableId,
-) -> Result<(), IntelligenceContractErrorV1> {
+fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), IntelligenceContractErrorV1> {
     let raw = value.as_str().as_bytes();
     let length = u32::try_from(raw.len()).map_err(|_| IntelligenceContractErrorV1::Arithmetic)?;
     bytes.extend_from_slice(&length.to_be_bytes());
