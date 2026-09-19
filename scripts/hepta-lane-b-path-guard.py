@@ -63,7 +63,12 @@ def canonical_path(root: Path, value: Any, label: str, *, require_file: bool | N
         and resolved.relative_to(root).as_posix() == value,
         f"{label}: aliased path {value!r}",
     )
-    kind_ok = path.is_file() if require_file is True else path.is_dir() if require_file is False else (path.is_file() or path.is_dir())
+    if require_file is True:
+        kind_ok = path.is_file()
+    elif require_file is False:
+        kind_ok = path.is_dir()
+    else:
+        kind_ok = path.is_file() or path.is_dir()
     need(kind_ok, f"{label}: missing path {value}")
     return path
 
@@ -175,8 +180,14 @@ def self_test() -> int:
         foreign_source = foreign / "source.rs"
         foreign_source.write_text("pub fn run() {}\n", encoding="utf-8")
         need(canonical_path(root, "owned/source.rs", "fixture", require_file=True) == source, "canonical fixture")
-        need(canonical_path(root, "owned/source.rs", "fixture", require_file=None) == source, "resolved file fixture")
-        need(canonical_path(root, "owned", "fixture", require_file=None) == owned, "resolved directory fixture")
+        need(
+            canonical_path(root, "owned/source.rs", "fixture", require_file=None) == source,
+            "resolved file fixture",
+        )
+        need(
+            canonical_path(root, "owned", "fixture", require_file=None) == owned,
+            "resolved directory fixture",
+        )
         for bad in (
             "owned/../foreign/source.rs",
             "owned/./source.rs",
