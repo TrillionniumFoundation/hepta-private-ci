@@ -558,7 +558,7 @@ where
 
     let post_transport_now_unix_ms = clock.now_unix_ms();
     if post_transport_now_unix_ms >= query.deadline_unix_ms {
-        return finalize_indeterminate_result(&query, lease, query_binding_digest);
+        return Err(FederationV2Error::DeadlineExpired);
     }
     if post_transport_now_unix_ms >= lease.expires_unix_ms {
         return Err(FederationV2Error::LeaseExpired);
@@ -579,16 +579,10 @@ where
     }
 
     let authority_state =
-        match revalidate_authority_bounded(authority, clock, &query, lease).await {
-            Ok(state) => state,
-            Err(FederationV2Error::DeadlineExpired) => {
-                return finalize_indeterminate_result(&query, lease, query_binding_digest);
-            }
-            Err(error) => return Err(error),
-        };
+        revalidate_authority_bounded(authority, clock, &query, lease).await?;
     let post_authority_now_unix_ms = clock.now_unix_ms();
     if post_authority_now_unix_ms >= query.deadline_unix_ms {
-        return finalize_indeterminate_result(&query, lease, query_binding_digest);
+        return Err(FederationV2Error::DeadlineExpired);
     }
     if post_authority_now_unix_ms >= lease.expires_unix_ms {
         return Err(FederationV2Error::LeaseExpired);
