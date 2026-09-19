@@ -1,0 +1,132 @@
+name: Hepta Matrix real Synapse qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: Why exact-main Matrix qualification is being requested
+        required: false
+        default: matrix-dispatch-ledger
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-matrix-real-synapse-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  qualify:
+    name: Qualify exact main against real Synapse
+    if: github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, macOS, ARM64, macbook]
+    timeout-minutes: 120
+    steps:
+      - name: Verify trusted exact-main invocation
+        shell: bash
+        env:
+          QUALIFICATION_REASON: ${{ inputs.reason }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_EVENT_NAME" = workflow_dispatch
+          test "$GITHUB_REF" = refs/heads/main
+          test "$RUNNER_NAME" = macbook-pro
+          test "$RUNNER_OS" = macOS
+          test "$RUNNER_ARCH" = ARM64
+          test "${#QUALIFICATION_REASON}" -le 128
+          [[ "$QUALIFICATION_REASON" =~ ^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$ ]]
+          [[ ! "/$QUALIFICATION_REASON/" =~ /\.\./ ]]
+
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact source identity
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          echo "tree=$(git rev-parse HEAD^{tree})" >> "$GITHUB_OUTPUT"
+          artifacts="$RUNNER_TEMP/hepta-matrix-real-synapse-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          mkdir -p "$artifacts"
+          echo "artifacts=$artifacts" >> "$GITHUB_OUTPUT"
+
+      - name: Execute hermetic real Synapse qualification
+        shell: bash
+        env:
+          ARTIFACTS_DIR: ${{ steps.source.outputs.artifacts }}
+        run: |
+          set -euo pipefail
+          ./codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh             --source-root "$GITHUB_WORKSPACE"             --source-mode exact             --artifacts-dir "$ARTIFACTS_DIR"
+
+      - name: Seal workflow qualification receipt
+        shell: bash
+        env:
+          ARTIFACTS_DIR: ${{ steps.source.outputs.artifacts }}
+          CANDIDATE_TREE: ${{ steps.source.outputs.tree }}
+        run: |
+          set -euo pipefail
+          test -f "$ARTIFACTS_DIR/completion.json"
+          /opt/homebrew/bin/python3 - "$ARTIFACTS_DIR" <<'PY'
+          import hashlib
+          import json
+          import os
+          import pathlib
+          import sys
+
+          root = pathlib.Path(sys.argv[1]).resolve(strict=True)
+          completion_path = root / "completion.json"
+          completion = json.loads(completion_path.read_text(encoding="utf-8"))
+          candidate_sha = os.environ["GITHUB_SHA"]
+          candidate_tree = os.environ["CANDIDATE_TREE"]
+          if completion.get("candidate_sha") != candidate_sha:
+              raise SystemExit("harness completion receipt is not bound to GITHUB_SHA")
+          if completion.get("candidate_tree_sha") != candidate_tree:
+              raise SystemExit("harness completion receipt is not bound to candidate tree")
+          if completion.get("test_assertions_passed") is not True:
+              raise SystemExit("harness did not assert successful qualification")
+          digest = hashlib.sha256(completion_path.read_bytes()).hexdigest()
+          receipt = {
+              "schema": "hepta.matrix.real-synapse-workflow-receipt.v1",
+              "candidate_sha": candidate_sha,
+              "candidate_tree_sha": candidate_tree,
+              "workflow_run_id": os.environ["GITHUB_RUN_ID"],
+              "workflow_run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+              "runner_name": os.environ["RUNNER_NAME"],
+              "runner_os": os.environ["RUNNER_OS"],
+              "runner_arch": os.environ["RUNNER_ARCH"],
+              "harness_completion_sha256": digest,
+              "qualification_passed": True,
+              "promotion": False,
+              "operator_acceptance": False,
+          }
+          target = root / "workflow-receipt.json"
+          target.write_text(
+              json.dumps(receipt, sort_keys=True, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Upload exact qualification evidence
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: matrix-real-synapse-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ steps.source.outputs.artifacts }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload failed qualification diagnostics
+        if: failure() && steps.source.outputs.artifacts != ''
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: matrix-real-synapse-failure-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ steps.source.outputs.artifacts }}
+          if-no-files-found: ignore
+          retention-days: 14
