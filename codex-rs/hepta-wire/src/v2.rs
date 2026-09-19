@@ -228,7 +228,7 @@ fn validate_identity_lengths(schema: &StableId, producer: &StableId) -> Result<(
 }
 
 fn validate_payload_length(length: usize) -> Result<(), WireV2Error> {
-    if length == 0 || length > crate::MAX_WIRE_PAYLOAD_BYTES {
+    if !(1..=crate::MAX_WIRE_PAYLOAD_BYTES).contains(&length) {
         return Err(WireV2Error::PayloadLength);
     }
     Ok(())
