@@ -43,6 +43,59 @@ def lane_by_module():
     }
 
 
+def verify_optional_head_attestation(
+    module_id: str, row: dict, failures: list[str]
+) -> None:
+    """Verify a non-self-referential exact-candidate attestation when present."""
+    attestation = row.get("headAttestation")
+    if attestation is None:
+        return
+    if not isinstance(attestation, dict):
+        failures.append(f"{module_id}: head attestation")
+        return
+
+    candidate_head = attestation.get("candidateHead")
+    candidate_tree = attestation.get("candidateTree")
+    metadata_only_paths = attestation.get("metadataOnlyPaths")
+    if (
+        not isinstance(candidate_head, str)
+        or not re.fullmatch(r"[0-9a-f]{40}", candidate_head)
+        or not isinstance(candidate_tree, str)
+        or not re.fullmatch(r"[0-9a-f]{40}", candidate_tree)
+        or not isinstance(metadata_only_paths, list)
+        or not metadata_only_paths
+        or any(not isinstance(path, str) or not path for path in metadata_only_paths)
+    ):
+        failures.append(f"{module_id}: head attestation shape")
+        return
+
+    try:
+        actual_tree = git("rev-parse", f"{candidate_head}^{{tree}}")
+    except subprocess.CalledProcessError:
+        failures.append(f"{module_id}: head attestation candidate missing")
+        return
+    if actual_tree != candidate_tree:
+        failures.append(f"{module_id}: head attestation tree")
+
+    try:
+        git("merge-base", "--is-ancestor", candidate_head, "HEAD")
+    except subprocess.CalledProcessError:
+        failures.append(f"{module_id}: head attestation is not an ancestor of HEAD")
+        return
+
+    changed_after_candidate = {
+        path
+        for path in git("diff", "--name-only", f"{candidate_head}..HEAD").splitlines()
+        if path
+    }
+    unexpected = sorted(changed_after_candidate - set(metadata_only_paths))
+    if unexpected:
+        failures.append(
+            f"{module_id}: non-metadata drift after attested head: "
+            + ", ".join(unexpected)
+        )
+
+
 def parse_entrypoints(module: str):
     path = ROOT / f"qualification/module-execution-dossiers/detail/{module}.md"
     text = path.read_text(encoding="utf-8") if path.exists() else ""
@@ -345,6 +398,7 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
+        verify_optional_head_attestation(mid, row, failures)
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
