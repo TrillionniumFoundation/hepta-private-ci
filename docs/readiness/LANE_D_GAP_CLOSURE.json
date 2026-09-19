@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "lane": "LANE-D-OBJECTIVE-VALUE",
   "authorityDelta": "none",
-  "repositoryControlledState": "candidate_complete_pending_exact_head_workflows",
+  "repositoryControlledState": "candidate_hardened_pending_exact_head_workflows",
   "gaps": [
     {
       "id": "LANE-D-OBJ-ERR-001",
@@ -285,6 +285,78 @@
         "docs/readiness/NDU_SYSTEM_EXECUTION.md",
         "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json"
       ]
+    },
+    {
+      "id": "LANE-D-RCP-RESOURCE-BIND-029",
+      "severity": "P0",
+      "title": "Resource-profile digest did not cryptographically bind the effective reservation endowments and essential floors",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-control-plane/src/planner.rs",
+        "codex-rs/hepta-control-plane/src/planner_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-RCP-MONOTONIC-030",
+      "severity": "P0",
+      "title": "The bounded Agentd planner caller used wall-clock time despite a monotonic planner-time contract",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-agentd/src/cognitive_context.rs",
+        "docs/readiness/CONTROL_RUNTIME_EXECUTION.md"
+      ]
+    },
+    {
+      "id": "LANE-D-RCP-JOURNAL-SEMANTIC-031",
+      "severity": "P0",
+      "title": "Planner journal reopen verified hashes but did not replay selection and revocation semantics",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-control-plane/src/planner_journal.rs",
+        "codex-rs/hepta-control-plane/src/planner_journal_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-RCP-DURABLE-STORE-032",
+      "severity": "P1",
+      "title": "Planner journal lacked a versioned fsync-bound owner-local durable store, migration and restore validation candidate",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-control-plane/src/planner_store.rs",
+        "codex-rs/hepta-control-plane/src/planner_store_tests.rs"
+      ]
+    },
+    {
+      "id": "LANE-D-RCP-GLOBAL-SEAM-033",
+      "severity": "P0",
+      "title": "No fail-closed integration seam ordered authenticated owner observations, real NDU evaluation and independent authority admission",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-control-plane/src/planner_host.rs",
+        "codex-rs/hepta-control-plane/src/planner_host_tests.rs",
+        "CALLERS.toml"
+      ]
+    },
+    {
+      "id": "LANE-D-RCP-CALLER-TRUTH-034",
+      "severity": "P1",
+      "title": "Control runtime maturity and caller manifests still described every planner product caller as uncomposed after Agentd integration",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-contracts/CALLERS.toml",
+        "docs/modules/control.runtime/IMPLEMENTATION_MAP.json",
+        "docs/readiness/LANE_D_MATURITY.json"
+      ]
+    },
+    {
+      "id": "LANE-D-RCP-HOST-PROFILE-035",
+      "severity": "P1",
+      "title": "Pilot maxima had no named-host p50/p95/p99 measurement fixture or exact-head synthetic-merge qualification workflow",
+      "state": "closed",
+      "closure": [
+        "codex-rs/hepta-control-plane/src/planner_perf_tests.rs",
+        ".github/workflows/control-runtime-qualification.yml"
+      ]
     }
   ],
   "externalGates": [
@@ -318,6 +390,7 @@
     "semanticChecker": "scripts/hepta-lane-d-semantic-conformance.py",
     "workflow": ".github/workflows/hepta-lane-d-semantic-conformance.yml",
     "exactHeadEvidenceRequired": true,
-    "syntheticMergeEvidenceRequired": true
+    "syntheticMergeEvidenceRequired": true,
+    "namedHostWorkflow": ".github/workflows/control-runtime-qualification.yml"
   }
 }

@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-control-plane/src/organ_runtime.rs](../../../codex-rs/hepta-control-plane/src/organ_runtime.rs); observed identifiers include `OrganHostV1`, `TrustedReadOnlyOrganV1`, `OrganDeliveryV1`, `OrganFaultRecordV1`, `start_all`, `dispatch_once`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/control.runtime.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.runtime.md) for the implemented subset and remaining product work.
+The registered source root is `codex-rs/hepta-control-plane`. The runtime-host surface remains in [organ_runtime.rs](../../../codex-rs/hepta-control-plane/src/organ_runtime.rs), while the bounded global planner is implemented in [planner.rs](../../../codex-rs/hepta-control-plane/src/planner.rs), real NDU composition in [planner_ndu.rs](../../../codex-rs/hepta-control-plane/src/planner_ndu.rs), the current bounded Agentd product adapter in [planner_context.rs](../../../codex-rs/hepta-control-plane/src/planner_context.rs), semantic restart state in [planner_journal.rs](../../../codex-rs/hepta-control-plane/src/planner_journal.rs), and the versioned durable file-store candidate in [planner_store.rs](../../../codex-rs/hepta-control-plane/src/planner_store.rs). Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/control.runtime.md#8-current-native-implementation) alongside the module-specific design; a bounded product caller exists, while a general global product caller and activation remain separate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -317,3 +317,17 @@ The bootstrap source-location obligation for `control.runtime` is implemented by
 - `codex-rs/hepta-control-plane`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+## 18. 2026-09-19 production-path closure delta
+
+The current source hardens the repository-controlled path without changing the authority ceiling:
+
+- `canonical_resource_profile_digest` hashes the sorted resource axis, endowment and essential-floor tuples; `prepare_plan` rejects a nonzero caller digest that does not match those exact reservations.
+- the Agentd measured-context caller uses a process-local `Instant` domain for planner observation and expiry time. Wall-clock Unix time remains limited to storage contracts that explicitly require it.
+- `PlannerJournalV1::reopen` replays kind-specific semantic constraints in addition to sequence and hash-chain integrity. A recomputed hash cannot make a selection valid without a prior decision or after revocation.
+- `PlannerJournalStoreV1` provides a versioned envelope, payload digest, write-to-same-directory temporary file, file `sync_all`, atomic rename on the qualified Linux host, parent-directory sync, raw-v1 migration and restore-time semantic revalidation. It is still owner-local and does not become an external-effect ledger.
+- `execute_authenticated_global_plan_v1` orders owner authentication before snapshot construction, runs the real NDU owner implementation, seals grant requests, and invokes a separately supplied authority-admission verifier. The crate provides no permissive/default owner verifier or authority verifier and receives no consumable capability back.
+- `plan_observed_context` is now registered with its real Agentd product caller. This proves one bounded product composition, not a general fleet/global-control product caller.
+
+The exact-head source and synthetic-merge workflows remain required before changing activation, promotion or release claims.

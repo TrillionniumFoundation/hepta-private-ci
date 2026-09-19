@@ -550,6 +550,7 @@ pub enum PlannerError {
     SnapshotExpired,
     UnknownCandidateOwner { candidate: String, owner: String },
     InvalidResourceReservation(String),
+    ResourceProfileMismatch,
     MissingResourceAxis { candidate: String, axis: String },
     UnknownResourceAxis { candidate: String, axis: String },
     AbstainUnavailable,
@@ -598,6 +599,9 @@ impl fmt::Display for PlannerError {
                     "invalid essential resource reservation for {axis}"
                 )
             }
+            Self::ResourceProfileMismatch => formatter.write_str(
+                "planner resource-profile digest does not match canonical reservations",
+            ),
             Self::MissingResourceAxis { candidate, axis } => {
                 write!(
                     formatter,
@@ -732,6 +736,18 @@ pub fn collect_snapshot(
     Ok(snapshot)
 }
 
+pub fn canonical_resource_profile_digest(
+    reservations: &[ResourceReservationV1],
+) -> Result<Digest32, PlannerError> {
+    if reservations.is_empty() || reservations.len() > MAX_RESOURCE_RESERVATIONS {
+        return Err(PlannerError::LimitExceeded("resource reservations"));
+    }
+    let mut normalized = reservations.to_vec();
+    normalized.sort_by(|left, right| left.axis.cmp(&right.axis));
+    validate_reservations(&normalized)?;
+    Ok(digest_resource_profile(&normalized))
+}
+
 pub fn prepare_plan(
     snapshot: &GlobalStateSnapshotV1,
     mut request: PlanningRequestV1,
@@ -759,6 +775,11 @@ pub fn prepare_plan(
         .resource_reservations
         .sort_by(|left, right| left.axis.cmp(&right.axis));
     validate_reservations(&request.resource_reservations)?;
+    if request.resource_profile_digest
+        != canonical_resource_profile_digest(&request.resource_reservations)?
+    {
+        return Err(PlannerError::ResourceProfileMismatch);
+    }
 
     let source_candidate_set_digest = digest_candidates(&request.candidates);
     let reservation_map: BTreeMap<_, _> = request
@@ -1298,6 +1319,17 @@ fn digest_candidates(candidates: &[PlanCandidateV1]) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
+fn digest_resource_profile(reservations: &[ResourceReservationV1]) -> Digest32 {
+    let mut bytes = b"hepta.control.resource-profile.v1".to_vec();
+    push_len(&mut bytes, reservations.len());
+    for reservation in reservations {
+        push_id(&mut bytes, &reservation.axis);
+        bytes.extend_from_slice(&reservation.endowment.raw().to_be_bytes());
+        bytes.extend_from_slice(&reservation.essential_floor.raw().to_be_bytes());
+    }
+    Digest32::of_bytes(&bytes)
+}
+
 fn digest_prepared_plan(prepared: &PreparedPlanInputV1) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(b"hepta.control.prepared-plan.v1");
@@ -1430,3 +1462,7 @@ fn push_len(bytes: &mut Vec<u8>, value: usize) {
 #[cfg(test)]
 #[path = "planner_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "planner_perf_tests.rs"]
+mod perf_tests;

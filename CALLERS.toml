@@ -30,6 +30,14 @@ product_callers = []
 caller_markers = []
 
 [[boundary]]
+id = "control_runtime_global_authority_admission"
+symbol = "execute_authenticated_global_plan_v1"
+definition_path = "codex-rs/hepta-control-plane/src/planner_host.rs"
+definition_markers = ["pub fn execute_authenticated_global_plan_v1", "OwnerSummaryVerifierV1", "AuthorityRequestSetVerifierV1"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
 id = "provider_effect_coordinator"
 symbol = "ProviderEffectCoordinator::new"
 definition_path = "codex-rs/hepta-contracts/src/provider_effect.rs"
@@ -54,6 +62,11 @@ forbidden = ["H7H89ProductionGrantVerifier::default"]
 path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
 required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier"]
 forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-control-plane/src/planner_host.rs"
+required = ["OwnerSummaryVerifierV1", "AuthorityRequestSetVerifierV1", "grant_requests.authority().grants_any"]
+forbidden = ["AllowAll", "PermitAll", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/model-provider/src/provider_effect.rs"

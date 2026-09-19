@@ -206,9 +206,12 @@
           ]
         },
         "durability": {
-          "state": "owner_local_reference_implemented_not_production_writer",
+          "state": "owner_local_versioned_fsync_file_store_candidate_not_production_writer",
           "evidence": [
-            "PlannerJournalV1"
+            "PlannerJournalV1",
+            "PlannerJournalStoreV1",
+            "raw_v1_journal_migrates_to_versioned_store",
+            "restore_revalidates_semantics_before_replacing_state"
           ]
         },
         "effectAuthority": {
@@ -222,8 +225,11 @@
           "evidence": []
         },
         "productCaller": {
-          "state": "not_established",
-          "evidence": []
+          "state": "bounded_context_product_caller_established_global_not_established",
+          "evidence": [
+            "plan_observed_context",
+            "codex-rs/hepta-agentd/src/cognitive_context.rs"
+          ]
         },
         "productionWriter": {
           "state": "not_established",
@@ -254,6 +260,41 @@
             "snapshotPolicyDigest",
             "evaluationPolicyDigest",
             "resourceProfileDigest"
+          ]
+        },
+        "resourceProfileBinding": {
+          "state": "candidate_implemented",
+          "evidence": [
+            "canonical_resource_profile_digest",
+            "nonzero_resource_profile_drift_is_rejected"
+          ]
+        },
+        "monotonicPlanningClock": {
+          "state": "bounded_product_caller_implemented",
+          "evidence": [
+            "planner_monotonic_now_micros",
+            "std::time::Instant"
+          ]
+        },
+        "semanticRestartReplay": {
+          "state": "candidate_implemented",
+          "evidence": [
+            "semantically_forged_selection_with_valid_hash_fails_reopen",
+            "revocation_clears_selection_and_prevents_reselection"
+          ]
+        },
+        "globalComposition": {
+          "state": "source_seam_implemented_no_general_product_caller",
+          "evidence": [
+            "execute_authenticated_global_plan_v1",
+            "OwnerSummaryVerifierV1",
+            "AuthorityRequestSetVerifierV1"
+          ]
+        },
+        "namedHostPerformance": {
+          "state": "fixture_implemented_measurement_pending_current_workflow",
+          "evidence": [
+            "planner_named_host_profile"
           ]
         }
       }

@@ -1,0 +1,114 @@
+name: Control runtime qualification
+
+on:
+  pull_request:
+    paths:
+      - codex-rs/hepta-control-plane/**
+      - codex-rs/hepta-agentd/src/cognitive_context.rs
+      - codex-rs/hepta-contracts/CALLERS.toml
+      - docs/modules/control.runtime/**
+      - docs/readiness/CONTROL_RUNTIME_EXECUTION.md
+      - docs/readiness/LANE_D_MATURITY.json
+      - qualification/module-execution-dossiers/detail/control.runtime.md
+      - scripts/hepta-lane-d-semantic-conformance.py
+      - .github/workflows/control-runtime-qualification.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: control-runtime-qualification-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source:
+    name: Source qualification (${{ matrix.lane }})
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - id: synthetic
+        if: matrix.lane == 'base-merge' && github.event_name == 'pull_request'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Control Runtime CI
+          author-email: hepta-control-runtime-ci@users.noreply.github.com
+          message: Control runtime synthetic merge
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0
+      - name: Record tested identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "TESTED_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          git rev-parse HEAD HEAD^{tree}
+      - name: Lane D semantic conformance
+        run: python3 scripts/hepta-lane-d-semantic-conformance.py verify
+      - name: Format
+        working-directory: codex-rs
+        run: cargo fmt --package codex-hepta-control-plane --package codex-hepta-agentd -- --check
+      - name: Compile affected packages
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-control-plane -p codex-hepta-agentd --all-targets
+      - name: Control runtime tests
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-control-plane
+      - name: Strict lint
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-control-plane --all-targets -- -D warnings
+
+  named-host:
+    name: Named-host pilot maxima
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    needs: source
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - name: Capture host identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/control-runtime-profile"
+          {
+            echo "source_sha=$(git rev-parse HEAD)"
+            echo "runner_image=ubuntu-24.04"
+            echo "kernel=$(uname -a)"
+            echo "cpu=$(grep -m1 'model name' /proc/cpuinfo || true)"
+            rustc -vV
+            cargo -V
+          } | tee "$RUNNER_TEMP/control-runtime-profile/host.txt"
+      - name: Measure pilot maxima
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-control-plane --release planner_named_host_profile -- --ignored --nocapture             | tee "$RUNNER_TEMP/control-runtime-profile/benchmark.log"
+          grep 'CONTROL_RUNTIME_BENCH_JSON' "$RUNNER_TEMP/control-runtime-profile/benchmark.log"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: control-runtime-named-host-${{ env.SOURCE_SHA }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/control-runtime-profile
+          if-no-files-found: error
+          retention-days: 30

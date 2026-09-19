@@ -10,8 +10,8 @@
     "codex-rs/hepta-control-plane"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_composed",
+  "productCallerState": "bounded_context_composed_global_not_composed",
+  "productionWriterState": "owner_local_file_store_candidate_not_product_composed",
   "operations": [
     {
       "operation": "collect_snapshot",
@@ -194,6 +194,149 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourcePathExists": true
+    },
+    {
+      "operation": "canonical_resource_profile_digest",
+      "nativeSymbol": "codex_hepta_control_plane::canonical_resource_profile_digest",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner.rs",
+      "inputs": [
+        "ResourceReservationV1 list"
+      ],
+      "outputs": [
+        "Digest32"
+      ],
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_tests.rs",
+          "symbol": "nonzero_resource_profile_drift_is_rejected"
+        }
+      ],
+      "designOperation": "canonical_resource_profile_digest",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "evaluate_prepared_plan_with_ndu",
+      "nativeSymbol": "codex_hepta_control_plane::evaluate_prepared_plan_with_ndu",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_ndu.rs",
+      "inputs": [
+        "GlobalStateSnapshotV1",
+        "PreparedPlanInputV1",
+        "NduPlanningInputV1",
+        "current monotonic time"
+      ],
+      "outputs": [
+        "EvaluatedPlanV1"
+      ],
+      "state": "source_implemented_owner_composition",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs",
+          "symbol": "owner_evaluation_composes_into_real_planner_without_self_reported_selection"
+        }
+      ],
+      "designOperation": "evaluate_prepared_plan_with_ndu",
+      "mappingClass": "owner_native_composition",
+      "delegatedCallees": [
+        "utility.ndu"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "plan_observed_context",
+      "nativeSymbol": "codex_hepta_control_plane::plan_observed_context",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_context.rs",
+      "inputs": [
+        "ObservedContextV1"
+      ],
+      "outputs": [
+        "ObservedContextPlanV1"
+      ],
+      "state": "product_composed_bounded_read",
+      "authority": "deny_all",
+      "productCaller": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_context_tests.rs",
+          "symbol": "measured_context_is_selected_and_budget_excess_abstains"
+        }
+      ],
+      "designOperation": "plan_observed_context",
+      "mappingClass": "bounded_product_adapter",
+      "delegatedCallees": [
+        "evaluate_prepared_plan_with_ndu"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "PlannerJournalStoreV1",
+      "nativeSymbol": "codex_hepta_control_plane::PlannerJournalStoreV1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_store.rs",
+      "inputs": [
+        "versioned journal bytes",
+        "restore journal bytes"
+      ],
+      "outputs": [
+        "fsync-bound journal envelope",
+        "reopened PlannerJournalV1"
+      ],
+      "state": "source_implemented_owner_local_durable_file_store_candidate",
+      "authority": "none",
+      "nonClaim": "not a product-composed external-effect ledger",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "raw_v1_journal_migrates_to_versioned_store"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_store_tests.rs",
+          "symbol": "restore_revalidates_semantics_before_replacing_state"
+        }
+      ],
+      "designOperation": "PlannerJournalStoreV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "execute_authenticated_global_plan_v1",
+      "nativeSymbol": "codex_hepta_control_plane::execute_authenticated_global_plan_v1",
+      "sourcePath": "codex-rs/hepta-control-plane/src/planner_host.rs",
+      "inputs": [
+        "authenticated owner inputs",
+        "SnapshotRequestV1",
+        "PlanningRequestV1",
+        "NduPlanningInputV1",
+        "OwnerSummaryVerifierV1",
+        "AuthorityRequestSetVerifierV1"
+      ],
+      "outputs": [
+        "GlobalPlanExecutionV1"
+      ],
+      "state": "source_implemented_integration_seam_no_general_product_caller",
+      "authority": "deny_all_control_plane",
+      "nonClaim": "no default owner verifier, no default authority verifier, no capability returned",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_host_tests.rs",
+          "symbol": "authenticated_global_plan_reaches_independent_authority_seam"
+        },
+        {
+          "path": "codex-rs/hepta-control-plane/src/planner_host_tests.rs",
+          "symbol": "owner_authentication_fails_before_planning_or_authority"
+        }
+      ],
+      "designOperation": "execute_authenticated_global_plan_v1",
+      "mappingClass": "cross_owner_integration_seam",
+      "delegatedCallees": [
+        "utility.ndu",
+        "kernel.authority adapter"
+      ],
+      "sourcePathExists": true
     }
   ],
   "canonicalDomainContracts": [
@@ -206,16 +349,18 @@
     "NduPlanEvaluationV1",
     "FeasiblePlanReceiptV1",
     "GrantRequestSetV1",
-    "PlannerJournalEntryV1"
+    "PlannerJournalEntryV1",
+    "ObservedContextV1",
+    "GlobalPlanExecutionV1"
   ],
   "completion": {
-    "specification": "complete",
-    "nativePlanningKernel": "candidate_implemented",
-    "ownerLocalDurabilityReference": "candidate_implemented",
+    "specification": "complete_hardened",
+    "nativePlanningKernel": "candidate_implemented_hardened",
+    "ownerLocalDurabilityReference": "versioned_fsync_file_store_candidate_implemented",
     "canonicalExternalProtocolAdmission": "not_established",
-    "productionCaller": "not_established",
+    "productionCaller": "bounded_context_established_global_not_established",
     "productionWriter": "not_established",
-    "exactHeadQualification": "required",
+    "exactHeadQualification": "required_current_pr",
     "independentAcceptance": "not_established",
     "activation": "not_established",
     "release": "not_established"
@@ -236,19 +381,27 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "boundedContextProductCaller": true,
+    "generalGlobalProductCaller": false
   },
   "sourceBase": {
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Bind execute_authenticated_global_plan_v1 to registered production owner-proof verifiers and the existing kernel.authority final-use adapter.",
+    "Select and qualify the deployment-owned journal store path, backup policy and target-host recovery profile.",
+    "Run exact-head, deterministic synthetic-merge and named-host performance workflows before changing the claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
-  ]
+  ],
+  "implementationHead": {
+    "commit": "c53748d6f92913e27795bdf1d69703e6a8b1b12e",
+    "tree": "52357d6c7c938e5d6e0b8a58ffc7c6d273e4c9a0",
+    "scope": "control.runtime hardened source with Linux durability qualification"
+  }
 }
