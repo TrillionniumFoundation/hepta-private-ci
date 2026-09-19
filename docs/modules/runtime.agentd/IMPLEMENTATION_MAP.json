@@ -14,7 +14,7 @@
   "resolvedRoots": [
     "codex-rs/hepta-agentd"
   ],
-  "stateOwnerDisposition": "Owns a bounded owner-private crash-recovery lifecycle journal, immutable run snapshot references and runtime-health composition state; product-domain facts remain with their canonical owners.",
+  "stateOwnerDisposition": "Owns a bounded owner-private crash-recovery lifecycle journal, immutable run snapshot references, bounded cancellation-ack deadlines and runtime-health composition state; lifecycle mutations are persisted before live publication and product-domain facts remain with their canonical owners.",
   "terminalObserverDisposition": "Agentd preserves dispatch-boundary uncertainty, never redispatches an unobserved external run after restart, and accepts success/failure/cancel terminality only from the delegated execution owner.",
   "operations": [
     {
@@ -72,7 +72,7 @@
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "The live control path admits a bounded run, freezes request/objective/body/artifact/authority/deadline identity, and durably records the resulting revision before reply.",
+      "sourceSemantics": "The live control path admits a bounded run, freezes request/objective/body/artifact/authority/deadline identity, and persists the candidate lifecycle revision before publishing it to live memory or replying.",
       "operation": "start_run",
       "nativeSymbol": "pub(crate) fn run_start(",
       "sourcePath": "codex-rs/hepta-agentd/src/state.rs",
@@ -100,7 +100,7 @@
           "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
-      "sourceSemantics": "The live control path durably records bounded cancellation intent. The named native-app-server inference caller pairs post-dispatch intent with a real TurnInterrupt and matching terminal/indeterminate observation; other direct callers are not yet universally composed.",
+      "sourceSemantics": "The live control path durably records bounded cancellation intent plus a 5-second acknowledgement deadline; missing acknowledgement advances to indeterminate without claiming physical cancellation. The named native-app-server inference caller pairs post-dispatch intent with a real TurnInterrupt and matching terminal/indeterminate observation; other direct callers are not yet universally composed.",
       "operation": "cancel_run",
       "nativeSymbol": "pub(crate) fn run_cancel(",
       "sourcePath": "codex-rs/hepta-agentd/src/state.rs",
