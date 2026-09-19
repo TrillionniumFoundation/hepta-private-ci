@@ -6,6 +6,7 @@ use std::time::UNIX_EPOCH;
 
 use codex_hepta_matrix_protocol::MatrixEventId;
 use codex_hepta_matrix_store::MatrixDurableError;
+use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::OutboxRecord;
 use tokio_util::sync::CancellationToken;
@@ -119,29 +120,44 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
             Ok(event_id) => {
                 // A successful Matrix send response proves transport acceptance only.
                 // Terminal success is recorded later from a trusted /sync homeserver echo.
-                store
+                let dispatch = store
                     .mark_dispatch_transport_accepted(&record.stable_txn_id, &event_id, now_ms)
                     .await
                     .map_err(store_error)?;
-                let next_attempt_at_ms = now_ms
-                    .checked_add(retry_delay_ms(config, record.attempts)?)
-                    .ok_or(OutboxDispatchError::Invalid)?;
-                store
-                    .mark_outbox_retry(
-                        &record.stable_txn_id,
-                        record.attempts,
-                        now_ms,
-                        next_attempt_at_ms,
-                    )
-                    .await
-                    .map_err(store_error)?;
-                stats.accepted += 1;
+                if matches!(
+                    dispatch.state,
+                    MatrixDispatchState::Succeeded | MatrixDispatchState::Redacted
+                ) {
+                    // A concurrent /sync observation already settled terminality.
+                    stats.sent += 1;
+                } else {
+                    let next_attempt_at_ms = now_ms
+                        .checked_add(retry_delay_ms(config, record.attempts)?)
+                        .ok_or(OutboxDispatchError::Invalid)?;
+                    store
+                        .mark_outbox_retry(
+                            &record.stable_txn_id,
+                            record.attempts,
+                            now_ms,
+                            next_attempt_at_ms,
+                        )
+                        .await
+                        .map_err(store_error)?;
+                    stats.accepted += 1;
+                }
             }
             Err(MatrixTransportError::Retryable) => {
-                store
+                let dispatch = store
                     .mark_dispatch_indeterminate(&record.stable_txn_id, now_ms)
                     .await
                     .map_err(store_error)?;
+                if matches!(
+                    dispatch.state,
+                    MatrixDispatchState::Succeeded | MatrixDispatchState::Redacted
+                ) {
+                    stats.sent += 1;
+                    continue;
+                }
                 if record.attempts >= config.max_attempts {
                     store
                         .mark_outbox_permanent_failure(
@@ -171,10 +187,17 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
             Err(MatrixTransportError::Permanent) => {
                 // The request may have crossed the external boundary before the
                 // transport classified the failure. Preserve indeterminate delivery.
-                store
+                let dispatch = store
                     .mark_dispatch_indeterminate(&record.stable_txn_id, now_ms)
                     .await
                     .map_err(store_error)?;
+                if matches!(
+                    dispatch.state,
+                    MatrixDispatchState::Succeeded | MatrixDispatchState::Redacted
+                ) {
+                    stats.sent += 1;
+                    continue;
+                }
                 store
                     .mark_outbox_permanent_failure(&record.stable_txn_id, record.attempts, now_ms)
                     .await
