@@ -5,18 +5,10 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
 use crate::NduError;
+use crate::NduIterationContextV1;
 use crate::NduSolverIterationReceipt;
 use crate::SubjectClass;
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct NduIterationContextV1 {
-    pub subject_id: StableId,
-    pub subject_class: SubjectClass,
-    pub objective_digest: Digest32,
-    pub generation: Generation,
-    pub event_digest: Digest32,
-    pub coefficient_digest: Digest32,
-}
+use crate::canonical_iteration_context_digest;
 
 /// Owner-local native representation of the canonical readiness protocol. It
 /// cannot be constructed from a local solver step without the complete frozen
@@ -43,10 +35,11 @@ pub fn bind_solver_iteration_receipt_v1(
     context: &NduIterationContextV1,
     receipt: &NduSolverIterationReceipt,
 ) -> Result<NduIterationReceiptV1, NduError> {
-    require_digest(context.objective_digest, "objective")?;
-    require_digest(context.event_digest, "event")?;
-    require_digest(context.coefficient_digest, "coefficient")?;
-    require_digest(receipt.state_digest, "state")?;
+    let context_digest = canonical_iteration_context_digest(context)?;
+    if receipt.context_digest() != context_digest {
+        return Err(NduError::ProtocolContextMismatch);
+    }
+    require_digest(receipt.state_digest(), "state")?;
 
     let receipt_digest = digest_receipt(context, receipt);
     Ok(NduIterationReceiptV1 {
@@ -56,12 +49,12 @@ pub fn bind_solver_iteration_receipt_v1(
         generation: context.generation,
         event_digest: context.event_digest,
         coefficient_digest: context.coefficient_digest,
-        iteration: receipt.iteration,
-        predecessor_revision: receipt.predecessor_revision,
-        next_revision: receipt.next_revision,
-        residual_raw: receipt.residual_raw,
-        projection_count: receipt.projection_count,
-        state_digest: receipt.state_digest,
+        iteration: receipt.iteration(),
+        predecessor_revision: receipt.predecessor_revision(),
+        next_revision: receipt.next_revision(),
+        residual_raw: receipt.residual_raw(),
+        projection_count: receipt.projection_count(),
+        state_digest: receipt.state_digest(),
         receipt_digest,
         authority: AuthorityPosture::DENY_ALL,
     })
@@ -80,18 +73,19 @@ fn digest_receipt(
 ) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(b"hepta.ndu.iteration-receipt.v1");
+    bytes.extend_from_slice(receipt.context_digest().as_array());
     push_id(&mut bytes, &context.subject_id);
     bytes.push(context.subject_class.tag());
     bytes.extend_from_slice(context.objective_digest.as_array());
     bytes.extend_from_slice(&context.generation.get().to_be_bytes());
     bytes.extend_from_slice(context.event_digest.as_array());
     bytes.extend_from_slice(context.coefficient_digest.as_array());
-    bytes.extend_from_slice(&receipt.iteration.to_be_bytes());
-    bytes.extend_from_slice(&receipt.predecessor_revision.get().to_be_bytes());
-    bytes.extend_from_slice(&receipt.next_revision.get().to_be_bytes());
-    bytes.extend_from_slice(&receipt.residual_raw.to_be_bytes());
-    bytes.extend_from_slice(&receipt.projection_count.to_be_bytes());
-    bytes.extend_from_slice(receipt.state_digest.as_array());
+    bytes.extend_from_slice(&receipt.iteration().to_be_bytes());
+    bytes.extend_from_slice(&receipt.predecessor_revision().get().to_be_bytes());
+    bytes.extend_from_slice(&receipt.next_revision().get().to_be_bytes());
+    bytes.extend_from_slice(&receipt.residual_raw().to_be_bytes());
+    bytes.extend_from_slice(&receipt.projection_count().to_be_bytes());
+    bytes.extend_from_slice(receipt.state_digest().as_array());
     Digest32::of_bytes(&bytes)
 }
 
