@@ -75,6 +75,8 @@ pub use lane_b_runtime::AgentRunError;
 pub use lane_b_runtime::CancellationDisposition;
 pub use lane_b_runtime::ContextAttachment;
 pub use lane_b_runtime::IntelligenceRunReceiptV3;
+pub use lane_b_runtime::IntelligenceTerminalClosureErrorV3;
+pub use lane_b_runtime::IntelligenceTerminalClosureReceiptV3;
 pub use lane_b_runtime::RunPhase;
 pub use lane_b_runtime::RunReceipt;
 pub use lane_b_runtime::RunSnapshot;
