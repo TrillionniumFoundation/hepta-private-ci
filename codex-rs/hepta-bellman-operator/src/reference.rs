@@ -71,7 +71,6 @@ pub struct OperatorIndependentApplicabilityAdmissionV1 {
     pub authority: AuthorityPosture,
 }
 
-
 pub fn validate_applicability_certificate(
     certificate: &OperatorApplicabilityCertificateV1,
     now: u64,
