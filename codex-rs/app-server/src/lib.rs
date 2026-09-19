@@ -1091,6 +1091,7 @@ pub async fn run_main_with_transport_options(
         ));
         let initialize_notification_sender = outgoing_message_sender.clone();
         let outbound_control_tx = outbound_control_tx;
+        let external_shutdown_token = runtime_options.external_shutdown_token.clone();
         let processor = Arc::new(MessageProcessor::new(MessageProcessorArgs {
             outgoing: outgoing_message_sender,
             analytics_events_client,
@@ -1124,7 +1125,6 @@ pub async fn run_main_with_transport_options(
         let mut remote_control_status_rx = remote_control_handle.status_receiver();
         let mut remote_control_status = remote_control_status_rx.borrow().clone();
         let transport_shutdown_token = transport_shutdown_token.clone();
-        let external_shutdown_token = runtime_options.external_shutdown_token.clone();
         async move {
             let mut listen_for_threads = true;
             let mut shutdown_state = ShutdownState::default();
