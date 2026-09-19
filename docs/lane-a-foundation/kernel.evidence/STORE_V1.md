@@ -43,9 +43,8 @@ creates or migrates it.
 
 ## External checkpoint and rollback detection
 
-Migration `0011` creates one immutable random store instance identity.
-`export_checkpoint` returns that identity plus receipt count, maximum
-qualification sequence and the chain digest at that sequence.
+Migration `0011` creates one immutable random store instance identity and one immutable provisioned qualification trust policy. The trust policy must be provisioned before the first qualification receipt and cannot be replaced in place.
+`export_checkpoint` returns that identity, the provisioned trust-policy digest, receipt count, maximum qualification sequence and the chain digest at that sequence.
 
 `verify_external_checkpoint` fails closed when:
 
@@ -66,7 +65,7 @@ provide anti-rollback protection.
 
 `hepta-evidence-writer` is the named checkpoint-guarded writer:
 
-- `bootstrap-checkpoint` succeeds only on an empty qualification chain;
+- `bootstrap-trust-policy` provisions the immutable trust policy on an empty qualification chain and emits the first checkpoint bound to that policy;
 - `signing-bytes` emits the canonical envelope bytes an issuer signs;
 - `admit` verifies the prior checkpoint, trust policy and Ed25519 issuer
   signature before append, then emits a new checkpoint;
