@@ -1127,7 +1127,10 @@ impl AutomationStore {
         &self,
         command: &TaskFlowCommand,
     ) -> Result<TaskFlowCommandResult, TaskFlowError> {
-        if !matches!(&command.transition, TaskFlowTransition::Indeterminate { .. }) {
+        if !matches!(
+            &command.transition,
+            TaskFlowTransition::Indeterminate { .. }
+        ) {
             return Err(invalid(
                 "effect observation quarantine requires indeterminate transition",
             ));
