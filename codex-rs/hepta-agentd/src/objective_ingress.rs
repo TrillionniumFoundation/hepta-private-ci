@@ -1,6 +1,6 @@
 //! Signed Objective ingress composed through the existing AuthBus outbox and
-//! canonical learning.ledger owner. Agentd owns only the host capability and
-//! ephemeral run coordinator; it does not create a second Objective database.
+//! canonical learning.ledger owner. AgentdState owns the sole run lifecycle
+//! ledger; Objective ingress does not create a second lifecycle authority.
 
 use std::fs::File;
 use std::fs::OpenOptions;
@@ -29,7 +29,6 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
-use crate::AgentRunCoordinator;
 use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdState;
@@ -37,11 +36,10 @@ use crate::AuthBusObjectiveBody;
 use crate::AuthBusObjectiveIngress;
 use crate::AuthBusObjectiveState;
 use crate::AuthBusObjectiveStatus;
-use crate::RuntimeComposition;
 use crate::authbus_ingress;
 use crate::authbus_trust::hex_bytes;
 use crate::authbus_trust::read_private_owner_file;
-use crate::objective_host::start_intelligence_run_v1;
+use crate::objective_host::intelligence_run_snapshot_v1;
 
 const PRODUCT_SOURCE_JSON_BYTES: usize = 32 * 1024;
 const PRODUCT_BODY_JSON_BYTES: usize = 48 * 1024;
@@ -60,15 +58,15 @@ pub(crate) struct ObjectiveIngressHost {
 struct ObjectiveOwnerState {
     ledger: DurableLedger,
     witness: LedgerWitnessStore,
-    coordinator: AgentRunCoordinator,
 }
 
 impl ObjectiveIngressHost {
     pub(crate) fn open(
-        identity: &AgentdIdentity,
+        agentd: &AgentdState,
         profile_file: &Path,
         now_ms: u64,
     ) -> Result<Self, AgentdError> {
+        let identity = agentd.identity();
         let bytes = read_private_owner_file(
             profile_file,
             identity,
@@ -113,16 +111,7 @@ impl ObjectiveIngressHost {
         };
 
         reconcile_witness(&ledger, &mut witness)?;
-        let composition = RuntimeComposition {
-            agent_id: identity.agent_id.as_str().to_string(),
-            supervisor_generation: identity.spawn_generation,
-            agentd_generation: identity.spawn_generation,
-            configuration_digest: profile_digest.to_string(),
-            ports_digest: Digest32::of_bytes(b"hepta.agentd.objective-ingress.v1").to_string(),
-        };
-        let mut coordinator = AgentRunCoordinator::compose_runtime(composition)
-            .map_err(|error| objective_invalid(&format!("run coordinator: {error:?}")))?;
-        recover_active_runs(identity, now_ms, &ledger, &mut coordinator)?;
+        recover_active_runs(identity, now_ms, &ledger, agentd)?;
 
         Ok(Self {
             profile,
@@ -130,11 +119,7 @@ impl ObjectiveIngressHost {
             subject: StableId::new(identity.agent_id.as_str())
                 .map_err(|error| objective_invalid(&error.to_string()))?,
             scope: objective_scope(identity),
-            state: Mutex::new(ObjectiveOwnerState {
-                ledger,
-                witness,
-                coordinator,
-            }),
+            state: Mutex::new(ObjectiveOwnerState { ledger, witness }),
         })
     }
 
@@ -256,12 +241,9 @@ impl ObjectiveIngressHost {
                             "post-publication signature revalidation: {error}"
                         ))
                     })?;
-                start_intelligence_run_v1(
-                    &mut state.coordinator,
-                    authbus_ingress::now_ms()?,
-                    &receipt.host_envelope,
-                )
-                .map_err(|error| objective_invalid(&error.to_string()))?;
+                let snapshot = intelligence_run_snapshot_v1(&receipt.host_envelope)
+                    .map_err(|error| objective_invalid(&error.to_string()))?;
+                agentd.run_start(authbus_ingress::now_ms()?, snapshot)?;
                 Ok(receipt.host_envelope.envelope_digest)
             }
             codex_hepta_intelligence::ProductionObjectiveDispositionV1::Conflict {
@@ -407,7 +389,7 @@ fn recover_active_runs(
     identity: &AgentdIdentity,
     now_ms: u64,
     ledger: &DurableLedger,
-    coordinator: &mut AgentRunCoordinator,
+    agentd: &AgentdState,
 ) -> Result<(), AgentdError> {
     for record in ledger
         .records()
@@ -431,8 +413,9 @@ fn recover_active_runs(
         }
         let envelope = codex_hepta_intelligence::recover_intelligence_host_envelope_v1(record)
             .map_err(|error| objective_invalid(&format!("RunStart recovery: {error}")))?;
-        start_intelligence_run_v1(coordinator, now_ms, &envelope)
+        let snapshot = intelligence_run_snapshot_v1(&envelope)
             .map_err(|error| objective_invalid(&format!("run recovery: {error}")))?;
+        agentd.recover_run_start(now_ms, snapshot)?;
     }
     Ok(())
 }

@@ -421,6 +421,33 @@ impl AgentdState {
             && !runtime.fenced)
     }
 
+    /// Rehydrate a durable product RunStart while Agentd is still in its
+    /// non-serving startup phase. This is the only bypass around the normal
+    /// Running+ready admission guard and exists solely to migrate/reconcile
+    /// owner-durable RunStart facts into the single Agentd lifecycle ledger.
+    pub(crate) fn recover_run_start(
+        &self,
+        now_ms: u64,
+        snapshot: RunSnapshot,
+    ) -> Result<RunReceipt, AgentdError> {
+        self.refresh_generation()?;
+        {
+            let runtime = self.runtime.lock().map_err(poisoned_state)?;
+            if runtime.lifecycle != AgentLifecycle::Starting
+                || runtime.app_server_ready
+                || runtime.fenced
+            {
+                return Err(AgentdError::Protocol(
+                    "run recovery is allowed only before Agentd begins serving".to_string(),
+                ));
+            }
+        }
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .transact(|coordinator| coordinator.start_run(now_ms, snapshot))
+    }
+
     pub(crate) fn run_start(
         &self,
         now_ms: u64,

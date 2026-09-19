@@ -84,7 +84,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     if let Some(profile_file) = objective_profile_file {
         state.refresh_generation()?;
         let host = crate::objective_ingress::ObjectiveIngressHost::open(
-            &identity,
+            state.as_ref(),
             &profile_file,
             crate::authbus_ingress::now_ms()?,
         )?;
