@@ -164,7 +164,9 @@ fn independent_anchor_rejects_old_backup_and_partial_tail() {
     let directory = Directory::new();
     let mut store = directory.create();
     let old = fs::read(directory.path()).unwrap();
-    store.consume_single_host_trusted(store.anchor(), &plan("plan-1")).unwrap();
+    store
+        .consume_single_host_trusted(store.anchor(), &plan("plan-1"))
+        .unwrap();
     let anchor = store.anchor();
     drop(store);
     let current = fs::read(directory.path()).unwrap();
@@ -222,7 +224,9 @@ fn lock_binding_cas_and_invalid_plan_do_not_mutate_storage() {
 fn idempotent_retry_does_not_append_and_byte_corruption_rejects() {
     let directory = Directory::new();
     let mut store = directory.create();
-    store.consume_single_host_trusted(store.anchor(), &plan("plan-1")).unwrap();
+    store
+        .consume_single_host_trusted(store.anchor(), &plan("plan-1"))
+        .unwrap();
     let anchor = store.anchor();
     let before = fs::read(directory.path()).unwrap();
     store
