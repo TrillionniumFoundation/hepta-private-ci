@@ -203,7 +203,7 @@ pub fn solve_preference_target(
 
     let mut receipts = Vec::new();
     let mut total_projection_count = 0_u32;
-    let mut maximum_residual_seen = initial_residual_raw;
+    let mut maximum_residual_seen = 0_i64;
 
     for iteration in 1..=MAX_ITERATIONS {
         let (next, receipt) = update_once(&state, &target, eta, context_digest, iteration)?;
