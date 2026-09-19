@@ -27,7 +27,6 @@ from .assignment import (
     heartbeat_assignment,
     heartbeat_worker,
     register_authenticated_worker,
-    register_worker,
     requeue_assignment,
     revoke_worker,
 )
@@ -182,7 +181,6 @@ __all__ = [
     "prepare_audit_anchor",
     "record_integration_decision",
     "register_authenticated_worker",
-    "register_worker",
     "requeue_assignment",
     "revoke_worker",
     "request_independent_review",
