@@ -161,9 +161,8 @@ impl AdmittedCognitiveStoreV2 {
             return Err(CognitiveStoreV2Error::IntentRetentionFrontierRegression);
         }
         let before = self.intent_journal.len();
-        self.intent_journal.retain(|_, entry| {
-            entry.receipt.committed_frontier >= minimum_committed_frontier
-        });
+        self.intent_journal
+            .retain(|_, entry| entry.receipt.committed_frontier >= minimum_committed_frontier);
         self.intent_retention_floor = minimum_committed_frontier;
         Ok(before.saturating_sub(self.intent_journal.len()))
     }
@@ -493,10 +492,7 @@ impl AdmittedCognitiveStoreV2 {
         Ok(())
     }
 
-    fn ensure_intent_journal_capacity(
-        &self,
-        terminal: bool,
-    ) -> Result<(), CognitiveStoreV2Error> {
+    fn ensure_intent_journal_capacity(&self, terminal: bool) -> Result<(), CognitiveStoreV2Error> {
         let limit = if terminal {
             self.maximum_total_intent_journal_entries
         } else {
@@ -805,10 +801,7 @@ impl CognitiveStoreImageV2 {
                 || entry.receipt.committed_frontier > final_frontier
                 || entry.receipt.snapshot_key.vector.memory_ledger_frontier
                     != entry.receipt.committed_frontier
-                || !same_static_lane_c_context(
-                    &entry.receipt.snapshot_key,
-                    &self.snapshot_key,
-                )
+                || !same_static_lane_c_context(&entry.receipt.snapshot_key, &self.snapshot_key)
             {
                 return Err(CognitiveStoreV2Error::JournalReceiptMismatch(
                     entry.intent_id.to_string(),
@@ -953,11 +946,19 @@ fn validate_receipt_transition(
     }
     let expected_tombstone = previous_vector
         .tombstone_frontier
-        .checked_add(if record.state == RecordState::Tombstone { 1 } else { 0 })
+        .checked_add(if record.state == RecordState::Tombstone {
+            1
+        } else {
+            0
+        })
         .ok_or(CognitiveStoreV2Error::ImageFrontierMismatch)?;
     let expected_fact = previous_vector
         .knowledge_fact_frontier
-        .checked_add(if record.kind == MemoryKind::Fact { 1 } else { 0 })
+        .checked_add(if record.kind == MemoryKind::Fact {
+            1
+        } else {
+            0
+        })
         .ok_or(CognitiveStoreV2Error::ImageFrontierMismatch)?;
     if current_vector.tombstone_frontier != expected_tombstone
         || current_vector.knowledge_fact_frontier != expected_fact
