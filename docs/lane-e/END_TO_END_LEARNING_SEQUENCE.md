@@ -79,11 +79,14 @@ host authenticates a scoped withdrawal authority/domain/registry
   -> payload bytes are validated, created and synchronized
   -> transaction records PayloadDurable
   -> V1 compatibility registration is appended and its snapshot is durable
-  -> transaction verifies the V1 projection and records RegistryDurable
+  -> transaction revalidates the live scoped withdrawal frontier, verifies the
+     V1 projection and records RegistryDurable
   -> independent RegistryHeadWitnessV1 binds generation, predecessor head and
      authority epoch
-  -> transaction verifies the exact witness receipt and records WitnessDurable
-  -> producer acknowledgement is permitted only from WitnessDurable
+  -> transaction revalidates the withdrawal frontier, verifies the exact witness
+     receipt and records WitnessDurable
+  -> final acknowledgement revalidates the current withdrawal frontier again and
+     is permitted only from WitnessDurable
 ```
 
 `DatasetWithdrawalScopeV1` binds `authority_domain_id + registry_id + scope_id`.
