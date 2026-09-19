@@ -395,7 +395,6 @@ fn qualification_requires_signature_verification_receipt() {
     );
 }
 
-
 #[test]
 fn large_input_remains_deterministic_and_bounded() {
     const SOURCE_RECORDS: usize = 4_096;
