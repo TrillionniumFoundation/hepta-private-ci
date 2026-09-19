@@ -374,8 +374,8 @@ impl AutomationStore {
         let rows = sqlx::query(
             "SELECT r.task_id, r.occurrence, r.occurrence_id, r.schedule_revision,
                     r.scheduled_for_ms, r.client_user_message_id,
-                    r.queued_submission_id, r.provider_turn_id, r.submitted_at_ms,
-                    t.thread_id, t.prompt
+                    r.queued_submission_id, r.taskflow_run_id, r.provider_turn_id,
+                    r.submitted_at_ms, t.thread_id, t.prompt
              FROM automation_runs r
              JOIN automation_tasks t ON t.task_id = r.task_id
              WHERE t.owner_agent_id = ? AND r.state = 'submitted'
@@ -423,6 +423,10 @@ impl AutomationStore {
                             .map_err(unavailable)?,
                     },
                     queued_submission_id: queued_submission_id.ok_or(AutomationError::Corrupt)?,
+                    taskflow_run_id: row
+                        .try_get::<Option<String>, _>("taskflow_run_id")
+                        .map_err(unavailable)?
+                        .ok_or(AutomationError::Corrupt)?,
                     provider_turn_id: row.try_get("provider_turn_id").map_err(unavailable)?,
                     submitted_at_ms: submitted_at_ms
                         .map(to_u64)
