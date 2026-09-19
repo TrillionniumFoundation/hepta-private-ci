@@ -108,3 +108,7 @@ impl fmt::Display for CompileWireError {
 }
 
 impl StdError for CompileWireError {}
+
+#[cfg(test)]
+#[path = "wire_tests.rs"]
+mod tests;
