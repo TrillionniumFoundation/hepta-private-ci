@@ -107,10 +107,7 @@ pub struct RuntimeModulePromotionWitnessV1 {
 }
 
 impl RuntimeModulePromotionWitnessV1 {
-    pub fn validate_for(
-        &self,
-        abi: &RuntimeModuleAbiV1,
-    ) -> Result<(), RuntimeModuleRegistryError> {
+    pub fn validate_for(&self, abi: &RuntimeModuleAbiV1) -> Result<(), RuntimeModuleRegistryError> {
         if self.selection_digest.is_zero() || self.canary_digest.is_zero() {
             return Err(RuntimeModuleRegistryError::MissingPromotionEvidence);
         }
