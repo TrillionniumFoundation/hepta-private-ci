@@ -408,6 +408,39 @@ impl MatrixDurableStore {
         Ok(true)
     }
 
+    pub async fn observe_dispatch_terminal_success_by_event_if_known(
+        &self,
+        room_id: &MatrixRoomId,
+        event_id: &MatrixEventId,
+        observation_digest: &str,
+        observed_at_ms: u64,
+    ) -> Result<bool, MatrixDurableError> {
+        let row = sqlx::query(
+            "SELECT stable_txn_id FROM matrix_dispatch_ledger
+             WHERE transport_event_id = ? LIMIT 1",
+        )
+        .bind(event_id.as_str())
+        .fetch_optional(self.sqlite_pool())
+        .await
+        .map_err(|_| MatrixDurableError::Unavailable)?;
+        let Some(row) = row else {
+            return Ok(false);
+        };
+        let txn_id = MatrixTransactionId::parse(
+            row.try_get::<String, _>("stable_txn_id")
+                .map_err(|_| MatrixDurableError::Unavailable)?,
+        )
+        .map_err(|_| MatrixDurableError::Corrupt)?;
+        self.observe_dispatch_terminal_success_if_known(
+            &txn_id,
+            room_id,
+            event_id,
+            observation_digest,
+            observed_at_ms,
+        )
+        .await
+    }
+
     pub async fn observe_dispatch_terminal_failure_if_known(
         &self,
         txn_id: &MatrixTransactionId,
@@ -866,6 +899,7 @@ pub(crate) async fn verify_dispatch_schema(
             ('matrix_dispatch_ledger', 'table'),
             ('matrix_dispatch_ledger_unresolved', 'index'),
             ('matrix_dispatch_ledger_terminal_event', 'index'),
+            ('matrix_dispatch_ledger_transport_event', 'index'),
             ('matrix_dispatch_observations', 'table'),
             ('matrix_dispatch_observations_by_txn', 'index'),
             ('matrix_dispatch_observations_no_update', 'trigger'),
@@ -881,7 +915,7 @@ pub(crate) async fn verify_dispatch_schema(
     .fetch_one(pool)
     .await
     .map_err(|_| MatrixDurableError::Unavailable)?;
-    if count != 10 {
+    if count != 11 {
         return Err(MatrixDurableError::Corrupt);
     }
 
