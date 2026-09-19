@@ -1,5 +1,9 @@
 //! Owner-local, module-native bounded read projection.
 //!
+//! This is the crate-internal projection primitive beneath the authoritative
+//! product boundary. Product callers must acquire an authoritative owner cut
+//! and use `read_authoritative`; this module never proves host/provider currentness.
+//!
 //! This encoding is not registered in `CONTRACTS.json` or
 //! `PROTOCOL_SCHEMAS.json`, is not a `ModulePort`, and is not a durable or wire
 //! protocol.  It only gives this crate a deterministic byte representation for
@@ -194,7 +198,7 @@ impl From<Error> for ReadV2Error {
 /// selected byte limit, that record and every later eligible record are counted
 /// as omitted. The returned bytes are always checked against both the selected
 /// limit and the one-MiB hard ceiling.
-pub fn read_v2(
+pub(crate) fn read_v2(
     snapshot: &CognitiveSnapshot,
     request: ReadRequestV2,
 ) -> Result<ReadResultV2, ReadV2Error> {
