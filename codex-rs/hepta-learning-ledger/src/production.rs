@@ -327,3 +327,7 @@ impl From<DatasetReceiptError> for ProductionLedgerError {
         Self::Dataset(value)
     }
 }
+
+#[cfg(test)]
+#[path = "production_tests.rs"]
+mod tests;
