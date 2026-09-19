@@ -5,6 +5,10 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::time::Duration;
 
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::FinalUseError;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use sha2::Digest;
 use sha2::Sha256;
 
@@ -59,6 +63,121 @@ pub trait ResourceGrantVerifier {
         now_ms: u64,
         grant: &ResourceGrant,
     ) -> Result<GrantVerification, Error>;
+}
+
+/// Concrete production-capable verifier for creating one local worker
+/// generation. It reuses the kernel final-use authority instead of defining a
+/// second signing system. The signed capability binds the complete resource
+/// grant and exact worker identity/generation. Verification consumes the
+/// final-use nonce, so replay cannot create another worker generation.
+///
+/// This is an admission snapshot, not a live revocation feed. The product host
+/// remains responsible for fencing the resulting worker generation when its
+/// resource authority changes.
+pub struct FinalUseResourceGrantVerifier<'a> {
+    authority: &'a FinalUseAuthority,
+    signed: &'a SignedFinalUseGrant,
+    worker_id: String,
+}
+
+impl<'a> FinalUseResourceGrantVerifier<'a> {
+    pub fn new(
+        authority: &'a FinalUseAuthority,
+        signed: &'a SignedFinalUseGrant,
+        worker_id: String,
+    ) -> Result<Self, Error> {
+        validate_identity(&worker_id, "worker")?;
+        Ok(Self {
+            authority,
+            signed,
+            worker_id,
+        })
+    }
+}
+
+impl ResourceGrantVerifier for FinalUseResourceGrantVerifier<'_> {
+    fn verify(
+        &self,
+        _now_ms: u64,
+        grant: &ResourceGrant,
+    ) -> Result<GrantVerification, Error> {
+        if self.signed.grant.authority_epoch != grant.authority_epoch {
+            return Err(Error::InvalidGrant);
+        }
+        let binding = resource_grant_final_use_binding(&self.worker_id, grant)?;
+        let evidence = serde_json::to_vec(self.signed).map_err(|_| Error::InvalidGrant)?;
+        let evidence_digest = sha256(&evidence);
+        let authority_id = self.signed.grant.signer_id.clone();
+        let token = self
+            .authority
+            .claim(self.signed, &binding)
+            .map_err(map_final_use_error)?;
+        self.authority
+            .with_verified_use(token, &binding, || GrantVerification::Authenticated {
+                authority_id,
+                evidence_digest,
+            })
+            .map_err(map_final_use_error)
+    }
+}
+
+/// Canonical kernel final-use binding for local resource-grant admission.
+pub fn resource_grant_final_use_binding(
+    worker_id: &str,
+    grant: &ResourceGrant,
+) -> Result<FinalUseBinding, Error> {
+    validate_identity(worker_id, "worker")?;
+    validate_identity(&grant.grant_id, "grant")?;
+    validate_digest(&grant.semantic_digest, "grant semantic")?;
+    if grant.revoked
+        || grant.authority_epoch == 0
+        || grant.generation == 0
+        || grant.expires_at_ms == 0
+        || grant.maximum_models == 0
+        || grant.maximum_active_requests == 0
+        || grant.maximum_memory_bytes == 0
+    {
+        return Err(Error::InvalidGrant);
+    }
+    let payload = serde_json::to_vec(&(
+        "hepta.local-resource-grant.v1",
+        &grant.grant_id,
+        grant.authority_epoch,
+        grant.generation,
+        grant.expires_at_ms,
+        grant.revoked,
+        grant.maximum_models,
+        grant.maximum_active_requests,
+        grant.maximum_memory_bytes,
+        &grant.semantic_digest,
+    ))
+    .map_err(|_| Error::InvalidGrant)?;
+    let payload_sha256 = sha256_array(&payload);
+    let request_sha256 = sha256_array(
+        &serde_json::to_vec(&(
+            "hepta.local-resource-grant.request.v1",
+            worker_id,
+            grant.generation,
+            payload_sha256,
+        ))
+        .map_err(|_| Error::InvalidGrant)?,
+    );
+    let scope_sha256 = sha256_array(
+        &serde_json::to_vec(&(
+            "hepta.local-resource-grant.scope.v1",
+            worker_id,
+            grant.generation,
+            &grant.semantic_digest,
+        ))
+        .map_err(|_| Error::InvalidGrant)?,
+    );
+    Ok(FinalUseBinding {
+        subject_id: worker_id.to_string(),
+        destination_id: "resource:local-model-worker".to_string(),
+        request_sha256,
+        scope_sha256,
+        payload_sha256,
+    })
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -193,6 +312,7 @@ pub enum Error {
     InvalidGrant,
     GrantExpired,
     GrantRevoked,
+    GrantAuthorityUnavailable,
     ModelCapacity,
     RequestCapacity,
     ModelAlreadyLoaded,
@@ -540,6 +660,19 @@ fn validate_request(now_ms: u64, value: &WorkerRequest) -> Result<(), Error> {
 
 fn sha256(bytes: &[u8]) -> String {
     format!("{:x}", Sha256::digest(bytes))
+}
+
+fn sha256_array(bytes: &[u8]) -> [u8; 32] {
+    Sha256::digest(bytes).into()
+}
+
+fn map_final_use_error(error: FinalUseError) -> Error {
+    match error {
+        FinalUseError::Unavailable
+        | FinalUseError::UnsafeStateDirectory
+        | FinalUseError::StateLocked => Error::GrantAuthorityUnavailable,
+        _ => Error::InvalidGrant,
+    }
 }
 
 fn validate_identity(value: &str, field: &'static str) -> Result<(), Error> {
