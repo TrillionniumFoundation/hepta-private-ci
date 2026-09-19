@@ -3697,6 +3697,70 @@ async fn verify_store(
     if invalid_logical_streams != 0 {
         return Err(MatrixDurableError::Corrupt);
     }
+    let invalid_matrix_dispatches: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM matrix_dispatch_ledger AS dispatch
+         JOIN outbox_messages AS outbox
+           ON outbox.stable_txn_id = dispatch.stable_txn_id
+         WHERE dispatch.room_id != outbox.room_id
+            OR dispatch.session_generation != outbox.generation
+            OR dispatch.payload_sha256 != outbox.payload_sha256
+            OR (
+                dispatch.state = 'prepared'
+                AND outbox.state NOT IN ('in_flight', 'retry_scheduled')
+            )
+            OR (
+                dispatch.state IN ('dispatched', 'accepted', 'indeterminate')
+                AND outbox.state != 'in_flight'
+            )
+            OR (
+                dispatch.state = 'accepted'
+                AND dispatch.accepted_event_id IS NULL
+            )
+            OR (
+                dispatch.state IN ('observed_succeeded', 'redacted')
+                AND (
+                    dispatch.terminal_event_id IS NULL
+                    OR dispatch.send_observation_digest IS NULL
+                    OR dispatch.terminal_observed_at_ms IS NULL
+                    OR outbox.state != 'sent'
+                    OR outbox.sent_event_id IS NULL
+                    OR outbox.sent_event_id != dispatch.terminal_event_id
+                    OR (
+                        dispatch.accepted_event_id IS NOT NULL
+                        AND dispatch.accepted_event_id != dispatch.terminal_event_id
+                    )
+                )
+            )
+            OR (
+                dispatch.state = 'observed_failed'
+                AND (
+                    dispatch.send_observation_digest IS NULL
+                    OR dispatch.terminal_observed_at_ms IS NULL
+                    OR outbox.state != 'permanent_failure'
+                )
+            )
+            OR (
+                dispatch.state = 'redacted'
+                AND (
+                    dispatch.redaction_observation_digest IS NULL
+                    OR dispatch.redacted_at_ms IS NULL
+                )
+            )
+            OR (
+                dispatch.state != 'redacted'
+                AND (
+                    dispatch.redaction_observation_digest IS NOT NULL
+                    OR dispatch.redacted_at_ms IS NOT NULL
+                )
+            )",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if invalid_matrix_dispatches != 0 {
+        return Err(MatrixDurableError::Corrupt);
+    }
     let foreign_checkpoint: i64 =
         sqlx::query_scalar("SELECT COUNT(*) FROM matrix_sync_checkpoint WHERE owner_agent_id != ?")
             .bind(owner_agent_id.as_str())
