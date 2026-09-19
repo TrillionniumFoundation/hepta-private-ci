@@ -345,6 +345,7 @@ fn exhausted_revision_preserves_every_transition_and_terminal_outcome() {
             key.id.clone(),
             OperationRecord {
                 key: key.clone(),
+                intent: None,
                 owner_generation: generation(3),
                 revision,
                 state: state.clone(),
@@ -386,4 +387,107 @@ fn exhausted_revision_preserves_every_transition_and_terminal_outcome() {
             }
         }
     }
+}
+
+
+fn bound_intent(payload: &[u8]) -> OperationIntent {
+    OperationIntent {
+        key: key(payload),
+        scope: stable_id("scope:test"),
+        owner: stable_id("owner:test"),
+        destination: stable_id("cognitive.store"),
+        expected_predecessor: Some(Digest32::of_bytes(b"predecessor")),
+    }
+}
+
+#[test]
+fn bound_prepare_replay_is_idempotent_and_semantic_drift_conflicts() {
+    let original = bound_intent(b"payload");
+    let original_digest = original.semantic_digest();
+    let mut ledger = OperationLedger::default();
+    assert!(ledger.prepare(original.clone(), generation(3)).is_ok());
+    let prepared = ledger.clone();
+    assert!(ledger.prepare(original.clone(), generation(3)).is_ok());
+    assert_eq!(ledger, prepared);
+
+    let mut changed = original.clone();
+    changed.destination = stable_id("prompt.registry");
+    assert_ne!(changed.semantic_digest(), original_digest);
+    assert_eq!(
+        ledger.prepare(changed, generation(3)),
+        Err(OperationError::Conflict(original.key.id.clone()))
+    );
+
+    // The compact legacy API cannot be used to downgrade a bound operation.
+    assert_eq!(
+        ledger.begin(original.key.clone(), generation(3)),
+        Err(OperationError::Conflict(original.key.id))
+    );
+}
+
+#[test]
+fn unresolved_operation_handoff_fences_old_owner_and_allows_new_reconciler() {
+    let (key, mut ledger) = dispatched_ledger();
+    assert!(
+        ledger
+            .mark_indeterminate(&key.id, Digest32::of_bytes(b"ack-lost"))
+            .is_ok()
+    );
+    let before = ledger.get(&key.id).expect("operation").revision;
+    assert!(
+        ledger
+            .handoff_owner(&key.id, generation(3), generation(4))
+            .is_ok()
+    );
+    let handed_off = ledger.get(&key.id).expect("operation");
+    assert_eq!(handed_off.owner_generation, generation(4));
+    assert!(handed_off.revision > before);
+
+    let outcome = Digest32::of_bytes(b"observed-after-takeover");
+    assert_eq!(
+        ledger.observe_terminal(
+            &key.id,
+            ReconciliationOutcome::Applied,
+            outcome,
+            generation(3),
+        ),
+        Err(OperationError::StaleGeneration)
+    );
+    assert!(
+        ledger
+            .observe_terminal(
+                &key.id,
+                ReconciliationOutcome::Applied,
+                outcome,
+                generation(4),
+            )
+            .is_ok()
+    );
+}
+
+#[test]
+fn handoff_requires_strictly_newer_generation_and_rejects_terminal_records() {
+    let (key, mut ledger) = dispatched_ledger();
+    assert_eq!(
+        ledger.handoff_owner(&key.id, generation(3), generation(3)),
+        Err(OperationError::StaleGeneration)
+    );
+    assert_eq!(
+        ledger.handoff_owner(&key.id, generation(2), generation(4)),
+        Err(OperationError::StaleGeneration)
+    );
+    assert!(
+        ledger
+            .observe_terminal(
+                &key.id,
+                ReconciliationOutcome::NotApplied,
+                Digest32::of_bytes(b"not-applied"),
+                generation(3),
+            )
+            .is_ok()
+    );
+    assert_eq!(
+        ledger.handoff_owner(&key.id, generation(3), generation(4)),
+        Err(OperationError::Terminal)
+    );
 }
