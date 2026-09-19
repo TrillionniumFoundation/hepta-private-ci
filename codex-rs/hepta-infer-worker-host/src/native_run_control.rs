@@ -120,6 +120,8 @@ impl AppServerModelDriver {
                         .as_ref()
                         .map(claimed_authority)
                         .unwrap_or(NativeFinalUseAuthority::Unverified),
+                    output_sha256: None,
+                    output_retained: true,
                     stop_reason: Some(
                         "reopened after possible dispatch; exact reconciliation pending".to_string(),
                     ),
@@ -131,7 +133,7 @@ impl AppServerModelDriver {
                 .await
             {
                 Ok(Some(output)) => {
-                    control.settle_native(&request_id, output.clone())?;
+                    control.settle_native_receipt_only(&request_id, output.clone())?;
                     return Ok(output);
                 }
                 Ok(None) => {
@@ -149,7 +151,7 @@ impl AppServerModelDriver {
                                 .take(1024)
                                 .collect(),
                         );
-                        control.settle_native(&request_id, output.clone())?;
+                        control.settle_native_receipt_only(&request_id, output.clone())?;
                     }
                     return Ok(output);
                 }
@@ -175,14 +177,14 @@ impl AppServerModelDriver {
                 if !output.terminal_observed && cancellation.is_cancelled() {
                     control.cancel_native(&request_id)?;
                 }
-                let settled = control.settle_native(&request_id, output.clone())?;
+                control.settle_native_receipt_only(&request_id, output.clone())?;
                 if !output.terminal_observed && output.turn_id.is_empty() {
                     match self
                         .reconcile_once(control, &request_id, &prompt, cancellation)
                         .await
                     {
                         Ok(Some(recovered)) => {
-                            control.settle_native(&request_id, recovered.clone())?;
+                            control.settle_native_receipt_only(&request_id, recovered.clone())?;
                             return Ok(recovered);
                         }
                         Ok(None) => {
@@ -194,7 +196,7 @@ impl AppServerModelDriver {
                         Err(_) => {}
                     }
                 }
-                Ok(settled.observation.unwrap_or(output))
+                Ok(output)
             }
             Err(error) => {
                 if control
