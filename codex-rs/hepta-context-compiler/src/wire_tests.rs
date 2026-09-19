@@ -20,8 +20,8 @@ fn id(value: &str) -> StableId {
 }
 
 #[test]
-fn compiler_composes_into_admitted_v2_transport_without_serializing_authority(
-) -> Result<(), Box<dyn StdError>> {
+fn compiler_composes_into_admitted_v2_transport_without_serializing_authority()
+-> Result<(), Box<dyn StdError>> {
     let request = CompilationRequest {
         compilation_id: id("compile.wire.v2"),
         run_snapshot_digest: Digest32::of_bytes(b"snapshot"),
@@ -36,11 +36,7 @@ fn compiler_composes_into_admitted_v2_transport_without_serializing_authority(
             contains_secret: false,
         }],
     };
-    let (receipt, envelope) = compile_to_wire_v2(
-        request,
-        id("context.compiler"),
-        Generation::new(1)?,
-    )?;
+    let (receipt, envelope) =
     assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
     assert_eq!(envelope.schema().as_str(), CONTEXT_COMPILATION_WIRE_SCHEMA_V2);
 
@@ -52,8 +48,8 @@ fn compiler_composes_into_admitted_v2_transport_without_serializing_authority(
 }
 
 #[test]
-fn context_wire_rejects_unknown_fields_and_duplicate_id_partitions(
-) -> Result<(), Box<dyn StdError>> {
+fn context_wire_rejects_unknown_fields_and_duplicate_id_partitions() -> Result<(), Box<dyn StdError>>
+{
     let digest = Digest32::of_bytes(b"context");
     let invalid = WireEnvelopeV2::new(
         id(CONTEXT_COMPILATION_WIRE_SCHEMA_V2),
