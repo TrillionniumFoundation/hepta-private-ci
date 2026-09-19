@@ -381,7 +381,7 @@ impl HeptaEvidenceStore {
             if let AuthBusSettlementOutcome::Applied { observed_cost } = outcome
                 && reservation.observed_cost == Some(observed_cost)
                 && reservation.settlement_digest
-                    == reservation_digest_for_outcome(&reservation, terminal_evidence, outcome)
+                    == Some(reservation_digest_for_outcome(&reservation, terminal_evidence, outcome))
             {
                 tx.commit().await.map_err(classify_sqlx_error)?;
                 return Ok(reservation);
