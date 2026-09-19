@@ -116,6 +116,13 @@ Fleet revocation transport/fanout, target-host trusted clock/frontier backends, 
 
 These facts require named hosts, deployment configuration and exact-candidate evidence. Source compilation or an empty B4 caller set cannot substitute for product execution evidence.
 
+The external trust/capacity/rotation/convergence facts now have a machine-checkable
+admission format and self-test in
+`qualification/kernel-authority/verify.py`. A real deployment bundle is accepted
+only when it is exact-candidate-bound and every referenced external receipt matches
+its retained SHA-256. Bundle admission explicitly does not grant activation or
+release.
+
 ## Verification
 
 Current source tests cover, among other cases:
