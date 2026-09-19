@@ -54,6 +54,12 @@ pub struct NduProjectionEntryV1 {
     pub entry_digest: Digest32,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct NduProjectionJournalAnchorV1 {
+    pub record_count: u32,
+    pub tip_digest: Digest32,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduProjectionJournalV1 {
     entries: Vec<NduProjectionEntryV1>,
@@ -73,6 +79,7 @@ pub enum NduProjectionJournalError {
     CorruptSequence,
     CorruptPredecessor,
     CorruptEntryDigest,
+    AnchorMismatch,
     UnknownKind(u8),
 }
 
@@ -102,6 +109,21 @@ impl NduProjectionJournalV1 {
     #[must_use]
     pub fn entries(&self) -> &[NduProjectionEntryV1] {
         &self.entries
+    }
+
+    /// Returns a compact value that may be retained by an independent trusted
+    /// owner. Reopening against this anchor detects a fully rehashed journal,
+    /// which the internal hash chain alone cannot distinguish from a new valid
+    /// history.
+    #[must_use]
+    pub fn anchor(&self) -> NduProjectionJournalAnchorV1 {
+        NduProjectionJournalAnchorV1 {
+            record_count: u32::try_from(self.entries.len()).unwrap_or(u32::MAX),
+            tip_digest: self
+                .entries
+                .last()
+                .map_or(Digest32::ZERO, |entry| entry.entry_digest),
+        }
     }
 
     pub fn append_projection(
@@ -139,7 +161,10 @@ impl NduProjectionJournalV1 {
         }) {
             return Err(NduProjectionJournalError::ProjectionNotRecorded);
         }
-        if self.revoked_digests().contains(&projection_digest) {
+        if self
+            .revoked_digests_for(objective_digest, subject_digest)
+            .contains(&projection_digest)
+        {
             return Err(NduProjectionJournalError::RevokedProjection);
         }
         self.append(
@@ -173,7 +198,7 @@ impl NduProjectionJournalV1 {
         objective_digest: Digest32,
         subject_digest: Digest32,
     ) -> Option<Digest32> {
-        let revoked = self.revoked_digests();
+        let revoked = self.revoked_digests_for(objective_digest, subject_digest);
         let mut selected = None;
         for entry in &self.entries {
             if entry.objective_digest != objective_digest || entry.subject_digest != subject_digest
@@ -379,10 +404,29 @@ impl NduProjectionJournalV1 {
         Ok(journal)
     }
 
-    fn revoked_digests(&self) -> BTreeSet<Digest32> {
+    pub fn reopen_with_anchor(
+        bytes: &[u8],
+        expected: NduProjectionJournalAnchorV1,
+    ) -> Result<Self, NduProjectionJournalError> {
+        let journal = Self::reopen(bytes)?;
+        if journal.anchor() != expected {
+            return Err(NduProjectionJournalError::AnchorMismatch);
+        }
+        Ok(journal)
+    }
+
+    fn revoked_digests_for(
+        &self,
+        objective_digest: Digest32,
+        subject_digest: Digest32,
+    ) -> BTreeSet<Digest32> {
         self.entries
             .iter()
-            .filter(|entry| entry.kind == NduProjectionKindV1::Revocation)
+            .filter(|entry| {
+                entry.kind == NduProjectionKindV1::Revocation
+                    && entry.objective_digest == objective_digest
+                    && entry.subject_digest == subject_digest
+            })
             .map(|entry| entry.payload_digest)
             .collect()
     }
