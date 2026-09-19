@@ -69,12 +69,13 @@ caller that can directly rewrite its connection, modules or database.
 
 `EngineeringStore` uses SQLite foreign keys, WAL, `synchronous=FULL` and one outer
 `BEGIN IMMEDIATE` per mutation. Nested owner operations share that transaction.
-`SCHEMA.sql` is the single schema source, currently version 5. Tables are:
+`SCHEMA.sql` is the single schema source, currently version 6. Tables are:
 
 - `work_envelopes`: immutable source/objective/contract/owner/path/capacity facts;
 - `path_leases`: state, revision, authority epoch, monotonically increasing fence and expiry;
 - `assignment_generations`: immutable assigned and blocked projections;
 - `assignment_generation_frontiers`: exact envelope revision, source and active-lease frontier;
+- `distributed_fence_frontiers`: highest admitted external leader/revocation fence per cluster/holder, retained across restart;
 - `integration_decisions`: immutable eligibility and rejection projection;
 - `integration_decision_bindings`: candidate, sandbox and evidence identity;
 - `integration_decision_seals`: authenticated seal identity, freshness and replay uniqueness;
@@ -83,8 +84,8 @@ caller that can directly rewrite its connection, modules or database.
 
 An owner mutation, its binding/frontier and audit event either commit together or
 roll back together. Equal identity and semantics replay idempotently; different
-semantics conflict. Startup checks the audit chain. Additive v2/v3/v4 stores migrate
-transactionally to v5; historical generations without a bound frontier remain
+semantics conflict. Startup checks the audit chain. Additive v2/v3/v4/v5 stores migrate
+transactionally to v6; historical generations without a bound frontier remain
 unusable and require a new generation. A future version is rejected before any
 schema or journal-mode write. A database claiming v5 but missing a required table
 is rejected. A corrupted store must be quarantined and restored from a verified
@@ -137,9 +138,14 @@ a proposal; workers must acquire the exact local lease, and multi-host productio
 writes must additionally present a signed distributed fence matching epoch/token,
 paths, source and revocation frontier. Fence verification re-reads the current
 SQLite lease row and requires the same envelope, holder, revision, epoch, token,
-paths and expiry to still be active; a previously signed active receipt fails
-immediately after local release/revocation. External fence and audit-anchor validity
-windows may not outlive their owning local lease/envelope.
+paths and expiry to still be active. Before production admission, the verified fence
+is transactionally recorded as the highest accepted leader-term/revocation-sequence
+frontier for its cluster/holder together with an audit event. Production control
+verification requires the presented receipt to equal that persisted frontier, so
+an older still-fresh signed receipt cannot become valid again after process restart.
+A previously signed active receipt also fails immediately after local release or
+revocation. External fence and audit-anchor validity windows may not outlive their
+owning local lease/envelope.
 
 ## Candidate qualification
 
