@@ -28,31 +28,123 @@
       "nativeSymbol": "consume_kv_v2",
       "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
       "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "authority": "kernel.authority final-use grant",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "consume_kv_v2",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "binding",
-      "nativeSymbol": "binding",
-      "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "operation": "request_secret_lease",
+      "nativeSymbol": "request_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_provider_reconciliation_pending",
+      "authority": "kernel.authority final-use grant",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_registry_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "binding",
+      "designOperation": "request_secret_lease",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "renew_secret_lease",
+      "nativeSymbol": "renew_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.authority final-use grant",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_registry_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "renew",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "revoke_secret_lease",
+      "nativeSymbol": "revoke_secret_lease",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel.authority final-use grant",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_registry_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revoke",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "reconcile_issue_observation",
+      "nativeSymbol": "reconcile_issue_observation",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_authorized_observer_provider_readback_pending",
+      "authority": "kernel.authority observer final-use grant; provider observation authenticity remains an external evidence input",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_registry_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "lost acknowledgement reconciliation",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "reconcile_revoke_observation",
+      "nativeSymbol": "reconcile_revoke_observation",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_authorized_observer_provider_readback_pending",
+      "authority": "kernel.authority observer final-use grant; provider observation authenticity remains an external evidence input",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_registry_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "lost revoke acknowledgement reconciliation",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "reconcile_renew_observation",
+      "nativeSymbol": "reconcile_renew_observation",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+      "state": "source_implemented_authorized_observer_provider_readback_pending",
+      "authority": "kernel.authority observer final-use grant; provider observation authenticity remains an external evidence input",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_registry_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "lost renew acknowledgement reconciliation",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "lease_registry",
+      "nativeSymbol": "LeaseRegistry",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/lease_registry.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "metadata owner only",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/lease_registry_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "secret_lease durable state",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Bind the lifecycle APIs to a named authenticated production caller and owner-selected trusted consumer registry.",
+    "Bind Unknown issue/renew/revoke reconciliation to a qualified provider-owned outcome/readback observer; current host observer grants authorize the assertion but do not make provider metadata self-authenticating.",
+    "Qualify replay-journal growth, epoch rotation, disk-full recovery and single-active failover on the selected target host.",
+    "Run exact-head and deterministic synthetic-merge tests and retain the SHA-named Lane-A receipts before changing the claim boundary."
   ],
   "externalEvidenceGates": [
+    "HeptaBao provider outcome/readback and dynamic-secret target-host observation",
+    "distributed or fenced-HA final-use replay/revocation qualification when active-active/failover is selected",
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"

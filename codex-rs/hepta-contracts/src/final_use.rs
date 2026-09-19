@@ -16,7 +16,7 @@ use serde::Serialize;
 #[path = "final_use_store.rs"]
 mod store;
 
-const MAX_CLAIMS: usize = 16_384;
+const MAX_REVOKED_GRANTS: usize = 16_384;
 const MAX_LIFETIME_MS: u64 = 300_000;
 
 /// Exact operation identity signed by the authority owner. Digests must bind
@@ -90,6 +90,10 @@ pub struct FinalUseRevocations {
 #[serde(deny_unknown_fields)]
 struct State {
     head: FinalUseRevocations,
+    /// Replay truth is serialized in the fixed-record claims journal. Keep
+    /// backward-compatible deserialization of legacy JSON snapshots, but do
+    /// not serialize this unbounded set back into authority.json.
+    #[serde(default, skip_serializing)]
     used_nonces: BTreeSet<[u8; 32]>,
     #[serde(skip)]
     failed: bool,
@@ -211,14 +215,16 @@ impl FinalUseAuthority {
         if state.used_nonces.contains(&signed.grant.nonce) {
             return Err(FinalUseError::AlreadyClaimed);
         }
-        if state.used_nonces.len() >= MAX_CLAIMS {
-            return Err(FinalUseError::CapacityExceeded);
-        }
-        state.used_nonces.insert(signed.grant.nonce);
-        if self.0.store.persist(&state).is_err() {
+        if self
+            .0
+            .store
+            .append_claim(state.head.authority_epoch, signed.grant.nonce)
+            .is_err()
+        {
             state.failed = true;
             return Err(FinalUseError::Unavailable);
         }
+        state.used_nonces.insert(signed.grant.nonce);
         // Persistence can outlast a short grant. Never admit a dispatch using
         // the time sampled before that I/O; its nonce stays consumed on expiry.
         validate_live(&signed.grant, &state.head)?;
@@ -258,7 +264,7 @@ impl FinalUseAuthority {
 fn valid_head(head: &FinalUseRevocations) -> bool {
     head.authority_epoch > 0
         && head.revision > 0
-        && head.revoked_grant_ids.len() <= MAX_CLAIMS
+        && head.revoked_grant_ids.len() <= MAX_REVOKED_GRANTS
         && head.revoked_grant_ids.iter().all(|id| identifier(id))
 }
 

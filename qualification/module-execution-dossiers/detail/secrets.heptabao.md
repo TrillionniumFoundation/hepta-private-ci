@@ -1,52 +1,153 @@
 # secrets.heptabao: implementation design
 
-Parent: `docs/modules/secrets.heptabao/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: authorized exact-version KV v2 HTTPS read consumer implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Parent: `docs/modules/secrets.heptabao/TECHNICAL.md`. Lane:
+`LANE-A-FOUNDATION`.
+
+Status: exact-version KV v2 consumption and repository-owned SecretLease
+issue/renew/revoke lifecycle source are implemented. Provider readback for a
+lost dynamic-lease issuance response, product composition, distributed
+authority state and independent acceptance remain external/open gates.
 
 ## 1. Source and work envelope
 
 Roots: `external/HeptaBao`, `codex-rs/hepta-bao-adapter`.
-Packages: `HEPTABAO-1-SECRET-BOUNDARY`.
+Package: `HEPTABAO-1-SECRET-BOUNDARY`.
 
-Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
+The adapter reuses the existing enrolled `BaoClient` transport and
+`kernel.authority::FinalUseAuthority`; it does not introduce another trust or
+network spine.
 
-## 2. Public operations and contract details
+## 2. Public operations
 
-`request_secret_lease(secret_reference, capability, operation_id) -> SecretLeaseMetadata`; `renew(lease_id, grant) -> LeaseMetadata`; `revoke(lease_id, grant) -> RevocationObservation`. Deliver an authorized secret only through the dedicated consumer channel; ordinary receipts contain references and lease metadata, never raw values. Freeze the external source pin/API version and verify it before enabling an adapter.
+Implemented native operations:
+
+- `consume_kv_v2(authority, grant, request, consumer) -> BaoSecretReceipt`;
+- `request_secret_lease(registry, authority, grant, request, now, consumer)
+  -> SecretLeaseIssueOutcome`;
+- `renew_secret_lease(registry, authority, grant, request, now)
+  -> SecretLeaseMutationReceipt`;
+- `revoke_secret_lease(registry, authority, grant, request, now)
+  -> SecretLeaseMutationReceipt`;
+- `reconciliation_binding(...)` produces the exact independently signed
+  observer proposal;
+- `reconcile_issue_observation`, `reconcile_renew_observation`, and
+  `reconcile_revoke_observation` consume a fresh observer grant and move only
+  a matching `Unknown` operation forward without replaying the provider effect.
+
+Ordinary receipts contain lease/reference metadata and digests, never raw
+secret values. Dynamic secret values exist only in bounded zeroizing response
+objects passed synchronously to the trusted consumer.
 
 ## 3. State records and transaction design
 
-The external secret authority remains the source of secret values and leases. Local `secret_metadata` and `secret_lease` records contain external identity, consumer scope, expiry, rotation generation and revocation status only. Any cache is sealed, strictly TTL/generation-bound and excluded from learning/export paths; its protection and erasure are independently tested.
+`LeaseRegistry` is the local authoritative metadata owner and uses SQLite/WAL
+with full synchronous durability. It stores no provider secret values.
 
-## 4. Deterministic algorithm and scheduling
+Lease state:
+`Issuing | Active | Renewing | RevokePending | Revoked | Expired | Unknown`.
 
-Validate host-authenticated grant and quota; resolve the enrolled external authority; bind final request and operation; call the typed adapter; observe external lease identity and expiry. Lost acknowledgement yields indeterminate until the external authority is queried. Rotation invalidates dependent caches and cannot silently reuse a revoked generation.
+Operation state:
+`Prepared | InFlight | Applied | Rejected | Unknown`.
 
-## 5. Capacity and performance profile
+Every effect persists `operation_id + operation kind + lease identity when
+known + semantic_sha256` before dispatch. Exact retries return the existing
+operation; changed semantics conflict. Renew/revoke persist the operation intent
+and transitional lease state in one transaction.
 
-Pilot metadata <= 16 KiB, one external operation per request, bounded TTL and renewals from policy. Separate secret-provider latency from metadata cache latency. Fail closed when the external authority or revocation frontier is unavailable.
+## 4. Effect ordering and recovery
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+1. Validate bounded request and derive exact final-use binding.
+2. Persist local operation intent.
+3. For renew/revoke, atomically fence the lease into its transitional state.
+4. Immediately before provider dispatch, claim the independently signed
+   final-use grant and durably burn the nonce.
+5. Enter exactly one provider effect.
+6. Deterministic pre/at-boundary denial may become `Rejected`.
+7. Any outcome that might have entered the provider but is not proven becomes
+   `Unknown`. No blind repeat is issued.
+8. A terminal provider observation reconciles Unknown forward through a separately
+authorized observer ceremony. Registry effect-transition methods are
+crate-private, so ordinary external callers cannot bypass that ceremony.
 
-## 6. Concrete verification cases
+A dynamic-secret GET is treated as `LEASE_ISSUING_READ`, not a pure read.
 
-- BAO-01: raw secret bytes are absent from logs, receipts, learning rows, exceptions and exports.
-- BAO-02: key/lease rotation invalidates the previous generation across process restart.
-- BAO-03: lost acknowledgement is reconciled without issuing duplicate unrestricted leases.
-- BAO-04: expired/revoked caller scope is rejected before the external API call.
+Current HeptaBao source requires unknown external-effect reconciliation but its
+operation ledger has no direct HTTP outcome endpoint. Consequently a lost
+issuance response cannot yet be automatically mapped back to a provider
+lease-id by this adapter. `reconcile_issue_observation` therefore requires an
+authenticated observation supplied by the product/provider reconciliation
+owner. This limitation is explicit and fail-closed. The observer grant authenticates
+which host principal may assert the observation; it is not a substitute for a
+provider-owned outcome/readback endpoint or other qualified terminal evidence.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+## 5. Final-use replay storage
 
-## 7. Integration, rollback and capability ceiling
+The final-use authority keeps `authority.json` as a compact trust/revocation
+checkpoint and appends fixed-size `(authority_epoch, nonce)` records to
+`claims.log`. Claim admission fsyncs one journal record rather than rewriting
+the complete JSON set. The journal is the complete replay truth and restart
+replays it; revocation/head persistence keeps the nonce set out of JSON and may
+rewrite the journal only as an O(N) checkpoint/compaction. Legacy JSON snapshots
+are migrated into the journal before compact publication.
 
-Run first against an isolated fake or enrolled non-production authority. Real authority use requires exact provider identity, consent and independent acceptance. Rollback preserves current revocations and cannot restore secret values from an old general-purpose backup.
+The former 16,384 nonce-claim ceiling is removed. The 16,384 bound applies only
+to the revocation-ID set. The local authority is still single-active per state
+directory by OS lock. Active-active requires a separate strongly consistent or
+sharded authority topology and is not claimed here.
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+## 6. Capacity and performance
 
-## 8. Current native implementation
+- provider response bound: 1 MiB;
+- dynamic secret fields: at most 64 string fields, each at most 64 KiB;
+- lease duration/increment: at most 31 days in the current adapter profile;
+- operation identity and metadata are bounded;
+- claim hot path: one fixed-size append + fsync plus in-memory replay lookup;
+- revocation/head checkpoint/journal compaction remains O(N) in retained nonce
+  count but is not the per-claim hot path;
+- replay memory and journal bytes grow with unique claims in a long-lived epoch,
+  so epoch rotation and target-host capacity remain explicit operational gates.
 
-- **Implemented entrypoints:** `consume_kv_v2` in [codex-rs/hepta-bao-adapter/src/https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs); `binding` in [codex-rs/hepta-bao-adapter/src/https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs). Authorized exact-version KV v2 HTTPS read consumer implemented.
-- **State and recovery:** BaoReadRequest binds one mount/path/version/string field, expected digest and consumer identity. The client owns no secret database or lease registry: it uses pinned direct HTTPS, a 1 MiB response cap, zeroizing buffers and kernel-owned durable nonce/revocation state.
-- **Source tests:** [codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs), [codex-rs/hepta-bao-adapter/qa/real_service_smoke.py](../../../codex-rs/hepta-bao-adapter/qa/real_service_smoke.py). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [codex-rs/hepta-bao-adapter/README.md](../../../codex-rs/hepta-bao-adapter/README.md).
-- **Remaining work:** request_secret_lease, renew and revoke in section 2 are target operations, not implemented adapter APIs. The external HeptaBao service owns its own wider capabilities and must be assessed at its own source pin. Bind the real registered host consumer; the callback and trust configuration are trusted host inputs. Existing recorded tests are tied to their recorded candidates, not this documentation revision.
+Target-host latency, journal replay scale and disk-full behavior require
+candidate measurements before production activation.
+
+## 7. Security and privacy invariants
+
+- no raw secret in ordinary return receipts, durable lease registry, logs or
+  learning/export records;
+- trusted callback selection is a host privilege, not established by a
+  caller-controlled closure or by `consumer_id` alone;
+- ordinary receipts omit secret-bearing response and delivered-value digests;
+  expected KV digests stay inside the signed request and are checked before use;
+  any owner-only secret-dependent diagnostic digest remains sensitive metadata;
+- zeroization covers owned application buffers only and is not a whole-RAM
+  secrecy claim;
+- restoring/deleting authority state is an authority reset unless independently
+  fenced by newer trust/epoch.
+
+## 8. Current native implementation and remaining gates
+
+Implemented source:
+
+- `codex-rs/hepta-bao-adapter/src/https_consumer.rs`;
+- `codex-rs/hepta-bao-adapter/src/lease_client.rs`;
+- `codex-rs/hepta-bao-adapter/src/lease_registry.rs`;
+- `codex-rs/hepta-contracts/src/final_use.rs`;
+- `codex-rs/hepta-contracts/src/final_use_store.rs`.
+
+Focused tests:
+
+- `codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs`;
+- `codex-rs/hepta-bao-adapter/src/lease_registry_tests.rs`;
+- `codex-rs/hepta-contracts/src/final_use_tests.rs`;
+- real-service fixture under `codex-rs/hepta-bao-adapter/qa`.
+
+Still open and not self-certifiable by this source:
+
+- HeptaBao runtime operation-outcome/readback endpoint for automatic lost-
+  issuance reconciliation;
+- a named production caller and authenticated provider observation source;
+- active-active/distributed final-use replay/revocation state;
+- retained exact-head/synthetic-merge execution receipts for this candidate
+  must be green; the Lane-A workflow generates SHA-named machine receipts;
+- target-host capacity/fault qualification;
+- independent semantic/operator acceptance, canary, promotion and release.

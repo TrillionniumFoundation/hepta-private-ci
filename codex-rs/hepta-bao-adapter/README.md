@@ -4,7 +4,9 @@ The legacy `resolve` and `assess_secret_boundary_v1` remain metadata-only;
 `PROVIDER_DISPATCH_ENABLED` remains false for that API. A caller-provided
 `Granted` observation cannot enable this separate client.
 
-`BaoClient::consume_kv_v2` is the executable host integration point. It reads
+`BaoClient::consume_kv_v2` is the executable exact-version KV integration point. The same enrolled client also exposes `request_secret_lease`, `renew_secret_lease`, and `revoke_secret_lease`; those lifecycle APIs persist metadata-only operation intent in `LeaseRegistry` before entering a provider effect. Dynamic-secret values are delivered only to a bounded synchronous trusted consumer and never enter the registry or ordinary receipts.
+
+The KV path reads
 `GET /v1/{mount}/data/{path}?version=N`, supplies `X-Vault-Token` and
 `X-Vault-Namespace`, requires a configured CA and hostname-valid HTTPS, disables
 redirects and ambient proxies, and caps the complete response at 1 MiB.
@@ -45,7 +47,7 @@ let binding = client.binding(&request)?; // metadata for the external issuer
 let receipt = client.consume_kv_v2(&authority, &grant, &request, |secret| {
     registered_consumer.use_credential(secret)
 }).await?;
-// Publish only receipt: request/body/secret digests, version and byte count.
+// Publish only receipt: exact signed request digest, version and byte count.
 ```
 
 The example `cargo run -p codex-hepta-bao-adapter --example consume_secret --
@@ -86,25 +88,19 @@ five minutes. Signing material remains outside the adapter and normal runtime.
 `FinalUseAuthority::update_revocations` accepts only monotonic trusted host
 updates. Within one epoch, revoked IDs cannot be removed. `open_state_dir`
 requires a Unix owner-only state directory (0700), creates private regular
-files (0600), and holds an operating-system process lock until exit. Claims
-and revocation updates are synced and atomically replaced before success.
-The example automatically reopens this state: used nonces remain rejected
-after restart without a manual epoch change. Corrupt, missing previously
+files (0600), and holds an operating-system process lock until exit. Revocation checkpoints are synced and atomically replaced before success. Hot-path nonce claims are fixed-size records appended and fsynced to `claims.log`; `authority.json` remains a compact trust/revocation checkpoint and deliberately does not serialize the unbounded nonce set. Restart replays the complete journal. A revocation/head checkpoint may rewrite the journal from the in-memory set, but this O(N) compaction is outside the per-claim hot path. The example automatically reopens this state: used nonces remain rejected after restart without a manual epoch change. Corrupt, missing previously
 initialized state, unsafe permissions, or a concurrent owner cause denial.
 Storage errors fence that authority instance until recovery. Preserve this
 state across deployments; deleting or restoring it from an old backup is an
 authority reset and requires an independently changed issuer trust/epoch.
 Other platforms fail closed until an equivalent owner ACL store exists.
-The 16,384-entry registry never evicts claims silently; exhaustion rejects new
-dispatch until a trusted epoch transition. A failed/timeout request does not
-refund its nonce or retry automatically. A new grant requires owner action.
+The former 16,384 nonce-claim ceiling is removed; nonce claims are retained for the authority epoch in the complete fixed-record journal and never silently evicted. Long-lived epochs still require capacity measurement and an owner-controlled epoch-rotation policy because memory and journal size grow with unique claims. The independent revoked-grant-ID set remains bounded at 16,384. A failed/timeout request does not refund its nonce or retry automatically. A new grant requires owner action after effect reconciliation.
 
 Provider 401/403 is denied; missing data, invalid TLS, timeout, oversize,
 malformed response, wrong version and digest mismatch never invoke the
 consumer. If the consumer reports failure after entry, the outcome is
 `ConsumerIndeterminate`; do not infer no effect or blindly repeat it.
-Only read operations exist here; adding mutation APIs requires durable
-idempotency and post-entry uncertainty handling, not reusing read retry rules.
+Lease issue/renew/revoke are effect operations, including dynamic-secret GETs. They use explicit `Prepared/InFlight/Applied/Rejected/Unknown` operation truth and never treat timeout as proof of no effect. Current HeptaBao source requires reconciliation for `LEASE_ISSUING_READ`, but its operation ledger has no direct HTTP outcome endpoint; therefore lost issuance responses remain `Unknown` until an authenticated provider observation is supplied to `reconcile_issue_observation`. Blind re-issuance is forbidden.
 
 ## Verification
 
@@ -192,3 +188,31 @@ client dependency migration, which requires its own current-head CI check.
 The full formatter was also blocked at the Bazel/Starlark step because
 `dotslash` was unavailable; Rust and Python formatting completed. These open
 workspace gates remain separate from the bounded integration results.
+
+
+## SecretLease lifecycle and HA boundary
+
+`LeaseRegistry` is a SQLite/WAL metadata owner. It records operation identity,
+semantic digest, provider lease identity, consumer scope, expiry, renewable
+state and lifecycle state. It stores no secret values. Reusing an operation ID
+with changed semantics fails closed. Renew/revoke transition local lease state
+and operation intent atomically.
+
+Both the lease registry and the final-use state directory are local authority
+stores. The final-use directory deliberately keeps an exclusive process lock,
+so one directory has one active authority owner. This is not active-active HA.
+A multi-replica deployment must use either a strongly consistent shared
+replay/revocation backend, disjoint authority shards, or fenced single-active
+failover, with split-brain and recovery qualification before activation.
+
+The trusted consumer callback is a privileged product-host capability. The
+signed consumer identifier binds intent but does not make arbitrary in-process
+code safe. Product composition must authenticate/select the actual consumer
+implementation.
+
+Secret fingerprints such as raw SHA-256 are security-sensitive metadata for
+low-entropy values. Do not export or retain them indefinitely merely because
+they are digests; use restricted retention or a context-separated keyed digest
+when equality matching is necessary. Application zeroization reduces retained
+copies in owned buffers but is not a whole-process, kernel, TLS, allocator or
+swap secrecy guarantee.

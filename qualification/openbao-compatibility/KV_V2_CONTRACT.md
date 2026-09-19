@@ -25,9 +25,12 @@ grant and has no provider signing key.
 The implementation is bound to
 [`BaoClient::consume_kv_v2`](../../codex-rs/hepta-bao-adapter/src/https_consumer.rs)
 and the request shape is [`BaoReadRequest`](../../codex-rs/hepta-bao-adapter/src/https_consumer.rs).
-Only one string-valued field is delivered to the trusted callback. The receipt
-contains request, response and secret digests, version and byte count; it never
-contains secret bytes.
+Only one string-valued field is delivered to the trusted callback. The ordinary
+receipt contains the exact signed request digest, version and byte count. It
+does not export the response digest or secret digest, because either would be a
+public fingerprint of secret-bearing material; the expected secret digest
+remains bound inside the independently signed request and is checked before
+delivery.
 
 ## Response and failure contract
 
@@ -42,9 +45,11 @@ contains secret bytes.
 | expected field digest differs | `SecretDigestMismatch` | No |
 | callback reports failure after entry | `ConsumerIndeterminate` | It was entered; the grant remains claimed |
 
-There is no automatic retry, write operation, metadata mutation, lease
-operation or type coercion. Response and decoded secret buffers are zeroized on
-drop; the transport remains bounded to a one MiB response.
+There is no automatic retry, KV write operation, metadata mutation or type
+coercion in this KV-v2 contract. Provider-native dynamic SecretLease
+issue/renew/revoke is a separate effect contract in `lease_client.rs` and must
+not be inferred from this document. Response and decoded secret buffers are
+zeroized on drop; the transport remains bounded to a one MiB response.
 
 ## Executable contract evidence
 
@@ -61,6 +66,9 @@ the following versioned API cases:
 - signature, revocation, TLS trust, size, timeout and indeterminate-delivery
   fences.
 
-These are source-linked synthetic fixtures. They do not establish a named
-production caller, independent acceptance, or complete OpenBao compatibility.
+These recorded fixtures are historical source-linked evidence, not proof of
+the current candidate. The Lane-A workflow separately emits exact-HEAD and
+deterministic synthetic-merge JSON receipts named by the candidate SHA. Neither
+form establishes a named production caller, independent acceptance, or
+complete OpenBao compatibility.
 Those gates remain open in [`COMPATIBILITY_MATRIX.json`](COMPATIBILITY_MATRIX.json).

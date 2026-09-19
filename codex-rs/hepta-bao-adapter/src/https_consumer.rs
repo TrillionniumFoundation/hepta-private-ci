@@ -23,7 +23,7 @@ use zeroize::Zeroizing;
 const MAX_RESPONSE_BYTES: usize = 1024 * 1024;
 
 /// Provider credential injected by the enrolled host. Debug never reveals it.
-pub struct BaoToken(Zeroizing<String>);
+pub struct BaoToken(pub(crate) Zeroizing<String>);
 
 impl BaoToken {
     pub fn new(value: String) -> Result<Self, BaoClientError> {
@@ -57,18 +57,18 @@ pub struct BaoReadRequest {
 /// Contains observations only; it is never a reusable permission or secret.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct BaoSecretReceipt {
+    /// Binds the exact signed request, including the expected-secret digest,
+    /// without exporting a second secret-dependent fingerprint.
     pub request_sha256: [u8; 32],
-    pub response_sha256: [u8; 32],
-    pub secret_sha256: [u8; 32],
     pub version: u64,
     pub secret_bytes: usize,
 }
 
 pub struct BaoClient {
-    client: HttpClient,
-    origin: Url,
-    ca_sha256: [u8; 32],
-    token: BaoToken,
+    pub(crate) client: HttpClient,
+    pub(crate) origin: Url,
+    pub(crate) ca_sha256: [u8; 32],
+    pub(crate) token: BaoToken,
 }
 
 impl fmt::Debug for BaoClient {
@@ -229,8 +229,6 @@ impl BaoClient {
         }
         let receipt = BaoSecretReceipt {
             request_sha256: binding.request_sha256,
-            response_sha256: Digest32::of_bytes(&body).into_array(),
-            secret_sha256: digest,
             version: request.version,
             secret_bytes: secret.len(),
         };

@@ -283,3 +283,33 @@ fn startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations() 
         FinalUseError::Revoked
     );
 }
+
+
+#[test]
+fn replay_journal_survives_checkpoint_without_bloating_authority_snapshot() {
+    let (authority, signed, directory) = fixture().unwrap();
+    let token = authority.claim(&signed, &signed.grant.binding).unwrap();
+    drop(token);
+    authority
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::new(),
+        })
+        .unwrap();
+    drop(authority);
+
+    let snapshot = std::fs::read_to_string(directory.path().join("authority.json")).unwrap();
+    assert!(
+        !snapshot.contains("used_nonces"),
+        "compact authority snapshot must not serialize the unbounded replay set"
+    );
+    let claims = std::fs::read(directory.path().join("claims.log")).unwrap();
+    assert_eq!(claims.len(), 40, "one fixed-size replay record expected");
+
+    let reopened = reopen(directory.path()).unwrap();
+    assert_eq!(
+        reopened.claim(&signed, &signed.grant.binding).unwrap_err(),
+        FinalUseError::AlreadyClaimed
+    );
+}
