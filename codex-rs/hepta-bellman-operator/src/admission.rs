@@ -99,7 +99,7 @@ pub fn fit_tabular_operator_from_dataset_receipt(
         receipt,
         plan.samples.iter().map(|sample| sample.evidence_digest),
     )?;
-    Ok(fit_tabular_operator(plan)?)
+    fit_tabular_operator(plan).map_err(OperatorAdmissionError::from)
 }
 
 /// Fit the action-conditioned world model from a verified frozen dataset
@@ -113,11 +113,8 @@ pub fn fit_transition_model_from_dataset_receipt(
 ) -> Result<TabularWorldModelV1, OperatorAdmissionError> {
     verify_dataset_snapshot_receipt_v3(receipt, now)?;
     require_receipt_rows(receipt, samples.iter().map(|sample| sample.evidence_digest))?;
-    Ok(fit_transition_model(
-        model_id,
-        receipt.snapshot.dataset_digest,
-        samples,
-    )?)
+    fit_transition_model(model_id, receipt.snapshot.dataset_digest, samples)
+        .map_err(OperatorAdmissionError::from)
 }
 
 fn require_receipt_rows(
