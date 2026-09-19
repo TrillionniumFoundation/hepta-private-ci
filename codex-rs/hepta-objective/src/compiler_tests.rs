@@ -6,6 +6,7 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
 
+use super::canonical_native_objective_semantic_bytes_v1;
 use super::compile;
 use crate::ActionClass;
 use crate::CompileDisposition;
@@ -304,5 +305,17 @@ fn maximum_scalar_conflict_is_deterministic_at_numeric_extremes() {
     assert_eq!(
         first.conflicting_ids,
         vec![id("maximum-bound"), id("minimum-bound")]
+    );
+}
+
+#[test]
+fn persisted_semantic_bytes_recompute_objective_digest() {
+    let compiled = must(must(compile(envelope())));
+    assert_eq!(SourceTrust::PrincipalStructured, compiled.objective.source_trust);
+    assert_eq!(
+        compiled.objective.semantic_digest,
+        Digest32::of_bytes(&canonical_native_objective_semantic_bytes_v1(
+            &compiled.objective
+        ))
     );
 }
