@@ -26,6 +26,9 @@ on:
 permissions:
   contents: read
 
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
 concurrency:
   group: hepta-objective-admission-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -37,6 +40,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
 
@@ -44,14 +48,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
           git rev-parse HEAD HEAD^{tree}
 
       - name: Validate exact-source and target-host recorders
         shell: bash
         run: |
           set -euo pipefail
-          python3 scripts/hepta-implementation-maps.py verify --expected-sha "${GITHUB_SHA}"
+          python3 scripts/hepta-implementation-maps.py verify --expected-sha "${SOURCE_SHA}"
           python3 scripts/hepta-objective-target-measure.py --self-test
 
       - name: Objective and product-composition tests
