@@ -131,6 +131,45 @@ def verify() -> None:
                 f"named inference product root must resolve exact grants after runtime binding: {forbidden}"
             )
 
+    run_control = (
+        ROOT / "codex-rs/hepta-infer-worker-host/src/native_run_control.rs"
+    ).read_text(encoding="utf-8")
+    app_server = (
+        ROOT / "codex-rs/hepta-infer-worker-host/src/native_app_server.rs"
+    ).read_text(encoding="utf-8")
+    core_control = (
+        ROOT / "codex-rs/hepta-infer-core/src/native_control.rs"
+    ).read_text(encoding="utf-8")
+    durable_control = (
+        ROOT / "codex-rs/hepta-infer-core/src/durable_control.rs"
+    ).read_text(encoding="utf-8")
+    for needle in (
+        "pub fn settle_native_receipt_only",
+        "pub output_sha256: Option<String>",
+        "pub output_retained: bool",
+        "redacted_for_compaction",
+    ):
+        if needle not in core_control:
+            raise SystemExit(
+                f"inference control missing receipt-only output privacy invariant: {needle}"
+            )
+    if "self.native = compacted_native;" not in durable_control:
+        raise SystemExit(
+            "native compaction must publish the redacted canonical in-memory image"
+        )
+    for source_name, source in (
+        ("native_run_control.rs", run_control),
+        ("native_app_server.rs", app_server),
+    ):
+        if "settle_native_receipt_only" not in source:
+            raise SystemExit(
+                f"{source_name} must journal provider observations through receipt-only settlement"
+            )
+        if ".settle_native(" in source:
+            raise SystemExit(
+                f"{source_name} contains raw provider-output settlement outside the receipt-only boundary"
+            )
+
     policy = (
         ROOT / "codex-rs/hepta-infer-worker-host/src/native_policy.rs"
     ).read_text(encoding="utf-8")
