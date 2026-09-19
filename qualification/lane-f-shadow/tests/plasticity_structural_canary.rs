@@ -3,8 +3,8 @@ use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use codex_hepta_plasticity::{
-    DurableTopologyAppendReceiptV1, DurableTopologyProposalRegistryV1,
-    GovernedTopologyProposalV1, ProposalWindowV2, StructuralCanaryControllerV1,
+    DurableTopologyProposalRegistryV1, GovernedTopologyProposalV1, ProposalWindowV2,
+    StructuralCanaryControllerV1,
     StructuralCanaryObservationV1, StructuralCanaryStateV1, TopologyChangeV2,
     TopologyOperationV2, TopologyProposalRequestV2, WriterHandoffPlanV1,
     admit_governed_topology_v1, build_structural_canary_plan_v1, build_writer_handoff_plan_v1,
@@ -123,7 +123,7 @@ fn governed_topology() -> (GovernedTopologyProposalV1, WriterHandoffPlanV1) {
 fn persist_and_reopen(
     fixture: &TestFile,
     governed: GovernedTopologyProposalV1,
-) -> (GovernedTopologyProposalV1, DurableTopologyAppendReceiptV1) {
+) -> DurableTopologyProposalRegistryV1 {
     let scope = digest("topology-registry-scope");
     let anchor = {
         let mut registry =
@@ -139,12 +139,12 @@ fn persist_and_reopen(
             .expect("anchor exists");
         (anchor, append)
     };
-    let (anchor, append) = anchor;
+    let (anchor, _append) = anchor;
     let reopened =
         DurableTopologyProposalRegistryV1::reopen_anchored(fixture.open(), scope, 41, 8, anchor)
             .expect("anchored reopen");
     assert_eq!(reopened.record_count(), Ok(1));
-    (governed, append)
+    reopened
 }
 
 #[test]
@@ -159,10 +159,11 @@ fn pls3_governed_topology_persists_then_accepts_bounded_canary() {
         .expect("update candidate")
         .candidate_id
         .clone();
-    let (governed, append) = persist_and_reopen(&fixture, governed);
+    let proposal_id = governed.proposal.proposal_id.clone();
+    let registry = persist_and_reopen(&fixture, governed);
     let plan = build_structural_canary_plan_v1(
-        &governed,
-        &append,
+        &registry,
+        &proposal_id,
         candidate_id,
         digest("baseline-health"),
         2,
@@ -204,10 +205,11 @@ fn pls3_safety_violation_aborts_after_durable_admission() {
         .expect("update candidate")
         .candidate_id
         .clone();
-    let (governed, append) = persist_and_reopen(&fixture, governed);
+    let proposal_id = governed.proposal.proposal_id.clone();
+    let registry = persist_and_reopen(&fixture, governed);
     let plan = build_structural_canary_plan_v1(
-        &governed,
-        &append,
+        &registry,
+        &proposal_id,
         candidate_id,
         digest("baseline-health"),
         4,
