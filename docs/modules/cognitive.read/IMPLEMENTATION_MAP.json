@@ -17,38 +17,76 @@
     "codex-rs/hepta-cognitive-read"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionImplementation": true,
+  "productCallerState": "composed_local_host",
+  "productionWriterState": "not_applicable_read_only",
   "operations": [
+    {
+      "operation": "read_ids_v1",
+      "nativeSymbol": "read_ids_v1",
+      "sourcePath": "codex-rs/hepta-cognitive-read/src/ids.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/ids_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "read_ids",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context.rs"
+      ]
+    },
     {
       "operation": "read_v2",
       "nativeSymbol": "read_v2",
       "sourcePath": "codex-rs/hepta-cognitive-read/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_compatibility_library",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "read_v2",
+      "designOperation": "bounded_compatibility_projection",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "durablecognitivesnapshot",
+      "operation": "durable_cognitive_snapshot",
       "nativeSymbol": "DurableCognitiveSnapshot",
       "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "durablecognitivesnapshot",
-      "mappingClass": "owner_native",
+      "designOperation": "acquire_snapshot",
+      "mappingClass": "existing_owner_adapter",
       "delegatedCallees": []
+    },
+    {
+      "operation": "final_use_revalidate",
+      "nativeSymbol": "revalidate",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revalidate",
+      "mappingClass": "consumer_integration",
+      "delegatedCallees": [
+        "codex-rs/hepta-infer-worker-host/src/native_app_server.rs"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Obtain exact-head and deterministic synthetic-merge execution receipts for the candidate.",
+    "Keep the current durable SQLite kind capability Fact-only until an explicit owner schema migration qualifies additional memory kinds.",
+    "Add target-host p50/p95/p99 CPU, RSS and SQLite measurements before performance qualification."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -58,7 +96,7 @@
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
@@ -66,5 +104,9 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-cognitive-read"
-  ]
+  ],
+  "observedImplementationBase": {
+    "commit": "d7af096f28fa9989388939efa0e6600b52a43952",
+    "interpretation": "fresh main source review base; sourceBase above remains the shared generated-map baseline used by the global verifier"
+  }
 }
