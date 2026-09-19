@@ -122,9 +122,9 @@ pub(super) fn build_binding(
     if admission.operation_id.is_empty()
         || model_provider.is_empty()
         || context_digest.len() != 64
-        || !context_digest.bytes().all(|byte| {
-            byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte)
-        })
+        || !context_digest
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
     {
         return Err("invalid native final-use binding input".into());
     }
