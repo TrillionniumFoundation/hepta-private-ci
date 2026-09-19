@@ -37,6 +37,7 @@ pub use learned::fit_tabular_operator;
 pub use learned::predict_tabular_operator;
 pub use learned_strict::StrictLearnedOperatorError;
 pub use learned_strict::fit_tabular_operator_strict_v2;
+pub use learned_strict::fit_tabular_operator_with_dataset_binding_v3;
 pub use learned_strict::predict_tabular_operator_indexed_v2;
 pub use reference::ApplicabilityDecisionV1;
 pub use reference::BellmanReferenceCellV1;
@@ -68,6 +69,7 @@ pub use world_model::WorldModelError;
 pub use world_model::WorldModelPredictionV1;
 pub use world_model::WorldModelSampleV1;
 pub use world_model::fit_transition_model;
+pub use world_model::fit_transition_model_with_dataset_binding;
 pub use world_model::predict_transition;
 
 const MAX_SAMPLES: usize = 16_384;
