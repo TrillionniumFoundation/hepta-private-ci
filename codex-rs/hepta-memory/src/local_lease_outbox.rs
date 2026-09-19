@@ -15,6 +15,10 @@ use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_operations::OperationIntent;
+use codex_hepta_operations::OperationKey;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
 use sha2::Digest;
@@ -70,6 +74,7 @@ pub enum LocalLeaseOutboxError {
 pub enum LocalAdmissionFault {
     AfterEventBeforeOutbox,
     AfterOutboxBeforeCommit,
+    AfterOperationBeforeCommit,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -242,6 +247,43 @@ pub struct QueuedReceipt {
     pub payload_sha256: Sha256Digest,
     /// Always false: a queued local intent is not an external effect receipt.
     pub external_effect: bool,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct InheritedQueuedReceipt {
+    pub lease_id: String,
+    pub occurrence_key: String,
+    pub event_id: String,
+    pub outbox_id: String,
+    pub owner_agent_id: AgentId,
+    pub source_generation: u64,
+    pub topic: String,
+    pub payload_json: String,
+    pub payload_sha256: Sha256Digest,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct DurableOperationDispatchBinding {
+    pub scope_id: String,
+    pub destination_id: String,
+}
+
+struct DurableOperationRow {
+    operation_id: String,
+    semantic_sha256: String,
+    scope_id: String,
+    owner_id: String,
+    destination_id: String,
+    payload_sha256: String,
+    expected_predecessor_sha256: Option<String>,
+    lease_id: String,
+    event_id: String,
+    outbox_id: String,
+    owner_agent_id: AgentId,
+    generation: u64,
+    fencing_token: String,
+    authority_epoch: u64,
+    owner_epoch: u64,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -907,6 +949,14 @@ impl LocalLeaseOutbox {
         let events = verify_event_chain(transaction, &self.lease_id, &self.owner_agent_id).await?;
         let outbox = verify_outbox_chain(transaction, &self.lease_id, &self.owner_agent_id).await?;
         verify_event_outbox_pairing(&events, &outbox)?;
+        verify_operation_ledger(
+            transaction,
+            &self.lease_id,
+            &self.owner_agent_id,
+            &events,
+            &outbox,
+        )
+        .await?;
         Ok(lease)
     }
 
@@ -924,6 +974,14 @@ impl LocalLeaseOutbox {
         let events = verify_event_chain(transaction, &self.lease_id, &self.owner_agent_id).await?;
         let outbox = verify_outbox_chain(transaction, &self.lease_id, &self.owner_agent_id).await?;
         verify_event_outbox_pairing(&events, &outbox)?;
+        verify_operation_ledger(
+            transaction,
+            &self.lease_id,
+            &self.owner_agent_id,
+            &events,
+            &outbox,
+        )
+        .await?;
         Ok(lease)
     }
 
@@ -1246,7 +1304,10 @@ impl LocalLeaseOutbox {
         Ok(lease)
     }
 
-    /// Atomically admit one local event and its paired local outbox intent.
+    /// Atomically admit one legacy local event and its paired local outbox
+    /// intent. Production cross-owner operations use `admit_operation`,
+    /// which additionally persists the complete semantic operation identity in
+    /// the same SQLite transaction.
     pub async fn admit(
         &self,
         occurrence_key: impl Into<String>,
@@ -1257,13 +1318,32 @@ impl LocalLeaseOutbox {
             occurrence_key.into(),
             topic.into(),
             payload_json.into(),
+            /*operation*/ None,
             /*fault*/ None,
         )
         .await
     }
 
-    /// Test/qualification fault hook proving that event+outbox are one
-    /// transaction.  It is local-only and intentionally cannot dispatch.
+    /// Atomically prepare a complete kernel operation and publish its local
+    /// outbox row. The operation id is the occurrence/idempotency key.
+    pub async fn admit_operation(
+        &self,
+        operation: OperationIntent,
+        topic: impl Into<String>,
+        payload_json: impl Into<String>,
+    ) -> Result<LocalAdmission, LocalLeaseOutboxError> {
+        let occurrence_key = operation.key.id.as_str().to_string();
+        self.admit_inner(
+            occurrence_key,
+            topic.into(),
+            payload_json.into(),
+            Some(operation),
+            /*fault*/ None,
+        )
+        .await
+    }
+
+    /// Test/qualification fault hook proving legacy event+outbox atomicity.
     pub async fn admit_with_fault(
         &self,
         occurrence_key: impl Into<String>,
@@ -1275,6 +1355,27 @@ impl LocalLeaseOutbox {
             occurrence_key.into(),
             topic.into(),
             payload_json.into(),
+            /*operation*/ None,
+            Some(fault),
+        )
+        .await
+    }
+
+    /// Fault hook for the full operation-ledger + event + outbox transaction.
+    #[cfg(test)]
+    pub(crate) async fn admit_operation_with_fault(
+        &self,
+        operation: OperationIntent,
+        topic: impl Into<String>,
+        payload_json: impl Into<String>,
+        fault: LocalAdmissionFault,
+    ) -> Result<LocalAdmission, LocalLeaseOutboxError> {
+        let occurrence_key = operation.key.id.as_str().to_string();
+        self.admit_inner(
+            occurrence_key,
+            topic.into(),
+            payload_json.into(),
+            Some(operation),
             Some(fault),
         )
         .await
@@ -1285,12 +1386,33 @@ impl LocalLeaseOutbox {
         occurrence_key: String,
         topic: String,
         payload_json: String,
+        operation: Option<OperationIntent>,
         fault: Option<LocalAdmissionFault>,
     ) -> Result<LocalAdmission, LocalLeaseOutboxError> {
         validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
         validate_text(&topic, "outbox topic", /*max_bytes*/ 256)?;
         validate_text(&payload_json, "event payload", /*max_bytes*/ 65_536)?;
         let payload_sha256 = Sha256Digest::for_bytes(payload_json.as_bytes());
+        if let Some(operation) = operation.as_ref() {
+            operation
+                .validate()
+                .map_err(|error| LocalLeaseOutboxError::Invalid(error.to_string()))?;
+            if operation.key.id.as_str() != occurrence_key
+                || operation.owner.as_str() != self.owner_agent_id.as_str()
+                || operation.key.payload_digest.to_string() != payload_sha256.as_str()
+            {
+                return Err(LocalLeaseOutboxError::CasConflict(
+                    "operation id, owner, or payload is not bound to the local admission"
+                        .to_string(),
+                ));
+            }
+            if self.binding().is_none() {
+                return Err(LocalLeaseOutboxError::Invalid(
+                    "durable operation admission requires an authority/owner/expiry-bound lease"
+                        .to_string(),
+                ));
+            }
+        }
         let mut transaction = self
             .store
             .pool
@@ -1304,6 +1426,14 @@ impl LocalLeaseOutbox {
         let outbox_rows =
             verify_outbox_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
         verify_event_outbox_pairing(&events, &outbox_rows)?;
+        verify_operation_ledger(
+            &mut transaction,
+            &self.lease_id,
+            &self.owner_agent_id,
+            &events,
+            &outbox_rows,
+        )
+        .await?;
 
         if let Some(existing) = find_admission(
             &mut transaction,
@@ -1343,6 +1473,31 @@ impl LocalLeaseOutbox {
                     "occurrence was admitted under generation {} and cannot be retried by generation {}",
                     existing.generation, self.generation
                 )));
+            }
+            let durable_operation = find_operation(&mut transaction, &occurrence_key).await?;
+            match (operation.as_ref(), durable_operation.as_ref()) {
+                (Some(expected), Some(stored)) => {
+                    verify_operation_row_binding(
+                        expected,
+                        stored,
+                        self,
+                        &existing,
+                        &outbox,
+                        &payload_sha256,
+                    )?;
+                }
+                (Some(_), None) => {
+                    return Err(LocalLeaseOutboxError::CasConflict(
+                        "operation replay targets a legacy admission without a durable operation row"
+                            .to_string(),
+                    ));
+                }
+                (None, Some(_)) => {
+                    return Err(LocalLeaseOutboxError::CasConflict(
+                        "legacy admission cannot replay a bound durable operation".to_string(),
+                    ));
+                }
+                (None, None) => {}
             }
             let outcome = current_outcome(
                 &mut transaction,
@@ -1445,7 +1600,29 @@ impl LocalLeaseOutbox {
         .await?;
         if fault == Some(LocalAdmissionFault::AfterOutboxBeforeCommit) {
             return Err(LocalLeaseOutboxError::TransactionAborted(
-                "fault injected after outbox before commit".to_string(),
+                "fault injected after outbox before operation/commit".to_string(),
+            ));
+        }
+        if let Some(operation) = operation.as_ref() {
+            let binding = self.binding().ok_or_else(|| {
+                LocalLeaseOutboxError::Invalid(
+                    "durable operation admission requires a bound lease".to_string(),
+                )
+            })?;
+            insert_operation(
+                &mut transaction,
+                operation,
+                self,
+                &event_id,
+                &outbox_id,
+                &payload_sha256,
+                &binding,
+            )
+            .await?;
+        }
+        if fault == Some(LocalAdmissionFault::AfterOperationBeforeCommit) {
+            return Err(LocalLeaseOutboxError::TransactionAborted(
+                "fault injected after operation ledger before commit".to_string(),
             ));
         }
         transaction
@@ -1482,6 +1659,57 @@ impl LocalLeaseOutbox {
         .await
     }
 
+    /// Verify that an occurrence has a complete durable OperationIntent and
+    /// that its immutable destination matches the attached effect target.
+    pub(crate) async fn verify_operation_dispatch_binding(
+        &self,
+        occurrence_key: &str,
+        destination_id: &str,
+    ) -> Result<DurableOperationDispatchBinding, LocalLeaseOutboxError> {
+        let mut transaction = self
+            .store
+            .pool
+            .begin()
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        let lease = self.current_lease(&mut transaction).await?;
+        ensure_current_active(&lease, self)?;
+        let events =
+            verify_event_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
+        let outbox =
+            verify_outbox_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
+        verify_event_outbox_pairing(&events, &outbox)?;
+        verify_operation_ledger(
+            &mut transaction,
+            &self.lease_id,
+            &self.owner_agent_id,
+            &events,
+            &outbox,
+        )
+        .await?;
+        let operation = find_operation(&mut transaction, occurrence_key)
+            .await?
+            .ok_or_else(|| {
+                LocalLeaseOutboxError::StaleFence(
+                    "production dispatch requires a durable operation ledger row".to_string(),
+                )
+            })?;
+        if operation.destination_id != destination_id {
+            return Err(LocalLeaseOutboxError::StaleFence(
+                "durable operation destination does not match attached target".to_string(),
+            ));
+        }
+        let binding = DurableOperationDispatchBinding {
+            scope_id: operation.scope_id,
+            destination_id: operation.destination_id,
+        };
+        transaction
+            .commit()
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        Ok(binding)
+    }
+
     /// Claim one exact queued occurrence before a target dispatch begins.
     ///
     /// The claim is persisted as the existing fail-closed `Indeterminate`
@@ -1509,6 +1737,249 @@ impl LocalLeaseOutbox {
             /*allow_exact_replay*/ false,
         )
         .await
+    }
+
+    /// Recover one queued occurrence admitted by a terminal predecessor fence.
+    ///
+    /// This is read-only and preserves the original event/outbox identity.
+    /// The returned row is not dispatchable until `claim_inherited_dispatch`
+    /// atomically appends a current-generation Indeterminate claim.
+    pub(crate) async fn inherited_queued_receipt(
+        &self,
+        occurrence_key: &str,
+    ) -> Result<Option<InheritedQueuedReceipt>, LocalLeaseOutboxError> {
+        validate_text(occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
+        let mut transaction = self
+            .store
+            .pool
+            .begin()
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        let lease = self.current_lease(&mut transaction).await?;
+        ensure_current_active(&lease, self)?;
+        let events =
+            verify_event_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
+        let outbox_rows =
+            verify_outbox_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
+        verify_event_outbox_pairing(&events, &outbox_rows)?;
+        let Some(admission) = events
+            .iter()
+            .find(|event| event.occurrence_key == occurrence_key && event.kind == "admitted")
+        else {
+            transaction
+                .commit()
+                .await
+                .map_err(crate::cognitive_store::unavailable)?;
+            return Ok(None);
+        };
+        let outbox = outbox_rows
+            .iter()
+            .find(|row| row.occurrence_key == occurrence_key)
+            .ok_or_else(|| corrupt("event admission has no paired outbox row"))?;
+        let state = current_outcome(
+            &mut transaction,
+            &self.lease_id,
+            occurrence_key,
+            &self.owner_agent_id,
+        )
+        .await?;
+        if state != LocalOutcomeState::Queued
+            || (admission.generation == self.generation
+                && admission.fencing_token == self.fencing_token)
+        {
+            transaction
+                .commit()
+                .await
+                .map_err(crate::cognitive_store::unavailable)?;
+            return Ok(None);
+        }
+        if admission.event_id != outbox.event_id
+            || admission.generation != outbox.generation
+            || admission.fencing_token != outbox.fencing_token
+            || admission.generation >= self.generation
+            || !lease_fence_is_terminal(
+                &mut transaction,
+                &self.lease_id,
+                admission.generation,
+                &admission.fencing_token,
+            )
+            .await?
+        {
+            return Err(LocalLeaseOutboxError::StaleFence(
+                "queued occurrence predecessor fence is not terminal for takeover".to_string(),
+            ));
+        }
+        let inherited = InheritedQueuedReceipt {
+            lease_id: self.lease_id.clone(),
+            occurrence_key: occurrence_key.to_string(),
+            event_id: admission.event_id.clone(),
+            outbox_id: outbox.outbox_id.clone(),
+            owner_agent_id: self.owner_agent_id.clone(),
+            source_generation: admission.generation,
+            topic: outbox.topic.clone(),
+            payload_json: outbox.payload_json.clone(),
+            payload_sha256: outbox.payload_sha256.clone(),
+        };
+        transaction
+            .commit()
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        Ok(Some(inherited))
+    }
+
+    /// Claim an inherited queued occurrence under the current successor fence.
+    ///
+    /// The immutable outbox row is reused; no second outbox identity is
+    /// created. The current generation writes the same one-shot
+    /// `indeterminate` marker used by normal dispatch *before* the target
+    /// boundary, so a crash can only recover/reconcile rather than resend.
+    #[allow(clippy::too_many_arguments)]
+    pub(crate) async fn claim_inherited_dispatch(
+        &self,
+        occurrence_key: &str,
+        event_id: &str,
+        outbox_id: &str,
+        source_generation: u64,
+        topic: &str,
+        payload_json: &str,
+        payload_sha256: &Sha256Digest,
+        grant_digest: &Sha256Digest,
+        operation_digest: &Sha256Digest,
+    ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        validate_text(occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
+        validate_text(event_id, "event id", /*max_bytes*/ 512)?;
+        validate_text(outbox_id, "outbox id", /*max_bytes*/ 512)?;
+        validate_text(topic, "outbox topic", /*max_bytes*/ 256)?;
+        validate_text(payload_json, "event payload", /*max_bytes*/ 65_536)?;
+        if Sha256Digest::for_bytes(payload_json.as_bytes()) != *payload_sha256 {
+            return Err(LocalLeaseOutboxError::StaleFence(
+                "inherited queued payload digest mismatch".to_string(),
+            ));
+        }
+        let mut transaction = self
+            .store
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        let lease = self.current_lease(&mut transaction).await?;
+        ensure_current_active(&lease, self)?;
+        let events =
+            verify_event_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
+        let outbox_rows =
+            verify_outbox_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
+        verify_event_outbox_pairing(&events, &outbox_rows)?;
+        let admission = events
+            .iter()
+            .find(|event| event.occurrence_key == occurrence_key && event.kind == "admitted")
+            .ok_or_else(|| {
+                LocalLeaseOutboxError::StaleFence(
+                    "inherited dispatch admission is missing".to_string(),
+                )
+            })?;
+        let outbox = outbox_rows
+            .iter()
+            .find(|row| row.occurrence_key == occurrence_key)
+            .ok_or_else(|| {
+                LocalLeaseOutboxError::StaleFence(
+                    "inherited dispatch outbox is missing".to_string(),
+                )
+            })?;
+        if admission.event_id != event_id
+            || outbox.outbox_id != outbox_id
+            || admission.event_id != outbox.event_id
+            || admission.generation != source_generation
+            || outbox.generation != source_generation
+            || admission.fencing_token != outbox.fencing_token
+            || source_generation >= self.generation
+            || outbox.topic != topic
+            || outbox.payload_json != payload_json
+            || outbox.payload_sha256 != *payload_sha256
+            || !lease_fence_is_terminal(
+                &mut transaction,
+                &self.lease_id,
+                source_generation,
+                &admission.fencing_token,
+            )
+            .await?
+        {
+            return Err(LocalLeaseOutboxError::StaleFence(
+                "inherited queued receipt does not match a terminal predecessor fence".to_string(),
+            ));
+        }
+        let state = current_outcome(
+            &mut transaction,
+            &self.lease_id,
+            occurrence_key,
+            &self.owner_agent_id,
+        )
+        .await?;
+        if state != LocalOutcomeState::Queued {
+            return Err(LocalLeaseOutboxError::IllegalTransition(format!(
+                "inherited occurrence is already in {} state",
+                state.as_str()
+            )));
+        }
+        let expected = dispatch_operation_digest(
+            grant_digest,
+            &self.lease_id,
+            occurrence_key,
+            &outbox.topic,
+            &outbox.payload_sha256,
+        );
+        if expected != *operation_digest {
+            return Err(LocalLeaseOutboxError::StaleFence(
+                "inherited dispatch operation digest is not bound to immutable outbox".to_string(),
+            ));
+        }
+
+        let kind = "indeterminate";
+        let payload = format!("dispatch_started_pending_ack:{}", operation_digest.as_str());
+        let payload_digest = Sha256Digest::for_bytes(payload.as_bytes());
+        let sequence = next_event_sequence(&mut transaction, &self.lease_id).await?;
+        let previous = event_head(&mut transaction, &self.lease_id).await?;
+        let new_event_id = journal_row_id("event", &self.lease_id, sequence);
+        let digest = event_digest(
+            &self.lease_id,
+            sequence,
+            &new_event_id,
+            occurrence_key,
+            &self.owner_agent_id,
+            self.generation,
+            &self.fencing_token,
+            kind,
+            &payload_digest,
+            &previous,
+        );
+        insert_event(
+            &mut transaction,
+            EventInsert {
+                lease_id: &self.lease_id,
+                sequence,
+                event_id: &new_event_id,
+                occurrence_key,
+                owner: &self.owner_agent_id,
+                generation: self.generation,
+                fencing_token: &self.fencing_token,
+                kind,
+                payload_json: &payload,
+                payload_sha256: &payload_digest,
+                previous_sha256: &previous,
+                event_sha256: &digest,
+            },
+        )
+        .await?;
+        transaction
+            .commit()
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        Ok(LocalOutcomeReceipt {
+            lease_id: self.lease_id.clone(),
+            occurrence_key: occurrence_key.to_string(),
+            state: LocalOutcomeState::Indeterminate,
+            event_id: new_event_id,
+            external_effect: false,
+        })
     }
 
     /// Verify that a dispatch claim digest is canonical and derives from the
@@ -1675,7 +2146,7 @@ impl LocalLeaseOutbox {
         )
         .await?
         .ok_or_else(|| corrupt("event admission has no paired outbox row"))?;
-        ensure_current_occurrence_fence(self, &admission, &outbox)?;
+        ensure_occurrence_readable(&mut transaction, self, &events, &admission, &outbox).await?;
         let state = current_outcome(
             &mut transaction,
             &self.lease_id,
@@ -1690,14 +2161,35 @@ impl LocalLeaseOutbox {
         Ok(Some(state))
     }
 
-    /// Reconcile an indeterminate local intent.  `StillIndeterminate` keeps
-    /// the quarantine state and can itself be replayed idempotently.
+    /// Reconcile an indeterminate local intent.
+    ///
+    /// Reconciliation is the only outcome transition allowed to cross a lease
+    /// generation.  A successor may settle an occurrence admitted by an older
+    /// generation only after that exact source fence is terminal in the
+    /// verified append-only lease chain.  This deliberately does *not* make an
+    /// inherited queued occurrence dispatchable: unknown external effects are
+    /// reconciled, never blindly resent.
+    ///
+    /// `StillIndeterminate` remains an idempotent observation. If an earlier
+    /// generation already recorded that observation, a successor may return
+    /// the existing receipt and later record the terminal observation under
+    /// its current fence.
     pub async fn reconcile(
         &self,
         occurrence_key: impl Into<String>,
         outcome: LocalReconcileOutcome,
     ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
-        let (kind, state) = match outcome {
+        self.append_reconciliation(occurrence_key.into(), outcome)
+            .await
+    }
+
+    async fn append_reconciliation(
+        &self,
+        occurrence_key: String,
+        outcome: LocalReconcileOutcome,
+    ) -> Result<LocalOutcomeReceipt, LocalLeaseOutboxError> {
+        validate_text(&occurrence_key, "occurrence key", /*max_bytes*/ 512)?;
+        let (kind, resulting_state) = match outcome {
             LocalReconcileOutcome::Committed => {
                 ("reconcile_committed", LocalOutcomeState::Committed)
             }
@@ -1707,14 +2199,150 @@ impl LocalLeaseOutbox {
                 LocalOutcomeState::Indeterminate,
             ),
         };
-        self.append_outcome(
-            occurrence_key.into(),
-            kind,
-            outcome.as_str().to_string(),
-            &[LocalOutcomeState::Indeterminate],
-            state,
+        let payload = outcome.as_str().to_string();
+        let payload_sha256 = Sha256Digest::for_bytes(payload.as_bytes());
+
+        let mut transaction = self
+            .store
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        let lease = self.current_lease(&mut transaction).await?;
+        ensure_current_active(&lease, self)?;
+        let events =
+            verify_event_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
+        let outbox_rows =
+            verify_outbox_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
+        verify_event_outbox_pairing(&events, &outbox_rows)?;
+
+        let admission = events
+            .iter()
+            .find(|event| event.occurrence_key == occurrence_key && event.kind == "admitted")
+            .ok_or_else(|| {
+                LocalLeaseOutboxError::IllegalTransition(format!(
+                    "occurrence {occurrence_key} has no admitted event"
+                ))
+            })?;
+        let outbox = outbox_rows
+            .iter()
+            .find(|row| row.occurrence_key == occurrence_key)
+            .ok_or_else(|| corrupt("event admission has no paired outbox row"))?;
+        if admission.event_id != outbox.event_id
+            || admission.owner_agent_id != self.owner_agent_id
+            || outbox.owner_agent_id != self.owner_agent_id
+        {
+            return Err(corrupt("event/outbox reconciliation binding mismatch"));
+        }
+
+        let current = current_outcome(
+            &mut transaction,
+            &self.lease_id,
+            &occurrence_key,
+            &self.owner_agent_id,
         )
-        .await
+        .await?;
+        if current != LocalOutcomeState::Indeterminate {
+            return Err(LocalLeaseOutboxError::IllegalTransition(format!(
+                "occurrence is already in {} state",
+                current.as_str()
+            )));
+        }
+
+        let latest = events
+            .iter()
+            .rev()
+            .find(|event| event.occurrence_key == occurrence_key)
+            .ok_or_else(|| corrupt("occurrence event chain is missing"))?;
+        let current_fence =
+            latest.generation == self.generation && latest.fencing_token == self.fencing_token;
+        let admission_fence = admission.generation == self.generation
+            && admission.fencing_token == self.fencing_token
+            && outbox.generation == self.generation
+            && outbox.fencing_token == self.fencing_token;
+        if !current_fence && !admission_fence {
+            if latest.generation >= self.generation
+                || !lease_fence_is_terminal(
+                    &mut transaction,
+                    &self.lease_id,
+                    latest.generation,
+                    &latest.fencing_token,
+                )
+                .await?
+            {
+                return Err(LocalLeaseOutboxError::StaleFence(
+                    "indeterminate occurrence source fence is not terminal for successor reconciliation"
+                        .to_string(),
+                ));
+            }
+        }
+
+        if let Some(existing) = events
+            .iter()
+            .find(|event| event.occurrence_key == occurrence_key && event.kind == kind)
+        {
+            if existing.payload_sha256 != payload_sha256 {
+                return Err(LocalLeaseOutboxError::CasConflict(
+                    "reconciliation replay changed its outcome payload".to_string(),
+                ));
+            }
+            transaction
+                .commit()
+                .await
+                .map_err(crate::cognitive_store::unavailable)?;
+            return Ok(LocalOutcomeReceipt {
+                lease_id: self.lease_id.clone(),
+                occurrence_key,
+                state: resulting_state,
+                event_id: existing.event_id.clone(),
+                external_effect: false,
+            });
+        }
+
+        let sequence = next_event_sequence(&mut transaction, &self.lease_id).await?;
+        let previous = event_head(&mut transaction, &self.lease_id).await?;
+        let event_id = journal_row_id("event", &self.lease_id, sequence);
+        let digest = event_digest(
+            &self.lease_id,
+            sequence,
+            &event_id,
+            &occurrence_key,
+            &self.owner_agent_id,
+            self.generation,
+            &self.fencing_token,
+            kind,
+            &payload_sha256,
+            &previous,
+        );
+        insert_event(
+            &mut transaction,
+            EventInsert {
+                lease_id: &self.lease_id,
+                sequence,
+                event_id: &event_id,
+                occurrence_key: &occurrence_key,
+                owner: &self.owner_agent_id,
+                generation: self.generation,
+                fencing_token: &self.fencing_token,
+                kind,
+                payload_json: &payload,
+                payload_sha256: &payload_sha256,
+                previous_sha256: &previous,
+                event_sha256: &digest,
+            },
+        )
+        .await?;
+        transaction
+            .commit()
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        Ok(LocalOutcomeReceipt {
+            lease_id: self.lease_id.clone(),
+            occurrence_key,
+            state: resulting_state,
+            event_id,
+            external_effect: false,
+        })
     }
 
     /// Append an explicit local rollback marker.  This does not delete the
@@ -1963,10 +2591,10 @@ impl LocalLeaseOutbox {
         )
         .await?
         .ok_or_else(|| corrupt("event admission has no paired outbox row"))?;
-        // Status is read-only, but it still has to be scoped to the exact
-        // admitted attempt. A newer generation must not observe or report
-        // the state of an occurrence admitted under an older fence.
-        ensure_current_occurrence_fence(self, &admission, &outbox)?;
+        // Status is read-only. A successor may inspect an inherited
+        // occurrence only after the exact source fence is terminal. This
+        // grants no permission to dispatch or mutate that historical attempt.
+        ensure_occurrence_readable(&mut transaction, self, &events, &admission, &outbox).await?;
         let state = current_outcome(
             &mut transaction,
             &self.lease_id,
@@ -2890,6 +3518,300 @@ async fn insert_outbox(
     Ok(())
 }
 
+async fn insert_operation(
+    transaction: &mut Transaction<'_, Sqlite>,
+    operation: &OperationIntent,
+    handle: &LocalLeaseOutbox,
+    event_id: &str,
+    outbox_id: &str,
+    payload_sha256: &Sha256Digest,
+    binding: &LocalLeaseBinding,
+) -> Result<(), LocalLeaseOutboxError> {
+    let prepared_at = now_unix_seconds()?;
+    sqlx::query(
+        "INSERT INTO cognitive_operation_ledger (
+            operation_id, semantic_sha256, scope_id, owner_id, destination_id,
+            payload_sha256, expected_predecessor_sha256, lease_id, event_id,
+            outbox_id, owner_agent_id, generation, fencing_token,
+            authority_epoch, owner_epoch, prepared_at_unix_seconds
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    )
+    .bind(operation.key.id.as_str())
+    .bind(operation.semantic_digest().to_string())
+    .bind(operation.scope.as_str())
+    .bind(operation.owner.as_str())
+    .bind(operation.destination.as_str())
+    .bind(payload_sha256.as_str())
+    .bind(
+        operation
+            .expected_predecessor
+            .map(|digest| digest.to_string()),
+    )
+    .bind(&handle.lease_id)
+    .bind(event_id)
+    .bind(outbox_id)
+    .bind(handle.owner_agent_id.as_str())
+    .bind(to_i64(handle.generation, "operation generation")?)
+    .bind(&handle.fencing_token)
+    .bind(to_i64(
+        binding.authority_epoch,
+        "operation authority epoch",
+    )?)
+    .bind(to_i64(binding.owner_epoch, "operation owner epoch")?)
+    .bind(prepared_at)
+    .execute(&mut **transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
+    Ok(())
+}
+
+async fn verify_operation_ledger(
+    transaction: &mut Transaction<'_, Sqlite>,
+    lease_id: &str,
+    expected_owner: &AgentId,
+    events: &[EventRow],
+    outbox_rows: &[OutboxRow],
+) -> Result<(), LocalLeaseOutboxError> {
+    let rows = sqlx::query(
+        "SELECT operation_id, semantic_sha256, scope_id, owner_id,
+                destination_id, payload_sha256, expected_predecessor_sha256,
+                lease_id, event_id, outbox_id, owner_agent_id, generation,
+                fencing_token, authority_epoch, owner_epoch
+         FROM cognitive_operation_ledger
+         WHERE lease_id = ?
+         ORDER BY operation_id",
+    )
+    .bind(lease_id)
+    .fetch_all(&mut **transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
+
+    for row in rows {
+        let stored = DurableOperationRow {
+            operation_id: row
+                .try_get("operation_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            semantic_sha256: row
+                .try_get("semantic_sha256")
+                .map_err(crate::cognitive_store::unavailable)?,
+            scope_id: row
+                .try_get("scope_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            owner_id: row
+                .try_get("owner_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            destination_id: row
+                .try_get("destination_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            payload_sha256: row
+                .try_get("payload_sha256")
+                .map_err(crate::cognitive_store::unavailable)?,
+            expected_predecessor_sha256: row
+                .try_get("expected_predecessor_sha256")
+                .map_err(crate::cognitive_store::unavailable)?,
+            lease_id: row
+                .try_get("lease_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            event_id: row
+                .try_get("event_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            outbox_id: row
+                .try_get("outbox_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            owner_agent_id: parse_agent(&row, "owner_agent_id")?,
+            generation: read_u64(&row, "generation")?,
+            fencing_token: row
+                .try_get("fencing_token")
+                .map_err(crate::cognitive_store::unavailable)?,
+            authority_epoch: read_u64(&row, "authority_epoch")?,
+            owner_epoch: read_u64(&row, "owner_epoch")?,
+        };
+        if stored.owner_agent_id != *expected_owner || stored.owner_id != expected_owner.as_str() {
+            return Err(corrupt("operation ledger contains a foreign owner"));
+        }
+        let operation_id = StableId::new(stored.operation_id.clone())
+            .map_err(|_| corrupt("operation ledger contains an invalid operation id"))?;
+        let scope = StableId::new(stored.scope_id.clone())
+            .map_err(|_| corrupt("operation ledger contains an invalid scope id"))?;
+        let owner = StableId::new(stored.owner_id.clone())
+            .map_err(|_| corrupt("operation ledger contains an invalid owner id"))?;
+        let destination = StableId::new(stored.destination_id.clone())
+            .map_err(|_| corrupt("operation ledger contains an invalid destination id"))?;
+        let payload_digest = stored
+            .payload_sha256
+            .parse::<Digest32>()
+            .map_err(|_| corrupt("operation ledger payload digest is invalid"))?;
+        let expected_predecessor = stored
+            .expected_predecessor_sha256
+            .as_deref()
+            .map(str::parse::<Digest32>)
+            .transpose()
+            .map_err(|_| corrupt("operation ledger predecessor digest is invalid"))?;
+        let operation = OperationIntent {
+            key: OperationKey {
+                id: operation_id,
+                payload_digest,
+            },
+            scope,
+            owner,
+            destination,
+            expected_predecessor,
+        };
+        operation
+            .validate()
+            .map_err(|_| corrupt("operation ledger semantic fields are invalid"))?;
+        if operation.semantic_digest().to_string() != stored.semantic_sha256 {
+            return Err(corrupt("operation ledger semantic digest mismatch"));
+        }
+        let event = events
+            .iter()
+            .find(|event| event.event_id == stored.event_id)
+            .ok_or_else(|| corrupt("operation ledger event reference is missing"))?;
+        let outbox = outbox_rows
+            .iter()
+            .find(|outbox| outbox.outbox_id == stored.outbox_id)
+            .ok_or_else(|| corrupt("operation ledger outbox reference is missing"))?;
+        if event.event_id != outbox.event_id
+            || event.occurrence_key != stored.operation_id
+            || outbox.occurrence_key != stored.operation_id
+            || event.owner_agent_id != stored.owner_agent_id
+            || outbox.owner_agent_id != stored.owner_agent_id
+            || event.generation != stored.generation
+            || outbox.generation != stored.generation
+            || event.fencing_token != stored.fencing_token
+            || outbox.fencing_token != stored.fencing_token
+            || event.payload_sha256.as_str() != stored.payload_sha256
+            || outbox.payload_sha256.as_str() != stored.payload_sha256
+        {
+            return Err(corrupt(
+                "operation ledger is not bound to its immutable event/outbox pair",
+            ));
+        }
+        let bound_lease: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM cognitive_local_leases
+             WHERE lease_id = ? AND generation = ? AND fencing_token = ?
+               AND state = 'active' AND authority_epoch = ? AND owner_epoch = ?",
+        )
+        .bind(&stored.lease_id)
+        .bind(to_i64(stored.generation, "operation generation")?)
+        .bind(&stored.fencing_token)
+        .bind(to_i64(stored.authority_epoch, "operation authority epoch")?)
+        .bind(to_i64(stored.owner_epoch, "operation owner epoch")?)
+        .fetch_one(&mut **transaction)
+        .await
+        .map_err(crate::cognitive_store::unavailable)?;
+        if bound_lease != 1 {
+            return Err(corrupt(
+                "operation ledger initial authority/fence is absent from lease history",
+            ));
+        }
+    }
+    Ok(())
+}
+
+async fn find_operation(
+    transaction: &mut Transaction<'_, Sqlite>,
+    operation_id: &str,
+) -> Result<Option<DurableOperationRow>, LocalLeaseOutboxError> {
+    let row = sqlx::query(
+        "SELECT operation_id, semantic_sha256, scope_id, owner_id,
+                destination_id, payload_sha256, expected_predecessor_sha256,
+                lease_id, event_id, outbox_id, owner_agent_id, generation,
+                fencing_token, authority_epoch, owner_epoch
+         FROM cognitive_operation_ledger
+         WHERE operation_id = ?",
+    )
+    .bind(operation_id)
+    .fetch_optional(&mut **transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
+    row.map(|row| {
+        Ok(DurableOperationRow {
+            operation_id: row
+                .try_get("operation_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            semantic_sha256: row
+                .try_get("semantic_sha256")
+                .map_err(crate::cognitive_store::unavailable)?,
+            scope_id: row
+                .try_get("scope_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            owner_id: row
+                .try_get("owner_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            destination_id: row
+                .try_get("destination_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            payload_sha256: row
+                .try_get("payload_sha256")
+                .map_err(crate::cognitive_store::unavailable)?,
+            expected_predecessor_sha256: row
+                .try_get("expected_predecessor_sha256")
+                .map_err(crate::cognitive_store::unavailable)?,
+            lease_id: row
+                .try_get("lease_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            event_id: row
+                .try_get("event_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            outbox_id: row
+                .try_get("outbox_id")
+                .map_err(crate::cognitive_store::unavailable)?,
+            owner_agent_id: parse_agent(&row, "owner_agent_id")?,
+            generation: read_u64(&row, "generation")?,
+            fencing_token: row
+                .try_get("fencing_token")
+                .map_err(crate::cognitive_store::unavailable)?,
+            authority_epoch: read_u64(&row, "authority_epoch")?,
+            owner_epoch: read_u64(&row, "owner_epoch")?,
+        })
+    })
+    .transpose()
+}
+
+fn verify_operation_row_binding(
+    operation: &OperationIntent,
+    stored: &DurableOperationRow,
+    handle: &LocalLeaseOutbox,
+    event: &EventRow,
+    outbox: &OutboxRow,
+    payload_sha256: &Sha256Digest,
+) -> Result<(), LocalLeaseOutboxError> {
+    let binding = handle.binding().ok_or_else(|| {
+        LocalLeaseOutboxError::Corrupt(
+            "durable operation row is attached to an unbound lease".to_string(),
+        )
+    })?;
+    if stored.operation_id != operation.key.id.as_str()
+        || stored.semantic_sha256 != operation.semantic_digest().to_string()
+        || stored.scope_id != operation.scope.as_str()
+        || stored.owner_id != operation.owner.as_str()
+        || stored.destination_id != operation.destination.as_str()
+        || stored.payload_sha256 != payload_sha256.as_str()
+        || stored.expected_predecessor_sha256
+            != operation
+                .expected_predecessor
+                .map(|digest| digest.to_string())
+        || stored.lease_id != handle.lease_id
+        || stored.event_id != event.event_id
+        || stored.outbox_id != outbox.outbox_id
+        || stored.owner_agent_id != handle.owner_agent_id
+        || stored.generation != handle.generation
+        || stored.fencing_token != handle.fencing_token
+        || stored.authority_epoch != binding.authority_epoch
+        || stored.owner_epoch != binding.owner_epoch
+        || event.occurrence_key != stored.operation_id
+        || outbox.occurrence_key != stored.operation_id
+        || event.payload_sha256.as_str() != stored.payload_sha256
+        || outbox.payload_sha256.as_str() != stored.payload_sha256
+    {
+        return Err(LocalLeaseOutboxError::CasConflict(
+            "durable operation replay changed semantic, fence, or outbox binding".to_string(),
+        ));
+    }
+    Ok(())
+}
+
 async fn verify_event_chain(
     transaction: &mut Transaction<'_, Sqlite>,
     lease_id: &str,
@@ -3372,6 +4294,29 @@ async fn find_outbox(
         .find(|row| row.occurrence_key == occurrence_key))
 }
 
+async fn lease_fence_is_terminal(
+    transaction: &mut Transaction<'_, Sqlite>,
+    lease_id: &str,
+    generation: u64,
+    fencing_token: &str,
+) -> Result<bool, LocalLeaseOutboxError> {
+    let state: Option<String> = sqlx::query_scalar(
+        "SELECT state FROM cognitive_local_leases
+         WHERE lease_id = ? AND generation = ? AND fencing_token = ?
+         ORDER BY lease_sequence DESC LIMIT 1",
+    )
+    .bind(lease_id)
+    .bind(to_i64(generation, "lease generation")?)
+    .bind(fencing_token)
+    .fetch_optional(&mut **transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
+    match state {
+        Some(state) => Ok(LocalLeaseState::parse(&state)? != LocalLeaseState::Active),
+        None => Ok(false),
+    }
+}
+
 async fn current_outcome(
     transaction: &mut Transaction<'_, Sqlite>,
     lease_id: &str,
@@ -3496,6 +4441,52 @@ fn queued_receipt(
         payload_sha256: event.payload_sha256.clone(),
         external_effect: false,
     })
+}
+
+async fn ensure_occurrence_readable(
+    transaction: &mut Transaction<'_, Sqlite>,
+    handle: &LocalLeaseOutbox,
+    events: &[EventRow],
+    event: &EventRow,
+    outbox: &OutboxRow,
+) -> Result<(), LocalLeaseOutboxError> {
+    if event.event_id != outbox.event_id
+        || event.occurrence_key != outbox.occurrence_key
+        || event.owner_agent_id != handle.owner_agent_id
+        || outbox.owner_agent_id != handle.owner_agent_id
+    {
+        return Err(corrupt("event/outbox read binding mismatch"));
+    }
+    if event.generation == handle.generation
+        && event.fencing_token == handle.fencing_token
+        && outbox.generation == handle.generation
+        && outbox.fencing_token == handle.fencing_token
+    {
+        return Ok(());
+    }
+    let latest = events
+        .iter()
+        .rev()
+        .find(|candidate| candidate.occurrence_key == event.occurrence_key)
+        .ok_or_else(|| corrupt("occurrence event chain is missing"))?;
+    if latest.generation == handle.generation && latest.fencing_token == handle.fencing_token {
+        return Ok(());
+    }
+    if latest.generation < handle.generation
+        && lease_fence_is_terminal(
+            transaction,
+            &handle.lease_id,
+            latest.generation,
+            &latest.fencing_token,
+        )
+        .await?
+    {
+        return Ok(());
+    }
+    Err(LocalLeaseOutboxError::StaleFence(format!(
+        "occurrence remains owned by active generation {}",
+        latest.generation
+    )))
 }
 
 fn ensure_current_occurrence_fence(
@@ -3874,6 +4865,9 @@ pub(crate) async fn verify_local_lease_outbox(
             .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
         verify_event_outbox_pairing(&events, &outbox)
             .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+        verify_operation_ledger(&mut transaction, &lease_id, owner, &events, &outbox)
+            .await
+            .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
     }
     let orphan_event_rows: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM cognitive_local_events AS e
@@ -3908,9 +4902,16 @@ pub(crate) async fn verify_local_lease_outbox(
             .fetch_one(&mut *transaction)
             .await
             .map_err(crate::cognitive_store::unavailable)?;
-    if foreign_event_rows != 0 || foreign_outbox_rows != 0 {
+    let foreign_operation_rows: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM cognitive_operation_ledger WHERE owner_agent_id != ? OR owner_id != ?")
+            .bind(owner.as_str())
+            .bind(owner.as_str())
+            .fetch_one(&mut *transaction)
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+    if foreign_event_rows != 0 || foreign_outbox_rows != 0 || foreign_operation_rows != 0 {
         return Err(CognitiveStoreError::Corrupt(
-            "local event/outbox journal contains a foreign owner".to_string(),
+            "local event/outbox/operation journal contains a foreign owner".to_string(),
         ));
     }
     transaction

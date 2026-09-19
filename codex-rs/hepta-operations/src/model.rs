@@ -21,6 +21,59 @@ impl OperationKey {
     }
 }
 
+/// Full semantic identity for a cross-owner operation.
+///
+/// The legacy `OperationKey` remains the compact reference identity. Production
+/// preparation binds the key to an owner/scope/destination and optional
+/// predecessor so a retry cannot silently drift any dispatch-relevant field.
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub struct OperationIntent {
+    pub key: OperationKey,
+    pub scope: StableId,
+    pub owner: StableId,
+    pub destination: StableId,
+    pub expected_predecessor: Option<Digest32>,
+}
+
+impl OperationIntent {
+    pub fn validate(&self) -> Result<(), OperationError> {
+        self.key.validate()?;
+        if self
+            .expected_predecessor
+            .is_some_and(Digest32::is_zero)
+        {
+            return Err(OperationError::InvalidDigest("expected predecessor"));
+        }
+        Ok(())
+    }
+
+    /// Canonical semantic digest used to bind a durable outbox row to the
+    /// exact prepared operation.
+    pub fn semantic_digest(&self) -> Digest32 {
+        let mut bytes = Vec::with_capacity(512);
+        bytes.extend_from_slice(b"hepta.kernel.operations.intent.v1\0");
+        push_text(&mut bytes, self.key.id.as_str());
+        bytes.extend_from_slice(self.key.payload_digest.as_array());
+        push_text(&mut bytes, self.scope.as_str());
+        push_text(&mut bytes, self.owner.as_str());
+        push_text(&mut bytes, self.destination.as_str());
+        match self.expected_predecessor {
+            Some(digest) => {
+                bytes.push(1);
+                bytes.extend_from_slice(digest.as_array());
+            }
+            None => bytes.push(0),
+        }
+        Digest32::of_bytes(&bytes)
+    }
+}
+
+fn push_text(bytes: &mut Vec<u8>, value: &str) {
+    let length = u32::try_from(value.len()).unwrap_or(u32::MAX);
+    bytes.extend_from_slice(&length.to_be_bytes());
+    bytes.extend_from_slice(value.as_bytes());
+}
+
 /// Reference-model witness used to exercise operation transitions.
 ///
 /// This value is deliberately named `ReferenceAuthorityWitness`.
@@ -173,6 +226,10 @@ impl OperationState {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct OperationRecord {
     pub key: OperationKey,
+    /// Present for the full cross-owner semantic contract. Legacy `begin`
+    /// records intentionally keep this absent and cannot be used with the
+    /// bound outbox API.
+    pub intent: Option<OperationIntent>,
     pub owner_generation: Generation,
     pub revision: Revision,
     pub state: OperationState,

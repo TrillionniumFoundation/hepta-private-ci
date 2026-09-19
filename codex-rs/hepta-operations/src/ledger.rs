@@ -7,6 +7,7 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
 use crate::OperationError;
+use crate::OperationIntent;
 use crate::OperationKey;
 use crate::OperationRecord;
 use crate::OperationState;
@@ -57,7 +58,10 @@ impl OperationLedger {
         match self.records.entry(id.clone()) {
             Entry::Occupied(entry) => {
                 let existing = entry.into_mut();
-                if existing.key == key && existing.owner_generation == owner_generation {
+                if existing.key == key
+                    && existing.intent.is_none()
+                    && existing.owner_generation == owner_generation
+                {
                     Ok(existing)
                 } else {
                     Err(OperationError::Conflict(id))
@@ -65,11 +69,76 @@ impl OperationLedger {
             }
             Entry::Vacant(entry) => Ok(entry.insert(OperationRecord {
                 key,
+                intent: None,
                 owner_generation,
                 revision: first_revision(),
                 state: OperationState::Pending,
             })),
         }
+    }
+
+    /// Prepare a fully-bound cross-owner operation.
+    ///
+    /// Exact semantic replay is idempotent. Reusing an operation identity with
+    /// a changed scope, owner, destination, predecessor or payload conflicts.
+    pub fn prepare(
+        &mut self,
+        intent: OperationIntent,
+        owner_generation: Generation,
+    ) -> Result<&OperationRecord, OperationError> {
+        intent.validate()?;
+        let id = intent.key.id.clone();
+        if !self.records.contains_key(&id) && self.records.len() >= self.maximum_records {
+            return Err(OperationError::CapacityExceeded {
+                resource: "reference operation ledger",
+                maximum: self.maximum_records,
+            });
+        }
+        match self.records.entry(id.clone()) {
+            Entry::Occupied(entry) => {
+                let existing = entry.into_mut();
+                if existing.intent.as_ref() == Some(&intent)
+                    && existing.owner_generation == owner_generation
+                {
+                    Ok(existing)
+                } else {
+                    Err(OperationError::Conflict(id))
+                }
+            }
+            Entry::Vacant(entry) => Ok(entry.insert(OperationRecord {
+                key: intent.key.clone(),
+                intent: Some(intent),
+                owner_generation,
+                revision: first_revision(),
+                state: OperationState::Pending,
+            })),
+        }
+    }
+
+    /// Move ownership of an unresolved operation to a strictly newer fence.
+    ///
+    /// This models the durable handoff required after process/owner failover.
+    /// It never changes the semantic operation identity and terminal records
+    /// cannot be transferred.
+    pub fn handoff_owner(
+        &mut self,
+        operation_id: &StableId,
+        expected_generation: Generation,
+        new_generation: Generation,
+    ) -> Result<&OperationRecord, OperationError> {
+        let record = self.record_mut(operation_id)?;
+        if record.owner_generation != expected_generation || new_generation <= expected_generation {
+            return Err(OperationError::StaleGeneration);
+        }
+        if record.state.is_terminal() {
+            return Err(OperationError::Terminal);
+        }
+        if record.owner_generation == new_generation {
+            return Ok(record);
+        }
+        advance(record)?;
+        record.owner_generation = new_generation;
+        Ok(record)
     }
 
     pub fn authorize(

@@ -158,6 +158,11 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("cognitive_logical_turn_attempts_lease_lookup", "index"),
     ("cognitive_logical_turn_attempts_journal_lookup", "index"),
     ("cognitive_logical_turn_attempts_trajectory_lookup", "index"),
+    ("cognitive_operation_ledger", "table"),
+    ("cognitive_operation_ledger_no_update", "trigger"),
+    ("cognitive_operation_ledger_no_delete", "trigger"),
+    ("cognitive_operation_ledger_destination_lookup", "index"),
+    ("cognitive_operation_ledger_lease_lookup", "index"),
 ];
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
     "ae52b47126c510d36e89cf378a9df11f985527cea24111da7b2cf38b020cab6c";
@@ -719,10 +724,11 @@ async fn verify_migration_ledger(pool: &SqlitePool) -> Result<(), CognitiveStore
             (8, true),
             (9, true),
             (10, true),
+            (11, true),
         ]
     {
         return Err(CognitiveStoreError::Corrupt(format!(
-            "cognitive migration ledger is not the exact successful 0001/0002/0003/0004/0005/0006/0007/0008/0009/0010 set: {migrations:?}"
+            "cognitive migration ledger is not the exact successful 0001/0002/0003/0004/0005/0006/0007/0008/0009/0010/0011 set: {migrations:?}"
         )));
     }
 
