@@ -13,7 +13,11 @@ use codex_hepta_automation::AutomationTaskId;
 use codex_hepta_automation::AutomationTaskState;
 use codex_hepta_automation::AutomationTick;
 use codex_hepta_automation::AutomationTurnQueue;
+use codex_hepta_automation::TaskFlowCommand;
+use codex_hepta_automation::TaskFlowFence;
+use codex_hepta_automation::TaskFlowTransition;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
@@ -255,6 +259,59 @@ fn draft(id: &str, schedule: AutomationSchedule, due: u64) -> AutomationTaskDraf
     draft
 }
 
+async fn terminalize_occurrence(
+    store: &AutomationStore,
+    task_id: AutomationTaskId,
+    occurrence: u64,
+    now_ms: u64,
+) {
+    let projection = store
+        .occurrence(task_id, occurrence)
+        .await
+        .expect("read occurrence")
+        .expect("occurrence exists");
+    assert!(
+        projection.terminal_state.is_none(),
+        "queue admission must not terminalize the automation occurrence"
+    );
+    let run_id = projection
+        .taskflow_run_id
+        .as_deref()
+        .expect("occurrence must be bound to TaskFlow");
+    let run = store
+        .taskflow_run(run_id)
+        .await
+        .expect("read TaskFlow")
+        .expect("TaskFlow exists");
+    let fence = TaskFlowFence::new(
+        run.owner_agent_id.clone(),
+        run.owner_id.clone().expect("TaskFlow owner"),
+        run.owner_epoch.expect("TaskFlow owner epoch"),
+        run.generation.expect("TaskFlow generation"),
+        run.fencing_token.clone().expect("TaskFlow fence token"),
+    )
+    .expect("TaskFlow fence");
+    let command = TaskFlowCommand::new(
+        run_id,
+        format!("test:{run_id}:succeed"),
+        fence,
+        run.revision,
+        TaskFlowTransition::Succeed {
+            output_digest: Sha256Digest::for_bytes(b"automation-test-output"),
+        },
+        now_ms,
+    )
+    .expect("terminal TaskFlow command");
+    store
+        .apply_taskflow_command(&command)
+        .await
+        .expect("TaskFlow terminal transition");
+    store
+        .finalize_occurrence_from_taskflow(task_id, occurrence, now_ms)
+        .await
+        .expect("project TaskFlow terminal state");
+}
+
 #[tokio::test]
 async fn one_shot_periodic_disable_and_cancel_are_durable() {
     let fixture = FleetFixture::new(1);
@@ -283,6 +340,18 @@ async fn one_shot_periodic_disable_and_cancel_are_durable() {
     ));
     assert_eq!(
         store.task(one.task_id).await.expect("read").unwrap().state,
+        AutomationTaskState::Enabled,
+        "queue admission is not automation completion"
+    );
+    let one_occurrence = store
+        .occurrence(one.task_id, 1)
+        .await
+        .expect("read one-shot occurrence")
+        .expect("one-shot occurrence");
+    assert!(one_occurrence.terminal_state.is_none());
+    terminalize_occurrence(&store, one.task_id, 1, 11).await;
+    assert_eq!(
+        store.task(one.task_id).await.expect("read").unwrap().state,
         AutomationTaskState::Completed
     );
 
@@ -302,6 +371,7 @@ async fn one_shot_periodic_disable_and_cancel_are_durable() {
             .next_run_at_ms,
         Some(5_020)
     );
+    terminalize_occurrence(&store, periodic.task_id, 1, 21).await;
     store
         .set_enabled(periodic.task_id, false, None, 21)
         .await
@@ -466,6 +536,25 @@ async fn successful_dispatch_upgrades_pre_admission_intent_atomically() {
             .task(task.task_id)
             .await
             .expect("read task")
+            .expect("task exists")
+            .state,
+        AutomationTaskState::Enabled,
+        "App Server admission must not complete the automation occurrence"
+    );
+    let projection = store
+        .occurrence(task.task_id, 1)
+        .await
+        .expect("read occurrence")
+        .expect("occurrence exists");
+    assert!(projection.taskflow_run_id.is_some());
+    assert!(projection.terminal_state.is_none());
+
+    terminalize_occurrence(&store, task.task_id, 1, 101).await;
+    assert_eq!(
+        store
+            .task(task.task_id)
+            .await
+            .expect("read terminal task")
             .expect("task exists")
             .state,
         AutomationTaskState::Completed
