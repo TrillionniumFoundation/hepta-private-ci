@@ -140,9 +140,13 @@ def verify_symbol(source: str, native_symbol: str) -> bool:
         return False
     if len(parts) >= 2 and parts[-2][:1].isupper():
         owner = parts[-2]
+        owner_name = re.escape(owner)
         return bool(
-            re.search(rf"\b(?:struct|enum|type)\s+{re.escape(owner)}\b", source)
-            and re.search(rf"\bimpl\s+{re.escape(owner)}\b", source)
+            re.search(rf"\b(?:struct|enum|type)\s+{owner_name}\b", source)
+            and re.search(
+                rf"\bimpl(?:<[^>]+>)?\s+{owner_name}(?:<[^>]+>)?\s*\{{",
+                source,
+            )
         )
     return True
 
