@@ -18,12 +18,14 @@ use codex_hepta_matrix_store::InboxState;
 use codex_hepta_matrix_store::MatrixDurableConfig;
 use codex_hepta_matrix_store::MatrixDurableError;
 use codex_hepta_matrix_store::MatrixDurableStore;
+use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixEventId;
 use codex_hepta_matrix_store::MatrixRoomId;
 use codex_hepta_matrix_store::MatrixUserId;
 use codex_hepta_matrix_store::OutboxDisposition;
 use codex_hepta_matrix_store::OutboxDraft;
 use codex_hepta_matrix_store::OutboxKind;
+use codex_hepta_matrix_store::OutboxState;
 use codex_hepta_matrix_store::RoomBindingDraft;
 use codex_hepta_matrix_store::RoomThreadBindingDraft;
 use codex_hepta_paths::HeptaAgentLayout;
@@ -103,6 +105,7 @@ fn mutation(
         source_event_id,
         room_id,
         sender: user("@owner:example.test")?,
+        transaction_id: None,
         binding_revision: 1,
         generation: 1,
         origin_server_ts_ms: at_ms,
@@ -1021,6 +1024,170 @@ async fn caller_persisted_outbox_attempt_survives_a_later_room_leave() -> TestRe
             .await,
         Err(MatrixDurableError::Conflict)
     );
+    Ok(())
+}
+
+#[tokio::test]
+async fn dispatch_observation_survives_reopen_and_redaction_preserves_send_evidence() -> TestResult {
+    let temp = TempDir::new()?;
+    let agent_id = agent()?;
+    let store_layout = layout(&temp, &agent_id)?;
+    let room_id = room("!dispatch-ledger:example.test")?;
+    let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    store
+        .bind_room(&RoomBindingDraft {
+            room_id: room_id.clone(),
+            agent_user_id: user(AGENT_USER_ID)?,
+            expected_revision: None,
+            generation: 1,
+            changed_at_ms: 1,
+        })
+        .await?;
+
+    let logical_outbox_id = "dispatch-ledger-final";
+    let txn_id = transaction_id(logical_outbox_id, 1)?;
+    store
+        .enqueue_outbox(&OutboxDraft {
+            logical_outbox_id: logical_outbox_id.to_string(),
+            revision: 1,
+            txn_id: txn_id.clone(),
+            room_id: room_id.clone(),
+            kind: OutboxKind::Final,
+            payload: b"durable outbound".to_vec(),
+            binding_revision: 1,
+            generation: 1,
+            created_at_ms: 10,
+        })
+        .await?;
+    let claimed = store.claim_outbox(11, 100, 1).await?;
+    let claimed = claimed.first().ok_or("missing claimed dispatch")?;
+    store.prepare_outbox_dispatch(claimed, 11).await?;
+
+    let sent_event_id = event("$durable-outbound")?;
+    store
+        .record_outbox_transport_accepted(
+            &txn_id,
+            claimed.attempts,
+            &sent_event_id,
+            12,
+        )
+        .await?;
+    store
+        .mark_outbox_retry(&txn_id, claimed.attempts, 12, 20)
+        .await?;
+    assert_eq!(
+        store
+            .dispatch_for_txn(&txn_id)
+            .await?
+            .ok_or("missing accepted dispatch")?
+            .state,
+        MatrixDispatchState::Accepted
+    );
+    store.close().await;
+
+    let store = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    assert_eq!(
+        store
+            .dispatch_for_txn(&txn_id)
+            .await?
+            .ok_or("accepted dispatch did not survive reopen")?
+            .state,
+        MatrixDispatchState::Accepted
+    );
+
+    let outbound_observation = MatrixSyncMutationV2 {
+        source_event_id: sent_event_id.clone(),
+        room_id: room_id.clone(),
+        sender: user(AGENT_USER_ID)?,
+        transaction_id: Some(txn_id.clone()),
+        binding_revision: 1,
+        generation: 1,
+        origin_server_ts_ms: 13,
+        received_at_ms: 14,
+        body: MatrixSyncMutationBodyV2::Timeline {
+            event_type: "m.room.message".to_string(),
+            payload: b"homeserver observed outbound".to_vec(),
+        },
+    };
+    store
+        .apply_sync_decision_v2(&commit(
+            None,
+            "dispatch-s1",
+            14,
+            vec![outbound_observation],
+        ))
+        .await?;
+    let succeeded = store
+        .dispatch_for_txn(&txn_id)
+        .await?
+        .ok_or("missing succeeded dispatch")?;
+    assert_eq!(succeeded.state, MatrixDispatchState::Succeeded);
+    let send_digest = succeeded
+        .send_observation_digest
+        .clone()
+        .ok_or("missing send observation digest")?;
+    assert!(succeeded.redaction_observation_digest.is_none());
+    assert_eq!(
+        store
+            .outbox_for_txn(&txn_id)
+            .await?
+            .ok_or("missing settled outbox")?
+            .state,
+        OutboxState::Sent
+    );
+
+    let redaction = MatrixSyncMutationV2 {
+        source_event_id: event("$redaction-of-outbound")?,
+        room_id,
+        sender: user("@moderator:example.test")?,
+        transaction_id: None,
+        binding_revision: 1,
+        generation: 1,
+        origin_server_ts_ms: 20,
+        received_at_ms: 21,
+        body: MatrixSyncMutationBodyV2::Redaction {
+            target_event_id: sent_event_id,
+        },
+    };
+    store
+        .apply_sync_decision_v2(&commit(
+            Some("dispatch-s1"),
+            "dispatch-s2",
+            21,
+            vec![redaction],
+        ))
+        .await?;
+    let redacted = store
+        .dispatch_for_txn(&txn_id)
+        .await?
+        .ok_or("missing redacted dispatch")?;
+    assert_eq!(redacted.state, MatrixDispatchState::Redacted);
+    assert_eq!(
+        redacted.send_observation_digest.as_deref(),
+        Some(send_digest.as_str())
+    );
+    let redaction_digest = redacted
+        .redaction_observation_digest
+        .as_deref()
+        .ok_or("missing redaction evidence")?;
+    assert_ne!(redaction_digest, send_digest);
+    store.close().await;
+
+    let reopened = MatrixDurableStore::open(&store_layout, MatrixDurableConfig::default()).await?;
+    let durable = reopened
+        .dispatch_for_txn(&txn_id)
+        .await?
+        .ok_or("redacted dispatch did not survive reopen")?;
+    assert_eq!(durable.state, MatrixDispatchState::Redacted);
+    assert_eq!(
+        durable.send_observation_digest.as_deref(),
+        Some(send_digest.as_str())
+    );
+    assert_eq!(
+        durable.redaction_observation_digest.as_deref(),
+        Some(redaction_digest)
+    );
+    reopened.close().await;
     Ok(())
 }
 

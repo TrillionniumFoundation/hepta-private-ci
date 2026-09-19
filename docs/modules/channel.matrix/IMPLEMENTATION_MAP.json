@@ -10,11 +10,15 @@
   "sourceMaturity": "native_durable_channel_runtime",
   "declaredRoots": [
     "codex-rs/hepta-matrix-sdk",
-    "codex-rs/hepta-matrixd"
+    "codex-rs/hepta-matrixd",
+    "codex-rs/hepta-matrix-store",
+    "codex-rs/hepta-matrix-protocol"
   ],
   "resolvedRoots": [
     "codex-rs/hepta-matrix-sdk",
-    "codex-rs/hepta-matrixd"
+    "codex-rs/hepta-matrixd",
+    "codex-rs/hepta-matrix-store",
+    "codex-rs/hepta-matrix-protocol"
   ],
   "stateOwnerDisposition": "Owns Matrix ingress projection, sync frontier, dispatch ledger, outbox, and transaction identities.",
   "terminalObserverDisposition": "A homeserver event observation settles send terminality; App Server turn completion and HTTP acceptance cannot substitute.",
@@ -47,22 +51,61 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-matrixd/src/send_observer.rs",
-        "symbol": "pub fn prepare_send(",
-        "buildTarget": "codex-hepta-matrixd::send_observer"
+        "path": "codex-rs/hepta-matrix-sdk/src/outbound.rs",
+        "symbol": "pub async fn dispatch_outbox_once",
+        "buildTarget": "codex-hepta-matrix-sdk"
       },
-      "delegatedCallees": [],
-      "tests": [
+      "delegatedCallees": [
         {
-          "path": "codex-rs/hepta-matrixd/src/send_observer_tests.rs",
-          "kind": "send_identity",
-          "command": "just test -p codex-hepta-matrixd --lib"
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-matrix-store/src/dispatch.rs",
+          "symbol": "pub async fn prepare_outbox_dispatch(",
+          "buildTarget": "codex-hepta-matrix-store",
+          "ownerModule": "channel.matrix"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-matrixd/src/final_use.rs",
+          "symbol": "impl MatrixOutboundAuthorizer for MatrixFinalUseBroker",
+          "buildTarget": "codex-hepta-matrixd",
+          "ownerModule": "channel.matrix"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-contracts/src/final_use.rs",
+          "symbol": "pub fn with_verified_use_at_frontier",
+          "buildTarget": "codex-hepta-contracts",
+          "ownerModule": "kernel.authority"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-matrix-store/src/dispatch.rs",
+          "symbol": "pub async fn record_dispatch_authority_claim(",
+          "buildTarget": "codex-hepta-matrix-store",
+          "ownerModule": "channel.matrix"
         }
       ],
-      "sourceSemantics": "Binds room, session, payload, authority epoch, and one Matrix transaction identity before dispatch.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs",
+          "kind": "durable_send_identity_final_use_and_reconciliation",
+          "command": "cargo test -p codex-hepta-matrix-sdk --test durable_transport"
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
+          "kind": "kernel_final_use_revocation_and_single_use",
+          "command": "cargo test -p codex-hepta-contracts final_use"
+        },
+        {
+          "path": "codex-rs/hepta-matrixd/tests/real_synapse_e2e.rs",
+          "kind": "real_encrypted_matrix_and_final_use_qualification",
+          "command": "main-only exact-SHA workflow: .github/workflows/hepta-lane-b-matrix-real-synapse.yml"
+        }
+      ],
+      "sourceSemantics": "Claims the canonical durable outbox transaction, obtains a fresh independently signed final-use grant for each physical attempt, consumes the kernel-owned durable nonce, revalidates the exact live revocation frontier at adapter entry, persists that per-attempt authority claim before polling the lazy SDK send future, and treats transport acceptance as non-terminal.",
       "operation": "prepare_send",
-      "nativeSymbol": "pub fn prepare_send(",
-      "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
+      "nativeSymbol": "pub async fn dispatch_outbox_once",
+      "sourcePath": "codex-rs/hepta-matrix-sdk/src/outbound.rs",
       "sourcePathExists": true
     },
     {
@@ -70,36 +113,52 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-matrixd/src/send_observer.rs",
-        "symbol": "pub fn observe_send(",
-        "buildTarget": "codex-hepta-matrixd::send_observer"
+        "path": "codex-rs/hepta-matrix-sdk/src/sync.rs",
+        "symbol": "pub async fn commit_response(",
+        "buildTarget": "codex-hepta-matrix-sdk"
       },
-      "delegatedCallees": [],
-      "tests": [
+      "delegatedCallees": [
         {
-          "path": "codex-rs/hepta-matrixd/src/send_observer_tests.rs",
-          "kind": "acknowledgement_and_reconciliation",
-          "command": "just test -p codex-hepta-matrixd --lib"
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-matrix-store/src/sync_v2.rs",
+          "symbol": "pub async fn apply_sync_decision_v2(",
+          "buildTarget": "codex-hepta-matrix-store",
+          "ownerModule": "channel.matrix"
         }
       ],
-      "sourceSemantics": "Records trusted server-event acknowledgement or preserves the same transaction as indeterminate for reconciliation.",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-matrix-store/tests/sync_mutation_v2.rs",
+          "kind": "crash_safe_terminal_and_redaction_reconciliation",
+          "command": "just test -p codex-hepta-matrix-store --test sync_mutation_v2"
+        },
+        {
+          "path": "codex-rs/hepta-matrix-sdk/tests/durable_transport.rs",
+          "kind": "transport_acceptance_is_not_terminal",
+          "command": "just test -p codex-hepta-matrix-sdk --test durable_transport"
+        }
+      ],
+      "sourceSemantics": "Carries homeserver unsigned.transaction_id through the atomic sync commit; only that trusted event observation settles success, while redaction evidence remains append-only and separate.",
       "operation": "observe_send",
-      "nativeSymbol": "pub fn observe_send(",
-      "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
+      "nativeSymbol": "pub async fn commit_response(",
+      "sourcePath": "codex-rs/hepta-matrix-sdk/src/sync.rs",
       "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
-    "Integrate any new send-observer state with the existing MatrixDurableStore transaction identity; the component alone is not a second durable sender."
+    "Run exact-head and deterministic synthetic-merge Matrix source, final-use authority, crash/reopen, and terminal-reconciliation tests for the current-main candidate.",
+    "Run the main-only exact-SHA real Synapse/E2EE qualification including fresh final-use grants across the ACK-loss same-transaction retry.",
+    "Reconcile the generated Lane-B/module truth projections and exact source-base receipt before changing repositoryControlledSourceBoundaryGapsClosed."
   ],
   "externalEvidenceGates": [
+    "independently operated production final-use grant broker/trust root and live monotonic revocation distribution",
     "real enrolled homeserver/user/device/encryption identity",
-    "live sync and send transport callsites",
-    "rate-limit/reconnect/redaction/restore target qualification"
+    "rate-limit/reconnect/redaction/restore target qualification",
+    "independent operator acceptance, activation, promotion, and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
-    "repositoryControlledDocumentationGapsClosed": true,
+    "repositoryControlledDocumentationGapsClosed": false,
     "repositoryControlledMappingGapsClosed": true,
     "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
@@ -114,13 +173,15 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "native_hepta_matrixd_process_and_final_use_source_composed_qualification_pending",
+  "productionWriterState": "matrix_durable_store_dispatch_and_authority_claim_writer_established",
   "owner": "channels-platform",
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/channel.matrix/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-matrix-sdk",
-    "codex-rs/hepta-matrixd"
+    "codex-rs/hepta-matrixd",
+    "codex-rs/hepta-matrix-store",
+    "codex-rs/hepta-matrix-protocol"
   ]
 }

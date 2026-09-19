@@ -1,0 +1,96 @@
+name: Matrix real Synapse qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_sha:
+        description: Exact main HEAD to qualify
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  real-synapse:
+    name: Qualify exact main against real Synapse
+    runs-on: [self-hosted, macOS, ARM64, macbook]
+    timeout-minutes: 180
+    steps:
+      - name: Enforce trusted main invocation
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_EVENT_NAME" = workflow_dispatch
+          test "$GITHUB_REF" = refs/heads/main
+          test "$RUNNER_NAME" = macbook-pro
+          [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$EXPECTED_SHA" = "$GITHUB_SHA"
+
+      - name: Check out exact main HEAD
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact source identity
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test "$(git rev-parse --abbrev-ref HEAD)" = HEAD
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+          test -x codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh
+          /opt/homebrew/bin/bash --version
+          docker info >/dev/null
+
+      - name: Run hermetic real Synapse qualification
+        id: qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          artifacts="$RUNNER_TEMP/matrix-real-synapse-$GITHUB_RUN_ID-$GITHUB_RUN_ATTEMPT"
+          test ! -e "$artifacts"
+          echo "artifacts=$artifacts" >> "$GITHUB_OUTPUT"
+          codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh             --source-root "$GITHUB_WORKSPACE"             --source-mode exact             --artifacts-dir "$artifacts"
+
+      - name: Verify SHA-bound completion receipt
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+          ARTIFACTS: ${{ steps.qualification.outputs.artifacts }}
+        run: |
+          set -euo pipefail
+          test -f "$ARTIFACTS/completion.json"
+          /opt/homebrew/bin/python3 - "$ARTIFACTS/completion.json" "$EXPECTED_SHA" <<'PY'
+          import json
+          import pathlib
+          import sys
+
+          path = pathlib.Path(sys.argv[1])
+          expected = sys.argv[2]
+          receipt = json.loads(path.read_text(encoding="utf-8"))
+          if receipt.get("candidate_sha") != expected:
+              raise SystemExit("qualification receipt candidate_sha mismatch")
+          if receipt.get("source_clean") is not True:
+              raise SystemExit("qualification receipt did not bind a clean exact source")
+          if receipt.get("test_assertions_passed") is not True:
+              raise SystemExit("qualification receipt did not record passing assertions")
+          if receipt.get("promotable") is not False:
+              raise SystemExit("qualification receipt unexpectedly grants promotion")
+          print(f"qualified_candidate_sha={expected}")
+          PY
+          (cd "$ARTIFACTS" && shasum -a 256 completion.json > COMPLETION.SHA256)
+
+      - name: Upload exact qualification evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: matrix-real-synapse-${{ github.sha }}
+          path: ${{ steps.qualification.outputs.artifacts }}
+          if-no-files-found: error
+          retention-days: 30

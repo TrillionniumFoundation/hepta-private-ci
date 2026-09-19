@@ -3806,6 +3806,7 @@ name = "codex-hepta-matrix-sdk"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
+ "ed25519-dalek",
  "codex-hepta-matrix-protocol",
  "codex-hepta-matrix-store",
  "codex-hepta-paths",
@@ -3858,9 +3859,11 @@ dependencies = [
  "codex-uds",
  "codex-utils-absolute-path",
  "core_test_support",
+ "ed25519-dalek",
  "matrix-sdk",
  "pretty_assertions",
  "reqwest 0.12.28",
+ "rustix 1.1.4",
  "serde",
  "serde_json",
  "tempfile",
