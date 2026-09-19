@@ -435,15 +435,15 @@ impl DurableInferenceControl {
         request_id: &str,
         mut output: NativeRunOutput,
     ) -> Result<NativeRunRecord, Error> {
-        if !output.output_retained || output.output_sha256.is_some() {
-            return Err(Error::Conflict);
+        let digest = validate_output_payload(&output)?;
+        if output.output_retained {
+            output.output_sha256 = Some(digest);
+            output.output.clear();
+            output.output_retained = false;
         }
-        if output.output.len() > 1024 * 1024 {
-            return Err(Error::CapacityExceeded);
-        }
-        output.output_sha256 = Some(Digest32::of_bytes(output.output.as_bytes()).to_string());
-        output.output.clear();
-        output.output_retained = false;
+        // Already-redacted values are accepted idempotently. This matters on
+        // restart when reconciliation refines status/usage but provider history
+        // cannot reproduce the original text.
         self.settle_native(request_id, output)
     }
 
