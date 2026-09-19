@@ -65,10 +65,7 @@ fn witness_reopens_exact_acknowledged_frontier_and_rejects_regression() {
         witness.publish(first).expect("idempotent");
         witness.publish(second).expect("second");
         assert_eq!(witness.current().expect("current"), Some(second));
-        assert_eq!(
-            witness.publish(first),
-            Err(AnchorWitnessError::Regression)
-        );
+        assert_eq!(witness.publish(first), Err(AnchorWitnessError::Regression));
     }
 
     let recovered = DurableAnchorWitness::recover(fixture.file(), binding).expect("recover");
