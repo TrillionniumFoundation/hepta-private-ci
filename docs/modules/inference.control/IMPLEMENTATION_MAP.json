@@ -7,7 +7,7 @@
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.control",
-  "sourceMaturity": "native_hosted_policy_bound_atomic_effect_admission_reconciliation_compaction_deterministic_worker_selection_and_named_product_root",
+  "sourceMaturity": "native_hosted_policy_bound_atomic_effect_admission_reconciliation_digest_only_receipts_compaction_deterministic_worker_selection_and_named_product_root",
   "declaredRoots": [
     "codex-rs/hepta-infer-core",
     "codex-rs/hepta-inferd"
@@ -16,7 +16,7 @@
     "codex-rs/hepta-infer-core",
     "codex-rs/hepta-inferd"
   ],
-  "stateOwnerDisposition": "The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, quota/resource/economic-budget holds, dispatch/final-use bindings, terminal observations and bounded native compaction archives. Archive-retention failure poisons the writer rather than silently allowing sensitive predecessor growth.",
+  "stateOwnerDisposition": "The same single-writer DurableInferenceControl journal owns legacy records and native hosted request identity, quota/resource/economic-budget holds, dispatch/final-use bindings, digest-only provider observations and bounded native compaction archives. Product settlement never persists new provider/model text; compaction redacts retained pre-upgrade native output into SHA-256 receipts. Archive-retention failure poisons the writer rather than silently allowing sensitive predecessor growth.",
   "terminalObserverDisposition": "The actual Agent-fenced App Server client supplies matching turn observations through a trusted in-process port. A fresh live effect freezes the exact provider/context/TurnStart payload, resolves a signed grant from an independent issuer seam, then consumes the one-shot token while durable dispatch intent and synchronous bounded transport-queue admission cross the same revocation fence. Queue admission is the local effect linearization point. Post-crash recovery is ReconcileOnly: exact Persisted may recover terminal facts, exact Missing/Cancelled proves NoAdmission, and ambiguous outcomes remain held. Recovery cannot recreate the non-serializable terminal revalidation receipt or retroactively report authorized success.",
   "operations": [
     {
@@ -117,7 +117,7 @@
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "codex-rs/hepta-infer-core/src/native_control.rs",
-        "symbol": "pub fn settle_native(",
+        "symbol": "pub fn settle_native_receipt_only(",
         "buildTarget": "codex-hepta-infer-core::durable_control::native"
       },
       "delegatedCallees": [],
@@ -131,11 +131,16 @@
           "path": "codex-rs/hepta-infer-worker-host/src/native_run_control_tests.rs",
           "kind": "read_only_post_crash_reconciliation",
           "command": "just test -p codex-hepta-infer-worker-host --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+          "kind": "receipt_only_output_and_legacy_compaction_redaction",
+          "command": "just test -p codex-hepta-infer-core --lib"
         }
       ],
-      "sourceSemantics": "Persists matching live or read-only reconciled terminal observations and optional observed usage. Terminality can release local concurrency; observed tokens refine token holds, while economic budget remains conservatively consumed without authenticated billing reconciliation. Post-crash reconciliation never replays the provider turn or reconstructs final-use authority.",
+      "sourceSemantics": "Persists matching live or reconciled observations as digest-only durable receipts: the current caller may receive live output text in memory, while the journal retains only output_sha256 plus terminal/usage/authority metadata. Terminality can release local concurrency; observed tokens refine token holds, while economic budget remains conservatively consumed without authenticated billing reconciliation. Redaction is monotonic; compaction also migrates pre-upgrade retained native output to digest-only snapshots. Post-crash reconciliation never replays the provider turn or reconstructs final-use authority.",
       "operation": "settle",
-      "nativeSymbol": "pub fn settle_native(",
+      "nativeSymbol": "pub fn settle_native_receipt_only(",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control.rs",
       "sourcePathExists": true
     }
@@ -146,7 +151,8 @@
     "real provider deployment, crash/cancellation/reconciliation acceptance and provider-side retention behavior",
     "real economic billing reconciliation and measured device-capacity authority/qualification; source budget units and ResourceAdvertisement bindings do not prove provider charges or hardware availability",
     "independently operated final-use signer/revocation service and product activation",
-    "authenticated remote-worker transport if a separate process is introduced"
+    "authenticated remote-worker transport if a separate process is introduced",
+    "target-host retention evidence for predecessor archive pruning, backup lifetime and secure deletion of any pre-upgrade provider text"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
