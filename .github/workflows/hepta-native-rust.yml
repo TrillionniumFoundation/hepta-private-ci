@@ -7,6 +7,8 @@ on:
       - "codex-rs/hepta-native-gateway/**"
       - "codex-rs/Cargo.lock"
       - ".github/workflows/hepta-native-rust.yml"
+      - "docs/modules/ui.native/**"
+      - "qualification/module-execution-dossiers/detail/ui.native.md"
   push:
     branches: [main]
     paths:
@@ -14,6 +16,8 @@ on:
       - "codex-rs/hepta-native-gateway/**"
       - "codex-rs/Cargo.lock"
       - ".github/workflows/hepta-native-rust.yml"
+      - "docs/modules/ui.native/**"
+      - "qualification/module-execution-dossiers/detail/ui.native.md"
   workflow_dispatch:
 
 permissions:
