@@ -12,6 +12,7 @@ use crate::SupervisorEventKind;
 use crate::runtime::AgentSlot;
 use crate::runtime::ReleaseChange;
 use crate::runtime::ReleaseChangePhase;
+use crate::signed_intent::SignedIntentStatus;
 
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn upgrade_slot(
@@ -81,6 +82,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         generation: u64,
     ) -> Result<(), SupervisorError> {
+        let mut signed_terminal = None;
         if let Some(change) = slot.release_change.take() {
             match change.phase {
                 ReleaseChangePhase::TargetStarting => {
@@ -107,6 +109,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                             restored: change.origin.identity().to_string(),
                         },
                     );
+                    signed_terminal = Some(SignedIntentStatus::RolledBack);
                 }
                 ReleaseChangePhase::WaitingForTargetExit => {
                     slot.release_change = Some(change);
@@ -114,7 +117,11 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
         }
         self.persist_release_state(agent_id, slot)?;
-        self.commit_signed_intent_if_target(agent_id, slot)
+        if let Some(status) = signed_terminal {
+            self.finish_signed_intent(agent_id, slot, status)
+        } else {
+            self.commit_signed_intent_if_target(agent_id, slot)
+        }
     }
 
     pub(crate) fn persist_release_state(
@@ -185,6 +192,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                         rollback: change.origin.identity().to_string(),
                     },
                 );
+                self.finish_signed_intent(agent_id, slot, SignedIntentStatus::Failed)?;
                 Ok(true)
             }
         }
@@ -224,6 +232,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     },
                 );
             }
+            self.finish_signed_intent(agent_id, slot, SignedIntentStatus::Failed)?;
             return Err(error);
         }
         Ok(true)
