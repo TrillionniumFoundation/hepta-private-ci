@@ -14,10 +14,15 @@ use std::time::Duration;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_contracts::QuotaReservation;
+use codex_hepta_contracts::ResourceAdvertisement;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_worker_host::native_app_server::GrantResolveError;
 use codex_hepta_infer_worker_host::native_app_server::NativeAdmission;
+use codex_hepta_infer_worker_host::native_app_server::NativeExecutionPolicy;
 use codex_hepta_infer_worker_host::native_app_server::NativeWorkerConfig;
 use codex_hepta_inferd::worker_port::NativeWorkerPort;
 use serde::Deserialize;
@@ -26,6 +31,7 @@ use tokio_util::sync::CancellationToken;
 
 const MAX_HOST_CONFIG_BYTES: usize = 64 * 1024;
 const MAX_GRANT_BYTES: usize = 32 * 1024;
+const MAX_POLICY_BYTES: usize = 64 * 1024;
 const MAX_PROMPT_BYTES: u64 = 32 * 1024 + 1;
 const JOURNAL_CAPACITY: usize = 16_384;
 
@@ -59,16 +65,27 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         return Err(usage().into());
     }
     let host_path = args.next().ok_or(usage())?;
+    let quota_path = args.next().ok_or(usage())?;
+    let resource_path = args.next().ok_or(usage())?;
     let grant_path = args.next().ok_or(usage())?;
     let request_id = args.next().ok_or(usage())?;
+    let maximum_output_tokens: u64 = args.next().ok_or(usage())?.parse()?;
+    let maximum_budget_units: u64 = args.next().ok_or(usage())?.parse()?;
     if args.next().is_some() {
         return Err(usage().into());
     }
 
     let host: HostConfig = serde_json::from_slice(&read_host_config(Path::new(&host_path))?)?;
     validate_host_config(&host)?;
-    let grant: SignedFinalUseGrant =
-        serde_json::from_slice(&bounded_regular_file(Path::new(&grant_path), MAX_GRANT_BYTES)?)?;
+    let quota: QuotaReservation = serde_json::from_slice(&read_request_evidence(
+        Path::new(&quota_path),
+        MAX_POLICY_BYTES,
+    )?)?;
+    let resource: ResourceAdvertisement = serde_json::from_slice(&read_request_evidence(
+        Path::new(&resource_path),
+        MAX_POLICY_BYTES,
+    )?)?;
+    let grant_bytes = read_request_evidence(Path::new(&grant_path), MAX_GRANT_BYTES)?;
 
     let authority = FinalUseAuthority::open_state_dir(
         &host.authority_state_dir,
@@ -86,6 +103,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         generation: host.generation,
         model: host.model,
         timeout: Duration::from_millis(host.timeout_ms),
+        final_use_authority: authority,
     })?;
     let mut control = DurableInferenceControl::open(&host.journal, JOURNAL_CAPACITY)?;
 
@@ -105,17 +123,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             signal.cancel();
         }
     });
+    let admission = NativeAdmission {
+        request_id,
+        maximum_in_flight: host.maximum_in_flight,
+        maximum_output_tokens,
+        maximum_budget_units,
+        policy: NativeExecutionPolicy { quota, resource },
+    };
+    let grant_resolver =
+        |_binding: &FinalUseBinding| -> Result<SignedFinalUseGrant, GrantResolveError> {
+            serde_json::from_slice(&grant_bytes).map_err(Into::into)
+        };
     let result = port
         .execute(
             &mut control,
-            &authority,
-            &grant,
-            NativeAdmission {
-                request_id,
-                maximum_in_flight: host.maximum_in_flight,
-            },
+            admission,
             prompt,
             &cancellation,
+            &grant_resolver,
         )
         .await;
     signal_task.abort();
@@ -165,6 +190,16 @@ fn read_host_config(path: &Path) -> Result<Vec<u8>, Box<dyn std::error::Error + 
     bounded_regular_file(path, MAX_HOST_CONFIG_BYTES)
 }
 
+fn read_request_evidence(
+    path: &Path,
+    maximum: usize,
+) -> Result<Vec<u8>, Box<dyn std::error::Error + Send + Sync>> {
+    if !path.is_absolute() {
+        return Err("quota/resource/grant evidence paths must be absolute".into());
+    }
+    bounded_regular_file(path, maximum)
+}
+
 fn bounded_regular_file(
     path: &Path,
     maximum: usize,
@@ -184,7 +219,7 @@ fn bounded_regular_file(
 }
 
 fn usage() -> &'static str {
-    "usage: hepta-inference-runtime-host execute ABS_HOST_CONFIG.json SIGNED_GRANT.json REQUEST_ID < PROMPT"
+    "usage: hepta-inference-runtime-host execute ABS_HOST_CONFIG.json ABS_QUOTA.json ABS_RESOURCE.json SIGNED_GRANT.json REQUEST_ID MAX_OUTPUT_TOKENS MAX_BUDGET_UNITS < PROMPT"
 }
 
 #[cfg(test)]
