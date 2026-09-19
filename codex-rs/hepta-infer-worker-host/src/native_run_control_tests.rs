@@ -33,6 +33,7 @@ fn admission() -> NativeAdmission {
         maximum_in_flight: 1,
         quota_reservation_digest: Digest32::of_bytes(b"quota-r1"),
         resource_snapshot_digest: Digest32::of_bytes(b"resource-r1"),
+        worker_assignment_digest: Digest32::of_bytes(b"assignment-r1"),
     }
 }
 
@@ -53,12 +54,14 @@ fn request(driver: &AppServerModelDriver) -> NativeRequest {
                 driver.config.timeout.as_millis(),
                 admission.quota_reservation_digest.to_string(),
                 admission.resource_snapshot_digest.to_string(),
+                admission.worker_assignment_digest.to_string(),
             ))
             .unwrap(),
         ),
         operation_id: Some(admission.operation_id),
         quota_reservation_digest: Some(admission.quota_reservation_digest.to_string()),
         resource_snapshot_digest: Some(admission.resource_snapshot_digest.to_string()),
+        worker_assignment_digest: Some(admission.worker_assignment_digest.to_string()),
     }
 }
 
