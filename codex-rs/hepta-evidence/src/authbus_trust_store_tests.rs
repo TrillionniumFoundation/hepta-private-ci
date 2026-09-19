@@ -159,4 +159,29 @@ async fn replay_retirement_requires_revoked_epoch_and_exact_checkpoint() {
         .await
         .unwrap();
     assert_eq!(count, 0);
+    let pending: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM authbus_replay_checkpoint_pending WHERE singleton = 1",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .unwrap();
+    assert_eq!(pending, 1);
+
+    let acknowledged = ReplayCheckpoint {
+        checkpoint_id: id("checkpoint:retire:ack"),
+        generation: 2,
+        replay_root: next_root,
+        observed_at_ms: 1_100,
+    };
+    store
+        .record_authbus_replay_checkpoint(&acknowledged)
+        .await
+        .unwrap();
+    let pending: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM authbus_replay_checkpoint_pending WHERE singleton = 1",
+    )
+    .fetch_one(&store.pool)
+    .await
+    .unwrap();
+    assert_eq!(pending, 0);
 }
