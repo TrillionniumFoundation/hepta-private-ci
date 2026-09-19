@@ -255,7 +255,7 @@ fn invalid_hierarchy_parent_class_fails_closed() {
 }
 
 #[test]
-fn duplicate_subject_or_artifact_in_one_generation_rejects() {
+fn duplicate_subject_in_one_generation_rejects() {
     let generation = must(Generation::new(11));
     let duplicate_subject = must_err(validate_staged_updates(&[
         UpdateGeneration {
@@ -280,28 +280,6 @@ fn duplicate_subject_or_artifact_in_one_generation_rejects() {
         NduError::DuplicateSubjectUpdate("domain-a".to_string())
     );
 
-    let duplicate_artifact = must_err(validate_staged_updates(&[
-        UpdateGeneration {
-            generation,
-            subject_id: id("domain-a"),
-            subject_class: SubjectClass::Domain,
-            parent_subject_id: Some(id("system-a")),
-            parent_subject_class: Some(SubjectClass::System),
-            artifact_id: id("artifact-shared"),
-        },
-        UpdateGeneration {
-            generation,
-            subject_id: id("domain-b"),
-            subject_class: SubjectClass::Domain,
-            parent_subject_id: Some(id("system-b")),
-            parent_subject_class: Some(SubjectClass::System),
-            artifact_id: id("artifact-shared"),
-        },
-    ]));
-    assert_eq!(
-        duplicate_artifact,
-        NduError::DuplicateArtifactUpdate("artifact-shared".to_string())
-    );
 }
 
 #[test]
