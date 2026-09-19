@@ -692,6 +692,56 @@ impl HeptaEvidenceStore {
         Ok(())
     }
 
+    /// Bounded owner-clock sweep for reservations that expired before the
+    /// durable effect-start boundary. EffectStarted and Quarantined rows are
+    /// intentionally excluded because an external effect may already exist.
+    pub async fn expire_authbus_reservations(
+        &self,
+        quota_key: &StableId,
+        limit: u32,
+    ) -> Result<u64, AuthBusControlError> {
+        if limit == 0 || limit > 128 {
+            return Err(AuthBusControlError::Invalid("list limit must be 1..=128"));
+        }
+        let mut tx = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(classify_sqlx_error)?;
+        let now_i64 = now_millis()?;
+        let now = clock(now_i64)?;
+        let rows = sqlx::query(
+            "SELECT * FROM authbus_quota_reservations
+             WHERE quota_key=? AND state='active'
+             ORDER BY expires_at_ms, reservation_id LIMIT ?",
+        )
+        .bind(quota_key.as_str())
+        .bind(i64::from(limit))
+        .fetch_all(&mut *tx)
+        .await
+        .map_err(classify_sqlx_error)?;
+
+        let mut expired = 0_u64;
+        for row in rows {
+            let reservation = decode_reservation(row)?;
+            if reservation.expires_at_ms > now {
+                break;
+            }
+            release_active_in_tx(
+                &mut tx,
+                &reservation,
+                ReservationState::Expired,
+                now_i64,
+            )
+            .await?;
+            expired = expired
+                .checked_add(1)
+                .ok_or(AuthBusControlError::Invalid("expiry count overflow"))?;
+        }
+        tx.commit().await.map_err(classify_sqlx_error)?;
+        Ok(expired)
+    }
+
     /// Bounded recovery projection for effects that crossed the durable
     /// final-use boundary but do not yet have terminal settlement.
     pub async fn pending_authbus_effect_reservations(
