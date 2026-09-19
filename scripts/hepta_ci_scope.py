@@ -27,7 +27,37 @@ PACKAGE_GROUPS = {
     "hepta-intelligence-eval": {"learning"},
     "hepta-objective": {"objective", "learning"},
     "hepta-prompt-optimizer": {"objective", "learning"},
+    "hepta-plasticity": {"learning", "lifecycle"},
+    "hepta-intelligence": {"objective", "learning"},
+    "hepta-intuition": {"objective", "learning"},
+    "hepta-neuron": {"learning"},
+    "hepta-ndu": {"objective", "learning"},
+    "hepta-cognitive-read": {"learning"},
+    "hepta-cognitive-store": {"learning", "lifecycle"},
+    "hepta-memory-retrieval": {"learning"},
+    "hepta-memory-federation": {"learning", "lifecycle"},
+    "hepta-prompt-registry": {"objective", "learning"},
 }
+
+DERIVED_ONLY_DOCS = frozenset({
+    "docs/STATUS.md",
+    "docs/learning/ALGORITHM_STATUS.md",
+    "docs/readiness/STATUS.md",
+    "docs/cns/STATUS.md",
+    "docs/modules/SOURCE_BINDINGS.json",
+    "docs/modules/MODULE_DOCS.json",
+})
+
+ARCHITECTURE_REGISTRY_PREFIXES = (
+    "docs/architecture/",
+    "docs/contracts/",
+    "docs/data/",
+    "docs/control-plane/",
+)
+ARCHITECTURE_REGISTRY_FILES = frozenset({
+    "docs/modules/MODULES.json",
+    "CALLERS.toml",
+})
 
 
 def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]:
@@ -41,9 +71,16 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
         # include_str! input and therefore defaults to the conservative path.
         if path in {"README.md", "CONTRIBUTING.md"} or (path.startswith("docs/") and path.endswith(".md")):
             continue
-        if path.startswith("docs/"):
+        if path in DERIVED_ONLY_DOCS:
+            derived = True
+        elif path in ARCHITECTURE_REGISTRY_FILES or path.startswith(ARCHITECTURE_REGISTRY_PREFIXES):
             derived = True
             selected.update(GROUPS)
+        elif path.startswith("docs/"):
+            # Machine-readable navigation/readiness/evidence projections are
+            # verified as derived metadata. They do not force unrelated native
+            # package builds unless they change an architectural contract.
+            derived = True
         elif path.startswith("apps/hepta-browser/"):
             selected.add("effects")
         elif len(parts) > 2 and parts[0] == "codex-rs" and parts[1] in PACKAGE_GROUPS:
