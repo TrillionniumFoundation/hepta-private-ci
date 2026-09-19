@@ -19,10 +19,15 @@ use codex_hepta_types::StableId;
 
 mod learned;
 mod loaded;
+mod loaded_world_model;
 pub use loaded::LoadedTabularOperatorV1;
 pub use loaded::TabularPayloadError;
 pub use loaded::TabularPayloadPinV1;
 pub use loaded::encode_tabular_payload_v1;
+pub use loaded_world_model::LoadedWorldModelV1;
+pub use loaded_world_model::WorldModelPayloadError;
+pub use loaded_world_model::WorldModelPayloadPinV1;
+pub use loaded_world_model::encode_world_model_payload_v1;
 mod learned_strict;
 mod reference;
 mod world_model;
