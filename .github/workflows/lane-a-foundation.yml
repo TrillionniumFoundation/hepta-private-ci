@@ -6,7 +6,12 @@ on:
       - "codex-rs/hepta-*/**"
       - "codex-rs/kernel-*/**"
       - "docs/contracts/**"
+      - "docs/lane-a-foundation/platform.types/**"
+      - "docs/modules/platform.types/**"
+      - "qualification/module-execution-dossiers/detail/platform.types.md"
       - "scripts/verify_hepta_callers.py"
+      - "scripts/verify_platform_types_vectors.py"
+      - "scripts/verify_platform_types_vectors.mjs"
       - ".github/workflows/lane-a-foundation.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
   push:
@@ -48,6 +53,8 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/verify_lane_a_foundation.py self-test
           python3 scripts/verify_lane_a_foundation.py verify
+          python3 scripts/verify_platform_types_vectors.py
+          node scripts/verify_platform_types_vectors.mjs
           python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
           (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
           git diff --check
@@ -112,6 +119,8 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/verify_lane_a_foundation.py self-test
           python3 scripts/verify_lane_a_foundation.py verify
+          python3 scripts/verify_platform_types_vectors.py
+          node scripts/verify_platform_types_vectors.mjs
           python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
           (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
           git diff --check
