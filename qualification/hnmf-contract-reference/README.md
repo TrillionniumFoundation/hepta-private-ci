@@ -1,3 +1,14 @@
-# HNMF multimodal contract reference
+# HNMF contract qualification shim
 
-This standalone, dependency-free Rust crate is the executable reference for the HNMF event, span, provenance, scope and source-driven non-resurrection contracts. It is qualification-only: all production/effect/selection authority constants are false.
+This package deliberately defines **no cognitive/memory contract structs**.
+
+The single canonical Rust source for HNMF V1 cognitive contracts is
+`codex-rs/hepta-cognitive-types`:
+
+- `src/hnmf.rs` — multimodal span/event contracts;
+- `src/hnmf_learning.rs` — engram/recall/replay/plasticity/topology/forget contracts;
+- `src/wire.rs` — strict canonical JSON V1 encoding.
+
+This crate remains only as an executable negative-authority/ownership fixture.
+Algorithm qualification lives in `qualification/hnmf-reference`; cross-language
+wire vectors live in `qualification/cognitive-types-v1`.
