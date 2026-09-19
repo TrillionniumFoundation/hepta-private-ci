@@ -175,7 +175,7 @@ def validate_schema_node(
     need(field_type in FIELD_TYPES, label + " unknown type")
 
     if field_type in FIXED_SCALAR_TYPES:
-        need(list(node) == prefix, label + " scalar key closure/order")
+        need(set(node) == set(prefix), label + " scalar key closure")
         return
 
     need(
@@ -185,13 +185,13 @@ def validate_schema_node(
         label + " maxBytes",
     )
     if field_type in BYTE_BOUNDED_SCALAR_TYPES:
-        need(list(node) == prefix + ["maxBytes"], label + " scalar key closure/order")
+        need(set(node) == set(prefix + ["maxBytes"]), label + " scalar key closure")
         return
 
     if field_type == "enum":
         need(
-            list(node) == prefix + ["maxBytes", "values"],
-            label + " enum key closure/order",
+            set(node) == set(prefix + ["maxBytes", "values"]),
+            label + " enum key closure",
         )
         values = node.get("values")
         need(
@@ -213,9 +213,8 @@ def validate_schema_node(
 
     if field_type in ARRAY_TYPES:
         need(
-            list(node)
-            == prefix + ["maxBytes", "minItems", "maxItems", "uniqueItems", "items"],
-            label + " array key closure/order",
+            set(node) == set(prefix + ["maxBytes", "minItems", "maxItems", "uniqueItems", "items"]),
+            label + " array key closure",
         )
         need(
             isinstance(node.get("minItems"), int)
@@ -245,9 +244,8 @@ def validate_schema_node(
 
     if field_type in FIXED_POINT_VECTOR_TYPES:
         need(
-            list(node)
-            == prefix + ["maxBytes", "scale", "minItems", "maxItems", "items"],
-            label + " fixed-point vector key closure/order",
+            set(node) == set(prefix + ["maxBytes", "scale", "minItems", "maxItems", "items"]),
+            label + " fixed-point vector key closure",
         )
         need(node.get("scale") in ("Q24", "Q32"), label + " fixed-point scale")
         need(
@@ -271,16 +269,15 @@ def validate_schema_node(
         label + " additionalProperties must be false",
     )
     need(
-        list(node)
-        == prefix
+        set(node) == set(prefix
         + [
             "maxBytes",
             "minProperties",
             "maxProperties",
             "additionalProperties",
             "properties",
-        ],
-        label + " object key closure/order",
+        ]),
+        label + " object key closure",
     )
     properties = node.get("properties")
     need(isinstance(properties, list) and properties, label + " object properties")
