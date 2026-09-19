@@ -75,6 +75,20 @@ deadline at their own I/O boundary. A host that requires hard interruption must
 adapt the owner call to its existing async cancellation/timeout primitive before
 implementing the V3 port.
 
+## Post-execution Outcome/Credit closure
+
+`append_outcome_credit_v1` closes the learning side after execution without
+making `intelligence.control` the learning fact owner. The caller supplies the
+exact Decision ledger predecessor, a terminal independent `OutcomeObservation`
+and its `CreditAssignment`. The adapter checks episode/outcome/support bindings
+before writing, appends Outcome first, then Credit through the sealed
+`DurableLearningJournal`, and returns both durable receipts.
+
+Outcome and Credit are intentionally separate commits. If Outcome is durable but
+Credit fails, the returned error retains the Outcome receipt and the caller must
+reconcile/retry the exact Credit; it must not roll back or fabricate an atomic
+success. Exact replay after anchored reopen is idempotent.
+
 ## Compatibility and remaining gates
 
 V1/V2 receipt meanings are unchanged. run_read_only_vertical remains the concrete
