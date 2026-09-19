@@ -6,6 +6,10 @@
 
 #![forbid(unsafe_code)]
 
+mod admission;
+mod delivery;
+mod durable;
+mod protocol;
 mod v2;
 
 use std::collections::BTreeMap;
@@ -17,6 +21,24 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
+pub use admission::AdmissionAuthority;
+pub use admission::AdmissionBindingV1;
+pub use admission::AdmissionError;
+pub use admission::AdmissionGrantV1;
+pub use admission::FinalUseAdmissionAuthority;
+pub use admission::SignedAdmissionGrantV1;
+pub use admission::VerifiedAdmission;
+pub use admission::final_use_admission_binding;
+pub use admission::final_use_realization_binding;
+pub use admission::final_use_retire_binding;
+pub use admission::final_use_revoke_binding;
+pub use delivery::MAX_REALIZATION_PAYLOAD_BYTES;
+pub use delivery::RealizationDeliveryV2;
+pub use durable::DurablePromptRegistry;
+pub use durable::DurableRegistryError;
+pub use protocol::PromptFactorV1;
+pub use protocol::PromptRealizationV1;
+pub use protocol::ProtocolCodecError;
 pub use v2::CompatibleRealizationSetV2;
 pub use v2::MAX_COMPATIBLE_REALIZATIONS_V2;
 pub use v2::PromptModelTupleV2;
@@ -46,6 +68,9 @@ pub struct PromptFactor {
     pub factor_id: StableId,
     pub proposer_id: StableId,
     pub semantic_version: StableId,
+    pub semantic_purpose: String,
+    pub authority_class: String,
+    pub eligible_objective_dimensions: Vec<StableId>,
     pub content_digest: Digest32,
     pub source: FactorSource,
     pub lifecycle: Lifecycle,
@@ -83,6 +108,10 @@ pub enum Error {
     EmptyDigest(&'static str),
     FactorConflict(String),
     RealizationConflict(String),
+    RealizationProfileConflict(String),
+    PayloadTooLarge,
+    PayloadDigestMismatch,
+    InvalidFactorMetadata,
     FactorNotFound(String),
     FactorNotAdmitted(String),
     ExternalSelfAdmission,
@@ -99,11 +128,70 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum LifecycleEventKind {
+    Registered,
+    Admitted,
+    Retired,
+    Revoked,
+    Imported,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LifecycleEvent {
+    pub revision: Revision,
+    pub factor_id: StableId,
+    pub kind: LifecycleEventKind,
+    pub from: Option<Lifecycle>,
+    pub to: Lifecycle,
+    pub actor_id: StableId,
+    pub admission_grant_id: Option<StableId>,
+    pub evidence_digest: Digest32,
+    pub scope_digest: Option<Digest32>,
+    pub reason_digest: Option<Digest32>,
+    pub cutoff_unix_ms: Option<u64>,
+    pub event_digest: Digest32,
+}
+
+impl LifecycleEvent {
+    #[must_use]
+    pub fn compute_digest(&self) -> Digest32 {
+        let mut bytes = b"hepta.prompt-factor-lifecycle.event.v1".to_vec();
+        bytes.extend_from_slice(&self.revision.get().to_be_bytes());
+        push_id(&mut bytes, &self.factor_id);
+        bytes.push(lifecycle_event_kind_code(self.kind));
+        match self.from {
+            Some(value) => {
+                bytes.push(1);
+                bytes.push(lifecycle_code(value));
+            }
+            None => bytes.push(0),
+        }
+        bytes.push(lifecycle_code(self.to));
+        push_id(&mut bytes, &self.actor_id);
+        push_optional_id(&mut bytes, self.admission_grant_id.as_ref());
+        bytes.extend_from_slice(self.evidence_digest.as_array());
+        push_optional_digest(&mut bytes, self.scope_digest);
+        push_optional_digest(&mut bytes, self.reason_digest);
+        match self.cutoff_unix_ms {
+            Some(value) => {
+                bytes.push(1);
+                bytes.extend_from_slice(&value.to_be_bytes());
+            }
+            None => bytes.push(0),
+        }
+        Digest32::of_bytes(&bytes)
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PromptRegistry {
     factors: BTreeMap<StableId, PromptFactor>,
     realizations: BTreeMap<StableId, PromptRealization>,
     realization_bindings: BTreeMap<StableId, PromptRealizationBindingV2>,
+    realization_payloads: BTreeMap<StableId, Vec<u8>>,
+    realization_supersessions: BTreeMap<StableId, StableId>,
+    lifecycle_events: Vec<LifecycleEvent>,
     revision: Revision,
     lifecycle_frontier: u64,
     revocation_frontier: u64,
@@ -111,7 +199,7 @@ pub struct PromptRegistry {
 }
 
 impl PromptRegistry {
-    pub fn new(maximum_records: usize) -> Result<Self, Error> {
+    pub(crate) fn new(maximum_records: usize) -> Result<Self, Error> {
         if maximum_records == 0 {
             return Err(Error::ZeroCapacity);
         }
@@ -122,6 +210,9 @@ impl PromptRegistry {
             factors: BTreeMap::new(),
             realizations: BTreeMap::new(),
             realization_bindings: BTreeMap::new(),
+            realization_payloads: BTreeMap::new(),
+            realization_supersessions: BTreeMap::new(),
+            lifecycle_events: Vec::new(),
             revision,
             lifecycle_frontier: 0,
             revocation_frontier: 0,
@@ -129,7 +220,11 @@ impl PromptRegistry {
         })
     }
 
-    pub fn register_factor(&mut self, factor: PromptFactor) -> Result<RegistryReceipt, Error> {
+    pub(crate) fn register_factor(
+        &mut self,
+        factor: PromptFactor,
+    ) -> Result<RegistryReceipt, Error> {
+        protocol::validate_factor_semantics(&factor).map_err(|_| Error::InvalidFactorMetadata)?;
         if factor.content_digest.is_zero() {
             return Err(Error::EmptyDigest("factor content"));
         }
@@ -144,12 +239,27 @@ impl PromptRegistry {
         }
         self.ensure_capacity(/*additional*/ 1)?;
         let next_revision = self.next_revision()?;
+        let event = lifecycle_event(
+            next_revision,
+            factor.factor_id.clone(),
+            LifecycleEventKind::Registered,
+            None,
+            Lifecycle::Draft,
+            factor.proposer_id.clone(),
+            None,
+            factor.content_digest,
+            None,
+            None,
+            None,
+        );
         self.factors.insert(factor.factor_id.clone(), factor);
+        self.lifecycle_events.push(event);
         self.commit_revision(next_revision, /*revocation*/ false);
         Ok(self.receipt(MutationDisposition::Inserted))
     }
 
-    pub fn admit_factor(
+    #[cfg(test)]
+    pub(crate) fn admit_factor(
         &mut self,
         factor_id: &StableId,
         reviewer_id: &StableId,
@@ -175,11 +285,79 @@ impl PromptRegistry {
             return Err(Error::FactorNotFound(factor_id.to_string()));
         };
         factor.lifecycle = Lifecycle::Admitted;
+        let event = lifecycle_event(
+            next_revision,
+            factor_id.clone(),
+            LifecycleEventKind::Admitted,
+            Some(Lifecycle::Draft),
+            Lifecycle::Admitted,
+            reviewer_id.clone(),
+            None,
+            evidence_digest,
+            None,
+            None,
+            None,
+        );
+        self.lifecycle_events.push(event);
         self.commit_revision(next_revision, /*revocation*/ false);
         Ok(self.receipt(MutationDisposition::Transitioned))
     }
 
-    pub fn register_realization(
+    pub(crate) fn admit_factor_verified(
+        &mut self,
+        admission: VerifiedAdmission,
+        now_unix_ms: u64,
+    ) -> Result<RegistryReceipt, Error> {
+        if !admission.is_live_at(now_unix_ms) {
+            return Err(Error::InvalidTransition);
+        }
+        let Some(factor) = self.factors.get(admission.factor_id()) else {
+            return Err(Error::FactorNotFound(admission.factor_id().to_string()));
+        };
+        if factor.content_digest != admission.factor_content_digest() {
+            return Err(Error::FactorConflict(admission.factor_id().to_string()));
+        }
+        if factor.lifecycle == Lifecycle::Admitted
+            && self.lifecycle_events.iter().any(|event| {
+                event.kind == LifecycleEventKind::Admitted
+                    && event.factor_id == *admission.factor_id()
+                    && event.admission_grant_id.as_ref() == Some(admission.grant_id())
+            })
+        {
+            return Ok(self.receipt(MutationDisposition::Unchanged));
+        }
+        if factor.source != FactorSource::GovernedInternal
+            || factor.lifecycle != Lifecycle::Draft
+            || &factor.proposer_id == admission.reviewer_id()
+        {
+            return Err(Error::InvalidTransition);
+        }
+        let next_revision = self.next_revision()?;
+        let factor_id = admission.factor_id().clone();
+        let Some(factor) = self.factors.get_mut(&factor_id) else {
+            return Err(Error::FactorNotFound(factor_id.to_string()));
+        };
+        factor.lifecycle = Lifecycle::Admitted;
+        let event = lifecycle_event(
+            next_revision,
+            factor_id,
+            LifecycleEventKind::Admitted,
+            Some(Lifecycle::Draft),
+            Lifecycle::Admitted,
+            admission.reviewer_id().clone(),
+            Some(admission.grant_id().clone()),
+            admission.evidence_digest(),
+            Some(admission.reviewed_scope_digest()),
+            None,
+            None,
+        );
+        self.lifecycle_events.push(event);
+        self.commit_revision(next_revision, /*revocation*/ false);
+        Ok(self.receipt(MutationDisposition::Transitioned))
+    }
+
+    #[cfg(test)]
+    pub(crate) fn register_realization(
         &mut self,
         realization: PromptRealization,
     ) -> Result<RegistryReceipt, Error> {
@@ -217,36 +395,154 @@ impl PromptRegistry {
         Ok(self.receipt(MutationDisposition::Inserted))
     }
 
-    pub fn retire_factor(&mut self, factor_id: &StableId) -> Result<RegistryReceipt, Error> {
+    #[cfg(test)]
+    pub(crate) fn retire_factor(&mut self, factor_id: &StableId) -> Result<RegistryReceipt, Error> {
         let Some(factor) = self.factors.get(factor_id) else {
             return Err(Error::FactorNotFound(factor_id.to_string()));
         };
         if factor.lifecycle != Lifecycle::Admitted {
             return Err(Error::InvalidTransition);
         }
+        let actor_id = factor.proposer_id.clone();
+        let evidence_digest = factor.content_digest;
         let next_revision = self.next_revision()?;
         let Some(factor) = self.factors.get_mut(factor_id) else {
             return Err(Error::FactorNotFound(factor_id.to_string()));
         };
         factor.lifecycle = Lifecycle::Retired;
         self.disable_realizations(factor_id);
+        let event = lifecycle_event(
+            next_revision,
+            factor_id.clone(),
+            LifecycleEventKind::Retired,
+            Some(Lifecycle::Admitted),
+            Lifecycle::Retired,
+            actor_id,
+            None,
+            evidence_digest,
+            None,
+            None,
+            None,
+        );
+        self.lifecycle_events.push(event);
         self.commit_revision(next_revision, /*revocation*/ false);
         Ok(self.receipt(MutationDisposition::Transitioned))
     }
 
-    pub fn revoke_factor(&mut self, factor_id: &StableId) -> Result<RegistryReceipt, Error> {
+    #[cfg(test)]
+    pub(crate) fn revoke_factor(&mut self, factor_id: &StableId) -> Result<RegistryReceipt, Error> {
         let Some(factor) = self.factors.get(factor_id) else {
             return Err(Error::FactorNotFound(factor_id.to_string()));
         };
         if factor.lifecycle == Lifecycle::Revoked {
             return Err(Error::InvalidTransition);
         }
+        let from = factor.lifecycle;
+        let actor_id = factor.proposer_id.clone();
+        let evidence_digest = factor.content_digest;
         let next_revision = self.next_revision()?;
         let Some(factor) = self.factors.get_mut(factor_id) else {
             return Err(Error::FactorNotFound(factor_id.to_string()));
         };
         factor.lifecycle = Lifecycle::Revoked;
         self.disable_realizations(factor_id);
+        let event = lifecycle_event(
+            next_revision,
+            factor_id.clone(),
+            LifecycleEventKind::Revoked,
+            Some(from),
+            Lifecycle::Revoked,
+            actor_id,
+            None,
+            evidence_digest,
+            None,
+            None,
+            None,
+        );
+        self.lifecycle_events.push(event);
+        self.commit_revision(next_revision, /*revocation*/ true);
+        Ok(self.receipt(MutationDisposition::Transitioned))
+    }
+
+    pub(crate) fn retire_factor_governed(
+        &mut self,
+        factor_id: &StableId,
+        actor_id: &StableId,
+        reason_digest: Digest32,
+    ) -> Result<RegistryReceipt, Error> {
+        if reason_digest.is_zero() {
+            return Err(Error::EmptyDigest("retirement reason"));
+        }
+        let Some(factor) = self.factors.get(factor_id) else {
+            return Err(Error::FactorNotFound(factor_id.to_string()));
+        };
+        if factor.lifecycle != Lifecycle::Admitted {
+            return Err(Error::InvalidTransition);
+        }
+        let evidence_digest = factor.content_digest;
+        let next_revision = self.next_revision()?;
+        let Some(factor) = self.factors.get_mut(factor_id) else {
+            return Err(Error::FactorNotFound(factor_id.to_string()));
+        };
+        factor.lifecycle = Lifecycle::Retired;
+        self.disable_realizations(factor_id);
+        self.lifecycle_events.push(lifecycle_event(
+            next_revision,
+            factor_id.clone(),
+            LifecycleEventKind::Retired,
+            Some(Lifecycle::Admitted),
+            Lifecycle::Retired,
+            actor_id.clone(),
+            None,
+            evidence_digest,
+            None,
+            Some(reason_digest),
+            None,
+        ));
+        self.commit_revision(next_revision, /*revocation*/ false);
+        Ok(self.receipt(MutationDisposition::Transitioned))
+    }
+
+    pub(crate) fn revoke_factor_governed(
+        &mut self,
+        factor_id: &StableId,
+        actor_id: &StableId,
+        reason_digest: Digest32,
+        cutoff_unix_ms: u64,
+    ) -> Result<RegistryReceipt, Error> {
+        if reason_digest.is_zero() {
+            return Err(Error::EmptyDigest("revocation reason"));
+        }
+        if cutoff_unix_ms == 0 {
+            return Err(Error::InvalidTransition);
+        }
+        let Some(factor) = self.factors.get(factor_id) else {
+            return Err(Error::FactorNotFound(factor_id.to_string()));
+        };
+        if factor.lifecycle == Lifecycle::Revoked {
+            return Err(Error::InvalidTransition);
+        }
+        let from = factor.lifecycle;
+        let evidence_digest = factor.content_digest;
+        let next_revision = self.next_revision()?;
+        let Some(factor) = self.factors.get_mut(factor_id) else {
+            return Err(Error::FactorNotFound(factor_id.to_string()));
+        };
+        factor.lifecycle = Lifecycle::Revoked;
+        self.disable_realizations(factor_id);
+        self.lifecycle_events.push(lifecycle_event(
+            next_revision,
+            factor_id.clone(),
+            LifecycleEventKind::Revoked,
+            Some(from),
+            Lifecycle::Revoked,
+            actor_id.clone(),
+            None,
+            evidence_digest,
+            None,
+            Some(reason_digest),
+            Some(cutoff_unix_ms),
+        ));
         self.commit_revision(next_revision, /*revocation*/ true);
         Ok(self.receipt(MutationDisposition::Transitioned))
     }
@@ -264,6 +560,47 @@ impl PromptRegistry {
         realization_id: &StableId,
     ) -> Option<&PromptRealizationBindingV2> {
         self.realization_bindings.get(realization_id)
+    }
+
+    pub fn factor_protocol_v1(
+        &self,
+        factor_id: &StableId,
+    ) -> Result<Option<PromptFactorV1>, ProtocolCodecError> {
+        let Some(factor) = self.factors.get(factor_id) else {
+            return Ok(None);
+        };
+        let revision = self
+            .lifecycle_events
+            .iter()
+            .rev()
+            .find(|event| &event.factor_id == factor_id)
+            .map(|event| event.revision.get())
+            .ok_or(ProtocolCodecError::MissingAuthoritativeLineage)?;
+        PromptFactorV1::from_registry(factor, revision).map(Some)
+    }
+
+    pub fn realization_protocol_v1(
+        &self,
+        realization_id: &StableId,
+    ) -> Result<Option<PromptRealizationV1>, ProtocolCodecError> {
+        let Some(binding) = self.realization_bindings.get(realization_id) else {
+            return Ok(None);
+        };
+        PromptRealizationV1::from_binding(binding).map(Some)
+    }
+
+    pub fn lifecycle_events(&self) -> &[LifecycleEvent] {
+        &self.lifecycle_events
+    }
+
+    pub fn admission_event_digest(&self, factor_id: &StableId) -> Option<Digest32> {
+        self.lifecycle_events
+            .iter()
+            .rev()
+            .find(|event| {
+                event.factor_id == *factor_id && event.kind == LifecycleEventKind::Admitted
+            })
+            .map(|event| event.event_digest)
     }
 
     #[must_use]
@@ -291,6 +628,16 @@ impl PromptRegistry {
             push_id(&mut bytes, &factor.factor_id);
             push_id(&mut bytes, &factor.proposer_id);
             push_id(&mut bytes, &factor.semantic_version);
+            push_text(&mut bytes, &factor.semantic_purpose);
+            push_text(&mut bytes, &factor.authority_class);
+            bytes.extend_from_slice(
+                &u32::try_from(factor.eligible_objective_dimensions.len())
+                    .unwrap_or(u32::MAX)
+                    .to_be_bytes(),
+            );
+            for dimension in &factor.eligible_objective_dimensions {
+                push_id(&mut bytes, dimension);
+            }
             bytes.extend_from_slice(factor.content_digest.as_array());
             bytes.push(match factor.source {
                 FactorSource::GovernedInternal => 0,
@@ -308,6 +655,17 @@ impl PromptRegistry {
         }
         for binding in self.realization_bindings.values() {
             bytes.extend_from_slice(binding.digest().as_array());
+        }
+        for (realization_id, payload) in &self.realization_payloads {
+            push_id(&mut bytes, realization_id);
+            bytes.extend_from_slice(Digest32::of_bytes(payload).as_array());
+        }
+        for (successor, predecessor) in &self.realization_supersessions {
+            push_id(&mut bytes, successor);
+            push_id(&mut bytes, predecessor);
+        }
+        for event in &self.lifecycle_events {
+            bytes.extend_from_slice(event.event_digest.as_array());
         }
         Digest32::of_bytes(&bytes)
     }
@@ -350,6 +708,67 @@ impl PromptRegistry {
     }
 }
 
+fn lifecycle_event(
+    revision: Revision,
+    factor_id: StableId,
+    kind: LifecycleEventKind,
+    from: Option<Lifecycle>,
+    to: Lifecycle,
+    actor_id: StableId,
+    admission_grant_id: Option<StableId>,
+    evidence_digest: Digest32,
+    scope_digest: Option<Digest32>,
+    reason_digest: Option<Digest32>,
+    cutoff_unix_ms: Option<u64>,
+) -> LifecycleEvent {
+    let mut event = LifecycleEvent {
+        revision,
+        factor_id,
+        kind,
+        from,
+        to,
+        actor_id,
+        admission_grant_id,
+        evidence_digest,
+        scope_digest,
+        reason_digest,
+        cutoff_unix_ms,
+        event_digest: Digest32::ZERO,
+    };
+    event.event_digest = event.compute_digest();
+    event
+}
+
+fn push_optional_id(bytes: &mut Vec<u8>, value: Option<&StableId>) {
+    match value {
+        Some(value) => {
+            bytes.push(1);
+            push_id(bytes, value);
+        }
+        None => bytes.push(0),
+    }
+}
+
+fn push_optional_digest(bytes: &mut Vec<u8>, value: Option<Digest32>) {
+    match value {
+        Some(value) => {
+            bytes.push(1);
+            bytes.extend_from_slice(value.as_array());
+        }
+        None => bytes.push(0),
+    }
+}
+
+const fn lifecycle_event_kind_code(kind: LifecycleEventKind) -> u8 {
+    match kind {
+        LifecycleEventKind::Registered => 0,
+        LifecycleEventKind::Admitted => 1,
+        LifecycleEventKind::Retired => 2,
+        LifecycleEventKind::Revoked => 3,
+        LifecycleEventKind::Imported => 4,
+    }
+}
+
 fn lifecycle_code(lifecycle: Lifecycle) -> u8 {
     match lifecycle {
         Lifecycle::Draft => 0,
@@ -360,7 +779,11 @@ fn lifecycle_code(lifecycle: Lifecycle) -> u8 {
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
-    let raw = value.as_str().as_bytes();
+    push_text(bytes, value.as_str());
+}
+
+fn push_text(bytes: &mut Vec<u8>, value: &str) {
+    let raw = value.as_bytes();
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(raw);
 }

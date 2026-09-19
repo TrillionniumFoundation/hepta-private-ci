@@ -160,6 +160,7 @@
         "ModulePort::kernel.authority::inference.control",
         "ModulePort::kernel.authority::inference.worker",
         "ModulePort::kernel.authority::memory.federation",
+        "ModulePort::kernel.authority::prompt.registry",
         "ModulePort::kernel.authority::runtime.codex",
         "ModulePort::kernel.authority::runtime.fleet",
         "ModulePort::kernel.authority::runtime.supervisor",
@@ -1200,6 +1201,7 @@
         "DomainRead::prompt_factor_lifecycleV1",
         "DomainRead::prompt_factor_registryV1",
         "DomainRead::prompt_realization_registryV1",
+        "ModulePort::prompt.registry::intelligence.control",
         "ModulePort::prompt.registry::knowledge.graph",
         "ModulePort::prompt.registry::prompt.optimizer",
         "PromptFactorV1",
@@ -1208,6 +1210,7 @@
       "consumedContracts": [
         "DomainRead::cross_owner_outboxV1",
         "DomainRead::operation_ledgerV1",
+        "ModulePort::kernel.authority::prompt.registry",
         "ModulePort::kernel.operations::prompt.registry",
         "ModulePort::platform.types::prompt.registry"
       ],
@@ -1431,6 +1434,7 @@
         "ModulePort::neuron.runtime::intelligence.control",
         "ModulePort::objective.compiler::intelligence.control",
         "ModulePort::prompt.optimizer::intelligence.control",
+        "ModulePort::prompt.registry::intelligence.control",
         "ModulePort::utility.ndu::intelligence.control",
         "NduCoefficientManifestV1",
         "NduUpdateReceiptV1",
