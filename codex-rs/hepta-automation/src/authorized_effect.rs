@@ -200,7 +200,10 @@ impl AutomationStore {
                 expected_binding,
                 command_id,
             )?;
-            return match self.settle_effect_dispatch_attempt(&existing, fence).await? {
+            return match self
+                .settle_effect_dispatch_attempt(&existing, fence)
+                .await?
+            {
                 AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
@@ -256,9 +259,9 @@ impl AutomationStore {
             payload_digest,
             binding: expected_binding,
         };
-        let provider = match authority.with_verified_use(token, expected_binding, || {
-            driver.dispatch(&request)
-        }) {
+        let provider = match authority
+            .with_verified_use(token, expected_binding, || driver.dispatch(&request))
+        {
             Ok(Ok(receipt)) => receipt,
             Ok(Err(error)) => {
                 let proof = no_contact_digest(&durable, "driver_before_provider_contact");
@@ -374,12 +377,7 @@ impl AutomationStore {
             EffectDispatchObservationKind::ProvenAbsent => unreachable!(),
         };
         let step = self
-            .read_taskflow_step(
-                &durable.run_id,
-                &durable.step_id,
-                durable.attempt,
-                fence,
-            )
+            .read_taskflow_step(&durable.run_id, &durable.step_id, durable.attempt, fence)
             .await?
             .ok_or_else(|| {
                 TaskFlowError::Conflict(
@@ -491,8 +489,10 @@ impl AutomationStore {
             .ok_or_else(|| TaskFlowError::Corrupt("effect TaskFlow run vanished".to_string()))?;
         let already_terminal = matches!(
             (run.state, terminal),
-            (TaskFlowRunState::Succeeded, TaskFlowReconcileOutcome::Succeeded)
-                | (TaskFlowRunState::Failed, TaskFlowReconcileOutcome::Failed)
+            (
+                TaskFlowRunState::Succeeded,
+                TaskFlowReconcileOutcome::Succeeded
+            ) | (TaskFlowRunState::Failed, TaskFlowReconcileOutcome::Failed)
         );
         if already_terminal {
             return Ok(());
@@ -605,7 +605,10 @@ fn effect_command_id(phase: &str, durable: &EffectDispatchAttempt) -> String {
     bytes.push(0);
     bytes.extend_from_slice(durable.step_id.as_bytes());
     bytes.extend_from_slice(&durable.attempt.to_be_bytes());
-    format!("effect:{phase}:{}", Sha256Digest::for_bytes(&bytes).as_str())
+    format!(
+        "effect:{phase}:{}",
+        Sha256Digest::for_bytes(&bytes).as_str()
+    )
 }
 
 fn no_contact_digest(durable: &EffectDispatchAttempt, reason: &str) -> Sha256Digest {
