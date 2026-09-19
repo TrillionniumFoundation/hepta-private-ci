@@ -15,6 +15,7 @@ mod model;
 mod recovery;
 mod release;
 mod release_selection;
+mod restart_budget;
 mod robrix_projection;
 mod robrix_protocol;
 mod runtime;
