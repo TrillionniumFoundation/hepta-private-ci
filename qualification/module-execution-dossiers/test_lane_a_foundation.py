@@ -115,6 +115,9 @@ class LaneAFoundationTruthTests(unittest.TestCase):
     def test_frozen_wire_vector_is_self_consistent(self) -> None:
         verify.validate_wire_vector()
 
+    def test_frozen_platform_types_vector_is_self_consistent(self) -> None:
+        verify.validate_platform_types_vector()
+
     def test_source_receipt_preserves_scope_and_nonclaims(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "receipt.json"
