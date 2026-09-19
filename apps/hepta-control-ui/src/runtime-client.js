@@ -87,6 +87,38 @@ function normalizeDisplayedView(value) {
   });
 }
 
+function snapshotTransport(transport) {
+  if (transport === null || typeof transport !== "object") {
+    fail(ERROR_CODES.INVALID_INPUT, "transport must be an object");
+  }
+  const snapshot = Object.create(null);
+  for (const method of ["connect", "request", "reconcile", "close"]) {
+    let owner = transport;
+    let descriptor = null;
+    const seen = new Set();
+    while (owner !== null) {
+      if (seen.has(owner)) {
+        fail(ERROR_CODES.INVALID_INPUT, "transport prototype chain must be acyclic");
+      }
+      seen.add(owner);
+      descriptor = Object.getOwnPropertyDescriptor(owner, method);
+      if (descriptor) break;
+      owner = Object.getPrototypeOf(owner);
+    }
+    if (
+      !descriptor ||
+      !Object.hasOwn(descriptor, "value") ||
+      descriptor.get !== undefined ||
+      descriptor.set !== undefined ||
+      typeof descriptor.value !== "function"
+    ) {
+      fail(ERROR_CODES.INVALID_INPUT, `transport.${method} must be a data method`);
+    }
+    snapshot[method] = descriptor.value.bind(transport);
+  }
+  return Object.freeze(snapshot);
+}
+
 export class RuntimeClient {
   #transport;
   #pendingStore;
@@ -113,12 +145,7 @@ export class RuntimeClient {
     setTimer = globalThis.setTimeout?.bind(globalThis),
     clearTimer = globalThis.clearTimeout?.bind(globalThis),
   }) {
-    requireRecord(transport, "transport");
-    for (const method of ["connect", "request", "reconcile", "close"]) {
-      if (typeof transport[method] !== "function") {
-        fail(ERROR_CODES.INVALID_INPUT, `transport.${method} must be a function`);
-      }
-    }
+    const transportSnapshot = snapshotTransport(transport);
     if (pendingStore !== null) {
       if (
         typeof pendingStore !== "object" ||
@@ -137,7 +164,7 @@ export class RuntimeClient {
     if (clearTimer !== undefined && typeof clearTimer !== "function") {
       fail(ERROR_CODES.INVALID_INPUT, "clearTimer must be a function when provided");
     }
-    this.#transport = transport;
+    this.#transport = transportSnapshot;
     this.#pendingStore = pendingStore;
     this.#clock = clock;
     this.#setTimer = setTimer;

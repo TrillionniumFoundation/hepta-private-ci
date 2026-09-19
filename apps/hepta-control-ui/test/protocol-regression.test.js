@@ -184,7 +184,17 @@ test("stop scope must be an explicit record", async () => {
     sessionId: "session.1", connectionGeneration: 1, generation: 1, revision: 1, digest: D2, modules: [],
   });
   await assert.rejects(
-    client.requestStop({ operationId: "stop.invalid", displayedRevision: 1, scope: "runtime.agentd" }),
+    client.requestStop({
+      operationId: "stop.invalid",
+      displayedView: {
+        sessionId: "session.1",
+        connectionGeneration: 1,
+        generation: 1,
+        revision: 1,
+        digest: D2,
+      },
+      scope: "runtime.agentd",
+    }),
     /scope must be an object/,
   );
 });

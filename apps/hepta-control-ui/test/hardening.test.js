@@ -438,6 +438,28 @@ test("durable pending identity survives reload without persisting request payloa
   assert.match(storage.getItem("hepta.pending.test"), /"entries":\[\]/);
 });
 
+test("runtime transport methods are snapshotted without invoking accessors", () => {
+  let getterCalls = 0;
+  const transport = {
+    async connect() { return {}; },
+    async reconcile() { return null; },
+    async close() {},
+  };
+  Object.defineProperty(transport, "request", {
+    configurable: true,
+    enumerable: true,
+    get() {
+      getterCalls += 1;
+      return async () => ({});
+    },
+  });
+  assert.throws(
+    () => new RuntimeClient({ transport }),
+    (error) => error.code === ERROR_CODES.INVALID_INPUT,
+  );
+  assert.equal(getterCalls, 0);
+});
+
 test("persistence failure before dispatch fails closed and never crosses transport", async () => {
   let requests = 0;
   const store = { load: () => [], save: () => { throw new Error("quota"); } };
@@ -1898,7 +1920,7 @@ test("pending store rejects duplicate JSON keys including escaped aliases", () =
   const storage = new MemoryStorage();
   storage.setItem(
     "dup",
-    '{"schema":"hepta.ui-control.pending-store.v1","schema\\u0065":"hepta.ui-control.pending-store.v1","entries":[]}',
+    '{"schema":"hepta.ui-control.pending-store.v1","schem\\u0061":"hepta.ui-control.pending-store.v1","entries":[]}',
   );
   const store = new LocalStoragePendingStore({ storage, key: "dup" });
   assert.throws(

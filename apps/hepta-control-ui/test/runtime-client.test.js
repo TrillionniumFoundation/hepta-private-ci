@@ -18,7 +18,7 @@ function moduleObservation(index = 1, extra = {}) {
   };
 }
 
-function makeTransport({ requestImpl, reconcileImpl } = {}) {
+function makeTransport({ connectImpl, requestImpl, reconcileImpl, closeImpl } = {}) {
   const calls = [];
   let connectionGeneration = 0;
   return {
@@ -26,6 +26,9 @@ function makeTransport({ requestImpl, reconcileImpl } = {}) {
     async connect(input) {
       calls.push(["connect", input]);
       connectionGeneration += 1;
+      if (connectImpl) {
+        return connectImpl(input, { connectionGeneration });
+      }
       return {
         authenticated: true,
         sessionId: `session.${connectionGeneration}`,
@@ -57,6 +60,9 @@ function makeTransport({ requestImpl, reconcileImpl } = {}) {
     },
     async close(input) {
       calls.push(["close", input]);
+      if (closeImpl) {
+        return closeImpl(input, { connectionGeneration });
+      }
     },
   };
 }
@@ -451,12 +457,13 @@ test("backend rejection clears local pending identity", async () => {
 });
 
 test("connect maps arbitrary transport error codes to stable BACKEND_UNAVAILABLE", async () => {
-  const io = makeTransport();
-  io.connect = async () => {
-    const error = new Error("connection reset");
-    error.code = "ECONNRESET";
-    throw error;
-  };
+  const io = makeTransport({
+    connectImpl: async () => {
+      const error = new Error("connection reset");
+      error.code = "ECONNRESET";
+      throw error;
+    },
+  });
   const client = new RuntimeClient({ transport: io });
   await assert.rejects(
     client.connect({
@@ -470,11 +477,12 @@ test("connect maps arbitrary transport error codes to stable BACKEND_UNAVAILABLE
 });
 
 test("close clears local session and maps raw transport failure to typed error", async () => {
-  const io = makeTransport();
+  const io = makeTransport({
+    closeImpl: async () => {
+      throw new Error("close response lost");
+    },
+  });
   const { client } = await connectedClient(io);
-  io.close = async () => {
-    throw new Error("close response lost");
-  };
 
   await assert.rejects(
     client.close(),
