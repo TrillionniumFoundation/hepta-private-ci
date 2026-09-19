@@ -32,25 +32,9 @@ not only snapshot generation. Broken ancestry, a nonlatest head, invalid record
 metadata, and tombstone resurrection fail closed. All returned values retain
 `DENY_ALL` effect authority.
 
-`DurableCognitiveSnapshot::read(ReadRequestV2)` runs the new cognitive-read
-implementation against this owner-acquired cut. The caller supplies result and
-encoded-byte bounds. It can intersect these digest-only records with the
-existing scoped retrieval API and fetch matching content through the same
-store. Before delivery, compare each fetched record's exact revision and content
-digest, call `revalidate_lane_c_snapshot`, and recheck host authority/generation.
-Revalidation detects intervening corrections, deletions, newly appended source
-evidence, projection changes, and changes caused by validity time. It rejects
-clock regression. A subsequent concurrent write remains possible: this API
-returns a historical read cut and does not grant a lease over future effects.
+`CognitiveStore::lane_c_authoritative_provider` acquires an immutable owner cut and binds it to `LaneCAuthorityContextV1`; `read_authoritative` is the product-facing reader. The SQLite owner fills memory/source/tombstone/knowledge-fact frontiers and graph generation from the same transaction. The host supplies only purpose, serving generation and authority epoch. Prompt/model/compact identities are intentionally outside this module-specific authoritative subset and are never fabricated here.
 
-`bind_context` optionally binds an externally frozen
-`LaneCGenerationVectorV1`. All five cognitive-owned components must exactly
-match the cut. The host must obtain prompt, compact, model, retrieval-profile,
-and authority values from their actual owners; the adapter supplies no defaults.
-Acquisition time must match the observed second, and the lease is bounded to
-five minutes. These are crate-native APIs; this change does not register V2
-types as a cross-module wire format or authorize arbitrary caller-supplied
-generation vectors.
+The returned `LaneCAuthoritativeSnapshotProvider` exposes no writer or moving/current-state query interface. Before final context consumption, `revalidate_lane_c_authoritative_provider` reacquires the canonical owner cut, requires exact equality of snapshot/frontiers, preserves the original lease expiry, and rebuilds the authoritative envelope against current host authority. `AuthoritativeReadResultV1::revalidate_for_current_snapshot` then requires the same provider, generation-vector digest, snapshot digest, request binding and unexpired original lease. Agentd additionally fences the lifecycle authority epoch before publication. Intervening corrections, deletions, source/frontier advances, projection changes, lease expiry or host epoch changes fail closed.
 
 Reopening with existing `CognitiveStore::open` reconstructs the same cut from
 durable rows. `cut_digest` can be retained independently and compared using
@@ -69,6 +53,5 @@ or unbounded lifetime retention. Retention/paging must preserve predecessor
 proofs and deletion frontiers before those limits can be increased safely.
 
 `lane_c_snapshot_tests.rs` exercises actual owner writes, correction ancestry,
-reopen, committed deletions, scope and verification/time filters, context
-binding, and restoration of an older valid SQLite backup. Run with
+reopen, committed deletions, scope and verification/time filters, authoritative provider binding/final-use revalidation, and restoration of an older valid SQLite backup. Run with
 `just test -p codex-hepta-memory`.
