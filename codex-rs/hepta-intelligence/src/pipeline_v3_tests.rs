@@ -121,6 +121,8 @@ fn request(with_optional: bool) -> LaneFRunRequestV3 {
     LaneFRunRequestV3 {
         run_id: id("run:v3"),
         request_digest: digest("request"),
+        body_digest: digest("body"),
+        artifact_set_digest: digest("artifact-set"),
         snapshot,
         legal_candidates: candidates,
         budget: LaneFBudgetV3 {
@@ -137,6 +139,7 @@ fn request(with_optional: bool) -> LaneFRunRequestV3 {
             host_handoff_micros: 2_000_000,
             ledger_micros: 2_000_000,
         },
+        deadline_unix_micros: 4_000_000_000_000_000,
     }
 }
 
