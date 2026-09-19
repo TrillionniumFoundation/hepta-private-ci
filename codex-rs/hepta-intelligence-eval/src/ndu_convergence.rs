@@ -90,20 +90,47 @@ pub struct NduConvergenceEvidenceV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduConvergenceCertificateV1 {
-    pub certificate_id: StableId,
-    pub subject_class: NduSubjectClassV1,
-    pub objective_class_digest: Digest32,
-    pub solver_digest: Digest32,
-    pub initialization_digest: Digest32,
-    pub iterations: u32,
-    pub maximum_residual_q32: i64,
-    pub spectral_radius_upper95_q32: i64,
-    pub conservation_residual_q32: i64,
-    pub multiple_solution_disposition: NduMultipleSolutionDispositionV1,
-    pub evaluator_identity: StableId,
-    pub decision: NduConvergenceDecisionV1,
-    pub certificate_digest: Digest32,
-    pub authority: AuthorityPosture,
+    certificate_id: StableId,
+    subject_class: NduSubjectClassV1,
+    objective_class_digest: Digest32,
+    solver_digest: Digest32,
+    initialization_digest: Digest32,
+    iterations: u32,
+    maximum_residual_q32: i64,
+    spectral_radius_upper95_q32: i64,
+    conservation_residual_q32: i64,
+    multiple_solution_disposition: NduMultipleSolutionDispositionV1,
+    evaluator_identity: StableId,
+    decision: NduConvergenceDecisionV1,
+    certificate_digest: Digest32,
+    authority: AuthorityPosture,
+}
+
+impl NduConvergenceCertificateV1 {
+    #[must_use]
+    pub const fn objective_class_digest(&self) -> Digest32 {
+        self.objective_class_digest
+    }
+
+    #[must_use]
+    pub const fn solver_digest(&self) -> Digest32 {
+        self.solver_digest
+    }
+
+    #[must_use]
+    pub const fn decision(&self) -> NduConvergenceDecisionV1 {
+        self.decision
+    }
+
+    #[must_use]
+    pub const fn certificate_digest(&self) -> Digest32 {
+        self.certificate_digest
+    }
+
+    #[must_use]
+    pub const fn authority(&self) -> AuthorityPosture {
+        self.authority
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
