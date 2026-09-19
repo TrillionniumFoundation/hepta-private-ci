@@ -295,8 +295,10 @@ const server = createServer(async (req, res) => {
     const type = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".webmanifest": "application/manifest+json" }[extname(path)] ?? "application/octet-stream";
     res.writeHead(200, { "content-type": `${type}; charset=utf-8`, "content-length": body.length, "cache-control": "no-store" });
     res.end(body);
-  } catch (error) {
-    json(res, 500, { error: String(error?.message ?? error) });
+  } catch {
+    // Keep harness internals out of HTTP responses. Test failures are reported
+    // by the runner process, not reflected through the mock control endpoint.
+    json(res, 500, { error: "internal" });
   }
 });
 
