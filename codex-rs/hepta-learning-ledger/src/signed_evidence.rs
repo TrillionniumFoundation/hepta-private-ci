@@ -27,7 +27,7 @@ pub enum LearningEvidenceRoleV1 {
 }
 
 impl LearningEvidenceRoleV1 {
-    const fn tag(self) -> u8 {
+    pub(crate) const fn tag(self) -> u8 {
         match self {
             Self::Generator => 0,
             Self::Observer => 1,
@@ -242,6 +242,11 @@ impl LearningEvidenceVerifierV1 {
     #[must_use]
     pub fn trust_digest(&self) -> Digest32 {
         self.trust_digest
+    }
+
+    #[must_use]
+    pub fn authority_epoch(&self) -> u64 {
+        self.authority_epoch
     }
 
     pub fn verify(
