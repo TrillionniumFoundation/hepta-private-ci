@@ -220,6 +220,7 @@ pub trait ModelDriver {
         &mut self,
         manifest: &ModelManifest,
         grant: &ResourceGrant,
+        maximum_memory_bytes: u64,
     ) -> Result<DriverModelHandle, Error>;
     fn run(
         &mut self,
@@ -303,10 +304,20 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 .checked_add(loaded.handle.reserved_memory_bytes)
                 .ok_or(Error::ArithmeticOverflow)
         })?;
-        let handle = self.driver.load(&manifest, &self.grant)?;
+        let remaining_memory_bytes = self
+            .grant
+            .maximum_memory_bytes
+            .checked_sub(reserved_before_load)
+            .ok_or(Error::ModelCapacity)?;
+        if remaining_memory_bytes == 0 {
+            return Err(Error::ModelCapacity);
+        }
+        let handle = self
+            .driver
+            .load(&manifest, &self.grant, remaining_memory_bytes)?;
         validate_identity(&handle.opaque_id, "model handle")?;
         if handle.reserved_memory_bytes == 0
-            || handle.reserved_memory_bytes > self.grant.maximum_memory_bytes
+            || handle.reserved_memory_bytes > remaining_memory_bytes
             || handle.observed_memory_bytes > handle.reserved_memory_bytes
         {
             self.driver.unload(handle)?;
