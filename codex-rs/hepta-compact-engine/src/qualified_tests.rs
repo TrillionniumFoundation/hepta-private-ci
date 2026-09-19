@@ -64,7 +64,21 @@ fn input(record: MemoryRecord, priority: u32) -> CompactionInputRecordV2 {
         retention_reason_digest: digest(&format!("reason:{}", record.record_id)),
         record,
         retention_priority: priority,
+        serialized_bytes: 64,
+        token_count: 16,
     }
+}
+
+fn input_cost(
+    record: MemoryRecord,
+    priority: u32,
+    serialized_bytes: u64,
+    token_count: u64,
+) -> CompactionInputRecordV2 {
+    let mut value = input(record, priority);
+    value.serialized_bytes = serialized_bytes;
+    value.token_count = token_count;
+    value
 }
 
 fn policy(maximum: u32, protected: Vec<StableId>) -> CompactionPolicyV2 {
@@ -72,8 +86,28 @@ fn policy(maximum: u32, protected: Vec<StableId>) -> CompactionPolicyV2 {
         policy_id: id("policy:compact"),
         algorithm_digest: digest("algorithm"),
         compatibility_digest: digest("compatibility"),
+        tokenizer_digest: snapshot_key().vector.tokenizer_digest,
         maximum_retained_records: maximum,
+        maximum_retained_bytes: 4096,
+        maximum_retained_tokens: 1024,
         protected_record_ids: protected,
+    }
+}
+
+fn qualification() -> CompactionQualificationV2 {
+    CompactionQualificationV2 {
+        evaluator_id: id("evaluator:independent"),
+        evaluation_artifact_digest: digest("evaluation-artifact"),
+        evaluator_implementation_digest: digest("evaluator-implementation"),
+        attestation_digest: digest("attestation"),
+        signature_digest: digest("signature"),
+        retained_query_suite_digest: digest("queries"),
+        reconstruction_obligation_digest: digest("reconstruction"),
+        contradiction_holdout_digest: digest("contradictions"),
+        retained_queries_passed: true,
+        reconstruction_passed: true,
+        contradictions_preserved: true,
+        deletion_non_resurrection_passed: true,
     }
 }
 
@@ -122,7 +156,7 @@ fn tombstoned_head_is_never_replayed_or_retained() {
 }
 
 #[test]
-fn explicit_resurrection_after_tombstone_is_rejected() {
+fn live_tombstone_live_resurrection_is_rejected_on_the_only_public_builder() {
     let live = record("memory:resurrected", 1, None, RecordState::Live);
     let tombstone = record(
         "memory:resurrected",
@@ -179,7 +213,99 @@ fn candidate_is_order_independent() {
 }
 
 #[test]
-fn proof_requires_all_loss_and_deletion_obligations() {
+fn byte_and_token_budgets_omit_optional_records_deterministically() {
+    let mut bounded = policy(4, Vec::new());
+    bounded.maximum_retained_bytes = 100;
+    bounded.maximum_retained_tokens = 25;
+    let candidate = build_qualified_candidate(
+        snapshot_key(),
+        generation(2),
+        Some(digest("predecessor-checkpoint")),
+        &bounded,
+        vec![
+            input_cost(record("memory:a", 1, None, RecordState::Live), 3, 60, 15),
+            input_cost(record("memory:b", 1, None, RecordState::Live), 2, 60, 15),
+            input_cost(record("memory:c", 1, None, RecordState::Live), 1, 30, 8),
+        ],
+    )
+    .expect("bounded candidate");
+    assert_eq!(candidate.retained_records.len(), 2);
+    assert_eq!(candidate.retained_records[0].record_id, id("memory:a"));
+    assert_eq!(candidate.retained_records[1].record_id, id("memory:c"));
+    assert_eq!(candidate.loss_report.retained_bytes, 90);
+    assert_eq!(candidate.loss_report.retained_tokens, 23);
+    assert_eq!(candidate.loss_report.omitted_live_records, 1);
+}
+
+#[test]
+fn protected_reference_must_fit_byte_and_token_budgets() {
+    let protected = record("memory:protected", 1, None, RecordState::Live);
+    let mut bounded = policy(2, vec![id("memory:protected")]);
+    bounded.maximum_retained_bytes = 32;
+    assert_eq!(
+        build_qualified_candidate(
+            snapshot_key(),
+            generation(2),
+            Some(digest("predecessor-checkpoint")),
+            &bounded,
+            vec![input_cost(protected.clone(), 1, 64, 16)],
+        ),
+        Err(QualifiedCompactionError::ProtectedReferencesExceedByteCapacity)
+    );
+    bounded.maximum_retained_bytes = 128;
+    bounded.maximum_retained_tokens = 8;
+    assert_eq!(
+        build_qualified_candidate(
+            snapshot_key(),
+            generation(2),
+            Some(digest("predecessor-checkpoint")),
+            &bounded,
+            vec![input_cost(protected, 1, 64, 16)],
+        ),
+        Err(QualifiedCompactionError::ProtectedReferencesExceedTokenCapacity)
+    );
+}
+
+#[test]
+fn tokenizer_mismatch_is_rejected() {
+    let mut mismatched = policy(2, Vec::new());
+    mismatched.tokenizer_digest = digest("other-tokenizer");
+    assert_eq!(
+        build_qualified_candidate(
+            snapshot_key(),
+            generation(2),
+            Some(digest("predecessor-checkpoint")),
+            &mismatched,
+            vec![input(record("memory:a", 1, None, RecordState::Live), 1)],
+        ),
+        Err(QualifiedCompactionError::TokenizerMismatch)
+    );
+}
+
+#[test]
+fn candidate_validation_cross_checks_payload_and_omission_digests() {
+    let mut candidate = build_qualified_candidate(
+        snapshot_key(),
+        generation(2),
+        Some(digest("predecessor-checkpoint")),
+        &policy(1, Vec::new()),
+        vec![
+            input(record("memory:a", 1, None, RecordState::Live), 2),
+            input(record("memory:b", 1, None, RecordState::Live), 1),
+        ],
+    )
+    .expect("candidate");
+    candidate.checkpoint.payload_digest = digest("tampered-payload");
+    candidate.checkpoint.checkpoint_digest = candidate.checkpoint.compute_checkpoint_digest();
+    candidate.candidate_digest = candidate.compute_candidate_digest();
+    assert_eq!(
+        candidate.validate(),
+        Err(QualifiedCompactionError::DigestMismatch("payload"))
+    );
+}
+
+#[test]
+fn proof_binds_independent_evaluator_and_attestation_material() {
     let candidate = build_qualified_candidate(
         snapshot_key(),
         generation(2),
@@ -188,18 +314,20 @@ fn proof_requires_all_loss_and_deletion_obligations() {
         vec![input(record("memory:a", 1, None, RecordState::Live), 1)],
     )
     .unwrap_or_else(|error| panic!("valid candidate: {error}"));
-    let qualification = CompactionQualificationV2 {
-        evaluator_id: id("evaluator:independent"),
-        retained_query_suite_digest: digest("queries"),
-        reconstruction_obligation_digest: digest("reconstruction"),
-        contradiction_holdout_digest: digest("contradictions"),
-        retained_queries_passed: true,
-        reconstruction_passed: true,
-        contradictions_preserved: true,
-        deletion_non_resurrection_passed: true,
-    };
+    let qualification = qualification();
     let proof = prove_compaction(&candidate, qualification.clone())
         .unwrap_or_else(|error| panic!("valid proof: {error}"));
+    assert_eq!(proof.evaluator_id, qualification.evaluator_id);
+    assert_eq!(
+        proof.evaluation_artifact_digest,
+        qualification.evaluation_artifact_digest
+    );
+    assert_eq!(
+        proof.evaluator_implementation_digest,
+        qualification.evaluator_implementation_digest
+    );
+    assert_eq!(proof.attestation_digest, qualification.attestation_digest);
+    assert_eq!(proof.signature_digest, qualification.signature_digest);
     assert_eq!(
         proof.checkpoint_digest,
         candidate.checkpoint.checkpoint_digest
