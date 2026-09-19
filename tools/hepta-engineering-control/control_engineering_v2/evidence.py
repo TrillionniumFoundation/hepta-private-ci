@@ -3,14 +3,17 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+import base64
 import hashlib
 import hmac
 import os
 from pathlib import Path
 import re
 import subprocess
+import tempfile
 import time
 from collections.abc import Mapping
+from typing import Protocol
 
 from .control_plane import (
     EngineeringError,
@@ -76,6 +79,113 @@ class EvidenceDecision:
     activation_authority: bool = False
     promotion_authority: bool = False
     release_authority: bool = False
+
+
+class SignatureVerifier(Protocol):
+    def verify(
+        self,
+        value: object,
+        issuer: str,
+        signing_identity: str,
+        signature: str,
+    ) -> bool: ...
+
+
+@dataclass(frozen=True)
+class TrustedPublicKey:
+    public_key_pem: bytes
+    public_key_sha256: str
+
+    def validate(self) -> None:
+        checked_sha256(self.public_key_sha256, "public_key_sha256")
+        if (
+            self.public_key_sha256 == "0" * 64
+            or not isinstance(self.public_key_pem, bytes)
+            or not self.public_key_pem
+            or hashlib.sha256(self.public_key_pem).hexdigest()
+            != self.public_key_sha256
+        ):
+            raise EngineeringError("public_key_digest_mismatch")
+
+
+class OpenSslTrustStore:
+    """Verification-only trust store backed by pinned public keys.
+
+    This adapter intentionally has no sign() method. Production composition can
+    therefore verify CI/reviewer/evidence signatures without placing the
+    corresponding private key inside the engineering-control process.
+    """
+
+    def __init__(
+        self,
+        keys: Mapping[tuple[str, str], TrustedPublicKey],
+        *,
+        openssl: str = "/usr/bin/openssl",
+    ):
+        self._keys = dict(keys)
+        self._openssl = openssl
+        for identity, key in self._keys.items():
+            if (
+                not isinstance(identity, tuple)
+                or len(identity) != 2
+                or not all(isinstance(item, str) and item for item in identity)
+            ):
+                raise EngineeringError("invalid_trust_identity")
+            key.validate()
+
+    @staticmethod
+    def payload(value: object) -> bytes:
+        return HmacTrustStore.payload(value)
+
+    def verify(
+        self,
+        value: object,
+        issuer: str,
+        signing_identity: str,
+        signature: str,
+    ) -> bool:
+        key = self._keys.get((issuer, signing_identity))
+        if key is None or not isinstance(signature, str):
+            return False
+        try:
+            signature_bytes = base64.b64decode(signature, validate=True)
+        except (ValueError, TypeError):
+            return False
+        if not signature_bytes or len(signature_bytes) > 16_384:
+            return False
+        try:
+            with tempfile.TemporaryDirectory(prefix="hepta-engineering-verify-") as temp:
+                root = Path(temp)
+                payload_path = root / "payload"
+                signature_path = root / "signature"
+                key_path = root / "key.pem"
+                payload_path.write_bytes(self.payload(value))
+                signature_path.write_bytes(signature_bytes)
+                key_path.write_bytes(key.public_key_pem)
+                for target in (payload_path, signature_path, key_path):
+                    target.chmod(0o600)
+                result = subprocess.run(
+                    [
+                        self._openssl,
+                        "dgst",
+                        "-sha256",
+                        "-verify",
+                        str(key_path),
+                        "-signature",
+                        str(signature_path),
+                        str(payload_path),
+                    ],
+                    stdin=subprocess.DEVNULL,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    cwd=str(root),
+                    env={"PATH": "/usr/bin:/bin", "LANG": "C", "LC_ALL": "C"},
+                    timeout=10,
+                    check=False,
+                )
+        except (OSError, subprocess.SubprocessError):
+            return False
+        return result.returncode == 0
 
 
 class HmacTrustStore:
@@ -196,7 +306,7 @@ def verify_integration_evidence(
     source_execution: ExecutionReceipt,
     merge_execution: ExecutionReceipt,
     independence: EvaluatorIndependenceReceipt,
-    trust_store: HmacTrustStore,
+    trust_store: SignatureVerifier,
     *,
     expected_document_set_digest: str,
     now_ns: int | None = None,
