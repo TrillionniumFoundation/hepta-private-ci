@@ -9,6 +9,7 @@
 mod admission_profile_json;
 mod compiler;
 mod error;
+mod error_policy;
 mod feasibility;
 mod feasibility_model;
 mod model;
