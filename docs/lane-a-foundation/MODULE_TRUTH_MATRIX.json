@@ -386,31 +386,33 @@
     },
     {
       "module": "secrets.heptabao",
-      "profile": "bounded_external_secret_reader",
+      "profile": "external_secret_reader_and_dynamic_lease_source",
       "formalGuide": "docs/modules/secrets.heptabao/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
       "currentSpecificationRole": "current_executable_contract",
-      "implementationDetail": "docs/lane-a-foundation/secrets.heptabao/KV_V2_READ_V1.md",
+      "implementationDetail": "docs/modules/secrets.heptabao/TECHNICAL.md",
       "states": {
         "source": "implemented",
-        "implementation": "bounded_kv_v2_reader",
-        "durability": "external_authority_plus_local_final_use_state",
-        "qualification": "partial_bounded_evidence",
-        "activation": "host_composition_required",
+        "implementation": "kv_v2_and_dynamic_lease_lifecycle_source",
+        "durability": "external_authority_plus_local_final_use_and_lease_state",
+        "qualification": "source_tests_pending_exact_head_and_target_host",
+        "activation": "named_host_composition_required",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
         "pinned-CA HTTPS read of one exact KV-v2 string field",
-        "final-use grant binding and single-use dispatch",
-        "metadata-only receipt without raw secret value"
+        "provider-native dynamic SecretLease issue/renew/synchronous-revoke source APIs",
+        "durable SQLite lease operation state with explicit unknown/reconciliation semantics",
+        "final-use grant binding with durable single-use replay journal",
+        "secret delivery only through a synchronous host-selected callback"
       ],
       "targetOnlyCapabilities": [
-        "secret mutation",
-        "generic lease renewal API",
-        "generic revoke API",
-        "durable operation and evidence composition",
-        "automatic production enrollment"
+        "authenticated production host consumer registry/composition",
+        "provider operation-key outcome lookup for lost dynamic issuance acknowledgement",
+        "strongly consistent active-active replay/revocation and lease-registry backend",
+        "external anti-rollback protection for restored authority/registry state",
+        "exact-head target-host qualification and independent acceptance"
       ],
       "sourceAnchors": [
         {
@@ -423,10 +425,27 @@
           ]
         },
         {
+          "path": "codex-rs/hepta-bao-adapter/src/lease_client.rs",
+          "mustContain": [
+            "request_secret_lease",
+            "renew_secret_lease",
+            "revoke_secret_lease",
+            "reconcile_issue_observation"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/lease_registry.rs",
+          "mustContain": [
+            "pub struct LeaseRegistry",
+            "LeaseOperationState",
+            "mark_unknown"
+          ]
+        },
+        {
           "path": "codex-rs/hepta-bao-adapter/README.md",
           "mustContain": [
-            "Authorized HeptaBao HTTPS consumer",
-            "Only read operations exist here"
+            "request_secret_lease",
+            "The former 16,384 nonce-claim ceiling is removed"
           ]
         }
       ]
