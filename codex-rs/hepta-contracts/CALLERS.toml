@@ -70,6 +70,17 @@ product_callers = [
 ]
 
 [[surface]]
+crate = "codex-hepta-intelligence"
+role = "authority_free_intelligence_composition_facade"
+public_items = [
+  "run_composition_v3_with_control",
+  "NativeV3OwnerPorts",
+  "IntelligenceHostEnvelopeV1",
+  "LegalActionCandidateSetV1",
+]
+product_callers = ["codex-rs/hepta-agentd/src/lane_b_runtime.rs"]
+
+[[surface]]
 crate = "codex-hepta-paths"
 role = "typed_product_state_paths"
 public_items = ["HeptaStateRoot", "HeptaStateLayout"]

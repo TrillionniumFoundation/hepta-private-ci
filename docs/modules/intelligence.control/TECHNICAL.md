@@ -48,6 +48,8 @@ None.
 
 The registered primary source is [codex-rs/hepta-intelligence/src/vertical.rs](../../../codex-rs/hepta-intelligence/src/vertical.rs); observed identifiers include `ReadOnlyVerticalRequest`, `ReadOnlyVerticalReceipt`, `ReadOnlyVerticalError`, `run_read_only_vertical`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/intelligence.control.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/intelligence.control.md) for the implemented subset and remaining product work.
 
+The V3 convergence candidate adds the canonical typed composition graph in [codex-rs/hepta-intelligence/src/pipeline_v3.rs](../../../codex-rs/hepta-intelligence/src/pipeline_v3.rs), native `LegalActionCandidateSetV1` and `IntelligenceHostEnvelopeV1` contracts in [contracts_v1.rs](../../../codex-rs/hepta-intelligence/src/contracts_v1.rs), real owner adapters in [native_ports_v3.rs](../../../codex-rs/hepta-intelligence/src/native_ports_v3.rs), the product-side typed envelope consumer in [codex-rs/hepta-agentd/src/intelligence_host.rs](../../../codex-rs/hepta-agentd/src/intelligence_host.rs), and the named Agentd runtime caller `AgentRunCoordinator::run_native_intelligence_v3` in [lane_b_runtime.rs](../../../codex-rs/hepta-agentd/src/lane_b_runtime.rs). V1/V2 and evaluated-shadow entrypoints remain compatibility/qualification surfaces; new product composition should target V3. This source mapping still does not establish product execution or activation. The same candidate adds [outcome_credit.rs](../../../codex-rs/hepta-intelligence/src/outcome_credit.rs), which delegates terminal Outcome and Credit appends to the existing sealed learning ledger and preserves partial-commit evidence for reconciliation. The V3 host envelope now binds request/objective/body/artifact/authority/deadline identity; Agentd performs the real run-state attach inside the graph before `LearningRecorded`, and `AgentRunCoordinator::observe_intelligence_terminal_and_record` connects an observed terminal runtime fact to the durable Outcome/Credit closure without claiming cross-owner atomicity.
+
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:
@@ -113,6 +115,7 @@ Consumed contracts:
 
 Critical protocol schemas:
 
+- `IntelligenceHostEnvelopeV1`
 - `LearningArtifactManifestV1`
 - `LegalActionCandidateSetV1`
 
@@ -173,6 +176,7 @@ Composition library over injected owner ports. The read-only vertical and evalua
 
 Current operating and state-format references:
 
+- [codex-rs/hepta-intelligence/V3_COMPOSITION.md](../../../codex-rs/hepta-intelligence/V3_COMPOSITION.md).
 - [codex-rs/hepta-intelligence/EVALUATED_SHADOW.md](../../../codex-rs/hepta-intelligence/EVALUATED_SHADOW.md).
 - [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
 
@@ -182,6 +186,10 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-intelligence/src/pipeline_v3_tests.rs](../../../codex-rs/hepta-intelligence/src/pipeline_v3_tests.rs); named cases cover required NDU/evaluation predecessor stages, seven-port baseline, nine-port optional routing, cancellation and abstention.
+- [codex-rs/hepta-agentd/src/intelligence_host.rs](../../../codex-rs/hepta-agentd/src/intelligence_host.rs); unit coverage rejects a tampered host envelope at the product-side consumer boundary.
+- [codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs); named runtime coverage attaches the validated intelligence envelope to an admitted Agentd run and continues through the existing dispatch state machine.
+- [codex-rs/hepta-intelligence/src/outcome_credit.rs](../../../codex-rs/hepta-intelligence/src/outcome_credit.rs); real-file tests append terminal Outcome and Credit, recover with an external anchor, and verify exact idempotent replay.
 - [codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs](../../../codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs); named case: `durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes`.
 - [codex-rs/hepta-intelligence/src/lib_tests.rs](../../../codex-rs/hepta-intelligence/src/lib_tests.rs); named case: `highest_eligible_candidate_is_selected_without_effect_authority`.
 
@@ -342,6 +350,7 @@ This generated projection binds `intelligence.control` to the current canonical 
 - `SupportAuditReceiptV1`
 
 **Typed protocols:**
+- `IntelligenceHostEnvelopeV1`
 - `LearningArtifactManifestV1`
 - `LegalActionCandidateSetV1`
 - `NduCoefficientManifestV1`

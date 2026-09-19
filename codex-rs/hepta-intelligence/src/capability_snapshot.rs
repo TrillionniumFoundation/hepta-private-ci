@@ -58,6 +58,7 @@ pub struct CapabilitySnapshotRequestV2 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CapabilitySnapshotV2 {
     objective_digest: Digest32,
+    authority_epoch: u64,
     snapshot_digest: Digest32,
     absent_optional: Vec<StableId>,
     bindings: BTreeMap<StableId, CapabilityBindingV2>,
@@ -172,6 +173,7 @@ impl CapabilitySnapshotV2 {
         }
         Ok(Self {
             objective_digest: request.objective_digest,
+            authority_epoch: request.authority_epoch,
             snapshot_digest: Digest32::of_bytes(&bytes),
             absent_optional,
             bindings: request
@@ -192,6 +194,14 @@ impl CapabilitySnapshotV2 {
     #[must_use]
     pub const fn digest(&self) -> Digest32 {
         self.snapshot_digest
+    }
+
+    pub(super) const fn objective_digest(&self) -> Digest32 {
+        self.objective_digest
+    }
+
+    pub(super) const fn authority_epoch(&self) -> u64 {
+        self.authority_epoch
     }
 
     #[must_use]

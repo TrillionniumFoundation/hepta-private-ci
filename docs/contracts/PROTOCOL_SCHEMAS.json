@@ -246,6 +246,133 @@
       ]
     },
     {
+      "id": "IntelligenceHostEnvelopeV1",
+      "contractId": "IntelligenceHostEnvelopeV1",
+      "canonicalEncoding": "canonical_json_utf8",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_semantic_fields_except_detached_signature",
+      "fields": [
+        {
+          "name": "runId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "producerId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "consumerId",
+          "type": "id128",
+          "required": true,
+          "maxBytes": 128
+        },
+        {
+          "name": "requestDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "snapshotDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "objectiveDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "authorityEpoch",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "bodyDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "artifactSetDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "candidateSetDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "utilityDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "evaluationDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "neuralDigest",
+          "type": "sha256",
+          "required": false,
+          "maxBytes": 64
+        },
+        {
+          "name": "promptDigest",
+          "type": "sha256",
+          "required": false,
+          "maxBytes": 64
+        },
+        {
+          "name": "intuitionDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "contextDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "preHandoffDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "deadlineUnixMicros",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "totalBudgetMicros",
+          "type": "u64",
+          "required": true
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "canonical_field_order",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected"
+      ]
+    },
+    {
       "id": "IntuitionDecisionReceiptV1",
       "contractId": "IntuitionDecisionReceiptV1",
       "canonicalEncoding": "canonical_json_utf8",
