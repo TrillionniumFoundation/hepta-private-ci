@@ -39,7 +39,6 @@ impl ProductionAppendPermit {
 pub trait DurableLearningJournal: sealed::Journal {
     /// Compatibility/qualification path. Absent from default/product builds.
     #[cfg(feature = "qualification-legacy-write")]
-    #[cfg(feature = "qualification-legacy-write")]
     fn append_decision(
         &mut self,
         expected_predecessor: Digest32,
