@@ -56,6 +56,46 @@ watermark, correction cut, revocation cut, inclusion policy and canonical source
 record digest set. It carries pending and censored counts and has `DENY_ALL`
 authority.
 
+## Convergence candidate mappings
+
+The repository-controlled convergence candidate adds the following native
+surfaces without changing the production/activation claim boundary:
+
+| Design obligation | Native symbol | Source | Candidate state |
+|---|---|---|---|
+| single authenticated product writer | `LedgerWriter<J>` | `src/writer.rs` | source candidate |
+| independently retained acknowledgement frontier | `IndependentLedgerWitness` | `src/witness.rs` | source candidate |
+| durable authenticated decision | `LedgerEvent::DecisionV2` | `src/model.rs`, `src/ledger.rs` | source candidate |
+| durable corrected outcome graph | `LedgerEvent::OutcomeV2` | `src/model.rs`, `src/ledger.rs` | source candidate |
+| atomic conserved credit publication | `LedgerEvent::CreditBatchV2` | `src/model.rs`, `src/ledger.rs` | source candidate |
+| explicit source/dataset/artifact unlearning | `LedgerEvent::UnlearningV1` | `src/model.rs`, `src/ledger.rs` | source candidate |
+| ledger-derived dataset freeze | `LedgerWriter::prepare_dataset_freeze`, `freeze_dataset_from_ledger` | `src/writer.rs` | source candidate |
+| pinned root signer distribution | `verify_learning_trust_manifest` | `src/trust_root.rs` | source candidate; root remains external |
+| canonical registry protocol adapters | `LearningDecisionV1`, `OutcomeReceiptV1`, `CreditAssignmentReceiptV1`, `LearningEpisodeV1`, `DatasetSnapshotV1` | `src/protocol_adapters.rs` | source candidate |
+| rebuildable verified long-history index | `LedgerIndexCheckpointV1` | `src/checkpoint.rs` | source candidate |
+
+Legacy V1 event tags remain readable and retain tags 0 through 3. New event
+kinds use additive tags 4 through 7. Once an episode is admitted by
+`DecisionV2`, weak V1 outcome and credit events are rejected for that episode.
+This prevents an authenticated decision from falling back to the weaker
+admission path.
+
+`CreditBatchV2` is one durable event; conservation is revalidated against the
+durable terminal outcome inside the ledger core. `OutcomeV2` corrections must
+extend the current same-episode outcome head. Dataset freeze source rows and
+correction/revocation cuts are derived from a fully witnessed ledger snapshot,
+not accepted from a product caller.
+
+`UnlearningV1` provides durable logical non-resurrection lineage for source
+records plus invalidation identities for downstream datasets and artifacts. It
+does not claim physical erasure from remote stores, backups or trained model
+parameters.
+
+The complete failure/recovery and external-gate boundary is documented in
+[`CONVERGENCE.md`](CONVERGENCE.md). These mappings are source implementation
+candidates; they do not change `productionImplementation`, activation,
+independent acceptance, promotion or release.
+
 ## Host and caller obligations
 
 A product integration receipt must name all of the following:
