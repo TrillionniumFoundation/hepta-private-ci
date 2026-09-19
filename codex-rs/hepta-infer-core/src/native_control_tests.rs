@@ -26,6 +26,11 @@ fn dispatch() -> NativeDispatch {
         thread_id: "thread-1".to_string(),
         model_provider: "provider".to_string(),
         context_digest: "b".repeat(64),
+        codex_session_id: None,
+        codex_deadline_ms: None,
+        codex_payload_digest: None,
+        codex_authority_witness_sha256: None,
+        codex_request_digest: None,
     }
 }
 
@@ -35,7 +40,12 @@ fn output(status: NativeRunStatus, tokens: Option<u64>) -> NativeRunOutput {
         turn_id: "turn-1".to_string(),
         model: "actual-model".to_string(),
         model_provider: "provider".to_string(),
-        terminal_observed: status != NativeRunStatus::Indeterminate,
+        codex_request_digest: None,
+        codex_receipt_digest: None,
+        terminal_observed: matches!(
+            status,
+            NativeRunStatus::Completed | NativeRunStatus::Failed | NativeRunStatus::Interrupted
+        ),
         status,
         output: "observed text".to_string(),
         observed_output_tokens: tokens,
@@ -193,6 +203,133 @@ fn pre_dispatch_stop_releases_without_claiming_provider_terminal() {
     drop(control);
     let control = DurableInferenceControl::open(&path, 8).unwrap();
     assert_eq!(control.native_record("r1"), Some(&stopped));
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn one_shot_pre_effect_abort_releases_only_the_live_write_ahead() {
+    let path = path("pre-effect-abort");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
+    let stopped = control
+        .abort_native_before_effect(token, "deadline elapsed before send".to_string())
+        .unwrap();
+    assert_eq!(stopped.state, NativeReservationState::Released);
+    assert_eq!(
+        stopped.pre_dispatch_stop.as_deref(),
+        Some("deadline elapsed before send")
+    );
+    assert_eq!(stopped.observation, None);
+    control.reserve_native(request("r2"), 1).unwrap();
+
+    drop(control);
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(reopened.native_record("r1"), Some(&stopped));
+    assert_eq!(
+        reopened.stop_native_before_dispatch("r1", "already stopped".to_string()),
+        Err(Error::InvalidTransition)
+    );
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn lost_pre_effect_abort_token_becomes_reconcile_only_on_reopen() {
+    let path = path("pre-effect-recovery");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
+    // Process death drops the only proof that the write-ahead record was
+    // definitely not followed by the external effect.
+    drop(token);
+    drop(control);
+
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(
+        reopened.native_record("r1").unwrap().state,
+        NativeReservationState::Dispatching
+    );
+    assert_eq!(
+        reopened.stop_native_before_dispatch("r1", "recovered".to_string()),
+        Err(Error::InvalidTransition)
+    );
+    assert_eq!(
+        reopened.reserve_native(request("r2"), 1),
+        Err(Error::CapacityExceeded)
+    );
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn request_rejection_releases_but_unknown_dispatch_outcomes_hold_capacity() {
+    let path = path("request-outcomes");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+
+    control.reserve_native(request("r1"), 1).unwrap();
+    control.dispatch_native("r1", dispatch()).unwrap();
+    let mut overloaded = output(NativeRunStatus::Overloaded, None);
+    overloaded.turn_id.clear();
+    overloaded.output.clear();
+    overloaded.terminal_observed = false;
+    overloaded.stop_reason = Some("Server overloaded; retry later.".to_string());
+    let rejected = control.settle_native("r1", overloaded.clone()).unwrap();
+    assert_eq!(rejected.state, NativeReservationState::Released);
+    assert_eq!(rejected.observation, Some(overloaded));
+
+    control.reserve_native(request("r2"), 1).unwrap();
+    control.dispatch_native("r2", dispatch()).unwrap();
+    let mut timed_out = output(NativeRunStatus::TimedOut, None);
+    timed_out.turn_id.clear();
+    timed_out.output.clear();
+    timed_out.terminal_observed = false;
+    timed_out.stop_reason = Some("turn/start acknowledgement timed out".to_string());
+    let unknown = control.settle_native("r2", timed_out).unwrap();
+    assert_eq!(unknown.state, NativeReservationState::Indeterminate);
+    assert_eq!(
+        control.reserve_native(request("r3"), 1),
+        Err(Error::CapacityExceeded)
+    );
+
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn reconciled_turn_and_codex_request_digest_must_match_durable_dispatch() {
+    let path = path("codex-binding");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut exact_dispatch = dispatch();
+    exact_dispatch.codex_session_id = Some("session-1".to_string());
+    exact_dispatch.codex_deadline_ms = Some(2_000);
+    exact_dispatch.codex_request_digest = Some("c".repeat(64));
+    control.reserve_native(request("r1"), 1).unwrap();
+    control
+        .dispatch_native("r1", exact_dispatch.clone())
+        .unwrap();
+
+    let mut reconciled = output(NativeRunStatus::Completed, Some(3));
+    reconciled.turn_id = "turn-recovered".to_string();
+    reconciled.codex_request_digest = Some("c".repeat(64));
+    reconciled.codex_receipt_digest = Some("d".repeat(64));
+    let settled = control.settle_native("r1", reconciled.clone()).unwrap();
+    assert_eq!(settled.turn_id.as_deref(), Some("turn-recovered"));
+    assert_eq!(settled.state, NativeReservationState::Released);
+
+    let mut drifted = reconciled;
+    drifted.codex_request_digest = Some("e".repeat(64));
+    drifted.codex_receipt_digest = Some("f".repeat(64));
+    assert_eq!(
+        control.settle_native("r1", drifted),
+        Err(Error::AssignmentMismatch)
+    );
+
     drop(control);
     std::fs::remove_file(path).unwrap();
 }

@@ -57,6 +57,44 @@ fn signed_claim_is_single_use_and_delivers_under_same_owner() {
 }
 
 #[test]
+fn async_effect_entry_rechecks_revocation_and_consumes_the_token() {
+    let (authority, signed, _directory) = fixture().unwrap();
+    let binding = signed.grant.binding.clone();
+    let token = authority.claim(&signed, &binding).unwrap();
+    let entered = authority.enter_verified_use(token, &binding).unwrap();
+    assert!(entered.matches(&binding));
+
+    // Once entry has happened, a later revocation fences future grants/entries
+    // but cannot retroactively erase the already-entered external effect.
+    authority
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
+        })
+        .unwrap();
+    assert!(entered.matches(&binding));
+}
+
+#[test]
+fn async_effect_entry_is_denied_if_revoked_after_claim_before_entry() {
+    let (authority, signed, _directory) = fixture().unwrap();
+    let binding = signed.grant.binding.clone();
+    let token = authority.claim(&signed, &binding).unwrap();
+    authority
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
+        })
+        .unwrap();
+    assert_eq!(
+        authority.enter_verified_use(token, &binding).unwrap_err(),
+        FinalUseError::Revoked
+    );
+}
+
+#[test]
 fn changing_signed_data_or_substituting_a_key_does_not_authorize() {
     let (authority, mut signed, _directory) = fixture().unwrap();
     signed.grant.binding.request_sha256 = [6; 32];
@@ -83,7 +121,7 @@ fn revocation_after_claim_prevents_delivery_and_cannot_be_rolled_back() {
         .update_revocations(FinalUseRevocations {
             authority_epoch: 9,
             revision: 2,
-            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
         })
         .unwrap();
     let mut called = false;
@@ -175,7 +213,7 @@ fn revocation_survives_restart_and_missing_state_is_not_reset() {
         .update_revocations(FinalUseRevocations {
             authority_epoch: 9,
             revision: 2,
-            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
         })
         .unwrap();
     drop(authority);
@@ -261,7 +299,7 @@ fn startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations() 
     let head = FinalUseRevocations {
         authority_epoch: 9,
         revision: 2,
-        revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+        revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
     };
     let reopened = FinalUseAuthority::open_state_dir(
         directory.path(),

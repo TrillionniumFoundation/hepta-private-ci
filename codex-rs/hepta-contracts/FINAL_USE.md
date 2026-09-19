@@ -118,32 +118,43 @@ turn missing/corrupt state into an empty registry.
 3. It samples time again after disk I/O, then returns a private, non-cloneable,
    non-serializable `VerifiedUseToken`. The claim is the dispatch admission
    point; rejection or expiry after persistence does not refund the nonce.
-4. The adapter performs its bounded asynchronous HTTPS read. It does not hold
-   the owner mutex over network awaits, so trusted revocations can progress.
-5. `with_verified_use` checks that token and authority share the same owner,
-   validates the binding/time/epoch/revocation again, and invokes the synchronous
-   callback while holding the revocation mutex. A completed revocation cannot
-   slip between this final check and callback entry.
+4. A synchronous consumer may call `with_verified_use`; it checks that the
+   token and authority share the same owner, validates binding/time/epoch/
+   revocation again, and enters the bounded callback while holding the
+   revocation mutex.
+5. An asynchronous effect adapter calls `VerifiedUseToken::enter(expected)`
+   immediately before its first effectful await. The same live checks run under
+   the owner mutex and consume the token, returning a private
+   `EnteredUseToken`. The adapter then releases the mutex before network I/O;
+   the entered token is a one-entry capability, not permission to retry.
+6. Trusted host ports may read `revocation_head()` to compare an authenticated
+   external revocation feed. New heads still pass through
+   `update_revocations`; the accessor grants no signing or effect authority.
 
-The callback must be bounded and must not reenter the authority. Revocation
-waits for an already entered synchronous callback to return; it cannot undo a
-completed effect. A dispatch failure, cancellation or timeout retains the
-claim. If a process dies after claiming, the new process rejects that nonce.
-If it dies after consumer entry but before recording a receipt, the host must
-treat the effect as uncertain and reconcile it before issuing another grant.
+The synchronous callback must be bounded and must not reenter the authority.
+Revocation waits for an already entered synchronous callback to return. For an
+asynchronous entered effect, a later revocation cannot retroactively prove that
+the effect did not start. A dispatch failure, cancellation or timeout retains
+the nonce claim. If a process dies after claiming, the new process rejects that
+nonce. If it dies after effect entry but before recording a receipt, the host
+must treat the effect as uncertain and reconcile it before issuing another
+grant.
 
-`VerifiedUseToken` has no public constructor and cannot be cloned. Keeping an
-outstanding token also keeps its owner and process lock alive. Mutex poisoning
-or persistence failure refuses further operations.
+`VerifiedUseToken` and `EnteredUseToken` have no public constructors and
+cannot be cloned. Keeping an outstanding verified token also keeps its owner
+and process lock alive. Mutex poisoning or persistence failure refuses further
+operations.
 
 ## APIs and failure semantics
 
 | API / result | Host action |
 | --- | --- |
 | `open_state_dir` | Pin trust, validate private storage, acquire the process lock and load/initialize state |
+| `revocation_head` | Read the currently trusted durable head for comparison; grants no authority |
 | `update_revocations` | Apply only a newer trusted revision; same-epoch revocations cannot be removed |
 | `claim` | Burn one valid nonce before effect dispatch; never reuse the grant on retry |
 | `with_verified_use` | Consume that token at the final synchronous secret-use boundary |
+| `VerifiedUseToken::enter` | Recheck and consume the token at an asynchronous effect-entry boundary; the returned `EnteredUseToken` is single-entry and not retry authority |
 | `InvalidGrant`, `InvalidSignature`, `BindingMismatch` | Reject the proposal; do not dispatch |
 | `EpochMismatch`, `Revoked`, `NotYetValid`, `Expired` | Reject stale or currently unauthorized use |
 | `AlreadyClaimed`, `CapacityExceeded` | Require owner reconciliation/new authorization or an epoch transition |

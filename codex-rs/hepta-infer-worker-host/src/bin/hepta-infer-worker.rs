@@ -1,8 +1,10 @@
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::Duration;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_worker_host::final_use_authorizer::UnixFinalUseAuthorizer;
 use codex_hepta_infer_worker_host::native_app_server::AppServerModelDriver;
 use codex_hepta_infer_worker_host::native_app_server::NativeAdmission;
 use codex_hepta_infer_worker_host::native_app_server::NativeWorkerConfig;
@@ -19,13 +21,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut request_id = None;
     let mut maximum_in_flight = None;
     let mut context_query = None;
+    let mut final_use_authority_config = None;
     let mut native_profile_selected = false;
     let mut timeout_ms = 120_000_u64;
     let mut args = std::env::args().skip(1);
     while let Some(flag) = args.next() {
         if flag == "--help" {
             println!(
-                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; executes through the owning Agent's configured model provider."
+                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; an independent final-use authority must sign the exact turn/start binding before model dispatch."
             );
             return Ok(());
         }
@@ -41,6 +44,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
             "--request-id" => request_id = Some(value),
             "--maximum-in-flight" => maximum_in_flight = Some(value.parse()?),
             "--context-query" => context_query = Some(value),
+            "--final-use-authority-config" => {
+                final_use_authority_config = Some(PathBuf::from(value))
+            }
             "--timeout-ms" => timeout_ms = value.parse()?,
             _ => return Err(format!("unknown argument: {flag}").into()),
         }
@@ -48,13 +54,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     if !native_profile_selected {
         return Err("--profile native-app-server must be selected explicitly".into());
     }
+    let final_use_authorizer = UnixFinalUseAuthorizer::open(
+        &final_use_authority_config.ok_or("--final-use-authority-config is required")?,
+    )?;
     let driver = AppServerModelDriver::new(NativeWorkerConfig {
         agentd_socket: socket.ok_or("--agentd-socket is required")?,
         agent_id: agent_id.ok_or("--agent-id is required")?,
         generation: generation.ok_or("--generation is required")?,
         model: model.ok_or("--model is required")?,
         timeout: Duration::from_millis(timeout_ms),
-    })?;
+    })?
+    .with_turn_start_authorizer(Arc::new(final_use_authorizer));
     let journal = journal.ok_or("--journal is required")?;
     if !journal.is_absolute() {
         return Err("--journal must be absolute".into());
