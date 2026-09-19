@@ -20,6 +20,7 @@ pub struct SpawnSpec {
     pub run_root: PathBuf,
     pub control_socket: PathBuf,
     pub logs_root: PathBuf,
+    pub fleet_allocation_id: Option<String>,
     pub command: AgentCommand,
 }
 
