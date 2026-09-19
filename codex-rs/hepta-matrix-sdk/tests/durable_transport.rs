@@ -246,6 +246,7 @@ struct TestAuthorizer {
     signer: SigningKey,
     _directory: TempDir,
     sequence: AtomicU64,
+    revoke_before_return: bool,
 }
 
 #[cfg(unix)]
@@ -271,7 +272,14 @@ impl TestAuthorizer {
             signer,
             _directory: directory,
             sequence: AtomicU64::new(0),
+            revoke_before_return: false,
         })
+    }
+
+    fn revoking() -> TestResult<Self> {
+        let mut value = Self::new()?;
+        value.revoke_before_return = true;
+        Ok(value)
     }
 }
 
@@ -305,7 +313,19 @@ impl MatrixOutboundAuthorizer for TestAuthorizer {
                 .signing_bytes()
                 .map_err(|_| MatrixAuthorityError::InvalidBinding)?;
             let signature = self.signer.sign(&signing_bytes).to_bytes().to_vec();
-            Ok(SignedFinalUseGrant { grant, signature })
+            let signed = SignedFinalUseGrant { grant, signature };
+            if self.revoke_before_return {
+                let mut revoked = BTreeSet::new();
+                revoked.insert(signed.grant.grant_id.clone());
+                self.authority
+                    .update_revocations(FinalUseRevocations {
+                        authority_epoch: 17,
+                        revision: 2,
+                        revoked_grant_ids: revoked,
+                    })
+                    .map_err(|_| MatrixAuthorityError::Unavailable)?;
+            }
+            Ok(signed)
         });
         Box::pin(async move { signed })
     }
@@ -709,6 +729,59 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
     assert_eq!(committed.state, OutboxState::Sent);
     assert_eq!(committed.attempts, 2);
     assert_eq!(committed.sent_event_id, Some(accepted_event_id));
+    store.close().await;
+
+    let reopened = MatrixDurableStore::open(&layout, MatrixDurableConfig::default()).await?;
+    let reopened_first = reopened
+        .dispatch_authority_claim(&original.stable_txn_id, 1)
+        .await?
+        .ok_or("first authority claim did not survive reopen")?;
+    let reopened_second = reopened
+        .dispatch_authority_claim(&original.stable_txn_id, 2)
+        .await?
+        .ok_or("second authority claim did not survive reopen")?;
+    assert_eq!(reopened_first.grant_id, first_claim.grant_id);
+    assert_eq!(reopened_second.grant_id, second_claim.grant_id);
+    reopened.close().await;
+    Ok(())
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn revoked_grant_never_enters_the_physical_matrix_adapter() -> TestResult {
+    let authorizer = TestAuthorizer::revoking()?;
+    let temp = TempDir::new()?;
+    let agent_id = agent(FIRST_AGENT)?;
+    let layout = layout(&temp, &agent_id)?;
+    let store = prepared_store(&layout).await?;
+    let original = enqueue_final(&store, &agent_id, 10).await?;
+    let transport = FakeTransport::new([Ok(event("$must-not-send")?)]);
+    let config = OutboxDispatchConfig {
+        lease_ms: 20,
+        retry_delay_ms: 10,
+        max_retry_delay_ms: 40,
+        max_attempts: 3,
+        claim_limit: 1,
+        idle_poll: Duration::from_millis(10),
+    };
+
+    let result = dispatch_outbox_once(
+        &store,
+        &transport,
+        &authorizer,
+        &config,
+        &CancellationToken::new(),
+        10,
+    )
+    .await;
+    assert!(matches!(result, Err(codex_hepta_matrix_sdk::OutboxDispatchError::Authority)));
+    assert!(transport.txn_ids()?.is_empty());
+    assert!(
+        store
+            .dispatch_authority_claim(&original.stable_txn_id, 1)
+            .await?
+            .is_none()
+    );
     store.close().await;
     Ok(())
 }
