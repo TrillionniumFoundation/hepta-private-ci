@@ -194,6 +194,18 @@ impl SparseCheckpoint {
         fixed + vector_headers + vector_values
     }
 
+    pub(crate) fn matches_segment_context(
+        &self,
+        config_digest: Digest32,
+        scope_digest: Digest32,
+        objective_digest: Digest32,
+    ) -> bool {
+        self.calculate_digest() == self.digest
+            && self.config == config_digest
+            && self.scope == scope_digest
+            && self.objective == objective_digest
+    }
+
     /// Diagonal local-head eligibility sufficient statistics, not model weights.
     pub fn eligibility_q24(&self) -> &[i64] {
         &self.eligibility
