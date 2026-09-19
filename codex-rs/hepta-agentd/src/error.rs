@@ -4,6 +4,7 @@ use std::path::Path;
 use std::path::PathBuf;
 
 use codex_hepta_automation::AutomationError;
+use codex_hepta_fleet::FleetAllocationStoreError;
 use codex_hepta_fleet::FleetRegistryError;
 use codex_hepta_memory::ProductionWriterError;
 
@@ -19,6 +20,8 @@ pub enum AgentdError {
     Protocol(String),
     #[error(transparent)]
     Fleet(#[from] FleetRegistryError),
+    #[error(transparent)]
+    FleetAllocation(#[from] FleetAllocationStoreError),
     #[error(transparent)]
     Automation(#[from] AutomationError),
     #[error(transparent)]
