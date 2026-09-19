@@ -21,6 +21,7 @@ pub enum LedgerError {
     OutcomeRevoked(String),
     OutcomeEpisodeMismatch,
     OutcomeNotTerminal,
+    OutcomeNotCurrent(String),
     PolicySelfLabelsOutcome,
     InvalidAuthenticatedPrincipal,
     OutcomeStateMismatch,
@@ -74,7 +75,7 @@ impl LedgerError {
             | Self::EpisodeRevoked(_)
             | Self::OutcomeNotFound(_)
             | Self::OutcomeRevoked(_) => "LRN-E004",
-            Self::OutcomeEpisodeMismatch | Self::OutcomeNotTerminal => "LRN-E005",
+            Self::OutcomeEpisodeMismatch | Self::OutcomeNotTerminal | Self::OutcomeNotCurrent(_) => "LRN-E005",
             Self::PolicySelfLabelsOutcome
             | Self::InvalidAuthenticatedPrincipal
             | Self::OutcomeStateMismatch
@@ -144,6 +145,9 @@ impl fmt::Display for LedgerError {
             }
             Self::OutcomeNotTerminal => {
                 formatter.write_str("credit assignment requires a terminal outcome")
+            }
+            Self::OutcomeNotCurrent(id) => {
+                write!(formatter, "credit assignment requires the current outcome head: {id}")
             }
             Self::PolicySelfLabelsOutcome => {
                 formatter.write_str("evaluated policy cannot label its own outcome")
