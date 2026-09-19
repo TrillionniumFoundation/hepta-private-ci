@@ -37,7 +37,10 @@ fn record(run_id: &str, objective: &[u8]) -> RunStartRecordV1 {
             key_epoch: 3,
             message_id: id(&format!("message.{run_id}")),
             sequence: 5,
+            expires_at_ms: 9_999_999,
+            scope_digest: digest("objective-scope"),
             signed_body_digest: digest("signed-body"),
+            signature: [7; 64],
         },
         admission: RunStartAdmissionBindingV1 {
             profile_digest: digest("profile"),
