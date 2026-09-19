@@ -48,7 +48,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-automation/src/taskflow_execution_boundary.rs](../../../codex-rs/hepta-automation/src/taskflow_execution_boundary.rs); observed identifiers include `LocalTaskFlowBoundaryRequestV1`, `TaskFlowBoundaryScope`, `TaskFlowBoundaryAuthority`, `TaskFlowExecutionUnavailableV1`, `assess_local_taskflow_boundary`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/automation.taskflow.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/automation.taskflow.md) for the implemented subset and remaining product work.
+The durable implementation spans the existing scheduler/store plus the causal-chain surfaces: [store.rs](../../../codex-rs/hepta-automation/src/store.rs) owns scheduler leases and atomic occurrence materialization, [causal_chain.rs](../../../codex-rs/hepta-automation/src/causal_chain.rs) owns semantic occurrence/run binding and terminal projection, [taskflow_step.rs](../../../codex-rs/hepta-automation/src/taskflow_step.rs) owns the append-only step intent/receipt outbox, [authority.rs](../../../codex-rs/hepta-automation/src/authority.rs) defines the fail-closed final-use verification/provider seam, and [effect_runtime.rs](../../../codex-rs/hepta-automation/src/effect_runtime.rs) sequences the durable effect boundary. The older [taskflow_execution_boundary.rs](../../../codex-rs/hepta-automation/src/taskflow_execution_boundary.rs) remains an authority-free assessment surface and must not be confused with the durable execution path. These are source bindings, not proof that a concrete downstream provider, product caller, activation, or release exists.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -160,7 +160,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use Agentd AutomationScheduler and AutomationStore as the existing durable owners. The effect_executor component is in-memory; route its effects through the durable step outbox and final-use provider before claiming a live end-to-end TaskFlow. Unknown steps block dependent mutation and are not safely rerunnable by default.
+Use Agentd `AutomationScheduler` and `AutomationStore` as the existing durable schedule owners; do not introduce a second scheduler or TaskFlow engine. Schema v4 separates queue admission from semantic occurrence completion. `claim_due` materializes a deterministic durable occurrence before the external queue seam, queue acceptance records only `queue_admitted`, and recurring progression remains blocked until `reconcile_occurrence_from_taskflow` observes a durable TaskFlow terminal state. Provider-bearing steps use the default durable step outbox and `execute_durable_taskflow_step`; final-use verification is fail-closed and an unknown provider result is durably recorded as `indeterminate`, never blindly redispatched. A concrete downstream provider/final-use verifier and non-test product caller remain composition gates.
 
 Current operating and state-format references:
 
@@ -173,7 +173,10 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-automation/src/effect_executor_tests.rs](../../../codex-rs/hepta-automation/src/effect_executor_tests.rs); named case: `current_fence_executes_once`.
+- [codex-rs/hepta-automation/tests/automation.rs](../../../codex-rs/hepta-automation/tests/automation.rs) for scheduler leases, crash recovery, queue-admission fencing, schema migration, and non-terminal queue semantics.
+- [codex-rs/hepta-automation/tests/taskflow.rs](../../../codex-rs/hepta-automation/tests/taskflow.rs) for the durable TaskFlow run/event ledger.
+- [codex-rs/hepta-automation/tests/taskflow_step.rs](../../../codex-rs/hepta-automation/tests/taskflow_step.rs) for the durable step intent/receipt outbox and reconciliation.
+- [codex-rs/hepta-automation/src/effect_executor_tests.rs](../../../codex-rs/hepta-automation/src/effect_executor_tests.rs) remains a reusable in-memory state-machine fixture; it is not the production durability boundary.
 
 In `codex-rs`, run `just test -p codex-hepta-automation`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/automation.taskflow.md) separately labels target acceptance designs.
 
@@ -250,10 +253,11 @@ This receipt records repository source bindings for the current documentation ca
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
 | `register_schedule` | `pub async fn create_task(` | `codex-rs/hepta-automation/src/store.rs` | `codex-rs/hepta-automation/src/store.rs` |
-| `materialize_due` | `pub async fn tick(` | `codex-rs/hepta-automation/src/scheduler.rs` | `codex-rs/hepta-automation/src/scheduler.rs` |
-| `claim_occurrence` | `pub fn claim_occurrence(` | `codex-rs/hepta-automation/src/effect_executor.rs` | `codex-rs/hepta-automation/src/effect_executor_tests.rs` |
-| `execute_step` | `pub fn execute_step(` | `codex-rs/hepta-automation/src/effect_executor.rs` | `codex-rs/hepta-automation/src/effect_executor_tests.rs` |
+| `materialize_due` | `pub async fn tick(` → `pub async fn claim_due(` | `codex-rs/hepta-automation/src/scheduler.rs`, `store.rs` | `codex-rs/hepta-automation/tests/automation.rs` |
+| `claim_occurrence` | `pub async fn claim_due(` | `codex-rs/hepta-automation/src/store.rs` | `codex-rs/hepta-automation/tests/automation.rs` |
+| `execute_step` | `pub async fn execute_durable_taskflow_step` | `codex-rs/hepta-automation/src/effect_runtime.rs` | `codex-rs/hepta-automation/tests/taskflow_step.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
+- The durable owner stores and repository-local causal execution boundary are present. Remaining source/composition work is the concrete downstream provider/final-use verifier adapter, a non-test product caller, and target schedule grammar/qualification (timezone/tzdb plus queue/allow overlap modes).
+- Queue admission is explicitly not an occurrence terminal state; only durable TaskFlow terminal reconciliation may advance the current conservative `forbid` recurring lane.
 - Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.

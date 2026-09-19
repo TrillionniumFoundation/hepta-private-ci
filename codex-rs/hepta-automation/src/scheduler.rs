@@ -80,6 +80,8 @@ where
         else {
             return Ok(AutomationTick::Idle);
         };
+        // claim_due atomically materializes the semantic occurrence before
+        // this scheduler can cross any external seam.
         // Persist the dispatch intent before crossing the App Server seam.
         // If this process dies after admission (or while the request is still
         // in flight) the successor must observe a durable unknown outcome and

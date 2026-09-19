@@ -1,7 +1,6 @@
-#![cfg(feature = "taskflow-structural-qualification")]
 #![allow(
     clippy::expect_used,
-    reason = "qualification fixtures should fail loudly"
+    reason = "durable step integration fixtures should fail loudly"
 )]
 
 use codex_hepta_automation::AutomationStore;

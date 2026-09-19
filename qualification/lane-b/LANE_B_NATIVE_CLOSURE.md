@@ -141,24 +141,25 @@ External evidence gates:
 
 Owns schedule, occurrence, claim, and step-orchestration facts without owning downstream domain effects.
 
-The registered effect driver supplies terminal observations; unknown effects block dependent steps and compensation is separately authorized.
+Durable provider observations and TaskFlow reconciliation are now represented locally; a real downstream terminal observer remains an external composition gate.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
 | `register_schedule` | `owner_native` | `codex-rs/hepta-automation/src/store.rs` — `pub async fn create_task(` |
 | `materialize_due` | `owner_native` | `codex-rs/hepta-automation/src/scheduler.rs` — `pub async fn tick(` |
-| `claim_occurrence` | `owner_native` | `codex-rs/hepta-automation/src/effect_executor.rs` — `pub fn claim_occurrence(` |
-| `execute_step` | `owner_native` | `codex-rs/hepta-automation/src/effect_executor.rs` — `pub fn execute_step(` |
+| `claim_occurrence` | `owner_native` | `codex-rs/hepta-automation/src/store.rs` — `pub async fn claim_due(` |
+| `execute_step` | `owner_native` | `codex-rs/hepta-automation/src/effect_runtime.rs` — `pub async fn execute_durable_taskflow_step` |
 
 Remaining repository implementation gaps:
 
-- Connect the effect-executor component to the existing durable TaskFlow step outbox and a real final-use authorized effect provider.
-- Implement post-crash effect reconciliation before permitting dependent steps.
+- Compose a non-test product caller that binds each live automation occurrence to its registered TaskFlow definition and invokes the durable effect runtime.
+- Implement the concrete downstream effect provider/final-use verifier adapter and terminal-observer reconciliation protocol.
+- Complete timezone/tzdb recurrence grammar and qualify queue/allow overlap modes before enabling them.
 
 External evidence gates:
 
 - non-test Codex/App Server caller
-- real downstream effect owner and terminal observer
+- real downstream effect owner, final-use authority verifier, and terminal observer
 - DST/timezone-database and multi-scheduler target qualification
 
 ## 9. `channel.matrix`
