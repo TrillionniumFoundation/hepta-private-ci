@@ -1,8 +1,7 @@
-//! Local durable admission around the actual App Server driver.
+//! Durable economic/resource admission around the actual App Server driver.
 
-use codex_hepta_contracts::FinalUseAuthority;
-use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_core::durable_control::native::NativeFinalUseAuthority;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
 use sha2::Digest;
@@ -11,24 +10,32 @@ use tokio_util::sync::CancellationToken;
 
 use super::AppServerModelDriver;
 use super::NativeOwnerAuthority;
-use super::NativeProviderAuthorization;
 use super::NativeRunOutput;
 use super::NativeRunStatus;
 use super::Result;
+use super::policy::FinalUseGrantResolver;
+use super::policy::NativeExecutionPolicy;
+use super::policy::claimed_authority;
 
-/// Explicit local capacity policy; the first request pins the journal's limit.
-/// This limits admitted runs, not provider tokens, billing or device memory.
+/// Exact admission evidence for one provider request. Local slot capacity is an
+/// independent ceiling; quota/resource evidence additionally binds request,
+/// token, concurrency, economic budget, provider/model and worker generation.
+#[derive(Clone, Debug)]
 pub struct NativeAdmission {
     pub request_id: String,
     pub maximum_in_flight: usize,
+    pub maximum_output_tokens: u64,
+    pub maximum_budget_units: u64,
+    pub policy: NativeExecutionPolicy,
 }
 
 impl AppServerModelDriver {
-    /// Reserves before any provider call, journals dispatch before `turn/start`,
-    /// and commits real observations before returning them to the caller.
-    /// Reopening a possibly dispatched run never submits a replacement model turn.
-    /// It uses Core's exact client-message reconciliation to recover the
-    /// original turn or prove that no durable admission happened.
+    /// The only native provider-execution entrypoint.
+    ///
+    /// It durably reserves exact quota/resource evidence before provider
+    /// contact, reconciles any previous accepted-or-unknown request without
+    /// replay, and requires an independently signed final-use grant for a fresh
+    /// physical turn admission.
     pub async fn run(
         &self,
         control: &mut DurableInferenceControl,
@@ -36,58 +43,7 @@ impl AppServerModelDriver {
         prompt: String,
         context_query: Option<String>,
         cancellation: &CancellationToken,
-    ) -> Result<NativeRunOutput> {
-        self.run_inner(
-            control,
-            admission,
-            prompt,
-            context_query,
-            cancellation,
-            None,
-        )
-        .await
-    }
-
-    /// Production composition entrypoint. Planning never grants authority:
-    /// the worker claims an independently signed final-use grant only for a
-    /// fresh Reserved request, immediately before the durable dispatch intent
-    /// and provider turn/start boundary.
-    ///
-    /// Dynamic context_query is deliberately unavailable here because the
-    /// final-use issuer must bind the exact provider user input.
-    pub async fn run_authorized(
-        &self,
-        control: &mut DurableInferenceControl,
-        authority: &FinalUseAuthority,
-        signed: &SignedFinalUseGrant,
-        admission: NativeAdmission,
-        prompt: String,
-        cancellation: &CancellationToken,
-    ) -> Result<NativeRunOutput> {
-        let binding = self.provider_final_use_binding(&admission.request_id, &prompt)?;
-        self.run_inner(
-            control,
-            admission,
-            prompt,
-            None,
-            cancellation,
-            Some(NativeProviderAuthorization {
-                authority,
-                signed,
-                binding,
-            }),
-        )
-        .await
-    }
-
-    async fn run_inner(
-        &self,
-        control: &mut DurableInferenceControl,
-        admission: NativeAdmission,
-        prompt: String,
-        context_query: Option<String>,
-        cancellation: &CancellationToken,
-        authorization: Option<NativeProviderAuthorization<'_>>,
+        grant_resolver: &FinalUseGrantResolver<'_>,
     ) -> Result<NativeRunOutput> {
         if prompt.is_empty() || prompt.len() > super::MAX_PROMPT_BYTES {
             return Err("prompt must contain 1..32768 bytes".into());
@@ -98,18 +54,33 @@ impl AppServerModelDriver {
         {
             return Err("context query must contain 1..2048 bytes".into());
         }
+
+        let admission_binding = admission.policy.admission_binding(
+            unix_seconds()?,
+            &self.config.agent_id.to_string(),
+            self.config.generation,
+            &self.config.model,
+            admission.maximum_output_tokens,
+            admission.maximum_budget_units,
+        )?;
         let request = NativeRequest {
             request_id: admission.request_id,
             principal_id: self.config.agent_id.to_string(),
             worker_generation: self.config.generation,
             model: self.config.model.clone(),
             payload_digest: digest(&serde_json::to_vec(&(
-                "hepta.native-request.v1",
+                "hepta.native-request.v2",
                 &prompt,
                 &context_query,
                 &self.config.agentd_socket,
                 self.config.timeout.as_millis(),
+                admission.maximum_output_tokens,
+                admission.maximum_budget_units,
+                &admission_binding,
             ))?),
+            maximum_output_tokens: admission.maximum_output_tokens,
+            maximum_budget_units: admission.maximum_budget_units,
+            admission: Some(admission_binding),
         };
         let record = control.reserve_native(request, admission.maximum_in_flight)?;
         if let Some(reason) = &record.pre_dispatch_stop {
@@ -121,13 +92,17 @@ impl AppServerModelDriver {
             )
             .into());
         }
+
         if record.state != NativeReservationState::Reserved {
-            if let Some(output) = &record.observation
-                && output.terminal_observed
-                && output.observed_output_tokens.is_some()
+            if let Some(output) = record
+                .observation
+                .as_ref()
+                .filter(|output| output.terminal_observed)
+                .cloned()
             {
-                return Ok(output.clone());
+                return Ok(output);
             }
+
             let request_id = record.request.request_id.clone();
             let fallback = record.observation.clone().or_else(|| {
                 record.dispatch.clone().map(|dispatch| NativeRunOutput {
@@ -140,11 +115,17 @@ impl AppServerModelDriver {
                     observed_output_tokens: None,
                     terminal_observed: false,
                     owner_authority: NativeOwnerAuthority::Unverified,
+                    final_use_authority: dispatch
+                        .final_use
+                        .as_ref()
+                        .map(claimed_authority)
+                        .unwrap_or(NativeFinalUseAuthority::Unverified),
                     stop_reason: Some(
                         "reopened after possible dispatch; exact reconciliation pending".to_string(),
                     ),
                 })
             });
+
             match self
                 .reconcile_once(control, &request_id, &prompt, cancellation)
                 .await
@@ -174,6 +155,7 @@ impl AppServerModelDriver {
                 }
             }
         }
+
         let request_id = record.request.request_id;
         match self
             .run_once(
@@ -181,8 +163,11 @@ impl AppServerModelDriver {
                 &request_id,
                 prompt.clone(),
                 context_query,
+                admission.maximum_output_tokens,
+                admission.maximum_budget_units,
+                &admission.policy,
                 cancellation,
-                authorization,
+                grant_resolver,
             )
             .await
         {
@@ -216,7 +201,8 @@ impl AppServerModelDriver {
                     .native_record(&request_id)
                     .is_some_and(|record| record.state == NativeReservationState::Reserved)
                 {
-                    // Only Reserved proves turn/start could not have happened.
+                    // Only Reserved proves provider effect admission could not
+                    // have happened. Every later state requires reconciliation.
                     let reason: String = error.to_string().chars().take(1024).collect();
                     control.stop_native_before_dispatch(&request_id, reason)?;
                 }
@@ -224,6 +210,12 @@ impl AppServerModelDriver {
             }
         }
     }
+}
+
+fn unix_seconds() -> Result<u64> {
+    Ok(std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)?
+        .as_secs())
 }
 
 pub(super) fn digest(bytes: &[u8]) -> String {
