@@ -282,7 +282,7 @@ def verify() -> int:
     expected_product_caller = {
         "objective.compiler": "not_established",
         "utility.ndu": "not_established",
-        "control.runtime": "narrow_agentd_context_composed_global_product_host_not_established",
+        "control.runtime": "runtime_supervisor_named_typed_host_source_composed_daemon_activation_pending",
     }
     for row in maturity["modules"]:
         module = row["module"]
