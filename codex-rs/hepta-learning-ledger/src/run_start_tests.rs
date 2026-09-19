@@ -89,12 +89,7 @@ impl Fixture {
         &self,
         recovery: RunStartRecovery,
     ) -> Result<DurableRunStartJournal, RunStartStoreError> {
-        DurableRunStartJournal::recover(
-            self.file(),
-            binding(),
-            /*max_records*/ 16,
-            recovery,
-        )
+        DurableRunStartJournal::recover(self.file(), binding(), /*max_records*/ 16, recovery)
     }
 }
 
@@ -209,13 +204,16 @@ fn incomplete_unacknowledged_tail_recovers_to_last_synced_frame() {
     let second_size = must(encode_frame(&second_stored)).len();
     let first_end = full.len() - second_size;
 
-    must(fs::write(fixture.path(), &full[..first_end + second_size / 2]));
-    let recovered = must(fixture.recover(RunStartRecovery::Acknowledged(
-        RunStartAnchor {
+    must(fs::write(
+        fixture.path(),
+        &full[..first_end + second_size / 2],
+    ));
+    let recovered = must(
+        fixture.recover(RunStartRecovery::Acknowledged(RunStartAnchor {
             sequence: first.sequence,
             chain_digest: first.chain_digest,
-        },
-    )));
+        })),
+    );
     assert_eq!(must(recovered.records()).len(), 1);
     assert_eq!(must(fs::metadata(fixture.path())).len(), first_end as u64);
 }
