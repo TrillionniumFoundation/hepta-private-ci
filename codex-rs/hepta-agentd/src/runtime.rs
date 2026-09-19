@@ -79,10 +79,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         state.refresh_generation()?;
         let host = crate::authbus_ingress::TextIngress::open(&identity, path).await?;
         state.refresh_generation()?;
-        state
-            .authbus
-            .set(Arc::new(host))
-            .map_err(|_| AgentdError::Protocol("AuthBus host already attached".to_string()))?;
+        state.attach_authbus(Arc::new(host))?;
     }
     if let Some(profile_file) = objective_profile_file {
         state.refresh_generation()?;
@@ -92,9 +89,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
             crate::authbus_ingress::now_ms()?,
         )?;
         state.refresh_generation()?;
-        state.objective_ingress.set(Arc::new(host)).map_err(|_| {
-            AgentdError::Protocol("Objective ingress host already attached".to_string())
-        })?;
+        state.attach_objective_ingress(Arc::new(host))?;
     }
     let cognitive_layout = identity.layout.clone();
     let cognitive_runtime = open_cognitive_runtime_after_generation_fence(&state, || async move {
