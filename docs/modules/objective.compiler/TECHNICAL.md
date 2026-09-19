@@ -194,7 +194,7 @@ For `objective.compiler`, this document grants no runtime, production, model, pr
 
 #### `OBJ-0-OBJECTIVE-CONTRACTS`
 
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; exact-head qualification/product composition/activation/release are tracked independently in `docs/readiness/LANE_D_MATURITY.json`; priority: `1`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `intelligence-platform` / `kernel-contracts`.
 - Allowed write paths:
 - `codex-rs/hepta-objective/**`
@@ -223,7 +223,7 @@ For `objective.compiler`, this document grants no runtime, production, model, pr
 
 #### `OBJ-1-OBJECTIVE-COMPILER`
 
-- State: `planned`; priority: `1`; parallel class: `contract_coordinated`.
+- State: `source_implemented`; exact-head qualification/product composition/activation/release are tracked independently in `docs/readiness/LANE_D_MATURITY.json`; priority: `1`; parallel class: `contract_coordinated`.
 - Owner/deputy: `intelligence-platform` / `kernel-contracts`.
 - Allowed write paths:
 - `codex-rs/hepta-objective/**`
@@ -279,4 +279,16 @@ The bootstrap source-location obligation for `objective.compiler` is implemented
 
 - `codex-rs/hepta-objective`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by the objective-specific `.github/workflows/hepta-objective-admission.yml` and the cross-platform `.github/workflows/hepta-lane-d-semantic-conformance.yml` for exact-source binding, package tests, all-target compilation/checks, strict Clippy, formatting and clean tracked state. The consolidated source workflow remains a repository-wide integrity gate but is not the package-test authority for `codex-hepta-objective`. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+## Objective semantic support matrix
+
+| Source syntax | Admission | Native representation | Feasibility/runtime status |
+| --- | --- | --- | --- |
+| `eq` | supported where profile-mapped | scalar equality | compiled and checked |
+| `lte` / `gte` | supported where profile-mapped | scalar interval bound | compiled and checked |
+| `ne` / `lt` / `gt` | rejected | none | deterministic `UnsupportedComparator`; no approximation |
+| `in` / `not_in` | rejected by V1 admission | generic feasibility has `Include` / `Exclude`, but admission does not map them | not end-to-end supported |
+
+A source grammar spelling is not a claim of executable compiler support. Unsupported represented semantics fail closed. Product callers must enter through `admit_and_compile_objective_v1`; `compile_prevalidated_legacy_objective` is a hidden compatibility surface for typed legacy/qualification fixtures and does not establish admission.
