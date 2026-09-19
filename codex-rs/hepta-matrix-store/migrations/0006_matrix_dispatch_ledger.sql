@@ -2,6 +2,9 @@ CREATE TABLE matrix_dispatch_ledger (
     stable_txn_id TEXT PRIMARY KEY,
     operation_id TEXT NOT NULL UNIQUE,
     room_id TEXT NOT NULL,
+    homeserver_id TEXT,
+    device_id TEXT,
+    session_generation INTEGER CHECK (session_generation IS NULL OR session_generation > 0),
     payload_sha256 TEXT NOT NULL CHECK (
         length(payload_sha256) = 64 AND payload_sha256 NOT GLOB '*[^0-9a-f]*'
     ),
