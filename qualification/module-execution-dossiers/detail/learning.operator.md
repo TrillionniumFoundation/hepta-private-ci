@@ -42,6 +42,7 @@ These are source bounds, not target-host measurements. A coordinate failing assu
 - OP-02: degenerate diffusion, bad mesh ratio or excessive reconstruction gain disables the learned path.
 - OP-03: a high in-sample fit with poor future calibration/retention fails evaluation.
 - OP-04: model-generated rollouts remain synthetic and cannot become independent factual outcome evidence.
+- OP-05: relabelled duplicate evidence is rejected by both tabular fitting paths, and persisted tabular/world-model inference rejects stale or tampered independently pinned payloads.
 
 Every case is mapped to concrete Rust test functions in `../../lane-e/TEST_TRACEABILITY.json`. Additional learned-grid tests verify order independence, complete-cell admission, minimum samples and domain-bounded prediction.
 
