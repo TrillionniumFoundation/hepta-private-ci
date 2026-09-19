@@ -1,6 +1,11 @@
 use std::collections::BTreeMap;
 
 use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
+use codex_hepta_intelligence::LaneFCompositionReceiptV3;
+use codex_hepta_intelligence::LaneFRunRequestV3;
+use codex_hepta_intelligence::LaneFV3Ports;
+use codex_hepta_intelligence::PipelineDispositionV3;
+use codex_hepta_intelligence::run_composition_v3;
 
 const MAX_ACTIVE_RUNS: usize = 256;
 const MAX_RETAINED_RUNS: usize = 1_024;
@@ -68,6 +73,12 @@ pub struct RunReceipt {
     pub idempotent: bool,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct IntelligenceRunReceiptV3 {
+    pub composition: LaneFCompositionReceiptV3,
+    pub runtime: Option<RunReceipt>,
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CancellationDisposition {
     CancelledBeforeDispatch,
@@ -89,6 +100,7 @@ pub enum AgentRunError {
     MixedSnapshot,
     ContextRequired,
     InvalidIntelligenceEnvelope,
+    IntelligenceCompositionFailed,
     TerminalObservationRequired,
     ArithmeticOverflow,
 }
@@ -229,6 +241,37 @@ impl AgentRunCoordinator {
         record.phase = RunPhase::ContextAttached;
         advance_revision(record)?;
         Ok(receipt(record, /*idempotent*/ false))
+    }
+
+    /// Run the canonical V3 intelligence composition for an already admitted run.
+    ///
+    /// A successful host handoff is attached to this coordinator's existing
+    /// ContextAttached phase. Abstain, slow-path and terminal-failure receipts
+    /// remain observable without mutating the runtime into a dispatchable state.
+    pub fn run_intelligence_v3<P: LaneFV3Ports>(
+        &mut self,
+        expected_revision: u64,
+        request: LaneFRunRequestV3,
+        ports: &mut P,
+    ) -> Result<IntelligenceRunReceiptV3, AgentRunError> {
+        let composition = run_composition_v3(request, ports)
+            .map_err(|_| AgentRunError::IntelligenceCompositionFailed)?;
+        let runtime = match composition.disposition {
+            PipelineDispositionV3::HostHandoffAccepted => {
+                let envelope = composition
+                    .host_envelope
+                    .as_ref()
+                    .ok_or(AgentRunError::InvalidIntelligenceEnvelope)?;
+                Some(self.attach_intelligence_envelope(expected_revision, envelope)?)
+            }
+            PipelineDispositionV3::Abstained
+            | PipelineDispositionV3::SlowPath
+            | PipelineDispositionV3::Failed(_) => None,
+        };
+        Ok(IntelligenceRunReceiptV3 {
+            composition,
+            runtime,
+        })
     }
 
     pub fn mark_dispatched(
