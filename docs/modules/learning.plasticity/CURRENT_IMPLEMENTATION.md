@@ -14,7 +14,7 @@ changing the map. Hand-written sections below explain semantics but do not
 override these machine status facts.
 
 - Product caller: `agentd_host_adapter_entrypoint_source_implemented_not_runtime_executed_or_target_host_qualified`
-- Production writer: `agentd_parameter_and_topology_external_anchor_fence_source_implemented_not_target_host_qualified`
+- Production writer: `agentd_append_only_parameter_and_topology_anchor_fence_journal_source_implemented_not_target_host_qualified`
 - Production implementation: `false`
 - Product execution proved: `false`
 - Independent acceptance: `false`
@@ -32,19 +32,20 @@ override these machine status facts.
 | `durableproposalregistry` | `source_implemented_agentd_host_composed_not_target_host_qualified` | `codex-rs/hepta-plasticity/src/durable_registry.rs` | 1 |
 | `authenticated_product_composition` | `adapter_implemented_called_by_agentd_host_entrypoint_pairwise_roles_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 5 |
 | `anchored_product_writer` | `adapter_implemented_agentd_external_anchor_host_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/plasticity_product.rs` | 2 |
-| `parameter_mutation_policy` | `source_implemented_authority_free_typed_parameter_allowlist_protected_surfaces` | `codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs` | 1 |
+| `parameter_mutation_policy` | `source_implemented_typed_parameter_projection_bound_to_control_engineering_mutation_grammar` | `codex-rs/hepta-plasticity/src/parameter_mutation_policy_v1.rs` | 2 |
 | `agentd_parameter_host` | `host_adapter_entrypoint_source_implemented_owner_evidence_required_not_runtime_executed_or_target_host_qualified` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 2 |
-| `agentd_owner_evidence_resolution` | `host_enforced_typed_owner_evidence_resolution_concrete_deployment_adapters_required` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 3 |
+| `agentd_owner_evidence_resolution` | `host_enforced_context_freshness_and_evidence_kind_owner_allowlist_concrete_deployment_adapters_required` | `codex-rs/hepta-agentd/src/plasticity_host.rs` | 4 |
 | `topology_governed_admission` | `source_implemented_typed_writer_handoff_validated` | `codex-rs/hepta-plasticity/src/topology_governance.rs` | 2 |
 | `durable_topology_registry` | `source_implemented_anchored_governed_topology_registry` | `codex-rs/hepta-plasticity/src/topology_registry.rs` | 1 |
 | `authenticated_topology_product_composition` | `adapter_implemented_called_by_agentd_host_entrypoint_not_target_host_qualified` | `codex-rs/hepta-intelligence/src/topology_product.rs` | 2 |
 | `agentd_topology_host` | `host_adapter_entrypoint_source_implemented_external_anchor_not_runtime_executed_or_target_host_qualified` | `codex-rs/hepta-agentd/src/topology_plasticity_host.rs` | 2 |
+| `agentd_anchor_fence_journal` | `source_implemented_append_only_checksum_journal_crash_tail_repair_monotonic_generation_fences` | `codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs` | 3 |
 | `structural_canary_controller` | `source_implemented_durable_candidate_plan_history_bound_observation_only_no_topology_apply_authority` | `codex-rs/hepta-plasticity/src/topology_canary.rs` | 6 |
 
 ### Repository-controlled gaps
 
 - Run exact-head and deterministic synthetic-merge compilation, tests, lint, document verification and Lane F qualification for this final source/document head.
-- Bind PlasticityOwnerEvidenceResolverV1 to concrete authoritative owner-store adapters in the selected deployment and exercise freshness/provenance failures before changing productionImplementation or productExecutionProved.
+- Bind PlasticityOwnerEvidenceResolverV1 to concrete authoritative owner-store adapters in the selected deployment and exercise owner-policy, freshness and provenance failures before changing productionImplementation or productExecutionProved.
 
 ### External evidence gates
 
@@ -61,15 +62,16 @@ override these machine status facts.
 | --- | --- | --- |
 | Parameter V2 canonical proposal envelope | **Implemented** | `codex-rs/hepta-plasticity/src/parameter_v2.rs` |
 | Deterministic generator-relative candidate completeness | **Implemented** | `generate_parameter_candidates_v3` in `generator_v3.rs` |
-| Typed parameter mutation policy / protected surfaces | **Implemented** | `ParameterMutationPolicyV1` in `parameter_mutation_policy_v1.rs` |
+| Typed parameter mutation policy / protected surfaces | **Implemented; canonical grammar-bound** | `ParameterMutationPolicyV1` binds the control.engineering-owned `MutationGrammarManifestV1.semanticDigest` |
 | Artifact/window-bound content candidate identity | **Implemented** | `generator_v3.rs` and `topology_v2.rs` |
 | Per-layer/global parameter trust regions | **Implemented** | V2 verifier and V3 generator |
 | Durable append-only proposal registry | **Implemented** | `DurableProposalRegistry` |
 | Production-path anchored reopen | **Implemented seam** | `AnchoredPlasticityWriterV1` in `codex-rs/hepta-intelligence` |
 | External anchor commit before adapter success | **Implemented fail-closed seam** | `PlasticityAnchorCommitterV1` |
+| Append-only host anchor/fence journal | **Implemented source composition** | shared Agentd `AdaptiveAnchorJournalV1`; checksum frames, crash-tail repair, monotonic generation fences |
 | Signed generator authentication | **Implemented adapter** | `propose_authenticated_parameter_plasticity_v1` |
 | Signed current artifact/evidence-frontier witness | **Implemented adapter** | `PlasticityAdmissionEvidenceV1` |
-| Typed owner-evidence resolution boundary | **Implemented host-enforced seam; concrete deployment adapters required** | `PlasticityOwnerEvidenceResolverV1` in Agentd |
+| Typed owner-evidence resolution boundary | **Implemented host-enforced seam; owner-kind allowlist + concrete deployment adapters required** | `PlasticityOwnerEvidenceResolverV1` and `PlasticityOwnerEvidencePolicyV1` in Agentd |
 | Cryptographically independent evaluator admission | **Implemented adapter** | existing `LearningEvidenceVerifierV1` + signed evaluation path |
 | Evaluation coverage for every generated update | **Implemented adapter** | product adapter rejects missing/duplicate/unexpected evaluations |
 | Product-workspace proposal adapter | **Implemented** | `codex-rs/hepta-intelligence/src/plasticity_product.rs` |
@@ -101,20 +103,24 @@ proposal crate, and that distinction is intentional and now explicit:
 `codex-hepta-plasticity` itself still does not query owner stores. The source-selected
 host seam is now `codex-hepta-agentd`: it recomputes the current `ArtifactRegistry`
 and durable learning-ledger frontiers immediately before calling the authenticated
-product adapters, requires context-bound owner evidence for every opaque learning digest and the typed mutation-policy digest, and owns separate parameter/topology anchor-fence stores. The resolver trait
-has no permissive default; a selected deployment must bind it to the actual owner
-stores rather than echoing caller inputs. This is a source-selected host adapter entrypoint that calls the product adapter; it is not proof that the Agentd runtime or a deployed target host has actually executed or accepted it. `productionImplementation` and `productExecutionProved` therefore remain false
+product adapters, requires context-bound owner evidence for every opaque learning digest and the typed mutation-policy digest, and owns separate parameter/topology anchor-fence stores. The resolver trait has no permissive default. Agentd additionally requires a complete
+`PlasticityOwnerEvidencePolicyV1` mapping every evidence kind to allowed owner IDs;
+a correctly signed/context-bound receipt from the wrong owner is rejected. A selected
+deployment must still bind the resolver to the actual owner stores rather than echoing
+caller inputs. This is a source-selected host adapter entrypoint that calls the product adapter; it is not proof that the Agentd runtime or a deployed target host has actually executed or accepted it. `productionImplementation` and `productExecutionProved` therefore remain false
 until exact target-host evidence exists.
 
 ## Parameter mutation-policy ownership
 
 The Rust `ParameterMutationPolicyV1` is an authority-free, parameter-specific
-allowlist consumed by the V3 generator. It deliberately does **not** reuse the name or
-claim the semantics of canonical readiness protocol `MutationGrammarManifestV1`,
-which remains owned by `control.engineering`. The parameter policy becomes admissible
-in the product path only because its digest is inside the generated-set digest that is
-bound by current Generator and Observer attestations; constructing a local policy in
-the core crate grants no authority by itself.
+executable projection consumed by the V3 generator. Canonical readiness protocol
+`MutationGrammarManifestV1` remains owned by `control.engineering`; plasticity does
+not mint or redefine it. Every parameter policy now carries the canonical manifest's
+non-zero semantic digest, and that grammar digest participates in the policy digest,
+the generated-set digest and the authenticated admission chain. The local typed rules
+therefore enforce learnable-parameter allowlists/protected surfaces while preserving
+one grammar authority. Constructing a local projection still grants no authority by
+itself.
 
 ## Parameter generator semantics
 
@@ -180,11 +186,16 @@ file. Any reopen of acknowledged history must use `reopen_anchored` with a host-
 After a durable append, the adapter obtains the current registry anchor and calls the
 host-owned `PlasticityAnchorCommitterV1`. **No successful adapter receipt is returned
 until that external anchor commit succeeds.** If the external commit fails, the writer
-is poisoned and rejects all further reads/appends through that handle. Recovery
-requires reopening against independently retained acknowledged history. The host still
-owns the physical independent rollback domain and monotonic writer-fence issuance;
-storing the registry file and its anchor in the same rollback domain does not satisfy
-this requirement.
+is poisoned and rejects all further reads/appends through that handle.
+
+Agentd now persists parameter and topology fences/anchors through one shared append-only
+checksum-framed journal implementation rather than overwriting the last trusted record
+in place. Reopen replays every complete frame, rejects any complete invalid frame, and
+repairs only an incomplete crash tail. A new registry generation advances the fence
+exactly once; repeated advancement while that generation is still unacknowledged fails
+closed. Explicit rollover/resume entrypoints prevent fence skipping across crashes.
+The host still owns the physical independent rollback domain; storing the registry and
+journal in the same rollback domain does not satisfy this requirement.
 
 ## Topology boundary
 

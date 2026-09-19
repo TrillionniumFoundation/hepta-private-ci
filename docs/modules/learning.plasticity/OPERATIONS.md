@@ -12,17 +12,22 @@ It can construct and persist a proposal only. It has no selection, training,
 installation, runtime-topology, promotion or release authority. `codex-rs/hepta-agentd::propose_agentd_plasticity_v1` is now the source-level host
 callsite. It recomputes the current artifact and durable learning-ledger frontiers
 and requires context-bound owner evidence for dataset, update-rule, modulator,
-modulator-broadcast, eligibility, mutation-policy and per-parameter signal digests before invoking the adapter. This source composition is not evidence that a deployed
+modulator-broadcast, eligibility, mutation-policy and per-parameter signal digests
+before invoking the adapter. A complete evidence-kind→owner allowlist is enforced
+separately from resolver authentication, so a valid receipt from the wrong owner
+cannot satisfy admission. This source composition is not evidence that a deployed
 target host executed or accepted it, so product execution remains unproved.
 
 The selected host owns four independent facts: current learning-evidence trust state,
 current artifact/evidence frontier witness, authoritative owner-evidence resolution,
 and the proposal-registry anchor/fence.
-Agentd now provides source implementations for parameter and topology anchor/fence
-stores; deployment must place each anchor store in a rollback domain independent from
-its registry file. The
-proposal registry file MUST NOT be the only copy of its acknowledged anchor. Writer
-fence issuance and anchor persistence MUST be serialized by the host.
+Agentd now provides parameter and topology anchor/fence stores over one shared
+append-only checksum-framed journal. Deployment must place each journal in a rollback
+domain independent from its registry file. A complete invalid journal frame is
+corruption and is never silently discarded; only an incomplete final crash tail may
+be truncated after all complete predecessors validate. The proposal registry file
+MUST NOT be the only copy of its acknowledged anchor. Writer-fence issuance, registry
+generation rollover and anchor persistence are serialized by the journal.
 
 An adapter append is acknowledged only after `PlasticityAnchorCommitterV1` durably
 persists the resulting current registry anchor in that independent rollback domain.
@@ -85,7 +90,12 @@ credentials, dataset records and payload bytes are prohibited from logs.
   rolling 15-minute window or any single proposal ID/slot produces repeated drift.
 - **Authentication:** page on any accepted request whose authenticated Generator,
   Observer and Evaluator do not satisfy pairwise signed-role separation, or whose
-  owner-evidence receipt, including the mutation-policy receipt, cannot be resolved against its exact artifact/window/dataset context; the implementation is expected to make these states unreachable.
+  owner-evidence receipt, including the mutation-policy receipt, cannot be resolved
+  against its exact artifact/window/dataset context and evidence-kind owner allowlist;
+  the implementation is expected to make these states unreachable.
+- **Mutation grammar provenance:** reject a parameter mutation policy whose canonical
+  `MutationGrammarManifestV1` semantic digest is zero, missing or differs from the
+  manifest admitted by the selected host/control-engineering boundary.
 - **Latency target:** host p99 for authenticated generation + evidence/evaluation
   admission + durable append + external anchor commit should remain below 2 seconds
   for the bounded profile. Exceeding this for 15 minutes disables new plasticity
@@ -103,20 +113,27 @@ until a target-host telemetry stream and exact execution receipts exist.
 3. On `Indeterminate`, `Poisoned` or `AnchorPersistenceFailed`, discard the in-process
    writer handle. Do not convert a failed anchor commit into success based only on the
    registry file.
-4. Reopen parameter state only with `AnchoredPlasticityWriterV1::reopen_anchored` and the independently
-   retained last acknowledged anchor. A valid file may contain later unacknowledged
-   frames; reconciliation may inspect them because `open_anchored` proves the trusted
-   prefix before any repair. Anchor mismatch or missing acknowledged history requires
-   operator recovery; never truncate first.
+4. Reopen parameter state only with `AnchoredPlasticityWriterV1::reopen_anchored`
+   and the independently retained last acknowledged anchor. The Agentd anchor journal
+   must also replay cleanly. It may trim only an incomplete last journal frame; a
+   complete checksum/sequence/fence violation is an incident and must remain intact
+   for recovery. A valid proposal file may contain later unacknowledged frames;
+   reconciliation may inspect them because `open_anchored` proves the trusted prefix
+   before any proposal-file repair. Anchor mismatch or missing acknowledged history
+   requires operator recovery; never truncate a complete invalid frame first.
 5. Reverify current trust/revocation, artifact/evidence frontiers and every typed
    owner-evidence receipt before retrying proposal construction. Do not replace an
    unavailable owner resolver with opaque-digest acceptance.
 6. An identical proposal retry may return the original record. Semantic drift in an
    occupied artifact/window slot remains a conflict.
-7. Topology proposal recovery follows the same rule through
+7. Registry rollover uses the explicit Agentd rollover entrypoint with the exact
+   previously acknowledged anchor. If a crash occurs after a new fence is journaled
+   but before a new registry is enrolled, resume that pending fence; never issue
+   another fence to skip the interrupted generation.
+8. Topology proposal recovery follows the same rule through
    `DurableTopologyProposalRegistryV1::reopen_anchored` and the Agentd topology anchor
-   store. Never convert a missing topology anchor into a fresh bootstrap.
-8. Resume only after the new current anchor is durably retained outside the registry
+   journal. Never convert a missing topology anchor into a fresh bootstrap.
+9. Resume only after the new current anchor is durably retained outside the registry
    rollback domain. A same-domain copy does not satisfy the external commit.
 
 ## Canary and qualification
@@ -128,8 +145,11 @@ rejection, signature expiry/revocation, generator/evaluator and observer/evaluat
 controller collisions, missing evaluation, owner-evidence missing/stale/context
 substitution, stale/frontier witness, anchored reopen, failed external-anchor
 commit and poisoned-writer behavior, old-prefix rollback, incomplete-tail recovery,
-writer-fence mismatch, typed parameter-mutation-policy protected-surface denial, topology
-writer-handoff validation, topology anchored reopen, topology self-activation denial,
+writer-fence mismatch, append-only anchor-journal crash-tail recovery and complete-frame
+corruption rejection, monotonic generation rollover, canonical mutation-grammar digest
+binding, evidence-kind wrong-owner denial, typed parameter-mutation-policy
+protected-surface denial, topology writer-handoff validation, topology anchored reopen,
+topology self-activation denial,
 and structural-canary abort semantics. A real bounded canary must additionally emit
 host telemetry and operator evidence. Until those receipts exist, product execution,
 activation and release remain false even when source compilation/tests pass.

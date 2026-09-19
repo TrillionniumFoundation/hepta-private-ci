@@ -20,6 +20,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 STATUS_BEGIN = "<!-- BEGIN GENERATED IMPLEMENTATION STATUS -->"
 STATUS_END = "<!-- END GENERATED IMPLEMENTATION STATUS -->"
+PLASTICITY_CURRENT_STATE = (
+    ROOT / "docs/modules/learning.plasticity/CURRENT_STATE.json"
+)
 
 
 def plasticity_status_block(row: dict) -> str:
@@ -56,6 +59,36 @@ def plasticity_status_block(row: dict) -> str:
     return "\n".join(lines)
 
 
+def plasticity_current_state_projection(row: dict) -> dict:
+    return {
+        "schema": "hepta.learning-plasticity-current-state.v1",
+        "schemaVersion": 1,
+        "module": row["module"],
+        "generatedFrom": "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
+        "sourceBase": row["sourceBase"],
+        "current": {
+            "sourceRootPresent": bool(row["sourceRootPresent"]),
+            "productionImplementation": bool(row["productionImplementation"]),
+            "productCallerState": row["productCallerState"],
+            "productionWriterState": row["productionWriterState"],
+            "claimBoundary": row["claimBoundary"],
+        },
+        "operations": [
+            {
+                "operation": op["operation"],
+                "state": op["state"],
+                "sourcePath": op.get("sourcePath"),
+                "tests": op.get("tests") or [],
+            }
+            for op in row["operations"]
+        ],
+        "remainingToTarget": {
+            "repositoryControlledGaps": row.get("repositoryControlledGaps", []),
+            "externalEvidenceGates": row.get("externalEvidenceGates", []),
+        },
+    }
+
+
 def sync_plasticity_status() -> None:
     map_path = ROOT / "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json"
     doc_path = ROOT / "docs/modules/learning.plasticity/CURRENT_IMPLEMENTATION.md"
@@ -71,6 +104,15 @@ def sync_plasticity_status() -> None:
             raise SystemExit("learning.plasticity current implementation is missing Status matrix")
         text = text.replace(marker, "\n" + expected + "\n" + marker, 1)
     doc_path.write_text(text, encoding="utf-8")
+    PLASTICITY_CURRENT_STATE.write_text(
+        json.dumps(
+            plasticity_current_state_projection(row),
+            indent=2,
+            ensure_ascii=False,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
 
 
 def plasticity_status_matches() -> bool:
@@ -81,7 +123,15 @@ def plasticity_status_matches() -> bool:
     expected = plasticity_status_block(row)
     pattern = re.compile(re.escape(STATUS_BEGIN) + r".*?" + re.escape(STATUS_END), re.S)
     match = pattern.search(text)
-    return bool(match and match.group(0) == expected)
+    if not (match and match.group(0) == expected):
+        return False
+    if not PLASTICITY_CURRENT_STATE.is_file():
+        return False
+    try:
+        current = json.loads(PLASTICITY_CURRENT_STATE.read_text(encoding="utf-8"))
+    except Exception:
+        return False
+    return current == plasticity_current_state_projection(row)
 
 
 
@@ -443,7 +493,7 @@ def verify():
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if not plasticity_status_matches():
         failures.append(
-            "learning.plasticity: CURRENT_IMPLEMENTATION generated status differs from IMPLEMENTATION_MAP"
+            "learning.plasticity: generated CURRENT_IMPLEMENTATION/CURRENT_STATE differs from IMPLEMENTATION_MAP"
         )
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
