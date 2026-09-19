@@ -53,7 +53,8 @@ fn register(registry: &mut ArtifactRegistry, name: &str, predecessor: Option<&st
             manifest: ArtifactManifest {
                 artifact_id: id(name),
                 kind: ArtifactKind::Policy,
-                generation: Generation::new(if predecessor.is_some() { 2 } else { 1 }).fixture("test fixture"),
+                generation: Generation::new(if predecessor.is_some() { 2 } else { 1 })
+                    .fixture("test fixture"),
                 predecessor_id: predecessor.map(id),
                 content_digest: Digest32::of_bytes(bytes),
                 objective_digest: Digest32::of_bytes(b"objective"),
@@ -106,7 +107,8 @@ fn current_head_witness_round_trips_only_with_current_requirement() {
     )
     .fixture("test fixture");
     assert_eq!(
-        read_registry_head_witness(file.open(), receipt, &head_requirement(20)).fixture("test fixture"),
+        read_registry_head_witness(file.open(), receipt, &head_requirement(20))
+            .fixture("test fixture"),
         witness
     );
     assert_eq!(
@@ -160,7 +162,9 @@ fn snapshot_reopens_exact_history_and_revoked_ancestors() {
         }))
         .fixture("test fixture");
     let file = TestFile::new();
-    let receipt = write_registry_snapshot(file.create().fixture("test fixture"), &registry, binding()).fixture("test fixture");
+    let receipt =
+        write_registry_snapshot(file.create().fixture("test fixture"), &registry, binding())
+            .fixture("test fixture");
     let recovered = read_registry_snapshot(file.open(), receipt).fixture("test fixture");
     assert_eq!(recovered.snapshot(), registry.snapshot());
     assert!(!recovered.is_eligible(&id("new")));
@@ -202,7 +206,8 @@ fn payload_rejects_wrong_bytes_without_reusing_its_created_target() {
 fn existing_nonempty_file_is_never_reopened_for_writing() {
     let registry = ArtifactRegistry::new();
     let file = TestFile::new();
-    write_registry_snapshot(file.create().fixture("test fixture"), &registry, binding()).fixture("test fixture");
+    write_registry_snapshot(file.create().fixture("test fixture"), &registry, binding())
+        .fixture("test fixture");
     let before = fs::read(&file.0).fixture("test fixture");
     assert_eq!(
         file.create().unwrap_err(),
@@ -226,7 +231,11 @@ fn created_target_permissions_are_never_wider_than_owner_read_write() {
 
     let file = TestFile::new();
     let created = file.create().fixture("test fixture");
-    let mode = fs::metadata(&file.0).fixture("test fixture").permissions().mode() & 0o777;
+    let mode = fs::metadata(&file.0)
+        .fixture("test fixture")
+        .permissions()
+        .mode()
+        & 0o777;
     assert_eq!(mode & !0o600, 0);
     write_registry_snapshot(created, &ArtifactRegistry::new(), binding()).fixture("test fixture");
 }
@@ -303,8 +312,12 @@ fn concurrent_creation_has_exactly_one_winner() {
     }
     assert_eq!(existing, 7);
 
-    let receipt =
-        write_registry_snapshot(winner.fixture("test fixture"), &ArtifactRegistry::new(), binding()).fixture("test fixture");
+    let receipt = write_registry_snapshot(
+        winner.fixture("test fixture"),
+        &ArtifactRegistry::new(),
+        binding(),
+    )
+    .fixture("test fixture");
     assert_eq!(
         read_registry_snapshot(file.open(), receipt)
             .fixture("test fixture")
@@ -330,7 +343,9 @@ fn every_truncation_and_wrong_external_witness_rejects_without_repair() {
     let mut registry = ArtifactRegistry::new();
     register(&mut registry, "policy", None, b"policy");
     let file = TestFile::new();
-    let receipt = write_registry_snapshot(file.create().fixture("test fixture"), &registry, binding()).fixture("test fixture");
+    let receipt =
+        write_registry_snapshot(file.create().fixture("test fixture"), &registry, binding())
+            .fixture("test fixture");
     let full = fs::read(&file.0).fixture("test fixture");
     for cut in 0..full.len() {
         fs::write(&file.0, &full[..cut]).fixture("test fixture");
@@ -351,7 +366,8 @@ fn noncanonical_encoding_rejects_even_with_rehashed_file_receipt() {
     let registry = ArtifactRegistry::new();
     let file = TestFile::new();
     let mut receipt =
-        write_registry_snapshot(file.create().fixture("test fixture"), &registry, binding()).fixture("test fixture");
+        write_registry_snapshot(file.create().fixture("test fixture"), &registry, binding())
+            .fixture("test fixture");
     let altered = format!("HEPTAR01\n{}\n00\n", binding()).into_bytes();
     receipt.file_digest = Digest32::of_bytes(&altered);
     receipt.encoded_bytes = altered.len();
@@ -364,7 +380,13 @@ fn revoked_payload_cannot_be_loaded_from_current_registry() {
     let mut registry = ArtifactRegistry::new();
     register(&mut registry, "policy", None, b"policy");
     let file = TestFile::new();
-    write_candidate_payload(file.create().fixture("test fixture"), &registry, &id("policy"), b"policy").fixture("test fixture");
+    write_candidate_payload(
+        file.create().fixture("test fixture"),
+        &registry,
+        &id("policy"),
+        b"policy",
+    )
+    .fixture("test fixture");
     registry
         .append(ArtifactEvent::Revoke(StateChange {
             event_id: id("revoke"),
@@ -384,7 +406,13 @@ fn payload_corruption_and_invalid_receipt_reject() {
     let mut registry = ArtifactRegistry::new();
     register(&mut registry, "policy", None, b"policy");
     let file = TestFile::new();
-    write_candidate_payload(file.create().fixture("test fixture"), &registry, &id("policy"), b"policy").fixture("test fixture");
+    write_candidate_payload(
+        file.create().fixture("test fixture"),
+        &registry,
+        &id("policy"),
+        b"policy",
+    )
+    .fixture("test fixture");
     fs::write(&file.0, b"tamper").fixture("test fixture");
     assert_eq!(
         read_candidate_payload(file.open(), &registry, &id("policy")),
@@ -417,7 +445,6 @@ fn zero_binding_leaves_created_file_empty_for_host_reconciliation() {
     assert_eq!(fs::metadata(&file.0).fixture("test fixture").len(), 0);
 }
 
-
 #[test]
 fn contained_write_rejects_escape_and_validates_before_create() {
     let root = TestFile::new();
@@ -432,13 +459,7 @@ fn contained_write_rejects_escape_and_validates_before_create() {
 
     let rejected = PathBuf::from("rejected-payload");
     assert_eq!(
-        write_candidate_payload_beneath(
-            &root.0,
-            &rejected,
-            &registry,
-            &id("policy"),
-            b"wrong",
-        ),
+        write_candidate_payload_beneath(&root.0, &rejected, &registry, &id("policy"), b"wrong",),
         Err(ArtifactStorageError::PayloadMismatch)
     );
     assert!(!root.0.join(&rejected).exists());
@@ -455,7 +476,10 @@ fn contained_write_rejects_escape_and_validates_before_create() {
         .fixture("test fixture"),
         Digest32::of_bytes(b"policy-v1")
     );
-    assert_eq!(fs::read(root.0.join(accepted)).fixture("test fixture"), b"policy-v1");
+    assert_eq!(
+        fs::read(root.0.join(accepted)).fixture("test fixture"),
+        b"policy-v1"
+    );
     fs::remove_dir_all(&root.0).fixture("test fixture");
 }
 
