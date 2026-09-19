@@ -331,6 +331,7 @@ async fn observe_provider_occurrence(
     {
         return Err(AutomationError::Corrupt);
     }
+    let response_digest = digest_json(&response)?;
 
     match response.outcome {
         ThreadQueueReconcileOutcome::Queued {
@@ -365,15 +366,12 @@ async fn observe_provider_occurrence(
             };
             Ok(ProviderEvidence::TurnPersisted { turn_id, terminal })
         }
-        ThreadQueueReconcileOutcome::Cancelled => {
-            let receipt_digest = digest_json(&response)?;
-            Ok(ProviderEvidence::Terminal {
-                terminal: AutomationOccurrenceTerminal::Cancelled,
-                receipt_digest,
-            })
-        }
+        ThreadQueueReconcileOutcome::Cancelled => Ok(ProviderEvidence::Terminal {
+            terminal: AutomationOccurrenceTerminal::Cancelled,
+            receipt_digest: response_digest,
+        }),
         ThreadQueueReconcileOutcome::Missing => Ok(ProviderEvidence::Missing {
-            receipt_digest: digest_json(&response)?,
+            receipt_digest: response_digest,
         }),
     }
 }
