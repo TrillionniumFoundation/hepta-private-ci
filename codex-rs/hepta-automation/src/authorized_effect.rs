@@ -386,7 +386,7 @@ impl AutomationStore {
             EffectDispatchStart::Existing(durable) => {
                 ensure_attempt_binding(
                     &durable,
-                    intent_digest,
+                    &intent_digest,
                     payload_digest,
                     &binding_digest,
                     expected_binding,
@@ -508,9 +508,9 @@ impl AutomationStore {
         };
         let durable = self
             .record_effect_dispatch_observation(
-                &intent.run_id,
-                &intent.step_id,
-                intent.attempt,
+                run_id,
+                step_id,
+                attempt,
                 kind,
                 &evidence,
                 observed_at_ms,
