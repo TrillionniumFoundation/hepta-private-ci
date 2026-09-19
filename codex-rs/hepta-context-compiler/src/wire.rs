@@ -7,6 +7,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_hepta_wire::PayloadCodec;
+use codex_hepta_wire::ProducerAdmission;
 use codex_hepta_wire::SchemaAdmissionError;
 use codex_hepta_wire::SchemaCodecError;
 use codex_hepta_wire::SchemaDescriptor;
@@ -14,7 +15,7 @@ use codex_hepta_wire::SchemaRegistry;
 use codex_hepta_wire::WireEnvelopeV2;
 use codex_hepta_wire::WireV2Error;
 use codex_hepta_wire::WireVersion;
-use codex_hepta_wire::decode_typed;
+use codex_hepta_wire::decode_typed_for_producer;
 use codex_hepta_wire::encode_typed;
 use serde::Deserialize;
 use serde::Serialize;
@@ -25,6 +26,7 @@ use crate::Error;
 use crate::compile;
 
 pub const CONTEXT_COMPILATION_WIRE_SCHEMA_V2: &str = "hepta.context-compilation-receipt.v2";
+pub const CONTEXT_COMPILATION_WIRE_PRODUCER: &str = "context.compiler";
 const CONTEXT_COMPILATION_WIRE_MAX_BYTES: usize = 256 * 1024;
 const MAX_WIRE_CONTEXT_IDS: usize = 4_096;
 
@@ -116,12 +118,20 @@ pub fn context_compilation_wire_schema_v2() -> Result<SchemaDescriptor, SchemaAd
     )
 }
 
+fn context_compiler_producers() -> Result<ProducerAdmission, ContextWireError> {
+    let producer = StableId::new(CONTEXT_COMPILATION_WIRE_PRODUCER)
+        .map_err(|_| ContextWireError::Identity("context compiler producer"))?;
+    ProducerAdmission::allow_list([producer]).map_err(ContextWireError::Schema)
+}
+
 pub fn encode_compilation_receipt_wire_v2(
     receipt: &ContextCompilationReceipt,
     producer: StableId,
     generation: Generation,
 ) -> Result<WireEnvelopeV2, ContextWireError> {
     let codec = ContextCompilationWireCodec::new().map_err(ContextWireError::Schema)?;
+    let producers = context_compiler_producers()?;
+    producers.admit(&producer).map_err(ContextWireError::Schema)?;
     let mut registry = SchemaRegistry::new();
     registry
         .register(codec.descriptor().clone())
@@ -157,14 +167,17 @@ pub fn decode_compilation_receipt_wire_v2(
     envelope: &WireEnvelopeV2,
 ) -> Result<ContextCompilationWireV2, ContextWireError> {
     let codec = ContextCompilationWireCodec::new().map_err(ContextWireError::Schema)?;
+    let producers = context_compiler_producers()?;
     let mut registry = SchemaRegistry::new();
     registry
         .register(codec.descriptor().clone())
         .map_err(ContextWireError::Schema)?;
-    decode_typed(
+    decode_typed_for_producer(
         &registry,
+        &producers,
         WireVersion::V2,
         envelope.schema(),
+        envelope.producer(),
         &codec,
         envelope.payload(),
     )
@@ -191,6 +204,7 @@ pub enum ContextWireError {
     Schema(SchemaAdmissionError),
     Codec(SchemaCodecError),
     Envelope(WireV2Error),
+    Identity(&'static str),
 }
 
 impl fmt::Display for ContextWireError {
@@ -205,6 +219,7 @@ impl StdError for ContextWireError {
             Self::Schema(error) => Some(error),
             Self::Codec(error) => Some(error),
             Self::Envelope(error) => Some(error),
+            Self::Identity(_) => None,
         }
     }
 }
