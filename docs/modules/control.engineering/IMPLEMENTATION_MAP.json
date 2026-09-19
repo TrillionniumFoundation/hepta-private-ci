@@ -22,45 +22,238 @@
   "productionWriterState": "not_established",
   "operations": [
     {
-      "operation": "schedule",
-      "nativeSymbol": "schedule",
-      "sourcePath": "tools/hepta-engineering-control/hepta_engineering_control.py",
+      "operation": "issue_work_envelope",
+      "nativeSymbol": "issue_work_envelope",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/facade.py",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "StoreTests.test_fenced_lease_schedule_reopen_and_audit"
+      ],
       "sourcePathExists": true,
-      "designOperation": "schedule",
+      "designOperation": "issue_work_envelope",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "decide_integration",
-      "nativeSymbol": "decide_integration",
-      "sourcePath": "tools/hepta-engineering-control/hepta_engineering_control.py",
+      "operation": "schedule_ready_packages",
+      "nativeSymbol": "schedule_ready_packages",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/facade.py",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "StoreTests.test_fenced_lease_schedule_reopen_and_audit",
+        "StoreTests.test_cycle_and_out_of_scope_paths_reject"
+      ],
       "sourcePathExists": true,
-      "designOperation": "decide_integration",
+      "designOperation": "schedule_ready_packages",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "debiansandboxadapter",
-      "nativeSymbol": "DebianSandboxAdapter",
-      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/assimilation.py",
+      "operation": "register_worker",
+      "nativeSymbol": "register_worker",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/assignment.py",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "AssignmentLifecycleTests.test_claim_run_fail_requeue_retry_complete"
+      ],
       "sourcePathExists": true,
-      "designOperation": "debiansandboxadapter",
+      "designOperation": "register_worker",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "claim_assignment",
+      "nativeSymbol": "claim_assignment",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/assignment.py",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "AssignmentLifecycleTests.test_claim_run_fail_requeue_retry_complete",
+        "AssignmentLifecycleTests.test_worker_capability_capacity_and_lease_binding"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "claim_assignment",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "begin_assignment",
+      "nativeSymbol": "begin_assignment",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/assignment.py",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "AssignmentLifecycleTests.test_claim_run_fail_requeue_retry_complete"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "begin_assignment",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "heartbeat_assignment",
+      "nativeSymbol": "heartbeat_assignment",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/assignment.py",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "AssignmentLifecycleTests.test_expiry_requires_explicit_requeue"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "heartbeat_assignment",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "complete_assignment",
+      "nativeSymbol": "complete_assignment",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/assignment.py",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "AssignmentLifecycleTests.test_claim_run_fail_requeue_retry_complete"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "complete_assignment",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "fail_assignment",
+      "nativeSymbol": "fail_assignment",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/assignment.py",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "AssignmentLifecycleTests.test_claim_run_fail_requeue_retry_complete"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "fail_assignment",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "requeue_assignment",
+      "nativeSymbol": "requeue_assignment",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/assignment.py",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "AssignmentLifecycleTests.test_claim_run_fail_requeue_retry_complete",
+        "AssignmentLifecycleTests.test_expiry_requires_explicit_requeue"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "requeue_assignment",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "generate_candidate",
+      "nativeSymbol": "generate_candidate",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/facade.py",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "CandidateTests.test_no_change_dedupe_and_protected_paths"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "generate_candidate",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "execute_candidate_sandbox",
+      "nativeSymbol": "execute_candidate_sandbox",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/facade.py",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "CandidateTests.test_detached_sandbox_does_not_mutate_source"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "execute_candidate_sandbox",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "verify_integration_evidence",
+      "nativeSymbol": "verify_integration_evidence",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/facade.py",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "EvidenceTests.test_exact_objects_and_independent_roles_pass_for_review_only",
+        "EvidenceTests.test_wrong_first_merge_parent_and_expected_tree_reject",
+        "EvidenceTests.test_git_replace_objects_do_not_change_verified_identity"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verify_integration_evidence",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "request_independent_review",
+      "nativeSymbol": "request_independent_review",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/seal.py",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "SealedEvidenceBoundaryTests.test_review_reverifies_seal"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "request_independent_review",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "record_integration_decision",
+      "nativeSymbol": "record_integration_decision",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/seal.py",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "SealedEvidenceBoundaryTests.test_seal_replay_under_new_decision_rejects"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "record_integration_decision",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "publish_audit_projection",
+      "nativeSymbol": "publish_audit_projection",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/facade.py",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "StoreTests.test_fenced_lease_schedule_reopen_and_audit"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "publish_audit_projection",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "prepare_assimilation_candidate",
+      "nativeSymbol": "prepare_assimilation_candidate",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/facade.py",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "AssimilationTests.test_read_only_pipeline_stops_at_dormant_candidate"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prepare_assimilation_candidate",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Bind the canonical v2 operations to a named repository/CI product caller using verification-only production identities.",
+    "Obtain fresh exact-head and deterministic synthetic-merge execution receipts before changing production or acceptance claims."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -78,5 +271,10 @@
   },
   "sourceRoot": [
     "tools/hepta-engineering-control"
-  ]
+  ],
+  "legacyCompatibility": {
+    "path": "tools/hepta-engineering-control/hepta_engineering_control.py",
+    "state": "compatibility_only_not_implementation_truth",
+    "canonicalImplementation": "tools/hepta-engineering-control/control_engineering_v2"
+  }
 }
