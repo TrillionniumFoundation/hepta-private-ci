@@ -5,6 +5,8 @@
 
 #![forbid(unsafe_code)]
 
+mod provider_observer;
+
 use std::error::Error as StdError;
 use std::fmt;
 
@@ -13,6 +15,11 @@ use codex_hepta_types::Digest32;
 pub use codex_hepta_types::PromptDeliveryObservationV1;
 pub use codex_hepta_types::PromptDeliveryRejectReasonV1;
 use codex_hepta_types::StableId;
+
+pub use provider_observer::PromptDeliveryProviderObserver;
+pub use provider_observer::PromptDeliveryProviderResultV1;
+pub use provider_observer::PromptDeliveryTurnBindingV1;
+pub use provider_observer::ProviderObserverError;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CodexOperationIntent {
@@ -80,7 +87,16 @@ pub fn observe_prompt_delivery_v1(
     compilation_id: StableId,
     observation: PromptProviderTerminalObservationV1,
 ) -> Result<PromptDeliveryObservationV1, Error> {
-    validate_intent(now_ms, intent)?;
+    validate_operation_intent(now_ms, intent)?;
+    observe_prompt_delivery_after_admission_v1(intent, compilation_id, observation)
+}
+
+pub fn observe_prompt_delivery_after_admission_v1(
+    intent: &CodexOperationIntent,
+    compilation_id: StableId,
+    observation: PromptProviderTerminalObservationV1,
+) -> Result<PromptDeliveryObservationV1, Error> {
+    validate_payload_binding(intent)?;
     if !observation.terminal_observed {
         return Err(Error::MissingTerminalResponse);
     }
@@ -103,15 +119,23 @@ pub fn observe_prompt_delivery_v1(
     Ok(result)
 }
 
-fn validate_intent(now_ms: u64, intent: &CodexOperationIntent) -> Result<(), Error> {
+pub fn validate_operation_intent(
+    now_ms: u64,
+    intent: &CodexOperationIntent,
+) -> Result<(), Error> {
+    validate_payload_binding(intent)?;
+    if now_ms >= intent.deadline_ms {
+        return Err(Error::DeadlineExpired);
+    }
+    Ok(())
+}
+
+fn validate_payload_binding(intent: &CodexOperationIntent) -> Result<(), Error> {
     if intent.payload_digest.is_zero() || intent.lease_payload_digest.is_zero() {
         return Err(Error::EmptyDigest("payload"));
     }
     if intent.payload_digest != intent.lease_payload_digest {
         return Err(Error::PayloadBindingMismatch);
-    }
-    if now_ms >= intent.deadline_ms {
-        return Err(Error::DeadlineExpired);
     }
     Ok(())
 }
@@ -121,7 +145,7 @@ pub fn adapt(
     intent: CodexOperationIntent,
     observation: Option<AppServerObservation>,
 ) -> Result<CodexAdapterReceipt, Error> {
-    validate_intent(now_ms, &intent)?;
+    validate_operation_intent(now_ms, &intent)?;
     let mut bytes = Vec::new();
     bytes.extend_from_slice(b"hepta.codex.adapter.request.v1");
     push_id(&mut bytes, &intent.operation_id);
