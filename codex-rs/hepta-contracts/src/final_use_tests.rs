@@ -70,7 +70,7 @@ fn async_effect_entry_rechecks_revocation_and_consumes_the_token() {
         .update_revocations(FinalUseRevocations {
             authority_epoch: 9,
             revision: 2,
-            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
         })
         .unwrap();
     assert!(entered.matches(&binding));
@@ -85,7 +85,7 @@ fn async_effect_entry_is_denied_if_revoked_after_claim_before_entry() {
         .update_revocations(FinalUseRevocations {
             authority_epoch: 9,
             revision: 2,
-            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
         })
         .unwrap();
     assert_eq!(
@@ -121,7 +121,7 @@ fn revocation_after_claim_prevents_delivery_and_cannot_be_rolled_back() {
         .update_revocations(FinalUseRevocations {
             authority_epoch: 9,
             revision: 2,
-            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
         })
         .unwrap();
     let mut called = false;
@@ -213,7 +213,7 @@ fn revocation_survives_restart_and_missing_state_is_not_reset() {
         .update_revocations(FinalUseRevocations {
             authority_epoch: 9,
             revision: 2,
-            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+            revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
         })
         .unwrap();
     drop(authority);
@@ -299,7 +299,7 @@ fn startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations() 
     let head = FinalUseRevocations {
         authority_epoch: 9,
         revision: 2,
-        revoked_grant_ids: BTreeSet::from([signed.grant.grant_id.clone()]),
+        revoked_grant_ids: BTreeSet::from([signed.grant.grant_id]),
     };
     let reopened = FinalUseAuthority::open_state_dir(
         directory.path(),
