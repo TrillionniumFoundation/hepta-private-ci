@@ -27,11 +27,7 @@ Native target-aligned operations are exposed through
 - `verify_chain(candidate, required_roles, now) -> EvidenceDisposition`;
 - `query_claim(candidate, claim_class) -> bounded evidence references`.
 
-`EvidenceTrustPolicy::authenticate` converts an Ed25519 issuer proof into the
-non-constructible authenticated issuer consumed by `append_receipt`.
-Authentication binds the canonical envelope, registered principal, verifying
-key, role set, credential validity and exact trust-policy digest. Arbitrary
-issuer strings cannot satisfy this contract.
+`provision_trust_policy` pins one immutable Ed25519 trust policy into the owner SQLite lineage before the first qualification receipt. `EvidenceTrustPolicy::authenticate` converts an issuer proof into the non-constructible authenticated issuer consumed by `append_receipt`; append then re-checks that authenticated issuer against the store-pinned policy. Authentication binds the canonical envelope, registered principal, verifying key, role set, credential validity and exact trust-policy digest. Arbitrary issuer strings or caller-supplied replacement policies cannot satisfy this contract.
 
 `prepare_independent_decision` emits the typed
 `IndependentDecisionReceiptV1` and exact signing envelope without signing on
@@ -118,8 +114,7 @@ after commit it emits a successor checkpoint. Independent review preparation
 emits exact bytes for an external reviewer to sign and never owns the reviewer's
 private key.
 
-An external checkpoint binds immutable store instance identity, receipt count,
-sequence and chain digest. It detects replacement, rollback and divergent
+An external checkpoint binds immutable store instance identity, pinned trust-policy digest, receipt count, sequence and chain digest. It detects replacement, rollback and divergent
 history when retained separately from SQLite. The repository does not claim
 that a checkpoint copied/restored beside the database is independent.
 
