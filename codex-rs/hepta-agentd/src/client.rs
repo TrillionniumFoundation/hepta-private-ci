@@ -100,6 +100,22 @@ impl AgentdClient {
         }
     }
 
+    pub async fn drain(&self) -> Result<(), AgentdError> {
+        match self
+            .send(AgentdRequest::drain(
+                self.request_id(),
+                self.spawn_generation,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::DrainAccepted {
+                admission_stopped: true,
+            } => Ok(()),
+            payload => unexpected(payload),
+        }
+    }
+
     pub async fn session_ingress(&self) -> Result<SessionIngress, AgentdError> {
         match self
             .send(AgentdRequest::session_ingress(
