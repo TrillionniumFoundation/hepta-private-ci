@@ -60,6 +60,22 @@
       "sourcePathExists": true
     },
     {
+      "operation": "rootedlearningevidencetrustproviderv1",
+      "designOperation": "rootedlearningevidencetrustproviderv1",
+      "nativeSymbol": "RootedLearningEvidenceTrustProviderV1",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/trust_root.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        "pinned_root_admits_signed_signer_distribution",
+        "manifest_cannot_replace_pinned_root",
+        "rooted_provider_rotates_only_predecessor_bound_manifests"
+      ],
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "sourcePathExists": true
+    },
+    {
       "operation": "productionledgerwriter",
       "designOperation": "productionledgerwriter",
       "nativeSymbol": "ProductionLedgerWriter",
@@ -124,7 +140,7 @@
     "Bind LearningEvidenceTrustProviderV1, ProductionLedgerWriter and DurableAnchorWitness to one named product process, live authority store, exclusive writer identity and durable directories before productionImplementation may become true."
   ],
   "externalEvidenceGates": [
-    "live trust-root and signer/controller distribution",
+    "live pinned-root private-key custody and manifest publication",
     "live independent outcome observers",
     "target-host durability, latency, storage-growth and power-loss qualification",
     "independent semantic review and operator acceptance",
