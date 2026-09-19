@@ -30,6 +30,7 @@ pub use closure_v2::DatasetWithdrawalReceiptV1;
 pub use closure_v2::DatasetWithdrawalRecordV1;
 pub use closure_v2::DatasetWithdrawalRegistry;
 pub use closure_v2::DatasetWithdrawalRegistrySnapshotV1;
+pub use closure_v2::DatasetWithdrawalScopeV1;
 pub use closure_v2::LearningArtifactManifestV2;
 pub use closure_v2::ProvenanceModeV1;
 pub use closure_v2::RegistryHeadReceiptV1;
