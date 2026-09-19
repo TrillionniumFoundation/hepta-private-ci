@@ -96,6 +96,11 @@ REQUIRED_FILES = [
     "qualification/hnmf-reference/Cargo.lock",
     "qualification/hnmf-reference/README.md",
     "qualification/hnmf-reference/src/lib.rs",
+    "qualification/hnmf-contract-reference/src/lib.rs",
+    "codex-rs/hepta-cognitive-types/src/hnmf.rs",
+    "codex-rs/hepta-cognitive-types/src/wire.rs",
+    "codex-rs/hepta-cognitive-types/src/ports.rs",
+    "docs/modules/cognitive.types/PORT_SCHEMAS.json",
     ".github/workflows/hnmf-qualification.yml",
 ]
 
@@ -300,6 +305,28 @@ def verify() -> int:
     need(all(position >= 0 for position in positions), "technical heading coverage")
     need(positions == sorted(positions), "technical heading ordering")
     need(len(set(positions)) == len(positions), "technical heading uniqueness")
+
+    canonical_source = (ROOT / "codex-rs/hepta-cognitive-types/src/hnmf.rs").read_text(encoding="utf-8")
+    protocol_registry = (ROOT / "docs/contracts/PROTOCOL_SCHEMAS.json").read_text(encoding="utf-8")
+    port_registry = (ROOT / "docs/modules/cognitive.types/PORT_SCHEMAS.json").read_text(encoding="utf-8")
+    for protocol in PROTOCOLS:
+        need(
+            f"pub struct {protocol}" in canonical_source
+            or f"pub enum {protocol}" in canonical_source,
+            f"production canonical type {protocol}",
+        )
+        need(f'"id": "{protocol}"' in protocol_registry, f"global protocol {protocol}")
+    for port in [
+        "ModulePort::cognitive.types::cognitive.read",
+        "ModulePort::cognitive.types::cognitive.store",
+        "ModulePort::cognitive.types::knowledge.graph",
+        "ModulePort::cognitive.types::learning.ledger",
+    ]:
+        need(port in port_registry, f"cognitive port schema binding {port}")
+    need(
+        "pub struct TopologyProposalV1" not in canonical_source,
+        "memory topology must not collide with learning TopologyProposalV1",
+    )
 
     migration_path = "docs/hnmf/MIGRATION.md"
     migration = (ROOT / migration_path).read_text(encoding="utf-8")
