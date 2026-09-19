@@ -3511,6 +3511,11 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
  "ed25519-dalek",
+ "pretty_assertions",
+ "sqlx",
+ "tempfile",
+ "thiserror 2.0.18",
+ "tokio",
 ]
 
 [[package]]
