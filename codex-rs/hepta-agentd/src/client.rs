@@ -73,15 +73,25 @@ impl AgentdClient {
     }
 
     pub async fn health(&self) -> Result<HealthSnapshot, AgentdError> {
-        match self
+        self.health_with_generation()
+            .await
+            .map(|(snapshot, _current_generation)| snapshot)
+    }
+
+    /// Return health together with the daemon's current lifecycle generation.
+    ///
+    /// The client spawn generation identifies the process. Run authority binds
+    /// to the current supervisor lifecycle generation carried by the response.
+    pub async fn health_with_generation(&self) -> Result<(HealthSnapshot, u64), AgentdError> {
+        let response = self
             .send(AgentdRequest::health(
                 self.request_id(),
                 self.spawn_generation,
             ))
-            .await?
-            .payload
-        {
-            AgentdPayload::Health(snapshot) => Ok(snapshot),
+            .await?;
+        let current_generation = response.current_generation;
+        match response.payload {
+            AgentdPayload::Health(snapshot) => Ok((snapshot, current_generation)),
             payload => unexpected(payload),
         }
     }
@@ -110,6 +120,174 @@ impl AgentdClient {
             .payload
         {
             AgentdPayload::SessionIngress(ingress) => Ok(ingress),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_start(
+        &self,
+        snapshot: crate::AgentdRunSnapshot,
+    ) -> Result<crate::AgentdRunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::RunStart { snapshot },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_attach_context(
+        &self,
+        expected_revision: u64,
+        attachment: crate::AgentdContextAttachment,
+    ) -> Result<crate::AgentdRunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::RunAttachContext {
+                    expected_revision,
+                    attachment,
+                },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_mark_dispatched(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+    ) -> Result<crate::AgentdRunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::RunMarkDispatched {
+                    run_id,
+                    expected_revision,
+                },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_cancel(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+        reason: String,
+    ) -> Result<
+        (
+            crate::AgentdCancellationDisposition,
+            crate::AgentdRunReceipt,
+        ),
+        AgentdError,
+    > {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::RunCancel {
+                    run_id,
+                    expected_revision,
+                    reason,
+                },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::RunCancellation {
+                disposition,
+                receipt,
+            } => Ok((disposition, receipt)),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_observe_terminal(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+        phase: crate::AgentdRunPhase,
+        terminal_observed: bool,
+    ) -> Result<crate::AgentdRunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::RunObserveTerminal {
+                    run_id,
+                    expected_revision,
+                    phase,
+                    terminal_observed,
+                },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_get(
+        &self,
+        run_id: String,
+    ) -> Result<Option<crate::AgentdRunReceipt>, AgentdError> {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::RunGet { run_id },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::RunStatus { receipt } => Ok(receipt),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn run_remove_closed(
+        &self,
+        run_id: String,
+        expected_revision: u64,
+    ) -> Result<crate::AgentdRunReceipt, AgentdError> {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::RunRemoveClosed {
+                    run_id,
+                    expected_revision,
+                },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::RunReceipt(receipt) => Ok(receipt),
             payload => unexpected(payload),
         }
     }

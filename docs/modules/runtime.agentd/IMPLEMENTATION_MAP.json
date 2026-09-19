@@ -14,30 +14,35 @@
   "resolvedRoots": [
     "codex-rs/hepta-agentd"
   ],
-  "stateOwnerDisposition": "Owns only ephemeral run admission, immutable snapshot references, and runtime-health composition state.",
-  "terminalObserverDisposition": "Agentd preserves dispatch-boundary uncertainty and accepts terminal state only from the delegated execution/effect owner.",
+  "stateOwnerDisposition": "Owns a bounded owner-private crash-recovery lifecycle journal, immutable run snapshot references, bounded cancellation-ack deadlines and runtime-health composition state; pre-rename failure leaves live state unchanged, post-rename durability ambiguity fences the generation, and closed rows are compacted at the retention ceiling; product-domain facts remain with their canonical owners.",
+  "terminalObserverDisposition": "Agentd preserves dispatch-boundary uncertainty, never redispatches an unobserved external run after restart, and accepts success/failure/cancel terminality only from the delegated execution owner.",
   "operations": [
     {
       "designOperation": "compose_runtime",
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-        "symbol": "pub fn compose_runtime(",
+        "path": "codex-rs/hepta-agentd/src/state.rs",
+        "symbol": "pub(crate) fn new(",
         "buildTarget": "codex-hepta-agentd"
       },
       "delegatedCallees": [],
       "tests": [
         {
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
-          "kind": "native_unit",
+          "kind": "daemon_composition",
+          "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+          "kind": "daemon_recovery",
           "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
-      "sourceSemantics": "Validates immutable supervisor/Agentd generations, configuration, and owner-port identities.",
+      "sourceSemantics": "AgentdState composes the bounded AgentRunCoordinator into the live daemon generation and restores only same-owner/config/port recovery state.",
       "operation": "compose_runtime",
-      "nativeSymbol": "pub fn compose_runtime(",
-      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "nativeSymbol": "pub(crate) fn new(",
+      "sourcePath": "codex-rs/hepta-agentd/src/state.rs",
       "sourcePathExists": true
     },
     {
@@ -45,30 +50,32 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-        "symbol": "pub fn start_run(",
+        "path": "codex-rs/hepta-agentd/src/state.rs",
+        "symbol": "pub(crate) fn run_start(",
         "buildTarget": "codex-hepta-agentd"
       },
-      "delegatedCallees": [
-        {
-          "role": "delegated_callee",
-          "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
-          "symbol": "pub(crate) async fn turn_start(",
-          "buildTarget": "codex-app-server",
-          "ownerModule": "runtime.codex"
-        }
-      ],
+      "delegatedCallees": [],
       "tests": [
         {
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
-          "kind": "snapshot_and_capacity",
+          "kind": "daemon_wire_lifecycle",
           "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+          "kind": "daemon_recovery",
+          "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+          "kind": "named_product_caller_unit",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Admits a bounded run and freezes request, objective, body, artifact, authority, and deadline identity.",
+      "sourceSemantics": "The live control path admits a bounded run, freezes request/objective/body/artifact/authority/deadline identity, and persists the candidate lifecycle revision before publishing it to live memory or replying.",
       "operation": "start_run",
-      "nativeSymbol": "pub fn start_run(",
-      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "nativeSymbol": "pub(crate) fn run_start(",
+      "sourcePath": "codex-rs/hepta-agentd/src/state.rs",
       "sourcePathExists": true
     },
     {
@@ -76,30 +83,27 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-        "symbol": "pub fn cancel_run(",
+        "path": "codex-rs/hepta-agentd/src/state.rs",
+        "symbol": "pub(crate) fn run_cancel(",
         "buildTarget": "codex-hepta-agentd"
       },
-      "delegatedCallees": [
-        {
-          "role": "delegated_callee",
-          "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
-          "symbol": "pub(crate) async fn turn_interrupt(",
-          "buildTarget": "codex-app-server",
-          "ownerModule": "runtime.codex"
-        }
-      ],
+      "delegatedCallees": [],
       "tests": [
         {
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
-          "kind": "cancellation_race",
+          "kind": "daemon_wire_lifecycle",
+          "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+          "kind": "daemon_recovery",
           "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
-      "sourceSemantics": "Distinguishes provable pre-dispatch cancellation from post-dispatch cancelling or indeterminate state.",
+      "sourceSemantics": "The live control path durably records bounded cancellation intent plus a 5-second acknowledgement deadline; missing acknowledgement advances to indeterminate without claiming physical cancellation. The named native-app-server inference caller pairs post-dispatch intent with a real TurnInterrupt and matching terminal/indeterminate observation; other direct callers are not yet universally composed.",
       "operation": "cancel_run",
-      "nativeSymbol": "pub fn cancel_run(",
-      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "nativeSymbol": "pub(crate) fn run_cancel(",
+      "sourcePath": "codex-rs/hepta-agentd/src/state.rs",
       "sourcePathExists": true
     },
     {
@@ -107,44 +111,44 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-        "symbol": "pub fn attach_context(",
+        "path": "codex-rs/hepta-agentd/src/state.rs",
+        "symbol": "pub(crate) fn run_attach_context(",
         "buildTarget": "codex-hepta-agentd"
       },
-      "delegatedCallees": [
-        {
-          "role": "delegated_callee",
-          "path": "codex-rs/core/src/codex_thread.rs",
-          "symbol": "pub(crate) async fn submit_turn_input_and_wait_for_exact_admission(",
-          "buildTarget": "codex-core",
-          "ownerModule": "runtime.codex"
-        }
-      ],
+      "delegatedCallees": [],
       "tests": [
         {
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
-          "kind": "mixed_generation_rejection",
+          "kind": "daemon_wire_lifecycle",
+          "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+          "kind": "daemon_recovery",
           "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
-      "sourceSemantics": "Accepts context only when its receipt binds the complete frozen run tuple.",
+      "sourceSemantics": "The live control path accepts context only when request/objective/body/artifact/authority/deadline exactly match the frozen run tuple, then persists the revision before reply.",
       "operation": "attach_context",
-      "nativeSymbol": "pub fn attach_context(",
-      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "nativeSymbol": "pub(crate) fn run_attach_context(",
+      "sourcePath": "codex-rs/hepta-agentd/src/state.rs",
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [],
+  "repositoryControlledGaps": [
+    "Compose the remaining direct SessionIngress product consumer(s), notably hepta-matrixd queue/turn execution, into the Agentd lifecycle API or enforce an equivalent host-side lifecycle hook before claiming universal per-Agent run coverage.",
+    "Define and enforce the bare RunCancel contract for callers outside the native inference composition: the native-app-server inference caller now pairs cancellation intent with a real TurnInterrupt and terminal observation, but RunCancel by itself remains a durable intent rather than proof of physical interruption."
+  ],
   "externalEvidenceGates": [
-    "deployed Agentd process and authenticated socket identity",
-    "non-test caller through the full Codex turn path",
-    "target backpressure/restart measurements"
+    "deployed Agentd process and authenticated socket/generation identity",
+    "target-host backpressure/restart measurements",
+    "independent operational acceptance of drain/restart behavior"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": true,
+    "repositoryControlledSourceBoundaryGapsClosed": false,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
@@ -157,7 +161,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "composed_native_app_server_inference_only",
   "productionWriterState": "not_established",
   "owner": "agent-runtime",
   "deputy": "runtime-control",

@@ -1,6 +1,8 @@
 //! Local durable admission around the actual App Server driver.
 
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_agentd::AgentdClient;
+use codex_hepta_agentd::AgentdRunPhase;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
 use sha2::Digest;
@@ -60,6 +62,9 @@ impl AppServerModelDriver {
         }
         if record.state != NativeReservationState::Reserved {
             if let Some(output) = record.observation {
+                // Historical terminal replay is already authorized by the
+                // durable inference journal. It must not regain a dependency
+                // on a possibly retired Agentd generation or contact provider.
                 return Ok(output);
             }
             let dispatch = record.dispatch.ok_or("missing durable dispatch binding")?;
@@ -89,7 +94,14 @@ impl AppServerModelDriver {
                 if !output.terminal_observed && cancellation.is_cancelled() {
                     control.cancel_native(&request_id)?;
                 }
+                // The inference-control journal is the result authority. Only
+                // after it has durably settled may the bounded Agentd lifecycle
+                // ledger retire a closed run. If cleanup fails, replay of the
+                // same durable observation retries cleanup without redispatch.
                 control.settle_native(&request_id, output.clone())?;
+                if output.terminal_observed {
+                    self.finish_agentd_lifecycle(&request_id, &output).await?;
+                }
                 Ok(output)
             }
             Err(error) => {
@@ -104,6 +116,60 @@ impl AppServerModelDriver {
                 Err(error)
             }
         }
+
+    }
+
+    async fn finish_agentd_lifecycle(
+        &self,
+        request_id: &str,
+        output: &NativeRunOutput,
+    ) -> Result<()> {
+        let owner = AgentdClient::new(
+            self.config.agentd_socket.clone(),
+            self.config.agent_id.clone(),
+            self.config.generation,
+        )?;
+        let Some(mut receipt) = owner.run_get(request_id.to_string()).await? else {
+            // A prior replay may already have retired the closed lifecycle row.
+            return Ok(());
+        };
+
+        let expected_phase = super::lifecycle_phase_for_output(output.status);
+        if expected_phase == AgentdRunPhase::Indeterminate {
+            return Err(
+                "terminal provider observation mapped to an indeterminate Agentd phase".into(),
+            );
+        }
+
+        if matches!(
+            receipt.phase,
+            AgentdRunPhase::Cancelled | AgentdRunPhase::Succeeded | AgentdRunPhase::Failed
+        ) {
+            if receipt.phase != expected_phase {
+                return Err(format!(
+                    "Agentd terminal phase {:?} conflicts with provider phase {:?}",
+                    receipt.phase, expected_phase
+                )
+                .into());
+            }
+        } else {
+            receipt = owner
+                .run_observe_terminal(
+                    request_id.to_string(),
+                    receipt.revision,
+                    expected_phase,
+                    true,
+                )
+                .await?;
+        }
+
+        if receipt.phase != expected_phase {
+            return Err("terminal inference output did not close the Agentd lifecycle exactly".into());
+        }
+        owner
+            .run_remove_closed(request_id.to_string(), receipt.revision)
+            .await?;
+        Ok(())
     }
 }
 

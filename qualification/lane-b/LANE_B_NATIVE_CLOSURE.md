@@ -53,22 +53,27 @@ External evidence gates:
 
 ## 4. `runtime.agentd`
 
-Owns only ephemeral run admission, immutable snapshot references, and runtime-health composition state.
+Owns a bounded owner-private crash-recovery lifecycle journal, immutable run snapshot references, bounded cancellation-ack deadlines and runtime-health composition state. Lifecycle mutations are synced before the live coordinator advances; product-domain facts remain with their canonical owners.
 
-Agentd preserves dispatch-boundary uncertainty and accepts terminal state only from the delegated execution/effect owner.
+Agentd preserves dispatch-boundary uncertainty, never redispatches an unobserved external run after restart, and accepts success/failure/cancel terminality only from the delegated execution owner. Post-dispatch cancellation carries a 5-second durable acknowledgement deadline; expiry becomes `indeterminate`, not fabricated cancellation.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
-| `compose_runtime` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn compose_runtime(` |
-| `start_run` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn start_run(` |
-| `cancel_run` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn cancel_run(` |
-| `attach_context` | `owner_native` | `codex-rs/hepta-agentd/src/lane_b_runtime.rs` — `pub fn attach_context(` |
+| `compose_runtime` | `owner_native` | `codex-rs/hepta-agentd/src/state.rs` — `pub(crate) fn new(` |
+| `start_run` | `owner_native` | `codex-rs/hepta-agentd/src/state.rs` — `pub(crate) fn run_start(` |
+| `cancel_run` | `owner_native` | `codex-rs/hepta-agentd/src/state.rs` — `pub(crate) fn run_cancel(` |
+| `attach_context` | `owner_native` | `codex-rs/hepta-agentd/src/state.rs` — `pub(crate) fn run_attach_context(` |
+
+Remaining repository implementation gaps:
+
+- Compose the remaining direct SessionIngress product consumer(s), notably hepta-matrixd queue/turn execution, into the Agentd lifecycle API or enforce an equivalent host-side lifecycle hook before claiming universal per-Agent run coverage.
+- Define and enforce the bare RunCancel contract for callers outside the native inference composition: the native-app-server inference caller now pairs cancellation intent with a real TurnInterrupt and terminal observation, but RunCancel by itself remains a durable intent rather than proof of physical interruption.
 
 External evidence gates:
 
-- deployed Agentd process and authenticated socket identity
-- non-test caller through the full Codex turn path
-- target backpressure/restart measurements
+- deployed Agentd process and authenticated socket/generation identity
+- target-host backpressure/restart measurements
+- independent operational acceptance of drain/restart behavior
 
 ## 5. `runtime.codex`
 

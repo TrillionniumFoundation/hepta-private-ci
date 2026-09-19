@@ -94,6 +94,66 @@ pub struct MemoryFederationCapabilitySnapshot {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
+pub struct AgentdRunSnapshot {
+    pub run_id: String,
+    pub request_digest: String,
+    pub objective_digest: String,
+    pub body_digest: String,
+    pub artifact_set_digest: String,
+    pub authority_epoch: u64,
+    pub deadline_ms: u64,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AgentdContextAttachment {
+    pub run_id: String,
+    pub request_digest: String,
+    pub objective_digest: String,
+    pub body_digest: String,
+    pub artifact_set_digest: String,
+    pub authority_epoch: u64,
+    pub deadline_ms: u64,
+    pub context_digest: String,
+    pub compilation_receipt_digest: String,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AgentdRunPhase {
+    Admitted,
+    ContextAttached,
+    Dispatched,
+    Cancelling,
+    Cancelled,
+    Succeeded,
+    Failed,
+    Indeterminate,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AgentdRunReceipt {
+    pub run_id: String,
+    pub revision: u64,
+    pub phase: AgentdRunPhase,
+    pub context_digest: Option<String>,
+    pub cancellation_reason: Option<String>,
+    pub cancellation_ack_deadline_ms: Option<u64>,
+    pub terminal_observed: bool,
+    pub idempotent: bool,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AgentdCancellationDisposition {
+    CancelledBeforeDispatch,
+    CancellingAfterDispatch,
+    AlreadyTerminal,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct AgentdRequest {
     pub schema_version: u32,
     pub request_id: u64,
@@ -266,6 +326,35 @@ pub enum AgentdMethod {
     Health,
     Lifecycle,
     SessionIngress,
+    RunStart {
+        snapshot: AgentdRunSnapshot,
+    },
+    RunAttachContext {
+        expected_revision: u64,
+        attachment: AgentdContextAttachment,
+    },
+    RunMarkDispatched {
+        run_id: String,
+        expected_revision: u64,
+    },
+    RunCancel {
+        run_id: String,
+        expected_revision: u64,
+        reason: String,
+    },
+    RunObserveTerminal {
+        run_id: String,
+        expected_revision: u64,
+        phase: AgentdRunPhase,
+        terminal_observed: bool,
+    },
+    RunGet {
+        run_id: String,
+    },
+    RunRemoveClosed {
+        run_id: String,
+        expected_revision: u64,
+    },
     AuthBusText {
         request: AuthBusTextIngress,
     },
@@ -328,6 +417,14 @@ pub enum AgentdPayload {
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
     SessionIngress(SessionIngress),
+    RunReceipt(AgentdRunReceipt),
+    RunCancellation {
+        disposition: AgentdCancellationDisposition,
+        receipt: AgentdRunReceipt,
+    },
+    RunStatus {
+        receipt: Option<AgentdRunReceipt>,
+    },
     CognitiveContext(CognitiveContextSnapshot),
     AuthBusTextStatus(AuthBusTextStatus),
     Events(EventBatch),
@@ -578,6 +675,60 @@ mod tests {
         assert_eq!(
             serde_json::from_slice::<AgentdPayload>(&payload_bytes).unwrap(),
             payload
+        );
+    }
+
+    #[test]
+    fn run_lifecycle_wire_round_trip_binds_complete_snapshot() {
+        let snapshot = AgentdRunSnapshot {
+            run_id: "run.1".to_string(),
+            request_digest: "1".repeat(64),
+            objective_digest: "2".repeat(64),
+            body_digest: "3".repeat(64),
+            artifact_set_digest: "4".repeat(64),
+            authority_epoch: 7,
+            deadline_ms: 10_000,
+        };
+        let request = AgentdRequest {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: 9,
+            spawn_generation: 11,
+            method: AgentdMethod::RunStart {
+                snapshot: snapshot.clone(),
+            },
+        };
+        let bytes = serde_json::to_vec(&request).expect("serialize run request");
+        assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&bytes).expect("parse run request"),
+            request
+        );
+
+        let attachment = AgentdContextAttachment {
+            run_id: snapshot.run_id,
+            request_digest: snapshot.request_digest,
+            objective_digest: snapshot.objective_digest,
+            body_digest: snapshot.body_digest,
+            artifact_set_digest: snapshot.artifact_set_digest,
+            authority_epoch: snapshot.authority_epoch,
+            deadline_ms: snapshot.deadline_ms,
+            context_digest: "5".repeat(64),
+            compilation_receipt_digest: "6".repeat(64),
+        };
+        let request = AgentdRequest {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: 10,
+            spawn_generation: 11,
+            method: AgentdMethod::RunAttachContext {
+                expected_revision: 1,
+                attachment,
+            },
+        };
+        let bytes = serde_json::to_vec(&request).expect("serialize attachment");
+        assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&bytes).expect("parse attachment"),
+            request
         );
     }
 

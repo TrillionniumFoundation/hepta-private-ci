@@ -7,6 +7,8 @@ use std::collections::HashMap;
 use std::future::Future;
 use std::path::PathBuf;
 use std::time::Duration;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_app_server_client::AppServerEvent;
 use codex_app_server_client::RemoteAppServerClient;
@@ -29,7 +31,11 @@ use codex_app_server_protocol::TurnStartResponse;
 use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_agentd::AgentdClient;
+use codex_hepta_agentd::AgentdContextAttachment;
 use codex_hepta_agentd::AgentdError;
+use codex_hepta_agentd::AgentdRunPhase;
+use codex_hepta_agentd::AgentdRunReceipt;
+use codex_hepta_agentd::AgentdRunSnapshot;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
@@ -110,8 +116,8 @@ impl AppServerModelDriver {
         if !health.ready || health.fenced {
             return Err("Agent is not ready".into());
         }
-        let context = match context_query {
-            Some(query) => Some(owner.cognitive_context(query, /*limit*/ 4).await?),
+        let context = match context_query.as_ref() {
+            Some(query) => Some(owner.cognitive_context(query.clone(), /*limit*/ 4).await?),
             None => None,
         };
         let additional_context = context
@@ -129,6 +135,14 @@ impl AppServerModelDriver {
                 )]))
             })
             .transpose()?;
+        let context_bytes = serde_json::to_vec(&additional_context)?;
+        let context_digest = control::digest(&context_bytes);
+        let compilation_receipt_digest = control::digest(&serde_json::to_vec(&(
+            "hepta.agentd-context-attachment.v1",
+            &context_digest,
+            &additional_context,
+        ))?);
+
         let ingress = owner.session_ingress().await?;
         let socket_path = AbsolutePathBuf::from_absolute_path(ingress.socket_path)?;
         let mut client = timeout(
@@ -171,20 +185,135 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("provider substituted the requested model".into());
         }
-        // Recheck the actual generation after acquiring context and connecting.
+
+        // Recheck the owner immediately before lifecycle admission. The
+        // response current_generation is the authority epoch carried by the
+        // run snapshot; spawn_generation alone is only the process identity.
         owner.session_ingress().await?;
+        let (latest_health, authority_epoch) = owner.health_with_generation().await?;
+        if !latest_health.ready || latest_health.fenced {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("Agent is no longer ready before model dispatch".into());
+        }
         if cancellation.is_cancelled() {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("cancelled before lifecycle admission".into());
+        }
+
+        let deadline = Instant::now() + self.config.timeout;
+        let deadline_ms = deadline_unix_ms(self.config.timeout)?;
+        let request_digest = control::digest(&serde_json::to_vec(&(
+            "hepta.agentd-run-request.v1",
+            request_id,
+            &self.config.agent_id,
+            self.config.generation,
+        ))?);
+        let objective_digest = control::digest(&serde_json::to_vec(&(
+            "hepta.agentd-run-objective.v1",
+            &self.config.model,
+        ))?);
+        let body_digest = control::digest(&serde_json::to_vec(&(
+            "hepta.agentd-run-body.v1",
+            &prompt,
+            &context_query,
+        ))?);
+        let artifact_set_digest = control::digest(&serde_json::to_vec(&(
+            "hepta.agentd-run-artifacts.v1",
+            &started.model,
+            &started.model_provider,
+        ))?);
+        let run_snapshot = AgentdRunSnapshot {
+            run_id: request_id.to_string(),
+            request_digest: request_digest.clone(),
+            objective_digest: objective_digest.clone(),
+            body_digest: body_digest.clone(),
+            artifact_set_digest: artifact_set_digest.clone(),
+            authority_epoch,
+            deadline_ms,
+        };
+        let lifecycle_started = owner.run_start(run_snapshot).await?;
+        let lifecycle_attached = match owner
+            .run_attach_context(
+                lifecycle_started.revision,
+                AgentdContextAttachment {
+                    run_id: request_id.to_string(),
+                    request_digest,
+                    objective_digest,
+                    body_digest,
+                    artifact_set_digest,
+                    authority_epoch,
+                    deadline_ms,
+                    context_digest: context_digest.clone(),
+                    compilation_receipt_digest,
+                },
+            )
+            .await
+        {
+            Ok(receipt) => receipt,
+            Err(error) => {
+                let _ = owner
+                    .run_cancel(
+                        request_id.to_string(),
+                        lifecycle_started.revision,
+                        "context_attachment_rejected".to_string(),
+                    )
+                    .await;
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err(error.into());
+            }
+        };
+        let mut lifecycle_revision = lifecycle_attached.revision;
+
+        if cancellation.is_cancelled() {
+            let _ = owner
+                .run_cancel(
+                    request_id.to_string(),
+                    lifecycle_revision,
+                    "cancelled_before_model_dispatch".to_string(),
+                )
+                .await;
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
         }
-        control.dispatch_native(
+
+        if let Err(error) = control.dispatch_native(
             request_id,
             NativeDispatch {
                 thread_id: started.thread.id.clone(),
                 model_provider: started.model_provider.clone(),
-                context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
+                context_digest,
             },
-        )?;
+        ) {
+            let _ = owner
+                .run_cancel(
+                    request_id.to_string(),
+                    lifecycle_revision,
+                    "inference_dispatch_journal_failed".to_string(),
+                )
+                .await;
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err(error.into());
+        }
+
+        let lifecycle_dispatched = match owner
+            .run_mark_dispatched(request_id.to_string(), lifecycle_revision)
+            .await
+        {
+            Ok(receipt) => receipt,
+            Err(error) => {
+                let _ = owner
+                    .run_cancel(
+                        request_id.to_string(),
+                        lifecycle_revision,
+                        "lifecycle_dispatch_boundary_rejected".to_string(),
+                    )
+                    .await;
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err(error.into());
+            }
+        };
+        lifecycle_revision = lifecycle_dispatched.revision;
+
         let response = timeout(
             RPC_TIMEOUT,
             client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {
@@ -206,6 +335,13 @@ impl AppServerModelDriver {
         let turn = match response {
             Ok(Ok(response)) => response.turn,
             _ => {
+                let _ = reconcile_lifecycle_observation(
+                    &owner,
+                    request_id,
+                    lifecycle_revision,
+                    None,
+                )
+                .await;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Ok(NativeRunOutput {
                     thread_id: started.thread.id,
@@ -234,11 +370,35 @@ impl AppServerModelDriver {
             stop_reason: None,
         };
         if let Err(error) = control.native_started(request_id, output.turn_id.clone()) {
+            lifecycle_revision = prepare_lifecycle_cancel(
+                &owner,
+                request_id,
+                lifecycle_revision,
+                "native_started_journal_failure",
+            )
+            .await;
             interrupt(&mut client, &output).await;
+            let grace = CancellationToken::new();
+            let _ = self
+                .observe(
+                    &mut client,
+                    &mut output,
+                    Instant::now() + INTERRUPT_GRACE,
+                    &grace,
+                    /*owner*/ None,
+                )
+                .await;
+            let _ = reconcile_lifecycle_observation(
+                &owner,
+                request_id,
+                lifecycle_revision,
+                Some(&output),
+            )
+            .await;
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err(error.into());
         }
-        let deadline = Instant::now() + self.config.timeout;
+
         let result = self
             .observe(
                 &mut client,
@@ -249,7 +409,7 @@ impl AppServerModelDriver {
             )
             .await;
         if let Err(reason) = result {
-            output.stop_reason = Some(reason);
+            output.stop_reason = Some(reason.clone());
             // Persist cancellation intent, but still interrupt if that write
             // fails. A failed journal write fences later admission/settlement.
             // Commit observed authority loss before waiting for interruption:
@@ -263,6 +423,8 @@ impl AppServerModelDriver {
                     Ok(())
                 };
             let cancel_recorded = control.cancel_native(request_id);
+            lifecycle_revision =
+                prepare_lifecycle_cancel(&owner, request_id, lifecycle_revision, &reason).await;
             interrupt(&mut client, &output).await;
             let grace = CancellationToken::new();
             let _ = self
@@ -277,6 +439,15 @@ impl AppServerModelDriver {
             loss_recorded?;
             cancel_recorded?;
         }
+
+        let _ = reconcile_lifecycle_observation(
+            &owner,
+            request_id,
+            lifecycle_revision,
+            Some(&output),
+        )
+        .await;
+
         if output.terminal_observed {
             let _ = timeout(
                 RPC_TIMEOUT,
@@ -350,6 +521,100 @@ impl AppServerModelDriver {
                 AppServerEvent::Disconnected { message } => return Err(message),
             }
         }
+    }
+}
+
+fn deadline_unix_ms(timeout: Duration) -> Result<u64> {
+    let now = SystemTime::now().duration_since(UNIX_EPOCH)?;
+    let deadline = now
+        .checked_add(timeout)
+        .ok_or("native lifecycle deadline overflow")?;
+    u64::try_from(deadline.as_millis())
+        .map_err(|_| "native lifecycle deadline exceeds u64 milliseconds".into())
+}
+
+fn bounded_lifecycle_reason(reason: &str) -> String {
+    let value: String = reason.chars().take(128).collect();
+    if value.trim().is_empty() {
+        "native_worker_cancel".to_string()
+    } else {
+        value
+    }
+}
+
+async fn prepare_lifecycle_cancel(
+    owner: &AgentdClient,
+    run_id: &str,
+    fallback_revision: u64,
+    reason: &str,
+) -> u64 {
+    let current = owner.run_get(run_id.to_string()).await.ok().flatten();
+    let Some(current) = current else {
+        return fallback_revision;
+    };
+    match current.phase {
+        AgentdRunPhase::Admitted
+        | AgentdRunPhase::ContextAttached
+        | AgentdRunPhase::Dispatched => owner
+            .run_cancel(
+                run_id.to_string(),
+                current.revision,
+                bounded_lifecycle_reason(reason),
+            )
+            .await
+            .map(|(_disposition, receipt)| receipt.revision)
+            .unwrap_or(current.revision),
+        AgentdRunPhase::Cancelling
+        | AgentdRunPhase::Cancelled
+        | AgentdRunPhase::Succeeded
+        | AgentdRunPhase::Failed
+        | AgentdRunPhase::Indeterminate => current.revision,
+    }
+}
+
+async fn reconcile_lifecycle_observation(
+    owner: &AgentdClient,
+    run_id: &str,
+    _fallback_revision: u64,
+    output: Option<&NativeRunOutput>,
+) -> std::result::Result<AgentdRunReceipt, AgentdError> {
+    let current = owner
+        .run_get(run_id.to_string())
+        .await?
+        .ok_or_else(|| AgentdError::Protocol("Agentd lifecycle run disappeared".to_string()))?;
+    if matches!(
+        current.phase,
+        AgentdRunPhase::Cancelled | AgentdRunPhase::Succeeded | AgentdRunPhase::Failed
+    ) {
+        return Ok(current);
+    }
+    let revision = current.revision;
+    match output {
+        Some(output) if output.terminal_observed => {
+            let phase = lifecycle_phase_for_output(output.status);
+            owner
+                .run_observe_terminal(run_id.to_string(), revision, phase, true)
+                .await
+        }
+        _ => {
+            owner
+                .run_observe_terminal(
+                    run_id.to_string(),
+                    revision,
+                    AgentdRunPhase::Indeterminate,
+                    false,
+                )
+                .await
+        }
+    }
+}
+
+fn lifecycle_phase_for_output(status: NativeRunStatus) -> AgentdRunPhase {
+    match status {
+        NativeRunStatus::Completed => AgentdRunPhase::Succeeded,
+        NativeRunStatus::Failed => AgentdRunPhase::Failed,
+        NativeRunStatus::Interrupted => AgentdRunPhase::Cancelled,
+        NativeRunStatus::Indeterminate => AgentdRunPhase::Indeterminate,
     }
 }
 
