@@ -246,7 +246,21 @@ impl MatrixDurableStore {
         let current = dispatch_by_txn_tx(&mut transaction, txn_id)
             .await?
             .ok_or(MatrixDurableError::Conflict)?;
-        if current.state.is_terminal() || now_ms < current.updated_at_ms {
+        if current.state.is_terminal() {
+            if next == MatrixDispatchState::Accepted
+                && event_id.is_some()
+                && current.terminal_event_id.as_ref() != event_id
+                && current.transport_event_id.as_ref() != event_id
+            {
+                return Err(MatrixDurableError::Conflict);
+            }
+            transaction
+                .commit()
+                .await
+                .map_err(|_| MatrixDurableError::Unavailable)?;
+            return Ok(current);
+        }
+        if now_ms < current.updated_at_ms {
             return Err(MatrixDurableError::Conflict);
         }
         let kind = match next {
