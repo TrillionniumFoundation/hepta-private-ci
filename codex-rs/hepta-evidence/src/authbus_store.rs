@@ -42,9 +42,17 @@ impl HeptaEvidenceStore {
         expected_scope: Digest32,
         expected_payload: Digest32,
     ) -> Result<VerificationReceipt, AuthBusAdmissionError> {
+        let mut transaction = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(classify_sqlx_error)?;
+        // Read wall time only after the writer lock. A request waiting for
+        // SQLite ownership cannot use its pre-wait validity window.
         let now = u64::try_from(now_millis()?)
             .map_err(|_| EvidenceError::Unavailable("clock predates Unix epoch".into()))?;
-        self.admit_authbus_message_at(
+        let receipt = admit_in_transaction(
+            &mut transaction,
             issuer,
             message,
             expected_subject,
@@ -52,7 +60,9 @@ impl HeptaEvidenceStore {
             expected_payload,
             now,
         )
-        .await
+        .await?;
+        transaction.commit().await.map_err(classify_sqlx_error)?;
+        Ok(receipt)
     }
 
     /// Admission with a host-provided trusted-time observation. Production
@@ -68,7 +78,13 @@ impl HeptaEvidenceStore {
         time: &TrustedTime,
     ) -> Result<VerificationReceipt, AuthBusAdmissionError> {
         time.validate(5_000)?;
-        self.admit_authbus_message_at(
+        let mut transaction = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(classify_sqlx_error)?;
+        let receipt = admit_in_transaction(
+            &mut transaction,
             issuer,
             message,
             expected_subject,
@@ -76,7 +92,9 @@ impl HeptaEvidenceStore {
             expected_payload,
             time.now_ms,
         )
-        .await
+        .await?;
+        transaction.commit().await.map_err(classify_sqlx_error)?;
+        Ok(receipt)
     }
 
     /// Resolve issuer trust from the durable managed registry before admission.
@@ -103,28 +121,23 @@ impl HeptaEvidenceStore {
         .await
     }
 
-    async fn admit_authbus_message_at(
-        &self,
-        issuer: &IssuerRegistration,
-        message: &SignedMessage,
-        expected_subject: &StableId,
-        expected_scope: Digest32,
-        expected_payload: Digest32,
-        now: u64,
-    ) -> Result<VerificationReceipt, AuthBusAdmissionError> {
-        let mut transaction = self
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(classify_sqlx_error)?;
-        if &message.claims.subject_id != expected_subject {
-            return Err(codex_hepta_authbus::Error::SubjectMismatch.into());
-        }
-        let authenticated = message.authenticate(issuer, expected_scope, expected_payload, now)?;
-        advance_replay(&mut transaction, &authenticated).await?;
-        transaction.commit().await.map_err(classify_sqlx_error)?;
-        Ok(authenticated.receipt().clone())
+}
+
+async fn admit_in_transaction(
+    transaction: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+    issuer: &IssuerRegistration,
+    message: &SignedMessage,
+    expected_subject: &StableId,
+    expected_scope: Digest32,
+    expected_payload: Digest32,
+    now: u64,
+) -> Result<VerificationReceipt, AuthBusAdmissionError> {
+    if &message.claims.subject_id != expected_subject {
+        return Err(codex_hepta_authbus::Error::SubjectMismatch.into());
     }
+    let authenticated = message.authenticate(issuer, expected_scope, expected_payload, now)?;
+    advance_replay(transaction, &authenticated).await?;
+    Ok(authenticated.receipt().clone())
 }
 
 // Both direct admission and durable enqueue advance the same owner-held replay
