@@ -38,7 +38,6 @@ pub enum NduError {
     SimultaneousHierarchyUpdate(u64),
     InvalidHierarchyRelation { subject: String, parent: String },
     DuplicateSubjectUpdate(String),
-    DuplicateArtifactUpdate(String),
     EmptyProfileSemanticDigest,
     Arithmetic,
 }
@@ -75,8 +74,7 @@ impl NduError {
             Self::InvalidEta | Self::DimensionMismatch | Self::StateDigestMismatch => "NDU-E008",
             Self::SimultaneousHierarchyUpdate(_)
             | Self::InvalidHierarchyRelation { .. }
-            | Self::DuplicateSubjectUpdate(_)
-            | Self::DuplicateArtifactUpdate(_) => "NDU-E009",
+            | Self::DuplicateSubjectUpdate(_) => "NDU-E009",
             Self::Arithmetic => "NDU-E010",
             Self::PreferenceDimensionLimitExceeded | Self::PreferenceValueOutOfRange(_) => {
                 "NDU-E011"
@@ -188,9 +186,6 @@ impl fmt::Display for NduError {
             ),
             Self::DuplicateSubjectUpdate(subject) => {
                 write!(formatter, "subject {subject} appears more than once in one generation")
-            }
-            Self::DuplicateArtifactUpdate(artifact) => {
-                write!(formatter, "artifact {artifact} appears more than once in one generation")
             }
             Self::EmptyProfileSemanticDigest => {
                 formatter.write_str("utility profile semantic manifest digest must not be zero")
