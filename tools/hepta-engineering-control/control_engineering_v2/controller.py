@@ -11,14 +11,16 @@ from __future__ import annotations
 from pathlib import Path
 
 from .assignment import (
+    WorkerIdentityReceipt,
     assignment_status,
     begin_assignment,
     claim_assignment,
     complete_assignment,
+    completed_packages,
     fail_assignment,
     heartbeat_assignment,
     heartbeat_worker,
-    register_worker,
+    register_authenticated_worker,
     requeue_assignment,
     revoke_worker,
 )
@@ -145,8 +147,40 @@ class EngineeringController:
             now_ns=now_ns,
         )
 
-    def register_worker(self, *args, **kwargs):
-        return register_worker(self.store, *args, **kwargs)
+    def schedule_from_state(
+        self,
+        envelope: WorkEnvelope,
+        packages: tuple[WorkPackage, ...],
+        *,
+        generation_id: str,
+        now_ns: int | None = None,
+    ):
+        self.store.issue_work_envelope(envelope, now_ns=now_ns)
+        completed = completed_packages(
+            self.store,
+            envelope.envelope_id,
+            now_ns=now_ns,
+        )
+        return self.store.schedule_ready_packages(
+            envelope.envelope_id,
+            packages,
+            completed,
+            generation_id=generation_id,
+            now_ns=now_ns,
+        )
+
+    def register_worker(
+        self,
+        identity: WorkerIdentityReceipt,
+        *,
+        now_ns: int | None = None,
+    ):
+        return register_authenticated_worker(
+            self.store,
+            identity,
+            self.verifier,
+            now_ns=now_ns,
+        )
 
     def heartbeat_worker(self, *args, **kwargs):
         return heartbeat_worker(self.store, *args, **kwargs)
