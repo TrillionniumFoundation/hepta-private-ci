@@ -119,6 +119,13 @@ struct StoredRunStart {
     record: RunStartRecordV1,
 }
 
+type ReplayedRunStarts = (
+    Vec<StoredRunStart>,
+    BTreeMap<StableId, usize>,
+    u64,
+    u64,
+);
+
 struct LockedRunStartFile(File);
 
 impl LockedRunStartFile {
@@ -192,8 +199,7 @@ impl DurableRunStartJournal {
         validate_domain(binding, max_records)?;
         validate_recovery(recovery, max_records)?;
         let mut file = LockedRunStartFile::acquire(file)?;
-        let (records, by_run, cursor, length) =
-            replay_frames(&mut file.0, binding, max_records)?;
+        let (records, by_run, cursor, length) = replay_frames(&mut file.0, binding, max_records)?;
         if let RunStartRecovery::Acknowledged(anchor) = recovery {
             let record = records
                 .get((anchor.sequence - 1) as usize)
@@ -281,8 +287,9 @@ impl DurableRunStartJournal {
             .and_then(|()| self.file.0.sync_all())
             .map_err(|_| RunStartStoreError::Indeterminate)?;
         let index = self.records.len();
-        self.by_run.insert(stored.record.snapshot.run_id.clone(), index);
-        self.records.push(stored.clone());
+        self.by_run
+            .insert(stored.record.snapshot.run_id.clone(), index);
+        self.records.push(stored);
         self.durable_length = next_length;
         self.poisoned = false;
         Ok(RunStartAppendReceipt {
@@ -362,7 +369,9 @@ fn validate_record(record: &RunStartRecordV1) -> Result<(), RunStartStoreError> 
     if record.objective_semantic_bytes.is_empty()
         || record.objective_semantic_bytes.len() > MAX_OBJECTIVE_SEMANTIC_BYTES
     {
-        return Err(RunStartStoreError::InvalidSnapshot("objectiveSemanticBytes"));
+        return Err(RunStartStoreError::InvalidSnapshot(
+            "objectiveSemanticBytes",
+        ));
     }
     if Digest32::of_bytes(&record.objective_semantic_bytes) != snapshot.objective_digest {
         return Err(RunStartStoreError::ObjectiveDigestMismatch);
@@ -442,7 +451,7 @@ fn replay_frames(
     file: &mut File,
     binding: Digest32,
     max_records: usize,
-) -> Result<(Vec<StoredRunStart>, BTreeMap<StableId, usize>, u64, u64), RunStartStoreError> {
+) -> Result<ReplayedRunStarts, RunStartStoreError> {
     let length = file.metadata()?.len();
     if length < HEADER as u64 {
         return Err(RunStartStoreError::MissingHeader);
@@ -608,8 +617,8 @@ impl Reader<'_> {
         if !(1..=128).contains(&length) {
             return Err(RunStartStoreError::Corrupt);
         }
-        let text = std::str::from_utf8(self.bytes(length)?)
-            .map_err(|_| RunStartStoreError::Corrupt)?;
+        let text =
+            std::str::from_utf8(self.bytes(length)?).map_err(|_| RunStartStoreError::Corrupt)?;
         StableId::new(text).map_err(|_| RunStartStoreError::Corrupt)
     }
     fn digest(&mut self) -> Result<Digest32, RunStartStoreError> {
