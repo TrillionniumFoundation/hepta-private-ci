@@ -151,5 +151,59 @@
   "trustDecision": "docs/modules/kernel.authority/ADR-0001-LEASE-TRUST-MODEL.md",
   "linearizationContract": "docs/modules/kernel.authority/LINEARIZATION.md",
   "productionTrustProfile": "docs/modules/kernel.authority/PRODUCTION_TRUST_PROFILE.md",
-  "capacityQualification": "docs/modules/kernel.authority/CAPACITY_QUALIFICATION.md"
+  "capacityQualification": "docs/modules/kernel.authority/CAPACITY_QUALIFICATION.md",
+  "productCallers": [
+    {
+      "id": "runtime.fleet.issue",
+      "nativeSymbol": "FleetAuthorityPort::issue",
+      "sourcePath": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "state": "source_composed_owner_boundary_not_product_process_activated",
+      "tests": [
+        "codex-rs/hepta-fleet/src/authority_port.rs"
+      ]
+    },
+    {
+      "id": "secrets.heptabao.registered_host",
+      "nativeSymbol": "BaoFinalUseHost::consume_kv_v2",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "state": "registered_host_source_composed_no_deployed_process_selected",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/tests/final_use_host.rs"
+      ]
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
+      "object": "7840a3aab99080c99849c04553611fd728df1332"
+    },
+    {
+      "path": "codex-rs/hepta-contracts",
+      "object": "03a3e6313310bb52ee3974bcf220f7fda77a3609"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "object": "10bd9b69e62b589d15f9215c05ab9376876dd3c6"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "object": "043ffd75a20c42935959a98d37f40e3d7229c407"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use.rs",
+      "object": "a87bc48d94a237f7dc4a1ad43538671011f68bb9"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "object": "b8504e0bbcf99c4fce72bc3c567d09f6bb5102a2"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
+      "object": "9425c4410e655c76980b96bd504566b53b64d711"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "object": "3229d85009fff31669ef4d8c277070b50381d22e"
+    }
+  ]
 }
