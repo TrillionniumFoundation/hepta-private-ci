@@ -7,26 +7,38 @@
 #![forbid(unsafe_code)]
 
 mod bounded;
+mod canonical;
 mod digest;
 mod fixed;
 mod identity;
 mod numeric_conversion;
 mod numeric_profile;
+mod registry;
 
 pub use bounded::BoundedBytes;
 pub use bounded::BoundedText;
 pub use bounded::BoundedValueError;
+pub use canonical::CanonicalDigestError;
+pub use canonical::CanonicalFieldV1;
+pub use canonical::CanonicalValueV1;
+pub use canonical::MAX_CANONICAL_COLLECTION_BYTES_V1;
+pub use canonical::canonical_digest_v1;
+pub use canonical::canonical_encode_v1;
 pub use digest::Digest32;
 pub use digest::DigestParseError;
 pub use fixed::FixedQ32;
 pub use fixed::FixedQ32Error;
 pub use fixed::ProbabilityQ32;
 pub use identity::AuthorityPosture;
+pub use identity::AuthorityPostureError;
 pub use identity::Generation;
+pub use identity::IdNamespaceV1;
+pub use identity::IdProfileV1;
 pub use identity::IdentityError;
 pub use identity::LogicalSequence;
 pub use identity::Revision;
 pub use identity::StableId;
+pub use identity::validate_id;
 pub use numeric_conversion::NumericConversionReceiptV1;
 pub use numeric_conversion::NumericErrorBoundV1;
 pub use numeric_conversion::NumericSignalV1;
@@ -36,3 +48,9 @@ pub use numeric_profile::NumericProfileV1;
 pub use numeric_profile::NumericRoundingV1;
 pub use numeric_profile::NumericSignalSchemaV1;
 pub use numeric_profile::SignalUnitV1;
+pub use registry::MAX_REGISTRY_DEFINITION_BYTES_V1;
+pub use registry::MAX_REGISTRY_ENTRIES_V1;
+pub use registry::RegistryDefinitionV1;
+pub use registry::RegistryError;
+pub use registry::RegistryKindV1;
+pub use registry::SchemaNormalizationRegistryV1;
