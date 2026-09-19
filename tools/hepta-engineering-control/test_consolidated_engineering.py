@@ -114,6 +114,7 @@ class OwnerTransactionTests(unittest.TestCase):
                 pass
             with sqlite3.connect(path) as connection:
                 connection.execute("DROP TABLE distributed_fence_frontiers")
+                connection.execute("DROP TABLE distributed_cluster_frontiers")
                 connection.execute("PRAGMA user_version=5")
                 connection.execute(
                     "UPDATE engineering_schema_meta SET schema_version=5"
@@ -123,12 +124,17 @@ class OwnerTransactionTests(unittest.TestCase):
                     store.connection.execute("PRAGMA user_version").fetchone()[0],
                     6,
                 )
-                self.assertIsNotNone(
-                    store.connection.execute(
-                        "SELECT 1 FROM sqlite_master "
-                        "WHERE type='table' AND name='distributed_fence_frontiers'"
-                    ).fetchone()
-                )
+                for table in (
+                    "distributed_cluster_frontiers",
+                    "distributed_fence_frontiers",
+                ):
+                    self.assertIsNotNone(
+                        store.connection.execute(
+                            "SELECT 1 FROM sqlite_master "
+                            "WHERE type='table' AND name=?",
+                            (table,),
+                        ).fetchone()
+                    )
 
     def test_schema_v3_migrates_without_losing_owner_facts(self):
         with tempfile.TemporaryDirectory() as temporary:
