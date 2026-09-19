@@ -268,3 +268,52 @@ mod durable_operations_control {
         Ok(())
     }
 }
+
+
+#[derive(Debug)]
+struct DummyRuntimeAttachment(u8);
+
+#[derive(Debug)]
+struct OtherRuntimeAttachment;
+
+#[test]
+fn generic_runtime_attachment_registry_is_typed_and_quarantines_route() -> anyhow::Result<()> {
+    let (_temp, _registry, state) = fixture()?;
+    state.attach_runtime_module(
+        "auth.authbus",
+        &[],
+        std::sync::Arc::new(DummyRuntimeAttachment(7)),
+    )?;
+
+    let attached = state
+        .runtime_attachment::<DummyRuntimeAttachment>("auth.authbus")?
+        .expect("typed attachment");
+    assert_eq!(attached.0, 7);
+    assert!(
+        state
+            .runtime_attachment::<OtherRuntimeAttachment>("auth.authbus")
+            .is_err()
+    );
+    assert!(
+        state
+            .runtime_topology_snapshot()?
+            .active
+            .iter()
+            .any(|module| module.module_id.as_str() == "auth.authbus")
+    );
+
+    state.quarantine_runtime_attachment("auth.authbus")?;
+    assert!(
+        state
+            .runtime_attachment::<DummyRuntimeAttachment>("auth.authbus")?
+            .is_none()
+    );
+    assert!(
+        state
+            .runtime_topology_snapshot()?
+            .active
+            .iter()
+            .all(|module| module.module_id.as_str() != "auth.authbus")
+    );
+    Ok(())
+}
