@@ -1,5 +1,9 @@
 use super::*;
 use codex_hepta_types::Generation;
+use crate::CapabilityBindingV2;
+use crate::CapabilityNecessityV2;
+use crate::CapabilityRequirementV2;
+use crate::CapabilitySnapshotRequestV2;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("id")
