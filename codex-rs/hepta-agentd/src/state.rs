@@ -115,10 +115,13 @@ impl AgentdState {
         &self.identity
     }
 
-
     pub(crate) fn current_generation(&self) -> Result<u64, AgentdError> {
         self.refresh_generation()?;
-        Ok(self.runtime.lock().map_err(poisoned_state)?.current_generation)
+        Ok(self
+            .runtime
+            .lock()
+            .map_err(poisoned_state)?
+            .current_generation)
     }
 
     pub(crate) fn refresh_generation(&self) -> Result<(), AgentdError> {
