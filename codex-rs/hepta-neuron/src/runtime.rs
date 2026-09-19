@@ -9,6 +9,9 @@ use codex_hepta_types::Digest32;
 use crate::JournalAnchor;
 use crate::JournalError;
 use crate::JournalScope;
+use crate::validate_deletion_rebuild;
+use crate::NeuronDeletionRebuildReceiptV1;
+use crate::NeuronDeletionRebuildPlanV1;
 use crate::SparseConfig;
 use crate::SparseJournal;
 use crate::SparseTick;
@@ -52,6 +55,43 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             witness,
             pending: None,
         })
+    }
+
+    /// Start a fresh generation after authenticated deletion/withdrawal
+    /// processing. The predecessor checkpoint is bound for lineage only and is
+    /// never loaded into the successor runtime.
+    pub fn bootstrap_after_deletion(
+        file: File,
+        native: SparseConfig,
+        scope: JournalScope,
+        max_records: usize,
+        config: NeuronRuntimeConfigV1,
+        witness: W,
+        predecessor: JournalAnchor,
+        plan: &NeuronDeletionRebuildPlanV1,
+    ) -> Result<(Self, NeuronDeletionRebuildReceiptV1), NeuronRuntimeError> {
+        let receipt = validate_deletion_rebuild(plan)?;
+        if receipt.predecessor_checkpoint_digest != predecessor.checkpoint_digest {
+            return Err(NeuronRuntimeError::Deletion(
+                crate::DeletionRebuildError::PredecessorMismatch,
+            ));
+        }
+        if receipt.successor_generation != config.generation
+            || receipt.successor_generation != native.generation
+        {
+            return Err(NeuronRuntimeError::Deletion(
+                crate::DeletionRebuildError::SuccessorMismatch,
+            ));
+        }
+        let runtime = Self::bootstrap(
+            file,
+            native,
+            scope,
+            max_records,
+            config,
+            witness,
+        )?;
+        Ok((runtime, receipt))
     }
 
     pub fn recover(
