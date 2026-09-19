@@ -142,7 +142,7 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-objective/src/objective_admission.rs](../../../codex-rs/hepta-objective/src/objective_admission.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. The exact Source-V1-to-native support boundary is recorded in [`SEMANTIC_SUPPORT.md`](SEMANTIC_SUPPORT.md); syntactically accepted source operators that lack a lossless native representation are deterministic rejections, not implemented compiler semantics. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-objective/src/objective_admission.rs](../../../codex-rs/hepta-objective/src/objective_admission.rs) and the linked implementation components.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
@@ -194,7 +194,7 @@ For `objective.compiler`, this document grants no runtime, production, model, pr
 
 #### `OBJ-0-OBJECTIVE-CONTRACTS`
 
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `1`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `intelligence-platform` / `kernel-contracts`.
 - Allowed write paths:
 - `codex-rs/hepta-objective/**`
@@ -223,7 +223,7 @@ For `objective.compiler`, this document grants no runtime, production, model, pr
 
 #### `OBJ-1-OBJECTIVE-COMPILER`
 
-- State: `planned`; priority: `1`; parallel class: `contract_coordinated`.
+- State: `source_implemented`; priority: `1`; parallel class: `contract_coordinated`.
 - Owner/deputy: `intelligence-platform` / `kernel-contracts`.
 - Allowed write paths:
 - `codex-rs/hepta-objective/**`
@@ -279,4 +279,4 @@ The bootstrap source-location obligation for `objective.compiler` is implemented
 
 - `codex-rs/hepta-objective`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-objective-admission.yml` for exact-source package tests, all-target strict Clippy, formatting and clean tracked state; `.github/workflows/hepta-lane-d-semantic-conformance.yml` repeats Lane-D package checks on Linux, macOS and Windows. `.github/workflows/hepta-consolidated-source.yml` also includes `codex-hepta-objective` in the shared source-owner package set. These are execution gates, not stored pass receipts. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
