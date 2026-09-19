@@ -23,6 +23,7 @@ pub(crate) struct AgentdState {
     events: Mutex<EventBuffer>,
     automation: Mutex<Option<AutomationStore>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
+    pub(crate) prompt_runtime: Arc<crate::AgentdPromptRuntimeOwner>,
 }
 
 struct RuntimeState {
@@ -58,6 +59,7 @@ impl AgentdState {
             events: Mutex::new(events),
             automation: Mutex::new(None),
             cognitive: Mutex::new(None),
+            prompt_runtime: Arc::new(crate::AgentdPromptRuntimeOwner::new()),
         })
     }
 
@@ -110,6 +112,10 @@ impl AgentdState {
 
     pub(crate) fn identity(&self) -> &AgentdIdentity {
         &self.identity
+    }
+
+    pub(crate) fn prompt_runtime_owner(&self) -> Arc<crate::AgentdPromptRuntimeOwner> {
+        Arc::clone(&self.prompt_runtime)
     }
 
     pub(crate) fn refresh_generation(&self) -> Result<(), AgentdError> {
