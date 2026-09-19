@@ -44,9 +44,10 @@ Later valid complete frames are preserved for lost-acknowledgement reconciliatio
 corruption after the anchor still rejects. Recovered bytes are synced before
 exposing committed results. The host must authenticate and bind the witness,
 retain it independently and acknowledge externally only after retaining it.
-It must not retry a failed anchored recovery as `Unacknowledged`. This patch does
-not supply the independent witness store; an unanchored recovery cannot detect
-loss of a whole valid suffix.
+It must not retry a failed anchored recovery as `Unacknowledged`. `DurableLedger` itself deliberately does not store the acknowledgement witness in
+its own journal. Product composition can use the separately bound
+`DurableAnchorWitness`; an unanchored recovery still cannot detect loss of a whole
+valid suffix and must never substitute for the current independent witness.
 
 ## Causal and resource boundaries
 
@@ -89,11 +90,14 @@ forks, cross-episode predecessors and self-reference without rewriting history.
 
 ## Product writer and independent acknowledgement witness
 
-`ProductionLedgerWriter` composes host-supplied immutable trust state with
+`ProductionLedgerWriter` composes a host-owned current trust provider with
 `LearningEvidenceVerifierV1`, exact current-anchor comparison and the durable
-journal. Its product-facing methods do not expose raw V1 outcome or per-target
-credit append. Authenticated outcome and atomic credit paths therefore cross
-signature/role admission and semantic validation before durable append.
+journal. The writer queries `LearningEvidenceTrustProviderV1` before every signed
+mutation and remembers a monotone trust revision/authority-epoch/digest frontier;
+rollback or same-revision trust drift fails closed. Its product-facing methods do
+not expose raw V1 outcome or per-target credit append. Authenticated outcome and
+atomic credit paths therefore cross current signature/role admission and semantic
+validation before durable append.
 
 `DurableAnchorWitness` is a separate host-authorized HEPTAW01 file. Its binding,
 lock and checksums are independent from the learning journal. Each witness row is
@@ -105,9 +109,12 @@ and witness are durable.
 
 `LedgerIndexCheckpointV1` records a verifiable summary of a replayed snapshot:
 head, record/active counts, event-class counts, correction/revocation cuts and
-source-set digest. Verification deliberately replays canonical history and
-recomputes the checkpoint. It is suitable for drift detection and recovery
-measurement; it is not a trusted shortcut around journal validation.
+source-set digest. `LedgerRecoveryWorkV1` separately records the exact replayed
+record count, active count, canonical event bytes and maximum canonical event
+size. Verification deliberately replays canonical history and recomputes these
+facts. The standard capacity regression exercises the full 8,192-record V1
+single-segment profile. These are drift/capacity receipts, not a trusted shortcut
+around journal validation or a target-host wall-clock latency claim.
 
 ## Verification and rollback
 
