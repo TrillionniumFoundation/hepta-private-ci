@@ -189,6 +189,37 @@ async fn one_attempt_returns_bounded_partial_result() {
 }
 
 #[tokio::test]
+async fn empty_scope_can_report_zero_frontier_without_fabrication() {
+    let query = query();
+    let mut response = terminal_response(&query);
+    response.observed_frontier = 0;
+    response.items.clear();
+    response.completeness = FederatedCompletenessV2::Empty;
+    response.response_digest = response.compute_response_digest();
+    let transport =
+        FixtureTransport::immediate(FederationTransportResultV2::Terminal(response));
+    let authority = FixtureAuthority::new([
+        FederationAuthorityStateV2::Current,
+        FederationAuthorityStateV2::Current,
+    ]);
+    let result = execute_once(
+        &transport,
+        &authority,
+        &NeverCancelledV2,
+        &FixedClock(10),
+        query.clone(),
+        &lease(&query),
+    )
+    .await
+    .unwrap_or_else(|error| panic!("valid empty result: {error}"));
+    assert!(result.items.is_empty());
+    assert_eq!(result.observed_frontier, Some(0));
+    assert_eq!(result.completeness, FederatedCompletenessV2::Empty);
+    assert_eq!(result.validity, FederatedValidityV2::Valid);
+    result.validate().expect("zero frontier result remains valid");
+}
+
+#[tokio::test]
 async fn nonterminal_attempt_is_explicitly_indeterminate_without_retry() {
     let query = query();
     let transport = FixtureTransport::immediate(FederationTransportResultV2::NonTerminal(
