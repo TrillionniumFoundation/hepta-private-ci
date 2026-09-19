@@ -15,16 +15,21 @@ The complete native admission path is:
 bounded JSON bytes
 -> decode_source_envelope_json_v1
 -> ObjectiveSourceEnvelopeV1::validate_structure
--> authenticate source and principal scope
--> bind exact ObjectiveAdmissionProfileV1 digest
--> normalize and map every represented semantic field
--> check_feasibility_v1
--> compile
+-> canonical_objective_intent_digest_v1
+-> admit_objective_v1
+   -> authenticate source and principal scope
+   -> bind exact ObjectiveAdmissionProfileV1 digest
+   -> normalize and map every losslessly representable semantic field
+   -> produce opaque AdmittedObjectiveV1
+-> compile_admitted_objective_v1
+   -> compiler::compile (owner-internal legacy scalar IR)
+      -> scalar_adapter::scalar_conflict
+         -> check_feasibility_v1
 -> ObjectiveAdmissionReceiptV1
 -> ObjectiveCompileReceiptV1 | ObjectiveConflictReceiptV1
 ```
 
-No stage may silently drop a represented constraint, action, success predicate, resource ceiling, risk rule, evidence requirement or provenance field. A decoder or structural validator is not semantic admission. A profile label is not authentication. The admitted source digest binds the supplied source digest, authenticated source class and selected profile.
+No stage may silently drop a represented constraint, action, success predicate, resource ceiling, risk rule, evidence requirement or provenance field. A represented Source-V1 operator without a lossless native mapping is rejected deterministically; see `docs/modules/objective.compiler/SEMANTIC_SUPPORT.md`. A decoder or structural validator is not semantic admission. A profile label is not authentication. The admitted source digest binds the supplied source digest, authenticated source class and selected profile.
 
 ## 2. Input grammar and canonical IR
 
@@ -97,7 +102,7 @@ compute hard-constraint and objective semantic digests
 emit deny-all admission receipt and compile/conflict outcome
 ```
 
-Compilation is a pure function of the authenticated source envelope, selected admission profile and registered schema revisions. Retry with identical inputs yields identical semantic bytes. Reuse of a durable request/revision identity with different semantics is handled by the owning durable caller as conflict; the stateless compiler does not invent persistence.
+Compilation semantics are a pure function of the authenticated source envelope, selected admission profile and registered schema revisions. The owner-internal compiler path uses an effectively unbounded wall-time budget so host scheduling cannot change a valid semantic result into `Exhausted`. The explicit `check_feasibility_v1` availability API is different: its caller-supplied wall-clock budget and observational `elapsed` field are host-sensitive and are not semantic identity. Retry with identical admitted inputs yields identical semantic objective bytes and digests; time-bounded availability receipts need not be byte-identical. Reuse of a durable request/revision identity with different semantics is handled by the owning durable caller as conflict; the stateless compiler does not invent persistence.
 
 ## 5. State machine and persistence
 
