@@ -347,6 +347,36 @@ def verify():
             failures.append(f"{mid}: claim boundary")
     if len(source_bases) != 1:
         failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+    elif source_bases:
+        source_commit, source_tree = next(iter(source_bases))
+        try:
+            if git("rev-parse", f"{source_commit}^{tree}") != source_tree:
+                failures.append("maps: source base tree does not match commit")
+            git("merge-base", "--is-ancestor", source_commit, "HEAD")
+        except subprocess.CalledProcessError:
+            failures.append("maps: source base is not an ancestor of HEAD")
+        mapped_paths = sorted(
+            {
+                op.get("sourcePath")
+                for module in modules
+                for op in load(f"docs/modules/{module['id']}/IMPLEMENTATION_MAP.json").get(
+                    "operations", []
+                )
+                if op.get("sourcePath")
+            }
+        )
+        if mapped_paths:
+            drift = subprocess.run(
+                ["git", "diff", "--quiet", source_commit, "HEAD", "--", *mapped_paths],
+                cwd=ROOT,
+                check=False,
+            )
+            if drift.returncode == 1:
+                failures.append(
+                    "maps: mapped owner source changed after source base; refresh implementation maps"
+                )
+            elif drift.returncode not in (0, 1):
+                failures.append("maps: cannot compare mapped owner source with source base")
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
