@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "source_composed_read_only_and_registered_port_adapters",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -40,18 +40,22 @@
       "operation": "wire_v2",
       "nativeSymbol": "WireEnvelopeV2",
       "sourcePath": "codex-rs/hepta-wire/src/envelope_v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_source_composed",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-wire/src/envelope_v2_tests.rs",
-        "codex-rs/hepta-native-gateway/src/lib.rs"
+        "codex-rs/hepta-native-gateway/src/lib.rs",
+        "codex-rs/hepta-context-compiler/src/wire_tests.rs",
+        "codex-rs/hepta-codex-adapter/src/wire_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "wire_v2",
       "mappingClass": "owner_native",
       "delegatedCallees": [
         "codex-rs/hepta-runtime/src/lib.rs",
-        "codex-rs/hepta-native-gateway/src/lib.rs"
+        "codex-rs/hepta-native-gateway/src/lib.rs",
+        "codex-rs/hepta-context-compiler/src/wire.rs",
+        "codex-rs/hepta-codex-adapter/src/wire.rs"
       ]
     },
     {
@@ -77,7 +81,9 @@
       "authority": "none",
       "tests": [
         "codex-rs/hepta-wire/src/schema_tests.rs",
-        "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs"
+        "codex-rs/hepta-shadow-qualification/tests/cross_runtime_wire_session.rs",
+        "codex-rs/hepta-context-compiler/src/wire_tests.rs",
+        "codex-rs/hepta-codex-adapter/src/wire_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "schema_admission",
@@ -102,7 +108,7 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Run exact-head and deterministic synthetic-merge tests for the versioned implementation and product source caller.",
+    "Run exact-head and deterministic synthetic-merge tests for the versioned implementation and registered product source callers.",
     "Bind HPTN negotiation and encoded HPTA frames to the selected authenticated production transport/session.",
     "Register and qualify each additional product-domain schema codec before admitting it."
   ],
