@@ -254,7 +254,13 @@ async fn reopened_dispatch_reconciles_without_submitting_a_replacement_turn() {
         stop_reason: Some("observed terminal failure".to_string()),
         ..unknown
     };
-    control.settle_native("r1", terminal.clone()).unwrap();
+    let terminal_receipt = control
+        .settle_native_receipt_only("r1", terminal.clone())
+        .unwrap()
+        .observation
+        .unwrap();
+    assert!(!terminal_receipt.output_retained);
+    assert!(terminal_receipt.output_sha256.is_some());
     drop(control);
 
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
@@ -270,7 +276,7 @@ async fn reopened_dispatch_reconciles_without_submitting_a_replacement_turn() {
             )
             .await
             .unwrap(),
-        terminal
+        terminal_receipt
     );
     drop(control);
     std::fs::remove_file(path).unwrap();
