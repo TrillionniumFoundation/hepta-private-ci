@@ -73,6 +73,7 @@ pub use projection_journal::NduProjectionEntryV1;
 pub use projection_journal::NduProjectionJournalError;
 pub use projection_journal::NduProjectionJournalV1;
 pub use projection_journal::NduProjectionKindV1;
+pub use projection_store::NduProjectionRetentionPolicyV1;
 pub use projection_store::NduProjectionStoreError;
 pub use projection_store::NduProjectionStoreV1;
 pub use protocol::NduIterationContextV1;
