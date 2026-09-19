@@ -1097,7 +1097,7 @@
       "transport": "typed_local_or_versioned_wire",
       "bounded": true,
       "authorityDelta": "none",
-      "payloadClass": "digest_bound_summary_or_request",
+      "payloadClass": "registered_protocol_set:docs/modules/cognitive.types/PORT_SCHEMAS.json#cognitive.read",
       "compatibility": "backward_compatible_or_explicit_migration"
     },
     {
@@ -1111,7 +1111,7 @@
       "transport": "typed_local_or_versioned_wire",
       "bounded": true,
       "authorityDelta": "none",
-      "payloadClass": "digest_bound_summary_or_request",
+      "payloadClass": "registered_protocol_set:docs/modules/cognitive.types/PORT_SCHEMAS.json#cognitive.store",
       "compatibility": "backward_compatible_or_explicit_migration"
     },
     {
@@ -1125,7 +1125,7 @@
       "transport": "typed_local_or_versioned_wire",
       "bounded": true,
       "authorityDelta": "none",
-      "payloadClass": "digest_bound_summary_or_request",
+      "payloadClass": "registered_protocol_set:docs/modules/cognitive.types/PORT_SCHEMAS.json#knowledge.graph",
       "compatibility": "backward_compatible_or_explicit_migration"
     },
     {
@@ -1139,7 +1139,7 @@
       "transport": "typed_local_or_versioned_wire",
       "bounded": true,
       "authorityDelta": "none",
-      "payloadClass": "digest_bound_summary_or_request",
+      "payloadClass": "registered_protocol_set:docs/modules/cognitive.types/PORT_SCHEMAS.json#learning.ledger",
       "compatibility": "backward_compatible_or_explicit_migration"
     },
     {
