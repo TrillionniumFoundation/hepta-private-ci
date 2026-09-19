@@ -286,7 +286,7 @@ impl AuthBusAuthorityStore {
     }
 }
 
-async fn load_quota(
+pub(crate) async fn load_quota(
     tx: &mut Transaction<'_, Sqlite>,
     quota_key: &StableId,
 ) -> Result<QuotaSnapshot, AuthBusAuthorityError> {
@@ -303,7 +303,7 @@ async fn load_quota(
     quota_from_row(&row)
 }
 
-async fn load_reservation(
+pub(crate) async fn load_reservation(
     tx: &mut Transaction<'_, Sqlite>,
     reservation_id: &StableId,
 ) -> Result<QuotaReservation, AuthBusAuthorityError> {
