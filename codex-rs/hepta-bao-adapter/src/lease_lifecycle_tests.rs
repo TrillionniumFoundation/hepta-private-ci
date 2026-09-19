@@ -280,7 +280,9 @@ async fn dynamic_issue_delivers_only_to_callback_and_replay_does_not_reissue() {
     let requests = task.await.unwrap().unwrap();
     assert_eq!(requests.len(), 1);
     assert!(requests[0].starts_with("GET /v1/database/creds/read-only HTTP/1.1\r\n"));
-    assert!(requests[0].contains("X-Vault-Namespace: team/one\r\n"));
+    assert!(requests[0]
+        .to_ascii_lowercase()
+        .contains("x-vault-namespace: team/one\r\n"));
 }
 
 #[tokio::test]
