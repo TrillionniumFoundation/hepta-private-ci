@@ -168,7 +168,9 @@ pub fn encode_tabular_payload_v1(
     Ok(bytes)
 }
 
-pub(crate) fn validate_tabular_artifact_v1(artifact: &TabularOperatorArtifactV1) -> Result<(), TabularPayloadError> {
+pub(crate) fn validate_tabular_artifact_v1(
+    artifact: &TabularOperatorArtifactV1,
+) -> Result<(), TabularPayloadError> {
     if artifact.authority.grants_any() {
         return Err(TabularPayloadError::Authority);
     }
