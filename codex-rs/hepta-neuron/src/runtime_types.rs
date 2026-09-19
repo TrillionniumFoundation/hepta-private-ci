@@ -501,7 +501,7 @@ pub(crate) fn calibrate(
     sequence: u64,
 ) -> Result<(u32, u32, bool), NeuronRuntimeError> {
     if sequence < profile.valid_from_sequence || sequence > profile.expires_after_sequence {
-        return Err(NeuronRuntimeError::CalibrationExpired);
+        return Ok((0, PPM as u32, true));
     }
     let error = u64::try_from(receipt.prediction_error_q24)
         .map_err(|_| NeuronRuntimeError::Arithmetic)?;
