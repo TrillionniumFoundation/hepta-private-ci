@@ -172,6 +172,14 @@ impl ObjectiveIngressHost {
                 source_digest: source.structured_intent.provenance.source_digest,
             },
         };
+        let authority_epoch = agentd.run_authority_epoch()?;
+        if body.authority_epoch != authority_epoch {
+            return Err(objective_invalid(&format!(
+                "authority epoch {} is stale; current lifecycle epoch is {authority_epoch}",
+                body.authority_epoch
+            )));
+        }
+
         let record_id = StableId::new(format!("objective-run:{}", delivery.lease.delivery_id()))
             .map_err(|error| objective_invalid(&format!("record id: {error}")))?;
         let run_id = StableId::new(&body.run_id)
@@ -243,7 +251,15 @@ impl ObjectiveIngressHost {
                     })?;
                 let snapshot = intelligence_run_snapshot_v1(&receipt.host_envelope)
                     .map_err(|error| objective_invalid(&error.to_string()))?;
-                agentd.run_start(authbus_ingress::now_ms()?, snapshot)?;
+                match agentd.run_start(authbus_ingress::now_ms()?, snapshot) {
+                    Ok(_) => {}
+                    Err(AgentdError::GenerationFenced(error)) => {
+                        return Err(objective_invalid(&format!(
+                            "authority epoch changed after durable RunStart publication: {error}"
+                        )));
+                    }
+                    Err(error) => return Err(error),
+                }
                 Ok(receipt.host_envelope.envelope_digest)
             }
             codex_hepta_intelligence::ProductionObjectiveDispositionV1::Conflict {

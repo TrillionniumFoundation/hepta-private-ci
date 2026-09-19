@@ -207,6 +207,7 @@ async fn deliver(
             if message.contains("source envelope:")
                 || message.contains("revision:")
                 || message.contains("run id:")
+                || message.contains("authority epoch")
                 || message.contains("canonical publication: objective admission") =>
         {
             authbus

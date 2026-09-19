@@ -455,6 +455,11 @@ impl AgentdState {
             .transact(|coordinator| coordinator.start_run(now_ms, snapshot))
     }
 
+    pub(crate) fn run_authority_epoch(&self) -> Result<u64, AgentdError> {
+        let runtime = self.run_execution_guard()?;
+        Ok(runtime.current_generation)
+    }
+
     pub(crate) fn run_start(
         &self,
         now_ms: u64,
