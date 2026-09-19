@@ -664,6 +664,73 @@ async fn real_agentd_local_memory_review_is_read_only_and_replayable() -> Result
     Ok(())
 }
 
+/// An authoritative context already published over the real Agentd control
+/// protocol must still fail closed when the owner frontier changes before the
+/// downstream consumer finalizes it. Finalization is one-shot on both success
+/// and failure, so a stale or replayed receipt cannot be retried into freshness.
+#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
+async fn real_agentd_finalization_rejects_post_publication_drift_and_replay() -> Result<()> {
+    const MEMORY: &str = "Final-use guard keeps the unique vermilion observatory marker.";
+    const QUERY: &str = "vermilion observatory marker";
+
+    let mut fleet = FleetHarness::new()?;
+    let agent = fleet.register(AGENT_A, "workspace-finalize-authority")?;
+    let model = responses::start_mock_server().await;
+    MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
+    seed_verified_agent_memory(&agent, "finalize-authority", MEMORY).await?;
+
+    fleet.start(&agent)?;
+    let (control, _) = fleet.wait_ready(&agent, 1).await?;
+
+    let stale = control.cognitive_context(QUERY.to_string(), 4).await?;
+    ensure!(
+        stale.items.iter().any(|item| item.content == MEMORY),
+        "real Agentd authoritative read did not publish the seeded memory"
+    );
+
+    // Advance only a host-owned source frontier after publication. The already
+    // selected memory bytes are unchanged, so failure proves the final RPC
+    // re-observes the broader authoritative owner vector rather than trusting
+    // the published context or merely checking its memory revision.
+    let store = CognitiveStore::open(&agent.layout).await?;
+    store
+        .append_source(
+            &CognitiveAccess::agent_private(agent.agent_id.clone()),
+            &SourceDraft {
+                scope: CognitiveScope::AgentPrivate,
+                kind: LedgerSourceKind::ExplicitMemoryDirective,
+                event_key: "finalize-authority-post-publication-drift".to_string(),
+                content: b"host evidence advanced after cognitive publication".to_vec(),
+                observed_at_unix_seconds: i64::try_from(
+                    SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs(),
+                )?,
+            },
+        )
+        .await?;
+
+    ensure!(
+        control.finalize_cognitive_context(&stale).await.is_err(),
+        "post-publication owner-frontier drift reached final consumption"
+    );
+    ensure!(
+        control.finalize_cognitive_context(&stale).await.is_err(),
+        "failed authoritative finalization receipt was replayable"
+    );
+
+    // Reacquiring after the frontier advance produces a new guard. The unchanged
+    // owner state may finalize exactly once; a second use is a replay.
+    let fresh = control.cognitive_context(QUERY.to_string(), 4).await?;
+    control
+        .finalize_cognitive_context(&fresh)
+        .await
+        .context("fresh authoritative context did not finalize")?;
+    ensure!(
+        control.finalize_cognitive_context(&fresh).await.is_err(),
+        "successful authoritative finalization receipt was replayable"
+    );
+    Ok(())
+}
+
 /// A host-owned tombstone must become visible to the real read-only product
 /// without granting the live Agent any cognitive write tool.  This closes the
 /// semantic gap between a store-level forget regression and the process path
