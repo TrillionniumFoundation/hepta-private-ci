@@ -1149,16 +1149,26 @@ struct JournalStore {
 
 impl JournalStore {
     fn open(root: &Path) -> Result<(Self, RegistryState), LeaseRegistryError> {
-        let root = prepare_directory(root)?;
-        let initialized = entry_exists(&root, "lease.lock")?;
-        let lock = open_private(&root, "lease.lock", Access::Create)?;
+        let root_handle = prepare_directory(root)?;
+        #[cfg(unix)]
+        let owner_uid = {
+            use std::os::unix::fs::MetadataExt;
+            root_handle
+                .metadata()
+                .map_err(|_| LeaseRegistryError::Unavailable)?
+                .uid()
+        };
+        #[cfg(not(unix))]
+        let owner_uid = 0;
+        let initialized = entry_exists(root, "lease.lock")?;
+        let lock = open_private(root, "lease.lock", Access::Create, owner_uid)?;
         lock.try_lock()
             .map_err(|_| LeaseRegistryError::StateLocked)?;
-        let has_journal = entry_exists(&root, "leases.journal")?;
+        let has_journal = entry_exists(root, "leases.journal")?;
         if initialized && !has_journal {
             return Err(LeaseRegistryError::InvalidState);
         }
-        let mut journal = open_private(&root, "leases.journal", Access::Append)?;
+        let mut journal = open_private(root, "leases.journal", Access::Append, owner_uid)?;
         root.sync_all()
             .map_err(|_| LeaseRegistryError::Unavailable)?;
         let length = journal
@@ -1189,7 +1199,7 @@ impl JournalStore {
             .map_err(|_| LeaseRegistryError::Unavailable)?;
         Ok((
             Self {
-                root,
+                root: root_handle,
                 journal,
                 _lock: lock,
             },
@@ -2805,22 +2815,25 @@ fn prepare_directory(root: &Path) -> Result<File, LeaseRegistryError> {
     {
         return Err(LeaseRegistryError::Unavailable);
     }
-    let directory: File = rustix::fs::open(
-        root,
-        rustix::fs::OFlags::RDONLY
-            | rustix::fs::OFlags::DIRECTORY
-            | rustix::fs::OFlags::NOFOLLOW
-            | rustix::fs::OFlags::CLOEXEC,
-        rustix::fs::Mode::empty(),
-    )
-    .map_err(|_| LeaseRegistryError::UnsafeStateDirectory)?
-    .into();
-    let metadata = directory
+    let before = std::fs::symlink_metadata(root).map_err(|_| LeaseRegistryError::Unavailable)?;
+    if before.file_type().is_symlink()
+        || !before.is_dir()
+        || before.mode() & 0o077 != 0
+    {
+        return Err(LeaseRegistryError::UnsafeStateDirectory);
+    }
+    let directory = File::open(root).map_err(|_| LeaseRegistryError::Unavailable)?;
+    let opened = directory
         .metadata()
         .map_err(|_| LeaseRegistryError::Unavailable)?;
-    if !metadata.is_dir()
-        || metadata.mode() & 0o077 != 0
-        || metadata.uid() != rustix::process::geteuid().as_raw()
+    let after = std::fs::symlink_metadata(root).map_err(|_| LeaseRegistryError::Unavailable)?;
+    if after.file_type().is_symlink()
+        || !opened.is_dir()
+        || opened.mode() & 0o077 != 0
+        || before.dev() != opened.dev()
+        || before.ino() != opened.ino()
+        || after.dev() != opened.dev()
+        || after.ino() != opened.ino()
     {
         return Err(LeaseRegistryError::UnsafeStateDirectory);
     }
@@ -2829,29 +2842,43 @@ fn prepare_directory(root: &Path) -> Result<File, LeaseRegistryError> {
 
 #[cfg(unix)]
 fn open_private(
-    directory: &File,
+    directory: &Path,
     name: &str,
     access: Access,
+    owner_uid: u32,
 ) -> Result<File, LeaseRegistryError> {
     use std::os::unix::fs::MetadataExt;
-    use rustix::fs::Mode;
-    use rustix::fs::OFlags;
+    use std::os::unix::fs::OpenOptionsExt;
 
-    let flags = match access {
-        Access::Create => OFlags::RDWR | OFlags::CREATE,
-        Access::Append => OFlags::RDWR | OFlags::CREATE | OFlags::APPEND,
-    } | OFlags::NOFOLLOW
-        | OFlags::CLOEXEC;
-    let file: File = rustix::fs::openat(directory, name, flags, Mode::RUSR | Mode::WUSR)
-        .map_err(|_| LeaseRegistryError::Unavailable)?
-        .into();
-    let metadata = file
+    let path = directory.join(name);
+    match std::fs::symlink_metadata(&path) {
+        Ok(metadata) if metadata.file_type().is_symlink() => {
+            return Err(LeaseRegistryError::UnsafeStateDirectory);
+        }
+        Ok(_) => {}
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+        Err(_) => return Err(LeaseRegistryError::Unavailable),
+    }
+
+    let mut options = std::fs::OpenOptions::new();
+    options.read(true).write(true).create(true).mode(0o600);
+    if matches!(access, Access::Append) {
+        options.append(true);
+    }
+    let file = options
+        .open(&path)
+        .map_err(|_| LeaseRegistryError::Unavailable)?;
+    let opened = file
         .metadata()
         .map_err(|_| LeaseRegistryError::Unavailable)?;
-    if !metadata.is_file()
-        || metadata.mode() & 0o077 != 0
-        || metadata.nlink() != 1
-        || metadata.uid() != rustix::process::geteuid().as_raw()
+    let named = std::fs::symlink_metadata(&path).map_err(|_| LeaseRegistryError::Unavailable)?;
+    if named.file_type().is_symlink()
+        || !opened.is_file()
+        || opened.mode() & 0o077 != 0
+        || opened.nlink() != 1
+        || opened.uid() != owner_uid
+        || named.dev() != opened.dev()
+        || named.ino() != opened.ino()
     {
         return Err(LeaseRegistryError::UnsafeStateDirectory);
     }
@@ -2859,10 +2886,13 @@ fn open_private(
 }
 
 #[cfg(unix)]
-fn entry_exists(directory: &File, name: &str) -> Result<bool, LeaseRegistryError> {
-    match rustix::fs::statat(directory, name, rustix::fs::AtFlags::SYMLINK_NOFOLLOW) {
+fn entry_exists(directory: &Path, name: &str) -> Result<bool, LeaseRegistryError> {
+    match std::fs::symlink_metadata(directory.join(name)) {
+        Ok(metadata) if metadata.file_type().is_symlink() => {
+            Err(LeaseRegistryError::UnsafeStateDirectory)
+        }
         Ok(_) => Ok(true),
-        Err(rustix::io::Errno::NOENT) => Ok(false),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(false),
         Err(_) => Err(LeaseRegistryError::Unavailable),
     }
 }
@@ -2874,15 +2904,16 @@ fn prepare_directory(_root: &Path) -> Result<File, LeaseRegistryError> {
 
 #[cfg(not(unix))]
 fn open_private(
-    _directory: &File,
+    _directory: &Path,
     _name: &str,
     _access: Access,
+    _owner_uid: u32,
 ) -> Result<File, LeaseRegistryError> {
     Err(LeaseRegistryError::UnsafeStateDirectory)
 }
 
 #[cfg(not(unix))]
-fn entry_exists(_directory: &File, _name: &str) -> Result<bool, LeaseRegistryError> {
+fn entry_exists(_directory: &Path, _name: &str) -> Result<bool, LeaseRegistryError> {
     Err(LeaseRegistryError::UnsafeStateDirectory)
 }
 
