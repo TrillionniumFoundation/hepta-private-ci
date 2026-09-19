@@ -1543,9 +1543,7 @@ async fn verify_post_send_pre_mark_proof(
     let receipt: PostSendPreMarkReceipt = serde_json::from_slice(&std::fs::read(receipt_path)?)?;
     ensure!(receipt.schema_version == 1);
     ensure!(receipt.requested_event_type == "m.room.message");
-    ensure!(
-        receipt.ack_disposition == "dropped_after_synapse_response_before_dispatch_acceptance"
-    );
+    ensure!(receipt.ack_disposition == "dropped_after_synapse_response_before_dispatch_acceptance");
     ensure!(
         receipt.attempt == 1,
         "post-send acknowledgement was not cut on the first attempt"
