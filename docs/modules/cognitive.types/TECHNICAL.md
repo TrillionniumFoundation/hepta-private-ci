@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-cognitive-types/src/lib.rs](../../../codex-rs/hepta-cognitive-types/src/lib.rs); observed identifiers include `MemoryRecord`, `CognitiveSnapshot`, `build_snapshot`, `validate_integrity`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.types.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.types.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-cognitive-types/src/lib.rs](../../../codex-rs/hepta-cognitive-types/src/lib.rs), with canonical HNMF contracts in [src/hnmf.rs](../../../codex-rs/hepta-cognitive-types/src/hnmf.rs), [src/hnmf_learning.rs](../../../codex-rs/hepta-cognitive-types/src/hnmf_learning.rs) and strict V1 wire encoding in [src/wire.rs](../../../codex-rs/hepta-cognitive-types/src/wire.rs); observed identifiers include `MemoryRecord`, `CognitiveSnapshot`, `MemoryEventV1`, `ModalitySpanRefV1`, `RecallPacketV1`, `build_snapshot`, `validate_integrity`, `encode_wire_v1` and `decode_wire_v1`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.types.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.types.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -97,7 +97,22 @@ Consumed contracts:
 
 Critical protocol schemas:
 
-None.
+- `ModalitySpanRefV1`
+- `MemoryEventV1`
+- `CrossModalBindingV1`
+- `EngramNodeV1`
+- `SynapseV1`
+- `MemoryCueV1`
+- `RecallPacketV1`
+- `OutcomeSignalV1`
+- `ReplaySelectionReceiptV1`
+- `PlasticityBatchV1`
+- `TopologyProposalV1`
+- `ForgetPropagationReceiptV1`
+
+The canonical Rust definitions live only in `codex-rs/hepta-cognitive-types/src/hnmf.rs` and `hnmf_learning.rs`. The canonical V1 wire codec is `src/wire.rs`: strict UTF-8 JSON, lexicographically sorted object keys, integer-only numeric fields, exact schema/version/contract identity, encoded-size limits, and deny-unknown deserialization. The HNMF qualification packages are oracles/algorithms and must import these contracts rather than redefine them.
+
+Exact ModulePort-to-schema sets are machine-bound in `IMPLEMENTATION_MAP.json.portSchemaBindings`. Existing Lane C owner-local records such as `MemoryAdmissionCandidateV1`, `MemoryWriteIntentV1` and `MemoryWriteReceiptV1` remain typed-local contracts until a separately registered wire schema is added; they are not silently reinterpreted as `MemoryEventV1`.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
@@ -163,6 +178,7 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-cognitive-types/src/lane_c_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lane_c_tests.rs); named case: `generation_vector_digest_binds_every_generation`.
 - [codex-rs/hepta-cognitive-types/src/lib_tests.rs](../../../codex-rs/hepta-cognitive-types/src/lib_tests.rs); named case: `snapshot_is_canonical_and_authority_free`.
+- [codex-rs/hepta-cognitive-types/src/contract_tests.rs](../../../codex-rs/hepta-cognitive-types/src/contract_tests.rs); CTYPE-01 through CTYPE-04 plus bounds, strict-wire, canonical-order and digest-domain tests.
 
 In `codex-rs`, run `just test -p codex-hepta-cognitive-types`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.types.md) separately labels target acceptance designs.
 
