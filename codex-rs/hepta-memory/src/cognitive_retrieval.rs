@@ -301,6 +301,44 @@ impl CognitiveStore {
         Ok(batch)
     }
 
+    /// Executes retrieval and reads the exact-scope memory frontier from the
+    /// same SQLite snapshot. Federation callers use this instead of inventing
+    /// a frontier from returned record revisions.
+    pub(crate) async fn retrieve_memory_candidates_for_scope(
+        &self,
+        access: &CognitiveAccess,
+        scope: &CognitiveScope,
+        request: &RetrievalRequest,
+    ) -> Result<(RetrievalBatch, u64), CognitiveStoreError> {
+        self.authorize(access, scope)?;
+        let fts_query = self.validate_retrieval_request(access, request)?;
+        let mut transaction = self.pool.begin().await.map_err(unavailable)?;
+        let mut batch = self
+            .retrieve_memory_candidates_tx(&mut transaction, access, request, &fts_query)
+            .await?;
+        batch
+            .candidates
+            .retain(|candidate| candidate.memory.scope == *scope);
+        let (scope_kind, workspace_sha256) = scope.database_parts();
+        let memory_frontier: i64 = sqlx::query_scalar(
+            "SELECT count(*) FROM memory_revisions
+             WHERE owner_agent_id = ? AND scope_kind = ? AND workspace_sha256 IS ?",
+        )
+        .bind(self.owner_agent_id.as_str())
+        .bind(scope_kind)
+        .bind(workspace_sha256)
+        .fetch_one(&mut *transaction)
+        .await
+        .map_err(unavailable)?;
+        let memory_frontier = u64::try_from(memory_frontier).map_err(|_| {
+            CognitiveStoreError::Corrupt(
+                "negative exact-scope memory federation frontier".to_string(),
+            )
+        })?;
+        transaction.commit().await.map_err(unavailable)?;
+        Ok((batch, memory_frontier))
+    }
+
     async fn retrieve_memory_candidates_tx(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
