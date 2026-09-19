@@ -181,3 +181,82 @@ fn conflicting_schema_registration_rejects() -> Result<(), Box<dyn Error>> {
     ));
     Ok(())
 }
+
+#[test]
+fn schema_registry_and_producer_allow_list_are_bounded() -> Result<(), Box<dyn Error>> {
+    let mut registry = SchemaRegistry::new();
+    for index in 0..MAX_REGISTERED_SCHEMAS {
+        registry.register(SchemaDescriptor::new(
+            StableId::new(format!("schema.{index}"))?,
+            WireVersion::V2,
+            WireVersion::V2,
+            256,
+        )?)?;
+    }
+    assert_eq!(registry.len(), MAX_REGISTERED_SCHEMAS);
+    assert_eq!(
+        registry.register(SchemaDescriptor::new(
+            StableId::new("schema.overflow")?,
+            WireVersion::V2,
+            WireVersion::V2,
+            256,
+        )?),
+        Err(SchemaAdmissionError::RegistryLimitExceeded)
+    );
+
+    assert_eq!(
+        ProducerAdmission::allow_list(Vec::<StableId>::new()),
+        Err(SchemaAdmissionError::EmptyProducerSet)
+    );
+    let mut producers = Vec::with_capacity(MAX_ADMITTED_PRODUCERS + 1);
+    for index in 0..=MAX_ADMITTED_PRODUCERS {
+        producers.push(StableId::new(format!("producer.{index}"))?);
+    }
+    assert_eq!(
+        ProducerAdmission::allow_list(producers),
+        Err(SchemaAdmissionError::ProducerLimitExceeded)
+    );
+    Ok(())
+}
+
+#[test]
+fn producer_admission_precedes_typed_payload_decode() -> Result<(), Box<dyn Error>> {
+    let codec = StrictCodec::new()?;
+    let mut registry = SchemaRegistry::new();
+    registry.register(codec.descriptor().clone())?;
+    let allowed = StableId::new("producer.allowed")?;
+    let denied = StableId::new("producer.denied")?;
+    let producers = ProducerAdmission::allow_list([allowed.clone()])?;
+    let payload = b"objective=ndu;step=1";
+
+    assert_eq!(
+        decode_typed_for_producer(
+            &registry,
+            &producers,
+            WireVersion::V2,
+            codec.descriptor().schema(),
+            &allowed,
+            &codec,
+            payload,
+        )?,
+        StrictMessage {
+            objective: "ndu".to_string(),
+            step: 1,
+        }
+    );
+    assert!(matches!(
+        decode_typed_for_producer(
+            &registry,
+            &producers,
+            WireVersion::V2,
+            codec.descriptor().schema(),
+            &denied,
+            &codec,
+            b"not-even-a-valid-typed-payload",
+        ),
+        Err(SchemaCodecError::Admission(
+            SchemaAdmissionError::ProducerDenied(producer)
+        )) if producer == denied
+    ));
+    Ok(())
+}
