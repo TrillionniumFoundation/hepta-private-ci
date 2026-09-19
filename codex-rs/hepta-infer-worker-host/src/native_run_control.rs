@@ -25,6 +25,7 @@ pub struct NativeAdmission {
     pub maximum_in_flight: usize,
     pub quota_reservation_digest: Digest32,
     pub resource_snapshot_digest: Digest32,
+    pub worker_assignment_digest: Digest32,
 }
 
 impl AppServerModelDriver {
@@ -63,10 +64,12 @@ impl AppServerModelDriver {
                 self.config.timeout.as_millis(),
                 admission.quota_reservation_digest.to_string(),
                 admission.resource_snapshot_digest.to_string(),
+                admission.worker_assignment_digest.to_string(),
             ))?),
             operation_id: Some(admission.operation_id.clone()),
             quota_reservation_digest: Some(admission.quota_reservation_digest.to_string()),
             resource_snapshot_digest: Some(admission.resource_snapshot_digest.to_string()),
+            worker_assignment_digest: Some(admission.worker_assignment_digest.to_string()),
         };
         let record = control.reserve_native(request, admission.maximum_in_flight)?;
         if let Some(reason) = &record.pre_dispatch_stop {
