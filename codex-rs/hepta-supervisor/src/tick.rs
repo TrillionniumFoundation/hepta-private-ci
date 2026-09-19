@@ -164,6 +164,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                     SupervisorEventKind::Lifecycle(AgentLifecycle::Failed),
                 );
                 slot.event(next.generation, SupervisorEventKind::StopRequested);
+                if slot.release_change.is_none() && !slot.restart_pending {
+                    self.schedule_auto_restart(agent_id, slot, next.generation, now)?;
+                }
             }
             RuntimePhase::Draining { deadline: limit } if drained || now >= limit => {
                 runtime.phase = RuntimePhase::Stopping {
