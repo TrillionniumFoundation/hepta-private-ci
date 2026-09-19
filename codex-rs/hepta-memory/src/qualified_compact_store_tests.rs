@@ -56,6 +56,7 @@ fn checkpoint(
         checkpoint_id: id(&format!("checkpoint:{compact_generation}:{payload_seed}")),
         generation: generation(compact_generation),
         source_snapshot: snapshot_key(compact_generation - 1),
+        source_memory_snapshot_digest: digest(&format!("source-memory:{payload_seed}")),
         support_manifest_digest: digest(&format!("support:{payload_seed}")),
         algorithm_digest: digest("algorithm"),
         payload_digest: digest(&format!("payload:{payload_seed}")),
@@ -259,9 +260,9 @@ async fn uncommitted_publication_transaction_disappears_after_restart() {
         "INSERT INTO cognitive_qualified_compact_checkpoints (
             owner_agent_id, scope_id, purpose_id, generation,
             checkpoint_digest, predecessor_digest, candidate_digest, proof_digest,
-            source_snapshot_digest, tokenizer_digest, publication_digest,
-            checkpoint_json, proof_json, published_at_unix_seconds
-         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            source_snapshot_digest, source_memory_snapshot_digest, tokenizer_digest,
+            publication_digest, checkpoint_json, proof_json, published_at_unix_seconds
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     )
     .bind(store.owner_agent_id().as_str())
     .bind(checkpoint.source_snapshot.vector.scope_id.as_str())
@@ -272,6 +273,7 @@ async fn uncommitted_publication_transaction_disappears_after_restart() {
     .bind(proof.candidate_digest.to_string())
     .bind(proof.proof_digest.to_string())
     .bind(checkpoint.source_snapshot.vector_digest.to_string())
+    .bind(checkpoint.source_memory_snapshot_digest.to_string())
     .bind(
         checkpoint
             .source_snapshot
@@ -319,9 +321,9 @@ async fn corrupt_persisted_checkpoint_fails_store_reopen() {
         "INSERT INTO cognitive_qualified_compact_checkpoints (
             owner_agent_id, scope_id, purpose_id, generation,
             checkpoint_digest, predecessor_digest, candidate_digest, proof_digest,
-            source_snapshot_digest, tokenizer_digest, publication_digest,
-            checkpoint_json, proof_json, published_at_unix_seconds
-         ) VALUES (?, ?, ?, 3, ?, ?, ?, ?, ?, ?, ?, '{}', '{}', ?)",
+            source_snapshot_digest, source_memory_snapshot_digest, tokenizer_digest,
+            publication_digest, checkpoint_json, proof_json, published_at_unix_seconds
+         ) VALUES (?, ?, ?, 3, ?, ?, ?, ?, ?, ?, ?, ?, '{}', '{}', ?)",
     )
     .bind(store.owner_agent_id().as_str())
     .bind(first.source_snapshot.vector.scope_id.as_str())
@@ -331,6 +333,7 @@ async fn corrupt_persisted_checkpoint_fails_store_reopen() {
     .bind(digest("corrupt-candidate").to_string())
     .bind(digest("corrupt-proof").to_string())
     .bind(digest("corrupt-snapshot").to_string())
+    .bind(digest("corrupt-source-memory-snapshot").to_string())
     .bind(first.source_snapshot.vector.tokenizer_digest.to_string())
     .bind(digest("corrupt-publication").to_string())
     .bind(i64::try_from(unix_seconds()).expect("time"))
@@ -370,9 +373,9 @@ async fn unknown_checkpoint_image_field_fails_store_reopen() {
         "INSERT INTO cognitive_qualified_compact_checkpoints (
             owner_agent_id, scope_id, purpose_id, generation,
             checkpoint_digest, predecessor_digest, candidate_digest, proof_digest,
-            source_snapshot_digest, tokenizer_digest, publication_digest,
-            checkpoint_json, proof_json, published_at_unix_seconds
-         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            source_snapshot_digest, source_memory_snapshot_digest, tokenizer_digest,
+            publication_digest, checkpoint_json, proof_json, published_at_unix_seconds
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
     )
     .bind(store.owner_agent_id().as_str())
     .bind(checkpoint.source_snapshot.vector.scope_id.as_str())
@@ -383,6 +386,7 @@ async fn unknown_checkpoint_image_field_fails_store_reopen() {
     .bind(proof.candidate_digest.to_string())
     .bind(proof.proof_digest.to_string())
     .bind(checkpoint.source_snapshot.vector_digest.to_string())
+    .bind(checkpoint.source_memory_snapshot_digest.to_string())
     .bind(
         checkpoint
             .source_snapshot
