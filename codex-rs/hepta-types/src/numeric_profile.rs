@@ -18,6 +18,15 @@ pub enum NumericRoundingV1 {
     NearestTiesEven,
 }
 
+impl NumericRoundingV1 {
+    pub const fn id(self) -> &'static str {
+        match self {
+            Self::TowardZero => "toward-zero",
+            Self::NearestTiesEven => "nearest-ties-even",
+        }
+    }
+}
+
 impl NumericProfileV1 {
     pub fn from_id(id: &str) -> Result<Self, NumericConversionError> {
         match id {
@@ -66,13 +75,13 @@ pub enum SignalUnitV1 {
 }
 
 impl SignalUnitV1 {
-    pub(crate) const fn tag(self) -> u8 {
+    pub const fn id(self) -> &'static str {
         match self {
-            Self::Dimensionless => 0,
-            Self::Metres => 1,
-            Self::MetresPerSecond => 2,
-            Self::MetresPerSecondSquared => 3,
-            Self::Utility => 4,
+            Self::Dimensionless => "dimensionless",
+            Self::Metres => "metres",
+            Self::MetresPerSecond => "metres-per-second",
+            Self::MetresPerSecondSquared => "metres-per-second-squared",
+            Self::Utility => "utility",
         }
     }
 }
@@ -118,12 +127,14 @@ impl NumericSignalSchemaV1 {
 pub enum NumericConversionError {
     UnknownProfile,
     MissingNormalization,
+    UnknownNormalization,
     NormalizationMismatch,
     UnitMismatch,
     Shape,
     InvalidRange,
     OutOfRange,
     Overflow,
+    CanonicalEncoding,
 }
 
 impl fmt::Display for NumericConversionError {

@@ -1,52 +1,90 @@
 # platform.types: implementation design
 
 Parent: `docs/modules/platform.types/TECHNICAL.md`. Lane: `LANE-A-FOUNDATION`.
-Status: bounded identity, digest and numeric-conversion source implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: bounded/profiled identity, canonical digest, immutable registry and
+numeric-conversion source implemented; independent product execution and
+acceptance remain separate gates. Common requirements:
+`../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and
+package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
 Roots: `codex-rs/hepta-types`.
 Packages: `PLATFORM-0-TYPE-BOUNDARY`.
 
-Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
+The operations below are native V1 APIs. They carry no runtime, production,
+effect, selection, promotion or release authority.
 
 ## 2. Public operations and contract details
 
-`validate_id(raw, id_profile) -> StableId | InvalidId` checks byte count, alphabet and normalized representation without allocating a second unrestricted copy. `rescale(value, source_profile, target_profile) -> ConversionReceipt | NumericError` uses checked wide arithmetic and the target rounding rule. `canonical_digest(type_id, schema_version, fields) -> Digest32` applies domain separation and length-delimits variable fields; map ordering is canonical and arrays retain semantic order. Schema version and numeric profile are part of the digest input, not ambient globals.
+`validate_id(raw, id_profile) -> StableId | IdentityError` checks byte count,
+profile alphabet and canonical representation before allocating the accepted
+owned value. `canonical_digest_v1(type_id, schema_version, fields) -> Digest32`
+applies the frozen `HPTC` domain-separated, typed and length-framed V1 encoding;
+field/map ordering is canonical and arrays retain semantic order.
+`rescale_signal_registered(value, target_profile, registry) -> (signal,
+ConversionReceipt) | NumericError` uses checked wide arithmetic, the target
+rounding rule and an explicitly resolved immutable normalization contract.
+Schema version and numeric/ID profile are values, not ambient globals.
 
 ## 3. State records and transaction design
 
-No authoritative state, clocks, credentials, filesystem handles or process-global mutable registries. Numeric-profile definitions are immutable inputs. A `ConversionReceipt` contains source/target profile IDs, input/output digests and a rational absolute-error bound. Authority/fence identifiers are exact integers or opaque IDs and must never pass through approximate rescaling.
+No authoritative state, clocks, credentials, filesystem handles or
+process-global mutable registries. `ContractRegistryV1` is an immutable bounded
+input for one caller generation. `RegistryDefinitionV1` binds kind, ID,
+version and definition text to a canonical digest. A `ConversionReceipt`
+contains source/target profile IDs, input/output digests and a rational
+absolute-error bound. Authority/fence identifiers are exact integers or opaque
+IDs and never pass through approximate rescaling.
 
 ## 4. Deterministic algorithm and scheduling
 
-Validate shape and limits; decode into exact primitive types; validate units and scale; compute with checked intermediates; apply only the named rounding/projection; encode and hash. Do not implicitly normalize invalid user IDs into valid identities. Compile-time ownership keeps authority-bearing types opaque to consumers.
+Validate profile, shape and limits; validate units and normalization identity;
+resolve the normalization definition when using the registered boundary;
+compute with checked intermediates; apply only the named rounding; canonical
+encode and hash. Do not implicitly normalize invalid IDs into valid identities.
+`AuthorityPosture` is sealed deny-only, so this module cannot represent a
+grant.
 
 ## 5. Capacity and performance profile
 
-Pilot scalar conversion batch <= 4096 values; string identifier <= the existing StableId bound; serialized primitive collection <= 256 KiB; no network/SQL dependencies. Record allocations per decode and numeric conversion separately.
+Numeric conversion batch <= 4096 values; identifier <= 128 encoded bytes;
+canonical encoding <= 256 KiB; canonical container <= 4096 items and depth <=
+16; immutable registry <= 256 definitions; one definition <= 4096 UTF-8 bytes.
+No network/SQL dependencies.
 
-Pilot ceilings are design targets, not measurements. Stricter canonical limits prevail. Bind actual schema/migration, host and measurements before composition; stateless modules prove absence rather than inventing state.
+These are enforced source limits, not target-host latency measurements.
+Performance measurements and product composition remain separate evidence.
 
 ## 6. Concrete verification cases
 
-- TYPES-01: positive and negative half ties reproduce ties-to-even (+2.5 -> 2, -3.5 -> -4).
-- TYPES-02: same number in ppm and Q24 has distinct source bytes/profile digests and a valid conversion receipt.
-- TYPES-03: overflow, unknown profile and unit mismatch reject; authority IDs are not accepted by approximate conversion.
-- TYPES-04: Rust/Python/TypeScript golden encodings agree byte-for-byte for the declared wire representation.
+- TYPES-01: positive and negative half ties reproduce ties-to-even (+2.5 -> 2,
+  -3.5 -> -4).
+- TYPES-02: same number in ppm and Q24 has distinct source digests and a valid
+  conversion receipt.
+- TYPES-03: overflow, unknown profile/unit/normalization mismatch reject;
+  authority posture cannot represent a grant.
+- TYPES-04: Rust/Python/TypeScript canonical V1 golden encoding agrees
+  byte-for-byte and on SHA-256.
 
-These are required product test designs, not executed-test receipts. Each implementation supplies native test identity, exact input/output and independent oracle evidence.
+The repository now contains native test identities and a frozen
+`CANONICAL_V1_CONFORMANCE.json`. Exact-head and synthetic-merge workflow
+success remain the execution receipts for a candidate.
 
 ## 7. Integration, rollback and capability ceiling
 
-Shared type changes land through the contract integrator before consumer PRs. Freeze generated type hashes for all affected lanes; rollback restores compatible readers and profile versions, never silently reinterprets stored numeric bytes.
+Shared type changes land through the contract integrator before consumer PRs.
+V1 canonical bytes and ID profile semantics never change in place. Rollback
+restores compatible readers/profile versions; it never silently reinterprets a
+stored commitment.
 
-Use all eighteen dossier receipt fields. Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge or self-release.
+Repository qualification cannot self-grant operator acceptance, promotion or
+release.
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `rescale_signal` in [codex-rs/hepta-types/src/numeric_conversion.rs](../../../codex-rs/hepta-types/src/numeric_conversion.rs); `StableId` in [codex-rs/hepta-types/src/identity.rs](../../../codex-rs/hepta-types/src/identity.rs). Bounded identity, digest and numeric-conversion source implemented.
-- **State and recovery:** Stateless native values. NumericSignalV1 digests bind profile, unit, shape, normalization and raw values; conversion checks i128 intermediates and returns an exact rational error bound, with no saturation.
-- **Source tests:** [codex-rs/hepta-types/src/numeric_conversion_tests.rs](../../../codex-rs/hepta-types/src/numeric_conversion_tests.rs), [codex-rs/hepta-types/src/identity_tests.rs](../../../codex-rs/hepta-types/src/identity_tests.rs). These are test identities, not execution receipts for this documentation revision.
-- **Implementation and operating references:** [codex-rs/hepta-types/NUMERIC_SIGNAL_CONVERSION.md](../../../codex-rs/hepta-types/NUMERIC_SIGNAL_CONVERSION.md).
-- **Remaining work:** Admit production numeric profiles and verify actual consumer/wire compatibility; numerical equivalence alone does not establish byte compatibility.
+- **Implemented entrypoints:** `validate_id` in [codex-rs/hepta-types/src/identity.rs](../../../codex-rs/hepta-types/src/identity.rs); `canonical_digest_v1` in [codex-rs/hepta-types/src/canonical_digest.rs](../../../codex-rs/hepta-types/src/canonical_digest.rs); `ContractRegistryV1` in [codex-rs/hepta-types/src/registry.rs](../../../codex-rs/hepta-types/src/registry.rs); `rescale_signal` in [codex-rs/hepta-types/src/numeric_conversion.rs](../../../codex-rs/hepta-types/src/numeric_conversion.rs); `rescale_signal_registered` in [codex-rs/hepta-types/src/numeric_conversion.rs](../../../codex-rs/hepta-types/src/numeric_conversion.rs).
+- **State and recovery:** Stateless native values plus caller-owned immutable registry generations. Canonical V1 framing is bounded and deterministic; numeric conversion checks i128 intermediates and returns an exact rational error bound with no saturation.
+- **Source tests:** [codex-rs/hepta-types/src/canonical_digest_tests.rs](../../../codex-rs/hepta-types/src/canonical_digest_tests.rs), [codex-rs/hepta-types/src/registry_tests.rs](../../../codex-rs/hepta-types/src/registry_tests.rs), [codex-rs/hepta-types/src/numeric_conversion_tests.rs](../../../codex-rs/hepta-types/src/numeric_conversion_tests.rs), [codex-rs/hepta-types/src/identity_tests.rs](../../../codex-rs/hepta-types/src/identity_tests.rs), [codex-rs/hepta-types/src/bounded_tests.rs](../../../codex-rs/hepta-types/src/bounded_tests.rs), [codex-rs/hepta-types/src/fixed_tests.rs](../../../codex-rs/hepta-types/src/fixed_tests.rs). These are source test identities, not candidate execution receipts.
+- **Implementation and operating references:** [codex-rs/hepta-types/CANONICAL_DIGEST_V1.md](../../../codex-rs/hepta-types/CANONICAL_DIGEST_V1.md), [codex-rs/hepta-types/CANONICAL_V1_CONFORMANCE.json](../../../codex-rs/hepta-types/CANONICAL_V1_CONFORMANCE.json), [codex-rs/hepta-types/NUMERIC_SIGNAL_CONVERSION.md](../../../codex-rs/hepta-types/NUMERIC_SIGNAL_CONVERSION.md).
+- **Remaining work:** generated cross-language bindings, named product-execution evidence and external operator/acceptance gates remain outside this source-only module closure.

@@ -213,7 +213,7 @@ mod tests {
     }
 
     #[test]
-    fn non_denied_authority_and_wrong_actuator_are_rejected_without_mutation() {
+    fn authority_grant_construction_and_wrong_actuator_fail_without_mutation() {
         let mut io = adapter();
         let reading = io.read_sensor(0).expect("sensor read");
         let mut controller = super::super::CartControllerV1::new(io.profile());
@@ -225,15 +225,12 @@ mod tests {
             )
             .expect("controller command");
         let before = io.read_sensor(0).expect("sensor reread");
-        let mut authority = AuthorityPosture::DENY_ALL;
-        authority.runtime = true;
         assert_eq!(
-            io.dispatch(TypedActuatorDispatchV1 {
-                actuator_id: StableId::new("actuator.cart").expect("actuator id"),
-                command,
-                authority,
+            AuthorityPosture::try_from_flags(codex_hepta_types::AuthorityFlagsV1 {
+                runtime: true,
+                ..codex_hepta_types::AuthorityFlagsV1::default()
             }),
-            Err(EmbodimentIoError::AuthorityNotDenied)
+            Err(codex_hepta_types::AuthorityPostureError::GrantRequested)
         );
         assert_eq!(io.read_sensor(0).expect("sensor reread"), before);
 
