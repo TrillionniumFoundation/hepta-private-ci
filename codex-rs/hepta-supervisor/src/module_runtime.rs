@@ -218,7 +218,8 @@ impl RuntimeModuleSupervisorV1 {
                     }
                     match delta.operation {
                         RuntimeTopologyOperationV1::Add => {
-                            if abi.predecessor_generation.is_some()
+                            if self.registry.active_generation(&delta.module_id).is_some()
+                                || abi.predecessor_generation.is_some()
                                 || !abi.rollback_predecessor_digest.is_zero()
                             {
                                 return Err(
@@ -328,11 +329,11 @@ impl RuntimeModuleSupervisorV1 {
             }
             let generation = self.registry.active_generation(&delta.module_id);
             let record = generation.and_then(|value| self.registry.record(&delta.module_id, value));
-            if generation != Some(candidate.candidate_generation)
-                || record.is_none_or(|value| {
-                    value.abi.implementation_digest != delta.candidate_digest
-                })
-            {
+            let implementation_matches = match record {
+                Some(value) => value.abi.implementation_digest == delta.candidate_digest,
+                None => false,
+            };
+            if generation != Some(candidate.candidate_generation) || !implementation_matches {
                 return Err(RuntimeModuleSupervisorErrorV1::TopologyNotReady(
                     delta.module_id.clone(),
                 ));
