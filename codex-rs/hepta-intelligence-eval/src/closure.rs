@@ -25,7 +25,7 @@ mod metric_roles;
 
 pub use metric_roles::MetricRoleContractV2;
 pub use metric_roles::MetricRoleV2;
-pub use metric_roles::decide_independently_v2;
+pub(crate) use metric_roles::decide_independently_v2;
 pub(crate) use metric_roles::digest_evaluation_roles;
 pub use metric_roles::freeze_cross_fold_plan_v2;
 
