@@ -66,7 +66,9 @@ jobs:
 
       - name: Strict lint canonical and product crates
         working-directory: codex-rs
-        run: cargo clippy -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-hepta-agentd -p codex-app-server --all-targets -- -D warnings
+        run: |
+          cargo clippy -p codex-hepta-memory-federation -p codex-hepta-memory -p codex-hepta-memory-extension -p codex-app-server --all-targets -- -D warnings
+          cargo clippy -p codex-hepta-agentd --lib -- -D warnings
 
       - name: Verify patch hygiene
         run: git diff --check
