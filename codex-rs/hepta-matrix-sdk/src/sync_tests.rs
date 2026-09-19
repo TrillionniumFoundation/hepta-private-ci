@@ -6,7 +6,15 @@ use codex_hepta_matrix_protocol::MATRIX_BINDING_SCHEMA_VERSION;
 use codex_hepta_matrix_protocol::MatrixBindingV1;
 use codex_hepta_matrix_protocol::MatrixDeviceId;
 use codex_hepta_matrix_protocol::MatrixHomeserverUrl;
+use codex_hepta_matrix_protocol::outbox_id;
+use codex_hepta_matrix_protocol::transaction_id;
 use codex_hepta_matrix_store::InboxDraft;
+use codex_hepta_matrix_store::MatrixDispatchAuthority;
+use codex_hepta_matrix_store::MatrixDispatchState;
+use codex_hepta_matrix_store::OutboxDisposition;
+use codex_hepta_matrix_store::OutboxDraft;
+use codex_hepta_matrix_store::OutboxKind;
+use codex_hepta_matrix_store::OutboxState;
 use codex_hepta_matrix_store::MatrixDurableConfig;
 use codex_hepta_matrix_store::RoomBindingDraft;
 use codex_hepta_paths::HeptaAgentLayout;
@@ -130,6 +138,118 @@ fn response(events: Vec<Value>) -> TestResult<SyncResponse> {
         },
     );
     Ok(response)
+}
+
+#[tokio::test]
+async fn own_sync_event_is_the_terminal_observer_for_an_accepted_send() -> TestResult {
+    let fixture = Fixture::new().await?;
+    let room_id = MatrixRoomId::parse(ROOM)?;
+    let logical_outbox_id = outbox_id(
+        fixture.store.owner_agent_id(),
+        &room_id,
+        "thread-observed",
+        "turn-observed",
+        "item-observed",
+        "final",
+    );
+    let txn_id = transaction_id(&logical_outbox_id, 1)?;
+    let queued = match fixture
+        .store
+        .enqueue_outbox(&OutboxDraft {
+            logical_outbox_id,
+            revision: 1,
+            txn_id: txn_id.clone(),
+            room_id: room_id.clone(),
+            kind: OutboxKind::Final,
+            payload: b"observed reply".to_vec(),
+            binding_revision: 1,
+            generation: 1,
+            created_at_ms: 10,
+        })
+        .await?
+    {
+        OutboxDisposition::Enqueued(record) => record,
+        other => return Err(format!("unexpected outbox disposition: {other:?}").into()),
+    };
+    let claimed = fixture
+        .store
+        .claim_outbox(10, 30, 1)
+        .await?
+        .pop()
+        .ok_or("outbox was not claimed")?;
+    assert_eq!(claimed.stable_txn_id, queued.stable_txn_id);
+    fixture
+        .store
+        .prepare_matrix_dispatch(
+            &claimed,
+            &MatrixDispatchAuthority::owner_local(&claimed.stable_txn_id),
+            10,
+        )
+        .await?;
+    fixture
+        .store
+        .mark_matrix_dispatch_dispatched(
+            &claimed.stable_txn_id,
+            claimed.attempts,
+            &"1".repeat(64),
+            11,
+        )
+        .await?;
+    let event_id = MatrixEventId::parse("$outbound-observed")?;
+    fixture
+        .store
+        .mark_matrix_dispatch_accepted(
+            &claimed.stable_txn_id,
+            claimed.attempts,
+            &event_id,
+            &"2".repeat(64),
+            12,
+        )
+        .await?;
+    assert_eq!(
+        fixture
+            .store
+            .outbox_for_txn(&claimed.stable_txn_id)
+            .await?
+            .ok_or("accepted outbox disappeared")?
+            .state,
+        OutboxState::InFlight
+    );
+
+    let own_event = json!({
+        "event_id": event_id.as_str(),
+        "sender": AGENT,
+        "origin_server_ts": 13,
+        "type": "m.room.message",
+        "content": {"msgtype": "m.text", "body": "observed reply"},
+        "unsigned": {"transaction_id": claimed.stable_txn_id.as_str()}
+    });
+    fixture
+        .composer()
+        .commit_response(
+            &response(vec![own_event])?,
+            /*checkpoint*/ None,
+            /*observed_at_ms*/ 20,
+            |_| Some(RoomVersionRules::V11),
+        )
+        .await?;
+
+    let dispatch = fixture
+        .store
+        .matrix_dispatch(&claimed.stable_txn_id)
+        .await?
+        .ok_or("dispatch disappeared after sync")?;
+    assert_eq!(dispatch.state, MatrixDispatchState::ObservedSucceeded);
+    assert_eq!(dispatch.terminal_event_id, Some(event_id.clone()));
+    let outbox = fixture
+        .store
+        .outbox_for_txn(&claimed.stable_txn_id)
+        .await?
+        .ok_or("outbox disappeared after terminal observation")?;
+    assert_eq!(outbox.state, OutboxState::Sent);
+    assert_eq!(outbox.sent_event_id, Some(event_id));
+    fixture.store.close().await;
+    Ok(())
 }
 
 #[tokio::test]
