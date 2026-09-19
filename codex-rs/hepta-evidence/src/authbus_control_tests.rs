@@ -42,6 +42,14 @@ fn decode_counter(bytes: Vec<u8>) -> u64 {
 }
 
 async fn seed(store: &HeptaEvidenceStore, endowment: u64) {
+    seed_with_cap(store, endowment, 128).await;
+}
+
+async fn seed_with_cap(
+    store: &HeptaEvidenceStore,
+    endowment: u64,
+    max_active_per_principal: u32,
+) {
     let scope = Digest32::of_bytes(b"scope");
     store
         .install_authbus_policy(
@@ -67,6 +75,7 @@ async fn seed(store: &HeptaEvidenceStore, endowment: u64) {
             window_start_ms: 1,
             window_end_ms: u64::MAX,
             endowment,
+            max_active_per_principal,
         })
         .await
         .unwrap();
@@ -190,6 +199,27 @@ async fn bus_01_simultaneous_last_unit_reservations_cannot_both_succeed() {
     assert_eq!(usize::from(left.is_ok()) + usize::from(right.is_ok()), 1);
     let rejected = left.err().or_else(|| right.err()).unwrap();
     assert!(matches!(rejected, AuthBusControlError::QuotaExceeded));
+}
+
+#[tokio::test]
+async fn per_principal_cap_counts_quarantined_effects_as_held() {
+    let temp = TempDir::new().unwrap();
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+    seed_with_cap(&store, 10, 1).await;
+
+    let first = reserve(&store, "principal-cap-first", 1).await.unwrap().1;
+    begin_effect(&store, &first, effect("principal-cap-first"))
+        .await
+        .unwrap();
+    store
+        .quarantine_authbus_reservation(&first.reservation_id)
+        .await
+        .unwrap();
+
+    assert!(matches!(
+        reserve(&store, "principal-cap-second", 1).await,
+        Err(AuthBusControlError::QuotaExceeded)
+    ));
 }
 
 #[tokio::test]
@@ -519,6 +549,7 @@ async fn quota_window_and_revision_are_enforced_and_rollover_is_bounded() {
             window_start_ms: now.saturating_sub(1_000),
             window_end_ms: window_end,
             endowment: 5,
+        max_active_per_principal: 128,
         })
         .await
         .unwrap();
@@ -542,6 +573,7 @@ async fn quota_window_and_revision_are_enforced_and_rollover_is_bounded() {
                 window_start_ms: now.saturating_sub(1_000),
                 window_end_ms: window_end,
                 endowment: 6,
+            max_active_per_principal: 128,
             })
             .await,
         Err(AuthBusControlError::Invalid(_))
@@ -558,6 +590,7 @@ async fn quota_window_and_revision_are_enforced_and_rollover_is_bounded() {
             window_start_ms: now.saturating_sub(1_000),
             window_end_ms: window_end,
             endowment: 6,
+        max_active_per_principal: 128,
         })
         .await
         .unwrap();
@@ -569,6 +602,7 @@ async fn quota_window_and_revision_are_enforced_and_rollover_is_bounded() {
             window_start_ms: window_end,
             window_end_ms: window_end.checked_add(20_000).unwrap(),
             endowment: 7,
+        max_active_per_principal: 128,
         })
         .await
         .unwrap();
@@ -621,6 +655,7 @@ async fn consumed_quota_cannot_be_erased_by_same_window_revision_change() {
                 window_start_ms: 1,
                 window_end_ms: u64::MAX,
                 endowment: 6,
+            max_active_per_principal: 128,
             })
             .await,
         Err(AuthBusControlError::Invalid(_))
