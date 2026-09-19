@@ -280,6 +280,7 @@
       "authority": "none",
       "tests": [
         "codex-rs/hepta-plasticity/src/topology_canary.rs::tests::canary_accepts_only_after_bounded_success_and_verified_rollback",
+        "codex-rs/hepta-plasticity/src/topology_canary.rs::tests::regression_budget_cannot_exceed_canary_horizon",
         "codex-rs/hepta-plasticity/src/topology_canary.rs::tests::any_safety_violation_aborts_terminally",
         "codex-rs/hepta-plasticity/src/topology_canary.rs::tests::receipt_binds_the_full_plan_and_observation_history",
         "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs::pls3_governed_topology_persists_then_accepts_bounded_canary",
