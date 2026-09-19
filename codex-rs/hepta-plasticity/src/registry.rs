@@ -89,6 +89,7 @@ impl ProposalRegistry {
         }
         if self.legacy_v1.contains_key(&proposal.proposal_id)
             || self.has_v2_proposal_id(&proposal.proposal_id)
+            || self.topology_v3.contains_key(&proposal.proposal_id)
         {
             return Err(Error::ProposalConflict(proposal.proposal_id.to_string()));
         }
