@@ -27,6 +27,7 @@ use codex_hepta_matrix_sdk::MatrixTransportError;
 use codex_hepta_matrix_sdk::OutboxDispatchConfig;
 use codex_hepta_matrix_sdk::dispatch_outbox_once;
 use codex_hepta_matrix_sdk::run_outbox_sender;
+use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixDurableConfig;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::OutboxDisposition;
