@@ -108,6 +108,133 @@ const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
         ],
     },
     SchemaObjectSpec {
+        name: "qualification_evidence_meta",
+        object_type: "table",
+        table_name: "qualification_evidence_meta",
+        required_sql_fragments: &[
+            "create table",
+            "store_instance_id",
+            "length(store_instance_id) = 64",
+            "slot = 1",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "qualification_evidence",
+        object_type: "table",
+        table_name: "qualification_evidence",
+        required_sql_fragments: &[
+            "create table",
+            "receipt_id",
+            "candidate_id",
+            "source_commit",
+            "source_tree",
+            "claim_class",
+            "issuer_principal_id",
+            "signing_identity_sha256",
+            "trust_policy_sha256",
+            "payload_sha256",
+            "previous_chain_sha256",
+            "chain_sha256",
+            "foreign key(predecessor_receipt_id)",
+            "foreign key(revokes_receipt_id)",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "independent_decision_receipts",
+        object_type: "table",
+        table_name: "independent_decision_receipts",
+        required_sql_fragments: &[
+            "create table",
+            "decision_id",
+            "evidence_receipt_id",
+            "evidence_set_sha256",
+            "'accept', 'reject', 'conditional', 'abstain'",
+            "foreign key(evidence_receipt_id)",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "qualification_evidence_candidate_claim_seq",
+        object_type: "index",
+        table_name: "qualification_evidence",
+        required_sql_fragments: &[
+            "create index",
+            "candidate_id, source_commit, source_tree, claim_class, seq",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "qualification_evidence_candidate_role_seq",
+        object_type: "index",
+        table_name: "qualification_evidence",
+        required_sql_fragments: &[
+            "create index",
+            "candidate_id, source_commit, source_tree, issuer_role, seq",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "qualification_evidence_revoked_key_seq",
+        object_type: "index",
+        table_name: "qualification_evidence",
+        required_sql_fragments: &[
+            "create index",
+            "revokes_issuer_key_sha256",
+            "where revokes_issuer_key_sha256 is not null",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "qualification_evidence_meta_no_update",
+        object_type: "trigger",
+        table_name: "qualification_evidence_meta",
+        required_sql_fragments: &[
+            "before update",
+            "qualification evidence store identity is immutable",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "qualification_evidence_meta_no_delete",
+        object_type: "trigger",
+        table_name: "qualification_evidence_meta",
+        required_sql_fragments: &[
+            "before delete",
+            "qualification evidence store identity is immutable",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "qualification_evidence_no_update",
+        object_type: "trigger",
+        table_name: "qualification_evidence",
+        required_sql_fragments: &[
+            "before update",
+            "qualification evidence is immutable",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "qualification_evidence_no_delete",
+        object_type: "trigger",
+        table_name: "qualification_evidence",
+        required_sql_fragments: &[
+            "before delete",
+            "qualification evidence is immutable",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "independent_decision_receipts_no_update",
+        object_type: "trigger",
+        table_name: "independent_decision_receipts",
+        required_sql_fragments: &[
+            "before update",
+            "independent decision receipts are immutable",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "independent_decision_receipts_no_delete",
+        object_type: "trigger",
+        table_name: "independent_decision_receipts",
+        required_sql_fragments: &[
+            "before delete",
+            "independent decision receipts are immutable",
+        ],
+    },
+    SchemaObjectSpec {
         name: "governance_decisions",
         object_type: "table",
         table_name: "governance_decisions",
