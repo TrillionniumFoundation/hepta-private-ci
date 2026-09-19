@@ -13,6 +13,8 @@ use std::time::Duration;
 use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_paths::HeptaStateRoot;
+use codex_keyring_store::DefaultKeyringStore;
+use codex_keyring_store::KeyringStore;
 use codex_hepta_runtime::HeptaRuntime;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
@@ -22,10 +24,13 @@ use tokio::net::TcpStream;
 pub const DEFAULT_LISTEN_ADDR: &str = "127.0.0.1:7373";
 pub const CANARY_LISTEN_ADDR: &str = "127.0.0.1:17373";
 pub const LIVE_SHELL_CONTRACT_ARG: &str = "--hepta-vnext-live-shell-contract-v1";
-pub const LIVE_SHELL_CONTRACT_JSON: &str = r#"{"schema":"hepta_vnext_live_shell_contract_v1","status":"ready","protocol_version":1,"routes":["GET /","GET /api/hepta/runtime","GET /healthz"],"runtime":{"loopback_only":true,"read_only":true,"open_mode":"immutable-query-only-open-existing","schema_version":5,"requires_empty_wal":true,"keyed_integrity_required":true},"authority":{"telegram":false,"outbound":false,"model_invocation":false,"operator_mutation":false,"enforce":false,"promotion":false,"retirement":false,"automatic_transition":false}}"#;
+pub const LIVE_SHELL_CONTRACT_JSON: &str = r#"{"schema":"hepta_vnext_live_shell_contract_v1","status":"ready","protocol_version":1,"routes":["GET /","GET /api/hepta/runtime","GET /healthz"],"runtime":{"loopback_only":true,"read_only":true,"client_auth":["disabled","keyring_bearer_v1"],"open_mode":"immutable-query-only-open-existing","schema_version":5,"requires_empty_wal":true,"keyed_integrity_required":true},"authority":{"telegram":false,"outbound":false,"model_invocation":false,"operator_mutation":false,"enforce":false,"promotion":false,"retirement":false,"automatic_transition":false}}"#;
 const MAX_REQUEST_BYTES: usize = 32 * 1024;
 const REQUEST_TIMEOUT: Duration = Duration::from_secs(5);
 const RESPONSE_TIMEOUT: Duration = Duration::from_secs(5);
+const NATIVE_GATEWAY_AUTH_SERVICE: &str = "hepta.native.gateway.v1";
+const MIN_GATEWAY_TOKEN_BYTES: usize = 32;
+const MAX_GATEWAY_TOKEN_BYTES: usize = 256;
 
 const CLOSED_EFFECT_ENV_VARS: &[&str] = &[
     "HEPTA_GATEWAY_ENABLE_TELEGRAM_PLUGIN",
@@ -52,6 +57,7 @@ const CLOSED_EFFECT_ENV_VARS: &[&str] = &[
 pub struct NativeGatewayOptions {
     pub listen_addr: SocketAddr,
     pub state_root: HeptaStateRoot,
+    pub auth_keyring_account: Option<String>,
 }
 
 impl NativeGatewayOptions {
@@ -59,6 +65,7 @@ impl NativeGatewayOptions {
         let mut listen_addr = DEFAULT_LISTEN_ADDR.to_string();
         let mut state_root = default_root;
         let mut positional_listen_seen = false;
+        let mut auth_keyring_account = None;
         let mut index = 0;
         while index < raw_args.len() {
             match raw_args[index].as_str() {
@@ -73,6 +80,14 @@ impl NativeGatewayOptions {
                     index += 1;
                     let value = raw_args.get(index).context("--state-root requires PATH")?;
                     state_root = HeptaStateRoot::parse(value)?;
+                }
+                "--auth-keyring-account" => {
+                    index += 1;
+                    let value = raw_args
+                        .get(index)
+                        .context("--auth-keyring-account requires ACCOUNT")?;
+                    validate_auth_account(value)?;
+                    auth_keyring_account = Some(value.clone());
                 }
                 value if !value.starts_with('-') && !positional_listen_seen => {
                     listen_addr = value.to_string();
@@ -90,6 +105,7 @@ impl NativeGatewayOptions {
         Ok(Self {
             listen_addr,
             state_root,
+            auth_keyring_account,
         })
     }
 }
@@ -135,6 +151,12 @@ pub fn run_serve_ui_if_requested(raw_args: &[String]) -> Result<bool> {
 
 pub async fn run_native_gateway(options: NativeGatewayOptions) -> Result<()> {
     validate_closed_effect_environment()?;
+    let auth_token = options
+        .auth_keyring_account
+        .as_deref()
+        .map(load_gateway_auth_token)
+        .transpose()?
+        .map(Arc::<str>::from);
     let runtime = Arc::new(HeptaRuntime::open_existing(options.state_root).await?);
     let listener = TcpListener::bind(options.listen_addr)
         .await
@@ -153,8 +175,9 @@ pub async fn run_native_gateway(options: NativeGatewayOptions) -> Result<()> {
                     continue;
                 }
                 let runtime = Arc::clone(&runtime);
+                let auth_token = auth_token.clone();
                 tokio::spawn(async move {
-                    if let Err(error) = serve_connection(stream, runtime).await {
+                    if let Err(error) = serve_connection(stream, runtime, auth_token).await {
                         eprintln!("hepta loopback request failed: {error:#}");
                     }
                 });
@@ -183,6 +206,75 @@ fn validate_closed_effect_environment() -> Result<()> {
     Ok(())
 }
 
+fn validate_auth_account(value: &str) -> Result<()> {
+    if value.is_empty()
+        || value.len() > 128
+        || !value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b':' | b'-'))
+    {
+        anyhow::bail!("native gateway auth account must be a bounded stable identifier");
+    }
+    Ok(())
+}
+
+fn validate_gateway_auth_token(value: &str) -> Result<()> {
+    if value.len() < MIN_GATEWAY_TOKEN_BYTES
+        || value.len() > MAX_GATEWAY_TOKEN_BYTES
+        || !value.bytes().all(|byte| {
+            byte.is_ascii_alphanumeric() || matches!(byte, b'-' | b'.' | b'_' | b'~' | b'+' | b'/' | b'=')
+        })
+    {
+        anyhow::bail!("native gateway bearer capability has invalid syntax or length");
+    }
+    Ok(())
+}
+
+fn load_gateway_auth_token(account: &str) -> Result<String> {
+    validate_auth_account(account)?;
+    let token = DefaultKeyringStore
+        .load(NATIVE_GATEWAY_AUTH_SERVICE, account)
+        .map_err(|error| anyhow::anyhow!("load native gateway keyring capability: {error}"))?
+        .context("native gateway keyring capability is missing")?;
+    validate_gateway_auth_token(&token)?;
+    Ok(token)
+}
+
+fn request_authorized(request: &str, expected_token: &str) -> bool {
+    let mut authorization = None;
+    for line in request.lines().skip(1) {
+        if line.is_empty() {
+            break;
+        }
+        let Some((name, value)) = line.split_once(':') else {
+            continue;
+        };
+        if name.trim().eq_ignore_ascii_case("authorization") {
+            if authorization.is_some() {
+                return false;
+            }
+            authorization = Some(value.trim());
+        }
+    }
+    let Some(value) = authorization else {
+        return false;
+    };
+    value
+        .strip_prefix("Bearer ")
+        .is_some_and(|presented| constant_time_eq(presented.as_bytes(), expected_token.as_bytes()))
+}
+
+fn constant_time_eq(left: &[u8], right: &[u8]) -> bool {
+    if left.len() != right.len() {
+        return false;
+    }
+    let mut difference = 0_u8;
+    for (&left, &right) in left.iter().zip(right) {
+        difference |= left ^ right;
+    }
+    difference == 0
+}
+
 fn truthy(value: &str) -> bool {
     matches!(
         value.trim().to_ascii_lowercase().as_str(),
@@ -190,11 +282,15 @@ fn truthy(value: &str) -> bool {
     )
 }
 
-async fn serve_connection(mut stream: TcpStream, runtime: Arc<HeptaRuntime>) -> Result<()> {
+async fn serve_connection(
+    mut stream: TcpStream,
+    runtime: Arc<HeptaRuntime>,
+    auth_token: Option<Arc<str>>,
+) -> Result<()> {
     let request = tokio::time::timeout(REQUEST_TIMEOUT, read_request(&mut stream))
         .await
         .context("loopback request timed out")??;
-    let response = route_request(&request, &runtime)?;
+    let response = route_request(&request, &runtime, auth_token.as_deref())?;
     tokio::time::timeout(RESPONSE_TIMEOUT, stream.write_all(&response))
         .await
         .context("loopback response timed out")?
@@ -226,7 +322,11 @@ async fn read_request(stream: &mut TcpStream) -> Result<Vec<u8>> {
     }
 }
 
-fn route_request(request: &[u8], runtime: &HeptaRuntime) -> Result<Vec<u8>> {
+fn route_request(
+    request: &[u8],
+    runtime: &HeptaRuntime,
+    auth_token: Option<&str>,
+) -> Result<Vec<u8>> {
     let request = std::str::from_utf8(request).context("HTTP request is not UTF-8")?;
     let first_line = request
         .lines()
@@ -243,6 +343,15 @@ fn route_request(request: &[u8], runtime: &HeptaRuntime) -> Result<Vec<u8>> {
             br#"{"error":"bad request"}"#,
         ));
     }
+    if let Some(expected) = auth_token {
+        if !request_authorized(request, expected) {
+            return Ok(response(
+                "401 Unauthorized",
+                "application/json; charset=utf-8",
+                br#"{"error":"native gateway authentication required"}"#,
+            ));
+        }
+    }
     if method != "GET" {
         return Ok(response(
             "405 Method Not Allowed",
@@ -255,7 +364,11 @@ fn route_request(request: &[u8], runtime: &HeptaRuntime) -> Result<Vec<u8>> {
         "/healthz" => Ok(response(
             "200 OK",
             "application/json; charset=utf-8",
-            br#"{"product":"hepta","status":"ok"}"#,
+            if auth_token.is_some() {
+                br#"{"product":"hepta","status":"ok","native_auth":"keyring_bearer_v1"}"#
+            } else {
+                br#"{"product":"hepta","status":"ok","native_auth":"disabled"}"#
+            },
         )),
         "/api/hepta/runtime" => match runtime.status_json() {
             Ok(body) => Ok(response("200 OK", "application/json; charset=utf-8", &body)),
@@ -382,11 +495,13 @@ mod tests {
         let health = route_request(
             b"GET /healthz HTTP/1.1\r\nHost: localhost\r\n\r\n",
             &runtime,
+        None,
         )?;
         assert!(health.starts_with(b"HTTP/1.1 200 OK"));
         let status = route_request(
             b"GET /api/hepta/runtime HTTP/1.1\r\nHost: localhost\r\n\r\n",
             &runtime,
+        None,
         )?;
         let body_start = status
             .windows(4)
@@ -408,6 +523,7 @@ mod tests {
         let response = route_request(
             b"POST /api/hepta/runtime HTTP/1.1\r\nHost: localhost\r\nContent-Length: 0\r\n\r\n",
             &fixture_runtime()?,
+        None,
         )?;
         assert!(response.starts_with(b"HTTP/1.1 405 Method Not Allowed"));
         Ok(())
@@ -430,6 +546,32 @@ mod tests {
 
         let error = server.await.unwrap().unwrap_err();
         assert!(error.to_string().contains("headers exceed"));
+    }
+
+    #[test]
+    fn keyring_bearer_mode_rejects_unauthenticated_clients() -> Result<()> {
+        let runtime = fixture_runtime()?;
+        let token = "A".repeat(48);
+        let denied = route_request(
+            b"GET /healthz HTTP/1.1\r\nHost: localhost\r\n\r\n",
+            &runtime,
+            Some(&token),
+        )?;
+        assert!(denied.starts_with(b"HTTP/1.1 401 Unauthorized"));
+
+        let request = format!(
+            "GET /healthz HTTP/1.1\r\nHost: localhost\r\nAuthorization: Bearer {token}\r\n\r\n"
+        );
+        let allowed = route_request(request.as_bytes(), &runtime, Some(&token))?;
+        assert!(allowed.starts_with(b"HTTP/1.1 200 OK"));
+        let body_start = allowed
+            .windows(4)
+            .position(|window| window == b"\r\n\r\n")
+            .context("authenticated health response headers")?
+            + 4;
+        let value: serde_json::Value = serde_json::from_slice(&allowed[body_start..])?;
+        assert_eq!(value["native_auth"], "keyring_bearer_v1");
+        Ok(())
     }
 
     #[test]
