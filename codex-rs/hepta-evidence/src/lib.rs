@@ -22,6 +22,7 @@ mod summary;
 pub use authbus_authority_store::AuthBusAuthorityError;
 pub use authbus_authority_store::AuthBusQuotaStatus;
 pub use authbus_authority_store::AuthBusSettlementOutcome;
+pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ATTEMPTS;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_LEASE_MS;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_PAYLOAD_BYTES;
