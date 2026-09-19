@@ -185,9 +185,9 @@ External evidence gates:
 
 ## 10. `browser.servo`
 
-Owns in-process profile/session/page/operation state around an injected browser driver; raw credentials remain external references.
+Owns serialized profile/session/page state plus a strict durable operation journal; a fresh principal-bound private profile directory is created for each worker generation and raw credentials remain external references.
 
-The driver must supply process, page, action, and reconciliation observations; unit tests use deterministic fake drivers.
+The current-pin Servo worker source supplies bounded semantic page observations and local action observations; durable reconciliation owns unknown dispatches, while remote business terminality and target-host enforcement still require independent evidence.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
@@ -197,9 +197,11 @@ The driver must supply process, page, action, and reconciliation observations; u
 
 External evidence gates:
 
-- reproducible Servo binary and patch digest
-- OS sandbox/profile/credential/network enforcement
-- real navigation/download/business terminal observation
+- reviewed committed exact Servo-worker Cargo.lock bound to the qualified build
+- terminal-success reproducible current-pin Servo worker artifact/SBOM receipt
+- independent Linux target-host namespace/profile/credential/network/no-listener/descendant-cleanup qualification and platform equivalents where targeted
+- real credential broker and download/upload terminal observers when those capabilities are enabled
+- real remote business terminal observations plus independent acceptance/promotion/release
 
 ## 11. `ui.control`
 

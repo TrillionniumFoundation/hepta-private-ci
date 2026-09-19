@@ -1,0 +1,96 @@
+name: Hepta Browser Agentd composition
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-agent-protocol/**'
+      - 'apps/hepta-browser/**'
+      - 'third_party/servo-patches/**'
+      - 'docs/modules/browser.servo/**'
+      - 'qualification/module-execution-dossiers/detail/browser.servo.md'
+      - '.github/workflows/hepta-browser-agentd-composition.yml'
+  push:
+    branches:
+      - main
+      - codex/browser-servo-effect-closure-20260917
+    paths:
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-agent-protocol/**'
+      - 'apps/hepta-browser/**'
+      - 'third_party/servo-patches/**'
+      - 'docs/modules/browser.servo/**'
+      - 'qualification/module-execution-dossiers/detail/browser.servo.md'
+      - '.github/workflows/hepta-browser-agentd-composition.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-browser-agentd-composition-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-composition:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Verify complete Browser owner boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test apps/hepta-browser/test/*.test.js
+          node --check apps/hepta-browser/src/*.js
+
+      - name: Verify Agentd Browser formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd -- --check
+
+      - name: Exercise real FinalUseAuthority handoff tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-agentd browser_servo --lib
+
+      - name: Compile named Agentd Browser product caller
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked -p codex-hepta-agentd --bin hepta-agentd-browser
+
+      - name: Deny Agentd Browser lint warnings
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-agentd --lib --bin hepta-agentd-browser --no-deps -- -D warnings
+
+      - name: Verify source stayed clean
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"

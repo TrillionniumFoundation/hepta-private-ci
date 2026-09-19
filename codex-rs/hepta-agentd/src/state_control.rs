@@ -397,6 +397,82 @@ impl AgentdState {
                         .collect::<Result<Vec<_>, _>>()?,
                 }
             }
+            crate::AgentdMethod::BrowserServo { request } => {
+                require_browser_control_ready(lifecycle, app_server_ready, fenced)?;
+                let Some(port) = self.browser_servo.get().cloned() else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        AgentdPayload::Error {
+                            code: "browser_servo_unavailable".to_string(),
+                            message: "browser.servo is not configured for this Agentd generation"
+                                .to_string(),
+                        },
+                    );
+                };
+                let module_method = match request.method {
+                    crate::BrowserServoControlMethod::OpenProfile => {
+                        crate::BrowserServoMethod::OpenProfile
+                    }
+                    crate::BrowserServoControlMethod::AdmitEffectGrant => {
+                        crate::BrowserServoMethod::AdmitEffectGrant
+                    }
+                    crate::BrowserServoControlMethod::ObservePage => {
+                        crate::BrowserServoMethod::ObservePage
+                    }
+                    crate::BrowserServoControlMethod::NavigateOrAct => {
+                        crate::BrowserServoMethod::NavigateOrAct
+                    }
+                    crate::BrowserServoControlMethod::ReconcileOperation => {
+                        crate::BrowserServoMethod::ReconcileOperation
+                    }
+                    crate::BrowserServoControlMethod::ReconcilePersistedOperation => {
+                        crate::BrowserServoMethod::ReconcilePersistedOperation
+                    }
+                    crate::BrowserServoControlMethod::CloseProfile => {
+                        crate::BrowserServoMethod::CloseProfile
+                    }
+                };
+                let call = if matches!(module_method, crate::BrowserServoMethod::NavigateOrAct) {
+                    let signed_grant = request.signed_grant.ok_or_else(|| {
+                        AgentdError::Invalid(
+                            "browser effect call requires signed final-use grant".to_string(),
+                        )
+                    })?;
+                    let binding = request.binding.ok_or_else(|| {
+                        AgentdError::Invalid(
+                            "browser effect call requires final-use binding".to_string(),
+                        )
+                    })?;
+                    crate::BrowserServoCall::effect(
+                        request.input,
+                        crate::BrowserFinalUseInvocation {
+                            signed_grant,
+                            binding,
+                        },
+                    )
+                    .map_err(|error| AgentdError::Invalid(error.to_string()))?
+                } else {
+                    if request.signed_grant.is_some() || request.binding.is_some() {
+                        return Err(AgentdError::Invalid(
+                            "non-effect browser call must not carry final-use authority"
+                                .to_string(),
+                        ));
+                    }
+                    crate::BrowserServoCall::read(module_method, request.input)
+                        .map_err(|error| AgentdError::Invalid(error.to_string()))?
+                };
+                let result = tokio::task::spawn_blocking(move || port.call(call))
+                    .await
+                    .map_err(|error| {
+                        AgentdError::Protocol(format!("browser.servo task failed: {error}"))
+                    })?
+                    .map_err(|error| {
+                        AgentdError::Protocol(format!("browser.servo call failed: {error}"))
+                    })?;
+                self.refresh_generation()?;
+                AgentdPayload::BrowserServo { result }
+            }
             crate::AgentdMethod::MemoryFederationStatus { capability_id } => {
                 require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
                 let Some(store) = cognitive else {
@@ -614,4 +690,18 @@ fn now_seconds() -> Result<i64, AgentdError> {
         .as_secs();
     i64::try_from(seconds)
         .map_err(|_| AgentdError::Protocol("system clock exceeds i64 seconds".to_string()))
+}
+
+fn require_browser_control_ready(
+    lifecycle: AgentLifecycle,
+    app_server_ready: bool,
+    fenced: bool,
+) -> Result<(), AgentdError> {
+    if lifecycle == AgentLifecycle::Running && app_server_ready && !fenced {
+        Ok(())
+    } else {
+        Err(AgentdError::Protocol(
+            "browser.servo control is unavailable until this Agent generation is ready".to_string(),
+        ))
+    }
 }
