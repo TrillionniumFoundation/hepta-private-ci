@@ -10,6 +10,7 @@
 #![forbid(unsafe_code)]
 
 mod coefficient_candidate;
+mod coefficient_manifest;
 mod conditional_moments;
 mod covariance;
 mod covariance_profile;
@@ -27,6 +28,13 @@ mod scoring;
 
 pub use coefficient_candidate::NduQ24CoefficientCandidateV1;
 pub use coefficient_candidate::materialize_q24_coefficient_candidate_v1;
+pub use coefficient_manifest::AdmittedNduCoefficientManifestV1;
+pub use coefficient_manifest::NduBoundedObjectRefV1;
+pub use coefficient_manifest::NduCoefficientDimensionsV1;
+pub use coefficient_manifest::NduCoefficientManifestError;
+pub use coefficient_manifest::NduCoefficientManifestV1;
+pub use coefficient_manifest::NduFixedPointScalesV1;
+pub use coefficient_manifest::admit_coefficient_manifest_v1;
 pub use conditional_moments::ConditionalMomentSampleV1;
 pub use conditional_moments::ConditionalMomentsV1;
 pub use conditional_moments::estimate_conditional_moments;
