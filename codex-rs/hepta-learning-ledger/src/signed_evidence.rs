@@ -57,6 +57,41 @@ pub struct LearningEvidenceTrustV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LearningEvidenceTrustSnapshotV1 {
+    pub revision: u64,
+    pub valid_from: u64,
+    pub valid_until: u64,
+    pub trust: LearningEvidenceTrustV1,
+}
+
+impl LearningEvidenceTrustSnapshotV1 {
+    pub fn validate(&self, now: u64) -> Result<(), SignedEvidenceError> {
+        if self.revision == 0
+            || self.valid_from > self.valid_until
+            || now < self.valid_from
+            || now > self.valid_until
+        {
+            return Err(SignedEvidenceError::InvalidTrust);
+        }
+        if self.trust.authority_epoch == 0 {
+            return Err(SignedEvidenceError::InvalidTrust);
+        }
+        Ok(())
+    }
+}
+
+/// Host-owned source of the CURRENT trust snapshot. Production writers query this
+/// boundary for every signed mutation instead of retaining one verifier forever.
+/// Implementations are expected to read the authority owner's current revision;
+/// submitted learning evidence must never implement or choose this source.
+pub trait LearningEvidenceTrustProviderV1 {
+    fn current_trust(
+        &self,
+        now: u64,
+    ) -> Result<LearningEvidenceTrustSnapshotV1, SignedEvidenceError>;
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SignedLearningEvidenceV1 {
     pub evidence_id: StableId,
     pub principal_id: StableId,
