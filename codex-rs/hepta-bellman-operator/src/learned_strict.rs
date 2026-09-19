@@ -1,9 +1,9 @@
 //! Strict admission wrapper for the simplest-sufficient tabular operator.
 //!
-//! The original V1 functions remain available. This additive surface rejects
-//! duplicate underlying evidence even when callers relabel samples, and uses
-//! the artifact's canonical cell ordering for binary lookup after an O(n)
-//! validation on every call. Use LoadedTabularOperatorV1 for once-validated
+//! The original V1 functions remain available and now share replay-resistant
+//! evidence admission. This additive surface preserves the V2 error vocabulary
+//! and indexed compatibility lookup after an O(n) validation on every call.
+//! Use LoadedTabularOperatorV1 for independently pinned, once-validated
 //! persisted candidates and O(log n) repeated lookups.
 
 use std::error::Error as StdError;
