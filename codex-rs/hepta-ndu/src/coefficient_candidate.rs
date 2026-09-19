@@ -8,6 +8,7 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
 use crate::AdmittedCovarianceProfileV1;
+use crate::AdmittedNduCoefficientManifestV1;
 use crate::CovarianceError;
 use crate::ZEstimateV1;
 
@@ -18,6 +19,7 @@ const I64_MIN_INCLUSIVE_F64: f64 = -9_223_372_036_854_775_808.0;
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduQ24CoefficientCandidateV1 {
     pub coefficient_manifest_digest: Digest32,
+    pub coefficient_admission_digest: Digest32,
     pub operating_region_digest: Digest32,
     pub profile_digest: Digest32,
     pub source_estimate_digest: Digest32,
@@ -39,14 +41,17 @@ pub struct NduQ24CoefficientCandidateV1 {
 pub fn materialize_q24_coefficient_candidate_v1(
     estimate: &ZEstimateV1,
     profile: &AdmittedCovarianceProfileV1,
-    coefficient_manifest_digest: Digest32,
+    coefficient_manifest: &AdmittedNduCoefficientManifestV1,
     operating_region_digest: Digest32,
 ) -> Result<NduQ24CoefficientCandidateV1, CovarianceError> {
-    if coefficient_manifest_digest.is_zero() || operating_region_digest.is_zero() {
+    if operating_region_digest.is_zero() {
         return Err(CovarianceError::MissingDigest);
     }
     if estimate.profile_digest() != profile.digest() {
         return Err(CovarianceError::EstimateMismatch);
+    }
+    if coefficient_manifest.covariance_profile_digest() != profile.digest() {
+        return Err(CovarianceError::ManifestMismatch);
     }
     if estimate.evidence_digest.is_zero() {
         return Err(CovarianceError::MissingDigest);
@@ -73,9 +78,12 @@ pub fn materialize_q24_coefficient_candidate_v1(
         coefficients_raw.push(quantize_q24_ties_even(*value)?);
     }
 
-    let mut bytes = b"hepta.ndu.q24-coefficient-candidate.v1".to_vec();
+    let coefficient_manifest_digest = coefficient_manifest.manifest_digest();
+    let coefficient_admission_digest = coefficient_manifest.admission_digest;
+    let mut bytes = b"hepta.ndu.q24-coefficient-candidate.v2".to_vec();
     for digest in [
         coefficient_manifest_digest,
+        coefficient_admission_digest,
         operating_region_digest,
         profile.digest(),
         estimate.evidence_digest,
@@ -96,6 +104,7 @@ pub fn materialize_q24_coefficient_candidate_v1(
 
     Ok(NduQ24CoefficientCandidateV1 {
         coefficient_manifest_digest,
+        coefficient_admission_digest,
         operating_region_digest,
         profile_digest: profile.digest(),
         source_estimate_digest: estimate.evidence_digest,
