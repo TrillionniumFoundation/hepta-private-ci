@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass
 import hashlib
 import hmac
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -33,6 +34,9 @@ class CanonicalSourceReceipt:
     observed_unix_ns: int
     expires_unix_ns: int
     signature: str = ""
+    base_commit: str = ""
+    base_tree: str = ""
+    expected_merge_tree: str = ""
 
 
 @dataclass(frozen=True)
@@ -110,15 +114,40 @@ class HmacTrustStore:
         return hmac.compare_digest(expected, signature)
 
 
+def _git_environment() -> dict[str, str]:
+    """Return a hermetic read-only Git environment for evidence verification."""
+    environment = dict(os.environ)
+    environment.update(
+        {
+            "GIT_CONFIG_NOSYSTEM": "1",
+            "GIT_CONFIG_GLOBAL": os.devnull,
+            "GIT_NO_REPLACE_OBJECTS": "1",
+            "GIT_TERMINAL_PROMPT": "0",
+            "LC_ALL": "C",
+        }
+    )
+    return environment
+
+
 def _run_git(root: Path, *args: str) -> str:
     try:
         result = subprocess.run(
-            ["git", "-C", str(root), *args],
+            [
+                "git",
+                "-c",
+                "core.fsmonitor=false",
+                "-c",
+                "core.untrackedCache=false",
+                "-C",
+                str(root),
+                *args,
+            ],
             check=False,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
             timeout=30,
+            env=_git_environment(),
         )
     except (OSError, subprocess.TimeoutExpired):
         raise EngineeringError("git_read_failed") from None
@@ -198,6 +227,15 @@ def verify_integration_evidence(
         checked_sha256(merge_execution.checks_digest, "invalid_merge_checks_digest")
     except EngineeringError as error:
         reasons.append(error.code)
+    for value, label in (
+        (source.base_commit, "invalid_base_commit"),
+        (source.base_tree, "invalid_base_tree"),
+        (source.source_commit, "invalid_source_commit"),
+        (source.source_tree, "invalid_source_tree"),
+        (source.expected_merge_tree, "invalid_expected_merge_tree"),
+    ):
+        if not isinstance(value, str) or SHA1.fullmatch(value) is None or value == "0" * 40:
+            reasons.append(label)
     if source.document_set_digest != expected_document_set_digest:
         reasons.append("document_set_drift")
     if source.issuer != "source_authority":
@@ -245,13 +283,16 @@ def verify_integration_evidence(
     ):
         reasons.append("evaluator_identity_collision")
     try:
+        base_tree, _base_parents = _git_identity(repository, source.base_commit)
         source_tree, _source_parents = _git_identity(repository, source.source_commit)
         exact_tree, exact_parents = _git_identity(repository, source_execution.commit)
         merge_tree, merge_parents = _git_identity(repository, merge_execution.commit)
     except EngineeringError as error:
         reasons.append(error.code)
-        source_tree = exact_tree = merge_tree = ""
+        base_tree = source_tree = exact_tree = merge_tree = ""
         exact_parents = merge_parents = ()
+    if base_tree != source.base_tree:
+        reasons.append("base_tree_mismatch")
     if source_tree != source.source_tree:
         reasons.append("source_tree_mismatch")
     if source_execution.class_name != "exact_source":
@@ -273,9 +314,13 @@ def verify_integration_evidence(
         or merge_execution.ordered_parents != merge_parents
     ):
         reasons.append("merge_execution_identity_mismatch")
-    if len(merge_parents) != 2 or merge_parents[1] != source.source_commit:
+    if merge_parents != (source.base_commit, source.source_commit):
         reasons.append("merge_parent_order_mismatch")
-    if merge_execution.commit in {source.source_commit, *merge_parents}:
+    if merge_tree != source.expected_merge_tree:
+        reasons.append("merge_tree_mismatch")
+    if merge_execution.tree != source.expected_merge_tree:
+        reasons.append("merge_execution_expected_tree_mismatch")
+    if merge_execution.commit in {source.source_commit, source.base_commit, *merge_parents}:
         reasons.append("synthetic_merge_not_distinct")
     if source_execution.passed is not True:
         reasons.append("source_execution_failed")
