@@ -228,6 +228,31 @@ fn recovery_never_redispatches_an_uncertain_external_run() {
 }
 
 #[test]
+fn v1_cancelling_recovery_migrates_to_indeterminate() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    coordinator.start_run(100, snapshot()).expect("admit");
+    coordinator
+        .attach_context(100, 1, attachment())
+        .expect("attach");
+    coordinator.mark_dispatched(100, "run.1", 2).expect("dispatch");
+    coordinator
+        .cancel_run(200, "run.1", 3, "legacy_cancel")
+        .expect("cancel");
+
+    let mut legacy = coordinator.recovery_state();
+    legacy.schema_version = 1;
+    legacy.composition.cancellation_ack_timeout_ms = 0;
+    legacy.records[0].cancellation_ack_deadline_ms = None;
+
+    let restored =
+        AgentRunCoordinator::restore_runtime(composition(), legacy, 300).expect("migrate v1");
+    let receipt = restored.run("run.1").expect("retained");
+    assert_eq!(receipt.phase, RunPhase::Indeterminate);
+    assert_eq!(receipt.cancellation_ack_deadline_ms, None);
+    assert!(!receipt.terminal_observed);
+}
+
+#[test]
 fn recovery_cancels_expired_pre_dispatch_work() {
     let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
     coordinator.start_run(100, snapshot()).expect("admit");
