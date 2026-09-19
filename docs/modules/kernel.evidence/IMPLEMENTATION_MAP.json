@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "a5a8a2c240a51f63141136348028feac530ddd3f",
+    "tree": "48145dc99e931a3bcb36a4db0994bcd9eba54494"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.evidence",
@@ -17,17 +17,64 @@
     "codex-rs/hepta-evidence"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionImplementation": true,
+  "productCallerState": "agentd_composed_feature_gated",
+  "productionWriterState": "agentd_authenticated_writer_established_feature_gated",
   "operations": [
+    {
+      "operation": "append_receipt",
+      "nativeSymbol": "QualificationEvidenceStore::append_receipt",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "authenticated_evidence_append_only",
+      "tests": [
+        "codex-rs/hepta-evidence/src/qualification_tests.rs",
+        "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "append_receipt",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "query_claim",
+      "nativeSymbol": "QualificationEvidenceStore::query_claim",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "read_only",
+      "tests": [
+        "codex-rs/hepta-evidence/src/qualification_tests.rs",
+        "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "query_claim",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "verify_chain",
+      "nativeSymbol": "QualificationEvidenceStore::verify_chain",
+      "sourcePath": "codex-rs/hepta-evidence/src/qualification.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "read_only_verification",
+      "tests": [
+        "codex-rs/hepta-evidence/src/qualification_tests.rs",
+        "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verify_chain",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
     {
       "operation": "append_provider_effect_intent",
       "nativeSymbol": "append_provider_effect_intent",
       "sourcePath": "codex-rs/hepta-evidence/src/provider_effect_store.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_qualification_only",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-evidence/src/provider_effect_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "append_provider_effect_intent",
       "mappingClass": "owner_native",
@@ -37,28 +84,27 @@
       "operation": "reconcile_provider_effect_lookup",
       "nativeSymbol": "reconcile_provider_effect_lookup",
       "sourcePath": "codex-rs/hepta-evidence/src/provider_effect_store.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_qualification_only",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-evidence/src/provider_effect_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "reconcile_provider_effect_lookup",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
-  "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
+    "independent exact-candidate acceptance",
+    "concrete external signed monotonic frontier backend and restore ceremony",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
