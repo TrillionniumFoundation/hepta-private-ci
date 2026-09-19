@@ -6,6 +6,7 @@ use std::time::Duration;
 use tokio::time::timeout;
 
 use crate::AutomationAdmission;
+use crate::causal_chain;
 use crate::AutomationError;
 use crate::AutomationQueueReceipt;
 use crate::AutomationStore;
@@ -80,10 +81,22 @@ where
         else {
             return Ok(AutomationTick::Idle);
         };
+        // Bind the deterministic occurrence into the existing durable
+        // TaskFlow run + step outbox before crossing the provider seam. This
+        // creates one causal identity spanning scheduler, workflow and
+        // provider reconciliation without creating another scheduler/engine.
+        let causal = causal_chain::prepare_occurrence(
+            &self.store,
+            &lease,
+            now_ms,
+            self.lease_duration_ms,
+        )
+        .await?;
+
         // Persist the dispatch intent before crossing the App Server seam.
         // If this process dies after admission (or while the request is still
         // in flight) the successor must observe a durable unknown outcome and
-        // refuse a blind duplicate.  Known pre-admission failures explicitly
+        // refuse a blind duplicate. Known pre-admission failures explicitly
         // clear this marker below, preserving the bounded retry path.
         self.store.record_dispatch_uncertain(&lease, now_ms).await?;
         let admission = lease.admission();
@@ -99,6 +112,13 @@ where
             }
             Ok(Err(AutomationError::DispatchUnknown)) | Err(_) => {
                 self.store.record_dispatch_uncertain(&lease, now_ms).await?;
+                causal_chain::mark_dispatch_unknown(
+                    &self.store,
+                    &causal,
+                    lease.occurrence_id.as_str(),
+                    now_ms,
+                )
+                .await?;
                 return Ok(AutomationTick::DispatchUncertain {
                     task_id: lease.task.task_id,
                     occurrence: lease.occurrence,
@@ -120,11 +140,25 @@ where
             || receipt.queued_submission_id.is_empty()
         {
             self.store.record_dispatch_uncertain(&lease, now_ms).await?;
+            causal_chain::mark_dispatch_unknown(
+                &self.store,
+                &causal,
+                lease.occurrence_id.as_str(),
+                now_ms,
+            )
+            .await?;
             return Ok(AutomationTick::DispatchUncertain {
                 task_id: lease.task.task_id,
                 occurrence: lease.occurrence,
             });
         }
+        causal_chain::mark_provider_pending(
+            &self.store,
+            &causal,
+            lease.occurrence_id.as_str(),
+            now_ms,
+        )
+        .await?;
         self.store.mark_submitted(&lease, &receipt, now_ms).await?;
         Ok(AutomationTick::Submitted {
             task_id: lease.task.task_id,

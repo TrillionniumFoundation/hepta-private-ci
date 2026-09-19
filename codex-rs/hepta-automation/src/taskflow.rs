@@ -593,6 +593,12 @@ pub enum TaskFlowTransition {
         receipt_digest: Sha256Digest,
         outcome: TaskFlowReconcileOutcome,
     },
+    /// A provider-specific negative observation proves that the previous
+    /// attempt did not cross the effect seam. The exact historical fence may
+    /// therefore re-arm the same run for a fresh, separately recorded attempt.
+    ReconcileRetry {
+        receipt_digest: Sha256Digest,
+    },
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -951,6 +957,46 @@ impl AutomationStore {
         now_ms: u64,
         lease_duration_ms: u64,
     ) -> Result<TaskFlowRun, TaskFlowError> {
+        self.claim_taskflow_run_inner(
+            run_id,
+            fence,
+            now_ms,
+            lease_duration_ms,
+            false,
+        )
+        .await
+    }
+
+    /// Automation-only preemption. The caller must have already acquired the
+    /// same occurrence through AutomationStore::claim_due, which proves that
+    /// no durable uncertain-dispatch fence blocks this occurrence. A strictly
+    /// higher process generation may then fence the old TaskFlow lease without
+    /// waiting for wall-clock expiry. Indeterminate runs remain unclaimable.
+    pub(crate) async fn claim_taskflow_run_for_automation(
+        &self,
+        run_id: &str,
+        fence: &TaskFlowFence,
+        now_ms: u64,
+        lease_duration_ms: u64,
+    ) -> Result<TaskFlowRun, TaskFlowError> {
+        self.claim_taskflow_run_inner(
+            run_id,
+            fence,
+            now_ms,
+            lease_duration_ms,
+            true,
+        )
+        .await
+    }
+
+    async fn claim_taskflow_run_inner(
+        &self,
+        run_id: &str,
+        fence: &TaskFlowFence,
+        now_ms: u64,
+        lease_duration_ms: u64,
+        allow_higher_generation_preemption: bool,
+    ) -> Result<TaskFlowRun, TaskFlowError> {
         validate_text(run_id, "run_id", MAX_ID_BYTES)?;
         self.validate_taskflow_fence(fence)?;
         if lease_duration_ms == 0 {
@@ -990,20 +1036,30 @@ impl AutomationStore {
                 "indeterminate TaskFlow run requires explicit reconciliation".to_string(),
             ));
         }
+        let same_identity = run.owner_id.as_deref() == Some(fence.owner_id.as_str())
+            && run.owner_epoch == Some(fence.owner_epoch)
+            && run.generation == Some(fence.generation)
+            && run.fencing_token.as_deref() == Some(fence.fencing_token.as_str());
         if let Some(current_expires) = run.lease_expires_at_ms
             && current_expires > now_ms
         {
-            if run.owner_id.as_deref() != Some(fence.owner_id.as_str())
-                || run.owner_epoch != Some(fence.owner_epoch)
-                || run.generation != Some(fence.generation)
-                || run.fencing_token.as_deref() != Some(fence.fencing_token.as_str())
-            {
+            if same_identity {
+                return Ok(run);
+            }
+            let higher_generation_preemption = allow_higher_generation_preemption
+                && run
+                    .generation
+                    .is_some_and(|previous| fence.generation > previous)
+                && run
+                    .owner_epoch
+                    .is_none_or(|previous| fence.owner_epoch >= previous);
+            if !higher_generation_preemption {
                 return Err(TaskFlowError::StaleFence);
             }
-            return Ok(run);
         }
         if let Some(previous_generation) = run.generation
             && fence.generation <= previous_generation
+            && !same_identity
         {
             return Err(TaskFlowError::StaleFence);
         }
@@ -1124,13 +1180,21 @@ impl AutomationStore {
                 state_digest: run.state_digest,
             });
         }
-        let explicit_reconcile = run.state == TaskFlowRunState::Indeterminate
-            && matches!(&command.transition, TaskFlowTransition::Reconcile { .. });
-        if explicit_reconcile {
-            // An indeterminate run retains its durable owner tuple, but its
-            // lease may have expired while an external outcome was being
-            // investigated. Reconciliation still requires that exact tuple;
-            // the run is never claimable by a new generation.
+        let historical_fence_transition =
+            (run.state == TaskFlowRunState::Indeterminate
+                && matches!(
+                    &command.transition,
+                    TaskFlowTransition::Reconcile { .. }
+                        | TaskFlowTransition::ReconcileRetry { .. }
+                ))
+                || matches!(&command.transition, TaskFlowTransition::Indeterminate { .. });
+        if historical_fence_transition {
+            // Indeterminate is fail-closed and grants no execution authority,
+            // so an exact historical owner tuple may quarantine a run after
+            // its lease expires. Reconciliation likewise requires that exact
+            // historical tuple. This closes the crash window between provider
+            // dispatch and durable local acknowledgement without allowing a
+            // stale fence to execute or claim new work.
             self.check_run_identity_fence(&run, &command.fence)?;
         } else {
             self.check_run_fence(&run, &command.fence, command.now_ms)?;
@@ -1417,6 +1481,17 @@ fn apply_transition(
             run.terminal_reason = Some("explicit_reconciliation".to_string());
             clear_lease(run);
         }
+        TaskFlowTransition::ReconcileRetry { receipt_digest } => {
+            if run.state != TaskFlowRunState::Indeterminate {
+                return Err(invalid_transition(
+                    "retry reconciliation requires indeterminate state",
+                ));
+            }
+            validate_digest(receipt_digest, "retry reconciliation receipt")?;
+            run.state = TaskFlowRunState::Running;
+            run.retry_at_ms = None;
+            run.terminal_reason = Some("negative_provider_observation".to_string());
+        }
     }
     Ok(())
 }
@@ -1440,6 +1515,7 @@ fn transition_name(transition: &TaskFlowTransition) -> &'static str {
         TaskFlowTransition::Fail { .. } => "failed",
         TaskFlowTransition::Indeterminate { .. } => "indeterminate",
         TaskFlowTransition::Reconcile { .. } => "reconciled",
+        TaskFlowTransition::ReconcileRetry { .. } => "reconciled_retry",
     }
 }
 

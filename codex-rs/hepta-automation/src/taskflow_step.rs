@@ -1,17 +1,15 @@
-//! Qualification-only durable TaskFlow step outbox.
+//! Durable TaskFlow step outbox.
 //!
 //! The regular TaskFlow ledger records the run projection and its transition
-//! chain.  It intentionally does not claim a provider/effect.  This module
-//! adds the smallest durable seam needed by H3: one append-only, per-step
-//! intent/receipt chain.  A prepared row is an outbox item; claim, observation
-//! and reconciliation append receipts to that same chain.  No method here
-//! invokes a provider, wakes a scheduler, or grants production authority.
+//! chain. This module owns the append-only per-step intent/receipt chain used
+//! by the production automation causal bridge and by structural qualification.
+//! A prepared row is an outbox item; claim, observation and reconciliation
+//! append receipts to that same chain. Storage alone invokes no provider and
+//! grants no effect authority.
 //!
-//! The table is created lazily by the explicitly opt-in qualification API.
-//! This keeps the default automation schema/version unchanged while making the
-//! qualification state durable across reopen.  Every read and mutation first
-//! verifies the owner, run history, definition binding, event hash chain and
-//! exact generation/fence tuple.
+//! Schema ownership belongs to the normal automation migrator. Every read and
+//! mutation verifies the owner, run history, definition binding, event hash
+//! chain and exact generation/fence tuple before touching the outbox.
 
 #![allow(
     clippy::too_many_arguments,
@@ -34,12 +32,11 @@ use crate::TaskFlowRun;
 use crate::taskflow::load_taskflow_definition_tx;
 use crate::taskflow::load_taskflow_run_tx;
 
-/// This module is compiled and callable only by an explicit qualification
-/// feature.  These constants are intentionally negative for all authority
-/// surfaces.
+/// The outbox is part of the default durable automation path. It still grants
+/// no provider/effect authority and cannot wake or replace the scheduler.
 pub const TASKFLOW_STEP_OUTBOX_QUALIFICATION_ENABLED: bool = true;
 pub const TASKFLOW_STEP_OUTBOX_EFFECTS: bool = false;
-pub const TASKFLOW_STEP_OUTBOX_PRODUCTION_CALLER: bool = false;
+pub const TASKFLOW_STEP_OUTBOX_PRODUCTION_CALLER: bool = true;
 pub const TASKFLOW_STEP_OUTBOX_SCHEDULER_AUTHORITY: bool = false;
 
 const STEP_SCHEMA_VERSION: u32 = 1;
@@ -686,93 +683,12 @@ impl From<TaskFlowReconcileOutcome> for StepOperationResult {
 }
 
 async fn ensure_step_schema(store: &AutomationStore) -> Result<(), TaskFlowError> {
-    // The schema is additive and deliberately qualification-only.  Keeping it
-    // out of the default migrator avoids changing AUTOMATION_SCHEMA_VERSION or
-    // existing production/open paths.
-    sqlx::query(
-        r#"CREATE TABLE IF NOT EXISTS taskflow_step_outbox (
-            owner_agent_id TEXT NOT NULL,
-            run_id TEXT NOT NULL,
-            step_id TEXT NOT NULL,
-            attempt INTEGER NOT NULL CHECK (attempt > 0 AND attempt <= 1000000),
-            event_seq INTEGER NOT NULL CHECK (event_seq > 0),
-            event_kind TEXT NOT NULL CHECK (
-                event_kind IN ('prepared', 'claimed', 'recorded', 'reconciled')
-            ),
-            command_id TEXT NOT NULL,
-            command_digest TEXT NOT NULL CHECK (
-                length(command_digest) = 64 AND command_digest NOT GLOB '*[^0-9a-f]*'
-            ),
-            intent_digest TEXT NOT NULL CHECK (
-                length(intent_digest) = 64 AND intent_digest NOT GLOB '*[^0-9a-f]*'
-            ),
-            payload_digest TEXT NOT NULL CHECK (
-                length(payload_digest) = 64 AND payload_digest NOT GLOB '*[^0-9a-f]*'
-            ),
-            receipt_digest TEXT CHECK (
-                receipt_digest IS NULL OR
-                (length(receipt_digest) = 64 AND receipt_digest NOT GLOB '*[^0-9a-f]*')
-            ),
-            observation TEXT CHECK (
-                observation IS NULL OR observation IN ('succeeded', 'failed', 'indeterminate')
-            ),
-            final_outcome TEXT CHECK (
-                final_outcome IS NULL OR final_outcome IN ('succeeded', 'failed', 'cancelled')
-            ),
-            owner_id TEXT NOT NULL,
-            owner_epoch INTEGER NOT NULL CHECK (owner_epoch > 0),
-            generation INTEGER NOT NULL CHECK (generation > 0),
-            fencing_token TEXT NOT NULL CHECK (length(fencing_token) BETWEEN 1 AND 256),
-            previous_event_digest TEXT NOT NULL CHECK (
-                length(previous_event_digest) = 64 AND
-                previous_event_digest NOT GLOB '*[^0-9a-f]*'
-            ),
-            event_digest TEXT NOT NULL CHECK (
-                length(event_digest) = 64 AND event_digest NOT GLOB '*[^0-9a-f]*'
-            ),
-            recorded_at_ms INTEGER NOT NULL CHECK (recorded_at_ms >= 0),
-            PRIMARY KEY (owner_agent_id, run_id, step_id, attempt, event_seq),
-            UNIQUE (owner_agent_id, command_id),
-            FOREIGN KEY (owner_agent_id, run_id)
-                REFERENCES taskflow_runs(owner_agent_id, run_id),
-            CHECK (
-                (event_kind IN ('prepared', 'claimed') AND
-                    receipt_digest IS NULL AND observation IS NULL AND final_outcome IS NULL)
-                OR
-                (event_kind = 'recorded' AND
-                    receipt_digest IS NOT NULL AND observation IS NOT NULL AND final_outcome IS NULL)
-                OR
-                (event_kind = 'reconciled' AND
-                    receipt_digest IS NOT NULL AND observation IS NULL AND final_outcome IS NOT NULL)
-            )
-        )"#,
-    )
-    .execute(store.taskflow_pool())
-    .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
-    sqlx::query(
-        "CREATE TRIGGER IF NOT EXISTS taskflow_step_outbox_no_update
-         BEFORE UPDATE ON taskflow_step_outbox
-         BEGIN SELECT RAISE(ABORT, 'TaskFlow step outbox is append-only'); END",
-    )
-    .execute(store.taskflow_pool())
-    .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
-    sqlx::query(
-        "CREATE TRIGGER IF NOT EXISTS taskflow_step_outbox_no_delete
-         BEFORE DELETE ON taskflow_step_outbox
-         BEGIN SELECT RAISE(ABORT, 'TaskFlow step outbox is append-only'); END",
-    )
-    .execute(store.taskflow_pool())
-    .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
-    sqlx::query(
-        "CREATE INDEX IF NOT EXISTS taskflow_step_outbox_lookup
-         ON taskflow_step_outbox(owner_agent_id, run_id, step_id, attempt, event_seq)",
-    )
-    .execute(store.taskflow_pool())
-    .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
+    // Production schema is migration-owned. Runtime code verifies presence but
+    // must never self-create an authority-relevant durable table.
+    sqlx::query_scalar::<_, i64>("SELECT 1 FROM taskflow_step_outbox LIMIT 1")
+        .fetch_optional(store.taskflow_pool())
+        .await
+        .map_err(|_| TaskFlowError::Unavailable)?;
     Ok(())
 }
 
