@@ -198,6 +198,10 @@ impl CapabilitySnapshotV2 {
         self.objective_digest
     }
 
+    pub(super) const fn authority_epoch(&self) -> u64 {
+        self.authority_epoch
+    }
+
     #[must_use]
     pub fn absent_optional(&self) -> &[StableId] {
         &self.absent_optional
