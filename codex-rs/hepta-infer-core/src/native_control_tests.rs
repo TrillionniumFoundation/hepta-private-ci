@@ -21,6 +21,7 @@ fn request(id: &str) -> NativeRequest {
         operation_id: Some(format!("operation-{id}")),
         quota_reservation_digest: Some("c".repeat(64)),
         resource_snapshot_digest: Some("d".repeat(64)),
+        worker_assignment_digest: Some("f".repeat(64)),
     }
 }
 
