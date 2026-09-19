@@ -15,13 +15,20 @@ class ScopeTests(unittest.TestCase):
     def test_inference_local_change_does_not_run_browser_learning_or_objective(self):
         scope = select(["codex-rs/hepta-infer-core/src/durable_control.rs"])
         self.assertTrue(scope["inference"])
+        self.assertTrue(scope["native"])
+        self.assertFalse(scope["full_repo"])
         for group in GROUPS - {"inference"}:
             self.assertFalse(scope[group])
 
     def test_shared_types_and_agentd_keep_cross_domain_coverage(self):
-        for path in ["codex-rs/hepta-types/src/lib.rs", "codex-rs/hepta-agentd/src/state.rs", "codex-rs/Cargo.lock"]:
+        for path in ["codex-rs/hepta-types/src/lib.rs", "codex-rs/hepta-agentd/src/state.rs"]:
             with self.subTest(path=path):
-                self.assertTrue(all(select([path])[key] for key in GROUPS))
+                scope = select([path])
+                self.assertTrue(all(scope[key] for key in GROUPS))
+                self.assertFalse(scope["full_repo"])
+        lock_scope = select(["codex-rs/Cargo.lock"])
+        self.assertTrue(all(lock_scope[key] for key in GROUPS))
+        self.assertTrue(lock_scope["full_repo"])
 
     def test_generated_module_projections_do_not_force_native_builds(self):
         for path in [
@@ -47,9 +54,14 @@ class ScopeTests(unittest.TestCase):
         self.assertTrue(all(scope[key] for key in GROUPS))
 
     def test_unknown_or_executable_document_selects_full(self):
-        for path in ["docs/check.rs", "scripts/new-verifier.py", "codex-rs/hepta-new/src/lib.rs", ".github/workflows/new.yml"]:
+        for path in ["docs/check.rs", "scripts/new-verifier.py", ".github/workflows/new.yml"]:
             with self.subTest(path=path):
-                self.assertTrue(all(select([path])[key] for key in GROUPS))
+                scope = select([path])
+                self.assertTrue(all(scope[key] for key in GROUPS))
+                self.assertTrue(scope["full_repo"])
+        new_hepta = select(["codex-rs/hepta-new/src/lib.rs"])
+        self.assertTrue(all(new_hepta[key] for key in GROUPS))
+        self.assertFalse(new_hepta["full_repo"])
 
     def test_code_owned_markdown_is_not_assumed_pure_prose(self):
         self.assertTrue(select(["codex-rs/core/prompt.md"])["native"])
@@ -64,6 +76,12 @@ class ScopeTests(unittest.TestCase):
 
     def test_manual_full_keeps_all_groups_even_with_no_paths(self):
         self.assertTrue(all(select([], force_full=True).values()))
+
+    def test_generated_projection_is_derived_only(self):
+        scope = select(["docs/readiness/STATUS.md"])
+        self.assertTrue(scope["derived"])
+        self.assertFalse(scope["native"])
+        self.assertFalse(scope["full_repo"])
 
     def test_bad_paths_fail_instead_of_selecting_nothing(self):
         for path in ["", "../README.md", "/README.md", "docs/../foo.md", "docs\\foo.md", "docs/a\0.md"]:
