@@ -148,6 +148,7 @@ impl SchemaRegistry {
             return Err(AdmissionError::PayloadTooLarge);
         }
 
+        preflight_json_bounds(envelope.payload())?;
         let mut deserializer = serde_json::Deserializer::from_slice(envelope.payload());
         let value = StrictValue::deserialize(&mut deserializer)
             .map_err(|error| AdmissionError::Json(error.to_string()))?
@@ -303,6 +304,55 @@ impl<'de> Visitor<'de> for StrictValueVisitor {
         }
         Ok(StrictValue(Value::Object(values)))
     }
+}
+
+
+fn preflight_json_bounds(bytes: &[u8]) -> Result<(), AdmissionError> {
+    let mut depth = 0_usize;
+    let mut field_count = 0_usize;
+    let mut in_string = false;
+    let mut escaped = false;
+
+    for byte in bytes {
+        if in_string {
+            if escaped {
+                escaped = false;
+                continue;
+            }
+            match byte {
+                b'\\' => escaped = true,
+                b'"' => in_string = false,
+                _ => {}
+            }
+            continue;
+        }
+
+        match byte {
+            b'"' => in_string = true,
+            b'{' | b'[' => {
+                depth = depth
+                    .checked_add(1)
+                    .ok_or(AdmissionError::NestingTooDeep)?;
+                if depth > MAX_JSON_NESTING {
+                    return Err(AdmissionError::NestingTooDeep);
+                }
+            }
+            b'}' | b']' => {
+                depth = depth.saturating_sub(1);
+            }
+            b':' => {
+                field_count = field_count
+                    .checked_add(1)
+                    .ok_or(AdmissionError::FieldCountExceeded)?;
+                if field_count > MAX_SCHEMA_FIELDS {
+                    return Err(AdmissionError::FieldCountExceeded);
+                }
+            }
+            _ => {}
+        }
+    }
+
+    Ok(())
 }
 
 
