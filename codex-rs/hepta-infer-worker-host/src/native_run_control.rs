@@ -60,7 +60,7 @@ impl AppServerModelDriver {
         }
         if record.state != NativeReservationState::Reserved {
             if record.state != NativeReservationState::Released
-                && let Some(reconciled) = self.reconcile_existing(&record).await?
+                && let Some(reconciled) = self.reconcile_existing(&record, &prompt).await?
             {
                 control.settle_native(&record.request.request_id, reconciled.clone())?;
                 return Ok(reconciled);
