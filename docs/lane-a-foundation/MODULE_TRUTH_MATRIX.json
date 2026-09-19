@@ -238,21 +238,22 @@
       "implementationDetail": "docs/lane-a-foundation/kernel.evidence/STORE_V1.md",
       "states": {
         "source": "implemented",
-        "implementation": "sqlite_store",
-        "durability": "sqlite_migrations_0001_0010",
-        "qualification": "source_tests_present",
-        "activation": "feature_gated",
+        "implementation": "sqlite_qualification_evidence_store",
+        "durability": "sqlite_migrations_0001_0011",
+        "qualification": "native_tests_and_agentd_product_test_present",
+        "activation": "agentd_product_composed_feature_gated",
         "acceptance": "not_granted"
       },
       "currentCapabilities": [
         "governance and historical evidence storage",
         "provider intent terminal and effect evidence storage",
-        "schema migration and integrity validation"
+        "schema migration and integrity validation",
+        "authenticated exact-candidate qualification evidence append query and verification"
       ],
       "targetOnlyCapabilities": [
-        "external monotonic checkpoint",
-        "cryptographic database replacement detection",
-        "signed evaluator-role and independence verification",
+        "external signed monotonic checkpoint backend",
+        "cryptographic complete-database replacement detection against an independently retained frontier",
+        "independent external acceptance ceremony",
         "promotion or release authority"
       ],
       "sourceAnchors": [
@@ -291,7 +292,35 @@
             "CREATE TABLE authbus_outbox",
             "authbus_outbox_active_no_delete"
           ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0011_qualification_evidence.sql",
+          "mustContain": [
+            "CREATE TABLE qualification_evidence",
+            "qualification_evidence_no_update",
+            "qualification_evidence_no_delete"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification.rs",
+          "mustContain": [
+            "pub async fn append_receipt",
+            "pub async fn query_claim",
+            "pub async fn verify_chain",
+            "IndependentDecisionReceiptV1"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/evidence_host.rs",
+          "mustContain": [
+            "pub(crate) struct EvidenceHost",
+            "pub(crate) async fn append",
+            "pub(crate) async fn verify"
+          ]
         }
+      ],
+      "namedProductCallers": [
+        "runtime.agentd"
       ]
     },
     {
