@@ -217,6 +217,54 @@ async fn authority_binding_rejects_payload_drift() -> TestResult {
         .await
         .expect_err("payload drift must fail");
     assert!(matches!(error, MatrixDurableError::Conflict));
+
+    let payload_digest = Sha256Digest::for_bytes(&outbox.payload).as_str().to_string();
+    let bound = store
+        .bind_dispatch_authority(
+            &outbox.stable_txn_id,
+            "operation.1",
+            "https://matrix.example.test",
+            "DEVICE1",
+            1,
+            7,
+            "grant.1",
+            &payload_digest,
+            10_000,
+            4,
+        )
+        .await?;
+    assert_eq!(bound.grant_id.as_deref(), Some("grant.1"));
+    let replay = store
+        .bind_dispatch_authority(
+            &outbox.stable_txn_id,
+            "operation.1",
+            "https://matrix.example.test",
+            "DEVICE1",
+            1,
+            7,
+            "grant.1",
+            &payload_digest,
+            10_000,
+            5,
+        )
+        .await?;
+    assert_eq!(replay, bound);
+    let changed = store
+        .bind_dispatch_authority(
+            &outbox.stable_txn_id,
+            "operation.1",
+            "https://matrix.example.test",
+            "DEVICE1",
+            1,
+            7,
+            "grant.2",
+            &payload_digest,
+            10_000,
+            5,
+        )
+        .await
+        .expect_err("bound grant identity must be immutable");
+    assert!(matches!(changed, MatrixDurableError::Conflict));
     store.close().await;
     Ok(())
 }
