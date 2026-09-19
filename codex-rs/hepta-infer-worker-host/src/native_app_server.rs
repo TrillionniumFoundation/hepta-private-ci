@@ -59,6 +59,8 @@ mod policy;
 pub use policy::FinalUseGrantResolver;
 pub use policy::GrantResolveError;
 pub use policy::NativeExecutionPolicy;
+pub use policy::NativePolicySignature;
+pub use policy::NativePolicyTrust;
 use tokio::time::Instant;
 use tokio::time::timeout;
 use tokio::time::timeout_at;
