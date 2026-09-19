@@ -32,6 +32,7 @@ pub use contracts_v1::build_legal_candidates_v1;
 mod pipeline_v2;
 mod pipeline_v3;
 mod outcome_credit;
+mod native_ports_v3;
 
 pub use pipeline_v2::LaneFRunRequestV2;
 pub use pipeline_v2::LaneFShadowPipelineReceiptV2;
@@ -59,6 +60,10 @@ pub use outcome_credit::OutcomeCreditClosureErrorV1;
 pub use outcome_credit::OutcomeCreditClosureReceiptV1;
 pub use outcome_credit::OutcomeCreditClosureRequestV1;
 pub use outcome_credit::append_outcome_credit_v1;
+pub use native_ports_v3::HostEnvelopePortV3;
+pub use native_ports_v3::LearningDecisionTemplateV3;
+pub use native_ports_v3::NativeV3OwnerInputs;
+pub use native_ports_v3::NativeV3OwnerPorts;
 
 mod pipeline;
 
