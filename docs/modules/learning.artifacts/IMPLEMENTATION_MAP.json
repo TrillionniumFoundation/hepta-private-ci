@@ -6,9 +6,9 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "moduleSourceHead": {
-    "commit": "cb9358740045c4bbf81f69b3a80fb1dd5e551e59",
-    "tree": "aabad50b550a0dff25e5c4310b383a52906ef8d8",
-    "meaning": "latest learning.artifacts code commit before documentation-only refresh; sourceBase remains the repository-wide common implementation-map baseline"
+    "commit": "cc249e7aaa001dfa9f92447c176fddbc91fa86de",
+    "tree": "84fb0e950353d37c9b8f0099aa7c782a0db5bbab",
+    "meaning": "latest learning.artifacts crate source commit before documentation-only refresh; sourceBase remains the repository-wide common implementation-map baseline"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.artifacts",
@@ -240,6 +240,20 @@
       "delegatedCallees": []
     },
     {
+      "operation": "observe_publication_status",
+      "nativeSymbol": "ArtifactPublicationTransactionV1::status",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/publication.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "art_07_publication_requires_ordered_durable_phases_before_ack"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "observe_publication_status",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
       "operation": "append_lifecycle_event",
       "nativeSymbol": "ArtifactLifecycleJournalV2::append",
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs",
@@ -354,12 +368,13 @@
     "compatibilityRegistry": "v1_retained",
     "manifestClosure": "v2_complete",
     "withdrawalAdmission": "v3_scoped_domain_registry_scope_bound",
-    "publicationAtomicity": "ordered_crash_recoverable_host_transaction_contract",
+    "publicationAtomicity": "ordered_crash_recoverable_host_transaction_contract_with_live_withdrawal_revalidation",
     "withdrawalDurability": "canonical_create_only_snapshot",
     "lifecycleDurability": "canonical_create_only_snapshot_historical_time_replay",
     "durableRecordCeiling": 4096,
     "pathBoundary": "trusted_root_relative_no_parent_no_symlink_ancestor_validation_before_create",
-    "iteration": "bounded_authority_free_replayable_bookkeeping"
+    "iteration": "bounded_authority_free_replayable_bookkeeping",
+    "adminServiceSurface": "deny_all_read_only_publication_status_no_override_authority"
   },
   "repositoryControlledGaps": [
     "Obtain exact-head and ordered-parent synthetic-merge green qualification for the final pull-request head."
