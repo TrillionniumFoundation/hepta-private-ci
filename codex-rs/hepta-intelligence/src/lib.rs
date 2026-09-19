@@ -7,12 +7,14 @@
 #![forbid(unsafe_code)]
 
 mod evaluated_shadow;
+mod neuron_runtime;
 
 pub use evaluated_shadow::EvaluatedShadowError;
 pub use evaluated_shadow::EvaluatedShadowReceiptV1;
 pub use evaluated_shadow::EvaluatedShadowRequestV1;
 pub use evaluated_shadow::evaluated_candidate_signing_payload_v1;
 pub use evaluated_shadow::run_evaluated_shadow_v1;
+pub use neuron_runtime::run_neuron_tick_v1;
 
 mod capability_snapshot;
 

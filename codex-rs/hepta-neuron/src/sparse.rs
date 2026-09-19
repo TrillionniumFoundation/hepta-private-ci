@@ -173,6 +173,39 @@ impl SparseCheckpoint {
         self.digest
     }
 
+    pub fn sequence(&self) -> u64 {
+        self.sequence
+    }
+
+    /// Upper bound for a canonical checkpoint encoding of the current state.
+    pub fn bounded_encoded_bytes(&self) -> usize {
+        let fixed = 6 * std::mem::size_of::<Digest32>() + 2 * std::mem::size_of::<u64>();
+        let vector_headers = 5 * std::mem::size_of::<u64>();
+        let vector_values = [
+            self.temporal.len(),
+            self.activation.len(),
+            self.activity.len(),
+            self.threshold.len(),
+            self.eligibility.len(),
+        ]
+        .into_iter()
+        .sum::<usize>()
+        * std::mem::size_of::<i64>();
+        fixed + vector_headers + vector_values
+    }
+
+    pub(crate) fn matches_segment_context(
+        &self,
+        config_digest: Digest32,
+        scope_digest: Digest32,
+        objective_digest: Digest32,
+    ) -> bool {
+        self.calculate_digest() == self.digest
+            && self.config == config_digest
+            && self.scope == scope_digest
+            && self.objective == objective_digest
+    }
+
     /// Diagonal local-head eligibility sufficient statistics, not model weights.
     pub fn eligibility_q24(&self) -> &[i64] {
         &self.eligibility

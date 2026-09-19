@@ -1,4 +1,4 @@
-//! Opt-in, single-generation journal over a host-authorized, exclusively owned file.
+//! Opt-in, single-generation journal over host-authorized, exclusively owned files.
 //! Complete frames bind the tick, checkpoint and receipt; no production authority.
 
 use std::error::Error;
@@ -23,6 +23,8 @@ use crate::sparse_tick;
 
 const MAGIC: &[u8; 8] = b"HPTNSJ01";
 const HEADER: usize = 136;
+const SUCCESSOR_MAGIC: &[u8; 8] = b"HPTNSJ02";
+const SUCCESSOR_HEADER: usize = 176;
 const MAX_RECORDS: usize = 1024;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -85,16 +87,17 @@ pub struct SparseJournal {
     config: SparseConfig,
     scope: JournalScope,
     max_records: usize,
+    base_sequence: u64,
+    base_anchor: Option<JournalAnchor>,
+    data_offset: usize,
     entries: Vec<(Digest32, SparseSignalReceipt)>,
     current: Option<SparseCheckpoint>,
     poisoned: bool,
 }
 
 impl SparseJournal {
-    /// Bootstrap or recover without an external acknowledgement witness.
-    /// This cannot detect loss of a valid suffix or replacement with an empty file.
-    /// Use `open_anchored` when the host has previously acknowledged history.
-    /// New-file directory durability must be established separately by the host.
+    /// Bootstrap or recover the first segment without an external acknowledgement
+    /// witness. This cannot detect loss of a valid suffix or empty replacement.
     pub fn open(
         file: File,
         config: SparseConfig,
@@ -104,9 +107,8 @@ impl SparseJournal {
         Self::open_with_policy(file, config, scope, max_records, RecoveryPolicy::Unanchored)
     }
 
-    /// Recover at least the externally acknowledged checkpoint. A missing or
-    /// different prefix rejects before any repair or initialization. Later complete
-    /// valid frames remain eligible for lost-acknowledgement reconciliation.
+    /// Recover the first segment at least through the externally acknowledged
+    /// checkpoint. Anchor validation occurs before any repair.
     pub fn open_anchored(
         file: File,
         config: SparseConfig,
@@ -130,9 +132,7 @@ impl SparseJournal {
         max_records: usize,
         policy: RecoveryPolicy,
     ) -> Result<Self, JournalError> {
-        if !(1..=MAX_RECORDS).contains(&max_records) {
-            return Err(JournalError::InvalidLimit);
-        }
+        validate_limit(max_records)?;
         if let RecoveryPolicy::Require(anchor) = policy
             && (anchor.sequence == 0
                 || anchor.sequence > max_records as u64
@@ -141,16 +141,9 @@ impl SparseJournal {
             return Err(JournalError::InvalidAnchor);
         }
         let config_digest = config.digest().map_err(JournalError::Mechanism)?;
-        if scope.scope_digest.is_zero() || scope.objective_digest.is_zero() {
-            return Err(JournalError::ContextMismatch);
-        }
+        validate_scope(scope)?;
         let mut file = LockedFile::acquire(file)?;
-        let mut header = MAGIC.to_vec();
-        for digest in [config_digest, scope.scope_digest, scope.objective_digest] {
-            header.extend_from_slice(digest.as_array());
-        }
-        let checksum = Digest32::of_bytes(&header);
-        header.extend_from_slice(checksum.as_array());
+        let header = root_header(config_digest, scope);
         let length = file.metadata()?.len();
         file.seek(SeekFrom::Start(0))?;
         if length == 0 {
@@ -161,48 +154,175 @@ impl SparseJournal {
                 .map_err(|_| JournalError::Indeterminate)?;
             file.sync_all().map_err(|_| JournalError::Indeterminate)?;
         } else {
-            if length < HEADER as u64 {
-                return Err(JournalError::Corrupt);
-            }
-            let mut actual = [0; HEADER];
-            file.read_exact(&mut actual)?;
-            if &actual[..8] != MAGIC
-                || Digest32::of_bytes(&actual[..HEADER - 32]).as_array() != &actual[HEADER - 32..]
+            validate_exact_header(&mut file, &header, HEADER, MAGIC)?;
+        }
+        Self::recover_frames(
+            file,
+            config,
+            scope,
+            max_records,
+            policy,
+            None,
+            HEADER,
+        )
+    }
+
+    /// Open or create a successor segment seeded from the exact final checkpoint
+    /// of the predecessor segment. The seed is part of the HPTNSJ02 header, so a
+    /// valid-prefix rollback of the predecessor cannot be silently composed with
+    /// this segment.
+    pub fn open_successor(
+        file: File,
+        config: SparseConfig,
+        scope: JournalScope,
+        max_records: usize,
+        seed: &SparseCheckpoint,
+    ) -> Result<Self, JournalError> {
+        Self::open_successor_with_policy(
+            file,
+            config,
+            scope,
+            max_records,
+            seed,
+            RecoveryPolicy::Unanchored,
+        )
+    }
+
+    /// Recover a successor segment while requiring at least the independently
+    /// acknowledged checkpoint. Later complete frames are retained for lost-ack
+    /// reconciliation exactly as for the first segment.
+    pub fn open_successor_anchored(
+        file: File,
+        config: SparseConfig,
+        scope: JournalScope,
+        max_records: usize,
+        seed: &SparseCheckpoint,
+        anchor: JournalAnchor,
+    ) -> Result<Self, JournalError> {
+        Self::open_successor_with_policy(
+            file,
+            config,
+            scope,
+            max_records,
+            seed,
+            RecoveryPolicy::Require(anchor),
+        )
+    }
+
+    fn open_successor_with_policy(
+        file: File,
+        config: SparseConfig,
+        scope: JournalScope,
+        max_records: usize,
+        seed: &SparseCheckpoint,
+        policy: RecoveryPolicy,
+    ) -> Result<Self, JournalError> {
+        validate_limit(max_records)?;
+        validate_scope(scope)?;
+        let config_digest = config.digest().map_err(JournalError::Mechanism)?;
+        if !seed.matches_segment_context(config_digest, scope.scope_digest, scope.objective_digest) {
+            return Err(JournalError::ContextMismatch);
+        }
+        let seed_anchor = JournalAnchor {
+            sequence: seed.sequence(),
+            checkpoint_digest: seed.digest(),
+        };
+        if let RecoveryPolicy::Require(anchor) = policy {
+            if anchor.sequence == 0
+                || anchor.sequence < seed_anchor.sequence
+                || anchor.sequence
+                    > seed_anchor
+                        .sequence
+                        .saturating_add(max_records as u64)
+                || anchor.checkpoint_digest.is_zero()
             {
-                return Err(JournalError::Corrupt);
+                return Err(JournalError::InvalidAnchor);
             }
-            if actual.as_slice() != header {
-                return Err(JournalError::ContextMismatch);
+            if anchor.sequence == seed_anchor.sequence
+                && anchor.checkpoint_digest != seed_anchor.checkpoint_digest
+            {
+                return Err(JournalError::AnchorMismatch);
             }
         }
+
+        let mut file = LockedFile::acquire(file)?;
+        let header = successor_header(config_digest, scope, seed_anchor);
+        let length = file.metadata()?.len();
+        file.seek(SeekFrom::Start(0))?;
+        if length == 0 {
+            if let RecoveryPolicy::Require(anchor) = policy
+                && anchor.sequence > seed_anchor.sequence
+            {
+                return Err(JournalError::AcknowledgedHistoryMissing);
+            }
+            file.write_all(&header)
+                .map_err(|_| JournalError::Indeterminate)?;
+            file.sync_all().map_err(|_| JournalError::Indeterminate)?;
+        } else {
+            validate_exact_header(
+                &mut file,
+                &header,
+                SUCCESSOR_HEADER,
+                SUCCESSOR_MAGIC,
+            )?;
+        }
+        Self::recover_frames(
+            file,
+            config,
+            scope,
+            max_records,
+            policy,
+            Some(seed.clone()),
+            SUCCESSOR_HEADER,
+        )
+    }
+
+    fn recover_frames(
+        mut file: LockedFile,
+        config: SparseConfig,
+        scope: JournalScope,
+        max_records: usize,
+        policy: RecoveryPolicy,
+        seed: Option<SparseCheckpoint>,
+        data_offset: usize,
+    ) -> Result<Self, JournalError> {
         let frame_len = 304 + 16 * config.width;
-        // Permit at most one incomplete tail, never an unbounded recovery scan.
-        if length > (HEADER + max_records * frame_len + frame_len - 1) as u64 {
+        let length = file.metadata()?.len();
+        if length < data_offset as u64
+            || length
+                > (data_offset + max_records * frame_len + frame_len - 1) as u64
+        {
             return Err(JournalError::Capacity);
         }
+        let base_sequence = seed.as_ref().map_or(0, SparseCheckpoint::sequence);
+        let base_anchor = seed.as_ref().map(|checkpoint| JournalAnchor {
+            sequence: checkpoint.sequence(),
+            checkpoint_digest: checkpoint.digest(),
+        });
         let mut journal = Self {
             file,
             config,
             scope,
             max_records,
+            base_sequence,
+            base_anchor,
+            data_offset,
             entries: Vec::new(),
-            current: None,
+            current: seed,
             poisoned: false,
         };
-        let available = length.saturating_sub(HEADER as u64) as usize;
+        let available = length.saturating_sub(data_offset as u64) as usize;
         let complete = available / frame_len;
         if complete > max_records {
             return Err(JournalError::Capacity);
         }
-        if let RecoveryPolicy::Require(anchor) = policy
-            && complete < anchor.sequence as usize
-        {
-            return Err(JournalError::AcknowledgedHistoryMissing);
-        }
+        journal.file.seek(SeekFrom::Start(data_offset as u64))?;
         let mut frame = vec![0; frame_len];
         for _ in 0..complete {
             journal.file.read_exact(&mut frame)?;
-            if Digest32::of_bytes(&frame[..frame_len - 32]).as_array() != &frame[frame_len - 32..] {
+            if Digest32::of_bytes(&frame[..frame_len - 32]).as_array()
+                != &frame[frame_len - 32..]
+            {
                 return Err(JournalError::Corrupt);
             }
             let tick = decode_tick(&frame[..frame_len - 128], journal.config.width)?;
@@ -211,8 +331,9 @@ impl SparseJournal {
             {
                 return Err(JournalError::Corrupt);
             }
-            let (state, receipt) = sparse_tick(&journal.config, &tick, journal.current.as_ref())
-                .map_err(|_| JournalError::Corrupt)?;
+            let (state, receipt) =
+                sparse_tick(&journal.config, &tick, journal.current.as_ref())
+                    .map_err(|_| JournalError::Corrupt)?;
             if encode_frame(&tick, &receipt) != frame {
                 return Err(JournalError::Corrupt);
             }
@@ -221,26 +342,28 @@ impl SparseJournal {
                 .push((Digest32::of_bytes(&encode_tick(&tick)), receipt));
             journal.current = Some(state);
         }
-        if let RecoveryPolicy::Require(anchor) = policy
-            && journal.entries[(anchor.sequence - 1) as usize]
-                .1
-                .checkpoint_after
-                != anchor.checkpoint_digest
-        {
-            return Err(JournalError::AnchorMismatch);
+
+        if let RecoveryPolicy::Require(anchor) = policy {
+            let actual = journal.anchor_at(anchor.sequence);
+            match actual {
+                None => return Err(JournalError::AcknowledgedHistoryMissing),
+                Some(actual) if actual.checkpoint_digest != anchor.checkpoint_digest => {
+                    return Err(JournalError::AnchorMismatch);
+                }
+                Some(_) => {}
+            }
         }
+
         if !available.is_multiple_of(frame_len) {
             journal
                 .file
-                .set_len((HEADER + complete * frame_len) as u64)
+                .set_len((data_offset + complete * frame_len) as u64)
                 .map_err(|_| JournalError::Indeterminate)?;
             journal
                 .file
                 .sync_all()
                 .map_err(|_| JournalError::Indeterminate)?;
         }
-        // A previous sync may have failed after writing a full frame. Reopening
-        // must establish durability before returning a recovered committed receipt.
         journal
             .file
             .sync_data()
@@ -248,9 +371,49 @@ impl SparseJournal {
         Ok(journal)
     }
 
-    /// Compare-and-append one tick. Equal retries return the exact committed receipt,
-    /// including when later ticks exist. Changed retry content or predecessor conflicts.
-    /// Any write/sync failure poisons this handle; reopen and reconcile, never blind retry.
+    /// Start the next bounded segment from the exact current checkpoint.
+    pub fn start_successor(
+        &self,
+        file: File,
+        max_records: usize,
+    ) -> Result<Self, JournalError> {
+        if self.poisoned {
+            return Err(JournalError::Poisoned);
+        }
+        let seed = self.current.as_ref().ok_or(JournalError::InvalidAnchor)?;
+        Self::open_successor(
+            file,
+            self.config.clone(),
+            self.scope,
+            max_records,
+            seed,
+        )
+    }
+
+    /// Recover a successor segment using this journal's exact current checkpoint
+    /// as its seed and an independently retained acknowledgement witness.
+    pub fn recover_successor(
+        &self,
+        file: File,
+        max_records: usize,
+        anchor: JournalAnchor,
+    ) -> Result<Self, JournalError> {
+        if self.poisoned {
+            return Err(JournalError::Poisoned);
+        }
+        let seed = self.current.as_ref().ok_or(JournalError::InvalidAnchor)?;
+        Self::open_successor_anchored(
+            file,
+            self.config.clone(),
+            self.scope,
+            max_records,
+            seed,
+            anchor,
+        )
+    }
+
+    /// Compare-and-append one tick. Equal retries return the exact committed
+    /// receipt, including after later ticks in the same segment.
     pub fn commit(
         &mut self,
         expected_predecessor: Digest32,
@@ -272,8 +435,9 @@ impl SparseJournal {
         let tick_digest = Digest32::of_bytes(&encode_tick(tick));
         if let Some(index) = tick
             .sequence
-            .checked_sub(1)
-            .and_then(|n| usize::try_from(n).ok())
+            .checked_sub(self.base_sequence)
+            .and_then(|relative| relative.checked_sub(1))
+            .and_then(|relative| usize::try_from(relative).ok())
             && let Some((prior_digest, receipt)) = self.entries.get(index)
         {
             return if *prior_digest == tick_digest
@@ -298,7 +462,7 @@ impl SparseJournal {
         let (state, receipt) = sparse_tick(&self.config, tick, self.current.as_ref())
             .map_err(JournalError::Mechanism)?;
         let frame = encode_frame(tick, &receipt);
-        let expected_length = (HEADER + self.entries.len() * frame.len()) as u64;
+        let expected_length = (self.data_offset + self.entries.len() * frame.len()) as u64;
         self.poisoned = true;
         if self.file.seek(SeekFrom::End(0))? != expected_length {
             return Err(JournalError::Corrupt);
@@ -322,6 +486,94 @@ impl SparseJournal {
             Ok(self.current.as_ref())
         }
     }
+
+    pub fn remaining_capacity(&self) -> Result<usize, JournalError> {
+        if self.poisoned {
+            Err(JournalError::Poisoned)
+        } else {
+            Ok(self.max_records.saturating_sub(self.entries.len()))
+        }
+    }
+
+    fn anchor_at(&self, sequence: u64) -> Option<JournalAnchor> {
+        if sequence == self.base_sequence {
+            return self.base_anchor;
+        }
+        let index = sequence
+            .checked_sub(self.base_sequence)?
+            .checked_sub(1)
+            .and_then(|relative| usize::try_from(relative).ok())?;
+        self.entries.get(index).map(|(_, receipt)| JournalAnchor {
+            sequence,
+            checkpoint_digest: receipt.checkpoint_after,
+        })
+    }
+}
+
+fn validate_limit(max_records: usize) -> Result<(), JournalError> {
+    if !(1..=MAX_RECORDS).contains(&max_records) {
+        Err(JournalError::InvalidLimit)
+    } else {
+        Ok(())
+    }
+}
+
+fn validate_scope(scope: JournalScope) -> Result<(), JournalError> {
+    if scope.scope_digest.is_zero() || scope.objective_digest.is_zero() {
+        Err(JournalError::ContextMismatch)
+    } else {
+        Ok(())
+    }
+}
+
+fn root_header(config_digest: Digest32, scope: JournalScope) -> Vec<u8> {
+    let mut header = MAGIC.to_vec();
+    for digest in [config_digest, scope.scope_digest, scope.objective_digest] {
+        header.extend_from_slice(digest.as_array());
+    }
+    let checksum = Digest32::of_bytes(&header);
+    header.extend_from_slice(checksum.as_array());
+    header
+}
+
+fn successor_header(
+    config_digest: Digest32,
+    scope: JournalScope,
+    seed: JournalAnchor,
+) -> Vec<u8> {
+    let mut header = SUCCESSOR_MAGIC.to_vec();
+    for digest in [config_digest, scope.scope_digest, scope.objective_digest] {
+        header.extend_from_slice(digest.as_array());
+    }
+    header.extend_from_slice(&seed.sequence.to_be_bytes());
+    header.extend_from_slice(seed.checkpoint_digest.as_array());
+    let checksum = Digest32::of_bytes(&header);
+    header.extend_from_slice(checksum.as_array());
+    header
+}
+
+fn validate_exact_header(
+    file: &mut LockedFile,
+    expected: &[u8],
+    header_len: usize,
+    magic: &[u8; 8],
+) -> Result<(), JournalError> {
+    let length = file.metadata()?.len();
+    if length < header_len as u64 {
+        return Err(JournalError::Corrupt);
+    }
+    let mut actual = vec![0_u8; header_len];
+    file.read_exact(&mut actual)?;
+    if &actual[..8] != magic
+        || Digest32::of_bytes(&actual[..header_len - 32]).as_array()
+            != &actual[header_len - 32..]
+    {
+        return Err(JournalError::Corrupt);
+    }
+    if actual != expected {
+        return Err(JournalError::ContextMismatch);
+    }
+    Ok(())
 }
 
 fn encode_tick(tick: &SparseTick) -> Vec<u8> {
@@ -413,3 +665,7 @@ mod tests;
 #[cfg(test)]
 #[path = "journal_anchor_tests.rs"]
 mod anchor_tests;
+
+#[cfg(test)]
+#[path = "journal_segment_tests.rs"]
+mod segment_tests;
