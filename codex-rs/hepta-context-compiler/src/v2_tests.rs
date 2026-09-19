@@ -75,6 +75,7 @@ impl ContextSerializerV2 for FramingSerializer {
 
 struct TestTransport {
     transmitted_override: Option<Digest32>,
+    acknowledged_override: Option<Digest32>,
     terminal_observed: bool,
     disposition: ContextDeliveryDispositionV2,
     acknowledgement: bool,
@@ -99,7 +100,10 @@ impl ContextTransportV2 for TestTransport {
             provider_acknowledged_payload_digest: if self.acknowledgement
                 && self.disposition == ContextDeliveryDispositionV2::Delivered
             {
-                Some(transmitted_payload_digest)
+                Some(
+                    self.acknowledged_override
+                        .unwrap_or(transmitted_payload_digest),
+                )
             } else {
                 None
             },
@@ -548,6 +552,7 @@ fn delivery_receipt_is_created_only_from_transport_invoked_with_exact_payload() 
     .unwrap_or_else(|error| panic!("valid attachment: {error}"));
     let transport = TestTransport {
         transmitted_override: None,
+        acknowledged_override: None,
         terminal_observed: true,
         disposition: ContextDeliveryDispositionV2::Delivered,
         acknowledgement: true,
@@ -616,6 +621,7 @@ fn transport_cannot_claim_delivery_of_different_payload() {
     .unwrap_or_else(|error| panic!("valid attachment: {error}"));
     let transport = TestTransport {
         transmitted_override: Some(digest("different-payload")),
+        acknowledged_override: None,
         terminal_observed: true,
         disposition: ContextDeliveryDispositionV2::Delivered,
         acknowledgement: true,
@@ -634,6 +640,58 @@ fn transport_cannot_claim_delivery_of_different_payload() {
         Err(ContextCompilerV2Error::DeliveryMismatch)
     );
 }
+
+#[test]
+fn provider_ack_for_different_payload_cannot_receive_delivered_status() {
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let (trusted, realized) = candidate(
+        "item:trusted",
+        ContextRoleV2::TrustedInstruction,
+        20,
+        FixedQ32::ONE,
+        &snapshot,
+    );
+    let compiled = compile_v2(request(vec![trusted], 100))
+        .unwrap_or_else(|error| panic!("valid compilation: {error}"));
+    let serialization = record_serialization(
+        &compiled,
+        &profile(),
+        id("serialization:1"),
+        vec![realized],
+        &FramingSerializer { overhead: 0 },
+        &ByteTokenizer,
+    )
+    .unwrap_or_else(|error| panic!("valid serialization: {error}"));
+    let attachment = build_attachment(
+        &compiled,
+        &serialization,
+        &profile(),
+        &snapshot,
+        id("attachment:1"),
+    )
+    .unwrap_or_else(|error| panic!("valid attachment: {error}"));
+    let transport = TestTransport {
+        transmitted_override: None,
+        acknowledged_override: Some(digest("different-provider-ack-payload")),
+        terminal_observed: true,
+        disposition: ContextDeliveryDispositionV2::Delivered,
+        acknowledgement: true,
+    };
+
+    assert_eq!(
+        deliver_context_v2(
+            &compiled,
+            &serialization,
+            &attachment,
+            &profile(),
+            &snapshot,
+            id("delivery:1"),
+            &transport,
+        ),
+        Err(ContextCompilerV2Error::MissingTerminalAcknowledgement)
+    );
+}
+
 
 #[test]
 fn delivery_revalidates_again_and_rejects_revocation_after_attachment() {
@@ -669,6 +727,7 @@ fn delivery_revalidates_again_and_rejects_revocation_after_attachment() {
         verified_snapshot("snapshot:2", 20, 2, vec![admission_id.clone()]);
     let transport = TestTransport {
         transmitted_override: None,
+        acknowledged_override: None,
         terminal_observed: true,
         disposition: ContextDeliveryDispositionV2::Delivered,
         acknowledgement: true,
