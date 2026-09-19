@@ -8,10 +8,12 @@ publish = false
 [lib]
 name = "codex_hepta_supervisor"
 path = "src/lib.rs"
-doctest = false
+doctest = true
 
 [features]
 default = []
+# Offline/shadow harness API; never enabled by a product dependency.
+qualification = []
 # Explicit build opt-in for externally authorized mutation; default daemons
 # remain lifecycle-only and keep signed mutation admission fail-closed.
 production-authority = []

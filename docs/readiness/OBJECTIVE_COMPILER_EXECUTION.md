@@ -29,7 +29,9 @@ The native compiler intentionally retains its historical scalar feasibility chec
 
 `check_feasibility_v1` is a richer general solver than the V1 source dialect. The solver supports scalar intervals, finite-enum include/exclude atoms, positive action implications and immutable identity atoms. `ObjectiveSourceEnvelopeV1`, however, carries only one Q32 hard-constraint bound and no enum-set or action-implication payload. Therefore the canonical V1 source-to-objective path uses the **scalar subset** of the general solver. Finite-enum intersection and positive action implication are solver capabilities, not claims that V1 bounded JSON can express them.
 
-## 2. Input grammar and canonical/native IR boundary
+## 2. Input grammar and canonical IR
+
+The following distinguishes canonical and native IR boundaries.
 
 The accepted V1 structured grammar is bounded and contains:
 
@@ -121,7 +123,7 @@ Compilation is a pure function of the authenticated source envelope, selected ad
 
 ## 5. State machine and persistence
 
-The compiler owns no domain-fact store. The target product contract requires the owning caller to persist the canonical `ObjectiveFunctionV1`, `RunStartSnapshotV1` and admission/compile receipts atomically enough that no run can observe an objective revision without its matching run-start snapshot.
+The compiler stages are:
 
 ```text
 received
@@ -139,7 +141,9 @@ The current source candidate establishes the canonical projection and a named, a
 
 A crash before caller publication leaves no selected objective. A crash after durable publication must be reconciled by an identity that includes request, principal scope, source digest, schema digest and selected profile digest. A changed success predicate, hard constraint, legal effect, evidence requirement, resource/risk rule, principal scope or rollback class creates a new objective revision and a new run snapshot.
 
-## 6. Error taxonomy and retry policy
+## 6. Error taxonomy and fallback
+
+Retry policy is part of the explicit fallback contract.
 
 The canonical code definitions remain in `docs/contracts/OBJECTIVE_ERRORS.json`:
 
@@ -184,7 +188,7 @@ The following paths are measured separately:
 | inclusion-minimal conflict extraction | at most `n+1` oracle calls and `O(n C(n))` |
 | legal-action construction | `O(a log a)` with compiled `a<=128` |
 
-Pilot ceilings for bounded V1 admission are `<=246` source hard constraints plus exactly ten generated hard constraints, `<=128` aggregate success/terminal/evidence predicates, `<=127` caller legal actions, `<=128` compiled actions including abstain, `<=64` soft dimensions and `<=257` conflict-oracle calls. The in-crate canonical gate uses the deterministic call budget with wall-clock cancellation disabled; host latency budgets and measurements belong to product composition and must not alter semantic results.
+Pilot ceilings for bounded V1 admission are `<=246` source hard constraints plus exactly ten generated hard-constraint slots, `<=128` aggregate success/terminal/evidence predicates, `<=127` caller legal actions, `<=128` compiled actions including abstain, `<=64` soft dimensions and `<=257` conflict-oracle calls. The in-crate canonical gate uses the deterministic call budget with wall-clock cancellation disabled; host latency budgets and measurements belong to product composition and must not alter semantic results.
 
 The p95/p99 targets apply only to a named path, fixture and host. A normal-path latency measurement cannot be reused as a conflict-extraction measurement. No network or synchronous central RPC is permitted on the deterministic compiler path. The target-host execution procedure is `docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md`, with recorder `scripts/hepta-objective-target-measure.py`.
 

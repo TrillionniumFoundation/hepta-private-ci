@@ -160,9 +160,10 @@ async fn recovered_handoff_physically_fences_old_writer_before_successor_admissi
         "released predecessor handle must be rejected by the durable lease fence"
     );
     drop(old);
+    let acknowledged = journal.checkpoint().clone();
     drop(journal);
 
-    let mut recovered = DurableWriterHandoffJournalV1::recover(handoff_file(&temp))
+    let mut recovered = DurableWriterHandoffJournalV1::recover_at_least(handoff_file(&temp), &acknowledged)
         .expect("recover handoff after old fence");
     assert_eq!(
         recovered.checkpoint().phase,

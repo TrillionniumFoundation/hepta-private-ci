@@ -12,6 +12,7 @@
 
 use std::fmt;
 use std::fs::File;
+use std::fs::TryLockError;
 use std::io::Read;
 use std::io::Seek;
 use std::io::SeekFrom;
@@ -190,6 +191,9 @@ pub enum WriterHandoffErrorV1 {
     OutboxWatermarkChanged,
     UnknownEffectsRemain(u32),
     AlreadyInitialized,
+    Busy,
+    NotRegular,
+    AcknowledgedCheckpointMissing,
     MissingHeader,
     MissingCheckpoint,
     RecordTooLarge,
@@ -226,6 +230,7 @@ impl DurableWriterHandoffJournalV1 {
     /// Create a new journal on an explicitly supplied, exclusively owned file.
     pub fn create(mut file: File, plan: WriterHandoffPlanV1) -> Result<Self, WriterHandoffErrorV1> {
         plan.validate()?;
+        acquire_handoff_lock(&file)?;
         if file.metadata()?.len() != 0 {
             return Err(WriterHandoffErrorV1::AlreadyInitialized);
         }
@@ -259,19 +264,44 @@ impl DurableWriterHandoffJournalV1 {
         })
     }
 
-    /// Recover the latest completely fsynced checkpoint. A torn final append
-    /// is discarded; corruption in any complete record fails closed.
-    pub fn recover(mut file: File) -> Result<Self, WriterHandoffErrorV1> {
+    /// Recover a local journal without an anti-rollback witness. This legacy
+    /// entry point cannot detect restoration to an older, valid prefix. A
+    /// product handoff with acknowledged progress must use `recover_at_least`.
+    pub fn recover(file: File) -> Result<Self, WriterHandoffErrorV1> {
+        Self::recover_with_minimum(file, None)
+    }
+
+    /// Recover only if the exact independently retained checkpoint occurs in
+    /// the validated chain. The host owns authentication and monotonic retention
+    /// of this minimum; the local journal cannot certify its own freshness.
+    /// Rejection occurs before truncating an incomplete suffix.
+    pub fn recover_at_least(
+        file: File,
+        minimum: &WriterHandoffCheckpointV1,
+    ) -> Result<Self, WriterHandoffErrorV1> {
+        Self::recover_with_minimum(file, Some(minimum))
+    }
+
+    fn recover_with_minimum(
+        mut file: File,
+        minimum: Option<&WriterHandoffCheckpointV1>,
+    ) -> Result<Self, WriterHandoffErrorV1> {
+        acquire_handoff_lock(&file)?;
+        if file.metadata()?.len() > MAX_JOURNAL_BYTES {
+            return Err(WriterHandoffErrorV1::JournalTooLarge);
+        }
         file.seek(SeekFrom::Start(0))?;
         let mut bytes = Vec::new();
-        file.read_to_end(&mut bytes)?;
-        if !bytes.starts_with(MAGIC) {
-            return Err(WriterHandoffErrorV1::MissingHeader);
-        }
+        // Also bound the read itself: a metadata check alone is not an
+        // allocation bound when a non-cooperating process changes the file.
+        Read::take(&mut file, MAX_JOURNAL_BYTES + 1).read_to_end(&mut bytes)?;
         if bytes.len() as u64 > MAX_JOURNAL_BYTES {
             return Err(WriterHandoffErrorV1::JournalTooLarge);
         }
-
+        if !bytes.starts_with(MAGIC) {
+            return Err(WriterHandoffErrorV1::MissingHeader);
+        }
+        let mut minimum_seen = minimum.is_none();
         let mut cursor = MAGIC.len();
         let mut previous: Option<WriterHandoffCheckpointV1> = None;
         while cursor < bytes.len() {
@@ -285,15 +315,21 @@ impl DurableWriterHandoffJournalV1 {
             }
             let checkpoint = decode_checkpoint(&bytes[cursor..end])?;
             validate_recovered_checkpoint(previous.as_ref(), &checkpoint)?;
+            minimum_seen |= minimum == Some(&checkpoint);
             previous = Some(checkpoint);
             cursor = end + 1;
         }
         let checkpoint = previous.ok_or(WriterHandoffErrorV1::MissingCheckpoint)?;
+        if !minimum_seen {
+            return Err(WriterHandoffErrorV1::AcknowledgedCheckpointMissing);
+        }
         if cursor != bytes.len() {
             file.set_len(cursor as u64)
                 .and_then(|()| file.sync_all())
                 .map_err(|_| WriterHandoffErrorV1::Indeterminate)?;
         }
+        file.sync_all()
+            .map_err(|_| WriterHandoffErrorV1::Indeterminate)?;
         file.seek(SeekFrom::Start(cursor as u64))?;
         Ok(Self {
             file,
@@ -319,7 +355,9 @@ impl DurableWriterHandoffJournalV1 {
         }
         if step.phase == self.checkpoint.phase
             && step.evidence_digest == self.checkpoint.evidence_digest
-            && step.outbox_watermark == self.checkpoint.outbox_watermark
+            && (step.outbox_watermark == self.checkpoint.outbox_watermark
+                || (step.outbox_watermark.is_none()
+                    && step.phase != WriterHandoffPhaseV1::Drained))
             && step.unknown_effect_count == self.checkpoint.unknown_effect_count
         {
             return Ok(self.checkpoint.clone());
@@ -346,6 +384,20 @@ impl DurableWriterHandoffJournalV1 {
         self.checkpoint = next.clone();
         self.poisoned = false;
         Ok(next)
+    }
+}
+
+/// Only independently opened regular files are supported. Cloned/inherited
+/// descriptors and uncooperative writers are outside this advisory lock model;
+/// actual domain writers still require their own durable generation fence.
+fn acquire_handoff_lock(file: &File) -> Result<(), WriterHandoffErrorV1> {
+    if !file.metadata()?.is_file() {
+        return Err(WriterHandoffErrorV1::NotRegular);
+    }
+    match file.try_lock() {
+        Ok(()) => Ok(()),
+        Err(TryLockError::WouldBlock) => Err(WriterHandoffErrorV1::Busy),
+        Err(TryLockError::Error(error)) => Err(error.into()),
     }
 }
 
@@ -828,3 +880,7 @@ mod tests {
         assert!(journal.checkpoint().new_writer_admission_open());
     }
 }
+
+#[cfg(test)]
+#[path = "writer_handoff_recovery_tests.rs"]
+mod recovery_tests;
