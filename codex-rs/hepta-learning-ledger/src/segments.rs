@@ -173,7 +173,7 @@ impl SegmentedLedger {
         })
     }
 
-    pub fn append(
+    pub(crate) fn append(
         &mut self,
         expected_predecessor: Digest32,
         event: LedgerEvent,
