@@ -134,7 +134,6 @@ fn truncation_and_tampering_fail_closed() {
     );
 }
 
-
 #[test]
 fn revocation_is_scoped_by_objective_subject_and_payload() {
     let objective_a = digest("objective-a");
