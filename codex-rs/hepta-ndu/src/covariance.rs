@@ -15,6 +15,7 @@ pub struct ZEstimateV1 {
     pub(crate) condition_estimate: f64,
     pub(crate) increment_eigenvalue_lower_estimate: f64,
     pub(crate) maximum_relative_residual: f64,
+    pub(crate) covariance_profile_digest: Digest32,
     pub(crate) evidence_digest: Digest32,
     pub(crate) authority: AuthorityPosture,
 }
@@ -38,6 +39,11 @@ impl ZEstimateV1 {
     #[must_use]
     pub const fn maximum_relative_residual(&self) -> f64 {
         self.maximum_relative_residual
+    }
+
+    #[must_use]
+    pub const fn covariance_profile_digest(&self) -> Digest32 {
+        self.covariance_profile_digest
     }
 
     #[must_use]
@@ -235,6 +241,7 @@ pub fn solve_backward_regression(
         condition_estimate,
         increment_eigenvalue_lower_estimate: eigenvalue_floor,
         maximum_relative_residual,
+        covariance_profile_digest: profile.digest,
         evidence_digest: Digest32::of_bytes(&bytes),
         authority: AuthorityPosture::DENY_ALL,
     })
