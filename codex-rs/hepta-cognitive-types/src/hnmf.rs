@@ -1343,7 +1343,7 @@ pub enum TopologyOperationV1 {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
-pub struct TopologyProposalV1 {
+pub struct MemoryTopologyProposalV1 {
     pub predecessor_generation: GenerationV1,
     pub next_generation: GenerationV1,
     pub operation: TopologyOperationV1,
@@ -1354,7 +1354,7 @@ pub struct TopologyProposalV1 {
     pub production_activation_allowed: bool,
 }
 
-impl TopologyProposalV1 {
+impl MemoryTopologyProposalV1 {
     pub fn validate(&self) -> Result<(), CognitiveContractError> {
         if self.predecessor_generation.next()? != self.next_generation {
             return Err(CognitiveContractError::Invalid(
@@ -1588,10 +1588,10 @@ canonical_contract!(
     PlasticityBatchV1::validate
 );
 canonical_contract!(
-    TopologyProposalV1,
-    "TopologyProposalV1",
+    MemoryTopologyProposalV1,
+    "MemoryTopologyProposalV1",
     65_536,
-    TopologyProposalV1::validate
+    MemoryTopologyProposalV1::validate
 );
 canonical_contract!(
     ForgetPropagationReceiptV1,
