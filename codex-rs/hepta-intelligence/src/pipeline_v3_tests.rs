@@ -463,10 +463,7 @@ fn cancellation_after_committed_host_handoff_applies_to_next_stage_only() {
         cancelled: Rc::clone(&cancelled),
     };
     let mut ports = Ports {
-        cancel_after: Some((
-            LaneFStageV3::HostHandoffAccepted,
-            Rc::clone(&cancelled),
-        )),
+        cancel_after: Some((LaneFStageV3::HostHandoffAccepted, Rc::clone(&cancelled))),
         ..Ports::default()
     };
     let receipt = run_composition_v3_with_control(request(false), &mut ports, &control)
@@ -484,7 +481,10 @@ fn cancellation_after_committed_host_handoff_applies_to_next_stage_only() {
         Some(StageOutcomeV3::Completed)
     );
     assert_eq!(
-        receipt.stages.last().map(|stage| (stage.stage, stage.outcome)),
+        receipt
+            .stages
+            .last()
+            .map(|stage| (stage.stage, stage.outcome)),
         Some((
             LaneFStageV3::LearningRecorded,
             StageOutcomeV3::Failed(PortFailureClassV3::Cancelled)

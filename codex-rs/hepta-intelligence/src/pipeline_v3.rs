@@ -1003,8 +1003,7 @@ where
                 Ok(StageAdvanceV3::Continue(output))
             } else {
                 let class = failure.class;
-                let terminal =
-                    append_failure_trace(stages, stage, producer, predecessor, failure)?;
+                let terminal = append_failure_trace(stages, stage, producer, predecessor, failure)?;
                 Ok(StageAdvanceV3::Terminal(class, terminal))
             }
         }

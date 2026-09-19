@@ -368,8 +368,7 @@ fn native_v3_owner_ports_traverse_real_owner_implementations_and_durable_ledger(
         host,
     );
 
-    let receipt =
-        run_composition_v3(run_request(snapshot, legal), &mut ports).expect("V3 run");
+    let receipt = run_composition_v3(run_request(snapshot, legal), &mut ports).expect("V3 run");
     assert_eq!(
         receipt.disposition,
         PipelineDispositionV3::HostHandoffAccepted
@@ -408,8 +407,7 @@ fn native_v3_rejects_candidate_universe_drift_before_owner_selection() {
         RecordingHost::default(),
     );
 
-    let receipt =
-        run_composition_v3(run_request(snapshot, legal), &mut ports).expect("receipt");
+    let receipt = run_composition_v3(run_request(snapshot, legal), &mut ports).expect("receipt");
     assert_eq!(
         receipt.disposition,
         PipelineDispositionV3::Failed(PortFailureClassV3::Rejected)

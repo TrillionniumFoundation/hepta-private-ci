@@ -217,11 +217,7 @@ impl<P: LaneFV3Ports> LaneFV3Ports for AgentdRuntimePorts<'_, P> {
             || input.snapshot_digest != envelope.snapshot_digest
             || input.predecessor_digest != envelope.envelope_digest
         {
-            return Err(agentd_handoff_failure(
-                input,
-                envelope,
-                "handoff-binding",
-            ));
+            return Err(agentd_handoff_failure(input, envelope, "handoff-binding"));
         }
 
         let proposal = self.inner.accept_host_envelope(input, envelope)?;
@@ -625,13 +621,12 @@ impl AgentRunCoordinator {
         let runtime = self
             .observe_terminal(run_id, expected_revision, phase, true)
             .map_err(IntelligenceTerminalClosureErrorV3::Runtime)?;
-        let learning =
-            append_outcome_credit_v1(closure, ledger).map_err(|error| {
-                IntelligenceTerminalClosureErrorV3::Learning {
-                    runtime: runtime.clone(),
-                    error,
-                }
-            })?;
+        let learning = append_outcome_credit_v1(closure, ledger).map_err(|error| {
+            IntelligenceTerminalClosureErrorV3::Learning {
+                runtime: runtime.clone(),
+                error,
+            }
+        })?;
         Ok(IntelligenceTerminalClosureReceiptV3 { runtime, learning })
     }
 

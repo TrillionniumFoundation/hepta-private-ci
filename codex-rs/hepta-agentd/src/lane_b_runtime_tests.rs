@@ -525,9 +525,7 @@ fn missing_runtime_run_fails_handoff_before_learning_stage() {
         .expect("terminal composition receipt");
     assert_eq!(
         receipt.composition.disposition,
-        codex_hepta_intelligence::PipelineDispositionV3::Failed(
-            PortFailureClassV3::Rejected
-        )
+        codex_hepta_intelligence::PipelineDispositionV3::Failed(PortFailureClassV3::Rejected)
     );
     assert!(receipt.runtime.is_none());
     assert!(!ports.calls.contains(&LaneFStageV3::LearningRecorded));
