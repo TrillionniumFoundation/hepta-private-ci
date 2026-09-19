@@ -43,7 +43,7 @@ library-only dependency and its values grant no runtime or effect authority.
 Generated language bindings, a durable/process-global schema service, production
 profile admission and product/runtime composition remain target-only. The current
 cross-language claim is limited to the frozen canonical V1 vectors, independently
-checked independently by Rust, Python and TypeScript code.
+checked by Rust, Python and TypeScript code.
 
 ## Known limits and non-claims
 
