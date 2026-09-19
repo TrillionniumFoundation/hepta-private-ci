@@ -154,6 +154,7 @@ pub fn revocation_admission_payload(revocation: &Revocation) -> Vec<u8> {
     push_id(&mut bytes, &revocation.record_id);
     push_id(&mut bytes, &revocation.target_record_id);
     push_id(&mut bytes, &revocation.authority_id);
+    bytes.extend_from_slice(revocation.reason_digest.as_array());
     bytes
 }
 
@@ -168,6 +169,7 @@ pub fn unlearning_admission_payload(lineage: &UnlearningLineageEventV1) -> Vec<u
     push_optional_id(&mut bytes, lineage.upstream_derived_id.as_ref());
     push_optional_digest(&mut bytes, lineage.upstream_derived_digest);
     push_id(&mut bytes, &lineage.authority_id);
+    bytes.extend_from_slice(lineage.reason_digest.as_array());
     bytes.extend_from_slice(lineage.source_digest.as_array());
     bytes.extend_from_slice(lineage.derived_digest.as_array());
     bytes
