@@ -31,6 +31,13 @@ pub use composition_v3::LegalActionCandidateV1;
 pub use composition_v3::build_legal_candidates;
 pub use composition_v3::prepare_intelligence_run_v3;
 
+mod native_ports_v3;
+
+pub use native_ports_v3::NativeCompositionInputsV3;
+pub use native_ports_v3::NativeCompositionPortsV3;
+pub use native_ports_v3::NativeNeuronStageV3;
+pub use native_ports_v3::NativeUtilityStageV3;
+
 mod learning_closure;
 
 pub use learning_closure::OutcomeCreditClosureErrorV1;
