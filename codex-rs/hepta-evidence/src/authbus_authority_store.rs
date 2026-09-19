@@ -94,7 +94,11 @@ impl HeptaEvidenceStore {
                 }
                 return Err(AuthBusAuthorityError::Conflict);
             }
-            if policy.revision != revision.checked_add(1).ok_or(AuthBusAuthorityError::StaleRevision)? {
+            if policy.revision
+                != revision
+                    .checked_add(1)
+                    .ok_or(AuthBusAuthorityError::StaleRevision)?
+            {
                 return Err(AuthBusAuthorityError::StaleRevision);
             }
         } else if policy.revision != 1 {
@@ -206,7 +210,11 @@ impl HeptaEvidenceStore {
                 tx.commit().await.map_err(classify_sqlx_error)?;
                 return Ok(current);
             }
-            if definition.revision != current.revision.checked_add(1).ok_or(AuthBusAuthorityError::StaleRevision)?
+            if definition.revision
+                != current
+                    .revision
+                    .checked_add(1)
+                    .ok_or(AuthBusAuthorityError::StaleRevision)?
                 || current.reserved != 0
                 || definition.limit < current.consumed
             {
@@ -278,7 +286,9 @@ impl HeptaEvidenceStore {
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
         time.validate(MAX_TRUSTED_TIME_UNCERTAINTY_MS)?;
         if expires_at_ms <= time.now_ms {
-            return Err(AuthBusAuthorityError::Invalid("reservation already expired"));
+            return Err(AuthBusAuthorityError::Invalid(
+                "reservation already expired",
+            ));
         }
         let candidate = QuotaReservation::new(
             reservation_id.clone(),
@@ -295,7 +305,9 @@ impl HeptaEvidenceStore {
             .await
             .map_err(classify_sqlx_error)?;
 
-        if let Some(existing) = load_reservation_by_identity(&mut tx, &reservation_id, &operation_id).await? {
+        if let Some(existing) =
+            load_reservation_by_identity(&mut tx, &reservation_id, &operation_id).await?
+        {
             if existing.reservation_digest == candidate.reservation_digest {
                 tx.commit().await.map_err(classify_sqlx_error)?;
                 return Ok(existing);
@@ -381,7 +393,11 @@ impl HeptaEvidenceStore {
             if let AuthBusSettlementOutcome::Applied { observed_cost } = outcome
                 && reservation.observed_cost == Some(observed_cost)
                 && reservation.settlement_digest
-                    == Some(reservation_digest_for_outcome(&reservation, terminal_evidence, outcome))
+                    == Some(reservation_digest_for_outcome(
+                        &reservation,
+                        terminal_evidence,
+                        outcome,
+                    ))
             {
                 tx.commit().await.map_err(classify_sqlx_error)?;
                 return Ok(reservation);
@@ -391,7 +407,11 @@ impl HeptaEvidenceStore {
         if reservation.state == ReservationState::Cancelled {
             if outcome == AuthBusSettlementOutcome::NotApplied
                 && reservation.settlement_digest
-                    == Some(reservation_digest_for_outcome(&reservation, terminal_evidence, outcome))
+                    == Some(reservation_digest_for_outcome(
+                        &reservation,
+                        terminal_evidence,
+                        outcome,
+                    ))
             {
                 tx.commit().await.map_err(classify_sqlx_error)?;
                 return Ok(reservation);
@@ -477,9 +497,10 @@ impl HeptaEvidenceStore {
                 .await
                 .map_err(classify_sqlx_error)?;
                 if updated.rows_affected() != 1 {
-                    return Err(
-                        EvidenceError::Corrupt("AuthBus reservation hold is missing".into()).into(),
-                    );
+                    return Err(EvidenceError::Corrupt(
+                        "AuthBus reservation hold is missing".into(),
+                    )
+                    .into());
                 }
                 sqlx::query(
                     "UPDATE authbus_quota_reservations
@@ -515,7 +536,9 @@ impl HeptaEvidenceStore {
     ) -> Result<u64, AuthBusAuthorityError> {
         time.validate(MAX_TRUSTED_TIME_UNCERTAINTY_MS)?;
         if limit == 0 || limit > 256 {
-            return Err(AuthBusAuthorityError::Invalid("expiry limit must be 1..=256"));
+            return Err(AuthBusAuthorityError::Invalid(
+                "expiry limit must be 1..=256",
+            ));
         }
         let mut tx = self
             .pool
@@ -584,9 +607,7 @@ fn decode_quota(
     })
 }
 
-fn decode_policy(
-    row: &sqlx::sqlite::SqliteRow,
-) -> Result<AuthPolicy, AuthBusAuthorityError> {
+fn decode_policy(row: &sqlx::sqlite::SqliteRow) -> Result<AuthPolicy, AuthBusAuthorityError> {
     let policy = AuthPolicy {
         policy_id: stable_id(row.try_get("policy_id").map_err(classify_sqlx_error)?)?,
         principal_id: stable_id(row.try_get("principal_id").map_err(classify_sqlx_error)?)?,
@@ -666,7 +687,10 @@ fn decode_reservation(
             .map_err(classify_sqlx_error)?
             .map(i64_to_u64)
             .transpose()?,
-        reservation_digest: digest(row.try_get("reservation_digest").map_err(classify_sqlx_error)?)?,
+        reservation_digest: digest(
+            row.try_get("reservation_digest")
+                .map_err(classify_sqlx_error)?,
+        )?,
         settlement_digest: row
             .try_get::<Option<Vec<u8>>, _>("settlement_digest")
             .map_err(classify_sqlx_error)?
