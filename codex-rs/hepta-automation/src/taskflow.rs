@@ -593,6 +593,12 @@ pub enum TaskFlowTransition {
         receipt_digest: Sha256Digest,
         outcome: TaskFlowReconcileOutcome,
     },
+    /// A provider-specific negative observation proves that the previous
+    /// attempt did not cross the effect seam. The exact historical fence may
+    /// therefore re-arm the same run for a fresh, separately recorded attempt.
+    ReconcileRetry {
+        receipt_digest: Sha256Digest,
+    },
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -1176,7 +1182,11 @@ impl AutomationStore {
         }
         let historical_fence_transition =
             (run.state == TaskFlowRunState::Indeterminate
-                && matches!(&command.transition, TaskFlowTransition::Reconcile { .. }))
+                && matches!(
+                    &command.transition,
+                    TaskFlowTransition::Reconcile { .. }
+                        | TaskFlowTransition::ReconcileRetry { .. }
+                ))
                 || matches!(&command.transition, TaskFlowTransition::Indeterminate { .. });
         if historical_fence_transition {
             // Indeterminate is fail-closed and grants no execution authority,
@@ -1471,6 +1481,17 @@ fn apply_transition(
             run.terminal_reason = Some("explicit_reconciliation".to_string());
             clear_lease(run);
         }
+        TaskFlowTransition::ReconcileRetry { receipt_digest } => {
+            if run.state != TaskFlowRunState::Indeterminate {
+                return Err(invalid_transition(
+                    "retry reconciliation requires indeterminate state",
+                ));
+            }
+            validate_digest(receipt_digest, "retry reconciliation receipt")?;
+            run.state = TaskFlowRunState::Running;
+            run.retry_at_ms = None;
+            run.terminal_reason = Some("negative_provider_observation".to_string());
+        }
     }
     Ok(())
 }
@@ -1494,6 +1515,7 @@ fn transition_name(transition: &TaskFlowTransition) -> &'static str {
         TaskFlowTransition::Fail { .. } => "failed",
         TaskFlowTransition::Indeterminate { .. } => "indeterminate",
         TaskFlowTransition::Reconcile { .. } => "reconciled",
+        TaskFlowTransition::ReconcileRetry { .. } => "reconciled_retry",
     }
 }
 
