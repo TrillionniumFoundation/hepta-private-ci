@@ -120,8 +120,10 @@ Restore to a new path first; do not overwrite the only surviving copy.
    must validate the schema and audit chain; a failure keeps the database
    quarantined.
 5. Compare the restored assignment/revocation frontier and external audit anchor
-   with independently retained values. A restore that would resurrect revoked or
-   superseded state is rejected.
+   with independently retained values. The anchor must match both the audit-chain
+   head and the deterministic durable owner-state snapshot digest; a restore that
+   would resurrect revoked/superseded state or silently rewrite owner tables is
+   rejected.
 6. Run focused owner tests and the applicable exact-source qualification against
    the intended binary.
 7. Only a separately authorized operator may switch a production caller to the
@@ -154,7 +156,10 @@ Critical production roles use distinct custodied keys. In particular,
 `source_authority`, `ci_executor`, `independent_evaluator` and
 `engineering_evidence_binder` may not be collapsed onto one HSM/KMS key even
 when that key is hardware backed; hardware custody does not replace identity
-separation.
+separation. Each custody receipt binds the subject signing identity, cryptographic
+algorithm, public-key digest and external attestation digest in addition to the
+provider/key identifier. The custody authority signer must remain distinct from
+the subject key it attests.
 
 A key rotation must:
 
