@@ -114,10 +114,9 @@ impl ObjectiveRuntimeHost {
         now_ms: u64,
     ) -> Result<(), AgentdError> {
         let trust = authbus_ingress::attached(agentd)?.trust(agentd)?;
-        let mut state = self
-            .state
-            .lock()
-            .map_err(|_| AgentdError::Protocol("objective runtime mutex is poisoned".to_string()))?;
+        let mut state = self.state.lock().map_err(|_| {
+            AgentdError::Protocol("objective runtime mutex is poisoned".to_string())
+        })?;
         ensure_coordinator(
             &mut state,
             agentd.identity(),
@@ -174,15 +173,13 @@ impl ObjectiveRuntimeHost {
             },
         };
 
-        let runtime_body_digest =
-            parse_digest(&request.body.runtime_body_digest, "runtime body")?;
+        let runtime_body_digest = parse_digest(&request.body.runtime_body_digest, "runtime body")?;
         let preference_state_digest =
             parse_digest(&request.body.preference_state_digest, "preference state")?;
         let model_tuple_digest = parse_digest(&request.body.model_tuple_digest, "model tuple")?;
         let prompt_registry_digest =
             parse_digest(&request.body.prompt_registry_digest, "prompt registry")?;
-        let artifact_set_digest =
-            parse_digest(&request.body.artifact_set_digest, "artifact set")?;
+        let artifact_set_digest = parse_digest(&request.body.artifact_set_digest, "artifact set")?;
         let run_id = StableId::new(&request.body.run_id)
             .map_err(|error| invalid(&format!("objective run id: {error}")))?;
         let authentication = RunStartAuthenticationV1 {
@@ -388,7 +385,9 @@ fn open_run_start_journal(
     if path.exists() {
         let metadata = std::fs::symlink_metadata(&path)?;
         if !metadata.is_file() || metadata.file_type().is_symlink() {
-            return Err(invalid("objective run-start journal must be a regular file"));
+            return Err(invalid(
+                "objective run-start journal must be a regular file",
+            ));
         }
     }
     let mut options = OpenOptions::new();
@@ -453,7 +452,10 @@ fn require_replay_admission(
     authentication: &RunStartAuthenticationV1,
     run_id: &StableId,
 ) -> Result<(), AgentdError> {
-    let key = (authentication.issuer_id.to_string(), authentication.key_epoch);
+    let key = (
+        authentication.issuer_id.to_string(),
+        authentication.key_epoch,
+    );
     let Some(highest) = state.highest_sequences.get(&key) else {
         return Ok(());
     };
@@ -570,7 +572,12 @@ fn authentication_is_current(
         },
         signature: auth.signature,
     };
-    match message.authenticate(&issuer, objective_scope(identity), auth.signed_body_digest, now_ms) {
+    match message.authenticate(
+        &issuer,
+        objective_scope(identity),
+        auth.signed_body_digest,
+        now_ms,
+    ) {
         Ok(_) => Ok(true),
         Err(AuthBusError::Expired | AuthBusError::Revoked | AuthBusError::IssuerMismatch) => {
             Ok(false)
