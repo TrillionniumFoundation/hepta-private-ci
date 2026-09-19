@@ -149,7 +149,9 @@ impl LegalActionCandidateSetV1 {
             self.support_floor_ppm,
             self.candidates.clone(),
         )?;
-        if rebuilt.candidate_set_digest != self.candidate_set_digest {
+        if rebuilt.candidates != self.candidates
+            || rebuilt.candidate_set_digest != self.candidate_set_digest
+        {
             return Err(IntelligenceContractErrorV1::DigestMismatch);
         }
         Ok(())
