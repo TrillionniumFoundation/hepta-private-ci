@@ -541,7 +541,7 @@ class EvidenceTests(unittest.TestCase):
             now_ns=self.now,
         )
         self.assertFalse(decision.eligible_for_independent_review)
-        self.assertIn("merge_tree_mismatch", decision.reasons)
+        self.assertIn("expected_merge_tree_mismatch", decision.reasons)
 
     def test_git_replace_objects_do_not_change_verified_identity(self) -> None:
         values = self.signed_receipts()
