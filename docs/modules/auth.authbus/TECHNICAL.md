@@ -36,9 +36,15 @@ Existing declared roots at this exact source snapshot:
 - `codex-rs/hepta-authbus`
 - `codex-rs/hepta-authbus-p1-3-qualification`
 
-Non-authoritative implementation evidence roots:
+Delegated implementation roots owned by dependencies:
 
-None.
+- `codex-rs/hepta-evidence` — durable replay/outbox plus policy, trust, quota,
+  reservation, settlement and checkpoint state under the `kernel.evidence` owner.
+- `codex-rs/hepta-agentd` — the restricted signed-text product integration
+  under the `runtime.agentd` owner.
+
+These are cross-owner implementation dependencies, not additional exclusive
+`auth.authbus` roots.
 
 Declared roots not yet present:
 
@@ -160,13 +166,18 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/auth.authbus.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-authbus/src/lib.rs](../../../codex-rs/hepta-authbus/src/lib.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/auth.authbus.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-authbus/src/lib.rs](../../../codex-rs/hepta-authbus/src/lib.rs), the EvidenceStore authority/outbox components and the linked host integrations.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-The native signed-admission verifier is embedded into the host; deliver issuer/replay trust through protected host configuration. Its signed text boundary is distinct from the broader policy/quota/settlement target below. Real economic quota ownership and provider settlement must be connected explicitly before those capabilities are claimed.
+The signed-admission verifier is embedded into the host. Durable issuer/key
+revisions, policy decisions and quota/reservation accounting now reuse the
+existing EvidenceStore owner. The signed-text Agentd boundary remains a narrow
+queue caller, not a general effect dispatcher. Production hosts must still bind
+the policy/quota decision and final-use authority immediately around the real
+effect boundary, and must provide independently governed time/checkpoint inputs.
 
 Current operating and state-format references:
 
@@ -239,7 +250,7 @@ For `auth.authbus`, this document grants no runtime, production, model, provider
 - `cross_owner_write`
 - `unbounded_resource_or_retry`
 
-## 16. V8.2 pre-coding implementation-readiness overlay
+## 16. V8.2 readiness overlay on the v8.0 parent plan
 
 The canonical readiness overlay binds `auth.authbus` to primary lane `LANE-A-FOUNDATION`. The following implementation-level specifications are mandatory alongside Sections 1–15:
 

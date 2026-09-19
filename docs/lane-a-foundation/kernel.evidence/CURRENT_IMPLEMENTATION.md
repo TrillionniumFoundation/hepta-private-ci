@@ -8,8 +8,11 @@ provider intent/terminal/effect records, bounded summaries and integrity-aware
 open paths. Equal content is idempotent; reused identity with different content
 conflicts.
 
-The checked-in migration lineage is exactly `0001` through `0010` as documented
-in `STORE_V1.md`. Migration `0009` adds the AuthBus signed-admission replay table; `0010` adds its bounded transactional message outbox, immutable payloads and fenced leases.
+The checked-in migration lineage is exactly `0001` through `0011` as documented
+in `STORE_V1.md`. Migration `0009` adds the AuthBus signed-admission replay
+table; `0010` adds its bounded transactional message outbox, immutable payloads
+and fenced leases; `0011` adds durable policy/trust revisions, quota and
+reservation accounting, settlement state and replay-checkpoint metadata.
 
 ## Public symbols and source bindings
 

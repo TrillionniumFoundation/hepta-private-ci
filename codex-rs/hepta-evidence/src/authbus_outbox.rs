@@ -1,6 +1,8 @@
 use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_authbus::SignedMessage;
+use codex_hepta_authbus::TrustedTime;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use sqlx::Sqlite;
 use sqlx::Transaction;
@@ -26,6 +28,72 @@ impl HeptaEvidenceStore {
         expected_scope: Digest32,
         payload: &[u8],
     ) -> Result<AuthBusDeliveryStatus, AuthBusOutboxError> {
+        self.enqueue_authbus_message_at(
+            issuer,
+            message,
+            expected_subject,
+            expected_scope,
+            payload,
+            None,
+        )
+        .await
+    }
+
+    /// Durable enqueue using a bounded host-provided trusted-time observation.
+    pub async fn enqueue_authbus_message_with_trusted_time(
+        &self,
+        issuer: &IssuerRegistration,
+        message: &SignedMessage,
+        expected_subject: &StableId,
+        expected_scope: Digest32,
+        payload: &[u8],
+        time: &TrustedTime,
+    ) -> Result<AuthBusDeliveryStatus, AuthBusOutboxError> {
+        time.validate(5_000)?;
+        self.enqueue_authbus_message_at(
+            issuer,
+            message,
+            expected_subject,
+            expected_scope,
+            payload,
+            Some(time.now_ms),
+        )
+        .await
+    }
+
+    /// Resolve the trusted key/revocation revision from the durable owner before
+    /// enqueue. Incoming message fields never become issuer registration.
+    pub async fn enqueue_authbus_message_managed(
+        &self,
+        issuer_id: &StableId,
+        key_epoch: Generation,
+        message: &SignedMessage,
+        expected_subject: &StableId,
+        expected_scope: Digest32,
+        payload: &[u8],
+        time: &TrustedTime,
+    ) -> Result<AuthBusDeliveryStatus, AuthBusOutboxError> {
+        let (issuer, _) = self.resolve_authbus_trust(issuer_id, key_epoch).await?;
+        self.enqueue_authbus_message_with_trusted_time(
+            &issuer,
+            message,
+            expected_subject,
+            expected_scope,
+            payload,
+            time,
+        )
+        .await
+    }
+
+    async fn enqueue_authbus_message_at(
+        &self,
+        issuer: &IssuerRegistration,
+        message: &SignedMessage,
+        expected_subject: &StableId,
+        expected_scope: Digest32,
+        payload: &[u8],
+        trusted_now_ms: Option<u64>,
+    ) -> Result<AuthBusDeliveryStatus, AuthBusOutboxError> {
         if payload.len() > AUTHBUS_OUTBOX_MAX_PAYLOAD_BYTES {
             return Err(AuthBusOutboxError::InvalidRequest("payload exceeds 16 KiB"));
         }
@@ -37,7 +105,11 @@ impl HeptaEvidenceStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
-        let now = now_millis()?;
+        let now = match trusted_now_ms {
+            Some(now) => i64::try_from(now)
+                .map_err(|_| EvidenceError::Unavailable("trusted clock overflow".into()))?,
+            None => now_millis()?,
+        };
         let authenticated = message
             .authenticate(
                 issuer,
@@ -73,6 +145,17 @@ impl HeptaEvidenceStore {
         }
         advance_replay(&mut tx, &authenticated).await?;
         maintain(&mut tx, now).await?;
+        let active_for_issuer: i64 = sqlx::query_scalar(
+            "SELECT COUNT(*) FROM authbus_outbox
+             WHERE issuer_id = ? AND state IN ('queued', 'leased')",
+        )
+        .bind(c.issuer_id.as_str())
+        .fetch_one(&mut *tx)
+        .await
+        .map_err(classify_sqlx_error)?;
+        if active_for_issuer >= AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER {
+            return Err(AuthBusOutboxError::Capacity);
+        }
         let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_outbox")
             .fetch_one(&mut *tx)
             .await

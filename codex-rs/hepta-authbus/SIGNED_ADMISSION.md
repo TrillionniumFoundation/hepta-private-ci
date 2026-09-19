@@ -25,8 +25,11 @@ receipt. It remains ordinary evidence data, not an unforgeable capability. The
 issuer registration is a snapshot: a queued admission refreshes time after the
 SQLite lock, but final-use authorization must also refresh revocation/epoch.
 Commit-before-response failure consumes the sequence, so this is at-most-once
-admission, not durable message delivery. The host's trust provisioning, replay-key
-retirement and backup rollback protection are not created by this API.
+admission, not durable message delivery. The compatibility API does not create trust provisioning or rollback protection.
+The EvidenceStore authority extension supplies a managed issuer/key registry,
+trusted-time admission variants, replay-root checkpoints and guarded replay-key
+retirement. Rollback resistance still requires the checkpoint itself to be
+retained independently of the SQLite lineage.
 
 Run `just test -p codex-hepta-authbus -p codex-hepta-evidence` for signed-field
 substitution, expiry/revocation, real SQLite reopen, two-handle contention and
@@ -79,9 +82,11 @@ Bounds are 4,096 total rows, 16 KiB payload per row (at most 64 MiB payload),
 Expiry is swept on enqueue/recovery scans. Terminal records (`Acked`, `Expired`,
 `Quarantined`) retain at most 1,024 rows or 24 hours and can be pruned earlier
 under queue pressure. The DB forbids deleting active queued/leased messages.
-Replay high-water rows are never pruned by this policy: their separate 16,384-key
-bound can still reject new identities until a separately defined safe registry
-retirement policy exists. Quarantine and expiry are terminal outcomes, not ack.
+Replay high-water rows are never pruned by outbox retention. Explicit replay-key
+retirement is allowed only for a revoked issuer epoch with no active delivery and
+an exact independently retained pre-retirement checkpoint. Retirement installs a
+post-retirement checkpoint handoff fence; no new replay identity can advance
+until an independent store acknowledges the new root. Quarantine and expiry are terminal outcomes, not ack.
 
 Only exact retained enqueue is idempotent. After a lost ack response, inspect
 status: `Acked` plus the acknowledgement digest records the local commit;

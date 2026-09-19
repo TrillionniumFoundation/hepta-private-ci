@@ -1,9 +1,11 @@
 #![forbid(unsafe_code)]
 
+mod authbus_authority_store;
 mod authbus_outbox;
 mod authbus_outbox_record;
 mod authbus_outbox_worker;
 mod authbus_store;
+mod authbus_trust_store;
 mod canonical;
 mod governance_store;
 mod governance_validation;
@@ -17,6 +19,10 @@ mod schema_validation;
 mod store;
 mod summary;
 
+pub use authbus_authority_store::AuthBusAuthorityError;
+pub use authbus_authority_store::AuthBusQuotaStatus;
+pub use authbus_authority_store::AuthBusSettlementOutcome;
+pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ACTIVE_PER_ISSUER;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ATTEMPTS;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_LEASE_MS;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_PAYLOAD_BYTES;
@@ -28,6 +34,7 @@ pub use authbus_outbox_record::AuthBusDeliveryStatus;
 pub use authbus_outbox_record::AuthBusLease;
 pub use authbus_outbox_record::AuthBusOutboxError;
 pub use authbus_store::AuthBusAdmissionError;
+pub use authbus_trust_store::AuthBusTrustRevision;
 pub use historical::HISTORICAL_EVIDENCE_SCHEMA_VERSION;
 pub use historical::HistoricalEvidenceFamily;
 pub use historical::HistoricalEvidenceRecord;
@@ -100,3 +107,11 @@ mod authbus_outbox_tests;
 #[cfg(test)]
 #[path = "authbus_outbox_quarantine_tests.rs"]
 mod authbus_outbox_quarantine_tests;
+
+#[cfg(test)]
+#[path = "authbus_authority_store_tests.rs"]
+mod authbus_authority_store_tests;
+
+#[cfg(test)]
+#[path = "authbus_trust_store_tests.rs"]
+mod authbus_trust_store_tests;

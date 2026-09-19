@@ -1,5 +1,6 @@
 use codex_hepta_authbus::Error;
 use codex_hepta_authbus::SignedMessageClaims;
+use codex_hepta_authbus::TrustedTime;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_state::SqliteConfig;
@@ -45,6 +46,7 @@ async fn admit(
         .admit_authbus_message(
             &issuer,
             &message,
+            &message.claims.subject_id,
             message.claims.scope_digest,
             message.claims.payload_digest,
         )
@@ -96,6 +98,7 @@ async fn rejected_authentication_does_not_consume_sequence() {
         .admit_authbus_message(
             &issuer,
             &message,
+            &message.claims.subject_id,
             message.claims.scope_digest,
             message.claims.payload_digest,
         )
@@ -132,4 +135,110 @@ async fn capacity_failure_does_not_burn_a_new_replay_key() {
         .await
         .unwrap();
     admit(&store, 1).await.unwrap();
+}
+
+#[tokio::test]
+async fn direct_admission_rejects_host_subject_mismatch_without_consuming_sequence() {
+    let temp = TempDir::new().unwrap();
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+    let (issuer, message) = fixture(1);
+    let other = StableId::new("subject:other").unwrap();
+    assert!(matches!(
+        store
+            .admit_authbus_message(
+                &issuer,
+                &message,
+                &other,
+                message.claims.scope_digest,
+                message.claims.payload_digest,
+            )
+            .await,
+        Err(AuthBusAdmissionError::Authentication(Error::SubjectMismatch))
+    ));
+    admit(&store, 1).await.unwrap();
+}
+
+#[tokio::test]
+async fn managed_admission_uses_durable_trust_and_bounded_trusted_time() {
+    let temp = TempDir::new().unwrap();
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+    let (issuer, message) = fixture(1);
+    let trusted_time = TrustedTime {
+        source_id: StableId::new("clock:managed").unwrap(),
+        generation: 1,
+        now_ms: 1_000,
+        uncertainty_ms: 0,
+    };
+    store
+        .publish_authbus_trust(&issuer, 1, &trusted_time)
+        .await
+        .unwrap();
+    let receipt = store
+        .admit_authbus_message_managed(
+            &issuer.issuer_id,
+            issuer.key_epoch,
+            &message,
+            &message.claims.subject_id,
+            message.claims.scope_digest,
+            message.claims.payload_digest,
+            &trusted_time,
+        )
+        .await
+        .unwrap();
+    assert_eq!(receipt.sequence, 1);
+
+    let revoked = IssuerRegistration {
+        revoked: true,
+        ..issuer
+    };
+    let later = TrustedTime {
+        now_ms: 1_100,
+        ..trusted_time
+    };
+    store
+        .publish_authbus_trust(&revoked, 2, &later)
+        .await
+        .unwrap();
+    let (_, message) = fixture(2);
+    assert!(matches!(
+        store
+            .admit_authbus_message_managed(
+                &revoked.issuer_id,
+                revoked.key_epoch,
+                &message,
+                &message.claims.subject_id,
+                message.claims.scope_digest,
+                message.claims.payload_digest,
+                &later,
+            )
+            .await,
+        Err(AuthBusAdmissionError::Authentication(Error::Revoked))
+    ));
+}
+
+#[tokio::test]
+async fn replay_admission_is_fenced_while_external_checkpoint_ack_is_pending() {
+    let temp = TempDir::new().unwrap();
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+    sqlx::query(
+        "INSERT INTO authbus_replay_checkpoint_pending
+         (singleton, minimum_generation, replay_root, created_at_ms)
+         VALUES (1, 2, ?, 1000)",
+    )
+    .bind(Digest32::of_bytes(b"pending-root").as_array().as_slice())
+    .execute(&store.pool)
+    .await
+    .unwrap();
+
+    assert!(matches!(
+        admit(&store, 1).await,
+        Err(AuthBusAdmissionError::Authentication(
+            Error::ExternalCheckpointRequired
+        ))
+    ));
+    let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_replay_sequences")
+        .fetch_one(&store.pool)
+        .await
+        .unwrap();
+    assert_eq!(count, 0);
 }
