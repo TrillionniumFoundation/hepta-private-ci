@@ -75,7 +75,14 @@ def schedule(
     completed: Iterable[str],
     active_leases: Iterable[PathLease],
     maximum_assignments: int = MAX_ASSIGNMENTS,
+    *,
+    compatibility_only: bool = False,
 ) -> ScheduleReceipt:
+    """Legacy fixture scheduler; new callers must use v2 plan_engineering_work."""
+    if compatibility_only is not True:
+        raise ValueError(
+            "legacy scheduler disabled; use control_engineering_v2.plan_engineering_work"
+        )
     package_list = tuple(packages)
     lease_list = tuple(active_leases)
     if len(package_list) > MAX_PACKAGES:
