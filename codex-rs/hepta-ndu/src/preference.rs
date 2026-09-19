@@ -352,9 +352,7 @@ fn normalize_preference_values(values: &mut [AxisValue]) -> Result<(), NduError>
     let minimum = FixedQ32::from_raw(-FixedQ32::ONE.raw());
     for value in values.iter() {
         if value.value < minimum || value.value > FixedQ32::ONE {
-            return Err(NduError::PreferenceValueOutOfRange(
-                value.axis.to_string(),
-            ));
+            return Err(NduError::PreferenceValueOutOfRange(value.axis.to_string()));
         }
     }
     values.sort();
