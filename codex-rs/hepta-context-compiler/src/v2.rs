@@ -174,6 +174,7 @@ pub struct ContextAdmissionBindingV2 {
     pub content_digest: Digest32,
     pub source_digest: Digest32,
     pub generation_vector_digest: Digest32,
+    pub contains_secret: bool,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -184,6 +185,7 @@ pub struct ContextAdmissionRecordV2 {
     pub content_digest: Digest32,
     pub source_digest: Digest32,
     pub generation_vector_digest: Digest32,
+    pub contains_secret: bool,
     pub issued_unix_ms: u64,
     pub expires_unix_ms: u64,
     pub record_digest: Digest32,
@@ -203,6 +205,7 @@ impl ContextAdmissionRecordV2 {
             content_digest: binding.content_digest,
             source_digest: binding.source_digest,
             generation_vector_digest: binding.generation_vector_digest,
+            contains_secret: binding.contains_secret,
             issued_unix_ms,
             expires_unix_ms,
             record_digest: Digest32::ZERO,
@@ -240,6 +243,7 @@ impl ContextAdmissionRecordV2 {
         push_digest(&mut bytes, self.content_digest);
         push_digest(&mut bytes, self.source_digest);
         push_digest(&mut bytes, self.generation_vector_digest);
+        bytes.push(u8::from(self.contains_secret));
         push_u64(&mut bytes, self.issued_unix_ms);
         push_u64(&mut bytes, self.expires_unix_ms);
         Digest32::of_bytes(&bytes)
@@ -381,6 +385,7 @@ pub struct VerifiedAdmissionV2 {
     content_digest: Digest32,
     source_digest: Digest32,
     generation_vector_digest: Digest32,
+    contains_secret: bool,
     expires_unix_ms: u64,
     verifier_digest: Digest32,
     verified_snapshot_digest: Digest32,
@@ -431,6 +436,11 @@ impl VerifiedAdmissionV2 {
                 item_id.to_string(),
             ));
         }
+        if self.contains_secret {
+            return Err(ContextCompilerV2Error::SecretRejected(
+                item_id.to_string(),
+            ));
+        }
         if self.verification_digest != self.compute_verification_digest() {
             return Err(ContextCompilerV2Error::DigestMismatch(
                 "verified_admission",
@@ -475,6 +485,7 @@ impl VerifiedAdmissionV2 {
         push_digest(&mut bytes, self.content_digest);
         push_digest(&mut bytes, self.source_digest);
         push_digest(&mut bytes, self.generation_vector_digest);
+        bytes.push(u8::from(self.contains_secret));
         push_u64(&mut bytes, self.expires_unix_ms);
         push_digest(&mut bytes, self.verifier_digest);
         push_digest(&mut bytes, self.verified_snapshot_digest);
@@ -522,6 +533,11 @@ pub fn verify_admission_v2(
             record.admission_id.to_string(),
         ));
     }
+    if record.contains_secret {
+        return Err(ContextCompilerV2Error::SecretRejected(
+            record.item_id.to_string(),
+        ));
+    }
     let mut verified = VerifiedAdmissionV2 {
         admission_id: record.admission_id,
         item_id: record.item_id,
@@ -529,6 +545,7 @@ pub fn verify_admission_v2(
         content_digest: record.content_digest,
         source_digest: record.source_digest,
         generation_vector_digest: record.generation_vector_digest,
+        contains_secret: record.contains_secret,
         expires_unix_ms: record.expires_unix_ms,
         verifier_digest,
         verified_snapshot_digest: snapshot.snapshot_digest(),
@@ -596,7 +613,6 @@ pub struct ContextCandidateV2 {
     pub tokenization: TokenizationReceiptV2,
     pub expected_value: FixedQ32,
     pub admission: VerifiedAdmissionV2,
-    pub contains_secret: bool,
 }
 
 impl ContextCandidateV2 {
@@ -632,11 +648,6 @@ impl ContextCandidateV2 {
         }
         if self.expected_value < FixedQ32::ZERO || self.expected_value > FixedQ32::ONE {
             return Err(ContextCompilerV2Error::ValueOutOfRange(
-                self.item_id.to_string(),
-            ));
-        }
-        if self.contains_secret {
-            return Err(ContextCompilerV2Error::SecretRejected(
                 self.item_id.to_string(),
             ));
         }
@@ -1741,7 +1752,6 @@ fn compute_candidate_set_digest<'a>(
         push_digest(&mut bytes, candidate.tokenization.receipt_digest());
         push_i64(&mut bytes, candidate.expected_value.raw());
         push_digest(&mut bytes, candidate.admission.verification_digest());
-        bytes.push(u8::from(candidate.contains_secret));
     }
     Digest32::of_bytes(&bytes)
 }
