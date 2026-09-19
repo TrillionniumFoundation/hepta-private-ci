@@ -523,6 +523,34 @@ impl ProductionDurableWriter {
         )
     }
 
+    /// Prepare a complete kernel operation and publish its outbox identity in
+    /// the same durable SQLite transaction.
+    pub async fn prepare_operation(
+        &self,
+        operation: OperationIntent,
+        topic: impl Into<String>,
+        payload_json: impl Into<String>,
+    ) -> Result<ProductionQueuedReceipt, ProductionWriterError> {
+        self.verify_authority().await?;
+        let topic = topic.into();
+        let payload_json = payload_json.into();
+        let admission = self
+            .lease
+            .admit_operation(operation, &topic, &payload_json)
+            .await?;
+        let (receipt, replayed) = match admission {
+            LocalAdmission::Queued(receipt) => (receipt, false),
+            LocalAdmission::Replay(receipt) => (receipt, true),
+        };
+        ProductionQueuedReceipt::from_local(
+            &self.authority,
+            &topic,
+            &payload_json,
+            receipt,
+            replayed,
+        )
+    }
+
     pub async fn recover(
         &self,
         occurrence_key: impl Into<String>,
@@ -779,6 +807,18 @@ impl ProductionDurableWriter {
             idempotency_key: receipt.occurrence_key.clone(),
             operation_digest: operation_digest(&self.authority, &receipt),
         };
+        self.lease
+            .verify_operation_dispatch_binding(
+                &receipt.occurrence_key,
+                target.destination_id(),
+            )
+            .await
+            .map_err(|error| match error {
+                LocalLeaseOutboxError::StaleFence(_)
+                | LocalLeaseOutboxError::IllegalTransition(_)
+                | LocalLeaseOutboxError::CasConflict(_) => ProductionWriterError::StaleReceipt,
+                other => ProductionWriterError::Local(other),
+            })?;
         verify_final_use_dispatch_binding(
             self.store.owner_agent_id(),
             target.destination_id(),
