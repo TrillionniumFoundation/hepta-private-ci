@@ -34,6 +34,7 @@ use crate::LocalLeaseOutboxError;
 use crate::LocalOutcomeReceipt;
 use crate::LocalOutcomeState;
 use crate::LocalReplayFinalization;
+use crate::LocalReconcileOutcome;
 use crate::QueuedReceipt;
 use crate::local_lease_outbox::dispatch_operation_digest;
 
@@ -407,10 +408,41 @@ impl ProductionDurableWriter {
                     .reopen_host_bound_lease(head, binding.0, binding.1, binding.2)
                     .await?
             }
-            (LocalLeaseHeadDisposition::ExpiredActive, Some(_)) => {
-                return Err(ProductionWriterError::AuthorityExpired {
-                    deadline: authority.lease_expires_at_unix_seconds,
-                });
+            (LocalLeaseHeadDisposition::ExpiredActive, Some(head)) => {
+                // The new authority has already been independently verified
+                // and is live. Close the exact expired predecessor first,
+                // preserving its unresolved occurrences, then acquire the
+                // successor generation through the append-only head CAS.
+                // No outbox row is dispatched during takeover.
+                let previous_authority_epoch =
+                    head.authority_epoch.ok_or(ProductionWriterError::StaleReceipt)?;
+                let previous_owner_epoch =
+                    head.owner_epoch.ok_or(ProductionWriterError::StaleReceipt)?;
+                let previous_expiry = head
+                    .lease_expires_at_unix_seconds
+                    .ok_or(ProductionWriterError::StaleReceipt)?;
+                let expired = store
+                    .reopen_host_bound_lease(
+                        head,
+                        previous_authority_epoch,
+                        previous_owner_epoch,
+                        previous_expiry,
+                    )
+                    .await?
+                    .expire_lease()
+                    .await?;
+                store
+                    .acquire_host_bound_lease_after_head(
+                        &lease_id,
+                        expired,
+                        binding.0,
+                        binding.1,
+                        generation,
+                        fencing_token,
+                        binding.2,
+                    )
+                    .await?
+                    .into_handle()
             }
             (
                 LocalLeaseHeadDisposition::Released | LocalLeaseHeadDisposition::RolledBack,
@@ -508,6 +540,20 @@ impl ProductionDurableWriter {
     ) -> Result<LocalOutcomeState, ProductionWriterError> {
         self.verify_authority().await?;
         Ok(self.lease.status(occurrence_key).await?)
+    }
+
+    /// Reconcile an indeterminate occurrence under the current durable fence.
+    ///
+    /// The local journal permits this across an expired-owner handoff only
+    /// after the predecessor fence is durably terminal. This method never
+    /// dispatches a queued row.
+    pub async fn reconcile(
+        &self,
+        occurrence_key: impl Into<String>,
+        outcome: LocalReconcileOutcome,
+    ) -> Result<ProductionOutcomeReceipt, ProductionWriterError> {
+        self.verify_authority().await?;
+        Ok(self.lease.reconcile(occurrence_key, outcome).await?.into())
     }
 
     pub async fn mark_indeterminate(
