@@ -36,8 +36,10 @@ Local model execution:
   input; and performs bounded unload/kill cleanup. Each load receives only the
   worker grant's remaining unreserved memory, and aggregate live model
   reservations may not exceed the worker grant.
-- A named local-model product caller is still absent. The local source path is
-  therefore not a deployed/product-composed resource-authority boundary yet.
+- A named local-model product caller is still absent. The kernel-backed
+  resource verifier exists in source, but it is not yet composed with protected
+  local runtime/artifact/device configuration and lifecycle fencing in a
+  deployed product host.
 
 The `hepta-infer-worker --profile native-app-server` CLI remains an explicit
 operator/qualification surface. Possessing CLI access is not production
@@ -53,16 +55,18 @@ There are two different authority objects and they must not be conflated.
    immediately enters the durable dispatch-intent boundary. Planning in
    `hepta-inferd::plan` remains `DENY_ALL`.
 2. Local resource admission uses `VerifiedResourceGrant`. A raw
-   `ResourceGrant` is data, not proof of authenticity. External callers must
-   pass it through a trusted `ResourceGrantVerifier` that returns an
-   authenticated authority identity and evidence digest. The
+   `ResourceGrant` is data, not proof of authenticity. The concrete
+   `FinalUseResourceGrantVerifier` reuses kernel `FinalUseAuthority`: an
+   independently signed capability binds the complete resource-grant fields to
+   the exact worker identity/generation, validates current kernel
+   epoch/revocation and consumes a durable single-use nonce before the verified
+   grant can construct that worker generation. The
    `TrustedInProcess` constructor is crate-private and only covers an
    explicitly shared trusted process boundary. `VerifiedResourceGrant` is a
    verification snapshot, not a live revocation subscription: a production
-   local-model caller must check current authority epoch/revocation before
-   constructing a worker generation and must fence/replace that generation when
-   its resource authority is withdrawn. Reusing the snapshot across an authority
-   change is not a supported trust model.
+   local-model caller must fence/replace the generation when its resource
+   authority is later withdrawn. Reusing the snapshot to create another
+   generation or across an authority change is not a supported trust model.
 
 Neither path grants fleet mutation, grant issuance, model installation or
 permission to widen another module's authority.
