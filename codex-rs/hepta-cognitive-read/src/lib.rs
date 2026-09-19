@@ -3,6 +3,7 @@
 #![forbid(unsafe_code)]
 
 mod authoritative;
+mod ids;
 mod v2;
 
 use std::collections::BTreeMap;
@@ -16,6 +17,7 @@ use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
 pub use authoritative::AuthoritativeCognitiveSnapshotProvider;
 pub use authoritative::AuthoritativeReadResultV1;
@@ -23,6 +25,13 @@ pub use authoritative::AuthoritativeSnapshotV1;
 pub use authoritative::SnapshotAcquisitionRequestV1;
 pub use authoritative::SnapshotProviderError;
 pub use authoritative::read_authoritative;
+pub use ids::MAX_READ_IDS_V1;
+pub use ids::ReadFieldV1;
+pub use ids::ReadIdsError;
+pub use ids::ReadIdsRequestV1;
+pub use ids::ReadIdsResultV1;
+pub use ids::ReadProjectionRecordV1;
+pub use ids::read_ids_v1;
 pub use v2::MAX_ENCODED_READ_RESULT_BYTES_V2;
 pub use v2::ReadRequestV2;
 pub use v2::ReadResultV2;
@@ -63,22 +72,16 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
-pub fn read(snapshot: &CognitiveSnapshot, request: ReadRequest) -> Result<ReadReceipt, Error> {
-    if request.snapshot_digest != snapshot.snapshot_digest {
+pub(crate) fn current_records<'a>(
+    snapshot: &'a CognitiveSnapshot,
+    expected_digest: Digest32,
+) -> Result<BTreeMap<StableId, &'a MemoryRecord>, Error> {
+    if expected_digest != snapshot.snapshot_digest {
         return Err(Error::SnapshotMismatch);
-    }
-    if request.maximum_results == 0 || request.maximum_results > MAX_RESULTS {
-        return Err(Error::InvalidMaximumResults);
     }
     snapshot
         .validate_integrity()
         .map_err(|_| Error::SnapshotMismatch)?;
-    let mut allowed = BTreeSet::new();
-    for kind in request.allowed_kinds {
-        if !allowed.insert(kind) {
-            return Err(Error::DuplicateKind);
-        }
-    }
 
     // The owning store makes a tombstone terminal. Preserve that invariant
     // when reading a caller-supplied snapshot. Every complete resurrection
@@ -106,15 +109,33 @@ pub fn read(snapshot: &CognitiveSnapshot, request: ReadRequest) -> Result<ReadRe
         }
     }
 
-    // Project the current revision before filtering. A tombstone or kind
-    // change must not make an older matching revision visible again.
+    // Resolve the current revision before any caller-specific filtering. A
+    // tombstone or kind change must never make an older revision visible again.
     let mut current = BTreeMap::new();
     for record in &snapshot.records {
-        let latest = current.entry(&record.record_id).or_insert(record);
+        let latest = current.entry(record.record_id.clone()).or_insert(record);
         if record.revision > latest.revision {
             *latest = record;
         }
     }
+    Ok(current)
+}
+
+pub fn read(snapshot: &CognitiveSnapshot, request: ReadRequest) -> Result<ReadReceipt, Error> {
+    if request.snapshot_digest != snapshot.snapshot_digest {
+        return Err(Error::SnapshotMismatch);
+    }
+    if request.maximum_results == 0 || request.maximum_results > MAX_RESULTS {
+        return Err(Error::InvalidMaximumResults);
+    }
+    let mut allowed = BTreeSet::new();
+    for kind in request.allowed_kinds {
+        if !allowed.insert(kind) {
+            return Err(Error::DuplicateKind);
+        }
+    }
+
+    let current = current_records(snapshot, request.snapshot_digest)?;
     let mut eligible = current
         .into_values()
         .filter(|record| {
@@ -159,3 +180,7 @@ mod tests;
 #[cfg(test)]
 #[path = "tombstone_resurrection_tests.rs"]
 mod tombstone_resurrection_tests;
+
+#[cfg(test)]
+#[path = "ids_tests.rs"]
+mod ids_tests;
