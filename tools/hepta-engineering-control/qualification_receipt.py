@@ -81,7 +81,8 @@ def command_records(directory: Path) -> list[dict[str, object]]:
                 "name": path.name,
                 "bytes": len(data),
                 "sha256": hashlib.sha256(data).hexdigest(),
-                "exitCode": value.get("exitCode", value.get("exit_code")),
+                "status": value.get("status"),
+                "exitCode": value.get("exit_code"),
             }
         )
     if not rows:
@@ -123,10 +124,13 @@ def main() -> int:
     else:
         if tested in {base, source} or parents != (base, source):
             fail("synthetic merge parent order mismatch")
+        expected_merge_tree = git(root, "merge-tree", "--write-tree", base, source)
+        if tested_tree != expected_merge_tree:
+            fail("synthetic merge tree mismatch")
 
     records = command_records(args.records)
-    if any(row["exitCode"] not in (0, None) for row in records):
-        fail("a command record reports failure")
+    if any(row["status"] != "passed" or row["exitCode"] != 0 for row in records):
+        fail("a command record is not a passing execution")
     body = {
         "schema": SCHEMA,
         "status": "observed_not_independently_signed",
