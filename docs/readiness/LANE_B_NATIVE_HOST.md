@@ -24,7 +24,9 @@ Lifecycle state has an owner-private bounded recovery projection under the Agent
 
 The control socket remains bounded. Normal connection capacity is 32; four separately bounded overload responders return typed `overloaded` responses when possible, after which saturation still fails closed instead of allocating an unbounded queue.
 
-This closes the library-only lifecycle and silent-overload gaps, but it does **not** complete C1. The ordinary non-test Codex turn path still has to call the lifecycle API at actual admission/context/dispatch/terminal boundaries, and `RunCancel`/deadline cancellation intent still has to invoke the real App Server interrupt and observe matching terminal acknowledgement. Until that wiring exists, a `Cancelling` lifecycle record is intent rather than proof of physical interruption.
+The named `hepta-infer-worker --profile native-app-server` caller now drives this lifecycle around a real App Server turn. It freezes the run before `turn/start`, records the dispatch boundary, maps matching provider completion into Agentd terminal state, and on cancellation/deadline records cancellation intent before sending the real `TurnInterrupt`; after the bounded grace window it records a matching terminal outcome or `indeterminate`. Turn/start acknowledgement loss is also reconciled as `indeterminate` and is never replayed.
+
+This closes the library-only lifecycle, silent-overload and first named non-test caller gaps, but universal per-Agent lifecycle coverage is still open. `hepta-matrixd` and any future direct `SessionIngress` product caller can still reach App Server queue/turn execution without this lifecycle unless they compose the same API or an equivalent host-side hook. A bare `RunCancel` outside the native inference composition remains durable intent rather than proof of physical interruption.
 
 ## Canonical memory to actual model execution
 
