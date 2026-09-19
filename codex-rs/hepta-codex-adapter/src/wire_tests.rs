@@ -87,3 +87,35 @@ fn wire_v2_rejects_unknown_fields_and_payload_binding_drift(
     ));
     Ok(())
 }
+
+#[test]
+fn runtime_codex_wire_rejects_foreign_producer_before_adapter_logic(
+) -> Result<(), Box<dyn StdError>> {
+    let digest = Digest32::of_bytes(b"payload");
+    let intent = CodexOperationIntent {
+        operation_id: id("operation.producer-bound"),
+        thread_id: id("thread.1"),
+        method_id: id("turn.start"),
+        payload_digest: digest,
+        lease_payload_digest: digest,
+        deadline_ms: 100,
+    };
+    let admitted = encode_codex_operation_intent_wire_v2(
+        &intent,
+        id(CODEX_OPERATION_INTENT_WIRE_PRODUCER),
+        Generation::new(3)?,
+    )?;
+    let foreign = WireEnvelopeV2::new(
+        admitted.schema().clone(),
+        id("runtime.foreign"),
+        admitted.generation(),
+        admitted.payload().to_vec(),
+    )?;
+    assert!(matches!(
+        adapt_wire_v2(1, &foreign, None),
+        Err(WireAdapterError::Payload(SchemaCodecError::Admission(
+            codex_hepta_wire::SchemaAdmissionError::ProducerDenied(producer)
+        ))) if producer.as_str() == "runtime.foreign"
+    ));
+    Ok(())
+}
