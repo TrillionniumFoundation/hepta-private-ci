@@ -466,7 +466,7 @@ impl AutomationStore {
              FROM automation_runs r
              JOIN automation_tasks t ON t.task_id = r.task_id
              WHERE r.task_id = ? AND r.occurrence = ? AND t.owner_agent_id = ?
-               AND r.state = 'submitted' AND r.terminal_state IS NULL",
+               AND r.state IN ('leased', 'submitted') AND r.terminal_state IS NULL",
         )
         .bind(task_id.to_string())
         .bind(to_i64(occurrence)?)
@@ -1243,7 +1243,7 @@ impl AutomationStore {
     /// Releases an uncertain occurrence only after an external check proves
     /// that the provider did not accept it.  The same client id is retained
     /// when the occurrence is claimed again.
-    pub async fn release_uncertain_for_retry(
+    pub(crate) async fn release_uncertain_for_retry(
         &self,
         task_id: AutomationTaskId,
         occurrence: u64,
