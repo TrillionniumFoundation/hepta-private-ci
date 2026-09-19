@@ -314,6 +314,15 @@ async fn sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deleti
             .unwrap();
     assert_eq!(ranked.items, vec![baseline.items[1].clone()]);
     assert!(ranked.plan.as_ref().unwrap().read_allowed);
+    let revalidated = client
+        .revalidate_cognitive_context(&ranked)
+        .await
+        .unwrap();
+    assert_eq!(revalidated.snapshot_digest, ranked.snapshot_digest);
+    assert_eq!(
+        usize::from(revalidated.verified_item_count),
+        ranked.items.len()
+    );
     // The read owner, not the learned ranker, remains authoritative on deletion.
     let selected_id = memory_ids
         .into_iter()
@@ -470,6 +479,11 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
         "lifecycle epoch must not become a substitute launch identity"
     );
     assert!(client.health().await.unwrap().ready);
+    let capabilities = client.capabilities().await.unwrap();
+    assert!(capabilities.capabilities.iter().any(|capability| {
+        capability.id == crate::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY
+            && capability.major == 1
+    }));
     let ranked = client
         .cognitive_context("lemon".to_string(), 1)
         .await
@@ -503,6 +517,10 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
         )
         .await
         .unwrap();
+    assert!(
+        client.revalidate_cognitive_context(&ranked).await.is_err(),
+        "a committed tombstone must invalidate final-use context bindings"
+    );
     assert_eq!(
         client
             .cognitive_context("lemon".to_string(), 1)

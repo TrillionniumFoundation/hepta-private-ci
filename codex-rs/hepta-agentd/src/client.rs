@@ -135,6 +135,30 @@ impl AgentdClient {
         }
     }
 
+    /// Reacquire the owner cut immediately before physical model attachment.
+    /// Success is only a freshness observation for this instant, not a lease.
+    pub async fn revalidate_cognitive_context(
+        &self,
+        snapshot: &crate::CognitiveContextSnapshot,
+    ) -> Result<crate::CognitiveContextRevalidation, AgentdError> {
+        match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::CognitiveContextRevalidate {
+                    snapshot_digest: snapshot.snapshot_digest.clone(),
+                    items: snapshot.items.clone(),
+                },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::CognitiveContextRevalidated(revalidation) => Ok(revalidation),
+            payload => unexpected(payload),
+        }
+    }
+
     /// Submit text signed by a separately trusted owner-configured issuer.
     pub async fn submit_authbus_text(
         &self,

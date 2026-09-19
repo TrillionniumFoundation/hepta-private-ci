@@ -61,9 +61,17 @@ impl AgentdState {
         let automation = self.automation.lock().map_err(poisoned_state)?.clone();
         let cognitive = self.cognitive.lock().map_err(poisoned_state)?.clone();
         let payload = match method {
-            crate::AgentdMethod::Capabilities => {
-                AgentdPayload::Capabilities(crate::AgentdCapabilitySet::empty())
-            }
+            crate::AgentdMethod::Capabilities => AgentdPayload::Capabilities(
+                crate::AgentdCapabilitySet::new(vec![
+                    crate::AgentdCapability::new(
+                        crate::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY,
+                        1,
+                        0,
+                    )
+                    .map_err(AgentdError::Invalid)?,
+                ])
+                .map_err(AgentdError::Invalid)?,
+            ),
             crate::AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
                 promotion_ready: matches!(
                     lifecycle,
@@ -148,6 +156,58 @@ impl AgentdState {
                         message: "selected ranker is unavailable; explicit reload required"
                             .to_string(),
                     },
+                }
+            }
+            crate::AgentdMethod::CognitiveContextRevalidate {
+                snapshot_digest,
+                items,
+            } => {
+                require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
+                let Some(store) = cognitive else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        cognitive_control_unavailable(),
+                    );
+                };
+                let result = crate::cognitive_context::revalidate(
+                    store.as_ref(),
+                    &self.identity.agent_id,
+                    &snapshot_digest,
+                    &items,
+                )
+                .await;
+                self.refresh_generation()?;
+                {
+                    let runtime = self.runtime.lock().map_err(poisoned_state)?;
+                    require_cognitive_control_ready(
+                        runtime.lifecycle,
+                        runtime.app_server_ready,
+                        runtime.fenced,
+                    )?;
+                }
+                match result {
+                    Ok(revalidation) => {
+                        AgentdPayload::CognitiveContextRevalidated(revalidation)
+                    }
+                    Err(CognitiveContextError::Store(error)) => {
+                        return self.cognitive_error_response(
+                            request_id,
+                            current_generation,
+                            error,
+                        );
+                    }
+                    Err(CognitiveContextError::RankerUnavailable) => {
+                        return self.response_with_payload(
+                            request_id,
+                            current_generation,
+                            AgentdPayload::Error {
+                                code: "cognitive_ranker_unavailable".to_string(),
+                                message: "current cognitive ranking artifact is unavailable"
+                                    .to_string(),
+                            },
+                        );
+                    }
                 }
             }
             crate::AgentdMethod::Events {

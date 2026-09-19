@@ -29,8 +29,10 @@ use codex_app_server_protocol::TurnStartResponse;
 use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_agentd::AgentdClient;
+use codex_hepta_agentd::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::HealthSnapshot;
+use codex_hepta_agentd::MAX_COGNITIVE_CONTEXT_BYTES;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
@@ -49,7 +51,6 @@ use tokio_util::sync::CancellationToken;
 
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
 const MAX_OUTPUT_BYTES: usize = 1024 * 1024;
-const MAX_MODEL_CONTEXT_BYTES: usize = 8 * 1024;
 const RPC_TIMEOUT: Duration = Duration::from_secs(5);
 const INTERRUPT_GRACE: Duration = Duration::from_secs(3);
 
@@ -110,14 +111,25 @@ impl AppServerModelDriver {
         if !health.ready || health.fenced {
             return Err("Agent is not ready".into());
         }
+        if context_query.is_some() {
+            let capabilities = owner.capabilities().await?;
+            let supports_revalidation = capabilities.capabilities.iter().any(|capability| {
+                capability.id == COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY
+                    && capability.major == 1
+            });
+            if !supports_revalidation {
+                return Err("owning Agent does not support final-use cognitive revalidation".into());
+            }
+        }
         let context = match context_query {
             Some(query) => Some(owner.cognitive_context(query, /*limit*/ 4).await?),
             None => None,
         };
         let additional_context = context
+            .as_ref()
             .map(|snapshot| -> Result<_> {
                 let value = serde_json::to_string(&snapshot)?;
-                if value.len() > MAX_MODEL_CONTEXT_BYTES {
+                if value.len() > MAX_COGNITIVE_CONTEXT_BYTES {
                     return Err("verified context exceeds the model attachment byte limit".into());
                 }
                 Ok(HashMap::from([(
@@ -173,6 +185,15 @@ impl AppServerModelDriver {
         }
         // Recheck the actual generation after acquiring context and connecting.
         owner.session_ingress().await?;
+        if let Some(snapshot) = context.as_ref() {
+            let revalidated = owner.revalidate_cognitive_context(snapshot).await?;
+            if revalidated.snapshot_digest != snapshot.snapshot_digest
+                || usize::from(revalidated.verified_item_count) != snapshot.items.len()
+            {
+                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+                return Err("cognitive final-use revalidation returned a mismatched receipt".into());
+            }
+        }
         if cancellation.is_cancelled() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());

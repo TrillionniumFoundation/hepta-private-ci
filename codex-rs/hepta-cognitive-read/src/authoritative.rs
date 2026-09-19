@@ -1,9 +1,12 @@
-//! Authoritative snapshot acquisition boundary for `cognitive.read`.
+//! Generic authoritative-snapshot envelope for non-owner adapters and fixtures.
 //!
-//! The legacy read functions intentionally validate only caller-supplied bytes.
-//! This module adds the missing provider boundary: a product adapter must acquire
-//! one coherent, scope-bound generation vector from an authoritative owner before
-//! any read result can be attached to downstream context.
+//! Product composition in this repository uses the existing durable
+//! `hepta-memory::CognitiveStore -> DurableCognitiveSnapshot` boundary. This
+//! synchronous trait is retained for compatibility with callers that already
+//! possess a fully owner-bound `AuthoritativeSnapshotV1`; it is not a second
+//! product snapshot owner, database, or alternative to the durable SQLite cut.
+//! The read functions intentionally validate only supplied snapshot bytes, so
+//! non-product adapters still need an authoritative source before downstream use.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -59,10 +62,13 @@ impl SnapshotAcquisitionRequestV1 {
     }
 }
 
-/// Product adapters implement this trait against the canonical cognitive owner.
+/// Compatibility abstraction for adapters that already have one owner-defined
+/// coherent cut.
 ///
-/// Implementations must not manufacture a snapshot from independent reads. They
-/// acquire one owner-defined cut and return it with a lease and receipt.
+/// The repository product path does not use this trait to reacquire SQLite
+/// state; it uses `hepta-memory::DurableCognitiveSnapshot` directly. New
+/// product callers must not introduce a parallel owner through this trait.
+/// Implementations must never manufacture a snapshot from independent reads.
 pub trait AuthoritativeCognitiveSnapshotProvider {
     fn acquire(
         &self,

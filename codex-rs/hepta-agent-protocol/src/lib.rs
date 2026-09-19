@@ -31,6 +31,9 @@ pub const AGENTD_CONTROL_SCHEMA_VERSION: u32 = 2;
 /// runtime yet; it gives a future host/supervisor seam one strict wire shape.
 pub const HOST_TURN_AUTHORITY_BINDING_SCHEMA_VERSION: u32 = 1;
 pub const MAX_CONTROL_FRAME_BYTES: u64 = 65_536;
+/// Maximum serialized cognitive context accepted by both Agentd and the final model consumer.
+pub const MAX_COGNITIVE_CONTEXT_BYTES: usize = 8 * 1024;
+pub const COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY: &str = "cognitive.context.revalidate";
 pub const MAX_EVENT_BATCH: u16 = 256;
 pub const MAX_FEDERATION_CONTROL_LIST: u16 = 128;
 const FEDERATION_CAPABILITY_ID_PREFIX: &str = "federation:v1:";
@@ -276,6 +279,10 @@ pub enum AgentdMethod {
         query: String,
         limit: u16,
     },
+    CognitiveContextRevalidate {
+        snapshot_digest: String,
+        items: Vec<CognitiveContextItem>,
+    },
     Events {
         after_cursor: u64,
         limit: u16,
@@ -329,6 +336,7 @@ pub enum AgentdPayload {
     Lifecycle(LifecycleSnapshot),
     SessionIngress(SessionIngress),
     CognitiveContext(CognitiveContextSnapshot),
+    CognitiveContextRevalidated(CognitiveContextRevalidation),
     AuthBusTextStatus(AuthBusTextStatus),
     Events(EventBatch),
     AutomationTask(AutomationTask),
@@ -358,6 +366,13 @@ pub struct CognitiveContextSnapshot {
     pub omitted_records: u64,
     pub items: Vec<CognitiveContextItem>,
     pub plan: Option<CognitiveContextPlan>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CognitiveContextRevalidation {
+    pub snapshot_digest: String,
+    pub verified_item_count: u16,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -578,6 +593,42 @@ mod tests {
         assert_eq!(
             serde_json::from_slice::<AgentdPayload>(&payload_bytes).unwrap(),
             payload
+        );
+    }
+
+    #[test]
+    fn cognitive_context_response_stays_v2_compatible_and_revalidation_is_additive() {
+        let legacy = serde_json::json!({
+            "snapshot_digest": "a".repeat(64),
+            "read_digest": "b".repeat(64),
+            "omitted_records": 0,
+            "items": [{
+                "memory_id": "memory:v2:test",
+                "revision": 1,
+                "content": "verified memory",
+                "content_sha256": "c".repeat(64)
+            }],
+            "plan": null
+        });
+        let snapshot: CognitiveContextSnapshot =
+            serde_json::from_value(legacy).expect("legacy cognitive context shape");
+        let serialized = serde_json::to_value(&snapshot).expect("serialize cognitive context");
+        assert!(serialized.get("cut_digest").is_none());
+
+        let request = AgentdRequest {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: 13,
+            spawn_generation: 3,
+            method: AgentdMethod::CognitiveContextRevalidate {
+                snapshot_digest: snapshot.snapshot_digest.clone(),
+                items: snapshot.items.clone(),
+            },
+        };
+        let bytes = serde_json::to_vec(&request).expect("serialize revalidation request");
+        assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&bytes).expect("parse revalidation request"),
+            request
         );
     }
 

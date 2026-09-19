@@ -26,70 +26,63 @@ Plane `domain`, kind `port`, state model `stateless` and architecture role `cont
 
 ## 2. Source binding and implementation status
 
-Declared exclusive target roots:
+Declared exclusive target root:
 
 - `codex-rs/hepta-cognitive-read`
 
-Existing declared roots at this exact source snapshot:
+The root is materialized. The current typed-local product port is [`read_ids_v1`](../../../codex-rs/hepta-cognitive-read/src/ids.rs) with `ReadIdsRequestV1`, `ReadIdsResultV1`, `ReadFieldV1` and `ReadProjectionRecordV1`. The compatibility `read_v2` projection remains in [`v2.rs`](../../../codex-rs/hepta-cognitive-read/src/v2.rs).
 
-- `codex-rs/hepta-cognitive-read`
+The durable source owner is not this crate. Product composition acquires one authorized `DurableCognitiveSnapshot` from [`hepta-memory`](../../../codex-rs/hepta-memory/src/lane_c_snapshot.rs), validates bounded retrieval candidates by exact ID/revision/content digest, and performs capability-gated final-use revalidation in Agentd immediately before the native worker issues physical `TurnStart`.
 
-Non-authoritative implementation evidence roots:
+The canonical work package `MEM-READ-1-SNAPSHOT-PORT` is `source_implemented_execution_pending`. That state means source and composition exist while exact-candidate execution evidence remains pending. It does not imply independent acceptance, activation, promotion or release.
 
-None.
-
-Declared roots not yet present:
-
-None.
-
-`existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish runtime composition, operator acceptance, selection, promotion or release. Any source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
-
-### Native source and scope
-
-The registered primary source is [codex-rs/hepta-cognitive-read/src/v2.rs](../../../codex-rs/hepta-cognitive-read/src/v2.rs); observed identifiers include `ReadRequestV2`, `ReadResultV2`, `read_v2`, `binding_digest`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.read.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md) for the implemented subset and remaining product work.
+The implementation map keeps the repository-wide generated `sourceBase` baseline intact and separately records the fresh reviewed implementation base. A generated-map baseline is not a claim that no later source exists.
 
 ## 3. Boundary, responsibilities and non-goals
 
-The SQLite owner now exposes `CognitiveStore::lane_c_snapshot` and
-`DurableCognitiveSnapshot::read(ReadRequestV2)` through `hepta-memory`. This is a
-native read-through adapter to the existing durable store. It authorizes the
-exact scope, preserves record and citation IDs, includes committed tombstones,
-and admits only verified, currently valid live heads. Consumers must compare
-retrieved revision/content digests and reacquire the cut before delivery using
-`revalidate_lane_c_snapshot`. Snapshot generation alone does not detect validity
-expiry without a write. See `codex-rs/hepta-memory/LANE_C_SQLITE.md`; the adapter
-does not register a new V2 wire format or grant effects to read results.
+Mission: expose coherent, bounded, read-only cognitive projections without write authority.
 
-Direct dependencies:
+The product path is:
+
+```text
+CognitiveStore::lane_c_snapshot
+→ DurableCognitiveSnapshot::read_ids
+→ Agentd cognitive_context
+→ cognitive.context.revalidate@1
+→ native App Server TurnStart
+```
+
+The SQLite owner authorizes the exact principal/scope before reading. `read_ids_v1` then resolves only requested current heads, reports missing IDs explicitly and projects only the requested optional fields. Results always retain `AuthorityPosture::DENY_ALL`.
+
+The current durable SQLite schema has no memory-kind discriminator. Its Lane C adapter therefore advertises `DURABLE_SQLITE_MEMORY_KIND = MemoryKind::Fact`. `Episode`, `Preference` and `Procedure` remain valid cognitive type values but are not claimed for this durable owner until an explicit owner migration qualifies them.
+
+Direct dependency:
 
 - `cognitive.types`
 
-Authoritative write domains:
+Authoritative write domains: none.
 
-None.
-
-Explicitly denied capabilities:
+Explicitly denied capability:
 
 - `write_authority`
 
-The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
-
-Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
+Non-goals include becoming a state store, opening SQL from the read crate, inventing a second cognitive owner, caching cross-principal projections, treating V2 bytes as a wire protocol, leasing future external effects, or converting source/test evidence into deployment authority.
 
 ## 4. Internal architecture and component decomposition
 
-The bounded components are:
+The implemented components are:
 
-- `snapshot acquisition`
-- `scope and redaction filter`
-- `cache boundary`
-- `consistency verifier`
+- owner-acquired coherent snapshot;
+- validated current-head map;
+- exact-ID field projection;
+- canonical request/result digest binding;
+- consumer integration and final-use revalidation.
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
+The module itself is stateless. It owns no cache, pin registry, lease table, descriptor pool, durable record or background worker. Snapshot acquisition and SQL transaction lifetime belong to the existing `hepta-memory` owner. Dropping or cancelling a read drops ordinary in-memory values; there is no module-owned long-lived history pin.
 
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
+`read_ids_v1` validates the entire supplied snapshot before projecting an exact bounded ID set. Duplicate IDs/fields, more than 512 IDs, malformed snapshots and oversize results fail closed. Exact-ID reads are all-or-error and never silently return a prefix.
 
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+The composed Agentd path builds an ID-indexed admitted-record map once, avoiding the former candidate-by-`read.records().iter().any(...)` scan. Ranking and byte budgeting happen only after owner-cut admission.
 
 ## 5. Contracts, ports and compatibility
 
@@ -103,45 +96,43 @@ Produced contracts:
 - `ModulePort::cognitive.read::objective.compiler`
 - `ModulePort::cognitive.read::utility.ndu`
 
-Consumed contracts:
+Consumed contract:
 
 - `ModulePort::cognitive.types::cognitive.read`
 
-Critical protocol schemas:
+The registered contract transport class permits `typed_local_or_versioned_wire`. The current native ModulePort implementation is the typed-local `read_ids_v1` Rust API. Its in-process types are the contract surface.
 
-None.
+The canonical bytes produced by `read_v2` and `ReadIdsResultV1` are integrity/digest representations. They are not admitted cross-process protocols and are not silently promoted into `PROTOCOL_SCHEMAS.json`. A future wire transport requires a separately versioned protocol admission.
 
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
-
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+The existing Agentd control protocol is a separate host-integration boundary. The pre-existing `CognitiveContextSnapshot` response shape remains unchanged; final-use validation is additive and capability-gated as `cognitive.context.revalidate@1`. New workers fail closed when cognitive context is requested from an owner that does not advertise that capability.
 
 ## 6. Data authority, persistence and migrations
 
-Owned authoritative or rebuildable domains:
+Owned authoritative or rebuildable domains: none.
 
-None.
+Read-only input: an already authorized `CognitiveSnapshot` value supplied by the existing cognitive owner.
 
-Read-only data dependencies:
+The read crate contains no persistence and therefore owns no migration. The physical SQLite schema, open/recovery behavior, correction lineage and tombstones remain under `hepta-memory::CognitiveStore`.
 
-None.
-
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
-
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
-
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+The current durable schema's lack of a memory-kind column is treated as an explicit capability limit, not inferred polymorphism: durable Lane C records project as `Fact` only. Expanding that set requires an owner migration, backward-compatibility policy and tests before the read port may expose more durable kinds.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.read.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md).
+`CognitiveStore::lane_c_snapshot` authorizes the caller and materializes one coherent scope inside a single SQLite read transaction. The transaction is committed before the immutable `DurableCognitiveSnapshot` is returned.
 
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
+The read crate performs no I/O and requires no lock. It validates/canonicalizes the supplied snapshot and resolves current heads into a `BTreeMap`; exact requested IDs are then keyed lookups.
+
+The Agentd consumer obtains retrieval candidates, validates them against the same cut, ranks only admitted records, applies the shared final-consumer budget, and revalidates the cut before returning. The native inference worker additionally negotiates `cognitive.context.revalidate@1` and asks the owner to reacquire the current snapshot and recheck every selected ID/revision/content digest before `TurnStart`.
+
+That final-use observation is intentionally not described as a lease: a concurrent write after the check remains possible and no read path blocks future owner mutations.
 
 ## 8. Failure semantics, recovery and rollback
 
-Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.read.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+Snapshot integrity, duplicate/oversize requests and malformed typed-local inputs are rejected. Resource exhaustion maps to unavailable; caller/request errors map to invalid; owner-store integrity violations map to corrupt; stale final-use state maps to conflict/request rejection. Agentd no longer classifies every read-port failure as store corruption.
 
-[Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
+Correction, committed tombstone, validity expiry, snapshot-generation change, wrong principal or selected-content substitution makes an old context fail final-use validation.
+
+Rollback restores the predecessor read/consumer path together. It must not leave a worker that attaches cognitive context without a negotiated final-use validation capability. V2 canonical bytes remain internal integrity evidence across rollback and never become a compatibility wire format.
 
 ## 9. Security, privacy and threat controls
 
@@ -155,31 +146,51 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-cognitive-read/src/v2.rs](../../../codex-rs/hepta-cognitive-read/src/v2.rs) and the linked implementation components.
+Current enforced source bounds include:
 
-[Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+- `read_ids_v1`: at most 512 IDs;
+- module-native encoded result ceiling: at most 1 MiB;
+- current composed Agentd/model context: one shared `MAX_COGNITIVE_CONTEXT_BYTES = 8 KiB`;
+- durable materialization: the revision/citation/source bounds documented by `LANE_C_SQLITE.md`;
+- current Agentd selected result limit: 1..=4.
+
+Exact-ID validation builds the current-head map once and then performs keyed lookups. It no longer intersects retrieval candidates with a globally truncated first-1,024-record read, and it no longer linearly scans the returned read set for every candidate.
+
+These are capacity and algorithmic bounds, not production performance measurements. Target-host p50/p95/p99 latency, CPU, RSS and SQLite evidence remain qualification requirements and must not be invented from unit tests.
 
 ## 11. Observability and operations
 
-Acquire a cut through the existing SQLite owner, then call the crate-native ReadRequestV2 reader. Before delivery compare exact revision/content digests and revalidate time as well as frontiers. Release snapshot handles on completion/cancel; the historical cut does not lease future external effects.
+The operational sequence is:
 
-Current operating and state-format references:
+1. acquire the owner cut;
+2. retrieve bounded candidates;
+3. exact-ID validate against that cut;
+4. rank and budget;
+5. revalidate before Agentd response publication;
+6. negotiate `cognitive.context.revalidate@1`;
+7. revalidate the selected ID/revision/content bindings against a newly acquired current snapshot immediately before model `TurnStart`.
 
-- [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md).
-- [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
+The same 8 KiB serialized cognitive-context budget is exported by the Agentd protocol and consumed by both Agentd and the native inference worker, preventing producer/consumer budget drift.
 
-[Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
+Current operating references:
+
+- [`codex-rs/hepta-memory/LANE_C_SQLITE.md`](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md)
+- [`docs/readiness/LANE_B_NATIVE_HOST.md`](../../readiness/LANE_B_NATIVE_HOST.md)
 
 ## 12. Verification and qualification
 
-Current focused test sources (source references, not pass receipts):
+Focused source tests include:
 
-- [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs); named case: `existing_sqlite_writes_are_readable_by_new_lane_c_after_reopen`.
-- [codex-rs/hepta-cognitive-read/src/authoritative_tests.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative_tests.rs); named case: `authoritative_read_binds_provider_vector_and_query`.
+- [`ids_tests.rs`](../../../codex-rs/hepta-cognitive-read/src/ids_tests.rs): exact ID beyond the legacy 1,024 prefix, field projection, missing IDs and request bounds;
+- [`v2_tests.rs`](../../../codex-rs/hepta-cognitive-read/src/v2_tests.rs): canonical V2 envelope and byte limits;
+- [`tombstone_resurrection_tests.rs`](../../../codex-rs/hepta-cognitive-read/src/tombstone_resurrection_tests.rs): terminal deletion lineage;
+- [`lane_c_snapshot_tests.rs`](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs): SQLite cut, correction, expiry, scope, reopen and rollback witness;
+- [`cognitive_ranker_tests.rs`](../../../codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs): real control socket, advertised revalidation capability and stale-final-use rejection;
+- [`cognitive_context_budget_tests.rs`](../../../codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs): post-ranking shared response budget.
 
-In `codex-rs`, run `just test -p codex-hepta-memory -p codex-hepta-cognitive-read`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md) separately labels target acceptance designs.
+In `codex-rs`, the focused invocation remains `just test -p codex-hepta-memory -p codex-hepta-cognitive-read`, with Agentd/native-worker tests required for the composed path.
 
-[Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
+Test files are not pass receipts. Exact-head and deterministic synthetic-merge execution must be read from the current candidate CI. Independent semantic review, target-host qualification, operator acceptance, promotion and release are separate evidence gates.
 
 ## 13. Implementation sequence and work packages
 
@@ -207,7 +218,7 @@ For `cognitive.read`, this document grants no runtime, production, model, provid
 
 #### `MEM-READ-1-SNAPSHOT-PORT`
 
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
+- State: `source_implemented_execution_pending`; priority: `2`; parallel class: `contract_coordinated`.
 - Owner/deputy: `cognitive-platform` / `agent-runtime`.
 - Allowed write paths:
 - `codex-rs/hepta-cognitive-read/**`
@@ -253,8 +264,8 @@ The following additional work packages are source-planning envelopes introduced 
 
 ## 17. Source implementation receipt
 
-The bootstrap source-location obligation for `cognitive.read` is implemented by work package `MEM-READ-1-SNAPSHOT-PORT` in:
+The bootstrap source implementation for `cognitive.read` is materialized by work package `MEM-READ-1-SNAPSHOT-PORT` in:
 
 - `codex-rs/hepta-cognitive-read`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source package is now classified `source_implemented_execution_pending`. `.github/workflows/hepta-consolidated-source.yml` is the intended exact-candidate gate for closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. Until a current candidate run is observed, this document does not claim those checks passed. Even a passing source receipt grants no independent acceptance, model/provider authority, promotion or release.
