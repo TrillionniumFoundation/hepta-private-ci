@@ -110,7 +110,7 @@ Critical protocol schemas:
 
 None.
 
-The local Agentd control protocol remains strict schema version 2 and uses capability negotiation for additive methods. The daemon advertises `run.lifecycle` v1 and `control.typed_backpressure` v1; clients that do not negotiate those optional capabilities retain the existing stable methods.
+The local Agentd control protocol remains strict schema version 2 and uses capability negotiation for additive methods. The daemon advertises `run.lifecycle` v1.1 and `control.typed_backpressure` v1; lifecycle minor 1 adds the durable cancellation-ack deadline while preserving the v1 major contract. Clients that do not negotiate those optional capabilities retain the existing stable methods.
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
