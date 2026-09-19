@@ -263,7 +263,6 @@ pub(crate) struct InheritedQueuedReceipt {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-#[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct DurableOperationDispatchBinding {
     pub scope_id: String,
     pub destination_id: String,
