@@ -175,7 +175,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Offline/reference learning library. Bind immutable dataset/sensor profiles and emit candidates through the artifact owner. Distinguish the deterministic reference, simplest-sufficient learner and action-conditioned world model; synthetic trajectories cannot supply independent production outcome evidence.
+Offline/reference learning library. Bind immutable dataset/sensor profiles and emit candidates through the artifact owner. New cross-owner training integrations use `DatasetEvidenceBindingV1` plus the dataset-bound tabular/world-model entrypoints so detached caller-supplied rows fail closed. Independent-review claims use the producer/evaluator identity-binding entrypoints after host authentication; structural digest checks alone are not authentication. Distinguish the deterministic reference, simplest-sufficient learner and action-conditioned world model; synthetic trajectories cannot supply independent production outcome evidence.
 
 Current operating and state-format references:
 
@@ -187,7 +187,10 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-bellman-operator/src/learned_tests.rs](../../../codex-rs/hepta-bellman-operator/src/learned_tests.rs); named case: `op_05_tabular_operator_fits_complete_grid_deterministically`.
+- [codex-rs/hepta-bellman-operator/src/learned_tests.rs](../../../codex-rs/hepta-bellman-operator/src/learned_tests.rs); named cases: `op_05_tabular_operator_fits_complete_grid_deterministically`, `op_05_tabular_operator_rejects_relabelled_duplicate_evidence`.
+- [codex-rs/hepta-bellman-operator/src/learned_strict.rs](../../../codex-rs/hepta-bellman-operator/src/learned_strict.rs); named case: `op_05_dataset_binding_rejects_detached_training_rows`.
+- [codex-rs/hepta-bellman-operator/src/world_model_tests.rs](../../../codex-rs/hepta-bellman-operator/src/world_model_tests.rs); duplicate-evidence and detached-row admission regressions.
+- [codex-rs/hepta-bellman-operator/src/loaded_tests.rs](../../../codex-rs/hepta-bellman-operator/src/loaded_tests.rs); OP-06 pin, truncation and separate-process reload/rollback regressions.
 - [codex-rs/hepta-bellman-operator/src/lib_tests.rs](../../../codex-rs/hepta-bellman-operator/src/lib_tests.rs); named case: `deterministic_and_canonical`.
 
 In `codex-rs`, run `just test -p codex-hepta-bellman-operator`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.operator.md) separately labels target acceptance designs.
