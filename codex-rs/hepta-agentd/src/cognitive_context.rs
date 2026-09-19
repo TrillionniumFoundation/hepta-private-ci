@@ -214,8 +214,9 @@ pub(crate) async fn read(
 
 fn map_read_ids_error(error: ReadIdsError) -> CognitiveStoreError {
     match error {
-        ReadIdsError::Read(error) | ReadIdsError::InvalidCanonicalEncoding => {
-            CognitiveStoreError::Corrupt(error.to_string())
+        ReadIdsError::Read(error) => CognitiveStoreError::Corrupt(error.to_string()),
+        ReadIdsError::InvalidCanonicalEncoding => {
+            CognitiveStoreError::Corrupt("invalid canonical exact-id cognitive read".to_string())
         }
         ReadIdsError::TooManyRecordIds { .. }
         | ReadIdsError::DuplicateRecordId
