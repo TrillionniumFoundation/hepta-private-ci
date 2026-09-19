@@ -375,11 +375,16 @@ fn validate_retention_policy(
         || policy.minimum_revocation_reserve == 0
         || policy.maximum_non_revocation_records > MAX_JOURNAL_RECORDS
         || policy.minimum_revocation_reserve > MAX_JOURNAL_RECORDS
-        || policy
-            .maximum_non_revocation_records
-            .checked_add(policy.minimum_revocation_reserve)
-            .is_none_or(|value| value > MAX_JOURNAL_RECORDS)
     {
+        return Err(NduProjectionStoreError::InvalidRetentionPolicy);
+    }
+    let Some(total) = policy
+        .maximum_non_revocation_records
+        .checked_add(policy.minimum_revocation_reserve)
+    else {
+        return Err(NduProjectionStoreError::InvalidRetentionPolicy);
+    };
+    if total > MAX_JOURNAL_RECORDS {
         return Err(NduProjectionStoreError::InvalidRetentionPolicy);
     }
     Ok(())
