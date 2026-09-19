@@ -262,7 +262,6 @@ fn digest(request: &EvaluationRequest, disposition: Disposition, failed: &[Stabl
     Digest32::of_bytes(&bytes)
 }
 
-#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     let raw = value.as_str().as_bytes();
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
