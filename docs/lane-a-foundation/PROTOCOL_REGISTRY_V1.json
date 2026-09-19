@@ -74,6 +74,26 @@
       ]
     },
     {
+      "protocolId": "hepta.kernel.operations.cognitive-store-owner.v1",
+      "module": "kernel.operations",
+      "kind": "sqlite_integrated_operation_owner",
+      "source": [
+        "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql",
+        "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+        "codex-rs/hepta-memory/src/production_writer.rs",
+        "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
+        "docs/lane-a-foundation/kernel.operations/DURABLE_OWNER_V1.md"
+      ],
+      "invariants": [
+        "operation event and local outbox identity commit in one BEGIN IMMEDIATE transaction",
+        "dispatch becomes durably indeterminate before target entry so crash recovery reconciles rather than blindly resends",
+        "successor owner handoff reuses the same immutable event and outbox identity",
+        "real FinalUseAuthority claim and with_verified_use guard the actual target entry",
+        "CognitiveStore destination apply and terminal observation are destination-owned",
+        "append-only journal compaction and default product activation are not claimed"
+      ]
+    },
+    {
       "protocolId": "hepta.kernel.evidence.sqlite-lineage.v1",
       "module": "kernel.evidence",
       "kind": "append_only_sqlite_evidence_lineage",

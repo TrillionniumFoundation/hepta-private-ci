@@ -266,6 +266,21 @@ def validate_source_specific(root: Path = ROOT) -> None:
             'InvalidDigest("outbox payload")',
             'InvalidDigest("outbox acknowledgement")',
         ],
+        "codex-rs/hepta-memory/src/local_lease_outbox.rs": [
+            "pub async fn admit_operation(",
+            'begin_with("BEGIN IMMEDIATE")',
+            "claim_inherited_dispatch",
+            "verify_operation_ledger",
+        ],
+        "codex-rs/hepta-memory/src/production_writer.rs": [
+            "ProductionFinalUseOutboxDispatcher",
+            "with_verified_use",
+            "pub async fn final_use_binding(",
+        ],
+        "codex-rs/hepta-memory/src/production_cognitive_source_target.rs": [
+            "pub struct CognitiveSourceOutboxTarget",
+            "observe_terminal",
+        ],
         "codex-rs/hepta-authbus/src/lib.rs": [
             "pub use signed::SignedMessage;",
             "pub struct PreverifiedAuthEnvelope",
