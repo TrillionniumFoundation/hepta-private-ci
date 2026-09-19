@@ -62,7 +62,21 @@ impl AgentdState {
         let cognitive = self.cognitive.lock().map_err(poisoned_state)?.clone();
         let payload = match method {
             crate::AgentdMethod::Capabilities => {
-                AgentdPayload::Capabilities(crate::AgentdCapabilitySet::empty())
+                let mut capabilities = Vec::new();
+                if self.evidence.get().is_some() {
+                    capabilities.push(
+                        codex_hepta_agent_protocol::AgentdCapability::new(
+                            "kernel.evidence",
+                            1,
+                            0,
+                        )
+                        .map_err(AgentdError::Invalid)?,
+                    );
+                }
+                AgentdPayload::Capabilities(
+                    crate::AgentdCapabilitySet::new(capabilities)
+                        .map_err(AgentdError::Invalid)?,
+                )
             }
             crate::AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
                 promotion_ready: matches!(
@@ -103,6 +117,21 @@ impl AgentdState {
             crate::AgentdMethod::AuthBusTextStatus { delivery_id } => {
                 AgentdPayload::AuthBusTextStatus(
                     crate::authbus_ingress::status(self, delivery_id).await?,
+                )
+            }
+            crate::AgentdMethod::KernelEvidenceAppend { request } => {
+                AgentdPayload::KernelEvidenceResult(
+                    crate::evidence_host::append(self, request).await?,
+                )
+            }
+            crate::AgentdMethod::KernelEvidenceQuery { request } => {
+                AgentdPayload::KernelEvidenceResult(
+                    crate::evidence_host::query(self, request).await?,
+                )
+            }
+            crate::AgentdMethod::KernelEvidenceVerify { request } => {
+                AgentdPayload::KernelEvidenceResult(
+                    crate::evidence_host::verify(self, request).await?,
                 )
             }
             crate::AgentdMethod::CognitiveContext { query, limit } => {
