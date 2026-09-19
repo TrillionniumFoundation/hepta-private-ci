@@ -26,6 +26,7 @@ use crate::DurableLearningJournal;
 use crate::DurableLedgerError;
 use crate::EpisodeDecision;
 use crate::LearningEvidenceRoleV1;
+use crate::LearningEvidenceTrustProviderV1;
 use crate::LearningEvidenceVerifierV1;
 use crate::LearningLedger;
 use crate::LedgerAnchor;
@@ -44,9 +45,17 @@ use crate::validate_authenticated_outcome;
 use crate::validate_candidate_set_completeness;
 use crate::verify_signed_role_separation;
 
-pub struct ProductionLedgerWriter<J: DurableLearningJournal> {
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct TrustFrontierV1 {
+    revision: u64,
+    authority_epoch: u64,
+    trust_digest: Digest32,
+}
+
+pub struct ProductionLedgerWriter<J: DurableLearningJournal, T: LearningEvidenceTrustProviderV1> {
     journal: J,
-    verifier: LearningEvidenceVerifierV1,
+    trust_provider: T,
+    trust_frontier: Option<TrustFrontierV1>,
 }
 
 pub fn decision_admission_payload(
@@ -162,20 +171,25 @@ pub fn unlearning_admission_payload(lineage: &UnlearningLineageEventV1) -> Vec<u
     bytes
 }
 
-impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
+impl<J: DurableLearningJournal, T: LearningEvidenceTrustProviderV1>
+    ProductionLedgerWriter<J, T>
+{
     #[must_use]
-    pub fn new(journal: J, verifier: LearningEvidenceVerifierV1) -> Self {
-        Self { journal, verifier }
-    }
-
-    #[must_use]
-    pub fn verifier(&self) -> &LearningEvidenceVerifierV1 {
-        &self.verifier
+    pub fn new(journal: J, trust_provider: T) -> Self {
+        Self {
+            journal,
+            trust_provider,
+            trust_frontier: None,
+        }
     }
 
     #[must_use]
     pub fn into_inner(self) -> J {
         self.journal
+    }
+
+    pub fn current_trust_digest(&mut self, now: u64) -> Result<Digest32, ProductionLedgerError> {
+        Ok(self.current_verifier(now)?.trust_digest())
     }
 
     pub fn current_anchor(&self) -> Result<LedgerAnchor, ProductionLedgerError> {
@@ -213,9 +227,9 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
         self.require_anchor(expected_anchor)?;
         let expected_payload = decision_admission_payload(&decision, completeness)?;
         require_exact_payload(payload, &expected_payload)?;
+        let verifier = self.current_verifier(now)?;
         let verified =
-            self.verifier
-                .verify(LearningEvidenceRoleV1::Generator, evidence, payload, now)?;
+            verifier.verify(LearningEvidenceRoleV1::Generator, evidence, payload, now)?;
 
         if completeness.generator_id != verified.principal().principal_id
             || decision.policy_id != verified.principal().principal_id
@@ -248,7 +262,8 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
         self.require_anchor(expected_anchor)?;
         let expected_payload = authenticated_outcome_admission_payload(&outcome);
         require_exact_payload(payload, &expected_payload)?;
-        let observer = self.verifier.verify(
+        let verifier = self.current_verifier(now)?;
+        let observer = verifier.verify(
             LearningEvidenceRoleV1::Observer,
             observer_evidence,
             payload,
@@ -280,9 +295,9 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
         self.require_anchor(expected_anchor)?;
         let expected_payload = credit_batch_admission_payload(&batch);
         require_exact_payload(payload, &expected_payload)?;
+        let verifier = self.current_verifier(now)?;
         let allocator =
-            self.verifier
-                .verify(LearningEvidenceRoleV1::Evaluator, evidence, payload, now)?;
+            verifier.verify(LearningEvidenceRoleV1::Evaluator, evidence, payload, now)?;
         if &batch.allocator != allocator.principal() {
             return Err(ProductionLedgerError::PrincipalMismatch);
         }
@@ -308,9 +323,9 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
         self.require_anchor(expected_anchor)?;
         let expected_payload = revocation_admission_payload(&revocation);
         require_exact_payload(payload, &expected_payload)?;
+        let verifier = self.current_verifier(now)?;
         let authority =
-            self.verifier
-                .verify(LearningEvidenceRoleV1::Evaluator, evidence, payload, now)?;
+            verifier.verify(LearningEvidenceRoleV1::Evaluator, evidence, payload, now)?;
         if revocation.authority_id != authority.principal().principal_id {
             return Err(ProductionLedgerError::PrincipalMismatch);
         }
@@ -334,9 +349,9 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
         self.require_anchor(expected_anchor)?;
         let expected_payload = unlearning_admission_payload(&lineage);
         require_exact_payload(payload, &expected_payload)?;
+        let verifier = self.current_verifier(now)?;
         let authority =
-            self.verifier
-                .verify(LearningEvidenceRoleV1::Evaluator, evidence, payload, now)?;
+            verifier.verify(LearningEvidenceRoleV1::Evaluator, evidence, payload, now)?;
         if lineage.authority_id != authority.principal().principal_id {
             return Err(ProductionLedgerError::PrincipalMismatch);
         }
@@ -395,7 +410,7 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
     }
 
     pub fn freeze_dataset_from_ledger(
-        &self,
+        &mut self,
         expected_anchor: LedgerAnchor,
         snapshot_id: StableId,
         objective_digest: Digest32,
@@ -406,7 +421,8 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
         now: u64,
     ) -> Result<DatasetSnapshotReceiptV3, ProductionLedgerError> {
         self.require_anchor(expected_anchor)?;
-        let producer = self.verifier.verify(
+        let verifier = self.current_verifier(now)?;
+        let producer = verifier.verify(
             LearningEvidenceRoleV1::Evaluator,
             producer_evidence,
             producer_payload,
@@ -423,6 +439,35 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
         let expected_payload = dataset_freeze_admission_payload(&request);
         require_exact_payload(producer_payload, &expected_payload)?;
         freeze_dataset_receipt_v3(request, now).map_err(Into::into)
+    }
+
+    fn current_verifier(
+        &mut self,
+        now: u64,
+    ) -> Result<LearningEvidenceVerifierV1, ProductionLedgerError> {
+        let snapshot = self.trust_provider.current_trust(now)?;
+        snapshot.validate(now)?;
+        let revision = snapshot.revision;
+        let authority_epoch = snapshot.trust.authority_epoch;
+        let verifier = LearningEvidenceVerifierV1::new(snapshot.trust)?;
+        let next = TrustFrontierV1 {
+            revision,
+            authority_epoch,
+            trust_digest: verifier.trust_digest(),
+        };
+        if let Some(current) = self.trust_frontier {
+            if next.revision < current.revision || next.authority_epoch < current.authority_epoch {
+                return Err(ProductionLedgerError::TrustRollback);
+            }
+            if next.revision == current.revision
+                && (next.authority_epoch != current.authority_epoch
+                    || next.trust_digest != current.trust_digest)
+            {
+                return Err(ProductionLedgerError::TrustRevisionConflict);
+            }
+        }
+        self.trust_frontier = Some(next);
+        Ok(verifier)
     }
 
     fn append_event(
@@ -512,6 +557,8 @@ pub enum ProductionLedgerError {
     SupportDigestMismatch,
     AdmissionPayloadMismatch,
     WitnessFrontierMismatch,
+    TrustRollback,
+    TrustRevisionConflict,
 }
 
 impl fmt::Display for ProductionLedgerError {
