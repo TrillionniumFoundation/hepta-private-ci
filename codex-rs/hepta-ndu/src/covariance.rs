@@ -10,13 +10,45 @@ use crate::conditional_moments::duration_seconds;
 #[derive(Clone, Debug, PartialEq)]
 pub struct ZEstimateV1 {
     /// Utility x driver sensitivity in the original increment coordinates.
-    pub z: Vec<Vec<f64>>,
+    pub(crate) z: Vec<Vec<f64>>,
     /// Conservative matrix 1-norm diagnostic, not a statistical certificate.
-    pub condition_estimate: f64,
-    pub increment_eigenvalue_lower_estimate: f64,
-    pub maximum_relative_residual: f64,
-    pub evidence_digest: Digest32,
-    pub authority: AuthorityPosture,
+    pub(crate) condition_estimate: f64,
+    pub(crate) increment_eigenvalue_lower_estimate: f64,
+    pub(crate) maximum_relative_residual: f64,
+    pub(crate) evidence_digest: Digest32,
+    pub(crate) authority: AuthorityPosture,
+}
+
+impl ZEstimateV1 {
+    #[must_use]
+    pub fn z(&self) -> &[Vec<f64>] {
+        &self.z
+    }
+
+    #[must_use]
+    pub const fn condition_estimate(&self) -> f64 {
+        self.condition_estimate
+    }
+
+    #[must_use]
+    pub const fn increment_eigenvalue_lower_estimate(&self) -> f64 {
+        self.increment_eigenvalue_lower_estimate
+    }
+
+    #[must_use]
+    pub const fn maximum_relative_residual(&self) -> f64 {
+        self.maximum_relative_residual
+    }
+
+    #[must_use]
+    pub const fn evidence_digest(&self) -> Digest32 {
+        self.evidence_digest
+    }
+
+    #[must_use]
+    pub const fn authority(&self) -> AuthorityPosture {
+        self.authority
+    }
 }
 
 /// Solves centered Z Sigma = B with a scaled Cholesky factorization.
