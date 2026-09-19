@@ -686,14 +686,22 @@ impl FederatedMemoryReader {
                 coverage: FederatedRetrievalCoverage {
                     requested_sources: 1,
                     completed_sources: 0,
-                    failed_sources: u32::from(matches!(
+                    failed_sources: if matches!(
                         result.validity,
                         FederatedValidityV2::Revoked | FederatedValidityV2::StaleGeneration
-                    )),
-                    indeterminate_sources: u32::from(matches!(
+                    ) {
+                        1
+                    } else {
+                        0
+                    },
+                    indeterminate_sources: if matches!(
                         result.validity,
                         FederatedValidityV2::Indeterminate
-                    )),
+                    ) {
+                        1
+                    } else {
+                        0
+                    },
                 },
             });
         }
@@ -967,7 +975,12 @@ impl FederationTransportV2 for CognitiveFederationTransport<'_> {
             let items = batch
                 .candidates
                 .iter()
-                .map(canonical_evidence_item)
+                .map(|candidate| {
+                    canonical_evidence_item(
+                        candidate,
+                        &self.reader.capability.owner_agent_id,
+                    )
+                })
                 .collect::<Result<Vec<_>, _>>()?;
             let observed_frontier = items
                 .iter()
@@ -1078,6 +1091,7 @@ fn build_v2_request(
 
 fn canonical_evidence_item(
     candidate: &RetrievalCandidate,
+    owner_agent_id: &AgentId,
 ) -> Result<FederatedEvidenceItemV2, FederationV2Error> {
     let record_id = StableId::new(candidate.memory.id.memory_id.as_str().to_string())
         .map_err(|_| FederationV2Error::TransportRejected)?;
@@ -1096,8 +1110,8 @@ fn canonical_evidence_item(
     let mut validity = b"hepta.memory.federation.validity.v2".to_vec();
     validity.extend_from_slice(&binding);
     Ok(FederatedEvidenceItemV2 {
-        source_owner_id: StableId::new(candidate.memory.scope.projection_key())
-            .unwrap_or_else(|_| record_id.clone()),
+        source_owner_id: StableId::new(owner_agent_id.as_str().to_string())
+            .map_err(|_| FederationV2Error::TransportRejected)?,
         record_id,
         record_revision,
         record_digest,
