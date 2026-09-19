@@ -244,7 +244,7 @@ impl RuntimeModuleRegistryV1 {
         self.ensure_writer_domains_available(&candidate.abi, None)?;
         self.records
             .get_mut(&key)
-            .expect("candidate was validated above")
+            .ok_or(RuntimeModuleRegistryError::UnknownCandidate)?
             .lifecycle = RuntimeModuleLifecycleV1::Active;
         self.active.insert(module_id.clone(), generation);
         Ok(self.snapshot())
