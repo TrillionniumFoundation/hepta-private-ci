@@ -5,6 +5,9 @@ use std::time::UNIX_EPOCH;
 
 use codex_hepta_cognitive_read::ReadRequest;
 use codex_hepta_cognitive_read::ReadRequestV2;
+use codex_hepta_cognitive_read::SnapshotAcquisitionRequestV1;
+use codex_hepta_cognitive_read::read_authoritative;
+use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_control_plane::ObservedContextV1;
 use codex_hepta_control_plane::plan_observed_context;
@@ -12,8 +15,11 @@ use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::CognitiveStoreError;
+use codex_hepta_memory::DurableCognitiveSnapshot;
 use codex_hepta_memory::RetrievalRequest;
+use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
+use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
 use crate::CognitiveContextItem;
@@ -21,6 +27,10 @@ use crate::CognitiveContextPlan;
 use crate::CognitiveContextSnapshot;
 
 const MAX_CONTEXT_JSON_BYTES: usize = 24 * 1024;
+const AUTHORITATIVE_READ_LEASE_MS: u64 = 30_000;
+const COGNITIVE_CONTEXT_PURPOSE: &str = "agentd-cognitive-context-owner-local-v1";
+const OWNER_LOCAL_UNBOUND_PROFILE: &[u8] =
+    b"hepta.agentd.cognitive-context.owner-local-unbound.v1";
 
 /// Only storage failures may invalidate the canonical SQLite owner. A revoked
 /// or unavailable optional ranker closes the ranked read, not other store ports.
@@ -42,6 +52,7 @@ pub(crate) async fn read(
     store: &CognitiveStore,
     owner: &AgentId,
     body_generation: u64,
+    authority_epoch: u64,
     query: &str,
     limit: u16,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
@@ -52,13 +63,47 @@ pub(crate) async fn read(
         )
         .into());
     }
+    if authority_epoch == 0 {
+        return Err(CognitiveStoreError::Invalid(
+            "cognitive authoritative read requires a non-zero host authority epoch".to_string(),
+        )
+        .into());
+    }
     let access = CognitiveAccess::agent_private(owner.clone());
     let scope = CognitiveScope::AgentPrivate;
+    let acquired_at_unix_ms = now_millis()?;
+    let acquired_at_unix_seconds = millis_to_seconds(acquired_at_unix_ms)?;
     let cut = store
-        .lane_c_snapshot(&access, &scope, now_seconds()?)
+        .lane_c_snapshot(&access, &scope, acquired_at_unix_seconds)
         .await?;
-    let read = cut
-        .read(ReadRequestV2 {
+    let vector = owner_local_generation_vector(&cut, authority_epoch, query, limit, ranker.is_some())?;
+    let lease_expires_unix_ms = acquired_at_unix_ms
+        .checked_add(AUTHORITATIVE_READ_LEASE_MS)
+        .ok_or_else(|| CognitiveStoreError::Invalid("cognitive read lease overflow".to_string()))?;
+    let provider = cut
+        .authoritative_provider(vector, acquired_at_unix_ms, lease_expires_unix_ms)
+        .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
+    let acquisition_request = SnapshotAcquisitionRequestV1 {
+        request_id: authoritative_request_id(
+            owner,
+            authority_epoch,
+            query,
+            limit,
+            cut.snapshot().snapshot_digest,
+        )?,
+        scope_id: cut.scope_id().clone(),
+        purpose_id: StableId::new(COGNITIVE_CONTEXT_PURPOSE)
+            .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
+        minimum_memory_frontier: cut.frontiers().memory,
+        minimum_tombstone_frontier: cut.frontiers().tombstone,
+        authority_epoch,
+        deadline_unix_ms: lease_expires_unix_ms,
+    };
+    let authoritative_read = read_authoritative(
+        &provider,
+        acquired_at_unix_ms,
+        acquisition_request.clone(),
+        ReadRequestV2 {
             read_request: ReadRequest {
                 snapshot_digest: cut.snapshot().snapshot_digest,
                 allowed_kinds: Vec::new(),
@@ -66,8 +111,10 @@ pub(crate) async fn read(
                 include_tombstones: false,
             },
             maximum_encoded_bytes: 1024 * 1024,
-        })
-        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+        },
+    )
+    .map_err(|error| CognitiveStoreError::Conflict(error.to_string()))?;
+    let read = authoritative_read.read_result;
     let candidates = store
         .retrieve_memory_candidates(&access, &RetrievalRequest::new(query, now_seconds()?))
         .await?;
@@ -183,7 +230,13 @@ pub(crate) async fn read(
     // A concurrent correction, deletion, changed citation, expiry or restored
     // older database must not leak a stale projection into the response.
     store
-        .revalidate_lane_c_snapshot(&access, &scope, &cut, now_seconds()?)
+        .revalidate_lane_c_authoritative_snapshot(
+            &access,
+            &scope,
+            provider.envelope(),
+            &acquisition_request,
+            now_millis()?,
+        )
         .await?;
     if let Some(ranker) = ranker {
         let ranker = std::sync::Arc::clone(ranker);
@@ -195,12 +248,82 @@ pub(crate) async fn read(
     Ok(response)
 }
 
-fn now_seconds() -> Result<i64, CognitiveStoreError> {
-    let seconds = SystemTime::now()
+fn owner_local_generation_vector(
+    cut: &DurableCognitiveSnapshot,
+    authority_epoch: u64,
+    query: &str,
+    limit: u16,
+    ranker_present: bool,
+) -> Result<LaneCGenerationVectorV1, CognitiveStoreError> {
+    // This product path consumes the canonical Lane-C owner cut plus an optional
+    // separately revalidated ranker. Model/tokenizer/template/tool bindings are
+    // intentionally outside this read boundary, so those dimensions use one
+    // explicit domain-separated sentinel rather than pretending to be live host
+    // generations. The purpose ID makes this a documented owner-local subset.
+    let unbound = Digest32::of_bytes(OWNER_LOCAL_UNBOUND_PROFILE);
+    let mut retrieval_profile = b"hepta.agentd.cognitive-context.retrieval-profile.v1".to_vec();
+    retrieval_profile.extend_from_slice(&(query.len() as u64).to_be_bytes());
+    retrieval_profile.extend_from_slice(query.as_bytes());
+    retrieval_profile.extend_from_slice(&limit.to_be_bytes());
+    retrieval_profile.push(u8::from(ranker_present));
+    Ok(LaneCGenerationVectorV1 {
+        scope_id: cut.scope_id().clone(),
+        purpose_id: StableId::new(COGNITIVE_CONTEXT_PURPOSE)
+            .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
+        memory_ledger_frontier: cut.frontiers().memory,
+        knowledge_fact_frontier: cut.frontiers().knowledge_facts,
+        tombstone_frontier: cut.frontiers().tombstone,
+        source_ledger_frontier: cut.frontiers().source,
+        knowledge_graph_generation: cut.frontiers().knowledge_graph,
+        compact_checkpoint_generation: Generation::new(1)
+            .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
+        prompt_registry_revision: Revision::new(1)
+            .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
+        retrieval_profile_digest: Digest32::of_bytes(&retrieval_profile),
+        encoder_preprocessor_digest: Digest32::of_bytes(
+            b"hepta.agentd.cognitive-context.query-encoder.v1",
+        ),
+        authority_epoch,
+        model_digest: unbound,
+        tokenizer_digest: unbound,
+        template_digest: unbound,
+        tool_schema_digest: unbound,
+    })
+}
+
+fn authoritative_request_id(
+    owner: &AgentId,
+    authority_epoch: u64,
+    query: &str,
+    limit: u16,
+    snapshot_digest: Digest32,
+) -> Result<StableId, CognitiveStoreError> {
+    let mut bytes = b"hepta.agentd.cognitive-context.authoritative-request.v1".to_vec();
+    bytes.extend_from_slice(owner.as_str().as_bytes());
+    bytes.extend_from_slice(&authority_epoch.to_be_bytes());
+    bytes.extend_from_slice(&(query.len() as u64).to_be_bytes());
+    bytes.extend_from_slice(query.as_bytes());
+    bytes.extend_from_slice(&limit.to_be_bytes());
+    bytes.extend_from_slice(snapshot_digest.as_array());
+    StableId::new(format!("cognitive-context-{}", Digest32::of_bytes(&bytes)))
+        .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))
+}
+
+fn now_millis() -> Result<u64, CognitiveStoreError> {
+    let millis = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?
-        .as_secs();
-    i64::try_from(seconds).map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))
+        .as_millis();
+    u64::try_from(millis).map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))
+}
+
+fn millis_to_seconds(millis: u64) -> Result<i64, CognitiveStoreError> {
+    i64::try_from(millis / 1000)
+        .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))
+}
+
+fn now_seconds() -> Result<i64, CognitiveStoreError> {
+    millis_to_seconds(now_millis()?)
 }
 
 #[cfg(test)]

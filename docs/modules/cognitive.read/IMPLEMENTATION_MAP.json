@@ -2,7 +2,7 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
+    "commit": "d7af096f28fa9989388939efa0e6600b52a43952",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "laneId": "LANE-C-MEMORY",
@@ -17,38 +17,77 @@
     "codex-rs/hepta-cognitive-read"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productionImplementation": true,
+  "productCallerState": "agentd_authoritative_composed",
   "productionWriterState": "not_established",
   "operations": [
+    {
+      "operation": "read_authoritative",
+      "nativeSymbol": "read_authoritative",
+      "sourcePath": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs",
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "acquire_snapshot/read/revalidate",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "read_v2"
+      ]
+    },
     {
       "operation": "read_v2",
       "nativeSymbol": "read_v2",
       "sourcePath": "codex-rs/hepta-cognitive-read/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_lower_level_primitive",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "read_v2",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "durablecognitivesnapshot",
-      "nativeSymbol": "DurableCognitiveSnapshot",
+      "operation": "lane_c_authoritative_snapshot_provider",
+      "nativeSymbol": "LaneCAuthoritativeSnapshotProvider",
       "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "durablecognitivesnapshot",
+      "designOperation": "acquire_snapshot/revalidate",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "agentd_cognitive_context",
+      "nativeSymbol": "cognitive_context::read",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "state": "named_product_caller_composed",
+      "authority": "host_generation_fenced",
+      "tests": [
+        "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+        "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "product_consume",
+      "mappingClass": "product_composition",
+      "delegatedCallees": [
+        "read_authoritative",
+        "revalidate_lane_c_authoritative_snapshot"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge tests before changing the qualification/release claim boundary.",
+    "Keep downstream model/tokenizer/template/tool generations bound at the later model-attachment boundary; the Agentd cognitive read intentionally declares an owner-local subset rather than fabricating those generations."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -58,7 +97,7 @@
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,

@@ -303,13 +303,13 @@ async fn sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deleti
             .unwrap();
         memory_ids.push(memory.id.memory_id);
     }
-    let baseline = crate::cognitive_context::read(&store, &owner(), 1, "lemon", 4, None)
+    let baseline = crate::cognitive_context::read(&store, &owner(), 1, 1, "lemon", 4, None)
         .await
         .unwrap();
     assert_eq!(baseline.items.len(), 2);
     let fixture = fixture(&baseline.items, &[0, 10]);
     let ranked =
-        crate::cognitive_context::read(&store, &owner(), 1, "lemon", 1, Some(&fixture.ranker))
+        crate::cognitive_context::read(&store, &owner(), 1, 1, "lemon", 1, Some(&fixture.ranker))
             .await
             .unwrap();
     assert_eq!(ranked.items, vec![baseline.items[1].clone()]);
@@ -334,7 +334,7 @@ async fn sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deleti
         .await
         .unwrap();
     let after =
-        crate::cognitive_context::read(&store, &owner(), 1, "lemon", 1, Some(&fixture.ranker))
+        crate::cognitive_context::read(&store, &owner(), 1, 1, "lemon", 1, Some(&fixture.ranker))
             .await
             .unwrap();
     assert_eq!(after.items, vec![baseline.items[0].clone()]);
@@ -431,11 +431,11 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
                 .unwrap(),
         );
     }
-    let baseline = crate::cognitive_context::read(&store, &owner(), 1, "lemon", 4, None)
+    let baseline = crate::cognitive_context::read(&store, &owner(), 1, 1, "lemon", 4, None)
         .await
         .unwrap();
     assert_eq!(baseline.items.len(), 2);
-    let retained = crate::cognitive_context::read(&store, &owner(), 1, "orchard", 4, None)
+    let retained = crate::cognitive_context::read(&store, &owner(), 1, 1, "orchard", 4, None)
         .await
         .unwrap();
     let mut fixture = fixture(&baseline.items, &[0, 10]);

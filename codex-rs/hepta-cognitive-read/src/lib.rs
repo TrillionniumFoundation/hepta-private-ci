@@ -27,6 +27,9 @@ pub use v2::MAX_ENCODED_READ_RESULT_BYTES_V2;
 pub use v2::ReadRequestV2;
 pub use v2::ReadResultV2;
 pub use v2::ReadV2Error;
+/// Lower-level snapshot projection primitive. Product callers that require current
+/// authority, retained-generation and lease guarantees should use
+/// [`read_authoritative`] through an authoritative owner adapter.
 pub use v2::read_v2;
 
 const MAX_RESULTS: usize = 1_024;
