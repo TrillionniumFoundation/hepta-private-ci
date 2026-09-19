@@ -64,3 +64,27 @@ fn qualification_authority_posture_is_unforgeable_from_granted_bits() {
         Err(AuthorityPostureError::GrantedBits(u8::MAX))
     );
 }
+
+#[test]
+fn deterministic_fuzz_sweep_matches_stable_id_ascii_grammar() {
+    let mut state = 0x8d26_4c73_9e51_a7b1_u64;
+    for case in 0..4096 {
+        let length = ((state as usize) % 32) + 1;
+        let mut bytes = Vec::with_capacity(length);
+        for _ in 0..length {
+            state ^= state << 13;
+            state ^= state >> 7;
+            state ^= state << 17;
+            bytes.push((state & 0x7f) as u8);
+        }
+        let value = String::from_utf8(bytes.clone()).expect("ASCII fuzz corpus");
+        let expected = bytes.iter().all(|byte| {
+            byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-' | b':')
+        });
+        assert_eq!(
+            StableId::new(value).is_ok(),
+            expected,
+            "deterministic fuzz case {case} diverged from StableId grammar"
+        );
+    }
+}
