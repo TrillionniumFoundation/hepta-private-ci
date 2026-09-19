@@ -681,6 +681,20 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
     assert_eq!(accepted.state, OutboxState::RetryScheduled);
     assert_eq!(accepted.attempts, 2);
     assert_eq!(accepted.sent_event_id, None);
+    let first_claim = store
+        .dispatch_authority_claim(&original.stable_txn_id, 1)
+        .await?
+        .ok_or("first authority claim disappeared")?;
+    let second_claim = store
+        .dispatch_authority_claim(&original.stable_txn_id, 2)
+        .await?
+        .ok_or("second authority claim disappeared")?;
+    assert_ne!(first_claim.grant_id, second_claim.grant_id);
+    assert_eq!(first_claim.authority_epoch, 17);
+    assert_eq!(first_claim.revocation_revision, 1);
+    assert_eq!(second_claim.revocation_revision, 1);
+    assert_eq!(first_claim.payload_digest, second_claim.payload_digest);
+    assert_eq!(first_claim.subject_id, agent_id.as_str());
     observe_outbound(
         &store,
         original.stable_txn_id.clone(),
