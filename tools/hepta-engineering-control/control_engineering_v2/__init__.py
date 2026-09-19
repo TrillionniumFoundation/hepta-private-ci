@@ -35,6 +35,7 @@ from .candidate import (
     generate_candidates,
     sandbox_candidate,
 )
+from .controller import EngineeringController
 from .control_plane import (
     EngineeringError,
     EngineeringStore,
@@ -111,6 +112,7 @@ __all__ = [
     "CandidateEnvelope",
     "CandidateEvidenceBindingReceipt",
     "CanonicalSourceReceipt",
+    "EngineeringController",
     "EngineeringError",
     "EngineeringStore",
     "EvaluatorIndependenceReceipt",
