@@ -1,13 +1,13 @@
 # objective.compiler: implementation design
 
 Parent: `docs/modules/objective.compiler/TECHNICAL.md`. Lane: `LANE-D-OBJECTIVE-VALUE`.
-Status: source candidate implemented and mapped; exact-head qualification and product composition remain separate. Common requirements: `../EXECUTION_SEMANTICS.md`, `../TECHNICAL.md`, `docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md` and `docs/contracts/OBJECTIVE_ERRORS.json`.
+Status: source candidate implemented with a named Agentd product composition and destination-owned durable run-start journal; exact-head/synthetic-merge qualification, target-host evidence, activation and independent acceptance remain separate. Common requirements: `../EXECUTION_SEMANTICS.md`, `../TECHNICAL.md`, `docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md` and `docs/contracts/OBJECTIVE_ERRORS.json`.
 
 ## 1. Source and work envelope
 
 Root: `codex-rs/hepta-objective`. Packages: `OBJ-0-OBJECTIVE-CONTRACTS`, `OBJ-1-OBJECTIVE-COMPILER`. Exact operation-to-symbol and test mappings are in `docs/modules/objective.compiler/IMPLEMENTATION_MAP.json`.
 
-This candidate changes no authority, effect or writer ownership. The module remains stateless for domain facts. The owning product caller, which is not established by this source candidate, persists immutable objective and run snapshots.
+This candidate changes no effect authority and keeps `objective.compiler` stateless for domain facts. The named source-level product caller is Agentd. It authenticates structured-objective ingress through current owner-controlled AuthBus trust, binds the verification receipt digest into admission, and asks the destination-owned learning-ledger `DurableRunStartJournal` to persist the immutable objective and `RunStartSnapshotV1` before runtime handoff.
 
 ## 2. Native operations and contract details
 
@@ -42,7 +42,7 @@ Normalization and canonical sorting are `O(n log n)`. A feasibility oracle has p
 
 ## 5. Capacity and performance profile
 
-Pilot bounds are 256 KiB raw input, 256 constraints, 128 success predicates, 64 soft dimensions, 127 caller actions without explicit abstain, 128 compiled actions and 257 conflict-oracle calls. No network or synchronous central RPC occurs in the deterministic compiler path.
+Pilot bounds are 256 KiB generic raw input; Source V1 admits at most 246 explicit constraints because admission deterministically generates 6 resource ceilings plus 4 risk/rollback constraints before the native 256-constraint ceiling. `successPredicates + terminalConditions + evidenceRequirements` share one native ceiling of 128. Legal source actions are at most 127 when intrinsic `abstain` is implicit, or 128 only when the profile maps an explicit valid `abstain`; compiled actions remain at most 128. Soft dimensions are at most 64 and conflict extraction is at most 257 oracle calls. The Agentd product frame deliberately applies a smaller source/body byte ceiling. No network or synchronous central RPC occurs in the deterministic compiler path itself.
 
 Latency claims require a named host, compiler, build profile, input class and exact source. A normal successful compile measurement cannot be reused as a conflict-extraction measurement.
 
@@ -67,7 +67,7 @@ The candidate issues no runtime, model, provider, network, filesystem, tool, sec
 ## 8. Current native implementation
 
 - **Implemented entrypoints:** `admit_and_compile_objective_v1` in [codex-rs/hepta-objective/src/objective_admission.rs](../../../codex-rs/hepta-objective/src/objective_admission.rs); `check_feasibility_v1` in [codex-rs/hepta-objective/src/feasibility.rs](../../../codex-rs/hepta-objective/src/feasibility.rs). Profile-bound source admission, deterministic compile and feasibility oracle implemented.
-- **State and recovery:** Stateless outputs bind the immutable source/principal/profile/schema/unit/time/intent tuple; unknown mappings fail closed. The owner caller must persist objective and run snapshot publication; the native compiler has no durable objective database.
+- **State and recovery:** Stateless outputs bind source/principal/profile/schema/unit/time/intent plus the preverified authentication receipt digest; unknown mappings fail closed. Agentd composes the product ingress and the sealed learning-ledger run-start journal owns durable objective/snapshot publication, idempotent exact-run replay, predecessor fencing and crash-tail recovery. The native compiler still has no durable objective database.
 - **Source tests:** [codex-rs/hepta-objective/src/objective_admission_tests.rs](../../../codex-rs/hepta-objective/src/objective_admission_tests.rs), [codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs](../../../codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md](../../../docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md), [docs/modules/objective.compiler/IMPLEMENTATION_MAP.json](../../../docs/modules/objective.compiler/IMPLEMENTATION_MAP.json).
-- **Remaining work:** Authenticate actual source context and compose the production caller; conflict-oracle budgets and target latency need separate measurements from ordinary compilation.
+- **Remaining work:** Current candidate CI must prove the exact head and deterministic synthetic merge. The repository supplies separate release-mode ordinary-admission and maximum-conflict measurement fixtures plus an exact-SHA recorder, but the selected deployment owner must still run them on the named target host/profile and retain p95/p99/resource evidence. Independent semantic acceptance, deployment activation, canary/promotion and release remain external.
