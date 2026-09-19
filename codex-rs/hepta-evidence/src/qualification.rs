@@ -593,6 +593,7 @@ pub struct StoredQualificationEvidence {
 pub struct EvidenceCheckpoint {
     pub schema_version: u32,
     pub store_instance_id: Sha256Digest,
+    pub trust_policy_sha256: Option<Sha256Digest>,
     pub receipt_count: u64,
     pub max_seq: u64,
     pub chain_head_sha256: Sha256Digest,
@@ -610,6 +611,14 @@ impl EvidenceCheckpoint {
         }
         validate_sha256("checkpoint store instance", &self.store_instance_id)?;
         validate_sha256("checkpoint chain head", &self.chain_head_sha256)?;
+        if let Some(trust_policy_sha256) = self.trust_policy_sha256.as_ref() {
+            validate_sha256("checkpoint trust policy", trust_policy_sha256)?;
+        }
+        if self.receipt_count > 0 && self.trust_policy_sha256.is_none() {
+            return Err(invalid(
+                "non-empty evidence checkpoint must bind the provisioned trust policy",
+            ));
+        }
         if self.receipt_count == 0 {
             if self.max_seq != 0 || self.chain_head_sha256.as_str() != QUALIFICATION_EVIDENCE_ZERO_CHAIN
             {
@@ -796,6 +805,22 @@ impl QualificationEvidence<'_> {
         .map_err(classify_sqlx_error)?;
         tx.commit().await.map_err(classify_sqlx_error)?;
         Ok(AppendDisposition::Inserted)
+    }
+
+    pub async fn verify_provisioned_trust_policy(
+        &self,
+        policy: &EvidenceTrustPolicy,
+    ) -> Result<(), EvidenceError> {
+        policy.validate()?;
+        let stored = load_trust_policy(&self.store.pool)
+            .await?
+            .ok_or_else(|| invalid("qualification trust policy has not been provisioned"))?;
+        if stored != *policy || stored.digest()? != policy.digest()? {
+            return Err(EvidenceError::IdempotencyConflict {
+                record_id: "qualification_trust_policy".to_string(),
+            });
+        }
+        Ok(())
     }
 
     pub async fn append_receipt(
@@ -1178,6 +1203,10 @@ impl QualificationEvidence<'_> {
 
     pub async fn export_checkpoint(&self) -> Result<EvidenceCheckpoint, EvidenceError> {
         let store_instance_id = load_store_instance_id(&self.store.pool).await?;
+        let trust_policy_sha256 = load_trust_policy(&self.store.pool)
+            .await?
+            .map(|policy| policy.digest())
+            .transpose()?;
         let receipt_count: i64 =
             sqlx::query_scalar("SELECT COUNT(*) FROM qualification_evidence")
                 .fetch_one(&self.store.pool)
@@ -1210,6 +1239,7 @@ impl QualificationEvidence<'_> {
         let checkpoint = EvidenceCheckpoint {
             schema_version: 1,
             store_instance_id,
+            trust_policy_sha256,
             receipt_count: u64::try_from(receipt_count)
                 .map_err(|_| EvidenceError::Corrupt("negative evidence count".into()))?,
             max_seq,
@@ -1228,6 +1258,11 @@ impl QualificationEvidence<'_> {
         if current.store_instance_id != checkpoint.store_instance_id {
             return Err(EvidenceError::Corrupt(
                 "qualification evidence database replacement detected".to_string(),
+            ));
+        }
+        if current.trust_policy_sha256 != checkpoint.trust_policy_sha256 {
+            return Err(EvidenceError::Corrupt(
+                "qualification evidence trust-policy checkpoint diverged".to_string(),
             ));
         }
         if current.receipt_count < checkpoint.receipt_count || current.max_seq < checkpoint.max_seq {
