@@ -170,6 +170,7 @@ CREATE TABLE matrix_dispatch_authority_claims (
     ),
     expires_at_ms INTEGER NOT NULL CHECK (expires_at_ms > 0),
     claimed_at_ms INTEGER NOT NULL CHECK (claimed_at_ms >= 0),
+    CHECK (expires_at_ms > claimed_at_ms),
     PRIMARY KEY (stable_txn_id, attempt),
     FOREIGN KEY (stable_txn_id) REFERENCES matrix_dispatch_ledger(stable_txn_id)
         ON DELETE RESTRICT
