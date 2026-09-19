@@ -23,20 +23,23 @@
       ]
     },
     {
-      "protocolId": "hepta.platform.wire.hpta-envelope.v1",
+      "protocolId": "hepta.platform.wire.versioned-envelope.v2",
       "module": "platform.wire",
-      "kind": "transport_neutral_binary_frame",
+      "kind": "transport_neutral_versioned_binary_frame",
       "source": [
-        "codex-rs/hepta-wire/src/envelope.rs",
-        "docs/lane-a-foundation/platform.wire/HPTA_V1_CONFORMANCE.json"
+        "codex-rs/hepta-wire/src/lib.rs",
+        "docs/lane-a-foundation/platform.wire/CURRENT_IMPLEMENTATION.md",
+        "docs/lane-a-foundation/platform.wire/HPTA_V1_CONFORMANCE.json",
+        "docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json",
+        "docs/lane-a-foundation/platform.wire/HPTN_V1_CONFORMANCE.json"
       ],
       "invariants": [
-        "magic is HPTA and version is exactly 1",
-        "schema and producer identifiers are 1 through 128 bytes",
-        "generation is nonzero big-endian u64",
-        "payload is 1 through 1048576 bytes",
-        "payload digest is verified before the owned payload copy",
-        "successful decode grants no transport acknowledgement or authority"
+        "HPTA V1 bytes and payload-digest semantics remain frozen",
+        "HPTA V2 binds schema producer generation lengths and payload in a domain-separated unkeyed frame digest",
+        "HPTN selects only an explicitly common locally implemented version and required capabilities fail closed",
+        "schema admission occurs before typed payload decode",
+        "stream decoder validates the fixed header before accepting advertised body size and buffers at most two maximum frames",
+        "successful negotiation or decode grants no transport acknowledgement authorization or external effect success"
       ]
     },
     {
