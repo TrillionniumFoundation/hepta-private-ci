@@ -108,9 +108,7 @@ impl StreamingDecoder {
 /// `std::os::unix::net::UnixStream`, files and pipes implement `Read`.
 pub fn read_frame<R: Read>(reader: &mut R) -> Result<DecodedEnvelope, ReadFrameError> {
     let mut header = [0_u8; WIRE_HEADER_BYTES];
-    reader
-        .read_exact(&mut header)
-        .map_err(ReadFrameError::Io)?;
+    reader.read_exact(&mut header).map_err(ReadFrameError::Io)?;
     let inspected = inspect_header(&header).map_err(ReadFrameError::Protocol)?;
     let mut frame = Vec::with_capacity(inspected.frame_length);
     frame.extend_from_slice(&header);
@@ -236,7 +234,10 @@ impl fmt::Display for StreamDecodeError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::InvalidBufferFrameLimit(frames) => {
-                write!(formatter, "wire stream frame buffer limit must be 1..=2, found {frames}")
+                write!(
+                    formatter,
+                    "wire stream frame buffer limit must be 1..=2, found {frames}"
+                )
             }
             Self::BufferLimit { attempted, maximum } => write!(
                 formatter,
@@ -244,7 +245,9 @@ impl fmt::Display for StreamDecodeError {
             ),
             Self::TruncatedHeader => formatter.write_str("wire stream header is truncated"),
             Self::Magic => formatter.write_str("wire stream magic mismatch"),
-            Self::Version(version) => write!(formatter, "unsupported wire stream version {version}"),
+            Self::Version(version) => {
+                write!(formatter, "unsupported wire stream version {version}")
+            }
             Self::IdentityLength => {
                 formatter.write_str("wire stream identity length is outside bounds")
             }
