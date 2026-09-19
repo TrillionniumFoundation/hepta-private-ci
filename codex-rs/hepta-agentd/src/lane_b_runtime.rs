@@ -266,8 +266,20 @@ impl AgentRunCoordinator {
         if snapshot.deadline_ms <= now_ms {
             return Err(AgentRunError::InvalidDeadline);
         }
-        if self.active_run_count() >= MAX_ACTIVE_RUNS || self.runs.len() >= MAX_RETAINED_RUNS {
+        if self.active_run_count() >= MAX_ACTIVE_RUNS {
             return Err(AgentRunError::CapacityExceeded);
+        }
+        if self.runs.len() >= MAX_RETAINED_RUNS {
+            // Closed rows are lifecycle recovery metadata, not an unbounded
+            // historical ledger. Compact one deterministic closed identity
+            // before rejecting healthy long-running owners at the retention
+            // ceiling. Explicit RunRemoveClosed remains an eager cleanup path.
+            let closed_run_id = self
+                .runs
+                .iter()
+                .find_map(|(run_id, record)| record.phase.closed().then(|| run_id.clone()))
+                .ok_or(AgentRunError::CapacityExceeded)?;
+            self.runs.remove(&closed_run_id);
         }
         let record = RunRecord {
             snapshot: snapshot.clone(),
