@@ -338,6 +338,7 @@ export async function startControlPlane({
       return priorRecovery.then(retryAfterPrior, retryAfterPrior);
     }
 
+    clearRecoveryRetry({ resetAttempts: false });
     stopTimer();
     const recoveryGeneration = ++lifecycleGeneration;
     activeRecoveryGeneration = recoveryGeneration;
