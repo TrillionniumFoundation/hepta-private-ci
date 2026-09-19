@@ -373,6 +373,8 @@ fn vertical_request() -> ReadOnlyVerticalRequest {
         required_read_evidence_item_id,
         ndu_profile: UtilityProfile {
             profile_id: id("utility.readonly.v1"),
+            axis_registry_digest: digest("utility.readonly.axis-registry.v1"),
+            normalization_manifest_digest: digest("utility.readonly.normalization.q32.v1"),
             dimensions: vec![(id("quality.ratio"), AxisDirection::Maximize)],
             risk_ceilings: Vec::new(),
             resource_ceilings: Vec::new(),
