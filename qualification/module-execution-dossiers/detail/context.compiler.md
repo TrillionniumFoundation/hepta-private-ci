@@ -16,7 +16,7 @@ Normative V2 native flow: `verify_admission_snapshot_v2(snapshot, verifier) -> V
 
 ## 3. State records and transaction design
 
-No authoritative store or model-call handle. `VerifiedAdmissionV2` is produced only through the verifier boundary and binds item id, role, content/source/generation digests, verifier identity, expiry and the snapshot/revocation epoch at verification. `SerializedContextV2` contains the actual final payload bytes plus a receipt binding the realization manifest, serializer/template/tool-schema identity and exact tokenizer result. `ContextAttachmentV2` binds the current verified admission snapshot used for attachment. `ContextDeliveryReceiptV2` binds the transport identity, exact transmitted payload digest, provider request id, acknowledgement digest and terminal observation. Raw assets are realized only after digest/admission checks; no receipt grants authority to call a provider outside the explicit transport adapter boundary.
+No authoritative store or model-call handle. `VerifiedAdmissionV2` is produced only through the verifier boundary and binds item id, role, content/source/generation digests, verifier-authenticated secret classification, verifier identity, expiry and the snapshot/revocation epoch at verification. Secret classification has no candidate-side override: a record classified as secret is rejected during admission verification. `SerializedContextV2` contains the actual final payload bytes plus a receipt binding the realization manifest, serializer/template/tool-schema identity and exact tokenizer result. `ContextAttachmentV2` binds the current verified admission snapshot used for attachment. `ContextDeliveryReceiptV2` binds the transport identity, exact transmitted payload digest, provider request id, acknowledgement digest and terminal observation. Raw assets are realized only after digest/admission checks; no receipt grants authority to call a provider outside the explicit transport adapter boundary.
 
 ## 4. Deterministic algorithm and scheduling
 
@@ -30,7 +30,7 @@ Pilot ceilings are design targets, not measurements. Stricter canonical limits p
 
 ## 6. Concrete verification cases
 
-- CTX-01: a well-formed admission record is insufficient unless the configured verifier accepts it, and role/content/source/generation bindings cannot be rewritten after verification.
+- CTX-01: a well-formed admission record is insufficient unless the configured verifier accepts it; role/content/source/generation and secret classification cannot be rewritten after verification, and a verifier-authenticated secret admission is rejected before compilation.
 - CTX-02: a tiny context budget preserves mandatory fields or explicitly refuses compilation; final serializer framing overhead is also checked against the real token budget.
 - CTX-03: compile-to-attach and attach-to-send revocation changes fail closed against a newer verified snapshot; snapshot epoch and observation time cannot roll back across attachment/delivery, and admission is expired when `observed_unix_ms >= expires_unix_ms`.
 - CTX-04: actual selected bytes must match compiled content digests, the final payload is tokenized after serialization, and a transport claiming a different transmitted payload digest cannot receive a delivered receipt.
