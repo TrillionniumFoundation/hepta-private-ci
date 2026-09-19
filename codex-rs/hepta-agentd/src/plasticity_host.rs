@@ -30,7 +30,7 @@ use crate::plasticity_anchor_journal::{
 
 const ANCHOR_MAGIC: [u8; 8] = *b"HPTAANC2";
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Debug)]
 pub enum AgentdPlasticityHostErrorV1 {
     AnchorBusy,
     AnchorNotRegular,
