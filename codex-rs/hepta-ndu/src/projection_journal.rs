@@ -73,6 +73,7 @@ pub enum NduProjectionJournalError {
     CorruptSequence,
     CorruptPredecessor,
     CorruptEntryDigest,
+    CheckpointMismatch,
     UnknownKind(u8),
 }
 
@@ -139,7 +140,10 @@ impl NduProjectionJournalV1 {
         }) {
             return Err(NduProjectionJournalError::ProjectionNotRecorded);
         }
-        if self.revoked_digests().contains(&projection_digest) {
+        if self
+            .revoked_keys()
+            .contains(&(objective_digest, subject_digest, projection_digest))
+        {
             return Err(NduProjectionJournalError::RevokedProjection);
         }
         self.append(
@@ -173,7 +177,7 @@ impl NduProjectionJournalV1 {
         objective_digest: Digest32,
         subject_digest: Digest32,
     ) -> Option<Digest32> {
-        let revoked = self.revoked_digests();
+        let revoked = self.revoked_keys();
         let mut selected = None;
         for entry in &self.entries {
             if entry.objective_digest != objective_digest || entry.subject_digest != subject_digest
@@ -182,8 +186,12 @@ impl NduProjectionJournalV1 {
             }
             match entry.kind {
                 NduProjectionKindV1::SelectedProjection => {
-                    selected =
-                        (!revoked.contains(&entry.payload_digest)).then_some(entry.payload_digest);
+                    let key = (
+                        entry.objective_digest,
+                        entry.subject_digest,
+                        entry.payload_digest,
+                    );
+                    selected = (!revoked.contains(&key)).then_some(entry.payload_digest);
                 }
                 NduProjectionKindV1::Revocation if selected == Some(entry.payload_digest) => {
                     selected = None;
@@ -191,7 +199,7 @@ impl NduProjectionJournalV1 {
                 _ => {}
             }
         }
-        selected.filter(|digest| !revoked.contains(digest))
+        selected.filter(|digest| !revoked.contains(&(objective_digest, subject_digest, *digest)))
     }
 
     fn append(
@@ -284,6 +292,28 @@ impl NduProjectionJournalV1 {
             bytes.extend_from_slice(entry.entry_digest.as_array());
         }
         bytes
+    }
+
+    /// Returns a content-addressed checkpoint suitable for storing in a
+    /// separately protected anchor. The journal does not treat this digest as
+    /// self-authenticating; callers must protect the expected checkpoint
+    /// independently from the bytes being verified.
+    #[must_use]
+    pub fn checkpoint_digest(&self) -> Digest32 {
+        Digest32::of_bytes(&self.export_bytes())
+    }
+
+    pub fn reopen_with_checkpoint(
+        bytes: &[u8],
+        expected_checkpoint: Digest32,
+    ) -> Result<Self, NduProjectionJournalError> {
+        if expected_checkpoint.is_zero() {
+            return Err(NduProjectionJournalError::EmptyDigest);
+        }
+        if Digest32::of_bytes(bytes) != expected_checkpoint {
+            return Err(NduProjectionJournalError::CheckpointMismatch);
+        }
+        Self::reopen(bytes)
     }
 
     pub fn reopen(bytes: &[u8]) -> Result<Self, NduProjectionJournalError> {
@@ -379,11 +409,17 @@ impl NduProjectionJournalV1 {
         Ok(journal)
     }
 
-    fn revoked_digests(&self) -> BTreeSet<Digest32> {
+    fn revoked_keys(&self) -> BTreeSet<(Digest32, Digest32, Digest32)> {
         self.entries
             .iter()
             .filter(|entry| entry.kind == NduProjectionKindV1::Revocation)
-            .map(|entry| entry.payload_digest)
+            .map(|entry| {
+                (
+                    entry.objective_digest,
+                    entry.subject_digest,
+                    entry.payload_digest,
+                )
+            })
             .collect()
     }
 }

@@ -120,9 +120,11 @@
           ]
         },
         "durability": {
-          "state": "owner_local_reference_implemented_not_production_writer",
+          "state": "owner_local_reference_with_scoped_revocation_and_external_checkpoint_not_production_writer",
           "evidence": [
-            "NduProjectionJournalV1"
+            "NduProjectionJournalV1",
+            "revocation_is_scoped_by_objective_subject_and_payload",
+            "externally_anchored_checkpoint_detects_full_journal_rewrite"
           ]
         },
         "independentConvergenceDecision": {
@@ -136,8 +138,15 @@
           "evidence": []
         },
         "productCaller": {
-          "state": "not_established",
-          "evidence": []
+          "state": "source_composed_pending_exact_head_qualification",
+          "evidence": [
+            "codex-rs/hepta-control-plane/src/planner_ndu.rs::evaluate_prepared_plan_with_ndu",
+            "codex-rs/hepta-control-plane/src/planner_context.rs::plan_observed_context",
+            "codex-rs/hepta-intelligence/src/vertical.rs::run_read_only_vertical",
+            "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs",
+            "codex-rs/hepta-control-plane/src/planner_context_tests.rs",
+            "codex-rs/hepta-intelligence/src/vertical_tests.rs"
+          ]
         },
         "productionWriter": {
           "state": "not_established",
@@ -160,6 +169,23 @@
           "evidence": [
             "missing_uncertainty_axis_is_unavailable",
             "candidate_support_digest_binds_organ_and_contribution_semantics"
+          ]
+        },
+        "preferenceContract": {
+          "state": "candidate_implemented",
+          "evidence": [
+            "preference_dimension_is_bounded_at_genesis",
+            "preference_values_are_rejected_before_solver_projection",
+            "already_converged_target_is_a_true_noop",
+            "iteration_budget_exhaustion_is_unavailable_not_a_terminal_state"
+          ]
+        },
+        "protocolProvenance": {
+          "state": "candidate_implemented",
+          "evidence": [
+            "canonical_iteration_context_digest_v1",
+            "a_solver_receipt_cannot_be_rebound_to_another_context",
+            "context_free_solver_evidence_cannot_be_published"
           ]
         }
       }
@@ -273,7 +299,7 @@
   },
   "externalGates": [
     "independent non-author review",
-    "production caller and production writer composition",
+    "production writer composition plus exact-candidate and target-host product qualification",
     "named-host resource and recovery measurements",
     "operator acceptance",
     "deployment and activation",

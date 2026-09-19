@@ -122,7 +122,7 @@ Critical protocol schemas:
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+Rust types and canonical JSON represent identical semantics. The owner-local `UtilityProfile` additionally carries mandatory axis-registry and normalization/scale/clipping manifest digests so unit or normalization drift cannot hide behind a stable profile ID. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
 ## 6. Data authority, persistence and migrations
 
@@ -177,7 +177,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Embed the deterministic evaluator under a frozen objective and versioned policy. The actual request-local context planner is described in the native host guide; it does not activate global adaptive reconfiguration. Projection journals are bounded owner-local references and must not be substituted for an independently selected production writer.
+Embed the deterministic evaluator under a frozen objective and versioned policy. The current source tree contains bounded product/read-only callers in Control planning and the Intelligence vertical; these are source-composition facts, not activation or release evidence. The request-local context planner does not activate global adaptive reconfiguration. Projection journals are bounded owner-local references with scoped revocation and optional externally anchored whole-journal checkpoints; they must not be substituted for an independently selected production writer.
 
 Current operating and state-format references:
 
@@ -195,7 +195,7 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-ndu/src/covariance_tests.rs](../../../codex-rs/hepta-ndu/src/covariance_tests.rs); named case: `scaled_covariance_recovers_three_instead_of_six_and_converts_microseconds`.
 - [codex-rs/hepta-ndu/src/evaluator_tests.rs](../../../codex-rs/hepta-ndu/src/evaluator_tests.rs); named case: `hard_violation_is_filtered_before_utility`.
 
-In `codex-rs`, run `just test -p codex-hepta-ndu`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/utility.ndu.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-ndu`, then the Lane-D all-target check and strict Clippy gate. The command text is not a stored result; use the exact-candidate workflow record for pass/fail status. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/utility.ndu.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -209,7 +209,7 @@ Applicable work packages:
 
 The bootstrap package is `NDU-0-PREFERENCE-UTILITY-CONTRACTS`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Source composition additionally requires a named consumer and executable consumer tests. Production persistence, stochastic coefficient admission, independent convergence acceptance and activation remain separately governed. Later planned packages may remain without invalidating documentation closure.
 
 ## 14. Activation, compatibility and retirement
 

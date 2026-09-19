@@ -41,8 +41,11 @@ means, rate/duration conversion, identity covariance, singular/indefinite and
 poorly conditioned matrices, covariance collapse, invalid samples/profiles,
 zero sensitivity, deterministic replay and the full 32-driver/8-utility envelope.
 
-Remaining gates include production coefficient-profile registration and consumer
-integration, original/whitened coordinate conversion, Q24 conversion/error
-receipts, independent mathematical review, conditional identification,
-well-posedness/stochastic FBSDE qualification and named-host resource/latency
-measurements. Algebraic regression tests do not establish those capabilities.
+`codex-hepta-types` already supplies bounded Q24/Q32 numeric conversion receipts,
+but this native f64 shadow kernel does not silently reinterpret those profiles or
+claim that an f64 Z estimate is an admitted Q24 coefficient artifact. Remaining
+gates include production coefficient-profile registration and consumer integration,
+original/whitened coordinate conversion, conversion evidence tying the f64 result
+to the registered coefficient artifact, independent mathematical review,
+conditional identification, well-posedness/stochastic FBSDE qualification and
+named-host resource/latency measurements. Algebraic regression tests do not establish those capabilities.

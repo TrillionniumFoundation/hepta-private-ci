@@ -1,3 +1,5 @@
+#![allow(deprecated)]
+
 use std::fmt::Debug;
 
 use codex_hepta_types::Digest32;
@@ -8,6 +10,7 @@ use pretty_assertions::assert_eq;
 
 use super::canonical_evaluation_policy_digest;
 use super::canonical_scalarization_digest;
+use super::canonical_utility_profile_digest;
 use super::evaluate_candidates;
 use super::evaluate_candidates_with_policy;
 use super::legacy_evaluation_policy;
@@ -96,6 +99,8 @@ fn contribution(candidate: &str, success: i64, latency: i64) -> UtilityContribut
 fn profile() -> UtilityProfile {
     UtilityProfile {
         profile_id: id("utility-v1"),
+        axis_registry_digest: Digest32::of_bytes(b"utility-v1-axis-registry"),
+        normalization_manifest_digest: Digest32::of_bytes(b"utility-v1-normalization"),
         dimensions: vec![
             (id("success"), AxisDirection::Maximize),
             (id("latency"), AxisDirection::Minimize),
@@ -414,4 +419,42 @@ fn candidate_support_digest_binds_organ_and_contribution_semantics() {
         .support_digest;
 
     assert_ne!(first_support, second_support);
+}
+
+#[test]
+fn utility_profile_digest_binds_axis_and_normalization_manifests() {
+    let baseline = profile();
+    let baseline_digest = must(canonical_utility_profile_digest(&baseline));
+
+    let mut changed_axis_registry = baseline.clone();
+    changed_axis_registry.axis_registry_digest = Digest32::of_bytes(b"different-axis-registry");
+    assert_ne!(
+        baseline_digest,
+        must(canonical_utility_profile_digest(&changed_axis_registry))
+    );
+
+    let mut changed_normalization = baseline;
+    changed_normalization.normalization_manifest_digest =
+        Digest32::of_bytes(b"different-normalization");
+    assert_ne!(
+        baseline_digest,
+        must(canonical_utility_profile_digest(&changed_normalization))
+    );
+}
+
+#[test]
+fn utility_profile_rejects_missing_semantic_manifests() {
+    let mut missing_axis_registry = profile();
+    missing_axis_registry.axis_registry_digest = Digest32::ZERO;
+    assert_eq!(
+        must_err(canonical_utility_profile_digest(&missing_axis_registry)),
+        crate::NduError::EmptyProfileDigest("axis_registry")
+    );
+
+    let mut missing_normalization = profile();
+    missing_normalization.normalization_manifest_digest = Digest32::ZERO;
+    assert_eq!(
+        must_err(canonical_utility_profile_digest(&missing_normalization)),
+        crate::NduError::EmptyProfileDigest("normalization_manifest")
+    );
 }

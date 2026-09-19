@@ -109,6 +109,81 @@ fn revocation_prevents_projection_resurrection() {
 }
 
 #[test]
+fn revocation_is_scoped_by_objective_subject_and_payload() {
+    let projection = digest("shared-projection");
+    let objective_a = digest("objective-a");
+    let objective_b = digest("objective-b");
+    let subject_a = digest("subject-a");
+    let subject_b = digest("subject-b");
+    let mut journal = NduProjectionJournalV1::new();
+
+    must(journal.append_projection(
+        NduProjectionKindV1::Preference,
+        digest("projection-a"),
+        objective_a,
+        subject_a,
+        projection,
+    ));
+    must(journal.append_projection(
+        NduProjectionKindV1::Preference,
+        digest("projection-b"),
+        objective_b,
+        subject_b,
+        projection,
+    ));
+    must(journal.select_projection(digest("selection-a"), objective_a, subject_a, projection));
+    must(journal.select_projection(digest("selection-b"), objective_b, subject_b, projection));
+    must(journal.revoke_projection(digest("revocation-a"), objective_a, subject_a, projection));
+
+    assert_eq!(
+        journal.selected_projection_digest(objective_a, subject_a),
+        None
+    );
+    assert_eq!(
+        journal.selected_projection_digest(objective_b, subject_b),
+        Some(projection)
+    );
+    must(journal.select_projection(
+        digest("selection-b-again"),
+        objective_b,
+        subject_b,
+        projection,
+    ));
+}
+
+#[test]
+fn externally_anchored_checkpoint_detects_full_journal_rewrite() {
+    let mut journal = NduProjectionJournalV1::new();
+    must(journal.append_projection(
+        NduProjectionKindV1::Utility,
+        digest("identity"),
+        digest("objective"),
+        digest("subject"),
+        digest("projection"),
+    ));
+    let checkpoint = journal.checkpoint_digest();
+    let bytes = journal.export_bytes();
+    let reopened = must(NduProjectionJournalV1::reopen_with_checkpoint(
+        &bytes, checkpoint,
+    ));
+    assert_eq!(reopened.entries(), journal.entries());
+
+    let mut rewritten = NduProjectionJournalV1::new();
+    must(rewritten.append_projection(
+        NduProjectionKindV1::Utility,
+        digest("other-identity"),
+        digest("objective"),
+        digest("subject"),
+        digest("other-projection"),
+    ));
+    assert_eq!(
+        NduProjectionJournalV1::reopen_with_checkpoint(&rewritten.export_bytes(), checkpoint,)
+            .expect_err("independently stored checkpoint must reject rewritten bytes"),
+        NduProjectionJournalError::CheckpointMismatch
+    );
+}
+
+#[test]
 fn truncation_and_tampering_fail_closed() {
     let mut journal = NduProjectionJournalV1::new();
     must(journal.append_projection(

@@ -64,6 +64,10 @@ struct ValidatedEvaluationPolicy {
 
 /// Compatibility entry point. Its former implicit sum/sum/sum/max and exact
 /// Pareto semantics are now materialized as a digestible policy.
+#[deprecated(
+    since = "0.0.0",
+    note = "new integrations must use evaluate_candidates_with_policy and NduEvaluationReceiptV2"
+)]
 pub fn evaluate_candidates(
     set: ContributionSet,
     profile: UtilityProfile,
@@ -242,7 +246,8 @@ pub fn legacy_evaluation_policy(profile: &UtilityProfile) -> Result<EvaluationPo
     })
 }
 
-/// Binds all utility directions, feasibility ceilings and required organs.
+/// Binds immutable axis/normalization manifests, utility directions,
+/// feasibility ceilings and required organs.
 pub fn canonical_utility_profile_digest(profile: &UtilityProfile) -> Result<Digest32, NduError> {
     let mut normalized = profile.clone();
     validate_profile(&mut normalized)?;
@@ -302,6 +307,12 @@ fn validate_contribution_envelope(set: &ContributionSet) -> Result<(), NduError>
 }
 
 fn validate_profile(profile: &mut UtilityProfile) -> Result<(), NduError> {
+    if profile.axis_registry_digest.is_zero() {
+        return Err(NduError::EmptyProfileDigest("axis_registry"));
+    }
+    if profile.normalization_manifest_digest.is_zero() {
+        return Err(NduError::EmptyProfileDigest("normalization_manifest"));
+    }
     if profile.dimensions.is_empty()
         || profile.dimensions.len() > MAX_UTILITY_DIMENSIONS
         || profile.risk_ceilings.len() > MAX_RISK_RESOURCE_DIMENSIONS

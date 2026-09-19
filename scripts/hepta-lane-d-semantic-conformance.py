@@ -178,8 +178,57 @@ def verify() -> int:
         "digest_contribution",
         "uncertainty:{axis}",
         "support_digests.push(contribution_digest)",
+        "axis_registry_digest.is_zero()",
+        "normalization_manifest_digest.is_zero()",
+        "#[deprecated(",
     ]:
         need(token in ndu, "NDU hardening " + token)
+
+    preference = (ROOT / "codex-rs/hepta-ndu/src/preference.rs").read_text(
+        encoding="utf-8"
+    )
+    for token in [
+        "MAX_PREFERENCE_DIMENSIONS: usize = 64",
+        "validate_preference_values(&target)?",
+        "iterations: 0",
+        "ConvergenceUnavailable",
+        "solve_preference_target_with_context",
+        "validate_parent_shape",
+    ]:
+        need(token in preference, "NDU preference contract " + token)
+
+    protocol = (ROOT / "codex-rs/hepta-ndu/src/protocol.rs").read_text(
+        encoding="utf-8"
+    )
+    for token in [
+        "canonical_iteration_context_digest_v1",
+        "receipt.context_digest() != expected_context_digest",
+        "ProtocolContextMismatch",
+    ]:
+        need(token in protocol, "NDU protocol provenance " + token)
+
+    journal = (ROOT / "codex-rs/hepta-ndu/src/projection_journal.rs").read_text(
+        encoding="utf-8"
+    )
+    for token in [
+        "revoked_keys",
+        "(objective_digest, subject_digest, projection_digest)",
+        "reopen_with_checkpoint",
+        "CheckpointMismatch",
+    ]:
+        need(token in journal, "NDU journal contract " + token)
+
+    legacy_callers = []
+    for candidate in (ROOT / "codex-rs").glob("hepta-*/src/**/*.rs"):
+        relative = candidate.relative_to(ROOT).as_posix()
+        if relative in {
+            "codex-rs/hepta-ndu/src/evaluator.rs",
+            "codex-rs/hepta-ndu/src/evaluator_tests.rs",
+        }:
+            continue
+        if re.search(r"\bevaluate_candidates\s*\(", candidate.read_text(encoding="utf-8")):
+            legacy_callers.append(relative)
+    need(not legacy_callers, f"new legacy NDU evaluator callers: {legacy_callers}")
 
     planner = (ROOT / "codex-rs/hepta-control-plane/src/planner.rs").read_text(
         encoding="utf-8"
@@ -271,10 +320,21 @@ def verify() -> int:
         "maturity module closure",
     )
     for row in maturity["modules"]:
-        for key in ["productCaller", "independentAcceptance", "activation", "release"]:
+        for key in ["independentAcceptance", "activation", "release"]:
             need(
                 row["dimensions"][key]["state"] == "not_established",
                 f"truth boundary {row['module']} {key}",
+            )
+        product_caller = row["dimensions"]["productCaller"]["state"]
+        if row["module"] == "utility.ndu":
+            need(
+                product_caller == "source_composed_pending_exact_head_qualification",
+                "truth boundary utility.ndu productCaller",
+            )
+        else:
+            need(
+                product_caller == "not_established",
+                f"truth boundary {row['module']} productCaller",
             )
 
     print(
