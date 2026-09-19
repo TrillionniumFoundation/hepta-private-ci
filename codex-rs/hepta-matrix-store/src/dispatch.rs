@@ -356,6 +356,82 @@ impl MatrixDurableStore {
         Ok(true)
     }
 
+    pub async fn observe_dispatch_terminal_failure_if_known(
+        &self,
+        txn_id: &MatrixTransactionId,
+        room_id: &MatrixRoomId,
+        observation_digest: &str,
+        observed_at_ms: u64,
+    ) -> Result<bool, MatrixDurableError> {
+        validate_digest(observation_digest)?;
+        let mut transaction = self
+            .sqlite_pool()
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(|_| MatrixDurableError::Unavailable)?;
+        let Some(current) = dispatch_by_txn_tx(&mut transaction, txn_id).await? else {
+            transaction
+                .commit()
+                .await
+                .map_err(|_| MatrixDurableError::Unavailable)?;
+            return Ok(false);
+        };
+        if current.state == MatrixDispatchState::Failed {
+            if current.send_observation_digest.as_deref() == Some(observation_digest) {
+                transaction
+                    .commit()
+                    .await
+                    .map_err(|_| MatrixDurableError::Unavailable)?;
+                return Ok(true);
+            }
+            return Err(MatrixDurableError::Conflict);
+        }
+        if matches!(current.state, MatrixDispatchState::Succeeded | MatrixDispatchState::Redacted)
+            || current.room_id != room_id.as_str()
+            || observed_at_ms < current.updated_at_ms
+        {
+            return Err(MatrixDurableError::Conflict);
+        }
+        sqlx::query(
+            "UPDATE matrix_dispatch_ledger
+             SET state = 'failed', send_observation_digest = ?,
+                 updated_at_ms = ?, terminal_at_ms = ?
+             WHERE stable_txn_id = ?",
+        )
+        .bind(observation_digest)
+        .bind(to_i64(observed_at_ms)?)
+        .bind(to_i64(observed_at_ms)?)
+        .bind(txn_id.as_str())
+        .execute(&mut *transaction)
+        .await
+        .map_err(|_| MatrixDurableError::Unavailable)?;
+        append_observation(
+            &mut transaction,
+            txn_id,
+            "terminal_failure",
+            "",
+            observation_digest,
+            observed_at_ms,
+        )
+        .await?;
+        sqlx::query(
+            "UPDATE outbox_messages
+             SET state = 'permanent_failure', lease_until_ms = NULL,
+                 updated_at_ms = MAX(updated_at_ms, ?), sent_event_id = NULL
+             WHERE stable_txn_id = ? AND state != 'sent'",
+        )
+        .bind(to_i64(observed_at_ms)?)
+        .bind(txn_id.as_str())
+        .execute(&mut *transaction)
+        .await
+        .map_err(|_| MatrixDurableError::Unavailable)?;
+        transaction
+            .commit()
+            .await
+            .map_err(|_| MatrixDurableError::Unavailable)?;
+        Ok(true)
+    }
+
     pub async fn observe_dispatch_redaction_if_known(
         &self,
         room_id: &MatrixRoomId,
