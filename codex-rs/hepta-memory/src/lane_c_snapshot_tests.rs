@@ -1,6 +1,8 @@
 use codex_hepta_cognitive_read::ReadRequest;
 use codex_hepta_cognitive_read::ReadRequestV2;
+use codex_hepta_cognitive_read::SnapshotAcquisitionRequestV1;
 use codex_hepta_cognitive_read::SnapshotProviderError;
+use codex_hepta_cognitive_read::read_authoritative;
 use codex_hepta_cognitive_types::MemoryKind;
 use codex_hepta_cognitive_types::RecordState;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
@@ -355,6 +357,106 @@ async fn retained_cut_detects_old_valid_backup_after_ordinary_reopen() {
     assert!(matches!(
         reopened
             .revalidate_lane_c_cut(&access, &scope, retained_witness.parse().unwrap(), 201)
+            .await,
+        Err(CognitiveStoreError::Conflict(_))
+    ));
+}
+
+
+#[tokio::test]
+async fn authoritative_production_provider_fails_closed_after_frontier_advance_and_lease_expiry() {
+    let temp = TempDir::new().unwrap();
+    let owner = agent_id(109);
+    let store = CognitiveStore::open(&layout(&temp, &owner)).await.unwrap();
+    let access = CognitiveAccess::agent_private(owner);
+    let scope = CognitiveScope::AgentPrivate;
+    let citation = store
+        .append_source(&access, &source(scope.clone(), "authoritative-event", "evidence"))
+        .await
+        .unwrap();
+    store
+        .remember_memory(
+            &access,
+            &MemoryDraft {
+                stable_key: "authoritative".to_string(),
+                revision: memory_revision(scope.clone(), "authoritative fact", citation),
+            },
+        )
+        .await
+        .unwrap();
+
+    let cut = store.lane_c_snapshot(&access, &scope, 200).await.unwrap();
+    let provider = cut
+        .authoritative_provider(vector(&cut), 200_000, 230_000)
+        .unwrap();
+    let request = SnapshotAcquisitionRequestV1 {
+        request_id: StableId::new("request:authoritative-production").unwrap(),
+        scope_id: cut.scope_id().clone(),
+        purpose_id: StableId::new("read-only-context").unwrap(),
+        minimum_memory_frontier: cut.frontiers().memory,
+        minimum_tombstone_frontier: cut.frontiers().tombstone,
+        authority_epoch: 1,
+        deadline_unix_ms: 225_000,
+    };
+    let result = read_authoritative(
+        &provider,
+        200_001,
+        request.clone(),
+        ReadRequestV2 {
+            read_request: ReadRequest {
+                snapshot_digest: cut.snapshot().snapshot_digest,
+                allowed_kinds: vec![MemoryKind::Fact],
+                maximum_results: 10,
+                include_tombstones: false,
+            },
+            maximum_encoded_bytes: 8192,
+        },
+    )
+    .unwrap();
+    assert_eq!(result.read_result.records().len(), 1);
+
+    store
+        .append_source(
+            &access,
+            &source(scope.clone(), "authoritative-later-event", "frontier advance"),
+        )
+        .await
+        .unwrap();
+    assert!(matches!(
+        store
+            .revalidate_lane_c_authoritative_snapshot(
+                &access,
+                &scope,
+                provider.envelope(),
+                &request,
+                200_100,
+            )
+            .await,
+        Err(CognitiveStoreError::Conflict(_))
+    ));
+
+    let fresh = store.lane_c_snapshot(&access, &scope, 201).await.unwrap();
+    let fresh_provider = fresh
+        .authoritative_provider(vector(&fresh), 201_000, 202_000)
+        .unwrap();
+    let fresh_request = SnapshotAcquisitionRequestV1 {
+        request_id: StableId::new("request:authoritative-expiry").unwrap(),
+        scope_id: fresh.scope_id().clone(),
+        purpose_id: StableId::new("read-only-context").unwrap(),
+        minimum_memory_frontier: fresh.frontiers().memory,
+        minimum_tombstone_frontier: fresh.frontiers().tombstone,
+        authority_epoch: 1,
+        deadline_unix_ms: 202_000,
+    };
+    assert!(matches!(
+        store
+            .revalidate_lane_c_authoritative_snapshot(
+                &access,
+                &scope,
+                fresh_provider.envelope(),
+                &fresh_request,
+                202_000,
+            )
             .await,
         Err(CognitiveStoreError::Conflict(_))
     ));
