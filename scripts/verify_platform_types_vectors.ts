@@ -22,6 +22,7 @@ interface VectorField {
 interface CanonicalVector {
   name: string;
   domain: string;
+  schemaVersion: string;
   fields: VectorField[];
   canonicalHex: string;
   sha256: string;
@@ -55,6 +56,12 @@ function u16(value: number): Buffer {
 function u32(value: number): Buffer {
   const buffer = Buffer.alloc(4);
   buffer.writeUInt32BE(value);
+  return buffer;
+}
+
+function u64(value: bigint): Buffer {
+  const buffer = Buffer.alloc(8);
+  buffer.writeBigUInt64BE(value);
   return buffer;
 }
 
@@ -102,6 +109,10 @@ function encode(vector: CanonicalVector): Buffer {
   if (!vector.domain || domain.length > 128 || !TOKEN.test(vector.domain)) {
     throw new Error("invalid domain: " + vector.domain);
   }
+  const schemaVersion = BigInt(vector.schemaVersion);
+  if (schemaVersion <= 0n || schemaVersion > 0xffff_ffff_ffff_ffffn) {
+    throw new Error("schemaVersion must be a nonzero u64");
+  }
   if (vector.fields.length > 1024) {
     throw new Error("too many fields");
   }
@@ -119,6 +130,7 @@ function encode(vector: CanonicalVector): Buffer {
     PREFIX,
     u16(domain.length),
     domain,
+    u64(schemaVersion),
     u16(vector.fields.length),
   ];
   for (const field of vector.fields) {
