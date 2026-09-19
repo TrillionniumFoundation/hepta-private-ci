@@ -17,8 +17,8 @@ use crate::ArtifactClosureError;
 use crate::ArtifactLifecycleEventV1;
 use crate::ArtifactLifecycleStateV1;
 use crate::validate_artifact_lifecycle_transition;
+use crate::limits::MAX_DURABLE_ARTIFACT_RECORDS;
 
-const MAX_LIFECYCLE_RECORDS: usize = 1_000_000;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LifecycleActorRoleV2 {
@@ -150,7 +150,7 @@ impl ArtifactLifecycleJournalV2 {
                 authority: AuthorityPosture::DENY_ALL,
             });
         }
-        if self.records.len() >= MAX_LIFECYCLE_RECORDS {
+        if self.records.len() >= MAX_DURABLE_ARTIFACT_RECORDS {
             return Err(ArtifactLifecycleJournalError::RecordLimit);
         }
         let current = self
