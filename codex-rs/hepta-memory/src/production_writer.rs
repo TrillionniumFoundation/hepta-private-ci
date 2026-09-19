@@ -2260,7 +2260,10 @@ mod final_use_dispatch_tests {
     use super::*;
     use codex_hepta_contracts::FinalUseGrant;
     use codex_hepta_contracts::FinalUseRevocations;
+    use codex_hepta_operations::OperationKey;
     use codex_hepta_paths::HeptaFleetRoot;
+    use codex_hepta_types::Digest32;
+    use codex_hepta_types::StableId;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
     use std::collections::BTreeSet;
@@ -2331,6 +2334,24 @@ mod final_use_dispatch_tests {
     impl FinalUseProductionOutboxTarget for CountingTarget {
         fn destination_id(&self) -> &str {
             &self.destination
+        }
+    }
+
+    fn bound_operation(
+        owner: &AgentId,
+        operation_id: &str,
+        destination: &str,
+        payload: &str,
+    ) -> OperationIntent {
+        OperationIntent {
+            key: OperationKey {
+                id: StableId::new(operation_id).expect("operation id"),
+                payload_digest: Digest32::of_bytes(payload.as_bytes()),
+            },
+            scope: StableId::new("scope:production-test").expect("scope"),
+            owner: StableId::new(owner.as_str()).expect("owner"),
+            destination: StableId::new(destination).expect("destination"),
+            expected_predecessor: None,
         }
     }
 
@@ -2412,11 +2433,17 @@ mod final_use_dispatch_tests {
         let dispatcher =
             ProductionFinalUseOutboxDispatcher::attach(final_use.clone(), target.clone());
 
+        let payload_one = "{\"fact\":\"one\"}";
         let queued = writer
-            .admit(
-                "occurrence:final-use:1",
+            .prepare_operation(
+                bound_operation(
+                    &owner,
+                    "occurrence:final-use:1",
+                    target.destination_id(),
+                    payload_one,
+                ),
                 "memory.write",
-                "{\"fact\":\"one\"}",
+                payload_one,
             )
             .await
             .expect("queued");
@@ -2436,11 +2463,17 @@ mod final_use_dispatch_tests {
         assert_eq!(dispatched.state, LocalOutcomeState::Committed);
         assert_eq!(target.calls(), 1);
 
+        let payload_two = "{\"fact\":\"two\"}";
         let queued_bad = writer
-            .admit(
-                "occurrence:final-use:2",
+            .prepare_operation(
+                bound_operation(
+                    &owner,
+                    "occurrence:final-use:2",
+                    target.destination_id(),
+                    payload_two,
+                ),
                 "memory.write",
-                "{\"fact\":\"two\"}",
+                payload_two,
             )
             .await
             .expect("second queued");
@@ -2491,11 +2524,17 @@ mod final_use_dispatch_tests {
         )
         .await
         .expect("old writer");
+        let handoff_payload = "{\"fact\":\"handoff\"}";
         let queued = old
-            .admit(
-                "occurrence:queued-handoff",
+            .prepare_operation(
+                bound_operation(
+                    &owner,
+                    "occurrence:queued-handoff",
+                    "destination:cognitive-store",
+                    handoff_payload,
+                ),
                 "memory.write",
-                "{\"fact\":\"handoff\"}",
+                handoff_payload,
             )
             .await
             .expect("queued");
