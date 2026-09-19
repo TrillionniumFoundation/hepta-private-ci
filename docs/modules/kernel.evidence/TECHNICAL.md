@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-evidence/src/provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs); observed identifiers include `StoredProviderEffect`, `append_provider_effect_intent`, `dispatch_provider_effect_qualification`, `append_provider_effect_ack`, `mark_provider_effect_indeterminate`, `reconcile_provider_effect_lookup`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md) for the implemented subset and remaining product work.
+The canonical qualification implementation is [codex-rs/hepta-evidence/src/qualification.rs](../../../codex-rs/hepta-evidence/src/qualification.rs), backed by migration `0011_qualification_evidence.sql`. The legacy provider-effect journal remains in [provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs). A named product caller/writer is composed in [codex-rs/hepta-agentd/src/evidence_host.rs](../../../codex-rs/hepta-agentd/src/evidence_host.rs) with an owner-controlled multi-issuer trust boundary in `evidence_trust.rs`. Product composition is explicitly configuration gated and grants no selection, promotion or release authority. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md#8-current-native-implementation) for exact current claims and remaining external gates.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -56,6 +56,7 @@ Direct dependencies:
 
 Authoritative write domains:
 
+- `independent_decision_receipt_v1`
 - `qualification_evidence`
 
 Explicitly denied capabilities:
@@ -88,6 +89,7 @@ Configuration is immutable for one process generation. Changes affecting authori
 Produced contracts:
 
 - `DomainRead::qualification_evidenceV1`
+- `IndependentDecisionReceiptV1`
 - `ModulePort::kernel.evidence::control.engineering`
 - `ModulePort::kernel.evidence::control.runtime`
 - `ModulePort::kernel.evidence::learning.eval`
@@ -96,6 +98,9 @@ Produced contracts:
 
 Consumed contracts:
 
+- `AlgorithmFaultReceiptV1`
+- `CandidateEvaluationReceiptV1`
+- `ConformanceReceiptV1`
 - `DomainRead::automation_occurrenceV1`
 - `DomainRead::automation_scheduleV1`
 - `DomainRead::browser_profile_stateV1`
@@ -119,7 +124,11 @@ Consumed contracts:
 
 Critical protocol schemas:
 
+- `AlgorithmFaultReceiptV1`
+- `CandidateEvaluationReceiptV1`
+- `ConformanceReceiptV1`
 - `EvaluationReceiptV1`
+- `IndependentDecisionReceiptV1`
 - `LocalModelRuntimeReceiptV1`
 - `LongitudinalEvaluationReceiptV1`
 - `UnlearningComplianceReceiptV1`
@@ -132,6 +141,7 @@ Rust types and canonical JSON represent identical semantics. Tests cover round t
 
 Owned authoritative or rebuildable domains:
 
+- `independent_decision_receipt_v1`
 - `qualification_evidence`
 
 Read-only data dependencies:
@@ -168,7 +178,7 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-evidence/src/provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current qualification bounds are enforced in [codex-rs/hepta-evidence/src/qualification.rs](../../../codex-rs/hepta-evidence/src/qualification.rs): 256 KiB canonical receipt, 64 referenced assets, 256 predecessor edges and 512 query references. Agentd deliberately applies a stricter 48 KiB control-wire ceiling. Provider-effect limits remain in `provider_effect_store.rs`.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
@@ -178,7 +188,10 @@ Operate through the existing evidence store and its migrations. Keep candidate, 
 
 Current operating and state-format references:
 
-- [codex-rs/hepta-evidence/src/provider_effect_store.rs](../../../codex-rs/hepta-evidence/src/provider_effect_store.rs).
+- [codex-rs/hepta-evidence/src/qualification.rs](../../../codex-rs/hepta-evidence/src/qualification.rs);
+- [codex-rs/hepta-agentd/src/evidence_host.rs](../../../codex-rs/hepta-agentd/src/evidence_host.rs);
+- [docs/lane-a-foundation/kernel.evidence/STORE_V1.md](../../lane-a-foundation/kernel.evidence/STORE_V1.md);
+- [docs/lane-a-foundation/kernel.evidence/RECOVERY_FRONTIER_V1.md](../../lane-a-foundation/kernel.evidence/RECOVERY_FRONTIER_V1.md).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -186,10 +199,12 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-evidence/src/qualification_tests.rs](../../../codex-rs/hepta-evidence/src/qualification_tests.rs): EVID-01..04, authenticated idempotency/replay, independent-decision binding, correction/revocation non-resurrection and reopen corruption.
+- [codex-rs/hepta-agentd/tests/kernel_evidence_product.rs](../../../codex-rs/hepta-agentd/tests/kernel_evidence_product.rs): real daemon append/query/verify, distinct reviewer principals, terminal observer and current revocation.
 - [codex-rs/hepta-evidence/src/authbus_outbox_issuer_tests.rs](../../../codex-rs/hepta-evidence/src/authbus_outbox_issuer_tests.rs); named case: `current_issuer_scan_cannot_be_starved_by_older_epochs_or_other_issuers`.
 - [codex-rs/hepta-evidence/src/authbus_outbox_quarantine_tests.rs](../../../codex-rs/hepta-evidence/src/authbus_outbox_quarantine_tests.rs); named case: `quarantine_requires_current_fence_and_survives_reopen_without_acknowledgement`.
 
-In `codex-rs`, run `just test -p codex-hepta-evidence`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-evidence` and `cargo test -p codex-hepta-agentd --test kernel_evidence_product`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.evidence.md) separately labels target acceptance designs.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -205,7 +220,7 @@ Source implementation completes only when the declared target root exists, publi
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+The named product caller/writer host is now source-composed in Agentd and appears only when `--evidence-trust-file` successfully attaches a current multi-issuer trust registry. That establishes product composition, not operator activation or independent acceptance. Production activation still requires the external recovery frontier, exact-candidate independent acceptance and remaining evidence predecessors.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
@@ -356,9 +371,12 @@ This receipt records repository source bindings for the current documentation ca
 
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
-| `append_provider_effect_intent` | `append_provider_effect_intent` | `codex-rs/hepta-evidence/src/provider_effect_store.rs` | `pending` |
-| `reconcile_provider_effect_lookup` | `reconcile_provider_effect_lookup` | `codex-rs/hepta-evidence/src/provider_effect_store.rs` | `pending` |
+| `append_receipt` | `QualificationEvidenceStore::append_receipt` | `codex-rs/hepta-evidence/src/qualification.rs` | `qualification_tests.rs`, `kernel_evidence_product.rs` |
+| `query_claim` | `QualificationEvidenceStore::query_claim` | `codex-rs/hepta-evidence/src/qualification.rs` | `qualification_tests.rs`, `kernel_evidence_product.rs` |
+| `verify_chain` | `QualificationEvidenceStore::verify_chain` | `codex-rs/hepta-evidence/src/qualification.rs` | `qualification_tests.rs`, `kernel_evidence_product.rs` |
+| `append_provider_effect_intent` | `append_provider_effect_intent` | `codex-rs/hepta-evidence/src/provider_effect_store.rs` | `provider_effect_tests.rs` |
+| `reconcile_provider_effect_lookup` | `reconcile_provider_effect_lookup` | `codex-rs/hepta-evidence/src/provider_effect_store.rs` | `provider_effect_tests.rs` |
 
-- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
-- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+- Named product caller/writer: `runtime.agentd`, configuration gated by `--evidence-trust-file`.
+- Exact source and deterministic synthetic-merge execution receipts are produced by the kernel-evidence qualification workflow; source links alone are not pass receipts.
+- Independent external acceptance, external monotonic frontier activation, operator acceptance, promotion and release remain false until separately evidenced.
