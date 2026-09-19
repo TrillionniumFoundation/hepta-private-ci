@@ -176,6 +176,17 @@
       ],
       "state": "source_implemented",
       "capabilityCeiling": "signature verification only; private signing keys remain external"
+    },
+    {
+      "designOperation": "engineering_controller",
+      "nativeModule": "control_engineering_v2.controller",
+      "nativeSymbol": "EngineeringController",
+      "ownerSymbol": "EngineeringController._bind_writer",
+      "tests": [
+        "OpenSslTrustStoreTests.test_verification_only_store_accepts_pinned_key_and_rejects_tamper"
+      ],
+      "state": "source_composed_not_product_executed",
+      "capabilityCeiling": "single-writer repository coordination composition without merge/deploy authority"
     }
   ],
   "negativeAuthorityInvariants": [
