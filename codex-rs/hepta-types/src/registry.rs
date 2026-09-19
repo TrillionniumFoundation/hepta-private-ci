@@ -54,6 +54,11 @@ impl ContractDefinitionV1 {
         if version == 0 {
             return Err(ContractRegistryError::ZeroVersion);
         }
+        let id_profile = match kind {
+            ContractDefinitionKindV1::Schema => IdProfileV1::Schema,
+            ContractDefinitionKindV1::Normalization => IdProfileV1::Normalization,
+        };
+        validate_id(id.as_str(), id_profile).map_err(ContractRegistryError::Identity)?;
         let body = BoundedBytes::try_from_slice(body).map_err(ContractRegistryError::Body)?;
         let type_id = validate_id(
             "platform.types:contract-definition-v1",
