@@ -37,8 +37,8 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
 use crate::IntelligenceHostEnvelopeV1;
-use crate::LaneFV3Ports;
 use crate::LaneFStageV3;
+use crate::LaneFV3Ports;
 use crate::LegalActionCandidateSetV1;
 use crate::PortDecisionV3;
 use crate::PortFailureClassV3;
@@ -135,7 +135,11 @@ impl<H: HostEnvelopePortV3> LaneFV3Ports for NativeV3OwnerPorts<'_, H> {
                 "objective-binding",
             ));
         }
-        success(input, "objective.compiler", compiled.objective.semantic_digest)
+        success(
+            input,
+            "objective.compiler",
+            compiled.objective.semantic_digest,
+        )
     }
 
     fn evaluate_utility(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
@@ -257,12 +261,8 @@ impl<H: HostEnvelopePortV3> LaneFV3Ports for NativeV3OwnerPorts<'_, H> {
             Decision::Selected(_) => PortDecisionV3::Continue,
             Decision::Abstained(_) => PortDecisionV3::Abstain,
         };
-        let result = success_with_decision(
-            input,
-            "intuition.policy",
-            receipt.receipt_digest,
-            decision,
-        );
+        let result =
+            success_with_decision(input, "intuition.policy", receipt.receipt_digest, decision);
         self.last_intuition = Some(receipt);
         result
     }
@@ -314,11 +314,7 @@ impl<H: HostEnvelopePortV3> LaneFV3Ports for NativeV3OwnerPorts<'_, H> {
                     .find(|row| &row.candidate_id == candidate)
                     .map(|row| row.probability)
                     .ok_or_else(|| {
-                        failure(
-                            input,
-                            PortFailureClassV3::Rejected,
-                            "missing-propensity",
-                        )
+                        failure(input, PortFailureClassV3::Rejected, "missing-propensity")
                     })?;
                 (candidate.clone(), propensity)
             }
