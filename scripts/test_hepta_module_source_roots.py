@@ -83,12 +83,33 @@ class SourceRootTests(unittest.TestCase):
             "claimBoundary": {"productionImplementation": False, "activation": False},
         }
         before = copy.deepcopy(row)
-        with mock.patch.object(maps, "ROOT", self.root):
+        fingerprints = {
+            "alias": {
+                "algorithm": "sha256",
+                "digest": "c" * 64,
+                "trackedFiles": 1,
+            }
+        }
+        cargo_packages = {self.module["id"]: []}
+        with (
+            mock.patch.object(maps, "ROOT", self.root),
+            mock.patch.object(
+                maps, "source_fingerprints", return_value=fingerprints
+            ),
+        ):
             result = maps.migrate_map(
-                row, self.module, {self.module["id"]: "lane"}, source_base
+                row,
+                self.module,
+                {self.module["id"]: "lane"},
+                source_base,
+                cargo_packages,
             )
             repeated = maps.migrate_map(
-                result, self.module, {self.module["id"]: "lane"}, source_base
+                result,
+                self.module,
+                {self.module["id"]: "lane"},
+                source_base,
+                cargo_packages,
             )
         self.assertEqual(row, before)
         self.assertEqual(result, repeated)
@@ -103,6 +124,16 @@ class SourceRootTests(unittest.TestCase):
             result["operations"][0]["tests"], row["operations"][0]["tests"]
         )
         self.assertEqual(result["sourceBase"], source_base)
+        self.assertEqual(result["sourceFingerprints"], fingerprints)
+        self.assertEqual(result["boundCargoPackages"], [])
+        self.assertEqual(
+            result["sourceBaseSemantics"],
+            maps.SOURCE_BASE_SEMANTICS,
+        )
+        self.assertEqual(
+            result["sourceFingerprintPolicy"],
+            maps.SOURCE_FINGERPRINT_POLICY,
+        )
         self.assertFalse(result["claimBoundary"]["activation"])
 
     def test_identity_version_and_authority_mismatches_reject(self):
