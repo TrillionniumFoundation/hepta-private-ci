@@ -8,6 +8,7 @@ from control_engineering_v2 import (
     EngineeringError,
     EngineeringStore,
     WorkEnvelope,
+    completed_packages,
     WorkPackage,
 )
 
@@ -255,6 +256,91 @@ class AssignmentLifecycleTests(unittest.TestCase):
                         expires_unix_ns=7000,
                         now_ns=109,
                     )
+
+    def test_durable_completion_drives_next_schedule(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            with EngineeringStore(Path(temp) / "engineering.db") as store:
+                envelope = WorkEnvelope(
+                    "env-deps",
+                    "a" * 40,
+                    "b" * 40,
+                    "c" * 64,
+                    "d" * 64,
+                    "developer-productivity",
+                    ("src",),
+                    DENIED,
+                    4,
+                    10_000,
+                )
+                store.issue_work_envelope(envelope, now_ns=100)
+                first = store.schedule_ready_packages(
+                    "env-deps",
+                    (WorkPackage(0, "A", (), ("src/a",), ("python",), 1),),
+                    (),
+                    generation_id="gen-a",
+                    now_ns=101,
+                )
+                self.assertEqual(first.assigned, ("A",))
+                store.register_worker(
+                    "worker-a",
+                    "worker-principal",
+                    "3" * 64,
+                    ("python",),
+                    maximum_concurrency=1,
+                    authority_epoch=2,
+                    expires_unix_ns=9000,
+                    now_ns=102,
+                )
+                store.acquire_path_lease(
+                    "lease-a",
+                    "env-deps",
+                    "worker-a",
+                    ("src/a",),
+                    authority_epoch=2,
+                    expires_unix_ns=8000,
+                    now_ns=103,
+                )
+                claim = store.claim_assignment(
+                    "claim-a",
+                    "gen-a",
+                    "A",
+                    "worker-a",
+                    "lease-a",
+                    authority_epoch=2,
+                    expires_unix_ns=7000,
+                    now_ns=104,
+                )
+                running = store.begin_assignment(
+                    "claim-a",
+                    expected_revision=claim.revision,
+                    authority_epoch=2,
+                    now_ns=105,
+                )
+                store.complete_assignment(
+                    "claim-a",
+                    "4" * 64,
+                    expected_revision=running.revision,
+                    authority_epoch=2,
+                    now_ns=106,
+                )
+                completed = completed_packages(
+                    store,
+                    "env-deps",
+                    now_ns=107,
+                )
+                self.assertEqual(completed, ("A",))
+                second = store.schedule_ready_packages(
+                    "env-deps",
+                    (
+                        WorkPackage(0, "A", (), ("src/a",), ("python",), 1),
+                        WorkPackage(1, "B", ("A",), ("src/b",), ("python",), 1),
+                    ),
+                    completed,
+                    generation_id="gen-b",
+                    now_ns=108,
+                )
+                self.assertEqual(second.assigned, ("B",))
+                self.assertIn(("A", "already_completed"), second.blocked)
 
     def test_expiry_requires_explicit_requeue(self) -> None:
         with tempfile.TemporaryDirectory() as temp:
