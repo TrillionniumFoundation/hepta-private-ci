@@ -828,7 +828,7 @@ fn revoked_predecessor_blocks_explicit_rollback() -> Result<(), SupervisorError>
         .revoke_release(&fleet.first, &ReleaseId::parse("revoked-v1")?)?;
     assert!(matches!(
         supervisor.rollback(&fleet.first, now),
-        Err(SupervisorError::Fleet(
+        Err(SupervisorError::Registry(
             codex_hepta_fleet::FleetRegistryError::ReleaseNotAllowed { .. }
         ))
     ));
