@@ -1,7 +1,7 @@
 # intelligence.control: implementation design
 
 Parent: `docs/modules/intelligence.control/TECHNICAL.md`. Lane: `LANE-F-ADAPTIVE-POLICY`.
-Status: read-only vertical and signed evaluated-shadow composition implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: canonical V3 source composition, native owner adapters, typed Agentd handoff, read-only vertical and signed evaluated-shadow compatibility paths are implemented in source; exact-candidate execution, product observations and independent acceptance remain gated in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -12,7 +12,7 @@ Operation signatures below describe the target contract. Section 8 identifies th
 
 ## 2. Public operations and contract details
 
-`prepare_intelligence_run(request, owner_ports, frozen_snapshot) -> IntelligenceHostEnvelopeV1`; `build_legal_candidates(objective, body, supported_skills) -> LegalActionCandidateSetV1`; `decide_boundary(run, observations) -> AdvisoryDecision`; `assemble_context(decision, evidence) -> ContextCompilationReceiptV1`. These are composition operations; facts and execution remain with their registered owners.
+`build_legal_candidates_v1(...) -> LegalActionCandidateSetV1`; `run_composition_v3(request, ports) -> LaneFCompositionReceiptV3`; `run_composition_v3_with_control(request, ports, control) -> LaneFCompositionReceiptV3`; and product-side `AgentRunCoordinator::run_native_intelligence_v3(...) -> IntelligenceRunReceiptV3` are the current native convergence surfaces. The older `prepare_intelligence_run` / `decide_boundary` / `assemble_context` names remain design vocabulary rather than separate product facades. Facts and execution remain with their registered owners.
 
 ## 3. State records and transaction design
 
