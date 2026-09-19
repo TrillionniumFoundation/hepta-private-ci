@@ -161,7 +161,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Acquire a cut through the existing SQLite owner, then call the crate-native ReadRequestV2 reader. Before delivery compare exact revision/content digests and revalidate time as well as frontiers. Release snapshot handles on completion/cancel; the historical cut does not lease future external effects.
+Acquire a cut through the existing SQLite owner and wrap it in `LaneCAuthoritativeSnapshotProvider`; product callers use `read_authoritative`, not `read_v2` directly. The authoritative envelope binds scope, purpose, host authority epoch, owner frontiers, generation-vector digest, lease/deadline and snapshot receipt. Before delivery, `revalidate_lane_c_authoritative_snapshot` rechecks the envelope and reacquires the exact owner cut; Agentd separately fences the current runtime generation before and after asynchronous I/O. `read_v2` remains a lower-level projection primitive. Release snapshot handles on completion/cancel; the historical cut does not lease future external effects.
 
 Current operating and state-format references:
 
@@ -174,8 +174,9 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs); named case: `existing_sqlite_writes_are_readable_by_new_lane_c_after_reopen`.
+- [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs); named cases include `existing_sqlite_writes_are_readable_by_new_lane_c_after_reopen` and `authoritative_production_provider_fails_closed_after_frontier_advance_and_lease_expiry`.
 - [codex-rs/hepta-cognitive-read/src/authoritative_tests.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative_tests.rs); named case: `authoritative_read_binds_provider_vector_and_query`.
+- [codex-rs/hepta-agentd/src/cognitive_context_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_tests.rs); named product caller exercises the authoritative Lane-C path before context delivery.
 
 In `codex-rs`, run `just test -p codex-hepta-memory -p codex-hepta-cognitive-read`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md) separately labels target acceptance designs.
 
@@ -189,7 +190,7 @@ Applicable work packages:
 
 The bootstrap package is `MEM-READ-1-SNAPSHOT-PORT`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. For `cognitive.read`, revision/frontier revalidation and a named Agentd product caller are implemented; current-authority correctness additionally relies on the Agentd runtime-generation fence. Independent acceptance, promotion and release remain external evidence states.
 
 ## 14. Activation, compatibility and retirement
 
@@ -207,7 +208,7 @@ For `cognitive.read`, this document grants no runtime, production, model, provid
 
 #### `MEM-READ-1-SNAPSHOT-PORT`
 
-- State: `planned`; priority: `2`; parallel class: `contract_coordinated`.
+- State: `source_implemented_product_composed`; priority: `2`; parallel class: `contract_coordinated`.
 - Owner/deputy: `cognitive-platform` / `agent-runtime`.
 - Allowed write paths:
 - `codex-rs/hepta-cognitive-read/**`
