@@ -79,38 +79,45 @@ impl CreateOnlyArtifactFile {
         root: impl AsRef<Path>,
         relative: impl AsRef<Path>,
     ) -> Result<Self, ArtifactStorageError> {
-        let relative = relative.as_ref();
-        if relative.as_os_str().is_empty()
-            || relative.is_absolute()
-            || relative
-                .components()
-                .any(|component| !matches!(component, Component::Normal(_)))
-        {
-            return Err(ArtifactStorageError::InvalidPath);
-        }
+        Self::create(resolve_beneath_trusted_root(root, relative)?)
+    }
+}
 
-        let canonical_root = std::fs::canonicalize(root).map_err(ArtifactStorageError::from)?;
-        if !canonical_root.metadata()?.is_dir() {
+pub(crate) fn resolve_beneath_trusted_root(
+    root: impl AsRef<Path>,
+    relative: impl AsRef<Path>,
+) -> Result<PathBuf, ArtifactStorageError> {
+    let relative = relative.as_ref();
+    if relative.as_os_str().is_empty()
+        || relative.is_absolute()
+        || relative
+            .components()
+            .any(|component| !matches!(component, Component::Normal(_)))
+    {
+        return Err(ArtifactStorageError::InvalidPath);
+    }
+
+    let canonical_root = std::fs::canonicalize(root).map_err(ArtifactStorageError::from)?;
+    if !canonical_root.metadata()?.is_dir() {
+        return Err(ArtifactStorageError::NotRegular);
+    }
+    let parent = relative.parent().unwrap_or_else(|| Path::new(""));
+    let mut cursor = PathBuf::from(&canonical_root);
+    for component in parent.components() {
+        let Component::Normal(component) = component else {
+            return Err(ArtifactStorageError::InvalidPath);
+        };
+        cursor.push(component);
+        let metadata = std::fs::symlink_metadata(&cursor)?;
+        if metadata.file_type().is_symlink() {
+            return Err(ArtifactStorageError::PathEscape);
+        }
+        if !metadata.is_dir() {
             return Err(ArtifactStorageError::NotRegular);
         }
-        let parent = relative.parent().unwrap_or_else(|| Path::new(""));
-        let mut cursor = PathBuf::from(&canonical_root);
-        for component in parent.components() {
-            let Component::Normal(component) = component else {
-                return Err(ArtifactStorageError::InvalidPath);
-            };
-            cursor.push(component);
-            let metadata = std::fs::symlink_metadata(&cursor)?;
-            if metadata.file_type().is_symlink() {
-                return Err(ArtifactStorageError::PathEscape);
-            }
-            if !metadata.is_dir() {
-                return Err(ArtifactStorageError::NotRegular);
-            }
-        }
-
-        Self::create(canonical_root.join(relative))
     }
+
+    Ok(canonical_root.join(relative))
 }
 
 /// Exact bytes and history witness. This is not a signature or acceptance.
