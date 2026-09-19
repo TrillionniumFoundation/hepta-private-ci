@@ -421,8 +421,87 @@ async fn five_agents_keep_private_stores_and_only_explicit_consumers_federate() 
                 batch.candidates[0].candidate.memory.content,
                 "private-agent-0-constellation"
             );
+            assert_eq!(batch.coverage.requested_sources, 1);
+            assert_eq!(batch.coverage.completed_sources, 1);
+            assert_eq!(batch.coverage.failed_sources, 0);
+            assert_eq!(batch.coverage.indeterminate_sources, 0);
         } else {
             assert!(batch.candidates.is_empty());
+            assert_eq!(batch.coverage.requested_sources, 0);
         }
     }
+}
+
+
+#[tokio::test]
+async fn revoked_source_is_reported_as_failed_coverage_instead_of_valid_empty() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner_id = agent_id(70);
+    let consumer_id = agent_id(71);
+    let owner_layout = layout(&temp, &owner_id);
+    let owner = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("owner store");
+    let owner_access = CognitiveAccess::agent_private(owner_id.clone());
+    let citation = owner
+        .append_source(
+            &owner_access,
+            &source(
+                CognitiveScope::AgentPrivate,
+                "coverage-source",
+                "coverage-sensitive federation fact",
+            ),
+        )
+        .await
+        .expect("source");
+    owner
+        .remember_memory(
+            &owner_access,
+            &MemoryDraft {
+                stable_key: "coverage-memory".to_string(),
+                revision: memory_revision(
+                    CognitiveScope::AgentPrivate,
+                    "coverage-sensitive federation fact",
+                    citation,
+                ),
+            },
+        )
+        .await
+        .expect("memory");
+    let consumer_workspace = workspace("coverage-consumer");
+    let capability = owner
+        .grant_federated_recall(
+            &owner_access,
+            &FederationGrantRequest {
+                consumer_agent_id: consumer_id.clone(),
+                scope: FederationGrantScope::new(
+                    CognitiveScope::AgentPrivate,
+                    consumer_workspace.clone(),
+                ),
+                effective_at_unix_seconds: 100,
+                expires_at_unix_seconds: 1_000,
+            },
+        )
+        .await
+        .expect("grant");
+    let reader = FederatedMemoryReader::discover(&owner_layout, &consumer_id, 150)
+        .await
+        .expect("discover")
+        .pop()
+        .expect("reader");
+    let set = FederatedRecallSet::new(consumer_id.clone(), vec![reader]).expect("recall set");
+    owner
+        .revoke_federated_recall(&owner_access, &capability, 151)
+        .await
+        .expect("revoke");
+    let access = FederationConsumerAccess::new(consumer_id, consumer_workspace);
+    let batch = set
+        .retrieve(&access, &RetrievalRequest::new("coverage-sensitive", 152))
+        .await
+        .expect("partial federation batch");
+    assert!(batch.candidates.is_empty());
+    assert_eq!(batch.coverage.requested_sources, 1);
+    assert_eq!(batch.coverage.completed_sources, 0);
+    assert_eq!(batch.coverage.failed_sources, 1);
+    assert_eq!(batch.coverage.indeterminate_sources, 0);
 }
