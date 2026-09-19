@@ -112,6 +112,13 @@ fn remaining_before(deadline_ms: u64) -> Result<Duration> {
     remaining_from(unix_now_ms()?, deadline_ms)
 }
 
+/// Once turn/start may have crossed the effect boundary, an elapsed absolute
+/// deadline must not return early and lose the durable reconciliation path.
+/// A zero observation budget immediately enters interrupt/grace reconciliation.
+fn observation_budget_from(now_ms: u64, deadline_ms: u64) -> Duration {
+    Duration::from_millis(deadline_ms.saturating_sub(now_ms))
+}
+
 fn validate_post_authority_fence(
     health: &HealthSnapshot,
     expected_ingress: &std::path::Path,
@@ -829,7 +836,11 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err(error.into());
         }
-        let deadline = Instant::now() + self.config.timeout;
+        // Preserve the original absolute runtime.codex deadline. Authority
+        // acquisition and turn/start acknowledgement already consumed part of
+        // this budget; they must not reset a fresh full model timeout here.
+        let deadline =
+            Instant::now() + observation_budget_from(unix_now_ms()?, codex_deadline_ms);
         let result = self
             .observe(
                 &mut client,
