@@ -444,10 +444,10 @@ fn serialization_validates_real_bytes_and_tokenizes_final_payload() {
     .unwrap_or_else(|error| panic!("valid exact serialization: {error}"));
 
     assert_eq!(compiled.receipt.used_tokens, 20);
-    assert_eq!(serialization.receipt.serialized_token_count, 27);
+    assert_eq!(serialization.receipt().serialized_token_count(), 27);
     assert_eq!(
-        serialization.receipt.payload_digest,
-        Digest32::of_bytes(&serialization.payload)
+        serialization.receipt().payload_digest(),
+        Digest32::of_bytes(serialization.payload())
     );
 }
 
@@ -556,13 +556,18 @@ fn delivery_receipt_is_created_only_from_transport_invoked_with_exact_payload() 
     )
     .unwrap_or_else(|error| panic!("valid delivery: {error}"));
 
-    assert_eq!(delivery.disposition, ContextDeliveryDispositionV2::Delivered);
+    assert_eq!(delivery.disposition(), ContextDeliveryDispositionV2::Delivered);
     assert_eq!(
-        delivery.payload_digest,
-        Digest32::of_bytes(&serialization.payload)
+        delivery.payload_digest(),
+        Digest32::of_bytes(serialization.payload())
     );
-    assert!(!delivery.acknowledgement_digest.is_zero());
-    assert_eq!(delivery.authority, AuthorityPosture::DENY_ALL);
+    assert!(!delivery.acknowledgement_digest().is_zero());
+    assert_eq!(delivery.revocation_epoch(), snapshot.revocation_epoch());
+    assert_eq!(
+        delivery.admission_snapshot_digest(),
+        snapshot.snapshot_digest()
+    );
+    assert_eq!(delivery.authority(), AuthorityPosture::DENY_ALL);
     delivery
         .validate_for(&attachment, &serialization)
         .unwrap_or_else(|error| panic!("valid delivery receipt: {error}"));
