@@ -6,6 +6,7 @@
 //! generation and predecessor content.
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 
 use codex_hepta_control_plane::RuntimeModuleAbiV1;
 use codex_hepta_control_plane::RuntimeModulePromotionWitnessV1;
@@ -28,6 +29,7 @@ pub struct RuntimeModuleSupervisorV1 {
     registry: RuntimeModuleRegistryV1,
     selections: BTreeMap<(StableId, Generation), Digest32>,
     pending_topologies: BTreeMap<Digest32, RuntimeTopologyCandidateV1>,
+    pending_promotions: BTreeMap<(Digest32, StableId), RuntimeModulePromotionWitnessV1>,
     retirement_ready: BTreeMap<(StableId, Generation), Digest32>,
 }
 
@@ -68,6 +70,11 @@ pub enum RuntimeModuleSupervisorErrorV1 {
     TopologyAbiMismatch(StableId),
     TopologyPredecessorMismatch(StableId),
     TopologyNotReady(StableId),
+    TopologyDependencyMissing {
+        module_id: StableId,
+        dependency_id: StableId,
+    },
+    TopologyDependencyCycle(StableId),
     InvalidInitializationWitness,
     InvalidRetirementWitness,
 }
@@ -104,6 +111,7 @@ impl RuntimeModuleSupervisorV1 {
             registry: RuntimeModuleRegistryV1::new(),
             selections: BTreeMap::new(),
             pending_topologies: BTreeMap::new(),
+            pending_promotions: BTreeMap::new(),
             retirement_ready: BTreeMap::new(),
         }
     }
@@ -300,6 +308,8 @@ impl RuntimeModuleSupervisorV1 {
             ));
         }
 
+        validate_projected_dependency_graph(&self.registry.snapshot(), &candidate, &admitted)?;
+
         let mut staged_registry = self.registry.clone();
         let mut staged_selections = self.selections.clone();
         for abi in admitted {
@@ -351,24 +361,26 @@ impl RuntimeModuleSupervisorV1 {
             .ok_or(RuntimeModuleSupervisorErrorV1::DuplicateTopologyCandidate)?
             .clone();
 
+        let mut promotion_witnesses = BTreeMap::new();
         for delta in &candidate.deltas {
             if delta.operation == RuntimeTopologyOperationV1::Retire {
                 continue;
             }
-            let generation = self.registry.active_generation(&delta.module_id);
-            let record = generation.and_then(|value| self.registry.record(&delta.module_id, value));
-            let implementation_matches = match record {
-                Some(value) => value.abi.implementation_digest == delta.candidate_digest,
-                None => false,
-            };
-            if generation != Some(candidate.candidate_generation) || !implementation_matches {
-                return Err(RuntimeModuleSupervisorErrorV1::TopologyNotReady(
-                    delta.module_id.clone(),
-                ));
-            }
+            let key = (candidate_digest, delta.module_id.clone());
+            let witness = self
+                .pending_promotions
+                .get(&key)
+                .cloned()
+                .ok_or_else(|| {
+                    RuntimeModuleSupervisorErrorV1::TopologyNotReady(delta.module_id.clone())
+                })?;
+            promotion_witnesses.insert(delta.module_id.clone(), witness);
         }
 
-        // Verify all retirements before mutating the staged registry.
+        // Verify all explicit retirements before mutating the staged registry.
+        // They are committed first only inside the private staged copy, so a
+        // cross-module writer transfer can release an old domain and acquire it
+        // in the same externally visible topology generation.
         for delta in &candidate.deltas {
             if delta.operation != RuntimeTopologyOperationV1::Retire {
                 continue;
@@ -411,12 +423,34 @@ impl RuntimeModuleSupervisorV1 {
             retired.push((delta.module_id.clone(), generation));
         }
 
+        for delta in &candidate.deltas {
+            if delta.operation == RuntimeTopologyOperationV1::Retire {
+                continue;
+            }
+            let witness = promotion_witnesses
+                .remove(&delta.module_id)
+                .ok_or_else(|| {
+                    RuntimeModuleSupervisorErrorV1::TopologyNotReady(delta.module_id.clone())
+                })?;
+            staged.promote_after_handoff(
+                &delta.module_id,
+                candidate.candidate_generation,
+                witness,
+            )?;
+        }
+
+        let snapshot = staged.snapshot();
+        validate_runtime_dependency_graph(&snapshot)?;
         self.registry = staged;
         for key in retired {
             self.retirement_ready.remove(&key);
         }
+        for delta in &candidate.deltas {
+            self.pending_promotions
+                .remove(&(candidate_digest, delta.module_id.clone()));
+        }
         self.pending_topologies.remove(&candidate_digest);
-        Ok(self.registry.snapshot())
+        Ok(snapshot)
     }
 
     #[cfg(test)]
@@ -450,7 +484,7 @@ impl RuntimeModuleSupervisorV1 {
         canary_digest: Digest32,
     ) -> Result<RuntimeTopologySnapshotV1, RuntimeModuleSupervisorErrorV1> {
         let selection_digest = self.selection_digest(module_id, generation)?;
-        Ok(self.registry.promote_after_handoff(
+        self.promote_or_stage(
             module_id,
             generation,
             RuntimeModulePromotionWitnessV1 {
@@ -458,7 +492,7 @@ impl RuntimeModuleSupervisorV1 {
                 canary_digest,
                 handoff_digest: Digest32::ZERO,
             },
-        )?)
+        )
     }
 
     /// Promote a newly introduced stateful/effectful module when there is no
@@ -490,7 +524,7 @@ impl RuntimeModuleSupervisorV1 {
         bytes.extend_from_slice(witness.initial_state_digest.as_array());
         bytes.extend_from_slice(witness.readiness_digest.as_array());
         let initialization_digest = Digest32::of_bytes(&bytes);
-        Ok(self.registry.promote_after_handoff(
+        self.promote_or_stage(
             module_id,
             generation,
             RuntimeModulePromotionWitnessV1 {
@@ -498,7 +532,7 @@ impl RuntimeModuleSupervisorV1 {
                 canary_digest,
                 handoff_digest: initialization_digest,
             },
-        )?)
+        )
     }
 
     pub fn promote_after_writer_handoff(
@@ -582,7 +616,7 @@ impl RuntimeModuleSupervisorV1 {
             bytes.extend_from_slice(domain.as_str().as_bytes());
             bytes.extend_from_slice(receipt.as_array());
         }
-        Ok(self.registry.promote_after_handoff(
+        self.promote_or_stage(
             module_id,
             generation,
             RuntimeModulePromotionWitnessV1 {
@@ -590,7 +624,7 @@ impl RuntimeModuleSupervisorV1 {
                 canary_digest,
                 handoff_digest: Digest32::of_bytes(&bytes),
             },
-        )?)
+        )
     }
 
     pub fn record_retirement_ready(
@@ -659,6 +693,45 @@ impl RuntimeModuleSupervisorV1 {
         )?)
     }
 
+    fn promote_or_stage(
+        &mut self,
+        module_id: &StableId,
+        generation: Generation,
+        witness: RuntimeModulePromotionWitnessV1,
+    ) -> Result<RuntimeTopologySnapshotV1, RuntimeModuleSupervisorErrorV1> {
+        let record = self
+            .registry
+            .record(module_id, generation)
+            .ok_or(RuntimeModuleSupervisorErrorV1::ModuleMismatch)?;
+        let candidate_digest = record.abi.candidate_artifact_digest;
+        let belongs_to_pending_topology = self
+            .pending_topologies
+            .get(&candidate_digest)
+            .is_some_and(|candidate| {
+                candidate.candidate_generation == generation
+                    && candidate.deltas.iter().any(|delta| {
+                        delta.module_id == *module_id
+                            && delta.operation != RuntimeTopologyOperationV1::Retire
+                    })
+            });
+        if belongs_to_pending_topology {
+            let key = (candidate_digest, module_id.clone());
+            if let Some(existing) = self.pending_promotions.get(&key) {
+                if existing != &witness {
+                    return Err(RuntimeModuleSupervisorErrorV1::TopologyNotReady(
+                        module_id.clone(),
+                    ));
+                }
+                return Ok(self.registry.snapshot());
+            }
+            self.pending_promotions.insert(key, witness);
+            return Ok(self.registry.snapshot());
+        }
+        Ok(self
+            .registry
+            .promote_after_handoff(module_id, generation, witness)?)
+    }
+
     fn selection_digest(
         &self,
         module_id: &StableId,
@@ -673,6 +746,102 @@ impl RuntimeModuleSupervisorV1 {
     pub fn topology(&self) -> RuntimeTopologySnapshotV1 {
         self.registry.snapshot()
     }
+}
+
+fn validate_projected_dependency_graph(
+    current: &RuntimeTopologySnapshotV1,
+    candidate: &RuntimeTopologyCandidateV1,
+    admitted: &[RuntimeModuleAbiV1],
+) -> Result<(), RuntimeModuleSupervisorErrorV1> {
+    let mut projected = current
+        .active
+        .iter()
+        .map(|module| (module.module_id.clone(), module.dependencies.clone()))
+        .collect::<BTreeMap<_, _>>();
+    let mut known = current
+        .active
+        .iter()
+        .map(|module| module.module_id.clone())
+        .collect::<BTreeSet<_>>();
+    for delta in &candidate.deltas {
+        known.insert(delta.module_id.clone());
+        known.extend(delta.related_module_ids.iter().cloned());
+    }
+    let admitted = admitted
+        .iter()
+        .map(|abi| (abi.module_id.clone(), abi))
+        .collect::<BTreeMap<_, _>>();
+    for delta in &candidate.deltas {
+        if delta.operation == RuntimeTopologyOperationV1::Retire {
+            projected.remove(&delta.module_id);
+            continue;
+        }
+        let abi = admitted
+            .get(&delta.module_id)
+            .ok_or_else(|| RuntimeModuleSupervisorErrorV1::MissingTopologyAbi(delta.module_id.clone()))?;
+        projected.insert(delta.module_id.clone(), abi.dependencies.clone());
+    }
+    validate_dependency_map(&projected, &known)
+}
+
+fn validate_runtime_dependency_graph(
+    snapshot: &RuntimeTopologySnapshotV1,
+) -> Result<(), RuntimeModuleSupervisorErrorV1> {
+    let projected = snapshot
+        .active
+        .iter()
+        .map(|module| (module.module_id.clone(), module.dependencies.clone()))
+        .collect::<BTreeMap<_, _>>();
+    let known = projected.keys().cloned().collect::<BTreeSet<_>>();
+    validate_dependency_map(&projected, &known)
+}
+
+fn validate_dependency_map(
+    projected: &BTreeMap<StableId, Vec<StableId>>,
+    known: &BTreeSet<StableId>,
+) -> Result<(), RuntimeModuleSupervisorErrorV1> {
+    for (module_id, dependencies) in projected {
+        for dependency_id in dependencies {
+            if known.contains(dependency_id) && !projected.contains_key(dependency_id) {
+                return Err(RuntimeModuleSupervisorErrorV1::TopologyDependencyMissing {
+                    module_id: module_id.clone(),
+                    dependency_id: dependency_id.clone(),
+                });
+            }
+        }
+    }
+
+    fn visit(
+        module_id: &StableId,
+        projected: &BTreeMap<StableId, Vec<StableId>>,
+        visiting: &mut BTreeSet<StableId>,
+        complete: &mut BTreeSet<StableId>,
+    ) -> Result<(), RuntimeModuleSupervisorErrorV1> {
+        if complete.contains(module_id) {
+            return Ok(());
+        }
+        if !visiting.insert(module_id.clone()) {
+            return Err(RuntimeModuleSupervisorErrorV1::TopologyDependencyCycle(
+                module_id.clone(),
+            ));
+        }
+        if let Some(dependencies) = projected.get(module_id) {
+            for dependency_id in dependencies {
+                if projected.contains_key(dependency_id) {
+                    visit(dependency_id, projected, visiting, complete)?;
+                }
+            }
+        }
+        visiting.remove(module_id);
+        complete.insert(module_id.clone());
+        Ok(())
+    }
+
+    let mut complete = BTreeSet::new();
+    for module_id in projected.keys() {
+        visit(module_id, projected, &mut BTreeSet::new(), &mut complete)?;
+    }
+    Ok(())
 }
 
 #[cfg(test)]
