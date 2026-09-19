@@ -30,7 +30,11 @@ pub enum NduError {
     InvalidWeight(String),
     InvalidEta,
     DimensionMismatch,
+    PreferenceValueOutOfRange(String),
     StateDigestMismatch,
+    ProtocolContextMismatch,
+    DuplicateHierarchyArtifact(String),
+    InvalidHierarchyRelation { child: String, parent: String },
     SimultaneousHierarchyUpdate(u64),
     Arithmetic,
 }
@@ -64,8 +68,14 @@ impl NduError {
             Self::AbstainInfeasible => "NDU-E005",
             Self::MissingAbstainCandidate => "NDU-E006",
             Self::IncompleteScalarization | Self::InvalidWeight(_) => "NDU-E007",
-            Self::InvalidEta | Self::DimensionMismatch | Self::StateDigestMismatch => "NDU-E008",
-            Self::SimultaneousHierarchyUpdate(_) => "NDU-E009",
+            Self::InvalidEta
+            | Self::DimensionMismatch
+            | Self::PreferenceValueOutOfRange(_)
+            | Self::StateDigestMismatch => "NDU-E008",
+            Self::ProtocolContextMismatch => "NDU-E002",
+            Self::DuplicateHierarchyArtifact(_)
+            | Self::InvalidHierarchyRelation { .. }
+            | Self::SimultaneousHierarchyUpdate(_) => "NDU-E009",
             Self::Arithmetic => "NDU-E010",
         }
     }
@@ -147,10 +157,24 @@ impl fmt::Display for NduError {
                 formatter.write_str("eta must be in the closed interval [1/16, 1/4]")
             }
             Self::DimensionMismatch => formatter.write_str("preference dimensions do not match"),
+            Self::PreferenceValueOutOfRange(axis) => write!(
+                formatter,
+                "preference value must be in the closed interval [-1, 1]: {axis}"
+            ),
             Self::StateDigestMismatch => formatter.write_str("preference state digest mismatch"),
+            Self::ProtocolContextMismatch => formatter.write_str(
+                "solver receipt context digest does not match the supplied iteration context"
+            ),
+            Self::DuplicateHierarchyArtifact(artifact) => {
+                write!(formatter, "duplicate hierarchy artifact in staged updates: {artifact}")
+            }
+            Self::InvalidHierarchyRelation { child, parent } => write!(
+                formatter,
+                "invalid staged hierarchy relation: child {child} does not follow parent {parent}"
+            ),
             Self::SimultaneousHierarchyUpdate(generation) => write!(
                 formatter,
-                "multiple hierarchy levels update in generation {generation}"
+                "parent and child hierarchy updates share generation {generation}"
             ),
             Self::Arithmetic => formatter.write_str("deterministic Q32 arithmetic failed"),
         }
