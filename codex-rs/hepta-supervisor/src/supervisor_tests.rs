@@ -127,6 +127,20 @@ fn release(identity: &str, program: &str) -> Result<AgentRelease, SupervisorErro
     )
 }
 
+fn install_release_for(
+    fleet: &TestFleet,
+    agent_id: &AgentId,
+    identity: &str,
+) -> Result<AgentRelease, SupervisorError> {
+    let release_id = ReleaseId::parse(identity)?;
+    let source = fleet.write_release_source()?;
+    fleet
+        .registry
+        .install_release(release_id.clone(), &source, Vec::new())?;
+    fleet.registry.allow_release(agent_id, &release_id)?;
+    AgentRelease::try_from(fleet.registry.resolve_release(agent_id, &release_id)?)
+}
+
 fn config() -> SupervisorConfig {
     SupervisorConfig {
         health_timeout: Duration::from_millis(10),
@@ -732,28 +746,19 @@ fn successful_upgrade_and_explicit_rollback_change_only_target_agent() -> Result
     let fleet = TestFleet::new()?;
     let control = FakeControl::default();
     let now = Instant::now();
+    let release_v1 = install_release_for(&fleet, &fleet.first, "release-v1")?;
+    let release_v2 = install_release_for(&fleet, &fleet.first, "release-v2")?;
+    let peer_release = install_release_for(&fleet, &fleet.second, "peer-release")?;
     let (mut supervisor, _) =
         Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
-    supervisor.start_release(
-        &fleet.first,
-        release("release-v1", "release-v1/hepta-agentd")?,
-        now,
-    )?;
-    supervisor.start_release(
-        &fleet.second,
-        release("peer-release", "peer/hepta-agentd")?,
-        now,
-    )?;
+    supervisor.start_release(&fleet.first, release_v1, now)?;
+    supervisor.start_release(&fleet.second, peer_release, now)?;
     control.set_healthy(&fleet.first);
     control.set_healthy(&fleet.second);
     assert_eq!(supervisor.tick(now), TickReport::default());
     let peer_before = supervisor.snapshot(&fleet.second).expect("peer snapshot");
 
-    supervisor.upgrade(
-        &fleet.first,
-        release("release-v2", "release-v2/hepta-agentd")?,
-        now,
-    )?;
+    supervisor.upgrade(&fleet.first, release_v2, now)?;
     assert!(matches!(
         supervisor.restart(&fleet.first, now),
         Err(SupervisorError::ReleaseChangePending(agent_id)) if agent_id == fleet.first
@@ -801,26 +806,59 @@ fn successful_upgrade_and_explicit_rollback_change_only_target_agent() -> Result
 }
 
 #[test]
+fn revoked_predecessor_blocks_explicit_rollback() -> Result<(), SupervisorError> {
+    let fleet = TestFleet::new()?;
+    let control = FakeControl::default();
+    let now = Instant::now();
+    let release_v1 = install_release_for(&fleet, &fleet.first, "revoked-v1")?;
+    let release_v2 = install_release_for(&fleet, &fleet.first, "revoked-v2")?;
+    let (mut supervisor, _) =
+        Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
+    supervisor.start_release(&fleet.first, release_v1, now)?;
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    supervisor.upgrade(&fleet.first, release_v2, now)?;
+    finish_release_drain(&mut supervisor, &control, &fleet.first, now);
+    control.set_healthy(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+
+    fleet
+        .registry
+        .revoke_release(&fleet.first, &ReleaseId::parse("revoked-v1")?)?;
+    assert!(matches!(
+        supervisor.rollback(&fleet.first, now),
+        Err(SupervisorError::Fleet(
+            codex_hepta_fleet::FleetRegistryError::ReleaseNotAllowed { .. }
+        ))
+    ));
+    assert_eq!(
+        supervisor
+            .snapshot(&fleet.first)
+            .expect("active v2")
+            .active_release
+            .as_deref(),
+        Some("revoked-v2")
+    );
+    Ok(())
+}
+
+#[test]
 fn failed_spawn_and_failed_health_each_auto_rollback_once() -> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
     let control = FakeControl::default();
     let now = Instant::now();
+    let release_v1 = install_release_for(&fleet, &fleet.first, "release-v1")?;
+    let spawn_fails = install_release_for(&fleet, &fleet.first, "release-spawn-fails")?;
+    let health_fails = install_release_for(&fleet, &fleet.first, "release-health-fails")?;
     let (mut supervisor, _) =
         Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
-    supervisor.start_release(
-        &fleet.first,
-        release("release-v1", "release-v1/hepta-agentd")?,
-        now,
-    )?;
+    supervisor.start_release(&fleet.first, release_v1, now)?;
     control.set_healthy(&fleet.first);
     supervisor.tick(now);
 
-    control.reject_spawn_program(fake_program("release-spawn-fails/hepta-agentd"));
-    supervisor.upgrade(
-        &fleet.first,
-        release("release-spawn-fails", "release-spawn-fails/hepta-agentd")?,
-        now,
-    )?;
+    control.reject_spawn_program(spawn_fails.command().program.clone());
+    supervisor.upgrade(&fleet.first, spawn_fails, now)?;
     finish_release_drain(&mut supervisor, &control, &fleet.first, now);
     control.set_healthy(&fleet.first);
     assert_eq!(supervisor.tick(now), TickReport::default());
@@ -830,11 +868,7 @@ fn failed_spawn_and_failed_health_each_auto_rollback_once() -> Result<(), Superv
     assert_eq!(recovered.active_release.as_deref(), Some("release-v1"));
     assert!(!recovered.release_change_pending);
 
-    supervisor.upgrade(
-        &fleet.first,
-        release("release-health-fails", "release-health-fails/hepta-agentd")?,
-        now,
-    )?;
+    supervisor.upgrade(&fleet.first, health_fails, now)?;
     finish_release_drain(&mut supervisor, &control, &fleet.first, now);
     assert_eq!(
         supervisor.tick(now + Duration::from_millis(11)),
