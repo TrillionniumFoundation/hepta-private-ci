@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Fail-closed blocker gate for complete OpenBao replacement claims."""
 
+import argparse
 import json
 import subprocess
 import sys
@@ -115,7 +116,14 @@ def verify_branch_audit(relative: str, external: dict) -> None:
         fail("branch audit grants authority")
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--report-only",
+        action="store_true",
+        help="validate matrix integrity and report open product gaps without making them a source-merge failure",
+    )
+    args = parser.parse_args(argv)
     try:
         matrix = json.loads(MATRIX.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
@@ -205,7 +213,7 @@ def main() -> int:
         "closed": sum(row["status"] == "closed" for row in rows),
     }
     print(json.dumps(result, separators=(",", ":")))
-    return 0 if not blockers else 1
+    return 0 if not blockers or args.report_only else 1
 
 
 if __name__ == "__main__":
