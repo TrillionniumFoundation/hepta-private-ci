@@ -227,6 +227,156 @@ export function canonicalJson(value, name = "value", options = undefined) {
   return JSON.stringify(snapshotCanonical(value, name, options));
 }
 
+export function parseJsonNoDuplicateKeys(
+  encoded,
+  name = "JSON value",
+  { maxDepth = MAX_CANONICAL_DEPTH } = {},
+) {
+  if (typeof encoded !== "string") {
+    fail(ERROR_CODES.PROTOCOL_VIOLATION, `${name} must be JSON text`);
+  }
+  if (!Number.isSafeInteger(maxDepth) || maxDepth < 1 || maxDepth > 256) {
+    fail(ERROR_CODES.INVALID_INPUT, "JSON parser maxDepth must be between 1 and 256");
+  }
+
+  let index = 0;
+  const length = encoded.length;
+  const skipWhitespace = () => {
+    while (
+      index < length &&
+      (encoded[index] === " " ||
+        encoded[index] === "\n" ||
+        encoded[index] === "\r" ||
+        encoded[index] === "\t")
+    ) {
+      index += 1;
+    }
+  };
+  const syntax = (message) =>
+    fail(ERROR_CODES.PROTOCOL_VIOLATION, `${name} ${message}`);
+
+  const parseStringToken = () => {
+    if (encoded[index] !== '"') syntax("contains invalid JSON");
+    const start = index;
+    index += 1;
+    while (index < length) {
+      const code = encoded.charCodeAt(index);
+      if (encoded[index] === '"') {
+        index += 1;
+        try {
+          return JSON.parse(encoded.slice(start, index));
+        } catch {
+          syntax("contains invalid JSON string data");
+        }
+      }
+      if (code < 0x20) syntax("contains an unescaped control character");
+      if (encoded[index] === "\\") {
+        index += 1;
+        if (index >= length) syntax("contains an incomplete JSON escape");
+        const escape = encoded[index];
+        if (escape === "u") {
+          if (!/^[0-9a-fA-F]{4}$/.test(encoded.slice(index + 1, index + 5))) {
+            syntax("contains an invalid Unicode escape");
+          }
+          index += 5;
+          continue;
+        }
+        if (!'"\\/bfnrt'.includes(escape)) {
+          syntax("contains an invalid JSON escape");
+        }
+      }
+      index += 1;
+    }
+    syntax("contains an unterminated JSON string");
+  };
+
+  const parseNumber = () => {
+    const match = /^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?/.exec(
+      encoded.slice(index),
+    );
+    if (!match) syntax("contains an invalid JSON number");
+    index += match[0].length;
+  };
+
+  const parseValue = (depth) => {
+    if (depth > maxDepth) syntax("exceeds the JSON nesting limit");
+    skipWhitespace();
+    if (index >= length) syntax("is truncated");
+    const token = encoded[index];
+
+    if (token === '"') {
+      parseStringToken();
+      return;
+    }
+    if (token === "{") {
+      index += 1;
+      skipWhitespace();
+      if (encoded[index] === "}") {
+        index += 1;
+        return;
+      }
+      const keys = new Set();
+      while (true) {
+        skipWhitespace();
+        const key = parseStringToken();
+        if (keys.has(key)) {
+          syntax(`contains duplicate object key ${JSON.stringify(key)}`);
+        }
+        keys.add(key);
+        skipWhitespace();
+        if (encoded[index] !== ":") syntax("contains an object key without ':'");
+        index += 1;
+        parseValue(depth + 1);
+        skipWhitespace();
+        if (encoded[index] === "}") {
+          index += 1;
+          return;
+        }
+        if (encoded[index] !== ",") syntax("contains an invalid object separator");
+        index += 1;
+      }
+    }
+    if (token === "[") {
+      index += 1;
+      skipWhitespace();
+      if (encoded[index] === "]") {
+        index += 1;
+        return;
+      }
+      while (true) {
+        parseValue(depth + 1);
+        skipWhitespace();
+        if (encoded[index] === "]") {
+          index += 1;
+          return;
+        }
+        if (encoded[index] !== ",") syntax("contains an invalid array separator");
+        index += 1;
+      }
+    }
+    for (const literal of ["true", "false", "null"]) {
+      if (encoded.startsWith(literal, index)) {
+        index += literal.length;
+        return;
+      }
+    }
+    if (token === "-" || (token >= "0" && token <= "9")) {
+      parseNumber();
+      return;
+    }
+    syntax("contains invalid JSON");
+  };
+
+  parseValue(0);
+  skipWhitespace();
+  if (index !== length) syntax("contains trailing data");
+  try {
+    return JSON.parse(encoded);
+  } catch {
+    syntax("contains invalid JSON");
+  }
+}
+
 export async function canonicalSha256(value, name = "request semantics") {
   const encoded = canonicalJson(value, name, { maxBytes: MAX_REQUEST_BYTES });
   const crypto = globalThis.crypto;
