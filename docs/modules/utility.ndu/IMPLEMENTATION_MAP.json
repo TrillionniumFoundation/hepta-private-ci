@@ -190,7 +190,7 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
-          "symbol": "malformed_local_solver_receipts_reject_before_protocol_publication"
+          "symbol": "solver_receipt_cannot_be_rebound_to_another_subject"
         }
       ],
       "designOperation": "bind_solver_iteration_receipt_v1",
@@ -214,7 +214,7 @@
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
-          "symbol": "scaled, correlated, singular and covariance analytic fixtures"
+          "symbol": "scaled_covariance_recovers_three_instead_of_six_and_converts_microseconds"
         }
       ],
       "designOperation": "solve_backward_regression",
