@@ -92,6 +92,15 @@ class SignatureVerifier(Protocol):
     ) -> bool: ...
 
 
+class SignatureSigner(Protocol):
+    def sign(
+        self,
+        value: object,
+        issuer: str,
+        signing_identity: str,
+    ) -> str: ...
+
+
 @dataclass(frozen=True)
 class TrustedPublicKey:
     public_key_pem: bytes
