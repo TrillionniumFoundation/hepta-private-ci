@@ -276,6 +276,9 @@ pub enum AgentdMethod {
         query: String,
         limit: u16,
     },
+    CognitiveContextRevalidate {
+        cut_digest: String,
+    },
     Events {
         after_cursor: u64,
         limit: u16,
@@ -329,6 +332,7 @@ pub enum AgentdPayload {
     Lifecycle(LifecycleSnapshot),
     SessionIngress(SessionIngress),
     CognitiveContext(CognitiveContextSnapshot),
+    CognitiveContextRevalidated(CognitiveContextRevalidation),
     AuthBusTextStatus(AuthBusTextStatus),
     Events(EventBatch),
     AutomationTask(AutomationTask),
@@ -353,11 +357,20 @@ pub enum AgentdPayload {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct CognitiveContextSnapshot {
+    /// Exact owner cut witness. Consumers must revalidate this immediately
+    /// before physical model attachment; it is not a lease over future writes.
+    pub cut_digest: String,
     pub snapshot_digest: String,
     pub read_digest: String,
     pub omitted_records: u64,
     pub items: Vec<CognitiveContextItem>,
     pub plan: Option<CognitiveContextPlan>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct CognitiveContextRevalidation {
+    pub cut_digest: String,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
