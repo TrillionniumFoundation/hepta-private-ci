@@ -3,7 +3,7 @@
 ## Current executable contract
 
 `codex-rs/hepta-authbus` verifies issuer-bound Ed25519 messages. The host supplies
-trusted issuer registration, current revocation and expected scope/payload.
+trusted issuer registration, current revocation and expected subject/scope/payload.
 `SignedMessage::authenticate` checks the signature, issuer/key epoch, expiry,
 scope and payload and returns a privately constructed `AuthenticatedMessage`.
 Authentication alone does not consume a durable replay sequence.
@@ -38,7 +38,10 @@ signatures or become durable through the addition of the signed API.
   evidence `src/authbus_store.rs`;
 - outbox APIs and records: evidence `src/authbus_outbox.rs`,
   `src/authbus_outbox_worker.rs`, `src/authbus_outbox_record.rs`;
-- replay and outbox tables: evidence migrations `0009` and `0010`.
+- replay and outbox tables: evidence migrations `0009` and `0010`;
+- policy/trust/quota/reservation/checkpoint tables: evidence migration `0011`;
+- durable authority APIs: evidence `src/authbus_authority_store.rs` and
+  `src/authbus_trust_store.rs`.
 
 ## Durability and activation
 
@@ -48,12 +51,21 @@ must compose trusted issuer registration and the evidence-store API; production
 enrollment is not established by library tests. Neither path grants effect
 authority.
 
-## Target-only design
+## Implemented authority/accounting slice
 
-Host trust provisioning and key lifecycle management, external replay-store
-rollback protection, authorization policy, quota registry, reservation,
-cancellation, expiry settlement and observed-cost settlement remain outside this
-implemented admission slice.
+The evidence owner now persists append-only policy revisions and managed issuer/key
+revisions, resolves exact principal/action/scope authorization, and owns a
+conservation-checked quota registry plus durable reservations. Reservation
+reconciliation distinguishes `Applied`, `NotApplied` and `Indeterminate`;
+unknown or expired effects keep their hold until authenticated terminal evidence
+arrives. The replay frontier can be hashed, compared to an externally retained
+checkpoint and safely retired only for revoked epochs with no active delivery.
+
+## Still external
+
+The independent checkpoint/time service, production key ceremony/distribution,
+provider terminal observer and product effect composition remain deployment
+responsibilities. SQLite cannot be its own anti-rollback oracle.
 
 ## Known limits and non-claims
 
@@ -80,7 +92,7 @@ presence.
 
 The host must supply trusted registration and current revocation, use the durable
 admission API where replay must survive restart, and govern clock/backup recovery.
-Effect-specific policy, quota and the final-use token remain separate checks.
+Effect-specific final-use authority remains a separate check even after AuthBus policy/quota admission.
 No effect adapter may consume `VerificationReceipt` as a grant. See
 [`SIGNED_ADMISSION.md`](../../../codex-rs/hepta-authbus/SIGNED_ADMISSION.md) and the
 separate legacy [`PREVERIFIED_REPLAY_V1.md`](PREVERIFIED_REPLAY_V1.md) contract.
