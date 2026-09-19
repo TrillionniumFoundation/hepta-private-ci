@@ -6,6 +6,8 @@
 //! Authentication of external observations and hard I/O cancellation remain host
 //! responsibilities.
 
+use std::collections::BTreeSet;
+
 use codex_hepta_context_compiler::CompilationRequest;
 use codex_hepta_context_compiler::compile as compile_context;
 use codex_hepta_intelligence_eval::Disposition as EvaluationDisposition;
@@ -135,6 +137,26 @@ impl<H: HostEnvelopePortV3> LaneFV3Ports for NativeV3OwnerPorts<'_, H> {
                 "objective-binding",
             ));
         }
+        let objective_candidates = compiled
+            .objective
+            .legal_actions
+            .iter()
+            .map(|action| action.id.clone())
+            .collect::<BTreeSet<_>>();
+        let declared_candidates = self
+            .inputs
+            .legal_candidates
+            .candidates
+            .iter()
+            .map(|candidate| candidate.candidate_id.clone())
+            .collect::<BTreeSet<_>>();
+        if objective_candidates != declared_candidates {
+            return Err(failure(
+                input,
+                PortFailureClassV3::Rejected,
+                "legal-candidate-objective-binding",
+            ));
+        }
         success(input, "objective.compiler", compiled.objective.semantic_digest)
     }
 
@@ -144,6 +166,27 @@ impl<H: HostEnvelopePortV3> LaneFV3Ports for NativeV3OwnerPorts<'_, H> {
                 input,
                 PortFailureClassV3::Rejected,
                 "utility-objective",
+            ));
+        }
+        let utility_candidates = self
+            .inputs
+            .utility_set
+            .contributions
+            .iter()
+            .map(|contribution| contribution.candidate_id.clone())
+            .collect::<BTreeSet<_>>();
+        let legal_candidates = self
+            .inputs
+            .legal_candidates
+            .candidates
+            .iter()
+            .map(|candidate| candidate.candidate_id.clone())
+            .collect::<BTreeSet<_>>();
+        if utility_candidates != legal_candidates {
+            return Err(failure(
+                input,
+                PortFailureClassV3::Rejected,
+                "utility-candidate-binding",
             ));
         }
         let receipt = evaluate_candidates(
@@ -241,6 +284,26 @@ impl<H: HostEnvelopePortV3> LaneFV3Ports for NativeV3OwnerPorts<'_, H> {
                 input,
                 PortFailureClassV3::Rejected,
                 "intuition-binding",
+            ));
+        }
+        let intuition_candidates = request
+            .candidates
+            .iter()
+            .map(|candidate| candidate.candidate_id.clone())
+            .collect::<BTreeSet<_>>();
+        let legal_candidates = self
+            .inputs
+            .legal_candidates
+            .candidates
+            .iter()
+            .filter(|candidate| candidate.candidate_id.as_str() != "abstain")
+            .map(|candidate| candidate.candidate_id.clone())
+            .collect::<BTreeSet<_>>();
+        if intuition_candidates != legal_candidates {
+            return Err(failure(
+                input,
+                PortFailureClassV3::Rejected,
+                "intuition-candidate-binding",
             ));
         }
         request.decision_id = input.run_id.clone();
