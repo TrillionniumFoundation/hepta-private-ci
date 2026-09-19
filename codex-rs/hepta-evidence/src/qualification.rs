@@ -464,11 +464,15 @@ impl QualificationEvidenceStore<'_> {
                 "qualification evidence is already expired".to_string(),
             ));
         }
+        let candidate_evidence_set_digest =
+            candidate_evidence_set_digest_in_transaction(&mut transaction, &envelope.candidate)
+                .await?;
         validate_independent_decision(
             envelope,
             issuer,
             message,
             &signing_identity_sha256,
+            &candidate_evidence_set_digest,
             now,
         )?;
 
@@ -616,6 +620,8 @@ impl QualificationEvidenceStore<'_> {
             }
         }
 
+        let expected_decision_evidence_set =
+            candidate_evidence_set_digest(&self.store.pool, &request.candidate).await?;
         let mut active = Vec::new();
         let mut expired = Vec::new();
         for row in rows {
@@ -640,6 +646,13 @@ impl QualificationEvidenceStore<'_> {
                             "independent decision payload is invalid: {error}"
                         ))
                     })?;
+                if receipt.evidence_set_digest != expected_decision_evidence_set {
+                    return Ok(EvidenceDispositionV1::Conflicting {
+                        evidence: vec![row.reference()],
+                        reason: "independent decision evidence-set digest is stale or unbound"
+                            .to_string(),
+                    });
+                }
                 match receipt.decision {
                     IndependentDecisionV1::Reject => {
                         return Ok(EvidenceDispositionV1::Conflicting {
@@ -789,6 +802,7 @@ fn validate_independent_decision(
     issuer: &IssuerRegistration,
     message: &SignedMessage,
     signing_identity_sha256: &Sha256Digest,
+    expected_evidence_set_digest: &Sha256Digest,
     now: u64,
 ) -> Result<(), EvidenceError> {
     if envelope.claim_class != EvidenceClaimClassV1::IndependentDecision {
@@ -808,6 +822,7 @@ fn validate_independent_decision(
         || receipt.role.evidence_role() != envelope.issuer_role
         || receipt.principal_id != issuer.issuer_id.as_str()
         || receipt.signing_identity_digest != *signing_identity_sha256
+        || receipt.evidence_set_digest != *expected_evidence_set_digest
         || envelope.expires_unix_ms != Some(receipt.expires_unix_ms)
         || receipt.expires_unix_ms <= now
         || receipt.expires_unix_ms > message.claims.expires_at_ms
@@ -830,6 +845,81 @@ fn validate_independent_decision(
         ));
     }
     Ok(())
+}
+
+const MAX_DECISION_EVIDENCE_REFERENCES: usize =
+    QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS * 16;
+
+async fn candidate_evidence_set_digest(
+    pool: &SqlitePool,
+    candidate: &EvidenceCandidateV1,
+) -> Result<Sha256Digest, EvidenceError> {
+    let rows = sqlx::query(
+        "SELECT seq, evidence_id, schema_version, candidate_id, source_commit, source_tree,
+                claim_class, receipt_kind, issuer_role, issuer_principal_id, issuer_key_epoch,
+                issuer_signing_identity_sha256, auth_message_id, auth_sequence,
+                auth_expires_at_ms, payload_sha256, envelope_sha256,
+                predecessor_evidence_id, target_evidence_id, observed_at_ms, expires_at_ms,
+                asset_count, envelope_json
+         FROM qualification_evidence
+         WHERE candidate_id = ? AND source_commit = ? AND source_tree = ?
+           AND claim_class != 'independent_decision'
+         ORDER BY seq ASC LIMIT ?",
+    )
+    .bind(&candidate.candidate_id)
+    .bind(&candidate.source_commit)
+    .bind(&candidate.source_tree)
+    .bind(i64::try_from(MAX_DECISION_EVIDENCE_REFERENCES + 1).map_err(|_| {
+        EvidenceError::InvalidRecord("independent evidence-set bound overflow".into())
+    })?)
+    .fetch_all(pool)
+    .await
+    .map_err(classify_sqlx_error)?;
+    decision_digest_from_rows(&rows)
+}
+
+async fn candidate_evidence_set_digest_in_transaction(
+    transaction: &mut Transaction<'_, Sqlite>,
+    candidate: &EvidenceCandidateV1,
+) -> Result<Sha256Digest, EvidenceError> {
+    let rows = sqlx::query(
+        "SELECT seq, evidence_id, schema_version, candidate_id, source_commit, source_tree,
+                claim_class, receipt_kind, issuer_role, issuer_principal_id, issuer_key_epoch,
+                issuer_signing_identity_sha256, auth_message_id, auth_sequence,
+                auth_expires_at_ms, payload_sha256, envelope_sha256,
+                predecessor_evidence_id, target_evidence_id, observed_at_ms, expires_at_ms,
+                asset_count, envelope_json
+         FROM qualification_evidence
+         WHERE candidate_id = ? AND source_commit = ? AND source_tree = ?
+           AND claim_class != 'independent_decision'
+         ORDER BY seq ASC LIMIT ?",
+    )
+    .bind(&candidate.candidate_id)
+    .bind(&candidate.source_commit)
+    .bind(&candidate.source_tree)
+    .bind(i64::try_from(MAX_DECISION_EVIDENCE_REFERENCES + 1).map_err(|_| {
+        EvidenceError::InvalidRecord("independent evidence-set bound overflow".into())
+    })?)
+    .fetch_all(&mut **transaction)
+    .await
+    .map_err(classify_sqlx_error)?;
+    decision_digest_from_rows(&rows)
+}
+
+fn decision_digest_from_rows(rows: &[SqliteRow]) -> Result<Sha256Digest, EvidenceError> {
+    if rows.len() > MAX_DECISION_EVIDENCE_REFERENCES {
+        return Err(EvidenceError::InvalidRecord(
+            "independent decision evidence set exceeds bounded verification capacity".to_string(),
+        ));
+    }
+    let references = rows
+        .iter()
+        .map(decode_row)
+        .collect::<Result<Vec<_>, _>>()?
+        .iter()
+        .map(StoredQualificationEvidence::reference)
+        .collect::<Vec<_>>();
+    evidence_set_digest(&references)
 }
 
 async fn load_claim_rows(
