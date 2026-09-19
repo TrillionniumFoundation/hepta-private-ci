@@ -263,6 +263,33 @@ fn newer_generation_cancels_pre_dispatch_recovery_instead_of_reusing_authority()
 }
 
 #[test]
+fn closed_retention_is_compacted_before_capacity_rejects_new_work() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    for index in 0..MAX_RETAINED_RUNS {
+        let mut closed = snapshot();
+        closed.run_id = format!("run.closed.{index:04}");
+        let admitted = coordinator.start_run(100, closed.clone()).expect("admit");
+        let (_, cancelled) = coordinator
+            .cancel_run(
+                100,
+                &closed.run_id,
+                admitted.revision,
+                "retention_fixture",
+            )
+            .expect("close");
+        assert_eq!(cancelled.phase, RunPhase::Cancelled);
+    }
+    assert_eq!(coordinator.runs.len(), MAX_RETAINED_RUNS);
+
+    let mut next = snapshot();
+    next.run_id = "run.zzzz.next".to_string();
+    coordinator.start_run(100, next.clone()).expect("compact and admit");
+    assert_eq!(coordinator.runs.len(), MAX_RETAINED_RUNS);
+    assert!(coordinator.run("run.closed.0000").is_none());
+    assert_eq!(coordinator.run(&next.run_id).expect("new run").phase, RunPhase::Admitted);
+}
+
+#[test]
 fn terminal_observation_is_idempotent_and_only_closed_runs_can_be_removed() {
     let mut coordinator =
         AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");
