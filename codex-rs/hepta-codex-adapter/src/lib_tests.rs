@@ -45,6 +45,12 @@ fn terminal(status: TurnStatus, error: Option<TurnError>) -> TurnCompletedNotifi
 }
 
 #[test]
+fn turn_start_method_id_matches_the_v2_wire_method() {
+    assert_eq!(TURN_START_METHOD_ID, "turn/start");
+    assert_eq!(intent().method_id.as_str(), "turn/start");
+}
+
+#[test]
 fn exact_completed_observation_maps_without_authority() {
     let intent = intent();
     let observation = AppServerObservation::from_turn_completed(
