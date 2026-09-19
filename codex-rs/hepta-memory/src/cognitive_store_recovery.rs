@@ -182,9 +182,11 @@ impl CognitiveStore {
         .fetch_optional(&self.pool)
         .await
         .map_err(unavailable)?
-        .ok_or_else(|| CognitiveStoreError::AccessDenied(
-            "cognitive recovery writer lease does not exist".to_string(),
-        ))?;
+        .ok_or_else(|| {
+            CognitiveStoreError::AccessDenied(
+                "cognitive recovery writer lease does not exist".to_string(),
+            )
+        })?;
         let state: String = row.try_get("state").map_err(unavailable)?;
         if state != "active" {
             return Err(CognitiveStoreError::AccessDenied(
@@ -202,25 +204,31 @@ impl CognitiveStore {
         let authority_epoch = positive_u64(
             row.try_get::<Option<i64>, _>("authority_epoch")
                 .map_err(unavailable)?
-                .ok_or_else(|| CognitiveStoreError::AccessDenied(
-                    "cognitive recovery writer lease is not authority-bound".to_string(),
-                ))?,
+                .ok_or_else(|| {
+                    CognitiveStoreError::AccessDenied(
+                        "cognitive recovery writer lease is not authority-bound".to_string(),
+                    )
+                })?,
             "authority epoch",
         )?;
         let owner_epoch = positive_u64(
             row.try_get::<Option<i64>, _>("owner_epoch")
                 .map_err(unavailable)?
-                .ok_or_else(|| CognitiveStoreError::AccessDenied(
-                    "cognitive recovery writer lease is not owner-bound".to_string(),
-                ))?,
+                .ok_or_else(|| {
+                    CognitiveStoreError::AccessDenied(
+                        "cognitive recovery writer lease is not owner-bound".to_string(),
+                    )
+                })?,
             "owner epoch",
         )?;
         let lease_expires_at_unix_seconds = positive_u64(
             row.try_get::<Option<i64>, _>("lease_expires_at_unix_seconds")
                 .map_err(unavailable)?
-                .ok_or_else(|| CognitiveStoreError::AccessDenied(
-                    "cognitive recovery writer lease has no expiry".to_string(),
-                ))?,
+                .ok_or_else(|| {
+                    CognitiveStoreError::AccessDenied(
+                        "cognitive recovery writer lease has no expiry".to_string(),
+                    )
+                })?,
             "lease expiry",
         )?;
         let now = SystemTime::now()
@@ -233,7 +241,8 @@ impl CognitiveStore {
             ));
         }
         let lease_sha256: String = row.try_get("lease_sha256").map_err(unavailable)?;
-        let lease_sha256 = Sha256Digest::parse(lease_sha256).map_err(CognitiveStoreError::Corrupt)?;
+        let lease_sha256 =
+            Sha256Digest::parse(lease_sha256).map_err(CognitiveStoreError::Corrupt)?;
         Ok(CognitiveRecoveryWriterFence {
             profile: WRITER_FENCE_PROFILE.to_string(),
             owner_agent_id: self.owner_agent_id.clone(),
