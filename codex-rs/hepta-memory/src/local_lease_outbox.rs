@@ -1655,6 +1655,53 @@ impl LocalLeaseOutbox {
         .await
     }
 
+    /// Verify that an occurrence has a complete durable OperationIntent and
+    /// that its immutable destination matches the attached effect target.
+    pub(crate) async fn verify_operation_dispatch_binding(
+        &self,
+        occurrence_key: &str,
+        destination_id: &str,
+    ) -> Result<(), LocalLeaseOutboxError> {
+        let mut transaction = self
+            .store
+            .pool
+            .begin()
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        let lease = self.current_lease(&mut transaction).await?;
+        ensure_current_active(&lease, self)?;
+        let events =
+            verify_event_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
+        let outbox =
+            verify_outbox_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
+        verify_event_outbox_pairing(&events, &outbox)?;
+        verify_operation_ledger(
+            &mut transaction,
+            &self.lease_id,
+            &self.owner_agent_id,
+            &events,
+            &outbox,
+        )
+        .await?;
+        let operation = find_operation(&mut transaction, occurrence_key)
+            .await?
+            .ok_or_else(|| {
+                LocalLeaseOutboxError::StaleFence(
+                    "production dispatch requires a durable operation ledger row".to_string(),
+                )
+            })?;
+        if operation.destination_id != destination_id {
+            return Err(LocalLeaseOutboxError::StaleFence(
+                "durable operation destination does not match attached target".to_string(),
+            ));
+        }
+        transaction
+            .commit()
+            .await
+            .map_err(crate::cognitive_store::unavailable)?;
+        Ok(())
+    }
+
     /// Claim one exact queued occurrence before a target dispatch begins.
     ///
     /// The claim is persisted as the existing fail-closed `Indeterminate`
