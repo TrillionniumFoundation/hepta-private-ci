@@ -140,6 +140,7 @@ impl MatrixDurableStore {
         .await
         .map_err(unavailable)?;
         verify_store(&pool, &owner_agent_id).await?;
+        crate::dispatch::verify_dispatch_schema(&pool).await?;
         Ok(Self {
             pool,
             owner_agent_id,
