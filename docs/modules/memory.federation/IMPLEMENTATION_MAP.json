@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "bd68a5c542546367417a053b26a4d9aa9112ba75",
+    "tree": "01879e5896cbea491745a1bdf52b714fbef4e942"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.federation",
@@ -18,28 +18,45 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "candidate_composed_pending_qualification",
   "productionWriterState": "not_established",
   "operations": [
     {
       "operation": "execute_once",
       "nativeSymbol": "execute_once",
       "sourcePath": "codex-rs/hepta-memory-federation/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_candidate_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-memory-federation/src/v2_tests.rs"
+        },
+        {
+          "path": "codex-rs/hepta-memory/src/cognitive_federation_tests.rs"
+        },
+        {
+          "path": "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
+        }
+      ],
       "sourcePathExists": true,
       "designOperation": "execute_once",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/cognitive_federation.rs",
+        "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
+      ]
     },
     {
       "operation": "observe_cancellation",
       "nativeSymbol": "observe_cancellation",
       "sourcePath": "codex-rs/hepta-memory-federation/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_composed_engine_support",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-memory-federation/src/v2_tests.rs"
+        }
+      ],
       "sourcePathExists": true,
       "designOperation": "observe_cancellation",
       "mappingClass": "owner_native",
@@ -47,8 +64,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Complete exact-head and deterministic synthetic-merge qualification for the composed product caller.",
+    "Keep coverage and live-authority semantics intact for any future fleet/network transport without reintroducing the legacy silent-failure path."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
