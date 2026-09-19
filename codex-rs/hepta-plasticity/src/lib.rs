@@ -8,11 +8,16 @@
 #![forbid(unsafe_code)]
 
 mod durable_registry;
+mod durable_topology_registry;
 
 pub use durable_registry::DurableProposalAppendReceiptV1;
 pub use durable_registry::DurableProposalRegistry;
 pub use durable_registry::DurableProposalRegistryError;
 pub use durable_registry::DurableRegistryAnchorV1;
+pub use durable_topology_registry::DurableTopologyAnchorV1;
+pub use durable_topology_registry::DurableTopologyAppendReceiptV1;
+pub use durable_topology_registry::DurableTopologyProposalRegistryV1;
+pub use durable_topology_registry::DurableTopologyRegistryError;
 
 mod legacy;
 mod parameter_v2;
