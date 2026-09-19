@@ -12,8 +12,10 @@ repository CI product caller. The package-root API intentionally does not export
 `facade.issue_work_envelope` or `facade.schedule_ready_packages`; those remain explicit
 local compatibility primitives and do not authenticate canonical source/completion facts.
 New composition uses `issue_repository_work_envelope` or `issue_signed_work_envelope`
-plus `plan_engineering_work`. `hepta_engineering_control.py` is compatibility-only
-and is not a native mapping or supported integration surface for new callers.
+plus `plan_engineering_work`. `hepta_engineering_control.py` is compatibility-only and is not a native mapping or
+supported integration surface for new callers. Its legacy `schedule()` rejects by
+default unless a fixture explicitly opts into `compatibility_only=True`, and its
+boolean-based `decide_integration()` can never produce review eligibility.
 
 [COMPONENTS.json](COMPONENTS.json) and [TRACEABILITY.json](TRACEABILITY.json) are
 source/test navigation maps. They do not self-certify maturity or grant authority.
