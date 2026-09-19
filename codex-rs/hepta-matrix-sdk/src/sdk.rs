@@ -399,8 +399,9 @@ impl MatrixOutboundTransport for MatrixSdkClient {
             {
                 // Synapse has accepted the PUT and returned `event_id`, but
                 // deliberately hide that acknowledgement from the durable
-                // dispatcher. The durable dispatch remains indeterminate until
-                // /sync observes the stable transaction or server event.
+                // dispatcher. The attempt remains non-terminal; any later
+                // retransmission must reuse this exact stable transaction, and
+                // /sync remains the terminal observer.
                 return Err(MatrixTransportError::Indeterminate);
             }
             Ok(event_id)
