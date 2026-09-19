@@ -17,38 +17,88 @@
     "codex-rs/hepta-cognitive-read"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productionImplementation": true,
+  "productCallerState": "composed",
+  "productionWriterState": "not_applicable_read_only",
   "operations": [
+    {
+      "operation": "read_authoritative",
+      "nativeSymbol": "read_authoritative",
+      "sourcePath": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs",
+          "symbol": "authoritative_read_binds_provider_vector_query_and_lease"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+          "symbol": "production_composition_fails_closed_when_owner_frontier_advances_before_consume"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "read_authoritative",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "read_v2"
+      ]
+    },
     {
       "operation": "read_v2",
       "nativeSymbol": "read_v2",
       "sourcePath": "codex-rs/hepta-cognitive-read/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "state": "source_implemented_internal_primitive",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-cognitive-read/src/v2_tests.rs",
+          "symbol": "bounded V2 projection suite"
+        }
+      ],
       "sourcePathExists": true,
       "designOperation": "read_v2",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "durablecognitivesnapshot",
-      "nativeSymbol": "DurableCognitiveSnapshot",
+      "operation": "lane_c_authoritative_provider",
+      "nativeSymbol": "LaneCAuthoritativeSnapshotProvider",
       "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [],
+      "state": "source_implemented_product_composed",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
+          "symbol": "authoritative_final_use_revalidation_fails_after_owner_frontier_advance"
+        }
+      ],
       "sourcePathExists": true,
-      "designOperation": "durablecognitivesnapshot",
+      "designOperation": "acquire_snapshot",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "revalidate_authoritative_provider",
+      "nativeSymbol": "revalidate_lane_c_authoritative_provider",
+      "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+          "symbol": "production_composition_fails_closed_when_owner_frontier_advances_before_consume"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "revalidate",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Record CI and target-host execution receipts for this revision before claiming product execution proved.",
+    "Keep independent semantic review, operator acceptance, canary, promotion and release as external gates."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -58,7 +108,7 @@
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
