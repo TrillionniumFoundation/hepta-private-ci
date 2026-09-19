@@ -309,6 +309,7 @@ fn native_v3_owner_ports_traverse_real_objective_ndu_eval_intuition_context_and_
     let envelope = receipt.host_envelope.as_ref().expect("host envelope");
     assert_eq!(ports.host().accepted, Some(envelope.envelope_digest));
     assert!(ports.learning_append().is_some());
-    assert_eq!(ledger.records().expect("records").len(), 1);
     receipt.validate().expect("receipt validation");
+    drop(ports);
+    assert_eq!(ledger.records().expect("records").len(), 1);
 }
