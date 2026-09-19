@@ -1,10 +1,10 @@
 #![forbid(unsafe_code)]
 
 use hnmf_reference::{
-    ActivationPath, ActiveNode, Contradiction, EngramNode, EngramPopulation, EventId, FabricConfig,
-    FabricError, ForgetBatch, MemoryCue, MemoryEvent, NodeId, OutcomeSignal, PPM, PlasticityBatch,
-    RecallAbstainReason, RecallPacket, ReplayCandidate, ReplaySelectionReceipt, Synapse,
-    SynapseRelation, ThresholdProposal, WeightProposal,
+    ReferenceActivationPath, ReferenceActiveNode, ReferenceContradiction, ReferenceEngramState, ReferenceEngramPopulation, EventId, ReferenceFabricConfig,
+    ReferenceFabricError, ReferenceForgetPlan, ReferenceCueFeatures, ReferenceEventFeatures, NodeId, ReferenceOutcomeFeatures, PPM, ReferencePlasticityProposalSet,
+    ReferenceRecallAbstainReason, ReferenceRecallState, ReferenceReplayCandidate, ReferenceReplaySelection, ReferenceSynapseState,
+    ReferenceSynapseRelation, ReferenceThresholdProposal, ReferenceWeightProposal,
 };
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
@@ -51,31 +51,31 @@ impl HardeningConfig {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct BoundRecallPacket {
-    pub source_cue: MemoryCue,
+    pub source_cue: ReferenceCueFeatures,
     pub candidate_event_ids: Vec<EventId>,
     pub expanded_node_ids: Vec<NodeId>,
-    pub packet: RecallPacket,
+    pub packet: ReferenceRecallState,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct BoundPlasticityBatch {
     pub source_packet: BoundRecallPacket,
-    pub outcome_signal: OutcomeSignal,
-    pub batch: PlasticityBatch,
+    pub outcome_signal: ReferenceOutcomeFeatures,
+    pub batch: ReferencePlasticityProposalSet,
     pub current_snapshot_immutable: bool,
     pub production_activation_allowed: bool,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ExactForgetBatch {
-    pub batch: ForgetBatch,
+    pub batch: ReferenceForgetPlan,
     pub exact_support_closure: bool,
     pub production_activation_allowed: bool,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum HardeningError {
-    Reference(FabricError),
+    Reference(ReferenceFabricError),
     Invalid(&'static str),
     BoundExceeded(&'static str),
     Conflict(&'static str),
@@ -84,8 +84,8 @@ pub enum HardeningError {
     ArithmeticOverflow,
 }
 
-impl From<FabricError> for HardeningError {
-    fn from(value: FabricError) -> Self {
+impl From<ReferenceFabricError> for HardeningError {
+    fn from(value: ReferenceFabricError) -> Self {
         Self::Reference(value)
     }
 }
@@ -111,17 +111,17 @@ impl std::error::Error for HardeningError {}
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct HardenedFabric {
     generation: u64,
-    runtime: FabricConfig,
+    runtime: ReferenceFabricConfig,
     hardening: HardeningConfig,
-    events: BTreeMap<EventId, MemoryEvent>,
-    nodes: BTreeMap<NodeId, EngramNode>,
-    synapses: BTreeMap<(NodeId, NodeId, SynapseRelation), Synapse>,
+    events: BTreeMap<EventId, ReferenceEventFeatures>,
+    nodes: BTreeMap<NodeId, ReferenceEngramState>,
+    synapses: BTreeMap<(NodeId, NodeId, ReferenceSynapseRelation), ReferenceSynapseState>,
 }
 
 impl HardenedFabric {
     pub fn new(
         generation: u64,
-        runtime: FabricConfig,
+        runtime: ReferenceFabricConfig,
         hardening: HardeningConfig,
     ) -> Result<Self, HardeningError> {
         if generation == 0 {
@@ -148,11 +148,11 @@ impl HardenedFabric {
         self.generation
     }
 
-    pub fn event(&self, event_id: EventId) -> Option<&MemoryEvent> {
+    pub fn event(&self, event_id: EventId) -> Option<&ReferenceEventFeatures> {
         self.events.get(&event_id)
     }
 
-    pub fn node(&self, node_id: NodeId) -> Option<&EngramNode> {
+    pub fn node(&self, node_id: NodeId) -> Option<&ReferenceEngramState> {
         self.nodes.get(&node_id)
     }
 
@@ -160,12 +160,12 @@ impl HardenedFabric {
         &self,
         source: NodeId,
         target: NodeId,
-        relation: SynapseRelation,
-    ) -> Option<&Synapse> {
+        relation: ReferenceSynapseRelation,
+    ) -> Option<&ReferenceSynapseState> {
         self.synapses.get(&(source, target, relation))
     }
 
-    pub fn insert_event(&mut self, event: MemoryEvent) -> Result<(), HardeningError> {
+    pub fn insert_event(&mut self, event: ReferenceEventFeatures) -> Result<(), HardeningError> {
         event.validate()?;
         if self.events.len() >= self.hardening.maximum_stored_events
             && !self.events.contains_key(&event.id)
@@ -175,7 +175,7 @@ impl HardenedFabric {
         insert_exact(&mut self.events, event.id, event, "event identity")
     }
 
-    pub fn insert_node(&mut self, node: EngramNode) -> Result<(), HardeningError> {
+    pub fn insert_node(&mut self, node: ReferenceEngramState) -> Result<(), HardeningError> {
         node.validate()?;
         if self.nodes.len() >= self.runtime.maximum_nodes && !self.nodes.contains_key(&node.id) {
             return Err(HardeningError::BoundExceeded("nodes"));
@@ -190,7 +190,7 @@ impl HardenedFabric {
         insert_exact(&mut self.nodes, node.id, node, "node identity")
     }
 
-    pub fn insert_synapse(&mut self, synapse: Synapse) -> Result<(), HardeningError> {
+    pub fn insert_synapse(&mut self, synapse: ReferenceSynapseState) -> Result<(), HardeningError> {
         synapse.validate()?;
         let key = (synapse.source, synapse.target, synapse.relation);
         if self.synapses.len() >= self.runtime.maximum_synapses && !self.synapses.contains_key(&key)
@@ -269,7 +269,7 @@ fn insert_exact<K: Ord + Clone, V: Eq>(
     Ok(())
 }
 
-fn eligible(event: &MemoryEvent, now_unix_ms: i64) -> bool {
+fn eligible(event: &ReferenceEventFeatures, now_unix_ms: i64) -> bool {
     !event.tombstoned
         && event.valid_from_unix_ms <= now_unix_ms
         && event.valid_to_unix_ms.is_none_or(|end| now_unix_ms < end)
