@@ -99,6 +99,11 @@ where
         evaluate_prepared_plan_with_ndu(&snapshot, &prepared, ndu_input, now_micros)?;
     let grant_requests =
         request_execution_grants(&snapshot, &prepared, &evaluation.plan, now_micros)?;
+    if grant_requests.authority().grants_any() {
+        return Err(GlobalPlanHostError::Planner(
+            PlannerError::PreparedPlanMismatch,
+        ));
+    }
     let authority_admission_receipt_digest = if grant_requests.requests().is_empty() {
         None
     } else {
