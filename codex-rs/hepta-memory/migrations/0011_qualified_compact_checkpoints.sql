@@ -28,6 +28,9 @@ CREATE TABLE cognitive_qualified_compact_checkpoints (
     source_snapshot_digest TEXT NOT NULL CHECK (
         length(source_snapshot_digest) = 64 AND source_snapshot_digest NOT GLOB '*[^0-9a-f]*'
     ),
+    source_memory_snapshot_digest TEXT NOT NULL CHECK (
+        length(source_memory_snapshot_digest) = 64 AND source_memory_snapshot_digest NOT GLOB '*[^0-9a-f]*'
+    ),
     tokenizer_digest TEXT NOT NULL CHECK (
         length(tokenizer_digest) = 64 AND tokenizer_digest NOT GLOB '*[^0-9a-f]*'
     ),
