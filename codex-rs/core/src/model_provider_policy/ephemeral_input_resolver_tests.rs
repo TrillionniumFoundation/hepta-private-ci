@@ -121,12 +121,14 @@ fn context<'a>(
     cwd: Option<PathBuf>,
 ) -> ModelProviderPolicyContext<'a> {
     ModelProviderPolicyContext {
+        require_active_policy: false,
         registry,
         session_store: stores.0,
         thread_store: stores.1,
         turn_store: stores.2,
         thread_id: "thread-1".to_string(),
         turn_id: "turn-1".to_string(),
+        app_server_client_name: None,
         request_kind,
         ephemeral_input_cwd: cwd,
     }

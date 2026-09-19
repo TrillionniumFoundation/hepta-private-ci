@@ -24,12 +24,18 @@ use super::transport::ProviderRoutingHint;
 /// IDs and the selected local cwd are host-resolved; extension stores remain
 /// borrowed from Codex's single session/thread/turn lifecycle.
 pub(crate) struct ModelProviderPolicyContext<'a> {
+    /// Fail closed when this host advertises Hepta governance but forgot to
+    /// install an active physical provider-policy contributor.
+    pub(crate) require_active_policy: bool,
     pub(crate) registry: &'a ExtensionRegistry<Config>,
     pub(crate) session_store: &'a ExtensionData,
     pub(crate) thread_store: &'a ExtensionData,
     pub(crate) turn_store: &'a ExtensionData,
     pub(crate) thread_id: String,
     pub(crate) turn_id: String,
+    /// Host-resolved App Server client provenance. Policy contributors may
+    /// bind it into authority scope but must never treat the string as authority.
+    pub(crate) app_server_client_name: Option<String>,
     pub(crate) request_kind: ModelProviderRequestKind,
     pub(crate) ephemeral_input_cwd: Option<PathBuf>,
 }
@@ -240,6 +246,7 @@ impl PreparedModelProviderPolicy {
             request_binding_id: &self.request_binding_id,
             thread_id: &self.thread_id,
             turn_id: &self.turn_id,
+            app_server_client_name: context.app_server_client_name.as_deref(),
             request_kind: self.request_kind,
             provider_id: &self.provider_id,
             provider_config_sha256: &self.provider_config_sha256,
