@@ -514,100 +514,108 @@ impl PlasticityBatchV1 {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(
-    tag = "kind",
-    rename_all = "snake_case",
-    rename_all_fields = "camelCase",
-    deny_unknown_fields
-)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum TopologyOperationV1 {
-    AddNode {
-        label: String,
-        population: EngramPopulationV1,
-    },
-    SplitNode {
-        node_id: ContractIdV1,
-        left_label: String,
-        right_label: String,
-    },
-    MergeNodes {
-        left_node_id: ContractIdV1,
-        right_node_id: ContractIdV1,
-        label: String,
-    },
-    RetireNode {
-        node_id: ContractIdV1,
-        reason: String,
-    },
-    Rewire {
-        source_node_id: ContractIdV1,
-        old_target_node_id: ContractIdV1,
-        new_target_node_id: ContractIdV1,
-        relation: SynapseRelationV1,
-    },
+    Add,
+    Split,
+    Merge,
+    Rewire,
+    Retire,
 }
 
-impl TopologyOperationV1 {
+#[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct TopologyNodeSpecV1 {
+    pub node_id: ContractIdV1,
+    pub population: EngramPopulationV1,
+    pub label: String,
+}
+
+impl TopologyNodeSpecV1 {
     fn validate(&self) -> Result<(), HnmfContractError> {
-        match self {
-            Self::AddNode { label, .. } | Self::MergeNodes { label, .. } => {
-                validate_text(label, 128, "topology label")
-            }
-            Self::SplitNode {
-                left_label,
-                right_label,
-                ..
-            } => {
-                validate_text(left_label, 128, "split left label")?;
-                validate_text(right_label, 128, "split right label")?;
-                if left_label == right_label {
-                    return Err(HnmfContractError::Invalid("split labels"));
-                }
-                Ok(())
-            }
-            Self::RetireNode { reason, .. } => validate_text(reason, 128, "retire reason"),
-            Self::Rewire {
-                source_node_id,
-                old_target_node_id,
-                new_target_node_id,
-                ..
-            } => {
-                if source_node_id == old_target_node_id
-                    || source_node_id == new_target_node_id
-                    || old_target_node_id == new_target_node_id
-                {
-                    return Err(HnmfContractError::Invalid("rewire endpoints"));
-                }
-                Ok(())
-            }
+        validate_text(&self.label, 128, "topology node label")
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct TopologyEdgeSpecV1 {
+    pub source_node_id: ContractIdV1,
+    pub target_node_id: ContractIdV1,
+    pub relation: SynapseRelationV1,
+}
+
+impl TopologyEdgeSpecV1 {
+    fn validate(&self) -> Result<(), HnmfContractError> {
+        if self.source_node_id == self.target_node_id {
+            return Err(HnmfContractError::Invalid("topology edge self-loop"));
         }
+        Ok(())
     }
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct TopologyTypedNodesEdgesV1 {
+    pub nodes: Vec<TopologyNodeSpecV1>,
+    pub edges: Vec<TopologyEdgeSpecV1>,
+}
+
+impl TopologyTypedNodesEdgesV1 {
+    fn validate(&self) -> Result<(), HnmfContractError> {
+        if self.nodes.is_empty() && self.edges.is_empty() {
+            return Err(HnmfContractError::Invalid("empty topology delta"));
+        }
+        if self.nodes.len() > MAX_NODES || self.edges.len() > MAX_SYNAPSES {
+            return Err(HnmfContractError::Invalid("topology delta bound"));
+        }
+        ensure_strict_order(&self.nodes, "topologyNodes")?;
+        ensure_strict_order(&self.edges, "topologyEdges")?;
+        for node in &self.nodes {
+            node.validate()?;
+        }
+        for edge in &self.edges {
+            edge.validate()?;
+        }
+        Ok(())
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct TopologyResourceDeltaV1 {
+    pub node_delta: i64,
+    pub edge_delta: i64,
+    pub resident_bytes_upper_bound_delta: i64,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum TopologyProposalStateV1 {
+    Proposed,
+    QualificationRequired,
+    Rejected,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct TopologyProposalV1 {
-    pub predecessor_generation: ContractGenerationV1,
-    pub next_generation: ContractGenerationV1,
+    pub proposal_id: ContractIdV1,
+    pub predecessor_topology_digest: ContractDigestV1,
     pub operation: TopologyOperationV1,
-    pub capability_typed: bool,
-    pub sandbox_only: bool,
-    pub operator_accepted: bool,
-    pub production_activation_allowed: bool,
+    pub typed_nodes_edges: TopologyTypedNodesEdgesV1,
+    pub compatibility_plan_digest: ContractDigestV1,
+    pub resource_delta: TopologyResourceDeltaV1,
+    pub security_review_digest: ContractDigestV1,
+    pub lesion_plan_digest: ContractDigestV1,
+    pub rollback_plan_digest: ContractDigestV1,
+    pub state: TopologyProposalStateV1,
 }
 
 impl TopologyProposalV1 {
     pub fn validate(&self) -> Result<(), HnmfContractError> {
-        if self.predecessor_generation.next()? != self.next_generation
-            || !self.capability_typed
-            || !self.sandbox_only
-            || self.operator_accepted
-            || self.production_activation_allowed
-        {
-            return Err(HnmfContractError::Conflict("topology authority boundary"));
-        }
-        self.operation.validate()
+        self.typed_nodes_edges.validate()
     }
 }
 
