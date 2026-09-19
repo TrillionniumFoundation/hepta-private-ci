@@ -8,6 +8,7 @@ use codex_hepta_cognitive_read::ReadFieldV1;
 use codex_hepta_cognitive_read::ReadIdsError;
 use codex_hepta_cognitive_read::ReadIdsRequestV1;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_control_plane::ObservedContextV1;
 use codex_hepta_control_plane::plan_observed_context;
 use codex_hepta_memory::CognitiveAccess;
@@ -15,11 +16,13 @@ use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::CognitiveStoreError;
 use codex_hepta_memory::RetrievalRequest;
+use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 use crate::CognitiveContextItem;
 use crate::CognitiveContextPlan;
+use crate::CognitiveContextRevalidation;
 use crate::CognitiveContextSnapshot;
 
 const MAX_CONTEXT_JSON_BYTES: usize = crate::MAX_COGNITIVE_CONTEXT_BYTES;
@@ -84,7 +87,6 @@ pub(crate) async fn read(
         .map(|record| (record.record_id.as_str(), record))
         .collect::<BTreeMap<_, _>>();
     let mut response = CognitiveContextSnapshot {
-        cut_digest: cut.cut_digest().to_string(),
         snapshot_digest: read.snapshot_digest().to_string(),
         read_digest: read.receipt_digest().to_string(),
         omitted_records: 0,
@@ -210,6 +212,91 @@ pub(crate) async fn read(
             .map_err(|_| CognitiveContextError::RankerUnavailable)?;
     }
     Ok(response)
+}
+
+pub(crate) async fn revalidate(
+    store: &CognitiveStore,
+    owner: &AgentId,
+    snapshot_digest: &str,
+    items: &[CognitiveContextItem],
+) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
+    if items.len() > 4 {
+        return Err(CognitiveStoreError::Invalid(
+            "context revalidation accepts at most four items".to_string(),
+        )
+        .into());
+    }
+    let expected_snapshot: Digest32 = snapshot_digest
+        .parse()
+        .map_err(|error| CognitiveStoreError::Invalid(format!("invalid snapshot digest: {error}")))?;
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let scope = CognitiveScope::AgentPrivate;
+    let cut = store
+        .lane_c_snapshot(&access, &scope, now_seconds()?)
+        .await?;
+    if cut.snapshot().snapshot_digest != expected_snapshot {
+        return Err(CognitiveStoreError::Conflict(
+            "cognitive context snapshot is stale".to_string(),
+        )
+        .into());
+    }
+
+    let record_ids = items
+        .iter()
+        .map(|item| {
+            StableId::new(&item.memory_id)
+                .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let read = cut
+        .read_ids(ReadIdsRequestV1 {
+            snapshot_digest: expected_snapshot,
+            record_ids,
+            fields: vec![ReadFieldV1::ContentDigest],
+            maximum_encoded_bytes: MAX_CONTEXT_JSON_BYTES,
+        })
+        .map_err(map_read_ids_error)?;
+    if !read.missing_ids().is_empty() || read.records().len() != items.len() {
+        return Err(CognitiveStoreError::Conflict(
+            "cognitive context item set is stale".to_string(),
+        )
+        .into());
+    }
+    let records = read
+        .records()
+        .iter()
+        .map(|record| (record.record_id.as_str(), record))
+        .collect::<BTreeMap<_, _>>();
+    for item in items {
+        let content_digest = Sha256Digest::for_bytes(item.content.as_bytes());
+        if content_digest.as_str() != item.content_sha256 {
+            return Err(CognitiveStoreError::Invalid(
+                "cognitive context content hash mismatch".to_string(),
+            )
+            .into());
+        }
+        let current = records.get(item.memory_id.as_str()).ok_or_else(|| {
+            CognitiveStoreError::Conflict("cognitive context item disappeared".to_string())
+        })?;
+        if !current.is_live()
+            || current.revision.get() != item.revision
+            || current
+                .content_digest
+                .is_none_or(|digest| digest.to_string() != item.content_sha256)
+        {
+            return Err(CognitiveStoreError::Conflict(
+                "cognitive context item changed before final use".to_string(),
+            )
+            .into());
+        }
+    }
+
+    Ok(CognitiveContextRevalidation {
+        snapshot_digest: expected_snapshot.to_string(),
+        verified_item_count: u16::try_from(items.len()).map_err(|error| {
+            CognitiveStoreError::Invalid(format!("invalid context item count: {error}"))
+        })?,
+    })
 }
 
 fn map_read_ids_error(error: ReadIdsError) -> CognitiveStoreError {
