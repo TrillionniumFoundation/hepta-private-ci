@@ -15,6 +15,7 @@ use codex_hepta_memory::FederationGrantRequest;
 use codex_hepta_memory::FederationGrantScope;
 use codex_hepta_memory::MAX_FEDERATION_GRANT_LIFETIME_SECONDS;
 use codex_hepta_memory::workspace_binding_digest;
+use codex_hepta_types::Digest32;
 
 use crate::AgentdError;
 use crate::AgentdPayload;
@@ -149,6 +150,48 @@ impl AgentdState {
                             .to_string(),
                     },
                 }
+            }
+            crate::AgentdMethod::CognitiveContextRevalidate { cut_digest } => {
+                require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
+                let Some(store) = cognitive else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        cognitive_control_unavailable(),
+                    );
+                };
+                let expected: Digest32 = cut_digest.parse().map_err(|error| {
+                    AgentdError::Invalid(format!("invalid cognitive cut digest: {error}"))
+                })?;
+                let access = CognitiveAccess::agent_private(self.identity.agent_id.clone());
+                let scope = CognitiveScope::AgentPrivate;
+                let current = match store
+                    .revalidate_lane_c_cut(&access, &scope, expected, now_seconds()?)
+                    .await
+                {
+                    Ok(current) => current,
+                    Err(error) => {
+                        return self.cognitive_error_response(
+                            request_id,
+                            current_generation,
+                            error,
+                        );
+                    }
+                };
+                self.refresh_generation()?;
+                {
+                    let runtime = self.runtime.lock().map_err(poisoned_state)?;
+                    require_cognitive_control_ready(
+                        runtime.lifecycle,
+                        runtime.app_server_ready,
+                        runtime.fenced,
+                    )?;
+                }
+                AgentdPayload::CognitiveContextRevalidated(
+                    crate::CognitiveContextRevalidation {
+                        cut_digest: current.cut_digest().to_string(),
+                    },
+                )
             }
             crate::AgentdMethod::Events {
                 after_cursor,
