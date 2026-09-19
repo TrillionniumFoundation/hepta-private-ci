@@ -17,19 +17,59 @@ fn digest(value: &str) -> Digest32 {
 
 fn capability_snapshot(with_optional: bool) -> CapabilitySnapshotV2 {
     let mut pairs = vec![
-        ("objective.validation", "objective.compiler", CapabilityNecessityV2::Required),
-        ("legal.actions", "intelligence.control", CapabilityNecessityV2::Required),
-        ("utility.evaluation", "utility.ndu", CapabilityNecessityV2::Required),
-        ("learning.evaluation", "learning.eval", CapabilityNecessityV2::Required),
-        ("intuition.decision", "intuition.policy", CapabilityNecessityV2::Required),
-        ("context.compilation", "context.compiler", CapabilityNecessityV2::Required),
-        ("host.handoff", "runtime.agentd", CapabilityNecessityV2::Required),
-        ("learning.record", "learning.ledger", CapabilityNecessityV2::Required),
+        (
+            "objective.validation",
+            "objective.compiler",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "legal.actions",
+            "intelligence.control",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "utility.evaluation",
+            "utility.ndu",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "learning.evaluation",
+            "learning.eval",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "intuition.decision",
+            "intuition.policy",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "context.compilation",
+            "context.compiler",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "host.handoff",
+            "runtime.agentd",
+            CapabilityNecessityV2::Required,
+        ),
+        (
+            "learning.record",
+            "learning.ledger",
+            CapabilityNecessityV2::Required,
+        ),
     ];
     if with_optional {
         pairs.extend([
-            ("neural.signal", "neuron.runtime", CapabilityNecessityV2::Optional),
-            ("prompt.portfolio", "prompt.optimizer", CapabilityNecessityV2::Optional),
+            (
+                "neural.signal",
+                "neuron.runtime",
+                CapabilityNecessityV2::Optional,
+            ),
+            (
+                "prompt.portfolio",
+                "prompt.optimizer",
+                CapabilityNecessityV2::Optional,
+            ),
         ]);
     }
     let requirements = pairs
@@ -208,13 +248,11 @@ fn v3_baseline_routes_seven_owner_ports_and_records_optional_absence() {
     assert!(!ports.calls.contains(&LaneFStageV3::PromptPortfolioBuilt));
     assert!(receipt.stages.iter().any(|trace| {
         trace.stage == LaneFStageV3::NeuralSignalCollected
-            && trace.outcome
-                == StageOutcomeV3::FallbackUsed(PortFailureClassV3::Unavailable)
+            && trace.outcome == StageOutcomeV3::FallbackUsed(PortFailureClassV3::Unavailable)
     }));
     assert!(receipt.stages.iter().any(|trace| {
         trace.stage == LaneFStageV3::PromptPortfolioBuilt
-            && trace.outcome
-                == StageOutcomeV3::FallbackUsed(PortFailureClassV3::Unavailable)
+            && trace.outcome == StageOutcomeV3::FallbackUsed(PortFailureClassV3::Unavailable)
     }));
     let envelope = receipt.host_envelope.as_ref().expect("host envelope");
     assert_eq!(ports.accepted_envelope, Some(envelope.envelope_digest));
@@ -228,10 +266,12 @@ fn v3_full_capability_snapshot_routes_nine_owner_ports() {
     assert_eq!(ports.calls.len(), 9);
     assert!(ports.calls.contains(&LaneFStageV3::NeuralSignalCollected));
     assert!(ports.calls.contains(&LaneFStageV3::PromptPortfolioBuilt));
-    assert!(receipt
-        .stages
-        .iter()
-        .all(|trace| !matches!(trace.outcome, StageOutcomeV3::FallbackUsed(_))));
+    assert!(
+        receipt
+            .stages
+            .iter()
+            .all(|trace| !matches!(trace.outcome, StageOutcomeV3::FallbackUsed(_)))
+    );
 }
 
 #[test]
