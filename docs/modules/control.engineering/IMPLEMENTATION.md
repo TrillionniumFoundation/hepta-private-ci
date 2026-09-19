@@ -51,7 +51,7 @@ must provide the separate owner authorization required by its own contract.
 | `hardening.py` | Active-state frontier and authenticated evidence/consent primitives | Store, closure and seal |
 | `closure.py` | Source-tree and freshness-window binding, dormant assimilation | Seal and public facade |
 | `seal.py` | Signed evidence seals, replay prevention, review and durable eligibility | Public package and facade |
-| `external_controls.py` | Distributed fencing, external audit anchor and HSM/KMS custody receipt admission | Production worker/deployment composition |
+| `external_controls.py` | Distributed fencing, external audit anchor over both audit head and durable owner-state snapshot, and subject-bound HSM/KMS custody receipt admission | Production worker/deployment composition |
 | `product_gate.py` | Named repository CI product caller over the v2 durable owner/orchestrator; PR qualification emits separate source-head and base-merge execution receipts | `hepta-consolidated-source.yml` |
 | `cli.py` | Bounded JSON ingress and local operations | `python -m control_engineering_v2`, installed CLI |
 
@@ -96,6 +96,9 @@ connections and serialize writes in SQLite. WAL disk growth, backups, external
 audit anchoring, archival retention and production availability remain operational
 work. The in-file hash chain detects accidental mutation; it is not protection
 against an administrator who can rewrite the complete database and chain.
+Production anchor admission therefore also recomputes a deterministic digest over
+the durable owner tables independently of `audit_events`; a direct owner-table
+rewrite cannot continue to satisfy a previously signed external anchor.
 
 ## Leases and scheduling
 
@@ -190,10 +193,13 @@ decision ID is rejected. Denied decisions can still be recorded without a seal.
 `HmacTrustStore` is the deterministic reference/test signing adapter.
 `SignatureTrustStore` is the production-facing signer/verifier protocol, so an
 HSM/KMS-backed adapter can be injected without changing evidence semantics.
-Production admission additionally requires a signed `KeyCustodyReceipt` proving
-hardware-backed custody outside the engineering process. Fixture signers establish
-protocol behavior only; they do not establish organizational independence or
-production key custody.
+Production admission additionally requires signed `KeyCustodyReceipt` values
+proving hardware-backed custody outside the engineering process. Each critical
+role binds a distinct custodied subject signing identity, provider/key identifier,
+algorithm, public-key digest and external attestation digest; the custody
+authority's own attestation signer cannot stand in for the custodied subject key.
+Fixture signers establish protocol behavior only; they do not establish
+organizational independence or production key custody.
 
 ## Authorized external-system composition
 
