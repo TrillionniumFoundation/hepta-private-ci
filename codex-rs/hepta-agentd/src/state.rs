@@ -3,7 +3,9 @@ use std::sync::Mutex;
 
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_fleet::AgentLifecycle;
+use codex_hepta_fleet::FleetAllocationStore;
 use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::FleetResourceVectorV1;
 use codex_hepta_memory::CognitiveStore;
 
 use crate::AgentdError;
@@ -19,6 +21,7 @@ pub(crate) struct AgentdState {
     pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
+    allocation_store: Option<FleetAllocationStore>,
     runtime: Mutex<RuntimeState>,
     events: Mutex<EventBuffer>,
     automation: Mutex<Option<AutomationStore>>,
@@ -44,6 +47,11 @@ impl AgentdState {
             lifecycle: AgentLifecycle::Starting,
             generation: identity.spawn_generation,
         });
+        let allocation_store = if identity.fleet_allocation.is_some() {
+            Some(FleetAllocationStore::open_existing(&registry)?)
+        } else {
+            None
+        };
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
@@ -55,6 +63,7 @@ impl AgentdState {
             }),
             identity,
             registry,
+            allocation_store,
             events: Mutex::new(events),
             automation: Mutex::new(None),
             cognitive: Mutex::new(None),
@@ -130,12 +139,58 @@ impl AgentdState {
             || record.layout.cognitive_root() != self.identity.layout.cognitive_root()
             || record.layout.automation_root() != self.identity.layout.automation_root()
             || record.manifest.workspace.as_path() != self.identity.workspace
-            || record.manifest.resources != self.identity.resources
         {
+            self.mark_fenced();
             return Err(AgentdError::GenerationFenced(
-                "registered agent roots or resource budget changed while agentd was running"
-                    .to_string(),
+                "registered agent roots changed while agentd was running".to_string(),
             ));
+        }
+        let manifest_ceiling = FleetResourceVectorV1::from(&record.manifest.resources);
+        let runtime_budget = FleetResourceVectorV1::from(&self.identity.resources);
+        if !runtime_budget.fits(manifest_ceiling) {
+            self.mark_fenced();
+            return Err(AgentdError::GenerationFenced(
+                "runtime budget exceeds the current registered Agent ceiling".to_string(),
+            ));
+        }
+        match (&self.identity.fleet_allocation, &self.allocation_store) {
+            (Some(binding), Some(store)) => {
+                let grant = store
+                    .validate_runtime_grant(
+                        &binding.allocation_id,
+                        &self.identity.agent_id,
+                        runtime_budget,
+                        unix_ms_now()?,
+                    )
+                    .map_err(|error| {
+                        self.mark_fenced();
+                        AgentdError::FleetAllocation(error)
+                    })?;
+                if grant.lease_generation != binding.lease_generation
+                    || grant.authority_epoch != binding.authority_epoch
+                    || grant.plan_sha256 != binding.plan_sha256
+                    || grant.resources != runtime_budget
+                {
+                    self.mark_fenced();
+                    return Err(AgentdError::GenerationFenced(
+                        "durable fleet allocation changed while agentd was running".to_string(),
+                    ));
+                }
+            }
+            (None, None) if record.manifest.resources == self.identity.resources => {}
+            (None, None) => {
+                self.mark_fenced();
+                return Err(AgentdError::GenerationFenced(
+                    "registered Agent resource budget changed while agentd was running"
+                        .to_string(),
+                ));
+            }
+            _ => {
+                self.mark_fenced();
+                return Err(AgentdError::GenerationFenced(
+                    "agentd fleet allocation owner state is inconsistent".to_string(),
+                ));
+            }
         }
         let distance = record
             .lifecycle
@@ -240,6 +295,15 @@ impl AgentdState {
             && runtime.app_server_ready
             && !runtime.fenced)
     }
+}
+
+fn unix_ms_now() -> Result<u64, AgentdError> {
+    let millis = std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_err(|_| AgentdError::Invalid("system clock predates Unix epoch".to_string()))?
+        .as_millis();
+    u64::try_from(millis)
+        .map_err(|_| AgentdError::Invalid("Unix millisecond clock overflow".to_string()))
 }
 
 fn poisoned_state<T>(_error: std::sync::PoisonError<T>) -> AgentdError {

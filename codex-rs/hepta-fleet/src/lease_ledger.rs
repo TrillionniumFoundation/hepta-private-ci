@@ -4,40 +4,16 @@ use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
 
+use crate::FleetResourceVectorV1;
+
 const MAX_HOSTS: usize = 256;
 const MAX_ACTIVE_GRANTS: usize = 16_384;
 
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
-pub struct Resources {
-    pub cpu_millis: u64,
-    pub memory_bytes: u64,
-    pub accelerator_millis: u64,
-}
-
-impl Resources {
-    pub fn checked_add(self, other: Self) -> Result<Self, Error> {
-        Ok(Self {
-            cpu_millis: self
-                .cpu_millis
-                .checked_add(other.cpu_millis)
-                .ok_or(Error::ArithmeticOverflow)?,
-            memory_bytes: self
-                .memory_bytes
-                .checked_add(other.memory_bytes)
-                .ok_or(Error::ArithmeticOverflow)?,
-            accelerator_millis: self
-                .accelerator_millis
-                .checked_add(other.accelerator_millis)
-                .ok_or(Error::ArithmeticOverflow)?,
-        })
-    }
-
-    pub fn fits(self, capacity: Self) -> bool {
-        self.cpu_millis <= capacity.cpu_millis
-            && self.memory_bytes <= capacity.memory_bytes
-            && self.accelerator_millis <= capacity.accelerator_millis
-    }
-}
+/// Compatibility name for the pre-durable in-memory lease component.
+///
+/// The type is now the same canonical vector used by placement and the durable
+/// allocation store. New production code should name `FleetResourceVectorV1`.
+pub type Resources = FleetResourceVectorV1;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct HostObservation {
@@ -115,6 +91,11 @@ impl fmt::Display for Error {
 
 impl StdError for Error {}
 
+/// Bounded in-memory reference state machine.
+///
+/// The durable production owner is `FleetAllocationStore`; this component is
+/// retained for narrow state-machine tests and callers that explicitly need an
+/// effect-free ephemeral ledger.
 #[derive(Debug)]
 pub struct LeaseLedger {
     hosts: BTreeMap<String, HostObservation>,
@@ -140,7 +121,7 @@ impl LeaseLedger {
         validate_identity(&observation.failure_domain_id, "failure domain")?;
         if observation.generation == 0
             || observation.observed_at_ms >= observation.valid_until_ms
-            || observation.capacity == Resources::default()
+            || observation.capacity.is_zero()
         {
             return Err(Error::HostCapacity);
         }
@@ -189,7 +170,10 @@ impl LeaseLedger {
             return Err(Error::GrantCapacityExceeded);
         }
         let committed = self.committed_resources(&grant.host_id, now_ms)?;
-        if !committed.checked_add(grant.resources)?.fits(host.capacity) {
+        let next = committed
+            .checked_add(grant.resources)
+            .ok_or(Error::ArithmeticOverflow)?;
+        if !next.fits(host.capacity) {
             return Err(Error::CapacityExceeded);
         }
         grant.revoked = false;
@@ -270,6 +254,15 @@ impl LeaseLedger {
         self.grants.get(allocation_id)
     }
 
+    /// Remove terminal grants so an ephemeral ledger cannot exhaust its bounded
+    /// identity set solely because old leases expired or were revoked.
+    pub fn prune_terminal(&mut self, now_ms: u64) -> usize {
+        let before = self.grants.len();
+        self.grants
+            .retain(|_, grant| !grant.revoked && grant.expires_at_ms > now_ms);
+        before - self.grants.len()
+    }
+
     fn committed_resources(&self, host_id: &str, now_ms: u64) -> Result<Resources, Error> {
         self.grants
             .values()
@@ -278,6 +271,7 @@ impl LeaseLedger {
             })
             .try_fold(Resources::default(), |sum, grant| {
                 sum.checked_add(grant.resources)
+                    .ok_or(Error::ArithmeticOverflow)
             })
     }
 }
@@ -320,7 +314,7 @@ fn validate_grant(grant: &AllocationGrant) -> Result<(), Error> {
     if grant.host_generation == 0 || grant.authority_epoch == 0 || grant.lease_generation == 0 {
         return Err(Error::InvalidGeneration);
     }
-    if grant.resources == Resources::default() {
+    if grant.resources.is_zero() {
         return Err(Error::HostCapacity);
     }
     Ok(())

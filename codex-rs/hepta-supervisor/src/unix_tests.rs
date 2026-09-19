@@ -58,6 +58,7 @@ fn unix_wrapper_captures_bounded_stdout_and_stderr() {
         run_root: temp.path().join("run"),
         control_socket: temp.path().join("run/agentd-control.sock"),
         logs_root: temp.path().join("logs"),
+        fleet_allocation_id: None,
         command,
     };
     let mut process = UnixProcessDriver::new(8)

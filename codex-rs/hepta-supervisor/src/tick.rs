@@ -2,6 +2,7 @@ use std::time::Instant;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
+use codex_hepta_fleet::FleetAllocationHolderStateV1;
 
 use crate::ManagedProcess;
 use crate::ProcessDriver;
@@ -10,14 +11,17 @@ use crate::ProcessState;
 use crate::Supervisor;
 use crate::SupervisorError;
 use crate::SupervisorEventKind;
+use crate::lease::LEGACY_PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::ProcessLease;
 use crate::lease::remove_lease;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
+use crate::runtime::bounded_message;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
+use crate::runtime::unix_ms_now;
 
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn tick_slot(
@@ -76,6 +80,42 @@ impl<D: ProcessDriver> Supervisor<D> {
                     registry: registry_generation,
                 },
             );
+        }
+        if !runtime.fenced {
+            if let Some(binding) = runtime.fleet_allocation.clone() {
+                let now_unix_ms = unix_ms_now()?;
+                let allocation_result = self
+                    .validate_fleet_allocation_binding(agent_id, &binding, now_unix_ms)
+                    .and_then(|()| {
+                        let store = self.allocation_store.as_ref().ok_or_else(|| {
+                            SupervisorError::Invalid(
+                                "allocation-bound runtime has no durable fleet owner".to_string(),
+                            )
+                        })?;
+                        store.reconcile_holder_current(
+                            &binding.allocation_id,
+                            binding.lease_generation,
+                            FleetAllocationHolderStateV1::Held,
+                            now_unix_ms,
+                        )?;
+                        Ok(())
+                    });
+                if let Err(error) = allocation_result {
+                    self.kill_matrix_now(agent_id, slot)?;
+                    runtime
+                        .process
+                        .kill()
+                        .map_err(|driver| driver_error(agent_id, driver))?;
+                    runtime.fenced = true;
+                    runtime.phase = RuntimePhase::Killing;
+                    slot.event(
+                        runtime.generation,
+                        SupervisorEventKind::DriverFault(bounded_message(format!(
+                            "fleet allocation fenced runtime: {error}"
+                        ))),
+                    );
+                }
+            }
         }
         let observation = runtime
             .process
@@ -166,12 +206,29 @@ impl<D: ProcessDriver> Supervisor<D> {
         let record = self.record(agent_id)?;
         let fenced = runtime.fenced || record.lifecycle.generation != runtime.generation;
         let lease = ProcessLease {
-            schema_version: PROCESS_LEASE_SCHEMA_VERSION,
+            schema_version: if runtime.fleet_allocation.is_some() {
+                PROCESS_LEASE_SCHEMA_VERSION
+            } else {
+                LEGACY_PROCESS_LEASE_SCHEMA_VERSION
+            },
             agent_id: agent_id.clone(),
             spawn_generation: runtime.spawn_generation,
             release_id: runtime.release_id.clone(),
             identity: runtime.identity.clone(),
+            fleet_allocation: runtime.fleet_allocation.clone(),
         };
+        if let Some(binding) = runtime.fleet_allocation.as_ref() {
+            let store = self.allocation_store.as_ref().ok_or_else(|| {
+                SupervisorError::Invalid(
+                    "allocation-bound exited runtime has no durable fleet owner".to_string(),
+                )
+            })?;
+            store.reconcile_terminal_holder_current(
+                &binding.allocation_id,
+                FleetAllocationHolderStateV1::Released,
+                unix_ms_now()?,
+            )?;
+        }
         remove_lease(record.layout.run_root(), &lease)?;
         let mut generation = runtime.generation;
         if !fenced {

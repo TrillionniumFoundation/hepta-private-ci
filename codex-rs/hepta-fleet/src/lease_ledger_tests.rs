@@ -1,5 +1,14 @@
 use super::*;
 
+fn resources(concurrent_turns: u64, memory_mib: u64) -> Resources {
+    Resources {
+        concurrent_turns,
+        memory_mib,
+        tool_processes: 4,
+        turn_queue_slots: 16,
+    }
+}
+
 fn host() -> HostObservation {
     HostObservation {
         host_id: "host.1".to_string(),
@@ -7,15 +16,11 @@ fn host() -> HostObservation {
         generation: 1,
         observed_at_ms: 100,
         valid_until_ms: 1_000,
-        capacity: Resources {
-            cpu_millis: 1_000,
-            memory_bytes: 4_096,
-            accelerator_millis: 0,
-        },
+        capacity: resources(10, 4_096),
     }
 }
 
-fn grant(id: &str, cpu: u64) -> AllocationGrant {
+fn grant(id: &str, turns: u64) -> AllocationGrant {
     AllocationGrant {
         allocation_id: id.to_string(),
         request_id: format!("request.{id}"),
@@ -26,11 +31,7 @@ fn grant(id: &str, cpu: u64) -> AllocationGrant {
         authority_epoch: 3,
         lease_generation: 1,
         expires_at_ms: 800,
-        resources: Resources {
-            cpu_millis: cpu,
-            memory_bytes: 1_024,
-            accelerator_millis: 0,
-        },
+        resources: resources(turns, 1_024),
         semantic_digest: "1".repeat(64),
         revoked: false,
     }
@@ -40,7 +41,7 @@ fn grant(id: &str, cpu: u64) -> AllocationGrant {
 fn conserves_capacity_and_reuses_identical_grant() {
     let mut ledger = LeaseLedger::new();
     ledger.admit_host(host()).expect("host");
-    let first = grant("one", 600);
+    let first = grant("one", 6);
     let receipt = ledger.issue(200, first.clone()).expect("grant");
     assert_eq!(receipt.outcome, LeaseOutcome::Issued);
     assert_eq!(
@@ -48,7 +49,7 @@ fn conserves_capacity_and_reuses_identical_grant() {
         LeaseOutcome::Unchanged
     );
     assert_eq!(
-        ledger.issue(200, grant("two", 500)),
+        ledger.issue(200, grant("two", 5)),
         Err(Error::CapacityExceeded)
     );
 }
@@ -57,7 +58,7 @@ fn conserves_capacity_and_reuses_identical_grant() {
 fn renewal_and_revocation_are_generation_fenced() {
     let mut ledger = LeaseLedger::new();
     ledger.admit_host(host()).expect("host");
-    ledger.issue(200, grant("one", 500)).expect("grant");
+    ledger.issue(200, grant("one", 5)).expect("grant");
     assert_eq!(
         ledger.renew_or_revoke(300, "one", 2, 3, &"1".repeat(64), LeaseDisposition::Revoke,),
         Err(Error::StaleLease)
@@ -78,4 +79,21 @@ fn renewal_and_revocation_are_generation_fenced() {
         ),
         Err(Error::Revoked)
     );
+}
+
+#[test]
+fn terminal_grants_are_pruned_and_do_not_leak_identity_capacity() {
+    let mut ledger = LeaseLedger::new();
+    ledger.admit_host(host()).expect("host");
+    ledger.issue(200, grant("one", 5)).expect("grant");
+    assert_eq!(ledger.prune_terminal(700), 0);
+    assert_eq!(ledger.prune_terminal(800), 1);
+    assert!(ledger.get("one").is_none());
+
+    ledger.issue(200, grant("two", 5)).expect("replacement");
+    ledger
+        .renew_or_revoke(300, "two", 1, 3, &"1".repeat(64), LeaseDisposition::Revoke)
+        .expect("revoke");
+    assert_eq!(ledger.prune_terminal(300), 1);
+    assert!(ledger.get("two").is_none());
 }

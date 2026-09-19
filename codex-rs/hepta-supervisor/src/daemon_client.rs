@@ -74,6 +74,20 @@ impl SupervisordClient {
             .await
     }
 
+    pub async fn start_allocated(
+        &self,
+        fence: SupervisordControlFence,
+        release_id: ReleaseId,
+        allocation_id: String,
+    ) -> Result<SupervisordMutationAccepted, SupervisorError> {
+        self.mutation(SupervisordMethod::StartAllocated {
+            fence,
+            release_id,
+            allocation_id,
+        })
+        .await
+    }
+
     pub async fn drain(
         &self,
         fence: SupervisordControlFence,

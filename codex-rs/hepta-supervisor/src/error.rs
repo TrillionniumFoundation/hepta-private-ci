@@ -1,4 +1,5 @@
 use codex_hepta_contracts::AgentId;
+use codex_hepta_fleet::FleetAllocationStoreError;
 use codex_hepta_fleet::FleetRegistryError;
 use thiserror::Error;
 
@@ -58,6 +59,8 @@ pub enum SupervisorError {
     },
     #[error(transparent)]
     Registry(#[from] FleetRegistryError),
+    #[error(transparent)]
+    FleetAllocation(#[from] FleetAllocationStoreError),
     #[error("signed production authority rejected: {0}")]
     ProductionAuthority(String),
     #[error("signed production authority feature is disabled in this build")]

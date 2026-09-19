@@ -4,6 +4,7 @@ use std::time::Instant;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentRecord;
+use codex_hepta_fleet::FleetAllocationStore;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ReleaseId;
 use codex_hepta_memory::H7SignedArtifactEnvelope;
@@ -39,6 +40,7 @@ pub struct Supervisor<D: ProcessDriver> {
     pub(crate) registry: FleetRegistry,
     pub(crate) driver: D,
     pub(crate) config: SupervisorConfig,
+    pub(crate) allocation_store: Option<FleetAllocationStore>,
     slots: BTreeMap<AgentId, AgentSlot<D::Process>>,
 }
 
@@ -53,6 +55,26 @@ impl<D: ProcessDriver> Supervisor<D> {
         config: SupervisorConfig,
         now: Instant,
     ) -> Result<(Self, TickReport), SupervisorError> {
+        Self::recover_inner(registry, driver, config, now, None)
+    }
+
+    pub fn recover_with_fleet_allocations(
+        registry: FleetRegistry,
+        allocation_store: FleetAllocationStore,
+        driver: D,
+        config: SupervisorConfig,
+        now: Instant,
+    ) -> Result<(Self, TickReport), SupervisorError> {
+        Self::recover_inner(registry, driver, config, now, Some(allocation_store))
+    }
+
+    fn recover_inner(
+        registry: FleetRegistry,
+        driver: D,
+        config: SupervisorConfig,
+        now: Instant,
+        allocation_store: Option<FleetAllocationStore>,
+    ) -> Result<(Self, TickReport), SupervisorError> {
         config.validate()?;
         let snapshot = registry.load()?;
         let slots = snapshot
@@ -65,6 +87,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             registry,
             driver,
             config,
+            allocation_store,
             slots,
         };
         let mut report = TickReport::default();
@@ -76,10 +99,8 @@ impl<D: ProcessDriver> Supervisor<D> {
             });
             if let Err(error) = result {
                 // A signed lifecycle intent is an externally authorized
-                // mutation.  Recording it as an ordinary per-agent fault
-                // would still bring the daemon up and expose unrelated
-                // mutation RPCs while the outcome is unknown.  Recovery of
-                // this class is therefore a daemon-wide startup failure.
+                // mutation. Recording it as an ordinary per-agent fault would
+                // still bring the daemon up while the outcome is unknown.
                 if matches!(&error, SupervisorError::SignedIntentRecoveryRequired(_)) {
                     return Err(error);
                 }
@@ -306,6 +327,15 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.release_change.is_some() || slot.restart_pending {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
         }
+        if slot
+            .runtime
+            .as_ref()
+            .is_some_and(|runtime| runtime.fleet_allocation.is_some())
+        {
+            return Err(SupervisorError::Invalid(
+                "allocated runtimes require a new allocation before restart".to_string(),
+            ));
+        }
         if slot.active_release.is_none() && slot.last_command.is_none() {
             return Err(SupervisorError::NoPreviousCommand(agent_id.clone()));
         }
@@ -348,6 +378,15 @@ impl<D: ProcessDriver> Supervisor<D> {
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
         if slot.release_change.is_some() || slot.restart_pending {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
+        }
+        if slot
+            .runtime
+            .as_ref()
+            .is_some_and(|runtime| runtime.fleet_allocation.is_some())
+        {
+            return Err(SupervisorError::Invalid(
+                "allocated runtimes require a new allocation before release change".to_string(),
+            ));
         }
         let current = slot.active_release.as_ref().ok_or_else(|| {
             SupervisorError::Invalid(format!(
@@ -413,6 +452,28 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<(), SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.start_release_slot(agent_id, slot, release, now)
+        })
+    }
+
+    pub fn start_release_with_allocation(
+        &mut self,
+        agent_id: &AgentId,
+        release: AgentRelease,
+        allocation_id: &str,
+        now_unix_ms: u64,
+        now: Instant,
+    ) -> Result<(), SupervisorError> {
+        let binding =
+            self.prepare_fleet_allocation_binding(agent_id, allocation_id, now_unix_ms)?;
+        self.with_slot(agent_id, |supervisor, slot| {
+            supervisor.start_release_slot_with_allocation(
+                agent_id,
+                slot,
+                release,
+                Some(binding),
+                now_unix_ms,
+                now,
+            )
         })
     }
 

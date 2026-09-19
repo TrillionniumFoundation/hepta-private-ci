@@ -1,6 +1,8 @@
 use std::collections::VecDeque;
 use std::time::Duration;
 use std::time::Instant;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
@@ -16,6 +18,7 @@ use crate::SupervisorConfig;
 use crate::SupervisorError;
 use crate::SupervisorEvent;
 use crate::SupervisorEventKind;
+use crate::lease::FleetAllocationProcessBinding;
 use crate::signed_intent::SignedSupervisorIntent;
 
 pub(crate) const MAX_FAULT_BYTES: usize = 512;
@@ -34,6 +37,7 @@ pub(crate) struct AgentRuntime<P> {
     pub identity: ProcessIdentity,
     pub spawn_generation: u64,
     pub release_id: ReleaseId,
+    pub fleet_allocation: Option<FleetAllocationProcessBinding>,
     pub generation: u64,
     pub phase: RuntimePhase,
     pub healthy: bool,
@@ -205,4 +209,14 @@ pub(crate) fn bounded_message(mut message: String) -> String {
         message.truncate(boundary);
     }
     message
+}
+
+
+pub(crate) fn unix_ms_now() -> Result<u64, SupervisorError> {
+    let millis = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|_| SupervisorError::Invalid("system clock predates Unix epoch".to_string()))?
+        .as_millis();
+    u64::try_from(millis)
+        .map_err(|_| SupervisorError::Invalid("Unix millisecond clock overflow".to_string()))
 }

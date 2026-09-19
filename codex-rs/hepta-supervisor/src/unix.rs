@@ -159,7 +159,11 @@ impl ProcessDriver for UnixProcessDriver {
             .env("HEPTA_AGENT_GENERATION", spec.generation.to_string())
             .env("HEPTA_FLEET_ROOT", &spec.fleet_root)
             .env("HEPTA_AGENT_HOME", &spec.home_root)
-            .env("HEPTA_AGENT_RUN_ROOT", &spec.run_root)
+            .env("HEPTA_AGENT_RUN_ROOT", &spec.run_root);
+        if let Some(allocation_id) = spec.fleet_allocation_id.as_deref() {
+            command.env("HEPTA_FLEET_ALLOCATION_ID", allocation_id);
+        }
+        command
             .stdin(Stdio::null())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());

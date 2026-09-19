@@ -187,6 +187,7 @@ mod tests {
             spawn_generation: 1,
             fleet_root: fleet_root.as_path().to_path_buf(),
             resources,
+        fleet_allocation: None,
         };
 
         let options =
