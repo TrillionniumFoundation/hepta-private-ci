@@ -4,10 +4,10 @@ use codex_hepta_context_compiler::{
 use codex_hepta_intelligence::{
     CapabilityBindingV2, CapabilityNecessityV2, CapabilityRequirementV2,
     CapabilitySnapshotRequestV2, CapabilitySnapshotV2, CompositionBudgetV3, CompositionControlV3,
-    CompositionDispositionV3, CompositionPortDecisionV3, CompositionPortFailureV3,
-    CompositionPortInputV3, CompositionPortReceiptV3, CompositionPortsV3, CompositionRunRequestV3,
-    CompositionStageV3, LegalActionCandidateSetRequestV1, LegalActionCandidateV1,
-    build_legal_candidates, prepare_intelligence_run_v3,
+    CompositionDispositionV3, CompositionRunRequestV3, CompositionStageV3,
+    LegalActionCandidateSetRequestV1, LegalActionCandidateV1, NativeCompositionInputsV3,
+    NativeCompositionPortsV3, NativeNeuronStageV3, NativeUtilityStageV3, build_legal_candidates,
+    prepare_intelligence_run_v3,
 };
 use codex_hepta_intelligence_eval::{
     Direction as EvalDirection, Disposition as EvalDisposition, EvaluationRequest,
@@ -20,9 +20,10 @@ use codex_hepta_intuition::{
     canonical_candidate_set_digest_v1, decide_calibrated,
 };
 use codex_hepta_ndu::{
-    AxisDirection, AxisValue, ContributionSet, EvaluationDisposition as NduDisposition,
-    FeasibilityPosture, RequiredOrganSet, ScalarizationProfile, UtilityContribution,
-    UtilityProfile, evaluate_candidates,
+    AggregationOperator, AxisAggregationRule, AxisDirection, AxisValue, ContributionSet,
+    EvaluationDisposition as NduDisposition, EvaluationPolicyV1, FeasibilityPosture,
+    RequiredOrganSet, ScalarizationProfile, UtilityContribution, UtilityProfile,
+    evaluate_candidates_with_policy,
 };
 use codex_hepta_neuron::{SparseConfig, SparseTick, sparse_tick};
 use codex_hepta_objective::{
@@ -35,7 +36,7 @@ use codex_hepta_prompt_optimizer::local_shadow::{
     LOCAL_NO_INTERVENTION_ID, LocalNoInterventionBaseline, LocalShadowInput, calculate_local_shadow,
 };
 use codex_hepta_types::{
-    AuthorityPosture, Digest32, FixedQ32, Generation, ProbabilityQ32, Revision, StableId,
+    Digest32, FixedQ32, Generation, ProbabilityQ32, Revision, StableId,
 };
 
 const Q24: i64 = 1 << 24;
@@ -133,6 +134,7 @@ struct NativeFixtures {
     ndu_set: ContributionSet,
     ndu_profile: UtilityProfile,
     ndu_scalarization: ScalarizationProfile,
+    ndu_policy: EvaluationPolicyV1,
     eval: EvaluationRequest,
     neuron_config: SparseConfig,
     neuron_tick: SparseTick,
@@ -173,10 +175,28 @@ impl NativeFixtures {
                 value: FixedQ32::ONE,
             }],
         };
-        let ndu_receipt = evaluate_candidates(
+        let ndu_policy = EvaluationPolicyV1 {
+            policy_id: id("native-v3-ndu-policy"),
+            utility_rules: vec![AxisAggregationRule {
+                axis: id("quality"),
+                operator: AggregationOperator::Sum,
+            }],
+            risk_rules: Vec::new(),
+            resource_rules: Vec::new(),
+            uncertainty_rules: vec![AxisAggregationRule {
+                axis: id("quality"),
+                operator: AggregationOperator::Maximum,
+            }],
+            pareto_absolute_tolerances: vec![AxisValue {
+                axis: id("quality"),
+                value: FixedQ32::ZERO,
+            }],
+        };
+        let ndu_receipt = evaluate_candidates_with_policy(
             ndu_set.clone(),
             ndu_profile.clone(),
             Some(ndu_scalarization.clone()),
+            ndu_policy.clone(),
         )
         .expect("NDU");
         assert_eq!(
@@ -198,7 +218,7 @@ impl NativeFixtures {
                 baseline: FixedQ32::ZERO,
                 minimum_delta: FixedQ32::ZERO,
                 hard: true,
-                support_digest: ndu_receipt.evaluation_digest,
+                support_digest: ndu_receipt.evaluation_digest_v2,
             }],
         };
         let eval_receipt = evaluate_independently(eval.clone()).expect("evaluation");
@@ -227,7 +247,7 @@ impl NativeFixtures {
         let neuron_tick = SparseTick {
             scope_digest: digest("native-v3-scope"),
             objective_digest,
-            ndu_digest: ndu_receipt.evaluation_digest,
+            ndu_digest: ndu_receipt.evaluation_digest_v2,
             body_digest: digest("native-v3-body"),
             input_digest: eval_receipt.evidence_digest,
             sequence: 1,
@@ -369,6 +389,7 @@ impl NativeFixtures {
             ndu_set,
             ndu_profile,
             ndu_scalarization,
+            ndu_policy,
             eval,
             neuron_config,
             neuron_tick,
@@ -376,166 +397,6 @@ impl NativeFixtures {
             intuition,
             context,
         }
-    }
-}
-
-struct NativeOwnerPorts {
-    fixtures: NativeFixtures,
-    calls: Vec<CompositionStageV3>,
-}
-
-impl NativeOwnerPorts {
-    fn receipt(
-        input: &CompositionPortInputV3,
-        producer: &str,
-        output_digest: Digest32,
-        evidence_digest: Digest32,
-        decision: CompositionPortDecisionV3,
-    ) -> Result<CompositionPortReceiptV3, CompositionPortFailureV3> {
-        Ok(CompositionPortReceiptV3 {
-            stage: input.stage,
-            producer: id(producer),
-            snapshot_digest: input.snapshot_digest,
-            predecessor_digest: input.predecessor_digest,
-            output_digest,
-            evidence_digest,
-            decision,
-            authority: AuthorityPosture::DENY_ALL,
-        })
-    }
-}
-
-impl CompositionPortsV3 for NativeOwnerPorts {
-    fn validate_objective(
-        &mut self,
-        input: &CompositionPortInputV3,
-    ) -> Result<CompositionPortReceiptV3, CompositionPortFailureV3> {
-        self.calls.push(input.stage);
-        let receipt = compile_objective(self.fixtures.objective.clone())
-            .expect("objective input")
-            .expect("objective conflict-free");
-        assert_eq!(receipt.disposition, CompileDisposition::Compiled);
-        Self::receipt(
-            input,
-            "objective.compiler",
-            receipt.objective.semantic_digest,
-            receipt.objective.hard_constraint_digest,
-            CompositionPortDecisionV3::Continue,
-        )
-    }
-
-    fn evaluate_utility(
-        &mut self,
-        input: &CompositionPortInputV3,
-    ) -> Result<CompositionPortReceiptV3, CompositionPortFailureV3> {
-        self.calls.push(input.stage);
-        let receipt = evaluate_candidates(
-            self.fixtures.ndu_set.clone(),
-            self.fixtures.ndu_profile.clone(),
-            Some(self.fixtures.ndu_scalarization.clone()),
-        )
-        .expect("NDU");
-        Self::receipt(
-            input,
-            "utility.ndu",
-            receipt.evaluation_digest,
-            receipt.utility_profile_digest,
-            CompositionPortDecisionV3::Continue,
-        )
-    }
-
-    fn admit_evaluation(
-        &mut self,
-        input: &CompositionPortInputV3,
-    ) -> Result<CompositionPortReceiptV3, CompositionPortFailureV3> {
-        self.calls.push(input.stage);
-        let receipt = evaluate_independently(self.fixtures.eval.clone()).expect("evaluation");
-        assert_eq!(
-            receipt.disposition,
-            EvalDisposition::EligibleForFurtherReview
-        );
-        Self::receipt(
-            input,
-            "learning.eval",
-            receipt.evidence_digest,
-            receipt.evidence_digest,
-            CompositionPortDecisionV3::Continue,
-        )
-    }
-
-    fn collect_neural_signal(
-        &mut self,
-        input: &CompositionPortInputV3,
-    ) -> Result<CompositionPortReceiptV3, CompositionPortFailureV3> {
-        self.calls.push(input.stage);
-        let (_, receipt) = sparse_tick(
-            &self.fixtures.neuron_config,
-            &self.fixtures.neuron_tick,
-            None,
-        )
-        .expect("neuron");
-        assert!(receipt.requires_calibration);
-        assert!(!receipt.authority.grants_any());
-        Self::receipt(
-            input,
-            "neuron.runtime",
-            receipt.checkpoint_after,
-            receipt.signal_digest,
-            CompositionPortDecisionV3::Continue,
-        )
-    }
-
-    fn build_prompt_portfolio(
-        &mut self,
-        input: &CompositionPortInputV3,
-    ) -> Result<CompositionPortReceiptV3, CompositionPortFailureV3> {
-        self.calls.push(input.stage);
-        let receipt = calculate_local_shadow(self.fixtures.prompt.clone()).expect("prompt");
-        assert!(!receipt.authority().grants_any());
-        Self::receipt(
-            input,
-            "prompt.optimizer",
-            receipt.proposal_digest,
-            receipt.proposal_digest,
-            CompositionPortDecisionV3::Continue,
-        )
-    }
-
-    fn decide_intuition(
-        &mut self,
-        input: &CompositionPortInputV3,
-    ) -> Result<CompositionPortReceiptV3, CompositionPortFailureV3> {
-        self.calls.push(input.stage);
-        let receipt = decide_calibrated(self.fixtures.intuition.clone()).expect("intuition");
-        assert!(!receipt.authority.grants_any());
-        let decision = match receipt.disposition {
-            CalibratedDispositionV1::Selected(_) => CompositionPortDecisionV3::Continue,
-            CalibratedDispositionV1::Abstained(_) => CompositionPortDecisionV3::Abstain,
-            CalibratedDispositionV1::SlowPath(_) => CompositionPortDecisionV3::SlowPath,
-        };
-        Self::receipt(
-            input,
-            "intuition.policy",
-            receipt.receipt_digest,
-            receipt.receipt_digest,
-            decision,
-        )
-    }
-
-    fn compile_context(
-        &mut self,
-        input: &CompositionPortInputV3,
-    ) -> Result<CompositionPortReceiptV3, CompositionPortFailureV3> {
-        self.calls.push(input.stage);
-        let receipt = compile_context(self.fixtures.context.clone()).expect("context");
-        assert!(!receipt.authority.grants_any());
-        Self::receipt(
-            input,
-            "context.compiler",
-            receipt.context_digest,
-            receipt.context_digest,
-            CompositionPortDecisionV3::Continue,
-        )
     }
 }
 
@@ -640,10 +501,23 @@ fn v3_composes_real_native_owner_algorithms_in_one_trace() {
         support_floor_ppm: 900_000,
     })
     .expect("legal candidates");
-    let mut ports = NativeOwnerPorts {
-        fixtures,
-        calls: Vec::new(),
-    };
+    let mut ports = NativeCompositionPortsV3::new(NativeCompositionInputsV3 {
+        objective: fixtures.objective,
+        utility: NativeUtilityStageV3 {
+            contributions: fixtures.ndu_set,
+            profile: fixtures.ndu_profile,
+            scalarization: Some(fixtures.ndu_scalarization),
+            policy: fixtures.ndu_policy,
+        },
+        evaluation: fixtures.eval,
+        neuron: Some(NativeNeuronStageV3 {
+            config: fixtures.neuron_config,
+            tick: fixtures.neuron_tick,
+        }),
+        prompt: Some(fixtures.prompt),
+        intuition: fixtures.intuition,
+        context: fixtures.context,
+    });
 
     let receipt = prepare_intelligence_run_v3(
         CompositionRunRequestV3 {
@@ -676,9 +550,14 @@ fn v3_composes_real_native_owner_algorithms_in_one_trace() {
         CompositionDispositionV3::HostEnvelopePrepared
     );
     assert_eq!(
-        ports.calls,
+        receipt
+            .stages
+            .iter()
+            .map(|stage| stage.stage)
+            .collect::<Vec<_>>(),
         vec![
             CompositionStageV3::ObjectiveValidated,
+            CompositionStageV3::LegalCandidatesBuilt,
             CompositionStageV3::UtilityEvaluated,
             CompositionStageV3::EvaluationAdmitted,
             CompositionStageV3::NeuralSignalCollected,
