@@ -112,3 +112,6 @@ mod persistent_index_integration_tests;
 #[cfg(test)]
 #[path = "persistent_index_reconcile_tests.rs"]
 mod persistent_index_reconcile_tests;
+
+#[cfg(test)]
+mod indexed_retention_tests;

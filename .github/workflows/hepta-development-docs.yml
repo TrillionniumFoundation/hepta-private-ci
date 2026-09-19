@@ -70,8 +70,8 @@ jobs:
           python3 scripts/hepta_workspace.py
           python3 scripts/hepta-module-docs.py refresh-derived --check
           python3 scripts/hepta_module_registry.py --strict
-          python3 scripts/test_hepta_module_registry.py -v
           python3 scripts/hepta-docs.py self-test
+          # Discovery includes test_hepta_module_registry.py; do not run it twice.
           python3 -m unittest discover -v -s scripts -p 'test_hepta_*.py'
           python3 scripts/hepta-docs.py inventory-legacy
           python3 scripts/hepta-docs.py generate-status

@@ -17,6 +17,7 @@ const MAX_MODULES: usize = 128;
 const MAX_DEPENDENCIES: usize = 64;
 const MAX_DOMAINS: usize = 64;
 const MAX_ID_BYTES: usize = 128;
+const MAX_CATALOG_BYTES: usize = 4 * 1024 * 1024;
 
 #[derive(Clone, Debug, Deserialize)]
 struct SourceCatalogV1 {
@@ -74,8 +75,18 @@ impl std::error::Error for RuntimeModuleCatalogErrorV1 {}
 
 impl RuntimeModuleCatalogV1 {
     pub fn canonical() -> Result<Self, RuntimeModuleCatalogErrorV1> {
-        let source: SourceCatalogV1 = serde_json::from_str(CANONICAL_MODULES_JSON)
-            .map_err(|_| RuntimeModuleCatalogErrorV1::Decode)?;
+        Self::from_reviewed_json(CANONICAL_MODULES_JSON)
+    }
+
+    /// Validate a host-supplied reviewed manifest using the canonical parser.
+    /// A successfully decoded catalog is data, not approval to load code or
+    /// activate its modules. Selection and writer handoff remain separate.
+    pub fn from_reviewed_json(json: &str) -> Result<Self, RuntimeModuleCatalogErrorV1> {
+        if json.len() > MAX_CATALOG_BYTES {
+            return Err(RuntimeModuleCatalogErrorV1::Bounds);
+        }
+        let source: SourceCatalogV1 =
+            serde_json::from_str(json).map_err(|_| RuntimeModuleCatalogErrorV1::Decode)?;
         if source.modules.is_empty() || source.modules.len() > MAX_MODULES {
             return Err(RuntimeModuleCatalogErrorV1::Bounds);
         }
@@ -117,7 +128,7 @@ impl RuntimeModuleCatalogV1 {
         validate_dag(&modules)?;
 
         Ok(Self {
-            digest: sha256_hex(CANONICAL_MODULES_JSON.as_bytes()),
+            digest: sha256_hex(json.as_bytes()),
             modules,
         })
     }
@@ -227,9 +238,84 @@ mod tests {
     #[test]
     fn canonical_catalog_is_bounded_and_acyclic() {
         let catalog = RuntimeModuleCatalogV1::canonical().expect("canonical module catalog");
-        assert_eq!(catalog.len(), 40);
+        let source: SourceCatalogV1 =
+            serde_json::from_str(CANONICAL_MODULES_JSON).expect("canonical source");
+        assert_eq!(catalog.len(), source.modules.len());
+        assert_eq!(
+            catalog.module_ids().collect::<BTreeSet<_>>(),
+            source.modules.iter().map(|row| row.id.as_str()).collect::<BTreeSet<_>>()
+        );
         assert!(!catalog.digest().is_empty());
         assert!(catalog.module("runtime.agentd").is_some());
         assert!(catalog.module("kernel.authority").is_some());
+    }
+
+    fn fixture(count: usize) -> serde_json::Value {
+        let modules = (0..count)
+            .map(|index| {
+                serde_json::json!({
+                    "id": format!("module-{index}"),
+                    "owner": "owner",
+                    "state": "stateless",
+                    "uses": [],
+                    "writes": []
+                })
+            })
+            .collect::<Vec<_>>();
+        serde_json::json!({"modules": modules})
+    }
+
+    #[test]
+    fn forty_first_optional_module_can_be_added_and_removed() {
+        let mut value = fixture(41);
+        let added = RuntimeModuleCatalogV1::from_reviewed_json(&value.to_string())
+            .expect("extension inside the resource bound");
+        assert_eq!(added.len(), 41);
+        assert!(added.module("module-40").is_some());
+        value["modules"].as_array_mut().expect("modules").pop();
+        let removed = RuntimeModuleCatalogV1::from_reviewed_json(&value.to_string())
+            .expect("removal of an unreferenced optional module");
+        assert_eq!(removed.len(), 40);
+        assert!(removed.module("module-40").is_none());
+        assert_ne!(added.digest(), removed.digest());
+    }
+
+    #[test]
+    fn removing_a_dependency_is_not_mistaken_for_safe_optional_removal() {
+        let mut value = fixture(2);
+        value["modules"][0]["uses"] = serde_json::json!(["module-1"]);
+        RuntimeModuleCatalogV1::from_reviewed_json(&value.to_string()).expect("valid dependency");
+        value["modules"].as_array_mut().expect("modules").pop();
+        assert!(matches!(
+            RuntimeModuleCatalogV1::from_reviewed_json(&value.to_string()),
+            Err(RuntimeModuleCatalogErrorV1::UnknownDependency { .. })
+        ));
+    }
+
+    #[test]
+    fn dynamic_manifests_keep_cycle_duplicate_and_resource_checks() {
+        let mut cycle = fixture(2);
+        cycle["modules"][0]["uses"] = serde_json::json!(["module-1"]);
+        cycle["modules"][1]["uses"] = serde_json::json!(["module-0"]);
+        assert!(matches!(
+            RuntimeModuleCatalogV1::from_reviewed_json(&cycle.to_string()),
+            Err(RuntimeModuleCatalogErrorV1::DependencyCycle)
+        ));
+        let mut duplicate = fixture(2);
+        duplicate["modules"][1]["id"] = serde_json::json!("module-0");
+        assert!(matches!(
+            RuntimeModuleCatalogV1::from_reviewed_json(&duplicate.to_string()),
+            Err(RuntimeModuleCatalogErrorV1::DuplicateModule(_))
+        ));
+        for count in [0, MAX_MODULES + 1] {
+            assert!(matches!(
+                RuntimeModuleCatalogV1::from_reviewed_json(&fixture(count).to_string()),
+                Err(RuntimeModuleCatalogErrorV1::Bounds)
+            ));
+        }
+        assert!(matches!(
+            RuntimeModuleCatalogV1::from_reviewed_json(&" ".repeat(MAX_CATALOG_BYTES + 1)),
+            Err(RuntimeModuleCatalogErrorV1::Bounds)
+        ));
     }
 }
