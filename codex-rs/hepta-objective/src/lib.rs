@@ -69,6 +69,7 @@ pub use objective_admission::ObjectivePredicateProfileV1;
 pub use objective_admission::ObjectiveResourceAxisProfileV1;
 pub use objective_admission::ObjectiveResourceProfileV1;
 pub use objective_admission::ObjectiveRiskProfileV1;
+pub use objective_admission::ObjectiveRetryDispositionV1;
 pub use objective_admission::ObjectiveSoftDimensionProfileV1;
 pub use objective_admission::ObjectiveSourceAuthenticationV1;
 pub use objective_admission::admit_and_compile_objective_v1;
