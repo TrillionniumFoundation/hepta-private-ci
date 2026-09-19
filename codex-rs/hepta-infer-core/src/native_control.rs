@@ -35,6 +35,9 @@ pub struct NativeRequest {
     /// Digest of the eligible resource/worker snapshot bound into authority.
     #[serde(default)]
     pub resource_snapshot_digest: Option<String>,
+    /// Digest of the deterministic worker assignment selected from that snapshot.
+    #[serde(default)]
+    pub worker_assignment_digest: Option<String>,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -391,11 +394,12 @@ impl NativeJournal {
                 request.operation_id.is_some(),
                 request.quota_reservation_digest.is_some(),
                 request.resource_snapshot_digest.is_some(),
+                request.worker_assignment_digest.is_some(),
             ]
             .into_iter()
             .filter(|present| *present)
             .count();
-            if evidence_count != 0 && evidence_count != 3 {
+            if evidence_count != 0 && evidence_count != 4 {
                 return Err(Error::InvalidIdentity("native admission evidence"));
             }
             if let Some(operation_id) = &request.operation_id {
@@ -406,6 +410,9 @@ impl NativeJournal {
             }
             if let Some(digest) = &request.resource_snapshot_digest {
                 validate_digest(digest, "native resource snapshot")?;
+            }
+            if let Some(digest) = &request.worker_assignment_digest {
+                validate_digest(digest, "native worker assignment")?;
             }
             if request.worker_generation == 0
                 || request.model.is_empty()
