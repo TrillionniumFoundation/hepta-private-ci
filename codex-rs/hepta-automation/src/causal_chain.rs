@@ -43,6 +43,7 @@ const AUTOMATION_PAYLOAD_DOMAIN: &[u8] = b"hepta.automation.taskflow.payload.v1\
 pub(crate) struct AutomationTaskFlowHandle {
     pub run_id: String,
     pub fence: TaskFlowFence,
+    pub attempt: u32,
     pub intent_digest: Sha256Digest,
     pub payload_digest: Sha256Digest,
 }
@@ -74,7 +75,7 @@ pub(crate) async fn prepare_occurrence(
     bind_run(store, lease, &run_id).await?;
 
     let mut run = store
-        .claim_taskflow_run(&run_id, &fence, now_ms, lease_duration_ms)
+        .claim_taskflow_run_for_automation(&run_id, &fence, now_ms, lease_duration_ms)
         .await
         .map_err(map_taskflow_error)?;
     if run.state == TaskFlowRunState::Queued {
@@ -101,9 +102,10 @@ pub(crate) async fn prepare_occurrence(
         return Err(AutomationError::Conflict);
     }
 
+    let attempt = lease.taskflow_step_attempt;
     let (intent_digest, payload_digest) = occurrence_digests(lease);
     match store
-        .read_taskflow_step(&run_id, AUTOMATION_EFFECT_NODE, 1, &fence)
+        .read_taskflow_step(&run_id, AUTOMATION_EFFECT_NODE, attempt, &fence)
         .await
         .map_err(map_taskflow_error)?
     {
@@ -112,11 +114,14 @@ pub(crate) async fn prepare_occurrence(
                 .prepare_taskflow_step(
                     &run_id,
                     AUTOMATION_EFFECT_NODE,
-                    1,
+                    attempt,
                     &fence,
                     &intent_digest,
                     &payload_digest,
-                    &format!("automation:{}:step:prepare", lease.occurrence_id),
+                    &format!(
+                        "automation:{}:step:{}:prepare",
+                        lease.occurrence_id, attempt
+                    ),
                     now_ms,
                 )
                 .await
@@ -129,7 +134,7 @@ pub(crate) async fn prepare_occurrence(
     }
 
     let step = store
-        .read_taskflow_step(&run_id, AUTOMATION_EFFECT_NODE, 1, &fence)
+        .read_taskflow_step(&run_id, AUTOMATION_EFFECT_NODE, attempt, &fence)
         .await
         .map_err(map_taskflow_error)?
         .ok_or(AutomationError::Corrupt)?;
@@ -138,11 +143,14 @@ pub(crate) async fn prepare_occurrence(
             .claim_taskflow_step(
                 &run_id,
                 AUTOMATION_EFFECT_NODE,
-                1,
+                attempt,
                 &fence,
                 &intent_digest,
                 &payload_digest,
-                &format!("automation:{}:step:claim", lease.occurrence_id),
+                &format!(
+                    "automation:{}:step:{}:claim",
+                    lease.occurrence_id, attempt
+                ),
                 now_ms,
             )
             .await
@@ -154,6 +162,7 @@ pub(crate) async fn prepare_occurrence(
     Ok(AutomationTaskFlowHandle {
         run_id,
         fence,
+        attempt,
         intent_digest,
         payload_digest,
     })
@@ -212,7 +221,12 @@ pub(crate) async fn mark_dispatch_unknown(
         .as_bytes(),
     );
     let step = store
-        .read_taskflow_step(&handle.run_id, AUTOMATION_EFFECT_NODE, 1, &handle.fence)
+        .read_taskflow_step(
+            &handle.run_id,
+            AUTOMATION_EFFECT_NODE,
+            handle.attempt,
+            &handle.fence,
+        )
         .await
         .map_err(map_taskflow_error)?
         .ok_or(AutomationError::Corrupt)?;
@@ -221,11 +235,14 @@ pub(crate) async fn mark_dispatch_unknown(
             .record_taskflow_step(
                 &handle.run_id,
                 AUTOMATION_EFFECT_NODE,
-                1,
+                handle.attempt,
                 &handle.fence,
                 &handle.intent_digest,
                 &handle.payload_digest,
-                &format!("automation:{occurrence_id}:step:dispatch-unknown"),
+                &format!(
+                    "automation:{occurrence_id}:step:{}:dispatch-unknown",
+                    handle.attempt
+                ),
                 &receipt_digest,
                 TaskFlowStepObservation::Indeterminate,
                 observed_at_ms,
@@ -255,7 +272,7 @@ pub(crate) async fn reconcile_terminal(
         .read_taskflow_step(
             &occurrence.taskflow_run_id,
             AUTOMATION_EFFECT_NODE,
-            1,
+            occurrence.taskflow_step_attempt,
             &fence,
         )
         .await
@@ -268,13 +285,14 @@ pub(crate) async fn reconcile_terminal(
                 .record_taskflow_step(
                     &occurrence.taskflow_run_id,
                     AUTOMATION_EFFECT_NODE,
-                    1,
+                    occurrence.taskflow_step_attempt,
                     &fence,
                     &intent_digest,
                     &payload_digest,
                     &format!(
-                        "automation:{}:step:terminal:{}",
+                        "automation:{}:step:{}:terminal:{}",
                         occurrence.admission.occurrence_id,
+                        occurrence.taskflow_step_attempt,
                         receipt_digest.as_str()
                     ),
                     receipt_digest,
@@ -291,13 +309,14 @@ pub(crate) async fn reconcile_terminal(
                 .reconcile_taskflow_step(
                     &occurrence.taskflow_run_id,
                     AUTOMATION_EFFECT_NODE,
-                    1,
+                    occurrence.taskflow_step_attempt,
                     &fence,
                     &intent_digest,
                     &payload_digest,
                     &format!(
-                        "automation:{}:step:reconcile:{}",
+                        "automation:{}:step:{}:reconcile:{}",
                         occurrence.admission.occurrence_id,
+                        occurrence.taskflow_step_attempt,
                         receipt_digest.as_str()
                     ),
                     receipt_digest,
