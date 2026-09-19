@@ -24,6 +24,22 @@ pub enum LedgerError {
     PolicySelfLabelsOutcome,
     CreditIdentityAlreadyExists(String),
     CreditAlreadyAssigned,
+    CreditBatchNotFinalized,
+    CreditBatchEmpty,
+    CreditBatchLimitExceeded,
+    DuplicateCreditTarget(String),
+    CreditConservation,
+    CorrectionPredecessorRequired(String),
+    CorrectionPredecessorNotFound(String),
+    CorrectionEpisodeMismatch,
+    CorrectionNotHead(String),
+    CorrectionSelfReference,
+    UnlearningSourceNotRevoked(String),
+    UnlearningPredecessorRequired(String),
+    UnlearningPredecessorNotFound(String),
+    UnlearningPredecessorMismatch,
+    UnlearningNotHead(String),
+    UnlearningSelfReference,
     TargetNotFound(String),
     TargetAlreadyRevoked(String),
     RevocationOfRevocation,
@@ -56,9 +72,25 @@ impl LedgerError {
             | Self::OutcomeRevoked(_) => "LRN-E004",
             Self::OutcomeEpisodeMismatch | Self::OutcomeNotTerminal => "LRN-E005",
             Self::PolicySelfLabelsOutcome => "LRN-E006",
-            Self::CreditAlreadyAssigned => "LRN-E007",
+            Self::CreditAlreadyAssigned
+            | Self::CreditBatchNotFinalized
+            | Self::CreditBatchEmpty
+            | Self::CreditBatchLimitExceeded
+            | Self::DuplicateCreditTarget(_)
+            | Self::CreditConservation => "LRN-E007",
             Self::TargetNotFound(_) | Self::TargetAlreadyRevoked(_) => "LRN-E008",
             Self::RevocationOfRevocation => "LRN-E009",
+            Self::CorrectionPredecessorRequired(_)
+            | Self::CorrectionPredecessorNotFound(_)
+            | Self::CorrectionEpisodeMismatch
+            | Self::CorrectionNotHead(_)
+            | Self::CorrectionSelfReference => "LRN-E013",
+            Self::UnlearningSourceNotRevoked(_)
+            | Self::UnlearningPredecessorRequired(_)
+            | Self::UnlearningPredecessorNotFound(_)
+            | Self::UnlearningPredecessorMismatch
+            | Self::UnlearningNotHead(_)
+            | Self::UnlearningSelfReference => "LRN-E014",
             Self::SequenceOverflow => "LRN-E010",
             Self::SnapshotHeadMismatch | Self::SnapshotRecordMismatch(_) => "LRN-E011",
             Self::EmptyDigest(_) | Self::InternalInvariant => "LRN-E012",
@@ -113,6 +145,48 @@ impl fmt::Display for LedgerError {
             }
             Self::CreditAlreadyAssigned => formatter
                 .write_str("credit already exists for this episode, outcome and target artifact"),
+            Self::CreditBatchNotFinalized => formatter.write_str("credit batch must be finalized"),
+            Self::CreditBatchEmpty => formatter.write_str("credit batch must contain allocations"),
+            Self::CreditBatchLimitExceeded => {
+                formatter.write_str("credit batch exceeds 256 allocations")
+            }
+            Self::DuplicateCreditTarget(id) => write!(formatter, "duplicate credit target: {id}"),
+            Self::CreditConservation => {
+                formatter.write_str("credit allocations plus residual must equal terminal outcome")
+            }
+            Self::CorrectionPredecessorRequired(id) => {
+                write!(formatter, "outcome correction predecessor required after head: {id}")
+            }
+            Self::CorrectionPredecessorNotFound(id) => {
+                write!(formatter, "outcome correction predecessor not found: {id}")
+            }
+            Self::CorrectionEpisodeMismatch => {
+                formatter.write_str("outcome correction predecessor belongs to another episode")
+            }
+            Self::CorrectionNotHead(id) => {
+                write!(formatter, "outcome correction predecessor is not current head: {id}")
+            }
+            Self::CorrectionSelfReference => {
+                formatter.write_str("outcome correction cannot reference itself")
+            }
+            Self::UnlearningSourceNotRevoked(id) => {
+                write!(formatter, "unlearning source is not currently revoked: {id}")
+            }
+            Self::UnlearningPredecessorRequired(id) => {
+                write!(formatter, "unlearning predecessor required after current head: {id}")
+            }
+            Self::UnlearningPredecessorNotFound(id) => {
+                write!(formatter, "unlearning predecessor not found: {id}")
+            }
+            Self::UnlearningPredecessorMismatch => {
+                formatter.write_str("unlearning predecessor targets another derived object")
+            }
+            Self::UnlearningNotHead(id) => {
+                write!(formatter, "unlearning predecessor is not current head: {id}")
+            }
+            Self::UnlearningSelfReference => {
+                formatter.write_str("unlearning lineage cannot reference itself")
+            }
             Self::TargetNotFound(id) => write!(formatter, "revocation target not found: {id}"),
             Self::TargetAlreadyRevoked(id) => {
                 write!(formatter, "revocation target is already revoked: {id}")
