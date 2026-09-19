@@ -107,8 +107,9 @@ fn prompt_delivery_v1_rejects_digest_drift_and_nonterminal_claims() {
 #[test]
 fn prompt_delivery_v1_rejection_requires_bounded_reason_and_canonical_positions() {
     let intent = intent();
-    let reason =
-        PromptDeliveryRejectReasonV1::new(id("provider_rejected")).expect("bounded reason");
+    let Ok(reason) = PromptDeliveryRejectReasonV1::new(id("provider_rejected")) else {
+        panic!("bounded reason");
+    };
     let rejected = PromptProviderTerminalObservationV1 {
         terminal_observed: true,
         observed_provider_request_digest: intent.payload_digest,
