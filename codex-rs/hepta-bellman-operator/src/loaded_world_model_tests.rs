@@ -92,4 +92,11 @@ fn invalid_retained_statistics_cannot_be_persisted() {
         encode_world_model_payload_v1(&model),
         Err(WorldModelPayloadError::Grid)
     );
+
+    let mut stale_digest = fitted();
+    stale_digest.model_digest = digest("stale-model-digest");
+    assert_eq!(
+        encode_world_model_payload_v1(&stale_digest),
+        Err(WorldModelPayloadError::Binding)
+    );
 }
