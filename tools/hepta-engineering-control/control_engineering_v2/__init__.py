@@ -13,8 +13,10 @@ from .assimilation import (
     synthesize_read_only_contracts,
     validate_consent,
 )
+from .audit import AuditAnchorReceipt, prepare_audit_anchor, verify_audit_anchor
 from .assignment import (
     AssignmentClaimReceipt,
+    WorkerIdentityReceipt,
     WorkerReceipt,
     assignment_status,
     begin_assignment,
@@ -23,6 +25,7 @@ from .assignment import (
     fail_assignment,
     heartbeat_assignment,
     heartbeat_worker,
+    register_authenticated_worker,
     register_worker,
     requeue_assignment,
     revoke_worker,
@@ -106,6 +109,7 @@ hardened_request_independent_review = request_independent_review
 __all__ = [
     "AssimilationProposal",
     "AssignmentClaimReceipt",
+    "AuditAnchorReceipt",
     "DebianSandboxAdapter",
     "AttestedSandboxParity",
     "BoundEvidenceDecision",
@@ -138,6 +142,7 @@ __all__ = [
     "TrustedPublicKey",
     "TypedOperation",
     "WorkEnvelope",
+    "WorkerIdentityReceipt",
     "WorkerReceipt",
     "WorkPackage",
     "assignment_frontier",
@@ -172,7 +177,9 @@ __all__ = [
     "prepare_assimilation_candidate",
     "propose_dormant_assimilation",
     "publish_audit_projection",
+    "prepare_audit_anchor",
     "record_integration_decision",
+    "register_authenticated_worker",
     "register_worker",
     "requeue_assignment",
     "revoke_worker",
@@ -182,6 +189,7 @@ __all__ = [
     "semantic_digest",
     "synthesize_read_only_contracts",
     "validate_consent",
+    "verify_audit_anchor",
     "verify_integration_evidence",
     "verify_sealed_candidate_evidence",
 ]
