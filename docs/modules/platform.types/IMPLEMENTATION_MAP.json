@@ -22,33 +22,82 @@
   "productionWriterState": "not_established",
   "operations": [
     {
+      "operation": "validate_id",
+      "nativeSymbol": "validate_id",
+      "sourcePath": "codex-rs/hepta-types/src/identity.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/identity_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "validate_id",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "canonical_digest_v1",
+      "nativeSymbol": "canonical_digest_v1",
+      "sourcePath": "codex-rs/hepta-types/src/canonical_digest.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/canonical_digest_tests.rs",
+        "docs/lane-a-foundation/platform.types/CANONICAL_DIGEST_V1.json",
+        "scripts/verify_platform_types_vectors.py",
+        "scripts/verify_platform_types_vectors.mjs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical_digest_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "contract_registry_v1_require",
+      "nativeSymbol": "ContractRegistryV1::require",
+      "sourcePath": "codex-rs/hepta-types/src/registry.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/registry_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "contract_registry_v1_require",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
       "operation": "rescale_signal",
       "nativeSymbol": "rescale_signal",
       "sourcePath": "codex-rs/hepta-types/src/numeric_conversion.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-types/src/numeric_conversion_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "rescale_signal",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "stableid",
-      "nativeSymbol": "StableId",
-      "sourcePath": "codex-rs/hepta-types/src/identity.rs",
+      "operation": "rescale_signal_registered",
+      "nativeSymbol": "rescale_signal_registered",
+      "sourcePath": "codex-rs/hepta-types/src/numeric_conversion.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-types/src/numeric_conversion_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "stableid",
+      "designOperation": "rescale_signal_registered",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Candidate-bound exact-head and deterministic synthetic-merge workflow receipts remain required for every changed source candidate.",
+    "Bind shared contracts to a named product consumer before changing the product-composition claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
