@@ -48,6 +48,8 @@ fn output(status: NativeRunStatus, tokens: Option<u64>) -> NativeRunOutput {
         stop_reason: None,
         owner_authority: NativeOwnerAuthority::Unverified,
         final_use_authority: NativeFinalUseAuthority::Unverified,
+        output_sha256: None,
+        output_retained: true,
     }
 }
 
@@ -617,5 +619,76 @@ fn reconciled_no_admission_survives_compaction_and_reopen() {
             let _ = std::fs::remove_file(entry.path());
         }
     }
+    std::fs::remove_file(path).unwrap();
+}
+
+
+#[test]
+fn receipt_only_settlement_never_persists_provider_text() {
+    let path = path("receipt-only-output");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    start(&mut control, "r1");
+    let mut observed = output(NativeRunStatus::Completed, Some(9));
+    observed.owner_authority = NativeOwnerAuthority::ObservedReady;
+    let live_text = "private provider text that must not enter the journal".to_string();
+    observed.output = live_text.clone();
+
+    let settled = control
+        .settle_native_receipt_only("r1", observed.clone())
+        .unwrap();
+    let persisted = settled.observation.as_ref().unwrap();
+    assert!(persisted.output.is_empty());
+    assert!(!persisted.output_retained);
+    assert_eq!(
+        persisted.output_sha256.as_deref(),
+        Some(Digest32::of_bytes(live_text.as_bytes()).to_string().as_str())
+    );
+
+    let bytes = std::fs::read(&path).unwrap();
+    assert!(
+        !bytes
+            .windows(live_text.len())
+            .any(|window| window == live_text.as_bytes())
+    );
+    drop(control);
+
+    let reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    let replayed = reopened
+        .native_record("r1")
+        .unwrap()
+        .observation
+        .as_ref()
+        .unwrap();
+    assert!(replayed.output.is_empty());
+    assert!(!replayed.output_retained);
+    assert_eq!(replayed.output_sha256, persisted.output_sha256);
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn redacted_observation_cannot_rehydrate_provider_text() {
+    let path = path("receipt-no-rehydrate");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    start(&mut control, "r1");
+
+    let mut first = output(NativeRunStatus::Indeterminate, None);
+    first.terminal_observed = false;
+    first.status = NativeRunStatus::Indeterminate;
+    first.output = "partial private text".to_string();
+    control
+        .settle_native_receipt_only("r1", first.clone())
+        .unwrap();
+
+    let mut rehydrate = first;
+    rehydrate.output = "partial private text plus more".to_string();
+    rehydrate.output_retained = true;
+    rehydrate.output_sha256 = None;
+    assert_eq!(
+        control.settle_native("r1", rehydrate),
+        Err(Error::Conflict)
+    );
+
+    drop(control);
     std::fs::remove_file(path).unwrap();
 }
