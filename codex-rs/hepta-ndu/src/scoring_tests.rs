@@ -19,7 +19,7 @@ use crate::ScalarizationProfile;
 use crate::UtilityContribution;
 use crate::UtilityProfile;
 use crate::evaluate_candidates_with_policy;
-use crate::legacy_evaluation_policy;
+use crate::evaluator::legacy_evaluation_policy;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("valid test identifier")
