@@ -51,7 +51,10 @@ pub struct RunStartAuthenticationV1 {
     pub key_epoch: u64,
     pub message_id: StableId,
     pub sequence: u64,
+    pub expires_at_ms: u64,
+    pub scope_digest: Digest32,
     pub signed_body_digest: Digest32,
+    pub signature: [u8; 64],
 }
 
 /// Admission facts required to recover the exact source/profile/deadline
@@ -385,7 +388,11 @@ impl RunStartJournal for DurableRunStartJournal {
 }
 
 fn validate_record(record: &RunStartRecordV1) -> Result<(), RunStartStoreError> {
-    if record.authentication.key_epoch == 0 || record.authentication.sequence == 0 {
+    if record.authentication.key_epoch == 0
+        || record.authentication.sequence == 0
+        || record.authentication.expires_at_ms == 0
+        || record.authentication.signature.iter().all(|byte| *byte == 0)
+    {
         return Err(RunStartStoreError::InvalidSnapshot("authentication"));
     }
     if record.admission.observed_at_unix_micros == 0
@@ -395,6 +402,7 @@ fn validate_record(record: &RunStartRecordV1) -> Result<(), RunStartStoreError> 
     }
     let snapshot = &record.snapshot;
     for (name, digest) in [
+        ("scopeDigest", record.authentication.scope_digest),
         ("signedBodyDigest", record.authentication.signed_body_digest),
         ("profileDigest", record.admission.profile_digest),
         ("intentDigest", record.admission.intent_digest),
@@ -432,7 +440,10 @@ fn encode_record(record: &RunStartRecordV1) -> Vec<u8> {
     push_u64(&mut bytes, record.authentication.key_epoch);
     push_id(&mut bytes, &record.authentication.message_id);
     push_u64(&mut bytes, record.authentication.sequence);
+    push_u64(&mut bytes, record.authentication.expires_at_ms);
+    push_digest(&mut bytes, record.authentication.scope_digest);
     push_digest(&mut bytes, record.authentication.signed_body_digest);
+    bytes.extend_from_slice(&record.authentication.signature);
     push_digest(&mut bytes, record.admission.profile_digest);
     push_digest(&mut bytes, record.admission.intent_digest);
     push_digest(&mut bytes, record.admission.admitted_source_digest);
@@ -471,7 +482,13 @@ fn decode_record(input: &[u8]) -> Result<RunStartRecordV1, RunStartStoreError> {
         key_epoch: reader.u64()?,
         message_id: reader.id()?,
         sequence: reader.u64()?,
+        expires_at_ms: reader.u64()?,
+        scope_digest: reader.digest()?,
         signed_body_digest: reader.digest()?,
+        signature: reader
+            .bytes(64)?
+            .try_into()
+            .map_err(|_| RunStartStoreError::Corrupt)?,
     };
     let admission = RunStartAdmissionBindingV1 {
         profile_digest: reader.digest()?,
