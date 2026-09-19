@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-memory-retrieval/src/v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs); observed identifiers include `RetrievalReceiptV2`, `retrieve_v2`, `binding_digest_v2`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) for the implemented subset and remaining product work.
+The source root now contains three complementary native surfaces: [v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs) preserves the complete-input integrity binding; [generator.rs](../../../codex-rs/hepta-memory-retrieval/src/generator.rs) owns cue compilation, authenticated generator-batch canonicalization and policy-relative completeness; [engram.rs](../../../codex-rs/hepta-memory-retrieval/src/engram.rs) owns bounded HNMF expansion/settling/competition; and [decision.rs](../../../codex-rs/hepta-memory-retrieval/src/decision.rs) emits generator-relative assignment observations. The durable SQLite adapter and explicit Agentd host live in their existing owner roots and do not move ownership into this crate. These are source candidates, not proof of activation, target-host performance, independent acceptance or release. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md#8-current-native-implementation) for the exact implemented subset and evidence gates.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -145,13 +145,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-memory-retrieval/src/v2.rs](../../../codex-rs/hepta-memory-retrieval/src/v2.rs) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) specifies the algorithm, enforced product ceilings and measurement obligations. The generation-bound path rejects more than 512 total generator candidate events, more than 16 recall selections, more than 4096 engram nodes, more than 32768 synapses, more than four settling steps or more than 64 active units per population. The legacy V1/V2 sorter remains separately bounded for compatibility and must not be mistaken for the product HNMF profile. These are capacity invariants, not latency or efficiency measurements; p50/p95/p99, throughput, CPU, RSS/peak memory, allocation and SQLite/revalidation cost require a named target-host receipt.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Embed retrieval against an authorized coherent read cut. The current host intersects SQLite search with an admitted bounded prefix and reports omitted_records; it does not promise complete recall outside that prefix. Revalidate source revisions before context delivery; missing support and revoked top results require omission or abstention.
+Embed retrieval against an authorized coherent read cut. The explicit HNMF host first obtains the Lane C cut, then observes the SQLite owner's bounded generator output before legacy top-four truncation. The owner adapter preserves channel rank and `Exhausted` versus `LimitReached` state and converts only owner-observed rows into generator batches. A positive-weight retrieval policy channel without its owner batch fails closed; a saturated channel remains explicitly incomplete. HNMF selection is followed by exact revision/content/source revalidation before materialization. Response byte/result limits, NDU context planning and optional learned reranking may narrow the final delivered subset; the learning-ledger bridge records that delivered subset separately from HNMF selection.
 
 Current operating and state-format references:
 
@@ -164,10 +164,15 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs); named case: `channel_completion_order_cannot_change_union_or_recall`.
-- [codex-rs/hepta-memory-retrieval/src/lib_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/lib_tests.rs); named case: `ranking_is_deterministic_and_explainable`.
+- [generation_bound_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs): deterministic union/recall ordering, hard result bounds, contradiction/OOD/generation failures and public-receipt validation.
+- [generator_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generator_tests.rs): generator permutation invariance, total 512-candidate ingress bound, channel-rank integrity, policy-relative owner coverage and cross-generation rebinding rejection.
+- [engram_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/engram_tests.rs): recurrent association, sparse population bounds, contradiction abstention, recomputed structural-forgery rejection and RET-04 no-intervention/no-recurrence/no-inhibition baselines.
+- [decision_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/decision_tests.rs): complete legal candidate-set and deterministic assignment binding.
+- [cognitive_retrieval_adapter_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs): real SQLite owner adaptation before top-four truncation, source completeness and Lane C retrieval-profile fencing.
+- [cognitive_context_hnmf_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs): explicit Agentd HNMF consumer and final owner-currentness behavior.
+- learning-ledger retrieval/durable tests: final delivered-set persistence is distinct from HNMF selection.
 
-In `codex-rs`, run `just test -p codex-hepta-memory-retrieval`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/memory.retrieval.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test --locked -p codex-hepta-memory-retrieval -p codex-hepta-memory -p codex-hepta-agentd -p codex-hepta-learning-ledger` for the focused cross-owner source candidate. The repository's consolidated source gate additionally executes ordered source/merge identities and strict all-target Clippy. Commands are invocations, not stored results; inspect the exact-candidate records for passes, failures and skips. Target-host performance and longitudinal task utility remain separate evidence classes.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 

@@ -283,3 +283,75 @@ async fn omitted_candidate_content_is_bound_even_when_selected_ids_do_not_change
     );
     assert_ne!(before.observation_sha256(), after.observation_sha256());
 }
+
+#[tokio::test]
+#[ignore = "target-host qualification probe; run explicitly with --ignored --nocapture"]
+async fn target_host_owner_retrieval_reports_latency_percentiles() {
+    fn percentile(values: &[u128], numerator: usize, denominator: usize) -> u128 {
+        assert!(!values.is_empty());
+        let rank = values
+            .len()
+            .saturating_mul(numerator)
+            .saturating_add(denominator.saturating_sub(1))
+            / denominator;
+        values[rank.saturating_sub(1).min(values.len() - 1)]
+    }
+
+    let temp = TempDir::new().expect("temp");
+    let owner = agent_id(/*suffix*/ 90);
+    let store = CognitiveStore::open(&layout(&temp, &owner))
+        .await
+        .expect("store");
+    let access = CognitiveAccess::agent_private(owner);
+    for index in 0..1024 {
+        remember(
+            &store,
+            &access,
+            &format!("qualification-beacon-{index:04}"),
+            revision(
+                CognitiveScope::AgentPrivate,
+                &format!("Qualification Beacon supported fact {index:04}."),
+            ),
+        )
+        .await;
+    }
+    let request = RetrievalRequest::new("Qualification Beacon", 200);
+    let mut retrieval_micros = Vec::with_capacity(200);
+    let mut revalidation_micros = Vec::with_capacity(200);
+    for _ in 0..200 {
+        let started = std::time::Instant::now();
+        let observation = store
+            .observe_memory_retrieval(&access, &request)
+            .await
+            .expect("owner retrieval");
+        retrieval_micros.push(started.elapsed().as_micros());
+
+        let bindings = observation
+            .candidates()
+            .iter()
+            .map(|candidate| candidate.revalidation.clone())
+            .collect::<Vec<_>>();
+        let started = std::time::Instant::now();
+        let statuses = store
+            .revalidate_memory_candidates(&access, &bindings, 200)
+            .await
+            .expect("revalidation");
+        assert!(
+            statuses
+                .iter()
+                .all(|status| matches!(status, RevalidationStatus::Current(_)))
+        );
+        revalidation_micros.push(started.elapsed().as_micros());
+    }
+    retrieval_micros.sort_unstable();
+    revalidation_micros.sort_unstable();
+    eprintln!(
+        "{{\"schema\":\"hepta.memory-retrieval.target-host.v1\",\"phase\":\"sqlite-owner\",\"records\":1024,\"iterations\":200,\"retrieval_p50_us\":{},\"retrieval_p95_us\":{},\"retrieval_p99_us\":{},\"revalidation_p50_us\":{},\"revalidation_p95_us\":{},\"revalidation_p99_us\":{}}}",
+        percentile(&retrieval_micros, 50, 100),
+        percentile(&retrieval_micros, 95, 100),
+        percentile(&retrieval_micros, 99, 100),
+        percentile(&revalidation_micros, 50, 100),
+        percentile(&revalidation_micros, 95, 100),
+        percentile(&revalidation_micros, 99, 100),
+    );
+}

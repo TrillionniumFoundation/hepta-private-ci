@@ -52,6 +52,7 @@ fn cue() -> MemoryCueV1 {
         cue_id: id("cue:1"),
         objective_digest: digest("objective"),
         approved_context_digest: digest("approved-context"),
+        request_digest: digest("request"),
         snapshot_key: snapshot_key(),
         cue_profile_digest: digest("cue-profile"),
     }
@@ -224,4 +225,138 @@ fn tombstones_and_duplicate_channel_candidates_fail_closed() {
             "memory:2".to_string()
         ))
     );
+}
+
+#[test]
+fn zero_weight_channel_cannot_satisfy_coverage() {
+    let cue = cue();
+    let mut policy = policy();
+    policy.channel_weights = vec![
+        RetrievalChannelWeightV1 {
+            channel: RetrievalChannelV1::Lexical,
+            weight: FixedQ32::ONE,
+            maximum_candidates: 16,
+        },
+        RetrievalChannelWeightV1 {
+            channel: RetrievalChannelV1::Entity,
+            weight: FixedQ32::ZERO,
+            maximum_candidates: 16,
+        },
+    ];
+    policy.minimum_distinct_channels = 2;
+    assert_eq!(
+        policy.validate(),
+        Err(RecallErrorV1::InvalidMinimumCoverage)
+    );
+}
+
+#[test]
+fn score_floor_applies_to_every_returned_selection() {
+    let cue = cue();
+    let mut policy = policy();
+    policy.minimum_total_score = FixedQ32::from_raw(1_i64 << 31);
+    policy.minimum_distinct_channels = 1;
+    policy.channel_weights = vec![RetrievalChannelWeightV1 {
+        channel: RetrievalChannelV1::Lexical,
+        weight: FixedQ32::ONE,
+        maximum_candidates: 16,
+    }];
+    let high = candidate(record(1), RetrievalChannelV1::Lexical, 1);
+    let mut low = candidate(record(2), RetrievalChannelV1::Lexical, 2);
+    low.normalized_score = FixedQ32::from_raw(1);
+    let packet = recall(&cue, &policy, vec![high, low])
+        .unwrap_or_else(|error| panic!("valid recall: {error}"));
+    assert_eq!(packet.disposition, RecallDispositionV1::Recalled);
+    assert_eq!(packet.selections.len(), 1);
+    assert_eq!(packet.selections[0].record_id, id("memory:1"));
+    assert_eq!(packet.omitted_count, 1);
+}
+
+#[test]
+fn public_union_and_packet_validators_reject_structural_tampering() {
+    let cue = cue();
+    let policy = policy();
+    let first = record(1);
+    let second = record(2);
+    let candidates = vec![
+        candidate(first.clone(), RetrievalChannelV1::Lexical, 1),
+        candidate(first, RetrievalChannelV1::Entity, 1),
+        candidate(second.clone(), RetrievalChannelV1::Lexical, 2),
+        candidate(second, RetrievalChannelV1::Entity, 2),
+    ];
+    let union = build_candidate_union(&cue, &policy, candidates.clone())
+        .unwrap_or_else(|error| panic!("union: {error}"));
+    let mut reordered = union.clone();
+    reordered.entries.reverse();
+    reordered.union_digest = reordered.compute_union_digest();
+    assert_eq!(
+        reordered.validate(),
+        Err(RecallErrorV1::NonCanonicalCollection("union_entries"))
+    );
+
+    let packet =
+        recall(&cue, &policy, candidates).unwrap_or_else(|error| panic!("recall: {error}"));
+    let mut duplicate = packet.clone();
+    duplicate.selections.push(duplicate.selections[0].clone());
+    duplicate.packet_digest = duplicate.compute_packet_digest();
+    assert_eq!(
+        duplicate.validate(),
+        Err(RecallErrorV1::DuplicateRecallSelection(
+            duplicate.selections[0].record_id.to_string()
+        ))
+    );
+}
+
+#[test]
+fn property_all_candidate_permutations_have_one_union_and_recall() {
+    let cue = cue();
+    let mut policy = policy();
+    policy.minimum_distinct_channels = 1;
+    let candidates = vec![
+        candidate(record(1), RetrievalChannelV1::Lexical, 1),
+        candidate(record(2), RetrievalChannelV1::Entity, 1),
+        candidate(record(3), RetrievalChannelV1::ContradictionSupport, 1),
+    ];
+    let mut order = vec![0_usize, 1, 2];
+    let mut expected_union = None;
+    let mut expected_recall = None;
+    loop {
+        let permutation = order
+            .iter()
+            .map(|index| candidates[*index].clone())
+            .collect::<Vec<_>>();
+        let union = build_candidate_union(&cue, &policy, permutation.clone())
+            .unwrap_or_else(|error| panic!("union: {error}"));
+        let recall =
+            recall(&cue, &policy, permutation).unwrap_or_else(|error| panic!("recall: {error}"));
+        if let Some(expected) = &expected_union {
+            assert_eq!(expected, &union);
+        } else {
+            expected_union = Some(union);
+        }
+        if let Some(expected) = &expected_recall {
+            assert_eq!(expected, &recall);
+        } else {
+            expected_recall = Some(recall);
+        }
+        if !next_permutation(&mut order) {
+            break;
+        }
+    }
+}
+
+fn next_permutation(values: &mut [usize]) -> bool {
+    let Some(pivot) = (0..values.len().saturating_sub(1))
+        .rev()
+        .find(|index| values[*index] < values[*index + 1])
+    else {
+        return false;
+    };
+    let swap = (pivot + 1..values.len())
+        .rev()
+        .find(|index| values[*index] > values[pivot])
+        .expect("permutation successor");
+    values.swap(pivot, swap);
+    values[pivot + 1..].reverse();
+    true
 }

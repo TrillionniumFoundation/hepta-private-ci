@@ -7,7 +7,13 @@ pub enum LedgerError {
     RecordLimitExceeded,
     EmptyCandidateSet,
     CandidateLimitExceeded,
+    RetrievalCandidateLimitExceeded,
     IncompleteCandidateSet,
+    RetrievalIndexOutOfRange,
+    RetrievalSelectionOutsideLegal,
+    RetrievalDeliveryOutsideSelection,
+    RetrievalExposureStateMismatch,
+    DuplicateRetrievalIndex,
     DuplicateCandidate(String),
     MissingAbstainCandidate,
     SelectedCandidateMissing(String),
@@ -41,11 +47,17 @@ impl LedgerError {
             Self::RecordLimitExceeded
             | Self::EmptyCandidateSet
             | Self::CandidateLimitExceeded
+            | Self::RetrievalCandidateLimitExceeded
             | Self::IncompleteCandidateSet => "LRN-E001",
             Self::DuplicateCandidate(_)
             | Self::MissingAbstainCandidate
             | Self::SelectedCandidateMissing(_)
-            | Self::ZeroSelectedPropensity => "LRN-E002",
+            | Self::ZeroSelectedPropensity
+            | Self::RetrievalIndexOutOfRange
+            | Self::RetrievalSelectionOutsideLegal
+            | Self::RetrievalDeliveryOutsideSelection
+            | Self::RetrievalExposureStateMismatch
+            | Self::DuplicateRetrievalIndex => "LRN-E002",
             Self::EpisodeAlreadyExists(_)
             | Self::OutcomeAlreadyExists(_)
             | Self::CreditIdentityAlreadyExists(_)
@@ -76,6 +88,9 @@ impl fmt::Display for LedgerError {
             Self::CandidateLimitExceeded => {
                 formatter.write_str("candidate set exceeds 128 entries")
             }
+            Self::RetrievalCandidateLimitExceeded => {
+                formatter.write_str("retrieval candidate set exceeds 512 entries")
+            }
             Self::IncompleteCandidateSet => {
                 formatter.write_str("candidate set completeness was not independently asserted")
             }
@@ -91,6 +106,20 @@ impl fmt::Display for LedgerError {
             }
             Self::ZeroSelectedPropensity => {
                 formatter.write_str("selected propensity must be greater than zero")
+            }
+            Self::RetrievalIndexOutOfRange => {
+                formatter.write_str("retrieval candidate index is outside the enumerated set")
+            }
+            Self::RetrievalSelectionOutsideLegal => {
+                formatter.write_str("retrieval selection is outside the legal candidate set")
+            }
+            Self::RetrievalDeliveryOutsideSelection => {
+                formatter.write_str("retrieval delivery is outside the selected candidate set")
+            }
+            Self::RetrievalExposureStateMismatch => formatter
+                .write_str("retrieval context exposure state disagrees with delivered candidates"),
+            Self::DuplicateRetrievalIndex => {
+                formatter.write_str("retrieval candidate index set contains duplicates")
             }
             Self::EmptyDigest(kind) => write!(formatter, "{kind} digest must not be zero"),
             Self::EpisodeAlreadyExists(id) => write!(formatter, "episode already exists: {id}"),

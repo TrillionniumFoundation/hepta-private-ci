@@ -3481,7 +3481,9 @@ dependencies = [
  "codex-hepta-evidence",
  "codex-hepta-fleet",
  "codex-hepta-learning-artifacts",
+ "codex-hepta-learning-ledger",
  "codex-hepta-memory",
+ "codex-hepta-memory-retrieval",
  "codex-hepta-memory-extension",
  "codex-hepta-paths",
  "codex-hepta-supervisor",
@@ -3785,6 +3787,7 @@ name = "codex-hepta-learning-ledger"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-intuition",
+ "codex-hepta-memory-retrieval",
  "codex-hepta-types",
  "ed25519-dalek",
  "pretty_assertions",
@@ -3879,6 +3882,7 @@ dependencies = [
  "codex-hepta-cognitive-read",
  "codex-hepta-cognitive-types",
  "codex-hepta-contracts",
+ "codex-hepta-memory-retrieval",
  "codex-hepta-paths",
  "codex-hepta-types",
  "codex-state",

@@ -66,6 +66,12 @@ pub enum RetrievalChannel {
     Recency,
 }
 
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+pub struct RetrievalChannelRank {
+    pub channel: RetrievalChannel,
+    pub rank: u32,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct SourceRevalidationBinding {
     pub id: SourceRevisionId,
@@ -91,6 +97,7 @@ pub struct RetrievalCandidate {
     pub memory: MemoryRevisionRecord,
     pub reciprocal_rank_score: u64,
     pub channels: Vec<RetrievalChannel>,
+    pub channel_ranks: Vec<RetrievalChannelRank>,
     pub revalidation: MemoryRevalidationBinding,
 }
 
@@ -154,6 +161,7 @@ struct MemoryKey {
 struct AggregatedRank {
     score: u64,
     channels: BTreeSet<RetrievalChannel>,
+    ranks: BTreeMap<RetrievalChannel, u32>,
 }
 
 struct EntitySeed {
@@ -836,6 +844,9 @@ fn add_rrf_channel(
         let aggregate = ranked.entry(memory.clone()).or_default();
         aggregate.score += RRF_SCALE / (RRF_K + rank);
         aggregate.channels.insert(source);
+        aggregate
+            .ranks
+            .insert(source, u32::try_from(rank).unwrap_or(u32::MAX));
     }
 }
 

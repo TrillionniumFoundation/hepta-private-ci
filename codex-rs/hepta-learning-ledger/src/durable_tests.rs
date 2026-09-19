@@ -15,6 +15,7 @@ use crate::CreditAssignment;
 use crate::EpisodeDecision;
 use crate::OutcomeFinality;
 use crate::OutcomeObservation;
+use crate::RetrievalAssignmentFact;
 use crate::Revocation;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
@@ -85,6 +86,30 @@ fn revocation() -> LedgerEvent {
         target_record_id: id("decision-1"),
         authority_id: id("privacy-owner"),
         reason_digest: Digest32::of_bytes(b"authorized-revocation"),
+    })
+}
+
+fn retrieval_assignment() -> LedgerEvent {
+    LedgerEvent::RetrievalAssignment(RetrievalAssignmentFact {
+        record_id: id("retrieval-assignment-1"),
+        episode_id: id("retrieval-episode-1"),
+        cue_digest: Digest32::of_bytes(b"cue"),
+        policy_digest: Digest32::of_bytes(b"policy"),
+        source_completeness_digest: Digest32::of_bytes(b"complete"),
+        candidate_union_digest: Digest32::of_bytes(b"union"),
+        recall_packet_digest: Digest32::of_bytes(b"packet"),
+        enumerated_candidate_digests: vec![
+            Digest32::of_bytes(b"candidate-b"),
+            Digest32::of_bytes(b"candidate-a"),
+        ],
+        legal_candidate_indices: vec![1, 0],
+        selected_candidate_indices: vec![1],
+        delivered_candidate_indices: vec![1],
+        context_exposed: true,
+        omitted_by_policy_limits: 0,
+        assignment_propensity: ProbabilityQ32::ONE,
+        completeness: CandidateSetCompleteness::Complete,
+        support_digest: Digest32::of_bytes(b"retrieval-observation"),
     })
 }
 struct Fixture {
@@ -608,4 +633,27 @@ fn failed_recovery_releases_acquired_lock_before_store_exists() {
         drop(transient);
         assert_eq!(must(fs::read(fixture.path())), bytes);
     }
+}
+
+#[test]
+fn retrieval_assignment_tag_four_replays_exactly_after_reopen() {
+    let fixture = Fixture::new();
+    let event = retrieval_assignment();
+    let snapshot = fixture.write_events(vec![event.clone()]);
+    let reopened = must(fixture.recover(anchored(&snapshot)));
+    let records = must(reopened.records());
+    assert_eq!(records.len(), 1);
+    let LedgerEvent::RetrievalAssignment(fact) = &records[0].event else {
+        panic!("retrieval assignment");
+    };
+    assert_eq!(fact.enumerated_candidate_digests.len(), 2);
+    assert_eq!(fact.legal_candidate_indices, vec![0, 1]);
+    assert_eq!(fact.selected_candidate_indices, vec![1]);
+    assert_eq!(fact.delivered_candidate_indices, vec![1]);
+    assert!(fact.context_exposed);
+    assert_eq!(must(reopened.snapshot()), snapshot);
+
+    let mut core = LearningLedger::new();
+    let receipt = must(core.append(event));
+    assert_eq!(receipt.event_digest, snapshot.records()[0].event_digest);
 }

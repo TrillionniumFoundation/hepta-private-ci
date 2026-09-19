@@ -16,6 +16,9 @@ use super::read;
 #[path = "cognitive_context_budget_tests.rs"]
 mod budget;
 
+#[path = "cognitive_context_hnmf_tests.rs"]
+mod hnmf;
+
 #[tokio::test]
 async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
     let temp = tempfile::tempdir().unwrap();
