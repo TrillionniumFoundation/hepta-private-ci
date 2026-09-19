@@ -17,3 +17,6 @@ workspace = true
 codex-extension-api = { workspace = true }
 codex-hepta-types = { path = "../hepta-types" }
 tokio = { workspace = true, features = ["sync"] }
+
+[dev-dependencies]
+codex-protocol = { workspace = true }
