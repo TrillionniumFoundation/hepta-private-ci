@@ -4,9 +4,14 @@ use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
 
+use sha2::Digest;
+use sha2::Sha256;
+
 const MAX_MODELS: usize = 8;
 const MAX_ACTIVE_REQUESTS: usize = 256;
 const MAX_TOKENS: u32 = 1_000_000;
+const MAX_PAYLOAD_BYTES: usize = 1024 * 1024;
+const MAX_OUTPUT_BYTES: usize = 4 * 1024 * 1024;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ModelManifest {
@@ -16,11 +21,22 @@ pub struct ModelManifest {
     pub tokenizer_digest: String,
     pub preprocessor_digest: String,
     pub quantization_digest: String,
+    pub license_digest: String,
+    pub sbom_digest: String,
     pub runtime_digest: String,
+    pub runtime_config_digest: String,
     pub device_digest: String,
     pub maximum_tokens: u32,
 }
 
+/// Process-local capability produced only after the authority boundary has
+/// authenticated the grant. This type is not a wire credential: constructing
+/// it does not verify a signature, epoch source, or revocation service.
+///
+/// Callers crossing IPC/network boundaries must authenticate and verify their
+/// external credential before constructing this value. The worker then
+/// revalidates expiry, revocation, generation, resource ceilings and device
+/// binding immediately before load/run/unload.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ResourceGrant {
     pub grant_id: String,
@@ -31,6 +47,7 @@ pub struct ResourceGrant {
     pub maximum_models: usize,
     pub maximum_active_requests: usize,
     pub maximum_memory_bytes: u64,
+    pub device_digest: String,
     pub semantic_digest: String,
 }
 
@@ -39,6 +56,9 @@ pub struct WorkerRequest {
     pub request_id: String,
     pub reservation_id: String,
     pub model_digest: String,
+    /// Actual bounded model input. The worker hashes these bytes itself and
+    /// rejects a caller-supplied digest that does not match.
+    pub payload: String,
     pub payload_digest: String,
     pub maximum_tokens: u32,
     pub deadline_ms: u64,
@@ -58,7 +78,9 @@ pub struct DriverModelHandle {
 pub struct DriverRunObservation {
     pub terminal_observed: bool,
     pub succeeded: bool,
-    pub output_digest: Option<String>,
+    /// Raw driver output. The worker, not the driver, computes the receipt
+    /// digest so an injected driver cannot choose an unrelated digest.
+    pub output: Option<String>,
     pub consumed_tokens: u32,
     pub observed_memory_bytes: u64,
 }
@@ -88,6 +110,7 @@ pub struct InferenceExecutionObservation {
     pub model_digest: String,
     pub payload_digest: String,
     pub status: ExecutionStatus,
+    pub output: Option<String>,
     pub output_digest: Option<String>,
     pub consumed_tokens: u32,
     pub observed_memory_bytes: u64,
@@ -109,12 +132,15 @@ pub enum Error {
     InvalidGrant,
     GrantExpired,
     GrantRevoked,
+    ResourceMismatch(&'static str),
     ModelCapacity,
     RequestCapacity,
     ModelAlreadyLoaded,
     ModelNotLoaded,
     ModelMismatch,
     PayloadMismatch,
+    PayloadTooLarge,
+    OutputTooLarge,
     TokenLimit,
     DeadlineExpired,
     ActiveRequests,
@@ -132,7 +158,11 @@ impl fmt::Display for Error {
 impl StdError for Error {}
 
 pub trait ModelDriver {
-    fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error>;
+    fn load(
+        &mut self,
+        manifest: &ModelManifest,
+        grant: &ResourceGrant,
+    ) -> Result<DriverModelHandle, Error>;
     fn run(
         &mut self,
         handle: &DriverModelHandle,
@@ -192,6 +222,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
     ) -> Result<ModelLoadObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_manifest(&manifest)?;
+        if manifest.device_digest != self.grant.device_digest {
+            return Err(Error::ResourceMismatch("device"));
+        }
         if self.models.contains_key(&manifest.model_id) {
             return Err(Error::ModelAlreadyLoaded);
         }
@@ -199,12 +232,18 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
-        let handle = self.driver.load(&manifest)?;
+
+        let already_observed = self.total_observed_memory()?;
+        let handle = self.driver.load(&manifest, &self.grant)?;
         validate_identity(&handle.opaque_id, "model handle")?;
-        if handle.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        let total = already_observed
+            .checked_add(handle.observed_memory_bytes)
+            .ok_or(Error::ArithmeticOverflow)?;
+        if total > self.grant.maximum_memory_bytes {
             self.driver.unload(handle)?;
             return Err(Error::ModelCapacity);
         }
+
         let observation = ModelLoadObservation {
             model_id: manifest.model_id.clone(),
             worker_generation: self.generation,
@@ -239,6 +278,16 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.active_requests.len() >= request_limit {
             return Err(Error::RequestCapacity);
         }
+
+        let other_memory = self
+            .models
+            .iter()
+            .filter(|(id, _)| id.as_str() != model_id)
+            .try_fold(0_u64, |sum, (_, loaded)| {
+                sum.checked_add(loaded.handle.observed_memory_bytes)
+                    .ok_or(Error::ArithmeticOverflow)
+            })?;
+
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         if request.model_digest != loaded.manifest.model_digest
             || request.reservation_model_digest != loaded.manifest.model_digest
@@ -261,6 +310,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 model_digest: request.model_digest,
                 payload_digest: request.payload_digest,
                 status: ExecutionStatus::Cancelled,
+                output: None,
                 output_digest: None,
                 consumed_tokens: 0,
                 observed_memory_bytes: loaded.handle.observed_memory_bytes,
@@ -278,29 +328,46 @@ impl<D: ModelDriver> InferenceWorker<D> {
         self.active_requests.remove(&request.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
         let observed = observed?;
+
         if observed.consumed_tokens > request.maximum_tokens
             || observed.consumed_tokens > request.reservation_maximum_tokens
         {
             return Err(Error::TokenLimit);
         }
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        let total_memory = other_memory
+            .checked_add(observed.observed_memory_bytes)
+            .ok_or(Error::ArithmeticOverflow)?;
+        if total_memory > self.grant.maximum_memory_bytes {
             return Err(Error::ModelCapacity);
         }
-        let (status, output_digest, terminal_observed) = if !observed.terminal_observed {
-            (ExecutionStatus::Indeterminate, None, false)
-        } else if observed.succeeded {
-            let output = observed
-                .output_digest
-                .as_ref()
-                .ok_or(Error::MissingTerminalOutput)?;
-            validate_digest(output, "output")?;
-            (ExecutionStatus::Succeeded, observed.output_digest, true)
-        } else {
-            if let Some(output) = &observed.output_digest {
-                validate_digest(output, "output")?;
-            }
-            (ExecutionStatus::Failed, observed.output_digest, true)
-        };
+
+        let (status, output, output_digest, terminal_observed) =
+            if !observed.terminal_observed {
+                (ExecutionStatus::Indeterminate, None, None, false)
+            } else if observed.succeeded {
+                let output = observed.output.ok_or(Error::MissingTerminalOutput)?;
+                if output.len() > MAX_OUTPUT_BYTES {
+                    return Err(Error::OutputTooLarge);
+                }
+                let digest = sha256_hex(output.as_bytes());
+                (
+                    ExecutionStatus::Succeeded,
+                    Some(output),
+                    Some(digest),
+                    true,
+                )
+            } else {
+                let output = observed.output;
+                if output
+                    .as_ref()
+                    .is_some_and(|value| value.len() > MAX_OUTPUT_BYTES)
+                {
+                    return Err(Error::OutputTooLarge);
+                }
+                let digest = output.as_ref().map(|value| sha256_hex(value.as_bytes()));
+                (ExecutionStatus::Failed, output, digest, true)
+            };
+
         Ok(InferenceExecutionObservation {
             request_id: request.request_id,
             reservation_id: request.reservation_id,
@@ -308,6 +375,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             model_digest: request.model_digest,
             payload_digest: request.payload_digest,
             status,
+            output,
             output_digest,
             consumed_tokens: observed.consumed_tokens,
             observed_memory_bytes: observed.observed_memory_bytes,
@@ -338,6 +406,13 @@ impl<D: ModelDriver> InferenceWorker<D> {
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
         validate_grant(now_ms, &self.grant)
     }
+
+    fn total_observed_memory(&self) -> Result<u64, Error> {
+        self.models.values().try_fold(0_u64, |sum, loaded| {
+            sum.checked_add(loaded.handle.observed_memory_bytes)
+                .ok_or(Error::ArithmeticOverflow)
+        })
+    }
 }
 
 fn validate_manifest(value: &ModelManifest) -> Result<(), Error> {
@@ -348,7 +423,10 @@ fn validate_manifest(value: &ModelManifest) -> Result<(), Error> {
         (&value.tokenizer_digest, "tokenizer"),
         (&value.preprocessor_digest, "preprocessor"),
         (&value.quantization_digest, "quantization"),
+        (&value.license_digest, "license"),
+        (&value.sbom_digest, "sbom"),
         (&value.runtime_digest, "runtime"),
+        (&value.runtime_config_digest, "runtime config"),
         (&value.device_digest, "device"),
     ] {
         validate_digest(digest, field)?;
@@ -361,6 +439,7 @@ fn validate_manifest(value: &ModelManifest) -> Result<(), Error> {
 
 fn validate_grant(now_ms: u64, value: &ResourceGrant) -> Result<(), Error> {
     validate_identity(&value.grant_id, "grant")?;
+    validate_digest(&value.device_digest, "grant device")?;
     validate_digest(&value.semantic_digest, "grant semantic")?;
     if value.revoked {
         return Err(Error::GrantRevoked);
@@ -386,6 +465,12 @@ fn validate_request(now_ms: u64, value: &WorkerRequest) -> Result<(), Error> {
     validate_digest(&value.payload_digest, "payload")?;
     validate_digest(&value.lease_payload_digest, "lease payload")?;
     validate_digest(&value.reservation_model_digest, "reservation model")?;
+    if value.payload.is_empty() || value.payload.len() > MAX_PAYLOAD_BYTES {
+        return Err(Error::PayloadTooLarge);
+    }
+    if sha256_hex(value.payload.as_bytes()) != value.payload_digest {
+        return Err(Error::PayloadMismatch);
+    }
     if value.maximum_tokens == 0
         || value.maximum_tokens > MAX_TOKENS
         || value.reservation_maximum_tokens == 0
@@ -421,6 +506,10 @@ fn validate_digest(value: &str, field: &'static str) -> Result<(), Error> {
         return Err(Error::InvalidDigest(field));
     }
     Ok(())
+}
+
+fn sha256_hex(bytes: &[u8]) -> String {
+    format!("{:x}", Sha256::digest(bytes))
 }
 
 #[cfg(test)]

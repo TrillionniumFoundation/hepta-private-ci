@@ -59,24 +59,54 @@ impl AppServerModelDriver {
             return Err(format!("request stopped before dispatch: {reason}").into());
         }
         if record.state != NativeReservationState::Reserved {
-            if let Some(output) = record.observation {
-                return Ok(output);
+            if let Some(output) = record
+                .observation
+                .as_ref()
+                .filter(|output| output.terminal_observed)
+            {
+                return Ok(output.clone());
             }
-            let dispatch = record.dispatch.ok_or("missing durable dispatch binding")?;
-            let output = NativeRunOutput {
-                thread_id: dispatch.thread_id,
-                turn_id: record.turn_id.unwrap_or_default(),
-                model: record.request.model,
-                model_provider: dispatch.model_provider,
+
+            // A durable dispatch binding means provider execution may already
+            // exist. Reconcile that exact dedicated thread/turn; never submit a
+            // replacement turn. Failure to prove a terminal fact remains
+            // indeterminate and retains the local slot.
+            let reconcile_reason = match self.reconcile(&record, cancellation).await {
+                Ok(Some(output)) => {
+                    if record.state == NativeReservationState::Dispatching
+                        && record.turn_id.is_none()
+                        && !output.turn_id.is_empty()
+                    {
+                        control.native_started(
+                            &record.request.request_id,
+                            output.turn_id.clone(),
+                        )?;
+                    }
+                    control.settle_native(&record.request.request_id, output.clone())?;
+                    return Ok(output);
+                }
+                Ok(None) => "reconciliation found no terminal provider outcome".to_string(),
+                Err(error) => format!("provider reconciliation unavailable: {error}"),
+            };
+
+            let dispatch = record
+                .dispatch
+                .as_ref()
+                .ok_or("missing durable dispatch binding")?;
+            let output = record.observation.clone().unwrap_or_else(|| NativeRunOutput {
+                thread_id: dispatch.thread_id.clone(),
+                turn_id: record.turn_id.clone().unwrap_or_default(),
+                model: record.request.model.clone(),
+                model_provider: dispatch.model_provider.clone(),
                 status: NativeRunStatus::Indeterminate,
                 output: String::new(),
                 observed_output_tokens: None,
                 terminal_observed: false,
                 owner_authority: NativeOwnerAuthority::Unverified,
-                stop_reason: Some(
-                    "reopened after possible dispatch; reservation held, no replay".to_string(),
-                ),
-            };
+                stop_reason: None,
+            });
+            let mut output = output;
+            output.stop_reason = Some(format!("{reconcile_reason}; no replay"));
             control.settle_native(&record.request.request_id, output.clone())?;
             return Ok(output);
         }

@@ -1,11 +1,16 @@
 //! Authority-checked inference worker boundary.
 //!
 //! The legacy boundary validates a pre-existing request, lease and reservation.
-//! The native App Server profile invokes the owning Agent's configured provider
-//! and observes its turn events. Neither profile issues grants, mutates fleet
-//! state, infers success from queue acceptance, promotes or releases artifacts.
+//! The native App Server profile invokes the owning Agent's configured provider.
+//! The local-process profile adapter verifies exact model/runtime artifacts and
+//! delegates physical model execution to one bounded resident runtime process.
+//! No profile issues grants, mutates fleet state, infers success from queue
+//! acceptance, promotes artifacts, or claims host sandboxing it did not prove.
 
 #![forbid(unsafe_code)]
+
+/// Verified local-runtime process adapter.
+pub mod local_process_driver;
 
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;

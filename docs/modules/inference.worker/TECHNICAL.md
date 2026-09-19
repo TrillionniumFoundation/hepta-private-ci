@@ -1,8 +1,8 @@
 # inference.worker technical development guide
 
-Current executable behavior, component owners and implementation gaps: [Lane B native host](../../readiness/LANE_B_NATIVE_HOST.md).
+Current executable behavior, component owners and implementation gaps: [Lane B native host](../../readiness/LANE_B_NATIVE_HOST.md). Deployment gates and operating procedures are consolidated in the [inference.worker production readiness runbook](./PRODUCTION_READINESS.md).
 
-The native App Server worker now calls the same durable control owner for explicit local-slot admission, persisted dispatch identity, cancellation intent and actual observed settlement. Optional observed tokens remain unknown when absent; restarting a possibly dispatched request never replays it. This does not close economic quota, local weights/device or trusted post-crash provider-reconciliation gaps. The [native host guide](../../readiness/LANE_B_NATIVE_HOST.md#durable-inference-journal) specifies journal limits, CLI requirements and recovery semantics.
+The native App Server worker calls the same durable control owner for explicit local-slot admission, persisted dispatch identity, cancellation intent and observed settlement. Each request now uses a dedicated durable App Server thread so a reopened dispatched request can reconcile the exact persisted turn through `thread/read` without replay. Optional observed tokens remain unknown when absent. The local path now includes a `LocalProcessModelDriver` that verifies the complete configured artifact tuple, starts the exact runtime executable, binds its PID/handle/memory-reservation acknowledgement and passes the real bounded payload; target-host GPU/device/sandbox proof remains an external qualification gate. The [native host guide](../../readiness/LANE_B_NATIVE_HOST.md#durable-inference-journal) specifies journal limits, CLI requirements and recovery semantics.
 
 **Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
 
@@ -67,6 +67,8 @@ Explicitly denied capabilities:
 The module accepts only registered, bounded, versioned inputs. It rejects unknown critical fields and treats missing authority, stale revisions, scope mismatch and digest mismatch as hard failures. It never directly writes another owner's store. Cross-owner mutation follows local transaction, durable intent, outbox, destination deduplication, acknowledgement and fenced reconciliation.
 
 Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
+
+“Isolated” has a narrow source-level meaning here: exact owner/generation fencing, dedicated execution identity, bounded resources, exact artifact/runtime binding and fail-closed recovery. This crate does not by itself establish cgroup, namespace, seccomp/Landlock, GPU device ACL/MIG, network or filesystem sandboxing. Those host/launcher guarantees require explicit deployment evidence; see [Production Readiness §3](./PRODUCTION_READINESS.md#3-isolation-guarantees).
 
 ## 4. Internal architecture and component decomposition
 
@@ -147,6 +149,8 @@ None.
 
 The posture is least authority, bounded input, typed contracts, digest binding and independent evidence. Sensitive values are redacted or represented by digests at evidence boundaries. Credentials never enter general logs, learning datasets, prompt factors or cross-module receipts. Authority is operation-bound, final-payload-bound, short-lived and revocation-aware.
 
+`model_worker::ResourceGrant` is explicitly a trusted **process-local capability**, not a self-authenticating wire credential. The worker revalidates expiry, revocation, generation, resource ceilings, semantic digest shape and device binding, but `model_worker.rs` does not perform signature verification or online authority lookup. Any IPC/network adapter must authenticate and verify the registered authority credential before constructing this type. Crossing that boundary with caller-controlled JSON is an activation blocker; see [Production Readiness §2](./PRODUCTION_READINESS.md#2-resourcegrant-trust-boundary).
+
 Negative tests cover denied capabilities, cross-owner writes, stale or revoked grants, replay with payload drift, unknown fields, oversize input, scope escape, untrusted instruction escalation and secret/provider leakage. Security review is mandatory for new effect boundaries, persistence, network, model invocation or authority semantics.
 
 ## 10. Performance, capacity and hot-path policy
@@ -157,11 +161,14 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Build hepta-infer-worker and explicitly select --profile native-app-server. Supply the owning Agentd socket, Agent ID/generation, exact configured model, private journal and stable request ID as documented. Hosted execution uses the owning App Server; it does not establish local model weights, device grants or GPU isolation.
+Build hepta-infer-worker and explicitly select --profile native-app-server. Supply the owning Agentd socket, Agent ID/generation, exact configured model, private journal and stable request ID as documented. Hosted execution uses the owning App Server. Its dedicated thread is persisted in the owning Agent's private App Server store specifically for post-crash reconciliation and must follow that principal's retention policy.
+
+The local execution library surface is `LocalProcessModelDriver` plus `InferenceWorker<D>`. It verifies weights, tokenizer, preprocessor, quantization, license, SBOM, runtime executable and device descriptor before runtime spawn; clears the inherited runtime environment; binds load/infer/unload protocol identities; and computes the output digest in the worker. The production caller must supply a separately authenticated process-local `ResourceGrant`. A generic unverified CLI grant loader is intentionally not provided.
 
 Current operating and state-format references:
 
-- [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
+- [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md);
+- [inference.worker production readiness/runbook](./PRODUCTION_READINESS.md).
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -170,9 +177,11 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-infer-worker-host/src/lib_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/lib_tests.rs); named case: `terminal_success_requires_exact_authority_binding`.
-- [codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs); named case: `loads_runs_and_unloads_exact_model_tuple`.
+- [codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs](../../../codex-rs/hepta-infer-worker-host/src/model_worker_tests.rs); named cases include `loads_runs_and_unloads_exact_model_tuple`, actual-payload digest recomputation, device binding and aggregate memory enforcement.
+- [codex-rs/hepta-infer-worker-host/src/local_process_driver.rs](../../../codex-rs/hepta-infer-worker-host/src/local_process_driver.rs); unit tests cover exact artifact digests and bounded runtime framing.
+- [codex-rs/hepta-infer-worker-host/src/native_reconcile.rs](../../../codex-rs/hepta-infer-worker-host/src/native_reconcile.rs); unit tests cover durable turn-id and `client_user_message_id` selection.
 
-In `codex-rs`, run `just test -p codex-hepta-infer-worker-host`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/inference.worker.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-infer-core -p codex-hepta-infer-worker-host`. The command is a test invocation, not a stored result. `.github/workflows/inference-worker-qualification.yml` binds focused tests and strict Clippy to the exact source SHA/tree SHA and retains command-record digests; its receipt explicitly does not grant hardware qualification, independent acceptance, activation or release. Real CPU/GPU/device/OOM/leak/restart qualification remains mandatory as listed in the [runbook](./PRODUCTION_READINESS.md#6-required-target-host-qualification).
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -316,4 +325,4 @@ The bootstrap source-location obligation for `inference.worker` is implemented b
 
 - `codex-rs/hepta-infer-worker-host`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. The module-specific `.github/workflows/inference-worker-qualification.yml` additionally emits exact-revision worker/core command receipts. These receipts are source implementation evidence only. They grant no target-hardware qualification, runtime, production-writer, model-provider, external-effect, independent-acceptance, activation, selection, promotion, merge or release authority.
