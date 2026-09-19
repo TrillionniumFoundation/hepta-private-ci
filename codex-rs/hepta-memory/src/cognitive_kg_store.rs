@@ -406,6 +406,8 @@ fn node_support(node: &ProjectionNode) -> Result<KnowledgeSupportV2, CognitiveSt
             ],
         ),
         validity_digest: validity_digest(node.valid_from, node.valid_to),
+        valid_from_unix_seconds: Some(node.valid_from),
+        valid_to_unix_seconds: node.valid_to,
         tombstoned: false,
     })
 }
@@ -428,6 +430,8 @@ fn edge_support(edge: &ProjectionEdge) -> Result<KnowledgeSupportV2, CognitiveSt
             ],
         ),
         validity_digest: validity_digest(edge.valid_from, edge.valid_to),
+        valid_from_unix_seconds: Some(edge.valid_from),
+        valid_to_unix_seconds: edge.valid_to,
         tombstoned: false,
     })
 }
