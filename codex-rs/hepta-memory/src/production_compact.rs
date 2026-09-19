@@ -815,3 +815,291 @@ fn contract_error(error: impl std::fmt::Display) -> ProductionCompactionError {
 fn sql_error(error: sqlx::Error) -> ProductionCompactionError {
     ProductionCompactionError::Corrupt(error.to_string())
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use codex_hepta_cognitive_types::MemoryKind;
+    use codex_hepta_cognitive_types::MemoryRecord;
+    use codex_hepta_cognitive_types::RecordState;
+    use codex_hepta_compact_engine::CompactionInputRecordV2;
+    use codex_hepta_compact_engine::CompactionPolicyV2;
+    use codex_hepta_compact_engine::CompactionQualificationV2;
+    use codex_hepta_compact_engine::build_qualified_candidate;
+    use codex_hepta_compact_engine::prove_compaction;
+    use codex_hepta_contracts::AgentId;
+    use codex_hepta_paths::HeptaFleetRoot;
+    use codex_hepta_types::Revision;
+    use std::time::Duration;
+    use tempfile::TempDir;
+
+    const OWNER: u8 = 223;
+
+    fn agent_id(number: u8) -> AgentId {
+        AgentId::parse(format!(
+            "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c{number:02x}"
+        ))
+        .expect("agent id")
+    }
+
+    async fn store(temp: &TempDir) -> crate::CognitiveStore {
+        let fleet_root = temp.path().join("fleet");
+        std::fs::create_dir_all(&fleet_root).expect("fleet root");
+        let fleet = HeptaFleetRoot::parse(
+            fleet_root.canonicalize().expect("canonical fleet root"),
+        )
+        .expect("fleet");
+        crate::CognitiveStore::open(&fleet.layout().agent(&agent_id(OWNER)))
+            .await
+            .expect("store")
+    }
+
+    fn authority(agent: AgentId) -> crate::ProductionAuthorityLease {
+        crate::ProductionAuthorityLease::from_verified_parts(
+            agent,
+            Sha256Digest::for_bytes(b"compact-signed-grant"),
+            9,
+            4,
+            now_unix_seconds().expect("clock") + 3_600,
+            crate::ProductionAuthorityToken::from_verified_bytes(
+                b"compact-supervisor-token".to_vec(),
+            )
+            .expect("token"),
+        )
+        .expect("authority")
+    }
+
+    struct AllowVerifier;
+
+    impl crate::ProductionAuthorityVerifier for AllowVerifier {
+        fn verify(
+            &self,
+            _authority: &crate::ProductionAuthorityLease,
+            _expected_agent: &AgentId,
+        ) -> Result<(), String> {
+            Ok(())
+        }
+    }
+
+    fn id(value: &str) -> StableId {
+        StableId::new(value).expect("stable id")
+    }
+
+    fn generation(value: u64) -> Generation {
+        Generation::new(value).expect("generation")
+    }
+
+    fn revision(value: u64) -> Revision {
+        Revision::new(value).expect("revision")
+    }
+
+    fn digest(value: &str) -> Digest32 {
+        Digest32::of_bytes(value.as_bytes())
+    }
+
+    fn snapshot() -> CognitiveSnapshotKeyV1 {
+        CognitiveSnapshotKeyV1::new(LaneCGenerationVectorV1 {
+            scope_id: id("scope:production-compact"),
+            purpose_id: id("purpose:consolidation"),
+            memory_ledger_frontier: 20,
+            knowledge_fact_frontier: 14,
+            tombstone_frontier: 6,
+            source_ledger_frontier: 21,
+            knowledge_graph_generation: generation(3),
+            compact_checkpoint_generation: generation(1),
+            prompt_registry_revision: revision(4),
+            retrieval_profile_digest: digest("retrieval"),
+            encoder_preprocessor_digest: digest("encoder"),
+            authority_epoch: 8,
+            model_digest: digest("model"),
+            tokenizer_digest: digest("tokenizer"),
+            template_digest: digest("template"),
+            tool_schema_digest: digest("tool-schema"),
+        })
+        .expect("snapshot")
+    }
+
+    fn publication(
+        checkpoint_generation: u64,
+        predecessor: Option<Digest32>,
+        algorithm: &str,
+    ) -> ProductionCompactionPublication {
+        let source = snapshot();
+        let record = MemoryRecord {
+            record_id: id("memory:production"),
+            revision: revision(1),
+            kind: MemoryKind::Fact,
+            content_digest: digest("production-memory"),
+            predecessor_digest: None,
+            citations: Vec::new(),
+            state: RecordState::Live,
+        };
+        let policy = CompactionPolicyV2 {
+            policy_id: id("policy:production"),
+            algorithm_digest: digest(algorithm),
+            compatibility_digest: digest("compatibility"),
+            tokenizer_digest: source.vector.tokenizer_digest,
+            maximum_retained_records: 8,
+            maximum_retained_bytes: 4096,
+            maximum_retained_tokens: 1024,
+            protected_record_ids: Vec::new(),
+        };
+        let candidate = build_qualified_candidate(
+            source,
+            generation(checkpoint_generation),
+            predecessor,
+            &policy,
+            vec![CompactionInputRecordV2 {
+                record,
+                retention_priority: 1,
+                retention_reason_digest: digest("retention-reason"),
+                serialized_bytes: 64,
+                token_count: 16,
+            }],
+        )
+        .expect("candidate");
+        let proof = prove_compaction(
+            &candidate,
+            CompactionQualificationV2 {
+                evaluator_id: id("evaluator:production"),
+                evaluation_artifact_digest: digest("evaluation-artifact"),
+                evaluator_implementation_digest: digest("evaluator-implementation"),
+                attestation_digest: digest("attestation"),
+                signature_digest: digest("signature"),
+                retained_query_suite_digest: digest("queries"),
+                reconstruction_obligation_digest: digest("reconstruction"),
+                contradiction_holdout_digest: digest("contradictions"),
+                retained_queries_passed: true,
+                reconstruction_passed: true,
+                contradictions_preserved: true,
+                deletion_non_resurrection_passed: true,
+            },
+        )
+        .expect("proof");
+        ProductionCompactionPublication {
+            checkpoint: candidate.checkpoint,
+            proof,
+            policy_digest: candidate.policy_digest,
+            candidate_digest: candidate.candidate_digest,
+            retained_bytes: candidate.loss_report.retained_bytes,
+            retained_tokens: candidate.loss_report.retained_tokens,
+            omitted_bytes: candidate.loss_report.omitted_bytes,
+            omitted_tokens: candidate.loss_report.omitted_tokens,
+        }
+    }
+
+    async fn writer(
+        store: crate::CognitiveStore,
+        authority: crate::ProductionAuthorityLease,
+    ) -> crate::ProductionDurableWriter {
+        crate::ProductionDurableWriter::open(
+            store,
+            authority,
+            &AllowVerifier,
+            "compact-production-test",
+            1,
+        )
+        .await
+        .expect("writer")
+    }
+
+    #[tokio::test]
+    async fn publish_replay_restart_and_reload_round_trip() {
+        let temp = TempDir::new().expect("temp dir");
+        let store = store(&temp).await;
+        let auth = authority(agent_id(OWNER));
+        let first = publication(1, None, "algorithm-v1");
+        let writer = writer(store.clone(), auth.clone()).await;
+
+        let receipt = writer.publish_compaction(&first).await.expect("publish");
+        assert!(!receipt.replayed);
+        let replay = writer.publish_compaction(&first).await.expect("replay");
+        assert!(replay.replayed);
+        assert_eq!(replay.sequence, receipt.sequence);
+        assert_eq!(
+            writer.load_current_compaction().await.expect("load"),
+            Some(first.clone())
+        );
+
+        drop(writer);
+        tokio::time::sleep(Duration::from_millis(20)).await;
+        let reopened = writer(store, auth).await;
+        assert_eq!(
+            reopened
+                .load_current_compaction()
+                .await
+                .expect("reload after restart"),
+            Some(first)
+        );
+    }
+
+    #[tokio::test]
+    async fn generation_cas_rejects_wrong_predecessor() {
+        let temp = TempDir::new().expect("temp dir");
+        let store = store(&temp).await;
+        let writer = writer(store, authority(agent_id(OWNER))).await;
+        let first = publication(1, None, "algorithm-v1");
+        writer.publish_compaction(&first).await.expect("first");
+
+        let wrong = publication(2, Some(digest("wrong-predecessor")), "algorithm-v2");
+        assert!(matches!(
+            writer.publish_compaction(&wrong).await,
+            Err(ProductionCompactionError::CasConflict(_))
+        ));
+    }
+
+    #[tokio::test]
+    async fn concurrent_same_generation_has_single_winner() {
+        let temp = TempDir::new().expect("temp dir");
+        let store = store(&temp).await;
+        let writer = writer(store, authority(agent_id(OWNER))).await;
+        let left_writer = writer.clone();
+        let right_writer = writer.clone();
+        let left = publication(1, None, "algorithm-left");
+        let right = publication(1, None, "algorithm-right");
+        let (a, b) = tokio::join!(
+            left_writer.publish_compaction(&left),
+            right_writer.publish_compaction(&right)
+        );
+        let successes = usize::from(a.is_ok()) + usize::from(b.is_ok());
+        assert_eq!(successes, 1);
+        let failures = usize::from(matches!(
+            a,
+            Err(ProductionCompactionError::CasConflict(_))
+        )) + usize::from(matches!(
+            b,
+            Err(ProductionCompactionError::CasConflict(_))
+        ));
+        assert_eq!(failures, 1);
+    }
+
+    #[tokio::test]
+    async fn tampered_durable_event_fails_closed_on_reload() {
+        let temp = TempDir::new().expect("temp dir");
+        let store = store(&temp).await;
+        let writer = writer(store, authority(agent_id(OWNER))).await;
+        let first = publication(1, None, "algorithm-v1");
+        writer.publish_compaction(&first).await.expect("publish");
+
+        sqlx::query("DROP TRIGGER cognitive_compact_events_no_update")
+            .execute(&writer.store().pool)
+            .await
+            .expect("drop immutable trigger for corruption probe");
+        sqlx::query(
+            "UPDATE cognitive_compact_events
+             SET event_json = event_json || ' '
+             WHERE journal_id = ? AND sequence = 1",
+        )
+        .bind(PRODUCTION_COMPACT_JOURNAL_ID)
+        .execute(&writer.store().pool)
+        .await
+        .expect("tamper event");
+
+        assert!(matches!(
+            writer.load_current_compaction().await,
+            Err(ProductionCompactionError::Corrupt(_))
+        ));
+    }
+}
