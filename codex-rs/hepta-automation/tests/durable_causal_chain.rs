@@ -188,6 +188,70 @@ async fn queue_submission_is_not_occurrence_or_taskflow_success() {
 }
 
 #[tokio::test]
+async fn allow_overlap_advances_recurrence_without_terminalizing_prior_occurrence() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75104",
+        AutomationSchedule::FixedInterval { interval_ms: 1_000 },
+        100,
+    );
+    store.create_task(&task).await.expect("create task");
+    let policy = store.schedule_policy(task.task_id).await.expect("policy");
+    assert_eq!(policy.overlap, AutomationOverlapPolicy::Allow);
+
+    let scheduler = AutomationScheduler::new(
+        store.clone(),
+        Arc::new(SuccessQueue),
+        1,
+        Duration::from_secs(30),
+        Duration::from_secs(2),
+    )
+    .expect("scheduler");
+    assert!(matches!(
+        scheduler.tick(100).await.expect("first tick"),
+        AutomationTick::Submitted { occurrence: 1, .. }
+    ));
+    assert_eq!(
+        store
+            .task(task.task_id)
+            .await
+            .expect("task")
+            .unwrap()
+            .next_run_at_ms,
+        Some(1_100),
+        "allow overlap advances only the schedule frontier after durable admission"
+    );
+
+    let first = store
+        .automation_occurrence(task.task_id, 1)
+        .await
+        .expect("first occurrence")
+        .expect("first materialized");
+    assert_eq!(first.state, AutomationOccurrenceState::Admitted);
+    assert!(first.terminal_at_ms.is_none());
+
+    assert!(matches!(
+        scheduler.tick(1_100).await.expect("second tick"),
+        AutomationTick::Submitted { occurrence: 2, .. }
+    ));
+    let first_after = store
+        .automation_occurrence(task.task_id, 1)
+        .await
+        .expect("first occurrence after overlap")
+        .expect("first remains materialized");
+    let second = store
+        .automation_occurrence(task.task_id, 2)
+        .await
+        .expect("second occurrence")
+        .expect("second materialized");
+    assert_eq!(first_after.state, AutomationOccurrenceState::Admitted);
+    assert!(first_after.terminal_at_ms.is_none());
+    assert_eq!(second.state, AutomationOccurrenceState::Admitted);
+    assert_ne!(first_after.occurrence_id, second.occurrence_id);
+}
+
+#[tokio::test]
 async fn forbid_overlap_parks_recurrence_until_terminal_observation() {
     let fixture = Fixture::new();
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
