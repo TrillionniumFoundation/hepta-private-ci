@@ -139,7 +139,10 @@ impl NduProjectionJournalV1 {
         }) {
             return Err(NduProjectionJournalError::ProjectionNotRecorded);
         }
-        if self.revoked_digests().contains(&projection_digest) {
+        if self
+            .revoked_projections()
+            .contains(&(objective_digest, subject_digest, projection_digest))
+        {
             return Err(NduProjectionJournalError::RevokedProjection);
         }
         self.append(
@@ -173,7 +176,7 @@ impl NduProjectionJournalV1 {
         objective_digest: Digest32,
         subject_digest: Digest32,
     ) -> Option<Digest32> {
-        let revoked = self.revoked_digests();
+        let revoked = self.revoked_projections();
         let mut selected = None;
         for entry in &self.entries {
             if entry.objective_digest != objective_digest || entry.subject_digest != subject_digest
@@ -182,8 +185,12 @@ impl NduProjectionJournalV1 {
             }
             match entry.kind {
                 NduProjectionKindV1::SelectedProjection => {
-                    selected =
-                        (!revoked.contains(&entry.payload_digest)).then_some(entry.payload_digest);
+                    selected = (!revoked.contains(&(
+                        objective_digest,
+                        subject_digest,
+                        entry.payload_digest,
+                    )))
+                    .then_some(entry.payload_digest);
                 }
                 NduProjectionKindV1::Revocation if selected == Some(entry.payload_digest) => {
                     selected = None;
@@ -191,7 +198,9 @@ impl NduProjectionJournalV1 {
                 _ => {}
             }
         }
-        selected.filter(|digest| !revoked.contains(digest))
+        selected.filter(|digest| {
+            !revoked.contains(&(objective_digest, subject_digest, *digest))
+        })
     }
 
     fn append(
@@ -379,11 +388,17 @@ impl NduProjectionJournalV1 {
         Ok(journal)
     }
 
-    fn revoked_digests(&self) -> BTreeSet<Digest32> {
+    fn revoked_projections(&self) -> BTreeSet<(Digest32, Digest32, Digest32)> {
         self.entries
             .iter()
             .filter(|entry| entry.kind == NduProjectionKindV1::Revocation)
-            .map(|entry| entry.payload_digest)
+            .map(|entry| {
+                (
+                    entry.objective_digest,
+                    entry.subject_digest,
+                    entry.payload_digest,
+                )
+            })
             .collect()
     }
 }
