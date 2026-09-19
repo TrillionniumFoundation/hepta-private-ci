@@ -46,6 +46,20 @@
       "delegatedCallees": []
     },
     {
+      "operation": "learningevidencetrustproviderv1",
+      "designOperation": "learningevidencetrustproviderv1",
+      "nativeSymbol": "LearningEvidenceTrustProviderV1",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "tests": [
+        "production_writer_reloads_current_trust_and_rejects_rollback"
+      ],
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "sourcePathExists": true
+    },
+    {
       "operation": "productionledgerwriter",
       "designOperation": "productionledgerwriter",
       "nativeSymbol": "ProductionLedgerWriter",
@@ -81,7 +95,9 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "tests": [
-        "canonical_decision_json_uses_registry_field_names_and_order"
+        "canonical_decision_json_uses_registry_field_names_and_order",
+        "unknown_critical_fields_reject",
+        "canonical_protocols_reject_semantically_invalid_json"
       ],
       "state": "source_implemented_not_product_composed",
       "authority": "none",
@@ -90,12 +106,13 @@
     {
       "operation": "ledgerindexcheckpointv1",
       "designOperation": "ledgerindexcheckpointv1",
-      "nativeSymbol": "LedgerIndexCheckpointV1",
+      "nativeSymbol": "LedgerIndexCheckpointV1 / LedgerRecoveryWorkV1",
       "sourcePath": "codex-rs/hepta-learning-ledger/src/index_checkpoint.rs",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "tests": [
-        "checkpoint_verifies_four_thousand_record_history"
+        "checkpoint_verifies_four_thousand_record_history",
+        "recovery_work_receipt_covers_full_single_segment_record_profile"
       ],
       "state": "source_implemented_not_product_composed",
       "authority": "none",
@@ -104,7 +121,7 @@
   ],
   "repositoryControlledGaps": [
     "Current candidate must pass exact-head and deterministic synthetic-merge qualification before source-complete status can advance from ci_pending.",
-    "Bind ProductionLedgerWriter and DurableAnchorWitness to one named product process, exclusive writer identity and durable directories before productionImplementation may become true."
+    "Bind LearningEvidenceTrustProviderV1, ProductionLedgerWriter and DurableAnchorWitness to one named product process, live authority store, exclusive writer identity and durable directories before productionImplementation may become true."
   ],
   "externalEvidenceGates": [
     "live trust-root and signer/controller distribution",
