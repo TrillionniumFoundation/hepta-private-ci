@@ -414,6 +414,67 @@ async fn stale_remote_generation_never_exposes_remote_items() {
 }
 
 #[tokio::test]
+async fn response_scope_and_purpose_drift_fail_closed_with_fresh_digest() {
+    let query = query();
+
+    let mut scope_drift = terminal_response(&query);
+    scope_drift.scope_digest = digest("other-scope");
+    scope_drift.response_digest = scope_drift.compute_response_digest();
+    let transport =
+        FixtureTransport::immediate(FederationTransportResultV2::Terminal(scope_drift));
+    let authority = FixtureAuthority::new([FederationAuthorityStateV2::Current]);
+    assert_eq!(
+        execute_once(
+            &transport,
+            &authority,
+            &NeverCancelledV2,
+            &FixedClock(10),
+            query.clone(),
+            &lease(&query),
+        )
+        .await,
+        Err(FederationV2Error::DigestMismatch("response_scope"))
+    );
+
+    let mut purpose_drift = terminal_response(&query);
+    purpose_drift.purpose_digest = digest("other-purpose");
+    purpose_drift.response_digest = purpose_drift.compute_response_digest();
+    let transport =
+        FixtureTransport::immediate(FederationTransportResultV2::Terminal(purpose_drift));
+    let authority = FixtureAuthority::new([FederationAuthorityStateV2::Current]);
+    assert_eq!(
+        execute_once(
+            &transport,
+            &authority,
+            &NeverCancelledV2,
+            &FixedClock(10),
+            query.clone(),
+            &lease(&query),
+        )
+        .await,
+        Err(FederationV2Error::DigestMismatch("response_purpose"))
+    );
+}
+
+#[tokio::test]
+async fn revoked_preflight_authority_never_dispatches_transport() {
+    let query = query();
+    let authority = FixtureAuthority::new([FederationAuthorityStateV2::Revoked]);
+    assert_eq!(
+        execute_once(
+            &FixtureTransport::pending(),
+            &authority,
+            &NeverCancelledV2,
+            &FixedClock(10),
+            query.clone(),
+            &lease(&query),
+        )
+        .await,
+        Err(FederationV2Error::LeaseRevoked)
+    );
+}
+
+#[tokio::test]
 async fn peer_scope_and_lease_drift_fail_closed() {
     let query = query();
     let mut response = terminal_response(&query);
