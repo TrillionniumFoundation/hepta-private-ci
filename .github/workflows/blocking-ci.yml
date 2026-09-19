@@ -43,7 +43,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m unittest -v scripts.tests.test_hepta_ci_scope
+          python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies
+          python3 -m unittest -v scripts.test_hepta_readiness_semantics
           args=(--head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT")
           if [ "$EVENT_NAME" = "pull_request" ]; then
             args+=(--base "$BASE_SHA")
@@ -131,34 +132,54 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - name: Check impacted Hepta package graph
+      - name: Compute exact base and candidate reverse dependencies
         env:
-          INFERENCE: ${{ needs.scope.outputs.inference }}
-          EFFECTS: ${{ needs.scope.outputs.effects }}
-          LIFECYCLE: ${{ needs.scope.outputs.lifecycle }}
-          LEARNING: ${{ needs.scope.outputs.learning }}
-          OBJECTIVE: ${{ needs.scope.outputs.objective }}
-        shell: bash
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: >-
+          python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA"
+          --tested "$TESTED_SHA" --output "$RUNNER_TEMP/cargo-impact.json"
+
+      - name: Prepare native test prerequisites before compilation
         run: |
-          set -euo pipefail
-          packages=()
-          [ "$INFERENCE" != true ] || packages+=(codex-hepta-infer-core codex-hepta-types)
-          [ "$EFFECTS" != true ] || packages+=(codex-hepta-contracts codex-hepta-operations codex-hepta-automation codex-hepta-agentd)
-          [ "$LIFECYCLE" != true ] || packages+=(codex-hepta-fleet codex-hepta-supervisor codex-hepta-control-plane codex-hepta-plasticity codex-hepta-agentd)
-          [ "$LEARNING" != true ] || packages+=(codex-hepta-plasticity codex-hepta-intelligence-eval codex-hepta-learning-ledger codex-hepta-learning-artifacts codex-hepta-agentd)
-          [ "$OBJECTIVE" != true ] || packages+=(codex-hepta-objective codex-hepta-prompt-optimizer codex-hepta-agentd)
-          mapfile -t packages < <(printf '%s\n' "${packages[@]}" | sort -u)
-          args=()
-          for package in "${packages[@]}"; do args+=(-p "$package"); done
-          cargo check --locked --manifest-path codex-rs/Cargo.toml "${args[@]}"
-          if [ "$LIFECYCLE" = true ]; then
-            cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-fleet module_catalog
-            cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane module_runtime
-            cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor module_runtime
-            cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor writer_handoff
-            cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-plasticity topology_v3
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           fi
-          git diff --check
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - name: Resolve verified V8 artifacts for affected host crates
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Test affected owners and reverse consumers, not a hand-written package list
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEPTA_CI_LANE: source-head
+        run: >-
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/impact-test.json" --
+          python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
+          --output "$RUNNER_TEMP/cargo-impact.json" --run
+
+      - name: Retain dependency plan and real command output
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-cargo-impact-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/cargo-impact.json
+            ${{ runner.temp }}/impact-test.json*
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Verify generated projections when applicable
         if: needs.scope.outputs.derived == 'true'
