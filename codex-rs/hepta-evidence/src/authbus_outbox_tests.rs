@@ -571,7 +571,7 @@ async fn one_issuer_cannot_exhaust_the_global_active_outbox_across_epochs() {
          )
          INSERT INTO authbus_outbox
          SELECT randomblob(32), issuer_id,
-                CAST(printf('%016x', x + 1) AS BLOB),
+                randomblob(8),
                 'issuer-cap:' || x, subject_id, scope_digest, payload_digest,
                 sequence, expires_at_ms, signature, payload, state, fence, attempts,
                 worker_id, lease_until_ms, available_at_ms, created_at_ms,
