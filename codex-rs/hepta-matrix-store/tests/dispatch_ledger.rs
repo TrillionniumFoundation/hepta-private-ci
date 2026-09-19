@@ -218,3 +218,81 @@ async fn authority_binding_rejects_payload_drift() -> TestResult {
     store.close().await;
     Ok(())
 }
+
+
+#[tokio::test]
+async fn transport_exhaustion_does_not_poison_logical_stream_before_terminal_observation() -> TestResult {
+    let temp = TempDir::new()?;
+    let (agent_id, _layout, store) = prepared_store(&temp).await?;
+    let room_id = room()?;
+    let logical_id = outbox_id(
+        &agent_id,
+        &room_id,
+        "thread-1",
+        "turn-1",
+        "logical-stream",
+        "final",
+    );
+    let root_txn = transaction_id(&logical_id, 1)?;
+    store
+        .enqueue_outbox(&OutboxDraft {
+            logical_outbox_id: logical_id.clone(),
+            revision: 1,
+            txn_id: root_txn.clone(),
+            room_id: room_id.clone(),
+            kind: OutboxKind::Final,
+            payload: b"root".to_vec(),
+            binding_revision: 1,
+            generation: 1,
+            created_at_ms: 2,
+        })
+        .await?;
+    let root = store.claim_outbox(3, 30, 1).await?.remove(0);
+    store.prepare_dispatch(&root, 3).await?;
+    store.mark_dispatch_dispatched(&root_txn, 4).await?;
+    store.mark_dispatch_indeterminate(&root_txn, 5).await?;
+    store
+        .mark_outbox_permanent_failure(&root_txn, root.attempts, 6)
+        .await?;
+
+    let edit_txn = transaction_id(&logical_id, 2)?;
+    store
+        .enqueue_outbox(&OutboxDraft {
+            logical_outbox_id: logical_id,
+            revision: 2,
+            txn_id: edit_txn.clone(),
+            room_id: room_id.clone(),
+            kind: OutboxKind::Final,
+            payload: b"edit".to_vec(),
+            binding_revision: 1,
+            generation: 1,
+            created_at_ms: 7,
+        })
+        .await?;
+
+    assert!(
+        store.claim_outbox(8, 30, 10).await?.is_empty(),
+        "dependent revision must wait while root effect remains indeterminate"
+    );
+
+    let terminal_event = MatrixEventId::parse("$root-terminal")?;
+    store
+        .observe_dispatch_terminal_success_if_known(
+            &root_txn,
+            &room_id,
+            &terminal_event,
+            &"d".repeat(64),
+            9,
+        )
+        .await?;
+
+    let claimed_edit = store.claim_outbox(10, 30, 10).await?;
+    assert_eq!(claimed_edit.len(), 1);
+    assert_eq!(claimed_edit[0].stable_txn_id, edit_txn);
+    assert_eq!(
+        claimed_edit[0].replaces_event_id.as_ref(),
+        Some(&terminal_event)
+    );
+    store.close().await;
+    Ok(())
+}
