@@ -1,8 +1,9 @@
 //! Governed prompt-factor and realization registry.
 //!
-//! The registry stores bounded identities and content digests, never executable
-//! instructions or ambient authority. External untrusted material cannot admit
-//! itself, and revocation is terminal and cascades to realizations.
+//! The registry owns bounded factor/realization identities and may retain the
+//! exact admitted realization payload behind a digest-bound V2 read API. Payload
+//! possession grants no execution authority. External untrusted material cannot
+//! admit itself, and revocation is terminal and cascades to realizations.
 
 #![forbid(unsafe_code)]
 
@@ -21,6 +22,7 @@ pub use v2::CompatibleRealizationSetV2;
 pub use v2::MAX_COMPATIBLE_REALIZATIONS_V2;
 pub use v2::PromptModelTupleV2;
 pub use v2::PromptRealizationBindingV2;
+pub use v2::PromptRealizationPayloadV2;
 pub use v2::PromptRegistrySnapshotV2;
 pub use v2::PromptRegistryV2Error;
 pub use v2::PromptRoleV2;
@@ -104,6 +106,7 @@ pub struct PromptRegistry {
     factors: BTreeMap<StableId, PromptFactor>,
     realizations: BTreeMap<StableId, PromptRealization>,
     realization_bindings: BTreeMap<StableId, PromptRealizationBindingV2>,
+    realization_payloads: BTreeMap<StableId, Vec<u8>>,
     revision: Revision,
     lifecycle_frontier: u64,
     revocation_frontier: u64,
@@ -122,6 +125,7 @@ impl PromptRegistry {
             factors: BTreeMap::new(),
             realizations: BTreeMap::new(),
             realization_bindings: BTreeMap::new(),
+            realization_payloads: BTreeMap::new(),
             revision,
             lifecycle_frontier: 0,
             revocation_frontier: 0,

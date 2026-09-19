@@ -10,7 +10,11 @@ use std::fmt;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::PromptDeliveryErrorV1;
 use codex_hepta_types::StableId;
+
+pub use codex_hepta_types::PromptDeliveryObservationV1;
+pub use codex_hepta_types::PromptDeliveryRejectionV1;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CodexOperationIntent {
@@ -46,11 +50,27 @@ pub struct CodexAdapterReceipt {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptDeliveryBoundaryInputV1 {
+    pub compilation_id: StableId,
+    pub expected_payload_digest: Digest32,
+    pub terminal_observed: bool,
+    pub delivered: bool,
+    pub rejected_reason: Option<PromptDeliveryRejectionV1>,
+    pub observed_token_positions: Vec<u32>,
+    pub truncation_observed: bool,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Error {
     EmptyDigest(&'static str),
     PayloadBindingMismatch,
     DeadlineExpired,
     MissingTerminalResponse,
+    PromptDeliveryNotTerminal,
+    InvalidPromptDeliveryDisposition,
+    TokenPositionLimitExceeded,
+    NonCanonicalTokenPositions,
+    PromptDeliveryContract(PromptDeliveryErrorV1),
 }
 
 impl fmt::Display for Error {
@@ -102,6 +122,50 @@ pub fn adapt(
         provider_authority: false,
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+/// Emits the runtime-owned prompt delivery observation only after the caller
+/// supplies the exact bytes that crossed the Codex request boundary.
+///
+/// This adapter does not submit the request itself. It fails closed unless the
+/// supplied bytes match the expected compilation attachment digest and the
+/// caller reports a terminal delivered/rejected disposition.
+pub fn observe_prompt_delivery_v1(
+    input: PromptDeliveryBoundaryInputV1,
+    submitted_payload: &[u8],
+) -> Result<PromptDeliveryObservationV1, Error> {
+    if input.expected_payload_digest.is_zero() {
+        return Err(Error::EmptyDigest("expected prompt payload"));
+    }
+    let provider_request_digest = Digest32::of_bytes(submitted_payload);
+    if provider_request_digest != input.expected_payload_digest {
+        return Err(Error::PayloadBindingMismatch);
+    }
+    if !input.terminal_observed {
+        return Err(Error::PromptDeliveryNotTerminal);
+    }
+
+    let observation = PromptDeliveryObservationV1 {
+        compilation_id: input.compilation_id,
+        provider_request_digest,
+        delivered: input.delivered,
+        rejected_reason: input.rejected_reason,
+        observed_token_positions: input.observed_token_positions,
+        truncation_observed: input.truncation_observed,
+    };
+    observation
+        .validate()
+        .map_err(map_prompt_delivery_contract_error)?;
+    Ok(observation)
+}
+
+fn map_prompt_delivery_contract_error(error: PromptDeliveryErrorV1) -> Error {
+    match error {
+        PromptDeliveryErrorV1::InvalidDisposition => Error::InvalidPromptDeliveryDisposition,
+        PromptDeliveryErrorV1::TokenPositionLimitExceeded => Error::TokenPositionLimitExceeded,
+        PromptDeliveryErrorV1::NonCanonicalTokenPositions => Error::NonCanonicalTokenPositions,
+        other => Error::PromptDeliveryContract(other),
+    }
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
