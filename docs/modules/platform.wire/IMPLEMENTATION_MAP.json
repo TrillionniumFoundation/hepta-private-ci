@@ -62,7 +62,7 @@
       "operation": "negotiate",
       "nativeSymbol": "negotiate",
       "sourcePath": "codex-rs/hepta-wire/src/version.rs",
-      "state": "source_implemented",
+      "state": "source_implemented_with_canonical_session_binding_material",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-wire/src/version_tests.rs",
@@ -74,10 +74,24 @@
       "delegatedCallees": []
     },
     {
+      "operation": "session_binding",
+      "nativeSymbol": "session_binding_digest",
+      "sourcePath": "codex-rs/hepta-wire/src/version.rs",
+      "state": "source_implemented_unkeyed_binding_material",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-wire/src/version_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "session_binding",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
       "operation": "schema_admission",
-      "nativeSymbol": "SchemaRegistry",
+      "nativeSymbol": "SchemaRegistry / ProducerAdmission",
       "sourcePath": "codex-rs/hepta-wire/src/schema.rs",
-      "state": "source_implemented_framework",
+      "state": "source_implemented_bounded_framework_with_producer_admission",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-wire/src/schema_tests.rs",
@@ -109,8 +123,8 @@
   ],
   "repositoryControlledGaps": [
     "Run exact-head and deterministic synthetic-merge tests for the versioned implementation and registered product source callers.",
-    "Bind HPTN negotiation and encoded HPTA frames to the selected authenticated production transport/session.",
-    "Register and qualify each additional product-domain schema codec before admitting it."
+    "Authenticate the canonical HPTN transcript plus encoded HPTA frame binding at the selected production transport/session.",
+    "Register and qualify each additional product-domain schema codec and producer policy before admitting it."
   ],
   "externalEvidenceGates": [
     "independent semantic and security review",
