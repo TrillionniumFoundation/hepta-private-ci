@@ -15,9 +15,12 @@ use ed25519_dalek::SigningKey;
 use crate::AuthenticatedPrincipalV1;
 use crate::CandidateSetCompleteness;
 use crate::CreditAllocationV1;
+use crate::LearningEvidenceTrustProviderV1;
+use crate::LearningEvidenceTrustSnapshotV1;
 use crate::LearningEvidenceTrustV1;
 use crate::OutcomeTerminalityV1;
 use crate::OutcomeWatermarkV1;
+use crate::SignedEvidenceError;
 use crate::TrustedLearningSignerV1;
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
@@ -100,6 +103,15 @@ impl MutableTrustProvider {
 
     fn set_revision(&self, revision: u64) {
         self.current.lock().expect("trust lock").revision = revision;
+    }
+
+    fn replace(&self, revision: u64, trust: LearningEvidenceTrustV1) {
+        *self.current.lock().expect("trust lock") = LearningEvidenceTrustSnapshotV1 {
+            revision,
+            valid_from: 1,
+            valid_until: 100,
+            trust,
+        };
     }
 }
 
@@ -407,14 +419,70 @@ fn production_writer_reloads_current_trust_and_rejects_rollback() {
     let fixture = Fixture::new();
     let ledger =
         crate::DurableLedger::create(fixture.file(), digest("binding-trust"), 8).expect("ledger");
-    let provider = MutableTrustProvider::new(1, trust());
+    let initial_trust = trust();
+    let provider = MutableTrustProvider::new(1, initial_trust);
     let control = provider.clone();
     let mut writer = ProductionLedgerWriter::new(ledger, provider);
 
     let first = writer.current_trust_digest(50).expect("revision one");
-    control.set_revision(2);
+
+    let mut revoked_trust = trust();
+    revoked_trust.signers[0].revoked_at = Some(40);
+    let revoked_verifier =
+        LearningEvidenceVerifierV1::new(revoked_trust.clone()).expect("revoked trust snapshot");
+    control.replace(2, revoked_trust);
     let second = writer.current_trust_digest(50).expect("revision two");
-    assert_eq!(first, second);
+    assert_ne!(first, second);
+
+    let mut decision = EpisodeDecision {
+        record_id: id("revoked-decision-record"),
+        episode_id: id("revoked-episode"),
+        objective_digest: digest("objective"),
+        policy_id: id("generator"),
+        candidate_ids: vec![id("choice"), id("abstain")],
+        selected_candidate_id: id("choice"),
+        selected_propensity: ProbabilityQ32::from_raw(1 << 31).expect("probability"),
+        completeness: CandidateSetCompleteness::Complete,
+        support_digest: Digest32::ZERO,
+    };
+    let completeness = CandidateSetCompletenessReceiptV1 {
+        set_id: id("revoked-set"),
+        state_digest: digest("revoked-state"),
+        generator_id: id("generator"),
+        generator_code_digest: digest("revoked-code"),
+        grammar_digest: digest("revoked-grammar"),
+        hard_filter_digest: digest("revoked-filter"),
+        truncation_digest: digest("revoked-truncation"),
+        candidates_digest: digest("revoked-candidates"),
+        candidate_count: 2,
+        omitted_count_bound: 0,
+        canonical_order_digest: digest("revoked-order"),
+        complete_for_generator: true,
+    };
+    let payload = decision_admission_payload(&decision, &completeness).expect("payload");
+    decision.support_digest = Digest32::of_bytes(&payload);
+    let signed = sign(
+        &revoked_verifier,
+        "revoked-evidence",
+        "generator",
+        LearningEvidenceRoleV1::Generator,
+        1,
+        &payload,
+    );
+    assert_eq!(
+        writer.append_decision(
+            LedgerAnchor {
+                sequence: 0,
+                chain_digest: Digest32::ZERO,
+            },
+            decision,
+            &completeness,
+            &signed,
+            &payload,
+            50,
+        ),
+        Err(ProductionLedgerError::Signed(SignedEvidenceError::Revoked))
+    );
 
     control.set_revision(1);
     assert_eq!(
