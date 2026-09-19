@@ -551,6 +551,45 @@ impl ProductionDurableWriter {
         )
     }
 
+    /// Derive the only FinalUseBinding accepted for this durable operation
+    /// and destination. Grant signers should sign this value verbatim.
+    pub async fn final_use_binding(
+        &self,
+        receipt: &ProductionQueuedReceipt,
+        destination_id: &str,
+    ) -> Result<FinalUseBinding, ProductionWriterError> {
+        self.verify_authority().await?;
+        self.validate_queued_receipt(receipt)?;
+        let operation = self
+            .lease
+            .verify_operation_dispatch_binding(&receipt.occurrence_key, destination_id)
+            .await
+            .map_err(|error| match error {
+                LocalLeaseOutboxError::StaleFence(_)
+                | LocalLeaseOutboxError::IllegalTransition(_)
+                | LocalLeaseOutboxError::CasConflict(_) => ProductionWriterError::StaleReceipt,
+                other => ProductionWriterError::Local(other),
+            })?;
+        let request = ProductionDispatchRequest {
+            schema_version: PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION,
+            namespace: PRODUCTION_DURABLE_WRITER_NAMESPACE.to_string(),
+            lease_id: receipt.lease_id.clone(),
+            occurrence_key: receipt.occurrence_key.clone(),
+            topic: receipt.topic.clone(),
+            payload_json: receipt.payload_json.clone(),
+            payload_sha256: receipt.payload_sha256.clone(),
+            idempotency_key: receipt.occurrence_key.clone(),
+            operation_digest: operation_digest(&self.authority, receipt),
+        };
+        Ok(FinalUseBinding {
+            subject_id: self.store.owner_agent_id().as_str().to_string(),
+            destination_id: operation.destination_id,
+            request_sha256: digest_bytes(&request.operation_digest)?,
+            scope_sha256: digest_bytes(&Sha256Digest::for_bytes(operation.scope_id.as_bytes()))?,
+            payload_sha256: digest_bytes(&request.payload_sha256)?,
+        })
+    }
+
     pub async fn recover(
         &self,
         occurrence_key: impl Into<String>,
@@ -807,7 +846,8 @@ impl ProductionDurableWriter {
             idempotency_key: receipt.occurrence_key.clone(),
             operation_digest: operation_digest(&self.authority, &receipt),
         };
-        self.lease
+        let durable_operation = self
+            .lease
             .verify_operation_dispatch_binding(
                 &receipt.occurrence_key,
                 target.destination_id(),
@@ -822,6 +862,7 @@ impl ProductionDurableWriter {
         verify_final_use_dispatch_binding(
             self.store.owner_agent_id(),
             target.destination_id(),
+            &durable_operation.scope_id,
             &request,
             expected,
         )?;
@@ -1348,11 +1389,14 @@ impl ProductionRecoveryReceipt {
 fn verify_final_use_dispatch_binding(
     owner: &AgentId,
     destination_id: &str,
+    scope_id: &str,
     request: &ProductionDispatchRequest,
     expected: &FinalUseBinding,
 ) -> Result<(), ProductionWriterError> {
     if expected.subject_id != owner.as_str()
         || expected.destination_id != destination_id
+        || expected.scope_sha256
+            != digest_bytes(&Sha256Digest::for_bytes(scope_id.as_bytes()))?
         || expected.payload_sha256 != digest_bytes(&request.payload_sha256)?
         || expected.request_sha256 != digest_bytes(&request.operation_digest)?
     {
