@@ -122,6 +122,7 @@ impl AgentdState {
                     self.identity.spawn_generation,
                     &query,
                     limit,
+                    self.cognitive_read_authority.get(),
                     self.cognitive_ranker.get(),
                 )
                 .await;
@@ -143,6 +144,12 @@ impl AgentdState {
                             error,
                         );
                     }
+                    Err(CognitiveContextError::Authority(error)) => AgentdPayload::Error {
+                        code: "cognitive_authority_unavailable".to_string(),
+                        message: format!(
+                            "authoritative cognitive read is unavailable or stale: {error}"
+                        ),
+                    },
                     Err(CognitiveContextError::RankerUnavailable) => AgentdPayload::Error {
                         code: "cognitive_ranker_unavailable".to_string(),
                         message: "selected ranker is unavailable; explicit reload required"
