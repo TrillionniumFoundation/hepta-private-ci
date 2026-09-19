@@ -135,7 +135,7 @@ impl ObjectiveRuntimeHost {
     ) -> Result<ObjectiveStartResult, AgentdError> {
         authbus_ingress::require_ready(agentd)?;
         let now_ms = authbus_ingress::now_ms()?;
-        let payload = objective_payload(agentd.identity(), &request.body)?;
+        let payload = objective_payload(agentd.identity(), &request.body, current_generation)?;
         if request.expires_at_ms <= now_ms || request.expires_at_ms.saturating_sub(now_ms) > 300_000
         {
             return Err(invalid("objective expiry must be within five minutes"));
