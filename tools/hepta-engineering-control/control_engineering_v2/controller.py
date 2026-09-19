@@ -13,6 +13,7 @@ from pathlib import Path
 from .audit import AuditAnchorReceipt, prepare_audit_anchor, verify_audit_anchor
 from .assignment import (
     WorkerIdentityReceipt,
+    acquire_worker_path_lease,
     assignment_status,
     begin_assignment,
     claim_assignment,
@@ -21,6 +22,7 @@ from .assignment import (
     fail_assignment,
     heartbeat_assignment,
     heartbeat_worker,
+    refresh_authenticated_worker,
     register_authenticated_worker,
     requeue_assignment,
     revoke_worker,
@@ -134,16 +136,13 @@ class EngineeringController:
         self,
         envelope: WorkEnvelope,
         packages: tuple[WorkPackage, ...],
-        completed: tuple[str, ...],
         *,
         generation_id: str,
         now_ns: int | None = None,
     ):
-        self.store.issue_work_envelope(envelope, now_ns=now_ns)
-        return self.store.schedule_ready_packages(
-            envelope.envelope_id,
+        return self.schedule_from_state(
+            envelope,
             packages,
-            completed,
             generation_id=generation_id,
             now_ns=now_ns,
         )
@@ -160,6 +159,7 @@ class EngineeringController:
         completed = completed_packages(
             self.store,
             envelope.envelope_id,
+            packages,
             now_ns=now_ns,
         )
         return self.store.schedule_ready_packages(
@@ -182,6 +182,24 @@ class EngineeringController:
             self.verifier,
             now_ns=now_ns,
         )
+
+    def refresh_worker_identity(
+        self,
+        identity: WorkerIdentityReceipt,
+        *,
+        expected_revision: int,
+        now_ns: int | None = None,
+    ):
+        return refresh_authenticated_worker(
+            self.store,
+            identity,
+            self.verifier,
+            expected_revision=expected_revision,
+            now_ns=now_ns,
+        )
+
+    def acquire_worker_path_lease(self, *args, **kwargs):
+        return acquire_worker_path_lease(self.store, *args, **kwargs)
 
     def heartbeat_worker(self, *args, **kwargs):
         return heartbeat_worker(self.store, *args, **kwargs)
