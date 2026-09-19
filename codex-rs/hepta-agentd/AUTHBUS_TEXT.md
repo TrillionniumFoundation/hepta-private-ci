@@ -72,12 +72,16 @@ Replace the complete file atomically while
 preserving its permissions. The daemon reloads it for admission and dispatch
 stages. Keep the private signing key with the independent producer.
 
-Revocation uses `revoked: true`; removing a thread also prevents subsequent
-admission/dispatch to that thread. Neither operation cancels work already
-accepted by the target queue. Registry reads are current snapshots, not an
-atomic transaction with the target queue. Changing epochs does not implicitly
-revoke or delete old-epoch outbox rows. Recovery scans filter the selected
-issuer/epoch before applying their row limit.
+The top-level `revoked` flag applies only to the current key epoch; each
+`previous_epochs` entry carries its own independent revocation flag. Removing
+a thread from the shared allowlist prevents subsequent admission/dispatch for
+every epoch. A staged current epoch that is outside its validity window does not
+hide an otherwise valid retained previous epoch during recovery. Revocation or
+thread removal does not cancel work already accepted by the target queue.
+Registry reads are current snapshots, not an atomic transaction with the target
+queue. Changing epochs does not implicitly revoke or delete old-epoch outbox
+rows. Recovery scans filter the selected issuer/epoch before applying their row
+limit.
 
 ## Produce and submit a message
 
