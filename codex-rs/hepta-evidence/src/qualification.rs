@@ -464,18 +464,6 @@ impl QualificationEvidenceStore<'_> {
                 "qualification evidence is already expired".to_string(),
             ));
         }
-        let candidate_evidence_set_digest =
-            candidate_evidence_set_digest_in_transaction(&mut transaction, &envelope.candidate)
-                .await?;
-        validate_independent_decision(
-            envelope,
-            issuer,
-            message,
-            &signing_identity_sha256,
-            &candidate_evidence_set_digest,
-            now,
-        )?;
-
         if let Some(existing) =
             load_evidence_by_id(&mut transaction, envelope.evidence_id.as_str()).await?
         {
@@ -496,6 +484,18 @@ impl QualificationEvidenceStore<'_> {
                 record_id: envelope.evidence_id.to_string(),
             });
         }
+
+        let candidate_evidence_set_digest =
+            candidate_evidence_set_digest_in_transaction(&mut transaction, &envelope.candidate)
+                .await?;
+        validate_independent_decision(
+            envelope,
+            issuer,
+            message,
+            &signing_identity_sha256,
+            &candidate_evidence_set_digest,
+            now,
+        )?;
 
         validate_lineage_references(&mut transaction, envelope).await?;
         advance_replay(&mut transaction, &authenticated)
