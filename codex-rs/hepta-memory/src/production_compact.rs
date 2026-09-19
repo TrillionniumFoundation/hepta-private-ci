@@ -1042,7 +1042,7 @@ mod tests {
         let temp = TempDir::new().expect("temp dir");
         let store = store(&temp).await;
         let writer = writer(store, authority(agent_id(OWNER))).await;
-        let first = publication(1, None, "algorithm-v1");
+        let first = publication(2, Some(digest("bootstrap-predecessor")), "algorithm-v1");
         writer.publish_compaction(&first).await.expect("first");
 
         let wrong = publication(3, Some(digest("wrong-predecessor")), "algorithm-v2");
@@ -1083,7 +1083,7 @@ mod tests {
         let temp = TempDir::new().expect("temp dir");
         let store = store(&temp).await;
         let writer = writer(store, authority(agent_id(OWNER))).await;
-        let first = publication(1, None, "algorithm-v1");
+        let first = publication(2, Some(digest("bootstrap-predecessor")), "algorithm-v1");
         writer.publish_compaction(&first).await.expect("publish");
 
         sqlx::query("DROP TRIGGER cognitive_compact_events_no_update")
