@@ -61,7 +61,9 @@ canonical V1 encoding. Generic bounded values are not secret containers.
 Native tests cover bounds, borrowed preflight paths, the complete ASCII StableId
 alphabet, namespace/profile rejection, authority-bit rejection, digest parsing,
 monotonic overflow, fixed-point boundaries, canonical framing/domain separation,
-registry capacity/kind binding, numeric overflow, rounding and error bounds.
+registry capacity/kind binding, numeric overflow, rounding and error bounds. Fixed-seed
+deterministic fuzz sweeps exercise thousands of StableId grammar cases and canonical
+payload/domain/schema-version combinations without adding a nondeterministic test dependency.
 
 `testdata/canonical_digest_v1_vectors.json` freezes language-neutral bytes and
 SHA-256 outputs. `scripts/verify_platform_types_vectors.py` and
