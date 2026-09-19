@@ -13,7 +13,7 @@
     "codex-rs/hepta-ndu"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
+  "productCallerState": "source_composed_unqualified",
   "productionWriterState": "not_composed",
   "operations": [
     {
@@ -126,9 +126,9 @@
         "NduSolverTerminationReceipt",
         "NduSolverIterationReceipt list"
       ],
-      "state": "source_implemented_local_solver",
+      "state": "source_implemented_bounded_local_solver",
       "authority": "none",
-      "nonClaim": "local termination is not NduConvergenceCertificateV1",
+      "nonClaim": "bounded local convergence or exhaustion evidence is not NduConvergenceCertificateV1",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
@@ -136,7 +136,27 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "already_converged_target_is_a_true_noop"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "preference_dimension_is_bounded_at_genesis"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "preference_values_are_rejected_before_solver_projection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "iteration_budget_exhaustion_is_unavailable_not_a_terminal_state"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
           "symbol": "parent_and_child_updates_cannot_share_generation"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "unrelated_hierarchy_subjects_may_update_in_one_generation"
         }
       ],
       "designOperation": "solve_preference_target",
@@ -160,7 +180,15 @@
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
-          "symbol": "local_step_requires_complete_context_before_protocol_publication"
+          "symbol": "local_step_requires_matching_complete_context_before_protocol_publication"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "a_solver_receipt_cannot_be_rebound_to_another_context"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "context_free_solver_evidence_cannot_be_published"
         },
         {
           "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
@@ -207,9 +235,9 @@
         "bounded hash-chain journal bytes",
         "selected projection view"
       ],
-      "state": "source_implemented_owner_local_durability_reference",
+      "state": "source_implemented_owner_local_integrity_and_durability_reference",
       "authority": "none",
-      "nonClaim": "not an activated production writer or fsync profile",
+      "nonClaim": "not an activated production writer, fsync profile or independently protected checkpoint store",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
@@ -218,6 +246,14 @@
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
           "symbol": "revocation_prevents_projection_resurrection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "revocation_is_scoped_by_objective_subject_and_payload"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "externally_anchored_checkpoint_detects_full_journal_rewrite"
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
@@ -248,7 +284,8 @@
     "exactHeadQualification": "required",
     "independentConvergenceDecision": "owned_by_learning.eval_not_self_issued",
     "activation": "not_established",
-    "release": "not_established"
+    "release": "not_established",
+    "sourceComposition": "candidate_implemented"
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
   "declaredRoots": [
@@ -273,12 +310,47 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Qualify the current exact candidate and deterministic synthetic merge after source changes.",
+    "Select and qualify a production projection writer with migration, fsync, retention and backup/restore behavior.",
+    "Admit stochastic coefficient/profile consumers and coordinate conversion without changing the independent learning.eval decision boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
-  ]
+  ],
+  "productCallerEvidence": [
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_ndu.rs",
+      "symbol": "evaluate_prepared_plan_with_ndu",
+      "tests": "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_context.rs",
+      "symbol": "plan_observed_context",
+      "tests": "codex-rs/hepta-control-plane/src/planner_context_tests.rs"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/vertical.rs",
+      "symbol": "run_read_only_vertical",
+      "tests": "codex-rs/hepta-intelligence/src/vertical_tests.rs"
+    }
+  ],
+  "profileSemanticBinding": {
+    "state": "source_implemented",
+    "fields": [
+      "axis_registry_digest",
+      "normalization_manifest_digest"
+    ],
+    "digest": "canonical_utility_profile_digest",
+    "tests": [
+      "utility_profile_digest_binds_axis_and_normalization_manifests",
+      "utility_profile_rejects_missing_semantic_manifests"
+    ]
+  },
+  "legacyEvaluator": {
+    "state": "deprecated_compatibility_only",
+    "symbol": "codex_hepta_ndu::evaluate_candidates",
+    "replacement": "codex_hepta_ndu::evaluate_candidates_with_policy"
+  }
 }
