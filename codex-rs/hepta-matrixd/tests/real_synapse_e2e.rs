@@ -738,6 +738,25 @@ async fn run_real_synapse_qualification_inner(
         matrix_encrypted_send_target(&room_a, &ack_loss_proof.stable_txn_id);
     let initial_ack_loss_wire_proof = network_proxy_a
         .assert_two_identical_puts(&expected_ack_loss_put_target, &ack_loss_proof.stable_txn_id)?;
+    let authority_issues = final_use_broker.issues_for(&ack_loss_proof.stable_txn_id)?;
+    ensure!(
+        authority_issues.len() == 2,
+        "ACK-loss transaction must consume exactly two independent final-use grants: {authority_issues:?}"
+    );
+    ensure!(
+        authority_issues[0].attempt == 1 && authority_issues[1].attempt == 2,
+        "ACK-loss final-use grants did not bind exact attempts"
+    );
+    ensure!(
+        authority_issues[0].grant_id != authority_issues[1].grant_id,
+        "ACK-loss retry reused a single-use final-use grant"
+    );
+    ensure!(
+        authority_issues
+            .iter()
+            .all(|issue| issue.subject_id == AGENT_A),
+        "ACK-loss grants were rebound across Matrix subjects"
+    );
     // Advance beyond the retry response before counting the timeline. If
     // Synapse accepted a second event under a different transaction ID, it
     // must be visible here.
