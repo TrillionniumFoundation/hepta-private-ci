@@ -25,6 +25,9 @@ use crate::SupervisorEventKind;
 use crate::TickReport;
 use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
+use crate::release_selection::ReleaseSelectionRecord;
+use crate::release_selection::read_selection;
+use crate::release_selection::write_selection;
 use crate::runtime::bounded_message;
 use crate::signed_authority::H7H89ProductionGrant;
 use crate::signed_authority::H7H89ProductionGrantVerifier;
@@ -551,6 +554,13 @@ impl<D: ProcessDriver> Supervisor<D> {
                 ));
             }
             let next_control_revision = supervisor.next_control_revision(agent_id)?;
+            let selection = ReleaseSelectionRecord::from_grant(
+                grant,
+                SignedIntentStatus::Prepared,
+            )
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            write_selection(record.layout.run_root(), &selection)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             let intent = SignedSupervisorIntent::new(
                 grant.digest().clone(),
                 agent_id.to_string(),
@@ -583,6 +593,17 @@ impl<D: ProcessDriver> Supervisor<D> {
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             write_intent(record.layout.run_root(), &queued)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            let queued_selection = selection
+                .with_status(SignedIntentStatus::Queued)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+            if let Err(error) = write_selection(record.layout.run_root(), &queued_selection) {
+                let recovery = queued
+                    .with_status(SignedIntentStatus::RecoveryRequired)
+                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+                let _ = write_intent(record.layout.run_root(), &recovery);
+                slot.signed_intent = Some(recovery);
+                return Err(SupervisorError::Invalid(error.to_string()));
+            }
             slot.signed_intent = Some(queued);
             Ok(ProductionMutationReceipt::queued(
                 grant,
@@ -618,6 +639,21 @@ impl<D: ProcessDriver> Supervisor<D> {
             .with_status(status)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let record = self.record(agent_id)?;
+        let selection = read_selection(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+            .ok_or_else(|| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
+        if selection.grant_sha256 != intent.grant_sha256
+            || selection.agent_id != intent.agent_id
+            || selection.source_release != intent.source_release
+            || selection.target_release != intent.target_release
+        {
+            return Err(SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()));
+        }
+        let updated_selection = selection
+            .with_status(status)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+        write_selection(record.layout.run_root(), &updated_selection)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         write_intent(record.layout.run_root(), &updated)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         slot.signed_intent = Some(updated);
@@ -644,14 +680,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         if active.identity() != intent.target_release {
             return Ok(());
         }
-        let committed = intent
-            .with_status(SignedIntentStatus::Committed)
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        let record = self.record(agent_id)?;
-        write_intent(record.layout.run_root(), &committed)
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        slot.signed_intent = Some(committed);
-        Ok(())
+        self.finish_signed_intent(agent_id, slot, SignedIntentStatus::Committed)
     }
 
     fn recover_signed_intent(
