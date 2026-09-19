@@ -225,12 +225,9 @@ fn run_gate(gate: Gate) {
         ood_valid_from_sequence: 1,
         ood_expires_after_sequence: 100,
     };
-    let scoring = scoring_commitment_for_request_v1(
-        &request,
-        &profile,
-        digest("benchmark:feature-snapshot"),
-    )
-    .unwrap();
+    let scoring =
+        scoring_commitment_for_request_v1(&request, &profile, digest("benchmark:feature-snapshot"))
+            .unwrap();
 
     let keys = [
         SigningKey::from_bytes(&[11; 32]),
@@ -279,8 +276,7 @@ fn run_gate(gate: Gate) {
 
     let completeness_payload = canonical_completeness_evidence_payload_v1(&request).unwrap();
     let scoring_payload = canonical_scoring_evidence_payload_v1(&scoring).unwrap();
-    let profile_payload =
-        canonical_profile_qualification_evidence_payload_v1(&profile).unwrap();
+    let profile_payload = canonical_profile_qualification_evidence_payload_v1(&profile).unwrap();
     let assignment_payload = canonical_random_assignment_evidence_payload_v1(&request)
         .unwrap()
         .unwrap();
