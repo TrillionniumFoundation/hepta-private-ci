@@ -10,6 +10,7 @@
 pub mod effect_executor;
 
 mod causal_chain;
+mod final_use_boundary;
 mod model;
 mod scheduler;
 mod store;
@@ -19,6 +20,9 @@ mod taskflow_execution_boundary;
 mod taskflow_kernel;
 mod taskflow_step;
 
+pub use final_use_boundary::TaskFlowFinalUseBindingReceipt;
+pub use final_use_boundary::TaskFlowFinalUseError;
+pub use final_use_boundary::claim_taskflow_final_use;
 pub use model::AutomationAdmission;
 pub use model::AutomationMissedRunPolicy;
 pub use model::AutomationOccurrenceId;
