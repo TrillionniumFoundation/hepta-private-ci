@@ -62,9 +62,7 @@ fn evaluation() -> NduConvergenceEvaluationV1 {
         evaluator_identity: id("independent-evaluator"),
         candidate_producer_identity: id("ndu-producer"),
         termination: termination(SolveDisposition::Converged),
-        spectral_radius_upper_95_q32: FixedQ32::from_raw(
-            FixedQ32::ONE.raw() * 9 / 10,
-        ),
+        spectral_radius_upper_95_q32: FixedQ32::from_raw(FixedQ32::ONE.raw() * 9 / 10),
         conservation_residual_q32: FixedQ32::from_raw(1),
         resource_residual_q32: FixedQ32::from_raw(1),
         risk_residual_ppm: 10,
@@ -110,9 +108,8 @@ fn bounded_solver_exhaustion_is_unavailable_not_accepted() {
 #[test]
 fn spectral_radius_at_nominal_threshold_is_rejected() {
     let mut input = evaluation();
-    input.spectral_radius_upper_95_q32 = FixedQ32::from_raw(
-        ((i128::from(FixedQ32::ONE.raw()) * 95) / 100) as i64,
-    );
+    input.spectral_radius_upper_95_q32 =
+        FixedQ32::from_raw(((i128::from(FixedQ32::ONE.raw()) * 95) / 100) as i64);
 
     assert_eq!(
         must(evaluate_ndu_convergence_v1(input)).decision,
