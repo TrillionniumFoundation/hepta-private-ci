@@ -16,7 +16,6 @@ mod taskflow;
 mod taskflow_execution_boundary;
 #[cfg(feature = "taskflow-structural-qualification")]
 mod taskflow_kernel;
-#[cfg(feature = "taskflow-structural-qualification")]
 mod taskflow_step;
 
 pub use model::AutomationAdmission;
@@ -24,12 +23,16 @@ pub use model::AutomationDispatchUncertainty;
 pub use model::AutomationError;
 pub use model::AutomationLease;
 pub use model::AutomationQueueReceipt;
+pub use model::AutomationMissedRunPolicy;
+pub use model::AutomationOverlapPolicy;
 pub use model::AutomationSchedule;
+pub use model::AutomationSchedulePolicy;
 pub use model::AutomationTask;
 pub use model::AutomationTaskDraft;
 pub use model::AutomationTaskId;
 pub use model::AutomationTaskState;
 pub use model::AutomationTick;
+pub use model::deterministic_occurrence_id;
 pub use scheduler::AutomationFuture;
 pub use scheduler::AutomationScheduler;
 pub use scheduler::AutomationTurnQueue;
@@ -81,23 +84,15 @@ pub use taskflow_kernel::TaskFlowFrontier;
 pub use taskflow_kernel::TaskFlowReplayReport;
 #[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_kernel::TaskFlowStructuralPreview;
-#[cfg(feature = "taskflow-structural-qualification")]
+pub use taskflow_step::TASKFLOW_STEP_OUTBOX_DURABLE;
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_EFFECTS;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_PRODUCTION_CALLER;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_QUALIFICATION_ENABLED;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TASKFLOW_STEP_OUTBOX_SCHEDULER_AUTHORITY;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepCommandResult;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepCommandStatus;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepObservation;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepReceipt;
-#[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepState;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 3;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 4;
