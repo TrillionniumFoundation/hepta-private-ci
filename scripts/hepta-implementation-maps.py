@@ -20,8 +20,14 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def current_source_base() -> dict[str, str]:
-    """Return the immutable source identity used by generated maps."""
-    return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
+    """Return the committed source snapshot preceding truth-only map changes.
+
+    The commit is authoritative; its tree is redundant and retained for
+    backwards compatibility. Verification derives the tree from the commit and
+    compares all mapped source/caller/test paths against the candidate HEAD.
+    """
+    commit = git("rev-parse", "HEAD")
+    return {"commit": commit, "tree": git("rev-parse", f"{commit}^{{tree}}")}
 
 
 def load(rel: str):
@@ -287,7 +293,6 @@ def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     failures = []
-    source_bases = set()
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -309,14 +314,20 @@ def verify():
         if row.get("laneId") != lanes.get(mid):
             failures.append(f"{mid}: lane")
         source_base = row.get("sourceBase")
-        if (
-            not isinstance(source_base, dict)
-            or not source_base.get("commit")
-            or not source_base.get("tree")
-        ):
-            failures.append(f"{mid}: source base")
+        source_commit = None
+        if not isinstance(source_base, dict) or not source_base.get("commit"):
+            failures.append(f"{mid}: source base commit")
         else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
+            source_commit = source_base["commit"]
+            try:
+                actual_tree = git("rev-parse", f"{source_commit}^{{tree}}")
+            except subprocess.CalledProcessError:
+                failures.append(f"{mid}: source base commit unavailable")
+                source_commit = None
+            else:
+                declared_tree = source_base.get("tree")
+                if declared_tree and declared_tree != actual_tree:
+                    failures.append(f"{mid}: source base tree mismatch")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -334,19 +345,39 @@ def verify():
             continue
         if "sourceRootPresent" not in row or "productionImplementation" not in row:
             failures.append(f"{mid}: status model")
+        mapped_paths = set(roots)
         for op in ops:
             if not op.get("operation"):
                 failures.append(f"{mid}: operation id")
             if "nativeSymbol" not in op or "sourcePath" not in op:
                 failures.append(f"{mid}: canonical operation fields")
             source = op.get("sourcePath")
-            if source and not (ROOT / source).is_file():
-                failures.append(f"{mid}: missing source {source}")
+            if source:
+                mapped_paths.add(source)
+                if not (ROOT / source).is_file():
+                    failures.append(f"{mid}: missing source {source}")
+            for field in ("delegatedCallees", "tests"):
+                values = op.get(field, [])
+                if isinstance(values, list):
+                    mapped_paths.update(
+                        value for value in values if isinstance(value, str) and value
+                    )
+        if source_commit is not None and mapped_paths:
+            diff = subprocess.run(
+                ["git", "diff", "--quiet", source_commit, "HEAD", "--", *sorted(mapped_paths)],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+            )
+            if diff.returncode == 1:
+                failures.append(
+                    f"{mid}: source base stale for mapped source/caller/test paths"
+                )
+            elif diff.returncode != 0:
+                failures.append(f"{mid}: source base comparison failed")
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
