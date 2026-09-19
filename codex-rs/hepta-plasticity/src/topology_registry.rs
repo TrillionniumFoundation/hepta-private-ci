@@ -425,6 +425,30 @@ impl DurableTopologyProposalRegistryV1 {
         }
     }
 
+    pub(crate) fn canary_binding(
+        &self,
+        proposal_id: &StableId,
+    ) -> Result<
+        Option<(&GovernedTopologyProposalV1, &DurableTopologyAppendReceiptV1)>,
+        DurableTopologyRegistryErrorV1,
+    > {
+        if self.poisoned {
+            return Err(DurableTopologyRegistryErrorV1::Poisoned);
+        }
+        let Some(slot) = self.by_id.get(proposal_id) else {
+            return Ok(None);
+        };
+        let record = self
+            .by_slot
+            .get(slot)
+            .ok_or(DurableTopologyRegistryErrorV1::Corrupt)?;
+        let receipt = self
+            .receipts
+            .get(proposal_id)
+            .ok_or(DurableTopologyRegistryErrorV1::Corrupt)?;
+        Ok(Some((record, receipt)))
+    }
+
     fn insert_memory(
         &mut self,
         record: GovernedTopologyProposalV1,
