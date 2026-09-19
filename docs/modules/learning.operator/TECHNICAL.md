@@ -29,10 +29,12 @@ Plane `qualification`, kind `trainer`, state model `stateful_shadow` and archite
 Declared exclusive target roots:
 
 - `codex-rs/hepta-bellman-operator`
+- `codex-rs/hepta-operator-acceptance`
 
 Existing declared roots at this exact source snapshot:
 
 - `codex-rs/hepta-bellman-operator`
+- `codex-rs/hepta-operator-acceptance`
 
 Non-authoritative implementation evidence roots:
 
@@ -497,5 +499,6 @@ Ordinary authorized coding identifies the Git baseline, relevant contracts, owne
 The bootstrap source-location obligation for `learning.operator` is implemented by work package `HBO-0-BELLMAN-OPERATOR-CONTRACTS` in:
 
 - `codex-rs/hepta-bellman-operator`
+- `codex-rs/hepta-operator-acceptance`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
