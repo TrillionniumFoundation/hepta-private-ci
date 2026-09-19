@@ -230,11 +230,7 @@ where
     let scope = CognitiveScope::AgentPrivate;
     let acquired_at_unix_ms = now_millis()?;
     let cut = store
-        .lane_c_snapshot(
-            &access,
-            &scope,
-            millis_to_seconds(acquired_at_unix_ms)?,
-        )
+        .lane_c_snapshot(&access, &scope, millis_to_seconds(acquired_at_unix_ms)?)
         .await?;
 
     let read_request = ReadRequestV2 {

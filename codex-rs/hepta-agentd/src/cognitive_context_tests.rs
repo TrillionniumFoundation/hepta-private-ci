@@ -93,7 +93,6 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
     assert!(read(&store, &other, 1, 1, "lemon", 4, None).await.is_err());
 }
 
-
 #[tokio::test]
 async fn production_composition_fails_closed_on_midflight_owner_frontier_changes() {
     let temp = tempfile::tempdir().unwrap();
@@ -139,15 +138,8 @@ async fn production_composition_fails_closed_on_midflight_owner_frontier_changes
     // Advance only the source frontier after the authoritative read has been
     // computed. The admitted memory bytes themselves are unchanged, so this
     // specifically proves the broader owner-frontier fence is enforced.
-    let source_drift = read_with_revalidation_hook(
-        &store,
-        &owner,
-        1,
-        1,
-        "cobalt",
-        4,
-        None,
-        || async {
+    let source_drift =
+        read_with_revalidation_hook(&store, &owner, 1, 1, "cobalt", 4, None, || async {
             store
                 .append_source(
                     &access,
@@ -161,26 +153,20 @@ async fn production_composition_fails_closed_on_midflight_owner_frontier_changes
                 )
                 .await?;
             Ok(())
-        },
-    )
-    .await;
+        })
+        .await;
     assert!(matches!(
         source_drift,
-        Err(CognitiveContextError::Store(CognitiveStoreError::Conflict(_)))
+        Err(CognitiveContextError::Store(CognitiveStoreError::Conflict(
+            _
+        )))
     ));
 
     // Reacquire from the new source frontier, then revoke the admitted memory
     // in the same deterministic window. Final context consumption must fail
     // closed rather than returning the already-computed content.
-    let tombstone_drift = read_with_revalidation_hook(
-        &store,
-        &owner,
-        1,
-        1,
-        "cobalt",
-        4,
-        None,
-        || async {
+    let tombstone_drift =
+        read_with_revalidation_hook(&store, &owner, 1, 1, "cobalt", 4, None, || async {
             store
                 .forget_memory(
                     &access,
@@ -195,12 +181,13 @@ async fn production_composition_fails_closed_on_midflight_owner_frontier_changes
                 )
                 .await?;
             Ok(())
-        },
-    )
-    .await;
+        })
+        .await;
     assert!(matches!(
         tombstone_drift,
-        Err(CognitiveContextError::Store(CognitiveStoreError::Conflict(_)))
+        Err(CognitiveContextError::Store(CognitiveStoreError::Conflict(
+            _
+        )))
     ));
 }
 

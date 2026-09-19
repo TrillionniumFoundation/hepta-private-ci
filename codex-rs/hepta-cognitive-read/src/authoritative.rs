@@ -114,10 +114,7 @@ impl SnapshotAcquisitionRequestV1 {
         push_u64(&mut bytes, self.minimum_source_frontier);
         push_u64(&mut bytes, self.minimum_tombstone_frontier);
         push_u64(&mut bytes, self.minimum_knowledge_fact_frontier);
-        push_u64(
-            &mut bytes,
-            self.minimum_knowledge_graph_generation.get(),
-        );
+        push_u64(&mut bytes, self.minimum_knowledge_graph_generation.get());
         push_u64(&mut bytes, self.authority_epoch);
         push_u64(&mut bytes, self.deadline_unix_ms);
         Digest32::of_bytes(&bytes)
@@ -225,8 +222,7 @@ impl AuthoritativeSnapshotV1 {
         if self.generation_vector.tombstone_frontier < request.minimum_tombstone_frontier {
             return Err(SnapshotProviderError::StaleTombstoneFrontier);
         }
-        if self.generation_vector.knowledge_fact_frontier
-            < request.minimum_knowledge_fact_frontier
+        if self.generation_vector.knowledge_fact_frontier < request.minimum_knowledge_fact_frontier
         {
             return Err(SnapshotProviderError::StaleKnowledgeFactFrontier);
         }
