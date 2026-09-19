@@ -659,14 +659,52 @@ impl AutomationStore {
         receipt: &AutomationQueueReceipt,
         submitted_at_ms: u64,
     ) -> Result<AutomationTask, AutomationError> {
-        self.reconcile_uncertain_occurrence_admitted(
-            task_id,
-            occurrence,
-            receipt,
-            submitted_at_ms,
-        )
-        .await?;
-        self.task(task_id).await?.ok_or(AutomationError::Corrupt)
+        match self
+            .reconcile_uncertain_occurrence_admitted(
+                task_id,
+                occurrence,
+                receipt,
+                submitted_at_ms,
+            )
+            .await
+        {
+            Ok(_) => self.task(task_id).await?.ok_or(AutomationError::Corrupt),
+            Err(AutomationError::Conflict) => {
+                // Preserve the old idempotent receipt-replay contract without
+                // reintroducing its schedule-advancement bypass. A replay is
+                // read-only and succeeds only for the exact already-committed
+                // client/submission identity.
+                let exact: i64 = sqlx::query_scalar(
+                    "SELECT EXISTS(
+                        SELECT 1
+                        FROM automation_runs r
+                        JOIN automation_dispatch_outcomes d
+                          ON d.task_id = r.task_id AND d.occurrence = r.occurrence
+                        JOIN automation_tasks t ON t.task_id = r.task_id
+                        WHERE r.task_id = ? AND r.occurrence = ?
+                          AND t.owner_agent_id = ?
+                          AND r.state = 'submitted' AND d.outcome = 'submitted'
+                          AND r.client_user_message_id = ?
+                          AND d.client_user_message_id = r.client_user_message_id
+                          AND r.queued_submission_id = ?
+                          AND d.queued_submission_id = r.queued_submission_id
+                    )",
+                )
+                .bind(task_id.to_string())
+                .bind(to_i64(occurrence)?)
+                .bind(self.owner_agent_id.as_str())
+                .bind(&receipt.client_user_message_id)
+                .bind(&receipt.queued_submission_id)
+                .fetch_one(&self.pool)
+                .await
+                .map_err(unavailable)?;
+                if exact != 1 {
+                    return Err(AutomationError::Conflict);
+                }
+                self.task(task_id).await?.ok_or(AutomationError::Corrupt)
+            }
+            Err(error) => Err(error),
+        }
     }
 
     /// Releases an uncertain occurrence only after an external check proves
