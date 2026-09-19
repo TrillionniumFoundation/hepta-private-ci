@@ -67,6 +67,48 @@ real-time or target-host latency claim. The V2 rotation and evaluated-shadow
 consumer below do not add compaction, arbitrary owner migration, independent
 witness storage or production enrollment.
 
+## Additive causal event kinds
+
+The original V1 event tags remain byte-for-byte assigned as Decision=0,
+Outcome=1, Credit=2 and Revocation=3. This convergence adds:
+
+- tag 4: `AuthenticatedOutcomeV1`, including authenticated-principal metadata,
+  delayed/censored/terminal watermark and correction predecessor;
+- tag 5: `CreditAllocationBatchV1`, one canonical sorted allocation batch whose
+  allocations plus residual must exactly conserve the terminal outcome before
+  one frame is committed;
+- tag 6: `UnlearningLineageEventV1`, a linear invalidation lineage from an
+  already-revoked source record to a derived dataset/artifact/checkpoint/replay/
+  prompt-graph/sensor-core/evaluation/backup object.
+
+New recovery code accepts V1-only histories unchanged. A journal containing a
+tag 4-6 event requires a compatible new reader; there is no claim that an older
+binary can interpret new event kinds. Corrections are append-only and must name
+the current authenticated-outcome head for the same episode. This rejects stale
+forks, cross-episode predecessors and self-reference without rewriting history.
+
+## Product writer and independent acknowledgement witness
+
+`ProductionLedgerWriter` composes host-supplied immutable trust state with
+`LearningEvidenceVerifierV1`, exact current-anchor comparison and the durable
+journal. Its product-facing methods do not expose raw V1 outcome or per-target
+credit append. Authenticated outcome and atomic credit paths therefore cross
+signature/role admission and semantic validation before durable append.
+
+`DurableAnchorWitness` is a separate host-authorized HEPTAW01 file. Its binding,
+lock and checksums are independent from the learning journal. Each witness row is
+an increasing `LedgerAnchor` plus checksum and is synced before its in-memory
+frontier advances. Reopen rejects binding drift, checksum damage and sequence
+regression. The host still owns directory fsync, path isolation, trust-root
+distribution and the decision to acknowledge externally only after both journal
+and witness are durable.
+
+`LedgerIndexCheckpointV1` records a verifiable summary of a replayed snapshot:
+head, record/active counts, event-class counts, correction/revocation cuts and
+source-set digest. Verification deliberately replays canonical history and
+recomputes the checkpoint. It is suitable for drift detection and recovery
+measurement; it is not a trusted shortcut around journal validation.
+
 ## Verification and rollback
 
 The existing eight core tests remain unchanged. Sixteen new tests cover actual
