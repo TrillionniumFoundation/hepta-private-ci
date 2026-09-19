@@ -173,7 +173,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use the existing hepta-matrixd, MatrixDurableStore and SDK sender. Keep sync/dedupe and the stable send transaction identity in that single durable owner. `send_observer` is now only a compatibility seam over `MatrixDurableStore`; it owns neither a BTreeMap ledger nor another sender. The dispatch ledger accepts an independently issued grant identity and final payload digest when supplied, but the current live Matrix SDK composition still supplies only its enrolled Matrix binding revision/digest. Composing a real final-use grant immediately before the external send remains repository-controlled activation work. Real homeserver, encryption/session and reconnection qualification require the selected host profile.
+Use the existing hepta-matrixd, MatrixDurableStore and SDK sender. Keep sync/dedupe and the stable send transaction identity in that single durable owner. `send_observer` is now only a compatibility seam over `MatrixDurableStore`; it owns neither a BTreeMap ledger nor another sender. The dispatch ledger accepts an independently issued grant identity and final payload digest when supplied; that authority tuple is frozen before the first effect and cannot be added, removed or changed on retransmission. The current live Matrix SDK composition still supplies only its enrolled Matrix binding revision/digest. Composing a real final-use grant immediately before the external send remains repository-controlled activation work. Real homeserver, encryption/session and reconnection qualification require the selected host profile.
 
 Current operating and state-format references:
 
