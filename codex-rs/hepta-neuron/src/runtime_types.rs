@@ -29,11 +29,14 @@ const MAX_MODULATORS: usize = 8;
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct LocalModelRuntimeReceiptV1 {
     pub model_id: StableId,
+    pub model_manifest_digest: Digest32,
     pub weights_digest: Digest32,
     pub tokenizer_digest: Digest32,
     pub preprocessor_digest: Digest32,
     pub quantization_id: StableId,
+    pub quantization_digest: Digest32,
     pub backend_id: StableId,
+    pub runtime_digest: Digest32,
     pub device_identity_digest: Digest32,
     pub latency_micros: u64,
     pub resident_bytes: u64,
@@ -42,9 +45,12 @@ pub struct LocalModelRuntimeReceiptV1 {
 impl LocalModelRuntimeReceiptV1 {
     pub fn semantic_digest(&self) -> Result<Digest32, NeuronRuntimeError> {
         for (field, digest) in [
+            ("model manifest", self.model_manifest_digest),
             ("weights", self.weights_digest),
             ("tokenizer", self.tokenizer_digest),
             ("preprocessor", self.preprocessor_digest),
+            ("quantization", self.quantization_digest),
+            ("runtime", self.runtime_digest),
             ("device", self.device_identity_digest),
         ] {
             if digest.is_zero() {
@@ -54,6 +60,7 @@ impl LocalModelRuntimeReceiptV1 {
         let mut bytes = b"hepta.neuron.local-model-runtime-receipt.v1".to_vec();
         push_id(&mut bytes, &self.model_id)?;
         for digest in [
+            self.model_manifest_digest,
             self.weights_digest,
             self.tokenizer_digest,
             self.preprocessor_digest,
@@ -61,7 +68,9 @@ impl LocalModelRuntimeReceiptV1 {
             bytes.extend_from_slice(digest.as_array());
         }
         push_id(&mut bytes, &self.quantization_id)?;
+        bytes.extend_from_slice(self.quantization_digest.as_array());
         push_id(&mut bytes, &self.backend_id)?;
+        bytes.extend_from_slice(self.runtime_digest.as_array());
         bytes.extend_from_slice(self.device_identity_digest.as_array());
         bytes.extend_from_slice(&self.latency_micros.to_be_bytes());
         bytes.extend_from_slice(&self.resident_bytes.to_be_bytes());
@@ -131,9 +140,15 @@ pub struct NeuronRuntimeConfigV1 {
     pub config_id: StableId,
     pub generation: Generation,
     pub model_id: StableId,
+    pub model_manifest_digest: Digest32,
     pub encoder_digest: Digest32,
     pub head_digest: Digest32,
     pub weights_digest: Digest32,
+    pub tokenizer_digest: Digest32,
+    pub preprocessor_digest: Digest32,
+    pub quantization_digest: Digest32,
+    pub runtime_digest: Digest32,
+    pub device_digest: Digest32,
     pub normalization_digest: Digest32,
     pub native_config_digest: Digest32,
     pub input_feature_dimension: usize,
@@ -146,9 +161,15 @@ pub struct NeuronRuntimeConfigV1 {
 impl NeuronRuntimeConfigV1 {
     pub(crate) fn validate_native(&self, native: &SparseConfig) -> Result<(), NeuronRuntimeError> {
         for (field, digest) in [
+            ("model manifest", self.model_manifest_digest),
             ("encoder", self.encoder_digest),
             ("head", self.head_digest),
             ("weights", self.weights_digest),
+            ("tokenizer", self.tokenizer_digest),
+            ("preprocessor", self.preprocessor_digest),
+            ("quantization", self.quantization_digest),
+            ("runtime", self.runtime_digest),
+            ("device", self.device_digest),
             ("normalization", self.normalization_digest),
             ("native config", self.native_config_digest),
         ] {
@@ -481,7 +502,13 @@ pub(crate) fn validate_model_output(
     if output.encoder_digest != config.encoder_digest
         || output.head_digest != config.head_digest
         || output.runtime_receipt.model_id != config.model_id
+        || output.runtime_receipt.model_manifest_digest != config.model_manifest_digest
         || output.runtime_receipt.weights_digest != config.weights_digest
+        || output.runtime_receipt.tokenizer_digest != config.tokenizer_digest
+        || output.runtime_receipt.preprocessor_digest != config.preprocessor_digest
+        || output.runtime_receipt.quantization_digest != config.quantization_digest
+        || output.runtime_receipt.runtime_digest != config.runtime_digest
+        || output.runtime_receipt.device_identity_digest != config.device_digest
     {
         return Err(NeuronRuntimeError::ModelBindingMismatch);
     }
