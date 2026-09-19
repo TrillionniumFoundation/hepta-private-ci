@@ -283,3 +283,48 @@ fn startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations() 
         FinalUseError::Revoked
     );
 }
+
+
+#[tokio::test]
+async fn async_effect_entry_holds_revocation_fence_until_dispatch_returns() {
+    use std::sync::Arc;
+    use std::sync::atomic::AtomicBool;
+    use std::sync::atomic::Ordering;
+
+    let (authority, signed, _directory) = fixture().unwrap();
+    let binding = signed.grant.binding.clone();
+    let grant_id = signed.grant.grant_id.clone();
+    let token = authority.claim(&signed, &binding).unwrap();
+
+    let entered = Arc::new(AtomicBool::new(false));
+    let finished = Arc::new(AtomicBool::new(false));
+    let updater_authority = authority.clone();
+    let updater_entered = Arc::clone(&entered);
+    let updater_finished = Arc::clone(&finished);
+    let updater = std::thread::spawn(move || {
+        while !updater_entered.load(Ordering::SeqCst) {
+            std::thread::yield_now();
+        }
+        updater_authority
+            .update_revocations(FinalUseRevocations {
+                authority_epoch: 9,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::from([grant_id]),
+            })
+            .unwrap();
+        updater_finished.store(true, Ordering::SeqCst);
+    });
+
+    let delivered = authority
+        .with_verified_use_async(token, &binding, || async {
+            entered.store(true, Ordering::SeqCst);
+            std::thread::sleep(std::time::Duration::from_millis(50));
+            assert!(!finished.load(Ordering::SeqCst));
+            17
+        })
+        .await
+        .unwrap();
+    assert_eq!(delivered, 17);
+    updater.join().unwrap();
+    assert!(finished.load(Ordering::SeqCst));
+}
