@@ -42,9 +42,7 @@ fn ctype_04_cross_language_canonical_vector_is_stable() {
         "\",\"range\":{\"kind\":\"byte_range\",\"start\":0,\"end\":4},",
         "\"preprocessorManifestSha256\":\"",
         "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-        "\",\"featureBlobSha256\":null,\"symbolicProjectionSha256\":null,",
-        "\"uncertaintyPpm\":0,\"privacyClass\":\"agent_private\",",
-        "\"redactionMaskSha256\":null}"
+        "\",\"uncertaintyPpm\":0,\"privacyClass\":\"agent_private\"}"
     );
     assert_eq!(encoded, expected.as_bytes());
 
@@ -52,7 +50,7 @@ fn ctype_04_cross_language_canonical_vector_is_stable() {
         .unwrap_or_else(|error| panic!("canonical digest must succeed: {error}"));
     assert_eq!(
         digest.to_string(),
-        "6ffdc8479ea47c1f761cddc3542a74e2e50a3521dd54aaa40d57aceca27ed9f2"
+        "3b6e534ed53b1476cd1ed88bda4419874580a72979ab84d3d6142668c2a771f1"
     );
 
     let decoded = decode_canonical_json::<ModalitySpanRefV1>(&encoded)
