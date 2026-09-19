@@ -77,14 +77,14 @@ trait ResourceGrantVerifier {
 /// This is an admission snapshot, not a live revocation feed. The product host
 /// remains responsible for fencing the resulting worker generation when its
 /// resource authority changes.
-pub struct FinalUseResourceGrantVerifier<'a> {
+struct FinalUseResourceGrantVerifier<'a> {
     authority: &'a FinalUseAuthority,
     signed: &'a SignedFinalUseGrant,
     worker_id: String,
 }
 
 impl<'a> FinalUseResourceGrantVerifier<'a> {
-    pub fn new(
+    fn new(
         authority: &'a FinalUseAuthority,
         signed: &'a SignedFinalUseGrant,
         worker_id: String,
