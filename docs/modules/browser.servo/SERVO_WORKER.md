@@ -180,8 +180,9 @@ separately supplied private receipt binding exact operation/request/semantic
 digests.
 
 The dedicated worker CI runs the real built Servo artifact through the complete
-Browser lifecycle and the egress-denial fixture before reproducibility/SBOM
-evidence is issued. The selected upstream candidate is
+Browser lifecycle, the egress-denial fixture and a final-use/revocation race
+whose revocation attempt remains blocked until the real worker admission
+boundary before reproducibility/SBOM evidence is issued. The selected upstream candidate is
 `5cc5bd32d02619acdec5736055515e38c5840ce1`; [SERVO_PIN_AUDIT.md](SERVO_PIN_AUDIT.md) defines its promotion oracle.
 
 

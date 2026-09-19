@@ -45,6 +45,46 @@ function authority() {
   };
 }
 
+function revocationRaceAuthority() {
+  let enteredResolve;
+  let releaseResolve;
+  let exitedResolve;
+  let inFence = false;
+  let revoked = false;
+  const entered = new Promise((resolve) => { enteredResolve = resolve; });
+  const release = new Promise((resolve) => { releaseResolve = resolve; });
+  const exited = new Promise((resolve) => { exitedResolve = resolve; });
+  return {
+    adapter: {
+      async withVerifiedUse(request, consumer) {
+        if (revoked) throw new TypeError("final-use authority was revoked");
+        inFence = true;
+        enteredResolve();
+        await release;
+        try {
+          return await consumer({
+            authorized: true,
+            witnessDigest: WITNESS,
+            authorityEpoch: request.authorityEpoch,
+            requestDigest: request.requestDigest,
+          });
+        } finally {
+          inFence = false;
+          exitedResolve();
+        }
+      },
+    },
+    entered,
+    release() {
+      releaseResolve();
+    },
+    async revoke() {
+      if (inFence) await exited;
+      revoked = true;
+    },
+  };
+}
+
 function grant(action, digest, origin, suffix) {
   return {
     grantDigest: sha(`grant:${suffix}`),
@@ -484,6 +524,67 @@ try {
     generation: 1,
   });
 
+  // A revocation update that begins after final-use entry must not become
+  // current until the real Servo worker reaches the admission boundary.
+  const race = revocationRaceAuthority();
+  const raceDriver = realDriver(join(root, "profiles-revocation-race"));
+  const raceJournal = new FileBrowserOperationJournal(join(root, "revocation-race-journal.log"));
+  const raceHost = new BrowserProfileHost({
+    driver: raceDriver,
+    authority: race.adapter,
+    journal: raceJournal,
+    driverCallTimeoutMs: 10_000,
+  });
+  const raceAction = {
+    kind: "navigate",
+    url: `${origin}/page`,
+    policyDigest: D1,
+    expectedRevision: 3,
+  };
+  const raceGrant = grant("navigate", browserActionDigest(raceAction), origin, "race");
+  await raceHost.openProfile({
+    profileId: "profile.race",
+    principalId: "principal.race",
+    manifestDigest: D1,
+    grantDigest: D2,
+    generation: 1,
+    expiresAtMs: Date.now() + 60_000,
+    allowedOrigins: [origin],
+    effectGrants: [raceGrant],
+  });
+  const raceInput = operation({
+    profileId: "profile.race",
+    principalId: "principal.race",
+    generation: 1,
+    operationId: "operation.race",
+    pageGeneration: 0,
+    typedAction: raceAction,
+    origin,
+    effectGrant: raceGrant,
+  });
+  const racedEffect = raceHost.navigateOrAct(raceInput);
+  await race.entered;
+  let revocationSettled = false;
+  const revocation = race.revoke().then(() => {
+    revocationSettled = true;
+  });
+  await new Promise((resolve) => setTimeout(resolve, 25));
+  assert.equal(
+    revocationSettled,
+    false,
+    "revocation must remain blocked while final-use covers real worker admission",
+  );
+  race.release();
+  const raceReceipt = await settle(raceHost, raceInput, await racedEffect);
+  await revocation;
+  assert.equal(revocationSettled, true);
+  assert.equal(raceReceipt.terminalObserved, true);
+  await raceHost.closeProfile({
+    profileId: "profile.race",
+    principalId: "principal.race",
+    generation: 1,
+  });
+
   // Crash/worker-loss path: preserve indeterminate identity, then converge only
   // through a separately supplied trusted persisted observation.
   const crashDriver = realDriver(join(root, "profiles-crash"));
@@ -576,6 +677,7 @@ try {
       exactOriginEgressObserved: true,
       crossOriginSubresourceDenied: true,
       redirectEscapeDenied: true,
+      revocationRaceBlockedUntilDispatchBoundary: true,
       persistedCrashReconciliation: true,
       crossProfileCookieIsolation: true,
       workerSha256: sha(workerBytes),

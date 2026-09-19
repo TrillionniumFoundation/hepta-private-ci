@@ -88,14 +88,16 @@ when one exact source SHA establishes all of the following:
    exact authority/port, and denies ungranted subresource and redirect targets;
 6. two simultaneous profiles prove cookie persistence within A and absence of
    A's cookie in B;
-7. crash recovery remains indeterminate until an exact trusted persisted-effect
+7. a revocation update started after final-use entry remains blocked until the
+   real Servo worker reaches the dispatch admission boundary;
+8. crash recovery remains indeterminate until an exact trusted persisted-effect
    receipt is supplied;
-8. a bounded 32-cycle real-worker RSS/FD soak completes without unbounded FD
+9. a bounded 32-cycle real-worker RSS/FD soak completes without unbounded FD
    growth;
-9. two release builds are byte-identical;
-10. dynamic-library closure, deterministic SPDX 2.3 SBOM and checksummed build
+10. two release builds are byte-identical;
+11. dynamic-library closure, deterministic SPDX 2.3 SBOM and checksummed build
     receipt are retained;
-11. the committed candidate `Cargo.lock` matches the selected dependency graph
+12. the committed candidate `Cargo.lock` matches the selected dependency graph
     and the exact-head build receipt reports `cargoLockCommitted=true` before
     trusted target deployment qualification.
 
