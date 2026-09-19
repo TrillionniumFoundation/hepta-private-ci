@@ -1,11 +1,12 @@
-//! Agent-local, qualification-only TaskFlow definition and run ledger.
+//! Agent-local durable TaskFlow definition and run ledger.
 //!
-//! This module is deliberately small and boring: it gives the H2 compiler and
-//! H3 durable-kernel work a typed seam without creating a second scheduler or
-//! an effect executor.  Definitions and transitions are immutable evidence in
-//! the existing per-Agent automation SQLite database.  The existing
+//! This module is deliberately small and boring: it is the durable lifecycle
+//! substrate used by automation without creating a second scheduler or an
+//! effect executor. Definitions and transitions are immutable evidence in the
+//! existing per-Agent automation SQLite database. The existing
 //! `AutomationScheduler` remains the only wakeup owner; callers must provide a
-//! lease/generation fence for every run mutation.
+//! lease/generation fence for every run mutation. The ledger itself grants no
+//! external-effect or scheduling authority.
 
 #![allow(
     clippy::expect_used,
@@ -33,9 +34,10 @@ use sqlx::Transaction;
 use crate::AutomationStore;
 
 pub const TASKFLOW_SCHEMA_VERSION: u32 = 1;
-pub const TASKFLOW_NAMESPACE: &str = "local_qualification_only";
+pub const TASKFLOW_NAMESPACE: &str = "agent_local_durable";
 pub const TASKFLOW_EXTERNAL_EFFECTS: bool = false;
-pub const TASKFLOW_PRODUCTION_CALLER: bool = false;
+/// The production AutomationScheduler binds admitted occurrences to this ledger.
+pub const TASKFLOW_PRODUCTION_CALLER: bool = true;
 pub const TASKFLOW_SCHEDULER_AUTHORITY: bool = false;
 
 const MAX_ID_BYTES: usize = 256;
@@ -76,8 +78,8 @@ impl TaskFlowNodeKind {
     }
 }
 
-/// A deliberately constrained node contract.  Activity and Effect nodes are
-/// represented only; this qualification ledger never invokes a callback.
+/// A deliberately constrained node contract. Activity and Effect nodes are
+/// represented only; this durable ledger never invokes a callback.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct TaskFlowNodeSpec {
