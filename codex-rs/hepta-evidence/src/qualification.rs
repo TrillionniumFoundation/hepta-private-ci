@@ -520,6 +520,11 @@ pub struct EvidenceCheckpoint {
 }
 
 impl EvidenceCheckpoint {
+    pub fn canonical_bytes(&self) -> Result<Vec<u8>, EvidenceError> {
+        self.validate()?;
+        canonical_json(self)
+    }
+
     pub fn validate(&self) -> Result<(), EvidenceError> {
         if self.schema_version != 1 {
             return Err(invalid("evidence checkpoint schema version mismatch"));
@@ -595,6 +600,11 @@ pub struct PreparedIndependentDecision {
 }
 
 impl PreparedIndependentDecision {
+    pub fn canonical_bytes(&self) -> Result<Vec<u8>, EvidenceError> {
+        validate_prepared_independent_decision(self)?;
+        canonical_json(self)
+    }
+
     pub fn signing_bytes(&self) -> Result<Vec<u8>, EvidenceError> {
         self.envelope.signing_bytes()
     }
