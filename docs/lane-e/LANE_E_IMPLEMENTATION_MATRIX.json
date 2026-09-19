@@ -181,6 +181,30 @@
           "nativeSymbol": "codex_hepta_bellman_operator::predict_transition",
           "source": "codex-rs/hepta-bellman-operator/src/world_model.rs",
           "status": "implemented"
+        },
+        {
+          "operation": "fit_tabular_operator_with_dataset_binding_v3",
+          "nativeSymbol": "codex_hepta_bellman_operator::fit_tabular_operator_with_dataset_binding_v3",
+          "source": "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "fit_transition_model_with_dataset_binding",
+          "nativeSymbol": "codex_hepta_bellman_operator::fit_transition_model_with_dataset_binding",
+          "source": "codex-rs/hepta-bellman-operator/src/world_model.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "admit_applicability_with_independent_evaluator",
+          "nativeSymbol": "codex_hepta_bellman_operator::admit_applicability_with_independent_evaluator",
+          "source": "codex-rs/hepta-bellman-operator/src/reference.rs",
+          "status": "implemented"
+        },
+        {
+          "operation": "admit_operator_regularity_with_independent_evaluator",
+          "nativeSymbol": "codex_hepta_bellman_operator::admit_operator_regularity_with_independent_evaluator",
+          "source": "codex-rs/hepta-bellman-operator/src/reference.rs",
+          "status": "implemented"
         }
       ],
       "supplementalOperations": [
@@ -199,39 +223,11 @@
           "profile": "compatibility_strict_wrapper"
         },
         {
-          "operation": "fit_tabular_operator_with_dataset_binding_v3",
-          "nativeSymbol": "codex_hepta_bellman_operator::fit_tabular_operator_with_dataset_binding_v3",
-          "source": "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
-          "status": "implemented",
-          "profile": "dataset_evidence_bound"
-        },
-        {
           "operation": "predict_tabular_operator",
           "nativeSymbol": "codex_hepta_bellman_operator::predict_tabular_operator",
           "source": "codex-rs/hepta-bellman-operator/src/learned.rs",
           "status": "implemented",
           "profile": "supported_cell_only_synthetic_deny_all_v1"
-        },
-        {
-          "operation": "fit_transition_model_with_dataset_binding",
-          "nativeSymbol": "codex_hepta_bellman_operator::fit_transition_model_with_dataset_binding",
-          "source": "codex-rs/hepta-bellman-operator/src/world_model.rs",
-          "status": "implemented",
-          "profile": "dataset_evidence_bound"
-        },
-        {
-          "operation": "admit_applicability_with_independent_evaluator",
-          "nativeSymbol": "codex_hepta_bellman_operator::admit_applicability_with_independent_evaluator",
-          "source": "codex-rs/hepta-bellman-operator/src/reference.rs",
-          "status": "implemented",
-          "profile": "host_authenticated_actor_binding_required"
-        },
-        {
-          "operation": "admit_operator_regularity_with_independent_evaluator",
-          "nativeSymbol": "codex_hepta_bellman_operator::admit_operator_regularity_with_independent_evaluator",
-          "source": "codex-rs/hepta-bellman-operator/src/reference.rs",
-          "status": "implemented",
-          "profile": "host_authenticated_actor_binding_required"
         }
       ],
       "tests": [
