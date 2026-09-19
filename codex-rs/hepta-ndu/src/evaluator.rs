@@ -64,7 +64,7 @@ struct ValidatedEvaluationPolicy {
 
 /// Compatibility entry point. Its former implicit sum/sum/sum/max and exact
 /// Pareto semantics are now materialized as a digestible policy.
-pub fn evaluate_candidates(
+fn evaluate_candidates(
     set: ContributionSet,
     profile: UtilityProfile,
     scalarization: Option<ScalarizationProfile>,
@@ -196,7 +196,7 @@ pub fn evaluate_candidates_with_policy(
 }
 
 /// Returns the exact compatibility policy used by `evaluate_candidates`.
-pub fn legacy_evaluation_policy(profile: &UtilityProfile) -> Result<EvaluationPolicyV1, NduError> {
+pub(crate) fn legacy_evaluation_policy(profile: &UtilityProfile) -> Result<EvaluationPolicyV1, NduError> {
     Ok(EvaluationPolicyV1 {
         policy_id: stable_id("legacy-sum-max-zero-tolerance-v1")?,
         utility_rules: profile
