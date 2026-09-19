@@ -1106,7 +1106,7 @@
             "symbol": "FederatedRecallSet"
           }
         ],
-        "stateAndRecovery": "FederatedQueryV2/LeaseV2 bind peer, principal, scope, purpose, generation, epoch, nonce and deadline. Terminal remote responses additionally bind the exact query and a recomputed canonical response digest. The engine enforces one async attempt under cancellation/deadline, clamps result lifetime to response/lease/query ceilings, and revalidates live durable capability authority both before dispatch and after terminal I/O. The existing hepta-memory product reader is composed through this boundary and preserves requested/completed/failed/indeterminate source coverage into the extension attachment; the module still owns no peer registry, remote writer or retry queue.",
+        "stateAndRecovery": "FederatedQueryV2/LeaseV2 bind peer, principal, scope, purpose, generation, epoch, nonce and deadline. Terminal responses bind the exact query and a recomputed canonical response digest. The engine bounds transport and live-authority I/O by query/lease deadlines, clamps result lifetime to response/lease/query ceilings, and revalidates durable capability authority before dispatch and after terminal I/O. The product adapter obtains the exact owner memory frontier from the same SQLite retrieval snapshot (including valid zero), preserves requested/completed/failed/indeterminate source coverage, and emits V2 coverage-bearing model attachments while retaining V1 source acceptance for rolling compatibility. The module owns no peer registry, remote writer or retry queue.",
         "testFiles": [
           "codex-rs/hepta-memory-federation/src/v2_tests.rs",
           "codex-rs/hepta-memory/src/cognitive_federation_tests.rs",
