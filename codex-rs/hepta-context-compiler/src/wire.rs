@@ -4,11 +4,11 @@ use std::fmt;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_hepta_wire::SchemaDefinition;
+use codex_hepta_wire::SchemaRegistry;
 use codex_hepta_wire::TypedPayloadError;
 use codex_hepta_wire::TypedWirePayload;
 use codex_hepta_wire::UnknownFieldPolicy;
 use codex_hepta_wire::WireEnvelopeV2;
-use codex_hepta_wire::encode_typed;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -77,7 +77,13 @@ pub fn encode_compilation_receipt_wire_v2(
         used_tokens: receipt.used_tokens,
         context_digest: receipt.context_digest.to_string(),
     };
-    encode_typed(producer, generation, &value)
+    let mut registry = SchemaRegistry::new();
+    registry
+        .register(
+            context_compilation_wire_schema_v2().map_err(TypedPayloadError::Schema)?,
+        )
+        .map_err(TypedPayloadError::Schema)?;
+    registry.encode_typed(producer, generation, &value)
 }
 
 /// Compose the real context compiler with the platform.wire V2 boundary.
