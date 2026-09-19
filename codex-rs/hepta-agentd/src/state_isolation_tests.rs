@@ -280,7 +280,6 @@ fn generic_runtime_attachment_registry_is_typed_and_quarantines_route() -> anyho
     let (_temp, _registry, state) = fixture()?;
     state.attach_runtime_module(
         "auth.authbus",
-        &[],
         std::sync::Arc::new(DummyRuntimeAttachment(7)),
     )?;
 
