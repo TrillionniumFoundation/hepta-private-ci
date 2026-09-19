@@ -225,6 +225,7 @@ fn evidence_payloads_partition_generator_scorer_profile_and_random_source_owners
     let (mut request, profile, scoring) = fixture();
     let completeness = canonical_completeness_evidence_payload_v1(&request).unwrap();
     let scorer = canonical_scoring_evidence_payload_v1(&scoring).unwrap();
+    let exact_request = canonical_exact_request_evidence_payload_v1(&request).unwrap();
     let qualification = canonical_profile_qualification_evidence_payload_v1(&profile).unwrap();
     assert!(
         canonical_random_assignment_evidence_payload_v1(&request)
@@ -246,6 +247,14 @@ fn evidence_payloads_partition_generator_scorer_profile_and_random_source_owners
         completeness
     );
     assert_eq!(
+        canonical_scoring_evidence_payload_v1(&scoring).unwrap(),
+        scorer
+    );
+    assert_ne!(
+        canonical_exact_request_evidence_payload_v1(&request).unwrap(),
+        exact_request
+    );
+    assert_eq!(
         canonical_profile_qualification_evidence_payload_v1(&profile).unwrap(),
         qualification
     );
@@ -254,15 +263,13 @@ fn evidence_payloads_partition_generator_scorer_profile_and_random_source_owners
             .unwrap()
             .is_some()
     );
-    assert_eq!(
-        decide_calibrated_v3(request.clone(), &profile, &scoring),
-        Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
-            "scored candidates"
-        ))
-    );
+    let receipt = decide_calibrated_v3(request.clone(), &profile, &scoring)
+        .expect("assignment is authenticated outside the scorer commitment");
+    assert!(!receipt.receipt_digest.is_zero());
+
     let rebound =
         scoring_commitment_for_request_v1(&request, &profile, digest("feature-snapshot")).unwrap();
-    assert_ne!(
+    assert_eq!(
         canonical_scoring_evidence_payload_v1(&rebound).unwrap(),
         scorer
     );
