@@ -1547,14 +1547,15 @@ fn check_historical_fence(
     supplied: &TaskFlowFence,
 ) -> Result<(), TaskFlowError> {
     check_step_fence(event_fence, supplied)?;
-    // If the run is still leased, its current tuple must remain the same.  A
-    // terminal run clears the lease but keeps the historical step readable.
-    if !matches!(
-        run.state,
-        crate::TaskFlowRunState::Succeeded
-            | crate::TaskFlowRunState::Failed
-            | crate::TaskFlowRunState::Cancelled
-    ) {
+    // Historical reads are authority-free. If the projection is currently
+    // leased, require the live tuple to match as well; if requeue/terminal
+    // recovery cleared the lease, the immutable event fence is sufficient.
+    let has_projection_lease = run.owner_id.is_some()
+        || run.owner_epoch.is_some()
+        || run.generation.is_some()
+        || run.fencing_token.is_some()
+        || run.lease_expires_at_ms.is_some();
+    if has_projection_lease {
         check_run_identity_for_observation(run, supplied)?;
     }
     Ok(())
