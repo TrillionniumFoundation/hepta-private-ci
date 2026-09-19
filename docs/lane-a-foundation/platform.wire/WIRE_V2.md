@@ -43,8 +43,10 @@ This construction detects mutation of schema, producer, generation, payload
 length or payload in addition to payload corruption. It is an **unkeyed
 digest**, not a MAC, signature, identity proof or authorization token. On an
 untrusted transport, the owning transport/session must authenticate the
-negotiation transcript and the encoded frame or bind them into an authenticated
-channel.
+negotiation transcript and the encoded frame. The canonical helpers
+`negotiation_binding_digest` and `session_binding_digest` provide one
+role-ordered transcript and full-frame binding preimage for that owner; the
+helpers themselves remain unkeyed and non-authenticating.
 
 ## Public symbols and source bindings
 
@@ -79,8 +81,9 @@ downgrade that property.
 
 Framing does not interpret a domain payload. `SchemaRegistry` admits a stable
 schema identity, compatible wire-version range and payload bound before a
-`PayloadCodec` performs typed semantic validation. `StreamingDecoder`
-checks the fixed 54-byte header before accepting the advertised body and caps
+`PayloadCodec` performs typed semantic validation. `ProducerAdmission`
+provides a bounded producer allow-list that can be enforced before typed decode.
+`StreamingDecoder` checks the fixed 54-byte header before accepting the advertised body and caps
 connection-local buffering at two maximum-size frames.
 
 ## Non-claims
