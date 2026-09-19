@@ -1,0 +1,79 @@
+name: Hepta Browser Agentd composition
+
+on:
+  push:
+    branches: [codex/browser-servo-agentd-composition-20260917]
+    paths:
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-agent-protocol/**'
+      - 'apps/hepta-browser/src/agentd-*.js'
+      - 'apps/hepta-browser/test/agentd-service.test.js'
+      - '.github/workflows/hepta-browser-agentd-composition.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-browser-agentd-composition-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-composition:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git rev-parse HEAD HEAD^{tree}
+
+      - name: Verify Browser private-parent protocol tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test apps/hepta-browser/test/agentd-service.test.js apps/hepta-browser/test/worker-driver.test.js
+
+      - name: Verify Agentd Browser formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-agentd -- --check
+
+      - name: Exercise real FinalUseAuthority handoff tests
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-agentd browser_servo --lib
+
+      - name: Compile named Agentd Browser product caller
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked -p codex-hepta-agentd --bin hepta-agentd-browser
+
+      - name: Deny Agentd Browser lint warnings
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked -p codex-hepta-agentd --lib --bin hepta-agentd-browser --no-deps -- -D warnings
+
+      - name: Verify source stayed clean
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"

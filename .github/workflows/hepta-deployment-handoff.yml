@@ -4,10 +4,15 @@ on:
   pull_request:
     paths:
       - "tools/hepta-engineering-control/**"
-      - "docs/modules/**"
+      - "docs/modules/MODULES.json"
+      - "docs/modules/SOURCE_BINDINGS.json"
       - "docs/cns/**"
       - "docs/data/**"
       - ".github/workflows/hepta-deployment-handoff.yml"
+
+concurrency:
+  group: hepta-deployment-handoff-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read

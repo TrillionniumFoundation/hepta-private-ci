@@ -1,0 +1,162 @@
+name: Hepta inference maintenance
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-infer-core/**'
+      - 'codex-rs/hepta-types/**'
+      - 'codex-rs/Cargo.toml'
+      - 'codex-rs/Cargo.lock'
+      - 'codex-rs/rust-toolchain*'
+      - 'scripts/hepta_ci_exec.py'
+      - '.github/workflows/hepta-inference-maintenance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-inference-maintenance-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  PYTHONDONTWRITEBYTECODE: '1'
+  CARGO_INCREMENTAL: '0'
+  CARGO_BUILD_JOBS: '2'
+  CARGO_PROFILE_TEST_DEBUG: '0'
+  CARGO_PROFILE_DEV_DEBUG: '0'
+
+jobs:
+  owner-regression:
+    name: Inference maintenance owner regression (${{ matrix.lane }})
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify GitHub prospective merge identity
+        if: matrix.lane == 'base-merge'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          merge_sha="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge" --jq '.object.sha')"
+          [[ "$merge_sha" =~ ^[0-9a-f]{40}$ ]]
+          observation="$(gh api "repos/$REPO/git/commits/$merge_sha")"
+          mapfile -t parents < <(jq -r '.parents[].sha' <<<"$observation")
+          test "${#parents[@]}" -eq 2
+          test "${parents[0]}" = "$BASE_SHA"
+          test "${parents[1]}" = "$SOURCE_SHA"
+          merge_tree="$(jq -er '.tree.sha' <<<"$observation")"
+          test "$merge_tree" = "$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          printf 'GITHUB_PROSPECTIVE_MERGE_SHA=%s\n' "$merge_sha" >> "$GITHUB_ENV"
+          printf 'GITHUB_PROSPECTIVE_MERGE_TREE=%s\n' "$merge_tree" >> "$GITHUB_ENV"
+      - name: Construct deterministic prospective merge
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Docs CI
+          author-email: hepta-docs-ci@users.noreply.github.com
+          message: Synthetic merge
+      - name: Bind tested identity and retain reproducible input
+        env:
+          CANDIDATE: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE"
+          git diff --quiet
+          git diff --cached --quiet
+          printf 'TESTED_SHA=%s\nHEPTA_CI_LANE=%s\n' "$CANDIDATE" "$LANE" >> "$GITHUB_ENV"
+          mkdir -p "$RUNNER_TEMP/hepta-inference-records"
+          printf 'source=%s\nbase=%s\ntested=%s\ntree=%s\nlane=%s\ngithub_merge=%s\ngithub_merge_tree=%s\n' \
+            "$SOURCE_SHA" "$BASE_SHA" "$CANDIDATE" "$(git rev-parse HEAD^{tree})" "$LANE" \
+            "${GITHUB_PROSPECTIVE_MERGE_SHA:-}" "${GITHUB_PROSPECTIVE_MERGE_TREE:-}" \
+            > "$RUNNER_TEMP/hepta-inference-records/identity.txt"
+          git archive --format=tar "$CANDIDATE" | gzip -1 > "$RUNNER_TEMP/hepta-inference-records/source-input.tar.gz"
+          rustc --version --verbose > "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+          cargo --version >> "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+          cargo fmt --version >> "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+      - name: Select exact-tree native execution
+        id: execution
+        env:
+          LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_candidate.py \
+            --source "$SOURCE_SHA" \
+            --tested "$TESTED_SHA" \
+            --base "$BASE_SHA" \
+            --lane "$LANE" \
+            --github-output "$GITHUB_OUTPUT"
+      - name: Verify actual execution-record and scope regressions
+        if: steps.execution.outputs.run_native == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/runner.json" --minimum-tests 1 -- python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_exec*.py'
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/controls-scope.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_repository_controls
+      - name: Run actual owner tests without unrelated product prerequisites
+        if: steps.execution.outputs.run_native == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/owner.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-types
+      - name: Measure post-compaction growth and maintenance
+        if: steps.execution.outputs.run_native == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/maintenance-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --nocapture --test-threads=1
+      - name: Check owner formatting without modifying tested source
+        if: steps.execution.outputs.run_native == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/format.json" -- cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-types -- --check
+      - name: Retain formatting suggestion separately from the tested checkout
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          # This worktree is NEVER executed, committed, pushed or treated as a
+          # candidate. Its patch is diagnostic input for ordinary source review.
+          proposal="$RUNNER_TEMP/hepta-format-proposal"
+          git worktree add --detach "$proposal" "$TESTED_SHA"
+          trap 'git worktree remove --force "$proposal"' EXIT
+          cargo fmt --manifest-path "$proposal/codex-rs/Cargo.toml" --all > "$RUNNER_TEMP/hepta-inference-records/format-proposal.log" 2>&1
+          git -C "$proposal" diff --binary > "$RUNNER_TEMP/hepta-inference-records/format-proposal.patch"
+      - name: Verify the tested source is unchanged
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+      - name: Retain real command evidence and source input
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-inference-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/hepta-inference-records/*
+          if-no-files-found: error
+          retention-days: 14

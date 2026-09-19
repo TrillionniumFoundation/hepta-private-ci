@@ -32,10 +32,18 @@ or filesystem namespace. Those capabilities remain host-owned.
 | read exact pinned candidate | `load_pinned_candidate` | `src/pinned.rs` | retained |
 | prepare snapshot-local dataset revocation | `prepare_dataset_revocation` | `src/dataset_revocation.rs` | retained |
 | validate complete V2 manifest | `validate_artifact_manifest_v2` | `src/closure_v2.rs` | implemented |
-| persist dataset withdrawal frontier | `DatasetWithdrawalRegistry::append` | `src/closure_v2.rs` | implemented |
+| persist scoped dataset withdrawal frontier | `DatasetWithdrawalRegistry::{new,append,from_snapshot}` | `src/closure_v2.rs` | implemented |
 | deny future admission from withdrawn dataset | `DatasetWithdrawalRegistry::admit_manifest` | `src/closure_v2.rs` | implemented |
+| bind admission to withdrawal registry + exact head | `admit_manifest_at_withdrawal_head_v3`, `validate_artifact_publication_v3` | `src/admission_v3.rs` | implemented |
+| durable withdrawal snapshot | `write_dataset_withdrawal_snapshot`, `read_dataset_withdrawal_snapshot` | `src/durable_aux.rs` | implemented |
 | validate latest-head/anti-rollback evidence | `validate_registry_head_witness` | `src/closure_v2.rs` | implemented |
 | validate lifecycle transition | `validate_artifact_lifecycle_transition` | `src/closure_v2.rs` | implemented |
+| append/replay lifecycle evidence | `ArtifactLifecycleJournalV2::{append,from_snapshot}` | `src/lifecycle_journal.rs` | implemented |
+| durable lifecycle snapshot | `write_artifact_lifecycle_snapshot`, `read_artifact_lifecycle_snapshot` | `src/durable_aux.rs` | implemented |
+| bind all durable publication frontiers | `prepare_artifact_publication_v1`, `write_artifact_publication_commit` | `src/publication.rs` | implemented |
+| verify/reopen publication commit | `verify_artifact_publication_commit_v1`, `read_artifact_publication_commit` | `src/publication.rs` | implemented |
+| governed iteration transitions | `validate_iteration_transition` | `src/iteration.rs` | implemented |
+| append-only iteration evidence bookkeeping | `IterationLedgerV1::{append_candidate,transition,from_snapshot}` | `src/iteration_ledger.rs` | implemented |
 
 `LearningArtifactManifestV2` explicitly binds:
 
@@ -52,9 +60,11 @@ modes. A dataset-derived manifest without a source dataset, or a
 dataset-independent manifest containing one, fails.
 
 `DatasetWithdrawalRegistry` is append-only, digest-chained and replayable from a
-snapshot. It closes the snapshot-local invalidation gap by rejecting every later
-manifest that references a previously withdrawn dataset. Exact notice retries
-are idempotent; changed semantics under a reused notice ID conflict.
+snapshot. Its `DatasetWithdrawalRegistryBindingV1` binds registry identity,
+scope digest and authority identity into every withdrawal event/chain and V3
+admission. Two registries with the same head bytes are therefore not
+interchangeable across scopes. Exact notice retries are idempotent; changed
+semantics under a reused notice ID conflict.
 
 `RegistryHeadWitnessV1` binds registry identity, generation, predecessor head,
 authority epoch, signer and expiry. Validation rejects generation rollback,
@@ -79,15 +89,12 @@ The selector and route owner remain separate external authorities.
 
 ## Publication saga and host obligations
 
-The product host must bind one durable saga:
-
-1. reserve a create-only artifact identity;
-2. write, synchronize and verify payload bytes;
-3. check the current withdrawal registry;
-4. append a manifest event against an exact predecessor head;
-5. durably publish the registry snapshot;
-6. publish an independently authenticated head witness;
-7. acknowledge the producer only after the witness is durable.
+The exact current contract is [`PUBLICATION_TRANSACTION.md`](PUBLICATION_TRANSACTION.md).
+The crate now writes create-only registry, scoped-withdrawal and lifecycle
+snapshots and creates a deny-all `ArtifactPublicationCommitV1` binding those
+receipts to the still-current V3 admission. The product host must make all of
+them durable before one fenced atomic current-pointer replacement. No staged
+file is current merely because it exists.
 
 The host also owns trusted directory traversal, containing-directory durability,
 latest witness discovery, writer fencing, orphan collection, retention, backup
@@ -108,7 +115,12 @@ Focused tests live in:
 - `src/storage_tests.rs` and storage budget tests;
 - `src/pinned_tests.rs`;
 - `src/dataset_revocation_tests.rs`;
-- `src/closure_v2_tests.rs`.
+- `src/closure_v2_tests.rs`;
+- `src/admission_v3.rs` scoped-admission tests;
+- `src/lifecycle_journal.rs` historical replay tests;
+- `src/durable_aux.rs` durable withdrawal/lifecycle tests;
+- `src/publication.rs` publication/crash tests;
+- `src/iteration.rs` and `src/iteration_ledger.rs`.
 
 Cross-crate composition is exercised by
 `../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. Exact dossier IDs,

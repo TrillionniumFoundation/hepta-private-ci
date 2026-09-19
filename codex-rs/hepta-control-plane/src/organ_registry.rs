@@ -55,6 +55,7 @@ pub enum OrganHandlerRegistryError {
     DuplicateOrgan(StableId),
     UnknownOrgan(StableId),
     MissingBinding(StableId),
+    // Retained for source compatibility; distinct organs may share a driver.
     DuplicateDriverBinding(StableId),
     UnknownDriver(StableId),
     DriverDigestMismatch {
@@ -129,7 +130,9 @@ impl OrganHandlerRegistryV1 {
     /// Every graph organ must have one binding, while unselected registered
     /// drivers are ignored and their factories are never called. All graph,
     /// binding, driver and digest checks complete before the first factory is
-    /// invoked. The returned host is registered but not started.
+    /// invoked. The returned host is registered but not started. A driver may
+    /// construct several distinct organs; identity and digest checks apply to
+    /// every instance, not only the first binding of that implementation.
     pub fn create_host(
         &self,
         graph: OrganGraphsV1,
@@ -159,7 +162,6 @@ impl OrganHandlerRegistryV1 {
             .map(|organ| organ.id.clone())
             .collect::<BTreeSet<_>>();
         let mut by_organ = BTreeMap::new();
-        let mut drivers = BTreeSet::new();
         for binding in bindings {
             if !organ_ids.contains(&binding.organ) {
                 return Err(OrganHandlerRegistryError::UnknownOrgan(
@@ -172,11 +174,6 @@ impl OrganHandlerRegistryV1 {
             {
                 return Err(OrganHandlerRegistryError::DuplicateOrgan(
                     binding.organ.clone(),
-                ));
-            }
-            if !drivers.insert(binding.driver.clone()) {
-                return Err(OrganHandlerRegistryError::DuplicateDriverBinding(
-                    binding.driver.clone(),
                 ));
             }
             let Some(registered) = self.factories.get(&binding.driver) else {

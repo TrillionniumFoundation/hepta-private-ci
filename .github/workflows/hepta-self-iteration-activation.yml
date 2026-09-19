@@ -1,0 +1,61 @@
+name: Hepta self-iteration activation gate
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: read
+
+jobs:
+  repository-control:
+    name: Verify live repository controls
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify exact main and live protection
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          HEPTA_EVALUATOR_APP_ID: ${{ vars.HEPTA_EVALUATOR_APP_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          # Observation failures (including 403) are fatal. Do not provide an
+          # administration token or release credentials to checked-out code.
+          python3 scripts/hepta_repository_controls.py \
+            --repo "$REPO" --expected-sha "$GITHUB_SHA"
+
+      - name: Prove candidate workflow token cannot push
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          probe="refs/heads/hepta-self-iteration-denial-probe-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          set +e
+          git -c "http.extraheader=AUTHORIZATION: bearer ${GH_TOKEN}" \
+            push --dry-run "https://github.com/${REPO}.git" "HEAD:${probe}" \
+            >"$RUNNER_TEMP/hepta-push-probe.stdout" 2>"$RUNNER_TEMP/hepta-push-probe.stderr"
+          status=$?
+          set -e
+          test "$status" -ne 0
+          # --dry-run never writes even if repository policy regresses. The
+          # expected rejection proves this workflow identity lacks branch-write
+          # capability in addition to the live protected-branch checks above.
+
+      - name: Verify source-side independent integration semantics
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/hepta-engineering-control/test_integration_identity.py -v
+          python3 scripts/tests/test_hepta_repository_controls.py -v

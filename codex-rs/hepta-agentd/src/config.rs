@@ -3,8 +3,10 @@ use std::fs::File;
 use std::fs::OpenOptions;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::ResourceBudget;
@@ -12,6 +14,7 @@ use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
 
 use crate::AgentdError;
+use crate::AutomationGrantProvider;
 
 pub const HEPTA_AGENT_ID_ENV: &str = "HEPTA_AGENT_ID";
 pub const HEPTA_AGENT_GENERATION_ENV: &str = "HEPTA_AGENT_GENERATION";
@@ -32,12 +35,20 @@ pub struct AgentdIdentity {
     pub app_server_socket: PathBuf,
 }
 
+#[derive(Clone)]
+pub(crate) struct AutomationOperationsConfig {
+    pub authority: FinalUseAuthority,
+    pub grants: Arc<dyn AutomationGrantProvider>,
+}
+
 pub struct AgentdConfig {
     identity: AgentdIdentity,
     registry: FleetRegistry,
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
-    cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    objective_admission_profile_file: Option<PathBuf>,
+    cognitive_ranker: Option<Arc<crate::PinnedCognitiveRanker>>,
+    automation_operations: Option<AutomationOperationsConfig>,
 }
 
 impl AgentdConfig {
@@ -142,7 +153,9 @@ impl AgentdConfig {
             registry,
             _writer_lock: writer_lock,
             authbus_trust_file: None,
+            objective_admission_profile_file: None,
             cognitive_ranker: None,
+            automation_operations: None,
         })
     }
 
@@ -157,12 +170,32 @@ impl AgentdConfig {
         self.authbus_trust_file.as_deref()
     }
 
+    /// Attach the owner-selected Objective admission profile. This never comes
+    /// from an implicit environment default: deployment must explicitly compose
+    /// it together with an AuthBus trust registry.
+    pub fn with_objective_admission_profile_file(
+        mut self,
+        path: PathBuf,
+    ) -> Result<Self, AgentdError> {
+        if self.objective_admission_profile_file.is_some() {
+            return Err(AgentdError::Invalid(
+                "Objective admission profile already configured".to_string(),
+            ));
+        }
+        self.objective_admission_profile_file = Some(path);
+        Ok(self)
+    }
+
+    pub(crate) fn objective_admission_profile_file(&self) -> Option<&Path> {
+        self.objective_admission_profile_file.as_deref()
+    }
+
     /// Attach an explicitly selected, read-only learned consumer. The host must
     /// authenticate the selection and current revocation witness independently.
     /// No CLI/environment default manufactures an evaluator or selection.
     pub fn with_cognitive_ranker(
         mut self,
-        ranker: std::sync::Arc<crate::PinnedCognitiveRanker>,
+        ranker: Arc<crate::PinnedCognitiveRanker>,
     ) -> Result<Self, AgentdError> {
         ranker
             .require_identity(&self.identity.agent_id, self.identity.spawn_generation)
@@ -176,8 +209,31 @@ impl AgentdConfig {
         Ok(self)
     }
 
-    pub(crate) fn cognitive_ranker(&self) -> Option<std::sync::Arc<crate::PinnedCognitiveRanker>> {
+    pub(crate) fn cognitive_ranker(&self) -> Option<Arc<crate::PinnedCognitiveRanker>> {
         self.cognitive_ranker.clone()
+    }
+
+    /// Enable the durable `kernel.operations` composition for AutomationCreate.
+    /// The caller must provide an independently configured FinalUseAuthority and
+    /// a grant provider that returns grants signed by that authority's issuer.
+    /// There is deliberately no environment/default provider and agentd never
+    /// receives the issuer signing key.
+    pub fn with_automation_operations(
+        mut self,
+        authority: FinalUseAuthority,
+        grants: Arc<dyn AutomationGrantProvider>,
+    ) -> Result<Self, AgentdError> {
+        if self.automation_operations.is_some() {
+            return Err(AgentdError::Invalid(
+                "automation operations host already configured".to_string(),
+            ));
+        }
+        self.automation_operations = Some(AutomationOperationsConfig { authority, grants });
+        Ok(self)
+    }
+
+    pub(crate) fn automation_operations(&self) -> Option<AutomationOperationsConfig> {
+        self.automation_operations.clone()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {

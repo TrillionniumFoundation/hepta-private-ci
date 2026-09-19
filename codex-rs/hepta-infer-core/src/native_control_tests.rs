@@ -51,6 +51,141 @@ fn start(control: &mut DurableInferenceControl, id: &str) {
 }
 
 #[test]
+fn concurrent_handles_share_budget_without_holding_the_lock_during_execution() {
+    let path = path("concurrent-handles");
+    // Both handles open before either request is admitted. Historically the
+    // second open failed because the first handle retained the exclusive lock
+    // for its full lifetime.
+    let mut first = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut second = DurableInferenceControl::open(&path, 8).unwrap();
+
+    let r1 = first.reserve_native(request("r1"), 2).unwrap();
+    let r2 = second.reserve_native(request("r2"), 2).unwrap();
+    assert_eq!(r1.state, NativeReservationState::Reserved);
+    assert_eq!(r2.state, NativeReservationState::Reserved);
+
+    // Each mutation refreshes under the short writer fence, so both handles
+    // can progress against the same durable budget without stale overwrite.
+    first.dispatch_native("r1", dispatch()).unwrap();
+    let mut d2 = dispatch();
+    d2.thread_id = "thread-2".to_string();
+    second.dispatch_native("r2", d2).unwrap();
+
+    drop(first);
+    drop(second);
+    let reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(
+        reopened.native_record("r1").unwrap().state,
+        NativeReservationState::Dispatching
+    );
+    assert_eq!(
+        reopened.native_record("r2").unwrap().state,
+        NativeReservationState::Dispatching
+    );
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn stale_handle_reopens_current_inode_after_peer_compaction() {
+    let path = path("peer-compaction");
+    let mut first = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut second = DurableInferenceControl::open(&path, 8).unwrap();
+
+    first.reserve_native(request("r1"), 2).unwrap();
+    second.reserve_native(request("r2"), 2).unwrap();
+    let archive = second.compact_with_archive().unwrap();
+
+    // `first` was opened before the atomic journal replacement. Its next
+    // mutation must reopen the current pathname while holding the sidecar fence
+    // instead of appending to the retired inode.
+    first.dispatch_native("r1", dispatch()).unwrap();
+    drop(first);
+    drop(second);
+
+    let reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(
+        reopened.native_record("r1").unwrap().state,
+        NativeReservationState::Dispatching
+    );
+    assert_eq!(
+        reopened.native_record("r2").unwrap().state,
+        NativeReservationState::Reserved
+    );
+    drop(reopened);
+
+    std::fs::remove_file(&path).unwrap();
+    std::fs::remove_file(&archive).unwrap();
+    let lock = path.with_file_name(format!(
+        "{}.writer.lock",
+        path.file_name().unwrap().to_string_lossy()
+    ));
+    let _ = std::fs::remove_file(lock);
+}
+
+#[test]
+fn compaction_archives_full_history_and_preserves_indeterminate_fences() {
+    let path = path("compact");
+    let mut control = DurableInferenceControl::open(&path, 16).unwrap();
+
+    start(&mut control, "r1");
+    let released = control
+        .settle_native("r1", output(NativeRunStatus::Completed, Some(9)))
+        .unwrap();
+
+    start(&mut control, "r2");
+    let indeterminate = control
+        .settle_native("r2", output(NativeRunStatus::Indeterminate, None))
+        .unwrap();
+
+    let bytes_before = std::fs::read(&path).unwrap();
+    let archive = control.compact_with_archive().unwrap();
+    assert!(archive.is_file());
+    assert_eq!(std::fs::read(&archive).unwrap(), bytes_before);
+    // Small histories can grow by the fixed checkpoint/header overhead.
+    // Require canonical bounded state here; growth tests separately require
+    // byte reduction for histories large enough to amortize that overhead.
+    let checkpoint = std::fs::read_to_string(&path).unwrap();
+    assert_eq!(checkpoint.lines().count(), 3);
+    assert_eq!(
+        checkpoint
+            .lines()
+            .filter(|line| line.starts_with(CHECKPOINT_PREFIX))
+            .count(),
+        2
+    );
+    assert!(
+        !checkpoint
+            .lines()
+            .any(|line| line.starts_with(JOURNAL_PREFIX))
+    );
+
+    drop(control);
+    let mut reopened = DurableInferenceControl::open(&path, 16).unwrap();
+    assert_eq!(reopened.native_record("r1"), Some(&released));
+    assert_eq!(reopened.native_record("r2"), Some(&indeterminate));
+    // The unknown external outcome still owns the journal's single slot after
+    // compaction; rotation cannot make it replayable or pretend it terminated.
+    assert_eq!(
+        reopened.reserve_native(request("r3"), 1),
+        Err(Error::CapacityExceeded)
+    );
+    drop(reopened);
+
+    // Active checkpoints are not self-sufficient audit history: the header
+    // binds the predecessor archive, and loss of that archive fails closed.
+    std::fs::remove_file(&archive).unwrap();
+    assert!(DurableInferenceControl::open(&path, 16).is_err());
+
+    std::fs::remove_file(&path).unwrap();
+    let lock = path.with_file_name(format!(
+        "{}.writer.lock",
+        path.file_name().unwrap().to_string_lossy()
+    ));
+    let _ = std::fs::remove_file(lock);
+}
+
+#[test]
 fn duplicate_reopen_preserves_exact_binding_and_reserves_only_once() {
     let path = path("duplicate");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();

@@ -17,6 +17,7 @@ use codex_hepta_memory::MAX_FEDERATION_GRANT_LIFETIME_SECONDS;
 use codex_hepta_memory::workspace_binding_digest;
 
 use crate::AgentdError;
+use crate::AgentdOperationsError;
 use crate::AgentdPayload;
 use crate::AgentdResponse;
 use crate::HealthSnapshot;
@@ -58,8 +59,9 @@ impl AgentdState {
                 runtime.fenced,
             )
         };
-        let automation = self.automation.lock().map_err(poisoned_state)?.clone();
-        let cognitive = self.cognitive.lock().map_err(poisoned_state)?.clone();
+        let automation = self.automation_store()?;
+        let automation_operations = self.automation_operations()?;
+        let cognitive = self.cognitive_store()?;
         let payload = match method {
             crate::AgentdMethod::Capabilities => {
                 AgentdPayload::Capabilities(crate::AgentdCapabilitySet::empty())
@@ -96,6 +98,16 @@ impl AgentdState {
                         transport: SessionTransport::CodexAppServerWebsocketOverUds,
                     })
                 }
+            }
+            crate::AgentdMethod::ObjectiveStart { request } => {
+                AgentdPayload::AuthBusObjectiveStatus(
+                    crate::objective_ingress::submit(self, request).await?,
+                )
+            }
+            crate::AgentdMethod::ObjectiveStatus { delivery_id } => {
+                AgentdPayload::AuthBusObjectiveStatus(
+                    crate::objective_ingress::status(self, delivery_id).await?,
+                )
             }
             crate::AgentdMethod::AuthBusText { request } => AgentdPayload::AuthBusTextStatus(
                 crate::authbus_ingress::submit(self, request).await?,
@@ -150,6 +162,56 @@ impl AgentdState {
                     },
                 }
             }
+            crate::AgentdMethod::CognitiveContextFinalize {
+                snapshot_digest,
+                read_digest,
+            } => {
+                require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
+                let Some(store) = cognitive else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        cognitive_control_unavailable(),
+                    );
+                };
+                // Re-observe the exact owner snapshot and deterministic read receipt
+                // immediately before the downstream effect boundary. Lifecycle
+                // authority is fenced before and after the storage I/O as well.
+                let result = crate::cognitive_context::finalize(
+                    &store,
+                    &self.identity.agent_id,
+                    &snapshot_digest,
+                    &read_digest,
+                )
+                .await;
+                self.refresh_generation()?;
+                {
+                    let runtime = self.runtime.lock().map_err(poisoned_state)?;
+                    require_cognitive_control_ready(
+                        runtime.lifecycle,
+                        runtime.app_server_ready,
+                        runtime.fenced,
+                    )?;
+                }
+                match result {
+                    Ok(()) => AgentdPayload::CognitiveContextFinalized {
+                        snapshot_digest,
+                        read_digest,
+                    },
+                    Err(CognitiveContextError::Store(error)) => {
+                        return self.cognitive_error_response(
+                            request_id,
+                            current_generation,
+                            error,
+                        );
+                    }
+                    Err(CognitiveContextError::RankerUnavailable) => AgentdPayload::Error {
+                        code: "cognitive_ranker_unavailable".to_string(),
+                        message: "selected ranker is unavailable; explicit reload required"
+                            .to_string(),
+                    },
+                }
+            }
             crate::AgentdMethod::Events {
                 after_cursor,
                 limit,
@@ -170,12 +232,29 @@ impl AgentdState {
             }
             crate::AgentdMethod::AutomationCreate { draft } => {
                 require_automation_ready(lifecycle, app_server_ready, fenced)?;
-                match automation {
-                    Some(store) => self.automation_result(
-                        store.create_task(&draft).await,
-                        AgentdPayload::AutomationTask,
-                    )?,
-                    None => automation_unavailable(),
+                if let Some(host) = automation_operations {
+                    match host.create_automation_task(draft).await {
+                        Ok(task) => {
+                            self.fence_after_durable_change()?;
+                            AgentdPayload::AutomationTask(task)
+                        }
+                        Err(AgentdOperationsError::Automation(error)) => {
+                            self.automation_result(Err(error), AgentdPayload::AutomationTask)?
+                        }
+                        Err(error) => {
+                            return Err(AgentdError::Protocol(format!(
+                                "durable automation operation failed: {error}"
+                            )));
+                        }
+                    }
+                } else {
+                    match automation {
+                        Some(store) => self.automation_result(
+                            store.create_task(&draft).await,
+                            AgentdPayload::AutomationTask,
+                        )?,
+                        None => automation_unavailable(),
+                    }
                 }
             }
             crate::AgentdMethod::AutomationList { limit } => {
@@ -479,7 +558,7 @@ impl AgentdState {
     ) -> Result<AgentdResponse, AgentdError> {
         match error {
             CognitiveStoreError::Unavailable(_) | CognitiveStoreError::Corrupt(_) => {
-                self.cognitive.lock().map_err(poisoned_state)?.take();
+                self.mark_cognitive_unavailable()?;
                 self.response_with_payload(
                     request_id,
                     current_generation,

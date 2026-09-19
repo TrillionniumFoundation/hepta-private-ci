@@ -135,6 +135,79 @@ impl AgentdClient {
         }
     }
 
+    /// Revalidate the exact snapshot/read receipt immediately before a caller
+    /// crosses its effect boundary. This is a final observation, not a lease.
+    pub async fn finalize_cognitive_context(
+        &self,
+        snapshot: &crate::CognitiveContextSnapshot,
+    ) -> Result<(), AgentdError> {
+        let expected_snapshot_digest = snapshot.snapshot_digest.clone();
+        let expected_read_digest = snapshot.read_digest.clone();
+        match self
+            .send(AgentdRequest::cognitive_context_finalize(
+                self.request_id(),
+                self.spawn_generation,
+                expected_snapshot_digest.clone(),
+                expected_read_digest.clone(),
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::CognitiveContextFinalized {
+                snapshot_digest,
+                read_digest,
+            } if snapshot_digest == expected_snapshot_digest
+                && read_digest == expected_read_digest =>
+            {
+                Ok(())
+            }
+            AgentdPayload::CognitiveContextFinalized { .. } => Err(AgentdError::Protocol(
+                "agentd finalized a different cognitive context receipt".to_string(),
+            )),
+            payload => unexpected(payload),
+        }
+    }
+
+    /// Submit a structured Objective signed by the explicitly configured
+    /// owner issuer. Queue admission is durable; processing remains asynchronous.
+    pub async fn objective_start(
+        &self,
+        request: crate::AuthBusObjectiveIngress,
+    ) -> Result<crate::AuthBusObjectiveStatus, AgentdError> {
+        match self
+            .send(AgentdRequest::objective_start(
+                self.request_id(),
+                self.spawn_generation,
+                request,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::AuthBusObjectiveStatus(status) => Ok(status),
+            payload => unexpected(payload),
+        }
+    }
+
+    /// Observe durable Objective delivery/processing state without implying
+    /// external-effect completion.
+    pub async fn objective_status(
+        &self,
+        delivery_id: String,
+    ) -> Result<crate::AuthBusObjectiveStatus, AgentdError> {
+        match self
+            .send(AgentdRequest::objective_status(
+                self.request_id(),
+                self.spawn_generation,
+                delivery_id,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::AuthBusObjectiveStatus(status) => Ok(status),
+            payload => unexpected(payload),
+        }
+    }
+
     /// Submit text signed by a separately trusted owner-configured issuer.
     pub async fn submit_authbus_text(
         &self,

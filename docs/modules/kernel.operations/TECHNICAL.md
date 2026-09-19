@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-operations/src/ledger.rs](../../../codex-rs/hepta-operations/src/ledger.rs); observed identifiers include `MAX_MODEL_OPERATION_RECORDS`, `OperationLedger`, `begin`, `authorize`, `record_dispatch`, `mark_indeterminate`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/kernel.operations.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) for the implemented subset and remaining product work.
+The declared owner root contains both the retained in-memory reference oracle and the durable SQLite implementation. `DurableOperationStore` owns atomic intent+outbox prepare, fenced claims, final-use authorization, dispatch uncertainty, terminal reconciliation and tombstone anti-resurrection. A named Agentd source composition now exists for Automation task creation: explicit owner configuration attaches `AgentdOperationsHost`, while the Automation destination commits its domain mutation and dedupe receipt in the same owner transaction. This is source composition, not deployment activation. Read the [current native implementation](../../../docs/lane-a-foundation/kernel.operations/CURRENT_IMPLEMENTATION.md) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md).
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -163,7 +163,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-OperationLedger and outbox types are embedded owner components. Their state transition result is not a remote effect observation. The host must bind each durable destination/outbox and current-fence reconciler; an in-memory ledger does not supply crash durability by itself.
+`OperationLedger` remains the deterministic reference oracle; `DurableOperationStore` is the crash-durable owner. The configured Agentd Automation path binds source intent/outbox, independent final-use grant consumption, the destination-owned Automation dedupe transaction and reopen reconciliation. Queue acknowledgement is still not terminal success, and a host that does not explicitly configure the operations authority follows the legacy direct Automation owner path rather than silently manufacturing authority.
 
 Current operating and state-format references:
 
@@ -176,8 +176,12 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-operations/src/durable_store_tests.rs](../../../codex-rs/hepta-operations/src/durable_store_tests.rs); atomic prepare/reopen, multi-writer identity, stale fencing, acknowledgement loss and tombstone anti-resurrection.
+- [codex-rs/hepta-automation/tests/kernel_operations_destination.rs](../../../codex-rs/hepta-automation/tests/kernel_operations_destination.rs); destination mutation+dedupe atomicity and reopen replay.
 - [codex-rs/hepta-operations/src/ledger_tests.rs](../../../codex-rs/hepta-operations/src/ledger_tests.rs); named case: `dispatch_ack_is_not_terminal_success`.
 - [codex-rs/hepta-operations/src/outbox_tests.rs](../../../codex-rs/hepta-operations/src/outbox_tests.rs); named case: `claim_and_ack_are_generation_fenced`.
+
+The remaining repository-controlled test gap is an end-to-end Agentd configuration/control test that proves the explicitly configured `AutomationCreate` callsite selects `AgentdOperationsHost` and survives reopen/reconciliation.
 
 In `codex-rs`, run `just test -p codex-hepta-operations`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/kernel.operations.md) separately labels target acceptance designs.
 

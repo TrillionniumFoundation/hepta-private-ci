@@ -46,12 +46,18 @@
           ]
         },
         "exactHeadSourceQualification": {
-          "state": "pending_current_candidate_workflows",
-          "evidence": []
+          "state": "workflow_enforced_per_candidate",
+          "evidence": [
+            ".github/workflows/hepta-objective-admission.yml",
+            ".github/workflows/hepta-lane-d-semantic-conformance.yml"
+          ]
         },
         "productCaller": {
-          "state": "not_established",
-          "evidence": []
+          "state": "source_composed_not_activated",
+          "evidence": [
+            "codex-rs/hepta-agentd/src/objective_runtime.rs::admit_publish_and_start_objective_run_v1",
+            "codex-rs/hepta-agentd/src/objective_runtime.rs::ObjectiveRunFileStore"
+          ]
         },
         "productionWriter": {
           "state": "not_applicable_stateless_compiler",
@@ -74,6 +80,15 @@
           "evidence": [
             "MAX_PROFILE_ENCODED_BYTES",
             "oversized_profile_mapping_set_is_rejected"
+          ]
+        },
+        "targetHostMeasurementHarness": {
+          "state": "source_implemented_external_observation_required",
+          "evidence": [
+            "scripts/hepta-objective-target-measure.py",
+            "docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md",
+            "measurement_ordinary_admission_compile_v1",
+            "measurement_conflict_extraction_v1"
           ]
         }
       }
@@ -260,7 +275,7 @@
     }
   ],
   "repositoryControlledClosure": {
-    "state": "candidate_pending_exact_head_qualification",
+    "state": "candidate_requires_current_workflow_success",
     "requiredChecks": [
       "Lane D semantic conformance",
       "cargo fmt",

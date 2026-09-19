@@ -244,6 +244,55 @@ fn missing_or_revoked_current_witness_closes_ranker_without_baseline_fallback() 
     }
 }
 
+#[test]
+fn new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it() {
+    let original = vec![item("one"), item("two")];
+
+    let mut candidate = fixture(&original, &[0, 10]);
+    let mut ranked = original.clone();
+    candidate
+        .ranker
+        .rank(&owner(), 1, "lemon", &mut ranked)
+        .unwrap();
+    assert_eq!(ranked, vec![original[1].clone(), original[0].clone()]);
+
+    candidate
+        .registry
+        .append(ArtifactEvent::Revoke(StateChange {
+            event_id: id("rollback-revoke"),
+            artifact_id: id("read-ranker"),
+            evaluator_id: id("independent-rollback-evaluator"),
+            reason_digest: hash("candidate-regressed"),
+        }))
+        .unwrap();
+    let revoked = candidate.directory.path().join("rollback-revoked");
+    let receipt = write_registry_snapshot(
+        CreateOnlyArtifactFile::create(&revoked).unwrap(),
+        &candidate.registry,
+        hash("fixture-host-binding"),
+    )
+    .unwrap();
+    *candidate.view.0.lock().unwrap() = Some((revoked, receipt));
+
+    assert!(
+        candidate
+            .ranker
+            .rank(&owner(), 1, "lemon", &mut ranked)
+            .is_err(),
+        "a revoked candidate must close rather than silently remain current"
+    );
+
+    // Rollback is an explicit new host/configuration using independently
+    // selected predecessor bytes; the failed candidate cannot reactivate itself.
+    let predecessor = fixture(&original, &[10, 0]);
+    let mut restored = original.clone();
+    predecessor
+        .ranker
+        .rank(&owner(), 1, "lemon", &mut restored)
+        .unwrap();
+    assert_eq!(restored, original);
+}
+
 #[tokio::test]
 async fn sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deletion() {
     use codex_hepta_memory::CognitiveAccess;

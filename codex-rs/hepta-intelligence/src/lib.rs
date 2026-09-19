@@ -7,12 +7,20 @@
 #![forbid(unsafe_code)]
 
 mod evaluated_shadow;
+mod production_objective;
 
 pub use evaluated_shadow::EvaluatedShadowError;
 pub use evaluated_shadow::EvaluatedShadowReceiptV1;
 pub use evaluated_shadow::EvaluatedShadowRequestV1;
 pub use evaluated_shadow::evaluated_candidate_signing_payload_v1;
 pub use evaluated_shadow::run_evaluated_shadow_v1;
+pub use production_objective::IntelligenceHostEnvelopeV1;
+pub use production_objective::ProductionObjectiveDispositionV1;
+pub use production_objective::ProductionObjectiveError;
+pub use production_objective::ProductionObjectiveStartReceiptV1;
+pub use production_objective::ProductionRunBindingsV1;
+pub use production_objective::prepare_intelligence_run_v1;
+pub use production_objective::recover_intelligence_host_envelope_v1;
 
 mod capability_snapshot;
 
@@ -50,6 +58,7 @@ pub use pipeline::StageTraceV1;
 pub use pipeline::run_shadow_pipeline;
 
 mod vertical;
+mod vertical_outcome;
 
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
@@ -65,6 +74,8 @@ pub use vertical::ReadOnlyVerticalError;
 pub use vertical::ReadOnlyVerticalReceipt;
 pub use vertical::ReadOnlyVerticalRequest;
 pub use vertical::run_read_only_vertical;
+pub use vertical_outcome::ReadOnlyVerticalOutcomeV1;
+pub use vertical_outcome::run_read_only_vertical_outcome_v1;
 
 const MAX_CANDIDATES: usize = 128;
 

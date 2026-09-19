@@ -11,6 +11,7 @@
 mod cart;
 #[path = "embodiment/io.rs"]
 mod io;
+mod module_runtime;
 mod organ_graph;
 mod organ_hierarchy;
 mod organ_registry;
@@ -38,6 +39,20 @@ pub use io::SyntheticActuatorReceiptV1;
 pub use io::SyntheticCartIoV1;
 pub use io::TypedActuatorDispatchV1;
 pub use io::TypedSensorReadingV1;
+pub use module_runtime::ActiveRuntimeModuleV1;
+pub use module_runtime::MAX_MODULE_DEPENDENCIES;
+pub use module_runtime::MAX_MODULE_DOMAINS;
+pub use module_runtime::MAX_MODULE_EFFECTS;
+pub use module_runtime::MAX_MODULE_PORTS;
+pub use module_runtime::MAX_RUNTIME_MODULES;
+pub use module_runtime::RuntimeModuleAbiV1;
+pub use module_runtime::RuntimeModuleLifecycleV1;
+pub use module_runtime::RuntimeModulePromotionWitnessV1;
+pub use module_runtime::RuntimeModuleRecordV1;
+pub use module_runtime::RuntimeModuleRegistryError;
+pub use module_runtime::RuntimeModuleRegistryV1;
+pub use module_runtime::RuntimeModuleStateClassV1;
+pub use module_runtime::RuntimeTopologySnapshotV1;
 pub use organ_graph::DataflowTiming;
 pub use organ_graph::FailureDomainV1;
 pub use organ_graph::FallbackTerminal;

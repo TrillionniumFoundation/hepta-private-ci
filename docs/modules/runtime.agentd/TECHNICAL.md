@@ -82,6 +82,8 @@ Ingress validates identity, version, size, scope and revision before domain logi
 
 Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
 
+Runtime composition uses one typed attachment registry keyed by canonical module ID rather than adding per-feature host fields to `AgentdState`. Ordinary modules enter through a generic no-effect attachment path whose owner, dependency and authoritative-domain facts are derived from the canonical runtime module catalog. Privileged effect scope is not a parameter of that generic path; effect-bearing hosts use an explicit internal boundary. When an attached owner becomes unavailable, Agentd quarantines its runtime-module route before detaching the host so a missing implementation cannot remain advertised as serving.
+
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
 ## 5. Contracts, ports and compatibility

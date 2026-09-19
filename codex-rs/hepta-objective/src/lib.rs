@@ -6,12 +6,17 @@
 
 #![forbid(unsafe_code)]
 
+mod admission_profile_json;
 mod compiler;
 mod error;
 mod feasibility;
 mod feasibility_model;
 mod model;
 mod objective_admission;
+mod objective_admission_gate;
+mod objective_function_v1;
+mod retry_policy;
+mod run_start;
 mod scalar_adapter;
 mod source_envelope_json;
 mod source_envelope_json_dto;
@@ -19,7 +24,25 @@ mod source_envelope_json_shape;
 mod source_envelope_v1;
 mod source_envelope_validation;
 
-pub use compiler::compile;
+/// Qualification-only compatibility entrypoint for already normalized legacy envelopes.
+///
+/// This bypasses authenticated source admission by design and is therefore not
+/// available unless the consumer explicitly enables `legacy-objective-compile`.
+/// Product callers must use `admit_and_compile_objective_v1`.
+#[cfg(feature = "legacy-objective-compile")]
+pub fn compile_prevalidated_legacy_objective(
+    source: model::ObjectiveSourceEnvelope,
+) -> Result<
+    Result<model::ObjectiveCompileReceipt, model::ObjectiveConflictReceipt>,
+    error::ObjectiveError,
+> {
+    compiler::compile(source)
+}
+
+pub use admission_profile_json::MAX_OBJECTIVE_ADMISSION_PROFILE_JSON_BYTES;
+pub use admission_profile_json::ObjectiveAdmissionProfileJsonError;
+pub use admission_profile_json::decode_admission_profile_json_v1;
+pub use compiler::validate_compiled_objective_v1;
 pub use error::ObjectiveError;
 pub use feasibility::check_feasibility_v1;
 pub use feasibility_model::AtomPrecedenceV1;
@@ -48,6 +71,15 @@ pub use model::SoftDirection;
 pub use model::SoftPreference;
 pub use model::SourceTrust;
 pub use model::SuccessPredicate;
+
+/// Stable V1 Rust contract name for the native compile receipt. This alias fixes
+/// the public type-name drift with `ObjectiveCompileReceiptV1`; it does not claim
+/// that the native `ObjectiveFunction` is the canonical JSON wire projection.
+pub type ObjectiveCompileReceiptV1 = ObjectiveCompileReceipt;
+
+/// Stable V1 Rust contract name for the typed non-error conflict outcome.
+pub type ObjectiveConflictReceiptV1 = ObjectiveConflictReceipt;
+
 pub use objective_admission::ObjectiveAbstentionRuleProfileV1;
 pub use objective_admission::ObjectiveActionProfileV1;
 pub use objective_admission::ObjectiveAdmissionContextV1;
@@ -63,8 +95,21 @@ pub use objective_admission::ObjectiveResourceProfileV1;
 pub use objective_admission::ObjectiveRiskProfileV1;
 pub use objective_admission::ObjectiveSoftDimensionProfileV1;
 pub use objective_admission::ObjectiveSourceAuthenticationV1;
-pub use objective_admission::admit_and_compile_objective_v1;
 pub use objective_admission::canonical_objective_intent_digest_v1;
+pub use objective_admission_gate::admit_and_compile_objective_v1;
+pub use objective_function_v1::ObjectiveConstraintWireV1;
+pub use objective_function_v1::ObjectiveFunctionV1;
+pub use objective_function_v1::ObjectivePredicateWireV1;
+pub use objective_function_v1::ObjectivePrincipalScopeWireV1;
+pub use objective_function_v1::ObjectiveProjectionError;
+pub use objective_function_v1::ObjectiveResourcesWireV1;
+pub use objective_function_v1::ObjectiveSoftDimensionWireV1;
+pub use objective_function_v1::project_objective_function_v1;
+pub use retry_policy::ObjectiveRetryDirectiveV1;
+pub use retry_policy::objective_admission_blind_retry_safe_v1;
+pub use retry_policy::objective_admission_retry_directive_v1;
+pub use run_start::RunStartSnapshotError;
+pub use run_start::RunStartSnapshotV1;
 pub use source_envelope_json::MAX_OBJECTIVE_SOURCE_JSON_INPUT_BYTES;
 pub use source_envelope_json::ObjectiveSourceJsonError;
 pub use source_envelope_json::decode_source_envelope_json_v1;
@@ -83,4 +128,7 @@ pub use source_envelope_v1::ObjectiveSourceEnvelopeV1;
 pub use source_envelope_v1::ObjectiveSourcePredicateV1;
 pub use source_envelope_v1::ObjectiveSourceTrustV1;
 pub use source_envelope_v1::ObjectiveStructuredIntentV1;
+pub use source_envelope_validation::MAX_OBJECTIVE_AGGREGATE_PREDICATES;
+pub use source_envelope_validation::MAX_OBJECTIVE_CALLER_ACTIONS;
+pub use source_envelope_validation::MAX_OBJECTIVE_SOURCE_CONSTRAINTS;
 pub use source_envelope_validation::ObjectiveStructureError;

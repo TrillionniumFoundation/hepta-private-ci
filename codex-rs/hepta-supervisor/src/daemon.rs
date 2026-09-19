@@ -1099,6 +1099,11 @@ fn safe_rejection(
             "a prior signed lifecycle operation requires recovery",
             actual,
         ),
+        SupervisorError::SignedMutationIndeterminate(_) => error_payload(
+            "operation_indeterminate",
+            "signed operation outcome is indeterminate; refresh before retry",
+            actual,
+        ),
         SupervisorError::CorruptLease(_)
         | SupervisorError::Registry(_)
         | SupervisorError::Io(_) => error_payload(
@@ -1458,9 +1463,14 @@ mod tests {
             ),
             safe_rejection(
                 SupervisorError::Driver {
-                    agent_id,
+                    agent_id: agent_id.clone(),
                     message: "/secret/bin/agentd --token raw-driver-secret".to_string(),
                 },
+                /*actual*/ None,
+                /*mutation_started*/ false,
+            ),
+            safe_rejection(
+                SupervisorError::SignedMutationIndeterminate(agent_id),
                 /*actual*/ None,
                 /*mutation_started*/ false,
             ),

@@ -16,3 +16,10 @@ workspace = true
 [dependencies]
 codex-hepta-types = { path = "../hepta-types" }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
+codex-hepta-memory = { workspace = true }
+codex-hepta-paths = { workspace = true }
+
+[dev-dependencies]
+codex-hepta-contracts = { workspace = true }
+tempfile = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }

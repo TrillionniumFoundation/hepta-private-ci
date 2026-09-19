@@ -55,16 +55,16 @@
     },
     {
       "module": "kernel.operations",
-      "path": "codex-rs/hepta-operations/src/ledger.rs",
-      "blobSha": "bd087cd814e5c51b13908f455abd60b165f69569",
+      "path": "codex-rs/hepta-operations/src/durable_store.rs",
+      "blobSha": "f70a1cb21ebdfea0120e9016ad17da4060977c7e",
       "exports": [
-        "MAX_MODEL_OPERATION_RECORDS",
-        "OperationLedger",
-        "begin",
-        "authorize",
-        "record_dispatch",
-        "mark_indeterminate",
-        "observe_terminal"
+        "DurableOperationStore",
+        "prepare_intent",
+        "claim_next",
+        "authorize_dispatch",
+        "execute_authorized",
+        "observe_terminal",
+        "recover_expired_leases"
       ]
     },
     {
@@ -109,6 +109,6 @@
   "interpretation": "Historical blobSha values record earlier source observations and do not freeze future implementations. Current verification checks registered module ownership, paths and observed source identifiers against committed checkout bytes, and emits actual sourceSha, sourceTree and per-file blobSha alongside historicalBlobSha. Lane A rows override the corresponding general rows. Source identity proves neither complete operation coverage nor production callers, activation, external effects, independent acceptance, promotion or release.",
   "sourceCodeCommitRole": "provenance_only_non_authoritative",
   "candidateBinding": "runtime_head_tree_and_source_blob_receipt",
-  "sourceObservationDigest": "20ffe4334377ab580b65f294930003e1a644fca7239f85423b0fb7bf5f5a9107",
+  "sourceObservationDigest": "86ef61ff4c19a89941acf47591d80755aff18629bdd77e0dc35f1a3fa2aeb7c6",
   "blobShaRole": "historical_observation_only"
 }

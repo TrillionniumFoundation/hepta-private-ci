@@ -8,7 +8,6 @@ use std::time::UNIX_EPOCH;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
 use codex_hepta_contracts::AgentId;
-use codex_hepta_evidence::AUTHBUS_OUTBOX_MAX_PAYLOAD_BYTES;
 use codex_hepta_evidence::AuthBusDeliveryState;
 use codex_hepta_evidence::AuthBusDeliveryStatus;
 use codex_hepta_evidence::HeptaEvidenceStore;
@@ -165,9 +164,7 @@ fn status_response(
 
 pub(crate) fn attached(state: &AgentdState) -> Result<Arc<TextIngress>, AgentdError> {
     state
-        .authbus
-        .get()
-        .cloned()
+        .authbus()?
         .ok_or_else(|| invalid("no explicit host trust configuration"))
 }
 
@@ -188,7 +185,7 @@ pub(crate) fn payload(body: &AuthBusTextBody) -> Result<Vec<u8>, AgentdError> {
         return Err(invalid("text, thread or generation is invalid"));
     }
     let bytes = serde_json::to_vec(body)?;
-    if bytes.len() > AUTHBUS_OUTBOX_MAX_PAYLOAD_BYTES {
+    if bytes.len() > 16 * 1024 {
         return Err(invalid("encoded text exceeds 16 KiB"));
     }
     Ok(bytes)

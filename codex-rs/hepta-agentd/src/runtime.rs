@@ -13,6 +13,7 @@ use codex_hepta_automation::AutomationStore;
 use codex_hepta_memory::CognitiveRuntime;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::FederatedRecallSet;
+use codex_hepta_types::Generation;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use tokio::task::JoinHandle;
 use tokio::time::timeout;
@@ -37,13 +38,23 @@ enum CompletedRuntimeTask {
     Monitor,
     Automation,
     AuthBus,
+    Objective,
 }
 
 pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<(), AgentdError> {
     let trust_file = config
         .authbus_trust_file()
         .map(std::path::Path::to_path_buf);
+    let objective_profile_file = config
+        .objective_admission_profile_file()
+        .map(std::path::Path::to_path_buf);
+    if objective_profile_file.is_some() && trust_file.is_none() {
+        return Err(AgentdError::Invalid(
+            "Objective admission requires explicit AuthBus trust configuration".to_string(),
+        ));
+    }
     let ranker = config.cognitive_ranker();
+    let automation_operations = config.automation_operations();
     let (identity, registry, writer_lock) = config.into_parts();
     let _writer_lock = writer_lock;
     let federation_owner_layouts = registry
@@ -68,10 +79,17 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         state.refresh_generation()?;
         let host = crate::authbus_ingress::TextIngress::open(&identity, path).await?;
         state.refresh_generation()?;
-        state
-            .authbus
-            .set(Arc::new(host))
-            .map_err(|_| AgentdError::Protocol("AuthBus host already attached".to_string()))?;
+        state.attach_authbus(Arc::new(host))?;
+    }
+    if let Some(profile_file) = objective_profile_file {
+        state.refresh_generation()?;
+        let host = crate::objective_ingress::ObjectiveIngressHost::open(
+            &identity,
+            &profile_file,
+            crate::authbus_ingress::now_ms()?,
+        )?;
+        state.refresh_generation()?;
+        state.attach_objective_ingress(Arc::new(host))?;
     }
     let cognitive_layout = identity.layout.clone();
     let cognitive_runtime = open_cognitive_runtime_after_generation_fence(&state, || async move {
@@ -100,6 +118,42 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     if let Some(store) = automation_store.as_ref() {
         state.attach_automation_store(store.clone())?;
     }
+    if let Some(operations) = automation_operations {
+        let store = automation_store.as_ref().ok_or_else(|| {
+            AgentdError::Protocol(
+                "durable automation operations were configured but automation storage is unavailable"
+                    .to_string(),
+            )
+        })?;
+        let generation = Generation::new(identity.spawn_generation)
+            .map_err(|error| AgentdError::Invalid(error.to_string()))?;
+        let operations_path = identity
+            .layout
+            .agent_root()
+            .join("kernel-operations")
+            .join("automation.sqlite3");
+        state.refresh_generation()?;
+        let host = crate::AgentdOperationsHost::open(
+            &operations_path,
+            store.clone(),
+            operations.authority,
+            operations.grants,
+            generation,
+        )
+        .await
+        .map_err(|error| {
+            AgentdError::Protocol(format!(
+                "durable automation operations host failed to open: {error}"
+            ))
+        })?;
+        state.refresh_generation()?;
+        state.attach_automation_operations(Arc::new(host))?;
+    }
+    // Materialize the executable module topology before serving. This makes
+    // module attachment part of the runtime control state rather than a set of
+    // unrelated fields that can silently drift from one another.
+    let _runtime_topology = state.runtime_topology_snapshot()?;
+
     let cancellation = CancellationToken::new();
     let control = AgentdControlServer::bind(
         identity.control_socket.clone(),
@@ -137,8 +191,16 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         Arc::clone(&state),
         cancellation.clone(),
     ));
+    let mut objective_task = tokio::spawn(crate::objective_dispatch::run(
+        Arc::clone(&state),
+        cancellation.clone(),
+    ));
 
     let (outcome, completed_task) = tokio::select! {
+        result = &mut objective_task => (
+            joined("Objective durable ingress", result),
+            Some(CompletedRuntimeTask::Objective),
+        ),
         result = &mut authbus_task => (
             joined("AuthBus text relay", result),
             Some(CompletedRuntimeTask::AuthBus),
@@ -168,6 +230,9 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     cancellation.cancel();
     if completed_task != Some(CompletedRuntimeTask::AuthBus) {
         abort_and_join(&mut authbus_task).await;
+    }
+    if completed_task != Some(CompletedRuntimeTask::Objective) {
+        abort_and_join(&mut objective_task).await;
     }
     cleanup_runtime_tasks(
         completed_task,

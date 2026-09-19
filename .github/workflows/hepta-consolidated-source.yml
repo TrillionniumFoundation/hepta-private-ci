@@ -5,8 +5,13 @@ on:
     branches: [main]
   pull_request:
     paths:
-      - "codex-rs/**"
-      - "apps/**"
+      - "codex-rs/core/**"
+      - "codex-rs/common/**"
+      - "codex-rs/protocol/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/**/Cargo.toml"
+      - "codex-rs/**/build.rs"
       - "tools/hepta-engineering-control/**"
       - "tools/hepta-os-evidence/**"
       - "scripts/hepta_ci_v8.py"

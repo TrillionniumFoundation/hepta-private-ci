@@ -13,6 +13,8 @@ use codex_hepta_bellman_operator::LoadedTabularOperatorV1;
 use codex_hepta_bellman_operator::TabularPayloadError;
 use codex_hepta_bellman_operator::TabularPayloadPinV1;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_intelligence_eval::VerifiedSelfEvolutionRollbackV1;
+use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
 use codex_hepta_learning_artifacts::PinnedCandidateSpec;
 use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
 use codex_hepta_learning_artifacts::RevalidatingCandidate;
@@ -63,7 +65,7 @@ pub fn cognitive_action_id(item: &CognitiveContextItem) -> Result<StableId, Stri
 
 impl PinnedCognitiveRanker {
     #[allow(clippy::too_many_arguments)]
-    pub fn load(
+    pub(crate) fn load(
         owner: AgentId,
         body_generation: u64,
         snapshot: File,
@@ -97,6 +99,79 @@ impl PinnedCognitiveRanker {
         };
         value.revalidate()?;
         Ok(value)
+    }
+
+    /// Load a candidate only after independent longitudinal evaluation and a
+    /// separately authenticated selector have admitted the exact artifact.
+    /// The opaque selection token cannot be fabricated from registry metadata.
+    #[allow(clippy::too_many_arguments)]
+    pub fn load_evaluated(
+        owner: AgentId,
+        body_generation: u64,
+        snapshot: File,
+        payload: File,
+        selected: PinnedCandidateSpec,
+        model_pin: TabularPayloadPinV1,
+        current: Arc<dyn CurrentCognitiveRegistry>,
+        selection: &VerifiedSelfEvolutionSelectionV1,
+    ) -> Result<Self, String> {
+        let receipt = selection.receipt();
+        if body_generation != receipt.candidate_generation.get()
+            || selected.manifest.artifact_id != receipt.candidate_id
+            || selected.manifest.generation != receipt.candidate_generation
+            || selected.manifest.content_digest != receipt.candidate_artifact_digest
+            || selected.manifest.objective_digest != receipt.objective_digest
+            || selected.manifest.support_digest != receipt.dataset_digest
+        {
+            return Err(
+                "selected ranker does not match independently admitted candidate".to_string(),
+            );
+        }
+        Self::load(
+            owner,
+            body_generation,
+            snapshot,
+            payload,
+            selected,
+            model_pin,
+            current,
+        )
+    }
+
+    /// Reload the exact predecessor only after an independent evaluator has
+    /// admitted rollback for the selected candidate. Rollback restores bytes,
+    /// not the old runtime generation or a revoked current witness.
+    #[allow(clippy::too_many_arguments)]
+    pub fn load_evaluated_rollback(
+        owner: AgentId,
+        body_generation: u64,
+        snapshot: File,
+        payload: File,
+        selected: PinnedCandidateSpec,
+        model_pin: TabularPayloadPinV1,
+        current: Arc<dyn CurrentCognitiveRegistry>,
+        rollback: &VerifiedSelfEvolutionRollbackV1,
+    ) -> Result<Self, String> {
+        let receipt = rollback.selection().receipt();
+        if body_generation != rollback.rollback_generation().get()
+            || selected.manifest.artifact_id != receipt.predecessor_id
+            || selected.manifest.generation != receipt.predecessor_generation
+            || selected.manifest.content_digest != receipt.predecessor_artifact_digest
+            || selected.manifest.objective_digest != receipt.objective_digest
+        {
+            return Err(
+                "rollback ranker does not match independently admitted predecessor".to_string(),
+            );
+        }
+        Self::load(
+            owner,
+            body_generation,
+            snapshot,
+            payload,
+            selected,
+            model_pin,
+            current,
+        )
     }
 
     pub(crate) fn require_identity(&self, owner: &AgentId, generation: u64) -> Result<(), String> {

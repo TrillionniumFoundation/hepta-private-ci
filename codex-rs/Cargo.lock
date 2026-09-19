@@ -3476,13 +3476,19 @@ dependencies = [
  "codex-hepta-automation",
  "codex-hepta-bellman-operator",
  "codex-hepta-cognitive-read",
+ "codex-hepta-cognitive-store",
  "codex-hepta-contracts",
  "codex-hepta-control-plane",
  "codex-hepta-evidence",
  "codex-hepta-fleet",
+ "codex-hepta-intelligence",
+ "codex-hepta-intelligence-eval",
  "codex-hepta-learning-artifacts",
+ "codex-hepta-learning-ledger",
  "codex-hepta-memory",
  "codex-hepta-memory-extension",
+ "codex-hepta-objective",
+ "codex-hepta-operations",
  "codex-hepta-paths",
  "codex-hepta-supervisor",
  "codex-hepta-types",
@@ -3497,6 +3503,7 @@ dependencies = [
  "ed25519-dalek",
  "serde",
  "serde_json",
+ "sha2 0.10.9",
  "sqlx",
  "tempfile",
  "thiserror 2.0.18",
@@ -3527,7 +3534,9 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-fleet",
+ "codex-hepta-operations",
  "codex-hepta-paths",
+ "codex-hepta-types",
  "codex-state",
  "codex-utils-absolute-path",
  "pretty_assertions",
@@ -3592,7 +3601,12 @@ name = "codex-hepta-cognitive-store"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-cognitive-types",
+ "codex-hepta-contracts",
+ "codex-hepta-memory",
+ "codex-hepta-paths",
  "codex-hepta-types",
+ "tempfile",
+ "tokio",
 ]
 
 [[package]]
@@ -3641,9 +3655,14 @@ dependencies = [
 name = "codex-hepta-control-plane"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-contracts",
  "codex-hepta-ndu",
+ "codex-hepta-operations",
  "codex-hepta-types",
+ "ed25519-dalek",
  "pretty_assertions",
+ "tempfile",
+ "tokio",
 ]
 
 [[package]]
@@ -3736,6 +3755,7 @@ dependencies = [
  "codex-hepta-context-compiler",
  "codex-hepta-intelligence-eval",
  "codex-hepta-intuition",
+ "codex-hepta-learning-artifacts",
  "codex-hepta-learning-ledger",
  "codex-hepta-ndu",
  "codex-hepta-neuron",
@@ -3785,6 +3805,7 @@ name = "codex-hepta-learning-ledger"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-intuition",
+ "codex-hepta-objective",
  "codex-hepta-types",
  "ed25519-dalek",
  "pretty_assertions",
@@ -3975,7 +3996,12 @@ dependencies = [
 name = "codex-hepta-operations"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-contracts",
  "codex-hepta-types",
+ "ed25519-dalek",
+ "sqlx",
+ "tempfile",
+ "tokio",
 ]
 
 [[package]]
@@ -4009,6 +4035,7 @@ name = "codex-hepta-plasticity"
 version = "0.0.0"
 dependencies = [
  "codex-hepta-types",
+ "tempfile",
 ]
 
 [[package]]
@@ -4078,10 +4105,13 @@ dependencies = [
  "base64 0.22.1",
  "codex-hepta-agent-protocol",
  "codex-hepta-contracts",
+ "codex-hepta-control-plane",
  "codex-hepta-fleet",
+ "codex-hepta-intelligence-eval",
  "codex-hepta-matrix-protocol",
  "codex-hepta-memory",
  "codex-hepta-paths",
+ "codex-hepta-types",
  "codex-uds",
  "constant_time_eq",
  "ed25519-dalek",

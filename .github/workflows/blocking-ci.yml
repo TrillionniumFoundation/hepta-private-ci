@@ -1,15 +1,10 @@
 name: blocking-ci
 
-# This is the single entrypoint for checks that block a PR merge. It also runs
-# after pushes to main so the same check family stays grouped in the Actions UI.
 on:
   pull_request: {}
   push:
     branches: [main]
 
-# Keep at most one full repository matrix per PR/ref. A synchronize event makes
-# every older head non-authoritative, so retaining its cross-platform matrix
-# only consumes scarce hosted capacity and can delay the exact current object.
 concurrency:
   group: blocking-ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
@@ -18,15 +13,70 @@ permissions:
   contents: read
 
 jobs:
+  scope:
+    name: Select blocking CI scope
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      inference: ${{ steps.scope.outputs.inference }}
+      effects: ${{ steps.scope.outputs.effects }}
+      lifecycle: ${{ steps.scope.outputs.lifecycle }}
+      learning: ${{ steps.scope.outputs.learning }}
+      objective: ${{ steps.scope.outputs.objective }}
+      native: ${{ steps.scope.outputs.native }}
+      derived: ${{ steps.scope.outputs.derived }}
+      full_repo: ${{ steps.scope.outputs.full_repo }}
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Select dependency impact
+        id: scope
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies
+          python3 -m unittest -v scripts.test_hepta_readiness_semantics
+          args=(--head "$HEAD_SHA" --github-output "$GITHUB_OUTPUT")
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            args+=(--base "$BASE_SHA")
+          else
+            args+=(--full)
+          fi
+          python3 scripts/hepta_ci_scope.py "${args[@]}"
+
+      - name: Regression-test scoped fan-in policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          NEEDS='{"scope":{"result":"success"},"heavy":{"result":"skipped"}}' \
+            ALLOWED_SKIPPED='["heavy"]' \
+            python3 .github/scripts/check_ci_results.py
+          if NEEDS='{"scope":{"result":"success"},"heavy":{"result":"skipped"}}' \
+            python3 .github/scripts/check_ci_results.py; then
+            echo "unscoped skipped dependency was incorrectly accepted" >&2
+            exit 1
+          fi
+
   hepta-contract-gate:
     name: Hepta contract gate
+    needs: scope
+    if: needs.scope.outputs.native == 'true' || needs.scope.outputs.full_repo == 'true'
     uses: ./.github/workflows/hepta-contract-gate.yml
     secrets: inherit
 
-  # Keep reusable workflow calls alphabetized. The `required` job below is the
-  # version-controlled list that the main-branch ruleset should require.
   bazel:
     name: Bazel
+    needs: scope
+    if: needs.scope.outputs.full_repo == 'true'
     uses: ./.github/workflows/bazel.yml
     secrets: inherit
 
@@ -37,6 +87,8 @@ jobs:
 
   cargo-deny:
     name: cargo-deny
+    needs: scope
+    if: needs.scope.outputs.full_repo == 'true'
     uses: ./.github/workflows/cargo-deny.yml
     secrets: inherit
 
@@ -47,26 +99,123 @@ jobs:
 
   repo-checks:
     name: repo-checks
+    needs: scope
+    if: needs.scope.outputs.full_repo == 'true'
     uses: ./.github/workflows/repo-checks.yml
     secrets: inherit
 
   rust-ci:
     name: rust-ci
+    needs: scope
+    if: needs.scope.outputs.full_repo == 'true'
     uses: ./.github/workflows/rust-ci.yml
     secrets: inherit
 
   sdk:
     name: sdk
+    needs: scope
+    if: needs.scope.outputs.full_repo == 'true'
     uses: ./.github/workflows/sdk.yml
     secrets: inherit
+
+  hepta-scoped:
+    name: Hepta scoped native checks
+    needs: scope
+    if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Compute exact base and candidate reverse dependencies
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: >-
+          python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA"
+          --tested "$TESTED_SHA" --output "$RUNNER_TEMP/cargo-impact.json"
+
+      - name: Prepare native test prerequisites before compilation
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - name: Resolve verified V8 artifacts for affected host crates
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Test affected owners and reverse consumers, not a hand-written package list
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEPTA_CI_LANE: source-head
+        run: >-
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/impact-test.json" --
+          python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
+          --output "$RUNNER_TEMP/cargo-impact.json" --run
+
+      - name: Retain dependency plan and real command output
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-cargo-impact-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/cargo-impact.json
+            ${{ runner.temp }}/impact-test.json*
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Verify generated projections when applicable
+        if: needs.scope.outputs.derived == 'true'
+        run: python3 scripts/hepta-module-docs.py refresh-derived --check
+
+  lightweight:
+    name: Lightweight prose and derived checks
+    needs: scope
+    if: needs.scope.outputs.native != 'true' && needs.scope.outputs.full_repo != 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify lightweight repository consistency
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          python3 scripts/asciicheck.py README.md
+          python3 scripts/readme_toc.py README.md
+          python3 scripts/hepta-module-docs.py refresh-derived --check
+          python3 scripts/hepta-docs.py verify
+          test -z "$(git status --porcelain --untracked-files=no)"
 
   required:
     timeout-minutes: 30
     name: CI required
-    # Without `always()`, GitHub skips this job after a failed dependency and a
-    # required check can appear successful instead of reporting the failure.
     if: ${{ always() }}
     needs:
+      - scope
       - hepta-contract-gate
       - bazel
       - blob-size-policy
@@ -75,15 +224,38 @@ jobs:
       - repo-checks
       - rust-ci
       - sdk
+      - hepta-scoped
+      - lightweight
     runs-on: ubuntu-24.04
     steps:
-      # Keep the helper on the same combined revision as the child workflows so
-      # the merge gate evaluates the exact candidate they validated.
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
 
-      - name: Require successful dependencies
+      - name: Require successful applicable dependencies
         env:
           NEEDS: ${{ toJSON(needs) }}
-        run: python3 .github/scripts/check_ci_results.py
+          NATIVE: ${{ needs.scope.outputs.native }}
+          FULL_REPO: ${{ needs.scope.outputs.full_repo }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          export ALLOWED_SKIPPED="$(
+            python3 - <<'PY'
+          import json
+          import os
+          native = os.environ["NATIVE"] == "true"
+          full = os.environ["FULL_REPO"] == "true"
+          allowed = []
+          if not (native or full):
+              allowed.append("hepta-contract-gate")
+          if not full:
+              allowed += ["bazel", "cargo-deny", "repo-checks", "rust-ci", "sdk"]
+          if not (native and not full):
+              allowed.append("hepta-scoped")
+          if not (not native and not full):
+              allowed.append("lightweight")
+          print(json.dumps(allowed))
+          PY
+          )"
+          python3 .github/scripts/check_ci_results.py

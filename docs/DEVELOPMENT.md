@@ -48,6 +48,14 @@ be added to an ordinary source-only change just to satisfy a document gate.
 Path-filtered CI selects the qualification checks from the changed boundary;
 it does not use a global checklist as a proxy for evidence.
 
+Ordinary authorized development has no hard changed-path quota. Work packages
+are bounded by semantic scope, ownership, authority change, durable-domain
+impact and required tests. A coherent cross-owner change may be reviewed in one
+PR with explicit co-owners; it must not be split into source and documentation
+PRs merely to satisfy a file-count budget. Resource-budget metadata may guide
+planning, but it is not a merge gate unless an autonomous candidate-execution
+profile explicitly declares and enforces that bound.
+
 ## 2. Canonical document system and historical cleanup
 
 Read in this order:

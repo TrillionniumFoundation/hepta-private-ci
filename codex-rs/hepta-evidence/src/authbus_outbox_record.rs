@@ -12,7 +12,9 @@ use crate::schema_validation::classify_sqlx_error;
 
 /// Queue bounds are independent of the separately bounded replay-key registry.
 pub const AUTHBUS_OUTBOX_MAX_ROWS: i64 = 4096;
-pub const AUTHBUS_OUTBOX_MAX_PAYLOAD_BYTES: usize = 16_384;
+// Text ingress remains capped at 16 KiB by its own product profile. The shared
+// durable envelope permits the bounded structured Objective profile as well.
+pub const AUTHBUS_OUTBOX_MAX_PAYLOAD_BYTES: usize = 48 * 1024;
 pub const AUTHBUS_OUTBOX_MAX_ATTEMPTS: i64 = 16;
 pub const AUTHBUS_OUTBOX_MAX_LEASE_MS: i64 = 60_000;
 pub(crate) const TERMINAL_RETENTION_MS: i64 = 86_400_000;

@@ -195,7 +195,11 @@ fn legacy_v1_is_explicit_read_only_and_never_upconverted() {
     );
     assert_eq!(
         dispatch_proposal_version(3),
-        Err(Error::UnsupportedVersion(3))
+        Ok(ProposalVersion::TopologyV3)
+    );
+    assert_eq!(
+        dispatch_proposal_version(4),
+        Err(Error::UnsupportedVersion(4))
     );
 }
 
@@ -718,4 +722,114 @@ fn registry_enforces_proposal_identity_capacity_and_legacy_read_only_state() {
         registry.append_v2(must(propose_v2(request))),
         Err(Error::RegistryCapacityExceeded)
     );
+}
+
+fn topology_v3_request() -> TopologyProposalRequestV3 {
+    let selected = digest(b"topology:selected");
+    TopologyProposalRequestV3 {
+        proposal_id: id("proposal:topology:3"),
+        proposer_id: id("topology-generator"),
+        evaluator_id: id("topology-evaluator"),
+        selected_topology_digest: selected,
+        baseline_generation: generation(20),
+        candidate_generation: generation(21),
+        evaluation_digest: digest(b"topology-evaluation"),
+        rollback_predecessor_digest: selected,
+        candidates: vec![
+            TopologyCandidateRequestV3 {
+                candidate_id: id("candidate:no-change-topology"),
+                kind: TopologyCandidateKindV3::NoChange,
+                topology_deltas: Vec::new(),
+            },
+            TopologyCandidateRequestV3 {
+                candidate_id: id("candidate:replace-memory"),
+                kind: TopologyCandidateKindV3::Change,
+                topology_deltas: vec![TopologyDeltaV3 {
+                    module_id: id("memory.retrieval"),
+                    operation: TopologyOperationV3::Replace,
+                    related_module_ids: Vec::new(),
+                    predecessor_digest: digest(b"memory-v1"),
+                    candidate_digest: digest(b"memory-v2"),
+                    evidence_digest: digest(b"memory-v2-evidence"),
+                }],
+            },
+        ],
+    }
+}
+
+#[test]
+fn topology_v3_requires_no_change_and_grants_no_authority() {
+    let proposal = must(propose_topology_v3(topology_v3_request()));
+    assert_eq!(proposal.candidate_generation, generation(21));
+    assert_eq!(proposal.candidates.len(), 2);
+    assert_eq!(
+        proposal.candidates[0].kind,
+        TopologyCandidateKindV3::NoChange
+    );
+    assert!(!proposal.authority.grants_any());
+    assert_eq!(
+        proposal.status,
+        ProposalStatus::RequiresIndependentAcceptance
+    );
+    must(verify_topology_proposal_v3(&proposal));
+}
+
+#[test]
+fn topology_v3_dispatch_and_registry_are_versioned_and_conflict_detecting() {
+    let proposal = must(propose_topology_v3(topology_v3_request()));
+    let record = must(propose_versioned(ProposalWriteRequest::TopologyV3(
+        Box::new(topology_v3_request()),
+    )));
+    assert_eq!(record.version(), ProposalVersion::TopologyV3);
+    let read = must(read_versioned_proposal(3, record));
+    assert_eq!(
+        read.digest_verification,
+        ProposalDigestVerification::VerifiedV3
+    );
+
+    let mut registry = ProposalRegistry::new(8);
+    assert_eq!(
+        must(registry.append_v3(proposal.clone())),
+        AppendDisposition::Inserted
+    );
+    assert_eq!(
+        must(registry.append_v3(proposal.clone())),
+        AppendDisposition::Unchanged
+    );
+    assert_eq!(registry.get_v3(&proposal.proposal_id), Some(&proposal));
+
+    let mut conflicting_request = topology_v3_request();
+    conflicting_request.proposal_id = id("proposal:topology:conflict");
+    conflicting_request.candidates[1].topology_deltas[0].candidate_digest = digest(b"memory-v3");
+    let conflicting = must(propose_topology_v3(conflicting_request));
+    assert!(matches!(
+        registry.append_v3(conflicting),
+        Err(Error::RegistrySlotConflict(_))
+    ));
+}
+
+#[test]
+fn topology_v3_rejects_invalid_delta_shapes_and_generation_drift() {
+    let mut request = topology_v3_request();
+    request.candidate_generation = generation(22);
+    assert_eq!(
+        propose_topology_v3(request),
+        Err(Error::GenerationNotExactSuccessor)
+    );
+
+    let mut request = topology_v3_request();
+    request.candidates[1].topology_deltas[0].candidate_digest =
+        request.candidates[1].topology_deltas[0].predecessor_digest;
+    assert!(matches!(
+        propose_topology_v3(request),
+        Err(Error::TopologyDigestUnchanged(_))
+    ));
+
+    let mut request = topology_v3_request();
+    let delta = request.candidates[1].topology_deltas[0].clone();
+    request.candidates[0].topology_deltas.push(delta);
+    assert!(matches!(
+        propose_topology_v3(request),
+        Err(Error::NoChangeHasTopologyDeltas(_))
+    ));
 }

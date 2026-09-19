@@ -2,26 +2,50 @@
 //!
 //! The supervisor does not execute turns or forward messages, models, or tokens.
 
+// These are compiler checks of the external default-build API, not source grep.
+#![cfg_attr(
+    not(feature = "qualification"),
+    doc = r#"
+Default builds retain the product API:
+```
+use codex_hepta_supervisor::Supervisor;
+```
+Qualification state machines require an explicit nondefault build feature:
+```compile_fail,E0432
+use codex_hepta_supervisor::H8H9ShadowSupervisor;
+```
+"#
+)]
+
 mod authority_signer;
 mod control;
 mod daemon;
 mod daemon_client;
 mod daemon_protocol;
 mod driver;
+mod durable_publish;
 mod error;
 mod lease;
 mod matrix;
 mod model;
+mod module_runtime;
+mod process_deadline;
 mod recovery;
 mod release;
+mod restart_journal;
+mod restart_policy;
+mod restart_state;
+mod result_fence;
 mod robrix_projection;
 mod robrix_protocol;
 mod runtime;
 mod signed_authority;
 mod signed_intent;
 mod supervisor;
+#[cfg(any(test, feature = "qualification"))]
 mod supervisor_qualification;
 mod tick;
+mod writer_handoff;
 
 #[cfg(unix)]
 mod unix;
@@ -82,6 +106,18 @@ pub use model::SupervisorConfig;
 pub use model::SupervisorEvent;
 pub use model::SupervisorEventKind;
 pub use model::TickReport;
+pub use module_runtime::RuntimeModuleInitializationWitnessV1;
+pub use module_runtime::RuntimeModuleRetirementWitnessV1;
+pub use module_runtime::RuntimeModuleSupervisorErrorV1;
+pub use module_runtime::RuntimeModuleSupervisorV1;
+pub use process_deadline::ProcessDeadlineOutcomeV1;
+pub use process_deadline::ProcessDeadlinePolicyErrorV1;
+pub use process_deadline::ProcessDeadlinePolicyV1;
+pub use process_deadline::ProcessTerminationOutcomeV1;
+pub use process_deadline::enforce_process_deadline_v1;
+pub use process_deadline::enforce_process_termination_deadline_v1;
+pub use result_fence::WriterResultFenceErrorV1;
+pub use result_fence::WriterResultFenceV1;
 pub use robrix_projection::CORPUS_FILE;
 pub use robrix_projection::GENERATED_CONSTANTS_FILE;
 pub use robrix_projection::MANIFEST_FILE;
@@ -106,29 +142,51 @@ pub use signed_authority::ProductionMutationStatus;
 pub use signed_authority::SIGNED_AUTHORITY_NAMESPACE;
 pub use signed_authority::SIGNED_AUTHORITY_SCHEMA_VERSION;
 pub use signed_authority::authority_epoch_for_supervisor_epoch;
+pub use signed_intent::SIGNED_INTENT_FILE;
+pub use signed_intent::SIGNED_INTENT_RECOVERY_FILE;
+pub use signed_intent::SignedIntentError;
+pub use signed_intent::SignedIntentRecoveryAction;
+pub use signed_intent::SignedIntentRecoveryDirective;
+pub use signed_intent::SignedIntentStatus;
+pub use signed_intent::SignedSupervisorIntent;
+pub use signed_intent::read_intent as read_signed_intent;
+pub use signed_intent::read_recovery_directive as read_signed_intent_recovery_directive;
+pub use signed_intent::write_recovery_directive as write_signed_intent_recovery_directive;
 pub use supervisor::Supervisor;
-pub use supervisor_qualification::H8_H9_SHADOW_EFFECT_AUTHORITY;
-pub use supervisor_qualification::H8_H9_SHADOW_EXECUTE_ALLOWED;
-pub use supervisor_qualification::H8_H9_SHADOW_EXTERNAL_EFFECTS;
-pub use supervisor_qualification::H8_H9_SHADOW_G5_ALLOWED;
-pub use supervisor_qualification::H8_H9_SHADOW_GOVERNANCE_BYPASS;
-pub use supervisor_qualification::H8_H9_SHADOW_NAMESPACE;
-pub use supervisor_qualification::H8_H9_SHADOW_OPERATOR_ACCEPTANCE;
-pub use supervisor_qualification::H8_H9_SHADOW_PRODUCTION_AUTHORITY;
-pub use supervisor_qualification::H8_H9_SHADOW_PRODUCTION_CALLER;
-pub use supervisor_qualification::H8_H9_SHADOW_PRODUCTION_WRITER;
-pub use supervisor_qualification::H8_H9_SHADOW_PROMOTION;
-pub use supervisor_qualification::H8_H9_SHADOW_PROMOTION_ELIGIBLE;
-pub use supervisor_qualification::H8_H9_SHADOW_SCHEMA_VERSION;
-pub use supervisor_qualification::H8H9PendingRollback;
-pub use supervisor_qualification::H8H9RecoveryOutcome;
-pub use supervisor_qualification::H8H9RollbackPhase;
-pub use supervisor_qualification::H8H9ShadowSupervisor;
-pub use supervisor_qualification::H8H9SupervisorError;
-pub use supervisor_qualification::H8H9SupervisorState;
-pub use supervisor_qualification::H8ShadowSupervisor;
-pub use supervisor_qualification::H9ShadowRollbackMachine;
-pub use supervisor_qualification::QualificationSupervisor;
+// Historical root names remain available only to explicit qualification builds.
+#[cfg(any(test, feature = "qualification"))]
+mod qualification_exports {
+    pub use super::supervisor_qualification::H8_H9_SHADOW_EFFECT_AUTHORITY;
+    pub use super::supervisor_qualification::H8_H9_SHADOW_EXECUTE_ALLOWED;
+    pub use super::supervisor_qualification::H8_H9_SHADOW_EXTERNAL_EFFECTS;
+    pub use super::supervisor_qualification::H8_H9_SHADOW_G5_ALLOWED;
+    pub use super::supervisor_qualification::H8_H9_SHADOW_GOVERNANCE_BYPASS;
+    pub use super::supervisor_qualification::H8_H9_SHADOW_NAMESPACE;
+    pub use super::supervisor_qualification::H8_H9_SHADOW_OPERATOR_ACCEPTANCE;
+    pub use super::supervisor_qualification::H8_H9_SHADOW_PRODUCTION_AUTHORITY;
+    pub use super::supervisor_qualification::H8_H9_SHADOW_PRODUCTION_CALLER;
+    pub use super::supervisor_qualification::H8_H9_SHADOW_PRODUCTION_WRITER;
+    pub use super::supervisor_qualification::H8_H9_SHADOW_PROMOTION;
+    pub use super::supervisor_qualification::H8_H9_SHADOW_PROMOTION_ELIGIBLE;
+    pub use super::supervisor_qualification::H8_H9_SHADOW_SCHEMA_VERSION;
+    pub use super::supervisor_qualification::H8H9PendingRollback;
+    pub use super::supervisor_qualification::H8H9RecoveryOutcome;
+    pub use super::supervisor_qualification::H8H9RollbackPhase;
+    pub use super::supervisor_qualification::H8H9ShadowSupervisor;
+    pub use super::supervisor_qualification::H8H9SupervisorError;
+    pub use super::supervisor_qualification::H8H9SupervisorState;
+    pub use super::supervisor_qualification::H8ShadowSupervisor;
+    pub use super::supervisor_qualification::H9ShadowRollbackMachine;
+    pub use super::supervisor_qualification::QualificationSupervisor;
+}
+#[cfg(any(test, feature = "qualification"))]
+pub use qualification_exports::*;
+pub use writer_handoff::DurableWriterHandoffJournalV1;
+pub use writer_handoff::WriterHandoffAdvanceV1;
+pub use writer_handoff::WriterHandoffCheckpointV1;
+pub use writer_handoff::WriterHandoffErrorV1;
+pub use writer_handoff::WriterHandoffPhaseV1;
+pub use writer_handoff::WriterHandoffPlanV1;
 
 #[cfg(unix)]
 pub use unix::UnixManagedProcess;

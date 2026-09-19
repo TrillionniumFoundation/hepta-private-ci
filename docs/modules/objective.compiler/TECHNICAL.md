@@ -14,7 +14,7 @@
 
 **Bootstrap work package:** `OBJ-0-OBJECTIVE-CONTRACTS`
 
-This stable document is the implementation guide for `objective.compiler`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
+This stable document is the implementation guide for `objective.compiler`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, exact-head qualification, activation, operator acceptance, promotion or release.
 
 ## 1. Identity, mission and ownership
 
@@ -30,7 +30,7 @@ Declared exclusive target roots:
 
 - `codex-rs/hepta-objective`
 
-Existing declared roots at this exact source snapshot:
+Existing declared roots at this source candidate:
 
 - `codex-rs/hepta-objective`
 
@@ -42,7 +42,9 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `objective.compiler`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. It means the declared source root exists and is bound to this module; it does **not** itself prove focused tests, all-target compilation, strict lint, exact-head qualification or synthetic-merge qualification for the current candidate. Those are run-specific evidence and must be read from the exact candidate's qualification workflows.
+
+The current source candidate contains a strict JSON decoder, structural/aggregate bounds, authenticated/profile-bound admission, a general feasibility solver, a V1 feasibility gate, deterministic native compilation, typed conflict/abstain outcomes, canonical `ObjectiveFunctionV1` projection and `RunStartSnapshotV1` binding. The product source path is now explicit: Agentd `ObjectiveStart` admits only signed AuthBus Objective envelopes under an owner-selected trust registry and admission profile; the durable outbox worker calls `ObjectiveIngressHost::process_delivery`, which delegates canonical publication to `codex-hepta-intelligence::prepare_intelligence_run_v1` and only then enters bounded runtime admission. The direct `objective_runtime.rs` file-store path remains feature-gated qualification compatibility. These source compositions do not by themselves establish deployment activation, current exact-head qualification, target-host qualification, independent acceptance, promotion or release.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -68,20 +70,22 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
-- `input normalizer`
-- `constraint validator`
-- `deterministic compiler`
-- `digest and receipt emitter`
+- strict source JSON decoder;
+- structural and aggregate-capacity validator;
+- authenticated/profile-bound admission mapper;
+- profile-bound general-feasibility gate for V1 hard scalar atoms;
+- deterministic native compiler with a legacy scalar defense-in-depth recheck;
+- digest and receipt emitter.
 
-Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
+The public V1 call graph is specified in [`docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md`](../../readiness/OBJECTIVE_COMPILER_EXECUTION.md). In particular, public admission runs `check_feasibility_v1` over the complete V1 hard scalar set (source hard constraints plus six generated resource constraints plus four generated risk constraints) before native compilation.
 
-Adapters translate one registered contract, verify final payload and grant immediately before the boundary, invoke one downstream capability, and map the observed terminal outcome. Queue acceptance or handler completion is never inferred as external success. Component interfaces support deterministic fixtures and fault injection.
+The general feasibility API supports scalar, finite-enum, action-implication and immutable-identity atoms. `ObjectiveSourceEnvelopeV1` is narrower: its hard-constraint row carries one Q32 bound and no enum-set or action-implication payload. The V1 source adapter therefore uses only the scalar subset. Rich solver capability must not be reported as rich V1 wire capability.
 
-Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
+Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state. Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
 ## 5. Contracts, ports and compatibility
 
-Produced contracts:
+Target produced contracts:
 
 - `ModulePort::objective.compiler::intelligence.control`
 - `ObjectiveFunctionV1`
@@ -97,9 +101,11 @@ Critical protocol schemas:
 - `ObjectiveFunctionV1`
 - `RunStartSnapshotV1`
 
-Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
+Native `ObjectiveFunction` remains the deterministic owner IR rather than the public wire object. `project_objective_function_v1` validates that IR against the admitted source and emits the exact canonical JSON projection registered as `ObjectiveFunctionV1`; `RunStartSnapshotV1::bind` binds that projection digest to the frozen run identity. `ObjectiveCompileReceiptV1` and `ObjectiveConflictReceiptV1` remain stable Rust aliases for the native typed receipts. Product persistence is caller-owned: the default signed Agentd ingress publishes the canonical projection and run-start lineage through the authoritative learning ledger plus independent witness before runtime admission. The narrow immutable `ObjectiveRunFileStore` is retained only behind the qualification feature.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+Every eventual canonical producer must validate output before publication and bind semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
+
+Canonical wire round-trip, maximum-bound, unknown-field, canonical-ordering and digest-stability tests become mandatory before the canonical wire projection can be claimed complete.
 
 ## 6. Data authority, persistence and migrations
 
@@ -111,21 +117,25 @@ Read-only data dependencies:
 
 None.
 
-For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+The compiler itself is stateless and owns no objective database. The product owner that publishes an objective must atomically or transactionally bind the canonical `ObjectiveFunctionV1`, matching `RunStartSnapshotV1`, admission/compile receipts and reconciliation identity so no run observes an objective revision without its matching start snapshot.
 
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
+The compiler still owns no durable store. Named caller-owned publication now exists in the signed Agentd ingress through the learning-ledger-backed intelligence path; the qualification-only `ObjectiveRunFileStore` remains a separate compatibility oracle. Both bind immutable objective/run identity before runtime admission and reject semantic drift under a reused identity. The signed ingress additionally recovers active runs from the durable ledger and revalidates generation and issuer trust after ledger+witness fsync before exposing runtime admission. This is source-level product composition, not evidence of deployed activation or a new objective-owned database. Crash/restart, backpressure and latency on the selected target host remain qualification work.
 
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+For every future owned durable domain, the owner is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/objective.compiler.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/objective.compiler.md#8-current-native-implementation) identifies the stateless compiler surfaces and the separate product-composition boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md).
 
-[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
+[Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary. The compiler may not invent a durable transaction owner merely to satisfy a target contract.
 
 ## 8. Failure semantics, recovery and rollback
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/objective.compiler.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
+
+`ObjectiveConflictReceiptV1` and `CompileDisposition::ExplicitAbstain` are non-error semantic outcomes. New read-only vertical callers can use `run_read_only_vertical_outcome_v1` so an objective abstain is represented as `ReadOnlyVerticalOutcomeV1::ExplicitAbstain` rather than telemetry that looks like a system failure. The legacy vertical error variant remains for compatibility.
+
+`OBJ-E007` is a stable compatibility code, not a blanket retry instruction. Variant-specific retry guidance is defined in [`docs/contracts/OBJECTIVE_RETRY_POLICY.json`](../../contracts/OBJECTIVE_RETRY_POLICY.json) and exported as `ObjectiveRetryDirectiveV1`.
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
@@ -142,17 +152,38 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-objective/src/objective_admission.rs](../../../codex-rs/hepta-objective/src/objective_admission.rs) and the linked implementation components.
+Current bounded V1 source capacity is tied to the actual lowered native capacity, not merely to per-array structural ceilings:
+
+- source hard constraints: `<=246`;
+- generated resource constraints: exactly `6`;
+- generated risk constraints: exactly `4`;
+- native hard-constraint aggregate: `<=256`;
+- `successPredicates + terminalConditions + evidenceRequirements`: `<=128` aggregate;
+- caller legal actions at the bounded V1 boundary: `0..=127`;
+- compiled legal actions including intrinsic `abstain`: `<=128`;
+- soft dimensions: `<=64`;
+- feasibility oracle calls: `<=257`.
+
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md) specifies the algorithm and acceptance fixtures. Target ceilings are not measurements. The in-crate V1 feasibility gate is deterministic and call-bounded; host wall-clock/SLO measurements belong to the selected product host and may not change semantic results.
+
+The current admission profile-size guard still uses owner-local byte accounting rather than measuring an exact canonical profile wire encoding. If the 256 KiB profile ceiling remains protocol-hard, the exact canonical profile encoding and its measured byte length must replace that parallel estimator before the boundary is called canonical wire enforcement.
+
+The executable target-host procedure is [OBJECTIVE_TARGET_HOST_MEASUREMENT.md](../../readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md), recorded by `scripts/hepta-objective-target-measure.py`; ordinary admission and maximal conflict extraction are measured separately.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Stateless compiler/admission library; embed it at a request boundary and preserve its immutable objective/run snapshot in the owning caller. No compiler daemon or private objective database is needed. Unsupported language, resource exhaustion and infeasibility remain different outcomes; changing goal semantics requires a new authorized revision.
+`objective.compiler` is a stateless compiler/admission library. Embed it at a request boundary; do not deploy a private objective database or infer product persistence from the library.
+
+The current candidate has a named signed product-source chain: `AgentdClient::objective_start` → Agentd control dispatch → `objective_ingress::submit` → durable AuthBus evidence outbox → `objective_dispatch::run` → `ObjectiveIngressHost::process_delivery` → `codex-hepta-intelligence::prepare_intelligence_run_v1` → `start_intelligence_run_v1`. The host refuses Objective activation unless both an explicit AuthBus trust registry and owner-selected admission profile are configured. The feature-gated direct file-store path remains qualification compatibility only. Deployment still requires selected-host crash/restart/backpressure measurements and current exact-head/synthetic-merge qualification.
+
+Unsupported language, hard infeasibility, availability/retry conditions and explicit abstention remain distinct outcomes. Changing goal semantics requires a new authorized revision.
 
 Current operating and state-format references:
 
-- [docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md](../../readiness/OBJECTIVE_COMPILER_EXECUTION.md).
+- [docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md](../../readiness/OBJECTIVE_COMPILER_EXECUTION.md)
+- [docs/contracts/OBJECTIVE_RETRY_POLICY.json](../../contracts/OBJECTIVE_RETRY_POLICY.json)
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -162,8 +193,12 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-objective/src/compiler_tests.rs](../../../codex-rs/hepta-objective/src/compiler_tests.rs); named case: `compilation_is_permutation_invariant`.
 - [codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs](../../../codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs); named case: `all_three_action_graphs_match_truth_table_and_have_minimal_conflicts`.
+- [codex-rs/hepta-objective/tests/admission_closure.rs](../../../codex-rs/hepta-objective/tests/admission_closure.rs); hostile aggregate-bound, zero-action abstain and public feasibility-conflict coverage.
+- [codex-rs/hepta-agentd/src/objective_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/objective_runtime_tests.rs); publish-before-run, idempotent replay, semantic-identity conflict and durable explicit-abstain coverage.
 
-In `codex-rs`, run `just test -p codex-hepta-objective`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-objective`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips.
+
+A green historical PR or a test source in the tree is not current qualification. Source-complete claims require current exact-head plus synthetic-merge evidence under the repository's qualification policy. Product caller, independent acceptance, activation, promotion and release remain separate gates even when source qualification is green.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -176,17 +211,17 @@ Applicable work packages:
 
 The bootstrap package is `OBJ-0-OBJECTIVE-CONTRACTS`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned product packages may remain without invalidating documentation closure, but their absence must remain explicit.
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+Activation composes a named product caller through registered ports and verifies authority, configuration, persistence, resource and failure behavior. Shadow, read-only and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root, registry/source agreement, candidate tests, exact-head evidence and merge-candidate evidence. Composition requires a named authenticated production caller and owner store. Canonical contract completion requires an exact `ObjectiveFunctionV1` projection and `RunStartSnapshotV1` persistence path. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion, activation and release are separate externally governed states.
 
 For `objective.compiler`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
@@ -197,59 +232,59 @@ For `objective.compiler`, this document grants no runtime, production, model, pr
 - State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `intelligence-platform` / `kernel-contracts`.
 - Allowed write paths:
-- `codex-rs/hepta-objective/**`
-- `codex-rs/hepta-types/**`
+  - `codex-rs/hepta-objective/**`
+  - `codex-rs/hepta-types/**`
 - Development predecessors:
-- `DOC-1-V8-SEMANTIC-UPGRADE`
+  - `DOC-1-V8-SEMANTIC-UPGRADE`
 - Activation predecessors:
-- `DOC-2-DEFAULT-BRANCH-SELECTION`
+  - `DOC-2-DEFAULT-BRANCH-SELECTION`
 - Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
+  - `exact_source_identity`
+  - `source_inventory`
+  - `static_verification`
+  - `focused_tests`
+  - `package_tests`
+  - `all_target_check`
+  - `strict_lint`
+  - `clean_worktree`
+  - `exact_head_execution`
+  - `merge_candidate_execution`
 - Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
+  - `authority_violation`
+  - `base_drift`
+  - `claim_evidence_mismatch`
+  - `cross_owner_write`
+  - `unbounded_resource_or_retry`
 
 #### `OBJ-1-OBJECTIVE-COMPILER`
 
 - State: `planned`; priority: `1`; parallel class: `contract_coordinated`.
 - Owner/deputy: `intelligence-platform` / `kernel-contracts`.
 - Allowed write paths:
-- `codex-rs/hepta-objective/**`
+  - `codex-rs/hepta-objective/**`
 - Development predecessors:
-- `OBJ-0-OBJECTIVE-CONTRACTS`
-- `MEM-0-TYPES`
+  - `OBJ-0-OBJECTIVE-CONTRACTS`
+  - `MEM-0-TYPES`
 - Activation predecessors:
-- `P0.7B-B4-CALLSITE-PROOF`
-- `OBJ-0-OBJECTIVE-CONTRACTS`
+  - `P0.7B-B4-CALLSITE-PROOF`
+  - `OBJ-0-OBJECTIVE-CONTRACTS`
 - Required deliverables:
-- `exact_source_identity`
-- `source_inventory`
-- `static_verification`
-- `focused_tests`
-- `package_tests`
-- `all_target_check`
-- `strict_lint`
-- `clean_worktree`
-- `exact_head_execution`
-- `merge_candidate_execution`
+  - `exact_source_identity`
+  - `source_inventory`
+  - `static_verification`
+  - `focused_tests`
+  - `package_tests`
+  - `all_target_check`
+  - `strict_lint`
+  - `clean_worktree`
+  - `exact_head_execution`
+  - `merge_candidate_execution`
 - Stop conditions:
-- `authority_violation`
-- `base_drift`
-- `claim_evidence_mismatch`
-- `cross_owner_write`
-- `unbounded_resource_or_retry`
+  - `authority_violation`
+  - `base_drift`
+  - `claim_evidence_mismatch`
+  - `cross_owner_write`
+  - `unbounded_resource_or_retry`
 
 ## 16. V8.2 pre-coding implementation-readiness overlay
 
@@ -275,8 +310,10 @@ Ordinary authorized coding identifies the Git baseline, relevant contracts, owne
 
 ## 17. Source implementation receipt
 
-The bootstrap source-location obligation for `objective.compiler` is implemented by work package `OBJ-0-OBJECTIVE-CONTRACTS` in:
+The source location for `objective.compiler` is materialized in:
 
 - `codex-rs/hepta-objective`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+Repository workflows such as `.github/workflows/hepta-consolidated-source.yml` are expected to check closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state for an exact candidate. Their existence is not a pass receipt; only the result attached to the exact candidate SHA is evidence for that candidate.
+
+This source-location receipt grants no runtime, production-writer, canonical wire, durable owner-store, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.

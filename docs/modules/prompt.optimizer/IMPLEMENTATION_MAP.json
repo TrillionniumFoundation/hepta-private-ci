@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "102ca73de59026ea52f99f9adbdd040dd3972a67",
+    "tree": "51b6308d43877aca06e0cb10e4ee3fd0d1a14d5b"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "prompt.optimizer",
@@ -22,12 +22,70 @@
   "productionWriterState": "not_established",
   "operations": [
     {
+      "operation": "enumerate_factors",
+      "nativeSymbol": "policy::enumerate_factors",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/policy_enumeration_pricing.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/policy.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "enumerate_factors",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "price_factors",
+      "nativeSymbol": "policy::price_factors",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/policy_enumeration_pricing.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/policy.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "price_factors",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "select_portfolio",
+      "nativeSymbol": "policy::select_portfolio",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/policy_portfolio.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/policy.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "select_portfolio",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "exercise",
+      "nativeSymbol": "policy::exercise",
+      "sourcePath": "codex-rs/hepta-prompt-optimizer/src/policy_exercise_helpers.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/policy.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "exercise",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
       "operation": "optimize",
       "nativeSymbol": "optimize",
       "sourcePath": "codex-rs/hepta-prompt-optimizer/src/lib.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/lib_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "optimize",
       "mappingClass": "owner_native",
@@ -39,7 +97,9 @@
       "sourcePath": "codex-rs/hepta-prompt-optimizer/src/local_shadow.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-prompt-optimizer/src/local_shadow_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "calculate_local_shadow",
       "mappingClass": "owner_native",
@@ -47,8 +107,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Compose the registered policy operations into an authenticated product caller and owner-bound prompt.registry, knowledge.graph and learning.ledger adapters.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the production, activation or release claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",

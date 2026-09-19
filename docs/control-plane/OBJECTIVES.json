@@ -81,22 +81,40 @@
   ],
   "objectiveFunctionContract": {
     "schema": "ObjectiveFunctionV1",
+    "registeredV1Fields": [
+      "objectiveId",
+      "requestDigest",
+      "principalScope",
+      "successPredicates",
+      "terminalConditions",
+      "hardConstraints",
+      "softUtilityDimensions",
+      "resourceEndowment",
+      "deadlineUnixMs",
+      "revision"
+    ],
     "immutableCore": [
       "principalScope",
       "successPredicates",
       "terminalConditions",
       "hardConstraints",
-      "evidenceRequirements",
-      "allowedActionClasses",
-      "forbiddenActionClasses"
+      "resourceEndowment",
+      "deadlineUnixMs",
+      "revision"
     ],
     "boundedAdaptiveSurface": [
-      "softUtilityDimensions",
+      "softUtilityDimensions"
+    ],
+    "futureVersionOnly": [
+      "evidenceRequirements",
+      "allowedActionClasses",
+      "forbiddenActionClasses",
       "resourceAllocation",
       "explorationBudget",
       "evidenceEffort",
       "abstentionThreshold"
     ],
+    "projectionPolicy": "ObjectiveFunctionV1 publication is closed to the exact fields registered in docs/contracts/PROTOCOL_SCHEMAS.json; future semantic fields require a versioned contract rather than an unregistered projection.",
     "ambiguityPolicy": "emit_bounded_interpretation_set_or_request_clarification",
     "feasibilityPolicy": "do_not_lower_success_predicate_to_claim_success"
   },

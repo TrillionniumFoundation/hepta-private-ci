@@ -8,10 +8,12 @@ publish = false
 [lib]
 name = "codex_hepta_supervisor"
 path = "src/lib.rs"
-doctest = false
+doctest = true
 
 [features]
 default = []
+# Offline/shadow harness API; never enabled by a product dependency.
+qualification = []
 # Explicit build opt-in for externally authorized mutation; default daemons
 # remain lifecycle-only and keep signed mutation admission fail-closed.
 production-authority = []
@@ -19,6 +21,11 @@ production-authority = []
 [[bin]]
 name = "hepta-supervisord"
 path = "src/main.rs"
+test = false
+
+[[bin]]
+name = "hepta-supervisor-intent-recovery"
+path = "src/bin/hepta-supervisor-intent-recovery.rs"
 test = false
 
 [[bin]]
@@ -33,6 +40,18 @@ path = "src/bin/hepta-final-use-signer.rs"
 test = false
 required-features = ["production-authority"]
 
+[[bin]]
+name = "hepta-final-use-approver"
+path = "src/bin/hepta-final-use-approver.rs"
+test = false
+required-features = ["production-authority"]
+
+[[bin]]
+name = "hepta-final-use-revocation-signer"
+path = "src/bin/hepta-final-use-revocation-signer.rs"
+test = false
+required-features = ["production-authority"]
+
 [lints]
 workspace = true
 
@@ -41,10 +60,13 @@ anyhow = { workspace = true }
 base64 = { workspace = true }
 codex-hepta-agent-protocol = { workspace = true }
 codex-hepta-contracts = { workspace = true }
+codex-hepta-control-plane = { path = "../hepta-control-plane" }
 codex-hepta-fleet = { workspace = true }
+codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }
 codex-hepta-memory = { workspace = true }
 codex-hepta-matrix-protocol = { workspace = true }
 codex-hepta-paths = { workspace = true }
+codex-hepta-types = { workspace = true }
 codex-uds = { workspace = true }
 constant_time_eq = { workspace = true }
 ed25519-dalek = { workspace = true }

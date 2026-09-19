@@ -1,6 +1,6 @@
 //! Governed plasticity proposal records.
 //!
-//! New writes are parameter-only V2 candidate sets. Historical parameter and
+//! New writes are bounded parameter V2 or topology V3 candidate sets. Historical parameter and
 //! topology V1 records are read-only. Proposals are next-generation,
 //! qualification-only artifacts; this crate has no API for runtime mutation,
 //! authority mutation, self-promotion or release.
@@ -8,21 +8,30 @@
 #![forbid(unsafe_code)]
 
 mod durable_registry;
+mod durable_topology_registry;
 
 pub use durable_registry::DurableProposalAppendReceiptV1;
 pub use durable_registry::DurableProposalRegistry;
 pub use durable_registry::DurableProposalRegistryError;
 pub use durable_registry::DurableRegistryAnchorV1;
+pub use durable_topology_registry::DurableTopologyAnchorV1;
+pub use durable_topology_registry::DurableTopologyAppendReceiptV1;
+pub use durable_topology_registry::DurableTopologyProposalRegistryV1;
+pub use durable_topology_registry::DurableTopologyRegistryError;
 
 mod legacy;
 mod parameter_v2;
 mod registry;
+mod topology_v3;
 mod types;
 
 pub use parameter_v2::propose_v2;
 pub use parameter_v2::verify_parameter_proposal_v2;
 pub use registry::ProposalRegistry;
 pub use registry::ProposalRegistrySlotV2;
+pub use topology_v3::propose_topology_v3;
+pub use topology_v3::runtime_topology_candidate_v1;
+pub use topology_v3::verify_topology_proposal_v3;
 pub use types::AppendDisposition;
 pub use types::CandidateNormMetricsV2;
 pub use types::Error;
@@ -45,11 +54,19 @@ pub use types::ProposalStatus;
 pub use types::ProposalVersion;
 pub use types::ProposalWindowV2;
 pub use types::ProposalWriteRequest;
+pub use types::TopologyCandidateKindV3;
+pub use types::TopologyCandidateRequestV3;
+pub use types::TopologyCandidateV3;
 pub use types::TopologyDelta;
+pub use types::TopologyDeltaV3;
 pub use types::TopologyOperation;
+pub use types::TopologyOperationV3;
+pub use types::TopologyProposalRequestV3;
+pub use types::TopologyProposalV3;
 
 use types::LEGACY_V1;
 use types::PARAMETER_V2;
+use types::TOPOLOGY_V3;
 
 #[cfg(test)]
 use codex_hepta_types::Digest32;
@@ -70,6 +87,7 @@ pub fn dispatch_proposal_version(version: u16) -> Result<ProposalVersion, Error>
     match version {
         LEGACY_V1 => Ok(ProposalVersion::LegacyV1),
         PARAMETER_V2 => Ok(ProposalVersion::ParameterV2),
+        TOPOLOGY_V3 => Ok(ProposalVersion::TopologyV3),
         value => Err(Error::UnsupportedVersion(value)),
     }
 }
@@ -80,6 +98,9 @@ pub fn propose_versioned(request: ProposalWriteRequest) -> Result<ProposalRecord
         ProposalWriteRequest::ParameterV2(request) => propose_v2(*request)
             .map(Box::new)
             .map(ProposalRecord::ParameterV2),
+        ProposalWriteRequest::TopologyV3(request) => propose_topology_v3(*request)
+            .map(Box::new)
+            .map(ProposalRecord::TopologyV3),
     }
 }
 
@@ -103,6 +124,10 @@ pub fn read_versioned_proposal(
         ProposalRecord::ParameterV2(proposal) => {
             verify_parameter_proposal_v2(proposal)?;
             ProposalDigestVerification::VerifiedV2
+        }
+        ProposalRecord::TopologyV3(proposal) => {
+            verify_topology_proposal_v3(proposal)?;
+            ProposalDigestVerification::VerifiedV3
         }
     };
     Ok(ProposalReadResult {

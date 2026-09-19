@@ -31,7 +31,7 @@ impl TextTrust {
     /// Reload the owner-controlled file for each admission and dispatch stage.
     /// Updating the public key does not synthesize a signature or a grant.
     pub fn load(path: &Path, identity: &AgentdIdentity) -> Result<Self, AgentdError> {
-        let bytes = read_owner_file(path, identity)?;
+        let bytes = read_private_owner_file(path, identity, 16_384)?;
         let trust: Self = serde_json::from_slice(&bytes)?;
         if trust.schema_version != 1
             || trust.agent_id != identity.agent_id.as_str()
@@ -82,7 +82,11 @@ pub(crate) fn hex_bytes<const N: usize>(value: &str) -> Result<[u8; N], AgentdEr
 // ownership, writable-by-others files, oversized files and replacement/drift
 // during the read. Do not create a file, key or registration on this path.
 #[cfg(unix)]
-fn read_owner_file(path: &Path, identity: &AgentdIdentity) -> Result<Vec<u8>, AgentdError> {
+pub(crate) fn read_private_owner_file(
+    path: &Path,
+    identity: &AgentdIdentity,
+    maximum_bytes: usize,
+) -> Result<Vec<u8>, AgentdError> {
     use std::os::unix::fs::MetadataExt;
 
     if !path.is_absolute()
@@ -101,7 +105,8 @@ fn read_owner_file(path: &Path, identity: &AgentdIdentity) -> Result<Vec<u8>, Ag
         || before.nlink() != 1
         || before.uid() != home.uid()
         || before.mode() & 0o077 != 0
-        || before.len() > 16_384
+        || maximum_bytes == 0
+        || before.len() > maximum_bytes as u64
     {
         return Err(invalid(
             "trust file must be a private owner-controlled regular file",
@@ -124,9 +129,11 @@ fn read_owner_file(path: &Path, identity: &AgentdIdentity) -> Result<Vec<u8>, Ag
         return Err(invalid("trust file changed while opening"));
     }
     let mut bytes = Vec::new();
-    file.by_ref().take(16_385).read_to_end(&mut bytes)?;
+    file.by_ref()
+        .take(maximum_bytes.saturating_add(1) as u64)
+        .read_to_end(&mut bytes)?;
     let after = std::fs::symlink_metadata(path)?;
-    if bytes.len() > 16_384
+    if bytes.len() > maximum_bytes
         || !after.is_file()
         || identity(&after) != identity(&before)
         || identity(&file.metadata()?) != identity(&before)
@@ -137,7 +144,11 @@ fn read_owner_file(path: &Path, identity: &AgentdIdentity) -> Result<Vec<u8>, Ag
 }
 
 #[cfg(not(unix))]
-fn read_owner_file(_path: &Path, _identity: &AgentdIdentity) -> Result<Vec<u8>, AgentdError> {
+pub(crate) fn read_private_owner_file(
+    _path: &Path,
+    _identity: &AgentdIdentity,
+    _maximum_bytes: usize,
+) -> Result<Vec<u8>, AgentdError> {
     Err(invalid(
         "the signed text trust-file profile currently requires Unix ownership checks",
     ))

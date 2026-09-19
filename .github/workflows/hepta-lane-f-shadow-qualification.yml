@@ -110,7 +110,23 @@ jobs:
           git checkout --detach "$SHA"
           printf 'sha=%s\n' "$SHA" >> "$GITHUB_OUTPUT"
 
+      - name: Select exact-tree native execution
+        id: execution
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_candidate.py \
+            --source "$SOURCE_SHA" \
+            --tested "${{ steps.merge.outputs.sha }}" \
+            --base "$BASE_SHA" \
+            --lane synthetic-merge \
+            --github-output "$GITHUB_OUTPUT"
+
       - name: Generate and verify exact dependency lock
+        if: steps.execution.outputs.run_native == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -123,6 +139,7 @@ jobs:
             qualification/lane-f-shadow/Cargo.lock
 
       - name: Test merge candidate
+        if: steps.execution.outputs.run_native == 'true'
         shell: bash
         run: |
           set -euo pipefail

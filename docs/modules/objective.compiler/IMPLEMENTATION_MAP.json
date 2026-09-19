@@ -7,11 +7,12 @@
   "technicalGuide": "docs/modules/objective.compiler/TECHNICAL.md",
   "executionSpecification": "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
   "canonicalErrorRegistry": "docs/contracts/OBJECTIVE_ERRORS.json",
+  "retryPolicyRegistry": "docs/contracts/OBJECTIVE_RETRY_POLICY.json",
   "sourceRoot": [
     "codex-rs/hepta-objective"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
+  "productCallerState": "source_composed_agentd_not_activated",
   "productionWriterState": "not_applicable_stateless",
   "operations": [
     {
@@ -30,6 +31,10 @@
         {
           "path": "codex-rs/hepta-objective/src/source_envelope_json_tests.rs",
           "symbol": "decodes_all_fields_without_loss_or_semantic_admission"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/source_envelope_json_tests.rs",
+          "symbol": "retains_structural_count_text_and_semantic_key_checks_after_decoding"
         }
       ],
       "designOperation": "decode_source_envelope_json_v1",
@@ -45,7 +50,7 @@
         "ObjectiveSourceEnvelopeV1"
       ],
       "outputs": [
-        "validated owner-local structure"
+        "validated owner-local structure and aggregate native-capacity reservation"
       ],
       "state": "source_implemented",
       "authority": "none",
@@ -53,6 +58,14 @@
         {
           "path": "codex-rs/hepta-objective/src/source_envelope_v1_tests.rs",
           "symbol": "text_limits_count_utf8_bytes_for_every_source_field"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/source_envelope_v1_tests.rs",
+          "symbol": "predicate_arrays_share_the_native_aggregate_capacity"
+        },
+        {
+          "path": "codex-rs/hepta-objective/tests/admission_closure.rs",
+          "symbol": "source_constraint_bound_reserves_ten_generated_constraint_slots"
         }
       ],
       "designOperation": "validate_structure",
@@ -86,7 +99,7 @@
     {
       "operation": "admit_and_compile_objective_v1",
       "nativeSymbol": "codex_hepta_objective::admit_and_compile_objective_v1",
-      "sourcePath": "codex-rs/hepta-objective/src/objective_admission.rs",
+      "sourcePath": "codex-rs/hepta-objective/src/objective_admission_gate.rs",
       "inputs": [
         "ObjectiveSourceEnvelopeV1",
         "ObjectiveAdmissionProfileV1",
@@ -94,10 +107,10 @@
       ],
       "outputs": [
         "ObjectiveAdmissionReceiptV1",
-        "ObjectiveCompileReceipt",
-        "ObjectiveConflictReceipt"
+        "ObjectiveCompileReceiptV1",
+        "ObjectiveConflictReceiptV1"
       ],
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_composed",
       "authority": "deny_all",
       "tests": [
         {
@@ -109,18 +122,27 @@
           "symbol": "untrusted_evidence_reaches_native_authority_rejection"
         },
         {
-          "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
-          "symbol": "oversized_profile_mapping_set_is_rejected"
+          "path": "codex-rs/hepta-objective/tests/admission_closure.rs",
+          "symbol": "public_admission_returns_inclusion_minimal_profile_bound_conflict"
         },
         {
-          "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
-          "symbol": "risk_profile_ordering_is_monotone"
+          "path": "codex-rs/hepta-objective/tests/admission_closure.rs",
+          "symbol": "zero_caller_actions_reaches_explicit_abstain_through_bounded_admission"
         }
       ],
       "designOperation": "admit_and_compile_objective_v1",
-      "mappingClass": "owner_native",
-      "delegatedCallees": [],
-      "sourcePathExists": true
+      "mappingClass": "owner_native_gate",
+      "delegatedCallees": [
+        "check_feasibility_v1",
+        "objective_admission::admit_and_compile_objective_v1",
+        "compile"
+      ],
+      "sourcePathExists": true,
+      "sourceDialect": "ObjectiveSourceEnvelopeV1 scalar hard-constraint subset",
+      "richSolverCapabilitiesNotYetSourceRepresentable": [
+        "finite-enum set payloads",
+        "positive action implication payloads"
+      ]
     },
     {
       "operation": "check_feasibility_v1",
@@ -153,16 +175,16 @@
     },
     {
       "operation": "compile",
-      "nativeSymbol": "codex_hepta_objective::compile",
+      "nativeSymbol": "crate::compiler::compile",
       "sourcePath": "codex-rs/hepta-objective/src/compiler.rs",
       "inputs": [
         "ObjectiveSourceEnvelope"
       ],
       "outputs": [
-        "ObjectiveCompileReceipt",
-        "ObjectiveConflictReceipt"
+        "ObjectiveCompileReceiptV1",
+        "ObjectiveConflictReceiptV1"
       ],
-      "state": "source_implemented",
+      "state": "source_implemented_internal",
       "authority": "none",
       "tests": [
         {
@@ -180,7 +202,67 @@
       ],
       "designOperation": "compile",
       "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "scalar_adapter::scalar_conflict"
+      ],
+      "sourcePathExists": true,
+      "compatibilityRecheck": "legacy scalar feasibility defense-in-depth after public V1 general-feasibility gate",
+      "publicCompatibilityEntrypoint": "compile_prevalidated_legacy_objective",
+      "publicCompatibilityFeature": "legacy-objective-compile"
+    },
+    {
+      "operation": "project_objective_function_v1",
+      "nativeSymbol": "codex_hepta_objective::project_objective_function_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/objective_function_v1.rs",
+      "inputs": [
+        "ObjectiveSourceEnvelopeV1",
+        "ObjectiveAdmissionOutcomeV1"
+      ],
+      "outputs": [
+        "canonical ObjectiveFunctionV1 JSON projection"
+      ],
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1.rs",
+          "symbol": "canonical_decode_rejects_reformatted_or_unknown_json"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/production_objective_tests.rs",
+          "symbol": "product objective publication and replay tests"
+        }
+      ],
+      "designOperation": "project_objective_function_v1",
+      "mappingClass": "owner_native",
       "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "bind_run_start_snapshot_v1",
+      "nativeSymbol": "codex_hepta_objective::RunStartSnapshotV1::bind",
+      "sourcePath": "codex-rs/hepta-objective/src/run_start.rs",
+      "inputs": [
+        "compiled ObjectiveFunction",
+        "canonical ObjectiveFunctionV1 digest",
+        "frozen run bindings"
+      ],
+      "outputs": [
+        "RunStartSnapshotV1"
+      ],
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence/src/production_objective_tests.rs",
+          "symbol": "product objective publication and replay tests"
+        }
+      ],
+      "designOperation": "bind_run_start_snapshot_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "validate_compiled_objective_v1"
+      ],
       "sourcePathExists": true
     }
   ],
@@ -191,10 +273,12 @@
     "ObjectiveCompileReceiptV1"
   ],
   "completion": {
-    "specification": "complete",
+    "specification": "candidate_aligned_with_current_source_boundary",
     "source": "candidate_implemented",
-    "exactHeadQualification": "required",
-    "productComposition": "not_established",
+    "exactHeadQualification": "required_current_candidate_workflows",
+    "canonicalObjectiveFunctionV1Projection": "source_implemented_and_product_composed",
+    "runStartSnapshotPersistence": "source_implemented_and_product_composed",
+    "productComposition": "source_composed_not_activated",
     "independentAcceptance": "not_established",
     "activation": "not_established",
     "release": "not_established"
@@ -207,11 +291,15 @@
     "codex-rs/hepta-objective"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
+  "productionImplementation": true,
   "claimBoundary": {
-    "nativeSourceMappingComplete": true,
+    "nativeV1ScalarAdmissionMapped": true,
+    "generalFeasibilityGateOnPublicAdmission": true,
+    "generalFeasibilityRichDomainsSourceRepresentable": false,
+    "canonicalObjectiveFunctionV1ProjectionComplete": true,
+    "runStartSnapshotPersistenceComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
@@ -222,12 +310,130 @@
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Define a versioned source grammar with explicit enum-set and positive action-implication payloads before claiming those rich solver domains on the source-to-objective path.",
+    "Replace manual profile byte estimation with exact canonical encoded-byte enforcement if the 256 KiB profile ceiling remains protocol-hard.",
+    "Obtain successful exact-head objective admission and Lane D semantic workflow receipts for the current combined candidate.",
+    "Qualify the Agentd objective publication path on the named target host, including crash/restart and backpressure measurements."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
-  ]
+  ],
+  "status": {
+    "implemented": true,
+    "composed": true,
+    "qualified": false
+  },
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-intelligence/src/production_objective.rs",
+      "symbol": "prepare_intelligence_run_v1",
+      "role": "canonical_projection_and_learning_ledger_run_start_publication"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/objective_ingress.rs",
+      "symbol": "submit",
+      "role": "signed_authbus_objective_admission_and_durable_outbox_enqueue"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/objective_ingress.rs",
+      "symbol": "ObjectiveIngressHost::process_delivery",
+      "role": "owner_profile_bound_canonical_publication_and_runtime_admission"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/objective_dispatch.rs",
+      "symbol": "run",
+      "role": "durable_outbox_processing_and_delivery_settlement"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/objective_host.rs",
+      "symbol": "start_intelligence_run_v1",
+      "role": "durable_host_envelope_runtime_consumer"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "symbol": "admit_publish_and_start_objective_run_v1",
+      "role": "qualification_feature_direct_store_compatibility"
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_dispatch.rs",
+      "object": "59c6bb135a57f2b29fd318df19aa7d7374305e1e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_host.rs",
+      "object": "478d3320838dd4b099613348785e4f7ff7b1a145"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_ingress.rs",
+      "object": "ec6440803a0f1284bbc1ef98b5121075fe74dbd4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "object": "be846bf6651cb57af6b4d716375f82927c0ac910"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/production_objective.rs",
+      "object": "b95c5fce04e84b085d5d055a05466b68d1e59bf0"
+    },
+    {
+      "path": "codex-rs/hepta-objective",
+      "object": "ddeffc271accc6f3d802e46cf2af9f9a9c790bed"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/compiler.rs",
+      "object": "7b881cc3dcdc0d4f178da42667b4430ecc203811"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/feasibility.rs",
+      "object": "c540d050dfdc59688d3ef5406537b1a3c32471db"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/objective_admission.rs",
+      "object": "5c0f533877c2e2a39d9e686374bdb564c73b92a5"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/objective_admission_gate.rs",
+      "object": "9f2905afe3cab56915d057dffe790eb510b04c4e"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/objective_function_v1.rs",
+      "object": "3a41274ff8eb22e9624346fadbdb6915e9c68b15"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/run_start.rs",
+      "object": "fe943936923cf740023d7cbeb175a9926a331f32"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/source_envelope_json.rs",
+      "object": "335290b26709bd7d4364faada5e763dcb7b4abbd"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/source_envelope_validation.rs",
+      "object": "669930084f7248cc0a58d56a040330f00891cf41"
+    }
+  ],
+  "productCallerEvidence": [
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_ingress.rs",
+      "symbol": "submit / ObjectiveIngressHost::process_delivery",
+      "semantics": "signed AuthBus admission -> durable evidence outbox -> canonical learning-ledger RunStart+witness -> post-fsync generation/issuer revalidation -> bounded runtime admission"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_dispatch.rs",
+      "symbol": "run",
+      "semantics": "lease durable Objective delivery -> process canonical publication -> settle delivered/rejected or release transient failures"
+    }
+  ],
+  "sourceBaseRole": "historical_mapping_baseline_not_exact_head_receipt",
+  "exactHeadQualificationPolicy": {
+    "state": "workflow_enforced_per_candidate",
+    "workflows": [
+      ".github/workflows/hepta-objective-admission.yml",
+      ".github/workflows/hepta-lane-d-semantic-conformance.yml",
+      ".github/workflows/hepta-architecture-convergence.yml"
+    ]
+  }
 }

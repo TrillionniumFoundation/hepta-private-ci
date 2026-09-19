@@ -15,11 +15,15 @@ mod durable_lock;
 mod error;
 mod journal;
 mod ledger;
+mod long_horizon;
 mod model;
+mod persistent_index;
 mod segment_codec;
 mod segments;
 mod shadow;
 mod signed_evidence;
+mod witness;
+mod witnessed;
 
 pub use causal_v2::AuthenticatedOutcomeV1;
 pub use causal_v2::AuthenticatedPrincipalV1;
@@ -39,7 +43,9 @@ pub use causal_v2::validate_candidate_set_completeness;
 pub use causal_v2::verify_independent_roles;
 pub use dataset_receipt_v3::DatasetReceiptError;
 pub use dataset_receipt_v3::DatasetSnapshotReceiptV3;
+pub use dataset_receipt_v3::freeze_dataset_receipt_from_ledger_v3;
 pub use dataset_receipt_v3::freeze_dataset_receipt_v3;
+pub use dataset_receipt_v3::verify_dataset_snapshot_receipt_against_ledger_v3;
 pub use dataset_receipt_v3::verify_dataset_snapshot_receipt_v3;
 pub use durable::DurableLedger;
 pub use durable::DurableLedgerError;
@@ -49,6 +55,10 @@ pub use durable::inspect_ledger;
 pub use error::LedgerError;
 pub use journal::DurableLearningJournal;
 pub use ledger::LearningLedger;
+pub use long_horizon::LongHorizonLedgerCheckpointV1;
+pub use long_horizon::LongHorizonLedgerErrorV1;
+pub use long_horizon::LongHorizonLedgerMetricsV1;
+pub use long_horizon::LongHorizonSegmentedLedgerV1;
 pub use model::AppendDisposition;
 pub use model::AppendReceipt;
 pub use model::CandidateSetCompleteness;
@@ -60,6 +70,11 @@ pub use model::LedgerSnapshot;
 pub use model::OutcomeFinality;
 pub use model::OutcomeObservation;
 pub use model::Revocation;
+pub use model::RunStartPublicationV1;
+pub use persistent_index::PersistentHistoricalIndexV1;
+pub use persistent_index::PersistentIndexErrorV1;
+pub use persistent_index::PersistentIndexedLearningLedgerV1;
+pub use persistent_index::PersistentIndexedLedgerErrorV1;
 pub use segments::LedgerSegmentCheckpoint;
 pub use segments::LedgerSegmentLimits;
 pub use segments::MAX_LEDGER_SEGMENTS;
@@ -80,7 +95,23 @@ pub use signed_evidence::SignedLearningEvidenceV1;
 pub use signed_evidence::TrustedLearningSignerV1;
 pub use signed_evidence::VerifiedLearningEvidenceV1;
 pub use signed_evidence::verify_signed_role_separation;
+pub use signed_evidence::verify_verified_role_separation;
+pub use witness::LedgerWitnessStore;
+pub use witness::WitnessStoreError;
+pub use witnessed::WitnessedAppendError;
+pub use witnessed::WitnessedLearningJournal;
 
 #[cfg(test)]
 #[path = "shadow_tests.rs"]
 mod shadow_tests;
+
+#[cfg(test)]
+#[path = "persistent_index_integration_tests.rs"]
+mod persistent_index_integration_tests;
+
+#[cfg(test)]
+#[path = "persistent_index_reconcile_tests.rs"]
+mod persistent_index_reconcile_tests;
+
+#[cfg(test)]
+mod indexed_retention_tests;

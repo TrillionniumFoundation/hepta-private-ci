@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import importlib.util
+import json
+import itertools
 import tempfile
 import unittest
 from pathlib import Path
@@ -101,6 +103,41 @@ class ReadinessSemanticsTests(unittest.TestCase):
             with self.subTest(value=value):
                 with self.assertRaisesRegex(SystemExit, "authority"):
                     VERIFIER.false_authority(flags, "fixture")
+
+
+    def test_field_schema_object_key_order_is_not_semantic(self):
+        schemas = [
+            {"name": "id", "type": "u64", "required": True},
+            {"name": "label", "type": "utf8", "required": True, "maxBytes": 32},
+            {"type": "enum", "maxBytes": 32, "values": ["first", "second"]},
+            {"type": "bounded_array", "maxBytes": 64, "minItems": 0,
+             "maxItems": 4, "uniqueItems": False, "items": {"type": "u64"}},
+            {"type": "bounded_fixed_point_vector", "maxBytes": 64, "scale": "Q24",
+             "minItems": 1, "maxItems": 4, "items": {"type": "i64"}},
+            {"type": "bounded_object", "maxBytes": 64, "minProperties": 1,
+             "maxProperties": 1, "additionalProperties": False,
+             "properties": [{"required": True, "type": "u64", "name": "id"}]},
+        ]
+        for schema in schemas:
+            for keys in itertools.permutations(schema):
+                with self.subTest(schema=schema["type"], keys=keys):
+                    VERIFIER.validate_schema_node(
+                        {key: schema[key] for key in keys}, 128, "fixture",
+                        named="name" in schema,
+                    )
+
+    def test_field_schema_still_rejects_missing_and_unknown_keys(self):
+        schema = {"name": "id", "type": "utf8", "required": True, "maxBytes": 32}
+        for key in schema:
+            invalid = {k: v for k, v in schema.items() if k != key}
+            with self.subTest(missing=key), self.assertRaises(SystemExit):
+                VERIFIER.validate_schema_node(invalid, 128, "fixture", named=True)
+        with self.assertRaisesRegex(SystemExit, "key closure"):
+            VERIFIER.validate_schema_node(schema | {"extra": False}, 128, "fixture", named=True)
+
+    def test_json_duplicate_schema_keys_are_not_collapsed(self):
+        with self.assertRaises(VERIFIER.DuplicateKey):
+            json.loads('{"type":"u64","type":"bool"}', object_pairs_hook=VERIFIER.pairs)
 
 
 if __name__ == "__main__":

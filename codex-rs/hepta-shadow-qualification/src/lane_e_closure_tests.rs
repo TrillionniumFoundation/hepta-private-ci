@@ -19,6 +19,7 @@ use codex_hepta_learning_artifacts::ArtifactKind;
 use codex_hepta_learning_artifacts::ArtifactLifecycleEventV1;
 use codex_hepta_learning_artifacts::ArtifactLifecycleStateV1;
 use codex_hepta_learning_artifacts::DatasetWithdrawalRegistry;
+use codex_hepta_learning_artifacts::DatasetWithdrawalRegistryBindingV1;
 use codex_hepta_learning_artifacts::LearningArtifactManifestV2;
 use codex_hepta_learning_artifacts::ProvenanceModeV1;
 use codex_hepta_learning_artifacts::validate_artifact_lifecycle_transition;
@@ -215,7 +216,12 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
 
     let artifact_id = id("candidate-1");
     let producer_id = generator.principal_id.clone();
-    let withdrawal_registry = DatasetWithdrawalRegistry::new();
+    let withdrawal_registry = DatasetWithdrawalRegistry::new(DatasetWithdrawalRegistryBindingV1 {
+        registry_id: id("dataset-withdrawals"),
+        scope_digest: digest("lane-e-qualification"),
+        authority_id: id("dataset-owner"),
+    })
+    .expect("valid withdrawal registry binding");
     let artifact = match withdrawal_registry.admit_manifest(
         LearningArtifactManifestV2 {
             artifact_id: artifact_id.clone(),

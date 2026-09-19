@@ -17,6 +17,7 @@ use crate::LedgerSnapshot;
 use crate::OutcomeFinality;
 use crate::OutcomeObservation;
 use crate::Revocation;
+use crate::RunStartPublicationV1;
 
 const MAX_RECORDS: usize = 1_000_000;
 const MAX_CANDIDATES: usize = 128;
@@ -24,16 +25,25 @@ const EVENT_DIGEST_DOMAIN: &[u8] = b"hepta.learning-ledger.event.v1";
 const CHAIN_DIGEST_DOMAIN: &[u8] = b"hepta.learning-ledger.chain.v1";
 
 #[derive(Clone, Debug)]
-struct DecisionIndex {
-    record_id: StableId,
-    policy_id: StableId,
+pub(crate) struct HistoricalRecordIndex {
+    pub(crate) sequence: LogicalSequence,
+    pub(crate) predecessor_chain_digest: Digest32,
+    pub(crate) event_digest: Digest32,
+    pub(crate) chain_digest: Digest32,
+    pub(crate) kind: u8,
 }
 
 #[derive(Clone, Debug)]
-struct OutcomeIndex {
-    record_id: StableId,
-    episode_id: StableId,
-    finality: OutcomeFinality,
+pub(crate) struct DecisionIndex {
+    pub(crate) record_id: StableId,
+    pub(crate) policy_id: StableId,
+}
+
+#[derive(Clone, Debug)]
+pub(crate) struct OutcomeIndex {
+    pub(crate) record_id: StableId,
+    pub(crate) episode_id: StableId,
+    pub(crate) finality: OutcomeFinality,
 }
 
 /// Validated immutable event prepared for a single-writer commit.
@@ -42,18 +52,51 @@ pub(crate) struct PreparedAppend {
     pub(crate) disposition: AppendDisposition,
 }
 
-/// Deterministic append-only ledger core. The type performs no ambient I/O and
-/// exposes immutable snapshots for a separately authorized durable adapter.
-#[derive(Clone, Debug, Default)]
+/// Deterministic append-only ledger core. The type performs no ambient I/O.
+///
+/// The core separates complete causal indexes from retained event payloads. A
+/// durable segmented owner can therefore archive an immutable prefix and drop
+/// its full `LedgerRecord` payloads without resetting sequence, idempotency,
+/// revocation, outcome or credit semantics. Pure in-memory users never invoke
+/// that crate-private compaction seam and retain the historical API unchanged.
+#[derive(Clone, Debug)]
 pub struct LearningLedger {
-    records: Vec<LedgerRecord>,
-    record_digests: BTreeMap<StableId, Digest32>,
-    record_kinds: BTreeMap<StableId, u8>,
-    decisions: BTreeMap<StableId, DecisionIndex>,
-    outcomes: BTreeMap<StableId, OutcomeIndex>,
-    credit_ids: BTreeSet<StableId>,
-    credit_keys: BTreeSet<(StableId, StableId, StableId)>,
-    revoked: BTreeSet<StableId>,
+    /// Full payloads retained since the latest durable archive frontier.
+    pub(crate) records: Vec<LedgerRecord>,
+    /// Record identities whose complete payload is still present in `records`.
+    pub(crate) record_positions: BTreeMap<StableId, usize>,
+    /// Compact immutable identity metadata for the complete logical history.
+    pub(crate) record_index: BTreeMap<StableId, HistoricalRecordIndex>,
+    /// Sequence-to-chain lookup retained independently from event payloads.
+    pub(crate) sequence_digests: BTreeMap<u64, Digest32>,
+    pub(crate) run_starts: BTreeMap<StableId, StableId>,
+    pub(crate) decisions: BTreeMap<StableId, DecisionIndex>,
+    pub(crate) outcomes: BTreeMap<StableId, OutcomeIndex>,
+    pub(crate) credit_ids: BTreeSet<StableId>,
+    pub(crate) credit_keys: BTreeSet<(StableId, StableId, StableId)>,
+    pub(crate) revoked: BTreeSet<StableId>,
+    /// Last sequence whose complete payload was released to durable archive.
+    pub(crate) archived_through_sequence: u64,
+    pub(crate) archived_through_digest: Digest32,
+}
+
+impl Default for LearningLedger {
+    fn default() -> Self {
+        Self {
+            records: Vec::new(),
+            record_positions: BTreeMap::new(),
+            record_index: BTreeMap::new(),
+            sequence_digests: BTreeMap::new(),
+            run_starts: BTreeMap::new(),
+            decisions: BTreeMap::new(),
+            outcomes: BTreeMap::new(),
+            credit_ids: BTreeSet::new(),
+            credit_keys: BTreeSet::new(),
+            revoked: BTreeSet::new(),
+            archived_through_sequence: 0,
+            archived_through_digest: Digest32::ZERO,
+        }
+    }
 }
 
 impl LearningLedger {
@@ -72,17 +115,31 @@ impl LearningLedger {
         let record_id = event.record_id().clone();
         let event_digest = digest_event(&event);
 
-        if let Some(existing_digest) = self.record_digests.get(&record_id) {
-            if *existing_digest != event_digest {
+        if let Some(existing) = self.record_index.get(&record_id) {
+            if existing.event_digest != event_digest {
                 return Err(LedgerError::IdentityConflict(record_id.to_string()));
             }
-            let record = self
-                .records
-                .iter()
-                .find(|record| record.event.record_id() == &record_id)
-                .ok_or(LedgerError::InternalInvariant)?;
+            let record = if let Some(position) = self.record_positions.get(&record_id).copied() {
+                self.records
+                    .get(position)
+                    .filter(|record| record.event.record_id() == &record_id)
+                    .cloned()
+                    .ok_or(LedgerError::InternalInvariant)?
+            } else {
+                // The full payload is archived. The caller supplied the same
+                // canonical event (its digest matched above), so reconstructing
+                // immutable record metadata is sufficient for an exact replay
+                // receipt without paging historical payloads back into memory.
+                LedgerRecord {
+                    sequence: existing.sequence,
+                    predecessor_chain_digest: existing.predecessor_chain_digest,
+                    event_digest: existing.event_digest,
+                    chain_digest: existing.chain_digest,
+                    event,
+                }
+            };
             return Ok(PreparedAppend {
-                record: record.clone(),
+                record,
                 disposition: AppendDisposition::IdempotentReplay,
             });
         }
@@ -91,16 +148,16 @@ impl LearningLedger {
             return Err(LedgerError::RecordLimitExceeded);
         }
         self.validate_event(&event)?;
-        let sequence_value = u64::try_from(self.records.len())
-            .map_err(|_| LedgerError::SequenceOverflow)?
-            .checked_add(1)
-            .ok_or(LedgerError::SequenceOverflow)?;
+        let sequence_value = match self.head_sequence() {
+            Some(sequence) => sequence
+                .get()
+                .checked_add(1)
+                .ok_or(LedgerError::SequenceOverflow)?,
+            None => 1,
+        };
         let sequence =
             LogicalSequence::new(sequence_value).map_err(|_| LedgerError::SequenceOverflow)?;
-        let predecessor_chain_digest = self
-            .records
-            .last()
-            .map_or(Digest32::ZERO, |record| record.chain_digest);
+        let predecessor_chain_digest = self.head_digest();
         let chain_digest = digest_chain(predecessor_chain_digest, sequence, event_digest);
         let record = LedgerRecord {
             sequence,
@@ -122,12 +179,15 @@ impl LearningLedger {
         } = prepared;
         let result = receipt(&record, disposition);
         if disposition == AppendDisposition::Appended {
-            let head = self
-                .records
-                .last()
-                .map_or(Digest32::ZERO, |row| row.chain_digest);
-            if record.predecessor_chain_digest != head
-                || record.sequence.get() != self.records.len() as u64 + 1
+            let expected_sequence = match self.head_sequence() {
+                Some(sequence) => sequence
+                    .get()
+                    .checked_add(1)
+                    .ok_or(LedgerError::SequenceOverflow)?,
+                None => 1,
+            };
+            if record.predecessor_chain_digest != self.head_digest()
+                || record.sequence.get() != expected_sequence
             {
                 return Err(LedgerError::InternalInvariant);
             }
@@ -137,14 +197,70 @@ impl LearningLedger {
         Ok(result)
     }
 
+    /// Retained payload tail. Pure in-memory ledgers retain the complete history;
+    /// segmented durable ledgers may retain only the current unarchived tail.
     #[must_use]
     pub fn records(&self) -> &[LedgerRecord] {
         &self.records
     }
 
-    /// Returns facts that remain causally effective after applying revocation
-    /// edges. Outcomes and credit disappear when their decision ancestor is
-    /// revoked, preventing restore-time resurrection.
+    /// Resolve a record only when its full payload is resident. Durable owners
+    /// expose a separate disk-backed archive lookup for compacted history.
+    #[must_use]
+    pub fn record(&self, record_id: &StableId) -> Option<&LedgerRecord> {
+        self.record_positions
+            .get(record_id)
+            .and_then(|position| self.records.get(*position))
+            .filter(|record| record.event.record_id() == record_id)
+    }
+
+    /// Current committed sequence without cloning historical records.
+    #[must_use]
+    pub fn head_sequence(&self) -> Option<LogicalSequence> {
+        self.records
+            .last()
+            .map(|record| record.sequence)
+            .or_else(|| {
+                LogicalSequence::new(self.archived_through_sequence)
+                    .ok()
+                    .filter(|_| self.archived_through_sequence != 0)
+            })
+    }
+
+    /// Current causal chain head without cloning historical records.
+    #[must_use]
+    pub fn head_digest(&self) -> Digest32 {
+        self.records
+            .last()
+            .map_or(self.archived_through_digest, |record| record.chain_digest)
+    }
+
+    /// Borrow a bounded incremental range from the retained payload tail after
+    /// `sequence`. When a caller asks before the archive frontier, the returned
+    /// slice starts at the first retained record; durable owners must use their
+    /// archive API to obtain the missing prefix.
+    #[must_use]
+    pub fn records_after(
+        &self,
+        sequence: Option<LogicalSequence>,
+        limit: usize,
+    ) -> &[LedgerRecord] {
+        let requested = sequence.map_or(self.archived_through_sequence, LogicalSequence::get);
+        let first_retained = self.archived_through_sequence.saturating_add(1);
+        let start = if requested < first_retained {
+            0
+        } else {
+            usize::try_from(requested.saturating_sub(self.archived_through_sequence))
+                .unwrap_or(usize::MAX)
+                .min(self.records.len())
+        };
+        let end = start.saturating_add(limit).min(self.records.len());
+        &self.records[start..end]
+    }
+
+    /// Returns causally effective records from the resident payload set. Pure
+    /// in-memory ledgers contain the full history; a segmented durable owner
+    /// reconstructs archived payloads explicitly when a complete view is needed.
     #[must_use]
     pub fn active_records(&self) -> Vec<&LedgerRecord> {
         self.records
@@ -157,10 +273,7 @@ impl LearningLedger {
     pub fn snapshot(&self) -> LedgerSnapshot {
         LedgerSnapshot {
             records: self.records.clone(),
-            head_digest: self
-                .records
-                .last()
-                .map_or(Digest32::ZERO, |record| record.chain_digest),
+            head_digest: self.head_digest(),
         }
     }
 
@@ -177,24 +290,104 @@ impl LearningLedger {
                 return Err(LedgerError::SnapshotRecordMismatch(expected.sequence.get()));
             }
         }
-        let actual_head = ledger
-            .records
-            .last()
-            .map_or(Digest32::ZERO, |record| record.chain_digest);
-        if actual_head != expected_head {
+        if ledger.head_digest() != expected_head {
             return Err(LedgerError::SnapshotHeadMismatch);
         }
         Ok(ledger)
     }
 
+    /// Release full payloads through the current head after their containing
+    /// segments have become immutable durable archive. Compact causal indexes
+    /// remain resident and are independently checkpointable.
+    pub(crate) fn compact_retained_payloads(&mut self) {
+        let Some(last) = self.records.last() else {
+            return;
+        };
+        self.archived_through_sequence = last.sequence.get();
+        self.archived_through_digest = last.chain_digest;
+        self.records = Vec::new();
+        self.record_positions.clear();
+    }
+
+    #[must_use]
+    pub(crate) fn retained_record_count(&self) -> usize {
+        self.records.len()
+    }
+
     fn validate_event(&self, event: &LedgerEvent) -> Result<(), LedgerError> {
         validate_support_digests(event)?;
         match event {
+            LedgerEvent::RunStart(value) => self.validate_run_start(value),
             LedgerEvent::Decision(value) => self.validate_decision(value),
             LedgerEvent::Outcome(value) => self.validate_outcome(value),
             LedgerEvent::Credit(value) => self.validate_credit(value),
             LedgerEvent::Revocation(value) => self.validate_revocation(value),
         }
+    }
+
+    fn validate_run_start(&self, publication: &RunStartPublicationV1) -> Result<(), LedgerError> {
+        if publication.admission.authority.grants_any() {
+            return Err(LedgerError::InvalidRunStart("admission grants authority"));
+        }
+        if publication.compile.disposition != codex_hepta_objective::CompileDisposition::Compiled {
+            return Err(LedgerError::InvalidRunStart(
+                "compile disposition is not compiled",
+            ));
+        }
+        if !publication.compile.removed_action_ids.is_empty() {
+            return Err(LedgerError::InvalidRunStart(
+                "successful compile removed requested actions",
+            ));
+        }
+        codex_hepta_objective::validate_compiled_objective_v1(&publication.compile.objective)
+            .map_err(|_| LedgerError::InvalidRunStart("compiled objective validation failed"))?;
+
+        let objective_v1 = codex_hepta_objective::ObjectiveFunctionV1::from_canonical_json(
+            &publication.objective_v1_json,
+        )
+        .map_err(|_| LedgerError::InvalidRunStart("canonical objective decode failed"))?;
+        let canonical_digest = objective_v1
+            .digest()
+            .map_err(|_| LedgerError::InvalidRunStart("canonical objective digest failed"))?;
+        if canonical_digest != publication.objective_v1_digest
+            || objective_v1.objective_id
+                != format!(
+                    "objective.{}",
+                    publication.compile.objective.semantic_digest
+                )
+            || objective_v1.request_digest != publication.admission.intent_digest.to_string()
+            || objective_v1.principal_scope.scope_id
+                != publication.compile.objective.principal_scope.to_string()
+            || objective_v1.revision != publication.compile.objective.revision.get()
+        {
+            return Err(LedgerError::InvalidRunStart(
+                "canonical objective binding mismatch",
+            ));
+        }
+        publication
+            .run_start
+            .validate_for_objective(&publication.compile.objective, canonical_digest)
+            .map_err(|_| LedgerError::InvalidRunStart("run snapshot validation failed"))?;
+        if publication.compile.objective.source_digest
+            != publication.admission.admitted_source_digest
+        {
+            return Err(LedgerError::InvalidRunStart(
+                "admitted source digest mismatch",
+            ));
+        }
+        if publication.admission.profile_digest.is_zero()
+            || publication.admission.supplied_source_digest.is_zero()
+            || publication.admission.intent_digest.is_zero()
+            || publication.admission.admitted_source_digest.is_zero()
+        {
+            return Err(LedgerError::InvalidRunStart("admission digest is zero"));
+        }
+        if self.run_starts.contains_key(&publication.run_start.run_id) {
+            return Err(LedgerError::RunAlreadyExists(
+                publication.run_start.run_id.to_string(),
+            ));
+        }
+        Ok(())
     }
 
     fn validate_decision(&self, decision: &EpisodeDecision) -> Result<(), LedgerError> {
@@ -290,12 +483,12 @@ impl LearningLedger {
     }
 
     fn validate_revocation(&self, revocation: &Revocation) -> Result<(), LedgerError> {
-        let Some(kind) = self.record_kinds.get(&revocation.target_record_id) else {
+        let Some(index) = self.record_index.get(&revocation.target_record_id) else {
             return Err(LedgerError::TargetNotFound(
                 revocation.target_record_id.to_string(),
             ));
         };
-        if *kind == event_kind_code(EventKind::Revocation) {
+        if index.kind == event_kind_code(EventKind::Revocation) {
             return Err(LedgerError::RevocationOfRevocation);
         }
         if self.revoked.contains(&revocation.target_record_id) {
@@ -308,11 +501,25 @@ impl LearningLedger {
 
     fn index_record(&mut self, record: &LedgerRecord) {
         let record_id = record.event.record_id().clone();
-        self.record_digests
-            .insert(record_id.clone(), record.event_digest);
-        self.record_kinds
-            .insert(record_id, event_kind(&record.event));
+        let position = self.records.len();
+        self.record_positions.insert(record_id.clone(), position);
+        self.record_index.insert(
+            record_id,
+            HistoricalRecordIndex {
+                sequence: record.sequence,
+                predecessor_chain_digest: record.predecessor_chain_digest,
+                event_digest: record.event_digest,
+                chain_digest: record.chain_digest,
+                kind: event_kind(&record.event),
+            },
+        );
+        self.sequence_digests
+            .insert(record.sequence.get(), record.chain_digest);
         match &record.event {
+            LedgerEvent::RunStart(value) => {
+                self.run_starts
+                    .insert(value.run_start.run_id.clone(), value.record_id.clone());
+            }
             LedgerEvent::Decision(value) => {
                 self.decisions.insert(
                     value.episode_id.clone(),
@@ -346,12 +553,13 @@ impl LearningLedger {
         }
     }
 
-    fn record_is_active(&self, record: &LedgerRecord) -> bool {
+    pub(crate) fn record_is_active(&self, record: &LedgerRecord) -> bool {
         let record_id = record.event.record_id();
         if self.revoked.contains(record_id) {
             return false;
         }
         match &record.event {
+            LedgerEvent::RunStart(_) => true,
             LedgerEvent::Decision(_) => true,
             LedgerEvent::Outcome(outcome) => self
                 .decisions
@@ -375,6 +583,20 @@ impl LearningLedger {
 
 fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
     match event {
+        LedgerEvent::RunStart(value) => {
+            for (field, digest) in [
+                ("objective", value.run_start.objective_digest),
+                ("canonical objective", value.objective_v1_digest),
+                ("hard constraint", value.run_start.hard_constraint_digest),
+                ("admission profile", value.admission.profile_digest),
+                ("intent", value.admission.intent_digest),
+                ("admitted source", value.admission.admitted_source_digest),
+            ] {
+                if digest.is_zero() {
+                    return Err(LedgerError::EmptyDigest(field));
+                }
+            }
+        }
         LedgerEvent::Decision(value) => {
             if value.objective_digest.is_zero() {
                 return Err(LedgerError::EmptyDigest("objective"));
@@ -402,7 +624,7 @@ fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
     Ok(())
 }
 
-fn normalize_event(event: &mut LedgerEvent) -> Result<(), LedgerError> {
+pub(crate) fn normalize_event(event: &mut LedgerEvent) -> Result<(), LedgerError> {
     let LedgerEvent::Decision(decision) = event else {
         return Ok(());
     };
@@ -433,6 +655,7 @@ enum EventKind {
     Outcome,
     Credit,
     Revocation,
+    RunStart,
 }
 
 const fn event_kind_code(kind: EventKind) -> u8 {
@@ -441,11 +664,14 @@ const fn event_kind_code(kind: EventKind) -> u8 {
         EventKind::Outcome => 1,
         EventKind::Credit => 2,
         EventKind::Revocation => 3,
+        // Preserve durable tags 0..=3 for compatibility with existing ledgers.
+        EventKind::RunStart => 4,
     }
 }
 
-fn event_kind(event: &LedgerEvent) -> u8 {
+pub(crate) fn event_kind(event: &LedgerEvent) -> u8 {
     let kind = match event {
+        LedgerEvent::RunStart(_) => EventKind::RunStart,
         LedgerEvent::Decision(_) => EventKind::Decision,
         LedgerEvent::Outcome(_) => EventKind::Outcome,
         LedgerEvent::Credit(_) => EventKind::Credit,
@@ -454,7 +680,7 @@ fn event_kind(event: &LedgerEvent) -> u8 {
     event_kind_code(kind)
 }
 
-fn digest_event(event: &LedgerEvent) -> Digest32 {
+pub(crate) fn digest_event(event: &LedgerEvent) -> Digest32 {
     Digest32::of_bytes(&encode_event(event))
 }
 
@@ -463,6 +689,7 @@ pub(crate) fn encode_event(event: &LedgerEvent) -> Vec<u8> {
     bytes.extend_from_slice(EVENT_DIGEST_DOMAIN);
     bytes.push(event_kind(event));
     match event {
+        LedgerEvent::RunStart(value) => push_run_start(&mut bytes, value),
         LedgerEvent::Decision(value) => push_decision(&mut bytes, value),
         LedgerEvent::Outcome(value) => push_outcome(&mut bytes, value),
         LedgerEvent::Credit(value) => push_credit(&mut bytes, value),
@@ -471,7 +698,7 @@ pub(crate) fn encode_event(event: &LedgerEvent) -> Vec<u8> {
     bytes
 }
 
-fn digest_chain(
+pub(crate) fn digest_chain(
     predecessor: Digest32,
     sequence: LogicalSequence,
     event_digest: Digest32,
@@ -482,6 +709,139 @@ fn digest_chain(
     bytes.extend_from_slice(&sequence.get().to_be_bytes());
     bytes.extend_from_slice(event_digest.as_array());
     Digest32::of_bytes(&bytes)
+}
+
+fn push_run_start(bytes: &mut Vec<u8>, value: &RunStartPublicationV1) {
+    use codex_hepta_objective::ConfirmationPolicy;
+    use codex_hepta_objective::ConstraintClass;
+    use codex_hepta_objective::ConstraintRelation;
+    use codex_hepta_objective::PredicateTerminality;
+    use codex_hepta_objective::SoftDirection;
+    use codex_hepta_objective::SourceTrust;
+
+    push_id(bytes, &value.record_id);
+    push_id(bytes, &value.admission.profile_id);
+    bytes.extend_from_slice(&value.admission.profile_revision.get().to_be_bytes());
+    push_digest(bytes, value.admission.profile_digest);
+    push_digest(bytes, value.admission.supplied_source_digest);
+    push_digest(bytes, value.admission.intent_digest);
+    push_digest(bytes, value.admission.admitted_source_digest);
+    bytes.extend_from_slice(&value.admission.observed_at_unix_micros.to_be_bytes());
+    match value.admission.deadline_unix_micros {
+        Some(deadline) => {
+            bytes.push(1);
+            bytes.extend_from_slice(&deadline.to_be_bytes());
+        }
+        None => bytes.push(0),
+    }
+    for granted in [
+        value.admission.authority.runtime,
+        value.admission.authority.production_writer,
+        value.admission.authority.model_invocation,
+        value.admission.authority.provider_dispatch,
+        value.admission.authority.external_effect,
+        value.admission.authority.selection,
+        value.admission.authority.promotion,
+        value.admission.authority.release,
+    ] {
+        bytes.push(u8::from(granted));
+    }
+
+    bytes.push(match value.compile.disposition {
+        codex_hepta_objective::CompileDisposition::Compiled => 0,
+        codex_hepta_objective::CompileDisposition::ExplicitAbstain => 1,
+    });
+    push_ids(bytes, &value.compile.removed_action_ids);
+
+    let objective = &value.compile.objective;
+    push_id(bytes, &objective.request_id);
+    push_id(bytes, &objective.principal_scope);
+    bytes.extend_from_slice(&objective.revision.get().to_be_bytes());
+    bytes.push(match objective.source_trust {
+        SourceTrust::PrincipalStructured => 0,
+        SourceTrust::RegisteredAdapter => 1,
+        SourceTrust::UntrustedEvidence => 2,
+    });
+    push_digest(bytes, objective.source_digest);
+    push_digest(bytes, objective.schema_digest);
+    push_digest(bytes, objective.hard_constraint_digest);
+    push_digest(bytes, objective.semantic_digest);
+
+    push_len(bytes, objective.constraints.len());
+    for constraint in &objective.constraints {
+        push_id(bytes, &constraint.id);
+        bytes.push(match constraint.class {
+            ConstraintClass::Constitutional => 0,
+            ConstraintClass::Principal => 1,
+            ConstraintClass::Environment => 2,
+            ConstraintClass::Task => 3,
+        });
+        push_id(bytes, &constraint.axis);
+        bytes.push(match constraint.relation {
+            ConstraintRelation::AtLeast => 0,
+            ConstraintRelation::AtMost => 1,
+            ConstraintRelation::Equal => 2,
+        });
+        bytes.extend_from_slice(&constraint.bound.raw().to_be_bytes());
+        push_id(bytes, &constraint.evidence_source);
+    }
+
+    push_len(bytes, objective.success_predicates.len());
+    for predicate in &objective.success_predicates {
+        push_id(bytes, &predicate.id);
+        push_id(bytes, &predicate.axis);
+        bytes.push(match predicate.relation {
+            ConstraintRelation::AtLeast => 0,
+            ConstraintRelation::AtMost => 1,
+            ConstraintRelation::Equal => 2,
+        });
+        bytes.extend_from_slice(&predicate.bound.raw().to_be_bytes());
+        push_id(bytes, &predicate.evidence_source);
+        bytes.push(match predicate.terminality {
+            PredicateTerminality::Intermediate => 0,
+            PredicateTerminality::Terminal => 1,
+        });
+    }
+
+    push_len(bytes, objective.legal_actions.len());
+    for action in &objective.legal_actions {
+        push_id(bytes, &action.id);
+        bytes.push(match action.confirmation {
+            ConfirmationPolicy::NotRequired => 0,
+            ConfirmationPolicy::Required => 1,
+        });
+    }
+
+    push_len(bytes, objective.soft_preferences.len());
+    for preference in &objective.soft_preferences {
+        push_id(bytes, &preference.dimension);
+        bytes.push(match preference.direction {
+            SoftDirection::Maximize => 0,
+            SoftDirection::Minimize => 1,
+        });
+        bytes.extend_from_slice(&preference.weight.raw().to_be_bytes());
+    }
+
+    push_len(bytes, value.objective_v1_json.len());
+    bytes.extend_from_slice(&value.objective_v1_json);
+    push_digest(bytes, value.objective_v1_digest);
+
+    let snapshot = &value.run_start;
+    push_id(bytes, &snapshot.run_id);
+    for digest in [
+        snapshot.objective_digest,
+        snapshot.hard_constraint_digest,
+        snapshot.preference_state_digest,
+        snapshot.model_tuple_digest,
+        snapshot.prompt_registry_digest,
+        snapshot.artifact_set_digest,
+    ] {
+        push_digest(bytes, digest);
+    }
+    bytes.extend_from_slice(&snapshot.authority_epoch.to_be_bytes());
+    bytes.extend_from_slice(&snapshot.generation.to_be_bytes());
+    push_digest(bytes, snapshot.fence_digest);
+    push_digest(bytes, value.runtime_body_digest);
 }
 
 fn push_decision(bytes: &mut Vec<u8>, value: &EpisodeDecision) {

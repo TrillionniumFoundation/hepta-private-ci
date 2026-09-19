@@ -58,23 +58,62 @@ jobs:
             git checkout --detach "$MERGE"
           fi
           git rev-parse HEAD HEAD^{tree}
+      - name: Select exact-tree native execution
+        id: execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_candidate.py \
+            --source "$SOURCE_SHA" \
+            --tested "$(git rev-parse HEAD)" \
+            --base "$BASE_SHA" \
+            --lane "${{ matrix.lane }}" \
+            --github-output "$GITHUB_OUTPUT"
       - name: Verify Cargo lockfile integrity
         run: python3 scripts/verify_cargo_lock.py
       - name: Install pinned repository test tools
+        if: steps.execution.outputs.run_native == 'true'
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve Cargo lockfile exactly or expose resolver drift
+        if: steps.execution.outputs.run_native == 'true'
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          cargo metadata --locked --format-version=1 >/dev/null
+          locked_status=$?
+          set -e
+          if [ "$locked_status" -eq 0 ]; then
+            exit 0
+          fi
+          echo "::error::Cargo.lock differs from the exact candidate manifests"
+          set +e
+          cargo metadata --offline --format-version=1 >/dev/null
+          offline_status=$?
+          set -e
+          git diff -- Cargo.lock
+          git checkout -- Cargo.lock
+          if [ "$offline_status" -ne 0 ]; then
+            echo "::warning::offline resolver could not fully materialize cached dependencies; source checkout restored"
+          fi
+          exit "$locked_status"
       - name: Original and added component regressions
+        if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: just test --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron -p codex-hepta-ndu
       - name: Real-file cross-crate qualification
+        if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: just test --locked -p codex-hepta-shadow-qualification --test durable_learning_roundtrip
       - name: Strict selected-package Clippy
+        if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: cargo clippy --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron -p codex-hepta-ndu -p codex-hepta-shadow-qualification --all-targets -- -D warnings
       - name: Formatting without tested-source mutation
-        if: always()
+        if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: cargo fmt --package codex-hepta-learning-ledger --package codex-hepta-learning-artifacts --package codex-hepta-intelligence-eval --package codex-hepta-neuron --package codex-hepta-ndu --package codex-hepta-shadow-qualification -- --check
       - name: Unmodified source

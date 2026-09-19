@@ -1,8 +1,10 @@
-//! Hosted runs share the control owner's journal and exclusive writer lock.
+//! Hosted runs share the control owner's journal with short durable writer
+//! transactions. Model/provider execution never holds the journal writer lock.
 //! A reservation is one local in-flight slot, not a token or payment grant.
 //! Unknown execution retains that slot; unknown token usage remains `None`.
 
 use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 
 use serde::Deserialize;
 use serde::Serialize;
@@ -13,6 +15,7 @@ use super::validate_digest;
 use super::validate_identity;
 
 pub(super) const JOURNAL_PREFIX: &str = "native-v1|";
+pub(super) const CHECKPOINT_PREFIX: &str = "checkpoint-native-v1|";
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -105,16 +108,35 @@ pub struct NativeRunRecord {
     pub dispatch: Option<NativeDispatch>,
     pub turn_id: Option<String>,
     pub cancel_requested: bool,
-    /// A locally proven pre-dispatch stop releases a slot without pretending
-    /// to have observed a provider terminal event or zero token consumption.
+    /// A locally proven stop before provider `turn/start` releases a slot
+    /// without pretending to have observed a provider terminal event or zero
+    /// token consumption.
     pub pre_dispatch_stop: Option<String>,
     pub observation: Option<NativeRunOutput>,
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
 pub(super) struct NativeJournal {
     maximum_in_flight: Option<usize>,
+    /// Derived during replay. Never trusted from a checkpoint or wire payload.
+    #[serde(skip)]
+    active_count: usize,
     pub(super) records: BTreeMap<String, NativeRunRecord>,
+}
+
+pub(super) struct NativeSuffixDelta {
+    pub(super) maximum_in_flight: Option<usize>,
+    pub(super) active_count: usize,
+    pub(super) records: BTreeMap<String, NativeRunRecord>,
+    pub(super) new_ids: usize,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+struct NativeCheckpointV1 {
+    maximum_in_flight: Option<usize>,
+    record: NativeRunRecord,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -156,33 +178,27 @@ impl DurableInferenceControl {
         if self.poisoned {
             return Err(Error::WriterUnavailable);
         }
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::PermissionsExt;
-            if self.file.metadata()?.permissions().mode() & 0o077 != 0 {
-                return Err(Error::InvalidIdentity("native journal must be owner-only"));
-            }
-        }
-        if self
-            .native
-            .maximum_in_flight
-            .is_some_and(|limit| limit != maximum_in_flight)
-            || self.records.contains_key(&request.request_id)
-        {
-            return Err(Error::Conflict);
-        }
-        if let Some(record) = self.native.records.get(&request.request_id) {
+        let id = request.request_id.clone();
+        if let Some(record) = self.archived_native_record(&id)? {
             return if record.request == request {
-                Ok(record.clone())
+                Ok(record)
             } else {
                 Err(Error::Conflict)
             };
         }
-        if self.records.len() + self.native.records.len() >= self.capacity {
-            return Err(Error::CapacityExceeded);
+
+        // Released runs are cold idempotence facts, not live scheduling state.
+        // Before failing a new admission on hot-record or journal capacity,
+        // move them to the owner-only released archive and publish a compact
+        // active journal. commit_native() still reloads and validates under the
+        // writer fence, so a peer mutation between maintenance and admission
+        // cannot bypass the exact-current check.
+        if self.records.len() + self.native.records.len() >= self.capacity
+            || self.needs_compaction()
+        {
+            self.archive_released_native()?;
         }
-        self.ensure_native_dispatch_space()?;
-        let id = request.request_id.clone();
+
         self.commit_native(
             &id,
             Event::Reserve {
@@ -198,7 +214,6 @@ impl DurableInferenceControl {
         request_id: &str,
         dispatch: NativeDispatch,
     ) -> Result<NativeRunRecord, Error> {
-        self.ensure_native_dispatch_space()?;
         self.commit_native(
             request_id,
             Event::Dispatch {
@@ -224,14 +239,6 @@ impl DurableInferenceControl {
 
     /// This records intent only: an interrupt acknowledgement never frees a slot.
     pub fn cancel_native(&mut self, request_id: &str) -> Result<NativeRunRecord, Error> {
-        let record = self
-            .native
-            .records
-            .get(request_id)
-            .ok_or(Error::RequestNotFound)?;
-        if record.cancel_requested {
-            return Ok(record.clone());
-        }
         self.commit_native(
             request_id,
             Event::Cancel {
@@ -254,6 +261,24 @@ impl DurableInferenceControl {
         )
     }
 
+    /// Release a synced dispatch intent only when the trusted host can prove it
+    /// has not sent provider `turn/start` yet. This lets a final authority or
+    /// cognitive-receipt check sit after durable dispatch and immediately before
+    /// the external effect without leaking the local slot on a fail-closed stop.
+    pub fn stop_native_before_turn_start(
+        &mut self,
+        request_id: &str,
+        reason: String,
+    ) -> Result<NativeRunRecord, Error> {
+        self.commit_native(
+            request_id,
+            Event::Stop {
+                request_id: request_id.to_string(),
+                reason,
+            },
+        )
+    }
+
     /// Trusted host port: validates exact assignment and monotonic observations.
     /// Only matching terminal observations release local execution capacity.
     /// Missing usage never becomes zero and unknown execution may later settle.
@@ -262,14 +287,6 @@ impl DurableInferenceControl {
         request_id: &str,
         output: NativeRunOutput,
     ) -> Result<NativeRunRecord, Error> {
-        let record = self
-            .native
-            .records
-            .get(request_id)
-            .ok_or(Error::RequestNotFound)?;
-        if record.observation.as_ref() == Some(&output) {
-            return Ok(record.clone());
-        }
         self.commit_native(
             request_id,
             Event::Observe {
@@ -284,7 +301,7 @@ impl DurableInferenceControl {
     }
 
     fn ensure_native_dispatch_space(&self) -> Result<(), Error> {
-        // This exclusive owner serializes active calls. Leave room for bounded
+        // A short writer transaction serializes mutations. Leave room for bounded
         // dispatch/cancel metadata and the next maximal observed output before
         // admitting a new external execution. This is not an archival policy.
         if self.journal_bytes > super::MAX_JOURNAL_BYTES - 2 * super::MAX_JOURNAL_LINE_BYTES as u64
@@ -295,21 +312,250 @@ impl DurableInferenceControl {
     }
 
     fn commit_native(&mut self, request_id: &str, event: Event) -> Result<NativeRunRecord, Error> {
-        let mut next = self.native.clone();
+        let _writer_fence = self.reload_locked()?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            if self.file.metadata()?.permissions().mode() & 0o077 != 0 {
+                return Err(Error::InvalidIdentity("native journal must be owner-only"));
+            }
+        }
+        if let Some(existing) = self.validate_latest_native_event(&event)? {
+            return Ok(existing);
+        }
+        // Headroom protects NEW dispatches. Terminal/cancel/reconciliation
+        // writes must still be allowed to use that reserved space.
+        if matches!(event, Event::Reserve { .. } | Event::Dispatch { .. }) {
+            self.ensure_native_dispatch_space()?;
+        }
+        let mut next = NativeJournal {
+            maximum_in_flight: self.native.maximum_in_flight,
+            active_count: self.native.active_count,
+            records: BTreeMap::new(),
+        };
+        if let Some(record) = self.native.records.get(request_id) {
+            next.records.insert(request_id.to_string(), record.clone());
+        }
         next.apply(event.clone())?;
+        let record = next
+            .records
+            .remove(request_id)
+            .ok_or(Error::RequestNotFound)?;
         let json =
             serde_json::to_string(&event).map_err(|_| Error::CorruptJournal("native encode"))?;
         self.append(&format!("{JOURNAL_PREFIX}{json}\n"))?;
-        self.native = next;
+        self.native.maximum_in_flight = next.maximum_in_flight;
+        self.native.active_count = next.active_count;
         self.native
             .records
-            .get(request_id)
-            .cloned()
-            .ok_or(Error::RequestNotFound)
+            .insert(request_id.to_string(), record.clone());
+        Ok(record)
+    }
+
+    fn validate_latest_native_event(
+        &self,
+        event: &Event,
+    ) -> Result<Option<NativeRunRecord>, Error> {
+        match event {
+            Event::Reserve {
+                request,
+                maximum_in_flight,
+            } => {
+                if !(1..=256).contains(maximum_in_flight) {
+                    return Err(Error::CapacityExceeded);
+                }
+                if self.records.contains_key(&request.request_id)
+                    || self
+                        .native
+                        .maximum_in_flight
+                        .is_some_and(|limit| limit != *maximum_in_flight)
+                {
+                    return Err(Error::Conflict);
+                }
+                if let Some(record) = self.native.records.get(&request.request_id) {
+                    return if record.request == *request {
+                        Ok(Some(record.clone()))
+                    } else {
+                        Err(Error::Conflict)
+                    };
+                }
+                if let Some(record) = self.archived_native_record(&request.request_id)? {
+                    return if record.request == *request {
+                        Ok(Some(record))
+                    } else {
+                        Err(Error::Conflict)
+                    };
+                }
+                if self.records.len() + self.native.records.len() >= self.capacity {
+                    return Err(Error::CapacityExceeded);
+                }
+            }
+            // Dispatch is an execution claim, not a repeatable observation.
+            // A second successful claim could let a second caller send the
+            // same external effect. The state machine admits Reserved once.
+            Event::Dispatch { .. } => {}
+            Event::Started {
+                request_id,
+                turn_id,
+            } => {
+                if let Some(record) = self.native.records.get(request_id) {
+                    if record.state == NativeReservationState::Running
+                        && record.turn_id.as_ref() == Some(turn_id)
+                    {
+                        return Ok(Some(record.clone()));
+                    }
+                }
+            }
+            Event::Cancel { request_id } => {
+                let record = self
+                    .native
+                    .records
+                    .get(request_id)
+                    .ok_or(Error::RequestNotFound)?;
+                if record.cancel_requested {
+                    return Ok(Some(record.clone()));
+                }
+            }
+            Event::Stop { request_id, reason } => {
+                let record = self
+                    .native
+                    .records
+                    .get(request_id)
+                    .ok_or(Error::RequestNotFound)?;
+                if record.state == NativeReservationState::Released
+                    && record.pre_dispatch_stop.as_ref() == Some(reason)
+                {
+                    return Ok(Some(record.clone()));
+                }
+            }
+            Event::Observe { request_id, output } => {
+                let record = self
+                    .native
+                    .records
+                    .get(request_id)
+                    .ok_or(Error::RequestNotFound)?;
+                if record.observation.as_ref() == Some(output) {
+                    return Ok(Some(record.clone()));
+                }
+            }
+        }
+        Ok(None)
     }
 }
 
 impl NativeJournal {
+    /// Validate an append-only peer suffix without cloning the complete hot
+    /// journal. Only request records touched by the suffix are staged. The
+    /// caller publishes the returned delta only after legacy/native cross-map
+    /// capacity and identity checks also succeed.
+    pub(super) fn stage_replay_suffix(
+        &self,
+        json_lines: &[String],
+    ) -> Result<NativeSuffixDelta, Error> {
+        let mut events = Vec::with_capacity(json_lines.len());
+        let mut touched = BTreeSet::new();
+        for json in json_lines {
+            let event: Event =
+                serde_json::from_str(json).map_err(|_| Error::CorruptJournal("native decode"))?;
+            let request_id = match &event {
+                Event::Reserve { request, .. } => &request.request_id,
+                Event::Dispatch { request_id, .. }
+                | Event::Started { request_id, .. }
+                | Event::Cancel { request_id }
+                | Event::Stop { request_id, .. }
+                | Event::Observe { request_id, .. } => request_id,
+            };
+            touched.insert(request_id.clone());
+            events.push(event);
+        }
+
+        let mut staged = NativeJournal {
+            maximum_in_flight: self.maximum_in_flight,
+            active_count: self.active_count,
+            records: BTreeMap::new(),
+        };
+        for request_id in &touched {
+            if let Some(record) = self.records.get(request_id) {
+                staged.records.insert(request_id.clone(), record.clone());
+            }
+        }
+        for event in events {
+            staged.apply(event)?;
+        }
+        let new_ids = staged
+            .records
+            .keys()
+            .filter(|request_id| !self.records.contains_key(*request_id))
+            .count();
+        Ok(NativeSuffixDelta {
+            maximum_in_flight: staged.maximum_in_flight,
+            active_count: staged.active_count,
+            records: staged.records,
+            new_ids,
+        })
+    }
+
+    pub(super) fn apply_replay_suffix(&mut self, delta: NativeSuffixDelta) {
+        self.maximum_in_flight = delta.maximum_in_flight;
+        self.active_count = delta.active_count;
+        for (request_id, record) in delta.records {
+            self.records.insert(request_id, record);
+        }
+    }
+
+    pub(super) fn checkpoint_lines(&self) -> impl Iterator<Item = Result<String, Error>> + '_ {
+        self.records.values().map(|record| {
+            let checkpoint = NativeCheckpointV1 {
+                maximum_in_flight: self.maximum_in_flight,
+                record: record.clone(),
+            };
+            let json = serde_json::to_string(&checkpoint)
+                .map_err(|_| Error::CorruptJournal("native checkpoint encode"))?;
+            Ok(format!("{CHECKPOINT_PREFIX}{json}\n"))
+        })
+    }
+
+    pub(super) fn replay_checkpoint(&mut self, json: &str) -> Result<(), Error> {
+        let checkpoint: NativeCheckpointV1 = serde_json::from_str(json)
+            .map_err(|_| Error::CorruptJournal("native checkpoint decode"))?;
+        if checkpoint
+            .maximum_in_flight
+            .is_some_and(|limit| !(1..=256).contains(&limit))
+        {
+            return Err(Error::CorruptJournal("native checkpoint capacity"));
+        }
+        if self
+            .maximum_in_flight
+            .zip(checkpoint.maximum_in_flight)
+            .is_some_and(|(left, right)| left != right)
+        {
+            return Err(Error::CorruptJournal("native checkpoint capacity drift"));
+        }
+        validate_checkpoint(&checkpoint.record)?;
+        let is_active = checkpoint.record.state != NativeReservationState::Released;
+        if self
+            .records
+            .insert(
+                checkpoint.record.request.request_id.clone(),
+                checkpoint.record,
+            )
+            .is_some()
+        {
+            return Err(Error::CorruptJournal("duplicate native checkpoint"));
+        }
+        self.maximum_in_flight = checkpoint.maximum_in_flight.or(self.maximum_in_flight);
+        self.active_count += usize::from(is_active);
+        if self
+            .maximum_in_flight
+            .is_none_or(|limit| self.active_count > limit)
+        {
+            return Err(Error::CorruptJournal(
+                "native checkpoint in-flight capacity",
+            ));
+        }
+        Ok(())
+    }
+
     pub(super) fn replay(&mut self, json: &str) -> Result<(), Error> {
         let event =
             serde_json::from_str(json).map_err(|_| Error::CorruptJournal("native decode"))?;
@@ -341,16 +587,11 @@ impl NativeJournal {
             {
                 return Err(Error::Conflict);
             }
-            if self
-                .records
-                .values()
-                .filter(|record| record.state != NativeReservationState::Released)
-                .count()
-                >= maximum_in_flight
-            {
+            if self.active_count >= maximum_in_flight {
                 return Err(Error::CapacityExceeded);
             }
             self.maximum_in_flight = Some(maximum_in_flight);
+            self.active_count += 1;
             self.records.insert(
                 request.request_id.clone(),
                 NativeRunRecord {
@@ -375,6 +616,7 @@ impl NativeJournal {
             | Event::Observe { request_id, .. } => request_id,
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
+        let was_active = record.state != NativeReservationState::Released;
         match event {
             Event::Reserve { .. } => return Err(Error::InvalidTransition),
             Event::Dispatch { dispatch, .. } => {
@@ -405,7 +647,10 @@ impl NativeJournal {
                 record.state = NativeReservationState::Cancelling;
             }
             Event::Stop { reason, .. } => {
-                if record.state != NativeReservationState::Reserved
+                if !matches!(
+                    record.state,
+                    NativeReservationState::Reserved | NativeReservationState::Dispatching
+                ) || record.turn_id.is_some()
                     || reason.is_empty()
                     || reason.len() > 4096
                 {
@@ -422,8 +667,119 @@ impl NativeJournal {
             .revision
             .checked_add(1)
             .ok_or(Error::ArithmeticOverflow)?;
+        let is_active = record.state != NativeReservationState::Released;
+        if was_active && !is_active {
+            self.active_count = self
+                .active_count
+                .checked_sub(1)
+                .ok_or(Error::ArithmeticOverflow)?;
+        } else if !was_active && is_active {
+            self.active_count = self
+                .active_count
+                .checked_add(1)
+                .ok_or(Error::ArithmeticOverflow)?;
+            if self
+                .maximum_in_flight
+                .is_none_or(|limit| self.active_count > limit)
+            {
+                return Err(Error::CapacityExceeded);
+            }
+        }
         Ok(())
     }
+}
+
+pub(super) fn validate_checkpoint(record: &NativeRunRecord) -> Result<(), Error> {
+    validate_identity(&record.request.request_id, "native request")?;
+    validate_identity(&record.request.principal_id, "native principal")?;
+    validate_digest(&record.request.payload_digest, "native payload")?;
+    if record.request.worker_generation == 0
+        || record.request.model.is_empty()
+        || record.request.model.len() > 256
+        || record.revision == 0
+    {
+        return Err(Error::CorruptJournal("native checkpoint request"));
+    }
+    if let Some(dispatch) = &record.dispatch {
+        validate_identity(&dispatch.thread_id, "native thread")?;
+        validate_identity(&dispatch.model_provider, "native provider")?;
+        validate_digest(&dispatch.context_digest, "native context")?;
+    }
+    if let Some(turn_id) = &record.turn_id {
+        validate_identity(turn_id, "native turn")?;
+    }
+    if record
+        .pre_dispatch_stop
+        .as_ref()
+        .is_some_and(|reason| reason.is_empty() || reason.len() > 4096)
+    {
+        return Err(Error::CorruptJournal("native checkpoint stop"));
+    }
+    match record.state {
+        NativeReservationState::Reserved => {
+            if record.dispatch.is_some()
+                || record.turn_id.is_some()
+                || record.pre_dispatch_stop.is_some()
+                || record.observation.is_some()
+            {
+                return Err(Error::CorruptJournal("native checkpoint reserved state"));
+            }
+        }
+        NativeReservationState::Dispatching => {
+            if record.dispatch.is_none()
+                || record.turn_id.is_some()
+                || record.pre_dispatch_stop.is_some()
+                || record.observation.is_some()
+            {
+                return Err(Error::CorruptJournal("native checkpoint dispatching state"));
+            }
+        }
+        NativeReservationState::Running => {
+            if record.dispatch.is_none()
+                || record.turn_id.is_none()
+                || record.pre_dispatch_stop.is_some()
+                || record.observation.is_some()
+            {
+                return Err(Error::CorruptJournal("native checkpoint running state"));
+            }
+        }
+        NativeReservationState::Cancelling => {
+            if record.dispatch.is_none() || !record.cancel_requested {
+                return Err(Error::CorruptJournal("native checkpoint cancelling state"));
+            }
+        }
+        NativeReservationState::Indeterminate => {
+            if record.dispatch.is_none()
+                || record
+                    .observation
+                    .as_ref()
+                    .is_none_or(|output| output.terminal_observed)
+            {
+                return Err(Error::CorruptJournal(
+                    "native checkpoint indeterminate state",
+                ));
+            }
+        }
+        NativeReservationState::Released => {
+            let stopped = record.pre_dispatch_stop.is_some() && record.observation.is_none();
+            let terminal = record
+                .observation
+                .as_ref()
+                .is_some_and(|output| output.terminal_observed);
+            if !stopped && !terminal {
+                return Err(Error::CorruptJournal("native checkpoint released state"));
+            }
+        }
+    }
+    if let Some(output) = &record.observation {
+        let mut candidate = record.clone();
+        candidate.observation = None;
+        apply_observation(&mut candidate, output.clone())?;
+        if candidate.state != record.state {
+            return Err(Error::CorruptJournal("native checkpoint observation state"));
+        }
+    }
+    Ok(())
 }
 
 fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> Result<(), Error> {
@@ -501,3 +857,62 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
 #[cfg(test)]
 #[path = "native_control_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+mod pre_turn_stop_tests {
+    use super::*;
+    use std::time::SystemTime;
+    use std::time::UNIX_EPOCH;
+
+    #[test]
+    fn synced_dispatch_can_stop_before_turn_start_and_release_slot() {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let path = std::env::temp_dir().join(format!("hepta-native-pre-turn-stop-{nonce}.journal"));
+        let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+        control
+            .reserve_native(
+                NativeRequest {
+                    request_id: "r1".to_string(),
+                    principal_id: "agent-1".to_string(),
+                    worker_generation: 4,
+                    model: "actual-model".to_string(),
+                    payload_digest: "a".repeat(64),
+                },
+                1,
+            )
+            .unwrap();
+        control
+            .dispatch_native(
+                "r1",
+                NativeDispatch {
+                    thread_id: "thread-1".to_string(),
+                    model_provider: "provider".to_string(),
+                    context_digest: "b".repeat(64),
+                },
+            )
+            .unwrap();
+        let stopped = control
+            .stop_native_before_turn_start("r1", "stale cognitive receipt".to_string())
+            .unwrap();
+        assert_eq!(stopped.state, NativeReservationState::Released);
+        assert_eq!(stopped.turn_id, None);
+        assert_eq!(
+            stopped.pre_dispatch_stop.as_deref(),
+            Some("stale cognitive receipt")
+        );
+        assert_eq!(stopped.observation, None);
+        assert!(stopped.dispatch.is_some());
+        assert_eq!(
+            control.native_started("r1", "turn-1".to_string()),
+            Err(Error::InvalidTransition)
+        );
+        drop(control);
+        let reopened = DurableInferenceControl::open(&path, 8).unwrap();
+        assert_eq!(reopened.native_record("r1"), Some(&stopped));
+        drop(reopened);
+        std::fs::remove_file(path).unwrap();
+    }
+}

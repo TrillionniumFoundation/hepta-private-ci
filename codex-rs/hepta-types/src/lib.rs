@@ -12,6 +12,7 @@ mod fixed;
 mod identity;
 mod numeric_conversion;
 mod numeric_profile;
+mod topology;
 
 pub use bounded::BoundedBytes;
 pub use bounded::BoundedText;
@@ -36,3 +37,8 @@ pub use numeric_profile::NumericProfileV1;
 pub use numeric_profile::NumericRoundingV1;
 pub use numeric_profile::NumericSignalSchemaV1;
 pub use numeric_profile::SignalUnitV1;
+pub use topology::MAX_RUNTIME_TOPOLOGY_DELTAS_V1;
+pub use topology::RuntimeTopologyCandidateV1;
+pub use topology::RuntimeTopologyContractErrorV1;
+pub use topology::RuntimeTopologyDeltaV1;
+pub use topology::RuntimeTopologyOperationV1;

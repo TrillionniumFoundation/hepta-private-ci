@@ -10,6 +10,7 @@
 pub mod effect_executor;
 
 mod model;
+mod operation_destination;
 mod scheduler;
 mod store;
 mod taskflow;
@@ -18,6 +19,7 @@ mod taskflow_execution_boundary;
 mod taskflow_kernel;
 #[cfg(feature = "taskflow-structural-qualification")]
 mod taskflow_step;
+mod timer_lifecycle;
 
 pub use model::AutomationAdmission;
 pub use model::AutomationDispatchUncertainty;
@@ -30,6 +32,10 @@ pub use model::AutomationTaskDraft;
 pub use model::AutomationTaskId;
 pub use model::AutomationTaskState;
 pub use model::AutomationTick;
+pub use operation_destination::AUTOMATION_OPERATION_DESTINATION;
+pub use operation_destination::AutomationOperationReceipt;
+pub use operation_destination::automation_task_operation_intent;
+pub use operation_destination::automation_task_payload_digest;
 pub use scheduler::AutomationFuture;
 pub use scheduler::AutomationScheduler;
 pub use scheduler::AutomationTurnQueue;
@@ -99,5 +105,7 @@ pub use taskflow_step::TaskFlowStepObservation;
 pub use taskflow_step::TaskFlowStepReceipt;
 #[cfg(feature = "taskflow-structural-qualification")]
 pub use taskflow_step::TaskFlowStepState;
+pub use timer_lifecycle::TimerDrainStatus;
+pub use timer_lifecycle::TimerPhase;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 3;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 5;

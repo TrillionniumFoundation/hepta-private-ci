@@ -9,6 +9,7 @@ mod authbus_dispatch;
 mod authbus_ingress;
 mod authbus_trust;
 mod automation;
+mod browser_servo;
 mod client;
 mod cognitive_context;
 mod cognitive_ranker;
@@ -17,12 +18,26 @@ mod control;
 mod error;
 mod event_buffer;
 mod lane_b_runtime;
+mod objective_dispatch;
+mod objective_host;
+mod objective_ingress;
+#[cfg(any(test, feature = "qualification-objective-direct-store"))]
+mod objective_runtime;
+mod operations_host;
 mod production_writer_host;
 mod qualification_writer;
 mod runtime;
 mod state;
 
 pub use authbus_ingress::authbus_text_claims;
+pub use browser_servo::BrowserFinalUseInvocation;
+pub use browser_servo::BrowserServoCall;
+pub use browser_servo::BrowserServoError;
+pub use browser_servo::BrowserServoMethod;
+pub use browser_servo::BrowserServoPort;
+pub use browser_servo::BrowserServoProcessConfig;
+pub use browser_servo::BrowserServoTransport;
+pub use browser_servo::ChildBrowserTransport;
 pub use client::AgentdClient;
 pub use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
 pub use codex_hepta_agent_protocol::AgentdCapabilitySet;
@@ -32,6 +47,10 @@ pub use codex_hepta_agent_protocol::AgentdMethod;
 pub use codex_hepta_agent_protocol::AgentdPayload;
 pub use codex_hepta_agent_protocol::AgentdRequest;
 pub use codex_hepta_agent_protocol::AgentdResponse;
+pub use codex_hepta_agent_protocol::AuthBusObjectiveBody;
+pub use codex_hepta_agent_protocol::AuthBusObjectiveIngress;
+pub use codex_hepta_agent_protocol::AuthBusObjectiveState;
+pub use codex_hepta_agent_protocol::AuthBusObjectiveStatus;
 pub use codex_hepta_agent_protocol::AuthBusTextBody;
 pub use codex_hepta_agent_protocol::AuthBusTextIngress;
 pub use codex_hepta_agent_protocol::AuthBusTextState;
@@ -74,6 +93,18 @@ pub use lane_b_runtime::RunPhase;
 pub use lane_b_runtime::RunReceipt;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
+pub use objective_host::ObjectiveHostError;
+pub use objective_host::start_intelligence_run_v1;
+#[cfg(any(test, feature = "qualification-objective-direct-store"))]
+pub use objective_runtime::{
+    ObjectiveProductRunDispositionV1, ObjectiveProductRunError, ObjectiveProductRunReceiptV1,
+    ObjectivePublicationError, ObjectivePublicationReceiptV1, ObjectiveRunBindingsV1,
+    ObjectiveRunFileStore, StoredObjectiveRunPublicationV1, StoredRunStartSnapshotV1,
+    admit_publish_and_start_objective_run_v1,
+};
+pub use operations_host::AgentdOperationsError;
+pub use operations_host::AgentdOperationsHost;
+pub use operations_host::AutomationGrantProvider;
 pub use production_writer_host::AgentdProductionWriterHost;
 pub use runtime::run;
 

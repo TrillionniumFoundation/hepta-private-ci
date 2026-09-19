@@ -1,10 +1,12 @@
 //! Append-only cognitive ledger with correction and tombstone lineage.
 //!
-//! The store is the only writer of its in-memory qualification ledger. It does
-//! not perform federation, model calls, learning-policy writes or effects.
+//! The semantic store owns cognitive mutation invariants. Production callers
+//! must enter through [`ProductionCognitiveStore`], which composes the durable
+//! SQLite backend without exposing it as a second product ownership boundary.
 
 #![forbid(unsafe_code)]
 
+mod production;
 mod v2;
 
 use std::collections::BTreeMap;
@@ -18,6 +20,8 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::LogicalSequence;
 use codex_hepta_types::StableId;
 
+pub use production::ProductionCognitiveStore;
+pub use production::ProductionCognitiveStoreError;
 pub use v2::AdmittedCognitiveStoreV2;
 pub use v2::CognitiveStoreImageV2;
 pub use v2::CognitiveStoreV2Error;
@@ -73,6 +77,11 @@ struct StoredRecord {
     sequence: LogicalSequence,
 }
 
+/// Qualification-only in-memory semantic oracle.
+///
+/// Production callers must use [`ProductionCognitiveStore`]. This type remains
+/// useful for deterministic invariant tests and must not be treated as durable
+/// authoritative storage.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CognitiveStore {
     records: BTreeMap<StableId, StoredRecord>,
