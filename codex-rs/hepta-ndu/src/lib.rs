@@ -9,6 +9,7 @@
 
 #![forbid(unsafe_code)]
 
+mod coefficient_candidate;
 mod conditional_moments;
 mod durable_projection_store;
 mod covariance;
@@ -24,6 +25,8 @@ mod protocol;
 mod recursive;
 mod scoring;
 
+pub use coefficient_candidate::NduQ24CoefficientCandidateV1;
+pub use coefficient_candidate::materialize_q24_coefficient_candidate_v1;
 pub use conditional_moments::ConditionalMomentSampleV1;
 pub use conditional_moments::ConditionalMomentsV1;
 pub use conditional_moments::estimate_conditional_moments;
