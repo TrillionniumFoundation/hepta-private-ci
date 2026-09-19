@@ -13,6 +13,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+use crate::DeletionRebuildError;
 use crate::JournalAnchor;
 use crate::JournalError;
 use crate::SparseConfig;
@@ -381,6 +382,7 @@ pub enum NeuronRuntimeError {
     RecoveryWitnessMismatch,
     PendingReconciliation,
     Model(NeuronModelError),
+    Deletion(DeletionRebuildError),
     Journal(JournalError),
     Witness(WitnessStoreError),
     WitnessAfterCommit {
@@ -407,6 +409,12 @@ impl From<JournalError> for NeuronRuntimeError {
 impl From<NeuronModelError> for NeuronRuntimeError {
     fn from(error: NeuronModelError) -> Self {
         Self::Model(error)
+    }
+}
+
+impl From<DeletionRebuildError> for NeuronRuntimeError {
+    fn from(error: DeletionRebuildError) -> Self {
+        Self::Deletion(error)
     }
 }
 
