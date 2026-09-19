@@ -645,6 +645,51 @@ impl FleetAllocationStore {
         })
     }
 
+    /// Record an observed terminal/uncertain holder disposition against the
+    /// grant's current lease generation. This is used after an actual process
+    /// observation, including after revocation advanced the lease fence.
+    pub fn reconcile_terminal_holder_current(
+        &self,
+        allocation_id: &str,
+        holder_state: FleetAllocationHolderStateV1,
+        now_unix_ms: u64,
+    ) -> Result<FleetAllocationMutationReceiptV1, FleetAllocationStoreError> {
+        if !matches!(
+            holder_state,
+            FleetAllocationHolderStateV1::Released | FleetAllocationHolderStateV1::Unknown
+        ) {
+            return Err(FleetAllocationStoreError::InvalidHolderTransition {
+                current: FleetAllocationHolderStateV1::Unknown,
+                proposed: holder_state,
+            });
+        }
+        for _ in 0..4 {
+            let snapshot = self.snapshot()?;
+            let grant = snapshot
+                .grants
+                .get(allocation_id)
+                .ok_or_else(|| {
+                    FleetAllocationStoreError::UnknownAllocation(allocation_id.to_string())
+                })?;
+            match self.reconcile_holder(
+                snapshot.generation,
+                allocation_id,
+                grant.lease_generation,
+                holder_state,
+                now_unix_ms,
+            ) {
+                Err(FleetAllocationStoreError::StaleGeneration { .. })
+                | Err(FleetAllocationStoreError::StaleLease { .. }) => continue,
+                result => return result,
+            }
+        }
+        let current = self.snapshot()?.generation;
+        Err(FleetAllocationStoreError::StaleGeneration {
+            expected: current.saturating_sub(1),
+            current,
+        })
+    }
+
     pub fn garbage_collect(
         &self,
         expected_generation: u64,
