@@ -51,7 +51,7 @@ The current source is materially beyond the original V1 bootstrap while preservi
 - `registry.rs` and `storage.rs`: append-only V1 registry, create-only payload/snapshot/head-witness storage, bounded reads, and contained prevalidated writes beneath a host-designated trusted root;
 - `closure_v2.rs`: complete `LearningArtifactManifestV2`, scoped dataset-withdrawal registry, registry-head requirements, and lifecycle transition validation;
 - `admission_v3.rs`: withdrawal-head admission that is additionally bound to `authority_domain_id + registry_id + scope_id`; unscoped registries fail closed for V3 admission;
-- `publication.rs`: crash-recoverable host publication transaction contract that binds the complete V2 admission to the exact V1 compatibility-registry snapshot and independently validated current-head witness before acknowledgement;
+- `publication.rs`: crash-recoverable host publication transaction contract that binds the complete V2 admission to the exact V1 compatibility-registry snapshot and independently validated current-head witness before acknowledgement, revalidates the current scoped withdrawal frontier during durable publication, and exposes a deny-all read-only status projection;
 - `lifecycle_journal.rs`: predecessor-bound lifecycle journal whose historical replay validates actor evidence at the event occurrence time rather than at process-recovery time;
 - `durable_snapshots.rs`: create-only, canonical, receipt-bound durable snapshots for scoped withdrawal state and lifecycle state;
 - `pinned.rs` and `dataset_revocation.rs`: exact pinned loading, current-view revalidation, and snapshot-local revocation preparation;
@@ -172,7 +172,7 @@ Artifact publication is an ordered durability protocol, not an assumed multi-fil
 
 `Prepared -> PayloadDurable -> RegistryDurable -> WitnessDurable -> Acknowledged`.
 
-Preparation validates the current scoped withdrawal registry and binds the exact predecessor registry head. `PayloadDurable` requires the exact V2 payload digest and byte count. `RegistryDurable` requires a durable registry receipt whose current last record extends the expected predecessor and matches every V2 field representable by V1. `WitnessDurable` requires an independently validated head witness for that exact registry head and predecessor. Acknowledgement before witness durability is rejected.
+Preparation validates the current scoped withdrawal registry and binds the exact predecessor registry head. `PayloadDurable` requires the exact V2 payload digest and byte count. `RegistryDurable` requires a durable registry receipt whose current last record extends the expected predecessor and matches every V2 field representable by V1; it also revalidates the live scoped withdrawal frontier. `WitnessDurable` requires an independently validated head witness for that exact registry head and predecessor and revalidates the withdrawal frontier again. Final acknowledgement revalidates the current withdrawal frontier once more, so a withdrawal arriving during crash recovery or publication cannot be hidden by an older admission. Acknowledgement before witness durability is rejected.
 
 The transaction exposes a digest-bound snapshot and replay constructor. Crash tests recover after prepared, payload-durable and registry-durable boundaries and prove that a partial publication cannot be relabelled acknowledged. The host that composes this contract must persist the returned transaction snapshot in its fenced transaction store before treating a phase as durable; a host that does not persist/replay the contract is outside this source qualification boundary.
 
@@ -238,7 +238,7 @@ For safer filesystem integration prefer the contained prevalidated writers:
 
 The lower-level `CreateOnlyArtifactFile` APIs remain for compatibility and capability-based composition. A host using them must reconcile empty files caused by creating a capability before later semantic validation.
 
-The crate deliberately exposes no mutable “admin override”, force-select, force-promote or force-repair API. Service/admin tooling should consume read-only receipts, snapshots, heads and publication phases, and perform repair only through a separately authenticated/fenced host operation. This keeps operational tooling from becoming an undeclared authority bypass.
+The crate deliberately exposes no mutable “admin override”, force-select, force-promote or force-repair API. `ArtifactPublicationTransactionV1::status` provides a deny-all read-only service/admin projection containing operation, phase, admission/withdrawal bindings, registry head, witness, acknowledgement time and transaction state digest. Repair still requires a separately authenticated/fenced host operation. This keeps operational tooling from becoming an undeclared authority bypass.
 
 Current operating and state-format references:
 
