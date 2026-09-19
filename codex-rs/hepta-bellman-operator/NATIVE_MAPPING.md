@@ -24,10 +24,16 @@ interpreted as the Hölder/operator qualification profile.
 | admit smooth-axis applicability | `validate_applicability_certificate` | `src/reference.rs` | implemented |
 | build fixed sensor core | `build_sensor_core` | `src/reference.rs` | implemented |
 | execute tabular Bellman reference | `evaluate_bellman_reference` | `src/reference.rs` | implemented |
-| fit complete simplest-sufficient operator | `fit_tabular_operator` | `src/learned.rs` | implemented |
-| predict only a fitted sensor/action cell | `predict_tabular_operator` | `src/learned.rs` | implemented |
-| admit rank/gain/shape/OOD/error budget | `admit_operator_regularity` | `src/reference.rs` | implemented |
-| fit action-conditioned tabular dynamics | `fit_transition_model` | `src/world_model.rs` | implemented |
+| fit complete simplest-sufficient operator (legacy core) | `fit_tabular_operator` | `src/learned.rs` | compatibility |
+| strict evidence-unique operator fit | `fit_tabular_operator_strict_v2` | `src/learned_strict.rs` | implemented |
+| bind strict fit to frozen V3 dataset | `fit_tabular_operator_from_dataset_receipt_v3` | `src/learned_strict.rs` | implemented |
+| predict only a fitted sensor/action cell | `predict_tabular_operator_indexed_v2` | `src/learned_strict.rs` | implemented |
+| structural rank/gain/shape/OOD/error budget | `admit_operator_regularity` | `src/reference.rs` | compatibility |
+| signed independent regularity admission | `admit_operator_regularity_verified` | `src/reference.rs` | implemented |
+| structural applicability validation | `validate_applicability_certificate` | `src/reference.rs` | compatibility |
+| signed independent applicability admission | `validate_applicability_certificate_verified` | `src/reference.rs` | implemented |
+| fit action-conditioned tabular dynamics (pure core) | `fit_transition_model` | `src/world_model.rs` | compatibility |
+| bind dynamics fit to frozen V3 dataset | `fit_transition_model_from_dataset_receipt_v3` | `src/world_model.rs` | implemented |
 | predict supported transition distribution | `predict_transition` | `src/world_model.rs` | implemented |
 
 ## Applicability and sensor core
@@ -52,7 +58,7 @@ registered sensor and action identities. Missing or duplicate cells fail. It
 computes Q32 targets, deterministic greedy actions and action gaps; ties break by
 canonical action ID. This reference is the oracle for any later learned model.
 
-`fit_tabular_operator` is the first source-complete trainable operator profile.
+`fit_tabular_operator` is the original source-complete trainable operator core. It remains readable for compatibility, but new qualification uses `fit_tabular_operator_strict_v2` and `fit_tabular_operator_from_dataset_receipt_v3`.
 It canonicalizes a frozen sensor-by-action grid, validates every sample and
 requires a configurable positive minimum sample count for every grid cell. The
 artifact stores each cell's mean, minimum, maximum, sample count and evidence
@@ -83,12 +89,15 @@ profile.
 
 ## World-model baseline
 
-`fit_transition_model` builds a deterministic action-conditioned tabular model
-from an immutable dataset. For every supported `(state, action)` it records the
+`fit_transition_model` remains the deterministic action-conditioned pure core. It now rejects duplicate underlying evidence even when callers relabel sample IDs. New qualification calls `fit_transition_model_from_dataset_receipt_v3`, which verifies the self-describing V3 frozen dataset and takes its dataset digest internally; every row must name evidence present in that snapshot. For every supported `(state, action)` it records the
 mean bounded outcome and a branch distribution whose Q32 probabilities sum
 exactly to one. `predict_transition` rejects unsupported pairs rather than
 extrapolating and marks every prediction synthetic with deny-all authority.
 Synthetic predictions cannot become independent factual outcomes.
+
+## Authenticated evaluator admission
+
+`encode_applicability_evidence_v1` and `encode_operator_regularity_assessment_v1` produce the exact canonical bytes covered by signed learning evidence. `validate_applicability_certificate_verified` and `admit_operator_regularity_verified` consume opaque `VerifiedLearningEvidenceV1` values from the host-trusted Ed25519 verifier, enforce generator/evaluator role and controller separation, bind evaluator principal/credential fields, and reject payload drift. Structural compatibility validators remain available but are not independent-review receipts.
 
 ## Host and external obligations
 
