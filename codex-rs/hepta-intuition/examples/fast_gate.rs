@@ -144,7 +144,10 @@ fn run_gate(gate: Gate) {
     let p50 = percentile(&latencies, 50);
     let p95 = percentile(&latencies, 95);
     let p99 = percentile(&latencies, 99);
-    let total_ns = latencies.iter().map(|value| u128::from(*value)).sum::<u128>();
+    let total_ns = latencies
+        .iter()
+        .map(|value| u128::from(*value))
+        .sum::<u128>();
     let throughput = if total_ns == 0 {
         u64::MAX
     } else {
