@@ -149,7 +149,10 @@ impl MatrixFinalUseBroker {
             stream
                 .write_all(&frame)
                 .await
-                .and_then(|()| stream.try_write(b"\n").map(|_| ()))
+                .map_err(|_| MatrixAuthorityError::Unavailable)?;
+            stream
+                .write_all(b"\n")
+                .await
                 .map_err(|_| MatrixAuthorityError::Unavailable)?;
             stream
                 .shutdown()
