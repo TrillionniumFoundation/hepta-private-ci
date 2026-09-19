@@ -176,6 +176,39 @@ async fn wire_run_lifecycle_is_daemon_owned_and_recovers_uncertain_dispatch() {
 }
 
 #[test]
+fn failed_run_state_persistence_does_not_advance_live_memory() {
+    let (_temp, _registry, state) = fixture().expect("runtime fixture");
+    let blocked_temp = state.run_state_path.with_extension("json.tmp");
+    fs::create_dir(&blocked_temp).expect("block lifecycle temp file with directory");
+
+    let snapshot = RunSnapshot {
+        run_id: "run.persist.failure".to_string(),
+        request_digest: "1".repeat(64),
+        objective_digest: "2".repeat(64),
+        body_digest: "3".repeat(64),
+        artifact_set_digest: "4".repeat(64),
+        authority_epoch: 2,
+        deadline_ms: u64::MAX - 1,
+    };
+
+    assert!(
+        state.run_start(/*now_ms*/ 1, snapshot.clone()).is_err(),
+        "the blocked durable write must reject the transition"
+    );
+    fs::remove_dir(&blocked_temp).expect("remove persistence blocker");
+
+    let admitted = state
+        .run_start(/*now_ms*/ 1, snapshot)
+        .expect("retry after durable storage recovers");
+    assert_eq!(admitted.phase, RunPhase::Admitted);
+    assert_eq!(admitted.revision, 1);
+    assert!(
+        !admitted.idempotent,
+        "failed persistence must not have published an in-memory admission"
+    );
+}
+
+#[test]
 fn missing_local_record_immediately_fences_the_serving_agent() {
     let (_temp, _registry, state) = fixture().expect("runtime fixture");
     fs::remove_file(state.identity.layout.agent_config()).expect("remove local manifest");
