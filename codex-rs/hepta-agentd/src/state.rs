@@ -1,3 +1,5 @@
+use std::any::Any;
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -23,18 +25,71 @@ use codex_hepta_types::StableId;
 #[path = "state_control.rs"]
 mod control;
 
+const MODULE_AUTHBUS: &str = "auth.authbus";
+const MODULE_OBJECTIVE: &str = "objective.compiler";
+const MODULE_AUTOMATION: &str = "automation.taskflow";
+const MODULE_OPERATIONS: &str = "kernel.operations";
+const MODULE_COGNITIVE: &str = "cognitive.store";
+
+#[derive(Default)]
+struct RuntimeModuleAttachments {
+    entries: BTreeMap<StableId, Arc<dyn Any + Send + Sync>>,
+}
+
+impl RuntimeModuleAttachments {
+    fn contains(&self, module_id: &StableId) -> bool {
+        self.entries.contains_key(module_id)
+    }
+
+    fn insert<T>(
+        &mut self,
+        module_id: StableId,
+        attachment: Arc<T>,
+    ) -> Result<(), AgentdError>
+    where
+        T: Any + Send + Sync + 'static,
+    {
+        if self.entries.contains_key(&module_id) {
+            return Err(AgentdError::Protocol(format!(
+                "runtime module {} was attached more than once",
+                module_id.as_str()
+            )));
+        }
+        let erased: Arc<dyn Any + Send + Sync> = attachment;
+        self.entries.insert(module_id, erased);
+        Ok(())
+    }
+
+    fn get<T>(&self, module_id: &StableId) -> Result<Option<Arc<T>>, AgentdError>
+    where
+        T: Any + Send + Sync + 'static,
+    {
+        let Some(attachment) = self.entries.get(module_id) else {
+            return Ok(None);
+        };
+        Arc::clone(attachment)
+            .downcast::<T>()
+            .map(Some)
+            .map_err(|_| {
+                AgentdError::Protocol(format!(
+                    "runtime module {} attachment type does not match its registered host",
+                    module_id.as_str()
+                ))
+            })
+    }
+
+    fn remove(&mut self, module_id: &StableId) -> bool {
+        self.entries.remove(module_id).is_some()
+    }
+}
+
 pub(crate) struct AgentdState {
     pub(crate) cognitive_ranker: std::sync::OnceLock<Arc<crate::PinnedCognitiveRanker>>,
-    pub(crate) authbus: std::sync::OnceLock<Arc<crate::authbus_ingress::TextIngress>>,
-    pub(crate) objective_ingress:
-        std::sync::OnceLock<Arc<crate::objective_ingress::ObjectiveIngressHost>>,
     identity: AgentdIdentity,
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
     events: Mutex<EventBuffer>,
-    automation: Mutex<Option<AutomationStore>>,
-    automation_operations: std::sync::OnceLock<Arc<AgentdOperationsHost>>,
-    cognitive: Mutex<Option<Arc<CognitiveStore>>>,
+    attachments: Mutex<RuntimeModuleAttachments>,
     runtime_modules: Mutex<RuntimeModuleRegistryV1>,
     runtime_catalog: RuntimeModuleCatalogV1,
 }
@@ -64,8 +119,6 @@ impl AgentdState {
             ))
         })?;
         Ok(Self {
-            authbus: std::sync::OnceLock::new(),
-            objective_ingress: std::sync::OnceLock::new(),
             cognitive_ranker: std::sync::OnceLock::new(),
             runtime: Mutex::new(RuntimeState {
                 current_generation: identity.spawn_generation,
@@ -76,12 +129,64 @@ impl AgentdState {
             identity,
             registry,
             events: Mutex::new(events),
-            automation: Mutex::new(None),
-            automation_operations: std::sync::OnceLock::new(),
-            cognitive: Mutex::new(None),
+            attachments: Mutex::new(RuntimeModuleAttachments::default()),
             runtime_modules: Mutex::new(RuntimeModuleRegistryV1::new()),
             runtime_catalog,
         })
+    }
+
+    fn module_id(module_id: &str) -> Result<StableId, AgentdError> {
+        StableId::new(module_id).map_err(|error| AgentdError::Protocol(error.to_string()))
+    }
+
+    fn attach_runtime_module<T>(
+        &self,
+        module_id: &str,
+        effect_scope: &[&str],
+        attachment: Arc<T>,
+    ) -> Result<(), AgentdError>
+    where
+        T: Any + Send + Sync + 'static,
+    {
+        let stable_id = Self::module_id(module_id)?;
+        let mut attachments = self.attachments.lock().map_err(poisoned_state)?;
+        if attachments.contains(&stable_id) {
+            return Err(AgentdError::Protocol(format!(
+                "runtime module {module_id} was attached more than once"
+            )));
+        }
+        self.activate_builtin_runtime_module(module_id, effect_scope)?;
+        attachments.insert(stable_id, attachment)
+    }
+
+    fn runtime_attachment<T>(&self, module_id: &str) -> Result<Option<Arc<T>>, AgentdError>
+    where
+        T: Any + Send + Sync + 'static,
+    {
+        let stable_id = Self::module_id(module_id)?;
+        self.attachments
+            .lock()
+            .map_err(poisoned_state)?
+            .get(&stable_id)
+    }
+
+    fn quarantine_runtime_attachment(&self, module_id: &str) -> Result<(), AgentdError> {
+        let stable_id = Self::module_id(module_id)?;
+        let mut attachments = self.attachments.lock().map_err(poisoned_state)?;
+        if !attachments.remove(&stable_id) {
+            return Ok(());
+        }
+        let generation = Generation::new(self.identity.spawn_generation)
+            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
+        self.runtime_modules
+            .lock()
+            .map_err(poisoned_state)?
+            .quarantine(&stable_id, generation)
+            .map_err(|error| {
+                AgentdError::Protocol(format!(
+                    "runtime module {module_id} quarantine failed: {error}"
+                ))
+            })
     }
 
     pub(crate) fn attach_cognitive_store(
@@ -93,15 +198,11 @@ impl AgentdState {
                 "cognitive store owner does not match agentd identity".to_string(),
             ));
         }
-        let mut cognitive = self.cognitive.lock().map_err(poisoned_state)?;
-        if cognitive.is_some() {
-            return Err(AgentdError::Protocol(
-                "cognitive store was attached more than once".to_string(),
-            ));
-        }
-        self.activate_builtin_runtime_module("cognitive.store", &[])?;
-        *cognitive = Some(store);
-        Ok(())
+        self.attach_runtime_module(MODULE_COGNITIVE, &[], store)
+    }
+
+    pub(crate) fn cognitive_store(&self) -> Result<Option<Arc<CognitiveStore>>, AgentdError> {
+        self.runtime_attachment(MODULE_COGNITIVE)
     }
 
     pub(crate) fn attach_automation_store(
@@ -113,15 +214,11 @@ impl AgentdState {
                 "automation store owner does not match agentd identity".to_string(),
             ));
         }
-        let mut automation = self.automation.lock().map_err(poisoned_state)?;
-        if automation.is_some() {
-            return Err(AgentdError::Protocol(
-                "automation store was attached more than once".to_string(),
-            ));
-        }
-        self.activate_builtin_runtime_module("automation.taskflow", &[])?;
-        *automation = Some(store);
-        Ok(())
+        self.attach_runtime_module(MODULE_AUTOMATION, &[], Arc::new(store))
+    }
+
+    pub(crate) fn automation_store(&self) -> Result<Option<Arc<AutomationStore>>, AgentdError> {
+        self.runtime_attachment(MODULE_AUTOMATION)
     }
 
     pub(crate) fn attach_automation_operations(
@@ -134,42 +231,43 @@ impl AgentdState {
                     .to_string(),
             ));
         }
-        self.activate_builtin_runtime_module("kernel.operations", &["external_effect_dispatch"])?;
-        self.automation_operations.set(host).map_err(|_| {
-            AgentdError::Protocol(
-                "automation operations host was attached more than once".to_string(),
-            )
-        })
+        self.attach_runtime_module(
+            MODULE_OPERATIONS,
+            &["external_effect_dispatch"],
+            host,
+        )
+    }
+
+    pub(crate) fn automation_operations(
+        &self,
+    ) -> Result<Option<Arc<AgentdOperationsHost>>, AgentdError> {
+        self.runtime_attachment(MODULE_OPERATIONS)
     }
 
     pub(crate) fn attach_authbus(
         &self,
         host: Arc<crate::authbus_ingress::TextIngress>,
     ) -> Result<(), AgentdError> {
-        if self.authbus.get().is_some() {
-            return Err(AgentdError::Protocol(
-                "AuthBus host already attached".to_string(),
-            ));
-        }
-        self.activate_builtin_runtime_module("auth.authbus", &[])?;
-        self.authbus
-            .set(host)
-            .map_err(|_| AgentdError::Protocol("AuthBus host already attached".to_string()))
+        self.attach_runtime_module(MODULE_AUTHBUS, &[], host)
+    }
+
+    pub(crate) fn authbus(
+        &self,
+    ) -> Result<Option<Arc<crate::authbus_ingress::TextIngress>>, AgentdError> {
+        self.runtime_attachment(MODULE_AUTHBUS)
     }
 
     pub(crate) fn attach_objective_ingress(
         &self,
         host: Arc<crate::objective_ingress::ObjectiveIngressHost>,
     ) -> Result<(), AgentdError> {
-        if self.objective_ingress.get().is_some() {
-            return Err(AgentdError::Protocol(
-                "Objective ingress host already attached".to_string(),
-            ));
-        }
-        self.activate_builtin_runtime_module("objective.compiler", &[])?;
-        self.objective_ingress.set(host).map_err(|_| {
-            AgentdError::Protocol("Objective ingress host already attached".to_string())
-        })
+        self.attach_runtime_module(MODULE_OBJECTIVE, &[], host)
+    }
+
+    pub(crate) fn objective_ingress(
+        &self,
+    ) -> Result<Option<Arc<crate::objective_ingress::ObjectiveIngressHost>>, AgentdError> {
+        self.runtime_attachment(MODULE_OBJECTIVE)
     }
 
     pub(crate) fn runtime_topology_snapshot(
@@ -260,17 +358,16 @@ impl AgentdState {
         Ok(())
     }
 
-    pub(crate) fn automation_operations(&self) -> Option<Arc<AgentdOperationsHost>> {
-        self.automation_operations.get().cloned()
-    }
-
     pub(crate) fn mark_automation_unavailable(&self) -> Result<(), AgentdError> {
-        self.automation.lock().map_err(poisoned_state)?.take();
-        Ok(())
+        self.quarantine_runtime_attachment(MODULE_AUTOMATION)
     }
 
     pub(crate) fn automation_is_available(&self) -> Result<bool, AgentdError> {
-        Ok(self.automation.lock().map_err(poisoned_state)?.is_some())
+        Ok(self.automation_store()?.is_some())
+    }
+
+    pub(crate) fn mark_cognitive_unavailable(&self) -> Result<(), AgentdError> {
+        self.quarantine_runtime_attachment(MODULE_COGNITIVE)
     }
 
     pub(crate) fn identity(&self) -> &AgentdIdentity {
