@@ -634,8 +634,7 @@ async fn authbus_timeout_quarantines_held_quota_instead_of_refunding() {
         AbsolutePathBuf::try_from(evidence_dir.path().to_path_buf()).unwrap(),
     );
     let evidence = HeptaEvidenceStore::open(&sqlite).await.unwrap();
-    let reservation_id =
-        reserve_authbus_for_request(&evidence, &client, &request, "timeout").await;
+    let reservation_id = reserve_authbus_for_request(&evidence, &client, &request, "timeout").await;
 
     assert_eq!(
         client
@@ -698,10 +697,7 @@ async fn authbus_consumer_indeterminate_can_be_reconciled_to_terminal_settlement
         Err(BaoClientError::ConsumerIndeterminate)
     );
     let pending = evidence
-        .pending_authbus_effect_reservations(
-            &StableId::new("quota:bao:indeterminate").unwrap(),
-            8,
-        )
+        .pending_authbus_effect_reservations(&StableId::new("quota:bao:indeterminate").unwrap(), 8)
         .await
         .unwrap();
     assert_eq!(pending.len(), 1);
@@ -842,8 +838,7 @@ async fn authbus_success_settles_exact_bound_request() {
         AbsolutePathBuf::try_from(evidence_dir.path().to_path_buf()).unwrap(),
     );
     let evidence = HeptaEvidenceStore::open(&sqlite).await.unwrap();
-    let reservation_id =
-        reserve_authbus_for_request(&evidence, &client, &request, "success").await;
+    let reservation_id = reserve_authbus_for_request(&evidence, &client, &request, "success").await;
 
     let receipt = client
         .consume_kv_v2_with_authbus(
@@ -866,10 +861,7 @@ async fn authbus_success_settles_exact_bound_request() {
         .unwrap();
     assert!(
         evidence
-            .pending_authbus_effect_reservations(
-                &StableId::new("quota:bao:success").unwrap(),
-                8,
-            )
+            .pending_authbus_effect_reservations(&StableId::new("quota:bao:success").unwrap(), 8,)
             .await
             .unwrap()
             .is_empty()

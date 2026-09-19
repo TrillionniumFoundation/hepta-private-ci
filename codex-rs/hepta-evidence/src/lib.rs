@@ -2,9 +2,9 @@
 
 mod authbus_control;
 mod authbus_outbox;
-mod authbus_recovery;
 mod authbus_outbox_record;
 mod authbus_outbox_worker;
+mod authbus_recovery;
 mod authbus_store;
 mod canonical;
 mod governance_store;

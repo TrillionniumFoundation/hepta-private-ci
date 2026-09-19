@@ -229,11 +229,12 @@ async fn bus_03_expiry_after_effect_start_cannot_refund_observed_effect() {
         .reconcile_authbus_quota(&id("quota:one"))
         .await
         .unwrap();
-    let row = sqlx::query("SELECT reserved, consumed FROM authbus_quota_registry WHERE quota_key=?")
-        .bind("quota:one")
-        .fetch_one(&store.pool)
-        .await
-        .unwrap();
+    let row =
+        sqlx::query("SELECT reserved, consumed FROM authbus_quota_registry WHERE quota_key=?")
+            .bind("quota:one")
+            .fetch_one(&store.pool)
+            .await
+            .unwrap();
     let reserved: Vec<u8> = row.try_get("reserved").unwrap();
     let consumed: Vec<u8> = row.try_get("consumed").unwrap();
     assert_eq!(decode_counter(reserved), 0);
@@ -386,13 +387,11 @@ async fn begin_effect_racing_cancel_has_one_linearization_and_never_double_refun
         .reconcile_authbus_quota(&id("quota:one"))
         .await
         .unwrap();
-    let row = sqlx::query(
-        "SELECT state FROM authbus_quota_reservations WHERE reservation_id=?",
-    )
-    .bind(reservation.reservation_id.as_str())
-    .fetch_one(&first.pool)
-    .await
-    .unwrap();
+    let row = sqlx::query("SELECT state FROM authbus_quota_reservations WHERE reservation_id=?")
+        .bind(reservation.reservation_id.as_str())
+        .fetch_one(&first.pool)
+        .await
+        .unwrap();
     let state: String = row.try_get("state").unwrap();
     let reserved: Vec<u8> =
         sqlx::query_scalar("SELECT reserved FROM authbus_quota_registry WHERE quota_key=?")

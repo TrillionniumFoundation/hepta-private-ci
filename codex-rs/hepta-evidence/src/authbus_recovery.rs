@@ -136,12 +136,7 @@ impl HeptaEvidenceStore {
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
-        verify_checkpoint_in_tx(
-            &mut tx,
-            checkpoint_generation,
-            checkpoint_digest,
-        )
-        .await?;
+        verify_checkpoint_in_tx(&mut tx, checkpoint_generation, checkpoint_digest).await?;
 
         let active: i64 = sqlx::query_scalar(
             "SELECT COUNT(*) FROM authbus_outbox
@@ -220,8 +215,7 @@ async fn verify_checkpoint_in_tx(
     .await
     .map_err(classify_sqlx_error)?
     .ok_or(AuthBusControlError::RollbackDetected)?;
-    let stored_generation =
-        decode_u64(row.try_get("generation").map_err(classify_sqlx_error)?)?;
+    let stored_generation = decode_u64(row.try_get("generation").map_err(classify_sqlx_error)?)?;
     let stored_digest = digest(
         row.try_get("checkpoint_digest")
             .map_err(classify_sqlx_error)?,
