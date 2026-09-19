@@ -199,9 +199,11 @@ impl CognitiveStore {
             .map_err(authoritative_error)
     }
 
-    /// Revalidate both the immutable owner cut and its host-authority binding.
+    /// Revalidate the immutable owner cut and rebind the caller's host-authority observation.
     ///
-    /// The original lease is never extended during revalidation.
+    /// This SQLite owner does not certify that the host epoch is current; the host must
+    /// re-read/fence its own authority source before publication. The original lease is
+    /// never extended during revalidation.
     pub async fn revalidate_lane_c_authoritative_provider(
         &self,
         access: &CognitiveAccess,
