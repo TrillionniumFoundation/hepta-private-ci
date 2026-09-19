@@ -222,26 +222,53 @@ def validate_native_bindings(root: Path = ROOT) -> dict[str, Any]:
 
 
 def validate_wire_vector(root: Path = ROOT) -> None:
-    value = read_json(
+    v1 = read_json(
         root / "docs/lane-a-foundation/platform.wire/HPTA_V1_CONFORMANCE.json"
     )
     try:
-        frame = bytes.fromhex(value["frameHex"])
-        payload = bytes.fromhex(value["fields"]["payloadHex"])
-        payload_digest = value["fields"]["payloadSha256"]
+        frame = bytes.fromhex(v1["frameHex"])
+        payload = bytes.fromhex(v1["fields"]["payloadHex"])
+        payload_digest = v1["fields"]["payloadSha256"]
     except (KeyError, TypeError, ValueError) as error:
         raise VerificationError(f"invalid HPTA V1 vector: {error}") from error
     if (
-        value.get("schemaVersion") != 1
-        or value.get("protocol") != "HPTA"
-        or value.get("version") != 1
-        or value.get("frameLength") != 59
+        v1.get("schemaVersion") != 1
+        or v1.get("protocol") != "HPTA"
+        or v1.get("version") != 1
+        or v1.get("frameLength") != 59
         or len(frame) != 59
         or frame[:6] != b"HPTA\x00\x01"
-        or hashlib.sha256(frame).hexdigest() != value.get("frameSha256")
+        or hashlib.sha256(frame).hexdigest() != v1.get("frameSha256")
         or hashlib.sha256(payload).hexdigest() != payload_digest
     ):
         raise VerificationError("HPTA V1 conformance vector mismatch")
+
+    v2 = read_json(
+        root / "docs/lane-a-foundation/platform.wire/HPTA_V2_CONFORMANCE.json"
+    )
+    try:
+        frame = bytes.fromhex(v2["frameHex"])
+        payload = bytes.fromhex(v2["fields"]["payloadHex"])
+        payload_digest = v2["fields"]["payloadSha256"]
+        frame_digest = v2["fields"]["frameDigest"]
+        domain = bytes.fromhex(v2["frameDigestDomainHex"])
+    except (KeyError, TypeError, ValueError) as error:
+        raise VerificationError(f"invalid HPTA V2 vector: {error}") from error
+    digest_material = domain + frame[:50] + frame[82:]
+    if (
+        v2.get("schemaVersion") != 1
+        or v2.get("protocol") != "HPTA"
+        or v2.get("version") != 2
+        or v2.get("frameLength") != 91
+        or len(frame) != 91
+        or frame[:6] != b"HPTA\x00\x02"
+        or hashlib.sha256(frame).hexdigest() != v2.get("frameSha256")
+        or hashlib.sha256(payload).hexdigest() != payload_digest
+        or frame[18:50].hex() != payload_digest
+        or frame[50:82].hex() != frame_digest
+        or hashlib.sha256(digest_material).hexdigest() != frame_digest
+    ):
+        raise VerificationError("HPTA V2 conformance vector mismatch")
 
 
 def validate_source_specific(root: Path = ROOT) -> None:
