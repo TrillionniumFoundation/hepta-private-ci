@@ -200,8 +200,7 @@ fn frozen_model_and_data_produce_four_role_authenticated_policy_decision() {
     let ood_dataset_digest = Digest32::of_bytes(OOD_CSV.as_bytes());
     let (measured_ece_ppm, subgroup_audit_digest) = calibration_ece_ppm(model);
     let maximum_in_domain_ppm = 750_000;
-    let measured_false_acceptance_ppm =
-        ood_false_acceptance_ppm(model, maximum_in_domain_ppm);
+    let measured_false_acceptance_ppm = ood_false_acceptance_ppm(model, maximum_in_domain_ppm);
     assert!(measured_ece_ppm <= 400_000, "ECE {measured_ece_ppm}");
     assert_eq!(measured_false_acceptance_ppm, 0);
 
@@ -370,15 +369,17 @@ fn frozen_model_and_data_produce_four_role_authenticated_policy_decision() {
     ]
     .into_iter()
     .enumerate()
-    .map(|(index, (principal_id, credentials))| AuthenticatedPrincipalV1 {
-        principal_id: id(principal_id),
-        credential_chain_digest: digest(credentials),
-        signing_key_digest: Digest32::of_bytes(&keys[index].verifying_key().to_bytes()),
-        scope_digest: digest("intuition-qualification-scope"),
-        authority_epoch: 12,
-        authenticated_at: 50,
-        expires_at: 250,
-    })
+    .map(
+        |(index, (principal_id, credentials))| AuthenticatedPrincipalV1 {
+            principal_id: id(principal_id),
+            credential_chain_digest: digest(credentials),
+            signing_key_digest: Digest32::of_bytes(&keys[index].verifying_key().to_bytes()),
+            scope_digest: digest("intuition-qualification-scope"),
+            authority_epoch: 12,
+            authenticated_at: 50,
+            expires_at: 250,
+        },
+    )
     .collect::<Vec<_>>();
 
     let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
@@ -420,8 +421,7 @@ fn frozen_model_and_data_produce_four_role_authenticated_policy_decision() {
 
     let completeness_payload = canonical_completeness_evidence_payload_v1(&request).unwrap();
     let scoring_payload = canonical_scoring_evidence_payload_v1(&scoring).unwrap();
-    let profile_payload =
-        canonical_profile_qualification_evidence_payload_v1(&profile).unwrap();
+    let profile_payload = canonical_profile_qualification_evidence_payload_v1(&profile).unwrap();
     let assignment_payload = canonical_random_assignment_evidence_payload_v1(&request)
         .unwrap()
         .unwrap();
