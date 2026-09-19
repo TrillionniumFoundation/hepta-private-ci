@@ -47,7 +47,7 @@ impl SchemaDefinition {
         unknown_field_policy: UnknownFieldPolicy,
         max_payload_bytes: usize,
     ) -> Result<Self, SchemaError> {
-        if max_payload_bytes == 0 || max_payload_bytes > crate::MAX_WIRE_PAYLOAD_BYTES {
+        if !(1..=crate::MAX_WIRE_PAYLOAD_BYTES).contains(&max_payload_bytes) {
             return Err(SchemaError::PayloadLimit);
         }
         if required_fields.len().saturating_add(optional_fields.len()) > MAX_SCHEMA_FIELDS {
@@ -102,8 +102,7 @@ fn collect_fields(fields: &[&str]) -> Result<BTreeSet<String>, SchemaError> {
 }
 
 fn validate_field_name(field: &str) -> Result<(), SchemaError> {
-    if field.is_empty()
-        || field.len() > MAX_FIELD_NAME_BYTES
+    if !(1..=MAX_FIELD_NAME_BYTES).contains(&field.len())
         || !field
             .bytes()
             .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-' | b':'))
