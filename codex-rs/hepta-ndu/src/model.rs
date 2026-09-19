@@ -56,6 +56,10 @@ pub struct RequiredOrganSet {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct UtilityProfile {
     pub profile_id: StableId,
+    /// Immutable registry identity for axis units, directions and semantic meaning.
+    pub axis_registry_digest: Digest32,
+    /// Immutable normalization and fixed-point scale manifest for every numeric axis.
+    pub normalization_manifest_digest: Digest32,
     pub dimensions: Vec<(StableId, AxisDirection)>,
     pub risk_ceilings: Vec<AxisLimit>,
     pub resource_ceilings: Vec<AxisLimit>,
