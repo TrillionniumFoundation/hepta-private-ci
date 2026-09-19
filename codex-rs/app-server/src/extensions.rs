@@ -66,6 +66,10 @@ pub(crate) struct ThreadExtensionDependencies {
     /// inputs.  `None` is the normal and production-facing state.
     pub(crate) hepta_qualification_turn_writer:
         Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
+    /// Optional embedding-owned policy installed at the finalized physical
+    /// provider-request boundary.
+    pub(crate) embedding_model_provider_policy_contributor:
+        Option<Arc<dyn codex_extension_api::ModelProviderPolicyContributor>>,
 }
 
 /// Apply the complete qualification writer gate at the app-server boundary.
@@ -114,8 +118,12 @@ where
         hepta_local_development_policy,
         hepta_qualification_turn_writer_enabled,
         hepta_qualification_turn_writer,
+        embedding_model_provider_policy_contributor,
     } = dependencies;
     let mut builder = ExtensionRegistryBuilder::<Config>::with_event_sink(Arc::clone(&event_sink));
+    if let Some(contributor) = embedding_model_provider_policy_contributor {
+        builder.model_provider_policy_contributor(contributor);
+    }
     if let Some(queue_service) = queue_service {
         codex_queue_extension::install(&mut builder, queue_service);
     }
