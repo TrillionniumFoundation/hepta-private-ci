@@ -1,11 +1,33 @@
+use std::collections::BTreeSet;
 use std::path::Path;
 use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 use std::time::Duration;
+use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_memory_federation::FederatedEvidenceItemV2;
+use codex_hepta_memory_federation::FederatedLeaseV2;
+use codex_hepta_memory_federation::FederatedQueryV2;
+use codex_hepta_memory_federation::FederatedValidityV2;
+use codex_hepta_memory_federation::FederationAuthorityStateV2;
+use codex_hepta_memory_federation::FederationAuthorityV2;
+use codex_hepta_memory_federation::FederationClockV2;
+use codex_hepta_memory_federation::FederationFutureV2;
+use codex_hepta_memory_federation::FederationTransportResultV2;
+use codex_hepta_memory_federation::FederationTransportV2;
+use codex_hepta_memory_federation::FederationV2Error;
+use codex_hepta_memory_federation::NeverCancelledV2;
+use codex_hepta_memory_federation::RemoteFederatedResponseV2;
+use codex_hepta_memory_federation::execute_once;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Revision;
+use codex_hepta_types::StableId;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -34,6 +56,8 @@ pub const MAX_FEDERATION_GRANT_LIFETIME_SECONDS: i64 = 31 * 24 * 60 * 60;
 pub const MAX_FEDERATION_SOURCES_PER_AGENT: usize = 16;
 const MAX_FEDERATION_OWNER_LAYOUTS_PER_AGENT: usize = 128;
 const FEDERATION_REFRESH_TIMEOUT: Duration = Duration::from_secs(2);
+const FEDERATION_QUERY_TIMEOUT: Duration = Duration::from_secs(2);
+static FEDERATION_ATTEMPT_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
 const COGNITIVE_DB_FILENAME: &str = "cognitive_1.sqlite3";
 const CAPABILITY_ID_PREFIX: &str = "federation:v1:";
@@ -224,10 +248,19 @@ pub struct FederatedRetrievalCandidate {
     pub revalidation: FederatedMemoryRevalidationBinding,
 }
 
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, Serialize)]
+pub struct FederatedRetrievalCoverage {
+    pub requested_sources: u32,
+    pub completed_sources: u32,
+    pub failed_sources: u32,
+    pub indeterminate_sources: u32,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct FederatedRetrievalBatch {
     pub query_sha256: Sha256Digest,
     pub candidates: Vec<FederatedRetrievalCandidate>,
+    pub coverage: FederatedRetrievalCoverage,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
@@ -626,22 +659,61 @@ impl FederatedMemoryReader {
         access: &FederationConsumerAccess,
         request: &RetrievalRequest,
     ) -> Result<FederatedRetrievalBatch, CognitiveStoreError> {
-        require_authorized(
-            self.validate_capability(access, request.now_unix_seconds())
-                .await?,
-        )?;
-        let owner_access = owner_access(&self.capability);
-        let mut batch = self
-            .owner
-            .retrieve_memory_candidates(&owner_access, request)
-            .await?;
-        batch
-            .candidates
-            .retain(|candidate| candidate.memory.scope == *self.capability.scope.owner_scope());
-        require_authorized(
-            self.validate_capability(access, request.now_unix_seconds())
-                .await?,
-        )?;
+        let base_unix_ms = unix_seconds_to_millis(request.now_unix_seconds())?;
+        let clock = LogicalFederationClock::new(base_unix_ms);
+        let (query, lease) = build_v2_request(self, request, &clock)?;
+        let transport = CognitiveFederationTransport::new(self, access, request);
+        let authority = CognitiveFederationAuthority {
+            reader: self,
+            access,
+        };
+        let result = execute_once(
+            &transport,
+            &authority,
+            &NeverCancelledV2,
+            &clock,
+            query,
+            &lease,
+        )
+        .await
+        .map_err(map_v2_error)?;
+
+        let query_sha256 = Sha256Digest::for_bytes(request.query().as_bytes());
+        if result.validity != FederatedValidityV2::Valid {
+            return Ok(FederatedRetrievalBatch {
+                query_sha256,
+                candidates: Vec::new(),
+                coverage: FederatedRetrievalCoverage {
+                    requested_sources: 1,
+                    completed_sources: 0,
+                    failed_sources: u32::from(matches!(
+                        result.validity,
+                        FederatedValidityV2::Revoked | FederatedValidityV2::StaleGeneration
+                    )),
+                    indeterminate_sources: u32::from(matches!(
+                        result.validity,
+                        FederatedValidityV2::Indeterminate
+                    )),
+                },
+            });
+        }
+
+        let mut batch = transport.take_batch()?.ok_or_else(|| {
+            CognitiveStoreError::Unavailable(
+                "canonical federation transport returned no captured owner batch".to_string(),
+            )
+        })?;
+        let admitted = result
+            .items
+            .iter()
+            .map(|item| (item.record_id.as_str().to_string(), item.record_revision.get()))
+            .collect::<BTreeSet<_>>();
+        batch.candidates.retain(|candidate| {
+            admitted.contains(&(
+                candidate.memory.id.memory_id.as_str().to_string(),
+                candidate.memory.id.revision,
+            ))
+        });
         let candidates = batch
             .candidates
             .into_iter()
@@ -658,6 +730,12 @@ impl FederatedMemoryReader {
         Ok(FederatedRetrievalBatch {
             query_sha256: batch.query_sha256,
             candidates,
+            coverage: FederatedRetrievalCoverage {
+                requested_sources: 1,
+                completed_sources: 1,
+                failed_sources: 0,
+                indeterminate_sources: 0,
+            },
         })
     }
 
@@ -761,6 +839,317 @@ impl FederatedMemoryReader {
     }
 }
 
+
+struct LogicalFederationClock {
+    base_unix_ms: u64,
+    started: Instant,
+}
+
+impl LogicalFederationClock {
+    fn new(base_unix_ms: u64) -> Self {
+        Self {
+            base_unix_ms,
+            started: Instant::now(),
+        }
+    }
+}
+
+impl FederationClockV2 for LogicalFederationClock {
+    fn now_unix_ms(&self) -> u64 {
+        self.base_unix_ms
+            .saturating_add(u64::try_from(self.started.elapsed().as_millis()).unwrap_or(u64::MAX))
+    }
+}
+
+struct CognitiveFederationAuthority<'a> {
+    reader: &'a FederatedMemoryReader,
+    access: &'a FederationConsumerAccess,
+}
+
+impl FederationAuthorityV2 for CognitiveFederationAuthority<'_> {
+    fn revalidate<'a>(
+        &'a self,
+        _query: &'a FederatedQueryV2,
+        _lease: &'a FederatedLeaseV2,
+        now_unix_ms: u64,
+    ) -> FederationFutureV2<'a, Result<FederationAuthorityStateV2, FederationV2Error>> {
+        Box::pin(async move {
+            let now_unix_seconds =
+                i64::try_from(now_unix_ms / 1_000).map_err(|_| FederationV2Error::TransportRejected)?;
+            match self
+                .reader
+                .validate_capability(self.access, now_unix_seconds)
+                .await
+                .map_err(|_| FederationV2Error::TransportRejected)?
+            {
+                None => Ok(FederationAuthorityStateV2::Current),
+                Some(FederationRevalidationDrift::Revoked) => {
+                    Ok(FederationAuthorityStateV2::Revoked)
+                }
+                Some(
+                    FederationRevalidationDrift::CapabilityMissing
+                    | FederationRevalidationDrift::CapabilityRevision
+                    | FederationRevalidationDrift::CapabilityGeneration,
+                ) => Ok(FederationAuthorityStateV2::StaleGeneration),
+                Some(FederationRevalidationDrift::Expired) => {
+                    Err(FederationV2Error::LeaseExpired)
+                }
+                Some(_) => Err(FederationV2Error::AuthorityGenerationStale),
+            }
+        })
+    }
+}
+
+struct CognitiveFederationTransport<'a> {
+    reader: &'a FederatedMemoryReader,
+    access: &'a FederationConsumerAccess,
+    request: &'a RetrievalRequest,
+    captured: Mutex<Option<crate::RetrievalBatch>>,
+}
+
+impl<'a> CognitiveFederationTransport<'a> {
+    fn new(
+        reader: &'a FederatedMemoryReader,
+        access: &'a FederationConsumerAccess,
+        request: &'a RetrievalRequest,
+    ) -> Self {
+        Self {
+            reader,
+            access,
+            request,
+            captured: Mutex::new(None),
+        }
+    }
+
+    fn take_batch(&self) -> Result<Option<crate::RetrievalBatch>, CognitiveStoreError> {
+        self.captured
+            .lock()
+            .map_err(|_| {
+                CognitiveStoreError::Unavailable(
+                    "canonical federation captured batch lock is poisoned".to_string(),
+                )
+            })
+            .map(|mut captured| captured.take())
+    }
+}
+
+impl FederationTransportV2 for CognitiveFederationTransport<'_> {
+    fn send_once<'a>(
+        &'a self,
+        query: &'a FederatedQueryV2,
+    ) -> FederationFutureV2<'a, Result<FederationTransportResultV2, FederationV2Error>> {
+        Box::pin(async move {
+            require_authorized(
+                self.reader
+                    .validate_capability(self.access, self.request.now_unix_seconds())
+                    .await
+                    .map_err(|_| FederationV2Error::TransportRejected)?,
+            )
+            .map_err(|_| FederationV2Error::TransportRejected)?;
+            let owner_access = owner_access(&self.reader.capability);
+            let mut batch = self
+                .reader
+                .owner
+                .retrieve_memory_candidates(&owner_access, self.request)
+                .await
+                .map_err(|_| FederationV2Error::TransportRejected)?;
+            batch.candidates.retain(|candidate| {
+                candidate.memory.scope == *self.reader.capability.scope.owner_scope()
+            });
+            require_authorized(
+                self.reader
+                    .validate_capability(self.access, self.request.now_unix_seconds())
+                    .await
+                    .map_err(|_| FederationV2Error::TransportRejected)?,
+            )
+            .map_err(|_| FederationV2Error::TransportRejected)?;
+
+            let items = batch
+                .candidates
+                .iter()
+                .map(canonical_evidence_item)
+                .collect::<Result<Vec<_>, _>>()?;
+            let observed_frontier = items
+                .iter()
+                .map(|item| item.record_revision.get())
+                .max()
+                .unwrap_or(self.reader.capability.revision)
+                .max(1);
+            let completeness = if items.is_empty() {
+                codex_hepta_memory_federation::FederatedCompletenessV2::Empty
+            } else {
+                codex_hepta_memory_federation::FederatedCompletenessV2::Complete
+            };
+            let mut response = RemoteFederatedResponseV2 {
+                peer_id: query.peer_id.clone(),
+                query_binding_digest: query.binding_digest(),
+                scope_digest: query.scope_digest,
+                purpose_digest: query.purpose_digest,
+                generation_vector_digest: query.generation_vector_digest,
+                response_digest: Digest32::ZERO,
+                observed_frontier,
+                expires_unix_ms: unix_seconds_to_millis_v2(
+                    self.reader.capability.expires_at_unix_seconds,
+                )?,
+                items,
+                completeness,
+                terminal_observed: true,
+            };
+            response.response_digest = response.compute_response_digest();
+            *self
+                .captured
+                .lock()
+                .map_err(|_| FederationV2Error::TransportRejected)? = Some(batch);
+            Ok(FederationTransportResultV2::Terminal(response))
+        })
+    }
+}
+
+fn build_v2_request(
+    reader: &FederatedMemoryReader,
+    request: &RetrievalRequest,
+    clock: &LogicalFederationClock,
+) -> Result<(FederatedQueryV2, FederatedLeaseV2), CognitiveStoreError> {
+    let sequence = FEDERATION_ATTEMPT_SEQUENCE.fetch_add(1, Ordering::Relaxed);
+    if sequence == 0 {
+        return Err(CognitiveStoreError::Unavailable(
+            "memory federation attempt sequence exhausted".to_string(),
+        ));
+    }
+    let now_unix_ms = clock.now_unix_ms();
+    let deadline_unix_ms = now_unix_ms
+        .checked_add(u64::try_from(FEDERATION_QUERY_TIMEOUT.as_millis()).unwrap_or(u64::MAX))
+        .ok_or_else(|| {
+            CognitiveStoreError::Unavailable("memory federation deadline overflow".to_string())
+        })?;
+    let query_digest = Digest32::of_bytes(request.query().as_bytes());
+    let mut nonce_bytes = Vec::new();
+    nonce_bytes.extend_from_slice(reader.capability.id.as_str().as_bytes());
+    nonce_bytes.extend_from_slice(query_digest.as_array());
+    nonce_bytes.extend_from_slice(&now_unix_ms.to_be_bytes());
+    nonce_bytes.extend_from_slice(&sequence.to_be_bytes());
+    let nonce_digest = Digest32::of_bytes(&nonce_bytes);
+    let query_id = stable_v2_id("fq", nonce_digest)?;
+    let peer_id = StableId::new(reader.capability.owner_agent_id.as_str().to_string())
+        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+    let principal_id = StableId::new(reader.capability.consumer_agent_id.as_str().to_string())
+        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))?;
+    let scope_digest = Digest32::of_bytes(reader.capability.id.as_str().as_bytes());
+    let purpose_digest = Digest32::of_bytes(b"hepta.memory.federation.recall.v2");
+    let mut generation_bytes = Vec::new();
+    generation_bytes.extend_from_slice(reader.capability.id.as_str().as_bytes());
+    generation_bytes.extend_from_slice(&reader.capability.generation.to_be_bytes());
+    generation_bytes.extend_from_slice(&reader.capability.revision.to_be_bytes());
+    let generation_vector_digest = Digest32::of_bytes(&generation_bytes);
+    let maximum_results = u32::try_from(crate::MAX_RETRIEVAL_RESULTS).map_err(|_| {
+        CognitiveStoreError::Invalid("memory federation result bound overflow".to_string())
+    })?;
+    let query = FederatedQueryV2 {
+        query_id,
+        peer_id,
+        principal_id,
+        scope_digest,
+        purpose_digest,
+        generation_vector_digest,
+        query_digest,
+        maximum_results,
+        deadline_unix_ms,
+        lease_epoch: reader.capability.generation,
+        nonce_digest,
+    };
+    let lease = FederatedLeaseV2 {
+        lease_id: stable_v2_id(
+            "fl",
+            Digest32::of_bytes(reader.capability.id.as_str().as_bytes()),
+        )?,
+        query_id: query.query_id.clone(),
+        peer_id: query.peer_id.clone(),
+        principal_id: query.principal_id.clone(),
+        scope_digest: query.scope_digest,
+        purpose_digest: query.purpose_digest,
+        generation_vector_digest: query.generation_vector_digest,
+        query_binding_digest: query.binding_digest(),
+        lease_epoch: query.lease_epoch,
+        expires_unix_ms: unix_seconds_to_millis(reader.capability.expires_at_unix_seconds)?,
+        revoked: false,
+    };
+    Ok((query, lease))
+}
+
+fn canonical_evidence_item(
+    candidate: &RetrievalCandidate,
+) -> Result<FederatedEvidenceItemV2, FederationV2Error> {
+    let record_id = StableId::new(candidate.memory.id.memory_id.as_str().to_string())
+        .map_err(|_| FederationV2Error::TransportRejected)?;
+    let record_revision =
+        Revision::new(candidate.memory.id.revision).map_err(|_| FederationV2Error::TransportRejected)?;
+    let record_digest = candidate
+        .memory
+        .content_sha256
+        .as_str()
+        .parse::<Digest32>()
+        .map_err(|_| FederationV2Error::TransportRejected)?;
+    let binding = serde_json::to_vec(&candidate.revalidation)
+        .map_err(|_| FederationV2Error::TransportRejected)?;
+    let mut support = b"hepta.memory.federation.support.v2".to_vec();
+    support.extend_from_slice(&binding);
+    let mut validity = b"hepta.memory.federation.validity.v2".to_vec();
+    validity.extend_from_slice(&binding);
+    Ok(FederatedEvidenceItemV2 {
+        source_owner_id: StableId::new(candidate.memory.scope.projection_key())
+            .unwrap_or_else(|_| record_id.clone()),
+        record_id,
+        record_revision,
+        record_digest,
+        support_digest: Digest32::of_bytes(&support),
+        validity_digest: Digest32::of_bytes(&validity),
+    })
+}
+
+fn stable_v2_id(prefix: &str, digest: Digest32) -> Result<StableId, CognitiveStoreError> {
+    StableId::new(format!("{prefix}:{digest}"))
+        .map_err(|error| CognitiveStoreError::Corrupt(error.to_string()))
+}
+
+fn unix_seconds_to_millis(value: i64) -> Result<u64, CognitiveStoreError> {
+    let seconds = u64::try_from(value).map_err(|_| {
+        CognitiveStoreError::Invalid("memory federation time precedes unix epoch".to_string())
+    })?;
+    seconds.checked_mul(1_000).ok_or_else(|| {
+        CognitiveStoreError::Invalid("memory federation time overflow".to_string())
+    })
+}
+
+fn unix_seconds_to_millis_v2(value: i64) -> Result<u64, FederationV2Error> {
+    u64::try_from(value)
+        .ok()
+        .and_then(|seconds| seconds.checked_mul(1_000))
+        .ok_or(FederationV2Error::TransportRejected)
+}
+
+fn map_v2_error(error: FederationV2Error) -> CognitiveStoreError {
+    match error {
+        FederationV2Error::LeaseExpired
+        | FederationV2Error::LeaseRevoked
+        | FederationV2Error::AuthorityGenerationStale => {
+            CognitiveStoreError::AccessDenied(format!("canonical memory federation denied: {error}"))
+        }
+        FederationV2Error::IdentityMismatch(_)
+        | FederationV2Error::DigestMismatch(_)
+        | FederationV2Error::MissingTerminalObservation
+        | FederationV2Error::DuplicateResultIdentity
+        | FederationV2Error::InvalidCompleteness
+        | FederationV2Error::InvalidCoverage
+        | FederationV2Error::StaleEvidenceExposed
+        | FederationV2Error::AuthorityGranted => {
+            CognitiveStoreError::Corrupt(format!("canonical memory federation rejected: {error}"))
+        }
+        _ => CognitiveStoreError::Unavailable(format!(
+            "canonical memory federation unavailable: {error}"
+        )),
+    }
+}
+
 #[derive(Clone)]
 pub struct FederatedRecallSet {
     consumer_agent_id: AgentId,
@@ -833,11 +1222,28 @@ impl FederatedRecallSet {
         }
         let readers = self.current_readers(request.now_unix_seconds()).await;
         let mut candidates = Vec::new();
+        let mut coverage = FederatedRetrievalCoverage {
+            requested_sources: u32::try_from(readers.len()).unwrap_or(u32::MAX),
+            ..FederatedRetrievalCoverage::default()
+        };
         for reader in &readers {
-            let Ok(batch) = reader.retrieve(access, request).await else {
-                continue;
-            };
-            candidates.extend(batch.candidates);
+            match reader.retrieve(access, request).await {
+                Ok(batch) => {
+                    coverage.completed_sources = coverage
+                        .completed_sources
+                        .saturating_add(batch.coverage.completed_sources);
+                    coverage.failed_sources = coverage
+                        .failed_sources
+                        .saturating_add(batch.coverage.failed_sources);
+                    coverage.indeterminate_sources = coverage
+                        .indeterminate_sources
+                        .saturating_add(batch.coverage.indeterminate_sources);
+                    candidates.extend(batch.candidates);
+                }
+                Err(_) => {
+                    coverage.failed_sources = coverage.failed_sources.saturating_add(1);
+                }
+            }
         }
         candidates.sort_by(|left, right| {
             right
@@ -864,6 +1270,7 @@ impl FederatedRecallSet {
         Ok(FederatedRetrievalBatch {
             query_sha256: Sha256Digest::for_bytes(request.query().as_bytes()),
             candidates,
+            coverage,
         })
     }
 
