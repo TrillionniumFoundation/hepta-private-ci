@@ -26,6 +26,7 @@ use tokio_util::sync::CancellationToken;
 use url::Url;
 
 use crate::MatrixIngress;
+use crate::MatrixOutboundIdentity;
 use crate::MatrixOutboundTransport;
 use crate::MatrixSdkPaths;
 use crate::MatrixSendFuture;
@@ -347,6 +348,17 @@ fn hepta_sync_token(checkpoint: Option<&MatrixSyncCheckpoint>) -> SyncToken {
 }
 
 impl MatrixOutboundTransport for MatrixSdkClient {
+    fn identity(&self) -> Result<MatrixOutboundIdentity, MatrixTransportError> {
+        self.verify_authenticated_identity()
+            .map_err(|_| MatrixTransportError::Permanent)?;
+        Ok(MatrixOutboundIdentity {
+            homeserver_id: self.config.binding.homeserver.as_str().to_string(),
+            matrix_user_id: self.config.binding.expected_mxid.as_str().to_string(),
+            device_id: self.config.binding.expected_device_id.as_str().to_string(),
+            session_generation: self.config.matrix_generation,
+        })
+    }
+
     fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a> {
         Box::pin(async move {
             if !self.config.binding.allowed_rooms.contains(&record.room_id)
