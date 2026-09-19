@@ -29,6 +29,7 @@ use codex_hepta_matrix_sdk::dispatch_outbox_once;
 use codex_hepta_matrix_sdk::run_outbox_sender;
 use codex_hepta_matrix_store::MatrixDurableConfig;
 use codex_hepta_matrix_store::MatrixDurableStore;
+use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::OutboxDisposition;
 use codex_hepta_matrix_store::OutboxDraft;
 use codex_hepta_matrix_store::OutboxKind;
@@ -369,8 +370,23 @@ async fn expired_crash_lease_reuses_the_stable_transaction_after_reopen() -> Tes
         31,
     )
     .await?;
-    assert_eq!(stats.sent, 1);
+    assert_eq!(stats.accepted, 1);
+    assert_eq!(stats.sent, 0);
     assert_eq!(transport.txn_ids()?, vec![original.stable_txn_id.clone()]);
+    let dispatch = reopened
+        .dispatch_record(&original.stable_txn_id)
+        .await?
+        .ok_or("dispatch ledger row disappeared")?;
+    assert_eq!(dispatch.state, MatrixDispatchState::Accepted);
+    reopened
+        .observe_dispatch_terminal_success_if_known(
+            &original.stable_txn_id,
+            &room(ALLOWED_ROOM)?,
+            &sent_event,
+            &"a".repeat(64),
+            32,
+        )
+        .await?;
     let stored = reopened
         .outbox_for_txn(&original.stable_txn_id)
         .await?
@@ -411,7 +427,7 @@ async fn retry_preserves_stable_transaction_and_shutdown_is_bounded() -> TestRes
     assert_eq!(
         dispatch_outbox_once(&store, &transport, &config, &cancel, 20)
             .await?
-            .sent,
+            .accepted,
         1
     );
     assert_eq!(
@@ -461,7 +477,17 @@ async fn post_send_ack_loss_reuses_txn_and_commits_same_synapse_event_id() -> Te
     assert_eq!(after_response_loss.sent_event_id, None);
 
     let second = dispatch_outbox_once(&store, &transport, &config, &cancel, 20).await?;
-    assert_eq!(second.sent, 1);
+    assert_eq!(second.accepted, 1);
+    assert_eq!(second.sent, 0);
+    store
+        .observe_dispatch_terminal_success_if_known(
+            &original.stable_txn_id,
+            &room(ALLOWED_ROOM)?,
+            &accepted_event_id,
+            &"b".repeat(64),
+            21,
+        )
+        .await?;
     assert_eq!(
         transport.txn_ids()?,
         vec![
