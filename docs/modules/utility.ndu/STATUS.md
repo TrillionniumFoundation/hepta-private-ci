@@ -21,7 +21,7 @@ Current source includes:
 - subject-bound local solver receipts with structural validation before protocol publication;
 - explicit subject/parent hierarchy staging, allowing siblings and unrelated hierarchies to advance without a global class lock;
 - semantic projection-journal recovery with objective/subject-scoped revocation;
-- `NduProjectionStoreV1` single-writer, temp-write + file-sync + atomic-rename + parent-directory-sync durability on the Unix qualification profile, poison-on-indeterminate and monotonic backup restore;
+- `NduProjectionStoreV1` single-writer, temp-write + file-sync + atomic-rename + parent-directory-sync durability on the Unix qualification profile, poison-on-indeterminate, versioned/checksummed V1 store images, deterministic migration from the predecessor raw-journal image, revocation-reserved retention policy and monotonic backup restore;
 - centered conditional covariance/backward-regression numerical support;
 - admitted original/whitened Z-coordinate conversion and signed Q24 nearest/ties-to-even conversion receipts with `DENY_ALL` authority.
 
