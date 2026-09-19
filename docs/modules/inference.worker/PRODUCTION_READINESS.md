@@ -62,7 +62,10 @@ There are two different authority objects and they must not be conflated.
    epoch/revocation and consumes a durable single-use nonce before the verified
    grant can construct that worker generation. The authenticated worker subject
    is retained inside `GrantVerification` and `InferenceWorker::new` exact-matches
-   it, so a capability issued for one worker cannot be transferred to another. The
+   it, so a capability issued for one worker cannot be transferred to another.
+   `VerifiedResourceGrant` is intentionally move-only: the post-claim proof cannot
+   be cloned into multiple worker instances after the authority nonce has been
+   consumed. The
    `TrustedInProcess` constructor is crate-private and only covers an
    explicitly shared trusted process boundary. `VerifiedResourceGrant` is a
    verification snapshot, not a live revocation subscription: a production
