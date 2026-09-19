@@ -41,6 +41,12 @@ fn attachment() -> ContextAttachment {
     }
 }
 
+fn attachment_with_deadline(deadline_ms: u64) -> ContextAttachment {
+    let mut attachment = attachment();
+    attachment.deadline_ms = deadline_ms;
+    attachment
+}
+
 fn dispatch_binding_for(run_id: &str, context_digest: String) -> RunDispatchBinding {
     RunDispatchBinding::new(run_id, context_digest, "thread.1", digest('a'))
         .expect("dispatch binding")
@@ -286,7 +292,7 @@ fn terminal_phase_rejects_missing_delegated_observation() {
         .mark_dispatched(102, "run.1", 2, dispatch_binding_for("run.1", digest('7')))
         .expect("dispatch");
     coordinator
-        .bind_execution("run.1", 3, execution_binding_for("run.1", digest('7')))
+        .bind_execution(103, "run.1", 3, execution_binding_for("run.1", digest('7')))
         .expect("bind execution");
     assert_eq!(
         coordinator.observe_terminal("run.1", 4, RunPhase::Succeeded, None),
@@ -306,7 +312,7 @@ fn terminal_observation_is_idempotent_and_only_closed_runs_can_be_removed() {
         .mark_dispatched(102, "run.1", 2, dispatch_binding_for("run.1", digest('7')))
         .expect("dispatch");
     coordinator
-        .bind_execution("run.1", 3, execution_binding_for("run.1", digest('7')))
+        .bind_execution(103, "run.1", 3, execution_binding_for("run.1", digest('7')))
         .expect("bind execution");
     let completed = coordinator
         .observe_terminal(
@@ -381,6 +387,7 @@ fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity() {
             .expect("dispatch");
         coordinator
             .bind_execution(
+                /* now_ms */ 103,
                 "run.1",
                 /* expected_revision */ 3,
                 execution_binding_for("run.1", digest('7')),
@@ -428,6 +435,27 @@ fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity() {
 }
 
 #[test]
+fn execution_binding_after_deadline_persists_cancellation_before_interrupt() {
+    let mut coordinator =
+        AgentRunCoordinator::compose_runtime(composition(3)).expect("compose runtime");
+    let mut run = snapshot();
+    run.deadline_ms = 103;
+    coordinator.start_run(100, run).expect("admit run");
+    coordinator
+        .attach_context(101, 1, attachment_with_deadline(103))
+        .expect("attach context");
+    coordinator
+        .mark_dispatched(102, "run.1", 2, dispatch_binding_for("run.1", digest('7')))
+        .expect("dispatch");
+    let bound = coordinator
+        .bind_execution(103, "run.1", 3, execution_binding_for("run.1", digest('7')))
+        .expect("bind exact execution after deadline");
+    assert_eq!(bound.phase, RunPhase::Cancelling);
+    assert_eq!(bound.cancel_reason.as_deref(), Some("deadline_exceeded"));
+    assert!(bound.cancellation_ack_deadline_ms.is_some());
+}
+
+#[test]
 fn terminal_observation_must_match_exact_bound_turn() {
     let mut coordinator = AgentRunCoordinator::compose_runtime(composition(3)).expect("compose");
     coordinator.start_run(100, snapshot()).expect("admit run");
@@ -439,7 +467,7 @@ fn terminal_observation_must_match_exact_bound_turn() {
         .expect("dispatch");
     let execution = execution_binding_for("run.1", digest('7'));
     coordinator
-        .bind_execution("run.1", 3, execution.clone())
+        .bind_execution(103, "run.1", 3, execution.clone())
         .expect("bind execution");
     let dispatch = dispatch_binding_for("run.1", digest('7'));
     let wrong_turn = RunTerminalObservation::new(

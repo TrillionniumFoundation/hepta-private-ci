@@ -158,11 +158,15 @@ impl AgentdState {
                 binding,
             } => {
                 self.verify_codex_execution_binding(&binding).await?;
-                let receipt =
-                    self.run_bind_execution(&run_id, expected_revision, binding.clone())?;
-                if receipt.phase == RunPhase::Cancelling {
-                    // The durable cancellation intent wins even if the
-                    // interrupt RPC is lost or the turn raced terminal.
+                let receipt = self.run_bind_execution(
+                    now_ms()?,
+                    &run_id,
+                    expected_revision,
+                    binding.clone(),
+                )?;
+                if matches!(receipt.phase, RunPhase::Cancelling | RunPhase::Indeterminate) {
+                    // A durable cancellation/uncertainty intent wins even if
+                    // the interrupt RPC is lost or the turn raced terminal.
                     let _ = self.interrupt_codex_execution(&binding).await;
                 }
                 AgentdPayload::RunReceipt(receipt)

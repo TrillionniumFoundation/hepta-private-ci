@@ -511,6 +511,7 @@ impl AgentdState {
 
     pub(crate) fn run_bind_execution(
         &self,
+        now_ms: u64,
         run_id: &str,
         expected_revision: u64,
         binding: RunExecutionBinding,
@@ -519,7 +520,7 @@ impl AgentdState {
         self.runs
             .lock()
             .map_err(poisoned_state)?
-            .transact(|coordinator| coordinator.bind_execution(run_id, expected_revision, binding))
+            .transact(|coordinator| coordinator.bind_execution(now_ms, run_id, expected_revision, binding))
     }
 
     pub(crate) fn run_execution_binding(

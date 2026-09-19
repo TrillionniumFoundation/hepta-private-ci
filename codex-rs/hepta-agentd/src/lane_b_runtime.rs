@@ -360,6 +360,7 @@ impl AgentRunCoordinator {
 
     pub fn bind_execution(
         &mut self,
+        now_ms: u64,
         run_id: &str,
         expected_revision: u64,
         binding: RunExecutionBinding,
@@ -385,6 +386,14 @@ impl AgentRunCoordinator {
             return Err(AgentRunError::Conflict);
         }
         require_revision(record, expected_revision)?;
+        if record.phase == RunPhase::Dispatched && record.snapshot.deadline_ms <= now_ms {
+            record.phase = RunPhase::Cancelling;
+            record.cancel_reason = Some("deadline_exceeded".to_string());
+            record.cancellation_ack_deadline_ms = Some(cancellation_ack_deadline(
+                now_ms,
+                self.composition.cancellation_ack_timeout_ms,
+            )?);
+        }
         if !matches!(
             record.phase,
             RunPhase::Dispatched | RunPhase::Cancelling | RunPhase::Indeterminate

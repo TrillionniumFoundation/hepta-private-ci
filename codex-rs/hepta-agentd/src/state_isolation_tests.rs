@@ -257,7 +257,7 @@ async fn deadline_monitor_path_persists_cancellation_before_lost_interrupt_ack()
     )
     .expect("execution binding");
     state
-        .run_bind_execution(&snapshot.run_id, dispatched.revision, execution)
+        .run_bind_execution(now_ms + 3, &snapshot.run_id, dispatched.revision, execution)
         .expect("bind execution");
 
     // No App Server is listening in this fixture. The interrupt transport is
