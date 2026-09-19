@@ -1255,6 +1255,21 @@ fn verify_step_events(
                 }
                 TaskFlowStepState::Reconciled
             }
+            (Some(TaskFlowStepState::Prepared), TaskFlowStepState::Reconciled)
+            | (Some(TaskFlowStepState::Claimed), TaskFlowStepState::Reconciled) => {
+                if !event
+                    .command_id
+                    .starts_with("automation:step:provider-absent:")
+                    || event.receipt_digest.is_none()
+                    || event.observation.is_some()
+                    || event.final_outcome != Some(TaskFlowReconcileOutcome::Cancelled)
+                {
+                    return Err(corrupt(
+                        "direct reconciled step lacks provider-absence cancellation evidence",
+                    ));
+                }
+                TaskFlowStepState::Reconciled
+            }
             (Some(TaskFlowStepState::Prepared), TaskFlowStepState::Prepared)
             | (Some(TaskFlowStepState::Claimed), TaskFlowStepState::Claimed)
             | (Some(TaskFlowStepState::Recorded), TaskFlowStepState::Recorded)
