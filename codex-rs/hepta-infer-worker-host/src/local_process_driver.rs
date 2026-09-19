@@ -772,4 +772,152 @@ mod tests {
             b"{\"ok\":true}".to_vec()
         );
     }
+
+    #[test]
+    fn launch_configuration_is_digest_bound_and_injection_keys_are_denied() {
+        let path = temp_file("launch-config", b"artifact");
+        let mut spec = LocalModelSpec {
+            weights_path: path.clone(),
+            tokenizer_path: path.clone(),
+            preprocessor_path: path.clone(),
+            quantization_path: path.clone(),
+            license_path: path.clone(),
+            sbom_path: path.clone(),
+            runtime_path: path.clone(),
+            device_descriptor_path: path.clone(),
+            runtime_args: vec!["--device=cuda0".to_string()],
+            runtime_env: BTreeMap::from([(
+                "CUDA_VISIBLE_DEVICES".to_string(),
+                "0".to_string(),
+            )]),
+        };
+        let first = runtime_config_digest(&spec);
+        spec.runtime_args.push("--threads=2".to_string());
+        assert_ne!(first, runtime_config_digest(&spec));
+
+        spec.runtime_env
+            .insert("LD_PRELOAD".to_string(), "evil.so".to_string());
+        assert!(validate_spec_paths(&spec).is_err());
+        fs::remove_file(path).expect("cleanup");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn resident_runtime_process_executes_load_infer_unload_protocol() {
+        use std::os::unix::fs::PermissionsExt;
+
+        let weights = temp_file("weights", b"weights");
+        let tokenizer = temp_file("tokenizer", b"tokenizer");
+        let preprocessor = temp_file("preprocessor", b"preprocessor");
+        let quantization = temp_file("quantization", b"quantization");
+        let license = temp_file("license", b"license");
+        let sbom = temp_file("sbom", b"sbom");
+        let device = temp_file("device", b"device");
+        let runtime = temp_file(
+            "runtime",
+            br#"#!/bin/sh
+IFS= read -r load || exit 10
+binding=${load#*\"binding\":}
+binding=${binding%%,\"paths\":*}
+[ -n "$binding" ] || exit 11
+printf '{"protocol":"hepta.local-model-runtime.v1","operation":"load_result","ok":true,"model_id":"model.1","handle_id":"handle.1","process_id":%s,"binding":%s,"reserved_memory_bytes":1024,"error":null}\n' "$" "$binding"
+IFS= read -r infer || exit 12
+case "$infer" in
+  *'"request_id":"request.1"'*'"payload":"hello local model"'*) ;;
+  *) exit 13 ;;
+esac
+printf '{"protocol":"hepta.local-model-runtime.v1","operation":"infer_result","request_id":"request.1","handle_id":"handle.1","terminal_observed":true,"succeeded":true,"output":"runtime output","consumed_tokens":7,"observed_memory_bytes":1024,"error":null}\n'
+IFS= read -r unload || exit 14
+printf '{"protocol":"hepta.local-model-runtime.v1","operation":"unload_result","ok":true,"handle_id":"handle.1","error":null}\n'
+"#,
+        );
+        let mut permissions = fs::metadata(&runtime).expect("runtime metadata").permissions();
+        permissions.set_mode(0o700);
+        fs::set_permissions(&runtime, permissions).expect("runtime executable");
+
+        let spec = LocalModelSpec {
+            weights_path: weights.clone(),
+            tokenizer_path: tokenizer.clone(),
+            preprocessor_path: preprocessor.clone(),
+            quantization_path: quantization.clone(),
+            license_path: license.clone(),
+            sbom_path: sbom.clone(),
+            runtime_path: runtime.clone(),
+            device_descriptor_path: device.clone(),
+            runtime_args: Vec::new(),
+            runtime_env: BTreeMap::new(),
+        };
+        let digest = |path: &Path| {
+            let bytes = fs::read(path).expect("read fixture");
+            format!("{:x}", Sha256::digest(bytes))
+        };
+        let manifest = ModelManifest {
+            model_id: "model.1".to_string(),
+            model_digest: "2".repeat(64),
+            weights_digest: digest(&weights),
+            tokenizer_digest: digest(&tokenizer),
+            preprocessor_digest: digest(&preprocessor),
+            quantization_digest: digest(&quantization),
+            license_digest: digest(&license),
+            sbom_digest: digest(&sbom),
+            runtime_digest: digest(&runtime),
+            runtime_config_digest: runtime_config_digest(&spec),
+            device_digest: digest(&device),
+            maximum_tokens: 128,
+        };
+        let grant = ResourceGrant {
+            grant_id: "grant.1".to_string(),
+            authority_epoch: 2,
+            generation: 3,
+            expires_at_ms: 10_000,
+            revoked: false,
+            maximum_models: 1,
+            maximum_active_requests: 1,
+            maximum_memory_bytes: 4096,
+            device_digest: manifest.device_digest.clone(),
+            semantic_digest: "1".repeat(64),
+        };
+        let payload = "hello local model".to_string();
+        let payload_digest = format!("{:x}", Sha256::digest(payload.as_bytes()));
+        let request = WorkerRequest {
+            request_id: "request.1".to_string(),
+            reservation_id: "reservation.1".to_string(),
+            model_digest: manifest.model_digest.clone(),
+            payload,
+            payload_digest: payload_digest.clone(),
+            maximum_tokens: 64,
+            deadline_ms: 9_000,
+            lease_payload_digest: payload_digest,
+            reservation_model_digest: manifest.model_digest.clone(),
+            reservation_maximum_tokens: 64,
+            cancelled: false,
+        };
+
+        let mut driver = LocalProcessModelDriver::new(
+            BTreeMap::from([(manifest.model_id.clone(), spec)]),
+            Duration::from_secs(2),
+        )
+        .expect("driver");
+        let handle = driver.load(&manifest, &grant).expect("load");
+        assert_eq!(handle.observed_memory_bytes, 1024);
+        let observed = driver.run(&handle, &request).expect("infer");
+        assert!(observed.terminal_observed);
+        assert!(observed.succeeded);
+        assert_eq!(observed.output.as_deref(), Some("runtime output"));
+        assert_eq!(observed.consumed_tokens, 7);
+        driver.unload(handle).expect("unload");
+
+        for path in [
+            weights,
+            tokenizer,
+            preprocessor,
+            quantization,
+            license,
+            sbom,
+            device,
+            runtime,
+        ] {
+            fs::remove_file(path).expect("cleanup");
+        }
+    }
 }
