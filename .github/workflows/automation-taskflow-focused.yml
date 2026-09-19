@@ -23,6 +23,8 @@ jobs:
         working-directory: codex-rs
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
       - name: Rustfmt changed automation owners
         run: cargo fmt -p codex-hepta-automation -p codex-hepta-agentd -- --check
       - name: Check automation and Agentd
