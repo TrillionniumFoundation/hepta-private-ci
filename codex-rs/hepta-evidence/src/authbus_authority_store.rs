@@ -388,6 +388,22 @@ impl HeptaEvidenceStore {
             }
             return Err(AuthBusAuthorityError::Conflict);
         }
+        if reservation.state == ReservationState::Cancelled {
+            if outcome == AuthBusSettlementOutcome::NotApplied
+                && reservation.settlement_digest
+                    == Some(reservation_digest_for_outcome(&reservation, terminal_evidence, outcome))
+            {
+                tx.commit().await.map_err(classify_sqlx_error)?;
+                return Ok(reservation);
+            }
+            return Err(AuthBusAuthorityError::Conflict);
+        }
+        if reservation.state == ReservationState::Indeterminate
+            && outcome == AuthBusSettlementOutcome::Indeterminate
+        {
+            tx.commit().await.map_err(classify_sqlx_error)?;
+            return Ok(reservation);
+        }
         if reservation.state.is_terminal() {
             return Err(AuthBusAuthorityError::InvalidReservationState);
         }
@@ -426,6 +442,17 @@ impl HeptaEvidenceStore {
             }
             AuthBusSettlementOutcome::Applied { observed_cost } => {
                 if observed_cost > reservation.amount {
+                    sqlx::query(
+                        "UPDATE authbus_quota_reservations
+                         SET state = 'indeterminate', revision = revision + 1, updated_at_ms = ?
+                         WHERE reservation_id = ? AND state IN ('held', 'indeterminate')",
+                    )
+                    .bind(u64_to_i64(time.now_ms)?)
+                    .bind(reservation_id.as_str())
+                    .execute(&mut *tx)
+                    .await
+                    .map_err(classify_sqlx_error)?;
+                    tx.commit().await.map_err(classify_sqlx_error)?;
                     return Err(AuthBusAuthorityError::UsageOverrun);
                 }
                 let refund = reservation.amount - observed_cost;
@@ -434,7 +461,7 @@ impl HeptaEvidenceStore {
                     .revision
                     .checked_add(1)
                     .ok_or(AuthBusAuthorityError::StaleRevision)?;
-                sqlx::query(
+                let updated = sqlx::query(
                     "UPDATE authbus_quota_registry
                      SET reserved = reserved - ?, available = available + ?,
                          consumed = consumed + ?, revision = ?
@@ -449,6 +476,11 @@ impl HeptaEvidenceStore {
                 .execute(&mut *tx)
                 .await
                 .map_err(classify_sqlx_error)?;
+                if updated.rows_affected() != 1 {
+                    return Err(
+                        EvidenceError::Corrupt("AuthBus reservation hold is missing".into()).into(),
+                    );
+                }
                 sqlx::query(
                     "UPDATE authbus_quota_reservations
                      SET state = 'settled', observed_cost = ?, settlement_digest = ?,
