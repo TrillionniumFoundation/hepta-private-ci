@@ -755,12 +755,9 @@ pub struct MemoryEventV1 {
     pub scope: MemoryScopeV1,
     pub observed_interval: ObservedIntervalV1,
     pub modality_spans: Vec<ModalitySpanRefV1>,
-    #[serde(default)]
     pub cross_modal_bindings: Vec<CrossModalBindingV1>,
     pub semantic_keys: BTreeSet<String>,
-    #[serde(default)]
     pub causal_parents: BTreeSet<CanonicalIdV1>,
-    #[serde(default)]
     pub temporal_neighbors: BTreeSet<CanonicalIdV1>,
     pub provenance: BTreeSet<ProvenanceRefV1>,
     pub verification: MemoryVerificationV1,
