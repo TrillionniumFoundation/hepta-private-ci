@@ -257,7 +257,10 @@ mod tests {
         for (phase, unknown, watermark) in [
             (WriterHandoffPhaseV1::AdmissionStopped, 0, None),
             (WriterHandoffPhaseV1::Drained, 0, Some(9)),
+            (WriterHandoffPhaseV1::OldWriterFenced, 0, Some(9)),
+            (WriterHandoffPhaseV1::Snapshotted, 0, Some(9)),
             (WriterHandoffPhaseV1::Migrated, 0, Some(9)),
+            (WriterHandoffPhaseV1::Validated, 0, Some(9)),
             (WriterHandoffPhaseV1::NewWriterFenced, 0, Some(9)),
             (WriterHandoffPhaseV1::RoutePublished, 0, Some(9)),
         ] {
