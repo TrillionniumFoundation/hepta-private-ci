@@ -125,7 +125,10 @@ impl AgentdUpstreamIntelligencePortsV3 for Upstream {
 #[test]
 fn agentd_is_the_named_host_handoff_producer() {
     let receipt = run_agentd_intelligence_v3(request(), &mut Upstream).expect("agentd composition");
-    assert_eq!(receipt.disposition, IntelligenceDispositionV3::HostHandedOff);
+    assert_eq!(
+        receipt.disposition,
+        IntelligenceDispositionV3::HostHandedOff
+    );
     let handoff = receipt
         .stages
         .iter()
@@ -143,9 +146,7 @@ fn missing_optional_adapters_do_not_call_upstream_or_fabricate_success() {
     assert!(receipt.stages.iter().any(|trace| {
         trace.stage == IntelligenceStageV3::NeuralSignalCollected
             && trace.outcome
-                == IntelligenceStageOutcomeV3::FallbackUsed(
-                    IntelligenceFailureClassV3::Unavailable,
-                )
+                == IntelligenceStageOutcomeV3::FallbackUsed(IntelligenceFailureClassV3::Unavailable)
     }));
     assert!(receipt.stages.iter().any(|trace| {
         trace.stage == IntelligenceStageV3::PromptPortfolioBuilt
