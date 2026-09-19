@@ -10,6 +10,10 @@ on:
       - "docs/data/**"
       - ".github/workflows/hepta-deployment-handoff.yml"
 
+concurrency:
+  group: hepta-deployment-handoff-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
