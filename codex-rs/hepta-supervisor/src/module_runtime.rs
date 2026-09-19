@@ -705,6 +705,7 @@ impl RuntimeModuleSupervisorV1 {
             .registry
             .record(module_id, generation)
             .ok_or(RuntimeModuleSupervisorErrorV1::ModuleMismatch)?;
+        witness.validate_for(&record.abi)?;
         let candidate_digest = record.abi.candidate_artifact_digest;
         let belongs_to_pending_topology = self
             .pending_topologies
