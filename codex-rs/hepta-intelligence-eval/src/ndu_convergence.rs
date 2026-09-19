@@ -22,6 +22,8 @@ const MAX_RESOURCE_RESIDUAL_RAW: i64 = 1;
 const MAX_RISK_RESIDUAL_PPM: u32 = 10;
 const MAX_BOUNDARY_RESIDUAL_PPM: u32 = 10_000;
 const MAX_STANDARDIZED_MARTINGALE_MEAN_PPM: u32 = 20_000;
+const SPECTRAL_RADIUS_95_Q32_RAW: i64 =
+    (((1_i128 << 32) * 95_i128) / 100_i128) as i64;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum NduMultipleSolutionDispositionV1 {
@@ -166,8 +168,6 @@ fn validate_termination(
     if termination.iterations > MAX_ITERATIONS
         || termination.terminal_residual_raw < 0
         || termination.maximum_residual_raw < termination.terminal_residual_raw
-        || termination.projection_count < termination.iterations.saturating_sub(1)
-            && termination.projection_count > MAX_ITERATIONS
         || termination.predecessor_digest.is_zero()
         || termination.terminal_state_digest.is_zero()
     {
@@ -196,7 +196,7 @@ fn absolute_raw(value: FixedQ32) -> Result<u64, NduConvergenceError> {
 }
 
 fn spectral_radius_below_threshold(value: FixedQ32) -> bool {
-    i128::from(value.raw()) * 100 < i128::from(FixedQ32::ONE.raw()) * 95
+    value.raw() < SPECTRAL_RADIUS_95_Q32_RAW
 }
 
 fn digest_evaluation(
@@ -205,7 +205,7 @@ fn digest_evaluation(
 ) -> Digest32 {
     let mut bytes = b"hepta.learning.eval.ndu-convergence.v1".to_vec();
     push_id(&mut bytes, &evaluation.certificate_id);
-    bytes.push(evaluation.subject_class.tag());
+    bytes.push(subject_class_tag(evaluation.subject_class));
     for digest in [
         evaluation.objective_class_digest,
         evaluation.solver_digest,
@@ -250,6 +250,15 @@ fn digest_evaluation(
         NduConvergenceDecisionV1::Unavailable => 2,
     });
     Digest32::of_bytes(&bytes)
+}
+
+const fn subject_class_tag(value: SubjectClass) -> u8 {
+    match value {
+        SubjectClass::System => 0,
+        SubjectClass::Domain => 1,
+        SubjectClass::Agent => 2,
+        SubjectClass::Episode => 3,
+    }
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
