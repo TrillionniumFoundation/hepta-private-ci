@@ -816,13 +816,7 @@ fn automation_recovery_fence(
         return Err(TaskFlowError::StaleFence);
     }
     Ok(TaskFlowFence {
-        owner_agent_id: occurrence
-            .task_id
-            .to_string()
-            .parse::<uuid::Uuid>()
-            .ok()
-            .and_then(|_| Some(run.owner_agent_id.clone()))
-            .unwrap_or_else(|| run.owner_agent_id.clone()),
+        owner_agent_id: run.owner_agent_id.clone(),
         owner_id: run
             .owner_id
             .clone()
