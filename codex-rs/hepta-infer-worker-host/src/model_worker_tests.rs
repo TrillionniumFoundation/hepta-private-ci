@@ -4,6 +4,7 @@ use super::*;
 struct Driver {
     fail_terminal: bool,
     indeterminate: bool,
+    corrupt_neuron_head: bool,
     loaded: usize,
 }
 
@@ -42,6 +43,46 @@ impl ModelDriver for Driver {
     fn unload(&mut self, _handle: DriverModelHandle) -> Result<(), Error> {
         self.loaded = self.loaded.saturating_sub(1);
         Ok(())
+    }
+}
+
+
+impl NeuronFeatureDriver for Driver {
+    fn run_neuron_features(
+        &mut self,
+        _handle: &DriverModelHandle,
+        request: &NeuronFeatureRequest,
+    ) -> Result<DriverNeuronFeatureObservation, Error> {
+        if self.indeterminate {
+            return Ok(DriverNeuronFeatureObservation {
+                terminal_observed: false,
+                succeeded: false,
+                encoder_digest: request.encoder_digest.clone(),
+                head_digest: request.head_digest.clone(),
+                drive_q24: Vec::new(),
+                prediction_q24: Vec::new(),
+                observed_memory_bytes: 1_024,
+                transient_allocation_bytes: 2_048,
+                queue_age_micros: 11,
+                latency_micros: 17,
+            });
+        }
+        Ok(DriverNeuronFeatureObservation {
+            terminal_observed: true,
+            succeeded: !self.fail_terminal,
+            encoder_digest: request.encoder_digest.clone(),
+            head_digest: if self.corrupt_neuron_head {
+                "f".repeat(64)
+            } else {
+                request.head_digest.clone()
+            },
+            drive_q24: vec![1 << 24; request.expected_output_width],
+            prediction_q24: vec![0; request.expected_output_width],
+            observed_memory_bytes: 1_024,
+            transient_allocation_bytes: 2_048,
+            queue_age_micros: 11,
+            latency_micros: 17,
+        })
     }
 }
 
@@ -139,4 +180,68 @@ fn lost_driver_terminality_is_indeterminate() {
     assert_eq!(observed.status, ExecutionStatus::Indeterminate);
     assert!(!observed.terminal_observed);
     assert_eq!(observed.output_digest, None);
+}
+
+
+fn neuron_feature_request() -> NeuronFeatureRequest {
+    let mut value = NeuronFeatureRequest {
+        authorization: request(),
+        encoder_digest: "a".repeat(64),
+        head_digest: "b".repeat(64),
+        input_digest: "c".repeat(64),
+        feature_vector_q24: vec![1 << 22, -(1 << 21)],
+        expected_output_width: 5,
+    };
+    let payload = canonical_neuron_feature_payload_digest(&value);
+    value.authorization.payload_digest = payload.clone();
+    value.authorization.lease_payload_digest = payload;
+    value
+}
+
+#[test]
+fn executes_authenticated_neuron_feature_tuple_from_loaded_manifest() {
+    let mut worker =
+        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
+            .expect("worker");
+    let expected_manifest = manifest();
+    worker
+        .load_model(100, expected_manifest.clone())
+        .expect("load");
+    let observed = worker
+        .run_neuron_features(100, "model.1", neuron_feature_request())
+        .expect("neuron features");
+    assert_eq!(observed.status, ExecutionStatus::Succeeded);
+    assert_eq!(observed.manifest, expected_manifest);
+    assert_eq!(observed.encoder_digest, "a".repeat(64));
+    assert_eq!(observed.head_digest, "b".repeat(64));
+    assert_eq!(observed.drive_q24, vec![1 << 24; 5]);
+    assert_eq!(observed.prediction_q24, vec![0; 5]);
+    assert_eq!(observed.transient_allocation_bytes, 2_048);
+    assert!(observed.terminal_observed);
+}
+
+#[test]
+fn neuron_feature_path_rejects_payload_drift_and_driver_identity_drift() {
+    let mut worker =
+        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
+            .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    let mut changed = neuron_feature_request();
+    changed.feature_vector_q24[0] += 1;
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", changed),
+        Err(Error::PayloadMismatch)
+    );
+
+    let driver = Driver {
+        corrupt_neuron_head: true,
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.2".to_string(), 3, grant(), driver).expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::FeatureOutputMismatch)
+    );
 }
