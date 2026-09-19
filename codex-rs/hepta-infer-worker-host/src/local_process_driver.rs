@@ -820,7 +820,7 @@ IFS= read -r load || exit 10
 binding=${load#*\"binding\":}
 binding=${binding%%,\"paths\":*}
 [ -n "$binding" ] || exit 11
-printf '{"protocol":"hepta.local-model-runtime.v1","operation":"load_result","ok":true,"model_id":"model.1","handle_id":"handle.1","process_id":%s,"binding":%s,"reserved_memory_bytes":1024,"error":null}\n' "$" "$binding"
+printf '{"protocol":"hepta.local-model-runtime.v1","operation":"load_result","ok":true,"model_id":"model.1","handle_id":"handle.1","process_id":%s,"binding":%s,"reserved_memory_bytes":1024,"error":null}\n' "$$" "$binding"
 IFS= read -r infer || exit 12
 case "$infer" in
   *'"request_id":"request.1"'*'"payload":"hello local model"'*) ;;
