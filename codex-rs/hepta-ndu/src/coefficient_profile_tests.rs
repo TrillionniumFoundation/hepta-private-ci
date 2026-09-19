@@ -53,6 +53,7 @@ fn coefficient_profile_binds_covariance_dimensions_units_and_q24_output() {
         condition_estimate: 1.0,
         increment_eigenvalue_lower_estimate: 1.0,
         maximum_relative_residual: 0.0,
+        covariance_profile_digest: covariance.digest(),
         evidence_digest: digest("z-estimate"),
         authority: AuthorityPosture::DENY_ALL,
     };
@@ -96,6 +97,7 @@ fn q24_projection_rejects_expired_or_dimension_drifted_evidence() {
         condition_estimate: 1.0,
         increment_eigenvalue_lower_estimate: 1.0,
         maximum_relative_residual: 0.0,
+        covariance_profile_digest: covariance.digest(),
         evidence_digest: digest("z-estimate"),
         authority: AuthorityPosture::DENY_ALL,
     };
@@ -113,6 +115,27 @@ fn q24_projection_rejects_expired_or_dimension_drifted_evidence() {
         quantize_z_to_q24(&bad_dimension, &admitted, 500)
             .expect_err("dimension drift must reject"),
         NduCoefficientProfileError::Dimension
+    );
+}
+
+#[test]
+fn q24_projection_rejects_z_from_another_covariance_profile() {
+    let covariance = covariance();
+    let admitted =
+        admit_ndu_coefficient_profile(profile(&covariance), &covariance).expect("admitted profile");
+    let estimate = ZEstimateV1 {
+        z: vec![vec![1.0, 2.0]],
+        condition_estimate: 1.0,
+        increment_eigenvalue_lower_estimate: 1.0,
+        maximum_relative_residual: 0.0,
+        covariance_profile_digest: digest("different-covariance-profile"),
+        evidence_digest: digest("z-estimate"),
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    assert_eq!(
+        quantize_z_to_q24(&estimate, &admitted, 500)
+            .expect_err("Z covariance provenance must match coefficient admission"),
+        NduCoefficientProfileError::ProfileMismatch
     );
 }
 
