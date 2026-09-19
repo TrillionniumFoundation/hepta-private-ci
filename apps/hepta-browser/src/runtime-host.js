@@ -1,3 +1,4 @@
+import { isIP } from "node:net";
 import {
   DEFAULT_DRIVER_CALL_TIMEOUT_MS,
   DEFAULT_MAX_ACTIVE_PROFILES,
@@ -186,6 +187,19 @@ export class BrowserProfileHost {
         if (allowedOrigins.size !== input.allowedOrigins.length) {
           throw new TypeError("allowedOrigins contains duplicates");
         }
+        const allowedNetworkAddresses = input.allowedNetworkAddresses ?? [];
+        if (
+          !Array.isArray(allowedNetworkAddresses) ||
+          allowedNetworkAddresses.length > 256 ||
+          allowedNetworkAddresses.some(
+            (address) => typeof address !== "string" || isIP(address) === 0,
+          )
+        ) {
+          throw new TypeError("allowedNetworkAddresses must be a bounded array of IP literals");
+        }
+        if (new Set(allowedNetworkAddresses).size !== allowedNetworkAddresses.length) {
+          throw new TypeError("allowedNetworkAddresses contains duplicates");
+        }
         if (
           !Array.isArray(input.effectGrants) ||
           input.effectGrants.length > MAX_EFFECT_GRANTS
@@ -214,6 +228,7 @@ export class BrowserProfileHost {
               grantDigest,
               generation,
               allowedOrigins: [...allowedOrigins],
+              allowedNetworkAddresses: [...allowedNetworkAddresses],
             },
             expiresAtMs,
           ),
@@ -256,6 +271,7 @@ export class BrowserProfileHost {
           profileOwnerDigest,
           expiresAtMs,
           effectGrantCount: effectGrants.size,
+          allowedNetworkAddressCount: allowedNetworkAddresses.length,
         });
       } finally {
         this.#openingProfiles.delete(profileId);

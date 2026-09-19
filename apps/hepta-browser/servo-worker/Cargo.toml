@@ -7,6 +7,8 @@ publish = false
 license = "Apache-2.0"
 
 [dependencies]
+base64 = "0.22"
+http = "1"
 dpi = "0.1"
 rustls = { version = "0.23", default-features = false, features = ["aws_lc_rs", "logging", "std", "tls12"] }
 serde = { version = "1", features = ["derive"] }

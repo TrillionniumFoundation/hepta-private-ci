@@ -10,6 +10,7 @@ import {
 } from "node:fs/promises";
 import { isAbsolute, join, resolve } from "node:path";
 
+import { GrantScopedEgressBroker } from "./egress-broker.js";
 import {
   WorkerFrameDecoder,
   buildWorkerFrame,
@@ -144,6 +145,8 @@ export class LinuxBubblewrapLauncher {
       sourceContractOnly: true,
       inheritedPrivateChannel: true,
       externalNetworkDenied: true,
+      directNetworkDenied: true,
+      grantScopedEgressBroker: true,
       ambientEnvironmentDenied: true,
       userHomeHidden: true,
       hostFilesystemRestricted: true,
@@ -279,7 +282,7 @@ export class LinuxBubblewrapLauncher {
   spawn({ workerPath, profileDir }) {
     const spec = this.spawnSpec({ workerPath, profileDir });
     return spawn(spec.command, [...spec.args], {
-      stdio: ["pipe", "pipe", "pipe"],
+      stdio: ["pipe", "pipe", "pipe", "pipe", "pipe"],
       env: {},
       shell: false,
       windowsHide: true,
@@ -598,6 +601,7 @@ export class SubprocessBrowserDriver {
   #generation = null;
   #processId = null;
   #persistedReconciler = null;
+  #egressBroker = null;
 
   constructor({
     workerPath,
@@ -616,6 +620,8 @@ export class SubprocessBrowserDriver {
     for (const key of [
       "inheritedPrivateChannel",
       "externalNetworkDenied",
+      "directNetworkDenied",
+      "grantScopedEgressBroker",
       "ambientEnvironmentDenied",
       "userHomeHidden",
       "hostFilesystemRestricted",
@@ -702,6 +708,20 @@ export class SubprocessBrowserDriver {
           "launcher did not return a pipe-connected child process",
         );
       }
+      if (
+        !Array.isArray(this.#child.stdio) ||
+        !this.#child.stdio[3]?.on ||
+        typeof this.#child.stdio[4]?.write !== "function"
+      ) {
+        throw new TypeError("browser egress private pipes are unavailable");
+      }
+      this.#egressBroker = new GrantScopedEgressBroker({
+        requestStream: this.#child.stdio[3],
+        responseStream: this.#child.stdio[4],
+        profileGrantDigest: grantDigest,
+        allowedOrigins: input.allowedOrigins,
+        allowedNetworkAddresses: input.allowedNetworkAddresses ?? [],
+      });
       this.#processId = `servo.pid.${this.#child.pid}`;
       this.#client = new PrivateWorkerClient({
         child: this.#child,
@@ -727,6 +747,8 @@ export class SubprocessBrowserDriver {
       await this.#cleanupProfile();
       this.#child = null;
       this.#client = null;
+      this.#egressBroker?.close();
+      this.#egressBroker = null;
       this.#sessionId = null;
       this.#generation = null;
       this.#processId = null;
@@ -743,6 +765,7 @@ export class SubprocessBrowserDriver {
 
   async dispatch(input, { signal } = {}) {
     this.#requireSession(input);
+    this.#egressBroker?.authorizeEffect(input);
     let crossed = false;
     let resolveBoundary;
     const boundary = new Promise((resolve) => {
@@ -829,6 +852,8 @@ export class SubprocessBrowserDriver {
     this.#child?.kill?.("SIGKILL");
     this.#client = null;
     this.#child = null;
+    this.#egressBroker?.close();
+    this.#egressBroker = null;
     return { contained: true };
   }
 
@@ -861,6 +886,8 @@ export class SubprocessBrowserDriver {
       this.#child?.kill?.("SIGTERM");
       this.#client = null;
       this.#child = null;
+      this.#egressBroker?.close();
+      this.#egressBroker = null;
       await this.#cleanupProfile();
     }
   }

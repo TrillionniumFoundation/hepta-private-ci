@@ -1,18 +1,22 @@
 use std::cell::RefCell;
 use std::collections::{HashMap, HashSet};
-use std::io::{self, Read, Write};
+use std::fs::{File, OpenOptions};
+use std::io::{self, BufReader, BufWriter, Read, Write};
 use std::rc::Rc;
 use std::sync::atomic::{AtomicBool, AtomicU64, Ordering};
-use std::sync::{Arc, mpsc};
+use std::sync::{Arc, Mutex, mpsc};
 use std::thread;
 use std::time::{Duration, Instant};
 
+use base64::{Engine as _, engine::general_purpose::STANDARD as BASE64};
 use dpi::PhysicalSize;
+use http::{HeaderMap, HeaderName, HeaderValue, StatusCode};
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value, json};
 use servo::{
     EventLoopWaker, JSValue, LoadStatus, NavigationRequest, PermissionRequest, RenderingContext,
-    Servo, ServoBuilder, SoftwareRenderingContext, WebView, WebViewBuilder, WebViewDelegate,
+    Servo, ServoBuilder, SoftwareRenderingContext, WebResourceLoad, WebResourceResponse, WebView,
+    WebViewBuilder, WebViewDelegate,
 };
 use sha2::{Digest, Sha256};
 use url::Url;
@@ -23,6 +27,11 @@ const MAX_FRAME_BYTES: usize = 1_048_576;
 const MAX_SAFE_INTEGER: u64 = 9_007_199_254_740_991;
 const MIN_SEMANTIC_OBSERVATION_BYTES: usize = 512;
 const MAX_SEMANTIC_OBSERVATION_BYTES: usize = 262_144;
+const EGRESS_REQUEST_SCHEMA: &str = "hepta.browser.egress-request.v1";
+const EGRESS_RESPONSE_SCHEMA: &str = "hepta.browser.egress-response.v1";
+const MAX_EGRESS_REQUEST_FRAME_BYTES: usize = 262_144;
+const MAX_EGRESS_RESPONSE_FRAME_BYTES: usize = 12 * 1024 * 1024;
+const MAX_EGRESS_BODY_BYTES: usize = 8 * 1024 * 1024;
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -59,10 +68,235 @@ impl EventLoopWaker for Waker {
     }
 }
 
+#[derive(Clone)]
+struct EgressAuthority {
+    operation_id: String,
+    profile_grant_digest: String,
+    effect_grant_digest: String,
+    authority_epoch: u64,
+}
+
+struct EgressBrokerClient {
+    writer: BufWriter<File>,
+    reader: BufReader<File>,
+    next_sequence: u64,
+}
+
+struct EgressResponse {
+    url: Url,
+    status: StatusCode,
+    status_message: Vec<u8>,
+    headers: HeaderMap,
+    body: Vec<u8>,
+}
+
+impl EgressBrokerClient {
+    fn open() -> Result<Self, String> {
+        let writer = OpenOptions::new()
+            .write(true)
+            .open("/proc/self/fd/3")
+            .map_err(|error| format!("egress request fd unavailable: {error}"))?;
+        let reader = OpenOptions::new()
+            .read(true)
+            .open("/proc/self/fd/4")
+            .map_err(|error| format!("egress response fd unavailable: {error}"))?;
+        Ok(Self {
+            writer: BufWriter::new(writer),
+            reader: BufReader::new(reader),
+            next_sequence: 1,
+        })
+    }
+
+    fn fetch(
+        &mut self,
+        authority: &EgressAuthority,
+        request: &servo::WebResourceRequest,
+    ) -> Result<EgressResponse, String> {
+        if self.next_sequence == 0 || self.next_sequence > MAX_SAFE_INTEGER {
+            return Err("egress sequence exhausted".to_string());
+        }
+        let sequence = self.next_sequence;
+        self.next_sequence = self
+            .next_sequence
+            .checked_add(1)
+            .ok_or_else(|| "egress sequence exhausted".to_string())?;
+        let mut headers = Vec::new();
+        for (name, value) in request.headers.iter() {
+            let value = value
+                .to_str()
+                .map_err(|_| "egress request header is not UTF-8".to_string())?;
+            headers.push(json!([name.as_str(), value]));
+        }
+        let frame = json!({
+            "schema": EGRESS_REQUEST_SCHEMA,
+            "sequence": sequence,
+            "operationId": authority.operation_id,
+            "profileGrantDigest": authority.profile_grant_digest,
+            "effectGrantDigest": authority.effect_grant_digest,
+            "authorityEpoch": authority.authority_epoch,
+            "url": request.url.as_str(),
+            "method": request.method.as_str(),
+            "headers": headers,
+            "isRedirect": request.is_redirect,
+        });
+        let body = canonical_json(&frame).into_bytes();
+        if body.is_empty() || body.len() > MAX_EGRESS_REQUEST_FRAME_BYTES {
+            return Err("egress request frame exceeds byte limit".to_string());
+        }
+        self.writer
+            .write_all(&(body.len() as u32).to_be_bytes())
+            .and_then(|_| self.writer.write_all(&body))
+            .and_then(|_| self.writer.flush())
+            .map_err(|error| format!("egress request write failed: {error}"))?;
+
+        let mut prefix = [0_u8; 4];
+        self.reader
+            .read_exact(&mut prefix)
+            .map_err(|error| format!("egress response prefix failed: {error}"))?;
+        let length = u32::from_be_bytes(prefix) as usize;
+        if length == 0 || length > MAX_EGRESS_RESPONSE_FRAME_BYTES {
+            return Err("egress response frame length invalid".to_string());
+        }
+        let mut bytes = vec![0_u8; length];
+        self.reader
+            .read_exact(&mut bytes)
+            .map_err(|error| format!("egress response truncated: {error}"))?;
+        let value: Value = serde_json::from_slice(&bytes)
+            .map_err(|error| format!("egress response JSON invalid: {error}"))?;
+        validate_safe_json(&value, 0)?;
+        let object = value
+            .as_object()
+            .ok_or_else(|| "egress response must be an object".to_string())?;
+        if object.get("schema").and_then(Value::as_str) != Some(EGRESS_RESPONSE_SCHEMA)
+            || object.get("sequence").and_then(Value::as_u64) != Some(sequence)
+        {
+            return Err("egress response did not bind the request sequence".to_string());
+        }
+        match object.get("ok").and_then(Value::as_bool) {
+            Some(false) => {
+                require_exact_json_keys(
+                    object,
+                    &["error", "ok", "schema", "sequence"],
+                    "egress error response",
+                )?;
+                let message = object
+                    .get("error")
+                    .and_then(Value::as_str)
+                    .unwrap_or("egress broker rejected request");
+                Err(format!("egress broker rejected request: {}", clean_error(message)))
+            }
+            Some(true) => {
+                require_exact_json_keys(
+                    object,
+                    &[
+                        "bodyBase64", "dnsAnswers", "egressReceiptDigest", "finalUrl",
+                        "headers", "ok", "remoteAddress", "schema", "sequence",
+                        "statusCode", "statusMessage", "tlsPeerFingerprint256", "tlsServerName",
+                    ],
+                    "egress success response",
+                )?;
+                let final_url = object
+                    .get("finalUrl")
+                    .and_then(Value::as_str)
+                    .ok_or_else(|| "egress response finalUrl missing".to_string())?;
+                let url = Url::parse(final_url)
+                    .map_err(|error| format!("egress response URL invalid: {error}"))?;
+                let status_u64 = object
+                    .get("statusCode")
+                    .and_then(Value::as_u64)
+                    .ok_or_else(|| "egress response status missing".to_string())?;
+                let status_u16 = u16::try_from(status_u64)
+                    .map_err(|_| "egress status exceeds u16".to_string())?;
+                let status = StatusCode::from_u16(status_u16)
+                    .map_err(|error| format!("egress status invalid: {error}"))?;
+                let status_message = object
+                    .get("statusMessage")
+                    .and_then(Value::as_str)
+                    .unwrap_or("")
+                    .as_bytes()
+                    .to_vec();
+                let raw_headers = object
+                    .get("headers")
+                    .and_then(Value::as_array)
+                    .ok_or_else(|| "egress response headers missing".to_string())?;
+                if raw_headers.len() > 256 {
+                    return Err("egress response has too many headers".to_string());
+                }
+                let mut response_headers = HeaderMap::new();
+                for pair in raw_headers {
+                    let pair = pair
+                        .as_array()
+                        .filter(|pair| pair.len() == 2)
+                        .ok_or_else(|| "egress response header shape invalid".to_string())?;
+                    let name = pair[0]
+                        .as_str()
+                        .ok_or_else(|| "egress header name invalid".to_string())?;
+                    let value = pair[1]
+                        .as_str()
+                        .ok_or_else(|| "egress header value invalid".to_string())?;
+                    let name = HeaderName::from_bytes(name.as_bytes())
+                        .map_err(|error| format!("egress header name invalid: {error}"))?;
+                    let value = HeaderValue::from_str(value)
+                        .map_err(|error| format!("egress header value invalid: {error}"))?;
+                    response_headers.append(name, value);
+                }
+                let encoded_body = object
+                    .get("bodyBase64")
+                    .and_then(Value::as_str)
+                    .ok_or_else(|| "egress body missing".to_string())?;
+                let body = BASE64
+                    .decode(encoded_body)
+                    .map_err(|error| format!("egress body base64 invalid: {error}"))?;
+                if body.len() > MAX_EGRESS_BODY_BYTES {
+                    return Err("egress response body exceeds byte limit".to_string());
+                }
+                let receipt = object
+                    .get("egressReceiptDigest")
+                    .and_then(Value::as_str)
+                    .ok_or_else(|| "egress receipt digest missing".to_string())?;
+                if !is_digest(receipt) {
+                    return Err("egress receipt digest invalid".to_string());
+                }
+                Ok(EgressResponse {
+                    url,
+                    status,
+                    status_message,
+                    headers: response_headers,
+                    body,
+                })
+            }
+            _ => Err("egress response has invalid ok field".to_string()),
+        }
+    }
+}
+
+fn require_exact_json_keys(
+    object: &Map<String, Value>,
+    expected: &[&str],
+    name: &str,
+) -> Result<(), String> {
+    if object.len() != expected.len()
+        || expected.iter().any(|key| !object.contains_key(*key))
+    {
+        return Err(format!("{name} contains missing or unknown fields"));
+    }
+    Ok(())
+}
+
+fn clean_error(value: &str) -> String {
+    value
+        .chars()
+        .filter(|ch| !matches!(ch, '\r' | '\n' | '\0'))
+        .take(512)
+        .collect()
+}
+
 struct Delegate {
     frame_ready: Arc<AtomicBool>,
     navigation_epoch: Arc<AtomicU64>,
     allowed_origins: HashSet<String>,
+    egress: Arc<Mutex<EgressBrokerClient>>,
+    egress_authority: Arc<Mutex<Option<EgressAuthority>>>,
 }
 
 impl WebViewDelegate for Delegate {
@@ -84,6 +318,45 @@ impl WebViewDelegate for Delegate {
     fn request_permission(&self, _webview: WebView, request: PermissionRequest) {
         request.deny();
     }
+
+    fn load_web_resource(&self, _webview: WebView, load: WebResourceLoad) {
+        let fallback_url = load.request().url.clone();
+        let response = (|| {
+            let authority = self
+                .egress_authority
+                .lock()
+                .map_err(|_| "egress authority mutex poisoned".to_string())?
+                .clone()
+                .ok_or_else(|| "no admitted effect grant for network request".to_string())?;
+            self.egress
+                .lock()
+                .map_err(|_| "egress broker mutex poisoned".to_string())?
+                .fetch(&authority, load.request())
+        })();
+
+        match response {
+            Ok(response) => {
+                let mut intercepted = load.intercept(
+                    WebResourceResponse::new(response.url)
+                        .headers(response.headers)
+                        .status_code(response.status)
+                        .status_message(response.status_message),
+                );
+                if !response.body.is_empty() {
+                    intercepted.send_body_data(response.body);
+                }
+                intercepted.finish();
+            }
+            Err(_error) => {
+                let intercepted = load.intercept(
+                    WebResourceResponse::new(fallback_url)
+                        .status_code(StatusCode::BAD_GATEWAY)
+                        .status_message(b"Blocked by Hepta egress policy".to_vec()),
+                );
+                intercepted.finish();
+            }
+        }
+    }
 }
 
 #[derive(Clone)]
@@ -98,6 +371,7 @@ struct Browser {
     webview: WebView,
     frame_ready: Arc<AtomicBool>,
     navigation_epoch: Arc<AtomicU64>,
+    egress_authority: Arc<Mutex<Option<EgressAuthority>>>,
     observed_navigation_epoch: Option<u64>,
     last_document_digest: Option<String>,
     last_action_surface_digest: Option<String>,
@@ -108,7 +382,11 @@ struct Browser {
 }
 
 impl Browser {
-    fn new(allowed_origins: HashSet<String>, waker: Waker) -> Result<Self, String> {
+    fn new(
+        allowed_origins: HashSet<String>,
+        waker: Waker,
+        egress: Arc<Mutex<EgressBrokerClient>>,
+    ) -> Result<Self, String> {
         let context = Rc::new(
             SoftwareRenderingContext::new(PhysicalSize::new(1280, 720))
                 .map_err(|error| format!("software rendering context failed: {error:?}"))?,
@@ -122,10 +400,13 @@ impl Browser {
         servo.setup_logging();
         let frame_ready = Arc::new(AtomicBool::new(false));
         let navigation_epoch = Arc::new(AtomicU64::new(0));
+        let egress_authority = Arc::new(Mutex::new(None));
         let delegate = Rc::new(Delegate {
             frame_ready: frame_ready.clone(),
             navigation_epoch: navigation_epoch.clone(),
             allowed_origins: allowed_origins.clone(),
+            egress,
+            egress_authority: egress_authority.clone(),
         });
         let webview = WebViewBuilder::new(&servo, context.clone())
             .url(Url::parse("about:blank").expect("literal about:blank is valid"))
@@ -137,6 +418,7 @@ impl Browser {
             webview,
             frame_ready,
             navigation_epoch,
+            egress_authority,
             observed_navigation_epoch: None,
             last_document_digest: None,
             last_action_surface_digest: None,
@@ -284,6 +566,27 @@ impl Browser {
             .get("kind")
             .and_then(Value::as_str)
             .ok_or_else(|| "typedAction.kind must be a string".to_string())?;
+        let egress_authority = EgressAuthority {
+            operation_id: operation_id.to_string(),
+            profile_grant_digest: string_field(&frame.payload, "profileGrantDigest")?.to_string(),
+            effect_grant_digest: string_field(&frame.payload, "effectGrantDigest")?.to_string(),
+            authority_epoch: frame
+                .payload
+                .get("authorityEpoch")
+                .and_then(Value::as_u64)
+                .filter(|value| *value > 0)
+                .ok_or_else(|| "worker egress authority is missing authorityEpoch".to_string())?,
+        };
+        if !is_digest(&egress_authority.profile_grant_digest)
+            || !is_digest(&egress_authority.effect_grant_digest)
+        {
+            return Err("worker egress authority digest is invalid".to_string());
+        }
+        *self
+            .egress_authority
+            .lock()
+            .map_err(|_| "worker egress authority mutex poisoned".to_string())? =
+            Some(egress_authority);
         let receipt_result = match kind {
             "navigate" => self.navigate(action),
             "click" => fixed_click(action).and_then(|script| self.fixed_script(script, "click")),
@@ -547,6 +850,7 @@ fn run() -> Result<(), String> {
         .spawn(move || read_frames(reader))
         .map_err(|error| format!("private channel thread failed: {error}"))?;
     let waker = Waker(sender);
+    let egress = Arc::new(Mutex::new(EgressBrokerClient::open()?));
     let mut output = io::stdout().lock();
     let mut browser: Option<Browser> = None;
     let mut session: Option<String> = None;
@@ -576,7 +880,11 @@ fn run() -> Result<(), String> {
                             Err("worker is already started".to_string())
                         } else {
                             let allowed = parse_allowed_origins(&frame.payload)?;
-                            browser = Some(Browser::new(allowed, waker.clone())?);
+                            browser = Some(Browser::new(
+                                allowed,
+                                waker.clone(),
+                                Arc::clone(&egress),
+                            )?);
                             session = Some(frame.session_id.clone());
                             generation = Some(frame.generation);
                             Ok(json!({"started": true}))

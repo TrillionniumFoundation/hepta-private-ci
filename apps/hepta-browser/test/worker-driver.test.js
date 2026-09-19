@@ -72,6 +72,8 @@ function fakeLauncher({
       sourceContractOnly: true,
       inheritedPrivateChannel: true,
       externalNetworkDenied: true,
+      directNetworkDenied: true,
+      grantScopedEgressBroker: true,
       ambientEnvironmentDenied: true,
       userHomeHidden: true,
       hostFilesystemRestricted: true,
@@ -84,6 +86,13 @@ function fakeLauncher({
       child.stdin = new PassThrough();
       child.stdout = new PassThrough();
       child.stderr = new PassThrough();
+      child.stdio = [
+        child.stdin,
+        child.stdout,
+        child.stderr,
+        new PassThrough(),
+        new PassThrough(),
+      ];
       child.killed = false;
       child.kill = () => {
         child.killed = true;
