@@ -15,8 +15,9 @@ TURN_START_NEEDLE = "ClientRequest::TurnStart"
 
 REQUIRED_ORDER = (
     "policy.claim_turn(",
+    "NativeExecutionPolicy::admit(",
     "control.dispatch_native(",
-    "ClientRequest::TurnStart",
+    "client.try_request(turn_request)",
 )
 
 
@@ -61,7 +62,11 @@ def verify() -> None:
         )
     if positions != sorted(positions):
         raise SystemExit(
-            "native provider boundary order must be final-use claim -> durable dispatch -> turn/start"
+            "native provider boundary order must be final-use claim -> revocation fence -> durable dispatch -> synchronous transport admission"
+        )
+    if "client.request_typed::<TurnStartResponse>" in boundary:
+        raise SystemExit(
+            "native provider boundary must not await TurnStart through an unfenced direct request path"
         )
 
     worker = (
@@ -71,7 +76,7 @@ def verify() -> None:
         "admission.policy.admission_binding(",
         "control.reserve_native(",
         "admission.maximum_budget_units",
-        "self.reconcile_existing(&record)",
+        "self.reconcile_once(control, &request_id, &prompt, cancellation)",
     ):
         if needle not in worker:
             raise SystemExit(f"native inference worker missing required control step: {needle}")
@@ -90,6 +95,19 @@ def verify() -> None:
             raise SystemExit(f"durable inference owner missing required invariant: {needle}")
 
 
+    app_client = (
+        ROOT / "codex-rs/app-server-client/src/remote.rs"
+    ).read_text(encoding="utf-8")
+    for needle in (
+        "pub fn try_request(&self, request: ClientRequest)",
+        ".try_send(RemoteClientCommand::Request",
+        "request queue is full before effect admission",
+    ):
+        if needle not in app_client:
+            raise SystemExit(
+                f"remote App Server client missing synchronous effect-admission primitive: {needle}"
+            )
+
     policy = (
         ROOT / "codex-rs/hepta-infer-worker-host/src/native_policy.rs"
     ).read_text(encoding="utf-8")
@@ -98,7 +116,7 @@ def verify() -> None:
         "self.resource.quota_sha256 != quota_digest",
         "self.quota.reserved_day_budget < maximum_budget_units",
         "authority.claim(&signed, &binding)?",
-        "authority.with_verified_use(",
+        "authority.with_verified_use_receipt(",
     ):
         if needle not in policy:
             raise SystemExit(f"native inference policy missing required invariant: {needle}")
