@@ -170,16 +170,10 @@ pub fn validate_staged_updates(updates: &[UpdateGeneration]) -> Result<(), NduEr
 
     for (generation, generation_updates) in generations {
         let mut subjects = BTreeSet::new();
-        let mut artifacts = BTreeSet::new();
         for update in &generation_updates {
             if !subjects.insert(update.subject_id.clone()) {
                 return Err(NduError::DuplicateSubjectUpdate(
                     update.subject_id.to_string(),
-                ));
-            }
-            if !artifacts.insert(update.artifact_id.clone()) {
-                return Err(NduError::DuplicateArtifactUpdate(
-                    update.artifact_id.to_string(),
                 ));
             }
             validate_hierarchy_relation(update)?;
