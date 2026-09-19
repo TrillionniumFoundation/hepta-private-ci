@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   source:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-24.04-arm
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -29,9 +29,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git branch integration-source "$GITHUB_SHA"
           auth="$(printf 'x-access-token:%s' "$GH_TOKEN" | base64 -w0)"
           git -c "http.https://github.com/.extraheader=AUTHORIZATION: basic $auth" fetch --unshallow --no-tags origin \
+            "$GITHUB_SHA:refs/heads/integration-source" \
             refs/heads/main:refs/heads/integration-main \
             refs/heads/work/scalability-remediation-20260919:refs/heads/integration-remediation
           unset auth GH_TOKEN
