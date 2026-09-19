@@ -42,7 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `utility.ndu`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory and focused source tests. Exact-head and synthetic-merge qualification are separate evidence dimensions tracked in `docs/readiness/LANE_D_MATURITY.json` and `STATUS.md`; the workflow definition or source presence is not itself a pass receipt. This status does not activate `utility.ndu`, create an authenticated production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -76,6 +76,9 @@ The bounded components are:
 - `bounded state updater`
 - `recursive utility evaluator`
 - `boundary-condition cache`
+- `semantic projection journal`
+- `crash-bounded durable projection-store candidate`
+- `stochastic coordinate/Q24 conversion adapter`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -143,11 +146,11 @@ For every owned domain, this module is the only authoritative writer. Mutations 
 
 Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
 
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+Projection domains rebuild from declared sources and publish complete generations atomically. `NduProjectionStoreV1` is the current durable-writer source candidate: it is single-writer, synchronizes a complete temporary image before rename, synchronizes the parent directory on the Unix qualification profile, poisons an indeterminate handle and permits only monotonic backup restore. It is not a selected or activated production writer. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/utility.ndu.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/utility.ndu.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/utility.ndu.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/utility.ndu.md). Current request-local read-only/planning callsites are real composition evidence; they remain distinct from the not-yet-established authenticated production NDU owner/caller.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -182,6 +185,7 @@ Embed the deterministic evaluator under a frozen objective and versioned policy.
 Current operating and state-format references:
 
 - [docs/readiness/NDU_SYSTEM_EXECUTION.md](../../readiness/NDU_SYSTEM_EXECUTION.md).
+- [docs/modules/utility.ndu/STATUS.md](STATUS.md).
 - [codex-rs/hepta-ndu/RECURSIVE_UTILITY.md](../../../codex-rs/hepta-ndu/RECURSIVE_UTILITY.md).
 - [codex-rs/hepta-ndu/COVARIANCE_REGRESSION.md](../../../codex-rs/hepta-ndu/COVARIANCE_REGRESSION.md).
 - [docs/readiness/LANE_B_NATIVE_HOST.md](../../readiness/LANE_B_NATIVE_HOST.md).
@@ -194,6 +198,9 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-ndu/src/covariance_tests.rs](../../../codex-rs/hepta-ndu/src/covariance_tests.rs); named case: `scaled_covariance_recovers_three_instead_of_six_and_converts_microseconds`.
 - [codex-rs/hepta-ndu/src/evaluator_tests.rs](../../../codex-rs/hepta-ndu/src/evaluator_tests.rs); named case: `hard_violation_is_filtered_before_utility`.
+- [codex-rs/hepta-ndu/src/preference_tests.rs](../../../codex-rs/hepta-ndu/src/preference_tests.rs); named case: `iteration_exhaustion_is_unavailable`.
+- [codex-rs/hepta-ndu/src/projection_store_tests.rs](../../../codex-rs/hepta-ndu/src/projection_store_tests.rs); named case: `older_valid_backup_cannot_remove_a_later_revocation`.
+- [codex-rs/hepta-ndu/src/z_conversion_tests.rs](../../../codex-rs/hepta-ndu/src/z_conversion_tests.rs); named case: `whitened_head_is_converted_back_to_original_increment_coordinates`.
 
 In `codex-rs`, run `just test -p codex-hepta-ndu`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/utility.ndu.md) separately labels target acceptance designs.
 
@@ -219,7 +226,7 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition truth is split: request-local read-only/planning callers are established, while the authenticated production owner/caller is not established. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
 For `utility.ndu`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
