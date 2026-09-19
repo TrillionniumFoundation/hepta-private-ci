@@ -16,9 +16,8 @@ use codex_hepta_types::StableId;
 use crate::ArtifactClosureError;
 use crate::ArtifactLifecycleEventV1;
 use crate::ArtifactLifecycleStateV1;
-use crate::validate_artifact_lifecycle_transition;
 use crate::limits::MAX_DURABLE_ARTIFACT_RECORDS;
-
+use crate::validate_artifact_lifecycle_transition;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LifecycleActorRoleV2 {
