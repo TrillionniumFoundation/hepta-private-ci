@@ -220,12 +220,19 @@ impl Outbox {
                 .map(|record| &record.intent)
                 .ok_or_else(|| OperationError::Missing(intent_id.clone()));
         }
-        self.claim_until(
-            intent_id,
+        let record = self
+            .records
+            .get_mut(intent_id)
+            .ok_or_else(|| OperationError::Missing(intent_id.clone()))?;
+        if matches!(record.state, OutboxState::Acknowledged { .. }) {
+            return Err(OperationError::Terminal);
+        }
+        record.state = OutboxState::Claimed {
             owner_generation,
             attempt,
             lease_expires_at_unix_ms,
-        )
+        };
+        Ok(&record.intent)
     }
 
     pub fn renew_claim(
