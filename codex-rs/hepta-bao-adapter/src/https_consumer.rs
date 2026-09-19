@@ -57,9 +57,9 @@ pub struct BaoReadRequest {
 /// Contains observations only; it is never a reusable permission or secret.
 #[derive(Clone, Debug, Eq, PartialEq, Serialize)]
 pub struct BaoSecretReceipt {
+    /// Binds the exact signed request, including the expected-secret digest,
+    /// without exporting a second secret-dependent fingerprint.
     pub request_sha256: [u8; 32],
-    pub response_sha256: [u8; 32],
-    pub secret_sha256: [u8; 32],
     pub version: u64,
     pub secret_bytes: usize,
 }
@@ -229,8 +229,6 @@ impl BaoClient {
         }
         let receipt = BaoSecretReceipt {
             request_sha256: binding.request_sha256,
-            response_sha256: Digest32::of_bytes(&body).into_array(),
-            secret_sha256: digest,
             version: request.version,
             secret_bytes: secret.len(),
         };
