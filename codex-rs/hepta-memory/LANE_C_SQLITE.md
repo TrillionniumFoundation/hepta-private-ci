@@ -16,7 +16,7 @@ graph generation are read in one SQLite transaction.
 | --- | --- |
 | `memory:v2:<hash>` and revision | Unchanged record ID and revision |
 | `source:v1:<hash>` and source content SHA256 | Citation ID and digest |
-| Verified, currently valid active head | Live `Fact`, content digest only |
+| Verified, currently valid active head | Live `DURABLE_SQLITE_MEMORY_KIND` = `Fact`, content digest only |
 | Provisional, expired, or future active head | Excluded from visible records |
 | Committed tombstone | Tombstone, effective immediately even if future-dated |
 | Ordered immutable revision chain | Canonical predecessor record digest |
@@ -32,25 +32,36 @@ not only snapshot generation. Broken ancestry, a nonlatest head, invalid record
 metadata, and tombstone resurrection fail closed. All returned values retain
 `DENY_ALL` effect authority.
 
-`DurableCognitiveSnapshot::read(ReadRequestV2)` runs the new cognitive-read
-implementation against this owner-acquired cut. The caller supplies result and
-encoded-byte bounds. It can intersect these digest-only records with the
-existing scoped retrieval API and fetch matching content through the same
-store. Before delivery, compare each fetched record's exact revision and content
-digest, call `revalidate_lane_c_snapshot`, and recheck host authority/generation.
-Revalidation detects intervening corrections, deletions, newly appended source
-evidence, projection changes, and changes caused by validity time. It rejects
-clock regression. A subsequent concurrent write remains possible: this API
-returns a historical read cut and does not grant a lease over future effects.
+The current durable schema has no persisted memory-kind discriminator.
+`DURABLE_SQLITE_MEMORY_KIND` therefore explicitly fixes this adapter to
+`MemoryKind::Fact`; callers may not infer Episode/Preference/Procedure from the
+generic cognitive type enum without an owner schema migration.
+
+`DurableCognitiveSnapshot::read_ids(ReadIdsRequestV1)` runs the typed-local
+exact-ID cognitive read port against this owner-acquired cut. The caller supplies
+at most 512 IDs, selected projection fields, and an encoded-byte bound. Missing
+IDs are explicit and an exact-ID request is all-or-error rather than a prefix.
+The legacy `read(ReadRequestV2)` remains available as a bounded compatibility
+projection, but product retrieval no longer intersects candidates with its
+first-1,024-record prefix.
+
+Agentd retrieves bounded candidates, validates their exact ID/revision/content
+digest through `read_ids`, and calls `revalidate_lane_c_snapshot` before
+response publication. The native model consumer additionally requires the
+capability `cognitive.context.revalidate@1`; immediately before physical
+`TurnStart` the owner reacquires a current snapshot and verifies the selected
+ID/revision/content bindings. Correction, deletion and validity-time changes
+therefore fail closed at final use. A subsequent concurrent write remains
+possible: these checks are current observations and do not lease future effects.
 
 `bind_context` optionally binds an externally frozen
 `LaneCGenerationVectorV1`. All five cognitive-owned components must exactly
 match the cut. The host must obtain prompt, compact, model, retrieval-profile,
 and authority values from their actual owners; the adapter supplies no defaults.
 Acquisition time must match the observed second, and the lease is bounded to
-five minutes. These are crate-native APIs; this change does not register V2
-types as a cross-module wire format or authorize arbitrary caller-supplied
-generation vectors.
+five minutes. These are crate-native APIs. `read_ids_v1` is the typed-local ModulePort shape;
+its canonical bytes and the V2 canonical bytes are not cross-process wire
+protocols. Arbitrary caller-supplied generation vectors remain unauthorized.
 
 Reopening with existing `CognitiveStore::open` reconstructs the same cut from
 durable rows. `cut_digest` can be retained independently and compared using
