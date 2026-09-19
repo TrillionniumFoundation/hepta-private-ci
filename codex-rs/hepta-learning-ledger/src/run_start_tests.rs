@@ -159,19 +159,21 @@ fn exact_retry_is_idempotent_but_run_id_drift_conflicts() {
         receipt.chain_digest,
         record("run-2", b"objective-semantic-second"),
     ));
+    let after_second = must(fs::read(fixture.path()));
     let late_replay = must(journal.append(second.chain_digest, first.clone()));
     assert_eq!(
         late_replay.disposition,
         RunStartAppendDisposition::IdempotentReplay
     );
     assert_eq!(late_replay.record_digest, receipt.record_digest);
+    assert_eq!(must(fs::read(fixture.path())), after_second);
 
     let changed = record("run-1", b"objective-semantic-two");
     assert_eq!(
         journal.append(Digest32::ZERO, changed),
         Err(RunStartStoreError::Conflict)
     );
-    assert_eq!(must(fs::read(fixture.path())), before);
+    assert_eq!(must(fs::read(fixture.path())), after_second);
 }
 
 #[test]
