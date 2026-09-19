@@ -24,7 +24,7 @@ The primary owner `developer-productivity` controls changes inside the declared 
 
 Plane `engineering`, kind `orchestrator`, state model `stateful_projection` and architecture role `engineering_control` define placement. The module may optimize locally, but cannot claim global optimality or absorb another module's durable facts.
 
-The concrete Python owner, SQLite v5 schema, authenticated public API, CLI,
+The concrete Python owner, SQLite v6 schema, authenticated public API, CLI,
 resource limits, failure recovery and behavioral verification are documented in
 [IMPLEMENTATION.md](IMPLEMENTATION.md). The candidate isolation contract is in
 [SANDBOX_SECURITY.md](SANDBOX_SECURITY.md). These implementation companions replace
@@ -147,13 +147,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 ## 10. Performance, capacity and hot-path policy
 
-The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.engineering.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [tools/hepta-engineering-control/hepta_engineering_control.py](../../../tools/hepta-engineering-control/hepta_engineering_control.py) and the linked implementation components.
+The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/control.engineering.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [control_engineering_v2/control_plane.py](../../../tools/hepta-engineering-control/control_engineering_v2/control_plane.py), [assignment.py](../../../tools/hepta-engineering-control/control_engineering_v2/assignment.py), and [candidate.py](../../../tools/hepta-engineering-control/control_engineering_v2/candidate.py). The historical `hepta_engineering_control.py` surface is compatibility-only.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Run the control_engineering_v2 CLI and SQLite v5 owner documented in IMPLEMENTATION.md. Keep one connection per execution thread; writers serialize with BEGIN IMMEDIATE. Strong candidate isolation requires a successful Bubblewrap probe. WAL capacity, backup, external audit anchoring, retention and availability are operational responsibilities, not properties of the in-file hash chain.
+Run the control_engineering_v2 CLI and SQLite v6 owner documented in IMPLEMENTATION.md. Keep one connection per execution thread; writers serialize with BEGIN IMMEDIATE. Strong candidate isolation requires a successful Bubblewrap probe. WAL capacity, backup, external audit anchoring, retention and availability are operational responsibilities, not properties of the in-file hash chain.
 
 Current operating and state-format references:
 

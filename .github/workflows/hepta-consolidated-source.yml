@@ -256,6 +256,17 @@ jobs:
           if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
             sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
           fi
+      - name: Execute Lane G exact-candidate tests
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+          HEPTA_REQUIRE_STRONG_SANDBOX: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hepta-command-records/engineering-control.json" -- \
+            python3 -m unittest discover -v -s tools/hepta-engineering-control -p 'test_*.py'
       - name: Install DotSlash for shell integration tests
         uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
       - name: Expose DotSlash at the path used by integration tests
@@ -300,6 +311,23 @@ jobs:
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Materialize exact Lane G qualification observation
+        if: success()
+        env:
+          TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 tools/hepta-engineering-control/qualification_receipt.py \
+            --root "$GITHUB_WORKSPACE" \
+            --repository "$GITHUB_REPOSITORY" \
+            --base "$BASE_SHA" \
+            --source "$SOURCE_SHA" \
+            --tested "$TESTED_SHA" \
+            --lane "$HEPTA_CI_LANE" \
+            --records "$RUNNER_TEMP/hepta-command-records" \
+            --output "$RUNNER_TEMP/hepta-command-records/qualification-observation.json"
       - name: Retain real command records
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

@@ -24,7 +24,7 @@ from .path_policy import (
     path_is_within as path_is_within,
 )
 
-STORE_SCHEMA_VERSION = 5
+STORE_SCHEMA_VERSION = 6
 STORE_TABLES = frozenset(
     {
         "work_envelopes",
@@ -36,6 +36,10 @@ STORE_TABLES = frozenset(
         "assignment_generation_frontiers",
         "integration_decision_bindings",
         "integration_decision_seals",
+        "assignment_generation_packages",
+        "engineering_workers",
+        "assignment_claims",
+        "engineering_writer_bindings",
     }
 )
 
@@ -47,6 +51,8 @@ MAX_ACTIVE_LEASES = 4096
 MAX_COMPLETED = 4096
 MAX_PREDECESSORS = 256
 MAX_ASSIGNMENTS = 128
+MAX_REQUIRED_CAPABILITIES = 64
+MAX_PACKAGE_ATTEMPTS = 5
 MAX_REASONS = 128
 MAX_AUDIT_ROWS = 512
 ZERO_DIGEST = "0" * 64
@@ -173,6 +179,8 @@ class WorkPackage:
     package_id: str
     predecessors: tuple[str, ...]
     write_paths: tuple[str, ...]
+    required_capabilities: tuple[str, ...] = ()
+    maximum_attempts: int = 1
 
 
 @dataclass(frozen=True)
@@ -266,11 +274,28 @@ def _validate_package(value: WorkPackage) -> WorkPackage:
         sorted({checked_id(item, "predecessor") for item in predecessors})
     )
     paths = canonical_paths(value.write_paths)
+    capabilities = bounded_tuple(
+        value.required_capabilities,
+        MAX_REQUIRED_CAPABILITIES,
+        "capability_limit_exceeded",
+    )
+    if any(not isinstance(item, str) for item in capabilities):
+        _error("invalid_required_capability")
+    normalized_capabilities = tuple(
+        sorted({checked_id(item, "required_capability") for item in capabilities})
+    )
+    if (
+        type(value.maximum_attempts) is not int
+        or not 1 <= value.maximum_attempts <= MAX_PACKAGE_ATTEMPTS
+    ):
+        _error("invalid_package_attempt_limit")
     return WorkPackage(
         value.priority,
         value.package_id,
         normalized_predecessors,
         paths,
+        normalized_capabilities,
+        value.maximum_attempts,
     )
 
 
@@ -544,6 +569,8 @@ class EngineeringStore:
         normalized = canonical_paths(paths)
         with self._transaction():
             envelope = self._get_envelope(envelope_id, now)
+            if expires_unix_ns > int(envelope["expires_unix_ns"]):
+                _error("lease_outlives_envelope")
             allowed = tuple(
                 json.loads(bytes(envelope["allowed_paths_json"]).decode("utf-8"))
             )
@@ -648,6 +675,9 @@ class EngineeringStore:
                     now, expiry
                 ):
                     _error("invalid_lease_expiry")
+                envelope = self._get_envelope(str(row["envelope_id"]), now)
+                if new_expiry_unix_ns > int(envelope["expires_unix_ns"]):
+                    _error("lease_outlives_envelope")
                 expiry = new_expiry_unix_ns
             elif disposition == "release":
                 state = "released"
@@ -762,6 +792,9 @@ class EngineeringStore:
             selected_paths: list[str] = []
             limit = min(int(envelope["maximum_assignments"]), MAX_ASSIGNMENTS)
             for package in sorted(package_values):
+                if package.package_id in completed_set:
+                    blocked.append((package.package_id, "already_completed"))
+                    continue
                 missing = tuple(sorted(set(package.predecessors) - completed_set))
                 if missing:
                     blocked.append(
@@ -802,6 +835,21 @@ class EngineeringStore:
             if existing is not None:
                 if existing["semantic_digest"] != digest:
                     _error("generation_identity_conflict")
+                bound_rows = self.connection.execute(
+                    "SELECT package_id,semantic_digest FROM assignment_generation_packages "
+                    "WHERE generation_id=? ORDER BY package_id",
+                    (generation_id,),
+                ).fetchall()
+                expected_packages = {
+                    package.package_id: semantic_digest(asdict(package))
+                    for package in package_values
+                }
+                actual_packages = {
+                    str(row["package_id"]): str(row["semantic_digest"])
+                    for row in bound_rows
+                }
+                if actual_packages != expected_packages:
+                    _error("unbound_assignment_packages")
                 return ScheduleReceipt(
                     generation_id,
                     str(existing["envelope_id"]),
@@ -825,6 +873,24 @@ class EngineeringStore:
                     now,
                 ),
             )
+            for package in package_values:
+                package_digest = semantic_digest(asdict(package))
+                self.connection.execute(
+                    "INSERT INTO assignment_generation_packages("
+                    "generation_id,package_id,priority,predecessors_json,write_paths_json,"
+                    "required_capabilities_json,maximum_attempts,semantic_digest"
+                    ") VALUES(?,?,?,?,?,?,?,?)",
+                    (
+                        generation_id,
+                        package.package_id,
+                        package.priority,
+                        canonical_json(package.predecessors),
+                        canonical_json(package.write_paths),
+                        canonical_json(package.required_capabilities),
+                        package.maximum_attempts,
+                        package_digest,
+                    ),
+                )
             self._append_audit(
                 "assignment_generation_published",
                 {
@@ -835,6 +901,61 @@ class EngineeringStore:
                 now,
             )
         return receipt
+
+    def register_worker(self, identity, verifier, *, now_ns=None):
+        from .assignment import register_authenticated_worker
+
+        return register_authenticated_worker(
+            self,
+            identity,
+            verifier,
+            now_ns=now_ns,
+        )
+
+    def heartbeat_worker(self, *args, **kwargs):
+        from .assignment import heartbeat_worker
+
+        return heartbeat_worker(self, *args, **kwargs)
+
+    def revoke_worker(self, *args, **kwargs):
+        from .assignment import revoke_worker
+
+        return revoke_worker(self, *args, **kwargs)
+
+    def claim_assignment(self, *args, **kwargs):
+        from .assignment import claim_assignment
+
+        return claim_assignment(self, *args, **kwargs)
+
+    def begin_assignment(self, *args, **kwargs):
+        from .assignment import begin_assignment
+
+        return begin_assignment(self, *args, **kwargs)
+
+    def heartbeat_assignment(self, *args, **kwargs):
+        from .assignment import heartbeat_assignment
+
+        return heartbeat_assignment(self, *args, **kwargs)
+
+    def complete_assignment(self, *args, **kwargs):
+        from .assignment import complete_assignment
+
+        return complete_assignment(self, *args, **kwargs)
+
+    def fail_assignment(self, *args, **kwargs):
+        from .assignment import fail_assignment
+
+        return fail_assignment(self, *args, **kwargs)
+
+    def requeue_assignment(self, *args, **kwargs):
+        from .assignment import requeue_assignment
+
+        return requeue_assignment(self, *args, **kwargs)
+
+    def assignment_status(self, *args, **kwargs):
+        from .assignment import assignment_status
+
+        return assignment_status(self, *args, **kwargs)
 
     def record_integration_decision(
         self,

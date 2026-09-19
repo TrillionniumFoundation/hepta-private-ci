@@ -48,7 +48,7 @@
         "EngineeringStore.issue_work_envelope"
       ],
       "state": "source_implemented",
-      "physicalState": "SQLite work_envelopes; WAL; synchronous FULL",
+      "physicalState": "SQLite v6 work_envelopes; WAL; synchronous FULL",
       "failureModel": [
         "expired_envelope",
         "authority_ceiling_incomplete",
@@ -324,6 +324,105 @@
         "input_byte_limit_exceeded"
       ],
       "rollback": "retry with corrected input; scheduling retains immutable committed generations"
+    },
+    {
+      "id": "worker-assignment-lifecycle",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/assignment.py",
+      "symbols": [
+        "WorkerIdentityReceipt",
+        "WorkerReceipt",
+        "AssignmentClaimReceipt",
+        "register_authenticated_worker",
+        "completed_packages",
+        "claim_assignment",
+        "begin_assignment",
+        "heartbeat_assignment",
+        "complete_assignment",
+        "fail_assignment",
+        "requeue_assignment"
+      ],
+      "state": "source_implemented",
+      "physicalState": "SQLite v6 engineering_workers, assignment_generation_packages and assignment_claims",
+      "failureModel": [
+        "worker_identity_signature",
+        "worker_identity_stale",
+        "worker_identity_conflict",
+        "worker_capability_mismatch",
+        "worker_capacity_exceeded",
+        "assignment_requeue_required",
+        "assignment_retry_exhausted",
+        "stale_claim_revision"
+      ],
+      "resourceBounds": {
+        "maximumWorkerCapabilities": 64,
+        "maximumWorkerConcurrency": 32,
+        "maximumPackageAttempts": 5
+      },
+      "rollback": "expire or revoke the current signed worker/claim, explicitly requeue retryable work, and preserve fencing history"
+    },
+    {
+      "id": "verification-only-production-trust",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/evidence.py",
+      "symbols": [
+        "SignatureVerifier",
+        "SignatureSigner",
+        "TrustedPublicKey",
+        "OpenSslTrustStore"
+      ],
+      "state": "source_implemented",
+      "failureModel": [
+        "empty_trust_store",
+        "public_key_digest_mismatch",
+        "invalid_trust_identity",
+        "signature_verification_failure"
+      ],
+      "resourceBounds": {
+        "maximumDetachedSignatureBytes": 16384,
+        "opensslVerificationTimeoutSeconds": 10
+      },
+      "rollback": "replace the verifier generation with a separately provisioned trusted key set; no private signing key is stored by the verifier"
+    },
+    {
+      "id": "engineering-controller-composition",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/controller.py",
+      "symbols": [
+        "EngineeringController"
+      ],
+      "state": "source_composed_not_product_executed",
+      "physicalState": "SQLite v6 engineering_writer_bindings singleton plus EngineeringStore owner state",
+      "failureModel": [
+        "fixture_verifier_forbidden",
+        "writer_binding_conflict",
+        "repository_root_unavailable"
+      ],
+      "resourceBounds": {
+        "ambientMergeAuthority": 0,
+        "ambientReleaseAuthority": 0
+      },
+      "rollback": "close the controller and reopen only with the identical durable writer binding or a separately governed migration"
+    },
+    {
+      "id": "external-audit-anchor",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/audit.py",
+      "symbols": [
+        "AuditAnchorReceipt",
+        "prepare_audit_anchor",
+        "verify_audit_anchor"
+      ],
+      "state": "source_implemented_external_retention_required",
+      "physicalState": "signed receipt retained outside the engineering owner database; owner DB stores only its local hash chain",
+      "failureModel": [
+        "audit_anchor_signature",
+        "audit_anchor_stale",
+        "audit_anchor_sequence",
+        "audit_anchor_writer_mismatch",
+        "audit_anchor_chain_mismatch",
+        "audit_anchor_time_order"
+      ],
+      "resourceBounds": {
+        "maximumVerificationLookups": 1
+      },
+      "rollback": "reject rollback below the independently retained minimum sequence; restoring the SQLite file alone cannot rewrite the external witness"
     }
   ],
   "externalGates": {

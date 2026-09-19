@@ -130,6 +130,85 @@
       ],
       "state": "source_implemented",
       "capabilityCeiling": "assignment projection or bounded qualification only"
+    },
+    {
+      "designOperation": "register_authenticated_worker",
+      "nativeModule": "control_engineering_v2.assignment",
+      "nativeSymbol": "register_authenticated_worker",
+      "ownerSymbol": "EngineeringStore.register_worker",
+      "tests": [
+        "OpenSslTrustStoreTests.test_verification_only_store_accepts_pinned_key_and_rejects_tamper"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "signed bounded worker registration only"
+    },
+    {
+      "designOperation": "claim_assignment",
+      "nativeModule": "control_engineering_v2.assignment",
+      "nativeSymbol": "claim_assignment",
+      "ownerSymbol": "EngineeringStore.claim_assignment",
+      "tests": [
+        "AssignmentLifecycleTests.test_claim_run_fail_requeue_retry_complete",
+        "AssignmentLifecycleTests.test_worker_capability_capacity_and_lease_binding"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "fenced package claim only"
+    },
+    {
+      "designOperation": "execute_assignment_lifecycle",
+      "nativeModule": "control_engineering_v2.assignment",
+      "nativeSymbol": "begin_assignment/heartbeat_assignment/complete_assignment/fail_assignment/requeue_assignment",
+      "ownerSymbol": "EngineeringStore assignment lifecycle wrappers",
+      "tests": [
+        "AssignmentLifecycleTests.test_claim_run_fail_requeue_retry_complete",
+        "AssignmentLifecycleTests.test_expiry_requires_explicit_requeue"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "worker execution state projection without external effects"
+    },
+    {
+      "designOperation": "verify_public_key_evidence",
+      "nativeModule": "control_engineering_v2.evidence",
+      "nativeSymbol": "OpenSslTrustStore.verify",
+      "ownerSymbol": "OpenSslTrustStore.verify",
+      "tests": [
+        "OpenSslTrustStoreTests.test_verification_only_store_accepts_pinned_key_and_rejects_tamper"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "signature verification only; private signing keys remain external"
+    },
+    {
+      "designOperation": "engineering_controller",
+      "nativeModule": "control_engineering_v2.controller",
+      "nativeSymbol": "EngineeringController",
+      "ownerSymbol": "EngineeringController._bind_writer",
+      "tests": [
+        "OpenSslTrustStoreTests.test_verification_only_store_accepts_pinned_key_and_rejects_tamper"
+      ],
+      "state": "source_composed_not_product_executed",
+      "capabilityCeiling": "single-writer repository coordination composition without merge/deploy authority"
+    },
+    {
+      "designOperation": "schedule_from_state",
+      "nativeModule": "control_engineering_v2.controller",
+      "nativeSymbol": "EngineeringController.schedule_from_state",
+      "ownerSymbol": "completed_packages + EngineeringStore.schedule_ready_packages",
+      "tests": [
+        "AssignmentLifecycleTests.test_durable_completion_drives_next_schedule"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "durable dependency-driven assignment proposal only"
+    },
+    {
+      "designOperation": "verify_external_audit_anchor",
+      "nativeModule": "control_engineering_v2.audit",
+      "nativeSymbol": "verify_audit_anchor",
+      "ownerSymbol": "EngineeringController.verify_audit_anchor",
+      "tests": [
+        "OpenSslTrustStoreTests.test_verification_only_store_accepts_pinned_key_and_rejects_tamper"
+      ],
+      "state": "source_implemented_external_retention_required",
+      "capabilityCeiling": "anti-rollback audit witness verification only"
     }
   ],
   "negativeAuthorityInvariants": [
@@ -149,6 +228,8 @@
     "tools/hepta-engineering-control/test_lane_g_hardening.py",
     "tools/hepta-engineering-control/test_lane_g_closure.py",
     "tools/hepta-engineering-control/test_lane_g_seal.py",
-    "tools/hepta-engineering-control/test_consolidated_engineering.py"
+    "tools/hepta-engineering-control/test_consolidated_engineering.py",
+    "tools/hepta-engineering-control/test_assignment_lifecycle.py",
+    "tools/hepta-engineering-control/test_evidence_public_key.py"
   ]
 }

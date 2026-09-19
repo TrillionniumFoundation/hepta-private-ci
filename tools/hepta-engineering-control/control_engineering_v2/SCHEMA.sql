@@ -1,4 +1,4 @@
--- Canonical engineering owner schema, version 5. Applied in one transaction.
+-- Canonical engineering owner schema, version 6. Applied in one transaction.
 
 CREATE TABLE IF NOT EXISTS work_envelopes(
   envelope_id TEXT PRIMARY KEY,
@@ -104,3 +104,78 @@ CREATE TABLE IF NOT EXISTS integration_decision_seals(
 );
 CREATE INDEX IF NOT EXISTS idx_integration_decision_seals_identity
   ON integration_decision_seals(issuer,signing_identity,observed_unix_ns);
+
+
+CREATE TABLE IF NOT EXISTS assignment_generation_packages(
+  generation_id TEXT NOT NULL,
+  package_id TEXT NOT NULL,
+  priority INTEGER NOT NULL,
+  predecessors_json BLOB NOT NULL,
+  write_paths_json BLOB NOT NULL,
+  required_capabilities_json BLOB NOT NULL,
+  maximum_attempts INTEGER NOT NULL CHECK(maximum_attempts BETWEEN 1 AND 5),
+  semantic_digest TEXT NOT NULL,
+  PRIMARY KEY(generation_id, package_id),
+  FOREIGN KEY(generation_id)
+    REFERENCES assignment_generations(generation_id)
+    ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS engineering_workers(
+  worker_id TEXT PRIMARY KEY,
+  principal TEXT NOT NULL,
+  credential_chain_digest TEXT NOT NULL,
+  capabilities_json BLOB NOT NULL,
+  maximum_concurrency INTEGER NOT NULL CHECK(maximum_concurrency BETWEEN 1 AND 32),
+  state TEXT NOT NULL CHECK(state IN ('active','draining','revoked','expired')),
+  authority_epoch INTEGER NOT NULL CHECK(authority_epoch >= 1),
+  revision INTEGER NOT NULL CHECK(revision >= 1),
+  registered_unix_ns INTEGER NOT NULL,
+  last_heartbeat_unix_ns INTEGER NOT NULL,
+  lease_expires_unix_ns INTEGER NOT NULL,
+  identity_expires_unix_ns INTEGER NOT NULL,
+  semantic_digest TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_engineering_workers_state_expiry
+  ON engineering_workers(state, lease_expires_unix_ns);
+
+CREATE TABLE IF NOT EXISTS assignment_claims(
+  claim_id TEXT PRIMARY KEY,
+  generation_id TEXT NOT NULL,
+  package_id TEXT NOT NULL,
+  worker_id TEXT NOT NULL REFERENCES engineering_workers(worker_id),
+  lease_id TEXT NOT NULL REFERENCES path_leases(lease_id),
+  state TEXT NOT NULL CHECK(state IN ('claimed','running','completed','failed','expired','requeued')),
+  attempt INTEGER NOT NULL CHECK(attempt >= 1),
+  authority_epoch INTEGER NOT NULL CHECK(authority_epoch >= 1),
+  fencing_token INTEGER NOT NULL UNIQUE CHECK(fencing_token >= 1),
+  revision INTEGER NOT NULL CHECK(revision >= 1),
+  claimed_unix_ns INTEGER NOT NULL,
+  started_unix_ns INTEGER,
+  heartbeat_unix_ns INTEGER NOT NULL,
+  expires_unix_ns INTEGER NOT NULL,
+  completed_unix_ns INTEGER,
+  result_digest TEXT,
+  failure_code TEXT,
+  retryable INTEGER NOT NULL CHECK(retryable IN (0,1)),
+  semantic_digest TEXT NOT NULL,
+  FOREIGN KEY(generation_id, package_id)
+    REFERENCES assignment_generation_packages(generation_id, package_id)
+);
+CREATE INDEX IF NOT EXISTS idx_assignment_claims_worker_state
+  ON assignment_claims(worker_id, state, expires_unix_ns);
+CREATE INDEX IF NOT EXISTS idx_assignment_claims_package
+  ON assignment_claims(generation_id, package_id, attempt);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_assignment_claims_one_active
+  ON assignment_claims(generation_id, package_id)
+  WHERE state IN ('claimed','running');
+
+
+CREATE TABLE IF NOT EXISTS engineering_writer_bindings(
+  singleton INTEGER PRIMARY KEY CHECK(singleton=1),
+  repository_full_name TEXT NOT NULL,
+  writer_instance_id TEXT NOT NULL,
+  writer_credential_chain_digest TEXT NOT NULL,
+  established_unix_ns INTEGER NOT NULL,
+  semantic_digest TEXT NOT NULL
+);
