@@ -1619,6 +1619,9 @@ pub fn deliver_context_v2(
     ensure_digest("transport", transport_digest)?;
     let evidence = transport.send(&serialization.payload, profile.digest())?;
     ensure_digest("transmitted_payload", evidence.transmitted_payload_digest)?;
+    if evidence.observed_unix_ms < current_snapshot.observed_unix_ms() {
+        return Err(ContextCompilerV2Error::InvalidObservationTime);
+    }
     let actual_payload_digest = Digest32::of_bytes(&serialization.payload);
     if evidence.transmitted_payload_digest != actual_payload_digest {
         return Err(ContextCompilerV2Error::DeliveryMismatch);
