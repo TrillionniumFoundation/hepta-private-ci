@@ -43,9 +43,24 @@ pub struct NativeResourceBinding {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
+pub struct NativePolicyAuthorityWitness {
+    pub issuer_id: String,
+    pub key_epoch: u64,
+    pub message_id: String,
+    pub sequence: u64,
+    pub expires_at_unix_ms: u64,
+    pub envelope_digest: String,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct NativeAdmissionBinding {
     pub quota: NativeQuotaBinding,
     pub resource: NativeResourceBinding,
+    /// Historical policy-bound native records may omit this. New product
+    /// callers populate it only after strict owner-signature authentication.
+    #[serde(default)]
+    pub policy_authority: Option<NativePolicyAuthorityWitness>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -907,6 +922,17 @@ fn validate_admission_binding(request: &NativeRequest) -> Result<(), Error> {
             validate_identity(&binding.resource.resource_id, "native resource")?;
             validate_digest(&binding.resource.resource_digest, "native resource")?;
             validate_identity(&binding.resource.provider_id, "native provider")?;
+            if let Some(authority) = &binding.policy_authority {
+                validate_identity(&authority.issuer_id, "native policy issuer")?;
+                validate_identity(&authority.message_id, "native policy message")?;
+                validate_digest(&authority.envelope_digest, "native policy envelope")?;
+                if authority.key_epoch == 0
+                    || authority.sequence == 0
+                    || authority.expires_at_unix_ms == 0
+                {
+                    return Err(Error::InvalidTransition);
+                }
+            }
             if request.maximum_output_tokens == 0
                 || request.maximum_budget_units == 0
                 || binding.quota.reserved_requests == 0
