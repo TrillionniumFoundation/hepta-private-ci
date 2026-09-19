@@ -34,8 +34,12 @@ pub struct IntelligenceHostEnvelopeV1 {
     pub run_id: StableId,
     pub producer_id: StableId,
     pub consumer_id: StableId,
+    pub request_digest: Digest32,
     pub snapshot_digest: Digest32,
     pub objective_digest: Digest32,
+    pub authority_epoch: u64,
+    pub body_digest: Digest32,
+    pub artifact_set_digest: Digest32,
     pub candidate_set_digest: Digest32,
     pub utility_digest: Digest32,
     pub evaluation_digest: Digest32,
@@ -44,6 +48,7 @@ pub struct IntelligenceHostEnvelopeV1 {
     pub intuition_digest: Digest32,
     pub context_digest: Digest32,
     pub pre_handoff_digest: Digest32,
+    pub deadline_unix_micros: u64,
     pub total_budget_micros: u64,
     pub envelope_digest: Digest32,
     pub authority: AuthorityPosture,
@@ -59,6 +64,8 @@ pub enum IntelligenceContractErrorV1 {
     InvalidCandidate(String),
     InvalidProducer,
     InvalidConsumer,
+    InvalidAuthorityEpoch,
+    InvalidDeadline,
     InvalidBudget,
     DigestMismatch,
     AuthorityWidening,
@@ -162,8 +169,12 @@ impl IntelligenceHostEnvelopeV1 {
     #[allow(clippy::too_many_arguments)]
     pub fn new(
         run_id: StableId,
+        request_digest: Digest32,
         snapshot_digest: Digest32,
         objective_digest: Digest32,
+        authority_epoch: u64,
+        body_digest: Digest32,
+        artifact_set_digest: Digest32,
         candidate_set_digest: Digest32,
         utility_digest: Digest32,
         evaluation_digest: Digest32,
@@ -172,11 +183,15 @@ impl IntelligenceHostEnvelopeV1 {
         intuition_digest: Digest32,
         context_digest: Digest32,
         pre_handoff_digest: Digest32,
+        deadline_unix_micros: u64,
         total_budget_micros: u64,
     ) -> Result<Self, IntelligenceContractErrorV1> {
         for (name, digest) in [
+            ("request", request_digest),
             ("snapshot", snapshot_digest),
             ("objective", objective_digest),
+            ("body", body_digest),
+            ("artifact set", artifact_set_digest),
             ("candidate set", candidate_set_digest),
             ("utility", utility_digest),
             ("evaluation", evaluation_digest),
@@ -193,6 +208,12 @@ impl IntelligenceHostEnvelopeV1 {
         {
             return Err(IntelligenceContractErrorV1::EmptyDigest("optional stage"));
         }
+        if authority_epoch == 0 {
+            return Err(IntelligenceContractErrorV1::InvalidAuthorityEpoch);
+        }
+        if deadline_unix_micros == 0 {
+            return Err(IntelligenceContractErrorV1::InvalidDeadline);
+        }
         if total_budget_micros == 0 {
             return Err(IntelligenceContractErrorV1::InvalidBudget);
         }
@@ -202,8 +223,12 @@ impl IntelligenceHostEnvelopeV1 {
             &run_id,
             &producer_id,
             &consumer_id,
+            request_digest,
             snapshot_digest,
             objective_digest,
+            authority_epoch,
+            body_digest,
+            artifact_set_digest,
             candidate_set_digest,
             utility_digest,
             evaluation_digest,
@@ -212,14 +237,19 @@ impl IntelligenceHostEnvelopeV1 {
             intuition_digest,
             context_digest,
             pre_handoff_digest,
+            deadline_unix_micros,
             total_budget_micros,
         )?;
         Ok(Self {
             run_id,
             producer_id,
             consumer_id,
+            request_digest,
             snapshot_digest,
             objective_digest,
+            authority_epoch,
+            body_digest,
+            artifact_set_digest,
             candidate_set_digest,
             utility_digest,
             evaluation_digest,
@@ -228,6 +258,7 @@ impl IntelligenceHostEnvelopeV1 {
             intuition_digest,
             context_digest,
             pre_handoff_digest,
+            deadline_unix_micros,
             total_budget_micros,
             envelope_digest,
             authority: AuthorityPosture::DENY_ALL,
@@ -246,8 +277,12 @@ impl IntelligenceHostEnvelopeV1 {
         }
         let rebuilt = Self::new(
             self.run_id.clone(),
+            self.request_digest,
             self.snapshot_digest,
             self.objective_digest,
+            self.authority_epoch,
+            self.body_digest,
+            self.artifact_set_digest,
             self.candidate_set_digest,
             self.utility_digest,
             self.evaluation_digest,
@@ -256,6 +291,7 @@ impl IntelligenceHostEnvelopeV1 {
             self.intuition_digest,
             self.context_digest,
             self.pre_handoff_digest,
+            self.deadline_unix_micros,
             self.total_budget_micros,
         )?;
         if rebuilt.envelope_digest != self.envelope_digest {
@@ -296,8 +332,12 @@ fn digest_host_envelope(
     run_id: &StableId,
     producer_id: &StableId,
     consumer_id: &StableId,
+    request_digest: Digest32,
     snapshot_digest: Digest32,
     objective_digest: Digest32,
+    authority_epoch: u64,
+    body_digest: Digest32,
+    artifact_set_digest: Digest32,
     candidate_set_digest: Digest32,
     utility_digest: Digest32,
     evaluation_digest: Digest32,
@@ -306,15 +346,20 @@ fn digest_host_envelope(
     intuition_digest: Digest32,
     context_digest: Digest32,
     pre_handoff_digest: Digest32,
+    deadline_unix_micros: u64,
     total_budget_micros: u64,
 ) -> Result<Digest32, IntelligenceContractErrorV1> {
     let mut bytes = b"hepta.intelligence.host-envelope.v1\0".to_vec();
     push_id(&mut bytes, run_id)?;
     push_id(&mut bytes, producer_id)?;
     push_id(&mut bytes, consumer_id)?;
+    bytes.extend_from_slice(request_digest.as_array());
+    bytes.extend_from_slice(snapshot_digest.as_array());
+    bytes.extend_from_slice(objective_digest.as_array());
+    bytes.extend_from_slice(&authority_epoch.to_be_bytes());
     for digest in [
-        snapshot_digest,
-        objective_digest,
+        body_digest,
+        artifact_set_digest,
         candidate_set_digest,
         utility_digest,
         evaluation_digest,
@@ -326,6 +371,7 @@ fn digest_host_envelope(
     for digest in [intuition_digest, context_digest, pre_handoff_digest] {
         bytes.extend_from_slice(digest.as_array());
     }
+    bytes.extend_from_slice(&deadline_unix_micros.to_be_bytes());
     bytes.extend_from_slice(&total_budget_micros.to_be_bytes());
     Ok(Digest32::of_bytes(&bytes))
 }
@@ -400,8 +446,12 @@ mod tests {
     fn host_envelope_binds_every_composition_digest() {
         let envelope = IntelligenceHostEnvelopeV1::new(
             id("run"),
+            digest("request"),
             digest("snapshot"),
             digest("objective"),
+            7,
+            digest("body"),
+            digest("artifact-set"),
             digest("candidates"),
             digest("utility"),
             digest("evaluation"),
@@ -410,6 +460,7 @@ mod tests {
             digest("intuition"),
             digest("context"),
             digest("prefix"),
+            2_000_000,
             10_000,
         )
         .expect("envelope");
