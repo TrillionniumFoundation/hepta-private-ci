@@ -614,6 +614,37 @@ impl FleetAllocationStore {
         })
     }
 
+    /// Reconcile an observed holder state against the latest durable
+    /// generation. A competing capacity/allocation mutation may advance the
+    /// store between observation and CAS; bounded retries are safe because
+    /// holder reconciliation is idempotent and never dispatches an effect.
+    pub fn reconcile_holder_current(
+        &self,
+        allocation_id: &str,
+        expected_lease_generation: u64,
+        holder_state: FleetAllocationHolderStateV1,
+        now_unix_ms: u64,
+    ) -> Result<FleetAllocationMutationReceiptV1, FleetAllocationStoreError> {
+        for _ in 0..4 {
+            let generation = self.snapshot()?.generation;
+            match self.reconcile_holder(
+                generation,
+                allocation_id,
+                expected_lease_generation,
+                holder_state,
+                now_unix_ms,
+            ) {
+                Err(FleetAllocationStoreError::StaleGeneration { .. }) => continue,
+                result => return result,
+            }
+        }
+        let current = self.snapshot()?.generation;
+        Err(FleetAllocationStoreError::StaleGeneration {
+            expected: current.saturating_sub(1),
+            current,
+        })
+    }
+
     pub fn garbage_collect(
         &self,
         expected_generation: u64,
