@@ -217,6 +217,13 @@ pub fn write_intent(
     Ok(())
 }
 
+pub(crate) fn publish_durable(
+    staging: &Path,
+    destination: &Path,
+) -> std::io::Result<()> {
+    publish::publish(staging, destination)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
