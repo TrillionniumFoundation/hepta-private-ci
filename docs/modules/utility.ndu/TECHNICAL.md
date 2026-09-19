@@ -143,7 +143,7 @@ For every owned domain, this module is the only authoritative writer. Mutations 
 
 Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
 
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore. The native source candidate includes `DurableNduProjectionStoreV1`, which operates only on an explicitly host-authorized regular file and adds exclusive locking, synced append, external recovery anchors, bounded retention, migration and verified backup/restore. Product path ownership, containing-directory durability, anchor custody and target-host qualification remain composition obligations.
 
 ## 7. Runtime, concurrency and transaction model
 
@@ -177,7 +177,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Embed the deterministic evaluator under a frozen objective and versioned policy. The actual request-local context planner is described in the native host guide; it does not activate global adaptive reconfiguration. Projection journals are bounded owner-local references and must not be substituted for an independently selected production writer.
+Embed the deterministic evaluator under a frozen objective and versioned policy. The actual request-local context planner is described in the native host guide; source-level callers are composed but are not thereby product-qualified or activated. Utility profiles bind an immutable axis-registry digest for units/scales/normalization. Projection journals and the durable-file adapter remain owner-local source candidates and must not be substituted for an independently selected and target-host-qualified production writer.
 
 Current operating and state-format references:
 

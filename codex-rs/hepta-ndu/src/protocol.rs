@@ -8,6 +8,9 @@ use crate::NduError;
 use crate::NduSolverIterationReceipt;
 use crate::SubjectClass;
 
+const ITERATION_CONTEXT_DIGEST_DOMAIN: &[u8] = b"hepta.ndu.iteration-context.v1";
+const ITERATION_RECEIPT_DIGEST_DOMAIN: &[u8] = b"hepta.ndu.iteration-receipt.v1";
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduIterationContextV1 {
     pub subject_id: StableId,
@@ -19,8 +22,9 @@ pub struct NduIterationContextV1 {
 }
 
 /// Owner-local native representation of the canonical readiness protocol. It
-/// cannot be constructed from a local solver step without the complete frozen
-/// context and always carries a deny-all authority posture.
+/// cannot be published from a local solver step whose creation-time context
+/// digest differs from this frozen context, and it always carries deny-all
+/// authority.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduIterationReceiptV1 {
     pub subject_id: StableId,
@@ -29,6 +33,7 @@ pub struct NduIterationReceiptV1 {
     pub generation: Generation,
     pub event_digest: Digest32,
     pub coefficient_digest: Digest32,
+    pub context_digest: Digest32,
     pub iteration: u32,
     pub predecessor_revision: Revision,
     pub next_revision: Revision,
@@ -39,16 +44,35 @@ pub struct NduIterationReceiptV1 {
     pub authority: AuthorityPosture,
 }
 
+pub fn canonical_iteration_context_digest_v1(
+    context: &NduIterationContextV1,
+) -> Result<Digest32, NduError> {
+    require_digest(context.objective_digest, "objective")?;
+    require_digest(context.event_digest, "event")?;
+    require_digest(context.coefficient_digest, "coefficient")?;
+
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(ITERATION_CONTEXT_DIGEST_DOMAIN);
+    push_id(&mut bytes, &context.subject_id);
+    bytes.push(context.subject_class.tag());
+    bytes.extend_from_slice(context.objective_digest.as_array());
+    bytes.extend_from_slice(&context.generation.get().to_be_bytes());
+    bytes.extend_from_slice(context.event_digest.as_array());
+    bytes.extend_from_slice(context.coefficient_digest.as_array());
+    Ok(Digest32::of_bytes(&bytes))
+}
+
 pub fn bind_solver_iteration_receipt_v1(
     context: &NduIterationContextV1,
     receipt: &NduSolverIterationReceipt,
 ) -> Result<NduIterationReceiptV1, NduError> {
-    require_digest(context.objective_digest, "objective")?;
-    require_digest(context.event_digest, "event")?;
-    require_digest(context.coefficient_digest, "coefficient")?;
+    let context_digest = canonical_iteration_context_digest_v1(context)?;
     require_digest(receipt.state_digest, "state")?;
+    if receipt.context_digest() != context_digest {
+        return Err(NduError::ProtocolContextMismatch);
+    }
 
-    let receipt_digest = digest_receipt(context, receipt);
+    let receipt_digest = digest_receipt(context, context_digest, receipt);
     Ok(NduIterationReceiptV1 {
         subject_id: context.subject_id.clone(),
         subject_class: context.subject_class,
@@ -56,6 +80,7 @@ pub fn bind_solver_iteration_receipt_v1(
         generation: context.generation,
         event_digest: context.event_digest,
         coefficient_digest: context.coefficient_digest,
+        context_digest,
         iteration: receipt.iteration,
         predecessor_revision: receipt.predecessor_revision,
         next_revision: receipt.next_revision,
@@ -76,10 +101,12 @@ fn require_digest(value: Digest32, field: &'static str) -> Result<(), NduError> 
 
 fn digest_receipt(
     context: &NduIterationContextV1,
+    context_digest: Digest32,
     receipt: &NduSolverIterationReceipt,
 ) -> Digest32 {
     let mut bytes = Vec::new();
-    bytes.extend_from_slice(b"hepta.ndu.iteration-receipt.v1");
+    bytes.extend_from_slice(ITERATION_RECEIPT_DIGEST_DOMAIN);
+    bytes.extend_from_slice(context_digest.as_array());
     push_id(&mut bytes, &context.subject_id);
     bytes.push(context.subject_class.tag());
     bytes.extend_from_slice(context.objective_digest.as_array());

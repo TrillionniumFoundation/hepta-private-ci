@@ -178,8 +178,27 @@ def verify() -> int:
         "digest_contribution",
         "uncertainty:{axis}",
         "support_digests.push(contribution_digest)",
+        "EmptyAxisRegistryDigest",
+        "#[deprecated(",
     ]:
         need(token in ndu, "NDU hardening " + token)
+
+    legacy_callers = []
+    allowed_legacy_callers = {
+        Path("codex-rs/hepta-ndu/src/evaluator.rs"),
+        Path("codex-rs/hepta-ndu/src/evaluator_tests.rs"),
+    }
+    for source_path in sorted((ROOT / "codex-rs").rglob("*.rs")):
+        relative = source_path.relative_to(ROOT)
+        if relative in allowed_legacy_callers:
+            continue
+        source = source_path.read_text(encoding="utf-8")
+        if re.search(r"\bevaluate_candidates\s*\(", source):
+            legacy_callers.append(relative.as_posix())
+    need(
+        not legacy_callers,
+        "legacy NDU evaluator has non-compatibility callers: " + ",".join(legacy_callers),
+    )
 
     planner = (ROOT / "codex-rs/hepta-control-plane/src/planner.rs").read_text(
         encoding="utf-8"

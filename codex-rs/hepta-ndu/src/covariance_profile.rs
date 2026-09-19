@@ -43,6 +43,8 @@ pub enum CovarianceError {
     InvalidProfile,
     MissingDigest,
     ProfileMismatch,
+    EstimateMismatch,
+    ManifestMismatch,
     ConditioningMismatch,
     Duration,
     SampleCount,
@@ -54,6 +56,7 @@ pub enum CovarianceError {
     EigenvalueFloor,
     IllConditioned,
     CoefficientBound,
+    QuantizationRange,
     Residual,
     Arithmetic,
 }

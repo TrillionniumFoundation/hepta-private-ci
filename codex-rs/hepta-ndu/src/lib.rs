@@ -9,9 +9,12 @@
 
 #![forbid(unsafe_code)]
 
+mod coefficient_candidate;
+mod coefficient_manifest;
 mod conditional_moments;
 mod covariance;
 mod covariance_profile;
+mod durable_projection_store;
 mod error;
 mod evaluation_digest;
 mod evaluator;
@@ -23,6 +26,15 @@ mod protocol;
 mod recursive;
 mod scoring;
 
+pub use coefficient_candidate::NduQ24CoefficientCandidateV1;
+pub use coefficient_candidate::materialize_q24_coefficient_candidate_v1;
+pub use coefficient_manifest::AdmittedNduCoefficientManifestV1;
+pub use coefficient_manifest::NduBoundedObjectRefV1;
+pub use coefficient_manifest::NduCoefficientDimensionsV1;
+pub use coefficient_manifest::NduCoefficientManifestError;
+pub use coefficient_manifest::NduCoefficientManifestV1;
+pub use coefficient_manifest::NduFixedPointScalesV1;
+pub use coefficient_manifest::admit_coefficient_manifest_v1;
 pub use conditional_moments::ConditionalMomentSampleV1;
 pub use conditional_moments::ConditionalMomentsV1;
 pub use conditional_moments::estimate_conditional_moments;
@@ -33,10 +45,18 @@ pub use covariance_profile::CovarianceConventionV1;
 pub use covariance_profile::CovarianceError;
 pub use covariance_profile::NduCovarianceProfileV1;
 pub use covariance_profile::admit_covariance_profile;
+pub use durable_projection_store::DurableNduProjectionError;
+pub use durable_projection_store::DurableNduProjectionStoreV1;
+pub use durable_projection_store::NduProjectionAppendDispositionV1;
+pub use durable_projection_store::NduProjectionAppendReceiptV1;
+pub use durable_projection_store::NduProjectionBackupV1;
+pub use durable_projection_store::NduProjectionRecoveryV1;
+pub use durable_projection_store::NduProjectionStoreAnchorV1;
 pub use error::NduError;
 pub use evaluator::canonical_evaluation_policy_digest;
 pub use evaluator::canonical_scalarization_digest;
 pub use evaluator::canonical_utility_profile_digest;
+#[allow(deprecated)]
 pub use evaluator::evaluate_candidates;
 pub use evaluator::evaluate_candidates_with_policy;
 pub use evaluator::legacy_evaluation_policy;
@@ -62,6 +82,7 @@ pub use model::UtilityContribution;
 pub use model::UtilityProfile;
 pub use preference::NduSolverIterationReceipt;
 pub use preference::NduSolverTerminationReceipt;
+pub use preference::PreferenceSolveOutcome;
 pub use preference::PreferenceState;
 pub use preference::SolveDisposition;
 pub use preference::UpdateGeneration;
@@ -74,6 +95,7 @@ pub use projection_journal::NduProjectionKindV1;
 pub use protocol::NduIterationContextV1;
 pub use protocol::NduIterationReceiptV1;
 pub use protocol::bind_solver_iteration_receipt_v1;
+pub use protocol::canonical_iteration_context_digest_v1;
 pub use recursive::RecursiveUtilityError;
 pub use recursive::RecursiveUtilityPath;
 pub use recursive::RecursiveUtilityReceipt;

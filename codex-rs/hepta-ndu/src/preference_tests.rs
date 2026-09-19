@@ -1,10 +1,12 @@
 use std::fmt::Debug;
 
+use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
 
+use super::PreferenceSolveOutcome;
 use super::PreferenceState;
 use super::SolveDisposition;
 use super::UpdateGeneration;
@@ -32,8 +34,31 @@ fn id(value: &str) -> StableId {
     must(StableId::new(value))
 }
 
+fn context_digest() -> Digest32 {
+    Digest32::of_bytes(b"preference-test-context")
+}
+
+fn converged(
+    outcome: PreferenceSolveOutcome,
+) -> (
+    PreferenceState,
+    super::NduSolverTerminationReceipt,
+    Vec<super::NduSolverIterationReceipt>,
+) {
+    match outcome {
+        PreferenceSolveOutcome::Converged {
+            state,
+            termination,
+            receipts,
+        } => (state, termination, receipts),
+        PreferenceSolveOutcome::Unavailable { termination, .. } => {
+            panic!("unexpected unavailable solve: {termination:?}")
+        }
+    }
+}
+
 #[test]
-fn damped_preference_update_emits_local_solver_receipts() {
+fn damped_preference_update_emits_context_bound_local_solver_receipts() {
     let initial = must(PreferenceState::genesis(
         id("agent-a"),
         SubjectClass::Agent,
@@ -43,55 +68,100 @@ fn damped_preference_update_emits_local_solver_receipts() {
         }],
     ));
     let predecessor = initial.state_digest;
-    let (terminal, termination, receipts) = must(solve_preference_target(
+    let (terminal, termination, receipts) = converged(must(solve_preference_target(
         initial,
         vec![AxisValue {
             axis: id("evidence-quality"),
             value: FixedQ32::ONE,
         }],
         FixedQ32::from_raw(1_i64 << 30),
-    ));
+        context_digest(),
+    )));
 
     assert_eq!(termination.disposition, SolveDisposition::Converged);
     assert_eq!(termination.predecessor_digest, predecessor);
     assert!(!receipts.is_empty());
-    assert!(terminal.revision.get() > 1);
-    assert!(terminal.values[0].value <= FixedQ32::ONE);
-    assert_eq!(
-        usize::try_from(termination.iterations).expect("bounded iteration count"),
-        receipts.len()
-    );
-    assert_eq!(
-        termination.terminal_residual_raw,
-        receipts.last().expect("terminal receipt").residual_raw
-    );
-    assert_eq!(
-        termination.maximum_residual_raw,
+    assert!(
         receipts
             .iter()
-            .map(|receipt| receipt.residual_raw)
-            .max()
-            .expect("maximum residual")
+            .all(|receipt| receipt.context_digest() == context_digest())
     );
+    assert!(terminal.revision.get() > 1);
+    assert!(terminal.values[0].value <= FixedQ32::ONE);
+    assert_eq!(termination.iterations as usize, receipts.len());
+    let terminal_residual = receipts
+        .last()
+        .map(|receipt| receipt.residual_raw)
+        .unwrap_or(i64::MAX);
+    assert_eq!(termination.terminal_residual_raw, terminal_residual);
+    let maximum_residual = receipts
+        .iter()
+        .map(|receipt| receipt.residual_raw)
+        .max()
+        .unwrap_or(0);
+    assert_eq!(termination.maximum_residual_raw, maximum_residual);
 }
 
 #[test]
 fn parent_and_child_updates_cannot_share_generation() {
     let generation = must(Generation::new(7));
+    let domain_id = id("domain-candidate");
     let error = must_err(validate_staged_updates(&[
         UpdateGeneration {
             generation,
             subject_class: SubjectClass::Domain,
-            artifact_id: id("domain-candidate"),
+            artifact_id: domain_id.clone(),
+            parent_artifact_id: Some(id("system-candidate")),
         },
         UpdateGeneration {
             generation,
             subject_class: SubjectClass::Agent,
             artifact_id: id("agent-candidate"),
+            parent_artifact_id: Some(domain_id),
         },
     ]));
 
     assert_eq!(error, NduError::SimultaneousHierarchyUpdate(7));
+}
+
+#[test]
+fn unrelated_hierarchy_subjects_may_share_generation() {
+    let generation = must(Generation::new(8));
+    must(validate_staged_updates(&[
+        UpdateGeneration {
+            generation,
+            subject_class: SubjectClass::Domain,
+            artifact_id: id("domain-a"),
+            parent_artifact_id: Some(id("system-a")),
+        },
+        UpdateGeneration {
+            generation,
+            subject_class: SubjectClass::Agent,
+            artifact_id: id("agent-b"),
+            parent_artifact_id: Some(id("domain-b")),
+        },
+    ]));
+}
+
+#[test]
+fn invalid_parent_class_relation_fails_closed() {
+    let generation = must(Generation::new(9));
+    let system_id = id("system-a");
+    let error = must_err(validate_staged_updates(&[
+        UpdateGeneration {
+            generation,
+            subject_class: SubjectClass::System,
+            artifact_id: system_id.clone(),
+            parent_artifact_id: None,
+        },
+        UpdateGeneration {
+            generation,
+            subject_class: SubjectClass::Agent,
+            artifact_id: id("agent-a"),
+            parent_artifact_id: Some(system_id),
+        },
+    ]));
+    assert_eq!(error, NduError::InvalidHierarchyRelation(9));
 }
 
 #[test]
@@ -113,7 +183,126 @@ fn eta_outside_registered_bounds_fails() {
                 value: FixedQ32::ONE,
             }],
             FixedQ32::from_raw(1_i64 << 27),
+            context_digest(),
         )),
         NduError::InvalidEta
     );
+}
+
+#[test]
+fn preference_dimension_limit_is_enforced_at_genesis() {
+    let values = (0..65)
+        .map(|index| AxisValue {
+            axis: id(&format!("axis-{index:02}")),
+            value: FixedQ32::ZERO,
+        })
+        .collect();
+    assert_eq!(
+        must_err(PreferenceState::genesis(
+            id("agent-wide"),
+            SubjectClass::Agent,
+            values,
+        )),
+        NduError::PreferenceDimensionLimitExceeded
+    );
+}
+
+#[test]
+fn preference_values_must_be_in_closed_unit_interval() {
+    let above_one = FixedQ32::from_raw(FixedQ32::ONE.raw() + 1);
+    assert_eq!(
+        must_err(PreferenceState::genesis(
+            id("agent-out-of-range"),
+            SubjectClass::Agent,
+            vec![AxisValue {
+                axis: id("quality"),
+                value: above_one,
+            }],
+        )),
+        NduError::PreferenceValueOutOfRange("quality".to_string())
+    );
+
+    let initial = must(PreferenceState::genesis(
+        id("agent-target"),
+        SubjectClass::Agent,
+        vec![AxisValue {
+            axis: id("quality"),
+            value: FixedQ32::ZERO,
+        }],
+    ));
+    assert_eq!(
+        must_err(solve_preference_target(
+            initial,
+            vec![AxisValue {
+                axis: id("quality"),
+                value: above_one,
+            }],
+            FixedQ32::from_raw(1_i64 << 30),
+            context_digest(),
+        )),
+        NduError::PreferenceValueOutOfRange("quality".to_string())
+    );
+}
+
+#[test]
+fn already_converged_solve_is_revision_preserving_noop() {
+    let initial = must(PreferenceState::genesis(
+        id("agent-stable"),
+        SubjectClass::Agent,
+        vec![AxisValue {
+            axis: id("quality"),
+            value: FixedQ32::ONE,
+        }],
+    ));
+    let original = initial.clone();
+    let (terminal, termination, receipts) = converged(must(solve_preference_target(
+        initial,
+        vec![AxisValue {
+            axis: id("quality"),
+            value: FixedQ32::ONE,
+        }],
+        FixedQ32::from_raw(1_i64 << 30),
+        context_digest(),
+    )));
+    assert_eq!(terminal, original);
+    assert_eq!(termination.iterations, 0);
+    assert_eq!(termination.terminal_residual_raw, 0);
+    assert!(receipts.is_empty());
+}
+
+#[test]
+fn iteration_exhaustion_returns_unavailable_without_terminal_state() {
+    let initial = must(PreferenceState::genesis(
+        id("agent-slow"),
+        SubjectClass::Agent,
+        vec![AxisValue {
+            axis: id("quality"),
+            value: FixedQ32::ZERO,
+        }],
+    ));
+    let outcome = must(solve_preference_target(
+        initial,
+        vec![AxisValue {
+            axis: id("quality"),
+            value: FixedQ32::ONE,
+        }],
+        FixedQ32::from_raw(1_i64 << 28),
+        context_digest(),
+    ));
+    match outcome {
+        PreferenceSolveOutcome::Unavailable {
+            termination,
+            receipts,
+        } => {
+            assert_eq!(
+                termination.disposition,
+                SolveDisposition::IterationBoundReached
+            );
+            assert_eq!(termination.iterations, 64);
+            assert_eq!(receipts.len(), 64);
+        }
+        PreferenceSolveOutcome::Converged { state, .. } => {
+            panic!("unexpected converged state: {state:?}")
+        }
+    }
 }

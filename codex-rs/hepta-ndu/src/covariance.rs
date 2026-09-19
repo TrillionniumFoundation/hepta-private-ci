@@ -11,12 +11,22 @@ use crate::conditional_moments::duration_seconds;
 pub struct ZEstimateV1 {
     /// Utility x driver sensitivity in the original increment coordinates.
     pub z: Vec<Vec<f64>>,
+    /// Crate-sealed profile provenance. External crates can inspect the digest
+    /// but cannot fabricate a solver result by struct literal.
+    pub(crate) profile_digest: Digest32,
     /// Conservative matrix 1-norm diagnostic, not a statistical certificate.
     pub condition_estimate: f64,
     pub increment_eigenvalue_lower_estimate: f64,
     pub maximum_relative_residual: f64,
     pub evidence_digest: Digest32,
     pub authority: AuthorityPosture,
+}
+
+impl ZEstimateV1 {
+    #[must_use]
+    pub const fn profile_digest(&self) -> Digest32 {
+        self.profile_digest
+    }
 }
 
 /// Solves centered Z Sigma = B with a scaled Cholesky factorization.
@@ -200,6 +210,7 @@ pub fn solve_backward_regression(
     }
     Ok(ZEstimateV1 {
         z,
+        profile_digest: profile.digest,
         condition_estimate,
         increment_eigenvalue_lower_estimate: eigenvalue_floor,
         maximum_relative_residual,
