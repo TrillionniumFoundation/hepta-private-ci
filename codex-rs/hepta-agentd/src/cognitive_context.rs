@@ -244,7 +244,7 @@ pub(crate) async fn revalidate(
     let record_ids = items
         .iter()
         .map(|item| {
-            StableId::new(&item.memory_id)
+            StableId::new(item.memory_id.as_str())
                 .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))
         })
         .collect::<Result<Vec<_>, _>>()?;
@@ -300,6 +300,7 @@ pub(crate) async fn revalidate(
 }
 
 fn map_read_ids_error(error: ReadIdsError) -> CognitiveStoreError {
+    let message = error.to_string();
     match error {
         ReadIdsError::Read(error) => CognitiveStoreError::Corrupt(error.to_string()),
         ReadIdsError::InvalidCanonicalEncoding => {
@@ -309,11 +310,9 @@ fn map_read_ids_error(error: ReadIdsError) -> CognitiveStoreError {
         | ReadIdsError::DuplicateRecordId
         | ReadIdsError::DuplicateField
         | ReadIdsError::InvalidMaximumEncodedBytes { .. } => {
-            CognitiveStoreError::Invalid(error.to_string())
+            CognitiveStoreError::Invalid(message)
         }
-        ReadIdsError::EncodedResultTooLarge { .. } => {
-            CognitiveStoreError::Unavailable(error.to_string())
-        }
+        ReadIdsError::EncodedResultTooLarge { .. } => CognitiveStoreError::Unavailable(message),
     }
 }
 
