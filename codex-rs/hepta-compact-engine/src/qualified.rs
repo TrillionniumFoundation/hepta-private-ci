@@ -277,19 +277,54 @@ impl CompactionLossReportV2 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct QualifiedCompactionCandidateV2 {
-    pub source_snapshot: CognitiveSnapshotKeyV1,
-    pub policy: CompactionPolicyV2,
-    pub semantic_payload: CompactionSemanticPayloadV2,
-    pub retained_records: Vec<MemoryRecord>,
-    pub retained_input_digests: Vec<Digest32>,
-    pub omitted_input_digests: Vec<Digest32>,
-    pub checkpoint: CompactCheckpointV1,
-    pub loss_report: CompactionLossReportV2,
-    pub candidate_digest: Digest32,
-    pub authority: AuthorityPosture,
+    source_snapshot: CognitiveSnapshotKeyV1,
+    policy: CompactionPolicyV2,
+    semantic_payload: CompactionSemanticPayloadV2,
+    retained_records: Vec<MemoryRecord>,
+    retained_input_digests: Vec<Digest32>,
+    omitted_input_digests: Vec<Digest32>,
+    checkpoint: CompactCheckpointV1,
+    loss_report: CompactionLossReportV2,
+    candidate_digest: Digest32,
+    authority: AuthorityPosture,
 }
 
 impl QualifiedCompactionCandidateV2 {
+    #[must_use]
+    pub fn source_snapshot(&self) -> &CognitiveSnapshotKeyV1 {
+        &self.source_snapshot
+    }
+
+    #[must_use]
+    pub fn policy(&self) -> &CompactionPolicyV2 {
+        &self.policy
+    }
+
+    #[must_use]
+    pub fn semantic_payload(&self) -> &CompactionSemanticPayloadV2 {
+        &self.semantic_payload
+    }
+
+    #[must_use]
+    pub fn retained_records(&self) -> &[MemoryRecord] {
+        &self.retained_records
+    }
+
+    #[must_use]
+    pub fn checkpoint(&self) -> &CompactCheckpointV1 {
+        &self.checkpoint
+    }
+
+    #[must_use]
+    pub fn loss_report(&self) -> &CompactionLossReportV2 {
+        &self.loss_report
+    }
+
+    #[must_use]
+    pub fn candidate_digest(&self) -> Digest32 {
+        self.candidate_digest
+    }
+
     pub fn validate(&self) -> Result<(), QualifiedCompactionError> {
         self.source_snapshot
             .validate()
