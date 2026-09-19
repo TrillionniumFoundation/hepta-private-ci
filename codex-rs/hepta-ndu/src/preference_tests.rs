@@ -71,7 +71,7 @@ fn damped_preference_update_emits_local_solver_receipts() {
         termination.maximum_residual_raw,
         receipts
             .iter()
-            .map(|receipt| receipt.residual_raw())
+            .map(crate::NduSolverIterationReceipt::residual_raw)
             .max()
             .expect("maximum residual")
             .max(FixedQ32::ONE.raw())
