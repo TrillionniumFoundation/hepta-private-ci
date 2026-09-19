@@ -16,7 +16,7 @@ from . import assimilation as _assimilation
 from . import candidate as _candidate
 from . import control_plane as _control
 from . import facade as _facade
-from .evidence import EvidenceDecision, ExecutionReceipt, HmacTrustStore
+from .evidence import EvidenceDecision, ExecutionReceipt, SignatureVerifier
 
 _ORIGINAL_RECORD_DECISION = _control.EngineeringStore.record_integration_decision
 
@@ -203,7 +203,7 @@ def bind_candidate_evidence(
     source_execution: ExecutionReceipt,
     merge_execution: ExecutionReceipt,
     binding: CandidateEvidenceBindingReceipt,
-    trust_store: HmacTrustStore,
+    trust_store: SignatureVerifier,
     *,
     now_ns: int | None = None,
 ) -> BoundEvidenceDecision:
@@ -461,7 +461,7 @@ def hardened_prepare_assimilation_candidate(
         AttestedSandboxParity,
     ],
     *,
-    trust_store: HmacTrustStore,
+    trust_store: SignatureVerifier,
     consent_attestation: OwnerConsentAttestation,
     now_ns: int | None = None,
 ) -> _assimilation.AssimilationProposal:
