@@ -73,6 +73,7 @@ fn correction_graph_rejects_forks_missing_predecessors_and_cross_episode_edges()
     ledger
         .append(outcome("outcome-record-1", "outcome-1", "episode-1", None, 100))
         .expect("first outcome");
+    let superseded_digest = ledger.records().last().expect("first outcome row").event_digest;
     ledger
         .append(outcome(
             "outcome-record-2",
@@ -82,6 +83,10 @@ fn correction_graph_rejects_forks_missing_predecessors_and_cross_episode_edges()
             100,
         ))
         .expect("correction");
+    let current_digest = ledger.records().last().expect("current outcome row").event_digest;
+    let source_digests = ledger.dataset_source_record_digests();
+    assert!(!source_digests.contains(&superseded_digest));
+    assert!(source_digests.contains(&current_digest));
 
     assert_eq!(
         ledger.append(outcome(
