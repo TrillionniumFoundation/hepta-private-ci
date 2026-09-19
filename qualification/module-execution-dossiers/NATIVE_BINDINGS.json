@@ -256,13 +256,16 @@
     },
     {
       "module": "cognitive.read",
-      "path": "codex-rs/hepta-cognitive-read/src/v2.rs",
-      "blobSha": "67135f3f56c4779fbd27568ee69c389a38522e5c",
+      "path": "codex-rs/hepta-cognitive-read/src/authoritative.rs",
+      "blobSha": "16d56824b3a6a7edf62e4e2f6b24b6533b6ff71a",
       "exports": [
-        "ReadRequestV2",
-        "ReadResultV2",
-        "read_v2",
-        "binding_digest"
+        "AuthoritativeCognitiveSnapshotProvider",
+        "AuthoritativeReadResultV1",
+        "AuthoritativeSnapshotV1",
+        "CognitiveReadGenerationVectorV1",
+        "SnapshotAcquisitionRequestV1",
+        "SnapshotProviderError",
+        "read_authoritative"
       ]
     },
     {
