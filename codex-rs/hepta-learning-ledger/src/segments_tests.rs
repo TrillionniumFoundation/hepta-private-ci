@@ -375,7 +375,10 @@ fn original_v1_and_segmented_v2_share_the_real_durable_port_not_a_fixture() {
     let mut v1 = must(DurableLedger::create(f.new_file("legacy"), binding(), 2));
     let mut v2 = f.create();
     for journal in [&mut v1 as &mut dyn DurableLearningJournal, &mut v2] {
-        must(journal.append(Digest32::ZERO, decision(0)));
+        let LedgerEvent::Decision(value) = decision(0) else {
+            panic!("decision fixture changed kind");
+        };
+        must(journal.append_decision(Digest32::ZERO, value));
     }
     assert_eq!(must(v1.snapshot()), must(v2.snapshot()));
     drop(v1);
