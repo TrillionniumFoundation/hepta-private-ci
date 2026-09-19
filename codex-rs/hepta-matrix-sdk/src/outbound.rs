@@ -63,6 +63,9 @@ impl OutboxDispatchConfig {
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
 pub struct OutboxDispatchStats {
     pub claimed: u64,
+    /// Transport accepted the stable transaction. This is not terminal delivery.
+    pub accepted: u64,
+    /// Terminal delivery is settled by trusted homeserver observation, not this sender.
     pub sent: u64,
     pub retry_scheduled: u64,
     pub permanent_failure: u64,
@@ -96,6 +99,14 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
         ..OutboxDispatchStats::default()
     };
     for record in records {
+        store
+            .prepare_dispatch(&record, now_ms)
+            .await
+            .map_err(store_error)?;
+        store
+            .mark_dispatch_dispatched(&record.stable_txn_id, now_ms)
+            .await
+            .map_err(store_error)?;
         let result = tokio::select! {
             biased;
             _ = cancel.cancelled() => {
@@ -106,13 +117,31 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
         };
         match result {
             Ok(event_id) => {
+                // A successful Matrix send response proves transport acceptance only.
+                // Terminal success is recorded later from a trusted /sync homeserver echo.
                 store
-                    .mark_outbox_sent(&record.stable_txn_id, record.attempts, &event_id, now_ms)
+                    .mark_dispatch_transport_accepted(&record.stable_txn_id, &event_id, now_ms)
                     .await
                     .map_err(store_error)?;
-                stats.sent += 1;
+                let next_attempt_at_ms = now_ms
+                    .checked_add(retry_delay_ms(config, record.attempts)?)
+                    .ok_or(OutboxDispatchError::Invalid)?;
+                store
+                    .mark_outbox_retry(
+                        &record.stable_txn_id,
+                        record.attempts,
+                        now_ms,
+                        next_attempt_at_ms,
+                    )
+                    .await
+                    .map_err(store_error)?;
+                stats.accepted += 1;
             }
             Err(MatrixTransportError::Retryable) => {
+                store
+                    .mark_dispatch_indeterminate(&record.stable_txn_id, now_ms)
+                    .await
+                    .map_err(store_error)?;
                 if record.attempts >= config.max_attempts {
                     store
                         .mark_outbox_permanent_failure(
@@ -140,6 +169,12 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
                 }
             }
             Err(MatrixTransportError::Permanent) => {
+                // The request may have crossed the external boundary before the
+                // transport classified the failure. Preserve indeterminate delivery.
+                store
+                    .mark_dispatch_indeterminate(&record.stable_txn_id, now_ms)
+                    .await
+                    .map_err(store_error)?;
                 store
                     .mark_outbox_permanent_failure(&record.stable_txn_id, record.attempts, now_ms)
                     .await
