@@ -13,12 +13,18 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use serde::Serialize;
 
 use crate::AutomationStore;
+use crate::TaskFlowCommand;
 use crate::TaskFlowError;
 use crate::TaskFlowFence;
+use crate::TaskFlowReconcileOutcome;
+use crate::TaskFlowRun;
+use crate::TaskFlowRunState;
 use crate::TaskFlowStepCommandResult;
 use crate::TaskFlowStepCommandStatus;
 use crate::TaskFlowStepObservation;
+use crate::TaskFlowStepReceipt;
 use crate::TaskFlowStepState;
+use crate::TaskFlowTransition;
 
 pub const TASKFLOW_AUTHORIZED_EFFECT_SCHEMA_VERSION: u32 = 1;
 
@@ -142,6 +148,12 @@ pub enum TaskFlowEffectError {
     Authority(FinalUseError),
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct TaskFlowEffectExecutionResult {
+    pub step: TaskFlowStepCommandResult,
+    pub run: TaskFlowRun,
+}
+
 impl AutomationStore {
     #[allow(clippy::too_many_arguments)]
     pub async fn execute_authorized_taskflow_effect<P: TaskFlowEffectProvider>(
@@ -153,7 +165,7 @@ impl AutomationStore {
         intent: &TaskFlowEffectIntent,
         payload: &[u8],
         now_ms: u64,
-    ) -> Result<TaskFlowStepCommandResult, TaskFlowEffectError> {
+    ) -> Result<TaskFlowEffectExecutionResult, TaskFlowEffectError> {
         intent.validate()?;
         if now_ms >= intent.deadline_ms
             || Sha256Digest::for_bytes(payload) != intent.payload_sha256
@@ -162,9 +174,10 @@ impl AutomationStore {
         }
         let intent_digest = intent.digest()?;
         let binding = intent.final_use_binding()?;
+        let command_key = intent_digest.as_str();
 
-        let prepare_command = format!("effect:{}:prepare", intent.operation_id);
-        let claim_command = format!("effect:{}:claim", intent.operation_id);
+        let prepare_command = format!("effect:{command_key}:prepare");
+        let claim_command = format!("effect:{command_key}:claim");
         self.prepare_taskflow_step(
             &intent.run_id,
             &intent.step_id,
@@ -179,6 +192,7 @@ impl AutomationStore {
         .map_err(map_taskflow_error)?;
 
         // A fully observed replay is safe without touching the one-use grant.
+        // Only the receipt->run projection is replayed.
         if let Some(receipt) = self
             .read_taskflow_step(&intent.run_id, &intent.step_id, intent.attempt, fence)
             .await
@@ -193,10 +207,14 @@ impl AutomationStore {
                 receipt.state,
                 TaskFlowStepState::Recorded | TaskFlowStepState::Reconciled
             ) {
-                return Ok(TaskFlowStepCommandResult {
+                let step = TaskFlowStepCommandResult {
                     status: TaskFlowStepCommandStatus::AlreadyApplied,
                     receipt,
-                });
+                };
+                let run = self
+                    .project_taskflow_effect_receipt(intent, &step.receipt, fence, now_ms)
+                    .await?;
+                return Ok(TaskFlowEffectExecutionResult { step, run });
             }
         }
 
@@ -228,24 +246,256 @@ impl AutomationStore {
             TaskFlowProviderOutcome::Indeterminate => TaskFlowStepObservation::Indeterminate,
         };
         let record_command = format!(
-            "effect:{}:observe:{}",
-            intent.operation_id,
+            "effect:{command_key}:observe:{}",
             observation.receipt_digest.as_str()
         );
-        self.record_taskflow_step(
+        let step = self
+            .record_taskflow_step(
+                &intent.run_id,
+                &intent.step_id,
+                intent.attempt,
+                fence,
+                &intent_digest,
+                &intent.payload_sha256,
+                &record_command,
+                &observation.receipt_digest,
+                step_observation,
+                now_ms,
+            )
+            .await
+            .map_err(map_taskflow_error)?;
+        let run = self
+            .project_taskflow_effect_receipt(intent, &step.receipt, fence, now_ms)
+            .await?;
+        Ok(TaskFlowEffectExecutionResult { step, run })
+    }
+
+    /// Records a provider-specific reconciliation receipt for an indeterminate
+    /// step and projects that exact receipt into TaskFlow's explicit Reconcile
+    /// transition. No final-use grant is consumed because no effect is emitted.
+    pub async fn reconcile_authorized_taskflow_effect(
+        &self,
+        fence: &TaskFlowFence,
+        intent: &TaskFlowEffectIntent,
+        reconciliation_receipt: &Sha256Digest,
+        outcome: TaskFlowReconcileOutcome,
+        now_ms: u64,
+    ) -> Result<TaskFlowEffectExecutionResult, TaskFlowEffectError> {
+        intent.validate()?;
+        let intent_digest = intent.digest()?;
+        let command = format!(
+            "effect:{}:reconcile:{}",
+            intent_digest.as_str(),
+            reconciliation_receipt.as_str()
+        );
+        let step = self
+            .reconcile_taskflow_step(
+                &intent.run_id,
+                &intent.step_id,
+                intent.attempt,
+                fence,
+                &intent_digest,
+                &intent.payload_sha256,
+                &command,
+                reconciliation_receipt,
+                outcome,
+                now_ms,
+            )
+            .await
+            .map_err(map_taskflow_error)?;
+        let run = self
+            .project_taskflow_effect_receipt(intent, &step.receipt, fence, now_ms)
+            .await?;
+        Ok(TaskFlowEffectExecutionResult { step, run })
+    }
+
+    /// Repairs the crash window after a provider observation was durably
+    /// recorded but before it was projected into the TaskFlow run. The
+    /// historical step fence is used only to verify the immutable receipt.
+    /// If the old run lease expired, the caller must supply a strictly newer
+    /// recovery fence; the provider is never called again.
+    #[allow(clippy::too_many_arguments)]
+    pub async fn recover_taskflow_effect_projection(
+        &self,
+        intent: &TaskFlowEffectIntent,
+        historical_fence: &TaskFlowFence,
+        recovery_fence: &TaskFlowFence,
+        now_ms: u64,
+        lease_duration_ms: u64,
+    ) -> Result<TaskFlowRun, TaskFlowEffectError> {
+        intent.validate()?;
+        let intent_digest = intent.digest()?;
+        let receipt = self
+            .read_taskflow_step(
+                &intent.run_id,
+                &intent.step_id,
+                intent.attempt,
+                historical_fence,
+            )
+            .await
+            .map_err(map_taskflow_error)?
+            .ok_or(TaskFlowEffectError::TaskFlow)?;
+        if receipt.intent_digest != intent_digest
+            || receipt.payload_digest != intent.payload_sha256
+            || !matches!(
+                receipt.state,
+                TaskFlowStepState::Recorded | TaskFlowStepState::Reconciled
+            )
+        {
+            return Err(TaskFlowEffectError::TaskFlow);
+        }
+
+        let run = self
+            .taskflow_run(&intent.run_id)
+            .await
+            .map_err(map_taskflow_error)?
+            .ok_or(TaskFlowEffectError::TaskFlow)?;
+        if run.state == TaskFlowRunState::Indeterminate || run.state_is_terminal() {
+            return self
+                .project_taskflow_effect_receipt(intent, &receipt, historical_fence, now_ms)
+                .await;
+        }
+        let projection_fence = if run.lease_expires_at_ms.is_some_and(|expiry| expiry > now_ms) {
+            historical_fence.clone()
+        } else {
+            self.claim_taskflow_run(
+                &intent.run_id,
+                recovery_fence,
+                now_ms,
+                lease_duration_ms,
+            )
+            .await
+            .map_err(map_taskflow_error)?;
+            recovery_fence.clone()
+        };
+        self.project_taskflow_effect_receipt(intent, &receipt, &projection_fence, now_ms)
+            .await
+    }
+
+    async fn project_taskflow_effect_receipt(
+        &self,
+        intent: &TaskFlowEffectIntent,
+        receipt: &TaskFlowStepReceipt,
+        projection_fence: &TaskFlowFence,
+        now_ms: u64,
+    ) -> Result<TaskFlowRun, TaskFlowEffectError> {
+        let intent_digest = intent.digest()?;
+        if receipt.run_id != intent.run_id
+            || receipt.step_id != intent.step_id
+            || receipt.attempt != intent.attempt
+            || receipt.intent_digest != intent_digest
+            || receipt.payload_digest != intent.payload_sha256
+        {
+            return Err(TaskFlowEffectError::TaskFlow);
+        }
+        let receipt_digest = receipt
+            .receipt_digest
+            .clone()
+            .ok_or(TaskFlowEffectError::TaskFlow)?;
+        let mut run = self
+            .taskflow_run(&intent.run_id)
+            .await
+            .map_err(map_taskflow_error)?
+            .ok_or(TaskFlowEffectError::TaskFlow)?;
+        if run.current_node != intent.step_id {
+            return Err(TaskFlowEffectError::TaskFlow);
+        }
+
+        if projection_matches_run(&run, receipt) {
+            return Ok(run);
+        }
+
+        let (label, transition) = match receipt.state {
+            TaskFlowStepState::Recorded => match receipt
+                .observation
+                .ok_or(TaskFlowEffectError::TaskFlow)?
+            {
+                TaskFlowStepObservation::Succeeded => (
+                    "succeeded",
+                    TaskFlowTransition::Succeed {
+                        output_digest: receipt_digest.clone(),
+                    },
+                ),
+                TaskFlowStepObservation::Failed => (
+                    "failed",
+                    TaskFlowTransition::Fail {
+                        reason: format!("provider_receipt:{}", receipt_digest.as_str()),
+                    },
+                ),
+                TaskFlowStepObservation::Indeterminate => (
+                    "indeterminate",
+                    TaskFlowTransition::Indeterminate {
+                        reason: format!("provider_receipt:{}", receipt_digest.as_str()),
+                    },
+                ),
+            },
+            TaskFlowStepState::Reconciled => (
+                "reconciled",
+                TaskFlowTransition::Reconcile {
+                    receipt_digest: receipt_digest.clone(),
+                    outcome: receipt
+                        .final_outcome
+                        .ok_or(TaskFlowEffectError::TaskFlow)?,
+                },
+            ),
+            TaskFlowStepState::Prepared | TaskFlowStepState::Claimed => {
+                return Err(TaskFlowEffectError::TaskFlow);
+            }
+        };
+        let command = TaskFlowCommand::new(
             &intent.run_id,
-            &intent.step_id,
-            intent.attempt,
-            fence,
-            &intent_digest,
-            &intent.payload_sha256,
-            &record_command,
-            &observation.receipt_digest,
-            step_observation,
+            format!("effect:{}:project:{label}", intent_digest.as_str()),
+            projection_fence.clone(),
+            run.revision,
+            transition,
             now_ms,
         )
-        .await
-        .map_err(map_taskflow_error)
+        .map_err(map_taskflow_error)?;
+        self.apply_taskflow_command(&command)
+            .await
+            .map_err(map_taskflow_error)?;
+        run = self
+            .taskflow_run(&intent.run_id)
+            .await
+            .map_err(map_taskflow_error)?
+            .ok_or(TaskFlowEffectError::TaskFlow)?;
+        if !projection_matches_run(&run, receipt) {
+            return Err(TaskFlowEffectError::TaskFlow);
+        }
+        Ok(run)
+    }
+}
+
+fn projection_matches_run(run: &TaskFlowRun, receipt: &TaskFlowStepReceipt) -> bool {
+    match receipt.state {
+        TaskFlowStepState::Recorded => match receipt.observation {
+            Some(TaskFlowStepObservation::Succeeded) => run.state == TaskFlowRunState::Succeeded,
+            Some(TaskFlowStepObservation::Failed) => run.state == TaskFlowRunState::Failed,
+            Some(TaskFlowStepObservation::Indeterminate) => {
+                run.state == TaskFlowRunState::Indeterminate
+            }
+            None => false,
+        },
+        TaskFlowStepState::Reconciled => match receipt.final_outcome {
+            Some(TaskFlowReconcileOutcome::Succeeded) => run.state == TaskFlowRunState::Succeeded,
+            Some(TaskFlowReconcileOutcome::Failed) => run.state == TaskFlowRunState::Failed,
+            Some(TaskFlowReconcileOutcome::Cancelled) => run.state == TaskFlowRunState::Cancelled,
+            None => false,
+        },
+        TaskFlowStepState::Prepared | TaskFlowStepState::Claimed => false,
+    }
+}
+
+trait TaskFlowRunStateExt {
+    fn state_is_terminal(&self) -> bool;
+}
+
+impl TaskFlowRunStateExt for TaskFlowRun {
+    fn state_is_terminal(&self) -> bool {
+        matches!(
+            self.state,
+            TaskFlowRunState::Succeeded | TaskFlowRunState::Failed | TaskFlowRunState::Cancelled
+        )
     }
 }
 
