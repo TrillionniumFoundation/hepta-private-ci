@@ -71,7 +71,66 @@ pub use world_model::fit_transition_model;
 pub use world_model::predict_transition;
 
 const MAX_SAMPLES: usize = 16_384;
+const MAX_DATASET_EVIDENCE: usize = 1_000_000;
 const SCALE: i128 = 1_i128 << 32;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct DatasetEvidenceBindingV1 {
+    pub dataset_digest: Digest32,
+    pub source_evidence_digests: Vec<Digest32>,
+}
+
+impl DatasetEvidenceBindingV1 {
+    pub fn validate(&self) -> Result<(), DatasetBindingError> {
+        if self.dataset_digest.is_zero() {
+            return Err(DatasetBindingError::EmptyDatasetDigest);
+        }
+        if self.source_evidence_digests.is_empty()
+            || self.source_evidence_digests.len() > MAX_DATASET_EVIDENCE
+        {
+            return Err(DatasetBindingError::EvidenceLimit);
+        }
+        if self
+            .source_evidence_digests
+            .iter()
+            .any(|digest| digest.is_zero())
+        {
+            return Err(DatasetBindingError::EmptyEvidenceDigest);
+        }
+        if self
+            .source_evidence_digests
+            .windows(2)
+            .any(|adjacent| adjacent[0] >= adjacent[1])
+        {
+            return Err(DatasetBindingError::NonCanonicalEvidence);
+        }
+        Ok(())
+    }
+
+    #[must_use]
+    pub fn contains(&self, digest: &Digest32) -> bool {
+        self.source_evidence_digests.binary_search(digest).is_ok()
+    }
+
+    #[must_use]
+    pub fn binding_digest(&self) -> Digest32 {
+        let mut bytes = b"hepta.bellman-operator.dataset-evidence-binding.v1".to_vec();
+        bytes.extend_from_slice(self.dataset_digest.as_array());
+        bytes.extend_from_slice(&(self.source_evidence_digests.len() as u64).to_be_bytes());
+        for digest in &self.source_evidence_digests {
+            bytes.extend_from_slice(digest.as_array());
+        }
+        Digest32::of_bytes(&bytes)
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum DatasetBindingError {
+    EmptyDatasetDigest,
+    EmptyEvidenceDigest,
+    EvidenceLimit,
+    NonCanonicalEvidence,
+}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Transition {
