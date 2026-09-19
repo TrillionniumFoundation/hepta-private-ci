@@ -16,6 +16,7 @@ use crate::SupervisorConfig;
 use crate::SupervisorError;
 use crate::SupervisorEvent;
 use crate::SupervisorEventKind;
+use crate::lease::FleetAllocationProcessBinding;
 use crate::signed_intent::SignedSupervisorIntent;
 
 pub(crate) const MAX_FAULT_BYTES: usize = 512;
@@ -34,6 +35,7 @@ pub(crate) struct AgentRuntime<P> {
     pub identity: ProcessIdentity,
     pub spawn_generation: u64,
     pub release_id: ReleaseId,
+    pub fleet_allocation: Option<FleetAllocationProcessBinding>,
     pub generation: u64,
     pub phase: RuntimePhase,
     pub healthy: bool,
