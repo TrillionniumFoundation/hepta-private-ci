@@ -251,6 +251,7 @@ impl NeuronTickInputV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronModelRequestV1 {
+    pub request_id: StableId,
     pub config_id: StableId,
     pub generation: Generation,
     pub model_id: StableId,
