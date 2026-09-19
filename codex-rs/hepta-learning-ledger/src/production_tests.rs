@@ -495,9 +495,10 @@ fn production_writer_closes_signed_decision_outcome_credit_and_dataset_path() {
         3,
         &artifact_payload,
     );
+    let artifact_anchor = writer.current_anchor().expect("dataset lineage anchor");
     let artifact_receipt = writer
         .append_unlearning_lineage(
-            writer.current_anchor().expect("dataset lineage anchor"),
+            artifact_anchor,
             artifact_lineage,
             &artifact_signed,
             &artifact_payload,
