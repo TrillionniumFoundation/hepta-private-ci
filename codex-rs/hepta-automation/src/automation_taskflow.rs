@@ -324,7 +324,7 @@ impl AutomationStore {
                         &step.intent_digest,
                         &step.payload_digest,
                         &format!(
-                            "automation:step:requeue-absent:{}:{step_attempt}",
+                            "automation:step:provider-absent:requeue:{}:{step_attempt}",
                             occurrence.occurrence_id
                         ),
                         proof_digest,
@@ -603,7 +603,7 @@ impl AutomationStore {
                         &step.intent_digest,
                         &step.payload_digest,
                         &format!(
-                            "automation:step:cancel-absent:{}:{step_attempt}",
+                            "automation:step:provider-absent:cancel:{}:{step_attempt}",
                             occurrence.occurrence_id
                         ),
                         proof_digest,
