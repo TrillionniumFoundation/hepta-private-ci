@@ -10,8 +10,11 @@
 use std::error::Error;
 use std::fmt;
 
+use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
 use codex_hepta_learning_ledger::RunStartAppendReceipt;
+use codex_hepta_learning_ledger::RunStartAuthenticationV1;
 use codex_hepta_learning_ledger::RunStartJournal;
+use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
 use codex_hepta_learning_ledger::RunStartSnapshotV1;
 use codex_hepta_learning_ledger::RunStartStoreError;
@@ -32,7 +35,9 @@ use codex_hepta_types::StableId;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ObjectiveRunBindingsV1 {
+    pub authentication: RunStartAuthenticationV1,
     pub run_id: StableId,
+    pub runtime_body_digest: Digest32,
     pub preference_state_digest: Digest32,
     pub model_tuple_digest: Digest32,
     pub prompt_registry_digest: Digest32,
@@ -57,6 +62,7 @@ pub struct PublishedObjectiveRunV1 {
 pub enum ObjectiveRunError {
     Admission(ObjectiveAdmissionError),
     Conflict(ObjectiveConflictReceipt),
+    DeadlineMissing,
     RunStart(RunStartStoreError),
 }
 
@@ -93,6 +99,10 @@ pub fn compile_and_publish_objective_run_v1(
     let admitted = admit_objective_v1(envelope, profile, context)?;
     let outcome = compile_admitted_objective_v1(admitted)?;
     let objective = outcome.compile_result.map_err(ObjectiveRunError::Conflict)?;
+    let deadline_unix_micros = outcome
+        .receipt
+        .deadline_unix_micros
+        .ok_or(ObjectiveRunError::DeadlineMissing)?;
     let objective_semantic_bytes =
         canonical_native_objective_semantic_bytes_v1(&objective.objective);
     if Digest32::of_bytes(&objective_semantic_bytes) != objective.objective.semantic_digest {
@@ -112,10 +122,24 @@ pub fn compile_and_publish_objective_run_v1(
         generation: bindings.generation,
         fence_digest: bindings.fence_digest,
     };
+    let disposition = match objective.disposition {
+        CompileDisposition::Compiled => RunStartObjectiveDispositionV1::Compiled,
+        CompileDisposition::ExplicitAbstain => RunStartObjectiveDispositionV1::ExplicitAbstain,
+    };
     let publication = journal.append_run_start(
         bindings.expected_run_start_head,
         RunStartRecordV1 {
+            authentication: bindings.authentication,
+            admission: RunStartAdmissionBindingV1 {
+                profile_digest: outcome.receipt.profile_digest,
+                intent_digest: outcome.receipt.intent_digest,
+                admitted_source_digest: outcome.receipt.admitted_source_digest,
+                observed_at_unix_micros: outcome.receipt.observed_at_unix_micros,
+                deadline_unix_micros,
+            },
+            disposition,
             snapshot: run_start.clone(),
+            runtime_body_digest: bindings.runtime_body_digest,
             objective_semantic_bytes,
         },
     )?;
