@@ -229,7 +229,7 @@ async fn run_real_synapse_qualification(
         process_shutdown_evidence: &process_shutdown_evidence,
     })?;
     eprintln!(
-        "R4_E2E qualification_mode={} test_assertions=PASS candidate_evidence=PENDING_RUNNER_REVALIDATION promotion=false operator_acceptance=false txn_dedupe=PASS outbound_ack_loss_no_blind_resend=PASS outbound_sync_terminal_reconciliation=PASS network_disconnect_recovery=PASS sidecar_restart_recovery=PASS generation_rollover=PASS idle_sync=PASS token_coalescing=PASS dual_agent_e2ee_inbound_decrypt=PASS dual_agent_e2ee_send_raw_encrypt=PASS fault_isolation=PASS real_pending_approval_authority_boundary=PASS final_stable_count_freeze=PASS durable_isolation=PASS explicit_process_shutdown=PASS",
+        "R4_E2E qualification_mode={} test_assertions=PASS candidate_evidence=PENDING_RUNNER_REVALIDATION promotion=false operator_acceptance=false txn_dedupe=PASS outbound_ack_loss_stable_txn_retransmission=PASS outbound_sync_terminal_reconciliation=PASS network_disconnect_recovery=PASS sidecar_restart_recovery=PASS generation_rollover=PASS idle_sync=PASS token_coalescing=PASS dual_agent_e2ee_inbound_decrypt=PASS dual_agent_e2ee_send_raw_encrypt=PASS fault_isolation=PASS real_pending_approval_authority_boundary=PASS final_stable_count_freeze=PASS durable_isolation=PASS explicit_process_shutdown=PASS",
         environment.qualification_mode.as_str(),
     );
     Ok(())
@@ -446,9 +446,9 @@ async fn run_real_synapse_qualification_inner(
     // Arm a non-default, exact-payload qualification cut in the product
     // Matrix SDK. The first encrypted PUT must reach Synapse and return an
     // event ID, but that acknowledgement is deliberately hidden before the
-    // durable dispatcher can record HTTP acceptance. The transaction must be
-    // parked as indeterminate, never blindly resent, and later reconciled by
-    // the product's own /sync observation of the accepted homeserver event.
+    // durable dispatcher can record HTTP acceptance. Any retransmission must
+    // reuse the exact stable transaction ID; terminal success still comes only
+    // from the product's own /sync observation of the homeserver event.
     eprintln!("R4_STAGE outbound_post_send_pre_mark:start");
     let ack_loss_receipt_path =
         arm_post_send_pre_mark_ack_drop_once(&agent_a.layout, OUTBOUND_ACK_LOSS_BODY.as_bytes())?;
@@ -476,10 +476,13 @@ async fn run_real_synapse_qualification_inner(
     wait_matrix_store_drained(&agent_a.layout).await?;
     let expected_ack_loss_put_target =
         matrix_encrypted_send_target(&room_a, &ack_loss_proof.stable_txn_id);
-    let initial_ack_loss_wire_proof = network_proxy_a
-        .assert_single_put(&expected_ack_loss_put_target, &ack_loss_proof.stable_txn_id)?;
-    // Advance sync before counting the timeline. Terminal success must come
-    // from this observation; there must be no second PUT after response loss.
+    let initial_ack_loss_wire_proof = network_proxy_a.assert_stable_txn_put_count(
+        &expected_ack_loss_put_target,
+        &ack_loss_proof.stable_txn_id,
+        2,
+    )?;
+    // Advance sync after the idempotent retransmission. Terminal success must
+    // come from this observation, while Synapse still exposes one event.
     encrypted_matrix_a.sync_once(1_000).await?;
     encrypted_matrix_a.assert_body_count(OUTBOUND_ACK_LOSS_BODY, 1)?;
     ensure!(
@@ -821,11 +824,14 @@ async fn run_real_synapse_qualification_inner(
     assert_pair_sockets_absent(&agent_b)?;
     network_proxy_a.shutdown().await;
     network_proxy_a.assert_capture_clean()?;
-    let ack_loss_wire_proof = network_proxy_a
-        .assert_single_put(&expected_ack_loss_put_target, &ack_loss_proof.stable_txn_id)?;
+    let ack_loss_wire_proof = network_proxy_a.assert_stable_txn_put_count(
+        &expected_ack_loss_put_target,
+        &ack_loss_proof.stable_txn_id,
+        2,
+    )?;
     ensure!(
         ack_loss_wire_proof == initial_ack_loss_wire_proof,
-        "parked Matrix transaction unexpectedly generated a later resend"
+        "stable Matrix transaction request count/target drifted after reconciliation"
     );
     encrypted_matrix_a.sync_once(0).await?;
     encrypted_matrix_b.sync_once(0).await?;
@@ -1566,13 +1572,13 @@ async fn verify_post_send_pre_mark_proof(
             .outbox_for_txn(&stable_txn_id)
             .await?
             .context("post-send failpoint outbox row disappeared")?;
-        if record.state == OutboxState::Sent && record.attempts == 1 {
+        if record.state == OutboxState::Sent && record.attempts == 2 {
             break record;
         }
         if Instant::now() >= deadline {
             store.close().await;
             bail!(
-                "post-send response loss did not reconcile from /sync to Sent/attempts=1: {record:?}"
+                "post-send response loss did not reconcile from /sync to Sent/attempts=2: {record:?}"
             );
         }
         tokio::time::sleep(Duration::from_millis(25)).await;
@@ -1580,7 +1586,7 @@ async fn verify_post_send_pre_mark_proof(
     ensure!(record.payload == expected_body.as_bytes());
     ensure!(
         record.sent_event_id.as_ref() == Some(&first_synapse_event_id),
-        "sync reconciliation did not preserve Synapse's accepted event ID"
+        "stable transaction reconciliation did not preserve Synapse's accepted event ID"
     );
     store.close().await;
 
@@ -4201,16 +4207,17 @@ impl LoopbackFaultProxy {
         Ok(())
     }
 
-    fn assert_single_put(
+    fn assert_stable_txn_put_count(
         &self,
         expected_target: &str,
         stable_txn_id: &str,
+        expected_attempts: usize,
     ) -> Result<WireRetryProof> {
         let capture = self
             .capture
             .lock()
             .map_err(|_| anyhow::anyhow!("downstream HTTP capture mutex was poisoned"))?;
-        prove_exact_put_count(&capture, expected_target, stable_txn_id, 1)
+        prove_exact_put_count(&capture, expected_target, stable_txn_id, expected_attempts)
     }
 
     fn assert_capture_clean(&self) -> Result<()> {
