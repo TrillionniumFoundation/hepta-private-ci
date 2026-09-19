@@ -182,6 +182,7 @@ fn candidate(
             content_digest: tokenization.content_digest(),
             source_digest: source_digest,
             generation_vector_digest: digest("generation-vector"),
+            contains_secret: false,
         },
         1,
         1_000,
@@ -199,7 +200,6 @@ fn candidate(
             tokenization,
             expected_value,
             admission,
-            contains_secret: false,
         },
         ContextRealizedItemV2 {
             item_id: id(item_id),
@@ -359,6 +359,7 @@ fn well_formed_admission_digest_is_not_enough_without_verifier_acceptance() {
             content_digest: Digest32::of_bytes(&content),
             source_digest: digest("source:item:trusted"),
             generation_vector_digest: digest("generation-vector"),
+            contains_secret: false,
         },
         1,
         1_000,
@@ -409,6 +410,7 @@ fn admission_expires_at_the_exact_expiry_instant() {
             content_digest: Digest32::of_bytes(&content),
             source_digest: digest("source:item:expiry"),
             generation_vector_digest: digest("generation-vector"),
+            contains_secret: false,
         },
         1,
         1_000,
@@ -855,16 +857,23 @@ fn tokenizer_generation_secret_and_profile_drift_fail_closed() {
         ))
     );
 
-    let (mut secret, _) = candidate(
-        "item:secret",
-        ContextRoleV2::UntrustedEvidence,
-        10,
-        FixedQ32::ONE,
-        &snapshot,
-    );
-    secret.contains_secret = true;
+    let secret_content = content_bytes("item:secret", 10);
+    let secret_record = ContextAdmissionRecordV2::new(
+        id("admission:item:secret"),
+        ContextAdmissionBindingV2 {
+            item_id: id("item:secret"),
+            role: ContextRoleV2::UntrustedEvidence,
+            content_digest: Digest32::of_bytes(&secret_content),
+            source_digest: digest("source:item:secret"),
+            generation_vector_digest: digest("generation-vector"),
+            contains_secret: true,
+        },
+        1,
+        1_000,
+    )
+    .unwrap_or_else(|error| panic!("valid secret admission record: {error}"));
     assert_eq!(
-        compile_v2(request(vec![secret], 100)),
+        verify_admission_v2(secret_record, &snapshot, &verifier()),
         Err(ContextCompilerV2Error::SecretRejected(
             "item:secret".to_string()
         ))
