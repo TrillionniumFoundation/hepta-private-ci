@@ -667,8 +667,14 @@ mod tests {
         assert_eq!(classify_http_status(403), MatrixTransportError::Permanent);
         assert_eq!(classify_http_status(404), MatrixTransportError::Permanent);
         assert_eq!(classify_http_status(429), MatrixTransportError::Retryable);
-        assert_eq!(classify_http_status(500), MatrixTransportError::Retryable);
-        assert_eq!(classify_http_status(503), MatrixTransportError::Retryable);
+        assert_eq!(
+            classify_http_status(500),
+            MatrixTransportError::Indeterminate
+        );
+        assert_eq!(
+            classify_http_status(503),
+            MatrixTransportError::Indeterminate
+        );
     }
 
     #[test]
