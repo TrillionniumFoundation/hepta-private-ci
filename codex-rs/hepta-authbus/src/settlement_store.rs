@@ -41,9 +41,6 @@ impl AuthBusAuthorityStore {
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
         let mut reservation = load_reservation(&mut tx, reservation_id).await?;
-        if reservation.revision != expected_revision {
-            return Err(AuthBusAuthorityError::RevisionConflict);
-        }
         let quota = load_quota(&mut tx, &reservation.quota_key).await?;
         require_current_policy(&mut tx, &reservation, &quota, &time).await?;
         if reservation.state == ReservationState::DispatchAttempted
@@ -51,6 +48,9 @@ impl AuthBusAuthorityStore {
         {
             tx.commit().await.map_err(storage)?;
             return Ok(reservation);
+        }
+        if reservation.revision != expected_revision {
+            return Err(AuthBusAuthorityError::RevisionConflict);
         }
         if reservation.state != ReservationState::Held
             || time.wall_time_ms >= reservation.expires_at_ms
@@ -86,12 +86,12 @@ impl AuthBusAuthorityStore {
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
         let mut reservation = load_reservation(&mut tx, reservation_id).await?;
-        if reservation.revision != expected_revision {
-            return Err(AuthBusAuthorityError::RevisionConflict);
-        }
         if reservation.state == ReservationState::Indeterminate {
             tx.commit().await.map_err(storage)?;
             return Ok(reservation);
+        }
+        if reservation.revision != expected_revision {
+            return Err(AuthBusAuthorityError::RevisionConflict);
         }
         if reservation.state != ReservationState::DispatchAttempted {
             return Err(AuthBusAuthorityError::InvalidTransition);
