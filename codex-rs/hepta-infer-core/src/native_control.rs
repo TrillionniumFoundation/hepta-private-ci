@@ -7,6 +7,8 @@ use std::collections::BTreeMap;
 use serde::Deserialize;
 use serde::Serialize;
 
+use codex_hepta_types::Digest32;
+
 use super::DurableInferenceControl;
 use super::Error;
 use super::validate_digest;
@@ -116,6 +118,10 @@ pub enum NativeFinalUseAuthority {
     },
 }
 
+fn default_true() -> bool {
+    true
+}
+
 /// Fields observed by the native client, never a provider billing assertion.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -133,6 +139,14 @@ pub struct NativeRunOutput {
     pub owner_authority: NativeOwnerAuthority,
     #[serde(default)]
     pub final_use_authority: NativeFinalUseAuthority,
+    /// SHA-256 of the provider/model text. New product settlements persist
+    /// this digest instead of the text itself.
+    #[serde(default)]
+    pub output_sha256: Option<String>,
+    /// Historical records default to true. False means the durable journal
+    /// contains only output_sha256 and no provider/model text.
+    #[serde(default = "default_true")]
+    pub output_retained: bool,
 }
 
 impl NativeRunOutput {
@@ -408,6 +422,29 @@ impl DurableInferenceControl {
                 output,
             },
         )
+    }
+
+    /// Persist a receipt for provider output without retaining the provider text.
+    ///
+    /// The caller keeps the live text in memory and can return it to the current
+    /// request. Reopen/duplicate paths intentionally expose only the durable
+    /// digest receipt. This method validates the live output bound before
+    /// redaction so oversized text cannot bypass the journal's observation cap.
+    pub fn settle_native_receipt_only(
+        &mut self,
+        request_id: &str,
+        mut output: NativeRunOutput,
+    ) -> Result<NativeRunRecord, Error> {
+        if !output.output_retained || output.output_sha256.is_some() {
+            return Err(Error::Conflict);
+        }
+        if output.output.len() > 1024 * 1024 {
+            return Err(Error::CapacityExceeded);
+        }
+        output.output_sha256 = Some(Digest32::of_bytes(output.output.as_bytes()).to_string());
+        output.output.clear();
+        output.output_retained = false;
+        self.settle_native(request_id, output)
     }
 
     pub fn native_record(&self, request_id: &str) -> Option<&NativeRunRecord> {
@@ -816,9 +853,15 @@ fn validate_snapshot_record(
                 .as_ref()
                 .is_some_and(|reason| reason.len() > 4096)
             || output.terminal_observed == (output.status == NativeRunStatus::Indeterminate)
+            || (output.turn_id.is_empty()
+                && (output.terminal_observed
+                    || output.observed_output_tokens.is_some()
+                    || !output.output.is_empty()
+                    || output.output_sha256.is_some()))
         {
             return Err(Error::CorruptJournal("native observation snapshot"));
         }
+        validate_output_payload(output).map_err(|_| Error::CorruptJournal("native output receipt"))?;
         validate_final_use_observation(record, output)?;
     }
     Ok(())
@@ -1052,6 +1095,31 @@ fn validate_final_use_observation(
     Ok(())
 }
 
+fn validate_output_payload(output: &NativeRunOutput) -> Result<String, Error> {
+    if output.output.len() > 1024 * 1024 {
+        return Err(Error::CapacityExceeded);
+    }
+    let computed = Digest32::of_bytes(output.output.as_bytes()).to_string();
+    match (&output.output_sha256, output.output_retained) {
+        (Some(digest), true) => {
+            validate_digest(digest, "native output")?;
+            if digest != &computed {
+                return Err(Error::Conflict);
+            }
+            Ok(digest.clone())
+        }
+        (Some(digest), false) => {
+            validate_digest(digest, "native output")?;
+            if !output.output.is_empty() {
+                return Err(Error::Conflict);
+            }
+            Ok(digest.clone())
+        }
+        (None, true) => Ok(computed),
+        (None, false) => Err(Error::InvalidIdentity("native output receipt")),
+    }
+}
+
 fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> Result<(), Error> {
     let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
     validate_final_use_observation(record, &output)?;
@@ -1065,11 +1133,11 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
     {
         return Err(Error::AssignmentMismatch);
     }
-    if output.output.len() > 1024 * 1024
-        || output
-            .stop_reason
-            .as_ref()
-            .is_some_and(|reason| reason.len() > 4096)
+    let output_digest = validate_output_payload(&output)?;
+    if output
+        .stop_reason
+        .as_ref()
+        .is_some_and(|reason| reason.len() > 4096)
     {
         return Err(Error::CapacityExceeded);
     }
@@ -1082,11 +1150,19 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
         || (output.turn_id.is_empty()
             && (output.terminal_observed
                 || output.observed_output_tokens.is_some()
-                || !output.output.is_empty()))
+                || !output.output.is_empty()
+                || output.output_sha256.is_some()))
     {
         return Err(Error::TerminalObservationMissing);
     }
     if let Some(previous) = &record.observation {
+        let previous_digest = validate_output_payload(previous)?;
+        // Redaction is monotonic. A legacy/full-text observation may be
+        // replaced by an equivalent digest-only receipt, but durable text is
+        // never reintroduced after a receipt-only observation exists.
+        if !previous.output_retained && output.output_retained {
+            return Err(Error::Conflict);
+        }
         // A late provider completion or usage refinement cannot erase a lost
         // owner, or retroactively authorize an unverified historical terminal.
         if (matches!(previous.owner_authority, NativeOwnerAuthority::Lost { .. })
@@ -1100,7 +1176,7 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
         if previous.terminal_observed
             && (previous.status != output.status
                 || !output.terminal_observed
-                || previous.output != output.output)
+                || previous_digest != output_digest)
         {
             return Err(Error::Conflict);
         }
