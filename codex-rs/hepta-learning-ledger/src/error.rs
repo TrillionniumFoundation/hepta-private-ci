@@ -38,6 +38,7 @@ pub enum LedgerError {
     CorrectionNotHead(String),
     CorrectionSelfReference,
     UnlearningSourceNotRevoked(String),
+    UnlearningSourceDigestMismatch,
     UnlearningPredecessorRequired(String),
     UnlearningPredecessorNotFound(String),
     UnlearningPredecessorMismatch,
@@ -92,6 +93,7 @@ impl LedgerError {
             | Self::CorrectionNotHead(_)
             | Self::CorrectionSelfReference => "LRN-E013",
             Self::UnlearningSourceNotRevoked(_)
+            | Self::UnlearningSourceDigestMismatch
             | Self::UnlearningPredecessorRequired(_)
             | Self::UnlearningPredecessorNotFound(_)
             | Self::UnlearningPredecessorMismatch
@@ -186,6 +188,9 @@ impl fmt::Display for LedgerError {
             }
             Self::UnlearningSourceNotRevoked(id) => {
                 write!(formatter, "unlearning source is not currently revoked: {id}")
+            }
+            Self::UnlearningSourceDigestMismatch => {
+                formatter.write_str("unlearning source digest does not match the authoritative record")
             }
             Self::UnlearningPredecessorRequired(id) => {
                 write!(formatter, "unlearning predecessor required after current head: {id}")
