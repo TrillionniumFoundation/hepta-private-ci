@@ -28,6 +28,8 @@ The tuple is canonical only when every Git object resolves, the tree matches its
 
 `docs/CURRENT.json` may store stable repository and baseline policy, but a live pull-request number is resolved by an external exact-candidate receipt rather than cached as a durable fact. Teams record the receipt digest in every `ParallelLaneEnvelopeV1`, benchmark, fixture and candidate artifact.
 
+Committed `docs/modules/*/IMPLEMENTATION_MAP.json` files are source-navigation maps, not self-authenticating exact-head receipts. A tracked file cannot contain the SHA/tree of the same commit that contains that file without a Git hash self-reference. Their `sourceBase` is therefore historical mapping provenance and must be labeled/treated as such; qualification derives the exact source commit/tree from the checked-out Git object and verifies it against the workflow/runtime expected SHA. A set of maps agreeing on one historical `sourceBase` never establishes current-source qualification.
+
 ## 3. Branch classes and purpose manifests
 
 Branches are classified as `canonical_candidate`, `implementation_package`, `integration`, `diagnostic`, `evidence`, or `archive`. Each non-canonical branch must carry a `BranchPurposeManifestV1` in its work envelope with base identity, allowed paths, expiry and zero authority delta.
