@@ -222,7 +222,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use `ProductionLedgerWriter` for product-facing mutation so signed role admission, exact-anchor CAS and V2 semantic validation precede the durable append. `DurableLedger` / `SegmentedLedger` remain the storage engines. Retain acknowledgement frontiers independently with `DurableAnchorWitness` or an externally qualified equivalent; inspect and reopen existing state before admitting new records, and never turn failed anchored recovery into unanchored opening. Segment rotation, retention and backup must preserve acknowledged lineage. `LedgerIndexCheckpointV1` is a verifiable optimization/evidence artifact, not permission to skip journal validation.
+Use `ProductionLedgerWriter` for product-facing mutation so a host-owned `LearningEvidenceTrustProviderV1` is queried for the current trust revision before every signed mutation; trust rollback/same-revision drift, signed role admission, exact-anchor CAS and V2 semantic validation all fail before the durable append. `DurableLedger` / `SegmentedLedger` remain the storage engines. Retain acknowledgement frontiers independently with `DurableAnchorWitness` or an externally qualified equivalent; inspect and reopen existing state before admitting new records, and never turn failed anchored recovery into unanchored opening. Segment rotation, retention and backup must preserve acknowledged lineage. `LedgerIndexCheckpointV1` is a verifiable optimization/evidence artifact, not permission to skip journal validation.
 
 Current operating and state-format references:
 
@@ -244,10 +244,10 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-learning-ledger/src/durable_tests.rs](../../../codex-rs/hepta-learning-ledger/src/durable_tests.rs); named case: `persisted_causal_events_replay_exact_core_and_revocation_excludes_descendants`.
 - [codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs](../../../codex-rs/hepta-learning-ledger/src/causal_v2_tests.rs); named case: `ledger_03_rejects_shared_credential_chain`.
 - `codex-rs/hepta-learning-ledger/src/convergence_tests.rs` — correction-head/fork, atomic conserved-credit and unlearning-lineage invariants.
-- `codex-rs/hepta-learning-ledger/src/production_tests.rs` — signed decision → authenticated outcome → atomic credit → ledger-derived dataset path.
+- `codex-rs/hepta-learning-ledger/src/production_tests.rs` — signed decision → authenticated outcome → atomic credit → ledger-derived dataset path plus current-trust refresh/anti-rollback.
 - `codex-rs/hepta-learning-ledger/src/witness_tests.rs` — independently retained acknowledgement recovery.
-- `codex-rs/hepta-learning-ledger/src/protocol_tests.rs` — canonical names/order/unknown-field compatibility.
-- `codex-rs/hepta-learning-ledger/src/index_checkpoint_tests.rs` — 4,096-record verifiable checkpoint fixture.
+- `codex-rs/hepta-learning-ledger/src/protocol_tests.rs` — canonical names/order, unknown-field rejection and semantic-invalid JSON rejection.
+- `codex-rs/hepta-learning-ledger/src/index_checkpoint_tests.rs` — 4,096-record checkpoint plus full 8,192-record single-segment recovery-work capacity fixture.
 
 In `codex-rs`, run `just test -p codex-hepta-learning-ledger`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.ledger.md) separately labels target acceptance designs.
 
