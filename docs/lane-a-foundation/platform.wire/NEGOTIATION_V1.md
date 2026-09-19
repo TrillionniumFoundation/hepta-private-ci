@@ -62,11 +62,20 @@ The same vector is frozen in `HPTN_V1_CONFORMANCE.json` and native tests.
 
 ## Authentication requirement
 
-The HPTN hello is not authenticated by itself. Where downgrade or peer
-impersonation matters, the transport/session owner must authenticate the
-negotiation transcript together with the subsequent encoded HPTA frame, for
-example by running HPTN inside an authenticated secure channel or binding the
-transcript and frame into the channel's authenticated transcript.
+The HPTN hello is not authenticated by itself. The current library exposes
+`negotiation_binding_digest(initiator, responder, required, negotiated)` as
+the canonical role-ordered transcript digest. It binds the exact canonical
+initiator/responder hello bytes, required capability bits, selected version and
+common capability set. `session_binding_digest(transcript_digest,
+encoded_frame)` then binds that transcript digest to the complete encoded HPTA
+frame.
+
+Both values are unkeyed SHA-256 digests, not MACs or signatures. Where
+downgrade, peer impersonation or frame substitution matters, the
+transport/session owner must authenticate the canonical session binding (or
+equivalently authenticate the same transcript and complete frame inside its
+secure-channel transcript). Callers must not invent an alternate transcript
+serialization.
 
 ## Recovery
 
