@@ -166,7 +166,24 @@ impl MatrixDurableStore {
         let current = dispatch_by_txn_tx(&mut transaction, txn_id)
             .await?
             .ok_or(MatrixDurableError::Conflict)?;
-        if current.state.is_terminal()
+        let identical_binding = current.operation_id == operation_id
+            && current.homeserver_id.as_deref() == Some(homeserver_id)
+            && current.device_id.as_deref() == Some(device_id)
+            && current.session_generation == Some(session_generation)
+            && current.authority_epoch == Some(authority_epoch)
+            && current.grant_id.as_deref() == Some(grant_id)
+            && current.grant_payload_sha256.as_deref() == Some(grant_payload_sha256)
+            && current.deadline_ms == Some(deadline_ms);
+        if identical_binding {
+            transaction
+                .commit()
+                .await
+                .map_err(|_| MatrixDurableError::Unavailable)?;
+            return Ok(current);
+        }
+        if current.state != MatrixDispatchState::Prepared
+            || current.authority_epoch.is_some()
+            || current.grant_id.is_some()
             || current.payload_sha256 != grant_payload_sha256
             || current.updated_at_ms > now_ms
         {
