@@ -13,6 +13,10 @@ use codex_hepta_memory::SourceDraft;
 use codex_hepta_paths::HeptaFleetRoot;
 
 use super::CognitiveContextError;
+use super::PendingCognitiveContexts;
+use super::finalize;
+use super::issue;
+use super::now_millis;
 use super::read;
 use super::read_with_revalidation_hook;
 
@@ -79,7 +83,9 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
         )
         .await
         .unwrap();
-    let withdrawn = read(&store, &owner, 1, "lemon", 4, None).await.unwrap();
+    let withdrawn = read(&store, &owner, 1, 1, "lemon", 4, None)
+        .await
+        .unwrap();
     assert!(withdrawn.items.is_empty());
     assert!(!withdrawn.plan.as_ref().unwrap().read_allowed);
     assert_ne!(withdrawn.snapshot_digest, context.snapshot_digest);
@@ -197,3 +203,124 @@ async fn production_composition_fails_closed_on_midflight_owner_frontier_changes
         Err(CognitiveContextError::Store(CognitiveStoreError::Conflict(_)))
     ));
 }
+
+#[tokio::test]
+async fn issued_guard_revalidates_again_at_actual_consumer_boundary_and_is_one_shot() {
+    let temp = tempfile::tempdir().unwrap();
+    let fleet = temp.path().join("fleet");
+    std::fs::create_dir_all(&fleet).unwrap();
+    let owner = AgentId::parse("00000000-0000-4000-8000-000000000122").unwrap();
+    let layout = HeptaFleetRoot::parse(fleet).unwrap().layout().agent(&owner);
+    let store = CognitiveStore::open(&layout).await.unwrap();
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let scope = CognitiveScope::AgentPrivate;
+
+    store
+        .append_source(
+            &access,
+            &SourceDraft {
+                scope: scope.clone(),
+                kind: LedgerSourceKind::ExplicitMemoryDirective,
+                event_key: "finalize-seed".to_string(),
+                content: b"verified indigo orchard".to_vec(),
+                observed_at_unix_seconds: 100,
+            },
+        )
+        .await
+        .unwrap();
+
+    let issued = issue(&store, &owner, 1, 1, "indigo", 4, None)
+        .await
+        .unwrap();
+    let snapshot = issued.snapshot.clone();
+    let mut pending = PendingCognitiveContexts::default();
+    pending.issue(issued, now_millis().unwrap()).unwrap();
+
+    // Mutation happens after the context has already been published to the
+    // worker. Finalization must observe it before provider TurnStart.
+    store
+        .append_source(
+            &access,
+            &SourceDraft {
+                scope,
+                kind: LedgerSourceKind::ExplicitMemoryDirective,
+                event_key: "finalize-midflight-drift".to_string(),
+                content: b"new owner evidence after context publication".to_vec(),
+                observed_at_unix_seconds: 101,
+            },
+        )
+        .await
+        .unwrap();
+
+    let guard = pending
+        .take(
+            &snapshot.snapshot_digest,
+            &snapshot.read_digest,
+            now_millis().unwrap(),
+        )
+        .unwrap();
+    assert!(matches!(
+        finalize(&store, &owner, 1, guard, None).await,
+        Err(CognitiveContextError::Store(CognitiveStoreError::Conflict(_)))
+    ));
+    assert!(matches!(
+        pending.take(
+            &snapshot.snapshot_digest,
+            &snapshot.read_digest,
+            now_millis().unwrap()
+        ),
+        Err(CognitiveStoreError::Conflict(_))
+    ));
+}
+
+#[tokio::test]
+async fn issued_guard_rejects_epoch_drift_and_expiry_without_replay() {
+    let temp = tempfile::tempdir().unwrap();
+    let fleet = temp.path().join("fleet");
+    std::fs::create_dir_all(&fleet).unwrap();
+    let owner = AgentId::parse("00000000-0000-4000-8000-000000000123").unwrap();
+    let layout = HeptaFleetRoot::parse(fleet).unwrap().layout().agent(&owner);
+    let store = CognitiveStore::open(&layout).await.unwrap();
+
+    let issued = issue(&store, &owner, 1, 7, "missing", 4, None)
+        .await
+        .unwrap();
+    let snapshot = issued.snapshot.clone();
+    let mut pending = PendingCognitiveContexts::default();
+    pending.issue(issued, now_millis().unwrap()).unwrap();
+    let guard = pending
+        .take(
+            &snapshot.snapshot_digest,
+            &snapshot.read_digest,
+            now_millis().unwrap(),
+        )
+        .unwrap();
+    assert!(matches!(
+        finalize(&store, &owner, 8, guard, None).await,
+        Err(CognitiveContextError::Store(CognitiveStoreError::Conflict(_)))
+    ));
+    assert!(matches!(
+        pending.take(
+            &snapshot.snapshot_digest,
+            &snapshot.read_digest,
+            now_millis().unwrap()
+        ),
+        Err(CognitiveStoreError::Conflict(_))
+    ));
+
+    let expired = issue(&store, &owner, 1, 7, "missing", 4, None)
+        .await
+        .unwrap();
+    let expired_snapshot = expired.snapshot.clone();
+    let expiry = expired.guard.original_envelope.lease_expires_unix_ms();
+    pending.issue(expired, now_millis().unwrap()).unwrap();
+    assert!(matches!(
+        pending.take(
+            &expired_snapshot.snapshot_digest,
+            &expired_snapshot.read_digest,
+            expiry
+        ),
+        Err(CognitiveStoreError::Conflict(_))
+    ));
+}
+

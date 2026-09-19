@@ -696,6 +696,41 @@ mod tests {
     }
 
     #[test]
+    fn cognitive_context_finalize_wire_round_trip_is_strict_and_bounded() {
+        let request = AgentdRequest::cognitive_context_finalize(
+            8,
+            11,
+            "a".repeat(64),
+            "b".repeat(64),
+        );
+        let request_bytes = serde_json::to_vec(&request).expect("serialize finalize request");
+        assert!(request_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&request_bytes).expect("parse finalize request"),
+            request
+        );
+
+        let response = AgentdResponse {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: 8,
+            agent_id: AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent id"),
+            spawn_generation: 11,
+            current_generation: 12,
+            payload: AgentdPayload::CognitiveContextFinalized {
+                snapshot_digest: "a".repeat(64),
+                read_digest: "b".repeat(64),
+            },
+        };
+        let response_bytes = serde_json::to_vec(&response).expect("serialize finalize response");
+        assert!(response_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdResponse>(&response_bytes)
+                .expect("parse finalize response"),
+            response
+        );
+    }
+
+    #[test]
     fn host_turn_authority_binding_is_strict_and_fail_closed() {
         let owner = AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dde").expect("owner id");
         let binding = HostTurnAuthorityBinding::new(
