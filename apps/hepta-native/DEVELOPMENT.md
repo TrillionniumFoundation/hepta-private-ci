@@ -67,7 +67,7 @@ For current local OS effects, open/reveal/notification launch success is intenti
 - SHA-256 of the final serialized `PlatformPayload` computed by Rust;
 - expiration time.
 
-The shell verifies an Ed25519 signature from an explicit absolute trusted-key-set path immediately before effect admission. A matching caller-supplied pair of digests is not sufficient. Grants are short-lived and cannot be carried to a new session incarnation.
+The shell verifies an Ed25519 signature from an explicit absolute trusted-key-set path immediately before effect admission. The product verifier reloads that trust file for every platform effect, so adding a key ID to `revoked_key_ids` takes effect without restarting the shell. A matching caller-supplied pair of digests is not sufficient. Grants are short-lived and cannot be carried to a new session incarnation.
 
 The local platform policy is a second ceiling, not authority. Paths must be absolute, canonicalizable and underneath one of the explicitly configured roots. Clipboard/notification classes are disabled unless their local policy switches are present.
 
@@ -87,12 +87,12 @@ A keyring error, unsigned/tampered endpoint manifest, legacy `native_auth=disabl
 
 Update flow:
 
-1. Verify target tuple, time bounds and Ed25519 signature.
+1. Verify the stable product channel, target tuple, time bounds and Ed25519 signature.
 2. Hash the package and require the signed package digest.
 3. Copy to the private staging directory, fsync, and hash again.
 4. Write `pending-update.json` atomically.
 5. A separate `hepta-native-updater` process re-verifies the signed manifest and staged digest.
-6. Back up the predecessor before replacement.
+6. Hash the installed target and require the signed predecessor digest before any replacement; then back up that exact predecessor.
 7. Replace from a temporary file; on replacement or post-copy digest failure restore the predecessor.
 8. Leave the state `ActivatedUnconfirmed` until the new process confirms its own running binary digest, then clear the pending record.
 
@@ -151,7 +151,8 @@ Trusted public keys example:
   "schema": "hepta.native-trusted-keys.v1",
   "keys": {
     "release.key.1": "<base64 32-byte Ed25519 public key>"
-  }
+  },
+  "revoked_key_ids": []
 }
 ```
 
@@ -169,7 +170,7 @@ cargo run --bin hepta-native -- --self-test
 cargo build --release --bins
 ```
 
-The runtime tests explicitly cover same-ID/new-session fencing, indeterminate retry without replay, process-restart reconciliation from the durable journal and close-with-pending behavior. Security/update tests cover Ed25519 final-payload binding, selector/generator separation, stage digest, independent updater activation and new-binary confirmation.
+The runtime tests explicitly cover same-ID/new-session fencing, indeterminate retry without replay, process-restart reconciliation from the durable journal and close-with-pending behavior. Security/update tests cover Ed25519 final-payload binding, live signing-key revocation, selector/generator separation, stable-channel admission, stage digest, installed-predecessor fencing, independent updater activation and new-binary confirmation. The merge-candidate matrix starts the release binary again from each packaged artifact and emits an unsigned qualification receipt with checked-out SHA, source-head SHA and binary digests. A separate Ubuntu job checks out the exact PR head and reruns format, Clippy, tests, gateway tests and the product self-test.
 
 CI output is not a production-release receipt. The generated artifacts are intentionally named `unsigned` until platform signing/notarization and independent acceptance are supplied.
 
