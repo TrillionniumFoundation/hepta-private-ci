@@ -36,13 +36,7 @@ pub fn observe_send<'a>(
     observation_digest: &'a str,
     now_ms: u64,
 ) -> impl Future<Output = Result<Option<MatrixDispatchRecord>, MatrixDurableError>> + 'a {
-    store.observe_matrix_dispatch_succeeded(
-        txn_id,
-        event_id,
-        room_id,
-        observation_digest,
-        now_ms,
-    )
+    store.observe_matrix_dispatch_succeeded(txn_id, event_id, room_id, observation_digest, now_ms)
 }
 
 /// Redaction is a later terminal observation and keeps the original send
