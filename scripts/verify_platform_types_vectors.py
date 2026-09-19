@@ -44,9 +44,14 @@ def encode_value(value: dict[str, Any]) -> bytes:
         raw = value["value"]
         if not isinstance(raw, str):
             raise ValueError("i64 vector value must be a signed decimal string")
-        body = raw[1:] if raw.startswith("-") else raw
-        if not body or not body.isascii() or not body.isdecimal():
-            raise ValueError("i64 vector value must be a signed decimal string")
+        if raw == "0":
+            pass
+        elif raw.startswith("-"):
+            body = raw[1:]
+            if not body or body.startswith("0") or not body.isascii() or not body.isdecimal():
+                raise ValueError("i64 vector value must use canonical signed decimal")
+        elif raw.startswith("0") or not raw.isascii() or not raw.isdecimal():
+            raise ValueError("i64 vector value must use canonical signed decimal")
         number = int(raw)
         if not -(1 << 63) <= number <= (1 << 63) - 1:
             raise ValueError("i64 vector value out of range")
