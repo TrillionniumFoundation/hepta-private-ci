@@ -12,7 +12,7 @@
 
 This specification defines a deterministic implementation baseline and a separately qualified stochastic candidate. It does not establish dynamic-preference efficacy, production activation, biological equivalence, or autonomous software evolution. The four-level hierarchy, event sourcing and deployment controls are Hepta engineering extensions. `docs/evidence/CLAIMS.json` and current independent evidence govern capability claims.
 
-Existing exported deterministic primitives in `codex-rs/hepta-ndu/src/lib.rs` include `evaluate_candidates`, `solve_preference_target`, `validate_staged_updates`, `evaluate_recursive_utility` and `mul_q32_ties_even`. Reuse compatible primitives and add owner-scoped adapters; a symbol inventory proves neither a real consumer nor an implemented stochastic solver.
+Existing exported deterministic primitives in `codex-rs/hepta-ndu/src/lib.rs` include the policy-bound `evaluate_candidates_with_policy`, context-bound `solve_preference_target`, hierarchy-bound `validate_staged_updates`, `evaluate_recursive_utility` and `mul_q32_ties_even`. The older `evaluate_candidates` entry is deprecated compatibility surface. Reuse compatible primitives and add owner-scoped adapters; a symbol inventory proves neither a real consumer nor an implemented stochastic solver.
 
 ## 2. Symbols, dimensions, units and normalization
 
@@ -32,7 +32,7 @@ Existing exported deterministic primitives in `codex-rs/hepta-ndu/src/lib.rs` in
 | `Sigma_k` | conditional increment covariance | driver x driver dimensions | declared numeric profile |
 | `B_k` | utility/increment conditional cross moment | utility x driver dimensions | declared numeric profile |
 
-Normalization, units, feature order, clipping locations, scales and conditional-moment conventions belong to immutable artifacts bound into `RunStartSnapshotV1`. `COST_k` is not the covariance matrix. Convert microseconds to the declared solver time unit with checked arithmetic; never silently treat microseconds as seconds. Reject invalid dimensions, non-finite numbers, unknown units and missing profiles. Pre-clipping violations and projection counts remain observable.
+Normalization, units, feature order, clipping locations, scales and conditional-moment conventions belong to immutable artifacts. For deterministic utility evaluation, `UtilityProfile.axis_registry_digest` binds the immutable axis-registry identity into the canonical profile/evaluation digest bound into `RunStartSnapshotV1`. `COST_k` is not the covariance matrix. Convert microseconds to the declared solver time unit with checked arithmetic; never silently treat microseconds as seconds. Reject invalid dimensions, non-finite numbers, unknown units and missing profiles. Pre-clipping violations and projection counts remain observable.
 
 Signed Q32 and Q24 are distinct from the HNMF ppm/toward-zero reference. Conversion records bind both profiles, rounding, units, source/output digests and absolute error. Identifier, authority, deletion, fence and deadline fields are exact; they never pass through approximate numerical conversion.
 
@@ -73,13 +73,13 @@ The backward Euler candidate is
 
 Conditional expectations use only pre-boundary features. Event duration, stopping, censoring and history conditioning are manifest fields. Future outcomes may label training rows but cannot enter runtime features. A stochastic approximation is not identical to the deterministic discounted baseline for an arbitrary generator.
 
-Hard constraints are filtered before Pareto/scalarization. Preferences may change bounded allocation, exploration, evidence effort and abstention, never success criteria, observer identity, privacy, consent or authority. Parent/child exchange only bounded budget, shadow price, continuation utility, uncertainty, residual and expiry via `NduBoundaryConditionV1`. Freeze the parent revision; accept a candidate state with damping `P_next=(1-eta)P_old+eta*P_candidate`, eta in [1/16,1/4]. Do not select parent and child parameter artifacts in the same generation.
+Hard constraints are filtered before Pareto/scalarization. Preferences may change bounded allocation, exploration, evidence effort and abstention, never success criteria, observer identity, privacy, consent or authority. Parent/child exchange only bounded budget, shadow price, continuation utility, uncertainty, residual and expiry via `NduBoundaryConditionV1`. Freeze the parent revision; accept a candidate state with damping `P_next=(1-eta)P_old+eta*P_candidate`, eta in [1/16,1/4]. Do not select parameter artifacts for a concrete parent/child pair in the same generation; the relationship is established by a digest-bound subject hierarchy, not inferred from `SubjectClass` alone.
 
 ## 4. Deterministic reference algorithm
 
 Set diffusion and both increments to zero. Use the registered discrete utility profile, canonical event ordering and signed fixed-point arithmetic:
 
-    validate objective, subject, legal set, units, predecessor and coefficients
+    validate objective, subject, legal set, axis-registry identity, units, predecessor, coefficients and exact iteration context
     P[0] = predecessor preference
     for event k in canonical order:
         P[k+1] = registered_projection(P[k] + dt[k]*bounded_drift(P[k],event[k]))
@@ -92,7 +92,7 @@ Feasibility precedes scoring. Missing support/units is unavailable, not zero cos
 
 `NDU-GV-001`: P0=0; two unit steps; drifts 0.25,-0.5; instantaneous utilities 0.5,0.25; discount 0.8; terminal utility 1. Expected real values are P=[0,0.25,-0.25], U=[1.34,1.05,1]. Q32 nearest/ties-to-even goldens are P=[0,1073741824,-1073741824], U=[5755256177,4509715661,4294967296]. Canonical reference goldens are exact; the separate adaptive zero-noise comparison uses the declared tolerance.
 
-The deterministic fixed-point solve has at most 64 iterations and residual <=2^-20; exhaustion reports unavailable. Damping, clipping or a bounded iteration count alone does not prove convergence.
+The deterministic fixed-point solve admits at most 64 preference axes with every value in [-1,1], has at most 64 iterations and residual <=2^-20, and reports exhaustion as unavailable. An already-converged state is a zero-iteration no-op that preserves the predecessor revision. Every emitted iteration receipt is construction-bound to the exact subject/objective/generation/event/coefficient context. Damping, clipping or a bounded iteration count alone does not prove convergence.
 
 ## 5. Trainable or estimated algorithm
 
