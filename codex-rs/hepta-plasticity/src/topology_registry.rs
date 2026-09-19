@@ -140,6 +140,16 @@ pub struct DurableTopologyProposalRegistryV1 {
 }
 
 impl DurableTopologyProposalRegistryV1 {
+    #[must_use]
+    pub const fn scope_digest(&self) -> Digest32 {
+        self.scope
+    }
+
+    #[must_use]
+    pub const fn writer_fence(&self) -> u64 {
+        self.writer_fence
+    }
+
     pub fn bootstrap_empty(
         file: File,
         scope: Digest32,
