@@ -391,9 +391,10 @@ fn receipt_only_settlement_persists_digest_without_model_text() {
     let persisted = settled.observation.as_ref().unwrap();
     assert_eq!(persisted.output, "");
     assert!(!persisted.output_retained);
+    let expected_digest = Digest32::of_bytes(live_text.as_bytes()).to_string();
     assert_eq!(
         persisted.output_sha256.as_deref(),
-        Some(Digest32::of_bytes(live_text.as_bytes()).to_string().as_str())
+        Some(expected_digest.as_str())
     );
     assert!(persisted.succeeded());
     drop(control);
