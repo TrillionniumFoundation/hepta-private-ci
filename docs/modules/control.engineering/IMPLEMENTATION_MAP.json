@@ -69,20 +69,6 @@
       "delegatedCallees": []
     },
     {
-      "operation": "register_worker",
-      "nativeSymbol": "register_worker",
-      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/assignment.py",
-      "state": "source_implemented_not_product_composed",
-      "authority": "none",
-      "tests": [
-        "AssignmentLifecycleTests.test_claim_run_fail_requeue_retry_complete"
-      ],
-      "sourcePathExists": true,
-      "designOperation": "register_worker",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
-    {
       "operation": "claim_assignment",
       "nativeSymbol": "claim_assignment",
       "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/assignment.py",
@@ -268,11 +254,57 @@
       "designOperation": "prepare_assimilation_candidate",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "register_authenticated_worker",
+      "nativeSymbol": "register_authenticated_worker",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/assignment.py",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "OpenSslTrustStoreTests.test_verification_only_store_accepts_pinned_key_and_rejects_tamper"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "register_authenticated_worker",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "schedule_from_state",
+      "nativeSymbol": "EngineeringController.schedule_from_state",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/controller.py",
+      "state": "source_composed_not_product_executed",
+      "authority": "none",
+      "tests": [
+        "AssignmentLifecycleTests.test_durable_completion_drives_next_schedule"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "schedule_from_state",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "completed_packages",
+        "EngineeringStore.schedule_ready_packages"
+      ]
+    },
+    {
+      "operation": "verify_audit_anchor",
+      "nativeSymbol": "verify_audit_anchor",
+      "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/audit.py",
+      "state": "source_implemented_external_retention_required",
+      "authority": "none",
+      "tests": [
+        "OpenSslTrustStoreTests.test_verification_only_store_accepts_pinned_key_and_rejects_tamper"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verify_audit_anchor",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Exercise EngineeringController from the selected repository CI/host with provisioned verification keys and retain exact command observations.",
-    "Obtain independent semantic review and external key-custody/host evidence before changing productionImplementation or productExecutionProved."
+    "Provision selected-host verifier keys and external signer/witness custody, then retain signed worker/evidence/audit receipts outside the engineering SQLite owner.",
+    "Retain fresh exact source-head and deterministic synthetic-merge qualification observations for the selected candidate before changing productExecutionProved.",
+    "A local SQLite writer is not an HA consensus service; production failover, replicated fencing and canary/merge authority remain separate external composition."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
