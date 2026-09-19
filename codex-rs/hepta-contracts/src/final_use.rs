@@ -126,6 +126,20 @@ impl fmt::Debug for VerifiedUseToken {
     }
 }
 
+/// Non-serializable evidence that one verified token has already crossed its
+/// single effect-admission boundary. It can only be revalidated; it cannot be
+/// consumed to authorize another effect.
+pub struct VerifiedUseReceipt {
+    owner: Arc<Inner>,
+    grant: FinalUseGrant,
+}
+
+impl fmt::Debug for VerifiedUseReceipt {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("VerifiedUseReceipt([REDACTED])")
+    }
+}
+
 impl FinalUseAuthority {
     pub fn open_state_dir(
         directory: &std::path::Path,
@@ -228,15 +242,18 @@ impl FinalUseAuthority {
         })
     }
 
-    /// Revalidate live authority after asynchronous work and before releasing a
-    /// secret to its consumer. The consumer runs under the revocation fence, so
-    /// a successful revocation update cannot race between check and delivery.
-    pub fn with_verified_use<T>(
+    /// Revalidate live authority and cross exactly one synchronous effect
+    /// admission point under the revocation fence.
+    ///
+    /// The token is consumed here. The returned receipt cannot authorize a
+    /// second effect; it exists only so the same admitted operation can be
+    /// revalidated after asynchronous work before terminal publication.
+    pub fn with_verified_use_receipt<T>(
         &self,
         token: VerifiedUseToken,
         expected: &FinalUseBinding,
         consumer: impl FnOnce() -> T,
-    ) -> Result<T, FinalUseError> {
+    ) -> Result<(T, VerifiedUseReceipt), FinalUseError> {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.grant.binding != expected {
             return Err(FinalUseError::BindingMismatch);
         }
@@ -249,9 +266,49 @@ impl FinalUseAuthority {
             return Err(FinalUseError::Unavailable);
         }
         validate_live(&token.grant, &state.head)?;
+        let grant = token.grant;
         let result = consumer();
         drop(state);
-        Ok(result)
+        Ok((
+            result,
+            VerifiedUseReceipt {
+                owner: Arc::clone(&self.0),
+                grant,
+            },
+        ))
+    }
+
+    /// Compatibility helper for synchronous consumers that do not need a
+    /// post-effect terminal revalidation receipt.
+    pub fn with_verified_use<T>(
+        &self,
+        token: VerifiedUseToken,
+        expected: &FinalUseBinding,
+        consumer: impl FnOnce() -> T,
+    ) -> Result<T, FinalUseError> {
+        self.with_verified_use_receipt(token, expected, consumer)
+            .map(|(result, _receipt)| result)
+    }
+
+    /// Revalidate an already-admitted effect without granting authority to
+    /// perform another effect.
+    pub fn revalidate_used(
+        &self,
+        receipt: &VerifiedUseReceipt,
+        expected: &FinalUseBinding,
+    ) -> Result<(), FinalUseError> {
+        if !Arc::ptr_eq(&self.0, &receipt.owner) || &receipt.grant.binding != expected {
+            return Err(FinalUseError::BindingMismatch);
+        }
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        validate_live(&receipt.grant, &state.head)
     }
 }
 
