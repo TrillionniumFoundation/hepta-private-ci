@@ -104,6 +104,38 @@ pub trait CurrentCognitiveReadAuthority: Send + Sync {
 }
 
 #[cfg(test)]
+pub(crate) fn test_cognitive_read_authority(
+) -> std::sync::Arc<dyn CurrentCognitiveReadAuthority> {
+    struct TestAuthority;
+
+    impl CurrentCognitiveReadAuthority for TestAuthority {
+        fn current(
+            &self,
+            _owner: &AgentId,
+            _body_generation: u64,
+        ) -> Result<CognitiveReadAuthoritySnapshotV1, SnapshotProviderError> {
+            let digest = |value: &str| Digest32::of_bytes(value.as_bytes());
+            Ok(CognitiveReadAuthoritySnapshotV1 {
+                compact_checkpoint_generation: Generation::new(1)
+                    .map_err(|_| SnapshotProviderError::Indeterminate)?,
+                prompt_registry_revision: Revision::new(1)
+                    .map_err(|_| SnapshotProviderError::Indeterminate)?,
+                retrieval_profile_digest: digest("test-retrieval-profile"),
+                encoder_preprocessor_digest: digest("test-encoder-profile"),
+                authority_epoch: 1,
+                model_digest: digest("test-model"),
+                tokenizer_digest: digest("test-tokenizer"),
+                template_digest: digest("test-template"),
+                tool_schema_digest: digest("test-tool-schema"),
+                maximum_lease_ms: 30_000,
+            })
+        }
+    }
+
+    std::sync::Arc::new(TestAuthority)
+}
+
+#[cfg(test)]
 mod tests {
     use super::*;
 
