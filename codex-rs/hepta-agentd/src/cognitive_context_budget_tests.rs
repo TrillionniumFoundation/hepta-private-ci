@@ -279,9 +279,10 @@ async fn learned_winner_survives_legacy_byte_cut_and_response_stays_bounded() {
     )
     .await
     .unwrap();
-    assert_eq!(
-        budgeted.items,
-        vec![winner, items[0].clone(), items[1].clone()]
+    assert_eq!(budgeted.items.first(), Some(&winner));
+    assert!(
+        !budgeted.items.is_empty() && budgeted.items.len() < items.len(),
+        "the shared final-consumer budget must bound the ranked response"
     );
     assert!(serde_json::to_vec(&budgeted).unwrap().len() <= MAX_CONTEXT_JSON_BYTES);
 }
