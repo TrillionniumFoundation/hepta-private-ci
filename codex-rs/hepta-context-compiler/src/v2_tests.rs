@@ -8,6 +8,105 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+#[derive(Clone, Copy)]
+struct ByteTokenizer;
+
+impl ExactTokenizerV2 for ByteTokenizer {
+    fn tokenizer_digest(&self) -> Digest32 {
+        digest("tokenizer")
+    }
+
+    fn count_tokens(&self, bytes: &[u8]) -> Result<u64, ContextCompilerV2Error> {
+        Ok(u64::try_from(bytes.len()).unwrap_or(u64::MAX))
+    }
+}
+
+#[derive(Clone, Copy)]
+struct TestAdmissionVerifier {
+    accept_record: bool,
+    accept_snapshot: bool,
+}
+
+impl ContextAdmissionVerifierV2 for TestAdmissionVerifier {
+    fn verifier_digest(&self) -> Digest32 {
+        digest("admission-verifier")
+    }
+
+    fn verify_record(&self, _record: &ContextAdmissionRecordV2) -> bool {
+        self.accept_record
+    }
+
+    fn verify_snapshot(&self, _snapshot: &ContextAdmissionSnapshotV2) -> bool {
+        self.accept_snapshot
+    }
+}
+
+fn verifier() -> TestAdmissionVerifier {
+    TestAdmissionVerifier {
+        accept_record: true,
+        accept_snapshot: true,
+    }
+}
+
+struct FramingSerializer {
+    overhead: usize,
+}
+
+impl ContextSerializerV2 for FramingSerializer {
+    fn template_digest(&self) -> Digest32 {
+        digest("template")
+    }
+
+    fn tool_schema_digest(&self) -> Digest32 {
+        digest("tool-schema")
+    }
+
+    fn serialize(
+        &self,
+        items: &[ContextRealizedItemV2],
+    ) -> Result<Vec<u8>, ContextCompilerV2Error> {
+        let mut payload = vec![b'F'; self.overhead];
+        for item in items {
+            payload.extend_from_slice(&item.content);
+        }
+        Ok(payload)
+    }
+}
+
+struct TestTransport {
+    transmitted_override: Option<Digest32>,
+    terminal_observed: bool,
+    disposition: ContextDeliveryDispositionV2,
+    acknowledgement: bool,
+}
+
+impl ContextTransportV2 for TestTransport {
+    fn transport_digest(&self) -> Digest32 {
+        digest("transport-adapter")
+    }
+
+    fn send(
+        &self,
+        payload: &[u8],
+        _model_profile_digest: Digest32,
+    ) -> Result<ContextTransportEvidenceV2, ContextCompilerV2Error> {
+        Ok(ContextTransportEvidenceV2 {
+            provider_request_id: id("provider:request:1"),
+            transmitted_payload_digest: self
+                .transmitted_override
+                .unwrap_or_else(|| Digest32::of_bytes(payload)),
+            acknowledgement_digest: if self.acknowledgement {
+                digest("provider-ack")
+            } else {
+                Digest32::ZERO
+            },
+            terminal_observed: self.terminal_observed,
+            disposition: self.disposition,
+            observed_unix_ms: 10,
+        })
+    }
+}
+
 fn profile() -> ContextModelProfileV2 {
     ContextModelProfileV2 {
         model_digest: digest("model"),
@@ -18,43 +117,94 @@ fn profile() -> ContextModelProfileV2 {
     }
 }
 
+fn verified_snapshot(
+    snapshot_id: &str,
+    observed_unix_ms: u64,
+    revocation_epoch: u64,
+    revoked: Vec<StableId>,
+) -> VerifiedAdmissionSnapshotV2 {
+    let raw = ContextAdmissionSnapshotV2::new(
+        id(snapshot_id),
+        observed_unix_ms,
+        revocation_epoch,
+        revoked,
+    )
+    .unwrap_or_else(|error| panic!("valid snapshot: {error}"));
+    verify_admission_snapshot_v2(raw, &verifier())
+        .unwrap_or_else(|error| panic!("verified snapshot: {error}"))
+}
+
+fn content_bytes(item_id: &str, token_count: u64) -> Vec<u8> {
+    let len = usize::try_from(token_count).unwrap_or(usize::MAX);
+    let source = item_id.as_bytes();
+    let mut content = vec![b'x'; len];
+    if !source.is_empty() {
+        for (index, byte) in content.iter_mut().enumerate() {
+            *byte = source[index % source.len()];
+        }
+    }
+    content
+}
+
 fn candidate(
     item_id: &str,
     role: ContextRoleV2,
     token_count: u64,
     expected_value: FixedQ32,
-) -> ContextCandidateV2 {
-    let content_digest = digest(&format!("content:{item_id}"));
-    ContextCandidateV2 {
-        item_id: id(item_id),
+    snapshot: &VerifiedAdmissionSnapshotV2,
+) -> (ContextCandidateV2, ContextRealizedItemV2) {
+    let content = content_bytes(item_id, token_count);
+    let tokenizer = ByteTokenizer;
+    let tokenization = TokenizationReceiptV2::from_exact_bytes(
+        id(item_id),
+        &content,
+        &tokenizer,
+    )
+    .unwrap_or_else(|error| panic!("valid tokenization: {error}"));
+    let source_digest = digest(&format!("source:{item_id}"));
+    let record = ContextAdmissionRecordV2::new(
+        id(&format!("admission:{item_id}")),
+        id(item_id),
         role,
-        content_digest,
-        source_digest: digest(&format!("source:{item_id}")),
-        generation_vector_digest: digest("generation-vector"),
-        tokenization: TokenizationReceiptV2::new(
-            id(item_id),
-            content_digest,
-            digest("tokenizer"),
-            token_count,
-        )
-        .unwrap_or_else(|error| panic!("valid tokenization: {error}")),
-        expected_value,
-        trusted_admission_digest: match role {
-            ContextRoleV2::TrustedInstruction | ContextRoleV2::Schema => {
-                Some(digest(&format!("admission:{item_id}")))
-            }
-            ContextRoleV2::UntrustedEvidence => None,
+        tokenization.content_digest(),
+        source_digest,
+        digest("generation-vector"),
+        1,
+        1_000,
+    )
+    .unwrap_or_else(|error| panic!("valid admission record: {error}"));
+    let admission = verify_admission_v2(record, snapshot, &verifier())
+        .unwrap_or_else(|error| panic!("valid admission: {error}"));
+    (
+        ContextCandidateV2 {
+            item_id: id(item_id),
+            role,
+            content_digest: tokenization.content_digest(),
+            source_digest,
+            generation_vector_digest: digest("generation-vector"),
+            tokenization,
+            expected_value,
+            admission,
+            contains_secret: false,
         },
-        contains_secret: false,
-    }
+        ContextRealizedItemV2 {
+            item_id: id(item_id),
+            role,
+            content,
+        },
+    )
 }
 
-fn request(candidates: Vec<ContextCandidateV2>, token_budget: u64) -> ContextCompilationRequestV2 {
+fn request(
+    candidates: Vec<ContextCandidateV2>,
+    token_budget: u64,
+) -> ContextCompilationRequestV2 {
     ContextCompilationRequestV2 {
         compilation_id: id("compilation:1"),
         objective_digest: digest("objective"),
         prompt_portfolio_digest: digest("portfolio"),
         generation_vector_digest: digest("generation-vector"),
+        admission_verifier_digest: digest("admission-verifier"),
         model_profile: profile(),
         token_budget,
         truncation_policy_digest: digest("truncation-policy"),
@@ -65,24 +215,34 @@ fn request(candidates: Vec<ContextCandidateV2>, token_budget: u64) -> ContextCom
 
 #[test]
 fn deterministic_value_per_token_preserves_mandatory_floors() {
-    let trusted = candidate(
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let (trusted, _) = candidate(
         "item:trusted",
         ContextRoleV2::TrustedInstruction,
         40,
         FixedQ32::ONE,
+        &snapshot,
     );
-    let schema = candidate("item:schema", ContextRoleV2::Schema, 20, FixedQ32::ONE);
-    let high_ratio = candidate(
+    let (schema, _) = candidate(
+        "item:schema",
+        ContextRoleV2::Schema,
+        20,
+        FixedQ32::ONE,
+        &snapshot,
+    );
+    let (high_ratio, _) = candidate(
         "item:high-ratio",
         ContextRoleV2::UntrustedEvidence,
         20,
         FixedQ32::from_raw(1_i64 << 31),
+        &snapshot,
     );
-    let low_ratio = candidate(
+    let (low_ratio, _) = candidate(
         "item:low-ratio",
         ContextRoleV2::UntrustedEvidence,
         40,
         FixedQ32::from_raw(1_i64 << 31),
+        &snapshot,
     );
     let candidates = vec![
         low_ratio.clone(),
@@ -92,10 +252,12 @@ fn deterministic_value_per_token_preserves_mandatory_floors() {
     ];
     let mut reversed = candidates.clone();
     reversed.reverse();
+
     let left = compile_v2(request(candidates, 80))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
     let right = compile_v2(request(reversed, 80))
         .unwrap_or_else(|error| panic!("valid compilation: {error}"));
+
     assert_eq!(left, right);
     assert_eq!(left.receipt.used_tokens, 80);
     assert_eq!(
@@ -107,13 +269,21 @@ fn deterministic_value_per_token_preserves_mandatory_floors() {
 
 #[test]
 fn tiny_budget_refuses_instead_of_truncating_instruction_or_schema() {
-    let trusted = candidate(
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let (trusted, _) = candidate(
         "item:trusted",
         ContextRoleV2::TrustedInstruction,
         40,
         FixedQ32::ONE,
+        &snapshot,
     );
-    let schema = candidate("item:schema", ContextRoleV2::Schema, 20, FixedQ32::ONE);
+    let (schema, _) = candidate(
+        "item:schema",
+        ContextRoleV2::Schema,
+        20,
+        FixedQ32::ONE,
+        &snapshot,
+    );
     assert_eq!(
         compile_v2(request(vec![trusted, schema], 50)),
         Err(ContextCompilerV2Error::InsufficientMandatoryBudget {
@@ -124,60 +294,395 @@ fn tiny_budget_refuses_instead_of_truncating_instruction_or_schema() {
 }
 
 #[test]
-fn mandatory_evidence_group_is_all_or_nothing() {
-    let first = candidate(
+fn mandatory_group_policy_is_bound_even_when_selected_set_is_identical() {
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let (first, _) = candidate(
         "item:citation",
         ContextRoleV2::UntrustedEvidence,
         30,
-        FixedQ32::ZERO,
+        FixedQ32::ONE,
+        &snapshot,
     );
-    let second = candidate(
+    let (second, _) = candidate(
         "item:contradiction",
         ContextRoleV2::UntrustedEvidence,
         30,
-        FixedQ32::ZERO,
+        FixedQ32::ONE,
+        &snapshot,
     );
-    let mut grouped = request(vec![first.clone(), second.clone()], 60);
-    grouped.mandatory_groups = vec![MandatoryContextGroupV2 {
+
+    let ungrouped = compile_v2(request(vec![first.clone(), second.clone()], 60))
+        .unwrap_or_else(|error| panic!("valid ungrouped compilation: {error}"));
+    let mut grouped_request = request(vec![first, second], 60);
+    grouped_request.mandatory_groups = vec![MandatoryContextGroupV2 {
         group_id: id("group:evidence"),
-        item_ids: vec![first.item_id.clone(), second.item_id.clone()],
+        item_ids: vec![id("item:citation"), id("item:contradiction")],
         reason_digest: digest("citation-contradiction-obligation"),
     }];
-    let compiled =
-        compile_v2(grouped).unwrap_or_else(|error| panic!("valid grouped compilation: {error}"));
+    let grouped = compile_v2(grouped_request)
+        .unwrap_or_else(|error| panic!("valid grouped compilation: {error}"));
+
     assert_eq!(
-        compiled.receipt.selected_item_ids,
-        vec![first.item_id, second.item_id]
+        ungrouped.receipt.selected_item_ids,
+        grouped.receipt.selected_item_ids
+    );
+    assert_ne!(
+        ungrouped.receipt.mandatory_groups_digest,
+        grouped.receipt.mandatory_groups_digest
+    );
+    assert_ne!(ungrouped.receipt.receipt_digest, grouped.receipt.receipt_digest);
+}
+
+#[test]
+fn well_formed_admission_digest_is_not_enough_without_verifier_acceptance() {
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let content = content_bytes("item:trusted", 20);
+    let record = ContextAdmissionRecordV2::new(
+        id("admission:item:trusted"),
+        id("item:trusted"),
+        ContextRoleV2::TrustedInstruction,
+        Digest32::of_bytes(&content),
+        digest("source:item:trusted"),
+        digest("generation-vector"),
+        1,
+        1_000,
+    )
+    .unwrap_or_else(|error| panic!("valid admission record: {error}"));
+    let rejecting = TestAdmissionVerifier {
+        accept_record: false,
+        accept_snapshot: true,
+    };
+
+    assert_eq!(
+        verify_admission_v2(record, &snapshot, &rejecting),
+        Err(ContextCompilerV2Error::AdmissionRecordUnverified(
+            "admission:item:trusted".to_string()
+        ))
     );
 }
 
 #[test]
-fn tokenizer_generation_secret_and_role_drift_fail_closed() {
-    let mut wrong_tokenizer = candidate(
-        "item:wrong-tokenizer",
-        ContextRoleV2::UntrustedEvidence,
-        10,
+fn admission_role_binding_prevents_evidence_instruction_confusion() {
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let (mut trusted, _) = candidate(
+        "item:trusted",
+        ContextRoleV2::TrustedInstruction,
+        20,
         FixedQ32::ONE,
+        &snapshot,
     );
-    wrong_tokenizer.tokenization = TokenizationReceiptV2::new(
-        wrong_tokenizer.item_id.clone(),
-        wrong_tokenizer.content_digest,
-        digest("different-tokenizer"),
-        10,
-    )
-    .unwrap_or_else(|error| panic!("valid alternate receipt: {error}"));
+    trusted.role = ContextRoleV2::UntrustedEvidence;
+
     assert_eq!(
-        compile_v2(request(vec![wrong_tokenizer], 100)),
-        Err(ContextCompilerV2Error::TokenizerMismatch(
-            "item:wrong-tokenizer".to_string()
+        compile_v2(request(vec![trusted], 100)),
+        Err(ContextCompilerV2Error::AdmissionBindingMismatch(
+            "item:trusted".to_string()
         ))
     );
+}
 
-    let mut stale = candidate(
+#[test]
+fn attachment_revalidation_rejects_compile_then_revoke_toc_tou() {
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let (trusted, realized) = candidate(
+        "item:trusted",
+        ContextRoleV2::TrustedInstruction,
+        20,
+        FixedQ32::ONE,
+        &snapshot,
+    );
+    let admission_id = trusted.admission.admission_id().clone();
+    let compiled = compile_v2(request(vec![trusted], 100))
+        .unwrap_or_else(|error| panic!("valid compilation: {error}"));
+    let serialization = record_serialization(
+        &compiled,
+        &profile(),
+        id("serialization:1"),
+        vec![realized],
+        &FramingSerializer { overhead: 0 },
+        &ByteTokenizer,
+    )
+    .unwrap_or_else(|error| panic!("valid serialization: {error}"));
+    let revoked_snapshot =
+        verified_snapshot("snapshot:2", 20, 2, vec![admission_id.clone()]);
+
+    assert_eq!(
+        build_attachment(
+            &compiled,
+            &serialization,
+            &profile(),
+            &revoked_snapshot,
+            id("attachment:1"),
+        ),
+        Err(ContextCompilerV2Error::AdmissionRevoked(
+            admission_id.to_string()
+        ))
+    );
+}
+
+#[test]
+fn serialization_validates_real_bytes_and_tokenizes_final_payload() {
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let (trusted, realized) = candidate(
+        "item:trusted",
+        ContextRoleV2::TrustedInstruction,
+        20,
+        FixedQ32::ONE,
+        &snapshot,
+    );
+    let compiled = compile_v2(request(vec![trusted], 100))
+        .unwrap_or_else(|error| panic!("valid compilation: {error}"));
+
+    let serialization = record_serialization(
+        &compiled,
+        &profile(),
+        id("serialization:1"),
+        vec![realized],
+        &FramingSerializer { overhead: 7 },
+        &ByteTokenizer,
+    )
+    .unwrap_or_else(|error| panic!("valid exact serialization: {error}"));
+
+    assert_eq!(compiled.receipt.used_tokens, 20);
+    assert_eq!(serialization.receipt.serialized_token_count, 27);
+    assert_eq!(
+        serialization.receipt.payload_digest,
+        Digest32::of_bytes(&serialization.payload)
+    );
+}
+
+#[test]
+fn serialization_rejects_payload_realization_that_does_not_match_selected_digest() {
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let (trusted, mut realized) = candidate(
+        "item:trusted",
+        ContextRoleV2::TrustedInstruction,
+        20,
+        FixedQ32::ONE,
+        &snapshot,
+    );
+    let compiled = compile_v2(request(vec![trusted], 100))
+        .unwrap_or_else(|error| panic!("valid compilation: {error}"));
+    realized.content[0] ^= 1;
+
+    assert_eq!(
+        record_serialization(
+            &compiled,
+            &profile(),
+            id("serialization:1"),
+            vec![realized],
+            &FramingSerializer { overhead: 0 },
+            &ByteTokenizer,
+        ),
+        Err(ContextCompilerV2Error::RealizedContentMismatch(
+            "item:trusted".to_string()
+        ))
+    );
+}
+
+#[test]
+fn final_serialized_token_count_must_fit_budget_including_framing() {
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let (trusted, realized) = candidate(
+        "item:trusted",
+        ContextRoleV2::TrustedInstruction,
+        20,
+        FixedQ32::ONE,
+        &snapshot,
+    );
+    let compiled = compile_v2(request(vec![trusted], 20))
+        .unwrap_or_else(|error| panic!("valid compilation: {error}"));
+
+    assert_eq!(
+        record_serialization(
+            &compiled,
+            &profile(),
+            id("serialization:1"),
+            vec![realized],
+            &FramingSerializer { overhead: 1 },
+            &ByteTokenizer,
+        ),
+        Err(ContextCompilerV2Error::SerializedTokenBudgetExceeded {
+            serialized_tokens: 21,
+            token_budget: 20,
+        })
+    );
+}
+
+#[test]
+fn delivery_receipt_is_created_only_from_transport_invoked_with_exact_payload() {
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let (trusted, realized) = candidate(
+        "item:trusted",
+        ContextRoleV2::TrustedInstruction,
+        20,
+        FixedQ32::ONE,
+        &snapshot,
+    );
+    let compiled = compile_v2(request(vec![trusted], 100))
+        .unwrap_or_else(|error| panic!("valid compilation: {error}"));
+    let serialization = record_serialization(
+        &compiled,
+        &profile(),
+        id("serialization:1"),
+        vec![realized],
+        &FramingSerializer { overhead: 0 },
+        &ByteTokenizer,
+    )
+    .unwrap_or_else(|error| panic!("valid serialization: {error}"));
+    let attachment = build_attachment(
+        &compiled,
+        &serialization,
+        &profile(),
+        &snapshot,
+        id("attachment:1"),
+    )
+    .unwrap_or_else(|error| panic!("valid attachment: {error}"));
+    let transport = TestTransport {
+        transmitted_override: None,
+        terminal_observed: true,
+        disposition: ContextDeliveryDispositionV2::Delivered,
+        acknowledgement: true,
+    };
+
+    let delivery = deliver_context_v2(
+        &compiled,
+        &serialization,
+        &attachment,
+        &profile(),
+        &snapshot,
+        id("delivery:1"),
+        &transport,
+    )
+    .unwrap_or_else(|error| panic!("valid delivery: {error}"));
+
+    assert_eq!(delivery.disposition, ContextDeliveryDispositionV2::Delivered);
+    assert_eq!(
+        delivery.payload_digest,
+        Digest32::of_bytes(&serialization.payload)
+    );
+    assert!(!delivery.acknowledgement_digest.is_zero());
+    assert_eq!(delivery.authority, AuthorityPosture::DENY_ALL);
+    delivery
+        .validate_for(&attachment, &serialization)
+        .unwrap_or_else(|error| panic!("valid delivery receipt: {error}"));
+}
+
+#[test]
+fn transport_cannot_claim_delivery_of_different_payload() {
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let (evidence, realized) = candidate(
+        "item:evidence",
+        ContextRoleV2::UntrustedEvidence,
+        20,
+        FixedQ32::ONE,
+        &snapshot,
+    );
+    let compiled = compile_v2(request(vec![evidence], 100))
+        .unwrap_or_else(|error| panic!("valid compilation: {error}"));
+    let serialization = record_serialization(
+        &compiled,
+        &profile(),
+        id("serialization:1"),
+        vec![realized],
+        &FramingSerializer { overhead: 0 },
+        &ByteTokenizer,
+    )
+    .unwrap_or_else(|error| panic!("valid serialization: {error}"));
+    let attachment = build_attachment(
+        &compiled,
+        &serialization,
+        &profile(),
+        &snapshot,
+        id("attachment:1"),
+    )
+    .unwrap_or_else(|error| panic!("valid attachment: {error}"));
+    let transport = TestTransport {
+        transmitted_override: Some(digest("different-payload")),
+        terminal_observed: true,
+        disposition: ContextDeliveryDispositionV2::Delivered,
+        acknowledgement: true,
+    };
+
+    assert_eq!(
+        deliver_context_v2(
+            &compiled,
+            &serialization,
+            &attachment,
+            &profile(),
+            &snapshot,
+            id("delivery:1"),
+            &transport,
+        ),
+        Err(ContextCompilerV2Error::DeliveryMismatch)
+    );
+}
+
+#[test]
+fn delivery_revalidates_again_and_rejects_revocation_after_attachment() {
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let (trusted, realized) = candidate(
+        "item:trusted",
+        ContextRoleV2::TrustedInstruction,
+        20,
+        FixedQ32::ONE,
+        &snapshot,
+    );
+    let admission_id = trusted.admission.admission_id().clone();
+    let compiled = compile_v2(request(vec![trusted], 100))
+        .unwrap_or_else(|error| panic!("valid compilation: {error}"));
+    let serialization = record_serialization(
+        &compiled,
+        &profile(),
+        id("serialization:1"),
+        vec![realized],
+        &FramingSerializer { overhead: 0 },
+        &ByteTokenizer,
+    )
+    .unwrap_or_else(|error| panic!("valid serialization: {error}"));
+    let attachment = build_attachment(
+        &compiled,
+        &serialization,
+        &profile(),
+        &snapshot,
+        id("attachment:1"),
+    )
+    .unwrap_or_else(|error| panic!("valid attachment: {error}"));
+    let revoked_snapshot =
+        verified_snapshot("snapshot:2", 20, 2, vec![admission_id.clone()]);
+    let transport = TestTransport {
+        transmitted_override: None,
+        terminal_observed: true,
+        disposition: ContextDeliveryDispositionV2::Delivered,
+        acknowledgement: true,
+    };
+
+    assert_eq!(
+        deliver_context_v2(
+            &compiled,
+            &serialization,
+            &attachment,
+            &profile(),
+            &revoked_snapshot,
+            id("delivery:1"),
+            &transport,
+        ),
+        Err(ContextCompilerV2Error::AdmissionRevoked(
+            admission_id.to_string()
+        ))
+    );
+}
+
+#[test]
+fn tokenizer_generation_secret_and_profile_drift_fail_closed() {
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+
+    let (mut stale, _) = candidate(
         "item:stale",
         ContextRoleV2::UntrustedEvidence,
         10,
         FixedQ32::ONE,
+        &snapshot,
     );
     stale.generation_vector_digest = digest("stale-vector");
     assert_eq!(
@@ -187,11 +692,12 @@ fn tokenizer_generation_secret_and_role_drift_fail_closed() {
         ))
     );
 
-    let mut secret = candidate(
+    let (mut secret, _) = candidate(
         "item:secret",
         ContextRoleV2::UntrustedEvidence,
         10,
         FixedQ32::ONE,
+        &snapshot,
     );
     secret.contains_secret = true;
     assert_eq!(
@@ -201,110 +707,26 @@ fn tokenizer_generation_secret_and_role_drift_fail_closed() {
         ))
     );
 
-    let mut confused = candidate(
-        "item:confused",
+    let (candidate, realized) = candidate(
+        "item:profile",
         ContextRoleV2::UntrustedEvidence,
         10,
         FixedQ32::ONE,
+        &snapshot,
     );
-    confused.trusted_admission_digest = Some(digest("fake-admission"));
+    let compiled = compile_v2(request(vec![candidate], 100))
+        .unwrap_or_else(|error| panic!("valid compilation: {error}"));
+    let mut wrong_profile = profile();
+    wrong_profile.template_digest = digest("different-template");
     assert_eq!(
-        compile_v2(request(vec![confused], 100)),
-        Err(ContextCompilerV2Error::EvidenceRoleConfusion(
-            "item:confused".to_string()
-        ))
-    );
-}
-
-#[test]
-fn compilation_serialization_attachment_and_delivery_form_one_digest_chain() {
-    let compiled = compile_v2(request(
-        vec![candidate(
-            "item:trusted",
-            ContextRoleV2::TrustedInstruction,
-            20,
-            FixedQ32::ONE,
-        )],
-        100,
-    ))
-    .unwrap_or_else(|error| panic!("valid compilation: {error}"));
-    let serialization =
-        record_serialization(&compiled, id("serialization:1"), digest("exact-payload"))
-            .unwrap_or_else(|error| panic!("valid serialization: {error}"));
-    let attachment = build_attachment(&compiled, &serialization, id("attachment:1"))
-        .unwrap_or_else(|error| panic!("valid attachment: {error}"));
-    let observation = observe_delivery(
-        &attachment,
-        id("observation:1"),
-        Some(digest("exact-payload")),
-        true,
-        ContextDeliveryDispositionV2::Delivered,
-        10,
-    )
-    .unwrap_or_else(|error| panic!("valid delivery: {error}"));
-    assert_eq!(observation.authority, AuthorityPosture::DENY_ALL);
-    observation
-        .validate_for(&attachment)
-        .unwrap_or_else(|error| panic!("valid observation: {error}"));
-}
-
-#[test]
-fn delivery_payload_mismatch_cannot_receive_delivered_status() {
-    let compiled = compile_v2(request(
-        vec![candidate(
-            "item:evidence",
-            ContextRoleV2::UntrustedEvidence,
-            20,
-            FixedQ32::ONE,
-        )],
-        100,
-    ))
-    .unwrap_or_else(|error| panic!("valid compilation: {error}"));
-    let serialization =
-        record_serialization(&compiled, id("serialization:1"), digest("expected-payload"))
-            .unwrap_or_else(|error| panic!("valid serialization: {error}"));
-    let attachment = build_attachment(&compiled, &serialization, id("attachment:1"))
-        .unwrap_or_else(|error| panic!("valid attachment: {error}"));
-    assert_eq!(
-        observe_delivery(
-            &attachment,
-            id("observation:1"),
-            Some(digest("different-payload")),
-            true,
-            ContextDeliveryDispositionV2::Delivered,
-            10,
+        record_serialization(
+            &compiled,
+            &wrong_profile,
+            id("serialization:1"),
+            vec![realized],
+            &FramingSerializer { overhead: 0 },
+            &ByteTokenizer,
         ),
-        Err(ContextCompilerV2Error::DeliveryMismatch)
-    );
-}
-
-#[test]
-fn nonterminal_delivery_is_indeterminate_not_success() {
-    let compiled = compile_v2(request(
-        vec![candidate(
-            "item:evidence",
-            ContextRoleV2::UntrustedEvidence,
-            20,
-            FixedQ32::ONE,
-        )],
-        100,
-    ))
-    .unwrap_or_else(|error| panic!("valid compilation: {error}"));
-    let serialization = record_serialization(&compiled, id("serialization:1"), digest("payload"))
-        .unwrap_or_else(|error| panic!("valid serialization: {error}"));
-    let attachment = build_attachment(&compiled, &serialization, id("attachment:1"))
-        .unwrap_or_else(|error| panic!("valid attachment: {error}"));
-    let observation = observe_delivery(
-        &attachment,
-        id("observation:1"),
-        None,
-        false,
-        ContextDeliveryDispositionV2::Indeterminate,
-        10,
-    )
-    .unwrap_or_else(|error| panic!("valid indeterminate observation: {error}"));
-    assert_eq!(
-        observation.disposition,
-        ContextDeliveryDispositionV2::Indeterminate
+        Err(ContextCompilerV2Error::ModelProfileMismatch)
     );
 }
