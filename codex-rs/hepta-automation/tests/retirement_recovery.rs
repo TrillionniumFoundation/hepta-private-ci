@@ -92,7 +92,7 @@ async fn unknown_dispatch_cannot_be_released_as_a_pre_dispatch_retry() -> TestRe
     assert_eq!(reopened.uncertain_dispatches(/*limit*/ 10).await?.len(), 1);
     assert_eq!(
         reopened
-            .recover_stale_generation(/*current_generation*/ 2)
+            .recover_stale_generation(/*current_generation*/ 2, 100_000)
             .await?,
         0
     );
@@ -150,7 +150,7 @@ async fn all_release_paths_preserve_disable_and_cancel_across_restart() -> TestR
                 ReleasePath::StaleGeneration => {
                     assert_eq!(
                         store
-                            .recover_stale_generation(/*current_generation*/ 2)
+                            .recover_stale_generation(/*current_generation*/ 2, 100_000)
                             .await?,
                         1
                     );
