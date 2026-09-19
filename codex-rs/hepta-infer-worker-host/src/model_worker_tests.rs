@@ -196,7 +196,6 @@ fn lost_driver_terminality_is_indeterminate() {
     assert_eq!(observed.output_digest, None);
 }
 
-
 #[derive(Debug)]
 struct Verifier;
 
