@@ -359,7 +359,7 @@ impl CanonicalLearningProtocol for LearningDecisionV1 {
         if self.propensity_ppm == 0 || self.propensity_ppm > 1_000_000 {
             return Err(ProtocolAdapterError::InvalidValue("propensityPpm"));
         }
-        if self.random_seed_digest.is_some_and(Digest32::is_zero) {
+        if self.random_seed_digest.is_some_and(|digest| digest.is_zero()) {
             return Err(ProtocolAdapterError::InvalidValue("randomSeedDigest"));
         }
         Ok(())
