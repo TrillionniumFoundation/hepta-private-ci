@@ -24,6 +24,7 @@ use crate::RegistrySnapshotReceipt;
 use crate::WithdrawalBoundArtifactAdmissionV3;
 use crate::validate_artifact_publication_v3;
 use crate::validate_registry_head_witness;
+use crate::verify_artifact_admission_v3;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ArtifactPublicationPhaseV1 {
@@ -261,6 +262,11 @@ impl ArtifactPublicationTransactionV1 {
     pub fn from_snapshot(
         snapshot: ArtifactPublicationTransactionSnapshotV1,
     ) -> Result<Self, ArtifactPublicationError> {
+        verify_artifact_admission_v3(
+            &snapshot.intent.admission,
+            snapshot.intent.admission.withdrawal_head_digest,
+            snapshot.intent.admission.admitted_at,
+        )?;
         let expected_intent = digest_intent(
             &snapshot.intent.operation_id,
             &snapshot.intent.admission,
@@ -399,13 +405,13 @@ fn digest_state(
 }
 
 fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
-    let raw = value.as_str().as_bytes();
-    bytes.extend_from_slice(&(raw.len() as u32).to_be_bytes());
-    bytes.extend_from_slice(raw);
+    bytes.extend_from_slice(value.as_str().as_bytes());
+    bytes.push(0);
 }
 
 fn push_usize(bytes: &mut Vec<u8>, value: usize) {
-    bytes.extend_from_slice(&(value as u64).to_be_bytes());
+    bytes.extend_from_slice(value.to_string().as_bytes());
+    bytes.push(0);
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
