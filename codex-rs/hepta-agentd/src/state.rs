@@ -287,17 +287,30 @@ impl AgentdState {
             && !runtime.fenced)
     }
 
+    fn mutate_runs<T>(
+        &self,
+        operation: impl FnOnce(&mut AgentRunCoordinator) -> Result<T, AgentRunError>,
+    ) -> Result<T, AgentdError> {
+        let mut current = self.run_coordinator.lock().map_err(poisoned_state)?;
+        let before = current.recovery_state();
+        let mut next = current.clone();
+        let result = operation(&mut next).map_err(run_error)?;
+        if next.recovery_state() != before {
+            // Durability is the linearization point for lifecycle metadata.
+            // A failed write/sync/rename must never publish a state transition
+            // that a restarted owner cannot recover.
+            persist_run_state(&self.run_state_path, &next)?;
+            *current = next;
+        }
+        Ok(result)
+    }
+
     pub(crate) fn run_start(
         &self,
         now_ms: u64,
         snapshot: RunSnapshot,
     ) -> Result<RunReceipt, AgentdError> {
-        let mut coordinator = self.run_coordinator.lock().map_err(poisoned_state)?;
-        let receipt = coordinator
-            .start_run(now_ms, snapshot)
-            .map_err(run_error)?;
-        persist_run_state(&self.run_state_path, &coordinator)?;
-        Ok(receipt)
+        self.mutate_runs(|coordinator| coordinator.start_run(now_ms, snapshot))
     }
 
     pub(crate) fn run_attach_context(
@@ -306,12 +319,9 @@ impl AgentdState {
         expected_revision: u64,
         attachment: ContextAttachment,
     ) -> Result<RunReceipt, AgentdError> {
-        let mut coordinator = self.run_coordinator.lock().map_err(poisoned_state)?;
-        let receipt = coordinator
-            .attach_context(now_ms, expected_revision, attachment)
-            .map_err(run_error)?;
-        persist_run_state(&self.run_state_path, &coordinator)?;
-        Ok(receipt)
+        self.mutate_runs(|coordinator| {
+            coordinator.attach_context(now_ms, expected_revision, attachment)
+        })
     }
 
     pub(crate) fn run_mark_dispatched(
@@ -320,12 +330,9 @@ impl AgentdState {
         run_id: &str,
         expected_revision: u64,
     ) -> Result<RunReceipt, AgentdError> {
-        let mut coordinator = self.run_coordinator.lock().map_err(poisoned_state)?;
-        let receipt = coordinator
-            .mark_dispatched(now_ms, run_id, expected_revision)
-            .map_err(run_error)?;
-        persist_run_state(&self.run_state_path, &coordinator)?;
-        Ok(receipt)
+        self.mutate_runs(|coordinator| {
+            coordinator.mark_dispatched(now_ms, run_id, expected_revision)
+        })
     }
 
     pub(crate) fn run_cancel(
@@ -334,12 +341,7 @@ impl AgentdState {
         expected_revision: u64,
         reason: &str,
     ) -> Result<(CancellationDisposition, RunReceipt), AgentdError> {
-        let mut coordinator = self.run_coordinator.lock().map_err(poisoned_state)?;
-        let result = coordinator
-            .cancel_run(run_id, expected_revision, reason)
-            .map_err(run_error)?;
-        persist_run_state(&self.run_state_path, &coordinator)?;
-        Ok(result)
+        self.mutate_runs(|coordinator| coordinator.cancel_run(run_id, expected_revision, reason))
     }
 
     pub(crate) fn run_observe_terminal(
@@ -349,12 +351,9 @@ impl AgentdState {
         phase: crate::RunPhase,
         terminal_observed: bool,
     ) -> Result<RunReceipt, AgentdError> {
-        let mut coordinator = self.run_coordinator.lock().map_err(poisoned_state)?;
-        let receipt = coordinator
-            .observe_terminal(run_id, expected_revision, phase, terminal_observed)
-            .map_err(run_error)?;
-        persist_run_state(&self.run_state_path, &coordinator)?;
-        Ok(receipt)
+        self.mutate_runs(|coordinator| {
+            coordinator.observe_terminal(run_id, expected_revision, phase, terminal_observed)
+        })
     }
 
     pub(crate) fn run_status(&self, run_id: &str) -> Result<Option<RunReceipt>, AgentdError> {
@@ -367,41 +366,29 @@ impl AgentdState {
         run_id: &str,
         expected_revision: u64,
     ) -> Result<RunReceipt, AgentdError> {
-        let mut coordinator = self.run_coordinator.lock().map_err(poisoned_state)?;
-        let receipt = coordinator
-            .remove_closed_run(run_id, expected_revision)
-            .map_err(run_error)?;
-        persist_run_state(&self.run_state_path, &coordinator)?;
-        Ok(receipt)
+        self.mutate_runs(|coordinator| coordinator.remove_closed_run(run_id, expected_revision))
     }
 
     pub(crate) fn enforce_run_deadlines(&self, now_ms: u64) -> Result<usize, AgentdError> {
-        let mut coordinator = self.run_coordinator.lock().map_err(poisoned_state)?;
-        let changed = coordinator.enforce_deadlines(now_ms).map_err(run_error)?;
-        if !changed.is_empty() {
-            persist_run_state(&self.run_state_path, &coordinator)?;
-        }
-        Ok(changed.len())
+        self.mutate_runs(|coordinator| {
+            coordinator
+                .enforce_deadlines(now_ms)
+                .map(|changed| changed.len())
+        })
     }
 
     pub(crate) fn begin_run_drain(&self, reason: &str) -> Result<usize, AgentdError> {
-        let mut coordinator = self.run_coordinator.lock().map_err(poisoned_state)?;
-        let changed = coordinator.begin_drain(reason).map_err(run_error)?;
-        if !changed.is_empty() {
-            persist_run_state(&self.run_state_path, &coordinator)?;
-        }
-        Ok(changed.len())
+        self.mutate_runs(|coordinator| {
+            coordinator.begin_drain(reason).map(|changed| changed.len())
+        })
     }
 
     pub(crate) fn mark_unobserved_runs_indeterminate(&self) -> Result<usize, AgentdError> {
-        let mut coordinator = self.run_coordinator.lock().map_err(poisoned_state)?;
-        let changed = coordinator
-            .mark_unobserved_external_indeterminate()
-            .map_err(run_error)?;
-        if !changed.is_empty() {
-            persist_run_state(&self.run_state_path, &coordinator)?;
-        }
-        Ok(changed.len())
+        self.mutate_runs(|coordinator| {
+            coordinator
+                .mark_unobserved_external_indeterminate()
+                .map(|changed| changed.len())
+        })
     }
 
     pub(crate) fn run_drain_complete(&self) -> Result<bool, AgentdError> {
