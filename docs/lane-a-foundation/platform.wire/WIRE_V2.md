@@ -65,7 +65,7 @@ it, negotiation rejects rather than silently downgrading.
 - a per-schema payload byte limit.
 
 JSON admission also enforces nesting <= 32 and at most 1024 total object fields
-before typed deserialization. `TypedWirePayload` plus `encode_typed` provide
+before typed deserialization. `TypedWirePayload` plus `SchemaRegistry::encode_typed` provide
 canonicalized JSON DTO encoding. This layer remains transport/domain neutral and
 does not deserialize permission-bearing runtime authority.
 
