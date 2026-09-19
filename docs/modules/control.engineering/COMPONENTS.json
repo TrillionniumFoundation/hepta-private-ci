@@ -457,7 +457,11 @@
         "KeyCustodyReceipt",
         "verify_production_controls",
         "DistributedRevocationFrontierReceipt",
-        "verify_distributed_revocation_frontier"
+        "verify_distributed_revocation_frontier",
+        "admit_distributed_fence",
+        "verify_persisted_distributed_fence",
+        "distributed_fence_frontier",
+        "store_snapshot_digest"
       ],
       "state": "source_implemented_external_evidence_required",
       "failureModel": [
@@ -481,12 +485,18 @@
         "audit_anchor_receipt_required",
         "audit_anchor_store_required",
         "key_custody_role_separation",
-        "key_custody_receipt_limit"
+        "key_custody_receipt_limit",
+        "distributed_fence_frontier_stale",
+        "distributed_fence_frontier_conflict",
+        "distributed_fence_not_admitted",
+        "distributed_fence_frontier_not_current",
+        "distributed_fence_leader_conflict"
       ],
       "resourceBounds": {
         "authorityMinted": 0
       },
-      "rollback": "production admission remains blocked until fresh externally authenticated, role-separated custody and control receipts exist"
+      "rollback": "production admission remains blocked until fresh externally authenticated, role-separated custody and control receipts exist",
+      "physicalState": "SQLite v6 distributed_fence_frontiers high-water mark plus externally signed revocation/fence receipts, owner-state audit snapshot binding and subject-bound HSM/KMS custody receipts"
     },
     {
       "id": "repository-product-caller",
