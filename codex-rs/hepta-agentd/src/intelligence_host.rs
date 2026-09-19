@@ -8,8 +8,8 @@
 use std::error::Error as StdError;
 use std::fmt;
 
-use codex_hepta_intelligence::IntelligenceContractErrorV1;
 use codex_hepta_intelligence::HostEnvelopePortV3;
+use codex_hepta_intelligence::IntelligenceContractErrorV1;
 use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
 use codex_hepta_intelligence::LaneFStageV3;
 use codex_hepta_intelligence::PortDecisionV3;
@@ -119,10 +119,7 @@ impl HostEnvelopePortV3 for AgentdIntelligenceHostV1 {
     }
 }
 
-fn handoff_failure_digest(
-    input: &PortInputV3,
-    envelope: &IntelligenceHostEnvelopeV1,
-) -> Digest32 {
+fn handoff_failure_digest(input: &PortInputV3, envelope: &IntelligenceHostEnvelopeV1) -> Digest32 {
     let mut bytes = b"hepta.agentd.intelligence-handoff-failure.v1\0".to_vec();
     bytes.extend_from_slice(input.snapshot_digest.as_array());
     bytes.extend_from_slice(input.predecessor_digest.as_array());
@@ -130,10 +127,7 @@ fn handoff_failure_digest(
     Digest32::of_bytes(&bytes)
 }
 
-fn push_id(
-    bytes: &mut Vec<u8>,
-    value: &StableId,
-) -> Result<(), AgentdIntelligenceErrorV1> {
+fn push_id(bytes: &mut Vec<u8>, value: &StableId) -> Result<(), AgentdIntelligenceErrorV1> {
     let raw = value.as_str().as_bytes();
     let length = u32::try_from(raw.len()).map_err(|_| AgentdIntelligenceErrorV1::Arithmetic)?;
     bytes.extend_from_slice(&length.to_be_bytes());
