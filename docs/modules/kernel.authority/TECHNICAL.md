@@ -194,7 +194,7 @@ Applicable work packages:
 
 The bootstrap package is `P0.7B-B0-VERIFIED-USE`. Development, activation and evidence predecessor graphs are distinct and all are enforced. Contract-first work may run in parallel only with non-overlapping write paths and frozen semantics. Each PR records its bounded contracts, domains, denied authorities, resources, rollback and stop conditions. A coordinator-issued envelope is required only at the coordination boundary that consumes it; it is not additional permission for ordinary authorized repository work.
 
-Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. Later planned packages may remain without invalidating documentation closure.
+Source implementation completes only when the declared target root exists, public surfaces match registries, tests pass and exact-head plus merge-candidate evidence is current. External production trust evidence is admitted through `qualification/kernel-authority/verify.py`; that admission is exact-candidate/content-addressed but does not itself activate or release a deployment. Later planned packages may remain without invalidating documentation closure.
 
 ## 14. Activation, compatibility and retirement
 
