@@ -516,9 +516,7 @@ where
     query.validate(now_unix_ms)?;
     lease.validate_for_query(now_unix_ms, &query)?;
     require_current_authority(
-        authority
-            .revalidate(&query, lease, now_unix_ms)
-            .await?,
+        revalidate_authority_bounded(authority, clock, &query, lease).await?,
     )?;
 
     let query_binding_digest = query.binding_digest();
@@ -529,7 +527,8 @@ where
     if dispatch_now_unix_ms >= lease.expires_unix_ms {
         return Err(FederationV2Error::LeaseExpired);
     }
-    let remaining_ms = query.deadline_unix_ms - dispatch_now_unix_ms;
+    let attempt_deadline_unix_ms = query.deadline_unix_ms.min(lease.expires_unix_ms);
+    let remaining_ms = attempt_deadline_unix_ms - dispatch_now_unix_ms;
     let transport_result = tokio::select! {
         _ = cancellation.cancelled(&query.query_id) => {
             FederationTransportResultV2::NonTerminal(FederationTransportOutcomeV2::Cancelled)
@@ -579,9 +578,14 @@ where
         return Err(FederationV2Error::ResponseExpired);
     }
 
-    let authority_state = authority
-        .revalidate(&query, lease, post_transport_now_unix_ms)
-        .await?;
+    let authority_state =
+        match revalidate_authority_bounded(authority, clock, &query, lease).await {
+            Ok(state) => state,
+            Err(FederationV2Error::DeadlineExpired) => {
+                return finalize_indeterminate_result(&query, lease, query_binding_digest);
+            }
+            Err(error) => return Err(error),
+        };
     let post_authority_now_unix_ms = clock.now_unix_ms();
     if post_authority_now_unix_ms >= query.deadline_unix_ms {
         return finalize_indeterminate_result(&query, lease, query_binding_digest);
@@ -655,6 +659,39 @@ where
     result.result_digest = result.compute_result_digest();
     result.validate()?;
     Ok(result)
+}
+
+async fn revalidate_authority_bounded<A, K>(
+    authority: &A,
+    clock: &K,
+    query: &FederatedQueryV2,
+    lease: &FederatedLeaseV2,
+) -> Result<FederationAuthorityStateV2, FederationV2Error>
+where
+    A: FederationAuthorityV2 + ?Sized,
+    K: FederationClockV2 + ?Sized,
+{
+    let now_unix_ms = clock.now_unix_ms();
+    if now_unix_ms >= query.deadline_unix_ms {
+        return Err(FederationV2Error::DeadlineExpired);
+    }
+    if now_unix_ms >= lease.expires_unix_ms {
+        return Err(FederationV2Error::LeaseExpired);
+    }
+    let authority_deadline_unix_ms = query.deadline_unix_ms.min(lease.expires_unix_ms);
+    let remaining_ms = authority_deadline_unix_ms - now_unix_ms;
+    match tokio::time::timeout(
+        Duration::from_millis(remaining_ms),
+        authority.revalidate(query, lease, now_unix_ms),
+    )
+    .await
+    {
+        Ok(result) => result,
+        Err(_) if lease.expires_unix_ms <= query.deadline_unix_ms => {
+            Err(FederationV2Error::LeaseExpired)
+        }
+        Err(_) => Err(FederationV2Error::DeadlineExpired),
+    }
 }
 
 fn require_current_authority(
