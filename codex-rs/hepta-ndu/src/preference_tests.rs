@@ -81,9 +81,11 @@ fn damped_preference_update_emits_context_bound_local_solver_receipts() {
     assert_eq!(termination.disposition, SolveDisposition::Converged);
     assert_eq!(termination.predecessor_digest, predecessor);
     assert!(!receipts.is_empty());
-    assert!(receipts
-        .iter()
-        .all(|receipt| receipt.context_digest() == context_digest()));
+    assert!(
+        receipts
+            .iter()
+            .all(|receipt| receipt.context_digest() == context_digest())
+    );
     assert!(terminal.revision.get() > 1);
     assert!(terminal.values[0].value <= FixedQ32::ONE);
     assert_eq!(termination.iterations as usize, receipts.len());
