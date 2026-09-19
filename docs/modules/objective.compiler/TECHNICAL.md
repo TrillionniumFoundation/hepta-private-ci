@@ -42,7 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `objective.compiler`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate. This candidate also contains a named source-level product composition: Agentd authenticates a signed structured-objective ingress against its owner-controlled AuthBus trust, binds the verification receipt into objective admission, and publishes the immutable objective/run-start record through the destination-owned durable learning-ledger journal before runtime handoff. Source composition is not deployment activation, independent acceptance, target-host qualification, promotion or release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -148,7 +148,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Stateless compiler/admission library; embed it at a request boundary and preserve its immutable objective/run snapshot in the owning caller. No compiler daemon or private objective database is needed. Unsupported language, resource exhaustion and infeasibility remain different outcomes; changing goal semantics requires a new authorized revision.
+`objective.compiler` remains a stateless compiler/admission library and owns no objective database. The canonical product composition is `runtime.agentd`: its private objective runtime verifies a signed AuthBus message against current owner trust, constructs the preverified admission context, invokes the compiler, and only after the destination-owned `DurableRunStartJournal` has synchronized the immutable objective plus `RunStartSnapshotV1` does it expose the run to `AgentRunCoordinator`. A caller-constructed `ObjectiveAdmissionContextV1` is only a preverified library input; it is not itself cryptographic authentication or product authority. Unsupported language, resource exhaustion and infeasibility remain different outcomes; changing goal semantics requires a new authorized revision.
 
 Current operating and state-format references:
 
@@ -180,13 +180,13 @@ Source implementation completes only when the declared target root exists, publi
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+A named source-level product caller is now composed through Agentd and the destination-owned run-start journal. Activation remains separate: the selected deployment must prove current trust/revocation access, owner-store configuration, resource/failure behavior, target-host measurements and recovery under the deployed host profile. Shadow and qualification callers are not production callers, and source composition alone does not activate a deployment.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Source composition requires a named caller and durable owner boundary; this candidate provides Agentd plus the learning-ledger run-start journal. Qualification still requires current exact-candidate and synthetic-merge evidence. Target-host qualification, independent acceptance, activation, selection, promotion and release are separate externally governed states.
 
 For `objective.compiler`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
@@ -279,4 +279,4 @@ The bootstrap source-location obligation for `objective.compiler` is implemented
 
 - `codex-rs/hepta-objective`
 
-The source candidate is checked by `.github/workflows/hepta-objective-admission.yml` for exact-source package tests, all-target strict Clippy, formatting and clean tracked state; `.github/workflows/hepta-lane-d-semantic-conformance.yml` repeats Lane-D package checks on Linux, macOS and Windows. `.github/workflows/hepta-consolidated-source.yml` also includes `codex-hepta-objective` in the shared source-owner package set. These are execution gates, not stored pass receipts. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The objective-specific `.github/workflows/hepta-objective-admission.yml` is the direct package/product-composition gate: it binds exact source, runs `codex-hepta-objective` tests, exercises Agentd objective-runtime composition, checks the target-host recorder, and applies strict Clippy/formatting to objective plus Agentd. `.github/workflows/hepta-lane-d-semantic-conformance.yml` independently repeats Lane-D package checks on Linux, macOS and Windows. The consolidated source workflow is a broader repository integrity/source-owner gate and must not be substituted for these objective-specific receipts. The target-host recorder is defined by `docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md`; a GitHub runner is not target-host performance evidence. These are execution gates, not stored pass receipts, and they grant no activation, independent acceptance, promotion or release authority.
