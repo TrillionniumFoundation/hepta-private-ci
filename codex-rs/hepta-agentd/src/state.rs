@@ -173,7 +173,7 @@ impl AgentdState {
     fn quarantine_runtime_attachment(&self, module_id: &str) -> Result<(), AgentdError> {
         let stable_id = Self::module_id(module_id)?;
         let mut attachments = self.attachments.lock().map_err(poisoned_state)?;
-        if !attachments.remove(&stable_id) {
+        if !attachments.contains(&stable_id) {
             return Ok(());
         }
         let generation = Generation::new(self.identity.spawn_generation)
@@ -186,7 +186,9 @@ impl AgentdState {
                 AgentdError::Protocol(format!(
                     "runtime module {module_id} quarantine failed: {error}"
                 ))
-            })
+            })?;
+        attachments.remove(&stable_id);
+        Ok(())
     }
 
     pub(crate) fn attach_cognitive_store(
