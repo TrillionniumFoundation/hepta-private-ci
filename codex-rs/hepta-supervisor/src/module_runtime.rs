@@ -6,7 +6,6 @@
 //! generation and predecessor content.
 
 use std::collections::BTreeMap;
-use std::collections::BTreeSet;
 
 use codex_hepta_control_plane::RuntimeModuleAbiV1;
 use codex_hepta_control_plane::RuntimeModulePromotionWitnessV1;
@@ -761,15 +760,6 @@ fn validate_projected_dependency_graph(
         .iter()
         .map(|module| (module.module_id.clone(), module.dependencies.clone()))
         .collect::<BTreeMap<_, _>>();
-    let mut known = current
-        .active
-        .iter()
-        .map(|module| module.module_id.clone())
-        .collect::<BTreeSet<_>>();
-    for delta in &candidate.deltas {
-        known.insert(delta.module_id.clone());
-        known.extend(delta.related_module_ids.iter().cloned());
-    }
     let admitted = admitted
         .iter()
         .map(|abi| (abi.module_id.clone(), abi))
@@ -784,7 +774,7 @@ fn validate_projected_dependency_graph(
             .ok_or_else(|| RuntimeModuleSupervisorErrorV1::MissingTopologyAbi(delta.module_id.clone()))?;
         projected.insert(delta.module_id.clone(), abi.dependencies.clone());
     }
-    validate_dependency_map(&projected, &known)
+    validate_dependency_map(&projected)
 }
 
 fn validate_runtime_dependency_graph(
@@ -795,17 +785,15 @@ fn validate_runtime_dependency_graph(
         .iter()
         .map(|module| (module.module_id.clone(), module.dependencies.clone()))
         .collect::<BTreeMap<_, _>>();
-    let known = projected.keys().cloned().collect::<BTreeSet<_>>();
-    validate_dependency_map(&projected, &known)
+    validate_dependency_map(&projected)
 }
 
 fn validate_dependency_map(
     projected: &BTreeMap<StableId, Vec<StableId>>,
-    known: &BTreeSet<StableId>,
 ) -> Result<(), RuntimeModuleSupervisorErrorV1> {
     for (module_id, dependencies) in projected {
         for dependency_id in dependencies {
-            if known.contains(dependency_id) && !projected.contains_key(dependency_id) {
+            if !projected.contains_key(dependency_id) {
                 return Err(RuntimeModuleSupervisorErrorV1::TopologyDependencyMissing {
                     module_id: module_id.clone(),
                     dependency_id: dependency_id.clone(),
