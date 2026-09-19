@@ -70,34 +70,15 @@ impl<D: ProcessDriver> Supervisor<D> {
         now_unix_ms: u64,
         now: Instant,
     ) -> Result<(), SupervisorError> {
-        let store = FleetAllocationStore::open(&self.registry).map_err(allocation_error)?;
-        let grant = store
-            .require_active_grant(agent_id, allocation_id, lease_generation, now_unix_ms)
-            .map_err(allocation_error)?;
-        self.start_release(agent_id, release, now)?;
-
-        let observation = FleetConsumptionObservationV1 {
-            allocation_id: grant.allocation_id,
-            lease_generation: grant.lease_generation,
-            host_generation: grant.host_generation,
-            observed_at_unix_ms: now_unix_ms,
-            observer_id: "runtime.supervisor".to_string(),
-            disposition: FleetConsumptionDispositionV1::Holding,
-        };
-        if let Err(error) = store.reconcile_consumption(observation) {
-            if let Ok(Some(current)) = store.active_grant_for_agent(agent_id) {
-                let _ = store.reconcile_consumption(FleetConsumptionObservationV1 {
-                    allocation_id: current.allocation_id,
-                    lease_generation: current.lease_generation,
-                    host_generation: current.host_generation,
-                    observed_at_unix_ms: now_unix_ms,
-                    observer_id: "runtime.supervisor".to_string(),
-                    disposition: FleetConsumptionDispositionV1::Indeterminate,
-                });
-            }
-            return Err(allocation_error(error));
+        {
+            let store = FleetAllocationStore::open(&self.registry).map_err(allocation_error)?;
+            store
+                .require_active_grant(agent_id, allocation_id, lease_generation, now_unix_ms)
+                .map_err(allocation_error)?;
         }
-        Ok(())
+        // The unique physical spawn seam revalidates the same durable grant
+        // immediately before spawning and records Holding after the process exists.
+        self.start_release(agent_id, release, now)
     }
 
     pub(crate) fn start_release_consuming_allocation_if_present(
@@ -106,23 +87,64 @@ impl<D: ProcessDriver> Supervisor<D> {
         release: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
-        let grant = {
-            let store = FleetAllocationStore::open(&self.registry).map_err(allocation_error)?;
-            store
-                .active_grant_for_agent(agent_id)
-                .map_err(allocation_error)?
+        // start_release_slot is the single physical spawn seam and performs the
+        // allocation lookup/freshness check for every caller, including internal
+        // restart/upgrade/rollback paths.
+        self.start_release(agent_id, release, now)
+    }
+
+    pub(crate) fn current_fleet_allocation_for_start(
+        &self,
+        agent_id: &AgentId,
+    ) -> Result<Option<FleetAllocationGrantV1>, SupervisorError> {
+        let store = FleetAllocationStore::open(&self.registry).map_err(allocation_error)?;
+        let Some(grant) = store
+            .active_grant_for_agent(agent_id)
+            .map_err(allocation_error)?
+        else {
+            return Ok(None);
         };
-        let Some(grant) = grant else {
-            return self.start_release(agent_id, release, now);
+        let now_unix_ms = system_unix_ms()?;
+        store
+            .require_active_grant(
+                agent_id,
+                &grant.allocation_id,
+                grant.lease_generation,
+                now_unix_ms,
+            )
+            .map(Some)
+            .map_err(allocation_error)
+    }
+
+    pub(crate) fn observe_fleet_allocation_holding(
+        &self,
+        agent_id: &AgentId,
+        admitted: &FleetAllocationGrantV1,
+    ) -> Result<(), SupervisorError> {
+        let store = FleetAllocationStore::open(&self.registry).map_err(allocation_error)?;
+        let observed_at_unix_ms = system_unix_ms()?;
+        let holding = FleetConsumptionObservationV1 {
+            allocation_id: admitted.allocation_id.clone(),
+            lease_generation: admitted.lease_generation,
+            host_generation: admitted.host_generation,
+            observed_at_unix_ms,
+            observer_id: "runtime.supervisor.spawn".to_string(),
+            disposition: FleetConsumptionDispositionV1::Holding,
         };
-        self.start_allocated(
-            agent_id,
-            &grant.allocation_id,
-            grant.lease_generation,
-            release,
-            system_unix_ms()?,
-            now,
-        )
+        if let Err(error) = store.reconcile_consumption(holding) {
+            if let Ok(Some(current)) = store.active_grant_for_agent(agent_id) {
+                let _ = store.reconcile_consumption(FleetConsumptionObservationV1 {
+                    allocation_id: current.allocation_id,
+                    lease_generation: current.lease_generation,
+                    host_generation: current.host_generation,
+                    observed_at_unix_ms,
+                    observer_id: "runtime.supervisor.spawn".to_string(),
+                    disposition: FleetConsumptionDispositionV1::Indeterminate,
+                });
+            }
+            return Err(allocation_error(error));
+        }
+        Ok(())
     }
 
     pub(crate) fn reconcile_fleet_allocation_after_recovery(
