@@ -358,9 +358,10 @@ impl From<ArtifactClosureError> for ArtifactLifecycleJournalError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::test_support::FixtureValue;
 
     fn id(value: &str) -> StableId {
-        StableId::new(value.to_owned()).expect("valid test id")
+        StableId::new(value.to_owned()).fixture("valid test id")
     }
 
     fn digest(value: &str) -> Digest32 {
@@ -421,7 +422,7 @@ mod tests {
                 ),
                 20,
             )
-            .expect("producer may publish trained state");
+            .fixture("producer may publish trained state");
         assert_eq!(
             journal.append(
                 Digest32::ZERO,
@@ -454,7 +455,7 @@ mod tests {
                 ),
                 21,
             )
-            .expect("independent evaluator may advance state");
+            .fixture("independent evaluator may advance state");
         let denied = actor("intruder", LifecycleActorRoleV2::Selector);
         assert_eq!(
             journal.append(
@@ -498,11 +499,11 @@ mod tests {
                 ),
                 20,
             )
-            .expect("historical append succeeds while credential is current");
+            .fixture("historical append succeeds while credential is current");
 
         let snapshot = journal.snapshot();
         let mut reopened = ArtifactLifecycleJournalV2::from_snapshot(snapshot, 101)
-            .expect("expired-at-recovery credential must not invalidate history");
+            .fixture("expired-at-recovery credential must not invalidate history");
         assert_eq!(reopened.head_digest(), journal.head_digest());
 
         let second_artifact = id("artifact-after-expiry");
@@ -546,9 +547,9 @@ mod tests {
                 ),
                 20,
             )
-            .expect("append succeeds");
+            .fixture("append succeeds");
         let reopened = ArtifactLifecycleJournalV2::from_snapshot(journal.snapshot(), 20)
-            .expect("snapshot replays");
+            .fixture("snapshot replays");
         assert_eq!(reopened.head_digest(), journal.head_digest());
         assert_eq!(reopened.records(), journal.records());
     }
