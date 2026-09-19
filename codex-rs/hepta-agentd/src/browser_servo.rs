@@ -126,10 +126,7 @@ pub trait BrowserServoTransport: Send {
         bytes: &[u8],
         timeout: Duration,
     ) -> Result<(), BrowserServoError>;
-    fn read_frame_timeout(
-        &mut self,
-        timeout: Duration,
-    ) -> Result<Vec<u8>, BrowserServoError>;
+    fn read_frame_timeout(&mut self, timeout: Duration) -> Result<Vec<u8>, BrowserServoError>;
 }
 
 pub struct BrowserServoPort<T: BrowserServoTransport> {
@@ -602,9 +599,7 @@ fn require_exact_object_keys(
     expected: &[&str],
     name: &str,
 ) -> Result<(), BrowserServoError> {
-    if object.len() != expected.len()
-        || expected.iter().any(|key| !object.contains_key(*key))
-    {
+    if object.len() != expected.len() || expected.iter().any(|key| !object.contains_key(*key)) {
         return Err(BrowserServoError::Protocol(format!(
             "{name} contains missing or unknown fields"
         )));
@@ -818,11 +813,8 @@ impl PersistentBrowserServoControl {
         process.validate()?;
         let frame_timeout = process.parent_frame_timeout()?;
         let transport = ChildBrowserTransport::spawn(&process)?;
-        let port = BrowserServoPort::with_frame_timeout(
-            authority.clone(),
-            transport,
-            frame_timeout,
-        )?;
+        let port =
+            BrowserServoPort::with_frame_timeout(authority.clone(), transport, frame_timeout)?;
         Ok(Self {
             authority,
             process,
@@ -832,12 +824,9 @@ impl PersistentBrowserServoControl {
     }
 
     pub fn call(&self, call: BrowserServoCall) -> Result<Value, BrowserServoError> {
-        let mut guard = self
-            .port
-            .lock()
-            .map_err(|_| BrowserServoError::Unavailable(
-                "persistent Browser owner mutex is poisoned".into(),
-            ))?;
+        let mut guard = self.port.lock().map_err(|_| {
+            BrowserServoError::Unavailable("persistent Browser owner mutex is poisoned".into())
+        })?;
         if guard.is_none() {
             let transport = ChildBrowserTransport::spawn(&self.process)?;
             *guard = Some(BrowserServoPort::with_frame_timeout(
@@ -848,11 +837,15 @@ impl PersistentBrowserServoControl {
         }
         let result = guard
             .as_ref()
-            .ok_or_else(|| BrowserServoError::Unavailable(
-                "persistent Browser child is unavailable".into(),
-            ))?
+            .ok_or_else(|| {
+                BrowserServoError::Unavailable("persistent Browser child is unavailable".into())
+            })?
             .call(call);
-        if result.as_ref().err().is_some_and(browser_error_requires_child_reset) {
+        if result
+            .as_ref()
+            .err()
+            .is_some_and(browser_error_requires_child_reset)
+        {
             // Never retry the current semantic call. Dropping the port contains
             // the private child; the next caller may start a clean service and
             // explicitly reconcile any durable indeterminate operation.
@@ -1015,7 +1008,10 @@ impl ChildBrowserTransport {
             )
             .env("HEPTA_BROWSER_PROFILE_ROOT", &config.profile_root)
             .env("HEPTA_BROWSER_JOURNAL_PATH", &config.journal_path)
-            .env("HEPTA_BROWSER_MAX_PROFILES", config.max_profiles.to_string())
+            .env(
+                "HEPTA_BROWSER_MAX_PROFILES",
+                config.max_profiles.to_string(),
+            )
             .env("HEPTA_BROWSER_BWRAP_PATH", &config.bwrap_path)
             .env(
                 "HEPTA_BROWSER_BWRAP_SHA256",
@@ -1094,11 +1090,13 @@ impl ChildBrowserTransport {
         let mut reader = BufReader::new(stdout);
         if let Err(error) = thread::Builder::new()
             .name("hepta-browser-child-reader".to_string())
-            .spawn(move || loop {
-                let result = read_private_child_frame(&mut reader);
-                let terminal = result.is_err();
-                if stdout_tx.send(result).is_err() || terminal {
-                    break;
+            .spawn(move || {
+                loop {
+                    let result = read_private_child_frame(&mut reader);
+                    let terminal = result.is_err();
+                    if stdout_tx.send(result).is_err() || terminal {
+                        break;
+                    }
                 }
             })
         {
@@ -1195,10 +1193,7 @@ impl BrowserServoTransport for ChildBrowserTransport {
         }
     }
 
-    fn read_frame_timeout(
-        &mut self,
-        timeout: Duration,
-    ) -> Result<Vec<u8>, BrowserServoError> {
+    fn read_frame_timeout(&mut self, timeout: Duration) -> Result<Vec<u8>, BrowserServoError> {
         if self.closed {
             return Err(BrowserServoError::Unavailable(
                 "Browser private child is closed".into(),
@@ -1313,9 +1308,9 @@ mod tests {
             timeout: Duration,
         ) -> Result<(), BrowserServoError> {
             self.writes += 1;
-            self.outbound
-                .send(bytes.to_vec())
-                .map_err(|_| BrowserServoError::Unavailable("test Browser receiver closed".into()))?;
+            self.outbound.send(bytes.to_vec()).map_err(|_| {
+                BrowserServoError::Unavailable("test Browser receiver closed".into())
+            })?;
             if self.stall_second_write && self.writes == 2 {
                 thread::sleep(timeout);
                 return Err(BrowserServoError::Indeterminate(
@@ -1325,18 +1320,17 @@ mod tests {
             Ok(())
         }
 
-        fn read_frame_timeout(
-            &mut self,
-            timeout: Duration,
-        ) -> Result<Vec<u8>, BrowserServoError> {
-            self.inbound.recv_timeout(timeout).map_err(|error| match error {
-                mpsc::RecvTimeoutError::Timeout => BrowserServoError::Indeterminate(
-                    "test Browser frame read timed out".into(),
-                ),
-                mpsc::RecvTimeoutError::Disconnected => {
-                    BrowserServoError::Unavailable("test Browser sender closed".into())
-                }
-            })
+        fn read_frame_timeout(&mut self, timeout: Duration) -> Result<Vec<u8>, BrowserServoError> {
+            self.inbound
+                .recv_timeout(timeout)
+                .map_err(|error| match error {
+                    mpsc::RecvTimeoutError::Timeout => {
+                        BrowserServoError::Indeterminate("test Browser frame read timed out".into())
+                    }
+                    mpsc::RecvTimeoutError::Disconnected => {
+                        BrowserServoError::Unavailable("test Browser sender closed".into())
+                    }
+                })
         }
     }
 
@@ -1557,8 +1551,11 @@ mod tests {
         let invocation = harness.invocation.clone();
         let call = thread::spawn(move || {
             port.call(
-                BrowserServoCall::effect(json!({"operationId":"operation.write-timeout"}), invocation)
-                    .expect("effect call"),
+                BrowserServoCall::effect(
+                    json!({"operationId":"operation.write-timeout"}),
+                    invocation,
+                )
+                .expect("effect call"),
             )
         });
 
