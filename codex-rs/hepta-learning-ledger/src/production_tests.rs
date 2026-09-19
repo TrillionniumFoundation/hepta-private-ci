@@ -2,6 +2,8 @@ use super::*;
 use std::fs;
 use std::fs::OpenOptions;
 use std::path::PathBuf;
+use std::sync::Arc;
+use std::sync::Mutex;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 
@@ -76,6 +78,37 @@ fn trust() -> LearningEvidenceTrustV1 {
                 LearningEvidenceRoleV1::Evaluator,
             ),
         ],
+    }
+}
+
+#[derive(Clone)]
+struct MutableTrustProvider {
+    current: Arc<Mutex<LearningEvidenceTrustSnapshotV1>>,
+}
+
+impl MutableTrustProvider {
+    fn new(revision: u64, trust: LearningEvidenceTrustV1) -> Self {
+        Self {
+            current: Arc::new(Mutex::new(LearningEvidenceTrustSnapshotV1 {
+                revision,
+                valid_from: 1,
+                valid_until: 100,
+                trust,
+            })),
+        }
+    }
+
+    fn set_revision(&self, revision: u64) {
+        self.current.lock().expect("trust lock").revision = revision;
+    }
+}
+
+impl LearningEvidenceTrustProviderV1 for MutableTrustProvider {
+    fn current_trust(
+        &self,
+        _now: u64,
+    ) -> Result<LearningEvidenceTrustSnapshotV1, SignedEvidenceError> {
+        Ok(self.current.lock().expect("trust lock").clone())
     }
 }
 fn sign(
@@ -155,8 +188,10 @@ fn production_writer_closes_signed_decision_outcome_credit_and_dataset_path() {
     let fixture = Fixture::new();
     let ledger =
         crate::DurableLedger::create(fixture.file(), digest("binding"), 32).expect("ledger");
-    let verifier = LearningEvidenceVerifierV1::new(trust()).expect("trust");
-    let mut writer = ProductionLedgerWriter::new(ledger, verifier.clone());
+    let trust_state = trust();
+    let verifier = LearningEvidenceVerifierV1::new(trust_state.clone()).expect("trust");
+    let trust_provider = MutableTrustProvider::new(1, trust_state);
+    let mut writer = ProductionLedgerWriter::new(ledger, trust_provider);
 
     let mut decision = EpisodeDecision {
         record_id: id("decision-record"),
@@ -364,5 +399,26 @@ fn production_writer_closes_signed_decision_outcome_credit_and_dataset_path() {
     assert_eq!(
         dataset.snapshot.ledger_head_digest,
         credit_receipt.chain_digest
+    );
+}
+
+#[test]
+fn production_writer_reloads_current_trust_and_rejects_rollback() {
+    let fixture = Fixture::new();
+    let ledger =
+        crate::DurableLedger::create(fixture.file(), digest("binding-trust"), 8).expect("ledger");
+    let provider = MutableTrustProvider::new(1, trust());
+    let control = provider.clone();
+    let mut writer = ProductionLedgerWriter::new(ledger, provider);
+
+    let first = writer.current_trust_digest(50).expect("revision one");
+    control.set_revision(2);
+    let second = writer.current_trust_digest(50).expect("revision two");
+    assert_eq!(first, second);
+
+    control.set_revision(1);
+    assert_eq!(
+        writer.current_trust_digest(50),
+        Err(ProductionLedgerError::TrustRollback)
     );
 }
