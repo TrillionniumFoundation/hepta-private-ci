@@ -86,14 +86,11 @@ const KG_GRAPH_PROFILE_V2: &[u8] = b"hepta:cognitive:kg-sqlite-adapter:v1";
 pub(crate) fn canonical_generation_from_projection(
     generation: u64,
     source_snapshot_sha256: &Sha256Digest,
+    generation_vector_digest: Digest32,
     nodes: &[ProjectionNode],
     edges: &[ProjectionEdge],
 ) -> Result<KnowledgeGenerationV2, CognitiveStoreError> {
     let source_snapshot_digest = digest32_from_sha256(source_snapshot_sha256)?;
-    let generation_vector_digest = framed_digest32(
-        b"hepta:cognitive:kg-generation-vector:v1",
-        &[source_snapshot_digest.as_array()],
-    );
     let graph_profile_digest = Digest32::of_bytes(KG_GRAPH_PROFILE_V2);
 
     let mut occurrence_to_canonical = BTreeMap::<String, StableId>::new();
@@ -232,6 +229,31 @@ pub(crate) async fn load_canonical_generation_tx(
     .map_err(unavailable)?;
     let source_snapshot_sha256 =
         Sha256Digest::parse(source_snapshot_sha256).map_err(CognitiveStoreError::Corrupt)?;
+    let semantic_row = sqlx::query(
+        "SELECT generation_vector_sha256, generation_sha256
+         FROM kg_projection_generation_semantics
+         WHERE projection_scope = ? AND generation = ?",
+    )
+    .bind(projection_scope)
+    .bind(generation)
+    .fetch_optional(&mut **transaction)
+    .await
+    .map_err(unavailable)?;
+    let generation_vector_digest = match semantic_row.as_ref() {
+        Some(row) => row
+            .try_get::<String, _>("generation_vector_sha256")
+            .map_err(unavailable)?
+            .parse()
+            .map_err(|error| {
+                CognitiveStoreError::Corrupt(format!(
+                    "invalid persisted KG generation vector digest: {error}"
+                ))
+            })?,
+        None => framed_digest32(
+            b"hepta:cognitive:kg-legacy-source-vector:v1",
+            &[digest32_from_sha256(&source_snapshot_sha256)?.as_array()],
+        ),
+    };
 
     let node_rows = sqlx::query(
         "SELECT n.node_id, i.canonical_entity_id, n.entity_type, n.label,
@@ -275,6 +297,11 @@ pub(crate) async fn load_canonical_generation_tx(
         })
         .collect::<Result<Vec<_>, CognitiveStoreError>>()?;
 
+    let occurrence_to_canonical = nodes
+        .iter()
+        .map(|node| (node.node_id.clone(), node.canonical_entity_id.clone()))
+        .collect::<BTreeMap<_, _>>();
+
     let edge_rows = sqlx::query(
         "SELECT edge_id, from_node_id, to_node_id, relation,
                 valid_from_unix_seconds, valid_to_unix_seconds,
@@ -302,16 +329,18 @@ pub(crate) async fn load_canonical_generation_tx(
         let relation: String = row.try_get("relation").map_err(unavailable)?;
         let from_node_id: String = row.try_get("from_node_id").map_err(unavailable)?;
         let to_node_id: String = row.try_get("to_node_id").map_err(unavailable)?;
-        let from_canonical = nodes
-            .iter()
-            .find(|node| node.node_id == from_node_id)
-            .map(|node| node.canonical_entity_id.as_str())
-            .ok_or_else(|| CognitiveStoreError::Corrupt("historical KG edge source is missing".to_string()))?;
-        let to_canonical = nodes
-            .iter()
-            .find(|node| node.node_id == to_node_id)
-            .map(|node| node.canonical_entity_id.as_str())
-            .ok_or_else(|| CognitiveStoreError::Corrupt("historical KG edge target is missing".to_string()))?;
+        let from_canonical = occurrence_to_canonical
+            .get(&from_node_id)
+            .map(String::as_str)
+            .ok_or_else(|| {
+                CognitiveStoreError::Corrupt("historical KG edge source is missing".to_string())
+            })?;
+        let to_canonical = occurrence_to_canonical
+            .get(&to_node_id)
+            .map(String::as_str)
+            .ok_or_else(|| {
+                CognitiveStoreError::Corrupt("historical KG edge target is missing".to_string())
+            })?;
         let canonical_relation_id = format!(
             "kg-relation:v1:{}",
             framed_sha256_hex(
@@ -341,19 +370,15 @@ pub(crate) async fn load_canonical_generation_tx(
     let rebuilt = canonical_generation_from_projection(
         generation_u64,
         &source_snapshot_sha256,
+        generation_vector_digest,
         &nodes,
         &edges,
     )?;
-    let stored_digest: Option<String> = sqlx::query_scalar(
-        "SELECT generation_sha256
-         FROM kg_projection_generation_semantics
-         WHERE projection_scope = ? AND generation = ?",
-    )
-    .bind(projection_scope)
-    .bind(generation)
-    .fetch_optional(&mut **transaction)
-    .await
-    .map_err(unavailable)?;
+    let stored_digest = semantic_row
+        .as_ref()
+        .map(|row| row.try_get::<String, _>("generation_sha256"))
+        .transpose()
+        .map_err(unavailable)?;
     if stored_digest.is_some_and(|digest| digest != rebuilt.generation_digest.to_string()) {
         return Err(CognitiveStoreError::Corrupt(
             "persisted KG generation digest does not match canonical hepta-kg reconstruction"
@@ -445,6 +470,88 @@ fn digest32_from_sha256(value: &Sha256Digest) -> Result<Digest32, CognitiveStore
         .as_str()
         .parse()
         .map_err(|error| CognitiveStoreError::Corrupt(format!("invalid KG digest: {error}")))
+}
+
+async fn graph_source_vector_digest_tx(
+    transaction: &mut Transaction<'_, Sqlite>,
+    owner_agent_id: &str,
+    scope: &CognitiveScope,
+    source_snapshot_digest: Digest32,
+) -> Result<Digest32, CognitiveStoreError> {
+    let (scope_kind, workspace_sha256) = scope.database_parts();
+    let memory_frontier: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM memory_revisions
+         WHERE owner_agent_id = ? AND scope_kind = ? AND workspace_sha256 IS ?",
+    )
+    .bind(owner_agent_id)
+    .bind(scope_kind)
+    .bind(workspace_sha256)
+    .fetch_one(&mut **transaction)
+    .await
+    .map_err(unavailable)?;
+    let source_frontier: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM source_ledger
+         WHERE owner_agent_id = ? AND scope_kind = ? AND workspace_sha256 IS ?",
+    )
+    .bind(owner_agent_id)
+    .bind(scope_kind)
+    .bind(workspace_sha256)
+    .fetch_one(&mut **transaction)
+    .await
+    .map_err(unavailable)?;
+    let tombstone_frontier: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM memory_revisions
+         WHERE owner_agent_id = ? AND scope_kind = ? AND workspace_sha256 IS ?
+           AND lifecycle = 'tombstoned'",
+    )
+    .bind(owner_agent_id)
+    .bind(scope_kind)
+    .bind(workspace_sha256)
+    .fetch_one(&mut **transaction)
+    .await
+    .map_err(unavailable)?;
+    let knowledge_fact_frontier: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*)
+         FROM kg_revision_fact_sets f
+         JOIN memory_revisions r
+           ON r.memory_id = f.memory_id AND r.revision = f.memory_revision
+         WHERE r.owner_agent_id = ? AND r.scope_kind = ? AND r.workspace_sha256 IS ?",
+    )
+    .bind(owner_agent_id)
+    .bind(scope_kind)
+    .bind(workspace_sha256)
+    .fetch_one(&mut **transaction)
+    .await
+    .map_err(unavailable)?;
+
+    let frontiers = [
+        u64::try_from(memory_frontier)
+            .map_err(|_| CognitiveStoreError::Corrupt("negative memory frontier".to_string()))?,
+        u64::try_from(knowledge_fact_frontier).map_err(|_| {
+            CognitiveStoreError::Corrupt("negative knowledge-fact frontier".to_string())
+        })?,
+        u64::try_from(tombstone_frontier)
+            .map_err(|_| CognitiveStoreError::Corrupt("negative tombstone frontier".to_string()))?,
+        u64::try_from(source_frontier)
+            .map_err(|_| CognitiveStoreError::Corrupt("negative source frontier".to_string()))?,
+    ];
+    let frontier_bytes = frontiers
+        .iter()
+        .map(|value| value.to_be_bytes())
+        .collect::<Vec<_>>();
+    let parts = [
+        owner_agent_id.as_bytes(),
+        scope.projection_key().as_bytes(),
+        frontier_bytes[0].as_slice(),
+        frontier_bytes[1].as_slice(),
+        frontier_bytes[2].as_slice(),
+        frontier_bytes[3].as_slice(),
+        source_snapshot_digest.as_array().as_slice(),
+    ];
+    Ok(framed_digest32(
+        b"hepta:cognitive:kg-source-vector:v1",
+        &parts,
+    ))
 }
 
 pub(crate) fn sha256_from_digest32(value: Digest32) -> Result<Sha256Digest, CognitiveStoreError> {
@@ -564,6 +671,13 @@ impl CognitiveStore {
             });
         }
         let input_heads_sha256 = input_heads_digest(&projection_scope, &heads);
+        let generation_vector_digest = graph_source_vector_digest_tx(
+            transaction,
+            self.owner_agent_id.as_str(),
+            scope,
+            digest32_from_sha256(&input_heads_sha256)?,
+        )
+        .await?;
 
         let entity_rows = sqlx::query(
             "SELECT e.memory_id, e.memory_revision, e.entity_key,
@@ -733,6 +847,7 @@ impl CognitiveStore {
         let candidate = canonical_generation_from_projection(
             next_u64,
             &input_heads_sha256,
+            generation_vector_digest,
             &nodes,
             &edges,
         )?;
