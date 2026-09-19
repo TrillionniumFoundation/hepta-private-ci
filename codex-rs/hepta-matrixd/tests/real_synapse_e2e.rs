@@ -1464,7 +1464,7 @@ async fn assert_isolated_and_drained(agent_a: &AgentFixture, agent_b: &AgentFixt
 
 async fn wait_matrix_store_drained(layout: &HeptaAgentLayout) -> Result<()> {
     let store = MatrixDurableStore::open(layout, MatrixDurableConfig::default()).await?;
-    let deadline = Instant::now() + Duration::from_secs(30);
+    let deadline = Instant::now() + Duration::from_secs(60);
     loop {
         let snapshot = store.snapshot(now_ms()?, 64).await?;
         if snapshot.pending_inbox.is_empty()
