@@ -135,7 +135,18 @@ impl AgentdState {
         StableId::new(module_id).map_err(|error| AgentdError::Protocol(error.to_string()))
     }
 
-    fn attach_runtime_module<T>(
+    pub(crate) fn attach_runtime_module<T>(
+        &self,
+        module_id: &str,
+        attachment: Arc<T>,
+    ) -> Result<(), AgentdError>
+    where
+        T: Any + Send + Sync + 'static,
+    {
+        self.attach_runtime_module_with_effect_scope(module_id, &[], attachment)
+    }
+
+    fn attach_runtime_module_with_effect_scope<T>(
         &self,
         module_id: &str,
         effect_scope: &[&str],
@@ -155,7 +166,7 @@ impl AgentdState {
         attachments.insert(stable_id, attachment)
     }
 
-    fn runtime_attachment<T>(&self, module_id: &str) -> Result<Option<Arc<T>>, AgentdError>
+    pub(crate) fn runtime_attachment<T>(&self, module_id: &str) -> Result<Option<Arc<T>>, AgentdError>
     where
         T: Any + Send + Sync + 'static,
     {
@@ -166,7 +177,7 @@ impl AgentdState {
             .get(&stable_id)
     }
 
-    fn quarantine_runtime_attachment(&self, module_id: &str) -> Result<(), AgentdError> {
+    pub(crate) fn quarantine_runtime_attachment(&self, module_id: &str) -> Result<(), AgentdError> {
         let stable_id = Self::module_id(module_id)?;
         let mut attachments = self.attachments.lock().map_err(poisoned_state)?;
         if !attachments.contains(&stable_id) {
@@ -196,7 +207,7 @@ impl AgentdState {
                 "cognitive store owner does not match agentd identity".to_string(),
             ));
         }
-        self.attach_runtime_module(MODULE_COGNITIVE, &[], store)
+        self.attach_runtime_module(MODULE_COGNITIVE, store)
     }
 
     pub(crate) fn cognitive_store(&self) -> Result<Option<Arc<CognitiveStore>>, AgentdError> {
@@ -212,7 +223,7 @@ impl AgentdState {
                 "automation store owner does not match agentd identity".to_string(),
             ));
         }
-        self.attach_runtime_module(MODULE_AUTOMATION, &[], Arc::new(store))
+        self.attach_runtime_module(MODULE_AUTOMATION, Arc::new(store))
     }
 
     pub(crate) fn automation_store(&self) -> Result<Option<Arc<AutomationStore>>, AgentdError> {
@@ -229,7 +240,11 @@ impl AgentdState {
                     .to_string(),
             ));
         }
-        self.attach_runtime_module(MODULE_OPERATIONS, &["external_effect_dispatch"], host)
+        self.attach_runtime_module_with_effect_scope(
+            MODULE_OPERATIONS,
+            &["external_effect_dispatch"],
+            host,
+        )
     }
 
     pub(crate) fn automation_operations(
@@ -242,7 +257,7 @@ impl AgentdState {
         &self,
         host: Arc<crate::authbus_ingress::TextIngress>,
     ) -> Result<(), AgentdError> {
-        self.attach_runtime_module(MODULE_AUTHBUS, &[], host)
+        self.attach_runtime_module(MODULE_AUTHBUS, host)
     }
 
     pub(crate) fn authbus(
@@ -255,7 +270,7 @@ impl AgentdState {
         &self,
         host: Arc<crate::objective_ingress::ObjectiveIngressHost>,
     ) -> Result<(), AgentdError> {
-        self.attach_runtime_module(MODULE_OBJECTIVE, &[], host)
+        self.attach_runtime_module(MODULE_OBJECTIVE, host)
     }
 
     pub(crate) fn objective_ingress(
