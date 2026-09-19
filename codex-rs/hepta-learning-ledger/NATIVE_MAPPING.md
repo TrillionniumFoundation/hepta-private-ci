@@ -40,6 +40,7 @@ anchor.
 | freeze immutable dataset | `freeze_dataset` | `src/causal_v2.rs` | implemented |
 | production signed + anchored admission | `ProductionLedgerWriter` | `src/production.rs` | implemented, not product-composed |
 | current trust refresh + anti-rollback | `LearningEvidenceTrustProviderV1`, `LearningEvidenceTrustSnapshotV1` | `src/signed_evidence.rs`, `src/production.rs` | implemented, host provider not product-bound |
+| pinned-root signer distribution | `verify_learning_trust_manifest`, `RootedLearningEvidenceTrustProviderV1::rotate` | `src/trust_root.rs` | implemented, production root key/distribution external |
 | durable authenticated/corrected outcome | `LedgerEvent::AuthenticatedOutcome` | `src/model.rs`, `src/ledger.rs`, `src/durable_codec.rs` | implemented |
 | durable atomic conserved credit batch | `LedgerEvent::CreditBatch` | `src/model.rs`, `src/ledger.rs`, `src/durable_codec.rs` | implemented |
 | correction graph head/fork/cycle prevention | `LearningLedger::validate_authenticated_outcome` | `src/ledger.rs` | implemented |
@@ -57,8 +58,10 @@ snapshot. `ProductionLedgerWriter` no longer caches one verifier indefinitely:
 it queries `LearningEvidenceTrustProviderV1` before every signed mutation,
 validates the snapshot time window and maintains a monotone revision/authority
 epoch/trust-digest frontier. Trust rollback or same-revision drift fails closed.
-The host still owns the authority store, signer distribution, root rotation and
-controller identity.
+`RootedLearningEvidenceTrustProviderV1` can back that boundary with an
+out-of-band pinned Ed25519 root and predecessor-bound signed signer manifests;
+remote evidence cannot choose or replace the root. The host still owns the root
+private key, durable authority-store publication and controller identity.
 
 `OutcomeWatermarkV1` distinguishes pending, censored and terminal observations.
 Terminal records require an observed value and finalization time; censored
