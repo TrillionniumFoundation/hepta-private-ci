@@ -107,6 +107,7 @@ fn rust_python_wire_roundtrip_and_payload_fault_reject() {
     let report: Value = must(
         serde_json::from_slice(&output.stdout),
         "python JSON receipt",
+    );
     assert_eq!(report["schema"], schema.as_str());
     assert_eq!(report["producer"], producer.as_str());
     assert_eq!(report["generation"], generation.get());
