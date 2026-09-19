@@ -399,6 +399,53 @@ pub struct AutomationQueueReceipt {
     pub client_user_message_id: String,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AutomationSubmittedOccurrence {
+    pub admission: AutomationAdmission,
+    pub queued_submission_id: String,
+    pub provider_turn_id: Option<String>,
+    pub submitted_at_ms: u64,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum AutomationProviderObservationKind {
+    QueueAdmitted,
+    TurnPersisted,
+    TurnCompleted,
+    TurnFailed,
+    TurnInterrupted,
+    Indeterminate,
+    ReconciledMissing,
+    ReconciledCancelled,
+}
+
+impl AutomationProviderObservationKind {
+    pub(crate) fn as_str(self) -> &'static str {
+        match self {
+            Self::QueueAdmitted => "queue_admitted",
+            Self::TurnPersisted => "turn_persisted",
+            Self::TurnCompleted => "turn_completed",
+            Self::TurnFailed => "turn_failed",
+            Self::TurnInterrupted => "turn_interrupted",
+            Self::Indeterminate => "indeterminate",
+            Self::ReconciledMissing => "reconciled_missing",
+            Self::ReconciledCancelled => "reconciled_cancelled",
+        }
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AutomationProviderObservation {
+    pub task_id: AutomationTaskId,
+    pub occurrence: u64,
+    pub observation_seq: u64,
+    pub kind: AutomationProviderObservationKind,
+    pub queued_submission_id: Option<String>,
+    pub turn_id: Option<String>,
+    pub receipt_digest: Sha256Digest,
+    pub observed_at_ms: u64,
+}
+
 /// Durable evidence that the provider outcome for one occurrence is not yet
 /// known.  The scheduler must not blindly re-submit this occurrence until an
 /// operator or a provider-specific reconciler supplies a terminal receipt (or
