@@ -127,7 +127,7 @@ fn build_candidates(
         request.topology_deltas.sort_by(|left, right| {
             left.module_id
                 .cmp(&right.module_id)
-                .then_with(|| left.operation.cmp(&right.operation))
+.then_with(|| left.operation.cmp(&right.operation))
         });
         validate_deltas(&request.topology_deltas)?;
         let candidate_digest =
@@ -155,19 +155,41 @@ fn validate_deltas(deltas: &[TopologyDeltaV3]) -> Result<(), Error> {
         if delta.evidence_digest.is_zero() {
             return Err(Error::EmptyDigest("topology evidence"));
         }
+        let related = delta.related_module_ids.iter().collect::<BTreeSet<_>>();
+        if related.len() != delta.related_module_ids.len()
+            || related.contains(&delta.module_id)
+        {
+            return Err(Error::DuplicateTopology(delta.module_id.to_string()));
+        }
         match delta.operation {
-            TopologyOperation::Add => {
-                if !delta.predecessor_digest.is_zero() || delta.candidate_digest.is_zero() {
+            TopologyOperationV3::Add => {
+                if !delta.related_module_ids.is_empty()
+                    || !delta.predecessor_digest.is_zero()
+                    || delta.candidate_digest.is_zero()
+                {
                     return Err(Error::TopologyDigestUnchanged(delta.module_id.to_string()));
                 }
             }
-            TopologyOperation::Remove => {
-                if delta.predecessor_digest.is_zero() || !delta.candidate_digest.is_zero() {
+            TopologyOperationV3::Retire => {
+                if !delta.related_module_ids.is_empty()
+                    || delta.predecessor_digest.is_zero()
+                    || !delta.candidate_digest.is_zero()
+                {
                     return Err(Error::TopologyDigestUnchanged(delta.module_id.to_string()));
                 }
             }
-            TopologyOperation::Replace => {
-                if delta.predecessor_digest.is_zero()
+            TopologyOperationV3::Replace | TopologyOperationV3::Rewire => {
+                if !delta.related_module_ids.is_empty()
+                    || delta.predecessor_digest.is_zero()
+                    || delta.candidate_digest.is_zero()
+                    || delta.predecessor_digest == delta.candidate_digest
+                {
+                    return Err(Error::TopologyDigestUnchanged(delta.module_id.to_string()));
+                }
+            }
+            TopologyOperationV3::Split | TopologyOperationV3::Merge => {
+                if delta.related_module_ids.is_empty()
+                    || delta.predecessor_digest.is_zero()
                     || delta.candidate_digest.is_zero()
                     || delta.predecessor_digest == delta.candidate_digest
                 {
@@ -194,10 +216,17 @@ fn digest_topology_candidate(
     for delta in deltas {
         push_id(&mut bytes, &delta.module_id)?;
         bytes.push(match delta.operation {
-            TopologyOperation::Add => 0,
-            TopologyOperation::Remove => 1,
-            TopologyOperation::Replace => 2,
+            TopologyOperationV3::Add => 0,
+            TopologyOperationV3::Replace => 1,
+            TopologyOperationV3::Retire => 2,
+            TopologyOperationV3::Rewire => 3,
+            TopologyOperationV3::Split => 4,
+            TopologyOperationV3::Merge => 5,
         });
+        push_len(&mut bytes, delta.related_module_ids.len())?;
+        for related in &delta.related_module_ids {
+            push_id(&mut bytes, related)?;
+        }
         bytes.extend_from_slice(delta.predecessor_digest.as_array());
         bytes.extend_from_slice(delta.candidate_digest.as_array());
         bytes.extend_from_slice(delta.evidence_digest.as_array());

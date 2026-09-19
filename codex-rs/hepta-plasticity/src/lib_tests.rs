@@ -741,7 +741,8 @@ fn topology_v3_request() -> TopologyProposalRequestV3 {
                 kind: TopologyCandidateKindV3::Change,
                 topology_deltas: vec![TopologyDeltaV3 {
                     module_id: id("memory.retrieval"),
-                    operation: TopologyOperation::Replace,
+                    operation: TopologyOperationV3::Replace,
+                    related_module_ids: Vec::new(),
                     predecessor_digest: digest(b"memory-v1"),
                     candidate_digest: digest(b"memory-v2"),
                     evidence_digest: digest(b"memory-v2-evidence"),

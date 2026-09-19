@@ -40,6 +40,7 @@ pub use io::SyntheticCartIoV1;
 pub use io::TypedActuatorDispatchV1;
 pub use io::TypedSensorReadingV1;
 pub use module_runtime::ActiveRuntimeModuleV1;
+pub use module_runtime::MAX_MODULE_DEPENDENCIES;
 pub use module_runtime::MAX_MODULE_DOMAINS;
 pub use module_runtime::MAX_MODULE_EFFECTS;
 pub use module_runtime::MAX_MODULE_PORTS;

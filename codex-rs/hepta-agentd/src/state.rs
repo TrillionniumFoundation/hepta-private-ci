@@ -13,6 +13,8 @@ use codex_hepta_memory::CognitiveStore;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+use serde::Deserialize;
+use serde::Serialize;
 
 use crate::AgentdError;
 use crate::AgentdEventKind;
@@ -28,6 +30,22 @@ use crate::RunReceipt;
 use crate::RunSnapshot;
 use crate::RunTerminalObservation;
 use crate::run_ledger::RunLedger;
+
+const CANONICAL_MODULE_REGISTRY: &str = include_str!("../../../docs/modules/MODULES.json");
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+struct CanonicalModuleRuntimeRow {
+    id: String,
+    owner: String,
+    state: String,
+    uses: Vec<String>,
+    writes: Vec<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct CanonicalModuleRuntimeRegistry {
+    modules: Vec<CanonicalModuleRuntimeRow>,
+}
 
 #[path = "state_control.rs"]
 mod control;
@@ -104,13 +122,7 @@ impl AgentdState {
                 "cognitive store was attached more than once".to_string(),
             ));
         }
-        self.activate_builtin_runtime_module(
-            "cognitive.store",
-            "cognitive-platform",
-            RuntimeModuleStateClassV1::Stateful,
-            &["knowledge_fact_ledger", "memory_ledger"],
-            &[],
-        )?;
+        self.activate_builtin_runtime_module("cognitive.store", &[])?;
         *cognitive = Some(store);
         Ok(())
     }
@@ -130,13 +142,7 @@ impl AgentdState {
                 "automation store was attached more than once".to_string(),
             ));
         }
-        self.activate_builtin_runtime_module(
-            "automation.taskflow",
-            "automation-platform",
-            RuntimeModuleStateClassV1::Stateful,
-            &["automation_occurrence", "automation_schedule"],
-            &[],
-        )?;
+        self.activate_builtin_runtime_module("automation.taskflow", &[])?;
         *automation = Some(store);
         Ok(())
     }
@@ -151,13 +157,7 @@ impl AgentdState {
                     .to_string(),
             ));
         }
-        self.activate_builtin_runtime_module(
-            "kernel.operations",
-            "durability-kernel",
-            RuntimeModuleStateClassV1::Stateful,
-            &["cross_owner_outbox", "operation_ledger"],
-            &["external_effect_dispatch"],
-        )?;
+        self.activate_builtin_runtime_module("kernel.operations", &["external_effect_dispatch"])?;
         self.automation_operations.set(host).map_err(|_| {
             AgentdError::Protocol(
                 "automation operations host was attached more than once".to_string(),
@@ -172,13 +172,7 @@ impl AgentdState {
         if self.authbus.get().is_some() {
             return Err(AgentdError::Protocol("AuthBus host already attached".to_string()));
         }
-        self.activate_builtin_runtime_module(
-            "auth.authbus",
-            "identity-access",
-            RuntimeModuleStateClassV1::Stateful,
-            &[],
-            &[],
-        )?;
+        self.activate_builtin_runtime_module("auth.authbus", &[])?;
         self.authbus
             .set(host)
             .map_err(|_| AgentdError::Protocol("AuthBus host already attached".to_string()))
@@ -193,13 +187,7 @@ impl AgentdState {
                 "Objective ingress host already attached".to_string(),
             ));
         }
-        self.activate_builtin_runtime_module(
-            "objective.compiler",
-            "intelligence-platform",
-            RuntimeModuleStateClassV1::Stateless,
-            &[],
-            &[],
-        )?;
+        self.activate_builtin_runtime_module("objective.compiler", &[])?;
         self.objective_ingress.set(host).map_err(|_| {
             AgentdError::Protocol("Objective ingress host already attached".to_string())
         })
@@ -218,36 +206,55 @@ impl AgentdState {
     fn activate_builtin_runtime_module(
         &self,
         module_id: &str,
-        owner_id: &str,
-        state_class: RuntimeModuleStateClassV1,
-        authoritative_domains: &[&str],
         effect_scope: &[&str],
     ) -> Result<(), AgentdError> {
-        let module_id = StableId::new(module_id)
+        let registry: CanonicalModuleRuntimeRegistry = serde_json::from_str(CANONICAL_MODULE_REGISTRY)
+            .map_err(|error| AgentdError::Protocol(format!("canonical module registry is invalid: {error}")))?;
+        let row = registry
+            .modules
+            .into_iter()
+            .find(|row| row.id == module_id)
+            .ok_or_else(|| AgentdError::Protocol(format!("runtime module {module_id} is absent from canonical registry")))?;
+        let module_id = StableId::new(&row.id)
             .map_err(|error| AgentdError::Protocol(error.to_string()))?;
-        let owner_id = StableId::new(owner_id)
+        let owner_id = StableId::new(&row.owner)
             .map_err(|error| AgentdError::Protocol(error.to_string()))?;
         let generation = Generation::new(self.identity.spawn_generation)
             .map_err(|error| AgentdError::Protocol(error.to_string()))?;
-        let authoritative_domains = authoritative_domains
+        let dependencies = row
+            .uses
             .iter()
-            .map(|value| StableId::new(*value).map_err(|error| AgentdError::Protocol(error.to_string())))
+            .map(|value| StableId::new(value).map_err(|error| AgentdError::Protocol(error.to_string())))
+            .collect::<Result<Vec<_>, _>>()?;
+        let authoritative_domains = row
+            .writes
+            .iter()
+            .map(|value| StableId::new(value).map_err(|error| AgentdError::Protocol(error.to_string())))
             .collect::<Result<BTreeSet<_>, _>>()?;
         let effect_scope = effect_scope
             .iter()
             .map(|value| StableId::new(*value).map_err(|error| AgentdError::Protocol(error.to_string())))
             .collect::<Result<BTreeSet<_>, _>>()?;
+        let state_class = match row.state.as_str() {
+            "stateful_external" => RuntimeModuleStateClassV1::ExternalStateful,
+            value if value.contains("stateful") => RuntimeModuleStateClassV1::Stateful,
+            _ => RuntimeModuleStateClassV1::Stateless,
+        };
         let implementation_digest = Digest32::of_bytes(
             format!("hepta.compiled-runtime-module.v1:{}", module_id.as_str()).as_bytes(),
         );
+        let manifest_bytes = serde_json::to_vec(&row)
+            .map_err(|error| AgentdError::Protocol(format!("canonical module row cannot encode: {error}")))?;
         let abi = RuntimeModuleAbiV1 {
             module_id: module_id.clone(),
             owner_id,
             generation,
             implementation_digest,
+            candidate_artifact_digest: Digest32::of_bytes(&manifest_bytes),
             predecessor_generation: None,
             rollback_predecessor_digest: Digest32::ZERO,
             state_class,
+            dependencies,
             input_ports: Vec::new(),
             output_ports: Vec::new(),
             authoritative_domains,

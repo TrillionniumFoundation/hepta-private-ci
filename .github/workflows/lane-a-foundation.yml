@@ -3,7 +3,12 @@ name: Lane A foundation truth and native qualification
 on:
   pull_request:
     paths:
-      - "codex-rs/hepta-*/**"
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-wire/**"
+      - "codex-rs/hepta-contracts/**"
+      - "codex-rs/hepta-operations/**"
+      - "codex-rs/hepta-evidence/**"
+      - "codex-rs/hepta-agent-protocol/**"
       - "codex-rs/kernel-*/**"
       - "docs/contracts/**"
       - "scripts/verify_hepta_callers.py"

@@ -5,6 +5,8 @@
 //! checkpoint proves route publication/retirement for the same module
 //! generation and predecessor content.
 
+use std::collections::BTreeMap;
+
 use codex_hepta_control_plane::RuntimeModuleAbiV1;
 use codex_hepta_control_plane::RuntimeModulePromotionWitnessV1;
 use codex_hepta_control_plane::RuntimeModuleRegistryError;
@@ -13,12 +15,15 @@ use codex_hepta_control_plane::RuntimeTopologySnapshotV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+use codex_hepta_intelligence_eval::VerifiedSelfEvolutionRollbackV1;
+use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
 
 use crate::WriterHandoffCheckpointV1;
 
 #[derive(Debug)]
 pub struct RuntimeModuleSupervisorV1 {
     registry: RuntimeModuleRegistryV1,
+    selections: BTreeMap<(StableId, Generation), Digest32>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -30,6 +35,11 @@ pub enum RuntimeModuleSupervisorErrorV1 {
     HandoffNotTerminal,
     HandoffDomainMismatch,
     HandoffDigestMismatch,
+    SelectionArtifactMismatch,
+    SelectionGenerationMismatch,
+    SelectionPredecessorMismatch,
+    MissingVerifiedSelection,
+    RollbackSelectionMismatch,
 }
 
 impl std::fmt::Display for RuntimeModuleSupervisorErrorV1 {
@@ -56,6 +66,7 @@ impl RuntimeModuleSupervisorV1 {
     pub fn new() -> Self {
         Self {
             registry: RuntimeModuleRegistryV1::new(),
+            selections: BTreeMap::new(),
         }
     }
 
@@ -69,17 +80,45 @@ impl RuntimeModuleSupervisorV1 {
         Ok(self.registry.activate_bootstrap(&module_id, generation)?)
     }
 
-    /// Register a selected candidate into shadow. This method does not accept
-    /// or manufacture selection evidence; callers retain the independently
-    /// verified selection token and bind its digest at promotion.
-    pub fn register_shadow(
+    /// Register a candidate into shadow only after consuming the opaque token
+    /// returned by independent generator/evaluator/observer/selector checks.
+    pub fn register_selected_shadow(
         &mut self,
         abi: RuntimeModuleAbiV1,
+        selection: &VerifiedSelfEvolutionSelectionV1,
+    ) -> Result<(), RuntimeModuleSupervisorErrorV1> {
+        let receipt = selection.receipt();
+        if receipt.candidate_generation != abi.generation {
+            return Err(RuntimeModuleSupervisorErrorV1::SelectionGenerationMismatch);
+        }
+        if receipt.candidate_artifact_digest != abi.candidate_artifact_digest {
+            return Err(RuntimeModuleSupervisorErrorV1::SelectionArtifactMismatch);
+        }
+        if let Some(predecessor) = abi.predecessor_generation
+            && receipt.predecessor_generation != predecessor
+        {
+            return Err(RuntimeModuleSupervisorErrorV1::SelectionPredecessorMismatch);
+        }
+        let module_id = abi.module_id.clone();
+        let generation = abi.generation;
+        self.registry.register_candidate(abi)?;
+        self.registry.enter_shadow(&module_id, generation)?;
+        self.selections
+            .insert((module_id, generation), selection.selection_digest());
+        Ok(())
+    }
+
+    #[cfg(test)]
+    fn register_shadow_for_test(
+        &mut self,
+        abi: RuntimeModuleAbiV1,
+        selection_digest: Digest32,
     ) -> Result<(), RuntimeModuleSupervisorErrorV1> {
         let module_id = abi.module_id.clone();
         let generation = abi.generation;
         self.registry.register_candidate(abi)?;
         self.registry.enter_shadow(&module_id, generation)?;
+        self.selections.insert((module_id, generation), selection_digest);
         Ok(())
     }
 
@@ -96,9 +135,9 @@ impl RuntimeModuleSupervisorV1 {
         &mut self,
         module_id: &StableId,
         generation: Generation,
-        selection_digest: Digest32,
         canary_digest: Digest32,
     ) -> Result<RuntimeTopologySnapshotV1, RuntimeModuleSupervisorErrorV1> {
+        let selection_digest = self.selection_digest(module_id, generation)?;
         Ok(self.registry.promote_after_handoff(
             module_id,
             generation,
@@ -114,7 +153,6 @@ impl RuntimeModuleSupervisorV1 {
         &mut self,
         module_id: &StableId,
         generation: Generation,
-        selection_digest: Digest32,
         canary_digest: Digest32,
         handoff: &WriterHandoffCheckpointV1,
     ) -> Result<RuntimeTopologySnapshotV1, RuntimeModuleSupervisorErrorV1> {
@@ -147,6 +185,7 @@ impl RuntimeModuleSupervisorV1 {
         if !handoff.new_writer_admission_open() || handoff.unknown_effect_count != 0 {
             return Err(RuntimeModuleSupervisorErrorV1::HandoffNotTerminal);
         }
+        let selection_digest = self.selection_digest(module_id, generation)?;
         Ok(self.registry.promote_after_handoff(
             module_id,
             generation,
@@ -167,19 +206,37 @@ impl RuntimeModuleSupervisorV1 {
         Ok(self.registry.finish_retire(module_id, generation)?)
     }
 
-    pub fn rollback_to_predecessor_content(
+    pub fn rollback_verified(
         &mut self,
         module_id: &StableId,
         active_generation: Generation,
-        rollback_generation: Generation,
-        evaluator_evidence_digest: Digest32,
+        rollback: &VerifiedSelfEvolutionRollbackV1,
     ) -> Result<RuntimeTopologySnapshotV1, RuntimeModuleSupervisorErrorV1> {
+        let selection = rollback.selection();
+        if selection.receipt().candidate_generation != active_generation {
+            return Err(RuntimeModuleSupervisorErrorV1::RollbackSelectionMismatch);
+        }
+        let admitted = self.selection_digest(module_id, active_generation)?;
+        if admitted != selection.selection_digest() {
+            return Err(RuntimeModuleSupervisorErrorV1::RollbackSelectionMismatch);
+        }
         Ok(self.registry.rollback_active_to_predecessor_content(
             module_id,
             active_generation,
-            rollback_generation,
-            evaluator_evidence_digest,
+            rollback.rollback_generation(),
+            rollback.regression_evidence_digest(),
         )?)
+    }
+
+    fn selection_digest(
+        &self,
+        module_id: &StableId,
+        generation: Generation,
+    ) -> Result<Digest32, RuntimeModuleSupervisorErrorV1> {
+        self.selections
+            .get(&(module_id.clone(), generation))
+            .copied()
+            .ok_or(RuntimeModuleSupervisorErrorV1::MissingVerifiedSelection)
     }
 
     pub fn topology(&self) -> RuntimeTopologySnapshotV1 {
@@ -217,9 +274,11 @@ mod tests {
             owner_id: id("memory-team"),
             generation: generation(generation_value),
             implementation_digest: digest(implementation),
+            candidate_artifact_digest: digest(implementation),
             predecessor_generation: predecessor.map(|(value, _)| generation(value)),
             rollback_predecessor_digest: predecessor.map_or(Digest32::ZERO, |(_, value)| digest(value)),
             state_class: RuntimeModuleStateClassV1::Stateful,
+            dependencies: Vec::new(),
             input_ports: Vec::new(),
             output_ports: Vec::new(),
             authoritative_domains: [id("memory-ledger")].into_iter().collect::<BTreeSet<_>>(),
@@ -232,7 +291,9 @@ mod tests {
         let temp = tempfile::tempdir().expect("temp");
         let mut supervisor = RuntimeModuleSupervisorV1::new();
         supervisor.register_bootstrap(abi(1, "v1", None)).expect("bootstrap");
-        supervisor.register_shadow(abi(2, "v2", Some((1, "v1")))).expect("shadow");
+        supervisor
+            .register_shadow_for_test(abi(2, "v2", Some((1, "v1"))), digest("selection"))
+            .expect("shadow");
         supervisor.enter_canary(&id("memory.retrieval"), generation(2)).expect("canary");
 
         let file = std::fs::OpenOptions::new()
@@ -257,7 +318,10 @@ mod tests {
         for (phase, unknown, watermark) in [
             (WriterHandoffPhaseV1::AdmissionStopped, 0, None),
             (WriterHandoffPhaseV1::Drained, 0, Some(9)),
+            (WriterHandoffPhaseV1::OldWriterFenced, 0, Some(9)),
+            (WriterHandoffPhaseV1::Snapshotted, 0, Some(9)),
             (WriterHandoffPhaseV1::Migrated, 0, Some(9)),
+            (WriterHandoffPhaseV1::Validated, 0, Some(9)),
             (WriterHandoffPhaseV1::NewWriterFenced, 0, Some(9)),
             (WriterHandoffPhaseV1::RoutePublished, 0, Some(9)),
         ] {
@@ -274,7 +338,6 @@ mod tests {
             .promote_after_writer_handoff(
                 &id("memory.retrieval"),
                 generation(2),
-                digest("selection"),
                 digest("canary"),
                 journal.checkpoint(),
             )

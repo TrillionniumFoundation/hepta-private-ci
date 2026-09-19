@@ -23,6 +23,24 @@ class ScopeTests(unittest.TestCase):
             with self.subTest(path=path):
                 self.assertTrue(all(select([path])[key] for key in GROUPS))
 
+    def test_generated_module_projections_do_not_force_native_builds(self):
+        for path in [
+            "docs/modules/SOURCE_BINDINGS.json",
+            "docs/modules/MODULE_DOCS.json",
+            "docs/readiness/STATUS.md",
+        ]:
+            with self.subTest(path=path):
+                scope = select([path])
+                self.assertTrue(scope["derived"])
+                self.assertFalse(scope["native"])
+
+    def test_plasticity_change_runs_learning_and_lifecycle_only(self):
+        scope = select(["codex-rs/hepta-plasticity/src/topology_v3.rs"])
+        self.assertTrue(scope["learning"])
+        self.assertTrue(scope["lifecycle"])
+        for group in GROUPS - {"learning", "lifecycle"}:
+            self.assertFalse(scope[group])
+
     def test_registry_is_not_prose(self):
         scope = select(["docs/modules/MODULES.json"])
         self.assertTrue(scope["derived"])
