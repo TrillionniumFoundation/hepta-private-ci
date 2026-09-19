@@ -134,6 +134,52 @@ async fn begin_effect(
 }
 
 #[tokio::test]
+async fn conflicting_policy_rules_for_one_binding_are_rejected_before_storage() {
+    let temp = TempDir::new().unwrap();
+    let store = HeptaEvidenceStore::open(&config(&temp)).await.unwrap();
+    let scope = Digest32::of_bytes(b"scope");
+    let policy_id = id("policy:conflict");
+    let policy = PolicyRevision {
+        policy_id: policy_id.clone(),
+        revision: 1,
+        rules: vec![
+            PolicyRule {
+                principal_id: id("principal:one"),
+                action_id: id("action:effect"),
+                scope_digest: scope,
+                allow: true,
+            },
+            PolicyRule {
+                principal_id: id("principal:one"),
+                action_id: id("action:effect"),
+                scope_digest: scope,
+                allow: false,
+            },
+        ],
+    };
+
+    assert!(matches!(
+        store.install_authbus_policy(&policy, false).await,
+        Err(AuthBusControlError::Invalid("duplicate policy rule"))
+    ));
+
+    let head_count: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM authbus_policy_heads WHERE policy_id=?")
+            .bind(policy_id.as_str())
+            .fetch_one(&store.pool)
+            .await
+            .unwrap();
+    let rule_count: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM authbus_policy_rules WHERE policy_id=?")
+            .bind(policy_id.as_str())
+            .fetch_one(&store.pool)
+            .await
+            .unwrap();
+    assert_eq!(head_count, 0);
+    assert_eq!(rule_count, 0);
+}
+
+#[tokio::test]
 async fn bus_01_simultaneous_last_unit_reservations_cannot_both_succeed() {
     let temp = TempDir::new().unwrap();
     let sqlite = config(&temp);
