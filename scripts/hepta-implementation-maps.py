@@ -387,7 +387,7 @@ def verify():
     elif source_bases:
         source_commit, source_tree = next(iter(source_bases))
         try:
-            if git("rev-parse", f"{source_commit}^{tree}") != source_tree:
+            if git("rev-parse", f"{source_commit}^{{tree}}") != source_tree:
                 failures.append("maps: source base tree does not match commit")
             git("merge-base", "--is-ancestor", source_commit, "HEAD")
         except subprocess.CalledProcessError:
