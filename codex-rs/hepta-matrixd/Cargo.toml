@@ -56,6 +56,9 @@ tokio = { workspace = true, features = [
 ] }
 tokio-util = { workspace = true, features = ["rt"] }
 
+[target.'cfg(unix)'.dependencies]
+rustix = { workspace = true, features = ["fs", "process"] }
+
 [dev-dependencies]
 anyhow = { workspace = true }
 app_test_support = { workspace = true }
