@@ -195,9 +195,11 @@ API that applies a topology change. Runtime graph mutation remains gated on an
 independently accepted migration/writer-handoff implementation and host canary.
 
 The structural-canary source controller is constructed through a durable-bound builder that
-verifies the exact governed proposal, durable append receipt and selected structural candidate.
-Its plan content-binds the admission, durable sequence/frame, candidate ID, rollback,
-writer-handoff set, baseline health and thresholds, and it maintains
+reads the governed proposal and original append receipt from `DurableTopologyProposalRegistryV1`
+by proposal ID, then verifies the selected structural candidate. External callers cannot
+construct `StructuralCanaryPlanV1` fields directly. Its plan content-binds the admission,
+durable sequence/frame, candidate ID, rollback, writer-handoff set, baseline health and
+thresholds, and it maintains
 a rolling observation-chain digest. Reaching the minimum successful-step threshold
 does not auto-accept: an explicit `finish()` transition is required. This prevents a
 last-observation-only receipt from being replayed across a different plan or truncated
