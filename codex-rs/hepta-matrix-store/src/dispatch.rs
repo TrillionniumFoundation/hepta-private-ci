@@ -59,6 +59,9 @@ pub struct MatrixDispatchRecord {
     pub stable_txn_id: MatrixTransactionId,
     pub operation_id: String,
     pub room_id: String,
+    pub homeserver_id: Option<String>,
+    pub device_id: Option<String>,
+    pub session_generation: Option<u64>,
     pub payload_sha256: String,
     pub binding_revision: u64,
     pub generation: u64,
@@ -137,14 +140,19 @@ impl MatrixDurableStore {
         &self,
         txn_id: &MatrixTransactionId,
         operation_id: &str,
+        homeserver_id: &str,
+        device_id: &str,
+        session_generation: u64,
         authority_epoch: u64,
         grant_payload_sha256: &str,
         deadline_ms: u64,
         now_ms: u64,
     ) -> Result<MatrixDispatchRecord, MatrixDurableError> {
         validate_identity(operation_id)?;
+        validate_identity(homeserver_id)?;
+        validate_identity(device_id)?;
         validate_digest(grant_payload_sha256)?;
-        if authority_epoch == 0 || deadline_ms <= now_ms {
+        if session_generation == 0 || authority_epoch == 0 || deadline_ms <= now_ms {
             return Err(MatrixDurableError::Invalid);
         }
         let mut transaction = self
@@ -163,11 +171,15 @@ impl MatrixDurableStore {
         }
         sqlx::query(
             "UPDATE matrix_dispatch_ledger
-             SET operation_id = ?, authority_epoch = ?, grant_payload_sha256 = ?,
+             SET operation_id = ?, homeserver_id = ?, device_id = ?,
+                 session_generation = ?, authority_epoch = ?, grant_payload_sha256 = ?,
                  deadline_ms = ?, updated_at_ms = ?
              WHERE stable_txn_id = ?",
         )
         .bind(operation_id)
+        .bind(homeserver_id)
+        .bind(device_id)
+        .bind(to_i64(session_generation)?)
         .bind(to_i64(authority_epoch)?)
         .bind(grant_payload_sha256)
         .bind(to_i64(deadline_ms)?)
@@ -562,7 +574,8 @@ async fn dispatch_by_txn_tx(
     txn_id: &MatrixTransactionId,
 ) -> Result<Option<MatrixDispatchRecord>, MatrixDurableError> {
     let row = sqlx::query(
-        "SELECT stable_txn_id, operation_id, room_id, payload_sha256,
+        "SELECT stable_txn_id, operation_id, room_id, homeserver_id, device_id,
+                session_generation, payload_sha256,
                 binding_revision, generation, authority_epoch, grant_payload_sha256,
                 deadline_ms, state, transport_event_id, terminal_event_id,
                 send_observation_digest, redaction_observation_digest,
@@ -591,6 +604,9 @@ fn dispatch_from_row(row: sqlx::sqlite::SqliteRow) -> Result<MatrixDispatchRecor
         .map_err(|_| MatrixDurableError::Corrupt)?,
         operation_id: row.try_get("operation_id").map_err(|_| MatrixDurableError::Unavailable)?,
         room_id: row.try_get("room_id").map_err(|_| MatrixDurableError::Unavailable)?,
+        homeserver_id: row.try_get("homeserver_id").map_err(|_| MatrixDurableError::Unavailable)?,
+        device_id: row.try_get("device_id").map_err(|_| MatrixDurableError::Unavailable)?,
+        session_generation: row.try_get::<Option<i64>, _>("session_generation").map_err(|_| MatrixDurableError::Unavailable)?.map(to_u64).transpose()?,
         payload_sha256: row.try_get("payload_sha256").map_err(|_| MatrixDurableError::Unavailable)?,
         binding_revision: to_u64(row.try_get("binding_revision").map_err(|_| MatrixDurableError::Unavailable)?)?,
         generation: to_u64(row.try_get("generation").map_err(|_| MatrixDurableError::Unavailable)?)?,
