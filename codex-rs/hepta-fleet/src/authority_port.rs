@@ -193,8 +193,7 @@ mod tests {
     #[test]
     fn allocation_issue_consumes_exact_live_kernel_authority_lease() {
         let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
-            .unwrap();
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
         let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
             directory.path(),
             "security-authority".into(),
@@ -225,9 +224,7 @@ mod tests {
             .unwrap();
         assert_eq!(receipt.allocation_id, "allocation-one");
 
-        registry
-            .revoke("fleet-issue-one", 1, [9; 32])
-            .unwrap();
+        registry.revoke("fleet-issue-one", 1, [9; 32]).unwrap();
         assert_eq!(
             port.issue(&mut ledger, "fleet-issue-one", 2, 2_001, grant)
                 .unwrap_err(),
