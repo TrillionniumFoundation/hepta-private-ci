@@ -175,6 +175,66 @@ impl AgentdClient {
         }
     }
 
+    pub async fn append_kernel_evidence(
+        &self,
+        request: crate::KernelEvidenceAppendIngress,
+    ) -> Result<codex_hepta_evidence::EvidenceId, AgentdError> {
+        let result = match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::KernelEvidenceAppend { request },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::KernelEvidenceResult(result) => result,
+            payload => return unexpected(payload),
+        };
+        Ok(serde_json::from_str(&result.json)?)
+    }
+
+    pub async fn query_kernel_evidence(
+        &self,
+        request: crate::KernelEvidenceQueryV1,
+    ) -> Result<Vec<codex_hepta_evidence::EvidenceReferenceV1>, AgentdError> {
+        let result = match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::KernelEvidenceQuery { request },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::KernelEvidenceResult(result) => result,
+            payload => return unexpected(payload),
+        };
+        Ok(serde_json::from_str(&result.json)?)
+    }
+
+    pub async fn verify_kernel_evidence(
+        &self,
+        request: crate::KernelEvidenceVerifyV1,
+    ) -> Result<codex_hepta_evidence::EvidenceDispositionV1, AgentdError> {
+        let result = match self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::KernelEvidenceVerify { request },
+            })
+            .await?
+            .payload
+        {
+            AgentdPayload::KernelEvidenceResult(result) => result,
+            payload => return unexpected(payload),
+        };
+        Ok(serde_json::from_str(&result.json)?)
+    }
+
     pub async fn events(&self, after_cursor: u64, limit: u16) -> Result<EventBatch, AgentdError> {
         match self
             .send(AgentdRequest::events(
