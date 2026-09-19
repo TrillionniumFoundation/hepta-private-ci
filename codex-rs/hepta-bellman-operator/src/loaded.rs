@@ -77,7 +77,7 @@ impl LoadedTabularOperatorV1 {
         {
             return Err(TabularPayloadError::Binding);
         }
-        validate(&artifact)?;
+        validate_tabular_artifact_v1(&artifact)?;
         Ok(Self { artifact })
     }
 
@@ -117,7 +117,7 @@ impl LoadedTabularOperatorV1 {
 pub fn encode_tabular_payload_v1(
     artifact: &TabularOperatorArtifactV1,
 ) -> Result<Vec<u8>, TabularPayloadError> {
-    validate(artifact)?;
+    validate_tabular_artifact_v1(artifact)?;
     let size = 8
         + 2
         + artifact.artifact_id.as_str().len()
@@ -168,7 +168,7 @@ pub fn encode_tabular_payload_v1(
     Ok(bytes)
 }
 
-fn validate(artifact: &TabularOperatorArtifactV1) -> Result<(), TabularPayloadError> {
+pub(crate) fn validate_tabular_artifact_v1(artifact: &TabularOperatorArtifactV1) -> Result<(), TabularPayloadError> {
     if artifact.authority.grants_any() {
         return Err(TabularPayloadError::Authority);
     }
