@@ -303,12 +303,12 @@ def validate_platform_types_vector(root: Path = ROOT) -> None:
         or value.get("contract") != "hepta.platform-types.canonical-digest-v1"
         or value.get("encodingSchemaVersion") != 1
         or value.get("typeId") != "platform.types:golden"
-        or value.get("encodedLength") != 218
-        or len(encoded) != 218
+        or value.get("encodedLength") != 254
+        or len(encoded) != 254
         or not encoded.startswith(b"HEPTA-CANONICAL-DIGEST-V1\\0")
         or hashlib.sha256(encoded).hexdigest() != expected_digest
         or expected_digest
-        != "b2dd7cbfbd9b6d6635f32ca616beadb135c7f7c5a62c7b6eea8a12071251394d"
+        != "8ef482c0a0cd42aee59638898402103024004fbb0ea189d5673d4d6455c2a53d"
         or value.get("authority") != "none"
     ):
         raise VerificationError("Platform Types canonical V1 conformance vector mismatch")
