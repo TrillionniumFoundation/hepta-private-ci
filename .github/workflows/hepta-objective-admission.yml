@@ -8,6 +8,19 @@ on:
     paths:
       - codex-rs/hepta-objective/**
       - codex-rs/hepta-types/**
+      - codex-rs/hepta-agent-protocol/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-intelligence/**
+      - codex-rs/hepta-learning-ledger/**
+      - codex-rs/Cargo.lock
+      - docs/contracts/OBJECTIVE_ERRORS.json
+      - docs/readiness/PROTOCOLS.json
+      - docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md
+      - docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md
+      - docs/modules/objective.compiler/**
+      - qualification/module-execution-dossiers/detail/objective.compiler.md
+      - scripts/hepta-objective-target-measure.py
+      - scripts/hepta-implementation-maps.py
       - .github/workflows/hepta-objective-admission.yml
 
 permissions:
@@ -34,26 +47,45 @@ jobs:
           test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
           git rev-parse HEAD HEAD^{tree}
 
-      - name: Objective tests
+      - name: Validate exact-source and target-host recorders
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py verify --expected-sha "${GITHUB_SHA}"
+          python3 scripts/hepta-objective-target-measure.py --self-test
+
+      - name: Objective and product-composition tests
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
           cargo test --locked -p codex-hepta-objective -- --nocapture
+          cargo test --locked -p codex-hepta-learning-ledger run_start -- --nocapture
+          cargo test --locked -p codex-hepta-intelligence objective_run -- --nocapture
+          cargo test --locked -p codex-hepta-agentd objective_runtime -- --nocapture
 
-      - name: Strict objective lint
+      - name: Strict objective and product-composition lint
         working-directory: codex-rs
         shell: bash
         run: |
           set -euo pipefail
-          cargo clippy --locked -p codex-hepta-objective --all-targets -- -D warnings
+          cargo clippy --locked \
+            -p codex-hepta-objective \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd \
+            --all-targets -- -D warnings
 
       - name: Formatting and clean source
         if: always()
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-objective -- --check
+          cargo fmt --manifest-path codex-rs/Cargo.toml \
+            --package codex-hepta-objective \
+            --package codex-hepta-learning-ledger \
+            --package codex-hepta-intelligence \
+            --package codex-hepta-agentd -- --check
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
