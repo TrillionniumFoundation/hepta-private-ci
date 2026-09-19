@@ -171,7 +171,6 @@ impl AgentdProductionWriterHost {
     }
 }
 
-
 #[cfg(test)]
 #[path = "production_writer_host_tests.rs"]
 mod tests;
