@@ -41,8 +41,8 @@ use crate::CapabilityRequirementV2;
 use crate::CapabilitySnapshotRequestV2;
 use crate::CapabilitySnapshotV2;
 use crate::LaneFBudgetV3;
-use crate::LegalActionCandidateV1;
 use crate::LaneFRunRequestV3;
+use crate::LegalActionCandidateV1;
 use crate::PipelineDispositionV3;
 use crate::build_legal_candidates_v1;
 use crate::run_composition_v3;
@@ -122,10 +122,7 @@ fn capability_snapshot(objective_digest: Digest32) -> CapabilitySnapshotV2 {
             capability_id: requirement.capability_id.clone(),
             owner_id: requirement.owner_id.clone(),
             contract_digest: requirement.contract_digest,
-            implementation_digest: digest(&format!(
-                "impl:{}",
-                requirement.capability_id.as_str()
-            )),
+            implementation_digest: digest(&format!("impl:{}", requirement.capability_id.as_str())),
             generation: generation(1),
         })
         .collect();
@@ -316,10 +313,7 @@ fn fixture_inputs(
     }
 }
 
-fn run_request(
-    objective_digest: Digest32,
-    legal: LegalActionCandidateSetV1,
-) -> LaneFRunRequestV3 {
+fn run_request(objective_digest: Digest32, legal: LegalActionCandidateSetV1) -> LaneFRunRequestV3 {
     LaneFRunRequestV3 {
         run_id: id("run:v3-native"),
         request_digest: digest("request"),
