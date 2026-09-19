@@ -24,7 +24,9 @@ must provide the separate owner authorization required by its own contract.
 | Owner | Responsibility | Main callers |
 | --- | --- | --- |
 | `path_policy.py` | Canonical POSIX paths and cross-platform alias rejection | Store, candidate generator and sandbox |
-| `control_plane.py` | SQLite schema, transactions, envelopes, leases, scheduling and audit | Public facade and CLI |
+| `control_plane.py` | SQLite schema, transactions, envelopes, leases, scheduling and audit | Public facade and controller |
+| `assignment.py` | Authenticated worker registration, fenced claims, heartbeat, completion and explicit retry/requeue | EngineeringController and public package |
+| `controller.py` | Named single-writer repository composition and durable writer binding | Repository/CI host composition |
 | `candidate.py` | Deterministic candidate grammar, exact Git materialization and isolation | Public facade and CLI |
 | `evidence.py` | Exact Git objects, source/merge execution receipts and independent identities | Candidate evidence binder |
 | `hardening.py` | Active-state frontier and authenticated evidence/consent primitives | Store, closure and seal |
@@ -43,12 +45,16 @@ connection, modules or database.
 
 `EngineeringStore` uses SQLite foreign keys, WAL, `synchronous=FULL` and one outer
 `BEGIN IMMEDIATE` per mutation. Nested owner operations share that transaction.
-`SCHEMA.sql` is the single schema source, currently version 5. Tables are:
+`SCHEMA.sql` is the single schema source, currently version 6. Tables are:
 
 - `work_envelopes`: immutable source/objective/contract/owner/path/capacity facts;
 - `path_leases`: state, revision, authority epoch, monotonically increasing fence and expiry;
 - `assignment_generations`: immutable assigned and blocked projections;
 - `assignment_generation_frontiers`: exact envelope revision, source and active-lease frontier;
+- `assignment_generation_packages`: immutable package paths, required worker capabilities and retry ceilings;
+- `engineering_workers`: authenticated worker identity, capability/capacity, epoch and heartbeat lease;
+- `assignment_claims`: fenced worker claims, execution state, attempts, heartbeat, completion/failure and requeue;
+- `engineering_writer_bindings`: singleton repository/controller writer identity and credential-chain digest;
 - `integration_decisions`: immutable eligibility and rejection projection;
 - `integration_decision_bindings`: candidate, sandbox and evidence identity;
 - `integration_decision_seals`: authenticated seal identity, freshness and replay uniqueness;
@@ -57,12 +63,16 @@ connection, modules or database.
 
 An owner mutation, its binding/frontier and audit event either commit together or
 roll back together. Equal identity and semantics replay idempotently; different
-semantics conflict. Startup checks the audit chain. Additive v2/v3/v4 stores migrate
-transactionally to v5; historical generations without a bound frontier remain
+semantics conflict. Startup checks the audit chain. Additive v2/v3/v4/v5 stores migrate
+transactionally to v6; historical generations without current package bindings remain
 unusable and require a new generation. A future version is rejected before any
 schema or journal-mode write. A database claiming v5 but missing a required table
 is rejected. A corrupted store must be quarantined and restored from a verified
 backup; startup does not silently reconstruct acceptance or change owner facts.
+
+The named `EngineeringController` composes one store and a verification-only
+trust boundary, and durably binds one repository/writer-instance/credential-chain
+tuple. A different writer cannot silently reuse the same owner database.
 
 The store is a local coordination database, not a replicated consensus service.
 One connection belongs to one execution thread; concurrent callers use separate
@@ -85,9 +95,15 @@ records also have a 256 KiB bound; hitting a byte bound may reject input below t
 item-count limit. Graph validation is iterative, so valid deep DAGs do not depend
 on Python's recursion limit. Scheduling applies completed predecessors, active
 lease exclusion, intra-batch path exclusion, stable priority and envelope capacity.
-A generation binds the exact source/envelope/active-lease frontier. A changed
-frontier requires a new generation ID. An assignment is a proposal; workers still
-need to acquire leases before writing their declared paths.
+A generation binds the exact source/envelope/active-lease frontier and immutable
+package path/capability/retry facts. A changed frontier requires a new generation ID.
+
+Workers register an authenticated principal and credential-chain digest, bounded
+capabilities/capacity, authority epoch and heartbeat lease. A scheduled package is
+not executable until one active worker holds a covering path lease and acquires a
+durable fenced claim. Claims move through claimed -> running -> completed/failed
+or expire. Failure/expiry never retries implicitly: retryable terminal work must be
+explicitly requeued before a later bounded attempt may be claimed.
 
 ## Candidate qualification
 
@@ -123,10 +139,12 @@ that seal; caller-made booleans or unsealed `BoundEvidenceDecision` values fail.
 Persisted bindings and seals commit with the decision, and seal reuse under a new
 decision ID is rejected. Denied decisions can still be recorded without a seal.
 
-`HmacTrustStore` is the deterministic reference/test signing adapter. Production
-composition needs independent registered signing identities and protected verifier
-keys. Tests using fixture signers establish protocol behavior; they do not establish
-organizational evaluator independence or production key custody.
+`HmacTrustStore` remains a deterministic fixture signer/verifier only.
+`OpenSslTrustStore` is verification-only and pins exact public-key bytes/digests;
+it intentionally exposes no signing method. Signing and verification are separate
+ports, so production composition can keep CI/reviewer/evidence-binder private keys
+outside this process and use an external/HSM signer. Fixture signatures still do
+not establish organizational evaluator independence or production key custody.
 
 ## Authorized external-system composition
 
@@ -194,7 +212,9 @@ the real admission probe fails; strict mode turns that into failure. Never count
 skip as strong sandbox evidence. `test_consolidated_engineering.py` adds concurrent
 SQLite lease races, rollback fault injection, migration/downgrade protection, deep
 DAG and lease capacity behavior, forged evidence rejection, per-command source/state
-mutation detection and real CLI subprocess round trips. Historical registries that
+mutation detection and real CLI subprocess round trips. The suite also includes `test_assignment_lifecycle.py` and
+`test_evidence_public_key.py` for worker claim/requeue fencing, durable controller
+writer binding and verification-only public-key trust. Historical registries that
 merely asserted maturity or counted source symbols have been retired in favor of
 these behavior tests and this single implementation map. CI definitions remain in
 the repository's current workflow; this document does not certify an unobserved run.
