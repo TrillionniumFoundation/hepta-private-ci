@@ -549,7 +549,7 @@ async fn quota_window_and_revision_are_enforced_and_rollover_is_bounded() {
             window_start_ms: now.saturating_sub(1_000),
             window_end_ms: window_end,
             endowment: 5,
-        max_active_per_principal: 128,
+            max_active_per_principal: 128,
         })
         .await
         .unwrap();
@@ -590,7 +590,7 @@ async fn quota_window_and_revision_are_enforced_and_rollover_is_bounded() {
             window_start_ms: now.saturating_sub(1_000),
             window_end_ms: window_end,
             endowment: 6,
-        max_active_per_principal: 128,
+            max_active_per_principal: 128,
         })
         .await
         .unwrap();
@@ -602,7 +602,7 @@ async fn quota_window_and_revision_are_enforced_and_rollover_is_bounded() {
             window_start_ms: window_end,
             window_end_ms: window_end.checked_add(20_000).unwrap(),
             endowment: 7,
-        max_active_per_principal: 128,
+            max_active_per_principal: 128,
         })
         .await
         .unwrap();
