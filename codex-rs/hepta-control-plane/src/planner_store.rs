@@ -202,6 +202,6 @@ fn sync_parent(_parent: &Path) -> Result<(), PlannerJournalStoreError> {
     Ok(())
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "planner_store_tests.rs"]
 mod tests;
