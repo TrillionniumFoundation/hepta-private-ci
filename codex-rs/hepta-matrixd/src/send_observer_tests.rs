@@ -152,7 +152,7 @@ async fn transport_acceptance_is_not_terminal_until_sync_observation() -> TestRe
 }
 
 #[tokio::test]
-async fn indeterminate_dispatch_survives_reopen_and_reconciles_without_resend() -> TestResult {
+async fn indeterminate_dispatch_survives_reopen_and_reuses_only_stable_txn() -> TestResult {
     let temp = TempDir::new()?;
     let (layout, store, claimed) = store_and_outbox(&temp).await?;
     let authority = MatrixDispatchAuthority::owner_local(&claimed.stable_txn_id);
@@ -176,28 +176,36 @@ async fn indeterminate_dispatch_survives_reopen_and_reconciles_without_resend() 
         .await?
         .ok_or("dispatch did not survive reopen")?;
     assert_eq!(pending.state, MatrixDispatchState::Indeterminate);
-    assert!(
-        reopened
-            .claim_outbox(u64::MAX / 4, 30, 10)
-            .await?
-            .is_empty(),
-        "indeterminate effect must not become a blind retry after restart"
-    );
+
+    let mut reclaimed = reopened.claim_outbox(41, 30, 1).await?;
+    let reclaimed = reclaimed.pop().ok_or("expired uncertain send was not reclaimed")?;
+    assert_eq!(reclaimed.stable_txn_id, claimed.stable_txn_id);
+    assert_eq!(reclaimed.attempts, claimed.attempts + 1);
+    prepare_send(&reopened, &reclaimed, &authority, 41).await?;
+    reopened
+        .mark_matrix_dispatch_dispatched(
+            &reclaimed.stable_txn_id,
+            reclaimed.attempts,
+            &digest('4'),
+            41,
+        )
+        .await?;
 
     let event_id = event("$reconciled:example.org")?;
     let terminal = observe_send(
         &reopened,
-        Some(&claimed.stable_txn_id),
+        Some(&reclaimed.stable_txn_id),
         &event_id,
-        &claimed.room_id,
+        &reclaimed.room_id,
         &digest('3'),
-        20,
+        42,
     )
     .await?
     .ok_or("reopened dispatch did not reconcile")?;
     assert_eq!(terminal.state, MatrixDispatchState::ObservedSucceeded);
+    assert_eq!(terminal.attempt, reclaimed.attempts);
     let outbox = reopened
-        .outbox_for_txn(&claimed.stable_txn_id)
+        .outbox_for_txn(&reclaimed.stable_txn_id)
         .await?
         .ok_or("reconciled outbox disappeared")?;
     assert_eq!(outbox.state, OutboxState::Sent);
