@@ -73,9 +73,12 @@ listener is added.
 
 Servo has no direct external namespace. Its proxy preferences point at a
 loopback relay inside the sandbox, which can reach only a profile-private Unix
-socket. The host-side `GrantScopedEgressBroker` revalidates exact origin, DNS
-answers and destination IP for every HTTP request/CONNECT. For HTTPS CONNECT to
-a DNS host it also requires bounded ClientHello SNI to match the granted host
+socket. The host-side `GrantScopedEgressBroker` resolves every admitted origin
+once while establishing the profile network-grant generation, rejects
+private/special destinations, and freezes the exact DNS/IP answer set under the
+profile grant digest. Every later HTTP request/CONNECT uses only those pinned
+addresses, so DNS rebinding cannot retarget the profile. For HTTPS CONNECT to a
+DNS host it also requires bounded ClientHello SNI to match the granted host
 before any upstream TCP connection. Independently, the Servo delegate pins
 top-level navigation to the current effect's exact `destinationOrigin`, so a
 second origin may remain profile-allowed for read/subresource policy without

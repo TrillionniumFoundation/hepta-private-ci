@@ -75,15 +75,43 @@ restart locked-build, real-E2E, reproducibility and SBOM evidence. The next pin
 refresh must rerun the complete promotion oracle below; this review is not a
 claim that arbitrary future upstream commits are compatible.
 
+### 3.2 Current upstream review (2026-09-20)
+
+Servo `main` has since advanced to
+`b5a1f5e6ec6f8685d40cd389802ced7abe4980f6` (2026-09-19T17:17:51Z),
+13 commits ahead of the frozen `5cc5bd32...` candidate and zero commits
+behind. This post-freeze window includes Browser-relevant changes:
+
+- `07777aaa24af690a52648f1cd7e575659310cee8` — avoids double-borrow
+  hazards when accessing `Servo` from `WebView`;
+- `55c0e7698f72e0733b9628bf9a36dc7ac2a7d85c` — moves TLS security
+  information to rustls-native types and changes net/devtools serialization;
+- `31f660d20c55444d352b83611328f68a2d0c2582` — makes layout image
+  loads block the document load event;
+- several promise/rooting changes in script, including
+  `531762343d4e6789d718c513ebfaeee9ea811a6d` and
+  `b5a1f5e6ec6f8685d40cd389802ced7abe4980f6`.
+
+The WebView double-borrow change is directly relevant to Hepta's embedding
+surface and must be included in the next pin-refresh review. It is not silently
+pulled into the current qualification cycle: changing the selected pin now
+would invalidate the reviewed worker `Cargo.lock` and restart locked-build,
+real-E2E, reproducibility and SBOM evidence. The current cycle therefore stays
+frozen at `5cc5bd32...`; promotion remains blocked until that exact candidate
+passes its oracle, and the next refresh must explicitly evaluate these 13
+commits rather than treating upstream `main` as automatically compatible.
+
 ## 4. Proxy compatibility
 
 The selected Servo source exposes `Preferences.network_http_proxy_uri`,
 `network_https_proxy_uri`, and `network_http_no_proxy` through
 `ServoBuilder::preferences`. Hepta uses those public preferences to point the
 sandboxed worker at a loopback relay. That relay can reach only the private
-profile Unix socket; the host-side `GrantScopedEgressBroker` independently
-checks exact origin, DNS results and destination IP before making an external
-connection.
+profile Unix socket; the host-side `GrantScopedEgressBroker` binds the profile network grant by
+resolving each admitted origin once, rejecting disallowed address classes and
+freezing the exact DNS/IP answer set under the profile grant digest. Later
+requests never re-resolve those names and can connect only to the frozen
+addresses.
 
 No direct external network namespace is granted to Servo.
 

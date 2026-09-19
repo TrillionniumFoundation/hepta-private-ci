@@ -165,12 +165,15 @@ requests operate on the same private Browser state.
 Servo still receives no direct external namespace. A profile-local Unix socket
 is mounted through the writable profile bind. Inside the sandbox a loopback-only
 relay forwards Servo's HTTP/HTTPS proxy traffic to that socket; the host
-`GrantScopedEgressBroker` admits only an exact granted origin and independently
-resolves/validates the destination before connect. HTTPS CONNECT to a DNS host
-is additionally bound to a bounded TLS ClientHello: the broker requires SNI to
-match the granted CONNECT host before opening any upstream TCP connection.
-IP-literal grants may omit SNI, while any supplied server name must still match.
-Every redirect/subresource request is rechecked. Production rejects private,
+`GrantScopedEgressBroker` admits only an exact profile-granted origin. At
+broker-generation startup it resolves that origin once, rejects disallowed
+address classes, freezes the exact DNS/IP set under the profile grant digest,
+and uses only that set for later connections; it does not re-resolve per
+request. HTTPS CONNECT to a DNS host is additionally bound to a bounded TLS
+ClientHello: the broker requires SNI to match the granted CONNECT host before
+opening any upstream TCP connection. IP-literal grants may omit SNI, while any
+supplied server name must still match. Every redirect/subresource request is
+rechecked against the frozen profile binding. Production rejects private,
 loopback, link-local, documentation and multicast/special ranges; the
 private-network override exists only for repository E2E fixtures. The worker
 also pins top-level `NavigationRequest` admission to the current dispatch

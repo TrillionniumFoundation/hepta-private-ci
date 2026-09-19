@@ -213,15 +213,17 @@ separated the hardened owner boundary from a usable browser lifecycle:
 - **Grant-scoped egress:** Servo keeps an unshared external network namespace.
   Its HTTP(S) proxy preferences point to a sandbox-loopback relay which can only
   reach a private Unix socket in the profile bind. The host-side
-  `GrantScopedEgressBroker` revalidates exact origin, DNS answers and
-  destination IP on every HTTP request/CONNECT. For HTTPS CONNECT to a DNS
-  destination it also parses a bounded TLS ClientHello and requires SNI to
-  match the granted host before opening any upstream TCP connection; production
-  denies loopback/private/link-local/special destinations. Independently of the
-  proxy allowlist, the Servo delegate pins every top-level navigation to the
-  current effect's exact `destinationOrigin`; redirecting to a second origin
-  that is profile-allowed but not selected by this effect is denied before
-  navigation admission.
+  `GrantScopedEgressBroker` binds the profile network grant by resolving each
+  admitted origin once when that broker generation starts, rejecting
+  loopback/private/link-local/special destinations, and freezing the exact
+  DNS/IP answer set under the profile grant digest. Later HTTP requests and
+  CONNECT tunnels never re-resolve those names and can connect only to the
+  frozen addresses. For HTTPS CONNECT to a DNS destination it also parses a
+  bounded TLS ClientHello and requires SNI to match the granted host before any
+  upstream TCP connection. Independently of the profile network allowlist, the
+  Servo delegate pins every top-level navigation to the current effect's exact
+  `destinationOrigin`; redirecting to a second origin that is profile-allowed
+  but not selected by this effect is denied before navigation admission.
 - **Terminal pipeline:** final-use authority ends at the worker admission
   boundary, but the driver retains the bound worker response. Terminal
   settlement is persisted without holding the revocation fence; bounded late
