@@ -146,6 +146,7 @@ export async function startControlPlane({
   let timer = null;
   let refreshingPromise = null;
   let recoveryPromise = null;
+  let activeRecoveryGeneration = null;
   let suspensionPromise = Promise.resolve();
   let writerLease = null;
   let lifecycleGeneration = 0;
@@ -278,12 +279,21 @@ export async function startControlPlane({
 
   const recoverSession = async (reason = "Runtime session is being re-established.") => {
     if (disposed || suspended) return null;
-    if (recoveryPromise) return recoveryPromise;
+    if (recoveryPromise) {
+      if (activeRecoveryGeneration === lifecycleGeneration) return recoveryPromise;
+      const priorRecovery = recoveryPromise;
+      const retryAfterPrior = () => {
+        if (disposed || suspended) return null;
+        return recoverSession(reason);
+      };
+      return priorRecovery.then(retryAfterPrior, retryAfterPrior);
+    }
 
     stopTimer();
     const recoveryGeneration = ++lifecycleGeneration;
+    activeRecoveryGeneration = recoveryGeneration;
     blockMutations(reason);
-    recoveryPromise = (async () => {
+    const recoveryWork = (async () => {
       const nextConfig = await loadConfig();
       if (!lifecycleCurrent(recoveryGeneration)) return null;
 
@@ -383,10 +393,15 @@ export async function startControlPlane({
       const view = await applyCurrentSnapshot(recoveryGeneration);
       if (lifecycleCurrent(recoveryGeneration)) startTimer();
       return view;
-    })().finally(() => {
-      recoveryPromise = null;
+    })();
+    const trackedRecovery = recoveryWork.finally(() => {
+      if (recoveryPromise === trackedRecovery) {
+        recoveryPromise = null;
+        activeRecoveryGeneration = null;
+      }
     });
-    return recoveryPromise;
+    recoveryPromise = trackedRecovery;
+    return trackedRecovery;
   };
 
   const refreshOnce = async () => {
