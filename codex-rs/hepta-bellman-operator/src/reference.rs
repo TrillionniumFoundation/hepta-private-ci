@@ -55,6 +55,10 @@ pub struct OperatorApplicabilityCertificateV1 {
     pub decision: ApplicabilityDecisionV1,
 }
 
+/// Structural certificate validation only. This function does not authenticate
+/// the evaluator or prove role independence. Product/qualification callers use
+/// `validate_applicability_certificate_authenticated` after cryptographic
+/// evidence verification.
 pub fn validate_applicability_certificate(
     certificate: &OperatorApplicabilityCertificateV1,
     now: u64,
@@ -483,6 +487,9 @@ pub struct OperatorRegularityAdmissionV1 {
     pub authority: AuthorityPosture,
 }
 
+/// Structural regularity/error-budget validation only. A caller-supplied
+/// evaluator identity or approval flag is not independent evidence. Product/
+/// qualification callers use `admit_operator_regularity_authenticated`.
 pub fn admit_operator_regularity(
     mut assessment: OperatorRegularityAssessmentV1,
 ) -> Result<OperatorRegularityAdmissionV1, OperatorClosureError> {
