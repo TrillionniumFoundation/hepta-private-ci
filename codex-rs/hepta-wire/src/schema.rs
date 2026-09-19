@@ -118,13 +118,14 @@ impl SchemaRegistry {
     }
 
     pub fn register(&mut self, definition: SchemaDefinition) -> Result<(), SchemaError> {
+        let key = definition.schema.clone();
+        if self.schemas.contains_key(&key) {
+            return Err(SchemaError::DuplicateSchema(key.to_string()));
+        }
         if self.schemas.len() >= MAX_REGISTERED_SCHEMAS {
             return Err(SchemaError::RegistryFull);
         }
-        let key = definition.schema.clone();
-        if self.schemas.insert(key.clone(), definition).is_some() {
-            return Err(SchemaError::DuplicateSchema(key.to_string()));
-        }
+        self.schemas.insert(key, definition);
         Ok(())
     }
 
