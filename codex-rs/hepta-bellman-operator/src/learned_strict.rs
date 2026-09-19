@@ -277,5 +277,4 @@ mod tests {
             Err(StrictLearnedOperatorError::DatasetBindingMismatch)
         );
     }
-
 }
