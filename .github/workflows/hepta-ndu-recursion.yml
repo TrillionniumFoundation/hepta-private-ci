@@ -6,6 +6,7 @@ on:
       - "codex-rs/hepta-ndu/**"
       - "scripts/verify_cargo_lock.py"
       - "scripts/test_verify_cargo_lock.py"
+      - "scripts/hepta-ndu-source-policy.py"
       - ".github/workflows/hepta-ndu-recursion.yml"
 
 permissions:
@@ -54,6 +55,9 @@ jobs:
 
       - name: Verify Cargo lockfile integrity
         run: python3 scripts/verify_cargo_lock.py
+
+      - name: Reject new legacy NDU evaluator callers
+        run: python3 scripts/hepta-ndu-source-policy.py
 
       - name: Install pinned repository test tools
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
