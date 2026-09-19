@@ -17,7 +17,6 @@ use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_contracts::VerifiedUseToken;
 use codex_hepta_types::Digest32;
-use serde::Deserialize;
 use sha2::Digest;
 use sha2::Sha256;
 
@@ -26,15 +25,12 @@ use super::Result;
 
 const MAX_AUTHORITY_CONFIG_BYTES: usize = 32 * 1024;
 
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
 struct NativeAuthorityFile {
     signer_id: String,
     verifying_key: [u8; 32],
     authority_state_dir: PathBuf,
     authority_epoch: u64,
     revocation_revision: u64,
-    #[serde(default)]
     revoked_grant_ids: BTreeSet<String>,
     grant: SignedFinalUseGrant,
 }
@@ -57,7 +53,7 @@ impl NativeExecutionAuthority {
         if bytes.len() > MAX_AUTHORITY_CONFIG_BYTES {
             return Err("authority config exceeds 32768 bytes".into());
         }
-        let config: NativeAuthorityFile = serde_json::from_slice(&bytes)?;
+        let config = parse_authority_file(&bytes)?;
         if !config.authority_state_dir.is_absolute() {
             return Err("authority state directory must be absolute".into());
         }
@@ -105,6 +101,100 @@ impl NativeExecutionAuthority {
     pub(super) fn grant_id(&self) -> &str {
         &self.grant.grant.grant_id
     }
+}
+
+fn parse_authority_file(bytes: &[u8]) -> Result<NativeAuthorityFile> {
+    let value: serde_json::Value = serde_json::from_slice(bytes)?;
+    let object = value
+        .as_object()
+        .ok_or("authority config must be a JSON object")?;
+    const ALLOWED: &[&str] = &[
+        "signer_id",
+        "verifying_key",
+        "authority_state_dir",
+        "authority_epoch",
+        "revocation_revision",
+        "revoked_grant_ids",
+        "grant",
+    ];
+    if object.keys().any(|key| !ALLOWED.contains(&key.as_str())) {
+        return Err("authority config contains an unknown field".into());
+    }
+    let signer_id = required_string(object, "signer_id")?;
+    let authority_state_dir = PathBuf::from(required_string(object, "authority_state_dir")?);
+    let authority_epoch = required_u64(object, "authority_epoch")?;
+    let revocation_revision = required_u64(object, "revocation_revision")?;
+
+    let key = object
+        .get("verifying_key")
+        .and_then(serde_json::Value::as_array)
+        .ok_or("authority verifying_key must be an array")?;
+    if key.len() != 32 {
+        return Err("authority verifying_key must contain 32 bytes".into());
+    }
+    let mut verifying_key = [0_u8; 32];
+    for (index, value) in key.iter().enumerate() {
+        let byte = value
+            .as_u64()
+            .and_then(|value| u8::try_from(value).ok())
+            .ok_or("authority verifying_key contains a non-byte value")?;
+        verifying_key[index] = byte;
+    }
+
+    let mut revoked_grant_ids = BTreeSet::new();
+    if let Some(values) = object.get("revoked_grant_ids") {
+        let values = values
+            .as_array()
+            .ok_or("authority revoked_grant_ids must be an array")?;
+        for value in values {
+            let id = value
+                .as_str()
+                .ok_or("authority revoked_grant_ids must contain strings")?;
+            if !revoked_grant_ids.insert(id.to_string()) {
+                return Err("authority revoked_grant_ids contains a duplicate".into());
+            }
+        }
+    }
+    let grant = object
+        .get("grant")
+        .cloned()
+        .ok_or("authority config is missing grant")
+        .and_then(|value| {
+            serde_json::from_value::<SignedFinalUseGrant>(value).map_err(|error| error.into())
+        })?;
+
+    Ok(NativeAuthorityFile {
+        signer_id,
+        verifying_key,
+        authority_state_dir,
+        authority_epoch,
+        revocation_revision,
+        revoked_grant_ids,
+        grant,
+    })
+}
+
+fn required_string(
+    object: &serde_json::Map<String, serde_json::Value>,
+    field: &'static str,
+) -> Result<String> {
+    object
+        .get(field)
+        .and_then(serde_json::Value::as_str)
+        .filter(|value| !value.is_empty())
+        .map(str::to_string)
+        .ok_or_else(|| format!("authority config is missing valid {field}").into())
+}
+
+fn required_u64(
+    object: &serde_json::Map<String, serde_json::Value>,
+    field: &'static str,
+) -> Result<u64> {
+    object
+        .get(field)
+        .and_then(serde_json::Value::as_u64)
+        .filter(|value| *value > 0)
+        .ok_or_else(|| format!("authority config is missing valid {field}").into())
 }
 
 pub(super) fn build_binding(
