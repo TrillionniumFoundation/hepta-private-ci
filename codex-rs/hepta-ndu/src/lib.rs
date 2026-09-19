@@ -9,6 +9,7 @@
 
 #![forbid(unsafe_code)]
 
+mod coefficient_profile;
 mod conditional_moments;
 mod covariance;
 mod covariance_profile;
@@ -24,6 +25,12 @@ mod protocol;
 mod recursive;
 mod scoring;
 
+pub use coefficient_profile::AdmittedNduCoefficientProfileV1;
+pub use coefficient_profile::NduCoefficientProfileError;
+pub use coefficient_profile::NduCoefficientProfileV1;
+pub use coefficient_profile::NduZQ24ProjectionV1;
+pub use coefficient_profile::admit_ndu_coefficient_profile;
+pub use coefficient_profile::quantize_z_to_q24;
 pub use conditional_moments::ConditionalMomentSampleV1;
 pub use conditional_moments::ConditionalMomentsV1;
 pub use conditional_moments::estimate_conditional_moments;
