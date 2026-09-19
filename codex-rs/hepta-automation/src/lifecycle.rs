@@ -481,6 +481,7 @@ impl AutomationStore {
         if run.rows_affected() != 1 {
             return Err(AutomationError::Conflict);
         }
+        crate::store::verify_claimed_dispatch_boundary_tx(&mut transaction, self, lease).await?;
         let dispatch = sqlx::query(
             "UPDATE automation_dispatch_outcomes
              SET outcome = 'submitted', queued_submission_id = ?, observed_at_ms = ?, submitted_at_ms = ?
