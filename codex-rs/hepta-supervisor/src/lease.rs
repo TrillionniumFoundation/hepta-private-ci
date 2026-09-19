@@ -10,6 +10,7 @@ use std::sync::atomic::Ordering;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
+use codex_hepta_fleet::FleetResourceVectorV1;
 use codex_hepta_fleet::ReleaseId;
 use serde::Deserialize;
 use serde::Serialize;
@@ -43,6 +44,7 @@ pub(crate) struct FleetAllocationProcessBinding {
     pub lease_generation: u64,
     pub authority_epoch: u64,
     pub plan_sha256: Sha256Digest,
+    pub resources: FleetResourceVectorV1,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -84,6 +86,8 @@ pub(crate) fn validate_lease(
                     .all(|byte| byte.is_ascii_alphanumeric() || b"._:-".contains(&byte))
                 && binding.lease_generation > 0
                 && binding.authority_epoch > 0
+                && !binding.resources.is_zero()
+                && binding.resources.try_into_resource_budget().is_ok()
         }),
         _ => false,
     };
