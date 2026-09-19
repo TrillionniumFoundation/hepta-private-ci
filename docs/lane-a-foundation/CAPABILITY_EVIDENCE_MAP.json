@@ -883,7 +883,8 @@
         "Settlement",
         "HeptaEvidenceStore::configure_authbus_quota",
         "HeptaEvidenceStore::settle_authbus_reservation",
-        "HeptaEvidenceStore::reconcile_authbus_quota"
+        "HeptaEvidenceStore::reconcile_authbus_quota",
+        "HeptaEvidenceStore::expire_authbus_reservations"
       ],
       "sourceEvidence": [
         {
@@ -901,7 +902,8 @@
             "window_start_ms",
             "window_end_ms",
             "reserved",
-            "consumed"
+            "consumed",
+            "max_active_per_principal"
           ]
         },
         {
@@ -909,7 +911,9 @@
           "mustContain": [
             "pub async fn configure_authbus_quota(",
             "pub async fn settle_authbus_reservation(",
-            "pub async fn reconcile_authbus_quota("
+            "pub async fn reconcile_authbus_quota(",
+            "pub async fn expire_authbus_reservations(",
+            "max_active_per_principal"
           ]
         }
       ],
@@ -919,7 +923,9 @@
           "mustContain": [
             "bus_02_duplicate_settlement_is_idempotent_and_altered_cost_conflicts",
             "quota_window_and_revision_are_enforced_and_rollover_is_bounded",
-            "consumed_quota_cannot_be_erased_by_same_window_revision_change"
+            "consumed_quota_cannot_be_erased_by_same_window_revision_change",
+            "per_principal_cap_counts_quarantined_effects_as_held",
+            "bounded_expiry_sweep_releases_only_pre_effect_active_reservations"
           ]
         }
       ],
