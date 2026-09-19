@@ -10,9 +10,9 @@ contract. The broader target architecture remains in
 | --- | --- | --- |
 | Frozen HPTA V1 framing | implemented | `WIRE_V1.md`, V1 boundary tests and frozen vector |
 | HPTA V2 metadata-bound digest | implemented | `WIRE_V2.md`, V2 mutation tests and frozen vector |
-| HPTN version/capability negotiation | implemented | `NEGOTIATION_V1.md` and downgrade tests |
+| HPTN version/capability negotiation | implemented | fail-closed capability pinning plus canonical role-ordered transcript/session binding digests |
 | Multi-version frame dispatch | implemented | `codex-rs/hepta-wire/src/frame.rs` |
-| Schema admission | implemented framework | `SchemaRegistry` admits stable IDs, version range and payload bounds |
+| Schema admission | implemented bounded framework | max 128 registered schemas plus max 128-entry producer allow-list before typed decode |
 | Typed payload serialization | implemented interface | `PayloadCodec`; each product schema supplies its canonical codec |
 | Bounded streaming decode | implemented | validates 54-byte header before advertised body, max two frames buffered |
 | Property testing | implemented | deterministic randomized round-trip and arbitrary-byte decoder tests |
@@ -29,9 +29,9 @@ digest. Neither digest is a MAC or signature.
 
 - V1 envelope: `codex-rs/hepta-wire/src/envelope.rs` — `WireEnvelope`
 - V2 envelope: `codex-rs/hepta-wire/src/envelope_v2.rs` — `WireEnvelopeV2`
-- negotiation: `codex-rs/hepta-wire/src/version.rs` — `NegotiationOffer`, `WireCapabilities`, `negotiate`
+- negotiation: `codex-rs/hepta-wire/src/version.rs` — `NegotiationOffer`, `WireCapabilities`, `negotiate`, `negotiation_binding_digest`, `session_binding_digest`
 - multi-version dispatch: `codex-rs/hepta-wire/src/frame.rs` — `DecodedEnvelope`, `decode_frame`
-- schema admission / typed codec boundary: `codex-rs/hepta-wire/src/schema.rs` — `SchemaRegistry`, `PayloadCodec`
+- schema admission / typed codec boundary: `codex-rs/hepta-wire/src/schema.rs` — `SchemaRegistry`, `ProducerAdmission`, `PayloadCodec`
 - streaming decoder: `codex-rs/hepta-wire/src/stream.rs` — `StreamingDecoder`
 - product source caller: `codex-rs/hepta-runtime/src/lib.rs` — `HeptaRuntime::status_wire_v2`
 - product transport surface: `codex-rs/hepta-native-gateway/src/lib.rs`
@@ -55,7 +55,7 @@ acceptance, promotion or release.
 The following remain outside the current `platform.wire` implementation or
 require their owning integration:
 
-- authenticated negotiation-transcript and encoded-frame binding at an
+- cryptographic authentication of the canonical session-binding digest at an
   untrusted production transport/session boundary;
 - admission and qualification of additional product-domain schema codecs;
 - independent target-host qualification, activation and external acceptance.
@@ -67,9 +67,10 @@ issuer.
 ## Known limits and non-claims
 
 V1 payload integrity does not bind metadata. V2's frame digest binds metadata
-but is still unkeyed and therefore does not authenticate a peer. Schema
-admission is a framework; each product schema must supply a strict
-`PayloadCodec`. Successful negotiation/decode/re-encode is not dispatch
+but is still unkeyed and therefore does not authenticate a peer. The schema
+registry and producer allow-list are bounded; each product schema must still
+supply a strict `PayloadCodec` and each production consumer must select its
+admitted producer set. Successful negotiation/decode/re-encode is not dispatch
 acknowledgement, terminal external success or authorization.
 
 The streaming decoder bounds its own connection-local buffer. The owning
@@ -81,8 +82,8 @@ authentication.
 Current source evidence includes:
 
 - V1 and V2 unit/boundary/frozen-vector tests;
-- negotiation capability and downgrade tests;
-- schema admission tests for missing/unknown critical fields;
+- negotiation capability, downgrade and role-ordered transcript/frame-binding tests;
+- bounded schema-registry and producer-admission tests plus missing/unknown critical-field tests;
 - incremental stream and buffer-bound tests;
 - deterministic property tests and a cargo-fuzz target;
 - a raw-binary Rust↔Python HPTN + HPTA V2 session test;
@@ -95,10 +96,11 @@ merge/target-host workflows pass.
 
 ## Integration prerequisites
 
-An untrusted producer/consumer pair must authenticate the HPTN transcript and
-the encoded HPTA frame using the selected transport/session security boundary.
-Consumers must register the exact schema descriptor and matching strict codec
-before typed decode. Security-sensitive callers must pin required capabilities
+An untrusted producer/consumer pair must authenticate the canonical
+`session_binding_digest` (or the equivalent exact HPTN transcript and encoded
+HPTA frame) using the selected transport/session security boundary. Consumers
+must register the exact schema descriptor, select an explicit bounded producer
+policy, and use the matching strict codec before typed decode. Security-sensitive callers must pin required capabilities
 during negotiation so required V2 integrity/schema properties cannot silently
 downgrade to V1.
 
