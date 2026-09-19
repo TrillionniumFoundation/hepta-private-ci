@@ -138,10 +138,10 @@ fn capability_snapshot(objective_digest: Digest32) -> CapabilitySnapshotV2 {
     .expect("capability snapshot")
 }
 
-fn legal_candidates() -> LegalActionCandidateSetV1 {
+fn legal_candidates(state_digest: Digest32) -> LegalActionCandidateSetV1 {
     build_legal_candidates_v1(
         id("legal-set:v3"),
-        digest("state"),
+        state_digest,
         digest("grammar"),
         0,
         vec![
@@ -313,11 +313,13 @@ fn fixture_inputs(
     }
 }
 
-fn run_request(objective_digest: Digest32, legal: LegalActionCandidateSetV1) -> LaneFRunRequestV3 {
+fn run_request(snapshot: CapabilitySnapshotV2, legal: LegalActionCandidateSetV1) -> LaneFRunRequestV3 {
     LaneFRunRequestV3 {
         run_id: id("run:v3-native"),
         request_digest: digest("request"),
-        snapshot: capability_snapshot(objective_digest),
+        body_digest: digest("body"),
+        artifact_set_digest: digest("artifact-set"),
+        snapshot,
         legal_candidates: legal,
         budget: LaneFBudgetV3 {
             total_micros: 11_000_000,
@@ -333,6 +335,7 @@ fn run_request(objective_digest: Digest32, legal: LegalActionCandidateSetV1) -> 
             host_handoff_micros: 1_000_000,
             ledger_micros: 1_000_000,
         },
+        deadline_unix_micros: 4_000_000_000_000_000,
     }
 }
 
@@ -343,7 +346,8 @@ fn native_v3_owner_ports_traverse_real_owner_implementations_and_durable_ledger(
         .expect("objective compile")
         .expect("objective conflict");
     let objective_digest = compiled.objective.semantic_digest;
-    let legal = legal_candidates();
+    let snapshot = capability_snapshot(objective_digest);
+    let legal = legal_candidates(snapshot.digest());
 
     let temp = tempfile::tempdir().expect("tempdir");
     let file = OpenOptions::new()
@@ -362,7 +366,7 @@ fn native_v3_owner_ports_traverse_real_owner_implementations_and_durable_ledger(
     );
 
     let receipt =
-        run_composition_v3(run_request(objective_digest, legal), &mut ports).expect("V3 run");
+        run_composition_v3(run_request(snapshot, legal), &mut ports).expect("V3 run");
     assert_eq!(
         receipt.disposition,
         PipelineDispositionV3::HostHandoffAccepted
@@ -381,7 +385,8 @@ fn native_v3_rejects_candidate_universe_drift_before_owner_selection() {
         .expect("objective compile")
         .expect("objective conflict");
     let objective_digest = compiled.objective.semantic_digest;
-    let legal = legal_candidates();
+    let snapshot = capability_snapshot(objective_digest);
+    let legal = legal_candidates(snapshot.digest());
     let mut inputs = fixture_inputs(objective, objective_digest, &legal);
     inputs.intuition.candidates[0].candidate_id = id("not-in-legal-set");
 
@@ -401,7 +406,7 @@ fn native_v3_rejects_candidate_universe_drift_before_owner_selection() {
     );
 
     let receipt =
-        run_composition_v3(run_request(objective_digest, legal), &mut ports).expect("receipt");
+        run_composition_v3(run_request(snapshot, legal), &mut ports).expect("receipt");
     assert_eq!(
         receipt.disposition,
         PipelineDispositionV3::Failed(PortFailureClassV3::Rejected)
