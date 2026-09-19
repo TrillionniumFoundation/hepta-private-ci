@@ -69,16 +69,16 @@ pub fn canonical_ndu_stochastic_solver_digest_v1(
     require_digest(coefficient_profile.digest(), "coefficient_profile")?;
     require_digest(coefficient_profile.manifest_digest(), "coefficient_manifest")?;
     require_digest(coefficient_profile.coordinate_digest(), "coordinate")?;
-    require_digest(z_projection.source_evidence_digest, "z_source_evidence")?;
-    require_digest(z_projection.output_digest, "z_output")?;
+    require_digest(z_projection.source_evidence_digest(), "z_source_evidence")?;
+    require_digest(z_projection.output_digest(), "z_output")?;
     require_digest(
-        z_projection.conversion_evidence_digest,
+        z_projection.conversion_evidence_digest(),
         "z_conversion_evidence",
     )?;
-    if z_projection.coefficient_profile_digest != coefficient_profile.digest() {
+    if z_projection.coefficient_profile_digest() != coefficient_profile.digest() {
         return Err(NduStochasticAdmissionError::CoefficientProfileMismatch);
     }
-    if z_projection.authority.grants_any() {
+    if z_projection.authority().grants_any() {
         return Err(NduStochasticAdmissionError::AuthorityEscalation(
             "z_projection",
         ));
@@ -88,9 +88,9 @@ pub fn canonical_ndu_stochastic_solver_digest_v1(
     bytes.extend_from_slice(coefficient_profile.digest().as_array());
     bytes.extend_from_slice(coefficient_profile.manifest_digest().as_array());
     bytes.extend_from_slice(coefficient_profile.coordinate_digest().as_array());
-    bytes.extend_from_slice(z_projection.source_evidence_digest.as_array());
-    bytes.extend_from_slice(z_projection.output_digest.as_array());
-    bytes.extend_from_slice(z_projection.conversion_evidence_digest.as_array());
+    bytes.extend_from_slice(z_projection.source_evidence_digest().as_array());
+    bytes.extend_from_slice(z_projection.output_digest().as_array());
+    bytes.extend_from_slice(z_projection.conversion_evidence_digest().as_array());
     Ok(Digest32::of_bytes(&bytes))
 }
 
@@ -107,7 +107,7 @@ pub fn admit_ndu_stochastic_candidate_v1(
             "coefficient_profile",
         ));
     }
-    if request.z_projection.authority.grants_any() {
+    if request.z_projection.authority().grants_any() {
         return Err(NduStochasticAdmissionError::AuthorityEscalation(
             "z_projection",
         ));
@@ -163,7 +163,7 @@ pub fn admit_ndu_stochastic_candidate_v1(
     bytes.extend_from_slice(request.objective_class_digest.as_array());
     bytes.extend_from_slice(request.operating_domain_digest.as_array());
     bytes.extend_from_slice(request.coefficient_profile.digest().as_array());
-    bytes.extend_from_slice(request.z_projection.output_digest.as_array());
+    bytes.extend_from_slice(request.z_projection.output_digest().as_array());
     bytes.extend_from_slice(solver_digest.as_array());
     bytes.extend_from_slice(convergence_certificate_digest.as_array());
     bytes.extend_from_slice(well_posedness_certificate_digest.as_array());
@@ -172,7 +172,7 @@ pub fn admit_ndu_stochastic_candidate_v1(
         objective_class_digest: request.objective_class_digest,
         operating_domain_digest: request.operating_domain_digest,
         coefficient_profile_digest: request.coefficient_profile.digest(),
-        z_output_digest: request.z_projection.output_digest,
+        z_output_digest: request.z_projection.output_digest(),
         solver_digest,
         convergence_certificate_digest,
         well_posedness_certificate_digest,
