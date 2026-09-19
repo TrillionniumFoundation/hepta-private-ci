@@ -8,6 +8,7 @@ use pretty_assertions::assert_eq;
 
 use super::canonical_evaluation_policy_digest;
 use super::canonical_scalarization_digest;
+use super::canonical_utility_profile_digest;
 use super::evaluate_candidates;
 use super::evaluate_candidates_with_policy;
 use super::legacy_evaluation_policy;
@@ -18,6 +19,7 @@ use crate::AxisValue;
 use crate::ContributionSet;
 use crate::EvaluationDisposition;
 use crate::FeasibilityPosture;
+use crate::NduError;
 use crate::RequiredOrganSet;
 use crate::ScalarizationProfile;
 use crate::UtilityContribution;
@@ -96,6 +98,9 @@ fn contribution(candidate: &str, success: i64, latency: i64) -> UtilityContribut
 fn profile() -> UtilityProfile {
     UtilityProfile {
         profile_id: id("utility-v1"),
+        normalization_manifest_digest: Digest32::of_bytes(
+            b"test.utility-v1.normalization-manifest",
+        ),
         dimensions: vec![
             (id("success"), AxisDirection::Maximize),
             (id("latency"), AxisDirection::Minimize),
@@ -414,4 +419,29 @@ fn candidate_support_digest_binds_organ_and_contribution_semantics() {
         .support_digest;
 
     assert_ne!(first_support, second_support);
+}
+
+
+#[test]
+fn utility_profile_digest_binds_normalization_manifest() {
+    let first = profile();
+    let mut second = first.clone();
+    second.normalization_manifest_digest =
+        Digest32::of_bytes(b"test.utility-v1.changed-normalization-manifest");
+
+    assert_ne!(
+        must(canonical_utility_profile_digest(&first)),
+        must(canonical_utility_profile_digest(&second))
+    );
+}
+
+#[test]
+fn zero_normalization_manifest_fails_closed() {
+    let mut invalid = profile();
+    invalid.normalization_manifest_digest = Digest32::ZERO;
+
+    assert_eq!(
+        must_err(canonical_utility_profile_digest(&invalid)),
+        NduError::EmptyProfileDigest("normalization_manifest")
+    );
 }

@@ -13,54 +13,25 @@
     "codex-rs/hepta-ndu"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_composed",
+  "productCallerState": "source_composed_policy_bound_planning_and_read_only_vertical_not_activated",
+  "productionWriterState": "anchored_durable_source_candidate_not_product_composed",
   "operations": [
-    {
-      "operation": "evaluate_candidates",
-      "nativeSymbol": "codex_hepta_ndu::evaluate_candidates",
-      "sourcePath": "codex-rs/hepta-ndu/src/evaluator.rs",
-      "inputs": [
-        "ContributionSet",
-        "UtilityProfile",
-        "optional ScalarizationProfile"
-      ],
-      "outputs": [
-        "NduEvaluationReceipt"
-      ],
-      "state": "source_implemented_compatibility_entry",
-      "authority": "none",
-      "semanticProfile": "legacy-sum-max-zero-tolerance-v1",
-      "tests": [
-        {
-          "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
-          "symbol": "hard_violation_is_filtered_before_utility"
-        },
-        {
-          "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
-          "symbol": "non_dominated_candidates_without_scalarization_require_slow_path"
-        }
-      ],
-      "designOperation": "evaluate_candidates",
-      "mappingClass": "owner_native",
-      "delegatedCallees": [],
-      "sourcePathExists": true
-    },
     {
       "operation": "evaluate_candidates_with_policy",
       "nativeSymbol": "codex_hepta_ndu::evaluate_candidates_with_policy",
       "sourcePath": "codex-rs/hepta-ndu/src/evaluator.rs",
       "inputs": [
         "ContributionSet",
-        "UtilityProfile",
+        "UtilityProfile with normalization_manifest_digest",
         "optional ScalarizationProfile",
         "EvaluationPolicyV1"
       ],
       "outputs": [
         "NduEvaluationReceiptV2"
       ],
-      "state": "source_implemented_owner_local_v2",
+      "state": "source_implemented_and_source_composed",
       "authority": "none",
+      "nonClaim": "source composition is not activation or effect authority",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
@@ -76,38 +47,50 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
-          "symbol": "missing_uncertainty_axis_is_unavailable"
+          "symbol": "utility_profile_digest_binds_normalization_manifest"
         },
         {
-          "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
-          "symbol": "candidate_support_digest_binds_organ_and_contribution_semantics"
+          "path": "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs",
+          "symbol": "policy-bound planning evaluation"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence/src/vertical_tests.rs",
+          "symbol": "read-only NDU vertical"
         }
       ],
       "designOperation": "evaluate_candidates_with_policy",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        "codex-rs/hepta-control-plane/src/planner_ndu.rs",
+        "codex-rs/hepta-control-plane/src/planner_context.rs",
+        "codex-rs/hepta-intelligence/src/vertical.rs",
+        "codex-rs/hepta-shadow-qualification/src/value_learning_tests.rs"
+      ],
       "sourcePathExists": true
     },
     {
-      "operation": "canonical_evaluation_policy_digest",
-      "nativeSymbol": "codex_hepta_ndu::canonical_evaluation_policy_digest",
-      "sourcePath": "codex-rs/hepta-ndu/src/evaluator.rs",
+      "operation": "canonical_utility_profile_digest",
+      "nativeSymbol": "codex_hepta_ndu::canonical_utility_profile_digest",
+      "sourcePath": "codex-rs/hepta-ndu/src/evaluation_digest.rs",
       "inputs": [
-        "UtilityProfile",
-        "EvaluationPolicyV1"
+        "UtilityProfile"
       ],
       "outputs": [
-        "evaluation policy digest"
+        "utility profile digest"
       ],
-      "state": "source_implemented",
+      "state": "source_implemented_manifest_bound",
       "authority": "none",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
-          "symbol": "policy_digest_is_permutation_invariant"
+          "symbol": "utility_profile_digest_binds_normalization_manifest"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
+          "symbol": "zero_normalization_manifest_fails_closed"
         }
       ],
-      "designOperation": "canonical_evaluation_policy_digest",
+      "designOperation": "canonical_utility_profile_digest",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourcePathExists": true
@@ -119,20 +102,43 @@
       "inputs": [
         "PreferenceState",
         "target AxisValue set",
-        "eta"
+        "eta",
+        "NduIterationContextV1"
       ],
       "outputs": [
-        "PreferenceState",
+        "PreferenceSolveOutcome::Converged or PreferenceSolveOutcome::Unavailable",
         "NduSolverTerminationReceipt",
         "NduSolverIterationReceipt list"
       ],
-      "state": "source_implemented_local_solver",
+      "state": "source_implemented_bounded_context_bound_solver",
       "authority": "none",
+      "invariants": [
+        "dimension <= 64",
+        "state and target values in [-1,1]",
+        "zero-iteration converged no-op",
+        "64-step exhaustion exposes no persistable state"
+      ],
       "nonClaim": "local termination is not NduConvergenceCertificateV1",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "damped_preference_update_emits_local_solver_receipts"
+          "symbol": "already_converged_state_is_a_zero_iteration_noop"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "preference_dimension_limit_is_enforced_at_genesis"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "preference_values_must_be_in_closed_unit_interval"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "iteration_exhaustion_returns_unavailable_without_a_persistable_state"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "unrelated_hierarchy_updates_may_share_generation"
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
@@ -150,17 +156,21 @@
       "sourcePath": "codex-rs/hepta-ndu/src/protocol.rs",
       "inputs": [
         "NduIterationContextV1",
-        "NduSolverIterationReceipt"
+        "opaque NduSolverIterationReceipt"
       ],
       "outputs": [
         "owner-local NduIterationReceiptV1"
       ],
-      "state": "source_implemented_protocol_adapter",
+      "state": "source_implemented_context_provenance_bound",
       "authority": "deny_all",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
-          "symbol": "local_step_requires_complete_context_before_protocol_publication"
+          "symbol": "solver_rejects_subject_context_mismatch_before_emitting_receipts"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "solver_receipt_cannot_be_rebound_to_different_context"
         },
         {
           "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
@@ -173,22 +183,98 @@
       "sourcePathExists": true
     },
     {
+      "operation": "NduProjectionJournalV1",
+      "nativeSymbol": "codex_hepta_ndu::NduProjectionJournalV1",
+      "sourcePath": "codex-rs/hepta-ndu/src/projection_journal.rs",
+      "inputs": [
+        "immutable projection, selection and revocation records"
+      ],
+      "outputs": [
+        "bounded semantic hash-chain",
+        "selected projection view"
+      ],
+      "state": "source_implemented_semantic_reducer",
+      "authority": "none",
+      "invariants": [
+        "revocation key is objective_digest + subject_digest + payload_digest"
+      ],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "revocation_is_scoped_by_objective_subject_and_payload"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "truncation_and_tampering_fail_closed"
+        }
+      ],
+      "designOperation": "NduProjectionJournalV1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "NduProjectionDurableJournalV1",
+      "nativeSymbol": "codex_hepta_ndu::NduProjectionDurableJournalV1",
+      "sourcePath": "codex-rs/hepta-ndu/src/durable_projection_journal.rs",
+      "inputs": [
+        "host-provisioned regular file",
+        "nonzero owner binding digest",
+        "bounded retention",
+        "external NduProjectionAnchorStoreV1"
+      ],
+      "outputs": [
+        "fsync-backed acknowledged projection state",
+        "durable receipt",
+        "checkpoint"
+      ],
+      "state": "source_implemented_anchored_durable_writer_candidate",
+      "authority": "none",
+      "nonClaim": "external anchor store, named product composition, containing-directory durability and target-host qualification remain external",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/durable_projection_journal.rs",
+          "symbol": "acknowledged_projection_round_trips_through_recovery"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/durable_projection_journal.rs",
+          "symbol": "ambiguous_anchor_failure_requires_recovery_and_discards_unwitnessed_tail"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/durable_projection_journal.rs",
+          "symbol": "checkpoint_restore_requires_matching_external_anchor"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/durable_projection_journal.rs",
+          "symbol": "authenticated_reference_snapshot_migrates_without_minting_trust"
+        }
+      ],
+      "designOperation": "durable_projection_owner",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
       "operation": "solve_backward_regression",
       "nativeSymbol": "codex_hepta_ndu::solve_backward_regression",
       "sourcePath": "codex-rs/hepta-ndu/src/covariance.rs",
       "inputs": [
-        "conditional moments",
-        "admitted covariance profile"
+        "ConditionalMomentsV1",
+        "AdmittedCovarianceProfileV1"
       ],
       "outputs": [
         "ZEstimateV1"
       ],
       "state": "source_implemented_shadow_numeric_kernel",
-      "authority": "none",
+      "authority": "deny_all",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
-          "symbol": "scaled, correlated, singular and whitening analytic fixtures"
+          "symbol": "scaled_covariance_recovers_three_instead_of_six_and_converts_microseconds"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/covariance_tests.rs",
+          "symbol": "full_pilot_dimensions_solve_multiple_utilities"
         }
       ],
       "designOperation": "solve_backward_regression",
@@ -197,34 +283,62 @@
       "sourcePathExists": true
     },
     {
-      "operation": "NduProjectionJournalV1",
-      "nativeSymbol": "codex_hepta_ndu::NduProjectionJournalV1",
-      "sourcePath": "codex-rs/hepta-ndu/src/projection_journal.rs",
+      "operation": "admit_fbsde_evidence_v1",
+      "nativeSymbol": "codex_hepta_ndu::admit_fbsde_evidence_v1",
+      "sourcePath": "codex-rs/hepta-ndu/src/qualified_fbsde.rs",
       "inputs": [
-        "immutable projection, selection and revocation records"
+        "NduFbsdeEvidenceBundleV1",
+        "AdmittedCovarianceProfileV1",
+        "external NduFbsdeEvidenceVerifierV1"
       ],
       "outputs": [
-        "bounded hash-chain journal bytes",
-        "selected projection view"
+        "opaque AdmittedNduFbsdeEvidenceV1"
       ],
-      "state": "source_implemented_owner_local_durability_reference",
+      "state": "source_implemented_external_evidence_admission",
       "authority": "none",
-      "nonClaim": "not an activated production writer or fsync profile",
+      "nonClaim": "NDU does not implement or self-issue the independent verifier decision",
       "tests": [
         {
-          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
-          "symbol": "projection_journal_round_trips_and_restores_selection"
+          "path": "codex-rs/hepta-ndu/src/qualified_fbsde.rs",
+          "symbol": "external_verifier_rejection_fails_closed"
         },
         {
-          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
-          "symbol": "revocation_prevents_projection_resurrection"
-        },
-        {
-          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
-          "symbol": "truncation_and_tampering_fail_closed"
+          "path": "codex-rs/hepta-ndu/src/qualified_fbsde.rs",
+          "symbol": "admitted_evidence_cannot_be_reused_for_other_conditioning"
         }
       ],
-      "designOperation": "NduProjectionJournalV1",
+      "designOperation": "admit_fbsde_evidence_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "solve_qualified_backward_regression_v1",
+      "nativeSymbol": "codex_hepta_ndu::solve_qualified_backward_regression_v1",
+      "sourcePath": "codex-rs/hepta-ndu/src/qualified_fbsde.rs",
+      "inputs": [
+        "ConditionalMomentsV1",
+        "AdmittedCovarianceProfileV1",
+        "AdmittedNduFbsdeEvidenceV1"
+      ],
+      "outputs": [
+        "QualifiedZEstimateV1",
+        "signed Q24 nearest-ties-even conversion receipt"
+      ],
+      "state": "source_implemented_qualified_consumption_candidate",
+      "authority": "deny_all",
+      "nonClaim": "not a complete learned FBSDE runtime, well-posedness proof, convergence certificate or activation",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/qualified_fbsde.rs",
+          "symbol": "qualified_regression_consumes_external_evidence_and_emits_q24"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/qualified_fbsde.rs",
+          "symbol": "q24_rounding_is_signed_nearest_ties_even"
+        }
+      ],
+      "designOperation": "solve_qualified_backward_regression_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourcePathExists": true
@@ -241,11 +355,13 @@
   },
   "completion": {
     "specification": "complete",
-    "deterministicKernel": "candidate_implemented",
+    "deterministicKernel": "contract_hardened_candidate_implemented",
+    "policyBoundSourceComposition": "implemented_not_activated",
     "ownerLocalDurabilityReference": "candidate_implemented",
-    "canonicalExternalV2Admission": "not_established",
-    "productionWriter": "not_established",
-    "exactHeadQualification": "required",
+    "anchoredDurableWriter": "source_candidate_not_product_composed",
+    "canonicalExternalV2Admission": "source_composed_not_independently_qualified",
+    "fbsdeEvidenceAdmissionAndQ24Conversion": "source_candidate_implemented",
+    "exactHeadQualification": "required_current_pr",
     "independentConvergenceDecision": "owned_by_learning.eval_not_self_issued",
     "activation": "not_established",
     "release": "not_established"
@@ -269,16 +385,17 @@
     "release": false
   },
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "00473842b43d61c1eb0d3fa00a67259393d023e5",
+    "treeVerification": "derive commit tree and require all mapped source/caller/test paths unchanged at candidate HEAD"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Compose NduProjectionDurableJournalV1 with a selected independent anchor store and named product owner; qualify containing-directory durability, backup/restore and crash injection on the target host.",
+    "Compose the external coefficient/profile registry and revocation-aware NduFbsdeEvidenceVerifierV1; qualify the complete learned/well-posed FBSDE runtime rather than only the bounded regression consumption seam.",
+    "Run current exact-head and deterministic synthetic-merge tests before changing productExecutionProved, activation or release."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
+    "independent learning.eval convergence/semantic acceptance",
+    "target-host durability, resource and latency qualification",
     "operator acceptance, canary, promotion and release"
   ]
 }

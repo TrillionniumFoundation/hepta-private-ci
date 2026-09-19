@@ -41,8 +41,19 @@ means, rate/duration conversion, identity covariance, singular/indefinite and
 poorly conditioned matrices, covariance collapse, invalid samples/profiles,
 zero sensitivity, deterministic replay and the full 32-driver/8-utility envelope.
 
-Remaining gates include production coefficient-profile registration and consumer
-integration, original/whitened coordinate conversion, Q24 conversion/error
-receipts, independent mathematical review, conditional identification,
-well-posedness/stochastic FBSDE qualification and named-host resource/latency
-measurements. Algebraic regression tests do not establish those capabilities.
+The source now also exposes `admit_fbsde_evidence_v1` and
+`solve_qualified_backward_regression_v1`. Admission consumes an external-verifier
+decision that binds the coefficient artifact/profile, source and conditioning
+identities, conditional-identification evidence, original-coordinate manifest,
+signed-Q24 conversion profile, consumer admission and independent qualification.
+The qualified solve requires those identities to match the moment/profile inputs
+and emits a signed-Q24 nearest/ties-to-even conversion receipt with an explicit
+maximum conversion error. These receipts remain `DENY_ALL`.
+
+Remaining gates are no longer “add a digest parameter to the numeric kernel”.
+They are product concerns: compose a real coefficient/profile registry and
+revocation-aware verifier, qualify any whitening profile separately (V1 admits
+original coordinates only), provide real conditional-identification and
+well-posedness evidence, obtain independent FBSDE/convergence acceptance from
+the external owner, and run named-host resource/latency/fault qualification.
+Algebraic or admission tests do not establish those external facts.

@@ -19,7 +19,7 @@ use crate::ScalarizationProfile;
 use crate::UtilityContribution;
 use crate::UtilityProfile;
 use crate::evaluate_candidates_with_policy;
-use crate::legacy_evaluation_policy;
+use crate::evaluator::legacy_evaluation_policy;
 
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("valid test identifier")
@@ -64,6 +64,9 @@ fn cyclic_tolerance_counterexample_retains_frontier_in_every_input_order() {
     ];
     let profile = UtilityProfile {
         profile_id: id("three-axis-profile"),
+        normalization_manifest_digest: Digest32::of_bytes(
+            b"test.three-axis.normalization-manifest",
+        ),
         dimensions: axes()
             .into_iter()
             .map(|axis| (axis, AxisDirection::Maximize))

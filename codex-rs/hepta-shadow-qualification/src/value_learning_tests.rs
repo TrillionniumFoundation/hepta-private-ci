@@ -13,16 +13,19 @@ use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::OutcomeFinality;
 use codex_hepta_learning_ledger::OutcomeObservation;
 use codex_hepta_learning_ledger::Revocation;
+use codex_hepta_ndu::AggregationOperator;
+use codex_hepta_ndu::AxisAggregationRule;
 use codex_hepta_ndu::AxisDirection;
 use codex_hepta_ndu::AxisLimit;
 use codex_hepta_ndu::AxisValue;
 use codex_hepta_ndu::ContributionSet;
 use codex_hepta_ndu::EvaluationDisposition;
+use codex_hepta_ndu::EvaluationPolicyV1;
 use codex_hepta_ndu::FeasibilityPosture;
 use codex_hepta_ndu::RequiredOrganSet;
 use codex_hepta_ndu::UtilityContribution;
 use codex_hepta_ndu::UtilityProfile;
-use codex_hepta_ndu::evaluate_candidates;
+use codex_hepta_ndu::evaluate_candidates_with_policy;
 use codex_hepta_objective::ActionClass;
 use codex_hepta_objective::ConfirmationPolicy;
 use codex_hepta_objective::Constraint;
@@ -159,7 +162,7 @@ fn objective_to_ndu_to_independent_learning_ledger_is_replayable_and_revocable()
         3
     );
 
-    let evaluation = must(evaluate_candidates(
+    let evaluation = must(evaluate_candidates_with_policy(
         ContributionSet {
             objective_digest,
             generation: must(Generation::new(1)),
@@ -181,6 +184,9 @@ fn objective_to_ndu_to_independent_learning_ledger_is_replayable_and_revocable()
         },
         UtilityProfile {
             profile_id: id("utility-profile-v1"),
+            normalization_manifest_digest: Digest32::of_bytes(
+                b"test.value-learning.normalization-manifest.v1",
+            ),
             dimensions: vec![(id("success"), AxisDirection::Maximize)],
             risk_ceilings: vec![AxisLimit {
                 axis: id("privacy-risk"),
@@ -195,13 +201,36 @@ fn objective_to_ndu_to_independent_learning_ledger_is_replayable_and_revocable()
             },
         },
         None,
+        EvaluationPolicyV1 {
+            policy_id: id("value-learning-policy-v1"),
+            utility_rules: vec![AxisAggregationRule {
+                axis: id("success"),
+                operator: AggregationOperator::Sum,
+            }],
+            risk_rules: vec![AxisAggregationRule {
+                axis: id("privacy-risk"),
+                operator: AggregationOperator::Sum,
+            }],
+            resource_rules: vec![AxisAggregationRule {
+                axis: id("compute"),
+                operator: AggregationOperator::Sum,
+            }],
+            uncertainty_rules: vec![AxisAggregationRule {
+                axis: id("success"),
+                operator: AggregationOperator::Maximum,
+            }],
+            pareto_absolute_tolerances: vec![AxisValue {
+                axis: id("success"),
+                value: FixedQ32::ZERO,
+            }],
+        },
     ));
     assert_eq!(
-        evaluation.disposition,
+        evaluation.base.disposition,
         EvaluationDisposition::UniqueParetoRecommendation
     );
-    assert_eq!(evaluation.advisory_recommendation, Some(id("policy-safe")));
-    assert_eq!(evaluation.rejected_candidates.len(), 1);
+    assert_eq!(evaluation.base.advisory_recommendation, Some(id("policy-safe")));
+    assert_eq!(evaluation.base.rejected_candidates.len(), 1);
 
     let mut ledger = LearningLedger::new();
     must(ledger.append(LedgerEvent::Decision(EpisodeDecision {
@@ -213,7 +242,7 @@ fn objective_to_ndu_to_independent_learning_ledger_is_replayable_and_revocable()
         selected_candidate_id: id("policy-safe"),
         selected_propensity: ProbabilityQ32::ONE,
         completeness: CandidateSetCompleteness::Complete,
-        support_digest: evaluation.evaluation_digest,
+        support_digest: evaluation.evaluation_digest_v2,
     })));
     must(ledger.append(LedgerEvent::Outcome(OutcomeObservation {
         record_id: id("outcome-record-1"),

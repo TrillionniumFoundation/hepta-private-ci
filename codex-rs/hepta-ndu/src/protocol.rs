@@ -39,13 +39,32 @@ pub struct NduIterationReceiptV1 {
     pub authority: AuthorityPosture,
 }
 
+pub fn ndu_iteration_context_digest_v1(
+    context: &NduIterationContextV1,
+) -> Result<Digest32, NduError> {
+    require_digest(context.objective_digest, "objective")?;
+    require_digest(context.event_digest, "event")?;
+    require_digest(context.coefficient_digest, "coefficient")?;
+
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(b"hepta.ndu.iteration-context.v1");
+    push_id(&mut bytes, &context.subject_id);
+    bytes.push(context.subject_class.tag());
+    bytes.extend_from_slice(context.objective_digest.as_array());
+    bytes.extend_from_slice(&context.generation.get().to_be_bytes());
+    bytes.extend_from_slice(context.event_digest.as_array());
+    bytes.extend_from_slice(context.coefficient_digest.as_array());
+    Ok(Digest32::of_bytes(&bytes))
+}
+
 pub fn bind_solver_iteration_receipt_v1(
     context: &NduIterationContextV1,
     receipt: &NduSolverIterationReceipt,
 ) -> Result<NduIterationReceiptV1, NduError> {
-    require_digest(context.objective_digest, "objective")?;
-    require_digest(context.event_digest, "event")?;
-    require_digest(context.coefficient_digest, "coefficient")?;
+    let context_digest = ndu_iteration_context_digest_v1(context)?;
+    if receipt.context_digest != context_digest {
+        return Err(NduError::ProtocolContextMismatch);
+    }
     require_digest(receipt.state_digest, "state")?;
 
     let receipt_digest = digest_receipt(context, receipt);
@@ -86,6 +105,7 @@ fn digest_receipt(
     bytes.extend_from_slice(&context.generation.get().to_be_bytes());
     bytes.extend_from_slice(context.event_digest.as_array());
     bytes.extend_from_slice(context.coefficient_digest.as_array());
+    bytes.extend_from_slice(receipt.context_digest.as_array());
     bytes.extend_from_slice(&receipt.iteration.to_be_bytes());
     bytes.extend_from_slice(&receipt.predecessor_revision.get().to_be_bytes());
     bytes.extend_from_slice(&receipt.next_revision.get().to_be_bytes());

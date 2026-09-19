@@ -12,7 +12,7 @@
 
 This specification defines a deterministic implementation baseline and a separately qualified stochastic candidate. It does not establish dynamic-preference efficacy, production activation, biological equivalence, or autonomous software evolution. The four-level hierarchy, event sourcing and deployment controls are Hepta engineering extensions. `docs/evidence/CLAIMS.json` and current independent evidence govern capability claims.
 
-Existing exported deterministic primitives in `codex-rs/hepta-ndu/src/lib.rs` include `evaluate_candidates`, `solve_preference_target`, `validate_staged_updates`, `evaluate_recursive_utility` and `mul_q32_ties_even`. Reuse compatible primitives and add owner-scoped adapters; a symbol inventory proves neither a real consumer nor an implemented stochastic solver.
+Existing exported deterministic primitives in `codex-rs/hepta-ndu/src/lib.rs` include the policy-bound `evaluate_candidates_with_policy`, `solve_preference_target`, `validate_staged_updates`, `evaluate_recursive_utility` and `mul_q32_ties_even`. The pre-policy `evaluate_candidates` compatibility helper is crate-local and must not be used by new integrations. Source callers now exist in Control planning and the read-only intelligence vertical; composition still proves neither activation nor a complete stochastic solver.
 
 ## 2. Symbols, dimensions, units and normalization
 
@@ -32,7 +32,7 @@ Existing exported deterministic primitives in `codex-rs/hepta-ndu/src/lib.rs` in
 | `Sigma_k` | conditional increment covariance | driver x driver dimensions | declared numeric profile |
 | `B_k` | utility/increment conditional cross moment | utility x driver dimensions | declared numeric profile |
 
-Normalization, units, feature order, clipping locations, scales and conditional-moment conventions belong to immutable artifacts bound into `RunStartSnapshotV1`. `COST_k` is not the covariance matrix. Convert microseconds to the declared solver time unit with checked arithmetic; never silently treat microseconds as seconds. Reject invalid dimensions, non-finite numbers, unknown units and missing profiles. Pre-clipping violations and projection counts remain observable.
+Normalization, units, feature order, clipping locations, scales and conditional-moment conventions belong to immutable artifacts bound into `RunStartSnapshotV1`. The native `UtilityProfile` carries a mandatory `normalization_manifest_digest`, so changing those semantics changes its canonical profile/evaluation digest even if a textual profile ID is reused. `COST_k` is not the covariance matrix. Convert microseconds to the declared solver time unit with checked arithmetic; never silently treat microseconds as seconds. Reject invalid dimensions, non-finite numbers, unknown units and missing profiles. Pre-clipping violations and projection counts remain observable.
 
 Signed Q32 and Q24 are distinct from the HNMF ppm/toward-zero reference. Conversion records bind both profiles, rounding, units, source/output digests and absolute error. Identifier, authority, deletion, fence and deadline fields are exact; they never pass through approximate numerical conversion.
 
@@ -66,6 +66,8 @@ Use a stable linear solve, not explicit matrix inversion. For positive-definite 
 
 For whitening `m = L xi`, with `E[xi xi^T | F_k] = dt I`, the manifest declares whether the head predicts `Z_m` or `Z_xi`; `Z_xi = Z_m L`. Coordinate conversion and residual checks precede publication. Singular covariance is unsupported in the pilot. A pseudoinverse requires a separately reviewed supported-subspace profile, null-space identifiability and residual tests.
 
+The current qualified V1 source path admits **original-coordinate** regression only. `admit_fbsde_evidence_v1` requires an external verifier to approve coefficient artifact/profile, dataset/source, conditioning stratum, conditional-identification evidence, coordinate manifest, signed-Q24 conversion profile, consumer admission and independent qualification. `solve_qualified_backward_regression_v1` requires those admitted source/conditioning/profile identities to match the actual moments and emits a signed-Q24 nearest/ties-to-even Z conversion receipt with its maximum absolute conversion error. A whitening profile remains a separate future qualification and cannot reuse the original-coordinate evidence digest.
+
 The backward Euler candidate is
 
     U_k = project_U E[U_(k+1)
@@ -73,7 +75,7 @@ The backward Euler candidate is
 
 Conditional expectations use only pre-boundary features. Event duration, stopping, censoring and history conditioning are manifest fields. Future outcomes may label training rows but cannot enter runtime features. A stochastic approximation is not identical to the deterministic discounted baseline for an arbitrary generator.
 
-Hard constraints are filtered before Pareto/scalarization. Preferences may change bounded allocation, exploration, evidence effort and abstention, never success criteria, observer identity, privacy, consent or authority. Parent/child exchange only bounded budget, shadow price, continuation utility, uncertainty, residual and expiry via `NduBoundaryConditionV1`. Freeze the parent revision; accept a candidate state with damping `P_next=(1-eta)P_old+eta*P_candidate`, eta in [1/16,1/4]. Do not select parent and child parameter artifacts in the same generation.
+Hard constraints are filtered before Pareto/scalarization. Preferences may change bounded allocation, exploration, evidence effort and abstention, never success criteria, observer identity, privacy, consent or authority. Parent/child exchange only bounded budget, shadow price, continuation utility, uncertainty, residual and expiry via `NduBoundaryConditionV1`. Freeze the parent revision; accept a candidate state with damping `P_next=(1-eta)P_old+eta*P_candidate`, eta in [1/16,1/4]. The native public boundary enforces `dim(P)<=64` and `P,target in [-1,1]`. A state already within tolerance is a zero-iteration no-op; a 64-step exhaustion produces `PreferenceSolveOutcome::Unavailable` rather than a persistable unconverged state. Do not select an actual parent/child artifact pair in the same generation; lineage is identified explicitly rather than inferred from `SubjectClass` alone.
 
 ## 4. Deterministic reference algorithm
 

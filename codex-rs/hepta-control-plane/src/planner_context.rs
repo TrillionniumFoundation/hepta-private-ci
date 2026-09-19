@@ -3,15 +3,17 @@
 //! generation fence. These observations say nothing about model quality,
 //! memory capacity, future utility, or permission to execute effects.
 
+use codex_hepta_ndu::AggregationOperator;
+use codex_hepta_ndu::AxisAggregationRule;
 use codex_hepta_ndu::AxisDirection;
 use codex_hepta_ndu::AxisLimit;
 use codex_hepta_ndu::AxisValue;
 use codex_hepta_ndu::ContributionSet;
+use codex_hepta_ndu::EvaluationPolicyV1;
 use codex_hepta_ndu::FeasibilityPosture;
 use codex_hepta_ndu::RequiredOrganSet;
 use codex_hepta_ndu::UtilityContribution;
 use codex_hepta_ndu::UtilityProfile;
-use codex_hepta_ndu::legacy_evaluation_policy;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
@@ -82,6 +84,9 @@ pub fn plan_observed_context(
     let objective_digest = Digest32::of_bytes(&objective);
     let profile = UtilityProfile {
         profile_id: id("verified-context-delivery-v1")?,
+        normalization_manifest_digest: Digest32::of_bytes(
+            b"hepta.control.verified-context-delivery.normalization.v1",
+        ),
         dimensions: vec![(count_axis.clone(), AxisDirection::Maximize)],
         risk_ceilings: vec![],
         resource_ceilings: vec![AxisLimit {
@@ -93,7 +98,26 @@ pub fn plan_observed_context(
         },
     };
     let mut input = NduPlanningInputV1 {
-        policy: legacy_evaluation_policy(&profile).map_err(E::Ndu)?,
+        policy: EvaluationPolicyV1 {
+            policy_id: id("verified-context-delivery-policy-v1")?,
+            utility_rules: vec![AxisAggregationRule {
+                axis: count_axis.clone(),
+                operator: AggregationOperator::Sum,
+            }],
+            risk_rules: vec![],
+            resource_rules: vec![AxisAggregationRule {
+                axis: bytes_axis.clone(),
+                operator: AggregationOperator::Sum,
+            }],
+            uncertainty_rules: vec![AxisAggregationRule {
+                axis: count_axis.clone(),
+                operator: AggregationOperator::Maximum,
+            }],
+            pareto_absolute_tolerances: vec![AxisValue {
+                axis: count_axis.clone(),
+                value: FixedQ32::ZERO,
+            }],
+        },
         profile,
         scalarization: None,
         contributions: ContributionSet {

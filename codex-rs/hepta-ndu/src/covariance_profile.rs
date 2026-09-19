@@ -55,6 +55,9 @@ pub enum CovarianceError {
     IllConditioned,
     CoefficientBound,
     Residual,
+    EvidenceRejected,
+    QualificationMismatch,
+    Q24Conversion,
     Arithmetic,
 }
 
