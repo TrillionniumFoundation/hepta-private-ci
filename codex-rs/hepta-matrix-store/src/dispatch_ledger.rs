@@ -459,6 +459,47 @@ impl MatrixDurableStore {
             .ok_or(MatrixDurableError::Corrupt)
     }
 
+    pub async fn park_matrix_dispatch_indeterminate(
+        &self,
+        txn_id: &MatrixTransactionId,
+        expected_attempt: u64,
+        now_ms: u64,
+    ) -> Result<MatrixDispatchRecord, MatrixDurableError> {
+        if expected_attempt == 0 {
+            return Err(MatrixDurableError::Invalid);
+        }
+        let mut tx = self
+            .sqlite_pool()
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(unavailable)?;
+        let current = load_dispatch_tx(&mut tx, txn_id)
+            .await?
+            .ok_or(MatrixDurableError::Conflict)?;
+        if current.state != MatrixDispatchState::Indeterminate
+            || current.attempt != expected_attempt
+        {
+            return Err(MatrixDurableError::Conflict);
+        }
+        let parked = sqlx::query(
+            "UPDATE outbox_messages
+             SET lease_until_ms = ?, updated_at_ms = ?
+             WHERE stable_txn_id = ? AND state = 'in_flight' AND attempts = ?",
+        )
+        .bind(PARKED_LEASE_UNTIL_MS)
+        .bind(to_i64(now_ms)?)
+        .bind(txn_id.as_str())
+        .bind(to_i64(expected_attempt)?)
+        .execute(&mut *tx)
+        .await
+        .map_err(unavailable)?;
+        if parked.rows_affected() != 1 {
+            return Err(MatrixDurableError::Conflict);
+        }
+        tx.commit().await.map_err(unavailable)?;
+        Ok(current)
+    }
+
     pub async fn mark_matrix_dispatch_retryable(
         &self,
         txn_id: &MatrixTransactionId,
