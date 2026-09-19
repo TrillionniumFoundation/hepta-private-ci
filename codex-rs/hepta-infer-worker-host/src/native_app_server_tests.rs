@@ -162,6 +162,31 @@ fn ready_owner() -> HealthSnapshot {
 }
 
 #[test]
+fn recovery_binds_the_stable_client_id_to_the_original_user_input() {
+    let user = |client_id: Option<&str>, text: &str| ThreadItem::UserMessage {
+        id: "user-item".to_string(),
+        client_id: client_id.map(str::to_string),
+        content: vec![UserInput::Text {
+            text: text.to_string(),
+            text_elements: Vec::new(),
+        }],
+    };
+
+    assert_eq!(
+        recovered_user_binding(&[user(Some("request-a"), "original")], "request-a", "original"),
+        RecoveredUserBinding::Exact
+    );
+    assert_eq!(
+        recovered_user_binding(&[user(Some("request-a"), "drifted")], "request-a", "original"),
+        RecoveredUserBinding::Mismatch
+    );
+    assert_eq!(
+        recovered_user_binding(&[user(Some("request-b"), "original")], "request-a", "original"),
+        RecoveredUserBinding::NotPresent
+    );
+}
+
+#[test]
 fn observation_budget_never_resets_the_absolute_codex_deadline() {
     assert_eq!(
         observation_budget_from(90, 100),
