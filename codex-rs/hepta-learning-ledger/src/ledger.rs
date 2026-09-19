@@ -192,7 +192,7 @@ impl LearningLedger {
             .filter(|record| self.record_is_active(record))
             .filter(|record| {
                 matches!(
-                    record.event,
+                    &record.event,
                     LedgerEvent::Decision(_)
                         | LedgerEvent::Outcome(_)
                         | LedgerEvent::Credit(_)
