@@ -1066,6 +1066,18 @@ where
     }
     let stage_started = Instant::now();
     let result = call(input);
+    if result.is_ok()
+        && matches!(
+            input.stage,
+            LaneFStageV3::HostHandoffAccepted | LaneFStageV3::LearningRecorded
+        )
+    {
+        // These owner boundaries may have committed durable/visible state. A
+        // deadline or cancellation observed only after their successful return
+        // cannot retroactively turn that commit into a failure. The next stage
+        // rechecks control before it starts.
+        return Ok(result);
+    }
     if control.cancelled() {
         return Ok(Err(control_failure(
             input.stage,
