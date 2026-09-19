@@ -84,8 +84,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     if let Some(path) = objective_profile_file {
         state.refresh_generation()?;
         let host = Arc::new(crate::objective_runtime::ObjectiveRuntimeHost::open(
-            &identity,
-            &path,
+            &identity, &path,
         )?);
         let current_generation = state.current_generation()?;
         host.reconcile(
