@@ -131,3 +131,41 @@ fn dataset_adapter_binds_revocation_cut_as_deletion_cutoff() {
     assert_eq!(wire.content_digest, digest("content"));
     assert_eq!(wire.row_count, 2);
 }
+
+#[test]
+fn canonical_protocols_reject_semantically_invalid_json() {
+    let zero_digest =
+        "0000000000000000000000000000000000000000000000000000000000000000";
+    let invalid_decision = format!(
+        "{{\"decisionId\":\"decision-1\",\"episodeId\":\"episode-1\",\"candidateSetDigest\":\"{}\",\"policyDigest\":\"{}\",\"chosenId\":\"choice\",\"propensityPpm\":1000001,\"randomSeedDigest\":null}}",
+        digest("candidate-set"),
+        digest("policy")
+    );
+    assert_eq!(
+        LearningDecisionV1::from_canonical_json(invalid_decision.as_bytes()),
+        Err(ProtocolAdapterError::InvalidValue("propensityPpm"))
+    );
+
+    let invalid_dataset = format!(
+        "{{\"datasetId\":\"dataset-1\",\"episodeRangeDigest\":\"{}\",\"rowCount\":0,\"schemaDigest\":\"{}\",\"splitPolicyDigest\":\"{}\",\"deletionCutoffDigest\":\"{}\",\"contentDigest\":\"{}\"}}",
+        digest("range"),
+        digest("schema"),
+        digest("split"),
+        digest("delete"),
+        digest("content")
+    );
+    assert_eq!(
+        DatasetSnapshotV1::from_canonical_json(invalid_dataset.as_bytes()),
+        Err(ProtocolAdapterError::InvalidValue("rowCount"))
+    );
+
+    let invalid_credit = format!(
+        "{{\"creditId\":\"credit-1\",\"episodeId\":\"episode-1\",\"outcomeDigest\":\"{}\",\"parentCreditId\":null,\"allocations\":[],\"conservationResidualQ32\":0,\"ruleDigest\":\"{}\"}}",
+        zero_digest,
+        digest("rule")
+    );
+    assert_eq!(
+        CreditAssignmentReceiptV1::from_canonical_json(invalid_credit.as_bytes()),
+        Err(ProtocolAdapterError::InvalidValue("outcomeDigest"))
+    );
+}
