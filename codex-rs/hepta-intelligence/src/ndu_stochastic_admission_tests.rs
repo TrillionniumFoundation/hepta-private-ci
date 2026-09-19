@@ -74,7 +74,7 @@ fn z_projection(
         convention: CovarianceConventionV1::Increment,
         minimum_increment_eigenvalue: 1e-8,
         maximum_condition: 1e6,
-        maximum_absolute_sample: 10.0,
+        maximum_absolute_sample: 1e6,
         maximum_absolute_z: 100.0,
         maximum_relative_residual: 1e-10,
     })
