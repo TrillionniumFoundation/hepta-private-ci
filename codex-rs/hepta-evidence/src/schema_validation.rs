@@ -119,6 +119,19 @@ const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
         ],
     },
     SchemaObjectSpec {
+        name: "qualification_trust_policy",
+        object_type: "table",
+        table_name: "qualification_trust_policy",
+        required_sql_fragments: &[
+            "create table",
+            "policy_id",
+            "revision",
+            "policy_sha256",
+            "policy_json",
+            "slot = 1",
+        ],
+    },
+    SchemaObjectSpec {
         name: "qualification_evidence",
         object_type: "table",
         table_name: "qualification_evidence",
@@ -178,6 +191,24 @@ const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
             "create index",
             "revokes_issuer_key_sha256",
             "where revokes_issuer_key_sha256 is not null",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "qualification_trust_policy_no_update",
+        object_type: "trigger",
+        table_name: "qualification_trust_policy",
+        required_sql_fragments: &[
+            "before update",
+            "qualification trust policy is immutable",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "qualification_trust_policy_no_delete",
+        object_type: "trigger",
+        table_name: "qualification_trust_policy",
+        required_sql_fragments: &[
+            "before delete",
+            "qualification trust policy is immutable",
         ],
     },
     SchemaObjectSpec {
