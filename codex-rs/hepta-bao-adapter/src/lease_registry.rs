@@ -158,6 +158,7 @@ impl fmt::Debug for LeaseRegistry {
 
 impl LeaseRegistry {
     pub async fn open(path: &Path) -> Result<Self, LeaseRegistryError> {
+        prepare_private_database(path)?;
         let options = SqliteConnectOptions::new()
             .filename(path)
             .create_if_missing(true)
@@ -171,6 +172,7 @@ impl LeaseRegistry {
             .connect_with(options)
             .await
             .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
+        verify_private_database(path)?;
         let registry = Self { pool };
         registry.initialize().await?;
         Ok(registry)
@@ -336,21 +338,12 @@ impl LeaseRegistry {
             &[LeaseOperationState::InFlight, LeaseOperationState::Unknown],
         )
         .await?;
-        sqlx::query(
+        let inserted = sqlx::query(
             r#"
-            INSERT INTO secret_leases(
+            INSERT OR IGNORE INTO secret_leases(
                 lease_id,provider_path,consumer_id,scope_sha256,renewable,
                 expires_at_ms,state,revision,updated_at_ms
             ) VALUES(?,?,?,?,?,?,?,?,?)
-            ON CONFLICT(lease_id) DO UPDATE SET
-                provider_path=excluded.provider_path,
-                consumer_id=excluded.consumer_id,
-                scope_sha256=excluded.scope_sha256,
-                renewable=excluded.renewable,
-                expires_at_ms=excluded.expires_at_ms,
-                state=excluded.state,
-                revision=secret_leases.revision+1,
-                updated_at_ms=excluded.updated_at_ms
             "#,
         )
         .bind(&lease.lease_id)
@@ -365,6 +358,9 @@ impl LeaseRegistry {
         .execute(&mut *tx)
         .await
         .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
+        if inserted.rows_affected() != 1 {
+            return Err(LeaseRegistryError::LeaseIdentityConflict);
+        }
         sqlx::query(
             "UPDATE lease_operations SET lease_id=?,state=?,observed_at_ms=? WHERE operation_id=?",
         )
@@ -423,15 +419,21 @@ impl LeaseRegistry {
         } else {
             LeaseState::RevokePending
         };
-        let result = sqlx::query(
-            "UPDATE secret_leases SET state=?,revision=revision+1,updated_at_ms=? WHERE lease_id=? AND state='active'",
-        )
-        .bind(target.as_str())
-        .bind(to_i64(now_ms)?)
-        .bind(lease_id)
-        .execute(&mut *tx)
-        .await
-        .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
+        let transition_sql = if kind == LeaseOperationKind::Renew {
+            "UPDATE secret_leases SET state=?,revision=revision+1,updated_at_ms=? WHERE lease_id=? AND state='active'"
+        } else {
+            // A known-but-uncertain lease must remain revocable. In particular,
+            // issuance delivery fencing and unknown revoke outcomes must never
+            // strand a provider credential outside the revoke path.
+            "UPDATE secret_leases SET state=?,revision=revision+1,updated_at_ms=? WHERE lease_id=? AND state IN ('active','unknown')"
+        };
+        let result = sqlx::query(transition_sql)
+            .bind(target.as_str())
+            .bind(to_i64(now_ms)?)
+            .bind(lease_id)
+            .execute(&mut *tx)
+            .await
+            .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
         if result.rows_affected() != 1 {
             return Err(LeaseRegistryError::InvalidLeaseState);
         }
@@ -581,6 +583,30 @@ impl LeaseRegistry {
         Ok(())
     }
 
+    /// Quarantine a known provider lease after issuance succeeded but final
+    /// delivery was revoked or became indeterminate. The lease identity stays
+    /// recoverable and the revoke path explicitly accepts this state.
+    pub async fn mark_lease_unknown(
+        &self,
+        lease_id: &str,
+        now_ms: u64,
+    ) -> Result<(), LeaseRegistryError> {
+        validate_id(lease_id)?;
+        let changed = sqlx::query(
+            "UPDATE secret_leases SET state='unknown',revision=revision+1,updated_at_ms=? WHERE lease_id=? AND state='active'",
+        )
+        .bind(to_i64(now_ms)?)
+        .bind(lease_id)
+        .execute(&self.pool)
+        .await
+        .map_err(|_| LeaseRegistryError::StoreUnavailable)?
+        .rows_affected();
+        if changed != 1 {
+            return Err(LeaseRegistryError::InvalidLeaseState);
+        }
+        Ok(())
+    }
+
     pub async fn reject_operation(
         &self,
         operation_id: &str,
@@ -686,16 +712,34 @@ impl LeaseRegistry {
         };
         let mut metadata = decode_lease(lease_id, &row)?;
         if matches!(metadata.state, LeaseState::Active) && now_ms >= metadata.expires_at_ms {
-            sqlx::query(
+            let changed = sqlx::query(
                 "UPDATE secret_leases SET state='expired',revision=revision+1,updated_at_ms=? WHERE lease_id=? AND state='active'",
             )
             .bind(to_i64(now_ms)?)
             .bind(lease_id)
             .execute(&self.pool)
             .await
-            .map_err(|_| LeaseRegistryError::StoreUnavailable)?;
-            metadata.state = LeaseState::Expired;
-            metadata.revision = metadata.revision.saturating_add(1);
+            .map_err(|_| LeaseRegistryError::StoreUnavailable)?
+            .rows_affected();
+            if changed == 1 {
+                metadata.state = LeaseState::Expired;
+                metadata.revision = metadata.revision.saturating_add(1);
+            } else {
+                // Another writer won the lifecycle transition. Never return a
+                // fabricated Expired view over a newer Renewing/RevokePending/
+                // Unknown state.
+                let Some(row) = sqlx::query(
+                    "SELECT provider_path,consumer_id,scope_sha256,renewable,expires_at_ms,state,revision FROM secret_leases WHERE lease_id=?",
+                )
+                .bind(lease_id)
+                .fetch_optional(&self.pool)
+                .await
+                .map_err(|_| LeaseRegistryError::StoreUnavailable)?
+                else {
+                    return Ok(None);
+                };
+                metadata = decode_lease(lease_id, &row)?;
+            }
         }
         Ok(Some(metadata))
     }
@@ -874,9 +918,87 @@ fn to_digest(value: &[u8]) -> Result<[u8; 32], LeaseRegistryError> {
         .map_err(|_| LeaseRegistryError::CorruptState)
 }
 
+#[cfg(unix)]
+fn prepare_private_database(path: &Path) -> Result<(), LeaseRegistryError> {
+    use std::os::unix::fs::DirBuilderExt;
+    use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::OpenOptionsExt;
+    use std::os::unix::fs::PermissionsExt;
+
+    let parent = path.parent().ok_or(LeaseRegistryError::UnsafeStatePath)?;
+    if !parent.exists() {
+        let mut builder = std::fs::DirBuilder::new();
+        builder.mode(0o700);
+        builder
+            .create(parent)
+            .map_err(|_| LeaseRegistryError::UnsafeStatePath)?;
+    }
+    let parent_metadata =
+        std::fs::symlink_metadata(parent).map_err(|_| LeaseRegistryError::UnsafeStatePath)?;
+    if parent_metadata.file_type().is_symlink()
+        || !parent_metadata.is_dir()
+        || parent_metadata.permissions().mode() & 0o077 != 0
+        || parent_metadata.uid() != rustix::process::geteuid().as_raw()
+    {
+        return Err(LeaseRegistryError::UnsafeStatePath);
+    }
+
+    match std::fs::symlink_metadata(path) {
+        Ok(metadata) => {
+            if metadata.file_type().is_symlink()
+                || !metadata.is_file()
+                || metadata.permissions().mode() & 0o077 != 0
+                || metadata.nlink() != 1
+                || metadata.uid() != rustix::process::geteuid().as_raw()
+            {
+                return Err(LeaseRegistryError::UnsafeStatePath);
+            }
+        }
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {
+            std::fs::OpenOptions::new()
+                .create_new(true)
+                .write(true)
+                .mode(0o600)
+                .open(path)
+                .map_err(|_| LeaseRegistryError::UnsafeStatePath)?;
+        }
+        Err(_) => return Err(LeaseRegistryError::UnsafeStatePath),
+    }
+    Ok(())
+}
+
+#[cfg(unix)]
+fn verify_private_database(path: &Path) -> Result<(), LeaseRegistryError> {
+    use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::PermissionsExt;
+
+    let metadata =
+        std::fs::symlink_metadata(path).map_err(|_| LeaseRegistryError::UnsafeStatePath)?;
+    if metadata.file_type().is_symlink()
+        || !metadata.is_file()
+        || metadata.permissions().mode() & 0o077 != 0
+        || metadata.nlink() != 1
+        || metadata.uid() != rustix::process::geteuid().as_raw()
+    {
+        return Err(LeaseRegistryError::UnsafeStatePath);
+    }
+    Ok(())
+}
+
+#[cfg(not(unix))]
+fn prepare_private_database(_path: &Path) -> Result<(), LeaseRegistryError> {
+    Err(LeaseRegistryError::UnsafeStatePath)
+}
+
+#[cfg(not(unix))]
+fn verify_private_database(_path: &Path) -> Result<(), LeaseRegistryError> {
+    Err(LeaseRegistryError::UnsafeStatePath)
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum LeaseRegistryError {
     InvalidInput,
+    UnsafeStatePath,
     UnsupportedSchema,
     StoreUnavailable,
     CorruptState,
@@ -884,6 +1006,7 @@ pub enum LeaseRegistryError {
     OperationNotFound,
     InvalidOperationState,
     LeaseNotFound,
+    LeaseIdentityConflict,
     InvalidLeaseState,
 }
 
