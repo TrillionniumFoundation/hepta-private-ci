@@ -32,6 +32,21 @@ fn binding() -> Digest32 {
 
 fn record(run_id: &str, objective: &[u8]) -> RunStartRecordV1 {
     RunStartRecordV1 {
+        authentication: RunStartAuthenticationV1 {
+            issuer_id: id("issuer.objective"),
+            key_epoch: 3,
+            message_id: id(&format!("message.{run_id}")),
+            sequence: 5,
+            signed_body_digest: digest("signed-body"),
+        },
+        admission: RunStartAdmissionBindingV1 {
+            profile_digest: digest("profile"),
+            intent_digest: digest("intent"),
+            admitted_source_digest: digest("admitted-source"),
+            observed_at_unix_micros: 1_000_000,
+            deadline_unix_micros: 2_000_000,
+        },
+        disposition: RunStartObjectiveDispositionV1::Compiled,
         snapshot: RunStartSnapshotV1 {
             run_id: id(run_id),
             objective_digest: Digest32::of_bytes(objective),
@@ -44,6 +59,7 @@ fn record(run_id: &str, objective: &[u8]) -> RunStartRecordV1 {
             generation: 11,
             fence_digest: digest("fence"),
         },
+        runtime_body_digest: digest("runtime-body"),
         objective_semantic_bytes: objective.to_vec(),
     }
 }
