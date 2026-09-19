@@ -1,8 +1,10 @@
 //! Named production composition root for hosted inference.
 //!
-//! Trust configuration is a protected host input. The independently signed
-//! final-use grant is supplied separately and is never allowed to replace the
-//! pinned signer, epoch, revocation head, Agent identity, model or journal.
+//! Trust configuration is a protected host input. Exact final-use grants are
+//! resolved only after the worker freezes the physical provider binding, via an
+//! independently operated Unix issuer socket. The issuer response is still
+//! verified against the host-pinned signer, epoch, revocation head, Agent
+//! identity, model and durable nonce state.
 
 #![forbid(unsafe_code)]
 
@@ -309,5 +311,66 @@ mod tests {
         assert!(validate_host_config(&value).is_err());
         value.maximum_in_flight = JOURNAL_CAPACITY + 1;
         assert!(validate_host_config(&value).is_err());
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn issuer_protocol_resolves_the_exact_runtime_binding() {
+        use codex_hepta_contracts::FinalUseGrant;
+        use std::os::unix::net::UnixListener;
+
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let socket = std::env::temp_dir().join(format!(
+            "hepta-final-use-issuer-{}-{nonce}.sock",
+            std::process::id()
+        ));
+        let listener = UnixListener::bind(&socket).unwrap();
+        let binding = FinalUseBinding {
+            subject_id: "agent:test".to_string(),
+            destination_id: "provider:test".to_string(),
+            request_sha256: [1; 32],
+            scope_sha256: [2; 32],
+            payload_sha256: [3; 32],
+        };
+        let expected = binding.clone();
+        let signed = SignedFinalUseGrant {
+            grant: FinalUseGrant {
+                schema_version: 1,
+                signer_id: "issuer:test".to_string(),
+                authority_epoch: 7,
+                grant_id: "grant:test".to_string(),
+                nonce: [4; 32],
+                binding: binding.clone(),
+                not_before_unix_ms: 1,
+                expires_at_unix_ms: 2,
+            },
+            signature: vec![5; 64],
+        };
+        let response = signed.clone();
+        let server = std::thread::spawn(move || {
+            let (mut stream, _) = listener.accept().unwrap();
+            let mut request_len = [0_u8; 4];
+            stream.read_exact(&mut request_len).unwrap();
+            let request_len = u32::from_be_bytes(request_len) as usize;
+            let mut request = vec![0_u8; request_len];
+            stream.read_exact(&mut request).unwrap();
+            let observed: FinalUseBinding = serde_json::from_slice(&request).unwrap();
+            assert_eq!(observed, expected);
+
+            let bytes = serde_json::to_vec(&response).unwrap();
+            stream
+                .write_all(&(bytes.len() as u32).to_be_bytes())
+                .unwrap();
+            stream.write_all(&bytes).unwrap();
+            stream.flush().unwrap();
+        });
+
+        let resolved = resolve_final_use_grant(&socket, &binding).unwrap();
+        assert_eq!(resolved, signed);
+        server.join().unwrap();
+        let _ = std::fs::remove_file(socket);
     }
 }
