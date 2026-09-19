@@ -3,7 +3,16 @@
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
+use std::str::FromStr;
 
+use codex_hepta_infer_core::NeuronFeatureObservationV1;
+use codex_hepta_infer_core::NeuronFeatureReceiptV1;
+use codex_hepta_infer_core::NeuronFeatureRequestV1;
+use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
+use codex_hepta_infer_core::NeuronModelRuntimeTupleV1;
+use codex_hepta_infer_core::build_neuron_feature_receipt_v1;
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 use codex_hepta_types::Digest32;
 
 const MAX_MODELS: usize = 8;
@@ -127,6 +136,7 @@ pub enum Error {
     ArithmeticOverflow,
     FeatureLimit,
     FeatureOutputMismatch,
+    FeatureContract,
 }
 
 impl fmt::Display for Error {
@@ -435,6 +445,7 @@ pub struct NeuronFeatureRequest {
     pub authorization: WorkerRequest,
     pub encoder_digest: String,
     pub head_digest: String,
+    pub weights_digest: String,
     pub input_digest: String,
     pub feature_vector_q24: Vec<i64>,
     pub expected_output_width: usize,
@@ -508,6 +519,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         if request.authorization.model_digest != loaded.manifest.model_digest
             || request.authorization.reservation_model_digest != loaded.manifest.model_digest
+            || request.weights_digest != loaded.manifest.weights_digest
         {
             return Err(Error::ModelMismatch);
         }
@@ -580,11 +592,78 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     }
 }
 
+
+impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
+    /// Execute the worker path and project the observed result into the
+    /// inference-control-owned typed receipt.
+    pub fn run_neuron_features_receipt(
+        &mut self,
+        now_ms: u64,
+        model_id: &str,
+        request: NeuronFeatureRequest,
+    ) -> Result<NeuronFeatureReceiptV1, Error> {
+        let request_copy = request.clone();
+        let observed = self.run_neuron_features(now_ms, model_id, request)?;
+        let generation = Generation::new(observed.worker_generation)
+            .map_err(|_| Error::FeatureContract)?;
+        let control_request = NeuronFeatureRequestV1 {
+            request_id: StableId::new(request_copy.authorization.request_id)
+                .map_err(|_| Error::FeatureContract)?,
+            generation,
+            model_id: StableId::new(observed.manifest.model_id.clone())
+                .map_err(|_| Error::FeatureContract)?,
+            encoder_digest: parse_digest32(&request_copy.encoder_digest)?,
+            head_digest: parse_digest32(&request_copy.head_digest)?,
+            weights_digest: parse_digest32(&request_copy.weights_digest)?,
+            input_digest: parse_digest32(&request_copy.input_digest)?,
+            feature_vector_q24: request_copy.feature_vector_q24,
+            expected_output_width: request_copy.expected_output_width,
+        };
+        let runtime_tuple = NeuronModelRuntimeTupleV1 {
+            model_id: control_request.model_id.clone(),
+            model_manifest_digest: parse_digest32(&observed.manifest.model_digest)?,
+            weights_digest: parse_digest32(&observed.manifest.weights_digest)?,
+            tokenizer_digest: parse_digest32(&observed.manifest.tokenizer_digest)?,
+            preprocessor_digest: parse_digest32(&observed.manifest.preprocessor_digest)?,
+            quantization_digest: parse_digest32(&observed.manifest.quantization_digest)?,
+            runtime_digest: parse_digest32(&observed.manifest.runtime_digest)?,
+            device_digest: parse_digest32(&observed.manifest.device_digest)?,
+        };
+        let status = match observed.status {
+            ExecutionStatus::Succeeded => NeuronFeatureTerminalStatusV1::Succeeded,
+            ExecutionStatus::Failed => NeuronFeatureTerminalStatusV1::Failed,
+            ExecutionStatus::Cancelled => NeuronFeatureTerminalStatusV1::Cancelled,
+            ExecutionStatus::Indeterminate => NeuronFeatureTerminalStatusV1::Indeterminate,
+        };
+        build_neuron_feature_receipt_v1(
+            &control_request,
+            runtime_tuple,
+            NeuronFeatureObservationV1 {
+                encoder_digest: parse_digest32(&observed.encoder_digest)?,
+                head_digest: parse_digest32(&observed.head_digest)?,
+                drive_q24: observed.drive_q24,
+                prediction_q24: observed.prediction_q24,
+                observed_memory_bytes: observed.observed_memory_bytes,
+                transient_allocation_bytes: observed.transient_allocation_bytes,
+                queue_age_micros: observed.queue_age_micros,
+                latency_micros: observed.latency_micros,
+                status,
+            },
+        )
+        .map_err(|_| Error::FeatureContract)
+    }
+}
+
+fn parse_digest32(value: &str) -> Result<Digest32, Error> {
+    Digest32::from_str(value).map_err(|_| Error::FeatureContract)
+}
+
 pub fn canonical_neuron_feature_payload_digest(request: &NeuronFeatureRequest) -> String {
     let mut bytes = b"hepta.infer-worker.neuron-feature-request.v1".to_vec();
     bytes.extend_from_slice(request.authorization.model_digest.as_bytes());
     bytes.extend_from_slice(request.encoder_digest.as_bytes());
     bytes.extend_from_slice(request.head_digest.as_bytes());
+    bytes.extend_from_slice(request.weights_digest.as_bytes());
     bytes.extend_from_slice(request.input_digest.as_bytes());
     bytes.extend_from_slice(&(request.feature_vector_q24.len() as u64).to_be_bytes());
     for value in &request.feature_vector_q24 {
@@ -597,6 +676,7 @@ pub fn canonical_neuron_feature_payload_digest(request: &NeuronFeatureRequest) -
 fn validate_neuron_feature_request(value: &NeuronFeatureRequest) -> Result<(), Error> {
     validate_digest(&value.encoder_digest, "encoder")?;
     validate_digest(&value.head_digest, "head")?;
+    validate_digest(&value.weights_digest, "weights")?;
     validate_digest(&value.input_digest, "neuron input")?;
     if value.feature_vector_q24.is_empty()
         || value.feature_vector_q24.len() > MAX_NEURON_FEATURES
