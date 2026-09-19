@@ -64,6 +64,18 @@ impl ProductionCompactionPublication {
                 "proof/checkpoint digest mismatch".to_string(),
             ));
         }
+        let expected_generation = self
+            .checkpoint
+            .source_snapshot
+            .vector
+            .compact_checkpoint_generation
+            .next()
+            .map_err(|error| ProductionCompactionError::Invalid(error.to_string()))?;
+        if self.checkpoint.generation != expected_generation {
+            return Err(ProductionCompactionError::Invalid(
+                "checkpoint generation does not advance source snapshot".to_string(),
+            ));
+        }
         if self.policy_digest.is_zero() || self.candidate_digest.is_zero() {
             return Err(ProductionCompactionError::Invalid(
                 "policy/candidate digests must be non-zero".to_string(),
@@ -274,12 +286,6 @@ impl ProductionDurableWriter {
                     "checkpoint generation/predecessor changed".to_string(),
                 ));
             }
-        } else if publication.checkpoint.generation.get() != 1
-            || publication.checkpoint.predecessor_digest.is_some()
-        {
-            return Err(ProductionCompactionError::CasConflict(
-                "first published checkpoint must be generation 1 without predecessor".to_string(),
-            ));
         }
 
         let sequence = rows.last().map_or(1, |row| row.sequence + 1);
@@ -715,10 +721,6 @@ async fn load_rows(
                     "published checkpoint lineage mismatch".to_string(),
                 ));
             }
-        } else if generation != 1 || publication.checkpoint.predecessor_digest.is_some() {
-            return Err(ProductionCompactionError::Corrupt(
-                "invalid first checkpoint lineage".to_string(),
-            ));
         }
 
         previous = observed.clone();
@@ -899,7 +901,7 @@ mod tests {
         Digest32::of_bytes(value.as_bytes())
     }
 
-    fn snapshot() -> CognitiveSnapshotKeyV1 {
+    fn snapshot(compact_generation: u64) -> CognitiveSnapshotKeyV1 {
         CognitiveSnapshotKeyV1::new(LaneCGenerationVectorV1 {
             scope_id: id("scope:production-compact"),
             purpose_id: id("purpose:consolidation"),
@@ -908,7 +910,7 @@ mod tests {
             tombstone_frontier: 6,
             source_ledger_frontier: 21,
             knowledge_graph_generation: generation(3),
-            compact_checkpoint_generation: generation(1),
+            compact_checkpoint_generation: generation(compact_generation),
             prompt_registry_revision: revision(4),
             retrieval_profile_digest: digest("retrieval"),
             encoder_preprocessor_digest: digest("encoder"),
@@ -926,7 +928,7 @@ mod tests {
         predecessor: Option<Digest32>,
         algorithm: &str,
     ) -> ProductionCompactionPublication {
-        let source = snapshot();
+        let source = snapshot(checkpoint_generation - 1);
         let record = MemoryRecord {
             record_id: id("memory:production"),
             revision: revision(1),
@@ -1010,7 +1012,7 @@ mod tests {
         let temp = TempDir::new().expect("temp dir");
         let store = store(&temp).await;
         let auth = authority(agent_id(OWNER));
-        let first = publication(1, None, "algorithm-v1");
+        let first = publication(2, Some(digest("bootstrap-predecessor")), "algorithm-v1");
         let writer = writer(store.clone(), auth.clone()).await;
 
         let receipt = writer.publish_compaction(&first).await.expect("publish");
@@ -1043,7 +1045,7 @@ mod tests {
         let first = publication(1, None, "algorithm-v1");
         writer.publish_compaction(&first).await.expect("first");
 
-        let wrong = publication(2, Some(digest("wrong-predecessor")), "algorithm-v2");
+        let wrong = publication(3, Some(digest("wrong-predecessor")), "algorithm-v2");
         assert!(matches!(
             writer.publish_compaction(&wrong).await,
             Err(ProductionCompactionError::CasConflict(_))
@@ -1057,8 +1059,8 @@ mod tests {
         let writer = writer(store, authority(agent_id(OWNER))).await;
         let left_writer = writer.clone();
         let right_writer = writer.clone();
-        let left = publication(1, None, "algorithm-left");
-        let right = publication(1, None, "algorithm-right");
+        let left = publication(2, Some(digest("bootstrap-predecessor")), "algorithm-left");
+        let right = publication(2, Some(digest("bootstrap-predecessor")), "algorithm-right");
         let (a, b) = tokio::join!(
             left_writer.publish_compaction(&left),
             right_writer.publish_compaction(&right)
