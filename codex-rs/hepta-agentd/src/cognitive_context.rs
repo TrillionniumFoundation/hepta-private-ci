@@ -1,5 +1,7 @@
 //! Connect the canonical SQLite owner to the newer bounded cognitive read port.
 
+use std::sync::OnceLock;
+use std::time::Instant;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -21,6 +23,7 @@ use crate::CognitiveContextPlan;
 use crate::CognitiveContextSnapshot;
 
 const MAX_CONTEXT_JSON_BYTES: usize = 24 * 1024;
+static CONTEXT_PLAN_CLOCK_EPOCH: OnceLock<Instant> = OnceLock::new();
 
 /// Only storage failures may invalidate the canonical SQLite owner. A revoked
 /// or unavailable optional ranker closes the ranked read, not other store ports.
@@ -139,13 +142,7 @@ pub(crate) async fn read(
     }
     let encoded_context = serde_json::to_vec(&response)
         .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-    let now_micros = u64::try_from(
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?
-            .as_micros(),
-    )
-    .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?;
+    let now_micros = monotonic_now_micros()?;
     let plan = plan_observed_context(ObservedContextV1 {
         owner_id: StableId::new(owner.as_str())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
@@ -193,6 +190,14 @@ pub(crate) async fn read(
             .map_err(|_| CognitiveContextError::RankerUnavailable)?;
     }
     Ok(response)
+}
+
+fn monotonic_now_micros() -> Result<u64, CognitiveStoreError> {
+    let elapsed = CONTEXT_PLAN_CLOCK_EPOCH
+        .get_or_init(Instant::now)
+        .elapsed()
+        .as_micros();
+    u64::try_from(elapsed).map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))
 }
 
 fn now_seconds() -> Result<i64, CognitiveStoreError> {

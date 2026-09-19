@@ -32,6 +32,9 @@ ALLOWED_PREFIXES = (
     "codex-rs/hepta-objective/",
     "codex-rs/hepta-ndu/",
     "codex-rs/hepta-control-plane/",
+    "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+    "codex-rs/hepta-contracts/CALLERS.toml",
     "docs/contracts/OBJECTIVE_ERRORS.json",
     "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
     "docs/readiness/NDU_SYSTEM_EXECUTION.md",
@@ -42,6 +45,7 @@ ALLOWED_PREFIXES = (
     "docs/modules/objective.compiler/IMPLEMENTATION_MAP.json",
     "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json",
     "docs/modules/control.runtime/IMPLEMENTATION_MAP.json",
+    "docs/modules/control.runtime/TECHNICAL.md",
     "qualification/module-execution-dossiers/detail/objective.compiler.md",
     "qualification/module-execution-dossiers/detail/utility.ndu.md",
     "qualification/module-execution-dossiers/detail/control.runtime.md",
@@ -190,12 +194,61 @@ def verify() -> int:
         "required_owner_set_digest",
         "evaluation_policy_digest",
         "resource_profile_digest",
+        "canonical_resource_profile_digest",
+        "ResourceProfileMismatch",
+        "digest_resource_profile(&request.resource_reservations)",
         "prepared_digest != digest_prepared_plan(prepared)",
         "candidate_set_digest != digest_candidates(&prepared.feasible_candidates)",
         "validate_snapshot_for_planning(snapshot, now_micros)?;",
         "receipt.prepared_digest != prepared.prepared_digest",
     ]:
         need(token in planner, "control hardening " + token)
+    journal = (ROOT / "codex-rs/hepta-control-plane/src/planner_journal.rs").read_text(
+        encoding="utf-8"
+    )
+    for token in ["decision_digests", "revoked_digests", "DecisionNotRecorded", "RevokedPlan"]:
+        need(token in journal, "journal semantic replay " + token)
+
+    store = (ROOT / "codex-rs/hepta-control-plane/src/planner_store.rs").read_text(
+        encoding="utf-8"
+    )
+    for token in [
+        "HCPSTR01",
+        "open_with_minimum_head",
+        "RollbackDetected",
+        "file.sync_all()",
+        "std::fs::rename",
+        "File::open(&self.root)?.sync_all()",
+    ]:
+        need(token in store, "planner durability " + token)
+
+    global_planner = (
+        ROOT / "codex-rs/hepta-control-plane/src/planner_global.rs"
+    ).read_text(encoding="utf-8")
+    for token in [
+        "OwnerSummaryAuthenticatorV1",
+        "authenticate_owner",
+        "evaluate_global_plan_v1",
+        "evaluate_prepared_plan_with_ndu",
+        "request_execution_grants",
+    ]:
+        need(token in global_planner, "global coordinator " + token)
+
+    agentd_context = (
+        ROOT / "codex-rs/hepta-agentd/src/cognitive_context.rs"
+    ).read_text(encoding="utf-8")
+    for token in ["OnceLock<Instant>", "monotonic_now_micros", "plan_observed_context"]:
+        need(token in agentd_context, "Agentd control composition " + token)
+
+    callers = (ROOT / "codex-rs/hepta-contracts/CALLERS.toml").read_text(
+        encoding="utf-8"
+    )
+    for token in [
+        '"plan_observed_context"',
+        '"codex-rs/hepta-agentd/src/cognitive_context.rs"',
+    ]:
+        need(token in callers, "control product caller truth " + token)
+
     for struct_name in [
         "GlobalStateSnapshotV1",
         "PreparedPlanInputV1",
@@ -224,7 +277,16 @@ def verify() -> int:
             "## 11. Coding-entry checklist",
             "## Appendix A. Closed gap and protocol mapping",
         ],
-        "docs/readiness/CONTROL_RUNTIME_EXECUTION.md": ["RCP-13", "RCP-14", "RCP-15"],
+        "docs/readiness/CONTROL_RUNTIME_EXECUTION.md": [
+            "RCP-13",
+            "RCP-14",
+            "RCP-15",
+            "RCP-16",
+            "RCP-17",
+            "RCP-18",
+            "RCP-19",
+            "RCP-20",
+        ],
     }
     for path, tokens in headings.items():
         text = (ROOT / path).read_text(encoding="utf-8")
@@ -270,6 +332,26 @@ def verify() -> int:
         {row["module"] for row in maturity["modules"]} == set(MODULES),
         "maturity module closure",
     )
+    control_maturity = next(
+        row for row in maturity["modules"] if row["module"] == "control.runtime"
+    )
+    need(
+        control_maturity["dimensions"]["narrowProductCaller"]["state"]
+        == "agentd_context_caller_composed",
+        "narrow product caller truth",
+    )
+    need(
+        control_maturity["dimensions"]["globalCoordinator"]["state"]
+        == "candidate_implemented_not_product_composed",
+        "global coordinator truth",
+    )
+    control_map = load(MAPS["control.runtime"])
+    need(
+        control_map.get("productCallerState")
+        == "narrow_agentd_context_caller_composed_global_planner_not_composed",
+        "control caller map truth",
+    )
+
     for row in maturity["modules"]:
         for key in ["productCaller", "independentAcceptance", "activation", "release"]:
             need(
