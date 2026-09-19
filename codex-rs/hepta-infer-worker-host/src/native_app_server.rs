@@ -509,11 +509,15 @@ fn verify_persisted_dispatch_binding(
         .native_record(request_id)
         .and_then(|record| record.dispatch.as_ref())
         .ok_or("runtime.codex dispatch binding was not durably published")?;
-    let exact = dispatch.codex_payload_digest.as_deref() == Some(&payload_digest.to_string())
-        && dispatch.codex_request_digest.as_deref() == Some(&request_digest.to_string())
+    let payload_digest = payload_digest.to_string();
+    let request_digest = request_digest.to_string();
+    let source_admission_digest = source_admission_digest.to_string();
+    let codex_home_digest = codex_home_digest.to_string();
+    let exact = dispatch.codex_payload_digest.as_deref() == Some(payload_digest.as_str())
+        && dispatch.codex_request_digest.as_deref() == Some(request_digest.as_str())
         && dispatch.codex_source_admission_digest.as_deref()
-            == Some(&source_admission_digest.to_string())
-        && dispatch.codex_home_digest.as_deref() == Some(&codex_home_digest.to_string())
+            == Some(source_admission_digest.as_str())
+        && dispatch.codex_home_digest.as_deref() == Some(codex_home_digest.as_str())
         && dispatch.codex_connection_id == Some(connection_id)
         && dispatch.app_server_version.as_deref() == Some(app_server_version)
         && dispatch.protocol_id.as_deref() == Some(APP_SERVER_V2_PROTOCOL_ID);
@@ -537,6 +541,7 @@ fn indeterminate_start_output(started: ThreadStartResponse, reason: String) -> N
         model: started.model,
         model_provider: started.model_provider,
         status: NativeRunStatus::Indeterminate,
+        boundary_status: NativeBoundaryStatus::Indeterminate,
         output: String::new(),
         observed_output_tokens: None,
         terminal_observed: false,
