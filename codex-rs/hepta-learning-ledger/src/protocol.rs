@@ -371,7 +371,10 @@ impl CanonicalLearningProtocol for LearningEpisodeV1 {
         require_nonzero(self.run_snapshot_digest, "runSnapshotDigest")?;
         if self.ordered_event_digests.is_empty()
             || self.ordered_event_digests.len() > 4096
-            || self.ordered_event_digests.iter().any(Digest32::is_zero)
+            || self
+                .ordered_event_digests
+                .iter()
+                .any(|digest| (*digest).is_zero())
         {
             return Err(ProtocolAdapterError::InvalidValue("orderedEventDigests"));
         }
