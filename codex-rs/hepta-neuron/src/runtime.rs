@@ -109,6 +109,108 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         })
     }
 
+    /// Recover the first segment of a multi-segment chain. If the independent
+    /// witness is beyond this segment, the segment must be complete; the next
+    /// segment header will bind its exact final checkpoint before composition.
+    pub fn recover_chain_root(
+        file: File,
+        native: SparseConfig,
+        scope: JournalScope,
+        max_records: usize,
+        config: NeuronRuntimeConfigV1,
+        witness: W,
+    ) -> Result<Self, NeuronRuntimeError> {
+        config.validate_native(&native)?;
+        let latest = witness
+            .current()?
+            .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
+        if latest.sequence <= max_records as u64 {
+            return Self::recover(
+                file,
+                native,
+                scope,
+                max_records,
+                config,
+                latest,
+                witness,
+            );
+        }
+        let journal = SparseJournal::open(file, native, scope, max_records)?;
+        let current = journal
+            .current()?
+            .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
+        if current.sequence() != max_records as u64 {
+            return Err(NeuronRuntimeError::Journal(
+                JournalError::AcknowledgedHistoryMissing,
+            ));
+        }
+        Ok(Self {
+            config,
+            journal,
+            witness,
+            pending: None,
+        })
+    }
+
+    /// Rotate to a fresh successor segment while preserving the exact current
+    /// checkpoint as the new segment's immutable seed.
+    pub fn rollover(
+        &mut self,
+        file: File,
+        max_records: usize,
+    ) -> Result<(), NeuronRuntimeError> {
+        if self.pending.is_some() {
+            return Err(NeuronRuntimeError::PendingReconciliation);
+        }
+        self.journal = self.journal.start_successor(file, max_records)?;
+        Ok(())
+    }
+
+    /// Recover the next segment in a chain. Intermediate segments must be full
+    /// when the external witness lies beyond them. The segment containing the
+    /// external witness is opened anchored before any tail repair.
+    pub fn recover_next_segment(
+        &mut self,
+        file: File,
+        max_records: usize,
+    ) -> Result<(), NeuronRuntimeError> {
+        if self.pending.is_some() {
+            return Err(NeuronRuntimeError::PendingReconciliation);
+        }
+        let latest = self
+            .witness
+            .current()?
+            .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
+        let seed = self
+            .journal
+            .current()?
+            .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
+        let segment_end = seed.sequence().saturating_add(max_records as u64);
+        let length = file.metadata().map_err(JournalError::from)?.len();
+        let next = if latest.sequence <= segment_end {
+            self.journal
+                .recover_successor(file, max_records, latest)?
+        } else {
+            if length == 0 {
+                return Err(NeuronRuntimeError::Journal(
+                    JournalError::AcknowledgedHistoryMissing,
+                ));
+            }
+            let recovered = self.journal.start_successor(file, max_records)?;
+            let current = recovered
+                .current()?
+                .ok_or(NeuronRuntimeError::RecoveryWitnessMismatch)?;
+            if current.sequence() != segment_end {
+                return Err(NeuronRuntimeError::Journal(
+                    JournalError::AcknowledgedHistoryMissing,
+                ));
+            }
+            recovered
+        };
+        self.journal = next;
+        Ok(())
+    }
+
     pub fn tick(
         &mut self,
         model: &mut impl NeuronModelPort,
