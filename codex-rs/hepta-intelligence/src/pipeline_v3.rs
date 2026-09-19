@@ -410,6 +410,8 @@ pub enum PipelineErrorV3 {
     EmptyDigest(&'static str),
     MissingCapability(&'static str),
     OwnerMismatch(&'static str),
+    CandidateStateMismatch,
+    ObjectiveDigestMismatch,
     InvalidPortFailure,
     StageMismatch,
     ProducerMismatch,
@@ -454,8 +456,11 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
     }
     request.budget.validate()?;
     request.legal_candidates.validate()?;
-    validate_capabilities(&request.snapshot)?;
     let snapshot_digest = request.snapshot.digest();
+    if request.legal_candidates.state_digest != snapshot_digest {
+        return Err(PipelineErrorV3::CandidateStateMismatch);
+    }
+    validate_capabilities(&request.snapshot)?;
     let objective_digest = request.snapshot.objective_digest();
     let started = Instant::now();
     let mut stages = Vec::with_capacity(MAX_V3_STAGES);
@@ -472,7 +477,12 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
         control,
         |input| ports.validate_objective(input),
     )? {
-        StageAdvanceV3::Continue(output) => output,
+        StageAdvanceV3::Continue(output) => {
+            if output != objective_digest {
+                return Err(PipelineErrorV3::ObjectiveDigestMismatch);
+            }
+            output
+        }
         StageAdvanceV3::Terminal(class, output) => {
             return finish(
                 request.run_id,
@@ -543,7 +553,7 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
     };
     let evaluation_digest = predecessor;
 
-    predecessor = optional_port_stage(
+    predecessor = match optional_port_stage(
         &request,
         snapshot_digest,
         predecessor,
@@ -554,10 +564,22 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
         started,
         control,
         |input| ports.collect_neural_signal(input),
-    )?;
+    )? {
+        StageAdvanceV3::Continue(output) => output,
+        StageAdvanceV3::Terminal(class, output) => {
+            return finish(
+                request.run_id,
+                snapshot_digest,
+                PipelineDispositionV3::Failed(class),
+                stages,
+                output,
+                None,
+            );
+        }
+    };
     let neural_digest = stage_completed_digest(&stages, LaneFStageV3::NeuralSignalCollected);
 
-    predecessor = optional_port_stage(
+    predecessor = match optional_port_stage(
         &request,
         snapshot_digest,
         predecessor,
@@ -568,7 +590,19 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
         started,
         control,
         |input| ports.build_prompt_portfolio(input),
-    )?;
+    )? {
+        StageAdvanceV3::Continue(output) => output,
+        StageAdvanceV3::Terminal(class, output) => {
+            return finish(
+                request.run_id,
+                snapshot_digest,
+                PipelineDispositionV3::Failed(class),
+                stages,
+                output,
+                None,
+            );
+        }
+    };
     let prompt_digest = stage_completed_digest(&stages, LaneFStageV3::PromptPortfolioBuilt);
 
     let intuition_input = port_input(
@@ -856,7 +890,7 @@ fn optional_port_stage<C, F>(
     started: Instant,
     control: &C,
     call: F,
-) -> Result<Digest32, PipelineErrorV3>
+) -> Result<StageAdvanceV3, PipelineErrorV3>
 where
     C: CompositionControlV3,
     F: FnOnce(&PortInputV3) -> Result<PortReceiptV3, PortFailureV3>,
@@ -877,7 +911,7 @@ where
             outcome: StageOutcomeV3::FallbackUsed(PortFailureClassV3::Unavailable),
             evidence_digest: evidence,
         });
-        return Ok(output);
+        return Ok(StageAdvanceV3::Continue(output));
     }
     let input = port_input(request, snapshot_digest, predecessor, stage);
     match timed_call(
@@ -903,21 +937,31 @@ where
                 outcome: StageOutcomeV3::Completed,
                 evidence_digest: output,
             });
-            Ok(output)
+            Ok(StageAdvanceV3::Continue(output))
         }
         Err(failure) => {
             validate_failure(&failure)?;
-            let output =
-                fallback_digest(stage, predecessor, failure.class, failure.evidence_digest);
-            stages.push(StageTraceV3 {
-                stage,
-                producer: stable_id(producer)?,
-                predecessor_digest: predecessor,
-                output_digest: output,
-                outcome: StageOutcomeV3::FallbackUsed(failure.class),
-                evidence_digest: failure.evidence_digest,
-            });
-            Ok(output)
+            if matches!(
+                failure.class,
+                PortFailureClassV3::Unavailable | PortFailureClassV3::TimedOut
+            ) {
+                let output =
+                    fallback_digest(stage, predecessor, failure.class, failure.evidence_digest);
+                stages.push(StageTraceV3 {
+                    stage,
+                    producer: stable_id(producer)?,
+                    predecessor_digest: predecessor,
+                    output_digest: output,
+                    outcome: StageOutcomeV3::FallbackUsed(failure.class),
+                    evidence_digest: failure.evidence_digest,
+                });
+                Ok(StageAdvanceV3::Continue(output))
+            } else {
+                let class = failure.class;
+                let terminal =
+                    append_failure_trace(stages, stage, producer, predecessor, failure)?;
+                Ok(StageAdvanceV3::Terminal(class, terminal))
+            }
         }
     }
 }
