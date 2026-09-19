@@ -167,6 +167,14 @@ pub enum AuthBusAuthorityError {
     InvalidSettlementSignature,
     #[error("observed settlement cost exceeds the held reservation")]
     ObservedCostExceedsReservation,
+    #[error("AuthBus issuer registration is missing")]
+    IssuerMissing,
+    #[error("AuthBus issuer key epoch did not advance monotonically")]
+    KeyEpochRegression,
+    #[error("trusted-time attestation does not name an active time issuer")]
+    TrustedTimeIssuerMismatch,
+    #[error("trusted-time attestation signature is invalid")]
+    InvalidTrustedTimeSignature,
     #[error("invalid AuthBus authority state transition")]
     InvalidTransition,
     #[error("trusted AuthBus time moved backwards")]
