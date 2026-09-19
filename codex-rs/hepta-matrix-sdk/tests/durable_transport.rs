@@ -1,10 +1,28 @@
 use std::collections::VecDeque;
+#[cfg(unix)]
+use std::collections::BTreeSet;
 use std::error::Error;
 use std::fs;
 use std::sync::Mutex;
+#[cfg(unix)]
+use std::sync::atomic::AtomicU64;
+#[cfg(unix)]
+use std::sync::atomic::Ordering;
 use std::time::Duration;
+#[cfg(unix)]
+use std::time::SystemTime;
+#[cfg(unix)]
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
+#[cfg(unix)]
+use codex_hepta_contracts::FinalUseAuthority;
+#[cfg(unix)]
+use codex_hepta_contracts::FinalUseGrant;
+#[cfg(unix)]
+use codex_hepta_contracts::FinalUseRevocations;
+#[cfg(unix)]
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_matrix_protocol::MATRIX_BINDING_SCHEMA_VERSION;
 use codex_hepta_matrix_protocol::MatrixBindingV1;
 use codex_hepta_matrix_protocol::MatrixDeviceId;
@@ -22,7 +40,16 @@ use codex_hepta_matrix_protocol::outbox_id;
 use codex_hepta_matrix_protocol::transaction_id;
 use codex_hepta_matrix_sdk::IngressDisposition;
 use codex_hepta_matrix_sdk::IngressIgnoredReason;
+#[cfg(unix)]
+use codex_hepta_matrix_sdk::MatrixAuthorityError;
+#[cfg(unix)]
+use codex_hepta_matrix_sdk::MatrixFinalUseRequest;
+#[cfg(unix)]
+use codex_hepta_matrix_sdk::MatrixGrantFuture;
 use codex_hepta_matrix_sdk::MatrixIngress;
+#[cfg(unix)]
+use codex_hepta_matrix_sdk::MatrixOutboundAuthorizer;
+use codex_hepta_matrix_sdk::MatrixOutboundIdentity;
 use codex_hepta_matrix_sdk::MatrixOutboundTransport;
 use codex_hepta_matrix_sdk::MatrixSdkPaths;
 use codex_hepta_matrix_sdk::MatrixSendFuture;
@@ -43,6 +70,10 @@ use codex_hepta_matrix_store::OutboxState;
 use codex_hepta_matrix_store::RoomBindingDraft;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
+#[cfg(unix)]
+use ed25519_dalek::Signer;
+#[cfg(unix)]
+use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 use tokio_util::sync::CancellationToken;
@@ -209,6 +240,86 @@ struct PostSendAckLossTransport {
     txn_ids: Mutex<Vec<MatrixTransactionId>>,
 }
 
+#[cfg(unix)]
+struct TestAuthorizer {
+    authority: FinalUseAuthority,
+    signer: SigningKey,
+    _directory: TempDir,
+    sequence: AtomicU64,
+}
+
+#[cfg(unix)]
+impl TestAuthorizer {
+    fn new() -> TestResult<Self> {
+        use std::os::unix::fs::PermissionsExt;
+
+        let directory = TempDir::new()?;
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
+        let signer = SigningKey::from_bytes(&[91; 32]);
+        let authority = FinalUseAuthority::open_state_dir(
+            directory.path(),
+            "matrix-test-owner".to_string(),
+            signer.verifying_key().to_bytes(),
+            FinalUseRevocations {
+                authority_epoch: 17,
+                revision: 1,
+                revoked_grant_ids: BTreeSet::new(),
+            },
+        )?;
+        Ok(Self {
+            authority,
+            signer,
+            _directory: directory,
+            sequence: AtomicU64::new(0),
+        })
+    }
+}
+
+#[cfg(unix)]
+impl MatrixOutboundAuthorizer for TestAuthorizer {
+    fn authority(&self) -> &FinalUseAuthority {
+        &self.authority
+    }
+
+    fn signed_grant<'a>(&'a self, request: &'a MatrixFinalUseRequest) -> MatrixGrantFuture<'a> {
+        let sequence = self.sequence.fetch_add(1, Ordering::SeqCst) + 1;
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_err(|_| MatrixAuthorityError::Unavailable)
+            .map(|duration| duration.as_millis() as u64);
+        let signed = now.and_then(|now| {
+            let mut nonce = [0_u8; 32];
+            nonce[..8].copy_from_slice(&sequence.to_be_bytes());
+            nonce[8..16].copy_from_slice(&request.attempt.to_be_bytes());
+            let grant = FinalUseGrant {
+                schema_version: 1,
+                signer_id: "matrix-test-owner".to_string(),
+                authority_epoch: 17,
+                grant_id: format!("matrix-grant-{sequence}"),
+                nonce,
+                binding: request.binding.clone(),
+                not_before_unix_ms: now.saturating_sub(1_000),
+                expires_at_unix_ms: now.saturating_add(60_000),
+            };
+            let signing_bytes = grant
+                .signing_bytes()
+                .map_err(|_| MatrixAuthorityError::InvalidBinding)?;
+            let signature = self.signer.sign(&signing_bytes).to_bytes().to_vec();
+            Ok(SignedFinalUseGrant { grant, signature })
+        });
+        Box::pin(async move { signed })
+    }
+}
+
+fn fake_outbound_identity() -> MatrixOutboundIdentity {
+    MatrixOutboundIdentity {
+        homeserver_id: "https://example.test".to_string(),
+        matrix_user_id: AGENT_MXID.to_string(),
+        device_id: "DEVICE".to_string(),
+        session_generation: 1,
+    }
+}
+
 impl PostSendAckLossTransport {
     fn new(accepted_event_id: MatrixEventId) -> Self {
         Self {
@@ -227,6 +338,10 @@ impl PostSendAckLossTransport {
 }
 
 impl MatrixOutboundTransport for PostSendAckLossTransport {
+    fn identity(&self) -> Result<MatrixOutboundIdentity, MatrixTransportError> {
+        Ok(fake_outbound_identity())
+    }
+
     fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a> {
         Box::pin(async move {
             let mut txn_ids = self
@@ -263,6 +378,10 @@ impl FakeTransport {
 }
 
 impl MatrixOutboundTransport for FakeTransport {
+    fn identity(&self) -> Result<MatrixOutboundIdentity, MatrixTransportError> {
+        Ok(fake_outbound_identity())
+    }
+
     fn send<'a>(&'a self, record: &'a OutboxRecord) -> MatrixSendFuture<'a> {
         Box::pin(async move {
             self.txn_ids
