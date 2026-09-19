@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 use std::time::Instant;
 
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentRecord;
 use codex_hepta_fleet::FleetRegistry;
@@ -489,9 +490,23 @@ impl<D: ProcessDriver> Supervisor<D> {
                     "agent {agent_id} has no explicit active release identity"
                 ))
             })?;
+            let source_id = ReleaseId::parse(current.identity().to_string())?;
+            let source_binding = supervisor.registry.release_binding(agent_id, &source_id)?;
             let target_id = ReleaseId::parse(grant.target_release.clone())?;
+            let target_binding = supervisor.registry.release_binding(agent_id, &target_id)?;
             let target =
                 AgentRelease::try_from(supervisor.registry.resolve_release(agent_id, &target_id)?)?;
+            let source_manifest = Sha256Digest::parse(source_binding.manifest_sha256)
+                .map_err(SupervisorError::Invalid)?;
+            let target_manifest = Sha256Digest::parse(target_binding.manifest_sha256)
+                .map_err(SupervisorError::Invalid)?;
+            let target_agentd = Sha256Digest::parse(target_binding.agentd_sha256)
+                .map_err(SupervisorError::Invalid)?;
+            let target_matrixd = target_binding
+                .matrixd_sha256
+                .map(Sha256Digest::parse)
+                .transpose()
+                .map_err(SupervisorError::Invalid)?;
             if grant.transition == H7H89ProductionTransition::Rollback {
                 let previous = slot
                     .previous_release
@@ -512,6 +527,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                     agent_id,
                     current.identity(),
                     target.identity(),
+                    &source_manifest,
+                    &target_manifest,
+                    &target_agentd,
+                    target_matrixd.as_ref(),
                     slot.control_revision,
                     record.lifecycle.generation,
                     expected_authority_epoch,
