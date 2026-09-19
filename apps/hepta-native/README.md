@@ -7,14 +7,14 @@
 - session-incarnation-fenced native operation identity;
 - durable pending-operation journal and crash/restart reconciliation without effect replay;
 - final-payload digesting inside the Rust shell rather than trusting a caller-supplied digest;
-- Ed25519-signed, short-lived platform grants bound to session, operation, action and final payload;
+- Ed25519-signed, short-lived platform grants bound to session, operation, action and final payload, with the trusted-key revocation snapshot reloaded before every effect;
 - explicit local platform policy plus narrow open/reveal/clipboard/notification adapters;
 - OS keyring storage for opaque session references and loopback gateway bearer capabilities through `codex-keyring-store`;
 - signed endpoint manifests plus authenticated `keyring_bearer_v1` gateway requests; the product shell refuses the legacy unauthenticated gateway mode;
-- signed update manifest verification, package digest verification, staging, predecessor backup, separate updater activation and rollback;
+- signed stable-channel update verification, package and installed-predecessor digest fencing, staging, predecessor backup, separate updater activation and rollback;
 - eframe/egui native window with runtime, operation, update and accessibility views;
 - AccessKit, native DPI scaling, keyboard focus order and English/Chinese shell strings;
-- a Windows/macOS/Linux CI matrix that builds, lints, tests and packages **unsigned development artifacts**.
+- a Windows/macOS/Linux merge-candidate matrix plus an exact-head Linux gate that build, lint, test, package, restart packaged binaries in self-test mode and emit **unsigned qualification receipts**.
 
 ## Build
 
