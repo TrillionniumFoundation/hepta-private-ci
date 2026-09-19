@@ -58,8 +58,10 @@ use crate::tools::registry::RegisteredTool;
 use crate::tools::router::ToolRouter;
 use crate::tools::router::ToolSuggestCandidates;
 use crate::tools::router::ToolSuggestPresentation;
+use crate::tools::spec_plan::HEPTA_INFER_WORKER_CLIENT_NAME;
 use crate::tools::spec_plan::append_source_tools;
 use crate::tools::spec_plan::build_core_tool_registry;
+use crate::tools::spec_plan::hepta_model_only_tool_router;
 
 const MULTI_AGENT_V2_NAMESPACE: &str = "collaboration";
 
@@ -229,6 +231,25 @@ async fn probe_with(
 
 async fn probe(configure_turn: impl FnOnce(&mut TurnContext)) -> ToolPlanProbe {
     probe_with(configure_turn, ToolPlanInputs::default()).await
+}
+
+#[tokio::test]
+async fn hepta_native_inference_client_has_no_model_visible_or_registered_tools() {
+    let (_session, mut turn) = make_session_and_context().await;
+    turn.app_server_client_name = Some(HEPTA_INFER_WORKER_CLIENT_NAME.to_string());
+
+    let router =
+        hepta_model_only_tool_router(&turn).expect("Hepta inference client must be model-only");
+    let probe = ToolPlanProbe::from_router(router);
+    assert!(probe.visible_names.is_empty(), "{:?}", probe.visible_names);
+    assert!(
+        probe.registered_names.is_empty(),
+        "{:?}",
+        probe.registered_names
+    );
+
+    turn.app_server_client_name = Some("other-client".to_string());
+    assert!(hepta_model_only_tool_router(&turn).is_none());
 }
 
 fn set_feature(turn: &mut TurnContext, feature: Feature, enabled: bool) {
