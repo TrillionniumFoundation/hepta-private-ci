@@ -10,6 +10,7 @@
 pub mod effect_executor;
 
 mod model;
+mod occurrence_chain;
 mod scheduler;
 mod store;
 mod taskflow;
@@ -22,6 +23,8 @@ pub use model::AutomationAdmission;
 pub use model::AutomationDispatchUncertainty;
 pub use model::AutomationError;
 pub use model::AutomationLease;
+pub use model::AutomationOccurrence;
+pub use model::AutomationOccurrenceTerminalState;
 pub use model::AutomationQueueReceipt;
 pub use model::AutomationMissedRunPolicy;
 pub use model::AutomationOverlapPolicy;
@@ -33,6 +36,8 @@ pub use model::AutomationTaskId;
 pub use model::AutomationTaskState;
 pub use model::AutomationTick;
 pub use model::deterministic_occurrence_id;
+pub use occurrence_chain::AUTOMATION_OCCURRENCE_WORKFLOW_ID;
+pub use occurrence_chain::AUTOMATION_OCCURRENCE_WORKFLOW_VERSION;
 pub use scheduler::AutomationFuture;
 pub use scheduler::AutomationScheduler;
 pub use scheduler::AutomationTurnQueue;
