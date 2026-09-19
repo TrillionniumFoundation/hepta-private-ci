@@ -391,6 +391,123 @@ impl AutomationStore {
         .await
     }
 
+    /// Close an undispatched prepared/claimed attempt only after the owning
+    /// recovery path has supplied durable provider-absence evidence. This is
+    /// intentionally crate-private: ordinary callers cannot turn a missing
+    /// provider observation into a terminal step.
+    pub(crate) async fn cancel_taskflow_step_after_proven_absence(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+        fence: &TaskFlowFence,
+        intent_digest: &Sha256Digest,
+        payload_digest: &Sha256Digest,
+        command_id: &str,
+        proof_digest: &Sha256Digest,
+        now_ms: u64,
+    ) -> Result<TaskFlowStepCommandResult, TaskFlowError> {
+        validate_common(
+            run_id,
+            step_id,
+            attempt,
+            command_id,
+            intent_digest,
+            payload_digest,
+        )?;
+        validate_fence(self, fence)?;
+        validate_digest(proof_digest, "provider absence proof digest")?;
+        ensure_step_schema(self).await?;
+        let mut tx = self.begin_step_tx().await?;
+        let run = load_run(&mut tx, self, run_id).await?;
+        let definition = load_definition(&mut tx, self, &run).await?;
+        validate_step_node(&definition, step_id)?;
+        let events = load_step_events(&mut tx, self, run_id, step_id, attempt).await?;
+        let command_digest = operation_digest(
+            "cancel_proven_absent",
+            self.taskflow_owner_agent_id(),
+            run_id,
+            step_id,
+            attempt,
+            command_id,
+            intent_digest.as_str(),
+            payload_digest.as_str(),
+            fence,
+            Some(proof_digest.as_str()),
+            /*observation*/ None,
+            Some(TaskFlowReconcileOutcome::Cancelled),
+            now_ms,
+        )?;
+        if let Some(existing) = existing_command(&events, command_id, command_digest.as_str())? {
+            let receipt = reconstruct_step(
+                self.taskflow_owner_agent_id(),
+                run_id,
+                step_id,
+                attempt,
+                &events,
+            )?;
+            tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+            return Ok(TaskFlowStepCommandResult {
+                status: TaskFlowStepCommandStatus::AlreadyApplied,
+                receipt: receipt_with_seq(receipt, existing.event_seq),
+            });
+        }
+        let current = events
+            .last()
+            .ok_or_else(|| TaskFlowError::Conflict("step intent is not prepared".to_string()))?;
+        if current.intent_digest != intent_digest.as_str()
+            || current.payload_digest != payload_digest.as_str()
+        {
+            return Err(TaskFlowError::Conflict(
+                "step cancellation is bound to different intent bytes".to_string(),
+            ));
+        }
+        check_historical_fence(
+            &run,
+            &fence_from_event(self.taskflow_owner_agent_id(), current)?,
+            fence,
+        )?;
+        if !matches!(
+            current.event_kind,
+            TaskFlowStepState::Prepared | TaskFlowStepState::Claimed
+        ) {
+            return Err(invalid_step_transition(
+                "provider-absence cancellation requires prepared or claimed state",
+            ));
+        }
+        let event = append_step_event(
+            &mut tx,
+            self,
+            run_id,
+            step_id,
+            attempt,
+            TaskFlowStepState::Reconciled,
+            command_id,
+            command_digest.as_str(),
+            intent_digest.as_str(),
+            payload_digest.as_str(),
+            Some(proof_digest.as_str()),
+            /*observation*/ None,
+            Some(TaskFlowReconcileOutcome::Cancelled),
+            fence,
+            now_ms,
+        )
+        .await?;
+        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+        let mut all_events = events;
+        all_events.push(event);
+        Ok(TaskFlowStepCommandResult {
+            status: TaskFlowStepCommandStatus::Applied,
+            receipt: reconstruct_step(
+                self.taskflow_owner_agent_id(),
+                run_id,
+                step_id,
+                attempt,
+                &all_events,
+            )?,
+        })
+    }
+
     /// Read and verify one immutable step chain.  A historical terminal step
     /// may be read after lease expiry, but the supplied fence must still be
     /// exactly the fence that authored the chain.
