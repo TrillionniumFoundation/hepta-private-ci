@@ -70,7 +70,7 @@ CREATE TABLE matrix_dispatch_observations (
     evidence_digest TEXT NOT NULL DEFAULT '',
     observed_at_ms INTEGER NOT NULL CHECK (observed_at_ms >= 0),
     FOREIGN KEY (stable_txn_id) REFERENCES matrix_dispatch_ledger(stable_txn_id) ON DELETE RESTRICT,
-    UNIQUE (stable_txn_id, kind, event_id, evidence_digest)
+    UNIQUE (stable_txn_id, kind, event_id, evidence_digest, observed_at_ms)
 ) STRICT;
 
 CREATE INDEX matrix_dispatch_observations_by_txn
