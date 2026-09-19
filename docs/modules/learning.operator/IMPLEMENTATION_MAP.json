@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "2b209faf9b6c46746c07c4359be6b13e7a44ee89",
+    "tree": "de17ec74becb8c70390360b3ac8d1640de4d83e8"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
@@ -27,9 +27,53 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/lib.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/lib_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "build_targets",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "build_sensor_core",
+      "nativeSymbol": "build_sensor_core",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/reference.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/reference_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "build_sensor_core",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "evaluate_bellman_reference",
+      "nativeSymbol": "evaluate_bellman_reference",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/reference.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/reference_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "evaluate_bellman_reference",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "admit_operator_regularity",
+      "nativeSymbol": "admit_operator_regularity",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/reference.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/reference_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "admit_operator_regularity",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -39,9 +83,53 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/learned.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/learned_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "fit_tabular_operator",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "fit_tabular_operator_strict_v2",
+      "nativeSymbol": "fit_tabular_operator_strict_v2",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/learned_strict.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/learned_strict.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "fit_tabular_operator_strict_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "encode_tabular_payload_v1",
+      "nativeSymbol": "encode_tabular_payload_v1",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/loaded.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/loaded_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "encode_tabular_payload_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "loadedtabularoperatorv1_from_pinned_payload",
+      "nativeSymbol": "LoadedTabularOperatorV1::from_pinned_payload",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/loaded.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/loaded_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "loadedtabularoperatorv1_from_pinned_payload",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
@@ -51,9 +139,81 @@
       "sourcePath": "codex-rs/hepta-bellman-operator/src/world_model.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/world_model_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "fit_transition_model",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "encode_world_model_payload_v1",
+      "nativeSymbol": "encode_world_model_payload_v1",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/loaded_world_model.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/loaded_world_model_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "encode_world_model_payload_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "loadedworldmodelv1_from_pinned_payload",
+      "nativeSymbol": "LoadedWorldModelV1::from_pinned_payload",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/loaded_world_model.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/loaded_world_model_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "loadedworldmodelv1_from_pinned_payload",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "prepare",
+      "nativeSymbol": "prepare",
+      "sourcePath": "codex-rs/hepta-operator-acceptance/src/lib.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-operator-acceptance/src/lib_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prepare",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "verify_and_seal",
+      "nativeSymbol": "verify_and_seal",
+      "sourcePath": "codex-rs/hepta-operator-acceptance/src/lib.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-operator-acceptance/src/lib_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verify_and_seal",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "verify_receipt",
+      "nativeSymbol": "verify_receipt",
+      "sourcePath": "codex-rs/hepta-operator-acceptance/src/lib.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-operator-acceptance/src/lib_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "verify_receipt",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
@@ -74,9 +234,28 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "boundCargoPackagesMapped": true
   },
   "sourceRoot": [
     "codex-rs/hepta-bellman-operator"
-  ]
+  ],
+  "sourceBaseSemantics": "generation_provenance_only_freshness_is_source_fingerprint",
+  "sourceFingerprintPolicy": "git-tracked-content-sha256-v1",
+  "boundCargoPackages": [
+    "codex-rs/hepta-bellman-operator",
+    "codex-rs/hepta-operator-acceptance"
+  ],
+  "sourceFingerprints": {
+    "codex-rs/hepta-bellman-operator": {
+      "algorithm": "sha256",
+      "digest": "744e10cdc295dd3ef664e6bd2b2f03c4d0fc8ebdaf5ff1c4a8e59ca45ca8f4c1",
+      "trackedFiles": 16
+    },
+    "codex-rs/hepta-operator-acceptance": {
+      "algorithm": "sha256",
+      "digest": "db0932ea60f6d77faee7f826f294d0c840e4ac653379af76cde9917b4063d9ae",
+      "trackedFiles": 24
+    }
+  }
 }

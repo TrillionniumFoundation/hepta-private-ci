@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "2b209faf9b6c46746c07c4359be6b13e7a44ee89",
+    "tree": "de17ec74becb8c70390360b3ac8d1640de4d83e8"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "auth.authbus",
@@ -29,7 +29,9 @@
       "sourcePath": "codex-rs/hepta-authbus/src/signed.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-authbus/src/signed_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "authenticate",
       "mappingClass": "owner_native",
@@ -41,7 +43,9 @@
       "sourcePath": "codex-rs/hepta-evidence/src/authbus_store.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_store_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "admit_authbus_message",
       "mappingClass": "owner_native",
@@ -53,7 +57,9 @@
       "sourcePath": "codex-rs/hepta-evidence/src/authbus_outbox.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "enqueue_authbus_message",
       "mappingClass": "owner_native",
@@ -76,10 +82,39 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "boundCargoPackagesMapped": true
   },
   "sourceRoot": [
     "codex-rs/hepta-authbus",
     "codex-rs/hepta-authbus-p1-3-qualification"
-  ]
+  ],
+  "sourceBaseSemantics": "generation_provenance_only_freshness_is_source_fingerprint",
+  "sourceFingerprintPolicy": "git-tracked-content-sha256-v1",
+  "boundCargoPackages": [
+    "codex-rs/hepta-authbus",
+    "codex-rs/hepta-authbus-p1-3-qualification"
+  ],
+  "sourceFingerprints": {
+    "codex-rs/hepta-authbus": {
+      "algorithm": "sha256",
+      "digest": "315b23751731d6c518dcdfad9213629e096e1bc9deb06624a2b3a6682c83b520",
+      "trackedFiles": 7
+    },
+    "codex-rs/hepta-authbus-p1-3-qualification": {
+      "algorithm": "sha256",
+      "digest": "d6b0b57d773f426aaaa18d067b52559a2957d40815e161827aedf80b2033b84b",
+      "trackedFiles": 4
+    },
+    "codex-rs/hepta-evidence/src/authbus_outbox.rs": {
+      "algorithm": "sha256",
+      "digest": "06eb3cdc92e7ef65302eae14e8d27f6994d20ccaa0237eb5ea070b8c47b03253",
+      "trackedFiles": 1
+    },
+    "codex-rs/hepta-evidence/src/authbus_store.rs": {
+      "algorithm": "sha256",
+      "digest": "f4093af12436abb1f696989d87acbc74f8ad082cb547e5c4620cf9e648cf6d15",
+      "trackedFiles": 1
+    }
+  }
 }

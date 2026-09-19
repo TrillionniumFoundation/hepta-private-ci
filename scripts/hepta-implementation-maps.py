@@ -9,6 +9,7 @@ runtime, effect, acceptance, promotion, or release authority.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -24,8 +25,78 @@ def current_source_base() -> dict[str, str]:
     return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
 
 
+SOURCE_FINGERPRINT_POLICY = "git-tracked-content-sha256-v1"
+SOURCE_BASE_SEMANTICS = "generation_provenance_only_freshness_is_source_fingerprint"
+
+
 def load(rel: str):
     return json.loads((ROOT / rel).read_text(encoding="utf-8"))
+
+
+def cargo_packages_by_module() -> dict[str, list[str]]:
+    packages: dict[str, list[str]] = {}
+    for row in load("docs/modules/CARGO_BINDINGS.json")["bindings"]:
+        module = row.get("module")
+        package = row.get("packagePath")
+        if isinstance(module, str) and isinstance(package, str) and package:
+            packages.setdefault(module, []).append(package)
+    return {module: sorted(set(paths)) for module, paths in packages.items()}
+
+
+def source_fingerprint_paths(
+    module: dict, operations: list[dict], bound_packages: list[str]
+) -> list[str]:
+    candidates = [x["path"] for x in module["rootBindings"]] + list(bound_packages)
+    candidates.extend(
+        op["sourcePath"]
+        for op in operations
+        if isinstance(op.get("sourcePath"), str) and op["sourcePath"]
+    )
+    ordered = sorted(set(candidates), key=lambda value: (value.count("/"), value))
+    paths: list[str] = []
+    for candidate in ordered:
+        if any(
+            candidate == root or candidate.startswith(root.rstrip("/") + "/")
+            for root in paths
+        ):
+            continue
+        paths.append(candidate)
+    return paths
+
+
+def fingerprint_path(rel: str) -> dict[str, object]:
+    tracked: list[tuple[str, str, str]] = []
+    for record in git("ls-files", "-s", "-z", "--", rel).split("\0"):
+        if not record:
+            continue
+        metadata, path = record.split("\t", 1)
+        mode = metadata.split()[0]
+        blob = git("hash-object", "--", path)
+        tracked.append((path, mode, blob))
+    if not tracked:
+        raise ValueError(f"no tracked source files under {rel}")
+    digest = hashlib.sha256()
+    digest.update(b"hepta.module-source-fingerprint.v1\0")
+    for path, mode, blob in sorted(tracked):
+        raw_path = path.encode("utf-8")
+        digest.update(len(raw_path).to_bytes(4, "big"))
+        digest.update(raw_path)
+        digest.update(mode.encode("ascii"))
+        digest.update(blob.encode("ascii"))
+    return {
+        "algorithm": "sha256",
+        "digest": digest.hexdigest(),
+        "trackedFiles": len(tracked),
+    }
+
+
+def source_fingerprints(
+    module: dict, operations: list[dict], bound_packages: list[str]
+) -> dict[str, dict[str, object]]:
+    return {
+        path: fingerprint_path(path)
+        for path in source_fingerprint_paths(module, operations, bound_packages)
+    }
 
 
 def git(*args: str) -> str:
@@ -41,6 +112,21 @@ def lane_by_module():
         for lane in load("docs/readiness/READINESS.json")["implementationLanes"]
         for m in lane["modules"]
     }
+
+
+def tests_for_source(source: str | None) -> list[str]:
+    if not source:
+        return []
+    path = Path(source)
+    if path.suffix != ".rs":
+        return []
+    candidate = path.with_name(f"{path.stem}_tests.rs")
+    if (ROOT / candidate).is_file():
+        return [str(candidate)]
+    source_path = ROOT / path
+    if source_path.is_file() and "#[cfg(test)]" in source_path.read_text(encoding="utf-8"):
+        return [str(path)]
+    return []
 
 
 def parse_entrypoints(module: str):
@@ -62,17 +148,20 @@ def parse_entrypoints(module: str):
                 "sourcePath": source,
                 "state": "source_implemented_not_product_composed",
                 "authority": "none",
-                "tests": [],
+                "tests": tests_for_source(source),
                 "sourcePathExists": source_path.is_file(),
             }
         )
     return entries
 
 
-def map_for(module: dict, source_base: dict, lanes: dict):
+def map_for(
+    module: dict, source_base: dict, lanes: dict, cargo_packages: dict[str, list[str]]
+):
     mid = module["id"]
     roots = [x["path"] for x in module["rootBindings"]]
     operations = parse_entrypoints(mid)
+    bound_packages = cargo_packages.get(mid, [])
     if not operations:
         # Keep the map explicit even where the dossier has not named a native
         # entrypoint.  This is a handoff blocker, not a production claim.
@@ -91,6 +180,10 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "schema": "hepta.module-implementation-map.v3",
         "schemaVersion": 3,
         "sourceBase": source_base,
+        "sourceBaseSemantics": SOURCE_BASE_SEMANTICS,
+        "sourceFingerprintPolicy": SOURCE_FINGERPRINT_POLICY,
+        "boundCargoPackages": bound_packages,
+        "sourceFingerprints": source_fingerprints(module, operations, bound_packages),
         "laneId": lanes[mid],
         "module": mid,
         "owner": module["owner"],
@@ -116,6 +209,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
             "nativeSourceMappingComplete": all(
                 op["sourcePathExists"] and op["nativeSymbol"] for op in operations
             ),
+            "boundCargoPackagesMapped": True,
             "sourceRootPresent": all((ROOT / x).exists() for x in roots),
             "productionImplementation": False,
             "productExecutionProved": False,
@@ -126,7 +220,13 @@ def map_for(module: dict, source_base: dict, lanes: dict):
     }
 
 
-def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict:
+def migrate_map(
+    row: dict,
+    module: dict,
+    lanes: dict,
+    source_base: dict,
+    cargo_packages: dict[str, list[str]],
+) -> dict:
     """Upgrade legacy v1/v2 maps without discarding implementation evidence.
 
     v1 used ``sourceRoot`` and canonical operation fields directly; v2 wrapped
@@ -135,6 +235,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     operation vocabulary and top-level status/claim fields.
     """
     roots = [x["path"] for x in module["rootBindings"]]
+    bound_packages = cargo_packages.get(module["id"], [])
     declared = row.get("declaredRoots", row.get("sourceRoot", roots))
     if isinstance(declared, str):
         declared = [declared]
@@ -157,8 +258,9 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         else:
             op.setdefault("mappingClass", "owner_native")
         op.setdefault("delegatedCallees", [])
-        op.setdefault("tests", [])
         source = op.get("sourcePath")
+        if not op.get("tests"):
+            op["tests"] = tests_for_source(source)
         op["sourcePathExists"] = bool(source and (ROOT / source).is_file())
         operations.append(op)
     if not operations:
@@ -181,7 +283,11 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
-            "sourceBase": row.get("sourceBase") or source_base,
+            "sourceBase": source_base,
+            "sourceBaseSemantics": SOURCE_BASE_SEMANTICS,
+            "sourceFingerprintPolicy": SOURCE_FINGERPRINT_POLICY,
+            "boundCargoPackages": bound_packages,
+            "sourceFingerprints": source_fingerprints(module, operations, bound_packages),
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -209,6 +315,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             bool(op.get("sourcePathExists") and op.get("nativeSymbol"))
             for op in operations
         ),
+        "boundCargoPackagesMapped": True,
         "sourceRootPresent": migrated["sourceRootPresent"],
         "productionImplementation": migrated["productionImplementation"],
         "productExecutionProved": bool(boundary.get("productExecutionProved", False)),
@@ -242,6 +349,7 @@ def migrate():
     by_id = {m["id"]: m for m in modules}
     lanes = lane_by_module()
     source_base = current_source_base()
+    cargo_packages = cargo_packages_by_module()
     changed = []
     for path in sorted((ROOT / "docs/modules").glob("*/IMPLEMENTATION_MAP.json")):
         row = json.loads(path.read_text(encoding="utf-8"))
@@ -253,9 +361,9 @@ def migrate():
             and row.get("schemaVersion") == 3
         ):
             # Normalize existing v3 operations with compatibility aliases.
-            migrated = migrate_map(row, module, lanes, source_base)
+            migrated = migrate_map(row, module, lanes, source_base, cargo_packages)
         else:
-            migrated = migrate_map(row, module, lanes, source_base)
+            migrated = migrate_map(row, module, lanes, source_base, cargo_packages)
         path.write_text(
             json.dumps(migrated, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
         )
@@ -270,12 +378,13 @@ def generate():
         "commit": git("rev-parse", "HEAD"),
         "tree": git("rev-parse", "HEAD^{tree}"),
     }
+    cargo_packages = cargo_packages_by_module()
     written = []
     for module in modules:
         path = ROOT / f"docs/modules/{module['id']}/IMPLEMENTATION_MAP.json"
         if path.exists():
             continue
-        value = map_for(module, source_base, lanes)
+        value = map_for(module, source_base, lanes, cargo_packages)
         path.write_text(
             json.dumps(value, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
         )
@@ -287,7 +396,7 @@ def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     failures = []
-    source_bases = set()
+    cargo_packages = cargo_packages_by_module()
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -316,7 +425,29 @@ def verify():
         ):
             failures.append(f"{mid}: source base")
         else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
+            commit = source_base["commit"]
+            tree = source_base["tree"]
+            resolved = subprocess.run(
+                ["git", "rev-parse", f"{commit}^{{tree}}"],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            if resolved.returncode == 0 and resolved.stdout.strip() != tree:
+                failures.append(f"{mid}: source base commit/tree mismatch")
+            # sourceBase is immutable generation provenance, not the freshness
+            # predicate. It may become unreachable after squash/rebase plus
+            # source-branch deletion. When resolvable we verify commit/tree
+            # consistency; current source truth is enforced below by the
+            # content-addressed sourceFingerprints.
+        if row.get("sourceBaseSemantics") != SOURCE_BASE_SEMANTICS:
+            failures.append(f"{mid}: source base semantics")
+        if row.get("sourceFingerprintPolicy") != SOURCE_FINGERPRINT_POLICY:
+            failures.append(f"{mid}: source fingerprint policy")
+        expected_packages = cargo_packages.get(mid, [])
+        if row.get("boundCargoPackages") != expected_packages:
+            failures.append(f"{mid}: bound cargo packages")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -342,11 +473,20 @@ def verify():
             source = op.get("sourcePath")
             if source and not (ROOT / source).is_file():
                 failures.append(f"{mid}: missing source {source}")
+        try:
+            expected_fingerprints = source_fingerprints(module, ops, expected_packages)
+        except (OSError, ValueError, subprocess.CalledProcessError) as exc:
+            failures.append(f"{mid}: source fingerprint: {exc}")
+        else:
+            if row.get("sourceFingerprints") != expected_fingerprints:
+                failures.append(f"{mid}: stale source fingerprint")
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+        elif boundary.get("nativeSourceMappingComplete") is True and not boundary.get(
+            "boundCargoPackagesMapped"
+        ):
+            failures.append(f"{mid}: cargo package mapping claim")
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(

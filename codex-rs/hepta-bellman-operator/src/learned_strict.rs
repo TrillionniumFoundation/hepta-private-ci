@@ -16,6 +16,7 @@ use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorPlanV1;
 use crate::TabularOperatorPredictionV1;
 use crate::fit_tabular_operator;
+use crate::learned::validate_tabular_operator_artifact;
 
 pub fn fit_tabular_operator_strict_v2(
     plan: TabularOperatorPlanV1,
@@ -46,6 +47,7 @@ pub fn predict_tabular_operator_indexed_v2(
     }) {
         return Err(StrictLearnedOperatorError::NonCanonicalArtifact);
     }
+    validate_tabular_operator_artifact(artifact)?;
     let index = artifact
         .cells
         .binary_search_by(|cell| (&cell.sensor_id, &cell.action_id).cmp(&(sensor_id, action_id)))

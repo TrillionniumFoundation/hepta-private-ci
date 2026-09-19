@@ -98,3 +98,34 @@ fn world_model_rejects_duplicate_samples_and_invalid_outcomes() {
         Err(WorldModelError::InvalidOutcome)
     );
 }
+
+
+#[test]
+fn world_model_rejects_relabelled_duplicate_evidence() {
+    let first = sample("sample-1", "state-b", 10);
+    let mut relabelled = sample("sample-2", "state-c", 20);
+    relabelled.evidence_digest = first.evidence_digest;
+    assert_eq!(
+        fit_transition_model(
+            id("world-model-1"),
+            digest("dataset"),
+            vec![first, relabelled],
+        ),
+        Err(WorldModelError::DuplicateEvidence)
+    );
+}
+
+#[test]
+fn raw_world_model_prediction_revalidates_public_model_structure() {
+    let mut model = fit_transition_model(
+        id("world-model-1"),
+        digest("dataset"),
+        vec![sample("sample-1", "state-b", 10)],
+    )
+    .expect("valid model");
+    model.estimates[0].sample_count = 2;
+    assert_eq!(
+        predict_transition(&model, &id("state-a"), &id("action-a")),
+        Err(WorldModelError::InvalidModel)
+    );
+}

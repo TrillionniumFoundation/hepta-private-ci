@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "2b209faf9b6c46746c07c4359be6b13e7a44ee89",
+    "tree": "de17ec74becb8c70390360b3ac8d1640de4d83e8"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -27,7 +27,9 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/v2.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "retrieve_v2",
       "mappingClass": "owner_native",
@@ -39,7 +41,9 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "build_candidate_union",
       "mappingClass": "owner_native",
@@ -51,7 +55,9 @@
       "sourcePath": "codex-rs/hepta-memory-retrieval/src/generation_bound.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-retrieval/src/generation_bound_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "recall",
       "mappingClass": "owner_native",
@@ -74,9 +80,22 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "boundCargoPackagesMapped": true
   },
   "sourceRoot": [
     "codex-rs/hepta-memory-retrieval"
-  ]
+  ],
+  "sourceBaseSemantics": "generation_provenance_only_freshness_is_source_fingerprint",
+  "sourceFingerprintPolicy": "git-tracked-content-sha256-v1",
+  "boundCargoPackages": [
+    "codex-rs/hepta-memory-retrieval"
+  ],
+  "sourceFingerprints": {
+    "codex-rs/hepta-memory-retrieval": {
+      "algorithm": "sha256",
+      "digest": "e8ffa0a5e98cfa9ae8f32f611f27594cc98f426a060799937627d7943595d36b",
+      "trackedFiles": 8
+    }
+  }
 }

@@ -215,11 +215,12 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "boundCargoPackagesMapped": true
   },
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "2b209faf9b6c46746c07c4359be6b13e7a44ee89",
+    "tree": "de17ec74becb8c70390360b3ac8d1640de4d83e8"
   },
   "repositoryControlledGaps": [
     "Bind every operation to an authenticated consumer callsite and owner store.",
@@ -229,5 +230,17 @@
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
-  ]
+  ],
+  "sourceBaseSemantics": "generation_provenance_only_freshness_is_source_fingerprint",
+  "sourceFingerprintPolicy": "git-tracked-content-sha256-v1",
+  "boundCargoPackages": [
+    "codex-rs/hepta-objective"
+  ],
+  "sourceFingerprints": {
+    "codex-rs/hepta-objective": {
+      "algorithm": "sha256",
+      "digest": "25f7c2ac8165709a5fb9a79d73248c8fc7db2b49d6173b60ec73ba0d905b284e",
+      "trackedFiles": 21
+    }
+  }
 }

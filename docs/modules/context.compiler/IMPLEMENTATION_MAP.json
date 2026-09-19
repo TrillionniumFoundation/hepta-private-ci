@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "2b209faf9b6c46746c07c4359be6b13e7a44ee89",
+    "tree": "de17ec74becb8c70390360b3ac8d1640de4d83e8"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "context.compiler",
@@ -27,7 +27,9 @@
       "sourcePath": "codex-rs/hepta-context-compiler/src/lib.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/lib_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "compile",
       "mappingClass": "owner_native",
@@ -39,7 +41,9 @@
       "sourcePath": "codex-rs/hepta-context-compiler/src/requirements.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/requirements_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "compile_with_requirements",
       "mappingClass": "owner_native",
@@ -51,7 +55,9 @@
       "sourcePath": "codex-rs/hepta-context-compiler/src/candidate_bound.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "compile_candidate_bound",
       "mappingClass": "owner_native",
@@ -74,9 +80,22 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "boundCargoPackagesMapped": true
   },
   "sourceRoot": [
     "codex-rs/hepta-context-compiler"
-  ]
+  ],
+  "sourceBaseSemantics": "generation_provenance_only_freshness_is_source_fingerprint",
+  "sourceFingerprintPolicy": "git-tracked-content-sha256-v1",
+  "boundCargoPackages": [
+    "codex-rs/hepta-context-compiler"
+  ],
+  "sourceFingerprints": {
+    "codex-rs/hepta-context-compiler": {
+      "algorithm": "sha256",
+      "digest": "d78cf8bd75d2670c3eaed781027405407a4c5e817a59ad98bd49a2979aab3ed8",
+      "trackedFiles": 11
+    }
+  }
 }

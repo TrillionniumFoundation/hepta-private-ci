@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "2b209faf9b6c46746c07c4359be6b13e7a44ee89",
+    "tree": "de17ec74becb8c70390360b3ac8d1640de4d83e8"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -27,7 +27,9 @@
       "sourcePath": "codex-rs/hepta-cognitive-read/src/v2.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-cognitive-read/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "read_v2",
       "mappingClass": "owner_native",
@@ -39,7 +41,9 @@
       "sourcePath": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
       "state": "source_implemented_not_product_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "durablecognitivesnapshot",
       "mappingClass": "owner_native",
@@ -62,9 +66,27 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "boundCargoPackagesMapped": true
   },
   "sourceRoot": [
     "codex-rs/hepta-cognitive-read"
-  ]
+  ],
+  "sourceBaseSemantics": "generation_provenance_only_freshness_is_source_fingerprint",
+  "sourceFingerprintPolicy": "git-tracked-content-sha256-v1",
+  "boundCargoPackages": [
+    "codex-rs/hepta-cognitive-read"
+  ],
+  "sourceFingerprints": {
+    "codex-rs/hepta-cognitive-read": {
+      "algorithm": "sha256",
+      "digest": "556af53506642a1a453505f896991c70c350a67d73c7044f5c33d09124269ab4",
+      "trackedFiles": 9
+    },
+    "codex-rs/hepta-memory/src/lane_c_snapshot.rs": {
+      "algorithm": "sha256",
+      "digest": "b161b2bd25ab02031d9a73831132e3aa8c04048857b429ba86eb63c41b56be55",
+      "trackedFiles": 1
+    }
+  }
 }
