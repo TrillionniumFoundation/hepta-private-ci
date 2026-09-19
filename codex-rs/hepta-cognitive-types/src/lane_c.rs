@@ -28,6 +28,7 @@ const GRAPH_GENERATION_DOMAIN: &[u8] = b"hepta.knowledge-graph.generation.v1";
 const PROJECTION_RECEIPT_DOMAIN: &[u8] = b"hepta.knowledge-graph.projection-receipt.v1";
 const COMPACT_CHECKPOINT_DOMAIN: &[u8] = b"hepta.compact.checkpoint.v1";
 const COMPACTION_PROOF_DOMAIN: &[u8] = b"hepta.compact.proof.v1";
+const COMPACTION_PROOF_V2_DOMAIN: &[u8] = b"hepta.compact.proof.v2";
 const PROMPT_REGISTRY_SNAPSHOT_DOMAIN: &[u8] = b"hepta.prompt-registry.snapshot-receipt.v1";
 const CONTEXT_DELIVERY_DOMAIN: &[u8] = b"hepta.context.delivery-observation.v1";
 
@@ -579,6 +580,7 @@ pub struct CompactCheckpointV1 {
     pub checkpoint_id: StableId,
     pub generation: Generation,
     pub source_snapshot: CognitiveSnapshotKeyV1,
+    pub source_memory_snapshot_digest: Digest32,
     pub support_manifest_digest: Digest32,
     pub algorithm_digest: Digest32,
     pub payload_digest: Digest32,
@@ -594,6 +596,10 @@ impl CompactCheckpointV1 {
     pub fn validate(&self) -> Result<(), LaneCContractError> {
         self.source_snapshot.validate()?;
         for (name, digest) in [
+            (
+                "compact_source_memory_snapshot",
+                self.source_memory_snapshot_digest,
+            ),
             ("compact_support_manifest", self.support_manifest_digest),
             ("compact_algorithm", self.algorithm_digest),
             ("compact_payload", self.payload_digest),
@@ -627,6 +633,7 @@ impl CompactCheckpointV1 {
         push_id(&mut bytes, &self.checkpoint_id);
         push_generation(&mut bytes, self.generation);
         push_digest(&mut bytes, self.source_snapshot.vector_digest);
+        push_digest(&mut bytes, self.source_memory_snapshot_digest);
         push_digest(&mut bytes, self.support_manifest_digest);
         push_digest(&mut bytes, self.algorithm_digest);
         push_digest(&mut bytes, self.payload_digest);
@@ -686,6 +693,94 @@ impl CompactionProofV1 {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(COMPACTION_PROOF_DOMAIN);
         push_digest(&mut bytes, self.checkpoint_digest);
+        push_digest(&mut bytes, self.retained_query_suite_digest);
+        push_digest(&mut bytes, self.reconstruction_obligation_digest);
+        push_digest(&mut bytes, self.contradiction_holdout_digest);
+        push_u64(&mut bytes, self.deletion_cutoff);
+        push_u64(&mut bytes, self.source_count);
+        push_u64(&mut bytes, self.retained_count);
+        Digest32::of_bytes(&bytes)
+    }
+}
+
+/// Audit-complete compaction qualification proof.
+///
+/// V2 retains the V1 holdout/reconstruction obligations and additionally binds
+/// the exact candidate, evaluator identity/implementation, evaluation artifact
+/// and the externally verified attestation/signature receipts.  The signature
+/// bytes and keys remain owned by the evaluator/evidence boundary; this
+/// authority-free contract binds their immutable digests only.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct CompactionProofV2 {
+    pub checkpoint_digest: Digest32,
+    pub candidate_digest: Digest32,
+    pub evaluator_id: StableId,
+    pub evaluator_implementation_digest: Digest32,
+    pub evaluation_artifact_digest: Digest32,
+    pub attestation_digest: Digest32,
+    pub attestation_signature_digest: Digest32,
+    pub signature_verification_receipt_digest: Digest32,
+    pub retained_query_suite_digest: Digest32,
+    pub reconstruction_obligation_digest: Digest32,
+    pub contradiction_holdout_digest: Digest32,
+    pub deletion_cutoff: u64,
+    pub source_count: u64,
+    pub retained_count: u64,
+    pub proof_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
+impl CompactionProofV2 {
+    pub fn validate(&self) -> Result<(), LaneCContractError> {
+        for (name, digest) in [
+            ("proof_checkpoint", self.checkpoint_digest),
+            ("proof_candidate", self.candidate_digest),
+            (
+                "proof_evaluator_implementation",
+                self.evaluator_implementation_digest,
+            ),
+            ("proof_evaluation_artifact", self.evaluation_artifact_digest),
+            ("proof_attestation", self.attestation_digest),
+            (
+                "proof_attestation_signature",
+                self.attestation_signature_digest,
+            ),
+            (
+                "proof_signature_verification_receipt",
+                self.signature_verification_receipt_digest,
+            ),
+            ("retained_query_suite", self.retained_query_suite_digest),
+            (
+                "reconstruction_obligation",
+                self.reconstruction_obligation_digest,
+            ),
+            ("contradiction_holdout", self.contradiction_holdout_digest),
+        ] {
+            ensure_digest(name, digest)?;
+        }
+        if self.retained_count > self.source_count {
+            return Err(LaneCContractError::InvalidState(
+                "compaction_retained_count",
+            ));
+        }
+        if self.proof_digest != self.compute_proof_digest() {
+            return Err(LaneCContractError::DigestMismatch("compaction_proof_v2"));
+        }
+        ensure_deny_all(self.authority)
+    }
+
+    #[must_use]
+    pub fn compute_proof_digest(&self) -> Digest32 {
+        let mut bytes = Vec::new();
+        bytes.extend_from_slice(COMPACTION_PROOF_V2_DOMAIN);
+        push_digest(&mut bytes, self.checkpoint_digest);
+        push_digest(&mut bytes, self.candidate_digest);
+        push_id(&mut bytes, &self.evaluator_id);
+        push_digest(&mut bytes, self.evaluator_implementation_digest);
+        push_digest(&mut bytes, self.evaluation_artifact_digest);
+        push_digest(&mut bytes, self.attestation_digest);
+        push_digest(&mut bytes, self.attestation_signature_digest);
+        push_digest(&mut bytes, self.signature_verification_receipt_digest);
         push_digest(&mut bytes, self.retained_query_suite_digest);
         push_digest(&mut bytes, self.reconstruction_obligation_digest);
         push_digest(&mut bytes, self.contradiction_holdout_digest);

@@ -43,29 +43,117 @@ def lane_by_module():
     }
 
 
+def discover_tests_for_source(source: str | None) -> list[str]:
+    """Return stable Rust test identities colocated with one native source."""
+    if not source:
+        return []
+    source_path = ROOT / source
+    if not source_path.is_file():
+        return []
+    candidates = {source_path}
+    if source_path.suffix == ".rs":
+        candidates.update(source_path.parent.glob("*tests.rs"))
+        candidates.update(source_path.parent.glob("*_tests.rs"))
+    pattern = re.compile(
+        r"#\[(?:tokio::)?test(?:\([^\]]*\))?\]\s*(?:async\s+)?fn\s+([A-Za-z0-9_]+)"
+    )
+    tests: list[str] = []
+    for candidate in sorted(candidates):
+        text = candidate.read_text(encoding="utf-8")
+        relative = candidate.relative_to(ROOT).as_posix()
+        tests.extend(f"{relative}::{name}" for name in pattern.findall(text))
+    return sorted(set(tests))
+
+
+def discover_companion_tests_for_source(source: str | None) -> list[str]:
+    """Return tests from the source file and its exact sibling test module.
+
+    Product callers and persistence owners often live in large source
+    directories; scanning every sibling test file would incorrectly attribute
+    unrelated module evidence.  Exact companions keep the evidence bounded.
+    """
+    if not source:
+        return []
+    source_path = ROOT / source
+    if not source_path.is_file():
+        return []
+    candidates = {source_path}
+    if source_path.suffix == ".rs":
+        companion = source_path.with_name(source_path.stem + "_tests.rs")
+        if companion.is_file():
+            candidates.add(companion)
+    pattern = re.compile(
+        r"#\[(?:tokio::)?test(?:\([^\]]*\))?\]\s*(?:async\s+)?fn\s+([A-Za-z0-9_]+)"
+    )
+    tests: list[str] = []
+    for candidate in sorted(candidates):
+        text = candidate.read_text(encoding="utf-8")
+        relative = candidate.relative_to(ROOT).as_posix()
+        tests.extend(f"{relative}::{name}" for name in pattern.findall(text))
+    return sorted(set(tests))
+
+
+def refresh_integration_evidence(row: dict) -> dict:
+    """Discover tests for explicitly composed product callers and store owners."""
+    refreshed = dict(row)
+    tests: set[str] = set()
+    for key in ("productCallers", "persistenceOwner"):
+        for binding in row.get(key, []):
+            source = binding.split("::", 1)[0]
+            tests.update(discover_companion_tests_for_source(source))
+    refreshed["integrationTests"] = sorted(tests)
+    return refreshed
+
+
+def refresh_operation_evidence(row: dict) -> dict:
+    """Refresh source existence and test inventory without widening claims."""
+    refreshed = dict(row)
+    operations = []
+    for original in row.get("operations", []):
+        op = dict(original)
+        source = op.get("sourcePath")
+        op["sourcePathExists"] = bool(source and (ROOT / source).is_file())
+        op["tests"] = discover_tests_for_source(source)
+        operations.append(op)
+    refreshed["operations"] = operations
+    return refreshed
+
+
 def parse_entrypoints(module: str):
     path = ROOT / f"qualification/module-execution-dossiers/detail/{module}.md"
     text = path.read_text(encoding="utf-8") if path.exists() else ""
-    match = re.search(r"\*\*Implemented entrypoints:\*\*\s*(.*)", text)
+    match = re.search(r"\*\*(?:Implemented|Canonical engine) entrypoints:\*\*\s*(.*)", text)
     if not match:
         return []
     entries = []
-    for name, source in re.findall(r"`([^`]+)`\s+in\s+\[([^]]+)\]", match.group(1)):
-        source = source.split(")", 1)[0]
+    # One source clause may name several entrypoints, for example:
+    # `build_qualified_candidate` and `prove_compaction` in [qualified.rs](...).
+    # Parse the source once, then bind every backticked symbol before that
+    # source. Splitting on semicolons preserves the older one-symbol-per-source
+    # dossier spelling as well.
+    for clause in match.group(1).split(";"):
+        source_match = re.search(r"\s+in\s+\[([^]]+)\]", clause)
+        if not source_match:
+            continue
+        source = source_match.group(1)
         if source.startswith("../../../"):
             source = source[9:]
         source_path = ROOT / source
-        entries.append(
-            {
-                "operation": re.sub(r"[^a-zA-Z0-9]+", "_", name).strip("_").lower(),
-                "nativeSymbol": name,
-                "sourcePath": source,
-                "state": "source_implemented_not_product_composed",
-                "authority": "none",
-                "tests": [],
-                "sourcePathExists": source_path.is_file(),
-            }
-        )
+        names = re.findall(r"`([^`]+)`", clause[: source_match.start()])
+        for name in names:
+            entries.append(
+                {
+                    "operation": re.sub(r"[^a-zA-Z0-9]+", "_", name)
+                    .strip("_")
+                    .lower(),
+                    "nativeSymbol": name,
+                    "sourcePath": source,
+                    "state": "source_implemented_not_product_composed",
+                    "authority": "none",
+                    "tests": discover_tests_for_source(source),
+                    "sourcePathExists": source_path.is_file(),
+                }
+            )
     return entries
 
 
@@ -283,6 +371,68 @@ def generate():
     print(json.dumps({"generated": len(written), "maps": written}, ensure_ascii=False))
 
 
+def evidence(output: str):
+    """Emit an exact-HEAD, non-authoritative implementation/test snapshot.
+
+    Tracked implementation maps are documentation artifacts and therefore
+    cannot contain the SHA of the commit that contains themselves. Exact-head
+    identity is emitted at CI runtime instead, avoiding that self-reference
+    while retaining one reproducible map/test artifact per candidate.
+    """
+    modules = load("docs/modules/MODULES.json")["modules"]
+    lanes = lane_by_module()
+    source_base = current_source_base()
+    maps = []
+    test_inventory: set[str] = set()
+    for module in modules:
+        path = ROOT / f"docs/modules/{module['id']}/IMPLEMENTATION_MAP.json"
+        if path.is_file():
+            row = json.loads(path.read_text(encoding="utf-8"))
+            value = migrate_map(row, module, lanes, source_base)
+            value["sourceBase"] = source_base
+        else:
+            value = map_for(module, source_base, lanes)
+        value = refresh_operation_evidence(value)
+        value = refresh_integration_evidence(value)
+        value["sourceBase"] = source_base
+        for operation in value["operations"]:
+            test_inventory.update(operation.get("tests", []))
+        test_inventory.update(value.get("integrationTests", []))
+        maps.append(value)
+
+    payload = {
+        "schema": "hepta.exact-head-implementation-evidence.v1",
+        "schemaVersion": 1,
+        "sourceBase": source_base,
+        "modules": maps,
+        "testInventory": sorted(test_inventory),
+        "productionImplementationProved": False,
+        "independentAcceptanceProved": False,
+        "releaseProved": False,
+    }
+    destination = ROOT / output
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(
+        json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    print(
+        json.dumps(
+            {
+                "status": "PASS_HEPTA_EXACT_HEAD_IMPLEMENTATION_EVIDENCE",
+                "output": (
+                    str(destination.relative_to(ROOT))
+                    if destination.is_relative_to(ROOT)
+                    else str(destination)
+                ),
+                "sourceBase": source_base,
+                "modules": len(maps),
+                "tests": len(test_inventory),
+            },
+            sort_keys=True,
+        )
+    )
+
+
 def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
@@ -342,6 +492,8 @@ def verify():
             source = op.get("sourcePath")
             if source and not (ROOT / source).is_file():
                 failures.append(f"{mid}: missing source {source}")
+            if not isinstance(op.get("tests", []), list):
+                failures.append(f"{mid}: operation tests must be a list")
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
@@ -364,9 +516,17 @@ def verify():
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("command", choices=["generate", "migrate", "verify"])
+    parser.add_argument("command", choices=["generate", "migrate", "verify", "evidence"])
+    parser.add_argument(
+        "--output",
+        default=".hepta-evidence/implementation-maps-exact-head.json",
+        help="output path for the exact-head evidence artifact",
+    )
     args = parser.parse_args()
-    {"generate": generate, "migrate": migrate, "verify": verify}[args.command]()
+    if args.command == "evidence":
+        evidence(args.output)
+    else:
+        {"generate": generate, "migrate": migrate, "verify": verify}[args.command]()
 
 
 if __name__ == "__main__":

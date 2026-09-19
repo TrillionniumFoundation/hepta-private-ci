@@ -12,6 +12,16 @@ on:
       - "scripts/test_hepta_module_registry.py"
       - ".github/workflows/hepta-development-docs.yml"
       - ".github/actions/hepta-synthetic-merge/**"
+      - "codex-rs/hepta-compact-engine/**"
+      - "codex-rs/hepta-cognitive-types/src/lane_c.rs"
+      - "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      - "codex-rs/hepta-memory/src/qualified_compact_store.rs"
+      - "codex-rs/hepta-memory/src/qualified_compact_store_tests.rs"
+      - "codex-rs/hepta-memory/src/production_writer.rs"
+      - "codex-rs/hepta-memory/migrations/0011_qualified_compact_checkpoints.sql"
+      - "codex-rs/hepta-agentd/src/production_writer_host.rs"
+      - "codex-rs/hepta-agentd/src/production_writer_host_tests.rs"
+      - "CALLERS.toml"
   push:
     branches:
       - main
@@ -22,6 +32,16 @@ on:
       - "qualification/module-execution-dossiers/**"
       - ".github/workflows/hepta-development-docs.yml"
       - ".github/actions/hepta-synthetic-merge/**"
+      - "CALLERS.toml"
+      - "codex-rs/hepta-agentd/src/production_writer_host_tests.rs"
+      - "codex-rs/hepta-agentd/src/production_writer_host.rs"
+      - "codex-rs/hepta-memory/migrations/0011_qualified_compact_checkpoints.sql"
+      - "codex-rs/hepta-memory/src/production_writer.rs"
+      - "codex-rs/hepta-memory/src/qualified_compact_store_tests.rs"
+      - "codex-rs/hepta-memory/src/qualified_compact_store.rs"
+      - "codex-rs/hepta-cognitive-types/src/lane_c_tests.rs"
+      - "codex-rs/hepta-cognitive-types/src/lane_c.rs"
+      - "codex-rs/hepta-compact-engine/**"
   workflow_dispatch:
 
 permissions:
@@ -60,6 +80,7 @@ jobs:
           python3 scripts/hepta-docs.py generate-status
           git diff --exit-code -- docs/STATUS.md
           python3 scripts/hepta-module-docs.py self-test
+          python3 scripts/hepta-implementation-maps.py evidence --output .hepta-evidence/implementation-maps-source-head.json
           python3 scripts/hepta-algorithm-docs.py self-test
           python3 scripts/hepta-algorithm-docs.py verify-sources
           python3 scripts/hepta-algorithm-docs.py generate-status --check
@@ -120,6 +141,7 @@ jobs:
           # revalidates the merged tree and receipt identity, so every PR does
           # not pay for the same document suite twice.
           python3 scripts/hepta-docs.py verify
+          python3 scripts/hepta-implementation-maps.py evidence --output .hepta-evidence/implementation-maps-merge-candidate.json
           python3 scripts/hepta-docs.py receipt --kind merge-candidate --expected-sha "$EXPECTED_SHA" --output .hepta-evidence/merge-candidate.json
           python3 scripts/hepta-docs.py receipt-verify --input .hepta-evidence/merge-candidate.json --kind merge-candidate --expected-sha "$EXPECTED_SHA"
           git diff --check
