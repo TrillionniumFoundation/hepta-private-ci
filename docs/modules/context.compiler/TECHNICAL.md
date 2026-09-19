@@ -124,6 +124,53 @@ Every producer validates output before publication and binds semantic fields int
 
 Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
+
+## Normative verified V2 execution path
+
+The normative security-sensitive path is now:
+
+`compile_verified_v2 -> record_verified_serialization_v2 -> build_revalidated_attachment_v2 -> observe_verified_delivery_v2`.
+
+The older `compile_v2`, `record_serialization`, `build_attachment` and `observe_delivery`
+functions remain compatibility surfaces only. They preserve existing callers and test fixtures but
+must not be used to claim admitted-input freshness, exact final-payload token accounting, physical
+payload realization, attachment-time revocation safety or provider delivery proof.
+
+### Admission and freshness
+
+`compile_verified_v2` requires an injected `ContextAdmissionVerifierV2`. Every candidate,
+including untrusted evidence, must resolve to current typed `VerifiedAdmissionEvidenceV2`
+bound to exact item id, role, content digest, source digest, generation vector, authoritative
+admission receipt, owner snapshot, revocation frontier and expiry. A caller-supplied digest alone
+cannot establish admission. Trusted instruction/schema candidates additionally require the legacy
+compatibility digest to equal the authoritative receipt while that field exists.
+
+`build_revalidated_attachment_v2` invokes the same owner verifier again immediately before
+attachment. Revoked, expired, unavailable or subject-drifted evidence fails closed; a successful
+compile is never treated as permission to attach later.
+
+### Exact serialization and tokenization
+
+`record_verified_serialization_v2` consumes the actual serialized payload bytes, a bounded segment
+manifest and an injected `ExactContextTokenizerV2`. Every selected item must occur exactly once in
+the manifest, each segment's bytes must hash to the selected candidate content digest, and the exact
+final payload is tokenized after framing. The final token count—not the sum of per-item estimates—
+must fit both the compilation budget and exact model profile.
+
+### Provider/transport delivery evidence
+
+`observe_verified_delivery_v2` accepts no caller boolean/digest tuple. It requires an injected
+`ProviderDeliveryEvidenceVerifierV2` that resolves a real provider/transport record with provider
+request identity and transport receipt digest. Delivered/rejected require terminal evidence;
+nonterminal evidence is indeterminate. Payload/model drift fails closed.
+
+### Mandatory-group provenance
+
+The verified compilation identity includes a canonical digest of mandatory group ids, member ids and
+reason digests in addition to the underlying V2 compilation receipt and selected admission manifest.
+Changing mandatory-group policy therefore changes the verified compilation identity even when the
+selected item set happens to remain identical.
+
 ## 6. Data authority, persistence and migrations
 
 Owned authoritative or rebuildable domains:
@@ -184,6 +231,8 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-context-compiler/src/verified_tests.rs](../../../codex-rs/hepta-context-compiler/src/verified_tests.rs); covers typed admission, attach-time revocation, final-byte tokenization, exact serialization realization, provider evidence and mandatory-group provenance.
+- [codex-rs/hepta-context-compiler/src/v2_tests.rs](../../../codex-rs/hepta-context-compiler/src/v2_tests.rs); legacy V2 compatibility tests.
 - [codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs](../../../codex-rs/hepta-context-compiler/src/candidate_bound_tests.rs); named case: `omitted_content_is_bound_without_changing_legacy_compilation`.
 - [codex-rs/hepta-context-compiler/src/lib_tests.rs](../../../codex-rs/hepta-context-compiler/src/lib_tests.rs); named case: `evidence_never_becomes_instruction`.
 
