@@ -32,6 +32,7 @@ _AUDIT_STATE_TABLES = (
     "path_leases",
     "assignment_generations",
     "assignment_generation_frontiers",
+    "distributed_fence_frontiers",
     "integration_decisions",
     "integration_decision_bindings",
     "integration_decision_seals",
@@ -354,6 +355,201 @@ def verify_distributed_fence(
     )
 
 
+def admit_distributed_fence(
+    lease: LeaseReceipt,
+    envelope: WorkEnvelope,
+    receipt: DistributedFenceReceipt,
+    revocation_frontier: DistributedRevocationFrontierReceipt,
+    trust_store: SignatureTrustStore,
+    *,
+    store: EngineeringStore,
+    now_ns: int | None = None,
+) -> str:
+    """Persist the highest accepted external fence for one cluster/holder.
+
+    The external lease authority remains the consensus/leader source. This local
+    high-water mark only prevents a process restart from making an older, still
+    cryptographically valid grant acceptable again.
+    """
+    now = store._now(now_ns)
+    with store._transaction():
+        digest = verify_distributed_fence(
+            lease,
+            envelope,
+            receipt,
+            revocation_frontier,
+            trust_store,
+            store=store,
+            now_ns=now,
+        )
+        row = store.connection.execute(
+            "SELECT * FROM distributed_fence_frontiers "
+            "WHERE cluster_id=? AND holder=?",
+            (receipt.cluster_id, receipt.holder),
+        ).fetchone()
+        incoming = (receipt.leader_term, receipt.revocation_frontier_sequence)
+        if row is not None:
+            current = (
+                int(row["leader_term"]),
+                int(row["revocation_frontier_sequence"]),
+            )
+            if incoming < current:
+                raise EngineeringError("distributed_fence_frontier_stale")
+            if (
+                receipt.leader_id != str(row["leader_id"])
+                and receipt.leader_term <= int(row["leader_term"])
+            ):
+                raise EngineeringError("distributed_fence_leader_conflict")
+            if incoming == current:
+                if (
+                    digest != str(row["fence_receipt_digest"])
+                    or receipt.revocation_frontier_digest
+                    != str(row["revocation_frontier_digest"])
+                ):
+                    raise EngineeringError("distributed_fence_frontier_conflict")
+                return digest
+
+        store.connection.execute(
+            "INSERT INTO distributed_fence_frontiers("
+            "cluster_id,holder,leader_id,leader_term,revocation_frontier_sequence,"
+            "revocation_frontier_digest,fence_receipt_digest,lease_id,"
+            "authority_epoch,fencing_token,lease_revision,source_commit,source_tree,"
+            "observed_unix_ns,expires_unix_ns,updated_unix_ns"
+            ") VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?) "
+            "ON CONFLICT(cluster_id,holder) DO UPDATE SET "
+            "leader_id=excluded.leader_id,"
+            "leader_term=excluded.leader_term,"
+            "revocation_frontier_sequence=excluded.revocation_frontier_sequence,"
+            "revocation_frontier_digest=excluded.revocation_frontier_digest,"
+            "fence_receipt_digest=excluded.fence_receipt_digest,"
+            "lease_id=excluded.lease_id,"
+            "authority_epoch=excluded.authority_epoch,"
+            "fencing_token=excluded.fencing_token,"
+            "lease_revision=excluded.lease_revision,"
+            "source_commit=excluded.source_commit,"
+            "source_tree=excluded.source_tree,"
+            "observed_unix_ns=excluded.observed_unix_ns,"
+            "expires_unix_ns=excluded.expires_unix_ns,"
+            "updated_unix_ns=excluded.updated_unix_ns",
+            (
+                receipt.cluster_id,
+                receipt.holder,
+                receipt.leader_id,
+                receipt.leader_term,
+                receipt.revocation_frontier_sequence,
+                receipt.revocation_frontier_digest,
+                digest,
+                receipt.lease_id,
+                receipt.authority_epoch,
+                receipt.fencing_token,
+                receipt.lease_revision,
+                receipt.source_commit,
+                receipt.source_tree,
+                receipt.observed_unix_ns,
+                receipt.expires_unix_ns,
+                now,
+            ),
+        )
+        store._append_audit(
+            "distributed_fence_admitted",
+            {
+                "clusterId": receipt.cluster_id,
+                "holder": receipt.holder,
+                "leaderId": receipt.leader_id,
+                "leaderTerm": receipt.leader_term,
+                "revocationFrontierSequence": receipt.revocation_frontier_sequence,
+                "revocationFrontierDigest": receipt.revocation_frontier_digest,
+                "fenceReceiptDigest": digest,
+                "leaseId": receipt.lease_id,
+                "fencingToken": receipt.fencing_token,
+            },
+            now,
+        )
+    return digest
+
+
+def verify_persisted_distributed_fence(
+    lease: LeaseReceipt,
+    envelope: WorkEnvelope,
+    receipt: DistributedFenceReceipt,
+    revocation_frontier: DistributedRevocationFrontierReceipt,
+    trust_store: SignatureTrustStore,
+    *,
+    store: EngineeringStore,
+    now_ns: int | None = None,
+) -> str:
+    """Require the presented fence to equal the current persisted high-water mark."""
+    now = store._now(now_ns)
+    with store._transaction():
+        digest = verify_distributed_fence(
+            lease,
+            envelope,
+            receipt,
+            revocation_frontier,
+            trust_store,
+            store=store,
+            now_ns=now,
+        )
+        row = store.connection.execute(
+            "SELECT * FROM distributed_fence_frontiers "
+            "WHERE cluster_id=? AND holder=?",
+            (receipt.cluster_id, receipt.holder),
+        ).fetchone()
+        if row is None:
+            raise EngineeringError("distributed_fence_not_admitted")
+        if (
+            str(row["leader_id"]) != receipt.leader_id
+            or int(row["leader_term"]) != receipt.leader_term
+            or int(row["revocation_frontier_sequence"])
+            != receipt.revocation_frontier_sequence
+            or str(row["revocation_frontier_digest"])
+            != receipt.revocation_frontier_digest
+            or str(row["fence_receipt_digest"]) != digest
+            or str(row["lease_id"]) != receipt.lease_id
+            or int(row["authority_epoch"]) != receipt.authority_epoch
+            or int(row["fencing_token"]) != receipt.fencing_token
+            or int(row["lease_revision"]) != receipt.lease_revision
+            or str(row["source_commit"]) != receipt.source_commit
+            or str(row["source_tree"]) != receipt.source_tree
+        ):
+            raise EngineeringError("distributed_fence_frontier_not_current")
+        return digest
+
+
+def distributed_fence_frontier(
+    store: EngineeringStore,
+    cluster_id: str,
+    holder: str,
+) -> dict[str, object]:
+    checked_id(cluster_id, "cluster_id")
+    checked_id(holder, "holder")
+    row = store.connection.execute(
+        "SELECT * FROM distributed_fence_frontiers "
+        "WHERE cluster_id=? AND holder=?",
+        (cluster_id, holder),
+    ).fetchone()
+    if row is None:
+        raise EngineeringError("unknown_distributed_fence_frontier")
+    return {
+        "clusterId": str(row["cluster_id"]),
+        "holder": str(row["holder"]),
+        "leaderId": str(row["leader_id"]),
+        "leaderTerm": int(row["leader_term"]),
+        "revocationFrontierSequence": int(row["revocation_frontier_sequence"]),
+        "revocationFrontierDigest": str(row["revocation_frontier_digest"]),
+        "fenceReceiptDigest": str(row["fence_receipt_digest"]),
+        "leaseId": str(row["lease_id"]),
+        "authorityEpoch": int(row["authority_epoch"]),
+        "fencingToken": int(row["fencing_token"]),
+        "leaseRevision": int(row["lease_revision"]),
+        "sourceCommit": str(row["source_commit"]),
+        "sourceTree": str(row["source_tree"]),
+        "observedUnixNs": int(row["observed_unix_ns"]),
+        "expiresUnixNs": int(row["expires_unix_ns"]),
+        "updatedUnixNs": int(row["updated_unix_ns"]),
+    }
+
+
 def verify_external_audit_anchor(
     store: EngineeringStore,
     envelope: WorkEnvelope,
@@ -539,7 +735,7 @@ def verify_production_controls(
     *,
     now_ns: int | None = None,
 ) -> ProductionControlDecision:
-    distributed_digest = verify_distributed_fence(
+    distributed_digest = verify_persisted_distributed_fence(
         lease,
         envelope,
         distributed,
