@@ -158,12 +158,7 @@ async fn indeterminate_dispatch_survives_reopen_and_reconciles_without_resend() 
     let authority = MatrixDispatchAuthority::owner_local(&claimed.stable_txn_id);
     prepare_send(&store, &claimed, &authority, 10).await?;
     store
-        .mark_matrix_dispatch_dispatched(
-            &claimed.stable_txn_id,
-            claimed.attempts,
-            &digest('1'),
-            11,
-        )
+        .mark_matrix_dispatch_dispatched(&claimed.stable_txn_id, claimed.attempts, &digest('1'), 11)
         .await?;
     store
         .mark_matrix_dispatch_indeterminate(
@@ -217,12 +212,7 @@ async fn redaction_keeps_original_send_evidence_and_uses_separate_digest() -> Te
     let authority = MatrixDispatchAuthority::owner_local(&claimed.stable_txn_id);
     prepare_send(&store, &claimed, &authority, 10).await?;
     store
-        .mark_matrix_dispatch_dispatched(
-            &claimed.stable_txn_id,
-            claimed.attempts,
-            &digest('1'),
-            11,
-        )
+        .mark_matrix_dispatch_dispatched(&claimed.stable_txn_id, claimed.attempts, &digest('1'), 11)
         .await?;
     let event_id = event("$redacted:example.org")?;
     store
@@ -266,12 +256,7 @@ async fn terminal_dispatch_can_be_archived_without_losing_evidence() -> TestResu
     let authority = MatrixDispatchAuthority::owner_local(&claimed.stable_txn_id);
     prepare_send(&store, &claimed, &authority, 10).await?;
     store
-        .mark_matrix_dispatch_dispatched(
-            &claimed.stable_txn_id,
-            claimed.attempts,
-            &digest('1'),
-            11,
-        )
+        .mark_matrix_dispatch_dispatched(&claimed.stable_txn_id, claimed.attempts, &digest('1'), 11)
         .await?;
     let event_id = event("$archive:example.org")?;
     observe_send(
