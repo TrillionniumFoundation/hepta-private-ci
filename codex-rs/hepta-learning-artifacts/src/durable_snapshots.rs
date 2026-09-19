@@ -6,6 +6,7 @@
 //! snapshot.
 
 use std::fs::File;
+use std::path::Path;
 use std::str::FromStr;
 
 use codex_hepta_types::Digest32;
@@ -47,6 +48,34 @@ pub struct ArtifactLifecycleSnapshotReceiptV2 {
     pub file_digest: Digest32,
     pub records: usize,
     pub encoded_bytes: usize,
+}
+
+pub fn write_dataset_withdrawal_snapshot_beneath(
+    root: impl AsRef<Path>,
+    relative: impl AsRef<Path>,
+    registry: &DatasetWithdrawalRegistry,
+    binding: Digest32,
+) -> Result<DatasetWithdrawalSnapshotReceiptV1, ArtifactStorageError> {
+    if binding.is_zero() {
+        return Err(ArtifactStorageError::InvalidBinding);
+    }
+    let scope_digest = registry
+        .scope_digest()
+        .ok_or(ArtifactStorageError::Unscoped)?;
+    let bytes = encode_withdrawal_snapshot(registry, binding)?;
+    let receipt = DatasetWithdrawalSnapshotReceiptV1 {
+        binding,
+        scope_digest,
+        head_digest: registry.head_digest(),
+        file_digest: Digest32::of_bytes(&bytes),
+        records: registry.snapshot().records().len(),
+        encoded_bytes: bytes.len(),
+    };
+    write_new(
+        CreateOnlyArtifactFile::create_beneath_trusted_root(root, relative)?,
+        &bytes,
+    )?;
+    Ok(receipt)
 }
 
 pub fn write_dataset_withdrawal_snapshot(
@@ -107,6 +136,30 @@ pub fn read_dataset_withdrawal_snapshot(
         return Err(ArtifactStorageError::Corrupt);
     }
     Ok(registry)
+}
+
+pub fn write_artifact_lifecycle_snapshot_beneath(
+    root: impl AsRef<Path>,
+    relative: impl AsRef<Path>,
+    journal: &ArtifactLifecycleJournalV2,
+    binding: Digest32,
+) -> Result<ArtifactLifecycleSnapshotReceiptV2, ArtifactStorageError> {
+    if binding.is_zero() {
+        return Err(ArtifactStorageError::InvalidBinding);
+    }
+    let bytes = encode_lifecycle_snapshot(journal, binding)?;
+    let receipt = ArtifactLifecycleSnapshotReceiptV2 {
+        binding,
+        head_digest: journal.head_digest(),
+        file_digest: Digest32::of_bytes(&bytes),
+        records: journal.records().len(),
+        encoded_bytes: bytes.len(),
+    };
+    write_new(
+        CreateOnlyArtifactFile::create_beneath_trusted_root(root, relative)?,
+        &bytes,
+    )?;
+    Ok(receipt)
 }
 
 pub fn write_artifact_lifecycle_snapshot(
