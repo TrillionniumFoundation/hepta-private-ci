@@ -152,11 +152,20 @@ pub fn canonical_subject_hierarchy_digest(
                 "duplicate hierarchy edge".to_string(),
             ));
         }
-        bind_subject_class(&mut classes, &edge.parent_subject_id, edge.parent_subject_class)?;
-        bind_subject_class(&mut classes, &edge.child_subject_id, edge.child_subject_class)?;
-        if let Some(existing) =
-            parents.insert(edge.child_subject_id.clone(), edge.parent_subject_id.clone())
-        {
+        bind_subject_class(
+            &mut classes,
+            &edge.parent_subject_id,
+            edge.parent_subject_class,
+        )?;
+        bind_subject_class(
+            &mut classes,
+            &edge.child_subject_id,
+            edge.child_subject_class,
+        )?;
+        if let Some(existing) = parents.insert(
+            edge.child_subject_id.clone(),
+            edge.parent_subject_id.clone(),
+        ) {
             if existing != edge.parent_subject_id {
                 return Err(NduError::InvalidHierarchyRelation(
                     edge.child_subject_id.to_string(),
@@ -469,9 +478,7 @@ fn validate_preference_values(values: &[AxisValue]) -> Result<(), NduError> {
     let minimum = FixedQ32::from_raw(-FixedQ32::ONE.raw());
     for value in values {
         if value.value < minimum || value.value > FixedQ32::ONE {
-            return Err(NduError::PreferenceValueOutOfRange(
-                value.axis.to_string(),
-            ));
+            return Err(NduError::PreferenceValueOutOfRange(value.axis.to_string()));
         }
     }
     Ok(())
@@ -509,9 +516,7 @@ fn bind_subject_class(
 ) -> Result<(), NduError> {
     if let Some(existing) = classes.insert(subject_id.clone(), subject_class) {
         if existing != subject_class {
-            return Err(NduError::InvalidHierarchyRelation(
-                subject_id.to_string(),
-            ));
+            return Err(NduError::InvalidHierarchyRelation(subject_id.to_string()));
         }
     }
     Ok(())
