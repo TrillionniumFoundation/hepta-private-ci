@@ -80,6 +80,13 @@ pub struct ReadProjectionRecordV1 {
     pub citations: Vec<Citation>,
 }
 
+impl ReadProjectionRecordV1 {
+    #[must_use]
+    pub const fn is_live(&self) -> bool {
+        matches!(self.state, RecordState::Live)
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ReadIdsResultV1 {
     snapshot_digest: Digest32,
