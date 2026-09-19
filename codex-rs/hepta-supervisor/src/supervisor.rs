@@ -498,7 +498,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 ))
             })?;
             let source_id = ReleaseId::parse(current.identity().to_string())?;
-            let source_binding = supervisor.registry.release_binding(agent_id, &source_id)?;
+            let source_binding = supervisor.registry.installed_release_binding(&source_id)?;
             let target_id = ReleaseId::parse(grant.target_release.clone())?;
             let target_binding = supervisor.registry.release_binding(agent_id, &target_id)?;
             let target =
