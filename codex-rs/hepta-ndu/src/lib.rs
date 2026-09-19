@@ -12,6 +12,7 @@
 mod conditional_moments;
 mod covariance;
 mod covariance_profile;
+mod durable_projection_store;
 mod error;
 mod evaluation_digest;
 mod evaluator;
@@ -33,6 +34,8 @@ pub use covariance_profile::CovarianceConventionV1;
 pub use covariance_profile::CovarianceError;
 pub use covariance_profile::NduCovarianceProfileV1;
 pub use covariance_profile::admit_covariance_profile;
+pub use durable_projection_store::NduDurableProjectionError;
+pub use durable_projection_store::NduDurableProjectionStoreV1;
 pub use error::NduError;
 pub use evaluator::canonical_evaluation_policy_digest;
 pub use evaluator::canonical_scalarization_digest;
