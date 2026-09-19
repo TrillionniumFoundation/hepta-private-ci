@@ -214,6 +214,17 @@ pub struct ParameterProposalV2 {
 }
 
 
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd)]
+pub enum TopologyOperationV3 {
+    Add,
+    Replace,
+    Retire,
+    Rewire,
+    Split,
+    Merge,
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum TopologyCandidateKindV3 {
     NoChange,
@@ -223,7 +234,8 @@ pub enum TopologyCandidateKindV3 {
 #[derive(Clone, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub struct TopologyDeltaV3 {
     pub module_id: StableId,
-    pub operation: TopologyOperation,
+    pub operation: TopologyOperationV3,
+    pub related_module_ids: Vec<StableId>,
     pub predecessor_digest: Digest32,
     pub candidate_digest: Digest32,
     pub evidence_digest: Digest32,
