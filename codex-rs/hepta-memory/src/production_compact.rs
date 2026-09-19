@@ -1063,15 +1063,16 @@ mod tests {
             left_writer.publish_compaction(&left),
             right_writer.publish_compaction(&right)
         );
-        let successes = usize::from(a.is_ok()) + usize::from(b.is_ok());
+        let successes = a.is_ok() as usize + b.is_ok() as usize;
         assert_eq!(successes, 1);
-        let failures = usize::from(matches!(
+        let failures = matches!(
             a,
             Err(ProductionCompactionError::CasConflict(_))
-        )) + usize::from(matches!(
-            b,
-            Err(ProductionCompactionError::CasConflict(_))
-        ));
+        ) as usize
+            + matches!(
+                b,
+                Err(ProductionCompactionError::CasConflict(_))
+            ) as usize;
         assert_eq!(failures, 1);
     }
 
