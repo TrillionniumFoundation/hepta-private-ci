@@ -379,6 +379,7 @@ def claim_assignment(
         ).fetchone()
         if generation is None:
             raise _control.EngineeringError("unknown_assignment_generation")
+        store._get_envelope(str(generation["envelope_id"]), now)
         assigned = _decode_strings(generation["assigned_json"], "invalid_assignment_generation")
         if package_id not in assigned:
             raise _control.EngineeringError("package_not_assigned")
