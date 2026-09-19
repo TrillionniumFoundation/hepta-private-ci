@@ -221,22 +221,26 @@ External evidence gates:
 
 ## 12. `ui.native`
 
-Owns shell/window/session state and opaque platform references; domain facts and secrets remain with their owners.
+Owns native shell/window/session state, a bounded durable operation journal, and opaque keyring references; backend domain facts, authority and signing private keys remain with their owners.
 
-The backend, platform permission adapter, and updater each supply their own observations; the shell cannot self-issue success.
+The authenticated backend, local platform adapter, and separately verified updater supply observations; uncertain OS effects remain indeterminate when no trustworthy terminal query exists, and the shell cannot self-issue success.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
-| `connect_runtime` | `owner_boundary` | `apps/hepta-native/src/shell-runtime.js` — `async connectRuntime(` |
-| `render_runtime_view` | `owner_boundary` | `apps/hepta-native/src/shell-runtime.js` — `renderRuntimeView(` |
-| `request_platform_capability` | `owner_boundary` | `apps/hepta-native/src/shell-runtime.js` — `async requestPlatformCapability(` |
-| `apply_shell_update` | `owner_boundary` | `apps/hepta-native/src/shell-runtime.js` — `async applyShellUpdate(` |
+| `connect_runtime` | `owner_boundary` | `apps/hepta-native/src/runtime.rs` — `pub fn connect_runtime(` |
+| `render_runtime_view` | `owner_boundary` | `apps/hepta-native/src/runtime.rs` — `pub fn render_runtime_view(` |
+| `request_platform_capability` | `owner_boundary` | `apps/hepta-native/src/runtime.rs` — `pub fn request_platform_capability(` |
+| `apply_shell_update` | `owner_boundary` | `apps/hepta-native/src/updater.rs` — `pub fn activate_staged_update(` |
+
+Remaining repository implementation gaps:
+
+- Observe current exact-head and merge-candidate execution receipts for the final claim-bearing candidate before setting productionImplementation/productExecutionComplete true.
 
 External evidence gates:
 
-- selected native framework and supported platform matrix
-- real code signing/notarization/keychain and updater trust roots
-- packaged crash/restart/accessibility/update rollback qualification
+- production Authenticode, Apple Developer ID/notarization and Linux distribution signing/repository ownership
+- installed Windows AppUserModelID notification identity plus real target-host OS permission/revocation evidence where applicable
+- independent screen-reader/accessibility acceptance, operator acceptance, promotion and release
 
 ## 13. Cross-module acceptance boundary
 
