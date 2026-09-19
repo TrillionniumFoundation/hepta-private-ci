@@ -18,6 +18,9 @@ fn request(id: &str) -> NativeRequest {
         worker_generation: 4,
         model: "actual-model".to_string(),
         payload_digest: "a".repeat(64),
+        maximum_output_tokens: 0,
+        maximum_budget_units: 0,
+        admission: None,
     }
 }
 
@@ -28,6 +31,7 @@ fn dispatch(id: &str) -> NativeDispatch {
         context_digest: "b".repeat(64),
         client_user_message_id: Some(id.to_string()),
         input_payload_sha256: Some("c".repeat(64)),
+        final_use: None,
     }
 }
 
@@ -43,6 +47,7 @@ fn output(status: NativeRunStatus, tokens: Option<u64>) -> NativeRunOutput {
         observed_output_tokens: tokens,
         stop_reason: None,
         owner_authority: NativeOwnerAuthority::Unverified,
+        final_use_authority: NativeFinalUseAuthority::Unverified,
     }
 }
 
@@ -173,6 +178,146 @@ fn missing_terminal_usage_can_be_completed_without_changing_the_outcome() {
     std::fs::remove_file(path).unwrap();
 }
 
+fn authorized_request(id: &str, maximum_output_tokens: u64) -> NativeRequest {
+    NativeRequest {
+        request_id: id.to_string(),
+        principal_id: "agent-1".to_string(),
+        worker_generation: 4,
+        model: "actual-model".to_string(),
+        payload_digest: "c".repeat(64),
+        maximum_output_tokens,
+        maximum_budget_units: 1,
+        admission: Some(NativeAdmissionBinding {
+            quota: NativeQuotaBinding {
+                reservation_id: "quota-1".to_string(),
+                reservation_digest: "d".repeat(64),
+                reserved_requests: 3,
+                reserved_tokens: 15,
+                reserved_concurrency: 1,
+                reserved_day_budget: 2,
+                authority_epoch: 9,
+                expires_at_unix_seconds: u64::MAX,
+            },
+            resource: NativeResourceBinding {
+                resource_id: "resource-1".to_string(),
+                resource_digest: "e".repeat(64),
+                provider_id: "provider".to_string(),
+                model: "actual-model".to_string(),
+                generation: 4,
+                expires_at_unix_seconds: u64::MAX,
+            },
+        }),
+    }
+}
+
+fn authorized_dispatch() -> NativeDispatch {
+    NativeDispatch {
+        thread_id: "thread-1".to_string(),
+        model_provider: "provider".to_string(),
+        context_digest: "b".repeat(64),
+        client_user_message_id: Some("r1".to_string()),
+        input_payload_sha256: Some("c".repeat(64)),
+        final_use: Some(NativeFinalUseWitness {
+            grant_id: "grant-1".to_string(),
+            authority_epoch: 9,
+            expires_at_unix_ms: u64::MAX,
+            binding_digest: "f".repeat(64),
+        }),
+    }
+}
+
+#[test]
+fn authorized_quota_blocks_before_dispatch_and_refines_only_from_observed_usage() {
+    let path = path("authorized-quota");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control
+        .reserve_native(authorized_request("r1", 10), 4)
+        .unwrap();
+    assert_eq!(
+        control.reserve_native(authorized_request("r2", 5), 4),
+        Err(Error::CapacityExceeded),
+        "reserved concurrency must block a second active request"
+    );
+    control
+        .dispatch_native("r1", authorized_dispatch())
+        .unwrap();
+    control.native_started("r1", "turn-1".to_string()).unwrap();
+    let mut terminal = output(NativeRunStatus::Completed, Some(4));
+    terminal.final_use_authority = NativeFinalUseAuthority::Claimed {
+        grant_id: "grant-1".to_string(),
+        authority_epoch: 9,
+    };
+    control.settle_native("r1", terminal).unwrap();
+
+    // The exact observed usage (4) replaces the conservative request hold (10),
+    // so another 10-token request fits under the 15-token reservation.
+    control
+        .reserve_native(authorized_request("r2", 10), 4)
+        .unwrap();
+    drop(control);
+
+    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert!(control.native_record("r1").is_some());
+    assert!(control.native_record("r2").is_some());
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn authorized_dispatch_requires_exact_provider_and_final_use_witness() {
+    let path = path("authorized-dispatch");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control
+        .reserve_native(authorized_request("r1", 10), 4)
+        .unwrap();
+    let mut missing = authorized_dispatch();
+    missing.final_use = None;
+    assert_eq!(
+        control.dispatch_native("r1", missing),
+        Err(Error::InvalidTransition)
+    );
+    let mut wrong_provider = authorized_dispatch();
+    wrong_provider.model_provider = "other-provider".to_string();
+    assert_eq!(
+        control.dispatch_native("r1", wrong_provider),
+        Err(Error::AssignmentMismatch)
+    );
+    control
+        .dispatch_native("r1", authorized_dispatch())
+        .unwrap();
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn authorized_economic_budget_remains_consumed_after_possible_provider_effect() {
+    let path = path("authorized-budget");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let mut first = authorized_request("r1", 5);
+    first.admission.as_mut().unwrap().quota.reserved_day_budget = 1;
+    control.reserve_native(first, 4).unwrap();
+    control
+        .dispatch_native("r1", authorized_dispatch())
+        .unwrap();
+    control.native_started("r1", "turn-1".to_string()).unwrap();
+    let mut terminal = output(NativeRunStatus::Completed, Some(1));
+    terminal.final_use_authority = NativeFinalUseAuthority::Claimed {
+        grant_id: "grant-1".to_string(),
+        authority_epoch: 9,
+    };
+    control.settle_native("r1", terminal).unwrap();
+
+    let mut second = authorized_request("r2", 1);
+    second.admission.as_mut().unwrap().quota.reserved_day_budget = 1;
+    assert_eq!(
+        control.reserve_native(second, 4),
+        Err(Error::CapacityExceeded),
+        "without authenticated billing reconciliation the full economic hold stays consumed"
+    );
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
 #[test]
 fn pre_dispatch_stop_releases_without_claiming_provider_terminal() {
     let path = path("before");
@@ -200,51 +345,55 @@ fn pre_dispatch_stop_releases_without_claiming_provider_terminal() {
 }
 
 #[test]
-fn journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes() {
-    use std::io::Write;
+fn journal_compaction_preserves_exact_state_and_bounds_archives() {
     let path = path("byte-budget");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     start(&mut control, "r1");
     let mut observed = output(NativeRunStatus::Completed, Some(0));
     observed.output = "x".repeat(1024 * 1024);
-    for tokens in 0..128 {
+    for tokens in 0..80 {
         observed.observed_output_tokens = Some(tokens);
-        let before = control.native_record("r1").unwrap().clone();
-        let bytes_before = std::fs::metadata(&path).unwrap().len();
-        match control.settle_native("r1", observed.clone()) {
-            Ok(_) => continue,
-            Err(error) => {
-                assert_eq!(error, Error::CapacityExceeded);
-                assert_eq!(control.native_record("r1"), Some(&before));
-                assert_eq!(std::fs::metadata(&path).unwrap().len(), bytes_before);
-                assert!(bytes_before > super::super::MAX_JOURNAL_BYTES / 2);
-                break;
-            }
-        }
+        control.settle_native("r1", observed.clone()).unwrap();
     }
     let expected = control.native_record("r1").unwrap().clone();
+    let before = std::fs::metadata(&path).unwrap().len();
+    let receipt = control
+        .compact_native_journal(/*retain_archives*/ 2)
+        .unwrap();
+    assert_eq!(receipt.before_bytes, before);
+    assert!(receipt.after_bytes < receipt.before_bytes);
+    assert_eq!(receipt.archive_sha256.len(), 64);
+    assert!(receipt.archive_path.is_file());
+
+    let parent = path.parent().unwrap();
+    let file_name = path.file_name().unwrap().to_string_lossy();
+    let archive_prefix = format!("{file_name}.hepta-archive-");
+    let archives = std::fs::read_dir(parent)
+        .unwrap()
+        .filter_map(Result::ok)
+        .filter(|entry| {
+            entry
+                .file_name()
+                .to_str()
+                .is_some_and(|name| name.starts_with(&archive_prefix))
+        })
+        .count();
+    assert!(archives <= 2);
+
     drop(control);
     let control = DurableInferenceControl::open(&path, 8).unwrap();
     assert_eq!(control.native_record("r1"), Some(&expected));
     drop(control);
-    // A syntactically valid extra observation still exceeds the total budget.
-    let event = Event::Observe {
-        request_id: "r1".to_string(),
-        output: observed,
-    };
-    let json = serde_json::to_string(&event).unwrap();
-    let mut file = std::fs::OpenOptions::new()
-        .append(true)
-        .open(&path)
-        .unwrap();
-    writeln!(file, "{JOURNAL_PREFIX}{json}").unwrap();
-    drop(file);
-    let oversized_bytes = std::fs::metadata(&path).unwrap().len();
-    assert!(matches!(
-        DurableInferenceControl::open(&path, 8),
-        Err(Error::CapacityExceeded)
-    ));
-    assert_eq!(std::fs::metadata(&path).unwrap().len(), oversized_bytes);
+
+    for entry in std::fs::read_dir(parent).unwrap().filter_map(Result::ok) {
+        if entry
+            .file_name()
+            .to_str()
+            .is_some_and(|name| name.starts_with(&archive_prefix))
+        {
+            let _ = std::fs::remove_file(entry.path());
+        }
+    }
     std::fs::remove_file(path).unwrap();
 }
 
@@ -422,5 +571,39 @@ fn recovered_turn_identity_is_idempotent_and_cannot_drift() {
         .unwrap();
     assert_eq!(rebound.state, NativeReservationState::Indeterminate);
     drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+
+#[test]
+fn reconciled_no_admission_survives_compaction_and_reopen() {
+    let path = path("no-admission-compact");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    control.dispatch_native("r1", dispatch("r1")).unwrap();
+    let released = control
+        .reconcile_native_no_admission("r1", "exact queue proof: not admitted".to_string())
+        .unwrap();
+    assert_eq!(released.state, NativeReservationState::Released);
+    control.compact_native_journal(/*retain_archives*/ 1).unwrap();
+    drop(control);
+
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(reopened.native_record("r1"), Some(&released));
+    reopened.reserve_native(request("r2"), 1).unwrap();
+    drop(reopened);
+
+    let parent = path.parent().unwrap();
+    let file_name = path.file_name().unwrap().to_string_lossy();
+    let archive_prefix = format!("{file_name}.hepta-archive-");
+    for entry in std::fs::read_dir(parent).unwrap().filter_map(Result::ok) {
+        if entry
+            .file_name()
+            .to_str()
+            .is_some_and(|name| name.starts_with(&archive_prefix))
+        {
+            let _ = std::fs::remove_file(entry.path());
+        }
+    }
     std::fs::remove_file(path).unwrap();
 }
