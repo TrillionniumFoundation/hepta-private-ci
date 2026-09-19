@@ -670,7 +670,9 @@ impl BaoClient {
         Ok(())
     }
 
-    fn reconciliation_binding(
+    /// Exact proposal that an independent reconciliation authority reviews
+    /// before a trusted observer can resolve an Unknown provider effect.
+    pub fn reconciliation_binding(
         &self,
         kind: &str,
         observer_subject_id: &str,
@@ -680,7 +682,8 @@ impl BaoClient {
         expires_at_ms: u64,
         renewable: bool,
     ) -> Result<FinalUseBinding, SecretLeaseClientError> {
-        if !component(observer_subject_id)
+        if !matches!(kind, "issue" | "renew" | "revoke")
+            || !component(observer_subject_id)
             || !component(operation_id)
             || lease_id.is_empty()
             || lease_id.len() > 512
