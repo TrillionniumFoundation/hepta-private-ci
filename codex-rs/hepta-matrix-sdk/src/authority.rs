@@ -7,8 +7,13 @@ use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_matrix_store::MatrixDispatchRecord;
 use codex_hepta_matrix_store::OutboxRecord;
+use serde::Deserialize;
+use serde::Serialize;
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+pub const MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION: u32 = 1;
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct MatrixOutboundIdentity {
     pub homeserver_id: String,
     pub matrix_user_id: String,
@@ -16,10 +21,13 @@ pub struct MatrixOutboundIdentity {
     pub session_generation: u64,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct MatrixFinalUseRequest {
+    pub schema_version: u32,
     pub operation_id: String,
     pub stable_txn_id: String,
+    pub logical_outbox_id: String,
     pub attempt: u64,
     pub subject_id: String,
     pub destination_id: String,
@@ -34,6 +42,82 @@ pub struct MatrixFinalUseRequest {
     pub scope_digest: String,
     pub payload_digest: String,
     pub binding: FinalUseBinding,
+}
+
+impl MatrixFinalUseRequest {
+    /// Recompute every digest and binding from the explicit proposal fields.
+    ///
+    /// An independently operated signer/broker should call this before
+    /// deciding whether to sign. A request-supplied digest is never trusted as
+    /// the definition of its own scope.
+    pub fn validate(&self) -> Result<(), MatrixAuthorityError> {
+        if self.schema_version != MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION
+            || !identifier(&self.subject_id, 128)
+            || !identifier(&self.destination_id, 128)
+            || !bounded_text(&self.operation_id, 512)
+            || !bounded_text(&self.stable_txn_id, 512)
+            || !bounded_text(&self.logical_outbox_id, 512)
+            || !bounded_text(&self.homeserver_id, 2048)
+            || !bounded_text(&self.matrix_user_id, 255)
+            || !bounded_text(&self.device_id, 255)
+            || !bounded_text(&self.room_id, 255)
+            || self.attempt == 0
+            || self.session_generation == 0
+            || self.binding_revision == 0
+            || self.generation == 0
+        {
+            return Err(MatrixAuthorityError::InvalidBinding);
+        }
+
+        let scope_digest = scope_digest(
+            &self.homeserver_id,
+            &self.matrix_user_id,
+            &self.device_id,
+            self.session_generation,
+            &self.room_id,
+            self.binding_revision,
+            self.generation,
+        )?;
+        if self.scope_digest != scope_digest.as_str() {
+            return Err(MatrixAuthorityError::InvalidBinding);
+        }
+        let destination_id = format!("matrix:{}", scope_digest.as_str());
+        if self.destination_id != destination_id {
+            return Err(MatrixAuthorityError::InvalidBinding);
+        }
+
+        let request_digest = request_digest(
+            &self.operation_id,
+            &self.stable_txn_id,
+            &self.logical_outbox_id,
+            self.attempt,
+            &self.room_id,
+            self.binding_revision,
+            self.generation,
+            &self.homeserver_id,
+            &self.matrix_user_id,
+            &self.device_id,
+            self.session_generation,
+            &self.payload_digest,
+        )?;
+        if self.request_digest != request_digest.as_str() {
+            return Err(MatrixAuthorityError::InvalidBinding);
+        }
+
+        let payload_digest = Sha256Digest::parse(self.payload_digest.clone())
+            .map_err(|_| MatrixAuthorityError::InvalidBinding)?;
+        let expected = FinalUseBinding {
+            subject_id: self.subject_id.clone(),
+            destination_id,
+            request_sha256: digest_bytes(request_digest.as_str())?,
+            scope_sha256: digest_bytes(scope_digest.as_str())?,
+            payload_sha256: digest_bytes(payload_digest.as_str())?,
+        };
+        if self.binding != expected {
+            return Err(MatrixAuthorityError::InvalidBinding);
+        }
+        Ok(())
+    }
 }
 
 pub type MatrixGrantFuture<'a> = Pin<
@@ -67,18 +151,7 @@ pub fn build_matrix_final_use_request(
     record: &OutboxRecord,
     identity: &MatrixOutboundIdentity,
 ) -> Result<MatrixFinalUseRequest, MatrixAuthorityError> {
-    if subject_id.is_empty()
-        || subject_id.len() > 128
-        || identity.homeserver_id.is_empty()
-        || identity.homeserver_id.len() > 2048
-        || identity.matrix_user_id.is_empty()
-        || identity.matrix_user_id.len() > 255
-        || identity.device_id.is_empty()
-        || identity.device_id.len() > 255
-        || identity.session_generation == 0
-        || dispatch.operation_id.is_empty()
-        || dispatch.operation_id.len() > 512
-        || dispatch.stable_txn_id != record.stable_txn_id
+    if dispatch.stable_txn_id != record.stable_txn_id
         || dispatch.room_id != record.room_id
         || dispatch.binding_revision != record.binding_revision
         || dispatch.generation != record.generation
@@ -88,34 +161,30 @@ pub fn build_matrix_final_use_request(
         return Err(MatrixAuthorityError::InvalidBinding);
     }
 
-    let mut scope = b"hepta.matrix.final-use.scope.v1\0".to_vec();
-    push_text(&mut scope, &identity.homeserver_id)?;
-    push_text(&mut scope, &identity.matrix_user_id)?;
-    push_text(&mut scope, &identity.device_id)?;
-    push_u64(&mut scope, identity.session_generation);
-    push_text(&mut scope, record.room_id.as_str())?;
-    push_u64(&mut scope, record.binding_revision);
-    push_u64(&mut scope, record.generation);
-    let scope_digest = Sha256Digest::for_bytes(&scope);
-
+    let scope_digest = scope_digest(
+        &identity.homeserver_id,
+        &identity.matrix_user_id,
+        &identity.device_id,
+        identity.session_generation,
+        record.room_id.as_str(),
+        record.binding_revision,
+        record.generation,
+    )?;
     let destination_id = format!("matrix:{}", scope_digest.as_str());
-    if destination_id.len() > 128 {
-        return Err(MatrixAuthorityError::InvalidBinding);
-    }
-
-    let mut request = b"hepta.matrix.final-use.request.v1\0".to_vec();
-    push_text(&mut request, &dispatch.operation_id)?;
-    push_text(&mut request, record.stable_txn_id.as_str())?;
-    push_u64(&mut request, record.attempts);
-    push_text(&mut request, &dispatch.logical_outbox_id)?;
-    push_text(&mut request, record.room_id.as_str())?;
-    push_u64(&mut request, record.binding_revision);
-    push_u64(&mut request, record.generation);
-    push_text(&mut request, &identity.homeserver_id)?;
-    push_text(&mut request, &identity.matrix_user_id)?;
-    push_text(&mut request, &identity.device_id)?;
-    push_u64(&mut request, identity.session_generation);
-    let request_digest = Sha256Digest::for_bytes(&request);
+    let request_digest = request_digest(
+        &dispatch.operation_id,
+        record.stable_txn_id.as_str(),
+        &dispatch.logical_outbox_id,
+        record.attempts,
+        record.room_id.as_str(),
+        record.binding_revision,
+        record.generation,
+        &identity.homeserver_id,
+        &identity.matrix_user_id,
+        &identity.device_id,
+        identity.session_generation,
+        &dispatch.payload_digest,
+    )?;
     let payload_digest = Sha256Digest::parse(dispatch.payload_digest.clone())
         .map_err(|_| MatrixAuthorityError::InvalidBinding)?;
 
@@ -127,9 +196,11 @@ pub fn build_matrix_final_use_request(
         payload_sha256: digest_bytes(payload_digest.as_str())?,
     };
 
-    Ok(MatrixFinalUseRequest {
+    let request = MatrixFinalUseRequest {
+        schema_version: MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION,
         operation_id: dispatch.operation_id.clone(),
         stable_txn_id: record.stable_txn_id.as_str().to_string(),
+        logical_outbox_id: dispatch.logical_outbox_id.clone(),
         attempt: record.attempts,
         subject_id: subject_id.to_string(),
         destination_id,
@@ -144,7 +215,60 @@ pub fn build_matrix_final_use_request(
         scope_digest: scope_digest.as_str().to_string(),
         payload_digest: payload_digest.as_str().to_string(),
         binding,
-    })
+    };
+    request.validate()?;
+    Ok(request)
+}
+
+fn scope_digest(
+    homeserver_id: &str,
+    matrix_user_id: &str,
+    device_id: &str,
+    session_generation: u64,
+    room_id: &str,
+    binding_revision: u64,
+    generation: u64,
+) -> Result<Sha256Digest, MatrixAuthorityError> {
+    let mut scope = b"hepta.matrix.final-use.scope.v1\0".to_vec();
+    push_text(&mut scope, homeserver_id)?;
+    push_text(&mut scope, matrix_user_id)?;
+    push_text(&mut scope, device_id)?;
+    push_u64(&mut scope, session_generation);
+    push_text(&mut scope, room_id)?;
+    push_u64(&mut scope, binding_revision);
+    push_u64(&mut scope, generation);
+    Ok(Sha256Digest::for_bytes(&scope))
+}
+
+#[allow(clippy::too_many_arguments)]
+fn request_digest(
+    operation_id: &str,
+    stable_txn_id: &str,
+    logical_outbox_id: &str,
+    attempt: u64,
+    room_id: &str,
+    binding_revision: u64,
+    generation: u64,
+    homeserver_id: &str,
+    matrix_user_id: &str,
+    device_id: &str,
+    session_generation: u64,
+    payload_digest: &str,
+) -> Result<Sha256Digest, MatrixAuthorityError> {
+    let mut request = b"hepta.matrix.final-use.request.v1\0".to_vec();
+    push_text(&mut request, operation_id)?;
+    push_text(&mut request, stable_txn_id)?;
+    push_text(&mut request, logical_outbox_id)?;
+    push_u64(&mut request, attempt);
+    push_text(&mut request, room_id)?;
+    push_u64(&mut request, binding_revision);
+    push_u64(&mut request, generation);
+    push_text(&mut request, homeserver_id)?;
+    push_text(&mut request, matrix_user_id)?;
+    push_text(&mut request, device_id)?;
+    push_u64(&mut request, session_generation);
+    push_text(&mut request, payload_digest)?;
+    Ok(Sha256Digest::for_bytes(&request))
 }
 
 fn push_text(output: &mut Vec<u8>, value: &str) -> Result<(), MatrixAuthorityError> {
@@ -178,6 +302,20 @@ fn hex_nibble(value: u8) -> Result<u8, MatrixAuthorityError> {
         b'a'..=b'f' => Ok(value - b'a' + 10),
         _ => Err(MatrixAuthorityError::InvalidBinding),
     }
+}
+
+fn identifier(value: &str, maximum: usize) -> bool {
+    !value.is_empty()
+        && value.len() <= maximum
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
+}
+
+fn bounded_text(value: &str, maximum: usize) -> bool {
+    !value.is_empty()
+        && value.len() <= maximum
+        && !value.chars().any(char::is_control)
 }
 
 #[cfg(test)]
@@ -249,6 +387,8 @@ mod tests {
             &identity,
         )
         .expect("binding");
+        first.validate().expect("self-verifying request");
+
         let mut retry_record = record.clone();
         retry_record.attempts = 2;
         let mut retry_dispatch = dispatch.clone();
@@ -275,5 +415,12 @@ mod tests {
         .expect("other binding");
         assert_ne!(first.scope_digest, other.scope_digest);
         assert_ne!(first.destination_id, other.destination_id);
+
+        let mut forged = first;
+        forged.attempt = forged.attempt.saturating_add(1);
+        assert_eq!(
+            forged.validate(),
+            Err(MatrixAuthorityError::InvalidBinding)
+        );
     }
 }
