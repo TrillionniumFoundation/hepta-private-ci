@@ -8,6 +8,10 @@
 use std::error::Error as StdError;
 use std::fmt;
 
+use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
+use codex_hepta_learning_ledger::SignedEvidenceError;
+use codex_hepta_learning_ledger::VerifiedLearningEvidenceV1;
+use codex_hepta_learning_ledger::verify_signed_role_separation;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
@@ -55,10 +59,13 @@ pub struct OperatorApplicabilityCertificateV1 {
     pub decision: ApplicabilityDecisionV1,
 }
 
-pub fn validate_applicability_certificate(
+/// Canonical bytes that an independently authenticated evaluator signs.
+/// Structural validation is performed here; signature and role admission are
+/// enforced by `validate_applicability_certificate_verified`.
+pub fn encode_applicability_evidence_v1(
     certificate: &OperatorApplicabilityCertificateV1,
     now: u64,
-) -> Result<Digest32, OperatorClosureError> {
+) -> Result<Vec<u8>, OperatorClosureError> {
     for (label, digest) in [
         ("axis partition", certificate.axis_partition_digest),
         ("operator domain", certificate.domain_digest),
@@ -114,7 +121,39 @@ pub fn validate_applicability_certificate(
     bytes.extend_from_slice(certificate.fallback_digest.as_array());
     bytes.extend_from_slice(&certificate.expires_at.to_be_bytes());
     bytes.push(certificate.decision.tag());
-    Ok(Digest32::of_bytes(&bytes))
+    Ok(bytes)
+}
+
+/// Legacy structural validator. It binds the supplied evaluator identity but
+/// does not authenticate that identity. External qualification must use the
+/// verified variant below.
+pub fn validate_applicability_certificate(
+    certificate: &OperatorApplicabilityCertificateV1,
+    now: u64,
+) -> Result<Digest32, OperatorClosureError> {
+    Ok(Digest32::of_bytes(&encode_applicability_evidence_v1(
+        certificate,
+        now,
+    )?))
+}
+
+pub fn validate_applicability_certificate_verified(
+    certificate: &OperatorApplicabilityCertificateV1,
+    generator: &VerifiedLearningEvidenceV1,
+    evaluator: &VerifiedLearningEvidenceV1,
+    now: u64,
+) -> Result<Digest32, OperatorClosureError> {
+    let payload = encode_applicability_evidence_v1(certificate, now)?;
+    let digest = Digest32::of_bytes(&payload);
+    verify_evaluator_evidence(
+        &certificate.evaluator_id,
+        certificate.evaluator_credential_digest,
+        digest,
+        generator,
+        evaluator,
+        now,
+    )?;
+    Ok(digest)
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -483,9 +522,12 @@ pub struct OperatorRegularityAdmissionV1 {
     pub authority: AuthorityPosture,
 }
 
-pub fn admit_operator_regularity(
+/// Canonical, fully validated regularity assessment bytes. In particular,
+/// `dominant_component_approved` is inside the signed payload rather than a
+/// caller-only side flag.
+pub fn encode_operator_regularity_assessment_v1(
     mut assessment: OperatorRegularityAssessmentV1,
-) -> Result<OperatorRegularityAdmissionV1, OperatorClosureError> {
+) -> Result<Vec<u8>, OperatorClosureError> {
     require_digest(
         assessment.evaluator_credential_digest,
         "regularity evaluator credential",
@@ -578,12 +620,69 @@ pub fn admit_operator_regularity(
     push_id(&mut bytes, &assessment.evaluator_id);
     bytes.extend_from_slice(assessment.evaluator_credential_digest.as_array());
     bytes.extend_from_slice(&total_normalized_error.raw().to_be_bytes());
+    Ok(bytes)
+}
+
+pub fn admit_operator_regularity(
+    assessment: OperatorRegularityAssessmentV1,
+) -> Result<OperatorRegularityAdmissionV1, OperatorClosureError> {
+    let bytes = encode_operator_regularity_assessment_v1(assessment.clone())?;
+    let total = assessment.error_components.iter().try_fold(0_i128, |sum, component| {
+        sum.checked_add(i128::from(component.normalized_error.raw()))
+            .ok_or(OperatorClosureError::Arithmetic)
+    })?;
+    let total_normalized_error =
+        FixedQ32::from_raw(i64::try_from(total).map_err(|_| OperatorClosureError::Arithmetic)?);
     Ok(OperatorRegularityAdmissionV1 {
         artifact_id: assessment.artifact_id,
         total_normalized_error,
         assessment_digest: Digest32::of_bytes(&bytes),
         authority: AuthorityPosture::DENY_ALL,
     })
+}
+
+pub fn admit_operator_regularity_verified(
+    assessment: OperatorRegularityAssessmentV1,
+    generator: &VerifiedLearningEvidenceV1,
+    evaluator: &VerifiedLearningEvidenceV1,
+    now: u64,
+) -> Result<OperatorRegularityAdmissionV1, OperatorClosureError> {
+    let payload = encode_operator_regularity_assessment_v1(assessment.clone())?;
+    verify_evaluator_evidence(
+        &assessment.evaluator_id,
+        assessment.evaluator_credential_digest,
+        Digest32::of_bytes(&payload),
+        generator,
+        evaluator,
+        now,
+    )?;
+    admit_operator_regularity(assessment)
+}
+
+fn verify_evaluator_evidence(
+    evaluator_id: &StableId,
+    evaluator_credential_digest: Digest32,
+    expected_payload_digest: Digest32,
+    generator: &VerifiedLearningEvidenceV1,
+    evaluator: &VerifiedLearningEvidenceV1,
+    now: u64,
+) -> Result<(), OperatorClosureError> {
+    verify_signed_role_separation(generator, evaluator, now)?;
+    if evaluator.role() != LearningEvidenceRoleV1::Evaluator {
+        return Err(OperatorClosureError::SignedEvidence(
+            SignedEvidenceError::RoleMismatch,
+        ));
+    }
+    let principal = evaluator.principal();
+    if &principal.principal_id != evaluator_id
+        || principal.credential_chain_digest != evaluator_credential_digest
+    {
+        return Err(OperatorClosureError::EvaluatorIdentityMismatch);
+    }
+    if evaluator.payload_digest() != expected_payload_digest {
+        return Err(OperatorClosureError::EvidencePayloadMismatch);
+    }
+    Ok(())
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -614,6 +713,9 @@ pub enum OperatorClosureError {
     DuplicateErrorComponent(String),
     TotalErrorBudget,
     DominantErrorComponent,
+    SignedEvidence(SignedEvidenceError),
+    EvaluatorIdentityMismatch,
+    EvidencePayloadMismatch,
     InternalInvariant,
     Arithmetic,
 }
@@ -624,7 +726,20 @@ impl fmt::Display for OperatorClosureError {
     }
 }
 
-impl StdError for OperatorClosureError {}
+impl StdError for OperatorClosureError {
+    fn source(&self) -> Option<&(dyn StdError + 'static)> {
+        match self {
+            Self::SignedEvidence(error) => Some(error),
+            _ => None,
+        }
+    }
+}
+
+impl From<SignedEvidenceError> for OperatorClosureError {
+    fn from(value: SignedEvidenceError) -> Self {
+        Self::SignedEvidence(value)
+    }
+}
 
 fn distance_squared(
     left: &SensorPointV1,
