@@ -33,7 +33,12 @@ fn id(value: &str) -> StableId {
     must(StableId::new(value))
 }
 
-fn context(subject: &str, subject_class: SubjectClass, objective: &[u8], generation: u64) -> NduIterationContextV1 {
+fn context(
+    subject: &str,
+    subject_class: SubjectClass,
+    objective: &[u8],
+    generation: u64,
+) -> NduIterationContextV1 {
     NduIterationContextV1 {
         subject_id: id(subject),
         subject_class,
