@@ -64,6 +64,13 @@ struct ValidatedEvaluationPolicy {
 
 /// Compatibility entry point. Its former implicit sum/sum/sum/max and exact
 /// Pareto semantics are now materialized as a digestible policy.
+///
+/// New integrations must call `evaluate_candidates_with_policy` so aggregation
+/// and tolerance semantics are explicit and digest-bound.
+#[deprecated(
+    since = "0.0.0",
+    note = "compatibility only; use evaluate_candidates_with_policy with EvaluationPolicyV1"
+)]
 pub fn evaluate_candidates(
     set: ContributionSet,
     profile: UtilityProfile,
