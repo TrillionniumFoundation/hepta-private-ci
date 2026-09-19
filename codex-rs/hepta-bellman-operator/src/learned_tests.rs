@@ -1,3 +1,5 @@
+#![allow(deprecated)]
+
 use super::*;
 
 fn id(value: &str) -> StableId {
