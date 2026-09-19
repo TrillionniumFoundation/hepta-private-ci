@@ -6,8 +6,10 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
+use super::MAGIC;
 use super::PlannerJournalError;
 use super::PlannerJournalKindV1;
+use super::digest_entry;
 use super::PlannerJournalV1;
 use crate::FeasiblePlanReceiptV1;
 use crate::NduPlanEvaluationInputV1;
@@ -142,7 +144,7 @@ fn hash_chain_round_trips_and_preserves_selected_pointer() {
     let receipt = receipt();
     must(journal.append(
         PlannerJournalKindV1::Snapshot,
-        digest("snapshot-identity"),
+        digest("snapshot"),
         digest("snapshot"),
     ));
     must(journal.record_decision(&receipt));
@@ -161,7 +163,7 @@ fn hash_chain_round_trips_and_preserves_selected_pointer() {
 fn identical_identity_is_idempotent_but_payload_drift_conflicts() {
     let mut journal = PlannerJournalV1::new();
     let identity = digest("identity");
-    let payload = digest("payload");
+    let payload = identity;
     let first = must(journal.append(PlannerJournalKindV1::Decision, identity, payload));
     let replay = must(journal.append(PlannerJournalKindV1::Decision, identity, payload));
     assert_eq!(first, replay);
@@ -216,5 +218,34 @@ fn revocation_clears_selection_and_prevents_reselection() {
             .select_plan(digest("select-2"), &receipt)
             .expect_err("revoked plan must not be reselected"),
         PlannerJournalError::RevokedPlan
+    );
+}
+
+
+#[test]
+fn semantically_forged_selection_with_valid_hash_fails_reopen() {
+    let identity = digest("selection-operation");
+    let payload = digest("missing-decision");
+    let predecessor = Digest32::ZERO;
+    let entry_digest = digest_entry(
+        1,
+        PlannerJournalKindV1::SelectedPlan,
+        identity,
+        payload,
+        predecessor,
+    );
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(MAGIC);
+    bytes.extend_from_slice(&1_u32.to_be_bytes());
+    bytes.extend_from_slice(&1_u64.to_be_bytes());
+    bytes.push(PlannerJournalKindV1::SelectedPlan.tag());
+    bytes.extend_from_slice(identity.as_array());
+    bytes.extend_from_slice(payload.as_array());
+    bytes.extend_from_slice(predecessor.as_array());
+    bytes.extend_from_slice(entry_digest.as_array());
+
+    assert_eq!(
+        PlannerJournalV1::reopen(&bytes).expect_err("selection without decision must reject"),
+        PlannerJournalError::DecisionNotRecorded
     );
 }
