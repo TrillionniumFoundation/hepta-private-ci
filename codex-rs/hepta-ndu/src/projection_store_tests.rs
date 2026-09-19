@@ -13,10 +13,14 @@ use codex_hepta_types::Digest32;
 
 use super::JOURNAL_FILE;
 use super::LOCK_FILE;
+use super::NduProjectionRetentionPolicyV1;
 use super::NduProjectionStoreError;
 use super::NduProjectionStoreV1;
+use super::STORE_MAGIC;
+use super::STORE_SCHEMA_V1;
 use super::TEMP_FILE;
 use crate::NduProjectionJournalError;
+use crate::NduProjectionJournalV1;
 use crate::NduProjectionKindV1;
 
 static NONCE: AtomicU64 = AtomicU64::new(1);
@@ -286,5 +290,117 @@ fn symlinked_root_lock_and_journal_paths_fail_closed() {
             .err()
             .expect("symlinked journal must reject"),
         NduProjectionStoreError::Symlink
+    );
+}
+
+
+#[test]
+fn legacy_raw_journal_migrates_to_schema_v1_store_image() {
+    let root = TempRoot::new("legacy-migration");
+    let objective = digest("objective");
+    let subject = digest("subject");
+    let projection = digest("projection");
+    let mut legacy = NduProjectionJournalV1::new();
+    must(legacy.append_projection(
+        NduProjectionKindV1::Preference,
+        digest("projection-id"),
+        objective,
+        subject,
+        projection,
+    ));
+    fs::write(root.0.join(JOURNAL_FILE), legacy.export_bytes()).expect("write legacy journal");
+
+    {
+        let store = must(NduProjectionStoreV1::open(&root.0));
+        assert_eq!(store.schema_version(), STORE_SCHEMA_V1);
+        assert_eq!(must(store.entries()).len(), 1);
+    }
+
+    let migrated = fs::read(root.0.join(JOURNAL_FILE)).expect("read migrated store");
+    assert!(migrated.starts_with(STORE_MAGIC));
+    let reopened = must(NduProjectionStoreV1::open(&root.0));
+    assert_eq!(must(reopened.entries()).len(), 1);
+}
+
+#[test]
+fn unknown_store_schema_fails_closed() {
+    let root = TempRoot::new("unknown-schema");
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(STORE_MAGIC);
+    bytes.extend_from_slice(&(STORE_SCHEMA_V1 + 1).to_be_bytes());
+    bytes.extend_from_slice(&0_u32.to_be_bytes());
+    bytes.extend_from_slice(Digest32::ZERO.as_array());
+    fs::write(root.0.join(JOURNAL_FILE), bytes).expect("write unsupported schema");
+
+    assert_eq!(
+        NduProjectionStoreV1::open(&root.0)
+            .err()
+            .expect("unknown schema must reject"),
+        NduProjectionStoreError::UnsupportedSchema
+    );
+}
+
+#[test]
+fn retention_policy_reserves_revocation_capacity_without_destructive_compaction() {
+    let root = TempRoot::new("retention-reserve");
+    let objective = digest("objective");
+    let subject = digest("subject");
+    let projection = digest("projection");
+    let policy = NduProjectionRetentionPolicyV1 {
+        maximum_non_revocation_records: 2,
+        minimum_revocation_reserve: 1,
+        retain_revocation_history: true,
+    };
+    let mut store = must(NduProjectionStoreV1::open_with_retention_policy(
+        &root.0, policy,
+    ));
+    must(store.append_projection(
+        NduProjectionKindV1::Preference,
+        digest("projection-id"),
+        objective,
+        subject,
+        projection,
+    ));
+    must(store.select_projection(digest("selection-id"), objective, subject, projection));
+
+    assert_eq!(
+        store
+            .append_projection(
+                NduProjectionKindV1::Utility,
+                digest("second-projection-id"),
+                objective,
+                subject,
+                digest("second-projection"),
+            )
+            .expect_err("non-revocation capacity must fail closed"),
+        NduProjectionStoreError::RetentionExceeded
+    );
+
+    must(store.revoke_projection(
+        digest("revocation-id"),
+        objective,
+        subject,
+        projection,
+    ));
+    assert_eq!(
+        must(store.selected_projection_digest(objective, subject)),
+        None
+    );
+    assert_eq!(must(store.entries()).len(), 3);
+}
+
+#[test]
+fn retention_policy_cannot_discard_revocation_history() {
+    let root = TempRoot::new("retention-invalid");
+    let policy = NduProjectionRetentionPolicyV1 {
+        maximum_non_revocation_records: 1,
+        minimum_revocation_reserve: 1,
+        retain_revocation_history: false,
+    };
+    assert_eq!(
+        NduProjectionStoreV1::open_with_retention_policy(&root.0, policy)
+            .err()
+            .expect("destructive retention must reject"),
+        NduProjectionStoreError::InvalidRetentionPolicy
     );
 }
