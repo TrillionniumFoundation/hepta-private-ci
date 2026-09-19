@@ -48,7 +48,7 @@ provenance: exact source and normalization-profile digests
 
 Free text is evidence for intent extraction, never the final authority representation. Every predicate has an identifier, unit, comparator, bound, evidence source and terminality. Arrays are stable-sorted by semantic identifier. Unicode uses the selected normalization profile; timestamps are UTC; durations are integer microseconds; numeric values use registered fixed-point profiles. Duplicate semantic keys are rejected.
 
-The canonical IR contains no raw credentials, unrestricted external text, hidden model state or executable code. Every payload and collection has both count and encoded-byte bounds. Admission profiles are bounded to 256 constraint mappings, 128 predicate mappings, 128 action mappings, 64 soft dimensions, 128 evidence mappings, 64 abstention rules and 256 KiB of encoded profile semantics; risk and rollback levels must be monotone.
+The canonical IR contains no raw credentials, unrestricted external text, hidden model state or executable code. Bounds are enforced against the **final native aggregate**, not just each source array: Source V1 admits at most **246 source constraints** because admission deterministically adds six resource constraints and four risk/rollback/compensation/abstention constraints before the native 256-constraint ceiling. `successPredicates + terminalConditions + evidenceRequirements` share one aggregate ceiling of **128**. Source legal-action arrays may contain 128 entries only when the intrinsic `abstain` slot is explicit; when it is omitted the compiler reserves one slot and accepts at most 127 caller legal actions. Admission profiles remain bounded to 256 constraint mappings, 128 predicate mappings, 128 action mappings, 64 soft dimensions, 128 evidence mappings, 64 abstention rules and a 256 KiB encoded-profile guard; risk and rollback levels must be monotone.
 
 ## 3. Constraint precedence and conflict resolution
 
@@ -62,7 +62,7 @@ P3 task success predicates and terminal conditions
 P4 soft utility preferences and resource allocation
 ```
 
-A lower class cannot offset a higher-class violation. Soft atoms never participate in hard feasibility. Scalar and finite-enum atoms use deterministic intersection. Registered positive action implications use bounded graph closure. Unsupported operators, arbitrary code, unrestricted quantifiers, nonlinear arithmetic and unbounded recursion reject before solving.
+A lower class cannot offset a higher-class violation. Soft atoms never participate in hard feasibility. The direct typed `check_feasibility_v1` API supports deterministic scalar and finite-enum intersection, bounded positive-action implication closure and immutable-identity equality. The Source V1 admission path is narrower: its scalar `boundQ32` payload losslessly maps only `eq/lte/gte`; `ne/lt/gt/in/not_in` are deterministic `OBJ-E002` rejection until a versioned source payload can carry the missing semantics. Generic feasibility support therefore must not be reported as Source V1 end-to-end support.
 
 For infeasible hard constraints, deterministic deletion filtering returns an **inclusion-minimal** unsatisfied set in canonical order. It does not claim minimum cardinality. A hard conflict is represented by `ObjectiveConflictReceiptV1`, not by reusing an unrelated error code. Oracle exhaustion preserves the original objective and emits unavailable; it never publishes a partial core that permits dropping a hard constraint.
 
@@ -70,7 +70,7 @@ For infeasible hard constraints, deterministic deletion filtering returns an **i
 
 ### 4.1 Legal-action grammar and intrinsic abstain
 
-`abstain` is a compiler-intrinsic, confirmation-free safety action. It is present in every successfully compiled legal set. A caller may include it explicitly, but may not forbid it or require confirmation.
+`abstain` is a compiler-intrinsic, confirmation-free safety action. It is present in every successfully compiled legal set. A caller may include it explicitly, may omit all other legal actions, but may not forbid it or require confirmation. An empty caller legal-action set is structurally valid and compiles to `CompileDisposition::ExplicitAbstain`.
 
 The compiled action ceiling is `128`, including the intrinsic abstain slot:
 
@@ -106,7 +106,7 @@ Compilation semantics are a pure function of the authenticated source envelope, 
 
 ## 5. State machine and persistence
 
-The compiler owns no domain-fact store. The owning caller persists the immutable `ObjectiveFunctionV1`, `RunStartSnapshotV1` and admission/compile receipts. Publication occurs only after source, intent, profile, constraint and objective digests agree.
+The compiler owns no domain-fact store. The canonical product-source caller is Agentd's signed objective ingress: current AuthBus trust authenticates the signed structured payload before Agentd constructs the owner-local admission context; `compile_and_publish_objective_run_v1` then appends the admission binding, canonical objective semantics and `RunStartSnapshotV1` to the destination-owned durable run-start journal before a non-abstain run reaches `AgentRunCoordinator`. Exact replay is idempotent; same-run semantic drift or predecessor drift conflicts; restart recovery revalidates retained authentication against current trust. This is source composition, not deployment activation. Publication occurs only after source, intent, profile, constraint and objective digests agree.
 
 ```text
 received
@@ -134,11 +134,11 @@ The only canonical definitions are in `docs/contracts/OBJECTIVE_ERRORS.json`:
 | `OBJ-E004` | source/schema/profile/normalization/intent integrity mismatch | integrity rejected |
 | `OBJ-E005` | unit, direction or semantic-profile mismatch | rejected |
 | `OBJ-E006` | intrinsic abstain unavailable or confirmation-gated | rejected |
-| `OBJ-E007` | freshness, deadline or feasibility budget unavailable | unavailable |
+| `OBJ-E007` | time-state, deadline or feasibility availability | unavailable; variant-specific retry |
 | `OBJ-E008` | terminality or durable semantic-identity conflict | conflict |
 | `OBJ-E009` | untrusted evidence attempts authority escalation | security rejected |
 
-`ObjectiveConflictReceiptV1` and `CompileDisposition::ExplicitAbstain` are typed non-error outcomes. Rust variants, documentation and external adapters must be checked against the canonical registry; no component may assign a local alternate meaning to a code.
+`OBJ-E007` is a stable error-code family, **not** a blanket retry instruction. `ObjectiveError::FeasibilityBudgetExhausted` and `ObjectiveAdmissionError::SourceFromFuture` may succeed after transient state changes; `LocaleNotAllowed`, stale source, missing/before-observation/expired deadline require changed input or configuration. Rust callers use the variant-level `retryable()` policy. `ObjectiveConflictReceiptV1` and `CompileDisposition::ExplicitAbstain` are typed non-error outcomes. Rust variants, documentation and external adapters must be checked against the canonical registry; no component may assign a local alternate meaning to a code.
 
 Fallback may reuse a previously selected immutable objective only when the owning caller proves equal request identity, principal scope, compatibility and current revocation frontier. Otherwise it asks for clarification or abstains. It never substitutes an easier goal.
 
@@ -160,9 +160,9 @@ The following paths are measured separately:
 | inclusion-minimal conflict extraction | at most `n+1` oracle calls and `O(n C(n))` |
 | legal-action construction | `O(a log a)` with compiled `a<=128` |
 
-Pilot ceilings are `<=256` constraints, `<=128` success predicates, `<=127` caller actions when abstain is implicit, `<=128` compiled actions including abstain, `<=64` soft dimensions and `<=257` conflict-oracle calls. CPU and wall-clock budgets are frozen before evaluation. Exceeding a bound rejects or returns unavailable; input is never truncated after semantic analysis.
+Pilot ceilings are `<=246` source constraints plus exactly ten generated resource/risk constraints for `<=256` native hard constraints, `<=128` aggregate success/terminal/evidence predicates, source action arrays `<=128`, `<=127` caller legal actions when abstain is implicit, `<=128` compiled actions including abstain, `<=64` soft dimensions and `<=257` conflict-oracle calls. Semantic compilation is call-budget bounded and deterministic; the direct feasibility API's wall-clock budget is an availability control and its measured `elapsed` field is operational evidence. Exceeding a semantic bound rejects or returns unavailable; input is never truncated after semantic analysis.
 
-The p95/p99 targets apply only to a named path, fixture and host. A normal-path latency measurement cannot be reused as a conflict-extraction measurement. No network or synchronous central RPC is permitted on the deterministic compiler path.
+The repository-owned measurement harness is `scripts/hepta-objective-target-measure.py` with procedure `docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md`. It records exact commit/tree and separately measures authenticated admission+ordinary compile versus maximum conflict extraction. A GitHub runner is development evidence only; closing the target-host gate still requires the selected host profile. A normal-path latency measurement cannot be reused as conflict-extraction latency. No network or synchronous central RPC is permitted on the deterministic compiler path.
 
 ## 9. Golden fixtures and tests
 
@@ -173,23 +173,26 @@ The p95/p99 targets apply only to a named path, fixture and host. A normal-path 
 - `OBJ-GV-005`: changing a soft weight changes the objective digest but not the hard-constraint digest.
 - `OBJ-GV-006`: untrusted evidence cannot create a privileged constraint or legal action.
 - `OBJ-GV-007`: forbidding or confirmation-gating abstain returns `OBJ-E006`.
-- `OBJ-GV-008`: 127 caller actions plus implicit abstain compile to exactly 128 actions; 128 caller actions without abstain reject.
+- `OBJ-GV-008`: 127 caller actions plus implicit abstain compile to exactly 128 actions; zero caller actions produce `ExplicitAbstain`.
 - `OBJ-GV-009`: source, intent, schema, normalization and selected-profile digest mismatches all fail before native compile.
 - `OBJ-GV-010`: unsupported or exhausted feasibility never weakens the original legal set.
+- `OBJ-GV-011`: 247 source constraints reject structurally because ten native slots are reserved for generated resource/risk constraints.
+- `OBJ-GV-012`: success predicates, terminal conditions and evidence requirements reject when their aggregate exceeds 128.
+- `OBJ-GV-013`: locale rejection, stale source and invalid/expired/missing deadlines are non-retryable for the same semantic input.
 
-Tests cover structural round trips, canonical ordering, unit conversion, conflict minimization, idempotent retry, stale/future time, deadline handling, source authentication, resource overflow, action-slot reservation, redaction and property-based permutation invariance.
+Tests cover structural round trips, canonical ordering, unit conversion, conflict minimization, idempotent durable replay, stale/future time, deadline handling, source authentication, resource overflow, aggregate-bound hostility, action-slot reservation, variant-specific retry policy, redaction and property-based permutation invariance.
 
 ## 10. Implementation sequence
 
-Implement and maintain, in order: strict JSON decoder; owner-local source type; structural validator; authenticated admission context; frozen profile mapping; deterministic feasibility grammar; conflict minimizer; intrinsic legal-action grammar; canonical digests; deny-all receipts; durable caller adapter; faults; benchmarks; exact-source and merge-candidate qualification.
+Implement and maintain, in order: strict JSON decoder; owner-local source type; admission-safe structural validator; authenticated product ingress; frozen profile mapping; opaque admitted-objective boundary; deterministic feasibility grammar; conflict minimizer; intrinsic legal-action grammar; canonical digests; deny-all receipts; destination-owned durable run-start journal; recovery/replay; target-host measurement harness; exact-source and merge-candidate qualification.
 
 Coding entry requires a current `CanonicalSourceReceiptV1`, frozen contract/readiness/error-registry digests, a bounded work-package envelope, mandatory fixtures, deterministic fallback and zero authority delta. Source completion still does not establish a production caller, activation, independent acceptance, promotion or release.
 
 ## 11. Coding-entry checklist
 
 - exact canonical source receipt and immutable profile digest are current;
-- every profile collection and encoded profile is within its enforced bound;
-- all represented source semantics map without truncation or guessing;
+- every profile collection and source/native aggregate is within its enforced bound;
+- all supported represented source semantics map without truncation or guessing and unsupported V1 operators fail closed;
 - intrinsic `abstain`, hard-feasibility and conflict fixtures pass;
 - outputs remain deny-all and the durable caller boundary is named;
 - exact-head and synthetic-merge checks pass before source completion is claimed.
