@@ -314,6 +314,15 @@ async fn sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deleti
             .unwrap();
     assert_eq!(ranked.items, vec![baseline.items[1].clone()]);
     assert!(ranked.plan.as_ref().unwrap().read_allowed);
+    let retained_cut_digest = ranked.cut_digest.clone();
+    assert_eq!(
+        client
+            .revalidate_cognitive_context(retained_cut_digest.clone())
+            .await
+            .unwrap()
+            .cut_digest,
+        retained_cut_digest
+    );
     // The read owner, not the learned ranker, remains authoritative on deletion.
     let selected_id = memory_ids
         .into_iter()
@@ -503,6 +512,13 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
         )
         .await
         .unwrap();
+    assert!(
+        client
+            .revalidate_cognitive_context(retained_cut_digest)
+            .await
+            .is_err(),
+        "a committed tombstone must invalidate the final-use cut witness"
+    );
     assert_eq!(
         client
             .cognitive_context("lemon".to_string(), 1)
