@@ -34,7 +34,7 @@ New/hardened operations include:
 - `admit_manifest_at_withdrawal_head_v3`,
   `verify_artifact_admission_v3` and `validate_artifact_publication_v3`;
 - `ArtifactPublicationTransactionV1::{begin, record_payload_durable,
-  record_registry_durable, record_witness_durable, acknowledge, snapshot,
+  record_registry_durable, record_witness_durable, acknowledge, status, snapshot,
   from_snapshot}`;
 - `ArtifactLifecycleJournalV2::{append, snapshot, from_snapshot}`;
 - `write/read_dataset_withdrawal_snapshot` and
@@ -77,10 +77,13 @@ Prepared
   -> Acknowledged
 ```
 
-Each phase is digest-bound and replayable. Acknowledgement before durable current
-head witness evidence is rejected. The host must persist the transaction
-snapshot under its writer fence before treating a phase as durable; this is a
-hard host transaction contract, not a false claim of atomic multi-file fsync.
+Each phase is digest-bound and replayable. Registry durability, witness durability
+and final acknowledgement revalidate the live scoped withdrawal frontier; an
+intervening withdrawal therefore stops an older admission from completing.
+Acknowledgement before durable current-head witness evidence is rejected. The
+host must persist the transaction snapshot under its writer fence before treating
+a phase as durable; this is a hard host transaction contract, not a false claim
+of atomic multi-file fsync.
 
 ## 4. Deterministic algorithm and scheduling
 
@@ -167,9 +170,10 @@ datasets. Snapshot-local `prepare_dataset_revocation` remains the batch that
 stages direct artifact revocations; it is not the persistent tombstone store.
 
 The crate intentionally provides no mutable admin override, force-select,
-force-promote, force-release or force-repair API. Product/admin tooling consumes
-receipts and read-only state, then performs any external repair through a
-separately authenticated and fenced host operation.
+force-promote, force-release or force-repair API. Product/admin tooling can use
+`ArtifactPublicationTransactionV1::status` as a deny-all read-only projection of
+publication state, then perform any external repair only through a separately
+authenticated and fenced host operation.
 
 ## 8. Current native implementation
 
