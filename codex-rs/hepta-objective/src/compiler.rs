@@ -85,6 +85,7 @@ pub(crate) fn compile(
         request_id: source.request_id,
         principal_scope: source.principal_scope,
         revision: source.revision,
+        source_trust: source.source_trust,
         source_digest: source.source_digest,
         schema_digest: source.schema_digest,
         hard_constraint_digest,
@@ -277,28 +278,78 @@ fn digest_objective(
     legal_actions: &[ActionClass],
     hard_constraint_digest: Digest32,
 ) -> Digest32 {
+    Digest32::of_bytes(&encode_objective_semantics(
+        &source.request_id,
+        &source.principal_scope,
+        source.revision.get(),
+        source.source_trust,
+        source.source_digest,
+        source.schema_digest,
+        hard_constraint_digest,
+        &source.success_predicates,
+        legal_actions,
+        &source.soft_preferences,
+    ))
+}
+
+/// Canonical native semantic bytes whose SHA-256 digest is
+/// `ObjectiveFunction::semantic_digest`.
+///
+/// This is intentionally the compiler's native identity profile, not the
+/// canonical JSON wire encoding of `ObjectiveFunctionV1`. Durable owners may
+/// retain these bytes to re-verify a recovered objective without trusting a
+/// previously emitted receipt.
+#[must_use]
+pub fn canonical_native_objective_semantic_bytes_v1(objective: &ObjectiveFunction) -> Vec<u8> {
+    encode_objective_semantics(
+        &objective.request_id,
+        &objective.principal_scope,
+        objective.revision.get(),
+        objective.source_trust,
+        objective.source_digest,
+        objective.schema_digest,
+        objective.hard_constraint_digest,
+        &objective.success_predicates,
+        &objective.legal_actions,
+        &objective.soft_preferences,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn encode_objective_semantics(
+    request_id: &StableId,
+    principal_scope: &StableId,
+    revision: u64,
+    source_trust: crate::SourceTrust,
+    source_digest: Digest32,
+    schema_digest: Digest32,
+    hard_constraint_digest: Digest32,
+    success_predicates: &[SuccessPredicate],
+    legal_actions: &[ActionClass],
+    soft_preferences: &[SoftPreference],
+) -> Vec<u8> {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(OBJECTIVE_DIGEST_DOMAIN);
-    push_id(&mut bytes, &source.request_id);
-    push_id(&mut bytes, &source.principal_scope);
-    push_u64(&mut bytes, source.revision.get());
-    bytes.push(source.source_trust.tag());
-    push_digest(&mut bytes, source.source_digest);
-    push_digest(&mut bytes, source.schema_digest);
+    push_id(&mut bytes, request_id);
+    push_id(&mut bytes, principal_scope);
+    push_u64(&mut bytes, revision);
+    bytes.push(source_trust.tag());
+    push_digest(&mut bytes, source_digest);
+    push_digest(&mut bytes, schema_digest);
     push_digest(&mut bytes, hard_constraint_digest);
-    push_len(&mut bytes, source.success_predicates.len());
-    for predicate in &source.success_predicates {
+    push_len(&mut bytes, success_predicates.len());
+    for predicate in success_predicates {
         push_predicate(&mut bytes, predicate);
     }
     push_len(&mut bytes, legal_actions.len());
     for action in legal_actions {
         push_action(&mut bytes, action);
     }
-    push_len(&mut bytes, source.soft_preferences.len());
-    for preference in &source.soft_preferences {
+    push_len(&mut bytes, soft_preferences.len());
+    for preference in soft_preferences {
         push_preference(&mut bytes, preference);
     }
-    Digest32::of_bytes(&bytes)
+    bytes
 }
 
 fn push_predicate(bytes: &mut Vec<u8>, predicate: &SuccessPredicate) {
