@@ -18,6 +18,7 @@ pub struct SendIntent {
     pub device_id: String,
     pub session_generation: u64,
     pub authority_epoch: u64,
+    pub grant_id: String,
     pub payload_digest: String,
     pub grant_payload_digest: String,
     pub deadline_ms: u64,
@@ -76,6 +77,7 @@ impl<'a> MatrixSendObserver<'a> {
                 &intent.device_id,
                 intent.session_generation,
                 intent.authority_epoch,
+                &intent.grant_id,
                 &intent.grant_payload_digest,
                 intent.deadline_ms,
                 now_ms,
@@ -171,6 +173,7 @@ fn validate_intent(now_ms: u64, value: &SendIntent) -> Result<(), MatrixDurableE
         &value.homeserver_id,
         &value.room_id,
         &value.device_id,
+        &value.grant_id,
     ] {
         validate_identity(field)?;
     }
