@@ -42,6 +42,7 @@ use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_codex_adapter::APP_SERVER_PROTOCOL_V2;
 use codex_hepta_codex_adapter::AdapterStatus;
 use codex_hepta_codex_adapter::AppServerObservation;
+use codex_hepta_codex_adapter::AppServerWireMethod;
 use codex_hepta_codex_adapter::CodexAdapterReceipt;
 use codex_hepta_codex_adapter::CodexOperationIntent;
 use codex_hepta_codex_adapter::TURN_START_METHOD_ID;
@@ -151,13 +152,13 @@ fn codex_intent(
     let operation_id = StableId::new(format!("codex:{}", control::digest(request_id.as_bytes())))?;
     let session_id = StableId::new(session_id.to_string())?;
     let thread_id = StableId::new(thread_id.to_string())?;
-    let method_id = StableId::new(TURN_START_METHOD_ID.to_string())?;
+    let method = AppServerWireMethod::new(TURN_START_METHOD_ID.to_string())?;
     let payload_digest = payload_digest.parse::<Digest32>()?;
     Ok(CodexOperationIntent {
         operation_id,
         session_id,
         thread_id,
-        method_id,
+        method,
         payload_digest,
         lease_payload_digest: payload_digest,
         owner_generation,
