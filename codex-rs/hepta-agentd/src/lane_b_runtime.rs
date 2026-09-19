@@ -220,7 +220,10 @@ impl AgentRunCoordinator {
             .validate()
             .map_err(|_| AgentRunError::InvalidIntelligenceEnvelope)?;
         let run_id = envelope.run_id.as_str();
-        let record = self.runs.get_mut(run_id).ok_or(AgentRunError::RunNotFound)?;
+        let record = self
+            .runs
+            .get_mut(run_id)
+            .ok_or(AgentRunError::RunNotFound)?;
         if record.snapshot.objective_digest != envelope.objective_digest.to_string() {
             return Err(AgentRunError::MixedSnapshot);
         }
