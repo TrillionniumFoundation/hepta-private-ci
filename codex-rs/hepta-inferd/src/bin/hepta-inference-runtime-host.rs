@@ -26,6 +26,8 @@ use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_worker_host::native_app_server::GrantResolveError;
 use codex_hepta_infer_worker_host::native_app_server::NativeAdmission;
 use codex_hepta_infer_worker_host::native_app_server::NativeExecutionPolicy;
+use codex_hepta_infer_worker_host::native_app_server::NativePolicySignature;
+use codex_hepta_infer_worker_host::native_app_server::NativePolicyTrust;
 use codex_hepta_infer_worker_host::native_app_server::NativeWorkerConfig;
 use codex_hepta_inferd::worker_port::NativeWorkerPort;
 use serde::Deserialize;
@@ -36,6 +38,7 @@ const MAX_HOST_CONFIG_BYTES: usize = 64 * 1024;
 const MAX_GRANT_BYTES: usize = 32 * 1024;
 const ISSUER_TIMEOUT: Duration = Duration::from_secs(5);
 const MAX_POLICY_BYTES: usize = 64 * 1024;
+const MAX_POLICY_PROOF_BYTES: usize = 16 * 1024;
 const MAX_PROMPT_BYTES: u64 = 32 * 1024 + 1;
 const JOURNAL_CAPACITY: usize = 16_384;
 
@@ -56,6 +59,21 @@ struct HostConfig {
     revocation_revision: u64,
     revoked_grant_ids: BTreeSet<String>,
     final_use_issuer_socket: PathBuf,
+    policy_issuer_id: String,
+    policy_key_epoch: u64,
+    policy_verifying_key: [u8; 32],
+    policy_issuer_revoked: bool,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct PolicyProofWire {
+    issuer_id: String,
+    key_epoch: u64,
+    message_id: String,
+    sequence: u64,
+    expires_at_ms: u64,
+    signature_hex: String,
 }
 
 #[tokio::main]
@@ -72,6 +90,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let host_path = args.next().ok_or(usage())?;
     let quota_path = args.next().ok_or(usage())?;
     let resource_path = args.next().ok_or(usage())?;
+    let policy_proof_path = args.next().ok_or(usage())?;
     let request_id = args.next().ok_or(usage())?;
     let maximum_output_tokens: u64 = args.next().ok_or(usage())?.parse()?;
     let maximum_budget_units: u64 = args.next().ok_or(usage())?.parse()?;
@@ -89,6 +108,29 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         Path::new(&resource_path),
         MAX_POLICY_BYTES,
     )?)?;
+    let policy_proof: PolicyProofWire = serde_json::from_slice(&read_request_evidence(
+        Path::new(&policy_proof_path),
+        MAX_POLICY_PROOF_BYTES,
+    )?)?;
+    let policy = NativeExecutionPolicy::authenticate(
+        quota,
+        resource,
+        &NativePolicyTrust {
+            issuer_id: host.policy_issuer_id.clone(),
+            key_epoch: host.policy_key_epoch,
+            verifying_key: host.policy_verifying_key,
+            revoked: host.policy_issuer_revoked,
+        },
+        NativePolicySignature {
+            issuer_id: policy_proof.issuer_id,
+            key_epoch: policy_proof.key_epoch,
+            message_id: policy_proof.message_id,
+            sequence: policy_proof.sequence,
+            expires_at_ms: policy_proof.expires_at_ms,
+            signature: decode_hex_signature(&policy_proof.signature_hex)?,
+        },
+        current_unix_ms()?,
+    )?;
 
     let authority = FinalUseAuthority::open_state_dir(
         &host.authority_state_dir,
@@ -132,7 +174,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         maximum_in_flight: host.maximum_in_flight,
         maximum_output_tokens,
         maximum_budget_units,
-        policy: NativeExecutionPolicy { quota, resource },
+        policy,
     };
     let grant_resolver =
         |binding: &FinalUseBinding| -> Result<SignedFinalUseGrant, GrantResolveError> {
@@ -165,6 +207,8 @@ fn validate_host_config(config: &HostConfig) -> Result<(), Box<dyn std::error::E
         || !config.journal.is_absolute()
         || !config.authority_state_dir.is_absolute()
         || !config.final_use_issuer_socket.is_absolute()
+        || config.policy_issuer_id.trim().is_empty()
+        || config.policy_key_epoch == 0
     {
         return Err(
             "host-owned socket, journal, authority state and final-use issuer socket paths must be absolute"
@@ -241,6 +285,28 @@ fn resolve_final_use_grant(
     Err("production final-use issuer socket is supported only on Unix".into())
 }
 
+fn current_unix_ms() -> Result<u64, Box<dyn std::error::Error + Send + Sync>> {
+    Ok(std::time::SystemTime::now()
+        .duration_since(std::time::UNIX_EPOCH)?
+        .as_millis()
+        .try_into()?)
+}
+
+fn decode_hex_signature(
+    value: &str,
+) -> Result<[u8; 64], Box<dyn std::error::Error + Send + Sync>> {
+    if value.len() != 128 {
+        return Err("policy signature must be 128 hexadecimal characters".into());
+    }
+    let mut signature = [0_u8; 64];
+    for (index, byte) in signature.iter_mut().enumerate() {
+        let offset = index * 2;
+        *byte = u8::from_str_radix(&value[offset..offset + 2], 16)
+            .map_err(|_| "policy signature must be hexadecimal")?;
+    }
+    Ok(signature)
+}
+
 fn read_request_evidence(
     path: &Path,
     maximum: usize,
@@ -270,7 +336,7 @@ fn bounded_regular_file(
 }
 
 fn usage() -> &'static str {
-    "usage: hepta-inference-runtime-host execute ABS_HOST_CONFIG.json ABS_QUOTA.json ABS_RESOURCE.json REQUEST_ID MAX_OUTPUT_TOKENS MAX_BUDGET_UNITS < PROMPT"
+    "usage: hepta-inference-runtime-host execute ABS_HOST_CONFIG.json ABS_QUOTA.json ABS_RESOURCE.json ABS_POLICY_PROOF.json REQUEST_ID MAX_OUTPUT_TOKENS MAX_BUDGET_UNITS < PROMPT"
 }
 
 #[cfg(test)]
@@ -293,6 +359,10 @@ mod tests {
             revocation_revision: 11,
             revoked_grant_ids: BTreeSet::new(),
             final_use_issuer_socket: PathBuf::from("/run/hepta/final-use-issuer.sock"),
+            policy_issuer_id: "issuer:quota-owner".to_string(),
+            policy_key_epoch: 1,
+            policy_verifying_key: [9; 32],
+            policy_issuer_revoked: false,
         }
     }
 
