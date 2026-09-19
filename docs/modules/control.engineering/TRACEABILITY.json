@@ -132,15 +132,15 @@
       "capabilityCeiling": "assignment projection or bounded qualification only"
     },
     {
-      "designOperation": "register_worker",
+      "designOperation": "register_authenticated_worker",
       "nativeModule": "control_engineering_v2.assignment",
-      "nativeSymbol": "register_worker",
+      "nativeSymbol": "register_authenticated_worker",
       "ownerSymbol": "EngineeringStore.register_worker",
       "tests": [
-        "AssignmentLifecycleTests.test_claim_run_fail_requeue_retry_complete"
+        "OpenSslTrustStoreTests.test_verification_only_store_accepts_pinned_key_and_rejects_tamper"
       ],
       "state": "source_implemented",
-      "capabilityCeiling": "authenticated worker registration only"
+      "capabilityCeiling": "signed bounded worker registration only"
     },
     {
       "designOperation": "claim_assignment",
@@ -187,6 +187,28 @@
       ],
       "state": "source_composed_not_product_executed",
       "capabilityCeiling": "single-writer repository coordination composition without merge/deploy authority"
+    },
+    {
+      "designOperation": "schedule_from_state",
+      "nativeModule": "control_engineering_v2.controller",
+      "nativeSymbol": "EngineeringController.schedule_from_state",
+      "ownerSymbol": "completed_packages + EngineeringStore.schedule_ready_packages",
+      "tests": [
+        "AssignmentLifecycleTests.test_durable_completion_drives_next_schedule"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "durable dependency-driven assignment proposal only"
+    },
+    {
+      "designOperation": "verify_external_audit_anchor",
+      "nativeModule": "control_engineering_v2.audit",
+      "nativeSymbol": "verify_audit_anchor",
+      "ownerSymbol": "EngineeringController.verify_audit_anchor",
+      "tests": [
+        "OpenSslTrustStoreTests.test_verification_only_store_accepts_pinned_key_and_rejects_tamper"
+      ],
+      "state": "source_implemented_external_retention_required",
+      "capabilityCeiling": "anti-rollback audit witness verification only"
     }
   ],
   "negativeAuthorityInvariants": [
