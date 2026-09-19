@@ -269,7 +269,6 @@ mod durable_operations_control {
     }
 }
 
-
 #[derive(Debug)]
 struct DummyRuntimeAttachment(u8);
 
