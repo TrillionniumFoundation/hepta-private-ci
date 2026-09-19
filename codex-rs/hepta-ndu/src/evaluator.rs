@@ -302,6 +302,9 @@ fn validate_contribution_envelope(set: &ContributionSet) -> Result<(), NduError>
 }
 
 fn validate_profile(profile: &mut UtilityProfile) -> Result<(), NduError> {
+    if profile.axis_registry_digest.is_zero() {
+        return Err(NduError::EmptyAxisRegistryDigest);
+    }
     if profile.dimensions.is_empty()
         || profile.dimensions.len() > MAX_UTILITY_DIMENSIONS
         || profile.risk_ceilings.len() > MAX_RISK_RESOURCE_DIMENSIONS
