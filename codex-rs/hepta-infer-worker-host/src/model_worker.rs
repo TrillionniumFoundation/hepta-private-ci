@@ -60,7 +60,7 @@ pub enum GrantVerification {
     },
 }
 
-pub trait ResourceGrantVerifier {
+trait ResourceGrantVerifier {
     fn verify(
         &self,
         now_ms: u64,
@@ -202,7 +202,7 @@ impl VerifiedResourceGrant {
         })
     }
 
-    pub fn verify_with<V: ResourceGrantVerifier>(
+    fn verify_with<V: ResourceGrantVerifier>(
         now_ms: u64,
         grant: ResourceGrant,
         verifier: &V,
@@ -227,6 +227,20 @@ impl VerifiedResourceGrant {
             grant,
             verification,
         })
+    }
+
+    /// Authenticate one exact local worker generation through the kernel
+    /// final-use authority. This is the only public external verification path;
+    /// callers cannot supply an arbitrary verifier implementation.
+    pub fn verify_final_use(
+        now_ms: u64,
+        grant: ResourceGrant,
+        authority: &FinalUseAuthority,
+        signed: &SignedFinalUseGrant,
+        worker_id: String,
+    ) -> Result<Self, Error> {
+        let verifier = FinalUseResourceGrantVerifier::new(authority, signed, worker_id)?;
+        Self::verify_with(now_ms, grant, &verifier)
     }
 
     pub fn grant(&self) -> &ResourceGrant {
