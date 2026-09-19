@@ -20,6 +20,7 @@ mod outbox;
 pub use error::OperationError;
 pub use ledger::MAX_MODEL_OPERATION_RECORDS;
 pub use ledger::OperationLedger;
+pub use model::OperationIntent;
 pub use model::OperationKey;
 pub use model::OperationRecord;
 pub use model::OperationState;
