@@ -1,10 +1,13 @@
 use codex_hepta_authbus::AuthenticatedMessage;
 use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_authbus::SignedMessage;
+use codex_hepta_authbus::TrustedTime;
 use codex_hepta_authbus::VerificationReceipt;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+use crate::AuthBusAuthorityError;
 use crate::EvidenceError;
 use crate::HeptaEvidenceStore;
 use crate::schema_validation::classify_sqlx_error;
@@ -16,6 +19,8 @@ const MAX_AUTHBUS_REPLAY_KEYS: i64 = 16_384;
 pub enum AuthBusAdmissionError {
     #[error("AuthBus message rejected: {0}")]
     Authentication(#[from] codex_hepta_authbus::Error),
+    #[error(transparent)]
+    Authority(#[from] AuthBusAuthorityError),
     #[error(transparent)]
     Storage(#[from] EvidenceError),
 }
@@ -37,15 +42,81 @@ impl HeptaEvidenceStore {
         expected_scope: Digest32,
         expected_payload: Digest32,
     ) -> Result<VerificationReceipt, AuthBusAdmissionError> {
+        let now = u64::try_from(now_millis()?)
+            .map_err(|_| EvidenceError::Unavailable("clock predates Unix epoch".into()))?;
+        self.admit_authbus_message_at(
+            issuer,
+            message,
+            expected_subject,
+            expected_scope,
+            expected_payload,
+            now,
+        )
+        .await
+    }
+
+    /// Admission with a host-provided trusted-time observation. Production
+    /// callers can use this instead of wall-clock admission; the observation
+    /// must be bounded and current according to the host's independent source.
+    pub async fn admit_authbus_message_with_trusted_time(
+        &self,
+        issuer: &IssuerRegistration,
+        message: &SignedMessage,
+        expected_subject: &StableId,
+        expected_scope: Digest32,
+        expected_payload: Digest32,
+        time: &TrustedTime,
+    ) -> Result<VerificationReceipt, AuthBusAdmissionError> {
+        time.validate(5_000)?;
+        self.admit_authbus_message_at(
+            issuer,
+            message,
+            expected_subject,
+            expected_scope,
+            expected_payload,
+            time.now_ms,
+        )
+        .await
+    }
+
+    /// Resolve issuer trust from the durable managed registry before admission.
+    /// The incoming message never supplies the trusted key or revocation state.
+    pub async fn admit_authbus_message_managed(
+        &self,
+        issuer_id: &StableId,
+        key_epoch: Generation,
+        message: &SignedMessage,
+        expected_subject: &StableId,
+        expected_scope: Digest32,
+        expected_payload: Digest32,
+        time: &TrustedTime,
+    ) -> Result<VerificationReceipt, AuthBusAdmissionError> {
+        let (issuer, _) = self.resolve_authbus_trust(issuer_id, key_epoch).await?;
+        self.admit_authbus_message_with_trusted_time(
+            &issuer,
+            message,
+            expected_subject,
+            expected_scope,
+            expected_payload,
+            time,
+        )
+        .await
+    }
+
+    async fn admit_authbus_message_at(
+        &self,
+        issuer: &IssuerRegistration,
+        message: &SignedMessage,
+        expected_subject: &StableId,
+        expected_scope: Digest32,
+        expected_payload: Digest32,
+        now: u64,
+    ) -> Result<VerificationReceipt, AuthBusAdmissionError> {
         let mut transaction = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
-        // Read time after the SQLite wait; a queued message cannot outlive its
-        // expiry merely because signature verification happened before a lock.
-        let now = u64::try_from(now_millis()?)
-            .map_err(|_| EvidenceError::Unavailable("clock predates Unix epoch".into()))?;
         if &message.claims.subject_id != expected_subject {
             return Err(codex_hepta_authbus::Error::SubjectMismatch.into());
         }
