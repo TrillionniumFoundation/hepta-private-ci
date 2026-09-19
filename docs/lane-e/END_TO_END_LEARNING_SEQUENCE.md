@@ -43,17 +43,22 @@ Linearization rules:
 ```text
 DatasetSnapshotV2
   -> validate current objective, lineage and withdrawal state
-  -> fit_transition_model builds an action-conditioned tabular baseline from
-     independently observed rows
+  -> fit_transition_model_from_dataset_receipt_v3 recomputes the frozen V3
+     dataset receipt, rejects detached/replayed evidence and builds an
+     action-conditioned tabular baseline from admitted observed rows
   -> unsupported state/action pairs return OOD instead of extrapolation
-  -> validate_applicability_certificate admits only current, independently
-     evaluated smooth-axis profiles with positive ellipticity and named fallback
+  -> validate_applicability_certificate_verified consumes host-verified signed
+     generator/evaluator evidence and admits only current smooth-axis profiles
+     with positive ellipticity, role/controller separation and named fallback
   -> build_sensor_core deterministically selects a fixed farthest-point core
      and measures fill distance, separation radius and mesh ratio
   -> evaluate_bellman_reference requires a complete sensor/action grid and emits
      deterministic targets, greedy actions and action gaps
+  -> fit_tabular_operator_from_dataset_receipt_v3 is the default learned
+     qualification path; V1 fit remains compatibility-only
   -> optional learned implementations are compared with that reference
-  -> admit_operator_regularity intersects rank, reconstruction gain,
+  -> admit_operator_regularity_verified binds the signed evaluator assessment
+     while intersecting rank, reconstruction gain,
      monotonicity, positivity, Hölder/Lipschitz residuals, OOD and the complete
      error-component budget
   -> candidate bytes and the complete V2 manifest go to learning.artifacts
