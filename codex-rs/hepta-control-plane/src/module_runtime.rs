@@ -128,7 +128,13 @@ pub struct ActiveRuntimeModuleV1 {
     pub module_id: StableId,
     pub generation: Generation,
     pub implementation_digest: Digest32,
+    pub candidate_artifact_digest: Digest32,
     pub owner_id: StableId,
+    pub state_class: RuntimeModuleStateClassV1,
+    pub input_ports: Vec<StableId>,
+    pub output_ports: Vec<StableId>,
+    pub authoritative_domains: BTreeSet<StableId>,
+    pub effect_scope: BTreeSet<StableId>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -422,7 +428,13 @@ impl RuntimeModuleRegistryV1 {
                         module_id: module_id.clone(),
                         generation: *generation,
                         implementation_digest: record.abi.implementation_digest,
+                        candidate_artifact_digest: record.abi.candidate_artifact_digest,
                         owner_id: record.abi.owner_id.clone(),
+                        state_class: record.abi.state_class,
+                        input_ports: record.abi.input_ports.clone(),
+                        output_ports: record.abi.output_ports.clone(),
+                        authoritative_domains: record.abi.authoritative_domains.clone(),
+                        effect_scope: record.abi.effect_scope.clone(),
                     })
             })
             .collect::<Vec<_>>();
@@ -433,7 +445,17 @@ impl RuntimeModuleRegistryV1 {
             push_text(&mut bytes, module.module_id.as_str());
             bytes.extend_from_slice(&module.generation.get().to_be_bytes());
             bytes.extend_from_slice(module.implementation_digest.as_array());
+            bytes.extend_from_slice(module.candidate_artifact_digest.as_array());
             push_text(&mut bytes, module.owner_id.as_str());
+            bytes.push(match module.state_class {
+                RuntimeModuleStateClassV1::Stateless => 0,
+                RuntimeModuleStateClassV1::Stateful => 1,
+                RuntimeModuleStateClassV1::ExternalStateful => 2,
+            });
+            push_ids(&mut bytes, &module.input_ports);
+            push_ids(&mut bytes, &module.output_ports);
+            push_ids(&mut bytes, &module.authoritative_domains.iter().cloned().collect::<Vec<_>>());
+            push_ids(&mut bytes, &module.effect_scope.iter().cloned().collect::<Vec<_>>());
         }
         RuntimeTopologySnapshotV1 {
             active,
@@ -484,6 +506,13 @@ impl RuntimeModuleRegistryV1 {
             }
         }
         Ok(())
+    }
+}
+
+fn push_ids(bytes: &mut Vec<u8>, values: &[StableId]) {
+    bytes.extend_from_slice(&(values.len() as u32).to_be_bytes());
+    for value in values {
+        push_text(bytes, value.as_str());
     }
 }
 
