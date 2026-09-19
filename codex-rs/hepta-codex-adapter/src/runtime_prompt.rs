@@ -314,10 +314,13 @@ pub struct PromptRuntimeTerminalRecordV1 {
     pub context_attachment_digest: Digest32,
     pub context_payload_digest: Digest32,
     pub source_binding_digest: Digest32,
+    pub thread_id: String,
+    pub turn_id: String,
     pub attempt_id: String,
     pub request_binding_id: String,
     pub provider_request_digest: Digest32,
     pub outcome: PromptRuntimeTerminalOutcomeV1,
+    pub end_turn: Option<bool>,
     pub terminal_reason_code: Option<String>,
     pub delivery_observation: Option<PromptDeliveryObservationV1>,
     pub observed_unix_ms: u64,
@@ -329,6 +332,8 @@ impl PromptRuntimeTerminalRecordV1 {
             || self.context_payload_digest.is_zero()
             || self.source_binding_digest.is_zero()
             || self.provider_request_digest.is_zero()
+            || self.thread_id.is_empty()
+            || self.turn_id.is_empty()
             || self.attempt_id.is_empty()
             || self.request_binding_id.is_empty()
             || self.observed_unix_ms == 0
@@ -579,6 +584,8 @@ impl ModelProviderPolicyContributor for PromptRuntimeExtension {
                     host: self.host.clone(),
                     attachment,
                     intent,
+                    thread_id: input.thread_id.to_owned(),
+                    turn_id: input.turn_id.to_owned(),
                     attempt_id: input.attempt_id.to_owned(),
                     request_binding_id: input.request_binding_id.to_owned(),
                     provider_request_digest,
@@ -604,6 +611,8 @@ struct PromptRuntimeAttemptLease {
     host: PromptRuntimeHost,
     attachment: PromptRuntimeAttachmentV1,
     intent: CodexOperationIntent,
+    thread_id: String,
+    turn_id: String,
     attempt_id: String,
     request_binding_id: String,
     provider_request_digest: Digest32,
@@ -617,17 +626,20 @@ impl ModelProviderAttemptLease for PromptRuntimeAttemptLease {
     ) -> ModelProviderPolicyFuture<'static, ()> {
         Box::pin(async move {
             let observed_unix_ms = current_unix_ms().map_err(runtime_policy_error)?;
-            let (outcome, terminal_reason_code, delivery_observation) =
+            let (outcome, terminal_reason_code, end_turn, delivery_observation) =
                 self.map_terminal(terminal).map_err(runtime_policy_error)?;
             let record = PromptRuntimeTerminalRecordV1 {
                 compilation_id: self.attachment.compilation_id.clone(),
                 context_attachment_digest: self.attachment.context_attachment_digest,
                 context_payload_digest: self.attachment.context_payload_digest,
                 source_binding_digest: self.attachment.source_binding_digest,
+                thread_id: self.thread_id,
+                turn_id: self.turn_id,
                 attempt_id: self.attempt_id,
                 request_binding_id: self.request_binding_id,
                 provider_request_digest: self.provider_request_digest,
                 outcome,
+                end_turn,
                 terminal_reason_code,
                 delivery_observation,
                 observed_unix_ms,
@@ -651,12 +663,13 @@ impl PromptRuntimeAttemptLease {
         (
             PromptRuntimeTerminalOutcomeV1,
             Option<String>,
+            Option<bool>,
             Option<PromptDeliveryObservationV1>,
         ),
         PromptRuntimeError,
     > {
         match terminal {
-            ModelProviderTerminal::Completed { .. } => {
+            ModelProviderTerminal::Completed { end_turn, .. } => {
                 let observation = observe_prompt_delivery_v1(
                     self.dispatch_unix_ms,
                     &self.intent,
@@ -674,6 +687,7 @@ impl PromptRuntimeAttemptLease {
                 Ok((
                     PromptRuntimeTerminalOutcomeV1::Delivered,
                     None,
+                    end_turn,
                     Some(observation),
                 ))
             }
@@ -696,6 +710,7 @@ impl PromptRuntimeAttemptLease {
                 Ok((
                     PromptRuntimeTerminalOutcomeV1::Rejected,
                     Some(reason_code),
+                    None,
                     Some(observation),
                 ))
             }
@@ -703,15 +718,18 @@ impl PromptRuntimeAttemptLease {
                 PromptRuntimeTerminalOutcomeV1::NotDispatched,
                 Some(reason_code),
                 None,
+                None,
             )),
             ModelProviderTerminal::Indeterminate { reason_code, .. } => Ok((
                 PromptRuntimeTerminalOutcomeV1::Indeterminate,
                 Some(reason_code),
                 None,
+                None,
             )),
             ModelProviderTerminal::CompletedUnary { .. } => Ok((
                 PromptRuntimeTerminalOutcomeV1::Indeterminate,
                 Some("unexpected_unary_terminal_for_turn".to_owned()),
+                None,
                 None,
             )),
         }
