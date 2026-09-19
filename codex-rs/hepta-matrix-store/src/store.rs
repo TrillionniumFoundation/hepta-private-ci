@@ -3009,6 +3009,7 @@ async fn logical_stream_dependency_tx(
     let row = sqlx::query(
         "SELECT current_txn.revision AS current_revision,
                 root_txn.revision AS root_revision,
+                root_txn.txn_id AS root_txn_id,
                 root_message.state AS root_state,
                 root_message.sent_event_id AS root_sent_event_id
          FROM outbox_txns AS current_txn
@@ -3047,52 +3048,41 @@ async fn logical_stream_dependency_tx(
             ))
         }
         OutboxState::PermanentFailure => {
-            let dispatch_state = sqlx::query_scalar::<_, Option<String>>(
-                "SELECT state FROM matrix_dispatch_ledger
-                 WHERE stable_txn_id = (
-                     SELECT root_txn.txn_id
-                     FROM outbox_txns AS root_txn
-                     JOIN outbox_txns AS current_txn
-                       ON current_txn.logical_outbox_id = root_txn.logical_outbox_id
-                     WHERE current_txn.txn_id = ?
-                     ORDER BY root_txn.revision ASC
-                     LIMIT 1
-                 )",
+            let root_txn_id = MatrixTransactionId::parse(
+                row.try_get::<String, _>("root_txn_id")
+                    .map_err(unavailable)?,
             )
-            .bind(stable_txn_id.as_str())
-            .fetch_one(&mut **transaction)
+            .map_err(|_| MatrixDurableError::Corrupt)?;
+            let dispatch = sqlx::query(
+                "SELECT state, terminal_event_id
+                 FROM matrix_dispatch_ledger
+                 WHERE stable_txn_id = ?",
+            )
+            .bind(root_txn_id.as_str())
+            .fetch_optional(&mut **transaction)
             .await
             .map_err(unavailable)?;
-            match dispatch_state.as_deref() {
-                Some("failed") => Ok(LogicalStreamDependency::RootFailed),
-                Some("succeeded") | Some("redacted") => {
-                    let event_id = sqlx::query_scalar::<_, Option<String>>(
-                        "SELECT terminal_event_id FROM matrix_dispatch_ledger
-                         WHERE stable_txn_id = (
-                             SELECT root_txn.txn_id
-                             FROM outbox_txns AS root_txn
-                             JOIN outbox_txns AS current_txn
-                               ON current_txn.logical_outbox_id = root_txn.logical_outbox_id
-                             WHERE current_txn.txn_id = ?
-                             ORDER BY root_txn.revision ASC
-                             LIMIT 1
-                         )",
-                    )
-                    .bind(stable_txn_id.as_str())
-                    .fetch_one(&mut **transaction)
-                    .await
-                    .map_err(unavailable)?
-                    .ok_or(MatrixDurableError::Corrupt)?;
+            let Some(dispatch) = dispatch else {
+                // Historical outbox rows predate the durable dispatch ledger.
+                return Ok(LogicalStreamDependency::RootFailed);
+            };
+            let dispatch_state: String = dispatch.try_get("state").map_err(unavailable)?;
+            match dispatch_state.as_str() {
+                "failed" => Ok(LogicalStreamDependency::RootFailed),
+                "succeeded" | "redacted" => {
+                    let event_id = dispatch
+                        .try_get::<Option<String>, _>("terminal_event_id")
+                        .map_err(unavailable)?
+                        .ok_or(MatrixDurableError::Corrupt)?;
                     Ok(LogicalStreamDependency::Replace(
                         MatrixEventId::parse(event_id)
                             .map_err(|_| MatrixDurableError::Corrupt)?,
                     ))
                 }
-                Some("prepared" | "dispatched" | "accepted" | "indeterminate") => {
+                "prepared" | "dispatched" | "accepted" | "indeterminate" => {
                     Ok(LogicalStreamDependency::Waiting)
                 }
-                Some(_) => Err(MatrixDurableError::Corrupt),
-                None => Ok(LogicalStreamDependency::RootFailed),
+                _ => Err(MatrixDurableError::Corrupt),
             }
         }
         OutboxState::Pending | OutboxState::InFlight | OutboxState::RetryScheduled => {
