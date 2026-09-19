@@ -416,14 +416,12 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
         }],
     };
 
-    let sign = |
-        evidence_id: &str,
-        principal: &AuthenticatedPrincipalV1,
-        key: &SigningKey,
-        role: LearningEvidenceRoleV1,
-        payload: &[u8],
-        issued_at: u64,
-    | {
+    let sign = |evidence_id: &str,
+                principal: &AuthenticatedPrincipalV1,
+                key: &SigningKey,
+                role: LearningEvidenceRoleV1,
+                payload: &[u8],
+                issued_at: u64| {
         let mut evidence = SignedLearningEvidenceV1 {
             evidence_id: id(evidence_id),
             principal_id: principal.principal_id.clone(),
