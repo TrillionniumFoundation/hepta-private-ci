@@ -5,8 +5,10 @@
 The restored Lane E source includes strict learned-operator fitting, immutable
 dataset/admission receipts, and replayable final-holdout/lifecycle journals. The
 journals implement semantic replay and expected-head checks; the host still owns
-exclusive writing, fsync, crash recovery and a trusted persisted head. Their
-existence is not evidence of a running long-term learner.
+fsync, crash recovery and trusted persisted authority. A single-host deployment
+owns an exclusive writer; a multi-owner deployment must supply the linearizable
+external anchor authority required by `consume_fenced`. Their existence is not
+evidence of a running long-term learner.
 
 ## Authenticated evidence boundary
 
