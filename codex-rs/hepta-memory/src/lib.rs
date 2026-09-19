@@ -118,6 +118,7 @@ pub use cognitive_runtime::CognitiveUnavailableReason;
 pub use cognitive_store::CognitiveRecoveryAnchor;
 pub use cognitive_store::CognitiveRecoveryError;
 pub use cognitive_store::CognitiveRecoveryRequirement;
+pub use cognitive_store::CognitiveRecoveryWriterFence;
 pub use cognitive_store::CognitiveStore;
 pub use cognitive_store::CognitiveStoreError;
 pub use cognitive_store::RecoveredCognitiveReadOnly;
