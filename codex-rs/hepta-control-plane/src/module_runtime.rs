@@ -177,7 +177,7 @@ impl fmt::Display for RuntimeModuleRegistryError {
 
 impl StdError for RuntimeModuleRegistryError {}
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default)]
 pub struct RuntimeModuleRegistryV1 {
     records: BTreeMap<(StableId, Generation), RuntimeModuleRecordV1>,
     active: BTreeMap<StableId, Generation>,
