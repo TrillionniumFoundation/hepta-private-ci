@@ -190,16 +190,7 @@ impl LearningLedger {
         self.records
             .iter()
             .filter(|record| self.record_is_active(record))
-            .filter(|record| {
-                matches!(
-                    &record.event,
-                    LedgerEvent::Decision(_)
-                        | LedgerEvent::Outcome(_)
-                        | LedgerEvent::Credit(_)
-                        | LedgerEvent::AuthenticatedOutcome(_)
-                        | LedgerEvent::CreditBatch(_)
-                )
-            })
+            .filter(|record| self.record_is_current_dataset_fact(record))
             .map(|record| record.event_digest)
             .collect()
     }
@@ -228,7 +219,7 @@ impl LearningLedger {
         let mut pending = 0_u32;
         let mut censored = 0_u32;
         for record in &self.records {
-            if !self.record_is_active(record) {
+            if !self.record_is_active(record) || !self.record_is_current_dataset_fact(record) {
                 continue;
             }
             match &record.event {
@@ -466,6 +457,11 @@ impl LearningLedger {
     }
 
     fn validate_credit_batch(&self, batch: &CreditAllocationBatchV1) -> Result<(), LedgerError> {
+        if self.credit_ids.contains(&batch.batch_id) {
+            return Err(LedgerError::CreditIdentityAlreadyExists(
+                batch.batch_id.to_string(),
+            ));
+        }
         if batch.allocator.authority_epoch == 0
             || batch.allocator.authenticated_at > batch.allocator.expires_at
         {
@@ -539,12 +535,18 @@ impl LearningLedger {
         &self,
         lineage: &UnlearningLineageEventV1,
     ) -> Result<(), LedgerError> {
-        if !self.record_digests.contains_key(&lineage.source_record_id)
-            || !self.revoked.contains(&lineage.source_record_id)
-        {
+        let Some(source_digest) = self.record_digests.get(&lineage.source_record_id) else {
             return Err(LedgerError::UnlearningSourceNotRevoked(
                 lineage.source_record_id.to_string(),
             ));
+        };
+        if !self.revoked.contains(&lineage.source_record_id) {
+            return Err(LedgerError::UnlearningSourceNotRevoked(
+                lineage.source_record_id.to_string(),
+            ));
+        }
+        if source_digest != &lineage.source_digest {
+            return Err(LedgerError::UnlearningSourceDigestMismatch);
         }
         match lineage.predecessor.as_ref() {
             Some(predecessor) => {
@@ -620,6 +622,8 @@ impl LearningLedger {
                         value_raw: Some(value.value.raw()),
                     },
                 );
+                self.outcome_heads
+                    .insert(value.episode_id.clone(), value.outcome_id.clone());
             }
             LedgerEvent::Credit(value) => {
                 self.credit_ids.insert(value.credit_id.clone());
@@ -661,6 +665,29 @@ impl LearningLedger {
                 self.unlearning_records
                     .insert(value.record_id.clone(), value.derived_id.clone());
             }
+        }
+    }
+
+    fn record_is_current_dataset_fact(&self, record: &LedgerRecord) -> bool {
+        match &record.event {
+            LedgerEvent::Decision(_) => true,
+            LedgerEvent::Outcome(outcome) => self
+                .outcome_heads
+                .get(&outcome.episode_id)
+                .is_some_and(|head| head == &outcome.outcome_id),
+            LedgerEvent::AuthenticatedOutcome(outcome) => self
+                .outcome_heads
+                .get(&outcome.episode_id)
+                .is_some_and(|head| head == &outcome.outcome_id),
+            LedgerEvent::Credit(credit) => self
+                .outcome_heads
+                .get(&credit.episode_id)
+                .is_some_and(|head| head == &credit.outcome_id),
+            LedgerEvent::CreditBatch(batch) => self
+                .outcome_heads
+                .get(&batch.episode_id)
+                .is_some_and(|head| head == &batch.outcome_id),
+            LedgerEvent::Revocation(_) | LedgerEvent::UnlearningLineage(_) => false,
         }
     }
 
