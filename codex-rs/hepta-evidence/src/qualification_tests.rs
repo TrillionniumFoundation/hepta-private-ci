@@ -312,6 +312,26 @@ async fn security_authority_revocation_is_immediate_and_persistent() {
         .await
         .expect("query");
     assert_eq!(refs[0].state, EvidenceReferenceState::Revoked);
+
+    let after_revocation = envelope(
+        "receipt-after-key-revocation",
+        "evaluator",
+        EvidenceClaimClass::ExactSource,
+        b"after-key-revocation",
+    );
+    let after_issuer = trust
+        .authenticate(
+            &after_revocation,
+            &proof(&evaluator, "reviewer-a", &after_revocation),
+        )
+        .expect("cryptographic proof still verifies against static policy");
+    assert!(matches!(
+        store
+            .qualification()
+            .append_receipt(&after_revocation, &after_issuer)
+            .await,
+        Err(EvidenceError::InvalidRecord(_))
+    ));
 }
 
 #[tokio::test]
