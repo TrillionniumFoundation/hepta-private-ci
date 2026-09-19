@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "2b209faf9b6c46746c07c4359be6b13e7a44ee89",
+    "tree": "de17ec74becb8c70390360b3ac8d1640de4d83e8"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.control",
@@ -135,7 +135,8 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "boundCargoPackagesMapped": true
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
@@ -147,5 +148,23 @@
   "sourceRoot": [
     "codex-rs/hepta-infer-core",
     "codex-rs/hepta-inferd"
-  ]
+  ],
+  "sourceBaseSemantics": "generation_provenance_only_freshness_is_source_fingerprint",
+  "sourceFingerprintPolicy": "git-tracked-content-sha256-v1",
+  "boundCargoPackages": [
+    "codex-rs/hepta-infer-core",
+    "codex-rs/hepta-inferd"
+  ],
+  "sourceFingerprints": {
+    "codex-rs/hepta-infer-core": {
+      "algorithm": "sha256",
+      "digest": "483702f7495cf6855016a77a1af974013bd13a70867a362405cb79e813c79920",
+      "trackedFiles": 9
+    },
+    "codex-rs/hepta-inferd": {
+      "algorithm": "sha256",
+      "digest": "3a145d542f6ff488731fa34a29283616317286a12a5d0721db58cec6b1552d70",
+      "trackedFiles": 5
+    }
+  }
 }

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "2b209faf9b6c46746c07c4359be6b13e7a44ee89",
+    "tree": "de17ec74becb8c70390360b3ac8d1640de4d83e8"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.codex",
@@ -149,7 +149,8 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "boundCargoPackagesMapped": true
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
@@ -161,5 +162,44 @@
   "sourceRoot": [
     "codex-rs/codex-app-server",
     "codex-rs/hepta-codex-adapter"
-  ]
+  ],
+  "sourceBaseSemantics": "generation_provenance_only_freshness_is_source_fingerprint",
+  "sourceFingerprintPolicy": "git-tracked-content-sha256-v1",
+  "boundCargoPackages": [
+    "codex-rs/ext/hepta-memory",
+    "codex-rs/hepta-codex-adapter",
+    "codex-rs/hepta-native-gateway"
+  ],
+  "sourceFingerprints": {
+    "codex-rs/codex-app-server": {
+      "algorithm": "sha256",
+      "digest": "8b9683b5f766f4c4dd8faf0101da41f2f7feed9a4364e8029d32cc9443ad99b0",
+      "trackedFiles": 2
+    },
+    "codex-rs/hepta-codex-adapter": {
+      "algorithm": "sha256",
+      "digest": "9f2d4fe4436b92e6507b804a2d9f6ebc22bf0e34fd7a0195e883a3e51160c30a",
+      "trackedFiles": 5
+    },
+    "codex-rs/hepta-native-gateway": {
+      "algorithm": "sha256",
+      "digest": "99ef069aa7edbea3cf2fd36a3cb2865564a922eb12e561707464665756796a19",
+      "trackedFiles": 4
+    },
+    "codex-rs/ext/hepta-memory": {
+      "algorithm": "sha256",
+      "digest": "66a9f866ca49ef12e1f72ea6fcb231acc0cf4b505a499469a2c2c6a9094e8b0f",
+      "trackedFiles": 21
+    },
+    "codex-rs/app-server/src/request_processors/thread_processor.rs": {
+      "algorithm": "sha256",
+      "digest": "14103cfe9d7e3df3775157b1a50abbc7147766e976dbdc0017687f4a1ddb6b49",
+      "trackedFiles": 1
+    },
+    "codex-rs/app-server/src/request_processors/turn_processor.rs": {
+      "algorithm": "sha256",
+      "digest": "950115c301f2989a7a7c355ffae9e06368eacfe49b490f811b558e83733c53ef",
+      "trackedFiles": 1
+    }
+  }
 }
