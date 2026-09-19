@@ -22,6 +22,9 @@ pub enum LedgerError {
     OutcomeEpisodeMismatch,
     OutcomeNotTerminal,
     PolicySelfLabelsOutcome,
+    InvalidAuthenticatedPrincipal,
+    OutcomeStateMismatch,
+    InvalidWatermark,
     CreditIdentityAlreadyExists(String),
     CreditAlreadyAssigned,
     CreditBatchNotFinalized,
@@ -71,7 +74,10 @@ impl LedgerError {
             | Self::OutcomeNotFound(_)
             | Self::OutcomeRevoked(_) => "LRN-E004",
             Self::OutcomeEpisodeMismatch | Self::OutcomeNotTerminal => "LRN-E005",
-            Self::PolicySelfLabelsOutcome => "LRN-E006",
+            Self::PolicySelfLabelsOutcome
+            | Self::InvalidAuthenticatedPrincipal
+            | Self::OutcomeStateMismatch
+            | Self::InvalidWatermark => "LRN-E006",
             Self::CreditAlreadyAssigned
             | Self::CreditBatchNotFinalized
             | Self::CreditBatchEmpty
@@ -139,6 +145,15 @@ impl fmt::Display for LedgerError {
             }
             Self::PolicySelfLabelsOutcome => {
                 formatter.write_str("evaluated policy cannot label its own outcome")
+            }
+            Self::InvalidAuthenticatedPrincipal => {
+                formatter.write_str("authenticated principal metadata is structurally invalid")
+            }
+            Self::OutcomeStateMismatch => {
+                formatter.write_str("authenticated outcome fields do not match terminality")
+            }
+            Self::InvalidWatermark => {
+                formatter.write_str("authenticated outcome watermark is inconsistent")
             }
             Self::CreditIdentityAlreadyExists(id) => {
                 write!(formatter, "credit identity already exists: {id}")
