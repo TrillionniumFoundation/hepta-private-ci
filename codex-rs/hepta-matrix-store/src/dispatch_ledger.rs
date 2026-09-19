@@ -315,6 +315,14 @@ impl MatrixDurableStore {
         let current = load_dispatch_tx(&mut tx, txn_id)
             .await?
             .ok_or(MatrixDurableError::Conflict)?;
+        if matches!(
+            current.state,
+            MatrixDispatchState::ObservedSucceeded | MatrixDispatchState::Redacted
+        ) && current.terminal_event_id.as_ref() == Some(event_id)
+        {
+            tx.commit().await.map_err(unavailable)?;
+            return Ok(current);
+        }
         if current.state == MatrixDispatchState::Accepted
             && current.attempt == expected_attempt
             && current.accepted_event_id.as_ref() == Some(event_id)
@@ -377,6 +385,13 @@ impl MatrixDurableStore {
         let current = load_dispatch_tx(&mut tx, txn_id)
             .await?
             .ok_or(MatrixDurableError::Conflict)?;
+        if matches!(
+            current.state,
+            MatrixDispatchState::ObservedSucceeded | MatrixDispatchState::Redacted
+        ) {
+            tx.commit().await.map_err(unavailable)?;
+            return Ok(current);
+        }
         if current.state == MatrixDispatchState::Indeterminate
             && current.attempt == expected_attempt
         {
@@ -440,6 +455,13 @@ impl MatrixDurableStore {
         let current = load_dispatch_tx(&mut tx, txn_id)
             .await?
             .ok_or(MatrixDurableError::Conflict)?;
+        if matches!(
+            current.state,
+            MatrixDispatchState::ObservedSucceeded | MatrixDispatchState::Redacted
+        ) {
+            tx.commit().await.map_err(unavailable)?;
+            return Ok(current);
+        }
         if current.state != MatrixDispatchState::Dispatched || current.attempt != expected_attempt {
             return Err(MatrixDurableError::Conflict);
         }
@@ -509,6 +531,13 @@ impl MatrixDurableStore {
         let current = load_dispatch_tx(&mut tx, txn_id)
             .await?
             .ok_or(MatrixDurableError::Conflict)?;
+        if matches!(
+            current.state,
+            MatrixDispatchState::ObservedSucceeded | MatrixDispatchState::Redacted
+        ) {
+            tx.commit().await.map_err(unavailable)?;
+            return Ok(current);
+        }
         if current.state == MatrixDispatchState::ObservedFailed
             && current.send_observation_digest.as_deref() == Some(observation_digest)
         {
