@@ -260,22 +260,209 @@ def register_authenticated_worker(
 def completed_packages(
     store: "EngineeringStore",
     envelope_id: str,
+    packages,
     *,
     now_ns: int | None = None,
 ) -> tuple[str, ...]:
+    """Return only completed package identities with equal current semantics."""
     _control.checked_id(envelope_id, "envelope_id")
+    raw = _control.bounded_tuple(
+        packages,
+        _control.MAX_PACKAGES,
+        "package_limit_exceeded",
+    )
+    current = tuple(_control._validate_package(value) for value in raw)
+    current_ids = {package.package_id for package in current}
+    for package in current:
+        if any(predecessor not in current_ids for predecessor in package.predecessors):
+            raise _control.EngineeringError("state_schedule_requires_complete_package_graph")
+    expected = {
+        package.package_id: _control.semantic_digest(
+            {
+                "priority": package.priority,
+                "package_id": package.package_id,
+                "predecessors": package.predecessors,
+                "write_paths": package.write_paths,
+                "required_capabilities": package.required_capabilities,
+                "maximum_attempts": package.maximum_attempts,
+            }
+        )
+        for package in current
+    }
     now = store._now(now_ns)
     with store._transaction():
         store._get_envelope(envelope_id, now)
         store._expire_leases(now)
         _expire_state(store, now)
         rows = store.connection.execute(
-            "SELECT DISTINCT c.package_id FROM assignment_claims c "
+            "SELECT p.package_id,p.semantic_digest FROM assignment_claims c "
             "JOIN assignment_generations g ON g.generation_id=c.generation_id "
-            "WHERE g.envelope_id=? AND c.state='completed' ORDER BY c.package_id",
+            "JOIN assignment_generation_packages p "
+            "ON p.generation_id=c.generation_id AND p.package_id=c.package_id "
+            "WHERE g.envelope_id=? AND c.state='completed' "
+            "ORDER BY p.package_id,c.attempt",
             (envelope_id,),
         ).fetchall()
-    return tuple(str(row["package_id"]) for row in rows)
+    completed = {
+        str(row["package_id"])
+        for row in rows
+        if expected.get(str(row["package_id"])) == str(row["semantic_digest"])
+    }
+    return tuple(sorted(completed))
+
+
+def refresh_authenticated_worker(
+    store: "EngineeringStore",
+    identity: WorkerIdentityReceipt,
+    verifier: SignatureVerifier,
+    *,
+    expected_revision: int,
+    now_ns: int | None = None,
+) -> WorkerReceipt:
+    if not isinstance(identity, WorkerIdentityReceipt):
+        raise _control.EngineeringError("worker_identity_receipt_required")
+    now = store._now(now_ns)
+    capabilities = _canonical_capabilities(identity.capabilities)
+    if capabilities != identity.capabilities:
+        raise _control.EngineeringError("worker_identity_noncanonical")
+    _control.checked_id(identity.worker_id, "worker_id")
+    _control.checked_id(identity.principal, "worker_principal")
+    _control.checked_sha256(identity.credential_chain_digest, "credential_chain_digest")
+    if identity.credential_chain_digest == "0" * 64:
+        raise _control.EngineeringError("invalid_credential_chain_digest")
+    if (
+        type(identity.maximum_concurrency) is not int
+        or not 1 <= identity.maximum_concurrency <= MAX_WORKER_CONCURRENCY
+        or type(identity.authority_epoch) is not int
+        or identity.authority_epoch < 1
+        or type(identity.observed_unix_ns) is not int
+        or type(identity.lease_expires_unix_ns) is not int
+        or type(identity.expires_unix_ns) is not int
+        or not identity.observed_unix_ns <= now < identity.lease_expires_unix_ns
+        or identity.lease_expires_unix_ns > identity.expires_unix_ns
+    ):
+        raise _control.EngineeringError("worker_identity_stale")
+    if identity.issuer != "engineering_worker_authority" or not identity.signing_identity:
+        raise _control.EngineeringError("worker_identity_issuer_role")
+    if not verifier.verify(
+        identity,
+        identity.issuer,
+        identity.signing_identity,
+        identity.signature,
+    ):
+        raise _control.EngineeringError("worker_identity_signature")
+    with store._transaction():
+        _expire_state(store, now)
+        row = store.connection.execute(
+            "SELECT * FROM engineering_workers WHERE worker_id=?",
+            (identity.worker_id,),
+        ).fetchone()
+        if row is None:
+            raise _control.EngineeringError("unknown_worker")
+        if int(row["revision"]) != expected_revision:
+            raise _control.EngineeringError("stale_worker_revision")
+        if row["state"] not in {"active", "draining"}:
+            raise _control.EngineeringError("worker_not_active")
+        immutable = (
+            str(row["principal"]) == identity.principal
+            and str(row["credential_chain_digest"]) == identity.credential_chain_digest
+            and _decode_strings(row["capabilities_json"], "invalid_worker_capabilities")
+            == identity.capabilities
+            and int(row["maximum_concurrency"]) == identity.maximum_concurrency
+            and int(row["authority_epoch"]) == identity.authority_epoch
+        )
+        if not immutable:
+            raise _control.EngineeringError("worker_identity_refresh_mismatch")
+        if (
+            identity.lease_expires_unix_ns <= int(row["lease_expires_unix_ns"])
+            or identity.expires_unix_ns <= int(row["identity_expires_unix_ns"])
+        ):
+            raise _control.EngineeringError("worker_identity_not_newer")
+        revision = expected_revision + 1
+        semantic = _control.semantic_digest(
+            {
+                "workerId": identity.worker_id,
+                "principal": identity.principal,
+                "credentialChainDigest": identity.credential_chain_digest,
+                "capabilities": identity.capabilities,
+                "maximumConcurrency": identity.maximum_concurrency,
+                "authorityEpoch": identity.authority_epoch,
+                "leaseExpiresUnixNs": identity.lease_expires_unix_ns,
+                "identityExpiresUnixNs": identity.expires_unix_ns,
+            }
+        )
+        store.connection.execute(
+            "UPDATE engineering_workers SET revision=?,last_heartbeat_unix_ns=?,"
+            "lease_expires_unix_ns=?,identity_expires_unix_ns=?,semantic_digest=? "
+            "WHERE worker_id=? AND revision=?",
+            (
+                revision,
+                now,
+                identity.lease_expires_unix_ns,
+                identity.expires_unix_ns,
+                semantic,
+                identity.worker_id,
+                expected_revision,
+            ),
+        )
+        store._append_audit(
+            "engineering_worker_identity_refreshed",
+            {
+                "workerId": identity.worker_id,
+                "revision": revision,
+                "leaseExpiresUnixNs": identity.lease_expires_unix_ns,
+                "identityExpiresUnixNs": identity.expires_unix_ns,
+            },
+            now,
+        )
+        updated = store.connection.execute(
+            "SELECT * FROM engineering_workers WHERE worker_id=?",
+            (identity.worker_id,),
+        ).fetchone()
+    return _worker_receipt(updated)
+
+
+def acquire_worker_path_lease(
+    store: "EngineeringStore",
+    worker_id: str,
+    lease_id: str,
+    envelope_id: str,
+    paths,
+    *,
+    authority_epoch: int,
+    expires_unix_ns: int,
+    now_ns: int | None = None,
+):
+    _control.checked_id(worker_id, "worker_id")
+    now = store._now(now_ns)
+    with store._transaction():
+        _expire_state(store, now)
+        worker = store.connection.execute(
+            "SELECT * FROM engineering_workers WHERE worker_id=?",
+            (worker_id,),
+        ).fetchone()
+        if worker is None:
+            raise _control.EngineeringError("unknown_worker")
+        if worker["state"] != "active" or int(worker["lease_expires_unix_ns"]) <= now:
+            raise _control.EngineeringError("worker_not_active")
+        if int(worker["authority_epoch"]) != authority_epoch:
+            raise _control.EngineeringError("stale_authority_epoch")
+        if (
+            type(expires_unix_ns) is not int
+            or expires_unix_ns <= now
+            or expires_unix_ns > int(worker["lease_expires_unix_ns"])
+            or expires_unix_ns > int(worker["identity_expires_unix_ns"])
+        ):
+            raise _control.EngineeringError("lease_outlives_worker")
+        return store.acquire_path_lease(
+            lease_id,
+            envelope_id,
+            worker_id,
+            paths,
+            authority_epoch=authority_epoch,
+            expires_unix_ns=expires_unix_ns,
+            now_ns=now,
+        )
 
 
 def register_worker(
