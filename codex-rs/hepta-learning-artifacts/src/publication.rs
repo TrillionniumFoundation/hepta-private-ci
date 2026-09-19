@@ -76,6 +76,20 @@ pub struct ArtifactPublicationReceiptV1 {
     pub authority: AuthorityPosture,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ArtifactPublicationStatusV1 {
+    pub operation_id: StableId,
+    pub phase: ArtifactPublicationPhaseV1,
+    pub admission_digest: Digest32,
+    pub withdrawal_scope_digest: Digest32,
+    pub withdrawal_head_digest: Digest32,
+    pub registry_head_digest: Option<Digest32>,
+    pub witness_digest: Option<Digest32>,
+    pub acknowledged_at: Option<u64>,
+    pub state_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
 #[derive(Clone, Debug)]
 pub struct ArtifactPublicationTransactionV1 {
     intent: ArtifactPublicationIntentV1,
@@ -132,6 +146,22 @@ impl ArtifactPublicationTransactionV1 {
     #[must_use]
     pub const fn state_digest(&self) -> Digest32 {
         self.state_digest
+    }
+
+    #[must_use]
+    pub fn status(&self) -> ArtifactPublicationStatusV1 {
+        ArtifactPublicationStatusV1 {
+            operation_id: self.intent.operation_id.clone(),
+            phase: self.phase,
+            admission_digest: self.intent.admission.admission_digest,
+            withdrawal_scope_digest: self.intent.admission.withdrawal_scope_digest,
+            withdrawal_head_digest: self.intent.admission.withdrawal_head_digest,
+            registry_head_digest: self.registry_receipt.map(|receipt| receipt.head_digest),
+            witness_digest: self.witness_receipt.map(|receipt| receipt.witness_digest),
+            acknowledged_at: self.acknowledged_at,
+            state_digest: self.state_digest,
+            authority: AuthorityPosture::DENY_ALL,
+        }
     }
 
     pub fn record_payload_durable(
@@ -686,6 +716,11 @@ mod tests {
             ArtifactPublicationPhaseV1::Acknowledged
         );
         assert!(!receipt.authority.grants_any());
+        let status = transaction.status();
+        assert_eq!(status.phase, ArtifactPublicationPhaseV1::Acknowledged);
+        assert_eq!(status.registry_head_digest, Some(receipt.registry_head_digest));
+        assert_eq!(status.witness_digest, Some(receipt.witness_digest));
+        assert!(!status.authority.grants_any());
     }
 
     #[test]
