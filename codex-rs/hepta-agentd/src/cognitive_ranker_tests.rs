@@ -479,6 +479,11 @@ async fn running_socket_uses_launch_bound_model_and_isolates_ranker_revocation()
         "lifecycle epoch must not become a substitute launch identity"
     );
     assert!(client.health().await.unwrap().ready);
+    let capabilities = client.capabilities().await.unwrap();
+    assert!(capabilities.capabilities.iter().any(|capability| {
+        capability.id == crate::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY
+            && capability.major == 1
+    }));
     let ranked = client
         .cognitive_context("lemon".to_string(), 1)
         .await
