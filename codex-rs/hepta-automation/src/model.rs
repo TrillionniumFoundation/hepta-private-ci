@@ -86,6 +86,106 @@ impl AutomationSchedule {
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
+pub enum AutomationOverlapPolicy {
+    /// At most one non-terminal occurrence may exist for the schedule.
+    Forbid,
+    /// Later due occurrences may be materialized while predecessors are active.
+    Allow,
+}
+
+impl AutomationOverlapPolicy {
+    pub(crate) fn as_str(self) -> &'static str {
+        match self {
+            Self::Forbid => "forbid",
+            Self::Allow => "allow",
+        }
+    }
+
+    pub(crate) fn parse(value: &str) -> Result<Self, AutomationError> {
+        match value {
+            "forbid" => Ok(Self::Forbid),
+            "allow" => Ok(Self::Allow),
+            _ => Err(AutomationError::Corrupt),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AutomationMissedRunPolicy {
+    /// Do not materialize stale interval slots; move the frontier beyond now.
+    Skip,
+    /// Collapse all currently-due slots into the newest deterministic slot.
+    Coalesce,
+    /// Materialize at most `catch_up_limit` historical slots before coalescing.
+    BoundedCatchUp,
+}
+
+impl AutomationMissedRunPolicy {
+    pub(crate) fn as_str(self) -> &'static str {
+        match self {
+            Self::Skip => "skip",
+            Self::Coalesce => "coalesce",
+            Self::BoundedCatchUp => "bounded_catch_up",
+        }
+    }
+
+    pub(crate) fn parse(value: &str) -> Result<Self, AutomationError> {
+        match value {
+            "skip" => Ok(Self::Skip),
+            "coalesce" => Ok(Self::Coalesce),
+            "bounded_catch_up" => Ok(Self::BoundedCatchUp),
+            _ => Err(AutomationError::Corrupt),
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AutomationSchedulePolicy {
+    pub overlap: AutomationOverlapPolicy,
+    pub missed_run: AutomationMissedRunPolicy,
+    /// Hard ceiling for one bounded catch-up episode.
+    pub catch_up_limit: u16,
+}
+
+impl AutomationSchedulePolicy {
+    pub const MAX_CATCH_UP: u16 = 1_024;
+
+    pub fn new(
+        overlap: AutomationOverlapPolicy,
+        missed_run: AutomationMissedRunPolicy,
+        catch_up_limit: u16,
+    ) -> Result<Self, AutomationError> {
+        let policy = Self {
+            overlap,
+            missed_run,
+            catch_up_limit,
+        };
+        policy.validate()?;
+        Ok(policy)
+    }
+
+    pub(crate) fn validate(self) -> Result<(), AutomationError> {
+        if self.catch_up_limit == 0 || self.catch_up_limit > Self::MAX_CATCH_UP {
+            return Err(AutomationError::Invalid);
+        }
+        Ok(())
+    }
+}
+
+impl Default for AutomationSchedulePolicy {
+    fn default() -> Self {
+        Self {
+            overlap: AutomationOverlapPolicy::Forbid,
+            missed_run: AutomationMissedRunPolicy::Coalesce,
+            catch_up_limit: 1,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum AutomationTaskState {
     Enabled,
     Disabled,
@@ -165,6 +265,9 @@ pub struct AutomationTask {
     pub thread_id: String,
     pub prompt: String,
     pub schedule: AutomationSchedule,
+    /// Monotonic schedule contract revision. Every materialized occurrence binds it.
+    pub schedule_revision: u64,
+    pub policy: AutomationSchedulePolicy,
     pub state: AutomationTaskState,
     pub next_run_at_ms: Option<u64>,
     pub next_occurrence: u64,
@@ -176,6 +279,9 @@ pub struct AutomationTask {
 pub struct AutomationLease {
     pub task: AutomationTask,
     pub occurrence: u64,
+    /// Stable identity derived from schedule id + revision + canonical instant.
+    pub occurrence_id: String,
+    pub schedule_revision: u64,
     pub scheduled_for_ms: u64,
     pub client_user_message_id: String,
     pub lease_generation: u64,
@@ -189,6 +295,8 @@ impl AutomationLease {
             agent_id: self.task.owner_agent_id.clone(),
             task_id: self.task.task_id,
             occurrence: self.occurrence,
+            occurrence_id: self.occurrence_id.clone(),
+            schedule_revision: self.schedule_revision,
             scheduled_for_ms: self.scheduled_for_ms,
             thread_id: self.task.thread_id.clone(),
             prompt: self.task.prompt.clone(),
@@ -202,6 +310,8 @@ pub struct AutomationAdmission {
     pub agent_id: AgentId,
     pub task_id: AutomationTaskId,
     pub occurrence: u64,
+    pub occurrence_id: String,
+    pub schedule_revision: u64,
     pub scheduled_for_ms: u64,
     pub thread_id: String,
     pub prompt: String,
@@ -222,6 +332,8 @@ pub struct AutomationQueueReceipt {
 pub struct AutomationDispatchUncertainty {
     pub task_id: AutomationTaskId,
     pub occurrence: u64,
+    pub occurrence_id: String,
+    pub schedule_revision: u64,
     pub scheduled_for_ms: u64,
     pub client_user_message_id: String,
     pub observed_at_ms: u64,
@@ -251,6 +363,20 @@ pub(crate) fn client_message_id(
     occurrence: u64,
 ) -> String {
     format!("hepta.automation.v1:{agent_id}:{task_id}:{occurrence}")
+}
+
+pub fn deterministic_occurrence_id(
+    agent_id: &AgentId,
+    task_id: AutomationTaskId,
+    schedule_revision: u64,
+    scheduled_for_ms: u64,
+) -> Result<String, AutomationError> {
+    if schedule_revision == 0 {
+        return Err(AutomationError::Invalid);
+    }
+    Ok(format!(
+        "hepta.automation.occurrence.v1:{agent_id}:{task_id}:{schedule_revision}:{scheduled_for_ms}"
+    ))
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
