@@ -20,10 +20,13 @@ use codex_hepta_automation::AutomationTask;
 use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_automation::AutomationTaskId;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_fleet::AgentLifecycle;
 use serde::Deserialize;
 use serde::Serialize;
+use serde_json::Value;
 
 pub const AGENTD_CONTROL_SCHEMA_VERSION: u32 = 2;
 /// Version for the transport-only host turn authority witness.  This type is
@@ -259,6 +262,27 @@ impl AgentdRequest {
     }
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum BrowserServoControlMethod {
+    OpenProfile,
+    AdmitEffectGrant,
+    ObservePage,
+    NavigateOrAct,
+    ReconcileOperation,
+    ReconcilePersistedOperation,
+    CloseProfile,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct BrowserServoControlRequest {
+    pub method: BrowserServoControlMethod,
+    pub input: Value,
+    pub signed_grant: Option<SignedFinalUseGrant>,
+    pub binding: Option<FinalUseBinding>,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdMethod {
@@ -308,6 +332,9 @@ pub enum AgentdMethod {
     MemoryFederationStatus {
         capability_id: MemoryFederationCapabilityId,
     },
+    BrowserServo {
+        request: BrowserServoControlRequest,
+    },
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -341,6 +368,9 @@ pub enum AgentdPayload {
     },
     MemoryFederationStatus {
         capability: Option<MemoryFederationCapabilitySnapshot>,
+    },
+    BrowserServo {
+        result: Value,
     },
     Error {
         code: String,
@@ -578,6 +608,34 @@ mod tests {
         assert_eq!(
             serde_json::from_slice::<AgentdPayload>(&payload_bytes).unwrap(),
             payload
+        );
+    }
+
+    #[test]
+    fn browser_servo_control_round_trip_is_strict_and_bounded() {
+        let request = AgentdRequest {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: 41,
+            spawn_generation: 7,
+            method: AgentdMethod::BrowserServo {
+                request: BrowserServoControlRequest {
+                    method: BrowserServoControlMethod::ObservePage,
+                    input: serde_json::json!({
+                        "profileId": "profile.1",
+                        "principalId": "principal.1",
+                        "generation": 1,
+                        "observationBudget": 4096
+                    }),
+                    signed_grant: None,
+                    binding: None,
+                },
+            },
+        };
+        let bytes = serde_json::to_vec(&request).expect("serialize Browser request");
+        assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&bytes).expect("parse Browser request"),
+            request
         );
     }
 

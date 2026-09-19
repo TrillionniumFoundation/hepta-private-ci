@@ -29,6 +29,8 @@ use crate::MemoryFederationCapabilitySnapshot;
 use crate::MemoryFederationScopeKind;
 use crate::SessionIngress;
 
+const BROWSER_CONTROL_TIMEOUT: Duration = Duration::from_secs(130);
+
 pub struct AgentdClient {
     socket_path: PathBuf,
     expected_agent_id: AgentId,
@@ -340,9 +342,38 @@ impl AgentdClient {
         }
     }
 
+    pub async fn browser_servo(
+        &self,
+        request: crate::BrowserServoControlRequest,
+    ) -> Result<serde_json::Value, AgentdError> {
+        let response = self
+            .send_with_timeout(
+                AgentdRequest {
+                    schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                    request_id: self.request_id(),
+                    spawn_generation: self.spawn_generation,
+                    method: crate::AgentdMethod::BrowserServo { request },
+                },
+                BROWSER_CONTROL_TIMEOUT,
+            )
+            .await?;
+        match response.payload {
+            AgentdPayload::BrowserServo { result } => Ok(result),
+            payload => unexpected(payload),
+        }
+    }
+
     async fn send(&self, request: AgentdRequest) -> Result<AgentdResponse, AgentdError> {
+        self.send_with_timeout(request, self.timeout).await
+    }
+
+    async fn send_with_timeout(
+        &self,
+        request: AgentdRequest,
+        io_timeout: Duration,
+    ) -> Result<AgentdResponse, AgentdError> {
         let expected_request_id = request.request_id;
-        let stream = timeout(self.timeout, UnixStream::connect(&self.socket_path))
+        let stream = timeout(io_timeout, UnixStream::connect(&self.socket_path))
             .await
             .map_err(|_| AgentdError::Protocol("agentd control connect timed out".to_string()))??;
         let (reader, mut writer) = tokio::io::split(stream);
@@ -353,12 +384,12 @@ impl AgentdClient {
                 "agentd request exceeded frame bound".to_string(),
             ));
         }
-        timeout(self.timeout, writer.write_all(&bytes))
+        timeout(io_timeout, writer.write_all(&bytes))
             .await
             .map_err(|_| AgentdError::Protocol("agentd control write timed out".to_string()))??;
         let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
         let mut response_bytes = Vec::new();
-        let count = timeout(self.timeout, reader.read_until(b'\n', &mut response_bytes))
+        let count = timeout(io_timeout, reader.read_until(b'\n', &mut response_bytes))
             .await
             .map_err(|_| AgentdError::Protocol("agentd control read timed out".to_string()))??;
         if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !response_bytes.ends_with(b"\n")

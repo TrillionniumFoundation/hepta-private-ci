@@ -25,6 +25,7 @@ use crate::error::io_context;
 
 const CONNECTION_CAPACITY: usize = 32;
 const IO_TIMEOUT: Duration = Duration::from_secs(2);
+const BROWSER_CONTROL_TIMEOUT: Duration = Duration::from_secs(130);
 
 pub(crate) struct AgentdControlServer {
     listener: UnixListener,
@@ -67,7 +68,7 @@ impl AgentdControlServer {
             let state = Arc::clone(&self.state);
             tokio::spawn(async move {
                 let _permit = permit;
-                let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
+                let _ = serve_connection(stream, state).await;
             });
         }
     }
@@ -90,7 +91,9 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
-    let count = reader.read_until(b'\n', &mut frame).await?;
+    let count = timeout(IO_TIMEOUT, reader.read_until(b'\n', &mut frame))
+        .await
+        .map_err(|_| AgentdError::Protocol("agentd control request read timed out".to_string()))??;
     if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !frame.ends_with(b"\n") {
         return Err(AgentdError::Protocol(
             "agentd control request must be one bounded newline JSON frame".to_string(),
@@ -106,17 +109,33 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
             "unsupported agentd control schema",
         )
     } else {
-        match state
-            .response(request.request_id, request.spawn_generation, request.method)
-            .await
+        let request_id = request.request_id;
+        let spawn_generation = request.spawn_generation;
+        let request_timeout = if matches!(&request.method, crate::AgentdMethod::BrowserServo { .. }) {
+            BROWSER_CONTROL_TIMEOUT
+        } else {
+            IO_TIMEOUT
+        };
+        match timeout(
+            request_timeout,
+            state.response(request_id, spawn_generation, request.method),
+        )
+        .await
         {
-            Ok(response) => response,
-            Err(error) => error_response(
+            Ok(Ok(response)) => response,
+            Ok(Err(error)) => error_response(
                 &state,
-                request.request_id,
-                request.spawn_generation,
+                request_id,
+                spawn_generation,
                 "request_rejected",
                 &error.to_string(),
+            ),
+            Err(_) => error_response(
+                &state,
+                request_id,
+                spawn_generation,
+                "request_timeout",
+                "agentd request exceeded its bounded execution timeout",
             ),
         }
     };
@@ -127,8 +146,12 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
             "agentd control response exceeded frame bound".to_string(),
         ));
     }
-    writer.write_all(&bytes).await?;
-    writer.shutdown().await?;
+    timeout(IO_TIMEOUT, writer.write_all(&bytes))
+        .await
+        .map_err(|_| AgentdError::Protocol("agentd control response write timed out".to_string()))??;
+    timeout(IO_TIMEOUT, writer.shutdown())
+        .await
+        .map_err(|_| AgentdError::Protocol("agentd control response shutdown timed out".to_string()))??;
     Ok(())
 }
 

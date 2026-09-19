@@ -7,7 +7,7 @@
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "browser.servo",
-  "sourceMaturity": "native_driver_boundary",
+  "sourceMaturity": "persistent_agentd_owned_servo_worker_pool_with_grant_scoped_egress",
   "declaredRoots": [
     "apps/hepta-browser",
     "third_party/servo-patches"
@@ -16,8 +16,8 @@
     "apps/hepta-browser",
     "third_party/servo-patches"
   ],
-  "stateOwnerDisposition": "Owns in-process profile/session/page/operation state around an injected browser driver; raw credentials remain external references.",
-  "terminalObserverDisposition": "The driver must supply process, page, action, and reconciliation observations; unit tests use deterministic fake drivers.",
+  "stateOwnerDisposition": "Owns serialized profile/session/page state plus a strict persistent operation journal; long-running Agentd retains the Browser port for the generation; each active profile owns one private Servo worker/profile directory; raw credentials remain outside the admitted capability set.",
+  "terminalObserverDisposition": "Worker admission and terminal response are distinct: final-use authority ends at dispatch_boundary, the bound worker settlement is then persisted when terminal, and post-process-loss reconciliation accepts only a separately trusted exact operation/request/semantic receipt. Missing external truth remains indeterminate.",
   "operations": [
     {
       "designOperation": "open_profile",
@@ -34,9 +34,14 @@
           "path": "apps/hepta-browser/test/runtime.test.js",
           "kind": "node_product_boundary",
           "command": "node --test apps/hepta-browser/test/runtime.test.js"
+        },
+        {
+          "path": "apps/hepta-browser/test/worker-driver.test.js",
+          "kind": "node_private_worker_boundary",
+          "command": "node --test apps/hepta-browser/test/worker-driver.test.js"
         }
       ],
-      "sourceSemantics": "Admits an isolated profile identity, allowed origins, effect grants, generation, and expiry before driver start.",
+      "sourceSemantics": "Persistent Agentd admits a profile/principal/generation after durable generation fences, exact artifact/launcher verification and bounded global profile capacity; the profile is assigned one private pooled Servo worker and exact-origin egress broker.",
       "operation": "open_profile",
       "nativeSymbol": "async openProfile(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -57,9 +62,14 @@
           "path": "apps/hepta-browser/test/runtime.test.js",
           "kind": "node_product_boundary",
           "command": "node --test apps/hepta-browser/test/runtime.test.js"
+        },
+        {
+          "path": "apps/hepta-browser/servo-worker/src/main.rs",
+          "kind": "current_pin_servo_worker_source",
+          "command": "cargo test --manifest-path apps/hepta-browser/servo-worker/Cargo.toml --locked"
         }
       ],
-      "sourceSemantics": "Publishes bounded page observations with monotonic page generation and origin identity.",
+      "sourceSemantics": "Publishes page-generation-fenced origin plus digest-bound bounded semantic observations from the selected Servo candidate; each later action revalidates page/document/navigation epoch and exact visible action surface.",
       "operation": "observe_page",
       "nativeSymbol": "async observePage(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -74,15 +84,38 @@
         "symbol": "async navigateOrAct(",
         "buildTarget": "hepta-browser"
       },
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        {
+          "role": "final_use_authority_owner",
+          "path": "codex-rs/hepta-agentd/src/browser_servo.rs",
+          "symbol": "FinalUseAuthority::with_verified_use",
+          "buildTarget": "codex-hepta-agentd",
+          "ownerModule": "runtime.agentd"
+        }
+      ],
       "tests": [
         {
           "path": "apps/hepta-browser/test/runtime.test.js",
           "kind": "node_product_boundary",
           "command": "node --test apps/hepta-browser/test/runtime.test.js"
+        },
+        {
+          "path": "apps/hepta-browser/test/agentd-service.test.js",
+          "kind": "node_private_parent_boundary",
+          "command": "node --test apps/hepta-browser/test/agentd-service.test.js"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/browser_servo.rs",
+          "kind": "rust_final_use_linearization",
+          "command": "cd codex-rs && cargo test --locked -p codex-hepta-agentd browser_servo --lib"
+        },
+        {
+          "path": "apps/hepta-browser/scripts/real-browser-e2e.js",
+          "kind": "real_servo_lifecycle_egress_recovery",
+          "command": "node apps/hepta-browser/scripts/real-browser-e2e.js <qualified-worker>"
         }
       ],
-      "sourceSemantics": "Revalidates page, destination, payload, authority, and operation identity before one driver effect.",
+      "sourceSemantics": "Binds proposal provenance, typed payload, current snapshot, grant and live final-use authority; holds revocation through durable intent and worker-side admission/rejection, then releases it. The Servo delegate independently pins top-level navigation to the exact current effect destinationOrigin, so a second profile-allowed origin cannot become this effect's redirect target. Worker terminal settlement is retained and durably recorded; exact trusted persisted receipts can refine a post-process-loss unknown without redispatch.",
       "operation": "navigate_or_act",
       "nativeSymbol": "async navigateOrAct(",
       "sourcePath": "apps/hepta-browser/src/runtime.js",
@@ -91,9 +124,13 @@
   ],
   "repositoryControlledGaps": [],
   "externalEvidenceGates": [
-    "reproducible Servo binary and patch digest",
-    "OS sandbox/profile/credential/network enforcement",
-    "real navigation/download/business terminal observation"
+    "terminal-success exact-head selected-pin build and real Browser E2E",
+    "terminal-success exact-head current-pin build must bind the committed Servo-worker Cargo.lock",
+    "terminal-success reproducible worker artifact/SPDX receipt",
+    "trusted Linux target-host namespace/profile/network/no-listener/descendant-cleanup qualification and platform equivalents where targeted",
+    "cross-profile cookie/cache/storage isolation and target resource/soak evidence",
+    "trusted real remote-business persisted-effect observations where business terminality is claimed",
+    "independent operator acceptance/promotion/release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
@@ -112,8 +149,8 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "persistent_agentd_owner_source_present_not_qualified",
+  "productionWriterState": "browser_owner_journal_and_settlement_source_present_not_activated",
   "owner": "browser-platform",
   "deputy": "security-authority",
   "technicalGuide": "docs/modules/browser.servo/TECHNICAL.md",

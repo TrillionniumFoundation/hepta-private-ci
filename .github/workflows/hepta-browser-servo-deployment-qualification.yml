@@ -1,0 +1,249 @@
+name: Hepta Browser Servo deployment qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_run_id:
+        description: GitHub Actions run ID containing the exact worker evidence artifact
+        required: true
+        type: string
+      worker_sha256:
+        description: Expected SHA-256 of the worker binary from the reviewed build receipt
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hepta-browser-servo-deployment-qualification
+  cancel-in-progress: false
+
+jobs:
+  linux-target:
+    name: Trusted Linux target qualification
+    runs-on:
+      group: trillionnium-android-gpu
+      labels: [self-hosted, linux, x64]
+    timeout-minutes: 30
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      BUILD_RUN_ID: ${{ inputs.build_run_id }}
+      EXPECTED_WORKER_SHA256: ${{ inputs.worker_sha256 }}
+      SERVO_PIN: 5cc5bd32d02619acdec5736055515e38c5840ce1
+    steps:
+      - name: Reject non-main or malformed qualification requests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_EVENT_NAME" = workflow_dispatch
+          test "$GITHUB_REF" = refs/heads/main
+          test "$SOURCE_SHA" = "$GITHUB_SHA"
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$BUILD_RUN_ID" =~ ^[0-9]+$ ]]
+          [[ "$EXPECTED_WORKER_SHA256" =~ ^[0-9a-f]{64}$ ]]
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind checkout and trusted host prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          command -v node
+          command -v python3
+          command -v bwrap
+          command -v prlimit
+          mkdir -p deployment-evidence
+          git rev-parse HEAD HEAD^{tree} > deployment-evidence/source-identity.txt
+          uname -a > deployment-evidence/uname.txt
+          node --version > deployment-evidence/node-version.txt
+          python3 --version > deployment-evidence/python-version.txt 2>&1
+          bwrap --version > deployment-evidence/bwrap-version.txt
+          sha256sum "$(command -v bwrap)" > deployment-evidence/bwrap.sha256
+          prlimit --version | head -n 1 > deployment-evidence/prlimit-version.txt
+          sha256sum "$(command -v prlimit)" > deployment-evidence/prlimit.sha256
+
+      - name: Verify exact worker build run provenance
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, urllib.request
+          request = urllib.request.Request(
+              f"https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/runs/{os.environ['BUILD_RUN_ID']}",
+              headers={
+                  "Accept": "application/vnd.github+json",
+                  "Authorization": f"Bearer {os.environ['GH_TOKEN']}",
+                  "X-GitHub-Api-Version": "2022-11-28",
+              },
+          )
+          with urllib.request.urlopen(request, timeout=30) as response:
+              run = json.load(response)
+          assert run["head_sha"] == os.environ["SOURCE_SHA"]
+          assert run["head_branch"] == "main"
+          assert run["name"] == "Hepta Browser Servo worker dev"
+          assert run["path"] == ".github/workflows/hepta-browser-servo-worker-dev.yml"
+          assert run["conclusion"] == "success"
+          assert run["event"] in {"push", "workflow_dispatch"}
+          PY
+
+      - name: Download exact worker evidence
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: hepta-browser-servo-worker-evidence-${{ github.sha }}
+          path: worker-evidence
+          repository: TrillionniumFoundation/hepta-private-ci
+          run-id: ${{ inputs.build_run_id }}
+          github-token: ${{ github.token }}
+
+      - name: Verify reviewed build receipt and artifact identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s worker-evidence/build-receipt.json
+          test -s worker-evidence/hepta-servo-worker
+          test -s worker-evidence/Cargo.lock
+          test -s worker-evidence/hepta-servo-worker.spdx.json
+          actual="$(sha256sum worker-evidence/hepta-servo-worker | awk '{print $1}')"
+          test "$actual" = "$EXPECTED_WORKER_SHA256"
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          root = pathlib.Path('worker-evidence')
+          def digest(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+          receipt = json.loads((root / 'build-receipt.json').read_text())
+          assert receipt['sourceSha'] == os.environ['SOURCE_SHA']
+          assert receipt['sourceTree'] == subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip()
+          assert receipt['servoPin'] == os.environ['SERVO_PIN']
+          assert receipt['cargoLockCommitted'] is True
+          assert receipt['cargoLockSha256'] == digest(root / 'Cargo.lock')
+          assert receipt['workerSha256'] == os.environ['EXPECTED_WORKER_SHA256']
+          assert receipt['workerSha256'] == digest(root / 'hepta-servo-worker')
+          assert receipt['sbomSha256'] == digest(root / 'hepta-servo-worker.spdx.json')
+          assert receipt['reproducibleIndependentBuilds'] is True
+          assert receipt['linuxSandboxProbe']['externalNetworkDenied'] is True
+          assert receipt['linuxSandboxProbe']['hostSecretHidden'] is True
+          assert receipt['linuxSandboxProbe']['parentDeathCleanupObserved'] is True
+          assert receipt['linuxSandboxProbe']['descendantCleanupObserved'] is True
+          assert receipt['linuxSandboxProbe']['resourceLimitsEnforced'] is True
+          assert receipt['realWorkerSmoke']['currentPinWorkerBooted'] is True
+          assert receipt['realWorkerSmoke']['privateProtocolRoundTrip'] is True
+          assert receipt['realBrowserE2E']['openNavigateObserveTypeClickClose'] is True
+          assert receipt['realBrowserE2E']['crossOriginSubresourceDenied'] is True
+          assert receipt['realBrowserE2E']['redirectEscapeDenied'] is True
+          assert receipt['realBrowserE2E']['profileAllowedCrossOriginRedirectDeniedByEffectGrant'] is True
+          assert receipt['realBrowserE2E']['crossProfileCookieIsolation'] is True
+          assert receipt['realBrowserE2E']['persistedCrashReconciliation'] is True
+          assert receipt['realBrowserSoak']['cycles'] == 32
+          assert receipt['realBrowserSoak']['boundedFdGrowth'] is True
+          PY
+          chmod 0555 worker-evidence/hepta-servo-worker
+          cp worker-evidence/build-receipt.json deployment-evidence/source-build-receipt.json
+          sha256sum worker-evidence/hepta-servo-worker \
+            > deployment-evidence/worker.sha256
+
+      - name: Re-probe host filesystem and external egress isolation
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/hepta-browser/scripts/linux-sandbox-probe.js \
+            | tee deployment-evidence/linux-sandbox-probe.json
+          python3 - <<'PY'
+          import json, pathlib
+          probe = json.loads(pathlib.Path("deployment-evidence/linux-sandbox-probe.json").read_text())
+          assert probe["resourceLimitsEnforced"] is True
+          PY
+
+      - name: Re-run real worker in the target sandbox
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/hepta-browser/scripts/real-worker-smoke.js \
+            worker-evidence/hepta-servo-worker \
+            | tee deployment-evidence/real-worker-smoke.json
+
+      - name: Re-run real Browser lifecycle and profile isolation on trusted target
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/hepta-browser/scripts/real-browser-e2e.js worker-evidence/hepta-servo-worker | tee deployment-evidence/real-browser-e2e.json
+          python3 - <<'PY'
+          import json, pathlib
+          result = json.loads(pathlib.Path("deployment-evidence/real-browser-e2e.json").read_text())
+          assert result["openNavigateObserveTypeClickClose"] is True
+          assert result["crossOriginSubresourceDenied"] is True
+          assert result["redirectEscapeDenied"] is True
+          assert result["profileAllowedCrossOriginRedirectDeniedByEffectGrant"] is True
+          assert result["crossProfileCookieIsolation"] is True
+          assert result["persistedCrashReconciliation"] is True
+          PY
+
+      - name: Re-run bounded Browser resource soak on trusted target
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/hepta-browser/scripts/real-browser-soak.js worker-evidence/hepta-servo-worker | tee deployment-evidence/real-browser-soak.json
+          python3 - <<'PY'
+          import json, pathlib
+          result = json.loads(pathlib.Path("deployment-evidence/real-browser-soak.json").read_text())
+          assert result["cycles"] == 32
+          assert result["boundedFdGrowth"] is True
+          PY
+
+      - name: Record target qualification receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, pathlib, subprocess
+          root = pathlib.Path('deployment-evidence')
+          def digest(path):
+              return hashlib.sha256(path.read_bytes()).hexdigest()
+          receipt = {
+              'schema': 'hepta.browser.servo-linux-target-qualification.v1',
+              'sourceSha': os.environ['SOURCE_SHA'],
+              'sourceTree': subprocess.check_output(['git', 'rev-parse', 'HEAD^{tree}'], text=True).strip(),
+              'buildRunId': os.environ['BUILD_RUN_ID'],
+              'workerSha256': os.environ['EXPECTED_WORKER_SHA256'],
+              'sandboxProbeSha256': digest(root / 'linux-sandbox-probe.json'),
+              'realWorkerSmokeSha256': digest(root / 'real-worker-smoke.json'),
+              'realBrowserE2ESha256': digest(root / 'real-browser-e2e.json'),
+              'realBrowserSoakSha256': digest(root / 'real-browser-soak.json'),
+              'operatorAcceptance': False,
+              'promotion': False,
+              'releaseQualified': False,
+              'interpretation': 'target execution evidence only; independent operator/release authority is not self-issued',
+          }
+          (root / 'target-qualification-receipt.json').write_text(
+              json.dumps(receipt, sort_keys=True, separators=(',', ':')) + '\n',
+              encoding='utf-8',
+          )
+          PY
+          sha256sum deployment-evidence/target-qualification-receipt.json \
+            > deployment-evidence/target-qualification-receipt.json.sha256
+
+      - name: Preserve target evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-browser-servo-linux-target-${{ github.sha }}
+          path: deployment-evidence
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Verify source stayed read-only
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"

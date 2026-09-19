@@ -8,13 +8,26 @@ fn main() -> anyhow::Result<()> {
     codex_arg0::arg0_dispatch_or_else(move |arg0_paths| async move {
         // Helper re-execs must reach arg0 dispatch before daemon-only flags.
         let mut args = std::env::args_os().skip(1);
-        if let Some(flag) = args.next() {
-            anyhow::ensure!(flag == "--authbus-trust-file", "unknown Agentd argument");
-            let path = args
-                .next()
-                .ok_or_else(|| anyhow::anyhow!("--authbus-trust-file requires a path"))?;
-            anyhow::ensure!(args.next().is_none(), "unexpected Agentd arguments");
-            config = config.with_authbus_trust_file(path.into());
+        let mut authbus_seen = false;
+        let mut browser_seen = false;
+        while let Some(flag) = args.next() {
+            if flag == "--authbus-trust-file" {
+                anyhow::ensure!(!authbus_seen, "duplicate --authbus-trust-file");
+                let path = args
+                    .next()
+                    .ok_or_else(|| anyhow::anyhow!("--authbus-trust-file requires a path"))?;
+                config = config.with_authbus_trust_file(path.into());
+                authbus_seen = true;
+            } else if flag == "--browser-servo-config" {
+                anyhow::ensure!(!browser_seen, "duplicate --browser-servo-config");
+                let path = args
+                    .next()
+                    .ok_or_else(|| anyhow::anyhow!("--browser-servo-config requires a path"))?;
+                config = config.with_browser_servo_config_file(path.into());
+                browser_seen = true;
+            } else {
+                anyhow::bail!("unknown Agentd argument");
+            }
         }
         codex_hepta_agentd::run(config, arg0_paths).await?;
         Ok(())
