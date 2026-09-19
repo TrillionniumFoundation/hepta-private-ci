@@ -457,6 +457,12 @@ impl ProductionDurableWriter {
         &self.store
     }
 
+    /// Internal owner-store extension seam. The handle remains lease/fence
+    /// bound and every mutating extension must revalidate it in-transaction.
+    pub(crate) fn lease_handle(&self) -> &LocalLeaseOutbox {
+        &self.lease
+    }
+
     pub async fn admit(
         &self,
         occurrence_key: impl Into<String>,
@@ -574,7 +580,7 @@ impl ProductionDurableWriter {
         ))
     }
 
-    async fn verify_authority(&self) -> Result<(), ProductionWriterError> {
+    pub(crate) async fn verify_authority(&self) -> Result<(), ProductionWriterError> {
         self.authority
             .validate_for_agent(self.store.owner_agent_id())?;
         verify_durable_store(&self.store).await?;
