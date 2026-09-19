@@ -134,26 +134,37 @@ impl AppServerModelDriver {
             return Ok(());
         };
 
-        if !matches!(
+        let expected_phase = super::lifecycle_phase_for_output(output.status);
+        if expected_phase == AgentdRunPhase::Indeterminate {
+            return Err(
+                "terminal provider observation mapped to an indeterminate Agentd phase".into(),
+            );
+        }
+
+        if matches!(
             receipt.phase,
             AgentdRunPhase::Cancelled | AgentdRunPhase::Succeeded | AgentdRunPhase::Failed
         ) {
-            let phase = super::lifecycle_phase_for_output(output.status);
-            if phase == AgentdRunPhase::Indeterminate {
-                return Err(
-                    "terminal provider observation mapped to an indeterminate Agentd phase".into(),
-                );
+            if receipt.phase != expected_phase {
+                return Err(format!(
+                    "Agentd terminal phase {:?} conflicts with provider phase {:?}",
+                    receipt.phase, expected_phase
+                )
+                .into());
             }
+        } else {
             receipt = owner
-                .run_observe_terminal(request_id.to_string(), receipt.revision, phase, true)
+                .run_observe_terminal(
+                    request_id.to_string(),
+                    receipt.revision,
+                    expected_phase,
+                    true,
+                )
                 .await?;
         }
 
-        if !matches!(
-            receipt.phase,
-            AgentdRunPhase::Cancelled | AgentdRunPhase::Succeeded | AgentdRunPhase::Failed
-        ) {
-            return Err("terminal inference output did not close the Agentd lifecycle".into());
+        if receipt.phase != expected_phase {
+            return Err("terminal inference output did not close the Agentd lifecycle exactly".into());
         }
         owner
             .run_remove_closed(request_id.to_string(), receipt.revision)
