@@ -40,6 +40,9 @@ jobs:
           python3 scripts/hepta-hnmf.py self-test
           python3 scripts/hepta-hnmf.py verify
 
+      - name: Verify cognitive.types cross-language V1 vectors
+        run: python3 qualification/cognitive-types-v1/verify_vectors.py
+
       - name: Show Rust toolchain identity
         run: |
           rustc --version --verbose
