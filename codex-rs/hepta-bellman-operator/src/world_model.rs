@@ -100,6 +100,9 @@ struct Group {
     evidence_digests: BTreeSet<Digest32>,
 }
 
+/// Pure deterministic fitting kernel. It rejects duplicate underlying evidence
+/// but trusts the caller-supplied dataset digest. Product/qualification callers
+/// use `fit_transition_model_from_dataset_receipt`.
 pub fn fit_transition_model(
     model_id: StableId,
     dataset_digest: Digest32,
