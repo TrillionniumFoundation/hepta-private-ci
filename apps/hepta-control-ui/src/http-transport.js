@@ -4,6 +4,7 @@ import {
   MAX_VIEW_BYTES,
   UiControlError,
   fail,
+  parseJsonNoDuplicateKeys,
   snapshotCanonical,
   utf8Bytes,
 } from "./protocol.js";
@@ -226,11 +227,7 @@ export class SameOriginHttpTransport {
         fail(ERROR_CODES.PROTOCOL_VIOLATION, "control transport response is not JSON");
       }
       const encoded = await boundedResponseText(response, maxBytes);
-      try {
-        return JSON.parse(encoded);
-      } catch {
-        fail(ERROR_CODES.PROTOCOL_VIOLATION, "control transport response is invalid JSON");
-      }
+      return parseJsonNoDuplicateKeys(encoded, "control transport response");
     } catch (error) {
       if (error instanceof UiControlError) throw error;
       fail(ERROR_CODES.BACKEND_UNAVAILABLE, "control transport request failed");
