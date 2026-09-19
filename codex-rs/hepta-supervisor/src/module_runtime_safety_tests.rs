@@ -258,6 +258,50 @@ fn projected_topology_rejects_retiring_a_still_required_dependency() {
 }
 
 #[test]
+fn projected_topology_rejects_unmaterialized_dependency() {
+    let mut supervisor = RuntimeModuleSupervisorV1::new();
+    supervisor
+        .register_bootstrap(stateless_abi(
+            "foundation",
+            1,
+            "foundation-v1",
+            digest("foundation-v1"),
+            None,
+            &[],
+        ))
+        .expect("foundation");
+    let baseline = supervisor.topology();
+    let candidate_digest = digest("dangling-candidate");
+    let extension = stateless_abi(
+        "extension",
+        2,
+        "extension-v1",
+        candidate_digest,
+        None,
+        &["missing.module"],
+    );
+    let candidate = topology_candidate(
+        candidate_digest,
+        baseline.digest,
+        vec![RuntimeTopologyDeltaV1 {
+            module_id: id("extension"),
+            operation: RuntimeTopologyOperationV1::Add,
+            related_module_ids: Vec::new(),
+            predecessor_digest: Digest32::ZERO,
+            candidate_digest: digest("extension-v1"),
+            evidence_digest: digest("extension-evidence"),
+        }],
+    );
+    assert_eq!(
+        validate_projected_dependency_graph(&baseline, &candidate, &[extension]),
+        Err(RuntimeModuleSupervisorErrorV1::TopologyDependencyMissing {
+            module_id: id("extension"),
+            dependency_id: id("missing.module"),
+        })
+    );
+}
+
+#[test]
 fn projected_topology_rejects_new_dependency_cycles() {
     let mut supervisor = RuntimeModuleSupervisorV1::new();
     supervisor
