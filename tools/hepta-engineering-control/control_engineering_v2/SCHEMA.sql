@@ -38,6 +38,15 @@ CREATE TABLE IF NOT EXISTS assignment_generations(
   blocked_json BLOB NOT NULL,
   created_unix_ns INTEGER NOT NULL
 );
+CREATE TABLE IF NOT EXISTS distributed_cluster_frontiers(
+  cluster_id TEXT PRIMARY KEY,
+  leader_id TEXT NOT NULL,
+  leader_term INTEGER NOT NULL CHECK(leader_term >= 1),
+  revocation_frontier_sequence INTEGER NOT NULL CHECK(revocation_frontier_sequence >= 1),
+  revocation_frontier_digest TEXT NOT NULL,
+  updated_unix_ns INTEGER NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS distributed_fence_frontiers(
   cluster_id TEXT NOT NULL,
   holder TEXT NOT NULL,
