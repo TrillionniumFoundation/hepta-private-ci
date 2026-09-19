@@ -224,7 +224,16 @@ def verify() -> int:
             "## 11. Coding-entry checklist",
             "## Appendix A. Closed gap and protocol mapping",
         ],
-        "docs/readiness/CONTROL_RUNTIME_EXECUTION.md": ["RCP-13", "RCP-14", "RCP-15"],
+        "docs/readiness/CONTROL_RUNTIME_EXECUTION.md": [
+            "RCP-13",
+            "RCP-14",
+            "RCP-15",
+            "RCP-16",
+            "RCP-17",
+            "RCP-18",
+            "RCP-19",
+            "RCP-20",
+        ],
     }
     for path, tokens in headings.items():
         text = (ROOT / path).read_text(encoding="utf-8")
@@ -270,11 +279,22 @@ def verify() -> int:
         {row["module"] for row in maturity["modules"]} == set(MODULES),
         "maturity module closure",
     )
+    expected_product_caller = {
+        "objective.compiler": "not_established",
+        "utility.ndu": "not_established",
+        "control.runtime": "narrow_agentd_context_composed_global_product_host_not_established",
+    }
     for row in maturity["modules"]:
-        for key in ["productCaller", "independentAcceptance", "activation", "release"]:
+        module = row["module"]
+        need(
+            row["dimensions"]["productCaller"]["state"]
+            == expected_product_caller[module],
+            f"truth boundary {module} productCaller",
+        )
+        for key in ["independentAcceptance", "activation", "release"]:
             need(
                 row["dimensions"][key]["state"] == "not_established",
-                f"truth boundary {row['module']} {key}",
+                f"truth boundary {module} {key}",
             )
 
     print(

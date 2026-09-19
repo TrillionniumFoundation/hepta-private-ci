@@ -30,6 +30,14 @@ product_callers = []
 caller_markers = []
 
 [[boundary]]
+id = "control_runtime_final_use_bridge"
+symbol = "with_authorized_grant_request_v1"
+definition_path = "codex-rs/hepta-control-plane/src/authority_bridge.rs"
+definition_markers = ["pub fn with_authorized_grant_request_v1", "FinalUseAuthority", "with_verified_use"]
+product_callers = ["codex-rs/hepta-supervisor/src/global_control.rs"]
+caller_markers = ["with_authorized_grant_request_v1", "FinalUseAuthority"]
+
+[[boundary]]
 id = "provider_effect_coordinator"
 symbol = "ProviderEffectCoordinator::new"
 definition_path = "codex-rs/hepta-contracts/src/provider_effect.rs"
@@ -54,6 +62,11 @@ forbidden = ["H7H89ProductionGrantVerifier::default"]
 path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
 required = ["ProductionDurableWriter::open", "ProductionAuthorityVerifier"]
 forbidden = ["AllowVerifier", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-supervisor/src/global_control.rs"
+required = ["HeptaEvidenceStore", "PlannerJournalStoreV1", "FinalUseAuthority", "with_authorized_grant_request_v1"]
+forbidden = ["AllowVerifier", "PermitAll", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/model-provider/src/provider_effect.rs"
