@@ -185,6 +185,7 @@ pub struct IntelligenceHostEnvelopeV1 {
     pub request_digest: Digest32,
     pub snapshot_digest: Digest32,
     pub objective_digest: Digest32,
+    pub authority_epoch: u64,
     pub body_digest: Digest32,
     pub artifact_set_digest: Digest32,
     pub candidate_set_digest: Digest32,
@@ -223,6 +224,7 @@ impl IntelligenceHostEnvelopeV1 {
         ] {
             bytes.extend_from_slice(digest.as_array());
         }
+        bytes.extend_from_slice(&self.authority_epoch.to_be_bytes());
         push_optional_digest(&mut bytes, self.neural_signal_digest);
         push_optional_digest(&mut bytes, self.prompt_portfolio_digest);
         for digest in [
@@ -268,6 +270,9 @@ impl IntelligenceHostEnvelopeV1 {
             if digest.is_zero() {
                 return Err(CompositionErrorV3::EmptyDigest("optional stage"));
             }
+        }
+        if self.authority_epoch == 0 {
+            return Err(CompositionErrorV3::InvalidPipelineReceipt("authority epoch"));
         }
         if self.deadline_unix_micros == 0 {
             return Err(CompositionErrorV3::InvalidDeadline);
@@ -1339,6 +1344,7 @@ fn finish_prepared(
         request_digest: request.request_digest,
         snapshot_digest,
         objective_digest: request.snapshot.objective_digest(),
+        authority_epoch: request.snapshot.authority_epoch(),
         body_digest: request.body_digest,
         artifact_set_digest: request.artifact_set_digest,
         candidate_set_digest: request.legal_candidates.digest(),
