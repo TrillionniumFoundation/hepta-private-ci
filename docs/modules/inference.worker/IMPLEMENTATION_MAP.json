@@ -59,7 +59,7 @@
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Requires VerifiedResourceGrant. FinalUseResourceGrantVerifier authenticates creation of one exact worker generation through kernel FinalUseAuthority with complete resource-grant/worker binding and durable single-use nonce; the verified receipt retains the authenticated worker subject and InferenceWorker::new exact-matches it. load_model enforces aggregate live reservations, passes only remaining memory to LocalProcessDriver, which verifies runtime/model/device artifacts, obtains a nonzero reservation, rechecks artifacts before usability and records reserved/observed memory.",
+      "sourceSemantics": "Requires move-only VerifiedResourceGrant. FinalUseResourceGrantVerifier authenticates creation of one exact worker generation through kernel FinalUseAuthority with complete resource-grant/worker binding and durable single-use nonce; the verified receipt retains the authenticated worker subject and InferenceWorker::new exact-matches it. The post-claim capability cannot be cloned into multiple worker instances. load_model enforces aggregate live reservations, passes only remaining memory to LocalProcessDriver, which verifies runtime/model/device artifacts, obtains a nonzero reservation, rechecks artifacts before usability and records reserved/observed memory.",
       "operation": "load_model",
       "nativeSymbol": "pub fn load_model(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/model_worker.rs",
