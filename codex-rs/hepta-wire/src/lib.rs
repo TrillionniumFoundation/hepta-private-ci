@@ -36,7 +36,6 @@ pub use schema::SchemaRegistry;
 pub use schema::TypedPayloadError;
 pub use schema::TypedWirePayload;
 pub use schema::UnknownFieldPolicy;
-pub use schema::encode_typed;
 pub use stream::FramedReader;
 pub use stream::FramedWriter;
 pub use stream::MAX_WIRE_FRAME_BYTES;
