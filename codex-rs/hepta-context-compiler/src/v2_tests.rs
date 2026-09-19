@@ -176,11 +176,13 @@ fn candidate(
     let source_digest = digest(&format!("source:{item_id}"));
     let record = ContextAdmissionRecordV2::new(
         id(&format!("admission:{item_id}")),
-        id(item_id),
-        role,
-        tokenization.content_digest(),
-        source_digest,
-        digest("generation-vector"),
+        ContextAdmissionBindingV2 {
+            item_id: id(item_id),
+            role: role,
+            content_digest: tokenization.content_digest(),
+            source_digest: source_digest,
+            generation_vector_digest: digest("generation-vector"),
+        },
         1,
         1_000,
     )
@@ -351,11 +353,13 @@ fn well_formed_admission_digest_is_not_enough_without_verifier_acceptance() {
     let content = content_bytes("item:trusted", 20);
     let record = ContextAdmissionRecordV2::new(
         id("admission:item:trusted"),
-        id("item:trusted"),
-        ContextRoleV2::TrustedInstruction,
-        Digest32::of_bytes(&content),
-        digest("source:item:trusted"),
-        digest("generation-vector"),
+        ContextAdmissionBindingV2 {
+            item_id: id("item:trusted"),
+            role: ContextRoleV2::TrustedInstruction,
+            content_digest: Digest32::of_bytes(&content),
+            source_digest: digest("source:item:trusted"),
+            generation_vector_digest: digest("generation-vector"),
+        },
         1,
         1_000,
     )
