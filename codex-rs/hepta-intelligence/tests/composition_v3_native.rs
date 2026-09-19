@@ -422,7 +422,7 @@ impl CompositionPortsV3 for NativeOwnerPorts {
             input,
             "objective.compiler",
             receipt.objective.semantic_digest,
-            receipt.receipt_digest,
+            receipt.objective.hard_constraint_digest,
             CompositionPortDecisionV3::Continue,
         )
     }
