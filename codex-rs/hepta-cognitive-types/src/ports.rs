@@ -36,7 +36,7 @@ pub const LEARNING_LEDGER_SCHEMAS: &[&str] = &[
     "OutcomeSignalV1",
     "ReplaySelectionReceiptV1",
     "PlasticityBatchV1",
-    "TopologyProposalV1",
+    "MemoryTopologyProposalV1",
     "ForgetPropagationReceiptV1",
 ];
 
