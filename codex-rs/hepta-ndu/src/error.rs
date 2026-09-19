@@ -31,7 +31,12 @@ pub enum NduError {
     InvalidEta,
     DimensionMismatch,
     StateDigestMismatch,
+    PreferenceDimensionLimitExceeded,
+    PreferenceValueOutOfRange(String),
+    ProtocolContextMismatch,
     SimultaneousHierarchyUpdate(u64),
+    InvalidHierarchyRelation(u64),
+    DuplicateHierarchyArtifact(String),
     Arithmetic,
 }
 
@@ -48,7 +53,8 @@ impl NduError {
             | Self::EmptyProtocolDigest(_)
             | Self::EmptySupportDigest { .. }
             | Self::MixedObjective
-            | Self::MixedGeneration => "NDU-E002",
+            | Self::MixedGeneration
+            | Self::ProtocolContextMismatch => "NDU-E002",
             Self::DuplicateOrganContribution { .. } | Self::MissingRequiredOrgan { .. } => {
                 "NDU-E003"
             }
@@ -64,8 +70,14 @@ impl NduError {
             Self::AbstainInfeasible => "NDU-E005",
             Self::MissingAbstainCandidate => "NDU-E006",
             Self::IncompleteScalarization | Self::InvalidWeight(_) => "NDU-E007",
-            Self::InvalidEta | Self::DimensionMismatch | Self::StateDigestMismatch => "NDU-E008",
-            Self::SimultaneousHierarchyUpdate(_) => "NDU-E009",
+            Self::InvalidEta
+            | Self::DimensionMismatch
+            | Self::StateDigestMismatch
+            | Self::PreferenceDimensionLimitExceeded
+            | Self::PreferenceValueOutOfRange(_) => "NDU-E008",
+            Self::SimultaneousHierarchyUpdate(_)
+            | Self::InvalidHierarchyRelation(_)
+            | Self::DuplicateHierarchyArtifact(_) => "NDU-E009",
             Self::Arithmetic => "NDU-E010",
         }
     }
@@ -148,10 +160,26 @@ impl fmt::Display for NduError {
             }
             Self::DimensionMismatch => formatter.write_str("preference dimensions do not match"),
             Self::StateDigestMismatch => formatter.write_str("preference state digest mismatch"),
+            Self::PreferenceDimensionLimitExceeded => {
+                formatter.write_str("preference dimension limit exceeds 64")
+            }
+            Self::PreferenceValueOutOfRange(axis) => {
+                write!(formatter, "preference value must be in [-1, 1]: {axis}")
+            }
+            Self::ProtocolContextMismatch => {
+                formatter.write_str("solver receipt context digest does not match protocol context")
+            }
             Self::SimultaneousHierarchyUpdate(generation) => write!(
                 formatter,
-                "multiple hierarchy levels update in generation {generation}"
+                "parent and child hierarchy artifacts update in generation {generation}"
             ),
+            Self::InvalidHierarchyRelation(generation) => write!(
+                formatter,
+                "invalid hierarchy parent relation in generation {generation}"
+            ),
+            Self::DuplicateHierarchyArtifact(artifact) => {
+                write!(formatter, "duplicate hierarchy artifact in staged updates: {artifact}")
+            }
             Self::Arithmetic => formatter.write_str("deterministic Q32 arithmetic failed"),
         }
     }
