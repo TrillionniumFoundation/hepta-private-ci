@@ -131,6 +131,63 @@ CREATE TABLE matrix_dispatch_observations (
 CREATE INDEX matrix_dispatch_observations_by_txn
 ON matrix_dispatch_observations(stable_txn_id, observation_seq);
 
+CREATE TABLE matrix_dispatch_authority_claims (
+    stable_txn_id TEXT NOT NULL,
+    attempt INTEGER NOT NULL CHECK (attempt > 0),
+    operation_id TEXT NOT NULL CHECK (
+        length(operation_id) BETWEEN 1 AND 512
+        AND operation_id NOT GLOB '*[^ -~]*'
+    ),
+    subject_id TEXT NOT NULL CHECK (
+        length(subject_id) BETWEEN 1 AND 128
+        AND subject_id NOT GLOB '*[^A-Za-z0-9_.:/-]*'
+    ),
+    destination_id TEXT NOT NULL CHECK (
+        length(destination_id) BETWEEN 1 AND 128
+        AND destination_id NOT GLOB '*[^A-Za-z0-9_.:/-]*'
+    ),
+    homeserver_id TEXT NOT NULL CHECK (length(homeserver_id) BETWEEN 1 AND 2048),
+    matrix_user_id TEXT NOT NULL CHECK (length(matrix_user_id) BETWEEN 1 AND 255),
+    device_id TEXT NOT NULL CHECK (length(device_id) BETWEEN 1 AND 255),
+    session_generation INTEGER NOT NULL CHECK (session_generation > 0),
+    authority_epoch INTEGER NOT NULL CHECK (authority_epoch > 0),
+    revocation_revision INTEGER NOT NULL CHECK (revocation_revision > 0),
+    grant_id TEXT NOT NULL UNIQUE CHECK (
+        length(grant_id) BETWEEN 1 AND 128
+        AND grant_id NOT GLOB '*[^A-Za-z0-9_.:/-]*'
+    ),
+    request_sha256 TEXT NOT NULL CHECK (
+        length(request_sha256) = 64
+        AND request_sha256 NOT GLOB '*[^0-9a-f]*'
+    ),
+    scope_sha256 TEXT NOT NULL CHECK (
+        length(scope_sha256) = 64
+        AND scope_sha256 NOT GLOB '*[^0-9a-f]*'
+    ),
+    payload_sha256 TEXT NOT NULL CHECK (
+        length(payload_sha256) = 64
+        AND payload_sha256 NOT GLOB '*[^0-9a-f]*'
+    ),
+    expires_at_ms INTEGER NOT NULL CHECK (expires_at_ms > 0),
+    claimed_at_ms INTEGER NOT NULL CHECK (claimed_at_ms >= 0),
+    PRIMARY KEY (stable_txn_id, attempt),
+    FOREIGN KEY (stable_txn_id) REFERENCES matrix_dispatch_ledger(stable_txn_id)
+        ON DELETE RESTRICT
+) STRICT;
+
+CREATE INDEX matrix_dispatch_authority_claims_by_txn
+ON matrix_dispatch_authority_claims(stable_txn_id, attempt);
+
+CREATE TRIGGER matrix_dispatch_authority_claims_no_update
+BEFORE UPDATE ON matrix_dispatch_authority_claims BEGIN
+    SELECT RAISE(ABORT, 'Matrix dispatch authority claim is immutable');
+END;
+
+CREATE TRIGGER matrix_dispatch_authority_claims_no_delete
+BEFORE DELETE ON matrix_dispatch_authority_claims BEGIN
+    SELECT RAISE(ABORT, 'Matrix dispatch authority claim is immutable');
+END;
+
 CREATE TRIGGER matrix_dispatch_ledger_identity_immutable
 BEFORE UPDATE OF
     stable_txn_id, operation_id, logical_outbox_id, room_id,
