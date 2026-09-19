@@ -62,10 +62,9 @@ impl AppServerModelDriver {
         }
         if record.state != NativeReservationState::Reserved {
             if let Some(output) = record.observation {
-                if output.terminal_observed {
-                    self.finish_agentd_lifecycle(&record.request.request_id, &output)
-                        .await?;
-                }
+                // Historical terminal replay is already authorized by the
+                // durable inference journal. It must not regain a dependency
+                // on a possibly retired Agentd generation or contact provider.
                 return Ok(output);
             }
             let dispatch = record.dispatch.ok_or("missing durable dispatch binding")?;
