@@ -180,11 +180,14 @@ fn build_candidates(
         request.topology_deltas.sort_by(|left, right| {
             left.module_id
                 .cmp(&right.module_id)
-.then_with(|| left.operation.cmp(&right.operation))
+                .then_with(|| left.operation.cmp(&right.operation))
         });
         validate_deltas(&request.topology_deltas)?;
-        let candidate_digest =
-            digest_topology_candidate(&request.candidate_id, request.kind, &request.topology_deltas)?;
+        let candidate_digest = digest_topology_candidate(
+            &request.candidate_id,
+            request.kind,
+            &request.topology_deltas,
+        )?;
         candidates.push(TopologyCandidateV3 {
             candidate_id: request.candidate_id,
             kind: request.kind,
@@ -209,9 +212,7 @@ fn validate_deltas(deltas: &[TopologyDeltaV3]) -> Result<(), Error> {
             return Err(Error::EmptyDigest("topology evidence"));
         }
         let related = delta.related_module_ids.iter().collect::<BTreeSet<_>>();
-        if related.len() != delta.related_module_ids.len()
-            || related.contains(&delta.module_id)
-        {
+        if related.len() != delta.related_module_ids.len() || related.contains(&delta.module_id) {
             return Err(Error::DuplicateTopology(delta.module_id.to_string()));
         }
         match delta.operation {

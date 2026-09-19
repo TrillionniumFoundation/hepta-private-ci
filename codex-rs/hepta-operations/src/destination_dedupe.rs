@@ -21,8 +21,7 @@ use crate::MAX_DURABLE_PENDING_OPERATIONS;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
-static DESTINATION_MIGRATOR: sqlx::migrate::Migrator =
-    sqlx::migrate!("./destination_migrations");
+static DESTINATION_MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./destination_migrations");
 
 #[derive(Clone)]
 pub struct DestinationDedupeStore {
@@ -93,7 +92,11 @@ impl DestinationDedupeStore {
     ) -> Result<DestinationApplyStart, DurableOperationError> {
         identity.validate()?;
         let semantic_digest = identity.semantic_digest();
-        let mut tx = self.pool.begin_with("BEGIN IMMEDIATE").await.map_err(sqlx_error)?;
+        let mut tx = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(sqlx_error)?;
         if let Some(row) = sqlx::query(
             "SELECT destination, scope_id, operation_id, semantic_digest, payload_digest,
                     outcome_digest, applied_at_ms
@@ -111,7 +114,9 @@ impl DestinationDedupeStore {
             if receipt.semantic_digest != semantic_digest
                 || receipt.identity.payload_digest != identity.payload_digest
             {
-                return Err(DurableOperationError::Conflict(identity.operation_id.clone()));
+                return Err(DurableOperationError::Conflict(
+                    identity.operation_id.clone(),
+                ));
             }
             tx.commit().await.map_err(sqlx_error)?;
             return Ok(DestinationApplyStart::AlreadyApplied(receipt));
@@ -174,9 +179,13 @@ pub struct DestinationApplyTransaction {
 }
 
 impl DestinationApplyTransaction {
-    pub fn transaction(&mut self) -> Result<&mut Transaction<'static, Sqlite>, DurableOperationError> {
+    pub fn transaction(
+        &mut self,
+    ) -> Result<&mut Transaction<'static, Sqlite>, DurableOperationError> {
         self.tx.as_mut().ok_or_else(|| {
-            DurableOperationError::Unavailable("destination transaction already completed".to_owned())
+            DurableOperationError::Unavailable(
+                "destination transaction already completed".to_owned(),
+            )
         })
     }
 
@@ -193,7 +202,9 @@ impl DestinationApplyTransaction {
         }
         let applied_at = now_millis()?;
         let mut tx = self.tx.take().ok_or_else(|| {
-            DurableOperationError::Unavailable("destination transaction already completed".to_owned())
+            DurableOperationError::Unavailable(
+                "destination transaction already completed".to_owned(),
+            )
         })?;
         sqlx::query(
             "INSERT INTO destination_operation_dedupe (
@@ -222,7 +233,9 @@ impl DestinationApplyTransaction {
 
     pub async fn rollback(mut self) -> Result<(), DurableOperationError> {
         let tx = self.tx.take().ok_or_else(|| {
-            DurableOperationError::Unavailable("destination transaction already completed".to_owned())
+            DurableOperationError::Unavailable(
+                "destination transaction already completed".to_owned(),
+            )
         })?;
         tx.rollback().await.map_err(sqlx_error)
     }

@@ -352,12 +352,8 @@ impl FinalUseAuthority {
         }
         clock.now_unix_ms().map_err(map_trust_error)?;
         let (issuer_keys, issuer_trust_sha256) = pin_issuer_keys(issuer_keys)?;
-        let (store, state) = store::Store::open_key_ring_exact(
-            directory,
-            &signer_id,
-            issuer_trust_sha256,
-            head,
-        )?;
+        let (store, state) =
+            store::Store::open_key_ring_exact(directory, &signer_id, issuer_trust_sha256, head)?;
         let observed = frontier_for_state(&state);
         let trusted = frontier_store.load(&signer_id).map_err(map_trust_error)?;
         if trusted != observed {

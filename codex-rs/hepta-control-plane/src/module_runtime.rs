@@ -255,7 +255,12 @@ impl RuntimeModuleRegistryV1 {
         module_id: &StableId,
         generation: Generation,
     ) -> Result<(), RuntimeModuleRegistryError> {
-        self.transition(module_id, generation, RuntimeModuleLifecycleV1::Registered, RuntimeModuleLifecycleV1::Shadow)
+        self.transition(
+            module_id,
+            generation,
+            RuntimeModuleLifecycleV1::Registered,
+            RuntimeModuleLifecycleV1::Shadow,
+        )
     }
 
     pub fn enter_canary(
@@ -263,7 +268,12 @@ impl RuntimeModuleRegistryV1 {
         module_id: &StableId,
         generation: Generation,
     ) -> Result<(), RuntimeModuleRegistryError> {
-        self.transition(module_id, generation, RuntimeModuleLifecycleV1::Shadow, RuntimeModuleLifecycleV1::Canary)
+        self.transition(
+            module_id,
+            generation,
+            RuntimeModuleLifecycleV1::Shadow,
+            RuntimeModuleLifecycleV1::Canary,
+        )
     }
 
     pub fn quarantine(
@@ -323,7 +333,8 @@ impl RuntimeModuleRegistryV1 {
         candidate.lifecycle = RuntimeModuleLifecycleV1::Active;
         candidate.selection_digest = Some(witness.selection_digest);
         candidate.canary_digest = Some(witness.canary_digest);
-        candidate.handoff_digest = (!witness.handoff_digest.is_zero()).then_some(witness.handoff_digest);
+        candidate.handoff_digest =
+            (!witness.handoff_digest.is_zero()).then_some(witness.handoff_digest);
         self.active.insert(module_id.clone(), generation);
         Ok(self.snapshot())
     }
@@ -333,7 +344,12 @@ impl RuntimeModuleRegistryV1 {
         module_id: &StableId,
         generation: Generation,
     ) -> Result<(), RuntimeModuleRegistryError> {
-        self.transition(module_id, generation, RuntimeModuleLifecycleV1::Active, RuntimeModuleLifecycleV1::Quiescing)
+        self.transition(
+            module_id,
+            generation,
+            RuntimeModuleLifecycleV1::Active,
+            RuntimeModuleLifecycleV1::Quiescing,
+        )
     }
 
     pub fn finish_retire(
@@ -341,7 +357,12 @@ impl RuntimeModuleRegistryV1 {
         module_id: &StableId,
         generation: Generation,
     ) -> Result<RuntimeTopologySnapshotV1, RuntimeModuleRegistryError> {
-        self.transition(module_id, generation, RuntimeModuleLifecycleV1::Quiescing, RuntimeModuleLifecycleV1::Retired)?;
+        self.transition(
+            module_id,
+            generation,
+            RuntimeModuleLifecycleV1::Quiescing,
+            RuntimeModuleLifecycleV1::Retired,
+        )?;
         if self.active.get(module_id) == Some(&generation) {
             self.active.remove(module_id);
         }
@@ -462,8 +483,18 @@ impl RuntimeModuleRegistryV1 {
             push_ids(&mut bytes, &module.dependencies);
             push_ids(&mut bytes, &module.input_ports);
             push_ids(&mut bytes, &module.output_ports);
-            push_ids(&mut bytes, &module.authoritative_domains.iter().cloned().collect::<Vec<_>>());
-            push_ids(&mut bytes, &module.effect_scope.iter().cloned().collect::<Vec<_>>());
+            push_ids(
+                &mut bytes,
+                &module
+                    .authoritative_domains
+                    .iter()
+                    .cloned()
+                    .collect::<Vec<_>>(),
+            );
+            push_ids(
+                &mut bytes,
+                &module.effect_scope.iter().cloned().collect::<Vec<_>>(),
+            );
         }
         RuntimeTopologySnapshotV1 {
             active,
@@ -552,7 +583,8 @@ mod tests {
             generation: Generation::new(generation).expect("generation"),
             implementation_digest: digest(implementation),
             candidate_artifact_digest: digest(implementation),
-            predecessor_generation: predecessor.map(|(g, _)| Generation::new(g).expect("generation")),
+            predecessor_generation: predecessor
+                .map(|(g, _)| Generation::new(g).expect("generation")),
             rollback_predecessor_digest: predecessor.map_or(Digest32::ZERO, |(_, d)| digest(d)),
             state_class: RuntimeModuleStateClassV1::Stateful,
             dependencies: Vec::new(),

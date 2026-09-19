@@ -13,12 +13,11 @@ use std::io::{self, Read, Seek, SeekFrom, Write};
 
 use codex_hepta_types::{AuthorityPosture, Digest32, Generation, StableId};
 
-use crate::{
-    AppendDisposition, Error, ProposalStatus, TopologyCandidateKindV3,
-    TopologyCandidateV3, TopologyDeltaV3, TopologyOperationV3, TopologyProposalV3,
-    verify_topology_proposal_v3,
-};
 use crate::types::{MAX_CANDIDATES, MAX_PROPOSALS, MAX_TOPOLOGY_DELTAS};
+use crate::{
+    AppendDisposition, Error, ProposalStatus, TopologyCandidateKindV3, TopologyCandidateV3,
+    TopologyDeltaV3, TopologyOperationV3, TopologyProposalV3, verify_topology_proposal_v3,
+};
 
 const MAGIC: &[u8; 8] = b"HPTTPV03";
 const VERSION: u16 = 3;
@@ -123,7 +122,13 @@ impl DurableTopologyProposalRegistryV1 {
         writer_fence: u64,
         maximum_records: usize,
     ) -> Result<Self, DurableTopologyRegistryError> {
-        Self::open_inner(file, registry_scope_digest, writer_fence, maximum_records, None)
+        Self::open_inner(
+            file,
+            registry_scope_digest,
+            writer_fence,
+            maximum_records,
+            None,
+        )
     }
 
     pub fn open_anchored(
@@ -304,11 +309,7 @@ impl DurableTopologyProposalRegistryV1 {
         if self.slots.contains_key(&slot) {
             return Err(DurableTopologyRegistryError::Conflict);
         }
-        let current = self
-            .frame_digests
-            .last()
-            .copied()
-            .unwrap_or(Digest32::ZERO);
+        let current = self.frame_digests.last().copied().unwrap_or(Digest32::ZERO);
         if current != expected_predecessor_frame_digest {
             return Err(DurableTopologyRegistryError::Conflict);
         }
@@ -358,7 +359,8 @@ impl DurableTopologyProposalRegistryV1 {
         self.proposals
             .insert(proposal.proposal_id.clone(), proposal);
         self.frame_digests.push(frame_digest);
-        self.receipts.insert(receipt.proposal_id.clone(), receipt.clone());
+        self.receipts
+            .insert(receipt.proposal_id.clone(), receipt.clone());
         self.poisoned = false;
         Ok(receipt)
     }
@@ -405,9 +407,7 @@ impl DurableTopologyProposalRegistryV1 {
             proposal.selected_topology_digest,
             proposal.baseline_generation.get(),
         );
-        if self.proposals.contains_key(&proposal.proposal_id)
-            || self.slots.contains_key(&slot)
-        {
+        if self.proposals.contains_key(&proposal.proposal_id) || self.slots.contains_key(&slot) {
             return Err(DurableTopologyRegistryError::Corrupt);
         }
         let receipt = DurableTopologyAppendReceiptV1 {
@@ -453,8 +453,7 @@ fn validate_header(bytes: &[u8]) -> Result<(), DurableTopologyRegistryError> {
     if bytes.len() != HEADER_SIZE
         || &bytes[..8] != MAGIC
         || u16::from_be_bytes([bytes[8], bytes[9]]) != VERSION
-        || Digest32::of_bytes(&bytes[..HEADER_SIZE - 32]).as_array()
-            != &bytes[HEADER_SIZE - 32..]
+        || Digest32::of_bytes(&bytes[..HEADER_SIZE - 32]).as_array() != &bytes[HEADER_SIZE - 32..]
     {
         return Err(DurableTopologyRegistryError::Corrupt);
     }
@@ -509,9 +508,7 @@ fn decode_frame(frame: &[u8]) -> Result<DecodedFrame, DurableTopologyRegistryErr
     })
 }
 
-fn encode_proposal(
-    proposal: &TopologyProposalV3,
-) -> Result<Vec<u8>, DurableTopologyRegistryError> {
+fn encode_proposal(proposal: &TopologyProposalV3) -> Result<Vec<u8>, DurableTopologyRegistryError> {
     verify_topology_proposal_v3(proposal)?;
     let mut writer = Writer::default();
     writer.bytes(PAYLOAD_MAGIC);
@@ -654,11 +651,21 @@ fn decode_proposal(bytes: &[u8]) -> Result<TopologyProposalV3, DurableTopologyRe
 #[derive(Default)]
 struct Writer(Vec<u8>);
 impl Writer {
-    fn bytes(&mut self, value: &[u8]) { self.0.extend_from_slice(value); }
-    fn u8(&mut self, value: u8) { self.0.push(value); }
-    fn u32(&mut self, value: u32) { self.0.extend_from_slice(&value.to_be_bytes()); }
-    fn u64(&mut self, value: u64) { self.0.extend_from_slice(&value.to_be_bytes()); }
-    fn digest(&mut self, value: Digest32) { self.0.extend_from_slice(value.as_array()); }
+    fn bytes(&mut self, value: &[u8]) {
+        self.0.extend_from_slice(value);
+    }
+    fn u8(&mut self, value: u8) {
+        self.0.push(value);
+    }
+    fn u32(&mut self, value: u32) {
+        self.0.extend_from_slice(&value.to_be_bytes());
+    }
+    fn u64(&mut self, value: u64) {
+        self.0.extend_from_slice(&value.to_be_bytes());
+    }
+    fn digest(&mut self, value: Digest32) {
+        self.0.extend_from_slice(value.as_array());
+    }
     fn len(&mut self, value: usize) -> Result<(), DurableTopologyRegistryError> {
         self.u32(u32::try_from(value).map_err(|_| DurableTopologyRegistryError::Capacity)?);
         Ok(())
@@ -671,35 +678,64 @@ impl Writer {
     }
 }
 
-struct Reader<'a> { bytes: &'a [u8], offset: usize }
+struct Reader<'a> {
+    bytes: &'a [u8],
+    offset: usize,
+}
 impl<'a> Reader<'a> {
-    fn new(bytes: &'a [u8]) -> Self { Self { bytes, offset: 0 } }
-    fn remaining(&self) -> usize { self.bytes.len().saturating_sub(self.offset) }
+    fn new(bytes: &'a [u8]) -> Self {
+        Self { bytes, offset: 0 }
+    }
+    fn remaining(&self) -> usize {
+        self.bytes.len().saturating_sub(self.offset)
+    }
     fn take(&mut self, count: usize) -> Result<&'a [u8], DurableTopologyRegistryError> {
-        let end = self.offset.checked_add(count).ok_or(DurableTopologyRegistryError::Corrupt)?;
-        if end > self.bytes.len() { return Err(DurableTopologyRegistryError::Corrupt); }
+        let end = self
+            .offset
+            .checked_add(count)
+            .ok_or(DurableTopologyRegistryError::Corrupt)?;
+        if end > self.bytes.len() {
+            return Err(DurableTopologyRegistryError::Corrupt);
+        }
         let value = &self.bytes[self.offset..end];
         self.offset = end;
         Ok(value)
     }
-    fn u8(&mut self) -> Result<u8, DurableTopologyRegistryError> { Ok(self.take(1)?[0]) }
+    fn u8(&mut self) -> Result<u8, DurableTopologyRegistryError> {
+        Ok(self.take(1)?[0])
+    }
     fn u32(&mut self) -> Result<u32, DurableTopologyRegistryError> {
-        Ok(u32::from_be_bytes(self.take(4)?.try_into().map_err(|_| DurableTopologyRegistryError::Corrupt)?))
+        Ok(u32::from_be_bytes(
+            self.take(4)?
+                .try_into()
+                .map_err(|_| DurableTopologyRegistryError::Corrupt)?,
+        ))
     }
     fn u64(&mut self) -> Result<u64, DurableTopologyRegistryError> {
-        Ok(u64::from_be_bytes(self.take(8)?.try_into().map_err(|_| DurableTopologyRegistryError::Corrupt)?))
+        Ok(u64::from_be_bytes(
+            self.take(8)?
+                .try_into()
+                .map_err(|_| DurableTopologyRegistryError::Corrupt)?,
+        ))
     }
     fn digest(&mut self) -> Result<Digest32, DurableTopologyRegistryError> {
-        Ok(Digest32::from_array(self.take(32)?.try_into().map_err(|_| DurableTopologyRegistryError::Corrupt)?))
+        Ok(Digest32::from_array(
+            self.take(32)?
+                .try_into()
+                .map_err(|_| DurableTopologyRegistryError::Corrupt)?,
+        ))
     }
     fn bounded_len(&mut self, maximum: usize) -> Result<usize, DurableTopologyRegistryError> {
         let value = self.u32()? as usize;
-        if value > maximum { return Err(DurableTopologyRegistryError::Corrupt); }
+        if value > maximum {
+            return Err(DurableTopologyRegistryError::Corrupt);
+        }
         Ok(value)
     }
     fn id(&mut self) -> Result<StableId, DurableTopologyRegistryError> {
         let len = self.bounded_len(4096)?;
-        let value = std::str::from_utf8(self.take(len)?).map_err(|_| DurableTopologyRegistryError::Corrupt)?;
+        let value = std::str::from_utf8(self.take(len)?)
+            .map_err(|_| DurableTopologyRegistryError::Corrupt)?;
         StableId::new(value).map_err(|_| DurableTopologyRegistryError::Corrupt)
     }
 }
@@ -707,13 +743,17 @@ impl<'a> Reader<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        TopologyCandidateRequestV3, TopologyProposalRequestV3, propose_topology_v3,
-    };
+    use crate::{TopologyCandidateRequestV3, TopologyProposalRequestV3, propose_topology_v3};
 
-    fn id(value: &str) -> StableId { StableId::new(value).expect("id") }
-    fn digest(value: &str) -> Digest32 { Digest32::of_bytes(value.as_bytes()) }
-    fn generation(value: u64) -> Generation { Generation::new(value).expect("generation") }
+    fn id(value: &str) -> StableId {
+        StableId::new(value).expect("id")
+    }
+    fn digest(value: &str) -> Digest32 {
+        Digest32::of_bytes(value.as_bytes())
+    }
+    fn generation(value: u64) -> Generation {
+        Generation::new(value).expect("generation")
+    }
 
     fn proposal() -> TopologyProposalV3 {
         let selected = digest("topology-v1");
@@ -745,12 +785,15 @@ mod tests {
                     }],
                 },
             ],
-        }).expect("proposal")
+        })
+        .expect("proposal")
     }
 
     fn file(temp: &tempfile::TempDir) -> File {
         std::fs::OpenOptions::new()
-            .read(true).write(true).create(true)
+            .read(true)
+            .write(true)
+            .create(true)
             .open(temp.path().join("topology-proposals.log"))
             .expect("file")
     }
@@ -763,17 +806,24 @@ mod tests {
         let anchor = {
             let mut store =
                 DurableTopologyProposalRegistryV1::open(file(&temp), scope, 7, 32).expect("open");
-            let receipt = store.append(Digest32::ZERO, proposal.clone()).expect("append");
+            let receipt = store
+                .append(Digest32::ZERO, proposal.clone())
+                .expect("append");
             assert_eq!(receipt.disposition, AppendDisposition::Inserted);
-            let retry = store.append(Digest32::ZERO, proposal.clone()).expect("retry");
+            let retry = store
+                .append(Digest32::ZERO, proposal.clone())
+                .expect("retry");
             assert_eq!(retry.disposition, AppendDisposition::Unchanged);
             store.current_anchor().expect("anchor").expect("some")
         };
-        let reopened = DurableTopologyProposalRegistryV1::open_anchored(
-            file(&temp), scope, 7, 32, anchor,
-        ).expect("reopen");
+        let reopened =
+            DurableTopologyProposalRegistryV1::open_anchored(file(&temp), scope, 7, 32, anchor)
+                .expect("reopen");
         assert_eq!(reopened.record_count().expect("count"), 1);
-        assert_eq!(reopened.get(&proposal.proposal_id).expect("get"), Some(&proposal));
+        assert_eq!(
+            reopened.get(&proposal.proposal_id).expect("get"),
+            Some(&proposal)
+        );
     }
 
     #[test]
@@ -783,7 +833,9 @@ mod tests {
         let proposal = proposal();
         let mut store =
             DurableTopologyProposalRegistryV1::open(file(&temp), scope, 9, 32).expect("open");
-        let receipt = store.append(Digest32::ZERO, proposal.clone()).expect("append");
+        let receipt = store
+            .append(Digest32::ZERO, proposal.clone())
+            .expect("append");
         drop(store);
         assert!(matches!(
             DurableTopologyProposalRegistryV1::open_anchored(

@@ -74,8 +74,8 @@ impl std::error::Error for RuntimeModuleCatalogErrorV1 {}
 
 impl RuntimeModuleCatalogV1 {
     pub fn canonical() -> Result<Self, RuntimeModuleCatalogErrorV1> {
-        let source: SourceCatalogV1 =
-            serde_json::from_str(CANONICAL_MODULES_JSON).map_err(|_| RuntimeModuleCatalogErrorV1::Decode)?;
+        let source: SourceCatalogV1 = serde_json::from_str(CANONICAL_MODULES_JSON)
+            .map_err(|_| RuntimeModuleCatalogErrorV1::Decode)?;
         if source.modules.is_empty() || source.modules.len() > MAX_MODULES {
             return Err(RuntimeModuleCatalogErrorV1::Bounds);
         }
@@ -170,7 +170,9 @@ fn canonical_ids(
 fn validate_id(value: &str) -> Result<(), RuntimeModuleCatalogErrorV1> {
     if value.is_empty()
         || value.len() > MAX_ID_BYTES
-        || value.bytes().any(|byte| byte == 0 || byte.is_ascii_whitespace())
+        || value
+            .bytes()
+            .any(|byte| byte == 0 || byte.is_ascii_whitespace())
     {
         return Err(RuntimeModuleCatalogErrorV1::InvalidId);
     }

@@ -2,6 +2,11 @@ use std::collections::BTreeSet;
 use std::sync::Arc;
 use std::sync::Mutex;
 
+use crate::AgentdError;
+use crate::AgentdEventKind;
+use crate::AgentdIdentity;
+use crate::AgentdOperationsHost;
+use crate::EventBuffer;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_control_plane::RuntimeModuleAbiV1;
 use codex_hepta_control_plane::RuntimeModuleRegistryV1;
@@ -14,11 +19,6 @@ use codex_hepta_memory::CognitiveStore;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use crate::AgentdError;
-use crate::AgentdEventKind;
-use crate::AgentdIdentity;
-use crate::AgentdOperationsHost;
-use crate::EventBuffer;
 
 #[path = "state_control.rs"]
 mod control;
@@ -59,7 +59,9 @@ impl AgentdState {
             generation: identity.spawn_generation,
         });
         let runtime_catalog = RuntimeModuleCatalogV1::canonical().map_err(|error| {
-            AgentdError::Protocol(format!("canonical runtime module catalog is invalid: {error}"))
+            AgentdError::Protocol(format!(
+                "canonical runtime module catalog is invalid: {error}"
+            ))
         })?;
         Ok(Self {
             authbus: std::sync::OnceLock::new(),
@@ -145,7 +147,9 @@ impl AgentdState {
         host: Arc<crate::authbus_ingress::TextIngress>,
     ) -> Result<(), AgentdError> {
         if self.authbus.get().is_some() {
-            return Err(AgentdError::Protocol("AuthBus host already attached".to_string()));
+            return Err(AgentdError::Protocol(
+                "AuthBus host already attached".to_string(),
+            ));
         }
         self.activate_builtin_runtime_module("auth.authbus", &[])?;
         self.authbus
@@ -183,31 +187,36 @@ impl AgentdState {
         module_id: &str,
         effect_scope: &[&str],
     ) -> Result<(), AgentdError> {
-        let row = self
-            .runtime_catalog
-            .module(module_id)
-            .ok_or_else(|| AgentdError::Protocol(format!(
+        let row = self.runtime_catalog.module(module_id).ok_or_else(|| {
+            AgentdError::Protocol(format!(
                 "runtime module {module_id} is absent from canonical catalog"
-            )))?;
-        let module_id = StableId::new(&row.id)
-            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
-        let owner_id = StableId::new(&row.owner)
-            .map_err(|error| AgentdError::Protocol(error.to_string()))?;
+            ))
+        })?;
+        let module_id =
+            StableId::new(&row.id).map_err(|error| AgentdError::Protocol(error.to_string()))?;
+        let owner_id =
+            StableId::new(&row.owner).map_err(|error| AgentdError::Protocol(error.to_string()))?;
         let generation = Generation::new(self.identity.spawn_generation)
             .map_err(|error| AgentdError::Protocol(error.to_string()))?;
         let dependencies = row
             .dependencies
             .iter()
-            .map(|value| StableId::new(value).map_err(|error| AgentdError::Protocol(error.to_string())))
+            .map(|value| {
+                StableId::new(value).map_err(|error| AgentdError::Protocol(error.to_string()))
+            })
             .collect::<Result<Vec<_>, _>>()?;
         let authoritative_domains = row
             .authoritative_domains
             .iter()
-            .map(|value| StableId::new(value).map_err(|error| AgentdError::Protocol(error.to_string())))
+            .map(|value| {
+                StableId::new(value).map_err(|error| AgentdError::Protocol(error.to_string()))
+            })
             .collect::<Result<BTreeSet<_>, _>>()?;
         let effect_scope = effect_scope
             .iter()
-            .map(|value| StableId::new(*value).map_err(|error| AgentdError::Protocol(error.to_string())))
+            .map(|value| {
+                StableId::new(*value).map_err(|error| AgentdError::Protocol(error.to_string()))
+            })
             .collect::<Result<BTreeSet<_>, _>>()?;
         let state_class = match row.state.as_str() {
             "stateful_external" => RuntimeModuleStateClassV1::ExternalStateful,
@@ -240,12 +249,14 @@ impl AgentdState {
             effect_scope,
         };
         let mut modules = self.runtime_modules.lock().map_err(poisoned_state)?;
-        modules
-            .register_candidate(abi)
-            .map_err(|error| AgentdError::Protocol(format!("runtime module registration failed: {error}")))?;
+        modules.register_candidate(abi).map_err(|error| {
+            AgentdError::Protocol(format!("runtime module registration failed: {error}"))
+        })?;
         modules
             .activate_bootstrap(&module_id, generation)
-            .map_err(|error| AgentdError::Protocol(format!("runtime module activation failed: {error}")))?;
+            .map_err(|error| {
+                AgentdError::Protocol(format!("runtime module activation failed: {error}"))
+            })?;
         Ok(())
     }
 

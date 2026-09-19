@@ -12,14 +12,14 @@ use codex_hepta_control_plane::RuntimeModulePromotionWitnessV1;
 use codex_hepta_control_plane::RuntimeModuleRegistryError;
 use codex_hepta_control_plane::RuntimeModuleRegistryV1;
 use codex_hepta_control_plane::RuntimeTopologySnapshotV1;
+use codex_hepta_intelligence_eval::VerifiedSelfEvolutionRollbackV1;
+use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
 use codex_hepta_types::RuntimeTopologyCandidateV1;
 use codex_hepta_types::RuntimeTopologyContractErrorV1;
 use codex_hepta_types::RuntimeTopologyOperationV1;
-use codex_hepta_intelligence_eval::VerifiedSelfEvolutionRollbackV1;
-use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
+use codex_hepta_types::StableId;
 
 use crate::WriterHandoffCheckpointV1;
 
@@ -157,7 +157,10 @@ impl RuntimeModuleSupervisorV1 {
         if !candidate.changed {
             return Err(RuntimeModuleSupervisorErrorV1::NoChangeTopologyCandidate);
         }
-        if self.pending_topologies.contains_key(&candidate.candidate_digest) {
+        if self
+            .pending_topologies
+            .contains_key(&candidate.candidate_digest)
+        {
             return Err(RuntimeModuleSupervisorErrorV1::DuplicateTopologyCandidate);
         }
 
@@ -208,11 +211,9 @@ impl RuntimeModuleSupervisorV1 {
                             )
                         })?;
                     if record.abi.implementation_digest != delta.predecessor_digest {
-                        return Err(
-                            RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
-                                delta.module_id.clone(),
-                            ),
-                        );
+                        return Err(RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
+                            delta.module_id.clone(),
+                        ));
                     }
                 }
                 RuntimeTopologyOperationV1::Add
@@ -221,9 +222,7 @@ impl RuntimeModuleSupervisorV1 {
                 | RuntimeTopologyOperationV1::Split
                 | RuntimeTopologyOperationV1::Merge => {
                     let abi = supplied.remove(&delta.module_id).ok_or_else(|| {
-                        RuntimeModuleSupervisorErrorV1::MissingTopologyAbi(
-                            delta.module_id.clone(),
-                        )
+                        RuntimeModuleSupervisorErrorV1::MissingTopologyAbi(delta.module_id.clone())
                     })?;
                     if abi.generation != candidate.candidate_generation
                         || abi.candidate_artifact_digest != candidate.candidate_digest
@@ -293,10 +292,7 @@ impl RuntimeModuleSupervisorV1 {
             let generation = abi.generation;
             staged_registry.register_candidate(abi)?;
             staged_registry.enter_shadow(&module_id, generation)?;
-            staged_selections.insert(
-                (module_id, generation),
-                selection.selection_digest(),
-            );
+            staged_selections.insert((module_id, generation), selection.selection_digest());
         }
         self.registry = staged_registry;
         self.selections = staged_selections;
@@ -384,26 +380,16 @@ impl RuntimeModuleSupervisorV1 {
             if delta.operation != RuntimeTopologyOperationV1::Retire {
                 continue;
             }
-            let generation = staged
-                .active_generation(&delta.module_id)
-                .ok_or_else(|| {
-                    RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
-                        delta.module_id.clone(),
-                    )
-                })?;
-            let record = staged
-                .record(&delta.module_id, generation)
-                .ok_or_else(|| {
-                    RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
-                        delta.module_id.clone(),
-                    )
-                })?;
+            let generation = staged.active_generation(&delta.module_id).ok_or_else(|| {
+                RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(delta.module_id.clone())
+            })?;
+            let record = staged.record(&delta.module_id, generation).ok_or_else(|| {
+                RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(delta.module_id.clone())
+            })?;
             if record.abi.implementation_digest != delta.predecessor_digest {
-                return Err(
-                    RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
-                        delta.module_id.clone(),
-                    ),
-                );
+                return Err(RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
+                    delta.module_id.clone(),
+                ));
             }
             staged.begin_retire(&delta.module_id, generation)?;
             staged.finish_retire(&delta.module_id, generation)?;
@@ -428,7 +414,8 @@ impl RuntimeModuleSupervisorV1 {
         let generation = abi.generation;
         self.registry.register_candidate(abi)?;
         self.registry.enter_shadow(&module_id, generation)?;
-        self.selections.insert((module_id, generation), selection_digest);
+        self.selections
+            .insert((module_id, generation), selection_digest);
         Ok(())
     }
 
@@ -478,7 +465,8 @@ impl RuntimeModuleSupervisorV1 {
             .record(module_id, generation)
             .ok_or(RuntimeModuleSupervisorErrorV1::ModuleMismatch)?;
         if record.abi.predecessor_generation.is_some()
-            || record.abi.state_class == codex_hepta_control_plane::RuntimeModuleStateClassV1::Stateless
+            || record.abi.state_class
+                == codex_hepta_control_plane::RuntimeModuleStateClassV1::Stateless
         {
             return Err(RuntimeModuleSupervisorErrorV1::PredecessorMismatch);
         }
@@ -516,9 +504,7 @@ impl RuntimeModuleSupervisorV1 {
         if handoff.plan.target_writer != *module_id {
             return Err(RuntimeModuleSupervisorErrorV1::ModuleMismatch);
         }
-        if handoff.plan.new_generation != generation
-            || handoff.plan.old_generation != predecessor
-        {
+        if handoff.plan.new_generation != generation || handoff.plan.old_generation != predecessor {
             return Err(RuntimeModuleSupervisorErrorV1::GenerationMismatch);
         }
         if handoff.rollback_predecessor() != record.abi.rollback_predecessor_digest {
@@ -559,7 +545,8 @@ impl RuntimeModuleSupervisorV1 {
         if self.registry.active_generation(module_id) != Some(generation)
             || witness.drain_digest.is_zero()
             || witness.unknown_effect_count != 0
-            || ((!record.abi.effect_scope.is_empty() || !record.abi.authoritative_domains.is_empty())
+            || ((!record.abi.effect_scope.is_empty()
+                || !record.abi.authoritative_domains.is_empty())
                 && witness.reconciliation_digest.is_zero())
         {
             return Err(RuntimeModuleSupervisorErrorV1::InvalidRetirementWitness);
@@ -584,7 +571,8 @@ impl RuntimeModuleSupervisorV1 {
         staged.begin_retire(module_id, generation)?;
         let snapshot = staged.finish_retire(module_id, generation)?;
         self.registry = staged;
-        self.retirement_ready.remove(&(module_id.clone(), generation));
+        self.retirement_ready
+            .remove(&(module_id.clone(), generation));
         Ok(snapshot)
     }
 
@@ -650,7 +638,11 @@ mod tests {
         Generation::new(value).expect("generation")
     }
 
-    fn abi(generation_value: u64, implementation: &str, predecessor: Option<(u64, &str)>) -> RuntimeModuleAbiV1 {
+    fn abi(
+        generation_value: u64,
+        implementation: &str,
+        predecessor: Option<(u64, &str)>,
+    ) -> RuntimeModuleAbiV1 {
         RuntimeModuleAbiV1 {
             module_id: id("memory.retrieval"),
             owner_id: id("memory-team"),
@@ -658,7 +650,8 @@ mod tests {
             implementation_digest: digest(implementation),
             candidate_artifact_digest: digest(implementation),
             predecessor_generation: predecessor.map(|(value, _)| generation(value)),
-            rollback_predecessor_digest: predecessor.map_or(Digest32::ZERO, |(_, value)| digest(value)),
+            rollback_predecessor_digest: predecessor
+                .map_or(Digest32::ZERO, |(_, value)| digest(value)),
             state_class: RuntimeModuleStateClassV1::Stateful,
             dependencies: Vec::new(),
             input_ports: Vec::new(),
@@ -672,11 +665,15 @@ mod tests {
     fn stateful_promotion_consumes_terminal_writer_handoff() {
         let temp = tempfile::tempdir().expect("temp");
         let mut supervisor = RuntimeModuleSupervisorV1::new();
-        supervisor.register_bootstrap(abi(1, "v1", None)).expect("bootstrap");
+        supervisor
+            .register_bootstrap(abi(1, "v1", None))
+            .expect("bootstrap");
         supervisor
             .register_shadow_for_test(abi(2, "v2", Some((1, "v1"))), digest("selection"))
             .expect("shadow");
-        supervisor.enter_canary(&id("memory.retrieval"), generation(2)).expect("canary");
+        supervisor
+            .enter_canary(&id("memory.retrieval"), generation(2))
+            .expect("canary");
 
         let file = std::fs::OpenOptions::new()
             .read(true)

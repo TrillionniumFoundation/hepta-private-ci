@@ -227,7 +227,9 @@ impl ObjectiveIngressHost {
         match result {
             codex_hepta_intelligence::ProductionObjectiveDispositionV1::Published(receipt) => {
                 {
-                    let ObjectiveOwnerState { ledger, witness, .. } = &mut *state;
+                    let ObjectiveOwnerState {
+                        ledger, witness, ..
+                    } = &mut *state;
                     reconcile_witness(ledger, witness)?;
                 }
                 // The durable publication may outlive an authority/generation

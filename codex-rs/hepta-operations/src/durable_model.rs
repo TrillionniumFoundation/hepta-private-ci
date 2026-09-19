@@ -272,9 +272,7 @@ pub struct DestinationOperationIdentity {
 impl DestinationOperationIdentity {
     pub fn validate(&self) -> Result<(), DurableOperationError> {
         if self.payload_digest.is_zero() {
-            return Err(DurableOperationError::Invalid(
-                "destination payload digest",
-            ));
+            return Err(DurableOperationError::Invalid("destination payload digest"));
         }
         Ok(())
     }
@@ -334,11 +332,16 @@ impl fmt::Display for DurableOperationError {
             Self::StaleGeneration => formatter.write_str("durable owner generation is stale"),
             Self::StaleLease => formatter.write_str("durable outbox lease is stale"),
             Self::InvalidTransition { from, to } => {
-                write!(formatter, "invalid durable transition from {from:?} to {to}")
+                write!(
+                    formatter,
+                    "invalid durable transition from {from:?} to {to}"
+                )
             }
             Self::ClockRollback => formatter.write_str("wall clock moved behind durable state"),
             Self::Authority(error) => write!(formatter, "final-use authority rejected: {error}"),
-            Self::Corrupt(message) => write!(formatter, "durable operation store corrupt: {message}"),
+            Self::Corrupt(message) => {
+                write!(formatter, "durable operation store corrupt: {message}")
+            }
             Self::Unavailable(message) => {
                 write!(formatter, "durable operation store unavailable: {message}")
             }

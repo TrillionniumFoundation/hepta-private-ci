@@ -213,8 +213,6 @@ pub struct ParameterProposalV2 {
     pub authority: AuthorityPosture,
 }
 
-
-
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum TopologyOperationV3 {
     Add,

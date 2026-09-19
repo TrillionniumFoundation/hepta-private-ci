@@ -133,8 +133,10 @@ impl ProposalRegistry {
         if self.record_count() >= self.maximum_records {
             return Err(Error::RegistryCapacityExceeded);
         }
-        self.topology_v3_slots.insert(slot, proposal.proposal_id.clone());
-        self.topology_v3.insert(proposal.proposal_id.clone(), proposal);
+        self.topology_v3_slots
+            .insert(slot, proposal.proposal_id.clone());
+        self.topology_v3
+            .insert(proposal.proposal_id.clone(), proposal);
         Ok(AppendDisposition::Inserted)
     }
 

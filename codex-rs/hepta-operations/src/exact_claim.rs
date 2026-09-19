@@ -53,9 +53,7 @@ impl DurableOperationStore {
         let Some(candidate) = candidate else {
             return Err(DurableOperationError::Missing(operation_id.clone()));
         };
-        let operation_state: String = candidate
-            .try_get("operation_state")
-            .map_err(unavailable)?;
+        let operation_state: String = candidate.try_get("operation_state").map_err(unavailable)?;
         let operation_state = DurableOperationState::parse(&operation_state)?;
         let outbox_state: String = candidate.try_get("outbox_state").map_err(unavailable)?;
         let next_eligible: i64 = candidate

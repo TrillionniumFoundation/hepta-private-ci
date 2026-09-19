@@ -82,9 +82,16 @@ async fn exact_multiwriter_prepare_is_idempotent_and_payload_drift_conflicts() {
     let right = right.expect("right");
     assert!(matches!(
         (left.disposition, right.disposition),
-        (PrepareDisposition::Inserted, PrepareDisposition::AlreadyPresent)
-            | (PrepareDisposition::AlreadyPresent, PrepareDisposition::Inserted)
-            | (PrepareDisposition::AlreadyPresent, PrepareDisposition::AlreadyPresent)
+        (
+            PrepareDisposition::Inserted,
+            PrepareDisposition::AlreadyPresent
+        ) | (
+            PrepareDisposition::AlreadyPresent,
+            PrepareDisposition::Inserted
+        ) | (
+            PrepareDisposition::AlreadyPresent,
+            PrepareDisposition::AlreadyPresent
+        )
     ));
     let changed = intent(b"changed");
     assert!(matches!(
@@ -436,7 +443,11 @@ async fn retirement_never_discards_an_unreconciled_external_effect() {
         "UPDATE operation_ledger SET state = 'indeterminate', indeterminate_digest = ?,
          revision = revision + 1 WHERE scope_id = ? AND operation_id = ?",
     )
-    .bind(Digest32::of_bytes(b"effect-may-have-crossed").as_array().as_slice())
+    .bind(
+        Digest32::of_bytes(b"effect-may-have-crossed")
+            .as_array()
+            .as_slice(),
+    )
     .bind(operation.scope_id.as_str())
     .bind(operation.operation_id.as_str())
     .execute(&store.pool)
