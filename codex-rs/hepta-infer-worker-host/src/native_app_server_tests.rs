@@ -173,25 +173,34 @@ fn recovery_binds_the_stable_client_id_to_the_original_user_input() {
     };
 
     assert_eq!(
-        recovered_user_binding(&[user(Some("request-a"), "original")], "request-a", "original"),
+        recovered_user_binding(
+            &[user(Some("request-a"), "original")],
+            "request-a",
+            "original"
+        ),
         RecoveredUserBinding::Exact
     );
     assert_eq!(
-        recovered_user_binding(&[user(Some("request-a"), "drifted")], "request-a", "original"),
+        recovered_user_binding(
+            &[user(Some("request-a"), "drifted")],
+            "request-a",
+            "original"
+        ),
         RecoveredUserBinding::Mismatch
     );
     assert_eq!(
-        recovered_user_binding(&[user(Some("request-b"), "original")], "request-a", "original"),
+        recovered_user_binding(
+            &[user(Some("request-b"), "original")],
+            "request-a",
+            "original"
+        ),
         RecoveredUserBinding::NotPresent
     );
 }
 
 #[test]
 fn observation_budget_never_resets_the_absolute_codex_deadline() {
-    assert_eq!(
-        observation_budget_from(90, 100),
-        Duration::from_millis(10)
-    );
+    assert_eq!(observation_budget_from(90, 100), Duration::from_millis(10));
     assert_eq!(observation_budget_from(100, 100), Duration::ZERO);
     assert_eq!(observation_budget_from(101, 100), Duration::ZERO);
 }
@@ -200,32 +209,12 @@ fn observation_budget_never_resets_the_absolute_codex_deadline() {
 fn post_authority_fence_rejects_deadline_cancel_owner_and_ingress_drift() {
     let health = ready_owner();
     let expected = PathBuf::from("/run/agent/app-server.sock");
-    assert!(
-        validate_post_authority_fence(
-            &health,
-            &expected,
-            &expected,
-            false,
-            99,
-            100
-        )
-        .is_ok()
-    );
+    assert!(validate_post_authority_fence(&health, &expected, &expected, false, 99, 100).is_ok());
     assert!(remaining_from(99, 100).is_ok());
     assert!(remaining_from(100, 100).is_err());
     assert!(remaining_from(101, 100).is_err());
 
-    assert!(
-        validate_post_authority_fence(
-            &health,
-            &expected,
-            &expected,
-            true,
-            99,
-            100
-        )
-        .is_err()
-    );
+    assert!(validate_post_authority_fence(&health, &expected, &expected, true, 99, 100).is_err());
     assert!(
         validate_post_authority_fence(
             &health,
@@ -240,42 +229,14 @@ fn post_authority_fence_rejects_deadline_cancel_owner_and_ingress_drift() {
 
     let mut fenced = ready_owner();
     fenced.fenced = true;
-    assert!(
-        validate_post_authority_fence(
-            &fenced,
-            &expected,
-            &expected,
-            false,
-            99,
-            100
-        )
-        .is_err()
-    );
+    assert!(validate_post_authority_fence(&fenced, &expected, &expected, false, 99, 100).is_err());
 
     let mut not_ready = ready_owner();
     not_ready.ready = false;
     assert!(
-        validate_post_authority_fence(
-            &not_ready,
-            &expected,
-            &expected,
-            false,
-            99,
-            100
-        )
-        .is_err()
+        validate_post_authority_fence(&not_ready, &expected, &expected, false, 99, 100).is_err()
     );
-    assert!(
-        validate_post_authority_fence(
-            &health,
-            &expected,
-            &expected,
-            false,
-            100,
-            100
-        )
-        .is_err()
-    );
+    assert!(validate_post_authority_fence(&health, &expected, &expected, false, 100, 100).is_err());
 }
 
 #[tokio::test]
