@@ -8,6 +8,7 @@ use codex_hepta_types::Digest32;
 use crate::AppendReceipt;
 use crate::DurableLedger;
 use crate::DurableLedgerError;
+#[cfg(feature = "qualification-legacy-write")]
 use crate::EpisodeDecision;
 use crate::LedgerAnchor;
 use crate::LedgerEvent;
@@ -36,7 +37,9 @@ impl ProductionAppendPermit {
 }
 
 pub trait DurableLearningJournal: sealed::Journal {
-    /// Compatibility/qualification path: only immutable decisions are writable.
+    /// Compatibility/qualification path. Absent from default/product builds.
+    #[cfg(feature = "qualification-legacy-write")]
+    #[cfg(feature = "qualification-legacy-write")]
     fn append_decision(
         &mut self,
         expected_predecessor: Digest32,
@@ -58,6 +61,7 @@ pub trait DurableLearningJournal: sealed::Journal {
 }
 
 impl DurableLearningJournal for DurableLedger {
+    #[cfg(feature = "qualification-legacy-write")]
     fn append_decision(
         &mut self,
         predecessor: Digest32,
@@ -85,6 +89,7 @@ impl DurableLearningJournal for DurableLedger {
 }
 
 impl DurableLearningJournal for SegmentedLedger {
+    #[cfg(feature = "qualification-legacy-write")]
     fn append_decision(
         &mut self,
         predecessor: Digest32,
