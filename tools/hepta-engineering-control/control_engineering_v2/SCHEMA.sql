@@ -168,3 +168,13 @@ CREATE INDEX IF NOT EXISTS idx_assignment_claims_package
 CREATE UNIQUE INDEX IF NOT EXISTS idx_assignment_claims_one_active
   ON assignment_claims(generation_id, package_id)
   WHERE state IN ('claimed','running');
+
+
+CREATE TABLE IF NOT EXISTS engineering_writer_bindings(
+  singleton INTEGER PRIMARY KEY CHECK(singleton=1),
+  repository_full_name TEXT NOT NULL,
+  writer_instance_id TEXT NOT NULL,
+  writer_credential_chain_digest TEXT NOT NULL,
+  established_unix_ns INTEGER NOT NULL,
+  semantic_digest TEXT NOT NULL
+);
