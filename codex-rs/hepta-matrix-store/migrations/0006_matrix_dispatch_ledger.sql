@@ -80,6 +80,10 @@ CREATE UNIQUE INDEX matrix_dispatch_ledger_terminal_event
 ON matrix_dispatch_ledger(terminal_event_id)
 WHERE terminal_event_id IS NOT NULL;
 
+CREATE UNIQUE INDEX matrix_dispatch_ledger_transport_event
+ON matrix_dispatch_ledger(transport_event_id)
+WHERE transport_event_id IS NOT NULL;
+
 CREATE TABLE matrix_dispatch_observations (
     observation_seq INTEGER PRIMARY KEY AUTOINCREMENT,
     stable_txn_id TEXT NOT NULL,
