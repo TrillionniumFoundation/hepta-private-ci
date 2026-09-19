@@ -194,6 +194,10 @@ impl CapabilitySnapshotV2 {
         self.snapshot_digest
     }
 
+    pub(super) const fn objective_digest(&self) -> Digest32 {
+        self.objective_digest
+    }
+
     #[must_use]
     pub fn absent_optional(&self) -> &[StableId] {
         &self.absent_optional
