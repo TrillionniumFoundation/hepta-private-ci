@@ -262,3 +262,18 @@ fn custom_relation_identities_are_lossless_and_queryable() {
         KnowledgeRelationKindV2::Custom(id("relation-kind:studies"))
     );
 }
+
+
+#[test]
+fn composed_owner_can_retain_more_than_sixty_four_supports() {
+    let mut canonical = node("shared", "shared");
+    canonical.supports = (1..=65)
+        .map(|index| support(&format!("shared-{index}"), false))
+        .collect();
+    let generation = build_complete_generation(
+        generation(1),
+        input(vec![canonical], Vec::new()),
+    )
+    .unwrap_or_else(|error| panic!("65 explicit supports remain within owner bounds: {error}"));
+    assert_eq!(generation.nodes[0].supports.len(), 65);
+}
