@@ -10,8 +10,8 @@
     "codex-rs/hepta-control-plane"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_composed",
+  "productCallerState": "source_composed_unqualified",
+  "productionWriterState": "not_established",
   "operations": [
     {
       "operation": "collect_snapshot",
@@ -213,7 +213,7 @@
     "nativePlanningKernel": "candidate_implemented",
     "ownerLocalDurabilityReference": "candidate_implemented",
     "canonicalExternalProtocolAdmission": "not_established",
-    "productionCaller": "not_established",
+    "productionCaller": "source_composed_unqualified",
     "productionWriter": "not_established",
     "exactHeadQualification": "required",
     "independentAcceptance": "not_established",
@@ -236,7 +236,8 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "sourceProductComposition": true
   },
   "sourceBase": {
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
@@ -250,5 +251,14 @@
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
+  ],
+  "sourceIdentityPolicy": "resolve_exact_candidate_from_git_and_ci",
+  "sourceBaseInterpretation": "implementation_map_generation_baseline_not_live_head",
+  "productCallerEvidence": [
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "symbol": "plan_observed_context",
+      "state": "source_composed_authority_free"
+    }
   ]
 }
