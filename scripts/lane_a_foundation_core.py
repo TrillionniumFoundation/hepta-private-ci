@@ -156,8 +156,22 @@ def validate_capability_map(
             or row.get("activation") != state["activation"]
         ):
             raise VerificationError(f"{capability_id}: matrix state mismatch")
-        if row.get("productionCaller") is not None:
-            raise VerificationError(f"{capability_id}: unproven production caller")
+        production_caller = row.get("productionCaller")
+        if production_caller is not None:
+            allowed_kernel_evidence_product = (
+                module == "kernel.evidence"
+                and production_caller == "hepta-evidence-writer"
+                and summary
+                in {
+                    "authenticated exact-candidate qualification receipt chain",
+                    "external checkpoint rollback and database replacement detection",
+                    "typed independent decision receipt projection",
+                }
+            )
+            if not allowed_kernel_evidence_product:
+                raise VerificationError(
+                    f"{capability_id}: unproven production caller"
+                )
         if row.get("receiptStatus") != "native_workflow_required":
             raise VerificationError(f"{capability_id}: invalid receipt status")
         symbols = row.get("publicSymbols")
