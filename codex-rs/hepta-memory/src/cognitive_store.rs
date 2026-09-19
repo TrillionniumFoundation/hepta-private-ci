@@ -158,6 +158,11 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("cognitive_logical_turn_attempts_lease_lookup", "index"),
     ("cognitive_logical_turn_attempts_journal_lookup", "index"),
     ("cognitive_logical_turn_attempts_trajectory_lookup", "index"),
+    ("cognitive_operation_ledger", "table"),
+    ("cognitive_operation_ledger_no_update", "trigger"),
+    ("cognitive_operation_ledger_no_delete", "trigger"),
+    ("cognitive_operation_ledger_destination_lookup", "index"),
+    ("cognitive_operation_ledger_lease_lookup", "index"),
 ];
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
     "ae52b47126c510d36e89cf378a9df11f985527cea24111da7b2cf38b020cab6c";
