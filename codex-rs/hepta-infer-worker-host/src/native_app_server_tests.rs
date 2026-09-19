@@ -162,6 +162,16 @@ fn ready_owner() -> HealthSnapshot {
 }
 
 #[test]
+fn observation_budget_never_resets_the_absolute_codex_deadline() {
+    assert_eq!(
+        observation_budget_from(90, 100),
+        Duration::from_millis(10)
+    );
+    assert_eq!(observation_budget_from(100, 100), Duration::ZERO);
+    assert_eq!(observation_budget_from(101, 100), Duration::ZERO);
+}
+
+#[test]
 fn post_authority_fence_rejects_deadline_cancel_owner_and_ingress_drift() {
     let health = ready_owner();
     let expected = PathBuf::from("/run/agent/app-server.sock");
