@@ -301,6 +301,8 @@ impl AppServerModelDriver {
                     terminal_observed: false,
                     owner_authority: NativeOwnerAuthority::Unverified,
                     final_use_authority: admitted_authority.clone(),
+                    output_sha256: None,
+                    output_retained: true,
                     stop_reason: Some("turn/start outcome unknown; do not replay".to_string()),
                 });
             }
@@ -316,6 +318,8 @@ impl AppServerModelDriver {
             terminal_observed: false,
             owner_authority: NativeOwnerAuthority::Unverified,
             final_use_authority: admitted_authority,
+            output_sha256: None,
+            output_retained: true,
             stop_reason: None,
         };
         if let Err(error) = control.native_started(request_id, output.turn_id.clone()) {
@@ -342,7 +346,7 @@ impl AppServerModelDriver {
             let loss_recorded =
                 if matches!(output.owner_authority, NativeOwnerAuthority::Lost { .. }) {
                     control
-                        .settle_native(request_id, output.clone())
+                        .settle_native_receipt_only(request_id, output.clone())
                         .map(|_| ())
                 } else {
                     Ok(())
@@ -540,6 +544,8 @@ impl AppServerModelDriver {
                 .as_ref()
                 .map(policy::claimed_authority)
                 .unwrap_or(NativeFinalUseAuthority::Unverified),
+            output_sha256: None,
+            output_retained: true,
             stop_reason: None,
         });
         if output.thread_id != dispatch.thread_id
