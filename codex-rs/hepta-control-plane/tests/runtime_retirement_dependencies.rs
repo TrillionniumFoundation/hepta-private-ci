@@ -74,7 +74,10 @@ fn provider_waits_for_active_quarantined_and_draining_dependents() {
         );
         assert_eq!(registry.snapshot(), before);
         assert_eq!(
-            registry.record(&id("provider"), generation()).unwrap().lifecycle,
+            registry
+                .record(&id("provider"), generation())
+                .unwrap()
+                .lifecycle,
             RuntimeModuleLifecycleV1::Active
         );
         registry.begin_retire(&id("consumer"), generation()).unwrap();
@@ -102,16 +105,28 @@ fn finish_rechecks_consumers_selected_during_the_drain_window() {
     let before = registry.snapshot();
     assert_eq!(
         registry.finish_retire(&id("provider"), generation()),
-        Err(RuntimeModuleRegistryError::SelectedDependent(id("late-consumer")))
+        Err(RuntimeModuleRegistryError::SelectedDependent(id(
+            "late-consumer"
+        )))
     );
     assert_eq!(registry.snapshot(), before);
-    assert_eq!(registry.active_generation(&id("provider")), Some(generation()));
     assert_eq!(
-        registry.record(&id("provider"), generation()).unwrap().lifecycle,
+        registry.active_generation(&id("provider")),
+        Some(generation())
+    );
+    assert_eq!(
+        registry
+            .record(&id("provider"), generation())
+            .unwrap()
+            .lifecycle,
         RuntimeModuleLifecycleV1::Quiescing
     );
-    registry.begin_retire(&id("late-consumer"), generation()).unwrap();
-    registry.finish_retire(&id("late-consumer"), generation()).unwrap();
+    registry
+        .begin_retire(&id("late-consumer"), generation())
+        .unwrap();
+    registry
+        .finish_retire(&id("late-consumer"), generation())
+        .unwrap();
     registry.finish_retire(&id("provider"), generation()).unwrap();
     assert_eq!(registry.active_generation(&id("provider")), None);
 }
@@ -127,7 +142,10 @@ fn unselected_candidate_does_not_pin_a_provider_forever() {
     registry.finish_retire(&id("provider"), generation()).unwrap();
     assert!(registry.snapshot().active.is_empty());
     assert_eq!(
-        registry.record(&id("pending-consumer"), generation()).unwrap().lifecycle,
+        registry
+            .record(&id("pending-consumer"), generation())
+            .unwrap()
+            .lifecycle,
         RuntimeModuleLifecycleV1::Registered
     );
 }
@@ -139,7 +157,14 @@ fn invalid_self_dependency_does_not_consume_the_generation_identity() {
         registry.register_candidate(abi("self-dependent", &["self-dependent"])),
         Err(RuntimeModuleRegistryError::SelfDependency)
     );
-    assert!(registry.record(&id("self-dependent"), generation()).is_none());
+    assert!(
+        registry
+            .record(&id("self-dependent"), generation())
+            .is_none()
+    );
     select(&mut registry, abi("self-dependent", &[]));
-    assert_eq!(registry.active_generation(&id("self-dependent")), Some(generation()));
+    assert_eq!(
+        registry.active_generation(&id("self-dependent")),
+        Some(generation())
+    );
 }

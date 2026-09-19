@@ -180,15 +180,18 @@ def select_packages(paths: Iterable[str], before: Graph, after: Graph) -> dict:
     if reasons:
         return {"packages": sorted(current), "full_workspace": True,
                 "changed_packages": sorted(changed), "reasons": sorted(reasons)}
-    edges = before.edges | after.edges
+    # Build reverse adjacency once. Re-scanning every edge for every reached
+    # package makes a long dependency chain quadratic in workspace size.
+    # Keep dev and production edges distinct, including across both revisions.
+    reverse: dict[str, list[tuple[str, bool]]] = {}
+    for source, consumer, dev_only in before.edges | after.edges:
+        reverse.setdefault(source, []).append((consumer, dev_only))
     affected = set(changed)
     pending = list(changed)
     tests = set()
     while pending:
         dependency = pending.pop()
-        for source, consumer, dev_only in edges:
-            if source != dependency:
-                continue
+        for consumer, dev_only in reverse.get(dependency, ()):
             tests.add(consumer)
             if not dev_only and consumer not in affected:
                 affected.add(consumer)
