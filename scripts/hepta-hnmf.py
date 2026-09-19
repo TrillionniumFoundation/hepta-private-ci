@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
@@ -97,6 +98,7 @@ REQUIRED_FILES = [
     "qualification/hnmf-reference/README.md",
     "qualification/hnmf-reference/src/lib.rs",
     "qualification/hnmf-contract-reference/src/lib.rs",
+    "qualification/hnmf-contract-reference/canonical_vectors.json",
     "codex-rs/hepta-cognitive-types/src/hnmf.rs",
     "codex-rs/hepta-cognitive-types/src/wire.rs",
     "codex-rs/hepta-cognitive-types/src/ports.rs",
@@ -327,6 +329,31 @@ def verify() -> int:
         "pub struct TopologyProposalV1" not in canonical_source,
         "memory topology must not collide with learning TopologyProposalV1",
     )
+
+    vectors = load_json("qualification/hnmf-contract-reference/canonical_vectors.json")
+    need(vectors.get("schema") == "hepta.cognitive-canonical-json-vectors.v1", "canonical vector schema")
+    need(vectors.get("schemaVersion") == 1, "canonical vector schema version")
+    vector_rows = vectors.get("vectors", [])
+    need(vector_rows, "canonical vectors")
+    for vector in vector_rows:
+        schema_id = vector.get("schemaId")
+        canonical_json = vector.get("canonicalJson")
+        value = vector.get("value")
+        expected_digest = vector.get("digestSha256")
+        need(schema_id in PROTOCOLS, "canonical vector protocol")
+        need(isinstance(canonical_json, str), "canonical vector JSON")
+        need(isinstance(value, dict), "canonical vector value")
+        python_canonical = json.dumps(value, ensure_ascii=False, separators=(",", ":"))
+        need(python_canonical == canonical_json, "cross-language canonical JSON")
+        payload = canonical_json.encode("utf-8")
+        schema_bytes = schema_id.encode("utf-8")
+        digest = hashlib.sha256(
+            b"hepta.cognitive.canonical-json.v1"
+            + len(schema_bytes).to_bytes(4, "big")
+            + schema_bytes
+            + payload
+        ).hexdigest()
+        need(digest == expected_digest, "cross-language canonical digest")
 
     migration_path = "docs/hnmf/MIGRATION.md"
     migration = (ROOT / migration_path).read_text(encoding="utf-8")
