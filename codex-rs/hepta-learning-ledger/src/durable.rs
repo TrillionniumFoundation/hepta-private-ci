@@ -200,6 +200,19 @@ impl DurableLedger {
         Ok(receipt)
     }
 
+    /// Explicit non-production compatibility hook for cross-crate qualification
+    /// fixtures that exercise the historical V1 event format. Product builds
+    /// must not enable `qualification-legacy-write`.
+    #[cfg(feature = "qualification-legacy-write")]
+    #[doc(hidden)]
+    pub fn append_qualification(
+        &mut self,
+        expected_predecessor: Digest32,
+        event: LedgerEvent,
+    ) -> Result<AppendReceipt, DurableLedgerError> {
+        self.append(expected_predecessor, event)
+    }
+
     pub fn records(&self) -> Result<&[LedgerRecord], DurableLedgerError> {
         if self.poisoned {
             Err(DurableLedgerError::Poisoned)
