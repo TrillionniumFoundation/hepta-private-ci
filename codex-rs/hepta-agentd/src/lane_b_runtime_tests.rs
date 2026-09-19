@@ -297,3 +297,238 @@ fn intelligence_envelope_attaches_to_the_named_runtime_run() {
         .expect("dispatch through existing runtime");
     assert_eq!(dispatched.phase, RunPhase::Dispatched);
 }
+
+use codex_hepta_intelligence::CapabilityBindingV2;
+use codex_hepta_intelligence::CapabilityNecessityV2;
+use codex_hepta_intelligence::CapabilityRequirementV2;
+use codex_hepta_intelligence::CapabilitySnapshotRequestV2;
+use codex_hepta_intelligence::CapabilitySnapshotV2;
+use codex_hepta_intelligence::LaneFBudgetV3;
+use codex_hepta_intelligence::LegalActionCandidateV1;
+use codex_hepta_intelligence::build_legal_candidates_v1;
+use codex_hepta_types::Generation;
+
+fn v3_id(value: &str) -> StableId {
+    StableId::new(value).expect("V3 fixture id")
+}
+
+fn v3_digest(value: &str) -> Digest32 {
+    Digest32::of_bytes(value.as_bytes())
+}
+
+fn v3_request() -> LaneFRunRequestV3 {
+    let pairs = [
+        ("objective.validation", "objective.compiler"),
+        ("legal.actions", "intelligence.control"),
+        ("utility.evaluation", "utility.ndu"),
+        ("learning.evaluation", "learning.eval"),
+        ("intuition.decision", "intuition.policy"),
+        ("context.compilation", "context.compiler"),
+        ("host.handoff", "runtime.agentd"),
+        ("learning.record", "learning.ledger"),
+    ];
+    let requirements = pairs
+        .iter()
+        .map(|(capability, owner)| CapabilityRequirementV2 {
+            capability_id: v3_id(capability),
+            owner_id: v3_id(owner),
+            contract_digest: v3_digest(&format!("contract:{capability}")),
+            necessity: CapabilityNecessityV2::Required,
+        })
+        .collect::<Vec<_>>();
+    let bindings = requirements
+        .iter()
+        .map(|requirement| CapabilityBindingV2 {
+            capability_id: requirement.capability_id.clone(),
+            owner_id: requirement.owner_id.clone(),
+            contract_digest: requirement.contract_digest,
+            implementation_digest: v3_digest(&format!(
+                "implementation:{}",
+                requirement.owner_id.as_str()
+            )),
+            generation: Generation::new(1).expect("generation"),
+        })
+        .collect();
+    let snapshot = CapabilitySnapshotV2::admit(CapabilitySnapshotRequestV2 {
+        objective_digest: v3_digest("objective-v3"),
+        authority_epoch: 1,
+        body_generation: Generation::new(1).expect("generation"),
+        configuration_digest: v3_digest("configuration"),
+        revocation_frontier_digest: v3_digest("revocations"),
+        requirements,
+        bindings,
+    })
+    .expect("capability snapshot");
+    let legal_candidates = build_legal_candidates_v1(
+        v3_id("candidate-set"),
+        snapshot.digest(),
+        v3_digest("grammar"),
+        0,
+        vec![LegalActionCandidateV1 {
+            candidate_id: v3_id("action.read"),
+            action_digest: v3_digest("action.read"),
+            support_digest: v3_digest("support"),
+            support_ppm: 1_000_000,
+        }],
+    )
+    .expect("legal candidates");
+    LaneFRunRequestV3 {
+        run_id: v3_id("run.v3.agentd"),
+        request_digest: v3_digest("request-v3"),
+        body_digest: v3_digest("body-v3"),
+        artifact_set_digest: v3_digest("artifact-set-v3"),
+        snapshot,
+        legal_candidates,
+        budget: LaneFBudgetV3 {
+            total_micros: 11_000_000,
+            objective_micros: 1_000_000,
+            legal_set_micros: 1_000_000,
+            utility_micros: 1_000_000,
+            evaluation_micros: 1_000_000,
+            neural_micros: 1_000_000,
+            prompt_micros: 1_000_000,
+            intuition_micros: 1_000_000,
+            context_micros: 1_000_000,
+            envelope_micros: 1_000_000,
+            host_handoff_micros: 1_000_000,
+            ledger_micros: 1_000_000,
+        },
+        deadline_unix_micros: 4_000_000_000_000_000,
+    }
+}
+
+#[derive(Default)]
+struct RuntimeV3Ports {
+    calls: Vec<LaneFStageV3>,
+}
+
+impl RuntimeV3Ports {
+    fn receipt(
+        &mut self,
+        input: &PortInputV3,
+        producer: &str,
+    ) -> Result<PortReceiptV3, PortFailureV3> {
+        self.calls.push(input.stage);
+        let output_digest = if input.stage == LaneFStageV3::ObjectiveValidated {
+            v3_digest("objective-v3")
+        } else {
+            v3_digest(&format!("output:{:?}", input.stage))
+        };
+        Ok(PortReceiptV3 {
+            stage: input.stage,
+            producer: v3_id(producer),
+            snapshot_digest: input.snapshot_digest,
+            predecessor_digest: input.predecessor_digest,
+            output_digest,
+            decision: PortDecisionV3::Continue,
+            authority: AuthorityPosture::DENY_ALL,
+        })
+    }
+}
+
+impl LaneFV3Ports for RuntimeV3Ports {
+    fn validate_objective(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
+        self.receipt(input, "objective.compiler")
+    }
+
+    fn evaluate_utility(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
+        self.receipt(input, "utility.ndu")
+    }
+
+    fn admit_evaluation(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
+        self.receipt(input, "learning.eval")
+    }
+
+    fn collect_neural_signal(
+        &mut self,
+        input: &PortInputV3,
+    ) -> Result<PortReceiptV3, PortFailureV3> {
+        self.receipt(input, "neuron.runtime")
+    }
+
+    fn build_prompt_portfolio(
+        &mut self,
+        input: &PortInputV3,
+    ) -> Result<PortReceiptV3, PortFailureV3> {
+        self.receipt(input, "prompt.optimizer")
+    }
+
+    fn decide_intuition(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
+        self.receipt(input, "intuition.policy")
+    }
+
+    fn compile_context(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
+        self.receipt(input, "context.compiler")
+    }
+
+    fn accept_host_envelope(
+        &mut self,
+        input: &PortInputV3,
+        envelope: &IntelligenceHostEnvelopeV1,
+    ) -> Result<PortReceiptV3, PortFailureV3> {
+        envelope.validate().expect("host envelope");
+        self.receipt(input, "runtime.agentd")
+    }
+
+    fn record_learning(&mut self, input: &PortInputV3) -> Result<PortReceiptV3, PortFailureV3> {
+        self.receipt(input, "learning.ledger")
+    }
+}
+
+#[test]
+fn v3_runtime_attach_completes_before_learning_stage() {
+    let mut coordinator =
+        AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");
+    let request = v3_request();
+    coordinator
+        .start_run(
+            100,
+            RunSnapshot {
+                run_id: request.run_id.to_string(),
+                request_digest: request.request_digest.to_string(),
+                objective_digest: v3_digest("objective-v3").to_string(),
+                body_digest: request.body_digest.to_string(),
+                artifact_set_digest: request.artifact_set_digest.to_string(),
+                authority_epoch: 1,
+                deadline_ms: request.deadline_unix_micros / 1_000,
+            },
+        )
+        .expect("start run");
+    let mut ports = RuntimeV3Ports::default();
+    let receipt = coordinator
+        .run_intelligence_v3(1, request, &mut ports)
+        .expect("composition");
+    assert_eq!(
+        receipt.runtime.as_ref().map(|runtime| runtime.phase),
+        Some(RunPhase::ContextAttached)
+    );
+    let host = ports
+        .calls
+        .iter()
+        .position(|stage| *stage == LaneFStageV3::HostHandoffAccepted)
+        .expect("host call");
+    let learning = ports
+        .calls
+        .iter()
+        .position(|stage| *stage == LaneFStageV3::LearningRecorded)
+        .expect("learning call");
+    assert!(host < learning);
+}
+
+#[test]
+fn missing_runtime_run_fails_handoff_before_learning_stage() {
+    let mut coordinator =
+        AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");
+    let mut ports = RuntimeV3Ports::default();
+    let receipt = coordinator
+        .run_intelligence_v3(1, v3_request(), &mut ports)
+        .expect("terminal composition receipt");
+    assert_eq!(
+        receipt.composition.disposition,
+        codex_hepta_intelligence::PipelineDispositionV3::Failed(
+            PortFailureClassV3::Rejected
+        )
+    );
+    assert!(receipt.runtime.is_none());
+    assert!(!ports.calls.contains(&LaneFStageV3::LearningRecorded));
+}
