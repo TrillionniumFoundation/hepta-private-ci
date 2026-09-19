@@ -1,7 +1,7 @@
 # intelligence.control: implementation design
 
 Parent: `docs/modules/intelligence.control/TECHNICAL.md`. Lane: `LANE-F-ADAPTIVE-POLICY`.
-Status: read-only vertical and signed evaluated-shadow composition implemented; remaining target capabilities and independent acceptance are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
+Status: read-only vertical, signed evaluated-shadow composition, and the authority-free V3 unified composition graph are source implemented; Agentd has a named host-admission caller. Product execution, live effect execution and independent acceptance remain unproved and are listed in section 8. Common requirements: `../EXECUTION_SEMANTICS.md` and `../TECHNICAL.md`. Canonical ownership and package predecessors are unchanged.
 
 ## 1. Source and work envelope
 
@@ -12,7 +12,7 @@ Operation signatures below describe the target contract. Section 8 identifies th
 
 ## 2. Public operations and contract details
 
-`prepare_intelligence_run(request, owner_ports, frozen_snapshot) -> IntelligenceHostEnvelopeV1`; `build_legal_candidates(objective, body, supported_skills) -> LegalActionCandidateSetV1`; `decide_boundary(run, observations) -> AdvisoryDecision`; `assemble_context(decision, evidence) -> ContextCompilationReceiptV1`. These are composition operations; facts and execution remain with their registered owners.
+`prepare_intelligence_run_v3(request, owner_ports, control) -> CompositionPipelineReceiptV3` is the native unified composition operation. `build_legal_candidates(request) -> LegalActionCandidateSetV1` materializes the registered bounded legal-set contract. A successful V3 run carries `IntelligenceHostEnvelopeV1`; Agentd consumes that envelope through `admit_intelligence_run_v1` and stops at `ContextAttached`. The older design names `prepare_intelligence_run`, `decide_boundary` and `assemble_context` remain semantic design labels, not additional native facades. Facts and effect execution remain with their registered owners.
 
 ## 3. State records and transaction design
 
@@ -20,7 +20,7 @@ Ephemeral orchestration state only: run/boundary identity, frozen owner snapshot
 
 ## 4. Deterministic algorithm and scheduling
 
-Compile immutable objective; acquire coherent memory/body evidence; build the complete bounded legal set; obtain NDU and qualified neural signals; price/select prompt portfolio; run calibrated intuition or deterministic slow path; compile source-aware context; hand to agentd/Codex; route independent outcomes to the ledger. Each stage has typed unavailable/conflict/abstain fallbacks; no stage converts missing evidence into a successful result.
+V3 orders one frozen-snapshot predecessor chain as objective validation -> legal candidate construction -> NDU utility evaluation -> independent evaluation admission -> optional neural signal -> optional prompt portfolio -> calibrated intuition -> context compilation. A successful graph prepares `IntelligenceHostEnvelopeV1`; Agentd separately admits it and attaches context before any Codex dispatch. Neural and prompt may use explicit unavailable/timed-out fallback; objective, utility, evaluation and context fail closed; intuition alone may abstain or request slow path. No stage converts missing evidence into success.
 
 ## 5. Capacity and performance profile
 
@@ -45,8 +45,11 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `run_read_only_vertical` in [codex-rs/hepta-intelligence/src/vertical.rs](../../../codex-rs/hepta-intelligence/src/vertical.rs); `run_evaluated_shadow_v1` in [codex-rs/hepta-intelligence/src/evaluated_shadow.rs](../../../codex-rs/hepta-intelligence/src/evaluated_shadow.rs). Read-only vertical and signed evaluated-shadow composition implemented.
-- **State and recovery:** The vertical derives cross-stage objective/read/context/NDU bindings in one call. Evaluated shadow additionally verifies signed evidence and appends a decision through the existing DurableLedger; it does not create another model loop or cognitive writer.
-- **Source tests:** [codex-rs/hepta-intelligence/src/vertical_tests.rs](../../../codex-rs/hepta-intelligence/src/vertical_tests.rs), [codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs](../../../codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs). These are test identities, not execution receipts for this documentation revision.
+- **Implemented entrypoints:** `run_read_only_vertical` in [codex-rs/hepta-intelligence/src/vertical.rs](../../../codex-rs/hepta-intelligence/src/vertical.rs); `run_evaluated_shadow_v1` in [codex-rs/hepta-intelligence/src/evaluated_shadow.rs](../../../codex-rs/hepta-intelligence/src/evaluated_shadow.rs); `prepare_intelligence_run_v3` and `build_legal_candidates` in [codex-rs/hepta-intelligence/src/composition_v3.rs](../../../codex-rs/hepta-intelligence/src/composition_v3.rs); `append_outcome_and_credit_v1` in [codex-rs/hepta-intelligence/src/learning_closure.rs](../../../codex-rs/hepta-intelligence/src/learning_closure.rs). Agentd's named host-admission caller is `admit_intelligence_run_v1` in [codex-rs/hepta-agentd/src/intelligence_control.rs](../../../codex-rs/hepta-agentd/src/intelligence_control.rs).
+- **Unified V3 graph:** objective validation, bounded legal-set construction, NDU utility, independent evaluation admission, optional neuron, optional prompt, intuition and context share one `CapabilitySnapshotV2` digest and one predecessor chain. The graph produces an authority-free `IntelligenceHostEnvelopeV1`; it does not dispatch Codex or execute an effect.
+- **Deadline/cancellation semantics:** V3 checks run cancellation and absolute run deadlines between stages, gives each port an absolute stage deadline and rejects a required-stage late success as `TimedOut`. The synchronous trait cannot preempt a blocked adapter; a selected host must wrap blocking I/O with its own cancellable timeout and return only after the underlying work is safely fenced.
+- **State and recovery:** The read-only vertical remains stateless. Evaluated shadow verifies signed evidence and appends a durable Decision. `append_outcome_and_credit_v1` accepts only host-supplied terminal observations and allocations and appends Outcome then Credit through the existing sealed `DurableLearningJournal`; it never invents either fact.
+- **Product host boundary:** Agentd now has a source-level consumer that validates the V3 receipt/envelope, calls its existing `AgentRunCoordinator::start_run`, attaches the compiled context, and deliberately stops at `ContextAttached`. Codex dispatch remains on the existing Agentd/App Server path and is not authorized by the intelligence envelope.
+- **Source tests:** [codex-rs/hepta-intelligence/src/vertical_tests.rs](../../../codex-rs/hepta-intelligence/src/vertical_tests.rs), [codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs](../../../codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs), [codex-rs/hepta-intelligence/src/composition_v3_tests.rs](../../../codex-rs/hepta-intelligence/src/composition_v3_tests.rs), [codex-rs/hepta-intelligence/tests/composition_v3_native.rs](../../../codex-rs/hepta-intelligence/tests/composition_v3_native.rs), [codex-rs/hepta-agentd/src/intelligence_control_tests.rs](../../../codex-rs/hepta-agentd/src/intelligence_control_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [codex-rs/hepta-intelligence/EVALUATED_SHADOW.md](../../../codex-rs/hepta-intelligence/EVALUATED_SHADOW.md).
-- **Remaining work:** Supply the seven real host ports, trusted current keys, observed evaluations/calibration and valid assignment draw; live model/effect execution and long-term benefits are not implemented by these shadow calls.
+- **Remaining work:** exact-head and synthetic-merge qualification must pass for the candidate; production must supply current authenticated owner inputs/keys, real calibration/OOD/evaluation observations and cancellable host adapters. Live Codex/model/tool/effect execution, operator acceptance, canary/promotion/release and longitudinal benefit evidence remain outside these source entrypoints.
