@@ -16,6 +16,16 @@ This page describes executable behavior in the source, including gaps that requi
 
 The standalone `hepta-taskflow-runtime`, `hepta-fleet-leased`, `hepta-infer-control`, and `hepta-matrix-send-observer` entry points exit 64 with the real owner or missing integration named. Their former empty mains returned success without doing work. Existing component tests now run as library tests, with sibling test sources.
 
+## Agentd run lifecycle control
+
+The per-Agent daemon now owns the bounded `AgentRunCoordinator` through `AgentdState` instead of exposing it only as a library type. The local generation-fenced protocol exposes `RunStart`, `RunAttachContext`, `RunMarkDispatched`, `RunCancel`, `RunObserveTerminal`, `RunGet` and `RunRemoveClosed`; the daemon advertises these through `run.lifecycle` v1. Context attachment binds request/objective/body/artifact digests together with the exact authority epoch and deadline.
+
+Lifecycle state has an owner-private bounded recovery projection under the Agent run root. Restart does not redispatch uncertain work: a dispatched or cancelling run without an execution-owner terminal observation becomes `indeterminate`; a newer generation cancels retained pre-dispatch work instead of reusing stale authority. The generation monitor enforces elapsed deadlines, and shutdown enters local drain before runtime tasks are stopped. Already-dispatched work is not relabelled as cancelled merely because the daemon is draining.
+
+The control socket remains bounded. Normal connection capacity is 32; four separately bounded overload responders return typed `overloaded` responses when possible, after which saturation still fails closed instead of allocating an unbounded queue.
+
+This closes the library-only lifecycle and silent-overload gaps, but it does **not** complete C1. The ordinary non-test Codex turn path still has to call the lifecycle API at actual admission/context/dispatch/terminal boundaries, and `RunCancel`/deadline cancellation intent still has to invoke the real App Server interrupt and observe matching terminal acknowledgement. Until that wiring exists, a `Cancelling` lifecycle record is intent rather than proof of physical interruption.
+
 ## Canonical memory to actual model execution
 
 `AgentdMethod::CognitiveContext { query, limit }` and `AgentdClient::cognitive_context` use the normal owner/generation-fenced local protocol. The host selects its own Agent identity and private scope; callers cannot supply another scope or a success receipt.
