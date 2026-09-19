@@ -160,7 +160,7 @@ impl AppServerModelDriver {
             .run_remove_closed(request_id.to_string(), receipt.revision)
             .await?;
         Ok(())
-
+    }
 }
 
 pub(super) fn digest(bytes: &[u8]) -> String {
