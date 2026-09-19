@@ -135,17 +135,17 @@ impl ObjectiveRuntimeHost {
     ) -> Result<ObjectiveStartResult, AgentdError> {
         authbus_ingress::require_ready(agentd)?;
         let now_ms = authbus_ingress::now_ms()?;
-        let payload = objective_payload(agentd.identity(), &request.body, current_generation)?;
+        let payload = objective_payload(agentd.identity(), &request.body)?;
         if request.expires_at_ms <= now_ms || request.expires_at_ms.saturating_sub(now_ms) > 300_000
         {
             return Err(invalid("objective expiry must be within five minutes"));
         }
+
         let authbus = authbus_ingress::attached(agentd)?;
         let trust = authbus.trust(agentd)?;
         let issuer = trust.issuer()?;
-        let claims = objective_claims(agentd.identity(), &request, &payload)?;
         let message = SignedMessage {
-            claims,
+            claims: objective_claims(agentd.identity(), &request, &payload)?,
             signature: hex_bytes(&request.signature_hex)?,
         };
         let authenticated = message
@@ -159,7 +159,6 @@ impl ObjectiveRuntimeHost {
 
         let source = decode_source_envelope_json_v1(request.body.source_envelope_json.as_bytes())
             .map_err(|error| invalid(&format!("objective source: {error}")))?;
-        let source_digest = source.structured_intent.provenance.source_digest;
         let now_unix_micros = now_ms
             .checked_mul(1_000)
             .ok_or_else(|| invalid("objective host clock overflow"))?;
@@ -170,95 +169,127 @@ impl ObjectiveRuntimeHost {
             selected_profile_digest: self.profile_digest,
             source_authentication: ObjectiveSourceAuthenticationV1::AuthorizedAdapter {
                 source_identity: issuer.issuer_id.clone(),
-                source_digest,
+                source_digest: source.structured_intent.provenance.source_digest,
             },
         };
-        let outcome = admit_and_compile_objective_v1(&source, &self.profile, &context)
-            .map_err(|error| invalid(&format!("objective admission {}: {error}", error.code())))?;
-        let admission = outcome.receipt;
-        let compiled = match outcome.compile_result {
-            Ok(compiled) => compiled,
-            Err(conflict) => {
+
+        let runtime_body_digest =
+            parse_digest(&request.body.runtime_body_digest, "runtime body")?;
+        let preference_state_digest =
+            parse_digest(&request.body.preference_state_digest, "preference state")?;
+        let model_tuple_digest = parse_digest(&request.body.model_tuple_digest, "model tuple")?;
+        let prompt_registry_digest =
+            parse_digest(&request.body.prompt_registry_digest, "prompt registry")?;
+        let artifact_set_digest =
+            parse_digest(&request.body.artifact_set_digest, "artifact set")?;
+        let run_id = StableId::new(&request.body.run_id)
+            .map_err(|error| invalid(&format!("objective run id: {error}")))?;
+        let authentication = RunStartAuthenticationV1 {
+            issuer_id: authenticated.claims().issuer_id.clone(),
+            key_epoch: authenticated.claims().key_epoch.get(),
+            message_id: authenticated.claims().message_id.clone(),
+            sequence: authenticated.claims().sequence,
+            expires_at_ms: authenticated.claims().expires_at_ms,
+            scope_digest: authenticated.claims().scope_digest,
+            signed_body_digest: authenticated.claims().payload_digest,
+            signature: message.signature,
+        };
+
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| AgentdError::Protocol("objective runtime mutex is poisoned".to_string()))?;
+        ensure_coordinator(
+            &mut state,
+            agentd.identity(),
+            self.profile_digest,
+            &trust,
+            current_generation,
+            now_ms,
+        )?;
+        require_replay_admission(&state, &authentication, &run_id)?;
+
+        let expected_run_start_head = state.journal.head_digest();
+        let published = match compile_and_publish_objective_run_v1(
+            &source,
+            &self.profile,
+            &context,
+            ObjectiveRunBindingsV1 {
+                authentication,
+                run_id: run_id.clone(),
+                runtime_body_digest,
+                preference_state_digest,
+                model_tuple_digest,
+                prompt_registry_digest,
+                artifact_set_digest,
+                authority_epoch: request.body.authority_epoch,
+                generation: current_generation,
+                fence_digest: objective_fence(agentd.identity(), current_generation),
+                expected_run_start_head,
+            },
+            &mut state.journal,
+        ) {
+            Ok(published) => published,
+            Err(ObjectiveRunError::Conflict(conflict)) => {
                 return Ok(ObjectiveStartResult::Conflict {
                     run_id: request.body.run_id,
                     conflict_digest: conflict.conflict_digest.to_string(),
                 });
             }
-        };
-        let run_id = StableId::new(&request.body.run_id)
-            .map_err(|error| invalid(&format!("objective run id: {error}")))?;
-        let publication = ObjectiveRunPublicationV1::new(
-            admission,
-            compiled,
-            RunStartBindingsV1 {
-                run_id,
-                preference_state_digest: parse_digest(
-                    &request.body.preference_state_digest,
-                    "preference state",
-                )?,
-                model_tuple_digest: parse_digest(&request.body.model_tuple_digest, "model tuple")?,
-                prompt_registry_digest: parse_digest(
-                    &request.body.prompt_registry_digest,
-                    "prompt registry",
-                )?,
-                artifact_set_digest: parse_digest(
-                    &request.body.artifact_set_digest,
-                    "artifact set",
-                )?,
-                authority_epoch: request.body.authority_epoch,
-                generation: current_generation,
-                fence_digest: objective_fence(agentd.identity(), current_generation),
-            },
-        )
-        .map_err(|error| invalid(&format!("objective run snapshot: {error}")))?;
-        let deadline_ms = publication
-            .admission
-            .deadline_unix_micros
-            .ok_or_else(|| invalid("production objective requires an explicit deadline"))
-            .and_then(deadline_micros_to_ms)?;
-        let publication_json = publication
-            .canonical_json()
-            .map_err(|error| invalid(&format!("objective publication: {error}")))?;
-        let publication_digest = objective_run_publication_digest_v1(&publication_json);
-        let run_start_digest = publication
-            .run_start
-            .semantic_digest()
-            .map_err(|error| invalid(&format!("run snapshot: {error}")))?;
-        let runtime_body_digest = parse_digest(&request.body.runtime_body_digest, "runtime body")?;
-        let disposition = disposition_name(publication.compile.disposition);
-        let stored = StoredObjectiveRun {
-            schema_version: STORE_SCHEMA_VERSION,
-            issuer_id: authenticated.receipt().issuer_id.to_string(),
-            key_epoch: authenticated.receipt().key_epoch.get(),
-            message_id: authenticated.receipt().message_id.to_string(),
-            sequence: authenticated.receipt().sequence,
-            signed_body_digest: Digest32::of_bytes(&payload).to_string(),
-            run_id: publication.run_start.run_id.to_string(),
-            admitted_source_digest: publication.admission.admitted_source_digest.to_string(),
-            objective_digest: publication.run_start.objective_digest.to_string(),
-            hard_constraint_digest: publication.run_start.hard_constraint_digest.to_string(),
-            preference_state_digest: publication.run_start.preference_state_digest.to_string(),
-            model_tuple_digest: publication.run_start.model_tuple_digest.to_string(),
-            prompt_registry_digest: publication.run_start.prompt_registry_digest.to_string(),
-            artifact_set_digest: publication.run_start.artifact_set_digest.to_string(),
-            authority_epoch: publication.run_start.authority_epoch,
-            generation: publication.run_start.generation,
-            fence_digest: publication.run_start.fence_digest.to_string(),
-            runtime_body_digest: runtime_body_digest.to_string(),
-            deadline_ms,
-            disposition: disposition.to_string(),
-            run_start_digest: run_start_digest.to_string(),
-            publication_digest: publication_digest.to_string(),
-            publication_json: String::from_utf8(publication_json)
-                .map_err(|_| invalid("objective publication is not UTF-8"))?,
+            Err(error) => return Err(invalid(&format!("objective publication: {error}"))),
         };
 
-        let mut state = self.state.lock().map_err(|_| {
-            AgentdError::Protocol("objective runtime mutex is poisoned".to_string())
-        })?;
-        let result = commit_or_replay(&self.root, &stored, &mut state, now_ms)?;
+        let record = state
+            .journal
+            .get(&run_id)
+            .map_err(store_error)?
+            .cloned()
+            .ok_or_else(|| invalid("durable objective publication disappeared"))?;
+        let key = (
+            record.authentication.issuer_id.to_string(),
+            record.authentication.key_epoch,
+        );
+        state
+            .highest_sequences
+            .entry(key)
+            .and_modify(|value| *value = (*value).max(record.authentication.sequence))
+            .or_insert(record.authentication.sequence);
+
         authbus_ingress::require_ready(agentd)?;
-        Ok(ObjectiveStartResult::Admitted(result))
+        let current = authbus.trust(agentd)?;
+        if !authentication_is_current(
+            &record,
+            &current,
+            agentd.identity(),
+            authbus_ingress::now_ms()?,
+        )? {
+            return Err(invalid(
+                "objective trust changed after durable publication; retry after reconciliation",
+            ));
+        }
+        ensure_runtime_record(
+            state
+                .coordinator
+                .as_mut()
+                .ok_or_else(|| invalid("objective runtime coordinator is unavailable"))?,
+            &record,
+            now_ms,
+        )?;
+
+        Ok(ObjectiveStartResult::Admitted(ObjectiveRunAdmission {
+            run_id: published.run_start.run_id.to_string(),
+            objective_digest: published.run_start.objective_digest.to_string(),
+            hard_constraint_digest: published.run_start.hard_constraint_digest.to_string(),
+            publication_digest: published.publication.record_digest.to_string(),
+            chain_digest: published.publication.chain_digest.to_string(),
+            disposition: match record.disposition {
+                RunStartObjectiveDispositionV1::Compiled => "compiled",
+                RunStartObjectiveDispositionV1::ExplicitAbstain => "explicit_abstain",
+            }
+            .to_string(),
+            idempotent: published.publication.disposition
+                == RunStartAppendDisposition::IdempotentReplay,
+        }))
     }
 }
 
