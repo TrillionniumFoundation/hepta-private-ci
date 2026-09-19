@@ -983,7 +983,6 @@ impl FederationTransportV2 for CognitiveFederationTransport<'_> {
                     )
                 })
                 .collect::<Result<Vec<_>, _>>()?;
-            let observed_frontier = observed_frontier.max(1);
             let completeness = if items.is_empty() {
                 codex_hepta_memory_federation::FederatedCompletenessV2::Empty
             } else {
