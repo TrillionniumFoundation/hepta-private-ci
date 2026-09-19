@@ -205,7 +205,7 @@ fn next_snapshot_contracts_cannot_self_activate() {
     activating.production_activation_allowed = true;
     assert!(activating.validate().is_err());
 
-    let topology = TopologyProposalV1 {
+    let topology = MemoryTopologyProposalV1 {
         predecessor_generation: generation(1),
         next_generation: generation(2),
         operation: TopologyOperationV1::Add,
