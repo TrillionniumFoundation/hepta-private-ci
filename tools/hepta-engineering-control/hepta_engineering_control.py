@@ -1,8 +1,9 @@
-"""Deterministic engineering scheduling and integration eligibility.
+"""Legacy compatibility helpers for engineering scheduling and eligibility.
 
-This module coordinates bounded work envelopes. It deliberately exposes no API
-for merging a pull request, modifying runtime authority, deploying, promoting,
-or releasing a candidate.
+The canonical implementation is control_engineering_v2. This module remains
+only for callers that still consume the original pure dataclasses/functions; it
+must not be used as implementation truth, a production writer, or an authority
+boundary. New code must use the v2 package.
 """
 
 from __future__ import annotations
@@ -11,6 +12,14 @@ from dataclasses import dataclass
 from pathlib import PurePosixPath
 from typing import Iterable
 import re
+
+from control_engineering_v2.path_policy import (
+    canonical_repo_path as _canonical_repo_path,
+    paths_overlap as _canonical_paths_overlap,
+)
+
+LEGACY_COMPATIBILITY_ONLY = True
+CANONICAL_IMPLEMENTATION = "control_engineering_v2"
 
 MAX_PACKAGES = 4096
 MAX_LEASES = 4096
@@ -171,7 +180,10 @@ def _normalized_paths(paths: Iterable[str]) -> tuple[str, ...]:
         path = raw_path.removesuffix("/**").rstrip("/")
         if not path:
             raise ValueError("write path must not resolve to repository root")
-        normalized.append(path)
+        try:
+            normalized.append(_canonical_repo_path(path))
+        except ValueError as error:
+            raise ValueError(f"invalid write path: {raw_path!r}") from error
     return tuple(sorted(set(normalized)))
 
 
@@ -180,8 +192,4 @@ def _has_overlap(left: tuple[str, ...], right: tuple[str, ...]) -> bool:
 
 
 def _paths_overlap(left: str, right: str) -> bool:
-    return (
-        left == right
-        or left.startswith(f"{right}/")
-        or right.startswith(f"{left}/")
-    )
+    return _canonical_paths_overlap(left, right)
