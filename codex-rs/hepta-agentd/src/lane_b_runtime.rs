@@ -221,6 +221,22 @@ impl<P: LaneFV3Ports> LaneFV3Ports for AgentdRuntimePorts<'_, P> {
             ));
         }
 
+        let proposal = self.inner.accept_host_envelope(input, envelope)?;
+        if proposal.stage != input.stage
+            || proposal.producer.as_str() != "runtime.agentd"
+            || proposal.snapshot_digest != input.snapshot_digest
+            || proposal.predecessor_digest != input.predecessor_digest
+            || proposal.output_digest.is_zero()
+            || proposal.decision != PortDecisionV3::Continue
+            || proposal.authority.grants_any()
+        {
+            return Err(agentd_handoff_failure(
+                input,
+                envelope,
+                "host-proposal-receipt",
+            ));
+        }
+
         let run = self
             .coordinator
             .attach_intelligence_envelope(self.expected_revision, envelope)
