@@ -6,7 +6,16 @@
       "privilegedFunctions": {
         "claim_final_use": "final_use_claim",
         "deliver_final_use": "final_use_delivery",
-        "dispatch_final_use": "final_use_dispatch"
+        "dispatch_final_use": "final_use_dispatch",
+        "deliver_final_use_with_witness": "final_use_delivery_witness",
+        "dispatch_final_use_with_witness": "final_use_dispatch_witness"
+      },
+      "nonPrivilegedFunctions": []
+    },
+    {
+      "sourcePath": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "privilegedFunctions": {
+        "deliver_authority_lease_with_witness": "authority_lease_delivery_witness"
       },
       "nonPrivilegedFunctions": []
     }
@@ -178,6 +187,15 @@
       ]
     },
     {
+      "id": "final_use_delivery_witness",
+      "typeMarker": "deliver_final_use_with_witness",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
+      "callPatterns": [
+        "\\bdeliver_final_use_with_witness\\s*\\("
+      ],
+      "allowedCallers": []
+    },
+    {
       "id": "final_use_delivery_raw",
       "typeMarker": "FinalUseAuthority",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
@@ -193,6 +211,15 @@
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
       "callPatterns": [
         "\\bdispatch_final_use\\s*\\("
+      ],
+      "allowedCallers": []
+    },
+    {
+      "id": "final_use_dispatch_witness",
+      "typeMarker": "dispatch_final_use_with_witness",
+      "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
+      "callPatterns": [
+        "\\bdispatch_final_use_with_witness\\s*\\("
       ],
       "allowedCallers": []
     },
@@ -408,6 +435,15 @@
       "allowedCallers": [
         "codex-rs/hepta-fleet/src/authority_port.rs"
       ]
+    },
+    {
+      "id": "authority_lease_delivery_witness",
+      "typeMarker": "deliver_authority_lease_with_witness",
+      "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
+      "callPatterns": [
+        "\\bdeliver_authority_lease_with_witness\\s*\\("
+      ],
+      "allowedCallers": []
     }
   ]
 }
