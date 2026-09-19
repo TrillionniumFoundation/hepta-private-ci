@@ -326,6 +326,8 @@ pub struct NeuronResourceReceiptV1 {
     pub execution_micros: u64,
     pub transient_allocation_bytes: u64,
     pub checkpoint_bytes: u64,
+    pub journal_bytes_written: u64,
+    pub write_amplification_ppm: u32,
     pub saturation_count: u32,
     pub queue_age_micros: u64,
 }
