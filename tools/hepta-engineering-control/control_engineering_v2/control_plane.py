@@ -792,6 +792,9 @@ class EngineeringStore:
             selected_paths: list[str] = []
             limit = min(int(envelope["maximum_assignments"]), MAX_ASSIGNMENTS)
             for package in sorted(package_values):
+                if package.package_id in completed_set:
+                    blocked.append((package.package_id, "already_completed"))
+                    continue
                 missing = tuple(sorted(set(package.predecessors) - completed_set))
                 if missing:
                     blocked.append(
