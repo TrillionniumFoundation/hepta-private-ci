@@ -27,7 +27,7 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).unwrap()
+    StableId::new(value.to_owned()).unwrap()
 }
 
 fn digest(value: &str) -> Digest32 {
