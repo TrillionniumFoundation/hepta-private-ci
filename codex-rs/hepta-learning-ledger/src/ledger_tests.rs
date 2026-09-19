@@ -346,7 +346,7 @@ fn rejected_runtime_delivery_preserves_rejection_lineage() {
         provider_request_digest: Digest32::of_bytes(b"runtime-provider-rejected"),
         delivered: false,
         rejected_reason: Some(
-            PromptDeliveryRejectReasonV1::new(id("provider_rejected")).expect("bounded reason"),
+            must(PromptDeliveryRejectReasonV1::new(id("provider_rejected"))),
         ),
         observed_token_positions: None,
         truncation_observed: false,
