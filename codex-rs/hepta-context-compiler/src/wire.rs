@@ -24,8 +24,7 @@ use crate::ContextCompilationReceipt;
 use crate::Error;
 use crate::compile;
 
-pub const CONTEXT_COMPILATION_WIRE_SCHEMA_V2: &str =
-    "hepta.context-compilation-receipt.v2";
+pub const CONTEXT_COMPILATION_WIRE_SCHEMA_V2: &str = "hepta.context-compilation-receipt.v2";
 const CONTEXT_COMPILATION_WIRE_MAX_BYTES: usize = 256 * 1024;
 const MAX_WIRE_CONTEXT_IDS: usize = 4_096;
 
