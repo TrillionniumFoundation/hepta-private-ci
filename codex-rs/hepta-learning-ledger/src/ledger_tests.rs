@@ -3,6 +3,8 @@ use std::fmt::Debug;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
+use codex_hepta_types::PromptDeliveryObservationV1;
+use codex_hepta_types::PromptDeliveryRejectReasonV1;
 use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
 
@@ -15,6 +17,8 @@ use crate::LedgerError;
 use crate::LedgerEvent;
 use crate::OutcomeFinality;
 use crate::OutcomeObservation;
+use crate::PromptDeliveryLineageV1;
+use crate::PromptDeliveryObservation;
 use crate::Revocation;
 
 fn must<T, E: Debug>(result: Result<T, E>) -> T {
@@ -207,4 +211,154 @@ fn tampered_snapshot_chain_is_rejected() {
         must_err(LearningLedger::from_snapshot(snapshot)),
         LedgerError::SnapshotRecordMismatch(1)
     );
+}
+
+fn prompt_delivery() -> PromptDeliveryObservation {
+    PromptDeliveryObservation {
+        record_id: id("record-delivery-1"),
+        episode_id: id("episode-1"),
+        compilation_id: id("compilation-1"),
+        observer_id: id("runtime-observer"),
+        portfolio_receipt_digest: Digest32::of_bytes(b"portfolio-receipt"),
+        provider_request_digest: Digest32::of_bytes(b"provider-request"),
+        delivered: true,
+        rejected_reason_digest: None,
+        observed_token_positions_digest: Some(Digest32::of_bytes(b"token-positions")),
+        truncation_observed: false,
+        context_delivery_observation_digest: Digest32::of_bytes(b"context-delivery"),
+        support_digest: Digest32::of_bytes(b"delivery-support"),
+    }
+}
+
+#[test]
+fn prompt_delivery_requires_live_episode_and_independent_runtime_observer() {
+    let mut ledger = LearningLedger::new();
+    assert_eq!(
+        must_err(ledger.append(LedgerEvent::PromptDelivery(prompt_delivery()))),
+        LedgerError::EpisodeNotFound("episode-1".to_owned())
+    );
+
+    must(ledger.append(LedgerEvent::Decision(decision())));
+    let mut self_observed = prompt_delivery();
+    self_observed.observer_id = id("policy-a");
+    assert_eq!(
+        must_err(ledger.append(LedgerEvent::PromptDelivery(self_observed))),
+        LedgerError::PolicySelfObservesDelivery
+    );
+
+    must(ledger.append(LedgerEvent::PromptDelivery(prompt_delivery())));
+    let mut duplicate = prompt_delivery();
+    duplicate.record_id = id("record-delivery-2");
+    assert_eq!(
+        must_err(ledger.append(LedgerEvent::PromptDelivery(duplicate))),
+        LedgerError::DeliveryAlreadyExists("episode-1".to_owned())
+    );
+}
+
+#[test]
+fn revoked_decision_logically_removes_prompt_delivery_lineage() {
+    let mut ledger = LearningLedger::new();
+    must(ledger.append(LedgerEvent::Decision(decision())));
+    must(ledger.append(LedgerEvent::PromptDelivery(prompt_delivery())));
+    must(ledger.append(LedgerEvent::Revocation(Revocation {
+        record_id: id("record-revocation-delivery"),
+        target_record_id: id("record-decision-1"),
+        authority_id: id("deletion-authority"),
+        reason_digest: Digest32::of_bytes(b"delete"),
+    })));
+
+    let active_ids = ledger
+        .active_records()
+        .iter()
+        .map(|record| record.event.record_id().to_string())
+        .collect::<Vec<_>>();
+    assert_eq!(active_ids, vec!["record-revocation-delivery"]);
+    let restored = must(LearningLedger::from_snapshot(ledger.snapshot()));
+    assert_eq!(restored.active_records().len(), 1);
+}
+
+fn runtime_prompt_delivery() -> PromptDeliveryObservationV1 {
+    PromptDeliveryObservationV1 {
+        compilation_id: id("compilation:runtime"),
+        provider_request_digest: Digest32::of_bytes(b"runtime-provider-request"),
+        delivered: true,
+        rejected_reason: None,
+        observed_token_positions: Some(vec![2, 4, 8]),
+        truncation_observed: false,
+    }
+}
+
+fn runtime_prompt_lineage() -> PromptDeliveryLineageV1 {
+    PromptDeliveryLineageV1 {
+        record_id: id("record-runtime-delivery"),
+        episode_id: id("episode-1"),
+        portfolio_receipt_digest: Digest32::of_bytes(b"portfolio-runtime"),
+        support_digest: Digest32::of_bytes(b"runtime-support"),
+    }
+}
+
+#[test]
+fn canonical_runtime_delivery_is_ingested_with_runtime_owned_observer() {
+    let mut ledger = LearningLedger::new();
+    must(ledger.append(LedgerEvent::Decision(decision())));
+    let runtime = runtime_prompt_delivery();
+    let expected_observation_digest = must(runtime.semantic_digest());
+
+    must(ledger.append_runtime_prompt_delivery_v1(runtime_prompt_lineage(), runtime.clone()));
+
+    let Some(record) = ledger.records().last() else {
+        panic!("delivery record must exist");
+    };
+    let LedgerEvent::PromptDelivery(delivery) = &record.event else {
+        panic!("expected prompt delivery event");
+    };
+    assert_eq!(delivery.observer_id, id("runtime.codex"));
+    assert_eq!(delivery.compilation_id, runtime.compilation_id);
+    assert_eq!(
+        delivery.provider_request_digest,
+        runtime.provider_request_digest
+    );
+    assert_eq!(
+        delivery.context_delivery_observation_digest,
+        expected_observation_digest
+    );
+    assert!(delivery.observed_token_positions_digest.is_some());
+}
+
+#[test]
+fn invalid_runtime_delivery_contract_cannot_enter_ledger() {
+    let mut ledger = LearningLedger::new();
+    must(ledger.append(LedgerEvent::Decision(decision())));
+    let mut runtime = runtime_prompt_delivery();
+    runtime.delivered = false;
+    assert_eq!(
+        must_err(ledger.append_runtime_prompt_delivery_v1(runtime_prompt_lineage(), runtime,)),
+        LedgerError::InvalidDeliveryObservation
+    );
+}
+
+#[test]
+fn rejected_runtime_delivery_preserves_rejection_lineage() {
+    let mut ledger = LearningLedger::new();
+    must(ledger.append(LedgerEvent::Decision(decision())));
+    let runtime = PromptDeliveryObservationV1 {
+        compilation_id: id("compilation:runtime-rejected"),
+        provider_request_digest: Digest32::of_bytes(b"runtime-provider-rejected"),
+        delivered: false,
+        rejected_reason: Some(
+            PromptDeliveryRejectReasonV1::new(id("provider_rejected")).expect("bounded reason"),
+        ),
+        observed_token_positions: Vec::new(),
+        truncation_observed: false,
+    };
+    must(ledger.append_runtime_prompt_delivery_v1(runtime_prompt_lineage(), runtime));
+
+    let Some(record) = ledger.records().last() else {
+        panic!("delivery record must exist");
+    };
+    let LedgerEvent::PromptDelivery(delivery) = &record.event else {
+        panic!("expected prompt delivery event");
+    };
+    assert!(delivery.rejected_reason_digest.is_some());
+    assert_eq!(delivery.observed_token_positions_digest, None);
 }
