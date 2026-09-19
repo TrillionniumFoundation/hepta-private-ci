@@ -1516,7 +1516,10 @@ impl ContextDeliveryReceiptV2 {
                 }
             }
             ContextDeliveryDispositionV2::Indeterminate => {
-                if self.terminal_observed {
+                if self.terminal_observed
+                    || !self.acknowledgement_digest.is_zero()
+                    || self.provider_acknowledged_payload_digest.is_some()
+                {
                     return Err(ContextCompilerV2Error::InvalidDeliveryDisposition);
                 }
             }
