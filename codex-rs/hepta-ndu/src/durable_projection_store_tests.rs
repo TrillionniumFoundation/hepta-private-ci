@@ -252,12 +252,7 @@ fn validated_reference_journal_migrates_without_rewriting_history() {
         subject,
         projection,
     ));
-    must(journal.select_projection(
-        digest("selection-op"),
-        objective,
-        subject,
-        projection,
-    ));
+    must(journal.select_projection(digest("selection-op"), objective, subject, projection));
     let expected = journal.clone();
 
     let store = must(DurableNduProjectionStoreV1::migrate_reference(
