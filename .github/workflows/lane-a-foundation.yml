@@ -78,6 +78,9 @@ jobs:
             --expected-sha "$EXPECTED_SHA" \
             --kind source_head \
             --output .hepta-evidence/kernel-evidence-source-head.json
+          python3 scripts/verify_kernel_evidence_traceability.py review-request \
+            --receipt .hepta-evidence/kernel-evidence-source-head.json \
+            --output .hepta-evidence/kernel-evidence-independent-review-request-source-head.json
 
       - name: Retain exact source receipts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -149,6 +152,9 @@ jobs:
             --expected-sha "$EXPECTED_SHA" \
             --kind synthetic_merge_candidate \
             --output .hepta-evidence/kernel-evidence-merge-candidate.json
+          python3 scripts/verify_kernel_evidence_traceability.py review-request \
+            --receipt .hepta-evidence/kernel-evidence-merge-candidate.json \
+            --output .hepta-evidence/kernel-evidence-independent-review-request-merge-candidate.json
 
       - name: Retain synthetic merge receipts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
