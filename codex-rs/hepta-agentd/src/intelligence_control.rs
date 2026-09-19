@@ -8,9 +8,13 @@
 use std::error::Error;
 use std::fmt;
 
+use codex_hepta_intelligence::CompositionControlV3;
 use codex_hepta_intelligence::CompositionDispositionV3;
 use codex_hepta_intelligence::CompositionErrorV3;
 use codex_hepta_intelligence::CompositionPipelineReceiptV3;
+use codex_hepta_intelligence::CompositionPortsV3;
+use codex_hepta_intelligence::CompositionRunRequestV3;
+use codex_hepta_intelligence::prepare_intelligence_run_v3;
 use codex_hepta_types::Digest32;
 
 use crate::AgentRunCoordinator;
@@ -24,6 +28,12 @@ pub struct IntelligenceAdmissionReceiptV1 {
     pub run: RunReceipt,
     pub envelope_digest: Digest32,
     pub composition_trace_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct IntelligenceCompositionAdmissionReceiptV1 {
+    pub composition: CompositionPipelineReceiptV3,
+    pub admission: Option<IntelligenceAdmissionReceiptV1>,
 }
 
 #[derive(Debug)]
@@ -41,6 +51,39 @@ impl fmt::Display for IntelligenceControlCallerErrorV1 {
 }
 
 impl Error for IntelligenceControlCallerErrorV1 {}
+
+/// Invoke intelligence.control V3 and, only when it prepares a host envelope,
+/// admit that envelope into the existing Agentd run coordinator.
+///
+/// Abstain, slow-path, cancellation, deadline and typed failure dispositions are
+/// returned as composition receipts with no Agentd run admission.
+pub fn compose_and_admit_intelligence_run_v1<P, C>(
+    coordinator: &mut AgentRunCoordinator,
+    now_unix_ms: u64,
+    request: CompositionRunRequestV3,
+    ports: &mut P,
+    control: &C,
+) -> Result<IntelligenceCompositionAdmissionReceiptV1, IntelligenceControlCallerErrorV1>
+where
+    P: CompositionPortsV3,
+    C: CompositionControlV3,
+{
+    let composition = prepare_intelligence_run_v3(request, ports, control)
+        .map_err(IntelligenceControlCallerErrorV1::Composition)?;
+    let admission = if composition.disposition == CompositionDispositionV3::HostEnvelopePrepared {
+        Some(admit_intelligence_run_v1(
+            coordinator,
+            now_unix_ms,
+            &composition,
+        )?)
+    } else {
+        None
+    };
+    Ok(IntelligenceCompositionAdmissionReceiptV1 {
+        composition,
+        admission,
+    })
+}
 
 /// Admit a V3 intelligence run into the real Agentd run coordinator.
 ///
