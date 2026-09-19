@@ -42,11 +42,44 @@ pub struct RunStartSnapshotV1 {
     pub fence_digest: Digest32,
 }
 
+/// Authenticated ingress identity consumed by the durable run-start owner.
+/// Authentication itself is performed by the product host; persisting these
+/// fields atomically with the objective makes replay state recoverable.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RunStartAuthenticationV1 {
+    pub issuer_id: StableId,
+    pub key_epoch: u64,
+    pub message_id: StableId,
+    pub sequence: u64,
+    pub signed_body_digest: Digest32,
+}
+
+/// Admission facts required to recover the exact source/profile/deadline
+/// identity without reconstructing or trusting ambient caller state.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RunStartAdmissionBindingV1 {
+    pub profile_digest: Digest32,
+    pub intent_digest: Digest32,
+    pub admitted_source_digest: Digest32,
+    pub observed_at_unix_micros: u64,
+    pub deadline_unix_micros: u64,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum RunStartObjectiveDispositionV1 {
+    Compiled,
+    ExplicitAbstain,
+}
+
 /// Durable publication unit. The objective bytes are the objective compiler's
 /// native canonical semantic bytes and MUST hash to `objective_digest`.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RunStartRecordV1 {
+    pub authentication: RunStartAuthenticationV1,
+    pub admission: RunStartAdmissionBindingV1,
+    pub disposition: RunStartObjectiveDispositionV1,
     pub snapshot: RunStartSnapshotV1,
+    pub runtime_body_digest: Digest32,
     pub objective_semantic_bytes: Vec<u8>,
 }
 
@@ -352,8 +385,21 @@ impl RunStartJournal for DurableRunStartJournal {
 }
 
 fn validate_record(record: &RunStartRecordV1) -> Result<(), RunStartStoreError> {
+    if record.authentication.key_epoch == 0 || record.authentication.sequence == 0 {
+        return Err(RunStartStoreError::InvalidSnapshot("authentication"));
+    }
+    if record.admission.observed_at_unix_micros == 0
+        || record.admission.deadline_unix_micros <= record.admission.observed_at_unix_micros
+    {
+        return Err(RunStartStoreError::InvalidSnapshot("admissionTime"));
+    }
     let snapshot = &record.snapshot;
     for (name, digest) in [
+        ("signedBodyDigest", record.authentication.signed_body_digest),
+        ("profileDigest", record.admission.profile_digest),
+        ("intentDigest", record.admission.intent_digest),
+        ("admittedSourceDigest", record.admission.admitted_source_digest),
+        ("runtimeBodyDigest", record.runtime_body_digest),
         ("objectiveDigest", snapshot.objective_digest),
         ("hardConstraintDigest", snapshot.hard_constraint_digest),
         ("preferenceStateDigest", snapshot.preference_state_digest),
@@ -382,6 +428,23 @@ fn validate_record(record: &RunStartRecordV1) -> Result<(), RunStartStoreError> 
 fn encode_record(record: &RunStartRecordV1) -> Vec<u8> {
     let snapshot = &record.snapshot;
     let mut bytes = RECORD_DOMAIN.to_vec();
+    push_id(&mut bytes, &record.authentication.issuer_id);
+    push_u64(&mut bytes, record.authentication.key_epoch);
+    push_id(&mut bytes, &record.authentication.message_id);
+    push_u64(&mut bytes, record.authentication.sequence);
+    push_digest(&mut bytes, record.authentication.signed_body_digest);
+    push_digest(&mut bytes, record.admission.profile_digest);
+    push_digest(&mut bytes, record.admission.intent_digest);
+    push_digest(&mut bytes, record.admission.admitted_source_digest);
+    push_u64(&mut bytes, record.admission.observed_at_unix_micros);
+    push_u64(&mut bytes, record.admission.deadline_unix_micros);
+    push_u64(
+        &mut bytes,
+        match record.disposition {
+            RunStartObjectiveDispositionV1::Compiled => 0,
+            RunStartObjectiveDispositionV1::ExplicitAbstain => 1,
+        },
+    );
     push_id(&mut bytes, &snapshot.run_id);
     push_digest(&mut bytes, snapshot.objective_digest);
     push_digest(&mut bytes, snapshot.hard_constraint_digest);
@@ -392,6 +455,7 @@ fn encode_record(record: &RunStartRecordV1) -> Vec<u8> {
     push_u64(&mut bytes, snapshot.authority_epoch);
     push_u64(&mut bytes, snapshot.generation);
     push_digest(&mut bytes, snapshot.fence_digest);
+    push_digest(&mut bytes, record.runtime_body_digest);
     push_len(&mut bytes, record.objective_semantic_bytes.len());
     bytes.extend_from_slice(&record.objective_semantic_bytes);
     bytes
@@ -402,7 +466,29 @@ fn decode_record(input: &[u8]) -> Result<RunStartRecordV1, RunStartStoreError> {
         .strip_prefix(RECORD_DOMAIN)
         .ok_or(RunStartStoreError::Corrupt)?;
     let mut reader = Reader(input);
+    let authentication = RunStartAuthenticationV1 {
+        issuer_id: reader.id()?,
+        key_epoch: reader.u64()?,
+        message_id: reader.id()?,
+        sequence: reader.u64()?,
+        signed_body_digest: reader.digest()?,
+    };
+    let admission = RunStartAdmissionBindingV1 {
+        profile_digest: reader.digest()?,
+        intent_digest: reader.digest()?,
+        admitted_source_digest: reader.digest()?,
+        observed_at_unix_micros: reader.u64()?,
+        deadline_unix_micros: reader.u64()?,
+    };
+    let disposition = match reader.u64()? {
+        0 => RunStartObjectiveDispositionV1::Compiled,
+        1 => RunStartObjectiveDispositionV1::ExplicitAbstain,
+        _ => return Err(RunStartStoreError::Corrupt),
+    };
     let record = RunStartRecordV1 {
+        authentication,
+        admission,
+        disposition,
         snapshot: RunStartSnapshotV1 {
             run_id: reader.id()?,
             objective_digest: reader.digest()?,
@@ -415,6 +501,7 @@ fn decode_record(input: &[u8]) -> Result<RunStartRecordV1, RunStartStoreError> {
             generation: reader.u64()?,
             fence_digest: reader.digest()?,
         },
+        runtime_body_digest: reader.digest()?,
         objective_semantic_bytes: {
             let length = reader.len()?;
             if length == 0 || length > MAX_OBJECTIVE_SEMANTIC_BYTES {
