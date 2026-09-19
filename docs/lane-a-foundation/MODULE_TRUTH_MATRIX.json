@@ -233,7 +233,7 @@
       "states": {
         "source": "implemented",
         "implementation": "sqlite_store",
-        "durability": "sqlite_migrations_0001_0010",
+        "durability": "sqlite_migrations_0001_0011",
         "qualification": "source_tests_present",
         "activation": "feature_gated",
         "acceptance": "not_granted"
@@ -241,12 +241,14 @@
       "currentCapabilities": [
         "governance and historical evidence storage",
         "provider intent terminal and effect evidence storage",
-        "schema migration and integrity validation"
+        "schema migration and integrity validation",
+        "authenticated exact-candidate qualification receipt chain",
+        "external checkpoint rollback and database replacement detection",
+        "typed independent decision receipt projection"
       ],
       "targetOnlyCapabilities": [
-        "external monotonic checkpoint",
-        "cryptographic database replacement detection",
-        "signed evaluator-role and independence verification",
+        "externally retained checkpoint deployment and rotation",
+        "independent exact-candidate acceptance ceremony",
         "promotion or release authority"
       ],
       "sourceAnchors": [
@@ -284,6 +286,29 @@
           "mustContain": [
             "CREATE TABLE authbus_outbox",
             "authbus_outbox_active_no_delete"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0011_qualification_evidence.sql",
+          "mustContain": [
+            "CREATE TABLE qualification_evidence",
+            "CREATE TABLE independent_decision_receipts",
+            "qualification_evidence_no_update",
+            "qualification_evidence_meta_no_update",
+            "CREATE TABLE qualification_trust_policy",
+            "qualification_trust_policy_no_update"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification.rs",
+          "mustContain": [
+            "pub async fn append_receipt(",
+            "pub async fn verify_chain(",
+            "pub async fn query_claim(",
+            "pub async fn verify_external_checkpoint(",
+            "pub struct IndependentDecisionReceiptV1",
+            "pub async fn provision_trust_policy(",
+            "trust-policy checkpoint diverged"
           ]
         }
       ]

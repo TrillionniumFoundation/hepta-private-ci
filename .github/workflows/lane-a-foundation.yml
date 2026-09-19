@@ -6,6 +6,10 @@ on:
       - "codex-rs/hepta-*/**"
       - "codex-rs/kernel-*/**"
       - "docs/contracts/**"
+      - "docs/modules/kernel.evidence/**"
+      - "docs/lane-a-foundation/kernel.evidence/**"
+      - "qualification/module-execution-dossiers/detail/kernel.evidence.md"
+      - "scripts/verify_kernel_evidence_traceability.py"
       - "scripts/verify_hepta_callers.py"
       - ".github/workflows/lane-a-foundation.yml"
       - ".github/actions/hepta-synthetic-merge/action.yml"
@@ -48,6 +52,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/verify_lane_a_foundation.py self-test
           python3 scripts/verify_lane_a_foundation.py verify
+          python3 scripts/verify_kernel_evidence_traceability.py verify
           python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
           (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
           git diff --check
@@ -69,12 +74,21 @@ jobs:
           python3 scripts/verify_lane_a_foundation.py native-receipt \
             --expected-sha "$EXPECTED_SHA" \
             --output .hepta-evidence/lane-a-native-head.json
+          python3 scripts/verify_kernel_evidence_traceability.py receipt \
+            --expected-sha "$EXPECTED_SHA" \
+            --kind source_head \
+            --output .hepta-evidence/kernel-evidence-source-head.json
+          python3 scripts/verify_kernel_evidence_traceability.py review-request \
+            --receipt .hepta-evidence/kernel-evidence-source-head.json \
+            --output .hepta-evidence/kernel-evidence-independent-review-request-source-head.json
 
       - name: Retain exact source receipts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: lane-a-source-native-${{ github.event.pull_request.head.sha || github.sha }}
-          path: .hepta-evidence/lane-a-*.json
+          path: |
+            .hepta-evidence/lane-a-*.json
+            .hepta-evidence/kernel-evidence-*.json
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 90
@@ -112,6 +126,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           python3 scripts/verify_lane_a_foundation.py self-test
           python3 scripts/verify_lane_a_foundation.py verify
+          python3 scripts/verify_kernel_evidence_traceability.py verify
           python3 -m unittest qualification/module-execution-dossiers/test_lane_a_foundation.py
           (cd qualification/module-execution-dossiers && python3 -m unittest test_implementation_contracts.py)
           git diff --check
@@ -133,12 +148,21 @@ jobs:
           python3 scripts/verify_lane_a_foundation.py native-receipt \
             --expected-sha "$EXPECTED_SHA" \
             --output .hepta-evidence/lane-a-native-merge-candidate.json
+          python3 scripts/verify_kernel_evidence_traceability.py receipt \
+            --expected-sha "$EXPECTED_SHA" \
+            --kind synthetic_merge_candidate \
+            --output .hepta-evidence/kernel-evidence-merge-candidate.json
+          python3 scripts/verify_kernel_evidence_traceability.py review-request \
+            --receipt .hepta-evidence/kernel-evidence-merge-candidate.json \
+            --output .hepta-evidence/kernel-evidence-independent-review-request-merge-candidate.json
 
       - name: Retain synthetic merge receipts
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: lane-a-merge-native-${{ steps.merge.outputs.sha }}
-          path: .hepta-evidence/lane-a-*.json
+          path: |
+            .hepta-evidence/lane-a-*.json
+            .hepta-evidence/kernel-evidence-*.json
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 90

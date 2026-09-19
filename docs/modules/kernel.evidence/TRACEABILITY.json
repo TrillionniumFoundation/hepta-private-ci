@@ -1,0 +1,320 @@
+{
+  "schema": "hepta.kernel-evidence-traceability.v1",
+  "schemaVersion": 1,
+  "module": "kernel.evidence",
+  "claimBoundary": {
+    "nativeContractImplemented": true,
+    "authenticatedProductWriterImplemented": true,
+    "externalCheckpointVerificationImplemented": true,
+    "exactCandidateExecutionReceipt": "generated_by_lane_a_ci",
+    "independentAcceptance": "pending_external",
+    "activation": false,
+    "release": false
+  },
+  "requirements": [
+    {
+      "id": "KE-EVID-001",
+      "requirement": "Provision one immutable store-owned trust policy, then append exact-candidate evidence only after cryptographic issuer authentication; exact replay is idempotent and identity/payload or trust-root drift conflicts.",
+      "sourceAnchors": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification.rs",
+          "mustContain": [
+            "pub async fn provision_trust_policy(",
+            "pub async fn append_receipt(",
+            "pub fn authenticate(",
+            "qualification evidence signature verification failed",
+            "authenticated issuer is not bound to the provisioned trust policy",
+            "IdempotencyConflict"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0011_qualification_evidence.sql",
+          "mustContain": [
+            "CREATE TABLE qualification_trust_policy",
+            "CREATE TABLE qualification_evidence",
+            "qualification_trust_policy_no_update",
+            "qualification_evidence_no_update"
+          ]
+        }
+      ],
+      "testAnchors": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+          "mustContain": [
+            "qualification_receipt_is_authenticated_idempotent_queryable_and_reopen_safe",
+            "same_receipt_identity_with_changed_content_conflicts",
+            "unprovisioned_or_different_trust_policy_cannot_write"
+          ]
+        }
+      ],
+      "executionReceipt": "lane-a source-head/native receipt + kernel-evidence traceability receipt",
+      "independentReceipt": {
+        "state": "not_required_for_native_invariant"
+      }
+    },
+    {
+      "id": "KE-EVID-002",
+      "requirement": "Query evidence by exact candidate id/source commit/source tree and claim class with bounded results.",
+      "sourceAnchors": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification.rs",
+          "mustContain": [
+            "pub async fn query_claim(",
+            "QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS",
+            "source_commit = ? AND source_tree = ?"
+          ]
+        }
+      ],
+      "testAnchors": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+          "mustContain": [
+            "exact_candidate_tree_and_expiry_are_enforced"
+          ]
+        }
+      ],
+      "executionReceipt": "lane-a source-head/native receipt + kernel-evidence traceability receipt",
+      "independentReceipt": {
+        "state": "not_required_for_native_invariant"
+      }
+    },
+    {
+      "id": "KE-EVID-003",
+      "requirement": "Verify predecessor chains fail closed on missing/cross-candidate/cross-claim/cyclic/exhausted lineage and reopen verifies the global hash chain.",
+      "sourceAnchors": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification.rs",
+          "mustContain": [
+            "verify_predecessor_chain",
+            "QUALIFICATION_EVIDENCE_MAX_CHAIN_EDGES",
+            "hash-chain predecessor mismatch",
+            "hash-chain digest mismatch"
+          ]
+        }
+      ],
+      "testAnchors": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+          "mustContain": [
+            "qualification_receipt_is_authenticated_idempotent_queryable_and_reopen_safe"
+          ]
+        }
+      ],
+      "executionReceipt": "lane-a source-head/native receipt + kernel-evidence traceability receipt",
+      "independentReceipt": {
+        "state": "not_required_for_native_invariant"
+      }
+    },
+    {
+      "id": "KE-EVID-004",
+      "requirement": "One principal or signing identity cannot satisfy multiple required independent roles.",
+      "sourceAnchors": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification.rs",
+          "mustContain": [
+            "pub async fn verify_chain(",
+            "one principal/signing identity cannot satisfy multiple required independent roles"
+          ]
+        }
+      ],
+      "testAnchors": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+          "mustContain": [
+            "one_principal_cannot_satisfy_two_independent_roles"
+          ]
+        }
+      ],
+      "executionReceipt": "lane-a source-head/native receipt + kernel-evidence traceability receipt",
+      "independentReceipt": {
+        "state": "not_required_for_native_invariant"
+      }
+    },
+    {
+      "id": "KE-EVID-005",
+      "requirement": "Expiry and security-authority revocation immediately remove evidence from active support without rewriting history.",
+      "sourceAnchors": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification.rs",
+          "mustContain": [
+            "EvidenceReferenceState::Expired",
+            "EvidenceReferenceState::Revoked",
+            "SECURITY_AUTHORITY_ROLE"
+          ]
+        }
+      ],
+      "testAnchors": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+          "mustContain": [
+            "security_authority_revocation_is_immediate_and_persistent",
+            "exact_candidate_tree_and_expiry_are_enforced"
+          ]
+        }
+      ],
+      "executionReceipt": "lane-a source-head/native receipt + kernel-evidence traceability receipt",
+      "independentReceipt": {
+        "state": "not_required_for_native_invariant"
+      }
+    },
+    {
+      "id": "KE-EVID-006",
+      "requirement": "kernel.evidence produces and durably projects IndependentDecisionReceiptV1 bound to candidate, principal, signing identity, evidence-set digest, decision, conditions and expiry.",
+      "sourceAnchors": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification.rs",
+          "mustContain": [
+            "pub struct IndependentDecisionReceiptV1",
+            "prepare_independent_decision",
+            "append_prepared_independent_decision"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0011_qualification_evidence.sql",
+          "mustContain": [
+            "CREATE TABLE independent_decision_receipts"
+          ]
+        }
+      ],
+      "testAnchors": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+          "mustContain": [
+            "independent_decision_is_typed_signed_and_projected_atomically"
+          ]
+        }
+      ],
+      "executionReceipt": "lane-a source-head/native receipt + kernel-evidence traceability receipt",
+      "independentReceipt": {
+        "state": "pending_external",
+        "contract": "IndependentDecisionReceiptV1",
+        "requirement": "A distinct reviewer must sign the exact PR/merge candidate evidence set."
+      }
+    },
+    {
+      "id": "KE-EVID-007",
+      "requirement": "An independently retained monotonic checkpoint binds store identity, provisioned trust-policy digest and chain frontier, detecting authority rollback, database replacement, receipt rollback and chain divergence.",
+      "sourceAnchors": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification.rs",
+          "mustContain": [
+            "pub struct EvidenceCheckpoint",
+            "trust_policy_sha256",
+            "pub async fn verify_external_checkpoint(",
+            "trust-policy checkpoint diverged",
+            "database replacement detected",
+            "rollback detected",
+            "checkpoint frontier diverged"
+          ]
+        }
+      ],
+      "testAnchors": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+          "mustContain": [
+            "external_checkpoint_detects_database_replacement_and_backward_frontier"
+          ]
+        }
+      ],
+      "executionReceipt": "lane-a source-head/native receipt + kernel-evidence traceability receipt",
+      "independentReceipt": {
+        "state": "pending_external",
+        "requirement": "Production operator must retain and rotate checkpoints outside the SQLite database."
+      }
+    },
+    {
+      "id": "KE-EVID-008",
+      "requirement": "A named authenticated product writer bootstraps the immutable trust root before evidence, then requires a prior external checkpoint for every mutation and emits a new create-only checkpoint/terminal receipt.",
+      "sourceAnchors": [
+        {
+          "path": "codex-rs/hepta-evidence/src/bin/hepta-evidence-writer.rs",
+          "mustContain": [
+            "bootstrap-trust-policy",
+            "provision_trust_policy",
+            "open_with_checkpoint",
+            "append_prepared_independent_decision",
+            "terminal-receipt-out"
+          ]
+        }
+      ],
+      "testAnchors": [
+        {
+          "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
+          "mustContain": [
+            "external_checkpoint_detects_database_replacement_and_backward_frontier",
+            "independent_decision_is_typed_signed_and_projected_atomically"
+          ]
+        }
+      ],
+      "executionReceipt": "Lane A cargo test/clippy all-targets and exact-head traceability receipt",
+      "independentReceipt": {
+        "state": "pending_external",
+        "requirement": "Target-host execution and operator-owned checkpoint durability must be independently observed."
+      }
+    },
+    {
+      "id": "KE-EVID-009",
+      "requirement": "Source-head and deterministic synthetic-merge evidence are bound to the exact Git candidate rather than a stale tracked sourceBase.",
+      "sourceAnchors": [
+        {
+          "path": ".github/workflows/lane-a-foundation.yml",
+          "mustContain": [
+            "Verify exact Lane A source and native contracts",
+            "Verify synthetic Lane A merge candidate and native contracts",
+            "--expected-sha"
+          ]
+        }
+      ],
+      "testAnchors": [
+        {
+          "path": "scripts/verify_kernel_evidence_traceability.py",
+          "mustContain": [
+            "expected-sha",
+            "gitTree",
+            "independentAcceptance"
+          ]
+        }
+      ],
+      "executionReceipt": ".hepta-evidence/kernel-evidence-source-head.json and .hepta-evidence/kernel-evidence-merge-candidate.json",
+      "independentReceipt": {
+        "state": "pending_external",
+        "requirement": "CI exactness is execution evidence, not an independent semantic acceptance decision."
+      }
+    },
+    {
+      "id": "KE-EVID-010",
+      "requirement": "Module completion does not self-issue independent acceptance, activation, promotion or release.",
+      "sourceAnchors": [
+        {
+          "path": "docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json",
+          "mustContain": [
+            "\"independentAcceptance\": false",
+            "\"activation\": false",
+            "\"release\": false"
+          ]
+        },
+        {
+          "path": "docs/modules/kernel.evidence/TECHNICAL.md",
+          "mustContain": [
+            "independent_exact_candidate_review",
+            "blocked_external"
+          ]
+        }
+      ],
+      "testAnchors": [
+        {
+          "path": "scripts/verify_kernel_evidence_traceability.py",
+          "mustContain": [
+            "pending_external",
+            "activation"
+          ]
+        }
+      ],
+      "executionReceipt": "kernel-evidence traceability receipt",
+      "independentReceipt": {
+        "state": "pending_external",
+        "contract": "IndependentDecisionReceiptV1"
+      }
+    }
+  ]
+}

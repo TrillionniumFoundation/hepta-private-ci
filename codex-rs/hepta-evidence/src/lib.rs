@@ -13,6 +13,7 @@ mod provider_effect_store;
 mod provider_insert;
 mod provider_record;
 mod provider_store;
+mod qualification;
 mod schema_validation;
 mod store;
 mod summary;
@@ -47,6 +48,29 @@ pub use provider_effect_store::StoredProviderEffectUncertainty;
 pub use provider_store::StoredProviderAttemptEvidence;
 pub use provider_store::StoredProviderIntent;
 pub use provider_store::StoredProviderReceipt;
+pub use qualification::AuthenticatedEvidenceIssuer;
+pub use qualification::EvidenceAssetReference;
+pub use qualification::EvidenceCandidate;
+pub use qualification::EvidenceCheckpoint;
+pub use qualification::EvidenceClaimClass;
+pub use qualification::EvidenceDisposition;
+pub use qualification::EvidenceDispositionKind;
+pub use qualification::EvidenceIssuerProof;
+pub use qualification::EvidenceIssuerRegistration;
+pub use qualification::EvidenceReference;
+pub use qualification::EvidenceReferenceState;
+pub use qualification::EvidenceTrustPolicy;
+pub use qualification::IndependentDecision;
+pub use qualification::IndependentDecisionInput;
+pub use qualification::IndependentDecisionReceiptV1;
+pub use qualification::PreparedIndependentDecision;
+pub use qualification::QualificationEvidence;
+pub use qualification::QualificationEvidenceEnvelope;
+pub use qualification::QUALIFICATION_EVIDENCE_MAX_ASSET_REFS;
+pub use qualification::QUALIFICATION_EVIDENCE_MAX_CHAIN_EDGES;
+pub use qualification::QUALIFICATION_EVIDENCE_MAX_QUERY_RESULTS;
+pub use qualification::QUALIFICATION_EVIDENCE_MAX_RECEIPT_BYTES;
+pub use qualification::QUALIFICATION_EVIDENCE_SCHEMA_VERSION;
 pub use store::AppendDisposition;
 pub use store::HeptaEvidenceStore;
 pub use store::StoredActionEvidence;
@@ -88,6 +112,10 @@ mod provider_effect_tests;
 #[cfg(test)]
 #[path = "summary_tests.rs"]
 mod summary_tests;
+
+#[cfg(test)]
+#[path = "qualification_tests.rs"]
+mod qualification_tests;
 
 #[cfg(test)]
 #[path = "historical_tests.rs"]

@@ -26,6 +26,8 @@ use crate::governance_store::verify_receipt;
 use crate::governance_validation::validate_decision;
 use crate::governance_validation::validate_receipt_binding;
 use crate::provider_effect_store::verify_provider_effect_rows;
+use crate::qualification::ensure_qualification_store_identity;
+use crate::qualification::verify_qualification_evidence_rows;
 use crate::schema_validation::classify_migrate_error;
 use crate::schema_validation::classify_sqlx_error;
 use crate::schema_validation::verify_foreign_keys;
@@ -83,6 +85,10 @@ impl HeptaEvidenceStore {
         if let Err(error) = MIGRATOR.run(&pool).await {
             pool.close().await;
             return Err(classify_migrate_error(error));
+        }
+        if let Err(error) = ensure_qualification_store_identity(&pool, &path).await {
+            pool.close().await;
+            return Err(error);
         }
         if let Err(error) = verify_existing_store(&pool).await {
             pool.close().await;
@@ -340,6 +346,7 @@ async fn verify_existing_store(pool: &SqlitePool) -> Result<(), EvidenceError> {
     verify_provider_host_bindings(pool).await?;
     verify_provider_ephemeral_input_projection(pool).await?;
     verify_provider_effect_rows(pool).await?;
+    verify_qualification_evidence_rows(pool).await?;
     verify_foreign_keys(pool).await
 }
 
