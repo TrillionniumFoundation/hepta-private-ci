@@ -139,6 +139,7 @@ pub struct AgentdRunReceipt {
     pub phase: AgentdRunPhase,
     pub context_digest: Option<String>,
     pub cancellation_reason: Option<String>,
+    pub cancellation_ack_deadline_ms: Option<u64>,
     pub terminal_observed: bool,
     pub idempotent: bool,
 }
