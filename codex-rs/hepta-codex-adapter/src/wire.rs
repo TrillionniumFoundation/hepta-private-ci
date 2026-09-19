@@ -50,17 +50,12 @@ impl CodexOperationIntentWireCodec {
     }
 
     fn validate(value: &CodexOperationIntentWireV2) -> Result<(), SchemaCodecError> {
-        for (name, id) in [
-            ("operation_id", &value.operation_id),
-            ("thread_id", &value.thread_id),
-            ("method_id", &value.method_id),
-        ] {
-            StableId::new(id.as_str()).map_err(|_| match name {
-                "operation_id" => SchemaCodecError::Rejected("invalid operation_id"),
-                "thread_id" => SchemaCodecError::Rejected("invalid thread_id"),
-                _ => SchemaCodecError::Rejected("invalid method_id"),
-            })?;
-        }
+        StableId::new(value.operation_id.as_str())
+            .map_err(|_| SchemaCodecError::Rejected("invalid operation_id"))?;
+        StableId::new(value.thread_id.as_str())
+            .map_err(|_| SchemaCodecError::Rejected("invalid thread_id"))?;
+        StableId::new(value.method_id.as_str())
+            .map_err(|_| SchemaCodecError::Rejected("invalid method_id"))?;
         let payload = Digest32::from_str(&value.payload_digest)
             .map_err(|_| SchemaCodecError::Rejected("invalid payload_digest"))?;
         let lease = Digest32::from_str(&value.lease_payload_digest)
