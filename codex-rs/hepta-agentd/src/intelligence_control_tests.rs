@@ -197,7 +197,9 @@ fn snapshot() -> CapabilitySnapshotV2 {
     .expect("snapshot")
 }
 
-fn composition(decision: CompositionPortDecisionV3) -> codex_hepta_intelligence::CompositionPipelineReceiptV3 {
+fn composition(
+    decision: CompositionPortDecisionV3,
+) -> codex_hepta_intelligence::CompositionPipelineReceiptV3 {
     let snapshot = snapshot();
     let legal = build_legal_candidates(LegalActionCandidateSetRequestV1 {
         candidate_set_id: id("candidate-set"),
@@ -212,7 +214,9 @@ fn composition(decision: CompositionPortDecisionV3) -> codex_hepta_intelligence:
         support_floor_ppm: 900_000,
     })
     .expect("candidate set");
-    let mut ports = Ports { intuition: decision };
+    let mut ports = Ports {
+        intuition: decision,
+    };
     prepare_intelligence_run_v3(
         CompositionRunRequestV3 {
             run_id: id("run:agentd-intelligence"),
@@ -270,8 +274,7 @@ fn prepared_intelligence_envelope_is_admitted_and_stops_before_dispatch() {
     assert!(!receipt.envelope_digest.is_zero());
     assert!(!receipt.composition_trace_digest.is_zero());
 
-    let replay =
-        admit_intelligence_run_v1(&mut coordinator, 1_000, &composition).expect("replay");
+    let replay = admit_intelligence_run_v1(&mut coordinator, 1_000, &composition).expect("replay");
     assert_eq!(replay.run.phase, RunPhase::ContextAttached);
     assert!(replay.run.idempotent);
 }
