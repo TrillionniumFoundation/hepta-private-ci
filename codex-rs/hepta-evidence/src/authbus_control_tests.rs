@@ -45,11 +45,7 @@ async fn seed(store: &HeptaEvidenceStore, endowment: u64) {
     seed_with_cap(store, endowment, 128).await;
 }
 
-async fn seed_with_cap(
-    store: &HeptaEvidenceStore,
-    endowment: u64,
-    max_active_per_principal: u32,
-) {
+async fn seed_with_cap(store: &HeptaEvidenceStore, endowment: u64, max_active_per_principal: u32) {
     let scope = Digest32::of_bytes(b"scope");
     store
         .install_authbus_policy(
@@ -637,7 +633,7 @@ async fn quota_window_and_revision_are_enforced_and_rollover_is_bounded() {
                 window_start_ms: now.saturating_sub(1_000),
                 window_end_ms: window_end,
                 endowment: 6,
-            max_active_per_principal: 128,
+                max_active_per_principal: 128,
             })
             .await,
         Err(AuthBusControlError::Invalid(_))
@@ -719,7 +715,7 @@ async fn consumed_quota_cannot_be_erased_by_same_window_revision_change() {
                 window_start_ms: 1,
                 window_end_ms: u64::MAX,
                 endowment: 6,
-            max_active_per_principal: 128,
+                max_active_per_principal: 128,
             })
             .await,
         Err(AuthBusControlError::Invalid(_))
