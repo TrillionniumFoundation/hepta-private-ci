@@ -263,6 +263,12 @@ pub(crate) struct InheritedQueuedReceipt {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct DurableOperationDispatchBinding {
+    pub scope_id: String,
+    pub destination_id: String,
+}
+
 struct DurableOperationRow {
     operation_id: String,
     semantic_sha256: String,
@@ -1661,7 +1667,7 @@ impl LocalLeaseOutbox {
         &self,
         occurrence_key: &str,
         destination_id: &str,
-    ) -> Result<(), LocalLeaseOutboxError> {
+    ) -> Result<DurableOperationDispatchBinding, LocalLeaseOutboxError> {
         let mut transaction = self
             .store
             .pool
@@ -1695,11 +1701,15 @@ impl LocalLeaseOutbox {
                 "durable operation destination does not match attached target".to_string(),
             ));
         }
+        let binding = DurableOperationDispatchBinding {
+            scope_id: operation.scope_id,
+            destination_id: operation.destination_id,
+        };
         transaction
             .commit()
             .await
             .map_err(crate::cognitive_store::unavailable)?;
-        Ok(())
+        Ok(binding)
     }
 
     /// Claim one exact queued occurrence before a target dispatch begins.
