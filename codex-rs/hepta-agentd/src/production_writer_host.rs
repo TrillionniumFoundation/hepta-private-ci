@@ -7,8 +7,12 @@
 
 use std::fmt;
 use std::sync::Arc;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
-use codex_hepta_cognitive_types::lane_c::CognitiveSnapshotKeyV1;
+use codex_hepta_cognitive_read::AuthoritativeSnapshotV1;
+use codex_hepta_cognitive_read::SnapshotAcquisitionRequestV1;
+use codex_hepta_cognitive_read::SnapshotProviderError;
 use codex_hepta_compact_engine::CompactionInputRecordV2;
 use codex_hepta_compact_engine::CompactionPolicyV2;
 use codex_hepta_compact_engine::CompactionQualificationV2;
@@ -42,7 +46,8 @@ pub struct AgentdProductionWriterHost {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentdCompactionCheckpointRequest {
-    pub source_snapshot: CognitiveSnapshotKeyV1,
+    pub source_snapshot: AuthoritativeSnapshotV1,
+    pub snapshot_acquisition_request: SnapshotAcquisitionRequestV1,
     pub generation: Generation,
     pub predecessor_checkpoint_digest: Option<Digest32>,
     pub policy: CompactionPolicyV2,
@@ -54,9 +59,13 @@ pub struct AgentdCompactionCheckpointRequest {
 #[derive(Debug, thiserror::Error)]
 pub enum AgentdCompactionCheckpointError {
     #[error(transparent)]
+    Snapshot(#[from] SnapshotProviderError),
+    #[error(transparent)]
     Qualification(#[from] QualifiedCompactionError),
     #[error(transparent)]
     Writer(#[from] ProductionWriterError),
+    #[error("system clock is unavailable for snapshot freshness validation: {0}")]
+    Clock(String),
 }
 
 impl fmt::Debug for AgentdProductionWriterHost {
@@ -131,15 +140,27 @@ impl AgentdProductionWriterHost {
         &self,
         request: AgentdCompactionCheckpointRequest,
     ) -> Result<QualifiedCompactCheckpointPublication, AgentdCompactionCheckpointError> {
+        let AgentdCompactionCheckpointRequest {
+            source_snapshot,
+            snapshot_acquisition_request,
+            generation,
+            predecessor_checkpoint_digest,
+            policy,
+            semantic_payload,
+            inputs,
+            qualification,
+        } = request;
+        source_snapshot.validate_for_request(now_unix_ms()?, &snapshot_acquisition_request)?;
         let candidate = build_qualified_candidate(
-            request.source_snapshot,
-            request.generation,
-            request.predecessor_checkpoint_digest,
-            &request.policy,
-            &request.semantic_payload,
-            request.inputs,
+            source_snapshot.snapshot_key().clone(),
+            source_snapshot.snapshot(),
+            generation,
+            predecessor_checkpoint_digest,
+            &policy,
+            &semantic_payload,
+            inputs,
         )?;
-        let proof = prove_compaction(&candidate, request.qualification)?;
+        let proof = prove_compaction(&candidate, qualification)?;
         Ok(self
             .writer
             .publish_qualified_compact_checkpoint(candidate.checkpoint(), &proof)
@@ -169,6 +190,15 @@ impl AgentdProductionWriterHost {
         })?;
         Ok(dispatcher.dispatch(self.writer.as_ref(), receipt).await?)
     }
+}
+
+fn now_unix_ms() -> Result<u64, AgentdCompactionCheckpointError> {
+    let millis = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|error| AgentdCompactionCheckpointError::Clock(error.to_string()))?
+        .as_millis();
+    u64::try_from(millis)
+        .map_err(|_| AgentdCompactionCheckpointError::Clock("timestamp overflow".to_string()))
 }
 
 #[cfg(test)]
