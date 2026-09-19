@@ -258,7 +258,7 @@ The source candidate is checked by `.github/workflows/hepta-consolidated-source.
 
 ## 18. V2 integrity and product-composition candidate
 
-Candidate source identity for the composed code path is commit `bd68a5c542546367417a053b26a4d9aa9112ba75`, tree `01879e5896cbea491745a1bdf52b714fbef4e942`. This identity is an immutable code baseline; later documentation-only commits may descend from it without changing the code candidate.
+Candidate source identity for the composed code path is commit `d8f3bd4205ed22e718776158fbb5d6c5ef6a8af7`, tree `52101a2bf201235e4a9816fc772b03e5769f1fdf`. This identity is an immutable code baseline; later documentation-only commits may descend from it without changing the code candidate.
 
 ### 18.1 Remote response integrity
 
@@ -272,7 +272,7 @@ A successful federated result cannot outlive any authority-bearing input. Its ef
 
 `min(remote_response_expiry, capability_lease_expiry, query_deadline)`.
 
-The engine performs live authority revalidation before transport dispatch and again after a terminal response. Post-I/O revocation or generation drift removes all remote items and yields explicit `Revoked` or `StaleGeneration` validity rather than treating the response as current evidence.
+The engine performs live authority revalidation before transport dispatch and again after a terminal response. Authority lookups themselves share the query/lease deadline, so a blocked authority store cannot bypass the bounded-attempt policy. Post-I/O revocation or generation drift removes all remote items and yields explicit `Revoked` or `StaleGeneration` validity rather than treating the response as current evidence.
 
 ### 18.3 Interruptible transport boundary
 
@@ -286,11 +286,12 @@ The existing product federation path in `codex-rs/hepta-memory/src/cognitive_fed
 - a `FederationAuthorityV2` adapter backed by the current durable capability head/revocation state;
 - a bounded per-query deadline and per-attempt nonce;
 - exact conversion of returned memory identities/revisions/digests into V2 evidence items;
+- the exact owner memory frontier observed in the same SQLite snapshot as retrieval, including legitimate frontier `0` for an empty scope;
 - admission of product candidates only when the V2 result contains the exact evidence identity.
 
 This is composition, not a shadow validation path: the product reader does not return a candidate that the canonical V2 result failed to admit.
 
-The aggregation layer also records requested, completed, failed and indeterminate source coverage. Source failures are no longer silently equivalent to a valid empty federation result. `codex-rs/ext/hepta-memory/src/cognitive/federation.rs` carries that coverage into the federated model attachment and binds it into the attachment source digest, so partial coverage cannot be erased while preserving the same provenance receipt.
+The aggregation layer also records requested, completed, failed and indeterminate source coverage. Source failures are no longer silently equivalent to a valid empty federation result. `codex-rs/ext/hepta-memory/src/cognitive/federation.rs` carries that coverage into a versioned V2 federated model attachment and V2 source-binding domain, so partial coverage cannot be erased while preserving the same provenance receipt. The core policy accepts both V1 and V2 federation source identifiers during rolling compatibility, while new attachments are emitted as V2.
 
 ### 18.5 Qualification boundary
 
