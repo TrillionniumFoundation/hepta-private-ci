@@ -789,8 +789,7 @@ impl AutomationStore {
             .map_err(|_| AutomationError::Corrupt)?;
         let terminal_step_matches = match step_event.as_str() {
             "reconciled" => {
-                step_outcome.as_deref() == Some(expected_terminal)
-                    && step_observation.is_none()
+                step_outcome.as_deref() == Some(expected_terminal) && step_observation.is_none()
             }
             "recorded" => {
                 matches!(expected_terminal, "succeeded" | "failed")
