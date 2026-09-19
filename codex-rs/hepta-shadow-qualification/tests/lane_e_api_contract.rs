@@ -3,6 +3,29 @@
 //! authority-bearing action; it proves that mapped symbols are public and
 //! available to a real cross-crate consumer.
 
+struct TestHoldoutAnchorAuthority;
+
+impl codex_hepta_intelligence_eval::HoldoutAnchorAuthorityV1 for TestHoldoutAnchorAuthority {
+    fn current_anchor(
+        &mut self,
+        _binding: codex_hepta_types::Digest32,
+    ) -> Result<
+        codex_hepta_intelligence_eval::HoldoutAnchorV1,
+        codex_hepta_intelligence_eval::DurableHoldoutError,
+    > {
+        unreachable!("compile-time public-surface witness only")
+    }
+
+    fn compare_and_swap_anchor(
+        &mut self,
+        _binding: codex_hepta_types::Digest32,
+        _expected: codex_hepta_intelligence_eval::HoldoutAnchorV1,
+        _next: codex_hepta_intelligence_eval::HoldoutAnchorV1,
+    ) -> Result<bool, codex_hepta_intelligence_eval::DurableHoldoutError> {
+        unreachable!("compile-time public-surface witness only")
+    }
+}
+
 #[test]
 fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_learning_ledger::verify_independent_roles;
@@ -33,8 +56,15 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_intelligence_eval::evaluate_temporal_holdout;
     let _ = codex_hepta_intelligence_eval::freeze_cross_fold_plan;
     let _ = codex_hepta_intelligence_eval::FinalHoldoutRegistry::consume;
-    let _ = codex_hepta_intelligence_eval::decide_independently;
+    let _ = codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
+    let _ = codex_hepta_intelligence_eval::decide_with_signed_longitudinal_evidence_v3;
+    let _ = codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
     let _ = codex_hepta_intelligence_eval::FinalHoldoutJournalV1::consume;
+    let _ =
+        codex_hepta_intelligence_eval::DurableFinalHoldoutJournalV1::consume_single_host_trusted;
+    let _ = codex_hepta_intelligence_eval::DurableFinalHoldoutJournalV1::consume_fenced::<
+        TestHoldoutAnchorAuthority,
+    >;
     let _ = codex_hepta_intelligence_eval::FinalHoldoutJournalV1::from_snapshot;
 
     let _ = codex_hepta_learning_artifacts::write_candidate_payload;

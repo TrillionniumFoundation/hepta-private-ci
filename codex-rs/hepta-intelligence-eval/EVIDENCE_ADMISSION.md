@@ -1,20 +1,27 @@
 # Learning evaluation admission after consolidation
 
+**Normative production API contract:** [`PRODUCTION_CONTRACT.md`](PRODUCTION_CONTRACT.md). This note explains evidence semantics; it does not widen the production surface defined there.
+
 The restored Lane E source includes strict learned-operator fitting, immutable
 dataset/admission receipts, and replayable final-holdout/lifecycle journals. The
 journals implement semantic replay and expected-head checks; the host still owns
-exclusive writing, fsync, crash recovery and a trusted persisted head. Their
-existence is not evidence of a running long-term learner.
+fsync, crash recovery and trusted persisted authority. A single-host deployment
+owns an exclusive writer; a multi-owner deployment must supply the linearizable
+external anchor authority required by `consume_fenced`. Their existence is not
+evidence of a running long-term learner.
 
 ## Authenticated evidence boundary
 
-`AuthenticatedPrincipalV1::validate`, the legacy evaluator and the V1/V2 dataset
+`AuthenticatedPrincipalV1::validate`, legacy evaluator semantics and V1/V2 dataset
 receipt APIs validate supplied structure and digests. They do not authenticate an
 external caller or prove that an estimate was produced by an independent actor.
-They remain available for trusted in-process composition and compatibility.
+Unsigned/direct evaluator entry points are therefore not part of the default
+public production surface; compatibility access is explicitly gated behind the
+`trusted-inprocess-eval` feature.
 
-Qualification-scoped external evaluation uses `decide_with_signed_evidence_v1`
-or `decide_with_signed_evidence_v2`. A `SystemLongitudinal` request now requires
+Qualification-scoped production evaluation uses `decide_with_signed_evidence_v2`.
+The signed V1 path is compatibility-only for its legacy metric contract and must
+not be selected for new production plans. A `SystemLongitudinal` request requires
 `decide_with_signed_longitudinal_evidence_v3`: signed window names alone are
 insufficient. V1/V2 authenticate the submitted bytes, then reject that stronger
 claim with `MissingLongitudinalTiming`. The host constructs `LearningEvidenceVerifierV1`
@@ -97,9 +104,13 @@ holdout authority. Its actual caller supplies an authorized regular `File`, a
 nonzero scope binding and an independently retained `HoldoutAnchorV1`. `create`
 is explicit initialization; `recover` never recreates or trims a damaged file.
 The adapter takes an exclusive file lock, replays bounded frames and checks the
-acknowledged chain prefix. `consume` checks the expected anchor, validates the
-next semantic state, writes and synchronizes bytes, then publishes memory state.
-An uncertain write poisons the handle. Exact retries do not append duplicates.
+acknowledged chain prefix. `consume_single_host_trusted` is restricted to one
+cooperative host. Multi-process or multi-host owners use `consume_fenced` with a
+host-owned `HoldoutAnchorAuthorityV1` whose compare-and-swap is linearizable.
+The fenced path reserves the next semantic anchor before appending local bytes;
+an uncertain local write after reservation poisons the handle and leaves the
+advanced external anchor in place, failing closed until reconciliation. Exact
+retries do not append duplicates.
 
 Host-owned format `HEPTHO01` is distinct from cross-owner protocols: an eight-byte
 magic, 32-byte binding and 32-byte header checksum precede length-prefixed sealed

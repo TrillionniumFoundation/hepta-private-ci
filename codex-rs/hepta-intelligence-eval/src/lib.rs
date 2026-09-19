@@ -1,6 +1,7 @@
 //! Independent deterministic candidate evaluation. Eligibility is not promotion.
 #![forbid(unsafe_code)]
 
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
@@ -14,6 +15,7 @@ mod durable_holdout;
 mod holdout_journal;
 pub use durable_holdout::DurableFinalHoldoutJournalV1;
 pub use durable_holdout::DurableHoldoutError;
+pub use durable_holdout::HoldoutAnchorAuthorityV1;
 pub use durable_holdout::HoldoutAnchorV1;
 mod ope;
 mod sequential;
@@ -38,8 +40,8 @@ pub use closure::MetricContractV1;
 pub use closure::MetricGateV1;
 pub use closure::MetricRoleContractV2;
 pub use closure::MetricRoleV2;
-pub use closure::decide_independently;
-pub use closure::decide_independently_v2;
+pub(crate) use closure::decide_independently;
+pub(crate) use closure::decide_independently_v2;
 pub use closure::freeze_cross_fold_plan;
 pub use closure::freeze_cross_fold_plan_v2;
 pub use holdout_journal::FinalHoldoutJournalError;
@@ -76,8 +78,10 @@ pub use sequential::estimate_sequential;
 pub use signed_evaluation::SignedEvaluationDecisionV1;
 pub use signed_evaluation::SignedEvaluationError;
 pub use signed_evaluation::SignedEvaluationEvidenceV1;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 pub use signed_evaluation::decide_with_signed_evidence_v1;
 pub use signed_evaluation::decide_with_signed_evidence_v2;
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 pub use signed_evaluation::evaluation_signing_payload_v1;
 pub use signed_evaluation::evaluation_signing_payload_v2;
 
@@ -93,6 +97,7 @@ pub use temporal_fold::TemporalFoldPlan;
 pub use temporal_fold::TemporalFoldReceipt;
 pub use temporal_fold::fit_temporal_fold;
 
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 const MAX_METRICS: usize = 128;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -159,7 +164,8 @@ impl fmt::Display for Error {
 }
 impl StdError for Error {}
 
-pub fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Error> {
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
+fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Error> {
     if request.evaluator_id == request.candidate_producer_id {
         return Err(Error::SelfEvaluation);
     }
@@ -211,6 +217,7 @@ pub fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Err
     })
 }
 
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 fn subtract(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, Error> {
     let raw = i128::from(left.raw()) - i128::from(right.raw());
     Ok(FixedQ32::from_raw(
@@ -218,6 +225,7 @@ fn subtract(left: FixedQ32, right: FixedQ32) -> Result<FixedQ32, Error> {
     ))
 }
 
+#[cfg(any(test, feature = "trusted-inprocess-eval"))]
 fn digest(request: &EvaluationRequest, disposition: Disposition, failed: &[StableId]) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(b"hepta.intelligence-eval.v1");
@@ -258,6 +266,39 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     let raw = value.as_str().as_bytes();
     bytes.extend_from_slice(&u32::try_from(raw.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(raw);
+}
+
+#[cfg(feature = "trusted-inprocess-eval")]
+pub mod trusted_inprocess {
+    //! Explicit compatibility surface for trusted tests and in-process composition.
+    //! Production ingress must use signature-verified V2/V3 admission.
+
+    use super::Error;
+    use super::EvaluationClosureError;
+    use super::EvaluationReceipt;
+    use super::EvaluationRequest;
+    use super::IndependentEvaluationBundleV1;
+    use super::IndependentEvaluationDecisionV1;
+    use super::MetricRoleContractV2;
+
+    pub fn evaluate_legacy_v1(request: EvaluationRequest) -> Result<EvaluationReceipt, Error> {
+        super::evaluate(request)
+    }
+
+    pub fn decide_v1(
+        bundle: IndependentEvaluationBundleV1,
+        now: u64,
+    ) -> Result<IndependentEvaluationDecisionV1, EvaluationClosureError> {
+        super::decide_independently(bundle, now)
+    }
+
+    pub fn decide_v2(
+        bundle: IndependentEvaluationBundleV1,
+        roles: Vec<MetricRoleContractV2>,
+        now: u64,
+    ) -> Result<IndependentEvaluationDecisionV1, EvaluationClosureError> {
+        super::decide_independently_v2(bundle, roles, now)
+    }
 }
 
 #[cfg(test)]

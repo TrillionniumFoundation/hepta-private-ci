@@ -16,6 +16,19 @@
 
 This stable document is the implementation guide for `learning.eval`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
 
+
+> **Production API authority:** [`PRODUCTION_CONTRACT.md`](../../../codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md) is the normative source for production admission, API status, signed evaluator requirements, holdout fencing and CI provenance. This guide remains authoritative for module design, but it must not be used to turn a trusted/legacy compatibility API into production evidence.
+
+### Production API/version matrix
+
+| Class | Surface | Rule |
+| --- | --- | --- |
+| Production-required | `decide_with_signed_evidence_v2` | Non-longitudinal qualification with current host trust and frozen V2 metric roles. |
+| Production-required | `decide_with_signed_longitudinal_evidence_v3` | Longitudinal qualification with observed-time V3 evidence. |
+| Production-required for multi-owner holdout | `DurableFinalHoldoutJournalV1::consume_fenced` | Linearizable host-owned anchor CAS/fencing is mandatory. |
+| Trusted-only | `consume_single_host_trusted` | One cooperative host only. |
+| Deprecated / trusted-only | `trusted_inprocess::*` | Explicit feature-gated compatibility/testing; forbidden as production ingress. |
+
 ## 1. Identity, mission and ownership
 
 Perform support-aware causal and longitudinal evaluation independently from the production writer.

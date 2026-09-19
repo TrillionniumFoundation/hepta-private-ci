@@ -123,14 +123,17 @@
       "stableGuide": "docs/modules/learning.eval/TECHNICAL.md",
       "dossier": "qualification/module-execution-dossiers/detail/learning.eval.md",
       "nativeMapping": "codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md",
+      "productionContract": "codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md",
       "implementationState": "source_implemented_ci_pending",
-      "compatibility": "existing_estimators_retained_complete_plan_receipt_sealed_holdout_use_and_independent_decision_additive",
+      "compatibility": "existing_estimators_retained_signed_v2_v3_default_admission_trusted_inprocess_feature_explicit_fenced_holdout_additive",
       "operations": [
         {"operation": "estimate_ope", "nativeSymbol": "codex_hepta_intelligence_eval::estimate_ope", "source": "codex-rs/hepta-intelligence-eval/src/ope.rs", "status": "implemented_existing"},
         {"operation": "estimate_sequential", "nativeSymbol": "codex_hepta_intelligence_eval::estimate_sequential", "source": "codex-rs/hepta-intelligence-eval/src/sequential.rs", "status": "implemented_existing"},
-        {"operation": "freeze_cross_fold_plan", "nativeSymbol": "codex_hepta_intelligence_eval::freeze_cross_fold_plan", "source": "codex-rs/hepta-intelligence-eval/src/closure.rs", "status": "implemented"},
+        {"operation": "freeze_cross_fold_plan_v2", "nativeSymbol": "codex_hepta_intelligence_eval::freeze_cross_fold_plan_v2", "source": "codex-rs/hepta-intelligence-eval/src/metric_roles.rs", "status": "implemented"},
         {"operation": "FinalHoldoutRegistry::consume", "nativeSymbol": "codex_hepta_intelligence_eval::FinalHoldoutRegistry::consume", "source": "codex-rs/hepta-intelligence-eval/src/closure.rs", "status": "implemented"},
-        {"operation": "decide_independently", "nativeSymbol": "codex_hepta_intelligence_eval::decide_independently", "source": "codex-rs/hepta-intelligence-eval/src/closure.rs", "status": "implemented"}
+        {"operation": "DurableFinalHoldoutJournalV1::consume_fenced", "nativeSymbol": "codex_hepta_intelligence_eval::DurableFinalHoldoutJournalV1::consume_fenced", "source": "codex-rs/hepta-intelligence-eval/src/durable_holdout.rs", "status": "implemented"},
+        {"operation": "decide_with_signed_evidence_v2", "nativeSymbol": "codex_hepta_intelligence_eval::decide_with_signed_evidence_v2", "source": "codex-rs/hepta-intelligence-eval/src/signed_evaluation.rs", "status": "implemented"},
+        {"operation": "decide_with_signed_longitudinal_evidence_v3", "nativeSymbol": "codex_hepta_intelligence_eval::decide_with_signed_longitudinal_evidence_v3", "source": "codex-rs/hepta-intelligence-eval/src/longitudinal_time.rs", "status": "implemented"}
       ],
       "tests": [
         "eval_03_intersects_superiority_safety_retention_and_unlearning",
@@ -140,6 +143,10 @@
         "final_holdout_registry_allows_exact_retry_but_blocks_adaptive_reuse",
         "final_holdout_replay_receipt_is_stable_after_unrelated_registry_growth",
         "independent_decision_consumes_bound_holdout_receipt",
+        "signed_evaluation_binds_metrics_roles_and_host_identities",
+        "signed_qualification_e2e_binds_plan_holdout_roles_and_trust",
+        "fenced_anchor_cas_rejects_stale_replicas_without_mutation",
+        "fenced_reservation_with_failed_local_write_is_fail_closed",
         "op_03_high_fit_without_retention_is_insufficient"
       ],
       "stageResourceBounds": {

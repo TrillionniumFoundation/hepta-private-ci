@@ -25,7 +25,7 @@ mod metric_roles;
 
 pub use metric_roles::MetricRoleContractV2;
 pub use metric_roles::MetricRoleV2;
-pub use metric_roles::decide_independently_v2;
+pub(crate) use metric_roles::decide_independently_v2;
 pub(crate) use metric_roles::digest_evaluation_roles;
 pub use metric_roles::freeze_cross_fold_plan_v2;
 
@@ -146,7 +146,7 @@ pub struct IndependentEvaluationDecisionV1 {
 
 /// Legacy contract: every metric must strictly outperform its baseline.
 /// Use [`decide_independently_v2`] for preregistered metric roles.
-pub fn decide_independently(
+pub(crate) fn decide_independently(
     bundle: IndependentEvaluationBundleV1,
     now: u64,
 ) -> Result<IndependentEvaluationDecisionV1, EvaluationClosureError> {

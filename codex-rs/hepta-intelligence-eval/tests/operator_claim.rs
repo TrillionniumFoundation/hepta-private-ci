@@ -8,8 +8,8 @@ use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::MetricContractV1;
 use codex_hepta_intelligence_eval::MetricGateV1;
-use codex_hepta_intelligence_eval::decide_independently;
 use codex_hepta_intelligence_eval::freeze_cross_fold_plan;
+use codex_hepta_intelligence_eval::trusted_inprocess::decide_v1;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
@@ -87,7 +87,7 @@ fn op_03_high_fit_without_retention_is_insufficient() {
         Ok(receipt) => receipt,
         Err(error) => panic!("valid holdout use failed: {error}"),
     };
-    let decision = match decide_independently(
+    let decision = match decide_v1(
         IndependentEvaluationBundleV1 {
             evaluation_id: id("operator-evaluation"),
             candidate_id: id("high-fit-operator"),

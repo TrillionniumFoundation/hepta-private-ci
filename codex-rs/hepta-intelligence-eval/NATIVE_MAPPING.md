@@ -1,5 +1,7 @@
 # `learning.eval` native implementation mapping
 
+**Normative production API contract:** [`PRODUCTION_CONTRACT.md`](PRODUCTION_CONTRACT.md). The mapping below describes implementation; production ingress must follow that contract.
+
 This file maps point, sequential, temporal and independent evaluation design to
 concrete Rust symbols. Estimation, evidence eligibility and artifact selection
 remain separate authorities.
@@ -27,11 +29,13 @@ efficacy.
 
 | Design operation | Native symbol | Source | Status |
 |---|---|---|---|
-| freeze complete cross-fold lineage | `freeze_cross_fold_plan` | `src/closure.rs` | implemented |
-| record final holdout use | `FinalHoldoutRegistry::consume` | `src/closure.rs` | implemented |
-| issue independent eligibility decision | `decide_independently` | `src/closure.rs` | implemented |
+| freeze preregistered cross-fold lineage and metric roles | `freeze_cross_fold_plan_v2` | `src/metric_roles.rs` | production-required |
+| record semantic final holdout use | `FinalHoldoutRegistry::consume` | `src/closure.rs` | implemented |
+| durably fence multi-owner final holdout use | `DurableFinalHoldoutJournalV1::consume_fenced` | `src/durable_holdout.rs` | production-required for multi-process/multi-host |
+| signed independent qualification | `decide_with_signed_evidence_v2` | `src/signed_evaluation.rs` | production-required |
+| signed observed-time longitudinal qualification | `decide_with_signed_longitudinal_evidence_v3` | `src/longitudinal_time.rs` | production-required for `SystemLongitudinal` |
 
-`freeze_cross_fold_plan` requires two to thirty-two folds. It canonicalizes and
+`freeze_cross_fold_plan_v2` layers preregistered metric roles and margins onto the complete cross-fold plan. The underlying plan requires two to thirty-two folds. It canonicalizes and
 deduplicates every principal, episode and window set; rejects training/holdout
 leakage within a fold; prevents the final holdout from entering any training
 set; prevents a holdout lineage from appearing in multiple folds; and requires
@@ -51,9 +55,11 @@ A future persistent host adapter must retain this registry under a single
 writer; the pure type and unkeyed seals alone do not prove durable exclusivity
 or authenticated origin.
 
-`decide_independently` consumes authenticated generator and evaluator identities
-from `learning.ledger`. It rejects shared principal, credential-chain or
-signing-key identity and validates expiry and authority epoch. It then
+`decide_with_signed_evidence_v2` first authenticates generator/evaluator evidence
+against host-owned `LearningEvidenceVerifierV1` trust and binds the exact V2 metric
+contract; `decide_with_signed_longitudinal_evidence_v3` additionally binds observed
+time. The internal direct evaluator then rejects shared principal, credential-chain
+or signing-key identity and validates expiry and authority epoch before it
 intersects:
 
 - an integrity-checked frozen-plan receipt and the exact consumed
@@ -97,8 +103,10 @@ owners must provide the actual evidence.
 A product receipt must name:
 
 1. the scheduler and immutable evaluation plan store;
-2. the durable final-holdout-use registry, single-writer fence and
-   canonical persistence/reload of frozen-plan and holdout-use receipts;
+2. the durable final-holdout-use registry and canonical persistence/reload of
+   frozen-plan and holdout-use receipts; single-host deployments name their
+   exclusive owner, while multi-owner deployments name the linearizable
+   `HoldoutAnchorAuthorityV1` backend and fencing domain;
 3. the authenticated dataset, outcome-observer and candidate manifests;
 4. the exact fold assignments and nuisance-model runtime;
 5. the target host, resource measurements and incomplete/censored counts;

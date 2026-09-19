@@ -5,19 +5,11 @@ on:
     branches:
       - main
   pull_request:
-    paths:
-      - codex-rs/hepta-learning-ledger/**
-      - codex-rs/hepta-learning-artifacts/**
-      - codex-rs/hepta-bellman-operator/**
-      - codex-rs/hepta-intelligence-eval/**
-      - codex-rs/hepta-shadow-qualification/**
-      - docs/lane-e/**
-      - qualification/lane-e/**
-      - scripts/hepta-lane-e-closure.py
-      - .github/workflows/hepta-lane-e-gap-closure.yml
 
 permissions:
   contents: read
+  id-token: write
+  attestations: write
 
 concurrency:
   group: hepta-lane-e-gap-closure-${{ github.event.pull_request.number || github.ref }}
@@ -83,6 +75,23 @@ jobs:
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
 
+      - name: Signed learning.eval qualification E2E
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-intelligence-eval
+          --test signed_qualification_e2e
+          -- --test-threads=1
+
+      - name: Trusted-only compatibility surface remains explicit
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-intelligence-eval
+          --features trusted-inprocess-eval
+          --test operator_claim
+          -- --test-threads=1
+
       - name: Cross-crate causal learning closure
         working-directory: codex-rs
         run: >-
@@ -125,6 +134,36 @@ jobs:
           git diff --check
           git diff --exit-code
           test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Emit exact-source learning.eval evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence/learning-eval
+          CANDIDATE_TREE="$(git rev-parse HEAD^{tree})"
+          python3 scripts/hepta-learning-eval-evidence.py emit \
+            --mode exact-source \
+            --source-sha "${SOURCE_SHA}" \
+            --candidate-sha "${SOURCE_SHA}" \
+            --candidate-tree "${CANDIDATE_TREE}" \
+            --base-sha "${BASE_SHA:-}" \
+            --output .hepta-evidence/learning-eval/exact-source.json
+          python3 scripts/hepta-learning-eval-evidence.py verify \
+            .hepta-evidence/learning-eval/exact-source.json
+
+      - name: Retain exact-source learning.eval evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-exact-source-${{ env.SOURCE_SHA }}
+          path: .hepta-evidence/learning-eval/exact-source.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Attest exact-source learning.eval evidence
+        if: github.event_name == 'push'
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: .hepta-evidence/learning-eval/exact-source.json
 
   synthetic-merge:
     runs-on: ubuntu-24.04
@@ -203,6 +242,23 @@ jobs:
           -p codex-hepta-bellman-operator
           -p codex-hepta-intelligence-eval
 
+      - name: Test merged signed learning.eval qualification E2E
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-intelligence-eval
+          --test signed_qualification_e2e
+          -- --test-threads=1
+
+      - name: Test merged trusted-only compatibility surface
+        working-directory: codex-rs
+        run: >-
+          cargo test --locked
+          -p codex-hepta-intelligence-eval
+          --features trusted-inprocess-eval
+          --test operator_claim
+          -- --test-threads=1
+
       - name: Test merged cross-crate closure
         working-directory: codex-rs
         run: >-
@@ -234,3 +290,32 @@ jobs:
           git diff --exit-code
           test "$(git write-tree)" = "${MERGE_TREE}"
           test "$(git rev-parse "${MERGE_COMMIT}^{tree}")" = "${MERGE_TREE}"
+
+      - name: Emit synthetic-merge learning.eval evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .hepta-evidence/learning-eval
+          python3 scripts/hepta-learning-eval-evidence.py emit \
+            --mode synthetic-merge \
+            --source-sha "${SOURCE_SHA}" \
+            --candidate-sha "${MERGE_COMMIT}" \
+            --candidate-tree "${MERGE_TREE}" \
+            --base-sha "${BASE_SHA}" \
+            --output .hepta-evidence/learning-eval/synthetic-merge.json
+          python3 scripts/hepta-learning-eval-evidence.py verify \
+            .hepta-evidence/learning-eval/synthetic-merge.json
+
+      - name: Retain synthetic-merge learning.eval evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-synthetic-merge-${{ env.SOURCE_SHA }}
+          path: .hepta-evidence/learning-eval/synthetic-merge.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Attest synthetic-merge learning.eval evidence
+        if: github.event_name == 'push'
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: .hepta-evidence/learning-eval/synthetic-merge.json
