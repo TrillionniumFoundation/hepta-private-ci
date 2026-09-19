@@ -67,33 +67,41 @@ pub(crate) async fn tick(state: &AgentdState) -> Result<(), AgentdError> {
     require_ready(state)?;
     let host = attached(state)?;
     let trust = host.trust(state)?;
-    let issuer = trust.issuer()?;
-    if issuer.revoked {
-        host.evidence
-            .quarantine_authbus_issuer(&issuer)
+    let mut selected = None;
+    for issuer in trust.registrations(now_ms()?)? {
+        if issuer.revoked {
+            host.evidence
+                .quarantine_authbus_issuer(&issuer)
+                .await
+                .map_err(|error| invalid(&error.to_string()))?;
+            continue;
+        }
+        let pending = host
+            .evidence
+            .pending_authbus_deliveries_for_issuer(
+                &host.subject,
+                host.scope,
+                &issuer,
+                /*limit*/ 16,
+            )
             .await
             .map_err(|error| invalid(&error.to_string()))?;
-        return Ok(());
+        if let Some(status) = pending
+            .into_iter()
+            .find(|row| row.issuer_id == issuer.issuer_id && row.key_epoch == issuer.key_epoch)
+        {
+            selected = Some((status, issuer));
+            break;
+        }
     }
-    let pending = host
-        .evidence
-        .pending_authbus_deliveries_for_issuer(
-            &host.subject,
-            host.scope,
-            &issuer,
-            /*limit*/ 16,
-        )
-        .await
-        .map_err(|error| invalid(&error.to_string()))?;
-    let Some(status) = pending
-        .into_iter()
-        .find(|row| row.issuer_id == issuer.issuer_id && row.key_epoch == issuer.key_epoch)
-    else {
+    let Some((status, _)) = selected else {
         return Ok(());
     };
     let client = connect(state).await?;
     require_ready(state)?;
-    let issuer = host.trust(state)?.issuer()?;
+    let issuer = host
+        .trust(state)?
+        .issuer_for(status.key_epoch.get(), now_ms()?)?;
     let worker = StableId::new(format!("agentd:{}", state.identity().spawn_generation))
         .map_err(|error| invalid(&error.to_string()))?;
     let delivery = host
@@ -151,7 +159,8 @@ async fn deliver<Q: TextQueueTransport>(
     delivery: AuthBusDelivery,
 ) -> Result<(), AgentdError> {
     let trust = host.trust(state)?;
-    let issuer = trust.issuer()?;
+    let key_epoch = delivery.message.claims.key_epoch.get();
+    let issuer = trust.issuer_for(key_epoch, now_ms()?)?;
     let body = serde_json::from_slice::<AuthBusTextBody>(&delivery.payload);
     let Ok(body) = body else {
         return host
@@ -189,7 +198,7 @@ async fn deliver<Q: TextQueueTransport>(
         .map_err(|error| invalid(&error.to_string()))?;
     require_ready(state)?;
     let fresh = host.trust(state)?;
-    let fresh_issuer = fresh.issuer()?;
+    let fresh_issuer = fresh.issuer_for(key_epoch, now_ms()?)?;
     if !fresh.permits(&body.thread_id) {
         return host
             .evidence
@@ -230,7 +239,7 @@ async fn deliver<Q: TextQueueTransport>(
     .await;
     require_ready(state)?;
     let current = host.trust(state)?;
-    let issuer = current.issuer()?;
+    let issuer = current.issuer_for(key_epoch, now_ms()?)?;
     if !current.permits(&body.thread_id) {
         return host
             .evidence

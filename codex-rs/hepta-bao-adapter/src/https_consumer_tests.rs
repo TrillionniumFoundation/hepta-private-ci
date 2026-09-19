@@ -4,8 +4,17 @@ use std::sync::Arc;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_authbus::PolicyRevision;
+use codex_hepta_authbus::PolicyRule;
+use codex_hepta_authbus::QuotaConfig;
+use codex_hepta_authbus::ReservationState;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_evidence::AuthBusControlError;
+use codex_hepta_evidence::HeptaEvidenceStore;
+use codex_hepta_types::StableId;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
@@ -457,4 +466,406 @@ async fn root_namespace_omits_namespace_header() {
         .unwrap();
     let observed = task.await.unwrap().unwrap().to_ascii_lowercase();
     assert!(!observed.contains("x-vault-namespace:"));
+}
+
+async fn reserve_authbus_for_request(
+    evidence: &HeptaEvidenceStore,
+    client: &BaoClient,
+    request: &BaoReadRequest,
+    suffix: &str,
+) -> StableId {
+    let binding = client.binding(request).unwrap();
+    let policy_id = StableId::new(format!("policy:bao:{suffix}")).unwrap();
+    let principal = StableId::new(binding.subject_id.clone()).unwrap();
+    let action = StableId::new("action:bao-read").unwrap();
+    let quota = StableId::new(format!("quota:bao:{suffix}")).unwrap();
+    let reservation_id = StableId::new(format!("reservation:bao:{suffix}")).unwrap();
+    let operation_id = StableId::new(format!("operation:bao:{suffix}")).unwrap();
+    let scope = Digest32::from_array(binding.scope_sha256);
+    evidence
+        .install_authbus_policy(
+            &PolicyRevision {
+                policy_id: policy_id.clone(),
+                revision: 1,
+                rules: vec![PolicyRule {
+                    principal_id: principal.clone(),
+                    action_id: action.clone(),
+                    scope_digest: scope,
+                    allow: true,
+                }],
+            },
+            false,
+        )
+        .await
+        .unwrap();
+    evidence
+        .configure_authbus_quota(&QuotaConfig {
+            quota_key: quota.clone(),
+            revision: 1,
+            unit_id: StableId::new("unit:bao-read").unwrap(),
+            window_start_ms: 1,
+            window_end_ms: u64::MAX,
+            endowment: 1,
+            max_active_per_principal: 16,
+        })
+        .await
+        .unwrap();
+    evidence
+        .authorize_and_reserve_authbus(
+            &policy_id,
+            1,
+            &principal,
+            &action,
+            scope,
+            &quota,
+            1,
+            &reservation_id,
+            &operation_id,
+            1,
+            u64::MAX - 1,
+            client.authbus_effect_digest(request).unwrap(),
+        )
+        .await
+        .unwrap();
+    reservation_id
+}
+
+#[tokio::test]
+async fn authbus_wrapper_cancels_reservation_when_request_fails_before_effect() {
+    let certified = rcgen::generate_simple_self_signed(vec!["localhost".to_owned()]).unwrap();
+    let client = BaoClient::new(
+        "https://localhost:443/",
+        certified.cert.pem().as_bytes(),
+        BaoToken::new("fixture".into()).unwrap(),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    let valid_request = read_request();
+    let (authority, grant, _authority_dir) = grant(&client, &valid_request).unwrap();
+
+    let evidence_dir = tempfile::tempdir().unwrap();
+    let sqlite = SqliteConfig::new_for_testing(
+        AbsolutePathBuf::try_from(evidence_dir.path().to_path_buf()).unwrap(),
+    );
+    let evidence = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    let reservation_id =
+        reserve_authbus_for_request(&evidence, &client, &valid_request, "invalid").await;
+
+    let mut invalid_request = valid_request.clone();
+    invalid_request.field.clear();
+    assert_eq!(
+        client
+            .consume_kv_v2_with_authbus(
+                &evidence,
+                &reservation_id,
+                &authority,
+                &grant,
+                &invalid_request,
+                |_| panic!("pre-effect invalid request reached consumer"),
+            )
+            .await,
+        Err(BaoClientError::InvalidRequest)
+    );
+    assert!(matches!(
+        evidence.cancel_authbus_reservation(&reservation_id).await,
+        Err(AuthBusControlError::InvalidTransition)
+    ));
+}
+
+#[tokio::test]
+async fn authbus_wrapper_rejects_request_binding_drift_before_network() {
+    let certified = rcgen::generate_simple_self_signed(vec!["localhost".to_owned()]).unwrap();
+    let client = BaoClient::new(
+        "https://localhost:443/",
+        certified.cert.pem().as_bytes(),
+        BaoToken::new("fixture".into()).unwrap(),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    let original = read_request();
+    let evidence_dir = tempfile::tempdir().unwrap();
+    let sqlite = SqliteConfig::new_for_testing(
+        AbsolutePathBuf::try_from(evidence_dir.path().to_path_buf()).unwrap(),
+    );
+    let evidence = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    let reservation_id =
+        reserve_authbus_for_request(&evidence, &client, &original, "binding-drift").await;
+
+    let mut changed = original.clone();
+    changed.path = "provider/other-token".into();
+    let (authority, grant, _authority_dir) = grant(&client, &changed).unwrap();
+    assert_eq!(
+        client
+            .consume_kv_v2_with_authbus(
+                &evidence,
+                &reservation_id,
+                &authority,
+                &grant,
+                &changed,
+                |_| panic!("mismatched reservation reached network consumer"),
+            )
+            .await,
+        Err(BaoClientError::AuthBusControl)
+    );
+    // A binding mismatch never consumes or mutates the active reservation.
+    evidence
+        .cancel_authbus_reservation(&reservation_id)
+        .await
+        .unwrap();
+}
+
+#[tokio::test]
+async fn authbus_timeout_quarantines_held_quota_instead_of_refunding() {
+    let (endpoint, ca, task) = server(200, body(), || async {
+        tokio::time::sleep(Duration::from_millis(150)).await;
+    })
+    .await
+    .unwrap();
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("fixture".into()).unwrap(),
+        Duration::from_millis(50),
+    )
+    .unwrap();
+    let request = read_request();
+    let (authority, grant, _authority_dir) = grant(&client, &request).unwrap();
+    let evidence_dir = tempfile::tempdir().unwrap();
+    let sqlite = SqliteConfig::new_for_testing(
+        AbsolutePathBuf::try_from(evidence_dir.path().to_path_buf()).unwrap(),
+    );
+    let evidence = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    let reservation_id = reserve_authbus_for_request(&evidence, &client, &request, "timeout").await;
+
+    assert_eq!(
+        client
+            .consume_kv_v2_with_authbus(
+                &evidence,
+                &reservation_id,
+                &authority,
+                &grant,
+                &request,
+                |_| panic!("timed-out AuthBus consumer"),
+            )
+            .await,
+        Err(BaoClientError::TimedOut)
+    );
+    let pending = evidence
+        .pending_authbus_effect_reservations(&StableId::new("quota:bao:timeout").unwrap(), 8)
+        .await
+        .unwrap();
+    assert_eq!(pending.len(), 1);
+    assert_eq!(pending[0].state, ReservationState::Quarantined);
+    assert!(matches!(
+        evidence.cancel_authbus_reservation(&reservation_id).await,
+        Err(AuthBusControlError::InvalidTransition)
+    ));
+    task.abort();
+    let _ = task.await;
+}
+
+#[tokio::test]
+async fn authbus_consumer_indeterminate_can_be_reconciled_to_terminal_settlement() {
+    let (endpoint, ca, task) = server(200, body(), || async {}).await.unwrap();
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("fixture".into()).unwrap(),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    let request = read_request();
+    let (authority, grant, _authority_dir) = grant(&client, &request).unwrap();
+    let evidence_dir = tempfile::tempdir().unwrap();
+    let sqlite = SqliteConfig::new_for_testing(
+        AbsolutePathBuf::try_from(evidence_dir.path().to_path_buf()).unwrap(),
+    );
+    let evidence = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    let reservation_id =
+        reserve_authbus_for_request(&evidence, &client, &request, "indeterminate").await;
+
+    assert_eq!(
+        client
+            .consume_kv_v2_with_authbus(
+                &evidence,
+                &reservation_id,
+                &authority,
+                &grant,
+                &request,
+                |_| Err(()),
+            )
+            .await,
+        Err(BaoClientError::ConsumerIndeterminate)
+    );
+    let pending = evidence
+        .pending_authbus_effect_reservations(&StableId::new("quota:bao:indeterminate").unwrap(), 8)
+        .await
+        .unwrap();
+    assert_eq!(pending.len(), 1);
+    assert_eq!(pending[0].state, ReservationState::Quarantined);
+    evidence
+        .settle_authbus_reservation(
+            &reservation_id,
+            1,
+            Digest32::of_bytes(b"operator-reconciled-terminal"),
+        )
+        .await
+        .unwrap();
+    assert!(
+        evidence
+            .pending_authbus_effect_reservations(
+                &StableId::new("quota:bao:indeterminate").unwrap(),
+                8,
+            )
+            .await
+            .unwrap()
+            .is_empty()
+    );
+    task.await.unwrap().unwrap();
+}
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn authbus_effect_occurs_but_settlement_failure_stays_recoverable() {
+    let (endpoint, ca, task) = server(200, body(), || async {}).await.unwrap();
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("fixture".into()).unwrap(),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    let request = read_request();
+    let (authority, grant, _authority_dir) = grant(&client, &request).unwrap();
+    let evidence_dir = tempfile::tempdir().unwrap();
+    let sqlite = SqliteConfig::new_for_testing(
+        AbsolutePathBuf::try_from(evidence_dir.path().to_path_buf()).unwrap(),
+    );
+    let evidence = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    let reservation_id =
+        reserve_authbus_for_request(&evidence, &client, &request, "settlement-failure").await;
+
+    // Inject a durable-store failure only for the post-effect settlement state.
+    // EffectStarted remains legal, so the HTTPS request and consumer run first.
+    let fault_pool = sqlite
+        .open_durable_evidence_pool(evidence.path())
+        .await
+        .unwrap();
+    sqlx::query(
+        "CREATE TRIGGER authbus_test_fail_settlement
+         BEFORE UPDATE ON authbus_quota_reservations
+         WHEN NEW.state = 'settled'
+         BEGIN
+             SELECT RAISE(ABORT, 'injected AuthBus settlement failure');
+         END",
+    )
+    .execute(&fault_pool)
+    .await
+    .unwrap();
+    fault_pool.close().await;
+
+    let consumed = std::sync::Arc::new(std::sync::atomic::AtomicBool::new(false));
+    let observed = std::sync::Arc::clone(&consumed);
+    assert_eq!(
+        client
+            .consume_kv_v2_with_authbus(
+                &evidence,
+                &reservation_id,
+                &authority,
+                &grant,
+                &request,
+                move |bytes| {
+                    assert_eq!(bytes, SECRET.as_bytes());
+                    observed.store(true, std::sync::atomic::Ordering::SeqCst);
+                    Ok(())
+                },
+            )
+            .await,
+        Err(BaoClientError::AuthBusControl)
+    );
+    assert!(consumed.load(std::sync::atomic::Ordering::SeqCst));
+    task.await.unwrap().unwrap();
+
+    let pending = evidence
+        .pending_authbus_effect_reservations(
+            &StableId::new("quota:bao:settlement-failure").unwrap(),
+            8,
+        )
+        .await
+        .unwrap();
+    assert_eq!(pending.len(), 1);
+    assert_eq!(pending[0].state, ReservationState::EffectStarted);
+    assert!(matches!(
+        evidence.cancel_authbus_reservation(&reservation_id).await,
+        Err(AuthBusControlError::InvalidTransition)
+    ));
+
+    let cleanup_pool = sqlite
+        .open_durable_evidence_pool(evidence.path())
+        .await
+        .unwrap();
+    sqlx::query("DROP TRIGGER authbus_test_fail_settlement")
+        .execute(&cleanup_pool)
+        .await
+        .unwrap();
+    cleanup_pool.close().await;
+    evidence
+        .quarantine_authbus_reservation(&reservation_id)
+        .await
+        .unwrap();
+    evidence
+        .settle_authbus_reservation(
+            &reservation_id,
+            1,
+            Digest32::of_bytes(b"reconciled-after-storage-failure"),
+        )
+        .await
+        .unwrap();
+}
+
+#[tokio::test]
+async fn authbus_success_settles_exact_bound_request() {
+    let (endpoint, ca, task) = server(200, body(), || async {}).await.unwrap();
+    let client = BaoClient::new(
+        &endpoint,
+        ca.as_bytes(),
+        BaoToken::new("fixture".into()).unwrap(),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    let request = read_request();
+    let (authority, grant, _authority_dir) = grant(&client, &request).unwrap();
+    let evidence_dir = tempfile::tempdir().unwrap();
+    let sqlite = SqliteConfig::new_for_testing(
+        AbsolutePathBuf::try_from(evidence_dir.path().to_path_buf()).unwrap(),
+    );
+    let evidence = HeptaEvidenceStore::open(&sqlite).await.unwrap();
+    let reservation_id = reserve_authbus_for_request(&evidence, &client, &request, "success").await;
+
+    let receipt = client
+        .consume_kv_v2_with_authbus(
+            &evidence,
+            &reservation_id,
+            &authority,
+            &grant,
+            &request,
+            |bytes| {
+                assert_eq!(bytes, SECRET.as_bytes());
+                Ok(())
+            },
+        )
+        .await
+        .unwrap();
+    let terminal = Digest32::of_bytes(&serde_json::to_vec(&receipt).unwrap());
+    evidence
+        .settle_authbus_reservation(&reservation_id, 1, terminal)
+        .await
+        .unwrap();
+    assert!(
+        evidence
+            .pending_authbus_effect_reservations(&StableId::new("quota:bao:success").unwrap(), 8,)
+            .await
+            .unwrap()
+            .is_empty()
+    );
+    task.await.unwrap().unwrap();
 }

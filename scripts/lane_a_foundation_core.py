@@ -60,6 +60,8 @@ MIGRATIONS = [
     "0008_provider_effect_ack_source.sql",
     "0009_authbus_replay.sql",
     "0010_authbus_outbox.sql",
+    "0011_authbus_control.sql",
+    "0012_authbus_recovery.sql",
 ]
 PACKAGES = [
     "codex-hepta-types",

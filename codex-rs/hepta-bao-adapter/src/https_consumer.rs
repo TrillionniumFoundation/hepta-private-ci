@@ -9,7 +9,9 @@ use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_evidence::HeptaEvidenceStore;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use codex_http_client::HttpClient;
 use codex_http_client::HttpClientBuilder;
 use codex_http_client::HttpError;
@@ -148,6 +150,102 @@ impl BaoClient {
             scope_sha256: Digest32::of_bytes(&scope).into_array(),
             payload_sha256: request.expected_secret_sha256,
         })
+    }
+
+    /// Canonical digest that an AuthBus reservation must bind before this exact
+    /// Bao final-use request can consume it.
+    pub fn authbus_effect_digest(
+        &self,
+        request: &BaoReadRequest,
+    ) -> Result<Digest32, BaoClientError> {
+        let binding = self.binding(request)?;
+        let bytes = serde_json::to_vec(&("hepta.authbus.bao-effect.v2", &binding))
+            .map_err(|_| BaoClientError::InvalidRequest)?;
+        Ok(Digest32::of_bytes(&bytes))
+    }
+
+    /// Product composition for AuthBus-controlled Bao reads.
+    ///
+    /// The exact FinalUseBinding is hashed into the reservation before dispatch.
+    /// Invalid request syntax is rejected while the reservation is still Active.
+    /// After `begin_authbus_effect` commits, cancellation/expiry can no longer
+    /// refund quota: definitive observations settle one unit and ambiguous
+    /// outcomes quarantine the held reservation for reconciliation.
+    pub async fn consume_kv_v2_with_authbus(
+        &self,
+        authbus: &HeptaEvidenceStore,
+        reservation_id: &StableId,
+        authority: &FinalUseAuthority,
+        grant: &SignedFinalUseGrant,
+        request: &BaoReadRequest,
+        consumer: impl FnOnce(&[u8]) -> Result<(), ()>,
+    ) -> Result<BaoSecretReceipt, BaoClientError> {
+        let binding = match self.binding(request) {
+            Ok(binding) => binding,
+            Err(error @ BaoClientError::InvalidRequest) => {
+                authbus
+                    .cancel_authbus_reservation(reservation_id)
+                    .await
+                    .map_err(|_| BaoClientError::AuthBusControl)?;
+                return Err(error);
+            }
+            Err(error) => return Err(error),
+        };
+        let effect_digest = self.authbus_effect_digest(request)?;
+        let principal_id = StableId::new(binding.subject_id.clone())
+            .map_err(|_| BaoClientError::InvalidRequest)?;
+        let action_id =
+            StableId::new("action:bao-read").map_err(|_| BaoClientError::AuthBusControl)?;
+        let scope_digest = Digest32::from_array(binding.scope_sha256);
+
+        authbus
+            .begin_authbus_effect(
+                reservation_id,
+                &principal_id,
+                &action_id,
+                scope_digest,
+                effect_digest,
+            )
+            .await
+            .map_err(|_| BaoClientError::AuthBusControl)?;
+
+        let result = self
+            .consume_kv_v2(authority, grant, request, consumer)
+            .await;
+        match result {
+            Ok(receipt) => {
+                let evidence =
+                    serde_json::to_vec(&receipt).map_err(|_| BaoClientError::AuthBusControl)?;
+                authbus
+                    .settle_authbus_reservation(reservation_id, 1, Digest32::of_bytes(&evidence))
+                    .await
+                    .map_err(|_| BaoClientError::AuthBusControl)?;
+                Ok(receipt)
+            }
+            Err(
+                error @ (BaoClientError::TimedOut
+                | BaoClientError::TransportUnavailable
+                | BaoClientError::ConsumerIndeterminate
+                | BaoClientError::InvalidConfiguration
+                | BaoClientError::InvalidRequest
+                | BaoClientError::Authority(_)),
+            ) => {
+                authbus
+                    .quarantine_authbus_reservation(reservation_id)
+                    .await
+                    .map_err(|_| BaoClientError::AuthBusControl)?;
+                Err(error)
+            }
+            Err(error) => {
+                let evidence =
+                    Digest32::of_bytes(format!("hepta.bao.terminal.v2:{error:?}").as_bytes());
+                authbus
+                    .settle_authbus_reservation(reservation_id, 1, evidence)
+                    .await
+                    .map_err(|_| BaoClientError::AuthBusControl)?;
+                Err(error)
+            }
+        }
     }
 
     /// Claim a kernel permit, fetch exactly one version, then deliver only to
@@ -291,6 +389,7 @@ pub enum BaoClientError {
     VersionMismatch,
     SecretDigestMismatch,
     ConsumerIndeterminate,
+    AuthBusControl,
 }
 impl fmt::Display for BaoClientError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

@@ -233,7 +233,7 @@
       "states": {
         "source": "implemented",
         "implementation": "sqlite_store",
-        "durability": "sqlite_migrations_0001_0010",
+        "durability": "sqlite_migrations_0001_0012",
         "qualification": "source_tests_present",
         "activation": "feature_gated",
         "acceptance": "not_granted"
@@ -290,7 +290,7 @@
     },
     {
       "module": "auth.authbus",
-      "profile": "signed_admission_with_legacy_replay",
+      "profile": "signed_admission_policy_quota_effect_fence_candidate",
       "formalGuide": "docs/modules/auth.authbus/TECHNICAL.md",
       "formalGuideRole": "target_architecture",
       "currentSpecification": "docs/lane-a-foundation/auth.authbus/CURRENT_IMPLEMENTATION.md",
@@ -298,8 +298,8 @@
       "implementationDetail": "codex-rs/hepta-authbus/SIGNED_ADMISSION.md",
       "states": {
         "source": "implemented",
-        "implementation": "signed_admission_with_legacy_replay",
-        "durability": "sqlite_admission_outbox_and_process_local_legacy",
+        "implementation": "signed_admission_policy_quota_effect_fence_candidate",
+        "durability": "sqlite_replay_outbox_control_recovery_candidate",
         "qualification": "source_tests_present",
         "activation": "host_composition_required",
         "acceptance": "not_granted"
@@ -308,14 +308,17 @@
         "bounded SQLite replay admission keyed by issuer epoch subject and scope",
         "strict Ed25519 authentication with trusted issuer expiry revocation scope and payload checks",
         "deny-all admission receipts and legacy preverified in-process replay",
-        "transactional bounded AuthBus message outbox with recoverable fenced delivery"
+        "transactional bounded AuthBus message outbox with recoverable fenced delivery",
+        "versioned authorization policy with exact principal action scope decisions",
+        "fixed-window integer quota reservation settlement and reconciliation",
+        "durable effect-start fencing with immutable operation effect binding",
+        "restore-checkpoint guarded replay retirement with durable tombstones",
+        "Bao KV v2 candidate composition with final-use reservation binding and indeterminate quarantine"
       ],
       "targetOnlyCapabilities": [
-        "host trust provisioning and key lifecycle management",
-        "external replay-store rollback protection",
-        "authorization policy evaluation",
-        "quota registry",
-        "quota reservation and settlement"
+        "independently governed trusted time and external checkpoint retention",
+        "managed production issuer enrollment and key-rotation ceremony",
+        "independent product qualification operator acceptance promotion and release"
       ],
       "sourceAnchors": [
         {
@@ -374,6 +377,40 @@
             "pub async fn renew_authbus_delivery(",
             "pub async fn retry_authbus_delivery(",
             "pub async fn ack_authbus_delivery("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/authbus_control.rs",
+          "mustContain": [
+            "pub async fn authorize_and_reserve_authbus(",
+            "pub async fn begin_authbus_effect(",
+            "pub async fn settle_authbus_reservation(",
+            "begin_with(\"BEGIN IMMEDIATE\")"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/migrations/0011_authbus_control.sql",
+          "mustContain": [
+            "CREATE TABLE authbus_quota_registry",
+            "CREATE TABLE authbus_quota_reservations",
+            "CREATE TRIGGER authbus_quota_reservation_immutable",
+            "CREATE TRIGGER authbus_quota_reservation_transition",
+            "CREATE TRIGGER authbus_quota_reservation_held_no_delete"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-evidence/src/authbus_recovery.rs",
+          "mustContain": [
+            "pub async fn verify_authbus_restore_checkpoint(",
+            "pub async fn retire_authbus_replay_epoch(",
+            "verify_checkpoint_in_tx("
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+          "mustContain": [
+            "pub async fn consume_kv_v2_with_authbus(",
+            ".begin_authbus_effect("
           ]
         }
       ]

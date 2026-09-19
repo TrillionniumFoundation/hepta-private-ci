@@ -15,6 +15,7 @@ workspace = true
 
 [dependencies]
 codex-hepta-contracts = { path = "../hepta-contracts" }
+codex-hepta-evidence = { path = "../hepta-evidence" }
 codex-hepta-types = { path = "../hepta-types" }
 codex-http-client = { workspace = true }
 http = { workspace = true }
@@ -24,10 +25,14 @@ url = { workspace = true }
 zeroize = { workspace = true, features = ["serde"] }
 
 [dev-dependencies]
+codex-hepta-authbus = { path = "../hepta-authbus" }
+codex-state = { workspace = true }
+codex-utils-absolute-path = { workspace = true }
 ed25519-dalek = { workspace = true }
 pretty_assertions = { workspace = true }
 tempfile = { workspace = true }
 rcgen = { workspace = true }
 rustls = { workspace = true }
+sqlx = { workspace = true }
 tokio = { workspace = true, features = ["macros", "rt-multi-thread", "net", "io-util", "time"] }
 tokio-rustls = { workspace = true }

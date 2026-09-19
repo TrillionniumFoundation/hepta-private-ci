@@ -17,6 +17,7 @@ arguments to its Agentd command:
 
 ```text
 --authbus-trust-file /absolute/canonical/agent/home/authbus-trust.json
+--authbus-restore-checkpoint <nonzero-generation>:<64-hex-digest>
 ```
 
 The file must be a direct child of the canonical Agent home. Set the home to
@@ -37,22 +38,50 @@ and allowed existing thread IDs:
   "key_epoch": 1,
   "public_key_hex": "<64 hexadecimal characters from the producer's public key>",
   "revoked": false,
+  "not_before_ms": null,
+  "not_after_ms": null,
+  "previous_epochs": [],
   "thread_ids": ["<existing thread ID>"]
 }
 ```
 
-One issuer/epoch and at most 16 thread IDs are supported. An empty allowlist
+One issuer identity, one current epoch, at most four explicitly retained previous epochs, and at most 16 thread IDs are supported. Previous epochs may carry independent revocation and optional `not_before_ms` / `not_after_ms` windows; this is intended only for bounded rotation overlap, not indefinite key retention. An empty allowlist
 permits startup but no text admission; use the normal session ingress to create
-a thread, then install its ID. Replace the complete file atomically while
+a thread, then install its ID.
+
+The restore checkpoint is deliberately **not** stored in this trust JSON or inferred
+from the EvidenceStore. Before enabling AuthBus on a new lineage, an explicit
+provisioning step must call
+`HeptaEvidenceStore::initialize_authbus_restore_checkpoint(generation, digest)`
+once and durably publish the identical witness outside the Agent-home/SQLite
+backup lineage. Normal Agentd startup is **verify-only**: whenever AuthBus trust
+is configured it also requires
+`--authbus-restore-checkpoint generation:digest`, and it refuses a missing
+checkpoint row instead of initializing one. This prevents a deleted or
+pre-checkpoint database from masquerading as a fresh install.
+
+The supervisor/operator must retain the witness independently. Restoring an
+older database against a newer external witness fails closed. To advance it,
+update the EvidenceStore checkpoint under its monotonic transition, publish and
+durably retain the matching external witness, then restart/reconcile the host as
+required. A crash between DB advancement and external witness publication is
+fail-closed and requires operator reconciliation; it must never be repaired by
+silently reinitializing the database checkpoint.
+
+Replace the complete file atomically while
 preserving its permissions. The daemon reloads it for admission and dispatch
 stages. Keep the private signing key with the independent producer.
 
-Revocation uses `revoked: true`; removing a thread also prevents subsequent
-admission/dispatch to that thread. Neither operation cancels work already
-accepted by the target queue. Registry reads are current snapshots, not an
-atomic transaction with the target queue. Changing epochs does not implicitly
-revoke or delete old-epoch outbox rows. Recovery scans filter the selected
-issuer/epoch before applying their row limit.
+The top-level `revoked` flag applies only to the current key epoch; each
+`previous_epochs` entry carries its own independent revocation flag. Removing
+a thread from the shared allowlist prevents subsequent admission/dispatch for
+every epoch. A staged current epoch that is outside its validity window does not
+hide an otherwise valid retained previous epoch during recovery. Revocation or
+thread removal does not cancel work already accepted by the target queue.
+Registry reads are current snapshots, not an atomic transaction with the target
+queue. Changing epochs does not implicitly revoke or delete old-epoch outbox
+rows. Recovery scans filter the selected issuer/epoch before applying their row
+limit.
 
 ## Produce and submit a message
 

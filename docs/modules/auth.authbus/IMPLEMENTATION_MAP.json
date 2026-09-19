@@ -20,8 +20,8 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "partial_agentd_ingress_and_bao_effect_candidate",
+  "productionWriterState": "candidate_owner_store_implemented_not_accepted",
   "operations": [
     {
       "operation": "authenticate",
@@ -58,11 +58,129 @@
       "designOperation": "enqueue_authbus_message",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "install_authbus_policy",
+      "nativeSymbol": "install_authbus_policy",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control.rs",
+      "state": "source_candidate_not_product_composed",
+      "authority": "policy_write",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authorize",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "authorize_and_reserve_authbus",
+      "nativeSymbol": "authorize_and_reserve_authbus",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control.rs",
+      "state": "source_candidate_not_product_composed",
+      "authority": "policy_decision_quota_reservation",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authorize+reserve",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "begin_authbus_effect",
+      "nativeSymbol": "begin_authbus_effect",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control.rs",
+      "state": "source_candidate_not_product_composed",
+      "authority": "durable_final_use_transition",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "begin-effect",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "settle_authbus_reservation",
+      "nativeSymbol": "settle_authbus_reservation",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control.rs",
+      "state": "source_candidate_not_product_composed",
+      "authority": "quota_settlement",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "settle",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "expire_authbus_reservations",
+      "nativeSymbol": "expire_authbus_reservations",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control.rs",
+      "state": "source_candidate_not_product_composed",
+      "authority": "quota_expiry_recovery",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "expiry-recovery",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "pending_authbus_effect_reservations",
+      "nativeSymbol": "pending_authbus_effect_reservations",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_control.rs",
+      "state": "source_candidate_not_product_composed",
+      "authority": "recovery_observation_only",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "effect-recovery-scan",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "retire_authbus_replay_epoch",
+      "nativeSymbol": "retire_authbus_replay_epoch",
+      "sourcePath": "codex-rs/hepta-evidence/src/authbus_recovery.rs",
+      "state": "source_candidate_not_product_composed",
+      "authority": "replay_retirement",
+      "tests": [
+        "codex-rs/hepta-evidence/src/authbus_recovery_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "replay-retirement",
+      "mappingClass": "delegated_durable_owner",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "consume_kv_v2_with_authbus",
+      "nativeSymbol": "consume_kv_v2_with_authbus",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "state": "source_candidate_product_composed_not_accepted",
+      "authority": "final_use_plus_authbus_reservation",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "effect_adapter",
+      "mappingClass": "delegated_effect_consumer",
+      "delegatedCallees": [
+        "begin_authbus_effect",
+        "settle_authbus_reservation",
+        "quarantine_authbus_reservation",
+        "cancel_authbus_reservation"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-head and deterministic synthetic-merge tests for the new policy/quota/reservation candidate.",
+    "Run exact-head product tests for the Bao AuthBus effect wrapper and bind receipts to the candidate source.",
+    "Operate and retain the mandatory external restore-checkpoint witness outside the selected production host SQLite backup lineage."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -81,5 +199,29 @@
   "sourceRoot": [
     "codex-rs/hepta-authbus",
     "codex-rs/hepta-authbus-p1-3-qualification"
-  ]
+  ],
+  "sourceBaseMeaning": "repository-wide generated baseline shared by all module maps; exact candidate identity is supplied by CI receipts",
+  "composition": {
+    "domainCore": {
+      "owner": "auth.authbus",
+      "path": "codex-rs/hepta-authbus",
+      "role": "pure authentication and policy/quota/reservation contracts"
+    },
+    "durableStateOwner": {
+      "owner": "kernel.evidence",
+      "path": "codex-rs/hepta-evidence",
+      "role": "SQLite replay, outbox, policy, quota, reservation, recovery checkpoint"
+    },
+    "hostIntegration": {
+      "owner": "runtime.agentd",
+      "path": "codex-rs/hepta-agentd",
+      "role": "narrow signed-text product caller; not a general effect adapter"
+    },
+    "effectComposition": {
+      "owner": "secrets.heptabao",
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "state": "source_candidate_not_accepted",
+      "semantics": "exact principal/action/scope/effect binding; durable EffectStarted before HTTPS; definitive observation settles one unit; indeterminate outcome remains held/quarantined"
+    }
+  }
 }

@@ -1,8 +1,10 @@
 #![forbid(unsafe_code)]
 
+mod authbus_control;
 mod authbus_outbox;
 mod authbus_outbox_record;
 mod authbus_outbox_worker;
+mod authbus_recovery;
 mod authbus_store;
 mod canonical;
 mod governance_store;
@@ -17,6 +19,7 @@ mod schema_validation;
 mod store;
 mod summary;
 
+pub use authbus_control::AuthBusControlError;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_ATTEMPTS;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_LEASE_MS;
 pub use authbus_outbox_record::AUTHBUS_OUTBOX_MAX_PAYLOAD_BYTES;
@@ -100,3 +103,11 @@ mod authbus_outbox_tests;
 #[cfg(test)]
 #[path = "authbus_outbox_quarantine_tests.rs"]
 mod authbus_outbox_quarantine_tests;
+
+#[cfg(test)]
+#[path = "authbus_control_tests.rs"]
+mod authbus_control_tests;
+
+#[cfg(test)]
+#[path = "authbus_recovery_tests.rs"]
+mod authbus_recovery_tests;

@@ -10,6 +10,7 @@ PACKAGES=(
   codex-hepta-operations
   codex-hepta-evidence
   codex-hepta-authbus
+  codex-hepta-authbus-p1-3-qualification
   codex-hepta-bao-adapter
 )
 ARGS=()
@@ -19,3 +20,9 @@ done
 
 cargo test --locked --manifest-path "$MANIFEST" "${ARGS[@]}"
 cargo clippy --locked --manifest-path "$MANIFEST" "${ARGS[@]}" --all-targets -- -D warnings
+
+# Product-composition proof for the narrow signed-text caller. This is kept
+# separate from the library package sweep so a socket/readiness failure is
+# visible as a product qualification failure rather than a source-only pass.
+cargo test --locked --manifest-path "$MANIFEST" --package codex-hepta-agentd \
+  --test authbus_text_product

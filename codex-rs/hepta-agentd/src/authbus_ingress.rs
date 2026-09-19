@@ -37,10 +37,18 @@ pub(crate) struct TextIngress {
 }
 
 impl TextIngress {
-    pub async fn open(identity: &AgentdIdentity, trust_file: PathBuf) -> Result<Self, AgentdError> {
+    pub async fn open(
+        identity: &AgentdIdentity,
+        trust_file: PathBuf,
+        restore_checkpoint: (u64, Digest32),
+    ) -> Result<Self, AgentdError> {
         TextTrust::load(&trust_file, identity)?;
         let home = AbsolutePathBuf::from_absolute_path(&identity.home_root)?;
         let evidence = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home))
+            .await
+            .map_err(|error| invalid(&error.to_string()))?;
+        evidence
+            .verify_authbus_restore_checkpoint(restore_checkpoint.0, restore_checkpoint.1)
             .await
             .map_err(|error| invalid(&error.to_string()))?;
         Ok(Self {
@@ -103,7 +111,13 @@ pub(crate) async fn submit(
     let body = payload(&request.body)?;
     let result = host
         .evidence
-        .enqueue_authbus_message(&trust.issuer()?, &message, &host.subject, host.scope, &body)
+        .enqueue_authbus_message(
+            &trust.issuer_for(request.key_epoch, now)?,
+            &message,
+            &host.subject,
+            host.scope,
+            &body,
+        )
         .await
         .map_err(|error| invalid(&error.to_string()))?;
     // If authority changed during admission, preserve the committed message but
@@ -112,7 +126,7 @@ pub(crate) async fn submit(
     let current = host.trust(state)?;
     message
         .authenticate(
-            &current.issuer()?,
+            &current.issuer_for(request.key_epoch, now_ms()?)?,
             host.scope,
             Digest32::of_bytes(&body),
             now_ms()?,
