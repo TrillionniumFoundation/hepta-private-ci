@@ -21,6 +21,7 @@ use crate::OutcomeFinality;
 use crate::OutcomeObservation;
 use crate::OutcomeTerminalityV1;
 use crate::Revocation;
+use crate::UnlearningDerivedKindV1;
 use crate::UnlearningLineageEventV1;
 
 const MAX_RECORDS: usize = 1_000_000;
@@ -40,6 +41,14 @@ struct OutcomeIndex {
     episode_id: StableId,
     terminal: bool,
     value_raw: Option<i64>,
+}
+
+#[derive(Clone, Debug)]
+struct UnlearningIndex {
+    derived_id: StableId,
+    source_record_id: StableId,
+    derived_kind: UnlearningDerivedKindV1,
+    derived_digest: Digest32,
 }
 
 /// Validated immutable event prepared for a single-writer commit.
@@ -62,7 +71,7 @@ pub struct LearningLedger {
     credit_keys: BTreeSet<(StableId, StableId, StableId)>,
     revoked: BTreeSet<StableId>,
     unlearning_heads: BTreeMap<StableId, StableId>,
-    unlearning_records: BTreeMap<StableId, StableId>,
+    unlearning_records: BTreeMap<StableId, UnlearningIndex>,
 }
 
 impl LearningLedger {
@@ -560,15 +569,50 @@ impl LearningLedger {
         if source_digest != &lineage.source_digest {
             return Err(LedgerError::UnlearningSourceDigestMismatch);
         }
+        match (
+            lineage.upstream_derived_id.as_ref(),
+            lineage.upstream_derived_digest,
+        ) {
+            (Some(upstream_id), Some(upstream_digest)) => {
+                if upstream_id == &lineage.derived_id {
+                    return Err(LedgerError::UnlearningUpstreamCycle);
+                }
+                let upstream_head = self.unlearning_heads.get(upstream_id).ok_or_else(|| {
+                    LedgerError::UnlearningUpstreamNotFound(upstream_id.to_string())
+                })?;
+                let upstream = self
+                    .unlearning_records
+                    .get(upstream_head)
+                    .ok_or(LedgerError::InternalInvariant)?;
+                if upstream.source_record_id != lineage.source_record_id {
+                    return Err(LedgerError::UnlearningUpstreamSourceMismatch);
+                }
+                if upstream.derived_digest != upstream_digest {
+                    return Err(LedgerError::UnlearningUpstreamDigestMismatch);
+                }
+                if lineage.derived_kind == UnlearningDerivedKindV1::Artifact
+                    && upstream.derived_kind != UnlearningDerivedKindV1::Dataset
+                {
+                    return Err(LedgerError::UnlearningUpstreamKindMismatch);
+                }
+            }
+            (None, None) => {
+                if lineage.derived_kind == UnlearningDerivedKindV1::Artifact {
+                    return Err(LedgerError::UnlearningUpstreamRequired);
+                }
+            }
+            _ => return Err(LedgerError::UnlearningUpstreamPairMismatch),
+        }
+
         match lineage.predecessor.as_ref() {
             Some(predecessor) => {
                 if predecessor == &lineage.record_id {
                     return Err(LedgerError::UnlearningSelfReference);
                 }
-                let prior_derived = self.unlearning_records.get(predecessor).ok_or_else(|| {
+                let prior = self.unlearning_records.get(predecessor).ok_or_else(|| {
                     LedgerError::UnlearningPredecessorNotFound(predecessor.to_string())
                 })?;
-                if prior_derived != &lineage.derived_id {
+                if prior.derived_id != lineage.derived_id {
                     return Err(LedgerError::UnlearningPredecessorMismatch);
                 }
                 let current = self
@@ -675,8 +719,15 @@ impl LearningLedger {
             LedgerEvent::UnlearningLineage(value) => {
                 self.unlearning_heads
                     .insert(value.derived_id.clone(), value.record_id.clone());
-                self.unlearning_records
-                    .insert(value.record_id.clone(), value.derived_id.clone());
+                self.unlearning_records.insert(
+                    value.record_id.clone(),
+                    UnlearningIndex {
+                        derived_id: value.derived_id.clone(),
+                        source_record_id: value.source_record_id.clone(),
+                        derived_kind: value.derived_kind,
+                        derived_digest: value.derived_digest,
+                    },
+                );
             }
         }
     }
@@ -809,6 +860,12 @@ fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
             }
             if value.derived_digest.is_zero() {
                 return Err(LedgerError::EmptyDigest("unlearning derived object"));
+            }
+            if value
+                .upstream_derived_digest
+                .is_some_and(|digest| digest.is_zero())
+            {
+                return Err(LedgerError::EmptyDigest("unlearning upstream derived object"));
             }
         }
     }
@@ -1045,6 +1102,8 @@ fn push_unlearning_lineage(bytes: &mut Vec<u8>, value: &UnlearningLineageEventV1
     push_id(bytes, &value.derived_id);
     bytes.push(value.derived_kind.tag());
     push_optional_id(bytes, value.predecessor.as_ref());
+    push_optional_id(bytes, value.upstream_derived_id.as_ref());
+    push_optional_digest(bytes, value.upstream_derived_digest);
     push_id(bytes, &value.authority_id);
     push_digest(bytes, value.reason_digest);
     push_digest(bytes, value.source_digest);
@@ -1062,6 +1121,16 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     let raw = value.as_str().as_bytes();
     push_len(bytes, raw.len());
     bytes.extend_from_slice(raw);
+}
+
+fn push_optional_digest(bytes: &mut Vec<u8>, value: Option<Digest32>) {
+    match value {
+        Some(value) => {
+            bytes.push(1);
+            push_digest(bytes, value);
+        }
+        None => bytes.push(0),
+    }
 }
 
 fn push_digest(bytes: &mut Vec<u8>, value: Digest32) {
