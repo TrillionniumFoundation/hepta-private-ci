@@ -26,6 +26,113 @@ struct SchemaObjectSpec {
 
 const REQUIRED_SCHEMA_OBJECTS: &[SchemaObjectSpec] = &[
     SchemaObjectSpec {
+        name: "authbus_policy_revisions",
+        object_type: "table",
+        table_name: "authbus_policy_revisions",
+        required_sql_fragments: &[
+            "create table",
+            "principal_id",
+            "action_id",
+            "scope_digest",
+            "policy_digest",
+            "primary key(policy_id, revision)",
+            "without rowid",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "authbus_policy_lookup",
+        object_type: "index",
+        table_name: "authbus_policy_revisions",
+        required_sql_fragments: &[
+            "create index",
+            "principal_id, action_id, scope_digest, revision desc",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "authbus_policy_no_update",
+        object_type: "trigger",
+        table_name: "authbus_policy_revisions",
+        required_sql_fragments: &["before update", "raise(abort", "policy revisions are immutable"],
+    },
+    SchemaObjectSpec {
+        name: "authbus_policy_no_delete",
+        object_type: "trigger",
+        table_name: "authbus_policy_revisions",
+        required_sql_fragments: &["before delete", "raise(abort", "policy revisions are immutable"],
+    },
+    SchemaObjectSpec {
+        name: "authbus_quota_registry",
+        object_type: "table",
+        table_name: "authbus_quota_registry",
+        required_sql_fragments: &[
+            "create table",
+            "available",
+            "reserved",
+            "consumed",
+            "available + reserved + consumed = limit_value",
+            "without rowid",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "authbus_quota_reservations",
+        object_type: "table",
+        table_name: "authbus_quota_reservations",
+        required_sql_fragments: &[
+            "create table",
+            "operation_id text not null unique",
+            "'held', 'indeterminate', 'settled', 'cancelled', 'expired', 'quarantined'",
+            "settlement_digest",
+            "foreign key(quota_key)",
+            "without rowid",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "authbus_quota_reservation_identity_immutable",
+        object_type: "trigger",
+        table_name: "authbus_quota_reservations",
+        required_sql_fragments: &[
+            "before update of",
+            "reservation identity is immutable",
+            "raise(abort",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "authbus_replay_checkpoint_state",
+        object_type: "table",
+        table_name: "authbus_replay_checkpoint_state",
+        required_sql_fragments: &[
+            "create table",
+            "checkpoint_id",
+            "generation",
+            "replay_root",
+            "singleton = 1",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "authbus_trust_epochs",
+        object_type: "table",
+        table_name: "authbus_trust_epochs",
+        required_sql_fragments: &[
+            "create table",
+            "public_key",
+            "revoked",
+            "primary key(issuer_id, key_epoch, revision)",
+            "without rowid",
+        ],
+    },
+    SchemaObjectSpec {
+        name: "authbus_trust_no_update",
+        object_type: "trigger",
+        table_name: "authbus_trust_epochs",
+        required_sql_fragments: &["before update", "raise(abort", "trust epochs are immutable"],
+    },
+    SchemaObjectSpec {
+        name: "authbus_trust_no_delete",
+        object_type: "trigger",
+        table_name: "authbus_trust_epochs",
+        required_sql_fragments: &["before delete", "raise(abort", "trust epochs are immutable"],
+    },
+    SchemaObjectSpec {
         name: "authbus_outbox",
         object_type: "table",
         table_name: "authbus_outbox",
