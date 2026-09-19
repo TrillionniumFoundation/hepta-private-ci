@@ -165,6 +165,8 @@ pub fn unlearning_admission_payload(lineage: &UnlearningLineageEventV1) -> Vec<u
     push_id(&mut bytes, &lineage.derived_id);
     bytes.push(lineage.derived_kind.tag());
     push_optional_id(&mut bytes, lineage.predecessor.as_ref());
+    push_optional_id(&mut bytes, lineage.upstream_derived_id.as_ref());
+    push_optional_digest(&mut bytes, lineage.upstream_derived_digest);
     push_id(&mut bytes, &lineage.authority_id);
     bytes.extend_from_slice(lineage.source_digest.as_array());
     bytes.extend_from_slice(lineage.derived_digest.as_array());
@@ -362,6 +364,7 @@ impl<J: DurableLearningJournal, T: LearningEvidenceTrustProviderV1>
         let record_id = lineage.record_id.clone();
         let source_record_id = lineage.source_record_id.clone();
         let derived_id = lineage.derived_id.clone();
+        let upstream_derived_id = lineage.upstream_derived_id.clone();
         let receipt = self.append_event(
             expected_anchor.chain_digest,
             LedgerEvent::UnlearningLineage(lineage),
@@ -370,6 +373,7 @@ impl<J: DurableLearningJournal, T: LearningEvidenceTrustProviderV1>
             record_id,
             source_record_id,
             derived_id,
+            upstream_derived_id,
             event_digest: receipt.event_digest,
             chain_digest: receipt.chain_digest,
         })
@@ -519,6 +523,16 @@ fn push_optional_id(bytes: &mut Vec<u8>, value: Option<&StableId>) {
         Some(value) => {
             bytes.push(1);
             push_id(bytes, value);
+        }
+        None => bytes.push(0),
+    }
+}
+
+fn push_optional_digest(bytes: &mut Vec<u8>, value: Option<Digest32>) {
+    match value {
+        Some(value) => {
+            bytes.push(1);
+            bytes.extend_from_slice(value.as_array());
         }
         None => bytes.push(0),
     }
