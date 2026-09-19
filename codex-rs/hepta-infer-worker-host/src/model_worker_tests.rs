@@ -213,6 +213,103 @@ impl ResourceGrantVerifier for Verifier {
     }
 }
 
+#[cfg(unix)]
+#[test]
+fn kernel_final_use_verifier_authenticates_one_exact_worker_generation() {
+    use codex_hepta_contracts::FinalUseGrant;
+    use codex_hepta_contracts::FinalUseRevocations;
+    use codex_hepta_contracts::SignedFinalUseGrant;
+    use ed25519_dalek::Signer as _;
+    use ed25519_dalek::SigningKey;
+    use std::collections::BTreeSet;
+    use std::os::unix::fs::PermissionsExt;
+    use std::time::SystemTime;
+    use std::time::UNIX_EPOCH;
+
+    let nonce = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_nanos();
+    let root = std::env::temp_dir().join(format!(
+        "hepta-local-resource-authority-{}-{nonce}",
+        std::process::id()
+    ));
+    std::fs::create_dir_all(&root).unwrap();
+    let mut permissions = std::fs::metadata(&root).unwrap().permissions();
+    permissions.set_mode(0o700);
+    std::fs::set_permissions(&root, permissions).unwrap();
+
+    let signing = SigningKey::from_bytes(&[7_u8; 32]);
+    let resource = grant();
+    let authority = FinalUseAuthority::open_state_dir(
+        &root,
+        "resource-authority".to_string(),
+        signing.verifying_key().to_bytes(),
+        FinalUseRevocations {
+            authority_epoch: resource.authority_epoch,
+            revision: 1,
+            revoked_grant_ids: BTreeSet::new(),
+        },
+    )
+    .unwrap();
+    let binding = resource_grant_final_use_binding("worker.1", &resource).unwrap();
+    let now_ms = u64::try_from(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_millis(),
+    )
+    .unwrap();
+    let proposal = FinalUseGrant {
+        schema_version: 1,
+        signer_id: "resource-authority".to_string(),
+        authority_epoch: resource.authority_epoch,
+        grant_id: "resource-proof.1".to_string(),
+        nonce: [9_u8; 32],
+        binding,
+        not_before_unix_ms: now_ms.saturating_sub(1000),
+        expires_at_unix_ms: now_ms + 60_000,
+    };
+    let signature = signing
+        .sign(&proposal.signing_bytes().unwrap())
+        .to_bytes()
+        .to_vec();
+    let signed = SignedFinalUseGrant {
+        grant: proposal,
+        signature,
+    };
+    let verifier =
+        FinalUseResourceGrantVerifier::new(&authority, &signed, "worker.1".to_string()).unwrap();
+
+    let verified = VerifiedResourceGrant::verify_with(100, resource.clone(), &verifier).unwrap();
+    assert!(matches!(
+        verified.verification(),
+        GrantVerification::Authenticated { authority_id, evidence_digest }
+            if authority_id == "resource-authority" && evidence_digest.len() == 64
+    ));
+
+    assert_eq!(
+        VerifiedResourceGrant::verify_with(100, resource, &verifier),
+        Err(Error::InvalidGrant),
+        "final-use nonce must not authorize a second worker generation"
+    );
+
+    drop(verifier);
+    drop(authority);
+    std::fs::remove_dir_all(root).unwrap();
+}
+
+#[test]
+fn local_resource_binding_changes_with_the_memory_scope() {
+    let first = grant();
+    let mut second = first.clone();
+    second.maximum_memory_bytes += 1;
+    assert_ne!(
+        resource_grant_final_use_binding("worker.1", &first).unwrap(),
+        resource_grant_final_use_binding("worker.1", &second).unwrap()
+    );
+}
+
 #[test]
 fn external_grants_require_explicit_verification_evidence() {
     let verified = VerifiedResourceGrant::verify_with(100, grant(), &Verifier).unwrap();
