@@ -108,6 +108,29 @@ def verify() -> None:
                 f"remote App Server client missing synchronous effect-admission primitive: {needle}"
             )
 
+    product_host = (
+        ROOT / "codex-rs/hepta-inferd/src/bin/hepta-inference-runtime-host.rs"
+    ).read_text(encoding="utf-8")
+    for needle in (
+        "NativeWorkerPort::new(NativeWorkerConfig",
+        "final_use_authority: authority",
+        "NativeExecutionPolicy { quota, resource }",
+        "maximum_output_tokens",
+        "maximum_budget_units",
+        "final_use_issuer_socket",
+        "resolve_final_use_grant(&issuer_socket, binding)",
+        ".execute(",
+    ):
+        if needle not in product_host:
+            raise SystemExit(
+                f"named inference product root bypasses current control/authority composition: {needle}"
+            )
+    for forbidden in ("SIGNED_GRANT.json", "grant_path"):
+        if forbidden in product_host:
+            raise SystemExit(
+                f"named inference product root must resolve exact grants after runtime binding: {forbidden}"
+            )
+
     policy = (
         ROOT / "codex-rs/hepta-infer-worker-host/src/native_policy.rs"
     ).read_text(encoding="utf-8")
