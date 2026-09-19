@@ -272,6 +272,12 @@
           "maxBytes": 128
         },
         {
+          "name": "requestDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
           "name": "snapshotDigest",
           "type": "sha256",
           "required": true,
@@ -279,6 +285,23 @@
         },
         {
           "name": "objectiveDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "authorityEpoch",
+          "type": "u64",
+          "required": true
+        },
+        {
+          "name": "bodyDigest",
+          "type": "sha256",
+          "required": true,
+          "maxBytes": 64
+        },
+        {
+          "name": "artifactSetDigest",
           "type": "sha256",
           "required": true,
           "maxBytes": 64
@@ -330,6 +353,11 @@
           "type": "sha256",
           "required": true,
           "maxBytes": 64
+        },
+        {
+          "name": "deadlineUnixMicros",
+          "type": "u64",
+          "required": true
         },
         {
           "name": "totalBudgetMicros",
