@@ -258,6 +258,8 @@ fn additive_causal_events_roundtrip_through_file_recovery() {
             derived_id: id("dataset-v2"),
             derived_kind: UnlearningDerivedKindV1::Dataset,
             predecessor: None,
+            upstream_derived_id: None,
+            upstream_derived_digest: None,
             authority_id: id("privacy-owner"),
             reason_digest: Digest32::of_bytes(b"authorized-revocation"),
             source_digest,
