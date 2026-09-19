@@ -61,6 +61,7 @@ pub fn negotiate(
         return Err(NegotiationError::CriticalCapabilityLimit);
     }
 
+    let mut missing_critical = None;
     for version in [HPTA_V2, HPTA_V1] {
         if !local_versions.contains(&version) || !remote_versions.contains(&version) {
             continue;
@@ -70,10 +71,8 @@ pub fn negotiate(
             .iter()
             .find(|feature| !capabilities.contains(&feature.as_str()))
         {
-            if version == HPTA_V1 {
-                return Err(NegotiationError::MissingCriticalCapability(
-                    missing.to_string(),
-                ));
+            if missing_critical.is_none() {
+                missing_critical = Some(missing.to_string());
             }
             continue;
         }
@@ -83,7 +82,11 @@ pub fn negotiate(
         });
     }
 
-    Err(NegotiationError::NoCommonImplementedVersion)
+    if let Some(capability) = missing_critical {
+        Err(NegotiationError::MissingCriticalCapability(capability))
+    } else {
+        Err(NegotiationError::NoCommonImplementedVersion)
+    }
 }
 
 pub fn capabilities_for(version: u16) -> &'static [&'static str] {
