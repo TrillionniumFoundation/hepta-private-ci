@@ -32,13 +32,18 @@ use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+pub use codex_hepta_infer_core::durable_control::native::NativeFinalUseAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
+#[path = "native_authority.rs"]
+mod authority;
+pub use authority::NativeExecutionAuthority;
 #[path = "native_run_control.rs"]
 mod control;
 pub use control::NativeAdmission;
@@ -61,7 +66,16 @@ pub struct NativeWorkerConfig {
     pub agent_id: AgentId,
     pub generation: u64,
     pub model: String,
+    /// Expected provider identity. The actual thread/start response must match.
+    pub model_provider: String,
     pub timeout: Duration,
+}
+
+struct PreparedOwnerContext {
+    owner: AgentdClient,
+    health: HealthSnapshot,
+    additional_context: Option<HashMap<String, AdditionalContextEntry>>,
+    context_digest: String,
 }
 
 /// A real provider client. Each new request uses a fresh ephemeral thread
@@ -77,6 +91,7 @@ impl AppServerModelDriver {
             || config.generation == 0
             || config.model.is_empty()
             || config.model.len() > 256
+            || !valid_identifier(&config.model_provider)
             || config.timeout.is_zero()
             || config.timeout > Duration::from_secs(3600)
         {
@@ -85,22 +100,40 @@ impl AppServerModelDriver {
         Ok(Self { config })
     }
 
-    /// Execute once. Transport loss after turn/start remains indeterminate and
-    /// must never be automatically replayed as a fresh request.
-    async fn run_once(
+    /// Produce the exact final-use binding without contacting the provider.
+    /// The owning Agent context is read now; if it changes before execution,
+    /// the independently signed grant will fail binding verification.
+    pub async fn authority_binding(
         &self,
-        control: &mut DurableInferenceControl,
-        request_id: &str,
-        prompt: String,
-        context_query: Option<String>,
-        cancellation: &CancellationToken,
-    ) -> Result<NativeRunOutput> {
+        admission: &NativeAdmission,
+        prompt: &str,
+        context_query: Option<&str>,
+    ) -> Result<FinalUseBinding> {
         if prompt.is_empty() || prompt.len() > MAX_PROMPT_BYTES {
             return Err("prompt must contain 1..32768 bytes".into());
         }
-        if cancellation.is_cancelled() {
-            return Err("cancelled before admission".into());
+        if context_query.is_some_and(|query| query.is_empty() || query.len() > 2048) {
+            return Err("context query must contain 1..2048 bytes".into());
         }
+        let prepared = self.prepare_owner_context(context_query).await?;
+        authority::build_binding(
+            admission,
+            &self.config.agent_id,
+            self.config.generation,
+            &self.config.model,
+            &self.config.model_provider,
+            &self.config.agentd_socket,
+            self.config.timeout,
+            prompt,
+            context_query,
+            &prepared.context_digest,
+        )
+    }
+
+    async fn prepare_owner_context(
+        &self,
+        context_query: Option<&str>,
+    ) -> Result<PreparedOwnerContext> {
         let owner = AgentdClient::new(
             self.config.agentd_socket.clone(),
             self.config.agent_id.clone(),
@@ -111,7 +144,7 @@ impl AppServerModelDriver {
             return Err("Agent is not ready".into());
         }
         let context = match context_query {
-            Some(query) => Some(owner.cognitive_context(query, /*limit*/ 4).await?),
+            Some(query) => Some(owner.cognitive_context(query.to_string(), /*limit*/ 4).await?),
             None => None,
         };
         let additional_context = context
@@ -129,6 +162,51 @@ impl AppServerModelDriver {
                 )]))
             })
             .transpose()?;
+        let context_digest = control::digest(&serde_json::to_vec(&additional_context)?);
+        Ok(PreparedOwnerContext {
+            owner,
+            health,
+            additional_context,
+            context_digest,
+        })
+    }
+
+    /// Execute once. Transport loss after turn/start remains indeterminate and
+    /// must never be automatically replayed as a fresh request.
+    async fn run_once(
+        &self,
+        control: &mut DurableInferenceControl,
+        request_id: &str,
+        admission: &NativeAdmission,
+        authorization: &NativeExecutionAuthority,
+        prompt: String,
+        context_query: Option<String>,
+        cancellation: &CancellationToken,
+    ) -> Result<NativeRunOutput> {
+        if prompt.is_empty() || prompt.len() > MAX_PROMPT_BYTES {
+            return Err("prompt must contain 1..32768 bytes".into());
+        }
+        if cancellation.is_cancelled() {
+            return Err("cancelled before admission".into());
+        }
+        let PreparedOwnerContext {
+            owner,
+            health,
+            additional_context,
+            context_digest,
+        } = self.prepare_owner_context(context_query.as_deref()).await?;
+        let binding = authority::build_binding(
+            admission,
+            &self.config.agent_id,
+            self.config.generation,
+            &self.config.model,
+            &self.config.model_provider,
+            &self.config.agentd_socket,
+            self.config.timeout,
+            &prompt,
+            context_query.as_deref(),
+            &context_digest,
+        )?;
         let ingress = owner.session_ingress().await?;
         let socket_path = AbsolutePathBuf::from_absolute_path(ingress.socket_path)?;
         let mut client = timeout(
@@ -171,38 +249,53 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("provider substituted the requested model".into());
         }
+        if started.model_provider != self.config.model_provider {
+            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
+            return Err("provider identity does not match final-use destination".into());
+        }
         // Recheck the actual generation after acquiring context and connecting.
         owner.session_ingress().await?;
         if cancellation.is_cancelled() {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err("cancelled before model dispatch".into());
         }
+        let token = authorization.claim(&binding)?;
+        let binding_digest = authority::binding_digest(&binding)?;
         control.dispatch_native(
             request_id,
             NativeDispatch {
                 thread_id: started.thread.id.clone(),
                 model_provider: started.model_provider.clone(),
-                context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
+                context_digest,
+                authority_binding_digest: Some(binding_digest),
             },
         )?;
-        let response = timeout(
-            RPC_TIMEOUT,
-            client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart {
-                request_id: RequestId::Integer(2),
-                params: TurnStartParams {
-                    thread_id: started.thread.id.clone(),
-                    client_user_message_id: Some(request_id.to_string()),
-                    input: vec![UserInput::Text {
-                        text: prompt,
-                        text_elements: Vec::new(),
-                    }],
-                    additional_context,
-                    environments: Some(Vec::new()),
-                    ..Default::default()
-                },
-            }),
-        )
-        .await;
+        let final_use_authority = NativeFinalUseAuthority::Verified {
+            authority_epoch: authorization.authority_epoch(),
+            grant_id: authorization.grant_id().to_string(),
+        };
+        let request = ClientRequest::TurnStart {
+            request_id: RequestId::Integer(2),
+            params: TurnStartParams {
+                thread_id: started.thread.id.clone(),
+                client_user_message_id: Some(request_id.to_string()),
+                input: vec![UserInput::Text {
+                    text: prompt,
+                    text_elements: Vec::new(),
+                }],
+                additional_context,
+                environments: Some(Vec::new()),
+                ..Default::default()
+            },
+        };
+        let response = authorization
+            .dispatch(token, &binding, || {
+                timeout(
+                    RPC_TIMEOUT,
+                    client.request_typed::<TurnStartResponse>(request),
+                )
+            })
+            .await?;
         let turn = match response {
             Ok(Ok(response)) => response.turn,
             _ => {
@@ -217,6 +310,9 @@ impl AppServerModelDriver {
                     observed_output_tokens: None,
                     terminal_observed: false,
                     owner_authority: NativeOwnerAuthority::Unverified,
+                    final_use_authority: final_use_authority.clone(),
+                    output_sha256: None,
+                    output_retained: true,
                     stop_reason: Some("turn/start outcome unknown; do not replay".to_string()),
                 });
             }
@@ -231,6 +327,9 @@ impl AppServerModelDriver {
             observed_output_tokens: None,
             terminal_observed: false,
             owner_authority: NativeOwnerAuthority::Unverified,
+            final_use_authority,
+            output_sha256: None,
+            output_retained: true,
             stop_reason: None,
         };
         if let Err(error) = control.native_started(request_id, output.turn_id.clone()) {
@@ -257,7 +356,7 @@ impl AppServerModelDriver {
             let loss_recorded =
                 if matches!(output.owner_authority, NativeOwnerAuthority::Lost { .. }) {
                     control
-                        .settle_native(request_id, output.clone())
+                        .settle_native_receipt_only(request_id, output.clone())
                         .map(|_| ())
                 } else {
                     Ok(())
@@ -439,6 +538,14 @@ fn observe_notification(
         _ => {}
     }
     Ok(false)
+}
+
+fn valid_identifier(value: &str) -> bool {
+    !value.is_empty()
+        && value.len() <= 128
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_alphanumeric() || b"_-.:/".contains(&byte))
 }
 
 #[cfg(test)]
