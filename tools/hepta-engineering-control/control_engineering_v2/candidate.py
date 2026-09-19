@@ -207,6 +207,14 @@ class Mutation:
         if self.operation == "rename_file":
             if not target_path or target_path == path or self.replacement_text:
                 raise EngineeringError("invalid_rename")
+            if self.expected_text and (
+                len(self.expected_text) != 64
+                or any(
+                    character not in "0123456789abcdef"
+                    for character in self.expected_text
+                )
+            ):
+                raise EngineeringError("invalid_rename_precondition")
         return Mutation(
             self.operation,
             path,
@@ -693,6 +701,18 @@ def _apply_mutation(worktree: Path, mutation: Mutation) -> None:
         return
     if not target.is_file() or target.is_symlink():
         raise EngineeringError("mutation_target_invalid")
+    if mutation.operation == "rename_file":
+        if mutation.expected_text and _hash_file(target) != mutation.expected_text:
+            raise EngineeringError("rename_precondition_failed")
+        destination = _safe_target(worktree, mutation.target_path)
+        if destination.exists() or destination.is_symlink():
+            raise EngineeringError("rename_target_exists")
+        try:
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            target.rename(destination)
+        except OSError:
+            raise EngineeringError("mutation_target_invalid") from None
+        return
     try:
         text = target.read_text(encoding="utf-8")
     except UnicodeDecodeError:
@@ -708,20 +728,6 @@ def _apply_mutation(worktree: Path, mutation: Mutation) -> None:
                 encoding="utf-8",
                 newline="\n",
             )
-        except OSError:
-            raise EngineeringError("mutation_target_invalid") from None
-    elif mutation.operation == "rename_file":
-        if (
-            mutation.expected_text
-            and hashlib.sha256(text.encode("utf-8")).hexdigest() != mutation.expected_text
-        ):
-            raise EngineeringError("rename_precondition_failed")
-        destination = _safe_target(worktree, mutation.target_path)
-        if destination.exists() or destination.is_symlink():
-            raise EngineeringError("rename_target_exists")
-        try:
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            target.rename(destination)
         except OSError:
             raise EngineeringError("mutation_target_invalid") from None
     else:
