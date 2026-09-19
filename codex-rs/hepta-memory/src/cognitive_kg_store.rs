@@ -472,7 +472,7 @@ fn digest32_from_sha256(value: &Sha256Digest) -> Result<Digest32, CognitiveStore
         .map_err(|error| CognitiveStoreError::Corrupt(format!("invalid KG digest: {error}")))
 }
 
-async fn graph_source_vector_digest_tx(
+pub(crate) async fn graph_source_vector_digest_tx(
     transaction: &mut Transaction<'_, Sqlite>,
     owner_agent_id: &str,
     scope: &CognitiveScope,
