@@ -56,6 +56,7 @@ impl MatrixFinalUseRequest {
             || !identifier(&self.destination_id, 128)
             || !bounded_text(&self.operation_id, 512)
             || !bounded_text(&self.stable_txn_id, 512)
+            || self.operation_id != format!("matrix.send:{}", self.stable_txn_id)
             || !bounded_text(&self.logical_outbox_id, 512)
             || !bounded_text(&self.homeserver_id, 2048)
             || !bounded_text(&self.matrix_user_id, 255)
