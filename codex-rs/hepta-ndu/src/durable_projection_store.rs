@@ -232,11 +232,8 @@ impl DurableNduProjectionStoreV1 {
         {
             return Err(DurableNduProjectionError::BackupMismatch);
         }
-        let (journal, cursor) = decode_complete_store_bytes(
-            &backup.bytes,
-            backup.binding,
-            max_records,
-        )?;
+        let (journal, cursor) =
+            decode_complete_store_bytes(&backup.bytes, backup.binding, max_records)?;
         if cursor != backup.bytes.len() {
             return Err(DurableNduProjectionError::BackupMismatch);
         }
@@ -381,8 +378,8 @@ impl DurableNduProjectionStoreV1 {
         let before = candidate.entries().len();
         let entry = mutation(&mut candidate)?;
         if candidate.entries().len() == before {
-            let store_anchor = anchor_for(&self.core, self.binding)
-                .ok_or(DurableNduProjectionError::Corrupt)?;
+            let store_anchor =
+                anchor_for(&self.core, self.binding).ok_or(DurableNduProjectionError::Corrupt)?;
             return Ok(NduProjectionAppendReceiptV1 {
                 disposition: NduProjectionAppendDispositionV1::IdempotentReplay,
                 entry,
@@ -428,10 +425,7 @@ impl DurableNduProjectionStoreV1 {
     }
 }
 
-fn validate_domain(
-    binding: Digest32,
-    max_records: usize,
-) -> Result<(), DurableNduProjectionError> {
+fn validate_domain(binding: Digest32, max_records: usize) -> Result<(), DurableNduProjectionError> {
     if binding.is_zero() {
         return Err(DurableNduProjectionError::InvalidBinding);
     }
@@ -512,8 +506,7 @@ fn replay_file(
     if length > MAX_STORE_BYTES as u64 {
         return Err(DurableNduProjectionError::Capacity);
     }
-    let length_usize =
-        usize::try_from(length).map_err(|_| DurableNduProjectionError::Capacity)?;
+    let length_usize = usize::try_from(length).map_err(|_| DurableNduProjectionError::Capacity)?;
     file.seek(SeekFrom::Start(0))?;
     let mut bytes = vec![0; length_usize];
     file.read_exact(&mut bytes)?;
@@ -569,8 +562,8 @@ fn decode_store_prefix(
             .to_be_bytes(),
     );
     reference.extend_from_slice(&body[..complete_body]);
-    let journal =
-        NduProjectionJournalV1::reopen(&reference).map_err(|_| DurableNduProjectionError::Corrupt)?;
+    let journal = NduProjectionJournalV1::reopen(&reference)
+        .map_err(|_| DurableNduProjectionError::Corrupt)?;
     Ok((journal, cursor))
 }
 
