@@ -30,6 +30,7 @@ fn id_profiles_bind_namespace_without_normalization() {
         Err(IdentityError::ProfileMismatch(IdProfileV1::Namespaced))
     );
     assert!(validate_id("schema:signal-v1", IdProfileV1::Schema).is_ok());
+    assert!(validate_id("normalization:unit-range-v1", IdProfileV1::Normalization).is_ok());
     assert!(validate_id("receipt:conversion-1", IdProfileV1::Receipt).is_ok());
     assert!(validate_id("artifact:model-1", IdProfileV1::Artifact).is_ok());
     assert_eq!(
