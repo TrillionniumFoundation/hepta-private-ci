@@ -12,9 +12,9 @@ The central truth is a closed index. Detailed module roots, ownership, terminal 
 
 ## 2. `runtime.supervisor`
 
-Owns generation-fenced process lifecycle and release transition records; user-task truth remains outside this module.
+Owns generation-fenced process lifecycle, durable restart-budget state, signed production release-selection records, and release transition records; user-task truth remains outside this module.
 
-The process driver and current-generation health observations establish process terminality, not user-task success.
+The process driver and current-generation health observations establish process terminality. Drain admission acknowledgement only proves new admission stopped; user-task/effect completion requires a separate trusted terminal observer.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
@@ -23,11 +23,17 @@ The process driver and current-generation health observations establish process 
 | `drain` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn drain(` |
 | `load_next` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn upgrade(` |
 
+Remaining repository implementation gaps:
+
+- Bind promotion readiness to a real current owner observation for critical-store integrity and capability-revocation availability; current Agentd health proves exact generation/App Server readiness but not that complete authority frontier.
+- Provide a trusted in-flight drain terminal/reconciliation observer. The native drain RPC now stops new Agentd admission, but the Unix process observer does not infer drained=true from acknowledgement and therefore waits the bounded drain deadline when no stronger observer exists.
+
 External evidence gates:
 
 - deployed binary and host identity
-- target-host watchdog/start/drain measurements
-- independent operational acceptance
+- target-host watchdog/start/drain/restart measurements
+- independent operational acceptance of signed release transition and rollback
+- target-host authority/revocation readiness observation
 
 ## 3. `runtime.fleet`
 
