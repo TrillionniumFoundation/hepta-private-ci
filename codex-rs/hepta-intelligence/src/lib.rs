@@ -7,12 +7,17 @@
 #![forbid(unsafe_code)]
 
 mod evaluated_shadow;
+mod ndu_stochastic;
 
 pub use evaluated_shadow::EvaluatedShadowError;
 pub use evaluated_shadow::EvaluatedShadowReceiptV1;
 pub use evaluated_shadow::EvaluatedShadowRequestV1;
 pub use evaluated_shadow::evaluated_candidate_signing_payload_v1;
 pub use evaluated_shadow::run_evaluated_shadow_v1;
+pub use ndu_stochastic::NduStochasticCompositionError;
+pub use ndu_stochastic::NduStochasticCompositionReceiptV1;
+pub use ndu_stochastic::NduStochasticCompositionRequestV1;
+pub use ndu_stochastic::admit_ndu_stochastic_product_candidate_v1;
 
 mod capability_snapshot;
 

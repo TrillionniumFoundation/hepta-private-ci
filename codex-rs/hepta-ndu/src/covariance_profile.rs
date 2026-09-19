@@ -36,6 +36,21 @@ impl AdmittedCovarianceProfileV1 {
     pub fn digest(&self) -> Digest32 {
         self.digest
     }
+
+    #[must_use]
+    pub const fn units_digest(&self) -> Digest32 {
+        self.specification.units_digest
+    }
+
+    #[must_use]
+    pub const fn driver_dimension(&self) -> usize {
+        self.specification.driver_dimension
+    }
+
+    #[must_use]
+    pub const fn utility_dimension(&self) -> usize {
+        self.specification.utility_dimension
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

@@ -39,6 +39,21 @@ impl AdmittedZConversionProfileV1 {
     pub const fn digest(&self) -> Digest32 {
         self.digest
     }
+
+    #[must_use]
+    pub const fn units_digest(&self) -> Digest32 {
+        self.specification.units_digest
+    }
+
+    #[must_use]
+    pub const fn driver_dimension(&self) -> usize {
+        self.specification.driver_dimension
+    }
+
+    #[must_use]
+    pub const fn utility_dimension(&self) -> usize {
+        self.specification.utility_dimension
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -64,14 +79,51 @@ impl StdError for ZConversionError {}
 #[derive(Clone, Debug, PartialEq)]
 pub struct ZQ24ConversionReceiptV1 {
     /// Utility x driver sensitivity in canonical original-increment coordinates.
-    pub original_z: Vec<Vec<f64>>,
+    original_z: Vec<Vec<f64>>,
     /// Same coefficients encoded as signed Q24 nearest/ties-to-even raw integers.
-    pub q24_raw: Vec<Vec<i64>>,
-    pub maximum_absolute_quantization_error: f64,
-    pub profile_digest: Digest32,
-    pub source_digest: Digest32,
-    pub receipt_digest: Digest32,
-    pub authority: AuthorityPosture,
+    q24_raw: Vec<Vec<i64>>,
+    maximum_absolute_quantization_error: f64,
+    profile_digest: Digest32,
+    source_digest: Digest32,
+    receipt_digest: Digest32,
+    authority: AuthorityPosture,
+}
+
+impl ZQ24ConversionReceiptV1 {
+    #[must_use]
+    pub fn original_z(&self) -> &[Vec<f64>] {
+        &self.original_z
+    }
+
+    #[must_use]
+    pub fn q24_raw(&self) -> &[Vec<i64>] {
+        &self.q24_raw
+    }
+
+    #[must_use]
+    pub const fn maximum_absolute_quantization_error(&self) -> f64 {
+        self.maximum_absolute_quantization_error
+    }
+
+    #[must_use]
+    pub const fn profile_digest(&self) -> Digest32 {
+        self.profile_digest
+    }
+
+    #[must_use]
+    pub const fn source_digest(&self) -> Digest32 {
+        self.source_digest
+    }
+
+    #[must_use]
+    pub const fn receipt_digest(&self) -> Digest32 {
+        self.receipt_digest
+    }
+
+    #[must_use]
+    pub const fn authority(&self) -> AuthorityPosture {
+        self.authority
+    }
 }
 
 /// Admits the coordinate/quantization convention only. Artifact provenance,

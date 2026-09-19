@@ -59,6 +59,7 @@ Direct dependencies:
 - `prompt.optimizer`
 - `context.compiler`
 - `learning.eval`
+- `learning.artifacts`
 
 Authoritative write domains:
 
@@ -82,6 +83,7 @@ The bounded components are:
 - `ordered composition pipeline`
 - `fallback controller`
 - `receipt aggregator`
+- `NDU stochastic cross-owner admission adapter`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -169,7 +171,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Composition library over injected owner ports. The read-only vertical and evaluated shadow entrypoints have distinct scopes; they do not install model weights or self-issue observations. Connect actual owner stages before naming a production closed loop, and retain unavailable/abstain outcomes instead of fabricating stage receipts.
+Composition library over injected owner ports. The NDU stochastic adapter revalidates current learning-artifact withdrawal state, exact coefficient-manifest lineage, compatible numerical profiles and accepted learning.eval identification/well-posedness/convergence decisions before creating an authority-free NDU admission. The read-only vertical and evaluated shadow entrypoints have distinct scopes; they do not install model weights or self-issue observations. Connect actual owner stages before naming a production closed loop, and retain unavailable/abstain outcomes instead of fabricating stage receipts.
 
 Current operating and state-format references:
 
@@ -181,6 +183,8 @@ Current operating and state-format references:
 ## 12. Verification and qualification
 
 Current focused test sources (source references, not pass receipts):
+
+- [codex-rs/hepta-intelligence/src/ndu_stochastic_tests.rs](../../../codex-rs/hepta-intelligence/src/ndu_stochastic_tests.rs); named case: `typed_cross_owner_evidence_admits_only_authority_free_candidate`.
 
 - [codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs](../../../codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs); named case: `durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes`.
 - [codex-rs/hepta-intelligence/src/lib_tests.rs](../../../codex-rs/hepta-intelligence/src/lib_tests.rs); named case: `highest_eligible_candidate_is_selected_without_effect_authority`.

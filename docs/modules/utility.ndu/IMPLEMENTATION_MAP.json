@@ -372,6 +372,28 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourcePathExists": true
+    },
+    {
+      "operation": "admit_stochastic_evidence_binding_v1",
+      "nativeSymbol": "codex_hepta_ndu::admit_stochastic_evidence_binding_v1",
+      "sourcePath": "codex-rs/hepta-ndu/src/stochastic_admission.rs",
+      "state": "source_implemented_owner_local_stochastic_admission",
+      "authority": "none",
+      "nonClaim": "typed binding consumes independently produced digests but does not authenticate external evidence or activate a stochastic policy",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-ndu/src/stochastic_admission_tests.rs",
+          "symbol": "every_external_evidence_class_is_digest_bound"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/stochastic_admission_tests.rs",
+          "symbol": "admitted_evidence_is_bound_into_the_regression_result"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "admit_stochastic_evidence_binding_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "canonicalReadinessProtocols": [
@@ -391,10 +413,11 @@
     "canonicalExternalV2Admission": "not_established",
     "productionWriter": "not_established",
     "exactHeadQualification": "required",
-    "independentConvergenceDecision": "owned_by_learning.eval_not_self_issued",
+    "independentConvergenceDecision": "learning_eval_source_candidate_implemented_external_authentication_required",
     "activation": "not_established",
     "release": "not_established",
-    "durableWriterCandidate": "candidate_implemented_with_v1_schema_migration_and_retention_policy"
+    "durableWriterCandidate": "candidate_implemented_with_v1_schema_migration_and_retention_policy",
+    "stochasticEvidenceAdmission": "candidate_implemented_cross_owner_authentication_required"
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
   "declaredRoots": [
@@ -433,12 +456,13 @@
     "Keep the established request-local read-only callers distinct from the not-yet-established authenticated production owner/caller.",
     "Select and target-host qualify NduProjectionStoreV1; source implementation, migration and retention policy do not activate a production writer.",
     "Physical deletion of referenced datasets/model parameters remains owned by their source/artifact stores; NDU retains scoped revocation audit digests to prevent resurrection.",
+    "Use the intelligence.control cross-owner stochastic adapter; utility.ndu alone must not authenticate learning.artifacts or learning.eval evidence.",
     "Run exact-head and deterministic synthetic-merge tests before changing the qualification claim boundary."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
+    "authenticated external evidence and independent semantic review",
     "product execution and target-host qualification",
-    "conditional identification and longitudinal efficacy",
+    "real conditional-identification and future-window efficacy observations",
     "operator acceptance, canary, promotion and release"
   ]
 }

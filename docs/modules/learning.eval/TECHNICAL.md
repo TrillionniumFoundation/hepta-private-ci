@@ -42,7 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `learning.eval`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate. Exact-head and synthetic-merge execution receipts, not source presence, establish qualification. This status does not activate `learning.eval`, create an authenticated production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -74,6 +74,9 @@ The bounded components are:
 - `deterministic algorithm core`
 - `generation publisher`
 - `checkpoint and recovery layer`
+- `NDU conditional-identification decision`
+- `NDU well-posedness decision`
+- `NDU convergence decision`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -215,6 +218,10 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
+- [codex-rs/hepta-intelligence-eval/src/ndu_conditional_identification_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/ndu_conditional_identification_tests.rs); named case: `independent_supported_identification_can_be_accepted`.
+- [codex-rs/hepta-intelligence-eval/src/ndu_well_posedness_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/ndu_well_posedness_tests.rs); named case: `supported_independent_assumptions_can_be_accepted`.
+- [codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs); named case: `independent_supported_evidence_can_be_accepted`.
+
 - [codex-rs/hepta-intelligence-eval/src/closure_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/closure_tests.rs); named case: `eval_03_intersects_superiority_safety_retention_and_unlearning`.
 - [codex-rs/hepta-intelligence-eval/src/lib_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/lib_tests.rs); named case: `eligible_is_not_promotion`.
 
@@ -245,7 +252,7 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
-For `learning.eval`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
+For `learning.eval`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority. The NDU decision functions consume independently supplied support digests and enforce evaluator/producer separation, but source code alone does not authenticate those external observations.
 
 ### Work-package execution envelopes
 
