@@ -146,12 +146,12 @@ fn append_reopen_and_anchor_preserve_exact_record() {
 }
 
 #[test]
-fn resume_unacknowledged_bootstrap_repairs_only_pre_frame_crash_state() -> Result<(), Box<dyn StdError>> {
+fn resume_unacknowledged_bootstrap_repairs_only_pre_frame_crash_state()
+-> Result<(), Box<dyn StdError>> {
     let fixture = TestFile::new("resume-unacknowledged-bootstrap");
     let scope = digest(b"registry-scope");
     {
-        let store =
-            DurableProposalRegistry::open_bootstrap_empty(fixture.create(), scope, 29, 4)?;
+        let store = DurableProposalRegistry::open_bootstrap_empty(fixture.create(), scope, 29, 4)?;
         drop(store);
     }
     {
@@ -160,24 +160,16 @@ fn resume_unacknowledged_bootstrap_repairs_only_pre_frame_crash_state() -> Resul
         file.sync_all()?;
     }
     {
-        let store = DurableProposalRegistry::resume_unacknowledged_bootstrap(
-            fixture.open(),
-            scope,
-            29,
-            4,
-        )?;
+        let store =
+            DurableProposalRegistry::resume_unacknowledged_bootstrap(fixture.open(), scope, 29, 4)?;
         assert_eq!(store.record_count(), Ok(0));
         drop(store);
     }
     assert_eq!(std::fs::metadata(&fixture.path)?.len(), HEADER_SIZE as u64);
 
     {
-        let mut store = DurableProposalRegistry::resume_unacknowledged_bootstrap(
-            fixture.open(),
-            scope,
-            29,
-            4,
-        )?;
+        let mut store =
+            DurableProposalRegistry::resume_unacknowledged_bootstrap(fixture.open(), scope, 29, 4)?;
         store.append_v2(
             Digest32::ZERO,
             proposal("proposal:unacknowledged-complete", b"window-a"),
@@ -185,13 +177,8 @@ fn resume_unacknowledged_bootstrap_repairs_only_pre_frame_crash_state() -> Resul
     }
     let complete = std::fs::read(&fixture.path)?;
     assert_eq!(
-        DurableProposalRegistry::resume_unacknowledged_bootstrap(
-            fixture.open(),
-            scope,
-            29,
-            4,
-        )
-        .err(),
+        DurableProposalRegistry::resume_unacknowledged_bootstrap(fixture.open(), scope, 29, 4,)
+            .err(),
         Some(DurableProposalRegistryError::UnacknowledgedHistoryPresent)
     );
     assert_eq!(std::fs::read(&fixture.path)?, complete);
