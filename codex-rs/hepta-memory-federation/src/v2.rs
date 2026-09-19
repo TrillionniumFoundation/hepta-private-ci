@@ -552,7 +552,7 @@ where
         }
     };
 
-    if matches!(transport_result, FederationTransportResultV2::NonTerminal(_)) {
+    if matches!(&transport_result, FederationTransportResultV2::NonTerminal(_)) {
         return finalize_indeterminate_result(&query, lease, query_binding_digest);
     }
 
@@ -591,6 +591,9 @@ where
     }
     if post_authority_now_unix_ms >= lease.expires_unix_ms {
         return Err(FederationV2Error::LeaseExpired);
+    }
+    if post_authority_now_unix_ms >= response.expires_unix_ms {
+        return Err(FederationV2Error::ResponseExpired);
     }
 
     let stale_generation =
