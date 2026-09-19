@@ -357,6 +357,7 @@ pub struct AutomationLease {
     pub occurrence: u64,
     pub occurrence_id: AutomationOccurrenceId,
     pub schedule_revision: u64,
+    pub taskflow_step_attempt: u32,
     pub scheduled_for_ms: u64,
     pub client_user_message_id: String,
     pub lease_generation: u64,
@@ -404,6 +405,7 @@ pub struct AutomationSubmittedOccurrence {
     pub admission: AutomationAdmission,
     pub queued_submission_id: String,
     pub taskflow_run_id: String,
+    pub taskflow_step_attempt: u32,
     pub provider_turn_id: Option<String>,
     pub submitted_at_ms: u64,
 }
