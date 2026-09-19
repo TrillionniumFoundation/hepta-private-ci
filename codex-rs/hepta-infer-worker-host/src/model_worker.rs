@@ -184,7 +184,10 @@ pub fn resource_grant_final_use_binding(
     })
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+/// Move-only verified capability. A successful authority claim may construct
+/// at most one worker generation; callers cannot clone the post-claim proof
+/// into a second worker instance.
+#[derive(Debug, Eq, PartialEq)]
 pub struct VerifiedResourceGrant {
     grant: ResourceGrant,
     verification: GrantVerification,
