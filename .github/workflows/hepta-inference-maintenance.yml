@@ -94,24 +94,40 @@ jobs:
           rustc --version --verbose > "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
           cargo --version >> "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
           cargo fmt --version >> "$RUNNER_TEMP/hepta-inference-records/toolchain.txt"
+      - name: Select exact-tree native execution
+        id: execution
+        env:
+          LANE: ${{ matrix.lane }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_candidate.py \
+            --source "$SOURCE_SHA" \
+            --tested "$TESTED_SHA" \
+            --base "$BASE_SHA" \
+            --lane "$LANE" \
+            --github-output "$GITHUB_OUTPUT"
       - name: Verify actual execution-record and scope regressions
+        if: steps.execution.outputs.run_native == 'true'
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/runner.json" --minimum-tests 1 -- python3 -m unittest discover -v -s scripts -p 'test_hepta_ci_exec*.py'
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/controls-scope.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_repository_controls
       - name: Run actual owner tests without unrelated product prerequisites
+        if: steps.execution.outputs.run_native == 'true'
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/owner.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-types
       - name: Measure post-compaction growth and maintenance
+        if: steps.execution.outputs.run_native == 'true'
         shell: bash
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-inference-records/maintenance-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --nocapture --test-threads=1
       - name: Check owner formatting without modifying tested source
-        if: always()
+        if: steps.execution.outputs.run_native == 'true'
         shell: bash
         run: |
           set -euo pipefail
