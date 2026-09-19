@@ -348,7 +348,7 @@ fn rejected_runtime_delivery_preserves_rejection_lineage() {
         rejected_reason: Some(
             PromptDeliveryRejectReasonV1::new(id("provider_rejected")).expect("bounded reason"),
         ),
-        observed_token_positions: Vec::new(),
+        observed_token_positions: None,
         truncation_observed: false,
     };
     must(ledger.append_runtime_prompt_delivery_v1(runtime_prompt_lineage(), runtime));
