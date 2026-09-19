@@ -4,6 +4,10 @@ use std::collections::BTreeSet;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::RuntimeTopologyCandidateV1;
+use codex_hepta_types::RuntimeTopologyDeltaV1;
+use codex_hepta_types::RuntimeTopologyOperationV1;
+use codex_hepta_types::StableId;
 
 use crate::types::*;
 
@@ -29,6 +33,55 @@ pub fn propose_topology_v3(
     proposal.proposal_digest = digest_topology_proposal_v3(&proposal)?;
     verify_topology_proposal_v3(&proposal)?;
     Ok(proposal)
+}
+
+/// Convert one already-verified proposal candidate into the neutral runtime
+/// admission contract. This grants no selection or promotion authority.
+pub fn runtime_topology_candidate_v1(
+    proposal: &TopologyProposalV3,
+    candidate_id: &StableId,
+) -> Result<RuntimeTopologyCandidateV1, Error> {
+    verify_topology_proposal_v3(proposal)?;
+    let selected = proposal
+        .candidates
+        .iter()
+        .find(|candidate| &candidate.candidate_id == candidate_id)
+        .ok_or_else(|| Error::UnknownTopologyCandidate(candidate_id.to_string()))?;
+    let deltas = selected
+        .topology_deltas
+        .iter()
+        .map(|delta| RuntimeTopologyDeltaV1 {
+            module_id: delta.module_id.clone(),
+            operation: match delta.operation {
+                TopologyOperationV3::Add => RuntimeTopologyOperationV1::Add,
+                TopologyOperationV3::Replace => RuntimeTopologyOperationV1::Replace,
+                TopologyOperationV3::Retire => RuntimeTopologyOperationV1::Retire,
+                TopologyOperationV3::Rewire => RuntimeTopologyOperationV1::Rewire,
+                TopologyOperationV3::Split => RuntimeTopologyOperationV1::Split,
+                TopologyOperationV3::Merge => RuntimeTopologyOperationV1::Merge,
+            },
+            related_module_ids: delta.related_module_ids.clone(),
+            predecessor_digest: delta.predecessor_digest,
+            candidate_digest: delta.candidate_digest,
+            evidence_digest: delta.evidence_digest,
+        })
+        .collect::<Vec<_>>();
+    let candidate = RuntimeTopologyCandidateV1 {
+        proposal_digest: proposal.proposal_digest,
+        candidate_id: selected.candidate_id.clone(),
+        candidate_digest: selected.candidate_digest,
+        baseline_generation: proposal.baseline_generation,
+        candidate_generation: proposal.candidate_generation,
+        selected_topology_digest: proposal.selected_topology_digest,
+        evaluation_digest: proposal.evaluation_digest,
+        rollback_predecessor_digest: proposal.rollback_predecessor_digest,
+        changed: matches!(selected.kind, TopologyCandidateKindV3::Change),
+        deltas,
+    };
+    candidate
+        .validate()
+        .map_err(|_| Error::RuntimeTopologyContract)?;
+    Ok(candidate)
 }
 
 pub fn verify_topology_proposal_v3(proposal: &TopologyProposalV3) -> Result<(), Error> {
