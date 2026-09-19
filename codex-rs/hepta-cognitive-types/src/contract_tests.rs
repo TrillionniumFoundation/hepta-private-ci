@@ -309,6 +309,12 @@ fn ctype_04_canonical_wire_vector_is_exact() {
         decode_wire_v1::<ModalitySpanRefV1>(&encoded).expect("decode canonical vector"),
         text_span()
     );
+    assert_eq!(
+        canonical_contract_digest_v1(&text_span())
+            .expect("canonical digest")
+            .to_string(),
+        "1e1c8f2232a1f6ddfea98400f3c2ae9d29ecd39ae2a2ff0e0bac70f91f0ad273"
+    );
 }
 
 #[test]
