@@ -255,3 +255,46 @@ The bootstrap source-location obligation for `memory.federation` is implemented 
 - `codex-rs/hepta-memory-federation`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## 18. V2 integrity and product-composition candidate
+
+Candidate source identity for the composed code path is commit `bd68a5c542546367417a053b26a4d9aa9112ba75`, tree `01879e5896cbea491745a1bdf52b714fbef4e942`. This identity is an immutable code baseline; later documentation-only commits may descend from it without changing the code candidate.
+
+### 18.1 Remote response integrity
+
+`RemoteFederatedResponseV2` carries the exact `query_binding_digest`. The V2 engine recomputes a domain-separated response digest over peer identity, query binding, scope, purpose, generation vector, observed frontier, response expiry, canonicalized evidence items, completeness and the terminal-observation bit. A non-zero opaque digest is insufficient: mismatch rejects before remote evidence can be exposed.
+
+Cross-query replay and post-digest item mutation are required negative cases in `codex-rs/hepta-memory-federation/src/v2_tests.rs`.
+
+### 18.2 Authority and expiry ceiling
+
+A successful federated result cannot outlive any authority-bearing input. Its effective expiry is:
+
+`min(remote_response_expiry, capability_lease_expiry, query_deadline)`.
+
+The engine performs live authority revalidation before transport dispatch and again after a terminal response. Post-I/O revocation or generation drift removes all remote items and yields explicit `Revoked` or `StaleGeneration` validity rather than treating the response as current evidence.
+
+### 18.3 Interruptible transport boundary
+
+`FederationTransportV2` is asynchronous. The engine races the one allowed transport attempt against its own query deadline and an explicit cancellation future. A transport that does not finish before the bounded deadline cannot keep the federation engine blocked indefinitely; timeout/cancellation is represented as an indeterminate result and never causes a blind retry.
+
+### 18.4 Product caller composition
+
+The existing product federation path in `codex-rs/hepta-memory/src/cognitive_federation.rs` now composes the canonical V2 engine around the real read-only owner-store lookup. It supplies:
+
+- a `FederationTransportV2` adapter whose one attempt is the existing scoped owner `CognitiveStore` retrieval;
+- a `FederationAuthorityV2` adapter backed by the current durable capability head/revocation state;
+- a bounded per-query deadline and per-attempt nonce;
+- exact conversion of returned memory identities/revisions/digests into V2 evidence items;
+- admission of product candidates only when the V2 result contains the exact evidence identity.
+
+This is composition, not a shadow validation path: the product reader does not return a candidate that the canonical V2 result failed to admit.
+
+The aggregation layer also records requested, completed, failed and indeterminate source coverage. Source failures are no longer silently equivalent to a valid empty federation result. `codex-rs/ext/hepta-memory/src/cognitive/federation.rs` carries that coverage into the federated model attachment and binds it into the attachment source digest, so partial coverage cannot be erased while preserving the same provenance receipt.
+
+### 18.5 Qualification boundary
+
+The code candidate adds adversarial tests for response tampering, cross-query replay, authority-lifetime clamping, post-I/O revocation, post-I/O generation drift, pending-I/O cancellation, engine timeout and canonical response ordering. Product-path tests cover explicit coverage for successful and revoked sources.
+
+These source changes do **not** by themselves set `productionImplementation`, `productExecutionProved`, activation, acceptance, promotion or release to true. Exact-head and synthetic-merge CI, independent semantic review, target-host qualification and operator acceptance remain separate gates. A future fleet/network transport must satisfy the same V2 transport and live-authority contracts; the current composed adapter is the existing same-host read-only owner-store federation path.
+
