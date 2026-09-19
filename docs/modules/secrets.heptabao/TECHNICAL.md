@@ -48,7 +48,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-bao-adapter/src/https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs); observed identifiers include `BaoToken`, `BaoReadRequest`, `BaoSecretReceipt`, `BaoClient`, `binding`, `consume_kv_v2`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md) for the implemented subset and remaining product work.
+The registered adapter sources are [codex-rs/hepta-bao-adapter/src/https_consumer.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer.rs) and [codex-rs/hepta-bao-adapter/src/lease.rs](../../../codex-rs/hepta-bao-adapter/src/lease.rs). Observed identifiers include `BaoClient`, `binding`, `consume_kv_v2`, `SecretLeaseHandle`, `request_secret_lease`, `renew_secret_lease`, `revoke_secret_lease` and `lookup_secret_lease`. The same source root also contains `SecretLeaseRegistry`, the private SQLite recovery owner for dynamic lease identities and operation outcomes. This is a source navigation binding, not proof of product composition or external-service qualification. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -163,7 +163,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Use the host-enrolled BaoClient consumer behind a registered trusted callback. The current integration supports the KV v2 read contract in the adapter README; the lease/renew/revoke design is a separate target. Configure CA, issuer, epoch and persistent authority state through the host, pass the provider token through the dedicated channel, and retain indeterminate consumer outcomes without blind retry.
+Use the host-enrolled `BaoClient` behind a registered trusted callback. The adapter now contains source-level KV v2 exact-version read plus provider-native dynamic lease issuance, renewal, revocation and a non-replaying known-lease lookup. Configure CA, issuer, epoch and persistent final-use authority state through the host, pass the provider token through the dedicated channel, and retain every `Indeterminate` mutation outcome without blind retry. The raw provider lease identifier remains inside `SecretLeaseHandle`; receipts expose its digest only. A known lease may be looked up to reconcile current state, but an issuance whose response is lost has no lease identity locally and cannot be auto-reconciled unless HeptaBao/provider supplies a stable operation-id idempotency and status-lookup contract. The adapter now owns a private durable SQLite lease registry for operation fencing and lease-handle recovery. Dynamic mutation entrypoints require this registry: the operation is persisted before dispatch, issuance persists the known handle before callback entry, and renew/revoke update durable lifecycle state. This closes local crash/reopen recovery for outcomes whose lease identity is known. It cannot manufacture an identity for an issuance whose provider response is completely lost.
 
 Current operating and state-format references:
 
@@ -179,6 +179,8 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs); named case: `real_tls_read_uses_headers_exact_version_and_secret_only_consumer`.
 - [codex-rs/hepta-bao-adapter/src/lib_tests.rs](../../../codex-rs/hepta-bao-adapter/src/lib_tests.rs); named case: `exact_reference_returns_only_opaque_digest`.
+- [codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs](../../../codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs); dynamic-lease cases cover TLS issuance, secret-only callback delivery, opaque metadata and response-body timeout becoming `Indeterminate` with the grant burned.
+- [codex-rs/hepta-bao-adapter/src/lease.rs](../../../codex-rs/hepta-bao-adapter/src/lease.rs); pure tests cover opaque-handle redaction, operation-identity binding and path-escape rejection.
 
 In `codex-rs`, run `just test -p codex-hepta-bao-adapter`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/secrets.heptabao.md) separately labels target acceptance designs.
 
@@ -251,7 +253,7 @@ Ordinary authorized coding identifies the Git baseline, relevant contracts, owne
 
 ## 17. Source implementation receipt
 
-The bootstrap source-location obligation for `secrets.heptabao` is implemented by work package `HEPTABAO-1-SECRET-BOUNDARY` in:
+The bootstrap source-location obligation for `secrets.heptabao` is implemented by work package `HEPTABAO-1-SECRET-BOUNDARY`. The current source tree also contains the bounded dynamic lease lifecycle API described above; this does not establish durable registry recovery or product activation. The declared roots are:
 
 - `external/HeptaBao`
 - `codex-rs/hepta-bao-adapter`

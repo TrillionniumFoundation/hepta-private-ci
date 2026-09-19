@@ -23,7 +23,7 @@ use zeroize::Zeroizing;
 const MAX_RESPONSE_BYTES: usize = 1024 * 1024;
 
 /// Provider credential injected by the enrolled host. Debug never reveals it.
-pub struct BaoToken(Zeroizing<String>);
+pub struct BaoToken(pub(crate) Zeroizing<String>);
 
 impl BaoToken {
     pub fn new(value: String) -> Result<Self, BaoClientError> {
@@ -65,10 +65,10 @@ pub struct BaoSecretReceipt {
 }
 
 pub struct BaoClient {
-    client: HttpClient,
-    origin: Url,
-    ca_sha256: [u8; 32],
-    token: BaoToken,
+    pub(crate) client: HttpClient,
+    pub(crate) origin: Url,
+    pub(crate) ca_sha256: [u8; 32],
+    pub(crate) token: BaoToken,
 }
 
 impl fmt::Debug for BaoClient {
@@ -291,6 +291,8 @@ pub enum BaoClientError {
     VersionMismatch,
     SecretDigestMismatch,
     ConsumerIndeterminate,
+    LeaseRegistry(crate::SecretLeaseRegistryError),
+    LeaseRegistryAfterProviderEffect,
 }
 impl fmt::Display for BaoClientError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
