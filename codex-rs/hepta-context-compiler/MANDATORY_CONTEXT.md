@@ -55,13 +55,16 @@ changing the V1 wire meaning:
   invokes the exact tokenizer over that final payload, including framing,
   template and tool-schema overhead;
 - `build_attachment` revalidates every selected admission against the current
-  verified admission/revocation snapshot;
-- `deliver_context_v2` revalidates again immediately before send, invokes a
+  verified admission/revocation snapshot; expiry is exclusive, so an admission
+  is already invalid when the snapshot time equals `expires_unix_ms`;
+- `deliver_context_v2` rejects revocation-epoch or snapshot-time rollback from
+  the attachment boundary, revalidates again immediately before send, invokes a
   `ContextTransportV2` with the exact serialized payload bytes, rejects a
   transport-reported payload digest mismatch, and emits
   `ContextDeliveryReceiptV2` binding transport identity, provider request id,
   acknowledgement digest, terminal disposition, time, and the verified
-  admission snapshot/revocation epoch used at send time;
+  admission snapshot/time/revocation epoch used at send time; terminal transport
+  observation time must not predate that send-time safety snapshot;
 - compilation, serialization, attachment and delivery proof artifacts are
   construction-closed outside the module, so external callers cannot synthesize
   receipts with struct literals and skip mandatory-group selection, exact
