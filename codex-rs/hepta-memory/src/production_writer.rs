@@ -12,6 +12,7 @@ use std::fmt;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::future::Future;
+use std::path::Path;
 use std::path::PathBuf;
 use std::pin::Pin;
 use std::sync::Arc;
@@ -453,7 +454,14 @@ impl ProductionDurableWriter {
         self.lease.generation()
     }
 
-    pub fn store(&self) -> &CognitiveStore {
+    /// Expose only the physical path for diagnostics/evidence. The raw
+    /// CognitiveStore stays crate-private so callers cannot bypass the
+    /// authority and current-fence checks performed by this capability.
+    pub fn database_path(&self) -> &Path {
+        self.store.path()
+    }
+
+    pub(crate) fn store(&self) -> &CognitiveStore {
         &self.store
     }
 
