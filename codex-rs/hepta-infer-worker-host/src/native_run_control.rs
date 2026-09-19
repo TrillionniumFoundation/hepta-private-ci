@@ -94,8 +94,11 @@ impl AppServerModelDriver {
                     "reopened after possible dispatch; reservation held, no replay".to_string(),
                 ),
             };
-            control.settle_native_receipt_only(&record.request.request_id, output.clone())?;
-            return Ok(output);
+            let settled =
+                control.settle_native_receipt_only(&record.request.request_id, output)?;
+            return settled
+                .observation
+                .ok_or_else(|| "missing durable native observation".into());
         }
         let request_id = record.request.request_id;
         match self
