@@ -201,7 +201,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Independent evaluation library. Freeze the estimand, split, thresholds, nuisance-model profile and evaluator identity before final outcomes. `decide_ndu_convergence_v1` now implements the owner-local source decision for `NduConvergenceCertificateV1`: it rejects self-evaluation, applies the registered iteration/residual/conservation/spectral-radius bounds, treats unresolved multiple solutions or missing perturbation/stability/conservation support as unavailable, and always returns `DENY_ALL`. Persist results through their declared evidence owner. A supported analytic or offline estimate or source certificate does not create real future calendar windows or authorize selection.
+Independent evaluation library. Freeze the estimand, split, thresholds, nuisance-model profile and evaluator identity before final outcomes. `decide_ndu_convergence_v1` now implements the owner-local source decision for `NduConvergenceCertificateV1`: it rejects self-evaluation, applies the registered iteration/residual/conservation/spectral-radius bounds, treats unresolved multiple solutions or missing perturbation/stability/conservation support as unavailable, and always returns `DENY_ALL`. `decide_ndu_well_posedness_v1` implements the separate `NduWellPosednessCertificateV1` source decision and binds independent assumption/conditional-mean evidence with expiry and self-evaluation rejection. Both certificate structs are opaque outside this owner crate, preventing a downstream caller from constructing an accepted certificate literal. Persist results through their declared evidence owner. A supported analytic or offline estimate or source certificate does not create real future calendar windows or authorize selection.
 
 Current operating and state-format references:
 
@@ -218,6 +218,7 @@ Current focused test sources (source references, not pass receipts):
 - [codex-rs/hepta-intelligence-eval/src/closure_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/closure_tests.rs); named case: `eval_03_intersects_superiority_safety_retention_and_unlearning`.
 - [codex-rs/hepta-intelligence-eval/src/lib_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/lib_tests.rs); named case: `eligible_is_not_promotion`.
 - [codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs); independent identity, threshold, unavailable-support and digest-binding cases for NDU convergence.
+- [codex-rs/hepta-intelligence-eval/src/ndu_well_posedness_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/ndu_well_posedness_tests.rs); independent identity, expiry, assumption, conditional-mean and digest-binding cases.
 
 In `codex-rs`, run `just test -p codex-hepta-intelligence-eval`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/learning.eval.md) separately labels target acceptance designs.
 
