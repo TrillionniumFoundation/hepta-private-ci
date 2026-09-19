@@ -15,6 +15,9 @@ use codex_hepta_control_plane::RuntimeTopologySnapshotV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+use codex_hepta_types::RuntimeTopologyCandidateV1;
+use codex_hepta_types::RuntimeTopologyContractErrorV1;
+use codex_hepta_types::RuntimeTopologyOperationV1;
 use codex_hepta_intelligence_eval::VerifiedSelfEvolutionRollbackV1;
 use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
 
@@ -24,6 +27,7 @@ use crate::WriterHandoffCheckpointV1;
 pub struct RuntimeModuleSupervisorV1 {
     registry: RuntimeModuleRegistryV1,
     selections: BTreeMap<(StableId, Generation), Digest32>,
+    pending_topologies: BTreeMap<Digest32, RuntimeTopologyCandidateV1>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -40,6 +44,14 @@ pub enum RuntimeModuleSupervisorErrorV1 {
     SelectionPredecessorMismatch,
     MissingVerifiedSelection,
     RollbackSelectionMismatch,
+    TopologyContract(RuntimeTopologyContractErrorV1),
+    NoChangeTopologyCandidate,
+    DuplicateTopologyCandidate,
+    MissingTopologyAbi(StableId),
+    UnexpectedTopologyAbi(StableId),
+    TopologyAbiMismatch(StableId),
+    TopologyPredecessorMismatch(StableId),
+    TopologyNotReady(StableId),
 }
 
 impl std::fmt::Display for RuntimeModuleSupervisorErrorV1 {
@@ -56,6 +68,12 @@ impl From<RuntimeModuleRegistryError> for RuntimeModuleSupervisorErrorV1 {
     }
 }
 
+impl From<RuntimeTopologyContractErrorV1> for RuntimeModuleSupervisorErrorV1 {
+    fn from(error: RuntimeTopologyContractErrorV1) -> Self {
+        Self::TopologyContract(error)
+    }
+}
+
 impl Default for RuntimeModuleSupervisorV1 {
     fn default() -> Self {
         Self::new()
@@ -67,6 +85,7 @@ impl RuntimeModuleSupervisorV1 {
         Self {
             registry: RuntimeModuleRegistryV1::new(),
             selections: BTreeMap::new(),
+            pending_topologies: BTreeMap::new(),
         }
     }
 
@@ -106,6 +125,253 @@ impl RuntimeModuleSupervisorV1 {
         self.selections
             .insert((module_id, generation), selection.selection_digest());
         Ok(())
+    }
+
+    /// Atomically admit every implementation-bearing delta from one independently
+    /// selected topology candidate into Shadow. Retire deltas stay pending until
+    /// all successor modules have completed their own canary/handoff promotion.
+    pub fn register_selected_topology_candidate(
+        &mut self,
+        candidate: RuntimeTopologyCandidateV1,
+        abis: Vec<RuntimeModuleAbiV1>,
+        selection: &VerifiedSelfEvolutionSelectionV1,
+    ) -> Result<(), RuntimeModuleSupervisorErrorV1> {
+        candidate.validate()?;
+        if !candidate.changed {
+            return Err(RuntimeModuleSupervisorErrorV1::NoChangeTopologyCandidate);
+        }
+        if self.pending_topologies.contains_key(&candidate.candidate_digest) {
+            return Err(RuntimeModuleSupervisorErrorV1::DuplicateTopologyCandidate);
+        }
+
+        let receipt = selection.receipt();
+        if receipt.candidate_generation != candidate.candidate_generation {
+            return Err(RuntimeModuleSupervisorErrorV1::SelectionGenerationMismatch);
+        }
+        if receipt.predecessor_generation != candidate.baseline_generation {
+            return Err(RuntimeModuleSupervisorErrorV1::SelectionPredecessorMismatch);
+        }
+        if receipt.candidate_artifact_digest != candidate.candidate_digest {
+            return Err(RuntimeModuleSupervisorErrorV1::SelectionArtifactMismatch);
+        }
+
+        let mut supplied = BTreeMap::new();
+        for abi in abis {
+            let module_id = abi.module_id.clone();
+            if supplied.insert(module_id.clone(), abi).is_some() {
+                return Err(RuntimeModuleSupervisorErrorV1::UnexpectedTopologyAbi(
+                    module_id,
+                ));
+            }
+        }
+
+        let mut admitted = Vec::new();
+        for delta in &candidate.deltas {
+            match delta.operation {
+                RuntimeTopologyOperationV1::Retire => {
+                    if supplied.contains_key(&delta.module_id) {
+                        return Err(RuntimeModuleSupervisorErrorV1::UnexpectedTopologyAbi(
+                            delta.module_id.clone(),
+                        ));
+                    }
+                    let generation = self
+                        .registry
+                        .active_generation(&delta.module_id)
+                        .ok_or_else(|| {
+                            RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
+                                delta.module_id.clone(),
+                            )
+                        })?;
+                    let record = self
+                        .registry
+                        .record(&delta.module_id, generation)
+                        .ok_or_else(|| {
+                            RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
+                                delta.module_id.clone(),
+                            )
+                        })?;
+                    if record.abi.implementation_digest != delta.predecessor_digest {
+                        return Err(
+                            RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
+                                delta.module_id.clone(),
+                            ),
+                        );
+                    }
+                }
+                RuntimeTopologyOperationV1::Add
+                | RuntimeTopologyOperationV1::Replace
+                | RuntimeTopologyOperationV1::Rewire
+                | RuntimeTopologyOperationV1::Split
+                | RuntimeTopologyOperationV1::Merge => {
+                    let abi = supplied.remove(&delta.module_id).ok_or_else(|| {
+                        RuntimeModuleSupervisorErrorV1::MissingTopologyAbi(
+                            delta.module_id.clone(),
+                        )
+                    })?;
+                    if abi.generation != candidate.candidate_generation
+                        || abi.candidate_artifact_digest != candidate.candidate_digest
+                        || abi.implementation_digest != delta.candidate_digest
+                    {
+                        return Err(RuntimeModuleSupervisorErrorV1::TopologyAbiMismatch(
+                            delta.module_id.clone(),
+                        ));
+                    }
+                    match delta.operation {
+                        RuntimeTopologyOperationV1::Add => {
+                            if abi.predecessor_generation.is_some()
+                                || !abi.rollback_predecessor_digest.is_zero()
+                            {
+                                return Err(
+                                    RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
+                                        delta.module_id.clone(),
+                                    ),
+                                );
+                            }
+                        }
+                        _ => {
+                            let predecessor = self
+                                .registry
+                                .active_generation(&delta.module_id)
+                                .ok_or_else(|| {
+                                    RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
+                                        delta.module_id.clone(),
+                                    )
+                                })?;
+                            let record = self
+                                .registry
+                                .record(&delta.module_id, predecessor)
+                                .ok_or_else(|| {
+                                    RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
+                                        delta.module_id.clone(),
+                                    )
+                                })?;
+                            if abi.predecessor_generation != Some(predecessor)
+                                || abi.rollback_predecessor_digest
+                                    != record.abi.implementation_digest
+                                || record.abi.implementation_digest != delta.predecessor_digest
+                            {
+                                return Err(
+                                    RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
+                                        delta.module_id.clone(),
+                                    ),
+                                );
+                            }
+                        }
+                    }
+                    admitted.push(abi);
+                }
+            }
+        }
+        if let Some((module_id, _)) = supplied.into_iter().next() {
+            return Err(RuntimeModuleSupervisorErrorV1::UnexpectedTopologyAbi(
+                module_id,
+            ));
+        }
+
+        let mut staged_registry = self.registry.clone();
+        let mut staged_selections = self.selections.clone();
+        for abi in admitted {
+            let module_id = abi.module_id.clone();
+            let generation = abi.generation;
+            staged_registry.register_candidate(abi)?;
+            staged_registry.enter_shadow(&module_id, generation)?;
+            staged_selections.insert(
+                (module_id, generation),
+                selection.selection_digest(),
+            );
+        }
+        self.registry = staged_registry;
+        self.selections = staged_selections;
+        self.pending_topologies
+            .insert(candidate.candidate_digest, candidate);
+        Ok(())
+    }
+
+    /// Move all implementation-bearing members of one admitted topology into
+    /// Canary together. Individual modules still require their own canary
+    /// evidence and writer handoff before promotion.
+    pub fn enter_topology_canary(
+        &mut self,
+        candidate_digest: Digest32,
+    ) -> Result<(), RuntimeModuleSupervisorErrorV1> {
+        let candidate = self
+            .pending_topologies
+            .get(&candidate_digest)
+            .ok_or(RuntimeModuleSupervisorErrorV1::DuplicateTopologyCandidate)?
+            .clone();
+        let mut staged = self.registry.clone();
+        for delta in &candidate.deltas {
+            if delta.operation != RuntimeTopologyOperationV1::Retire {
+                staged.enter_canary(&delta.module_id, candidate.candidate_generation)?;
+            }
+        }
+        self.registry = staged;
+        Ok(())
+    }
+
+    /// Commit topology retirement only after every successor implementation is
+    /// already active at the selected candidate generation. A failed readiness
+    /// check leaves every predecessor untouched.
+    pub fn finalize_topology_candidate(
+        &mut self,
+        candidate_digest: Digest32,
+    ) -> Result<RuntimeTopologySnapshotV1, RuntimeModuleSupervisorErrorV1> {
+        let candidate = self
+            .pending_topologies
+            .get(&candidate_digest)
+            .ok_or(RuntimeModuleSupervisorErrorV1::DuplicateTopologyCandidate)?
+            .clone();
+
+        for delta in &candidate.deltas {
+            if delta.operation == RuntimeTopologyOperationV1::Retire {
+                continue;
+            }
+            let generation = self.registry.active_generation(&delta.module_id);
+            let record = generation.and_then(|value| self.registry.record(&delta.module_id, value));
+            if generation != Some(candidate.candidate_generation)
+                || record.is_none_or(|value| {
+                    value.abi.implementation_digest != delta.candidate_digest
+                })
+            {
+                return Err(RuntimeModuleSupervisorErrorV1::TopologyNotReady(
+                    delta.module_id.clone(),
+                ));
+            }
+        }
+
+        let mut staged = self.registry.clone();
+        for delta in &candidate.deltas {
+            if delta.operation != RuntimeTopologyOperationV1::Retire {
+                continue;
+            }
+            let generation = staged
+                .active_generation(&delta.module_id)
+                .ok_or_else(|| {
+                    RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
+                        delta.module_id.clone(),
+                    )
+                })?;
+            let record = staged
+                .record(&delta.module_id, generation)
+                .ok_or_else(|| {
+                    RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
+                        delta.module_id.clone(),
+                    )
+                })?;
+            if record.abi.implementation_digest != delta.predecessor_digest {
+                return Err(
+                    RuntimeModuleSupervisorErrorV1::TopologyPredecessorMismatch(
+                        delta.module_id.clone(),
+                    ),
+                );
+            }
+            staged.begin_retire(&delta.module_id, generation)?;
+            staged.finish_retire(&delta.module_id, generation)?;
+        }
+
+        self.registry = staged;
+        self.pending_topologies.remove(&candidate_digest);
+        Ok(self.registry.snapshot())
     }
 
     #[cfg(test)]
