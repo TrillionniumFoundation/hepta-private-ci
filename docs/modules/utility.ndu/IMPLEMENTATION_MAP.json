@@ -323,9 +323,9 @@
         "selected projection view",
         "validated backup image"
       ],
-      "state": "source_implemented_durable_writer_candidate",
+      "state": "source_implemented_durable_writer_candidate_with_migration_retention",
       "authority": "none",
-      "nonClaim": "not production-activated; target-host filesystem, retention, backup transport and non-Unix durability remain qualification boundaries",
+      "nonClaim": "source candidate only; external payload/parameter deletion remains with source and artifact owners, and target-host activation remains separate",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
@@ -350,6 +350,22 @@
         {
           "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
           "symbol": "indeterminate_handle_fails_closed_until_reopen"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "legacy_raw_journal_migrates_to_schema_v1_store_image"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "unknown_store_schema_fails_closed"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "retention_policy_reserves_revocation_capacity_without_destructive_compaction"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+          "symbol": "retention_policy_cannot_discard_revocation_history"
         }
       ],
       "designOperation": "NduProjectionStoreV1",
@@ -373,11 +389,12 @@
     "ownerLocalDurabilityReference": "candidate_implemented",
     "stochasticCoordinateQ24Conversion": "candidate_implemented",
     "canonicalExternalV2Admission": "not_established",
-    "productionWriter": "source_candidate_implemented_not_established",
+    "productionWriter": "not_established",
     "exactHeadQualification": "required",
     "independentConvergenceDecision": "owned_by_learning.eval_not_self_issued",
     "activation": "not_established",
-    "release": "not_established"
+    "release": "not_established",
+    "durableWriterCandidate": "candidate_implemented_with_v1_schema_migration_and_retention_policy"
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
   "declaredRoots": [
@@ -414,9 +431,9 @@
   },
   "repositoryControlledGaps": [
     "Keep the established request-local read-only callers distinct from the not-yet-established authenticated production owner/caller.",
-    "Compose and target-host qualify NduProjectionStoreV1 before changing productionWriterState; source existence is not activation.",
-    "Register and compose a production stochastic coefficient profile/consumer; native coordinate/Q24 conversion is now source-implemented but not production-admitted.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Select and target-host qualify NduProjectionStoreV1; source implementation, migration and retention policy do not activate a production writer.",
+    "Physical deletion of referenced datasets/model parameters remains owned by their source/artifact stores; NDU retains scoped revocation audit digests to prevent resurrection.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the qualification claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
