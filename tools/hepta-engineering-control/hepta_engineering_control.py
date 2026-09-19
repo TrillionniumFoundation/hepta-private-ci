@@ -1,9 +1,4 @@
-"""Deterministic engineering scheduling and integration eligibility.
-
-This module coordinates bounded work envelopes. It deliberately exposes no API
-for merging a pull request, modifying runtime authority, deploying, promoting,
-or releasing a candidate.
-"""
+"""Legacy compatibility facade for the pre-v2 engineering-control prototype.\n\nCanonical new composition lives in control_engineering_v2. This module is retained\nonly for historical callers and regression fixtures; it is not a native mapping,\nproduct caller, production evidence verifier, or supported path for new integration.\nIts boolean-based IntegrationEvidence cannot substitute for authenticated v2\nGit/execution/evaluator receipts.\n\nIt deliberately exposes no API for merging a pull request, modifying runtime\nauthority, deploying, promoting, or releasing a candidate.\n"""
 
 from __future__ import annotations
 
@@ -15,6 +10,7 @@ import re
 MAX_PACKAGES = 4096
 MAX_LEASES = 4096
 MAX_ASSIGNMENTS = 128
+LEGACY_COMPATIBILITY_ONLY = True
 
 
 @dataclass(frozen=True, order=True)
@@ -79,7 +75,14 @@ def schedule(
     completed: Iterable[str],
     active_leases: Iterable[PathLease],
     maximum_assignments: int = MAX_ASSIGNMENTS,
+    *,
+    compatibility_only: bool = False,
 ) -> ScheduleReceipt:
+    """Legacy fixture scheduler; new callers must use v2 plan_engineering_work."""
+    if compatibility_only is not True:
+        raise ValueError(
+            "legacy scheduler disabled; use control_engineering_v2.plan_engineering_work"
+        )
     package_list = tuple(packages)
     lease_list = tuple(active_leases)
     if len(package_list) > MAX_PACKAGES:
@@ -127,22 +130,46 @@ def schedule(
 
 
 def decide_integration(evidence: IntegrationEvidence) -> IntegrationDecision:
-    reasons: list[str] = []
+    """Legacy diagnostics only; v1 booleans can never establish review eligibility."""
+    reasons: list[str] = ["legacy_unauthenticated_evidence"]
     if evidence.candidate_head != evidence.exact_head:
         reasons.append("exact_head_mismatch")
-    if not isinstance(evidence.merge_candidate_parents, tuple) or len(evidence.merge_candidate_parents) != 2:
-        return IntegrationDecision(False, tuple(reasons + ["merge_parent_mismatch"]))
-    identities = (evidence.candidate_head, evidence.exact_head, evidence.base_head,
-                  evidence.source_tree, evidence.exact_head_tree,
-                  evidence.merge_candidate_head, evidence.merge_candidate_tree,
-                  evidence.expected_merge_tree, *evidence.merge_candidate_parents)
-    if any(not isinstance(value, str) or re.fullmatch(r"[0-9a-f]{40}", value) is None or value == "0" * 40 for value in identities):
-        return IntegrationDecision(False, tuple(reasons + ["invalid_git_identity"]))
+    if (
+        not isinstance(evidence.merge_candidate_parents, tuple)
+        or len(evidence.merge_candidate_parents) != 2
+    ):
+        reasons.append("merge_parent_mismatch")
+        return IntegrationDecision(False, tuple(reasons))
+    identities = (
+        evidence.candidate_head,
+        evidence.exact_head,
+        evidence.base_head,
+        evidence.source_tree,
+        evidence.exact_head_tree,
+        evidence.merge_candidate_head,
+        evidence.merge_candidate_tree,
+        evidence.expected_merge_tree,
+        *evidence.merge_candidate_parents,
+    )
+    if any(
+        not isinstance(value, str)
+        or re.fullmatch(r"[0-9a-f]{40}", value) is None
+        or value == "0" * 40
+        for value in identities
+    ):
+        reasons.append("invalid_git_identity")
+        return IntegrationDecision(False, tuple(reasons))
     if evidence.source_tree != evidence.exact_head_tree:
         reasons.append("source_tree_mismatch")
-    if evidence.merge_candidate_head in {evidence.candidate_head, evidence.base_head}:
+    if evidence.merge_candidate_head in {
+        evidence.candidate_head,
+        evidence.base_head,
+    }:
         reasons.append("synthetic_merge_not_distinct")
-    if evidence.merge_candidate_parents != (evidence.base_head, evidence.candidate_head):
+    if evidence.merge_candidate_parents != (
+        evidence.base_head,
+        evidence.candidate_head,
+    ):
         reasons.append("merge_parent_mismatch")
     if evidence.merge_candidate_tree != evidence.expected_merge_tree:
         reasons.append("merge_tree_mismatch")
@@ -160,8 +187,7 @@ def decide_integration(evidence: IntegrationEvidence) -> IntegrationDecision:
     reasons.extend(name for name, passed in checks.items() if passed is not True)
     if evidence.authority_delta is not False:
         reasons.append("authority_delta")
-    return IntegrationDecision(not reasons, tuple(reasons))
-
+    return IntegrationDecision(False, tuple(reasons))
 
 def _normalized_paths(paths: Iterable[str]) -> tuple[str, ...]:
     normalized: list[str] = []

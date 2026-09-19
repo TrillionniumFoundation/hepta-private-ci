@@ -16,6 +16,7 @@ from . import assimilation as _assimilation
 from . import candidate as _candidate
 from . import control_plane as _control
 from . import facade as _facade
+from . import sandbox_control as _sandbox_control
 from .evidence import EvidenceDecision, ExecutionReceipt, HmacTrustStore
 
 _ORIGINAL_RECORD_DECISION = _control.EngineeringStore.record_integration_decision
@@ -140,12 +141,18 @@ def assignment_frontier(
 
 
 def hardened_sandbox_candidate(repository, envelope, candidate, checks):
-    """Compatibility entrypoint for the single metadata-free sandbox owner."""
-    return _candidate.sandbox_candidate(repository, envelope, candidate, checks)
+    """Compatibility entrypoint routed through bounded host admission."""
+    result = _sandbox_control.SandboxCoordinator().execute(
+        str(repository), envelope, candidate, checks
+    )
+    return result.candidate, result.receipt
 
 
 def hardened_execute_candidate_sandbox(repository, envelope, candidate, checks):
-    return _candidate.sandbox_candidate(repository, envelope, candidate, checks)
+    result = _sandbox_control.SandboxCoordinator().execute(
+        str(repository), envelope, candidate, checks
+    )
+    return result.candidate, result.receipt
 
 
 # ---------------------------------------------------------------------------

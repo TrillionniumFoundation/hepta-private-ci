@@ -9,10 +9,12 @@ import sys
 from .candidate import (
     CandidateEnvelope,
     Mutation,
+    MutationSet,
     generate_candidates,
-    sandbox_candidate,
 )
+from .sandbox_control import SandboxCoordinator
 from .control_plane import EngineeringError, EngineeringStore, WorkEnvelope, WorkPackage
+from .production import ProductionReadinessFacts, evaluate_production_readiness
 
 MAX_INPUT_BYTES = 2 * 1024 * 1024
 
@@ -53,9 +55,25 @@ def _records(record_type, value, limit):
     return tuple(_record(record_type, item) for item in value)
 
 
+def _candidate_mutations(value):
+    if not isinstance(value, list) or len(value) > 32:
+        raise EngineeringError("input_record_limit_exceeded")
+    result = []
+    for item in value:
+        if isinstance(item, dict) and set(item) == {"mutations"}:
+            result.append(
+                MutationSet(
+                    _records(Mutation, item["mutations"], 100)
+                )
+            )
+        else:
+            result.append(_record(Mutation, item))
+    return tuple(result)
+
+
 def _candidate_inputs(args):
     envelope = _record(CandidateEnvelope, _read(args.envelope))
-    mutations = _records(Mutation, _read(args.mutations), 32)
+    mutations = _candidate_mutations(_read(args.mutations))
     return envelope, generate_candidates(envelope, mutations)
 
 
@@ -63,13 +81,34 @@ def parser():
     root = argparse.ArgumentParser(description=__doc__)
     commands = root.add_subparsers(dest="command", required=True)
     schedule = commands.add_parser(
-        "schedule", help="persist an envelope and bounded assignment generation"
+        "schedule", help="local compatibility scheduling; not authenticated product orchestration"
     )
     schedule.add_argument("--database", required=True)
     schedule.add_argument("--envelope", required=True)
     schedule.add_argument("--packages", required=True)
     schedule.add_argument("--completed")
     schedule.add_argument("--generation-id", required=True)
+    projection = commands.add_parser(
+        "readiness-projection",
+        help=(
+            "project already-authenticated readiness facts; this command is "
+            "non-authoritative and never certifies implementation or deployment"
+        ),
+    )
+    projection.add_argument("--facts", required=True)
+    legacy_readiness = commands.add_parser(
+        "production-readiness",
+        help=(
+            "deprecated fail-closed alias; authenticated production/deployment "
+            "readiness must be composed through the typed verifier APIs"
+        ),
+    )
+    legacy_readiness.add_argument("--facts", required=True)
+    legacy_readiness.add_argument(
+        "--require",
+        choices=("implementation", "deployment"),
+        default="deployment",
+    )
     for name, help_text in (
         ("candidates", "generate deterministic proposals including no-change"),
         ("sandbox", "execute one candidate in the admitted isolation profile"),
@@ -85,6 +124,19 @@ def parser():
 
 
 def run(args):
+    if args.command == "production-readiness":
+        # A JSON document can describe facts but cannot authenticate them.  Keep
+        # the historical command fail-closed so it cannot be used as a deployment
+        # certificate by setting booleans and well-shaped digests.
+        raise EngineeringError("authenticated_readiness_composition_required")
+    if args.command == "readiness-projection":
+        facts = _record(ProductionReadinessFacts, _read(args.facts))
+        return {
+            "qualificationClass": "projection_only",
+            "authenticated": False,
+            "authorityGranted": False,
+            "decision": asdict(evaluate_production_readiness(facts)),
+        }
     if args.command == "schedule":
         envelope = _record(WorkEnvelope, _read(args.envelope))
         packages = _records(WorkPackage, _read(args.packages), 4096)
@@ -100,6 +152,10 @@ def run(args):
                 generation_id=args.generation_id,
             )
             return {
+                "qualificationClass": "local_compatibility_only",
+                "canonicalSourceAuthenticated": False,
+                "completionAuthenticated": False,
+                "productOrchestrationEvidence": False,
                 "assignment": asdict(receipt),
                 "frontier": store.assignment_frontier(args.generation_id),
             }
@@ -114,8 +170,19 @@ def run(args):
     checks = _read(args.checks)
     if not isinstance(checks, list):
         raise EngineeringError("invalid_check")
-    tested, receipt = sandbox_candidate(args.repository, envelope, candidate, checks)
-    return {"candidate": asdict(tested), "receipt": asdict(receipt)}
+    execution = SandboxCoordinator().execute(
+        args.repository,
+        envelope,
+        candidate,
+        checks,
+    )
+    return {
+        "candidate": asdict(execution.candidate),
+        "receipt": asdict(execution.receipt),
+        "attempts": execution.attempts,
+        "policyDigest": execution.policy_digest,
+        "admissionControlled": True,
+    }
 
 
 def main(argv=None):
@@ -127,4 +194,6 @@ def main(argv=None):
         print(json.dumps({"error": code, "authorityGranted": False}), file=sys.stderr)
         return 1
     print(json.dumps(result, sort_keys=True))
-    return int(args.command == "sandbox" and result["receipt"]["passed"] is not True)
+    if args.command == "sandbox":
+        return int(result["receipt"]["passed"] is not True)
+    return 0

@@ -17,9 +17,9 @@ from .candidate import (
     Candidate,
     CandidateEnvelope,
     Mutation,
+    MutationSet,
     SandboxReceipt,
     generate_candidates,
-    sandbox_candidate,
 )
 from .control_plane import (
     EngineeringError,
@@ -39,21 +39,64 @@ from .control_plane import (
     paths_overlap,
     semantic_digest,
 )
+from .external_controls import (
+    AuditAnchorAttestation,
+    DistributedFenceReceipt,
+    DistributedRevocationFrontierReceipt,
+    KeyCustodyReceipt,
+    ProductionControlDecision,
+    admit_distributed_fence,
+    distributed_fence_frontier,
+    verify_distributed_fence,
+    verify_persisted_distributed_fence,
+    verify_distributed_revocation_frontier,
+    verify_external_audit_anchor,
+    verify_external_key_custody,
+    verify_production_controls,
+    store_snapshot_digest,
+)
 from .evidence import (
     CanonicalSourceReceipt,
     EvidenceDecision,
     EvaluatorIndependenceReceipt,
     ExecutionReceipt,
     HmacTrustStore,
+    SignatureTrustStore,
     verify_integration_evidence,
 )
 from .facade import (
     ReviewRequest,
     execute_candidate_sandbox,
     generate_candidate,
-    issue_work_envelope,
     publish_audit_projection,
-    schedule_ready_packages,
+)
+from .mutation_testing import (
+    MutationTestingReceipt,
+    run_mutation_testing,
+)
+from .orchestration import (
+    CompletionReceipt,
+    EngineeringAssignment,
+    EngineeringCapacity,
+    EngineeringPlan,
+    EngineeringWorkPackage,
+    MergeQueueProposal,
+    ReviewCapacity,
+    WorkerProfile,
+    issue_repository_work_envelope,
+    issue_signed_work_envelope,
+    plan_engineering_work,
+)
+from .sandbox_control import (
+    SandboxCoordinator,
+    SandboxExecutionPolicy,
+    SandboxExecutionResult,
+)
+from .product_gate import verify_product_receipt_pair
+from .production import (
+    ProductionReadinessDecision,
+    ProductionReadinessFacts,
+    evaluate_production_readiness,
 )
 from .hardening import (
     AttestedSandboxParity,
@@ -78,6 +121,11 @@ from .seal import (
     verify_sealed_candidate_evidence,
 )
 
+# Historical root sandbox name is preserved as a controlled alias.  The raw
+# candidate executor remains internal to candidate.py so public callers cannot
+# bypass host admission or retry policy.
+sandbox_candidate = execute_candidate_sandbox
+
 # Legacy public names use the current authenticated boundary too. Lower-layer
 # composition helpers are implementation details, not an alternate public gate.
 hardened_prepare_assimilation_candidate = prepare_assimilation_candidate
@@ -92,7 +140,15 @@ __all__ = [
     "Candidate",
     "CandidateEnvelope",
     "CandidateEvidenceBindingReceipt",
+    "AuditAnchorAttestation",
     "CanonicalSourceReceipt",
+    "CompletionReceipt",
+    "EngineeringAssignment",
+    "EngineeringCapacity",
+    "EngineeringPlan",
+    "EngineeringWorkPackage",
+    "DistributedFenceReceipt",
+    "DistributedRevocationFrontierReceipt",
     "EngineeringError",
     "EngineeringStore",
     "EvaluatorIndependenceReceipt",
@@ -100,11 +156,23 @@ __all__ = [
     "ExecutionReceipt",
     "ExternalManifestCandidate",
     "HmacTrustStore",
+    "SignatureTrustStore",
+    "KeyCustodyReceipt",
     "LeaseReceipt",
+    "MergeQueueProposal",
     "Mutation",
+    "MutationTestingReceipt",
+    "MutationSet",
     "OwnerConsentAttestation",
     "OwnerConsentReceipt",
+    "ProductionControlDecision",
+    "ProductionReadinessDecision",
+    "ProductionReadinessFacts",
+    "ReviewCapacity",
     "ReviewRequest",
+    "SandboxCoordinator",
+    "SandboxExecutionPolicy",
+    "SandboxExecutionResult",
     "SandboxParityAttestation",
     "SandboxParityReceipt",
     "SandboxObservation",
@@ -112,9 +180,12 @@ __all__ = [
     "ScheduleReceipt",
     "SealedCandidateEvidence",
     "TypedOperation",
+    "WorkerProfile",
     "WorkEnvelope",
     "WorkPackage",
+    "admit_distributed_fence",
     "assignment_frontier",
+    "distributed_fence_frontier",
     "bind_candidate_evidence",
     "bounded_tuple",
     "build_manifest_candidate",
@@ -124,6 +195,7 @@ __all__ = [
     "checked_id",
     "checked_sha256",
     "consent_payload_digest",
+    "evaluate_production_readiness",
     "execute_candidate_sandbox",
     "generate_candidate",
     "generate_candidates",
@@ -132,7 +204,9 @@ __all__ = [
     "hardened_record_integration_decision",
     "hardened_request_independent_review",
     "hardened_sandbox_candidate",
-    "issue_work_envelope",
+    "issue_repository_work_envelope",
+    "issue_signed_work_envelope",
+    "plan_engineering_work",
     "path_is_within",
     "path_sets_overlap",
     "paths_overlap",
@@ -140,12 +214,20 @@ __all__ = [
     "propose_dormant_assimilation",
     "publish_audit_projection",
     "record_integration_decision",
+    "run_mutation_testing",
     "request_independent_review",
     "sandbox_candidate",
-    "schedule_ready_packages",
     "semantic_digest",
     "synthesize_read_only_contracts",
     "validate_consent",
+    "verify_distributed_fence",
+    "verify_distributed_revocation_frontier",
+    "verify_persisted_distributed_fence",
+    "verify_external_audit_anchor",
+    "verify_external_key_custody",
     "verify_integration_evidence",
+    "verify_production_controls",
+    "verify_product_receipt_pair",
     "verify_sealed_candidate_evidence",
+    "store_snapshot_digest",
 ]

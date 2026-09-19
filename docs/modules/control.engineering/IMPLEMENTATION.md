@@ -8,12 +8,30 @@ These are implementation and test mappings, not acceptance certificates.
 ## Implemented boundary
 
 The Python package persists work envelopes, fenced path leases and dependency-aware
-assignment generations; creates bounded code candidates; runs admitted checks;
-verifies source, execution and evaluator evidence; records signed candidate-bound
-review eligibility; and composes consent-bound dormant external-system proposals.
-Its CLI exposes local scheduling, candidate generation and sandbox execution.
-The pilot mutation grammar is deterministic (`no_change`, `add_file`, `replace_text`,
-`delete_file`). It is not a learned code generator or an autonomous development agent.
+assignment generations; verifies exact local or signed canonical source identity;
+performs resource-aware engineering orchestration over worker skills/capacity,
+CI capacity, review topology, expected value, architecture debt and rollback cost;
+creates bounded atomic single- or multi-file code candidates including rename;
+runs admitted checks under a bounded sandbox controller; performs evaluator-owned
+mutation testing; verifies source/execution/evaluator evidence; records signed
+candidate-bound review eligibility; exposes distributed-fence, external-audit-anchor
+and external-key-custody admission contracts; and composes consent-bound dormant
+external-system proposals. The repository CI includes a named v2 product caller.
+That caller fail-closed reads the canonical work-package registry from the exact
+`HEAD:docs/delivery/WORK_PACKAGES.json` Git blob (not checkout-filtered worktree
+bytes) and binds its blob OID plus registry/package digests to the tested tree. It
+requires the unique `ECP-1-ENGINEERING-CONTROL-PLANE` row, including its owner,
+state, zero authority delta, write scope and unresolved
+`DOC-2-DEFAULT-BRANCH-SELECTION` predecessors; the binding is emitted by digest
+and does not reinterpret that predecessor as satisfied.
+On pull requests the named product caller executes independently against source-head
+and the deterministic base-merge candidate. CI retains both lane receipts, then a
+separate aggregation job recomputes each receipt digest, checks common repository/run/source
+identity, ordered merge parents, canonical ECP blob/package identity and zero authority,
+and emits `hepta.control-engineering-product-receipt-pair.v1`. Production-readiness
+projection requires both lane digests and their canonical receipt-set digest; one lane
+plus caller-supplied booleans cannot satisfy product composition. It is not a learned code
+generator, merge service or autonomous release agent.
 
 Review requests and dormant proposals do not themselves merge, activate, deploy,
 enroll a host or transfer credentials. A deployment controller or production caller
@@ -24,31 +42,41 @@ must provide the separate owner authorization required by its own contract.
 | Owner | Responsibility | Main callers |
 | --- | --- | --- |
 | `path_policy.py` | Canonical POSIX paths and cross-platform alias rejection | Store, candidate generator and sandbox |
-| `control_plane.py` | SQLite schema, transactions, envelopes, leases, scheduling and audit | Public facade and CLI |
-| `candidate.py` | Deterministic candidate grammar, exact Git materialization and isolation | Public facade and CLI |
-| `evidence.py` | Exact Git objects, source/merge execution receipts and independent identities | Candidate evidence binder |
+| `control_plane.py` | SQLite schema, transactions, envelopes, leases, base scheduling and audit anchor head | Public facade, orchestrator and CLI |
+| `orchestration.py` | Exact source admission, signed completion receipts, skills/capacity scheduling, integration order and merge-queue proposals | Product caller and public package |
+| `candidate.py` | Deterministic single/multi-file/rename grammar, exact Git materialization and immutable oracle paths | Public facade and CLI |
+| `sandbox_control.py` | <=8 host-wide POSIX sandbox admission (process-local fallback on non-POSIX fixtures) and <=2 infrastructure-only retries | Mutation testing and production qualification |
+| `mutation_testing.py` | Baseline-pass / mutant-kill evaluator gate | Qualification |
+| `evidence.py` | Exact Git objects, source/merge execution receipts, pluggable signing port and independent identities | Candidate evidence binder |
 | `hardening.py` | Active-state frontier and authenticated evidence/consent primitives | Store, closure and seal |
 | `closure.py` | Source-tree and freshness-window binding, dormant assimilation | Seal and public facade |
 | `seal.py` | Signed evidence seals, replay prevention, review and durable eligibility | Public package and facade |
+| `external_controls.py` | Distributed fencing, external audit anchor over both audit head and durable owner-state snapshot, and subject-bound HSM/KMS custody receipt admission | Production worker/deployment composition |
+| `product_gate.py` | Named repository CI product caller over the v2 durable owner/orchestrator; PR qualification emits separate source-head and base-merge execution receipts | `hepta-consolidated-source.yml` |
 | `cli.py` | Bounded JSON ingress and local operations | `python -m control_engineering_v2`, installed CLI |
 
 There are no import-time store patches or alternate clone sandbox owners. The
-public package, direct facade and historical public `hardened_*` aliases use the
-current authenticated composition. Lower-layer composition helpers do not replace
-that public boundary. SQLite file access and the Python process are trusted owner
-boundaries: this library does not isolate a caller that can directly rewrite its
-connection, modules or database.
+public package and historical public `hardened_*` aliases use the current
+authenticated composition. The historical direct-facade wrappers
+`issue_work_envelope` and `schedule_ready_packages` fail closed unless a caller
+explicitly sets `compatibility_only=True`; they are retained only for local legacy
+fixtures and are not supported product admission paths. Lower-layer store helpers
+do not replace the authenticated orchestration boundary. SQLite file access and
+the Python process are trusted owner boundaries: this library does not isolate a
+caller that can directly rewrite its connection, modules or database.
 
 ## Durable state and migration
 
 `EngineeringStore` uses SQLite foreign keys, WAL, `synchronous=FULL` and one outer
 `BEGIN IMMEDIATE` per mutation. Nested owner operations share that transaction.
-`SCHEMA.sql` is the single schema source, currently version 5. Tables are:
+`SCHEMA.sql` is the single schema source, currently version 6. Tables are:
 
 - `work_envelopes`: immutable source/objective/contract/owner/path/capacity facts;
 - `path_leases`: state, revision, authority epoch, monotonically increasing fence and expiry;
 - `assignment_generations`: immutable assigned and blocked projections;
 - `assignment_generation_frontiers`: exact envelope revision, source and active-lease frontier;
+- `distributed_cluster_frontiers`: cluster-global highest admitted leader term and revocation frontier, shared across all holders;
+- `distributed_fence_frontiers`: highest admitted holder-local fence/token/revision bound to the current cluster frontier, retained across restart;
 - `integration_decisions`: immutable eligibility and rejection projection;
 - `integration_decision_bindings`: candidate, sandbox and evidence identity;
 - `integration_decision_seals`: authenticated seal identity, freshness and replay uniqueness;
@@ -57,8 +85,8 @@ connection, modules or database.
 
 An owner mutation, its binding/frontier and audit event either commit together or
 roll back together. Equal identity and semantics replay idempotently; different
-semantics conflict. Startup checks the audit chain. Additive v2/v3/v4 stores migrate
-transactionally to v5; historical generations without a bound frontier remain
+semantics conflict. Startup checks the audit chain. Additive v2/v3/v4/v5 stores migrate
+transactionally to v6; historical generations without a bound frontier remain
 unusable and require a new generation. A future version is rejected before any
 schema or journal-mode write. A database claiming v5 but missing a required table
 is rejected. A corrupted store must be quarantined and restored from a verified
@@ -70,6 +98,9 @@ connections and serialize writes in SQLite. WAL disk growth, backups, external
 audit anchoring, archival retention and production availability remain operational
 work. The in-file hash chain detects accidental mutation; it is not protection
 against an administrator who can rewrite the complete database and chain.
+Production anchor admission therefore also recomputes a deterministic digest over
+the durable owner tables independently of `audit_events`; a direct owner-table
+rewrite cannot continue to satisfy a previously signed external anchor.
 
 ## Leases and scheduling
 
@@ -79,25 +110,65 @@ Envelope trailing `/**` denotes a canonical prefix. Leases check current envelop
 expiry, declared scope, active conflicts and revisions in the owner transaction.
 Renewal, release and revocation require the exact revision and epoch.
 
-At most 4096 packages, 4096 completed IDs, 256 predecessors per package, 4096 active
-leases, 256 paths per record and 128 assignments are admitted. Encoded semantic
-records also have a 256 KiB bound; hitting a byte bound may reject input below the
-item-count limit. Graph validation is iterative, so valid deep DAGs do not depend
-on Python's recursion limit. Scheduling applies completed predecessors, active
-lease exclusion, intra-batch path exclusion, stable priority and envelope capacity.
-A generation binds the exact source/envelope/active-lease frontier. A changed
-frontier requires a new generation ID. An assignment is a proposal; workers still
-need to acquire leases before writing their declared paths.
+At most 4096 packages, 4096 authenticated completion receipts, 256 predecessors per
+package, 4096 active leases, 256 paths per record and 128 durable base assignments
+are admitted. The low-level compatibility scheduler still accepts completed IDs,
+but canonical resource-aware orchestration first requires the caller's `WorkEnvelope`
+to be semantically identical to the already-admitted SQLite owner row, then derives
+the completed set only from fresh signed `CompletionReceipt` objects bound to the
+same source commit/tree and to an actually published immutable assignment generation. The receipt carries that generation's
+semantic digest; verification also requires the package to have been assigned in
+that generation and the stored assignment frontier to match the same envelope and
+source identity. A signed arbitrary generation string cannot satisfy a predecessor.
+Completion observation cannot predate the referenced generation and its
+freshness window cannot outlive the owning work envelope. Encoded semantic records
+also have a 256 KiB bound; hitting a byte bound may reject input below the item-count
+limit. Graph validation is iterative, so valid deep DAGs do not depend on Python's
+recursion limit. Canonical resource-aware scheduling runs under one `BEGIN IMMEDIATE`
+owner transaction: it freezes the active-lease frontier, removes completed or
+dependency-blocked work, ranks ready packages by expected value minus architecture
+debt and rollback cost (priority is a deterministic tie-breaker), then admits only
+packages with an eligible worker, remaining worker/CI/reviewer capacity and no path
+conflict. Infeasible work does not consume the assignment limit. The exact final
+assigned/blocked set—not a coarser preliminary schedule—is written to
+`assignment_generations` in the same transaction as its frontier and audit event.
+The generation semantic digest binds normalized package/worker/capacity inputs,
+completion frontier, assignments, integration order and merge queue. A changed
+frontier or planning input requires a new generation ID. An assignment is still
+a proposal; workers must acquire the exact local lease, and multi-host production
+writes must additionally present a signed distributed fence matching epoch/token,
+paths, source and revocation frontier. Fence verification re-reads the current
+SQLite lease row and requires the same envelope, holder, revision, epoch, token,
+paths and expiry to still be active. Before production admission, the verified fence
+advances two transactionally persisted high-water marks together with an audit
+event: a cluster-global leader-term/revocation frontier and a holder-local
+fence-token/revision frontier. Production control verification requires both to
+match. Thus a new leader observed by one holder immediately fences stale receipts
+for every other holder, while a legitimate lease renewal may advance its local
+revision under an unchanged cluster frontier. Older still-fresh signed receipts
+cannot become valid again after process restart.
+A previously signed active receipt also fails immediately after local release or
+revocation. External fence and audit-anchor validity windows may not outlive their
+owning local lease/envelope.
 
 ## Candidate qualification
 
 Candidates bind exact base commit, allowed/protected paths and file/diff/resource
-budgets. No-change is first and candidate identity is content-derived. The executor
+budgets. No-change is first and candidate identity is content-derived. A candidate
+may be a single mutation or one atomic `MutationSet` of up to the changed-file
+ceiling; rename is a first-class two-path operation. Test, tests, __tests__, fixture,
+golden and common test-file forms are mandatory oracle paths and cannot be made
+mutable by an envelope. Before mutation, the executor also rejects a changed source
+file whose existing contents contain inline test/oracle markers (for example Rust
+`#[cfg(test)]` / `#[test]`, Python unittest/pytest forms, or common JS/JUnit/Go test
+forms), and rejects replacement/addition text that attempts to introduce those
+markers. This closes the same-file oracle case rather than relying only on filenames.
+The executor
 requires the clean caller HEAD to match the envelope. It reads exact Git tree and
 blob records into a metadata-free temporary workspace, without checkout filters,
 Git archive attributes, hooks, repository remotes or credential files.
 
-The Linux strong profile requires an actual successful Bubblewrap admission probe.
+The Linux strong profile requires an actual successful Bubblewrap admission probe. `SandboxCoordinator` also acquires one of eight non-blocking host-wide slot locks on POSIX before entering the candidate executor, so separate cooperating worker processes on the same qualification host cannot each admit their own set of eight sandboxes. Multi-host admission still requires the separately authenticated distributed coordination/fencing boundary.
 It mounts the candidate workspace read-only, isolates network and namespaces and
 provides private writable temporary/home paths. The portable profile is for trusted
 fixtures and reports `fixture_tested`; it cannot produce strong review evidence.
@@ -105,7 +176,13 @@ See [SANDBOX_SECURITY.md](SANDBOX_SECURITY.md) for platform and mount policy.
 
 Checks use argument vectors without shell expansion, at most 64 checks, 256 arguments
 per check, 8192 characters per argument and 65536 characters per argument vector.
-One elapsed time budget covers all checks. Source HEAD/tree/refs/worktree and
+One elapsed time budget covers all checks. `SandboxCoordinator` admits at most
+eight host-wide sandboxes across cooperating POSIX processes (with a process-local
+fallback on non-POSIX fixtures) and retries only explicitly classified infrastructure
+failures, at most twice; semantic rejection is never retried.
+`run_mutation_testing` first requires the no-change/baseline candidate to pass
+the exact evaluator-owned check set and then requires every admitted code mutant
+to fail that same set. Source HEAD/tree/refs/worktree and
 candidate manifests are checked after every command, so a later check cannot hide
 an earlier mutation. Resource and isolation failure rejects or produces a failing
 receipt; no checks cannot pass. A production check runner must use an admitted
@@ -123,10 +200,16 @@ that seal; caller-made booleans or unsealed `BoundEvidenceDecision` values fail.
 Persisted bindings and seals commit with the decision, and seal reuse under a new
 decision ID is rejected. Denied decisions can still be recorded without a seal.
 
-`HmacTrustStore` is the deterministic reference/test signing adapter. Production
-composition needs independent registered signing identities and protected verifier
-keys. Tests using fixture signers establish protocol behavior; they do not establish
-organizational evaluator independence or production key custody.
+`HmacTrustStore` is the deterministic reference/test signing adapter.
+`SignatureTrustStore` is the production-facing signer/verifier protocol, so an
+HSM/KMS-backed adapter can be injected without changing evidence semantics.
+Production admission additionally requires signed `KeyCustodyReceipt` values
+proving hardware-backed custody outside the engineering process. Each critical
+role binds a distinct custodied subject signing identity, provider/key identifier,
+algorithm, public-key digest and external attestation digest; the custody
+authority's own attestation signer cannot stand in for the custodied subject key.
+Fixture signers establish protocol behavior only; they do not establish
+organizational independence or production key custody.
 
 ## Authorized external-system composition
 
@@ -158,10 +241,12 @@ PYTHONPATH=tools/hepta-engineering-control python3 -m control_engineering_v2 san
 
 Installation of `tools/hepta-engineering-control` provides `hepta-engineering` with
 the same commands. JSON object keys match the exported dataclass field names;
-`packages.json` and `mutations.json` are arrays of `WorkPackage` and `Mutation`
-objects. `checks.json` is an array of string argument arrays. Candidate IDs come from
-the `candidates` output, including its no-change entry. Schedule optionally accepts
-`--completed completed.json`, a JSON array of completed package IDs. Each input
+`packages.json` is an array of `WorkPackage` objects. `mutations.json` accepts
+single `Mutation` objects or `{"mutations": [...]}` atomic mutation sets. `checks.json` is an array of string argument arrays. Candidate IDs come from
+the `candidates` output, including its no-change entry. The legacy `schedule` CLI optionally accepts `--completed completed.json` as a
+local compatibility surface. Product composition must use
+`plan_engineering_work` with authenticated `CompletionReceipt` objects and must
+not treat caller-supplied completion strings as production evidence. Each input
 file is bounded to 2 MiB; duplicate and unknown record keys reject. Machine-readable
 results go to stdout; a rejected operation emits a safe error code on stderr and
 exits 1. A failed sandbox check also exits 1. The CLI cannot issue signed review
@@ -176,7 +261,10 @@ receipts, self-approve changes or deploy them.
 | Active lease conflict/capacity | Wait for or explicitly release/revoke the relevant lease |
 | Future/incomplete schema or corrupt audit | Stop using the store; restore or migrate with the compatible owner |
 | Isolation unavailable or workspace/source mutation | Reject qualification and repair the executor environment |
+| Sandbox capacity or infrastructure retry exhausted | Stop or reschedule; never retry unchanged semantic rejection |
+| Surviving mutation-test mutant | Reject the generated/evaluator test claim and strengthen the oracle |
 | Missing/tampered/stale binding, seal or replay | Obtain fresh independent execution evidence; never set eligibility manually |
+| Missing/stale distributed fence, external audit anchor or key-custody receipt | Block production worker/deployment admission |
 | Consent/parity mismatch or widened effect scope | Obtain exact owner consent and evaluator evidence for the declared target |
 
 Run all current engineering-control tests from the repository root:
@@ -194,7 +282,10 @@ the real admission probe fails; strict mode turns that into failure. Never count
 skip as strong sandbox evidence. `test_consolidated_engineering.py` adds concurrent
 SQLite lease races, rollback fault injection, migration/downgrade protection, deep
 DAG and lease capacity behavior, forged evidence rejection, per-command source/state
-mutation detection and real CLI subprocess round trips. Historical registries that
-merely asserted maturity or counted source symbols have been retired in favor of
-these behavior tests and this single implementation map. CI definitions remain in
+mutation detection and real CLI subprocess round trips. The historical `hepta_engineering_control.py` module remains a local regression
+compatibility surface only. Its boolean-based `decide_integration` is permanently
+fail-closed and always includes `legacy_unauthenticated_evidence`; it cannot issue
+positive review eligibility even when all legacy booleans are true. Historical
+registries that merely asserted maturity or counted source symbols have been
+retired in favor of these behavior tests and this single implementation map. CI definitions remain in
 the repository's current workflow; this document does not certify an unobserved run.

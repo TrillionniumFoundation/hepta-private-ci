@@ -63,7 +63,14 @@ def canonical_path(root: Path, value: Any, label: str, *, require_file: bool) ->
         and resolved.relative_to(root).as_posix() == value,
         f"{label}: aliased path {value!r}",
     )
-    need(path.is_file() if require_file else path.is_dir(), f"{label}: missing path {value}")
+    if require_file:
+        exists_with_expected_kind = path.is_file()
+    else:
+        # Resolved ownership roots may be a directory or an exact source-file
+        # root. Preserve the closed-world path identity while accepting either
+        # physical kind; symlinks and aliases were already rejected above.
+        exists_with_expected_kind = path.is_file() or path.is_dir()
+    need(exists_with_expected_kind, f"{label}: missing path {value}")
     return path
 
 

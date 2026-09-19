@@ -101,68 +101,116 @@
   ],
   "edges": [
     {
+      "from": "ART-1-LEARNING-ARTIFACT-REGISTRY",
+      "to": "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK"
+    },
+    {
+      "from": "ART-1-LEARNING-ARTIFACT-REGISTRY",
+      "to": "HBO-1-OPERATOR-SENSOR-CORE"
+    },
+    {
+      "from": "ART-1-LEARNING-ARTIFACT-REGISTRY",
+      "to": "NDU-1-DETERMINISTIC-UTILITY-BASELINE"
+    },
+    {
+      "from": "ART-1-LEARNING-ARTIFACT-REGISTRY",
+      "to": "NEU-1-LOCAL-MODEL-BAKEOFF"
+    },
+    {
+      "from": "ART-1-LEARNING-ARTIFACT-REGISTRY",
+      "to": "P0.7D-FAULT-MATRIX"
+    },
+    {
+      "from": "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK",
+      "to": "LONG-1-TEMPORAL-HOLDOUT"
+    },
+    {
+      "from": "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK",
+      "to": "SELF-1-CODE-CANDIDATE-PIPELINE"
+    },
+    {
+      "from": "ASM-0-EXTERNAL-SYSTEM-CONTRACTS",
+      "to": "ASM-1-DISCOVERY-MANIFEST"
+    },
+    {
+      "from": "ASM-1-DISCOVERY-MANIFEST",
+      "to": "ASM-2-DEBIAN-BRIDGE-SANDBOX"
+    },
+    {
+      "from": "ASM-2-DEBIAN-BRIDGE-SANDBOX",
+      "to": "ASM-3-STATE-MIGRATION-QUALIFICATION"
+    },
+    {
+      "from": "ASM-3-STATE-MIGRATION-QUALIFICATION",
+      "to": "ASM-4-FEDERATED-ORGAN-ENROLLMENT"
+    },
+    {
+      "from": "AUTHBUS-P1.3-V12",
+      "to": "HEPTABAO-1-SECRET-BOUNDARY"
+    },
+    {
+      "from": "BIO-0-NEURON-INTUITION-CONTRACTS",
+      "to": "BIO-1-ELIGIBILITY-HOMEOSTASIS"
+    },
+    {
+      "from": "BIO-0-NEURON-INTUITION-CONTRACTS",
+      "to": "INT-1-CALIBRATED-INTUITION-POLICY"
+    },
+    {
+      "from": "BIO-0-NEURON-INTUITION-CONTRACTS",
+      "to": "NEU-1-LOCAL-MODEL-BAKEOFF"
+    },
+    {
+      "from": "BIO-0-NEURON-INTUITION-CONTRACTS",
+      "to": "NEU-2-TEMPORAL-SIGNAL-RUNTIME"
+    },
+    {
+      "from": "BIO-0-NEURON-INTUITION-CONTRACTS",
+      "to": "P0.7E-DEPENDENCY-INVERSION"
+    },
+    {
+      "from": "BIO-0-NEURON-INTUITION-CONTRACTS",
+      "to": "PLATFORM-0-TYPE-BOUNDARY"
+    },
+    {
+      "from": "BIO-1-ELIGIBILITY-HOMEOSTASIS",
+      "to": "BIO-2-REPLAY-CONSOLIDATION"
+    },
+    {
+      "from": "BIO-2-REPLAY-CONSOLIDATION",
+      "to": "BIO-3-WORLD-MODEL-PREDICTION-ERROR"
+    },
+    {
+      "from": "BIO-3-WORLD-MODEL-PREDICTION-ERROR",
+      "to": "PLS-1-PARAMETER-PLASTICITY"
+    },
+    {
+      "from": "C1-PROMPTED-MEMORY-RETRIEVAL-RANK",
+      "to": "BIO-1-ELIGIBILITY-HOMEOSTASIS"
+    },
+    {
+      "from": "C1-PROMPTED-MEMORY-RETRIEVAL-RANK",
+      "to": "INT-2-AGENTD-CODEX-COMPOSITION"
+    },
+    {
+      "from": "C1-PROMPTED-MEMORY-RETRIEVAL-RANK",
+      "to": "LRN-2-CAUSAL-EVALUATION"
+    },
+    {
+      "from": "CTX-1-CONTEXT-COMPILER",
+      "to": "C1-PROMPTED-MEMORY-RETRIEVAL-RANK"
+    },
+    {
+      "from": "CTX-1-CONTEXT-COMPILER",
+      "to": "INT-2-AGENTD-CODEX-COMPOSITION"
+    },
+    {
       "from": "DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION",
       "to": "DOC-1-V8-SEMANTIC-UPGRADE"
     },
     {
-      "from": "DOC-3C-MODULE-DOC-CLOSED-WORLD",
-      "to": "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD"
-    },
-    {
-      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
-      "to": "DOC-2-DEFAULT-BRANCH-SELECTION"
-    },
-    {
-      "from": "DOC-3C-MODULE-DOC-CLOSED-WORLD",
-      "to": "DOC-2-DEFAULT-BRANCH-SELECTION"
-    },
-    {
-      "from": "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
-      "to": "DOC-2-DEFAULT-BRANCH-SELECTION"
-    },
-    {
-      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
-      "to": "P0.7A-RUNTIME-BOOTSTRAP"
-    },
-    {
-      "from": "P0.7A-RUNTIME-BOOTSTRAP",
-      "to": "P0.7B-B0-VERIFIED-USE"
-    },
-    {
-      "from": "P0.7B-B0-VERIFIED-USE",
-      "to": "P0.7B-B1A-PROVIDER-BOUNDARY"
-    },
-    {
-      "from": "P0.7B-B0-VERIFIED-USE",
-      "to": "P0.7B-B1B-MODEL-BOUNDARY"
-    },
-    {
-      "from": "P0.7B-B0-VERIFIED-USE",
-      "to": "P0.7B-B2-TOOL-NET-FS"
-    },
-    {
-      "from": "P0.7B-B0-VERIFIED-USE",
-      "to": "P0.7B-B3-BOUNDARIES"
-    },
-    {
-      "from": "P0.7B-B2-TOOL-NET-FS",
-      "to": "P0.7B-B3-BOUNDARIES"
-    },
-    {
-      "from": "P0.7B-B1A-PROVIDER-BOUNDARY",
-      "to": "P0.7B-B4-CALLSITE-PROOF"
-    },
-    {
-      "from": "P0.7B-B1B-MODEL-BOUNDARY",
-      "to": "P0.7B-B4-CALLSITE-PROOF"
-    },
-    {
-      "from": "P0.7B-B2-TOOL-NET-FS",
-      "to": "P0.7B-B4-CALLSITE-PROOF"
-    },
-    {
-      "from": "P0.7B-B3-BOUNDARIES",
-      "to": "P0.7B-B4-CALLSITE-PROOF"
+      "from": "DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION",
+      "to": "DOC-REGISTRY-CLOSED-WORLD"
     },
     {
       "from": "DOC-1-V8-SEMANTIC-UPGRADE",
@@ -170,31 +218,191 @@
     },
     {
       "from": "DOC-1-V8-SEMANTIC-UPGRADE",
+      "to": "BROWSER-WEB-C1"
+    },
+    {
+      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
+      "to": "DOC-2-DEFAULT-BRANCH-SELECTION"
+    },
+    {
+      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
+      "to": "DOC-3A-SOURCE-BINDING-RECONCILIATION"
+    },
+    {
+      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
+      "to": "DOC-REGISTRY-CLOSED-WORLD"
+    },
+    {
+      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
       "to": "INTELLIGENCE-A0-Q0.63"
     },
     {
-      "from": "P0.7B-B0-VERIFIED-USE",
-      "to": "INFER-V4-T1"
+      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
+      "to": "LRN-0-CAUSAL-LEARNING-CONTRACTS"
     },
     {
-      "from": "P0.7B-B1A-PROVIDER-BOUNDARY",
-      "to": "INFER-V4-T1"
+      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
+      "to": "MEM-0-TYPES"
+    },
+    {
+      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
+      "to": "OBJ-0-OBJECTIVE-CONTRACTS"
+    },
+    {
+      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
+      "to": "P0.7A-RUNTIME-BOOTSTRAP"
+    },
+    {
+      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
+      "to": "PLATFORM-0-TYPE-BOUNDARY"
+    },
+    {
+      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
+      "to": "UI-V5"
+    },
+    {
+      "from": "DOC-2-DEFAULT-BRANCH-SELECTION",
+      "to": "RCP-1-RUNTIME-CONTROL-PLANE"
+    },
+    {
+      "from": "DOC-3A-SOURCE-BINDING-RECONCILIATION",
+      "to": "DOC-3B-MODULE-TECHNICAL-DOCUMENTS"
+    },
+    {
+      "from": "DOC-3B-MODULE-TECHNICAL-DOCUMENTS",
+      "to": "DOC-3C-MODULE-DOC-CLOSED-WORLD"
+    },
+    {
+      "from": "DOC-3C-MODULE-DOC-CLOSED-WORLD",
+      "to": "DOC-2-DEFAULT-BRANCH-SELECTION"
+    },
+    {
+      "from": "DOC-3C-MODULE-DOC-CLOSED-WORLD",
+      "to": "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD"
+    },
+    {
+      "from": "DOC-3C-MODULE-DOC-CLOSED-WORLD",
+      "to": "ECP-1-ENGINEERING-CONTROL-PLANE"
+    },
+    {
+      "from": "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
+      "to": "DOC-2-DEFAULT-BRANCH-SELECTION"
+    },
+    {
+      "from": "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
+      "to": "DOC-3E-PRECODING-READINESS-CLOSED-WORLD"
+    },
+    {
+      "from": "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
+      "to": "ECP-1-ENGINEERING-CONTROL-PLANE"
+    },
+    {
+      "from": "DOC-3E-PRECODING-READINESS-CLOSED-WORLD",
+      "to": "ASM-0-EXTERNAL-SYSTEM-CONTRACTS"
+    },
+    {
+      "from": "DOC-3E-PRECODING-READINESS-CLOSED-WORLD",
+      "to": "EMB-0-EMBODIED-CONTRACTS"
+    },
+    {
+      "from": "DOC-REGISTRY-CLOSED-WORLD",
+      "to": "DOC-3A-SOURCE-BINDING-RECONCILIATION"
+    },
+    {
+      "from": "ECP-1-ENGINEERING-CONTROL-PLANE",
+      "to": "ASM-1-DISCOVERY-MANIFEST"
+    },
+    {
+      "from": "ECP-1-ENGINEERING-CONTROL-PLANE",
+      "to": "PLS-2-TOPOLOGY-PROPOSAL"
+    },
+    {
+      "from": "ECP-1-ENGINEERING-CONTROL-PLANE",
+      "to": "SELF-1-CODE-CANDIDATE-PIPELINE"
+    },
+    {
+      "from": "EMB-0-EMBODIED-CONTRACTS",
+      "to": "EMB-1-SENSOR-BUS-BODY-SCHEMA"
+    },
+    {
+      "from": "EMB-1-SENSOR-BUS-BODY-SCHEMA",
+      "to": "EMB-2-REFLEX-MOTOR-ACTUATION"
+    },
+    {
+      "from": "EMB-2-REFLEX-MOTOR-ACTUATION",
+      "to": "EMB-3-HIL-SIM-TO-REAL-QUALIFICATION"
+    },
+    {
+      "from": "FLEET-1-ALLOCATION-CONTRACT",
+      "to": "ASM-4-FEDERATED-ORGAN-ENROLLMENT"
+    },
+    {
+      "from": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+      "to": "BIO-0-NEURON-INTUITION-CONTRACTS"
+    },
+    {
+      "from": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+      "to": "BIO-2-REPLAY-CONSOLIDATION"
+    },
+    {
+      "from": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+      "to": "BIO-3-WORLD-MODEL-PREDICTION-ERROR"
+    },
+    {
+      "from": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+      "to": "HBO-1-OPERATOR-SENSOR-CORE"
+    },
+    {
+      "from": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+      "to": "HBO-2-BELLMAN-OPERATOR-SHADOW"
+    },
+    {
+      "from": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+      "to": "P0.7E-DEPENDENCY-INVERSION"
+    },
+    {
+      "from": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
+      "to": "PLATFORM-0-TYPE-BOUNDARY"
+    },
+    {
+      "from": "HBO-1-OPERATOR-SENSOR-CORE",
+      "to": "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK"
+    },
+    {
+      "from": "HBO-1-OPERATOR-SENSOR-CORE",
+      "to": "BIO-2-REPLAY-CONSOLIDATION"
+    },
+    {
+      "from": "HBO-1-OPERATOR-SENSOR-CORE",
+      "to": "BIO-3-WORLD-MODEL-PREDICTION-ERROR"
+    },
+    {
+      "from": "HBO-1-OPERATOR-SENSOR-CORE",
+      "to": "HBO-2-BELLMAN-OPERATOR-SHADOW"
+    },
+    {
+      "from": "HBO-2-BELLMAN-OPERATOR-SHADOW",
+      "to": "BIO-2-REPLAY-CONSOLIDATION"
+    },
+    {
+      "from": "HBO-2-BELLMAN-OPERATOR-SHADOW",
+      "to": "BIO-3-WORLD-MODEL-PREDICTION-ERROR"
+    },
+    {
+      "from": "HBO-2-BELLMAN-OPERATOR-SHADOW",
+      "to": "C1-PROMPTED-MEMORY-RETRIEVAL-RANK"
+    },
+    {
+      "from": "HBO-2-BELLMAN-OPERATOR-SHADOW",
+      "to": "EMB-3-HIL-SIM-TO-REAL-QUALIFICATION"
+    },
+    {
+      "from": "HBO-2-BELLMAN-OPERATOR-SHADOW",
+      "to": "LRN-2-CAUSAL-EVALUATION"
     },
     {
       "from": "INFER-V4-T1",
       "to": "INFER-V4-T2"
-    },
-    {
-      "from": "P0.7B-B1A-PROVIDER-BOUNDARY",
-      "to": "INFER-V4-T2"
-    },
-    {
-      "from": "INFER-V4-T2",
-      "to": "INFER-V4-T3"
-    },
-    {
-      "from": "P0.7B-B1A-PROVIDER-BOUNDARY",
-      "to": "INFER-V4-T3"
     },
     {
       "from": "INFER-V4-T1",
@@ -205,20 +413,144 @@
       "to": "INFER-V4-T4"
     },
     {
+      "from": "INFER-V4-T2",
+      "to": "INFER-V4-T3"
+    },
+    {
       "from": "INFER-V4-T4",
       "to": "INFER-V4-T5"
     },
     {
-      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
-      "to": "UI-V5"
+      "from": "INFER-V4-T4",
+      "to": "NEU-1-LOCAL-MODEL-BAKEOFF"
     },
     {
-      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
-      "to": "BROWSER-WEB-C1"
+      "from": "INFER-V4-T5",
+      "to": "NEU-1-LOCAL-MODEL-BAKEOFF"
     },
     {
-      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
-      "to": "MEM-0-TYPES"
+      "from": "INT-1-CALIBRATED-INTUITION-POLICY",
+      "to": "CTX-1-CONTEXT-COMPILER"
+    },
+    {
+      "from": "INT-1-CALIBRATED-INTUITION-POLICY",
+      "to": "INT-2-AGENTD-CODEX-COMPOSITION"
+    },
+    {
+      "from": "INTELLIGENCE-A0-Q0.63",
+      "to": "C1-PROMPTED-MEMORY-RETRIEVAL-RANK"
+    },
+    {
+      "from": "INTELLIGENCE-A0-Q0.63",
+      "to": "INT-2-AGENTD-CODEX-COMPOSITION"
+    },
+    {
+      "from": "LONG-1-TEMPORAL-HOLDOUT",
+      "to": "LONG-2-RETENTION-FORGETTING"
+    },
+    {
+      "from": "LONG-1-TEMPORAL-HOLDOUT",
+      "to": "NDU-2-AGENT-DOMAIN-HIERARCHY"
+    },
+    {
+      "from": "LONG-2-RETENTION-FORGETTING",
+      "to": "BIO-2-REPLAY-CONSOLIDATION"
+    },
+    {
+      "from": "LONG-2-RETENTION-FORGETTING",
+      "to": "LONG-3-UNLEARNING-NON-RESURRECTION"
+    },
+    {
+      "from": "LONG-3-UNLEARNING-NON-RESURRECTION",
+      "to": "ASM-3-STATE-MIGRATION-QUALIFICATION"
+    },
+    {
+      "from": "LONG-3-UNLEARNING-NON-RESURRECTION",
+      "to": "EMB-3-HIL-SIM-TO-REAL-QUALIFICATION"
+    },
+    {
+      "from": "LONG-3-UNLEARNING-NON-RESURRECTION",
+      "to": "PIM-3-FACTOR-EVOLUTION"
+    },
+    {
+      "from": "LONG-3-UNLEARNING-NON-RESURRECTION",
+      "to": "PLS-1-PARAMETER-PLASTICITY"
+    },
+    {
+      "from": "LONG-3-UNLEARNING-NON-RESURRECTION",
+      "to": "SELF-1-CODE-CANDIDATE-PIPELINE"
+    },
+    {
+      "from": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+      "to": "ART-1-LEARNING-ARTIFACT-REGISTRY"
+    },
+    {
+      "from": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+      "to": "BIO-0-NEURON-INTUITION-CONTRACTS"
+    },
+    {
+      "from": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+      "to": "HBO-0-BELLMAN-OPERATOR-CONTRACTS"
+    },
+    {
+      "from": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+      "to": "LRN-1-DURABLE-EPISODE-LEDGER"
+    },
+    {
+      "from": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+      "to": "NDU-0-PREFERENCE-UTILITY-CONTRACTS"
+    },
+    {
+      "from": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+      "to": "P0.7E-DEPENDENCY-INVERSION"
+    },
+    {
+      "from": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+      "to": "PIM-0-PROMPT-INTERVENTION-CONTRACTS"
+    },
+    {
+      "from": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
+      "to": "PLATFORM-0-TYPE-BOUNDARY"
+    },
+    {
+      "from": "LRN-1-DURABLE-EPISODE-LEDGER",
+      "to": "HBO-1-OPERATOR-SENSOR-CORE"
+    },
+    {
+      "from": "LRN-1-DURABLE-EPISODE-LEDGER",
+      "to": "NDU-1-DETERMINISTIC-UTILITY-BASELINE"
+    },
+    {
+      "from": "LRN-1-DURABLE-EPISODE-LEDGER",
+      "to": "NEU-2-TEMPORAL-SIGNAL-RUNTIME"
+    },
+    {
+      "from": "LRN-1-DURABLE-EPISODE-LEDGER",
+      "to": "P0.7D-FAULT-MATRIX"
+    },
+    {
+      "from": "LRN-1-DURABLE-EPISODE-LEDGER",
+      "to": "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW"
+    },
+    {
+      "from": "LRN-2-CAUSAL-EVALUATION",
+      "to": "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK"
+    },
+    {
+      "from": "LRN-2-CAUSAL-EVALUATION",
+      "to": "ASM-3-STATE-MIGRATION-QUALIFICATION"
+    },
+    {
+      "from": "LRN-2-CAUSAL-EVALUATION",
+      "to": "EMB-3-HIL-SIM-TO-REAL-QUALIFICATION"
+    },
+    {
+      "from": "LRN-2-CAUSAL-EVALUATION",
+      "to": "LONG-3-UNLEARNING-NON-RESURRECTION"
+    },
+    {
+      "from": "MEM-0-TYPES",
+      "to": "EMB-1-SENSOR-BUS-BODY-SCHEMA"
     },
     {
       "from": "MEM-0-TYPES",
@@ -237,784 +569,456 @@
       "to": "MEM-4-KG"
     },
     {
-      "from": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
-      "to": "MEM-4-KG"
-    },
-    {
       "from": "MEM-0-TYPES",
       "to": "MEM-5-COMPACT"
-    },
-    {
-      "from": "MEM-1-STORE",
-      "to": "MEM-8-PRODUCTION-WRITER"
-    },
-    {
-      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
-      "to": "OBJ-0-OBJECTIVE-CONTRACTS"
-    },
-    {
-      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
-      "to": "LRN-0-CAUSAL-LEARNING-CONTRACTS"
-    },
-    {
-      "from": "OBJ-0-OBJECTIVE-CONTRACTS",
-      "to": "LRN-0-CAUSAL-LEARNING-CONTRACTS"
-    },
-    {
-      "from": "OBJ-0-OBJECTIVE-CONTRACTS",
-      "to": "NDU-0-PREFERENCE-UTILITY-CONTRACTS"
-    },
-    {
-      "from": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
-      "to": "NDU-0-PREFERENCE-UTILITY-CONTRACTS"
-    },
-    {
-      "from": "OBJ-0-OBJECTIVE-CONTRACTS",
-      "to": "PIM-0-PROMPT-INTERVENTION-CONTRACTS"
-    },
-    {
-      "from": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
-      "to": "PIM-0-PROMPT-INTERVENTION-CONTRACTS"
-    },
-    {
-      "from": "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
-      "to": "PIM-0-PROMPT-INTERVENTION-CONTRACTS"
-    },
-    {
-      "from": "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
-      "to": "HBO-0-BELLMAN-OPERATOR-CONTRACTS"
-    },
-    {
-      "from": "OBJ-0-OBJECTIVE-CONTRACTS",
-      "to": "HBO-0-BELLMAN-OPERATOR-CONTRACTS"
-    },
-    {
-      "from": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
-      "to": "HBO-0-BELLMAN-OPERATOR-CONTRACTS"
-    },
-    {
-      "from": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
-      "to": "HBO-0-BELLMAN-OPERATOR-CONTRACTS"
-    },
-    {
-      "from": "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
-      "to": "BIO-0-NEURON-INTUITION-CONTRACTS"
-    },
-    {
-      "from": "OBJ-0-OBJECTIVE-CONTRACTS",
-      "to": "BIO-0-NEURON-INTUITION-CONTRACTS"
-    },
-    {
-      "from": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
-      "to": "BIO-0-NEURON-INTUITION-CONTRACTS"
-    },
-    {
-      "from": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
-      "to": "BIO-0-NEURON-INTUITION-CONTRACTS"
-    },
-    {
-      "from": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
-      "to": "BIO-0-NEURON-INTUITION-CONTRACTS"
-    },
-    {
-      "from": "OBJ-0-OBJECTIVE-CONTRACTS",
-      "to": "OBJ-1-OBJECTIVE-COMPILER"
-    },
-    {
-      "from": "MEM-0-TYPES",
-      "to": "OBJ-1-OBJECTIVE-COMPILER"
-    },
-    {
-      "from": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
-      "to": "LRN-1-DURABLE-EPISODE-LEDGER"
-    },
-    {
-      "from": "MEM-1-STORE",
-      "to": "LRN-1-DURABLE-EPISODE-LEDGER"
-    },
-    {
-      "from": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
-      "to": "ART-1-LEARNING-ARTIFACT-REGISTRY"
-    },
-    {
-      "from": "MEM-1-STORE",
-      "to": "ART-1-LEARNING-ARTIFACT-REGISTRY"
-    },
-    {
-      "from": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
-      "to": "PIM-1-PROMPT-FACTOR-REGISTRY"
-    },
-    {
-      "from": "MEM-1-STORE",
-      "to": "PIM-1-PROMPT-FACTOR-REGISTRY"
-    },
-    {
-      "from": "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
-      "to": "NDU-1-DETERMINISTIC-UTILITY-BASELINE"
-    },
-    {
-      "from": "OBJ-1-OBJECTIVE-COMPILER",
-      "to": "NDU-1-DETERMINISTIC-UTILITY-BASELINE"
-    },
-    {
-      "from": "LRN-1-DURABLE-EPISODE-LEDGER",
-      "to": "NDU-1-DETERMINISTIC-UTILITY-BASELINE"
-    },
-    {
-      "from": "ART-1-LEARNING-ARTIFACT-REGISTRY",
-      "to": "NDU-1-DETERMINISTIC-UTILITY-BASELINE"
-    },
-    {
-      "from": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
-      "to": "HBO-1-OPERATOR-SENSOR-CORE"
-    },
-    {
-      "from": "LRN-1-DURABLE-EPISODE-LEDGER",
-      "to": "HBO-1-OPERATOR-SENSOR-CORE"
-    },
-    {
-      "from": "ART-1-LEARNING-ARTIFACT-REGISTRY",
-      "to": "HBO-1-OPERATOR-SENSOR-CORE"
-    },
-    {
-      "from": "HBO-1-OPERATOR-SENSOR-CORE",
-      "to": "HBO-2-BELLMAN-OPERATOR-SHADOW"
-    },
-    {
-      "from": "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
-      "to": "HBO-2-BELLMAN-OPERATOR-SHADOW"
-    },
-    {
-      "from": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
-      "to": "HBO-2-BELLMAN-OPERATOR-SHADOW"
-    },
-    {
-      "from": "BIO-0-NEURON-INTUITION-CONTRACTS",
-      "to": "NEU-1-LOCAL-MODEL-BAKEOFF"
-    },
-    {
-      "from": "INFER-V4-T5",
-      "to": "NEU-1-LOCAL-MODEL-BAKEOFF"
-    },
-    {
-      "from": "ART-1-LEARNING-ARTIFACT-REGISTRY",
-      "to": "NEU-1-LOCAL-MODEL-BAKEOFF"
-    },
-    {
-      "from": "INFER-V4-T4",
-      "to": "NEU-1-LOCAL-MODEL-BAKEOFF"
-    },
-    {
-      "from": "NEU-1-LOCAL-MODEL-BAKEOFF",
-      "to": "NEU-2-TEMPORAL-SIGNAL-RUNTIME"
-    },
-    {
-      "from": "LRN-1-DURABLE-EPISODE-LEDGER",
-      "to": "NEU-2-TEMPORAL-SIGNAL-RUNTIME"
-    },
-    {
-      "from": "BIO-0-NEURON-INTUITION-CONTRACTS",
-      "to": "NEU-2-TEMPORAL-SIGNAL-RUNTIME"
-    },
-    {
-      "from": "BIO-0-NEURON-INTUITION-CONTRACTS",
-      "to": "INT-1-CALIBRATED-INTUITION-POLICY"
-    },
-    {
-      "from": "NEU-2-TEMPORAL-SIGNAL-RUNTIME",
-      "to": "INT-1-CALIBRATED-INTUITION-POLICY"
-    },
-    {
-      "from": "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
-      "to": "INT-1-CALIBRATED-INTUITION-POLICY"
-    },
-    {
-      "from": "PIM-1-PROMPT-FACTOR-REGISTRY",
-      "to": "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW"
-    },
-    {
-      "from": "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
-      "to": "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW"
-    },
-    {
-      "from": "MEM-2-RETRIEVAL",
-      "to": "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW"
-    },
-    {
-      "from": "LRN-1-DURABLE-EPISODE-LEDGER",
-      "to": "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW"
-    },
-    {
-      "from": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
-      "to": "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW"
-    },
-    {
-      "from": "OBJ-1-OBJECTIVE-COMPILER",
-      "to": "CTX-1-CONTEXT-COMPILER"
-    },
-    {
-      "from": "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW",
-      "to": "CTX-1-CONTEXT-COMPILER"
-    },
-    {
-      "from": "INT-1-CALIBRATED-INTUITION-POLICY",
-      "to": "CTX-1-CONTEXT-COMPILER"
-    },
-    {
-      "from": "MEM-1-STORE",
-      "to": "P0.7D-FAULT-MATRIX"
-    },
-    {
-      "from": "MEM-8-PRODUCTION-WRITER",
-      "to": "P0.7D-FAULT-MATRIX"
-    },
-    {
-      "from": "LRN-1-DURABLE-EPISODE-LEDGER",
-      "to": "P0.7D-FAULT-MATRIX"
-    },
-    {
-      "from": "ART-1-LEARNING-ARTIFACT-REGISTRY",
-      "to": "P0.7D-FAULT-MATRIX"
-    },
-    {
-      "from": "PIM-1-PROMPT-FACTOR-REGISTRY",
-      "to": "P0.7D-FAULT-MATRIX"
-    },
-    {
-      "from": "P0.7B-B2-TOOL-NET-FS",
-      "to": "P0.7D-FAULT-MATRIX"
-    },
-    {
-      "from": "MEM-0-TYPES",
-      "to": "P0.7E-DEPENDENCY-INVERSION"
-    },
-    {
-      "from": "P0.7B-B4-CALLSITE-PROOF",
-      "to": "P0.7E-DEPENDENCY-INVERSION"
-    },
-    {
-      "from": "OBJ-0-OBJECTIVE-CONTRACTS",
-      "to": "P0.7E-DEPENDENCY-INVERSION"
-    },
-    {
-      "from": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
-      "to": "P0.7E-DEPENDENCY-INVERSION"
-    },
-    {
-      "from": "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
-      "to": "P0.7E-DEPENDENCY-INVERSION"
-    },
-    {
-      "from": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
-      "to": "P0.7E-DEPENDENCY-INVERSION"
-    },
-    {
-      "from": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
-      "to": "P0.7E-DEPENDENCY-INVERSION"
-    },
-    {
-      "from": "BIO-0-NEURON-INTUITION-CONTRACTS",
-      "to": "P0.7E-DEPENDENCY-INVERSION"
-    },
-    {
-      "from": "P0.7E-DEPENDENCY-INVERSION",
-      "to": "P0.8A-AST-RATCHET"
-    },
-    {
-      "from": "P0.7B-B4-CALLSITE-PROOF",
-      "to": "P0.8A-AST-RATCHET"
-    },
-    {
-      "from": "P0.8A-AST-RATCHET",
-      "to": "P0.8B-READINESS"
-    },
-    {
-      "from": "P0.7A-RUNTIME-BOOTSTRAP",
-      "to": "P0.8B-READINESS"
-    },
-    {
-      "from": "P0.8B-READINESS",
-      "to": "P0.8C-RESOURCE-BUDGETS"
-    },
-    {
-      "from": "P0.7A-RUNTIME-BOOTSTRAP",
-      "to": "P0.8C-RESOURCE-BUDGETS"
-    },
-    {
-      "from": "DOC-2-DEFAULT-BRANCH-SELECTION",
-      "to": "ECP-1-ENGINEERING-CONTROL-PLANE"
-    },
-    {
-      "from": "DOC-2-DEFAULT-BRANCH-SELECTION",
-      "to": "RCP-1-RUNTIME-CONTROL-PLANE"
-    },
-    {
-      "from": "P0.8C-RESOURCE-BUDGETS",
-      "to": "RCP-1-RUNTIME-CONTROL-PLANE"
-    },
-    {
-      "from": "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
-      "to": "RCP-1-RUNTIME-CONTROL-PLANE"
-    },
-    {
-      "from": "P0.7D-FAULT-MATRIX",
-      "to": "P0.8D-VERTICAL-SLICE"
-    },
-    {
-      "from": "P0.8C-RESOURCE-BUDGETS",
-      "to": "P0.8D-VERTICAL-SLICE"
-    },
-    {
-      "from": "P0.8B-READINESS",
-      "to": "P0.8D-VERTICAL-SLICE"
-    },
-    {
-      "from": "CTX-1-CONTEXT-COMPILER",
-      "to": "C1-PROMPTED-MEMORY-RETRIEVAL-RANK"
-    },
-    {
-      "from": "HBO-2-BELLMAN-OPERATOR-SHADOW",
-      "to": "C1-PROMPTED-MEMORY-RETRIEVAL-RANK"
-    },
-    {
-      "from": "P0.8D-VERTICAL-SLICE",
-      "to": "C1-PROMPTED-MEMORY-RETRIEVAL-RANK"
-    },
-    {
-      "from": "INTELLIGENCE-A0-Q0.63",
-      "to": "C1-PROMPTED-MEMORY-RETRIEVAL-RANK"
-    },
-    {
-      "from": "C1-PROMPTED-MEMORY-RETRIEVAL-RANK",
-      "to": "LRN-2-CAUSAL-EVALUATION"
-    },
-    {
-      "from": "HBO-2-BELLMAN-OPERATOR-SHADOW",
-      "to": "LRN-2-CAUSAL-EVALUATION"
-    },
-    {
-      "from": "LRN-2-CAUSAL-EVALUATION",
-      "to": "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK"
-    },
-    {
-      "from": "HBO-1-OPERATOR-SENSOR-CORE",
-      "to": "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK"
-    },
-    {
-      "from": "ART-1-LEARNING-ARTIFACT-REGISTRY",
-      "to": "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK"
-    },
-    {
-      "from": "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK",
-      "to": "LONG-1-TEMPORAL-HOLDOUT"
-    },
-    {
-      "from": "LONG-1-TEMPORAL-HOLDOUT",
-      "to": "LONG-2-RETENTION-FORGETTING"
-    },
-    {
-      "from": "LONG-2-RETENTION-FORGETTING",
-      "to": "LONG-3-UNLEARNING-NON-RESURRECTION"
-    },
-    {
-      "from": "LRN-2-CAUSAL-EVALUATION",
-      "to": "LONG-3-UNLEARNING-NON-RESURRECTION"
-    },
-    {
-      "from": "LONG-1-TEMPORAL-HOLDOUT",
-      "to": "NDU-2-AGENT-DOMAIN-HIERARCHY"
-    },
-    {
-      "from": "RCP-1-RUNTIME-CONTROL-PLANE",
-      "to": "NDU-2-AGENT-DOMAIN-HIERARCHY"
-    },
-    {
-      "from": "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
-      "to": "NDU-2-AGENT-DOMAIN-HIERARCHY"
-    },
-    {
-      "from": "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
-      "to": "NDU-2-AGENT-DOMAIN-HIERARCHY"
-    },
-    {
-      "from": "NEU-2-TEMPORAL-SIGNAL-RUNTIME",
-      "to": "BIO-1-ELIGIBILITY-HOMEOSTASIS"
-    },
-    {
-      "from": "C1-PROMPTED-MEMORY-RETRIEVAL-RANK",
-      "to": "BIO-1-ELIGIBILITY-HOMEOSTASIS"
-    },
-    {
-      "from": "BIO-0-NEURON-INTUITION-CONTRACTS",
-      "to": "BIO-1-ELIGIBILITY-HOMEOSTASIS"
-    },
-    {
-      "from": "NEU-1-LOCAL-MODEL-BAKEOFF",
-      "to": "BIO-1-ELIGIBILITY-HOMEOSTASIS"
-    },
-    {
-      "from": "BIO-1-ELIGIBILITY-HOMEOSTASIS",
-      "to": "BIO-2-REPLAY-CONSOLIDATION"
-    },
-    {
-      "from": "LONG-2-RETENTION-FORGETTING",
-      "to": "BIO-2-REPLAY-CONSOLIDATION"
-    },
-    {
-      "from": "HBO-2-BELLMAN-OPERATOR-SHADOW",
-      "to": "BIO-2-REPLAY-CONSOLIDATION"
-    },
-    {
-      "from": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
-      "to": "BIO-2-REPLAY-CONSOLIDATION"
-    },
-    {
-      "from": "HBO-1-OPERATOR-SENSOR-CORE",
-      "to": "BIO-2-REPLAY-CONSOLIDATION"
-    },
-    {
-      "from": "BIO-2-REPLAY-CONSOLIDATION",
-      "to": "BIO-3-WORLD-MODEL-PREDICTION-ERROR"
-    },
-    {
-      "from": "HBO-2-BELLMAN-OPERATOR-SHADOW",
-      "to": "BIO-3-WORLD-MODEL-PREDICTION-ERROR"
-    },
-    {
-      "from": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
-      "to": "BIO-3-WORLD-MODEL-PREDICTION-ERROR"
-    },
-    {
-      "from": "HBO-1-OPERATOR-SENSOR-CORE",
-      "to": "BIO-3-WORLD-MODEL-PREDICTION-ERROR"
-    },
-    {
-      "from": "LONG-3-UNLEARNING-NON-RESURRECTION",
-      "to": "PIM-3-FACTOR-EVOLUTION"
-    },
-    {
-      "from": "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW",
-      "to": "PIM-3-FACTOR-EVOLUTION"
-    },
-    {
-      "from": "PIM-1-PROMPT-FACTOR-REGISTRY",
-      "to": "PIM-3-FACTOR-EVOLUTION"
-    },
-    {
-      "from": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
-      "to": "PIM-3-FACTOR-EVOLUTION"
-    },
-    {
-      "from": "LONG-3-UNLEARNING-NON-RESURRECTION",
-      "to": "PLS-1-PARAMETER-PLASTICITY"
-    },
-    {
-      "from": "BIO-3-WORLD-MODEL-PREDICTION-ERROR",
-      "to": "PLS-1-PARAMETER-PLASTICITY"
-    },
-    {
-      "from": "PLS-1-PARAMETER-PLASTICITY",
-      "to": "PLS-2-TOPOLOGY-PROPOSAL"
-    },
-    {
-      "from": "PIM-3-FACTOR-EVOLUTION",
-      "to": "PLS-2-TOPOLOGY-PROPOSAL"
-    },
-    {
-      "from": "ECP-1-ENGINEERING-CONTROL-PLANE",
-      "to": "PLS-2-TOPOLOGY-PROPOSAL"
-    },
-    {
-      "from": "ECP-1-ENGINEERING-CONTROL-PLANE",
-      "to": "SELF-1-CODE-CANDIDATE-PIPELINE"
-    },
-    {
-      "from": "LONG-3-UNLEARNING-NON-RESURRECTION",
-      "to": "SELF-1-CODE-CANDIDATE-PIPELINE"
-    },
-    {
-      "from": "ART-2-NEXT-SNAPSHOT-RELOAD-ROLLBACK",
-      "to": "SELF-1-CODE-CANDIDATE-PIPELINE"
-    },
-    {
-      "from": "P0.8D-VERTICAL-SLICE",
-      "to": "P0.9-EXTERNAL-GATES"
-    },
-    {
-      "from": "PLS-2-TOPOLOGY-PROPOSAL",
-      "to": "PLS-3-BOUNDED-STRUCTURAL-CANARY"
-    },
-    {
-      "from": "P0.9-EXTERNAL-GATES",
-      "to": "PLS-3-BOUNDED-STRUCTURAL-CANARY"
-    },
-    {
-      "from": "PLS-1-PARAMETER-PLASTICITY",
-      "to": "PLS-3-BOUNDED-STRUCTURAL-CANARY"
-    },
-    {
-      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
-      "to": "PLATFORM-0-TYPE-BOUNDARY"
-    },
-    {
-      "from": "OBJ-0-OBJECTIVE-CONTRACTS",
-      "to": "PLATFORM-0-TYPE-BOUNDARY"
-    },
-    {
-      "from": "LRN-0-CAUSAL-LEARNING-CONTRACTS",
-      "to": "PLATFORM-0-TYPE-BOUNDARY"
-    },
-    {
-      "from": "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
-      "to": "PLATFORM-0-TYPE-BOUNDARY"
-    },
-    {
-      "from": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
-      "to": "PLATFORM-0-TYPE-BOUNDARY"
-    },
-    {
-      "from": "HBO-0-BELLMAN-OPERATOR-CONTRACTS",
-      "to": "PLATFORM-0-TYPE-BOUNDARY"
-    },
-    {
-      "from": "BIO-0-NEURON-INTUITION-CONTRACTS",
-      "to": "PLATFORM-0-TYPE-BOUNDARY"
-    },
-    {
-      "from": "P0.7E-DEPENDENCY-INVERSION",
-      "to": "PLATFORM-0-TYPE-BOUNDARY"
-    },
-    {
-      "from": "P0.7B-B0-VERIFIED-USE",
-      "to": "FLEET-1-ALLOCATION-CONTRACT"
-    },
-    {
-      "from": "AUTHBUS-P1.3-V12",
-      "to": "HEPTABAO-1-SECRET-BOUNDARY"
-    },
-    {
-      "from": "P0.7B-B3-BOUNDARIES",
-      "to": "HEPTABAO-1-SECRET-BOUNDARY"
     },
     {
       "from": "MEM-0-TYPES",
       "to": "MEM-READ-1-SNAPSHOT-PORT"
     },
     {
-      "from": "P0.7B-B4-CALLSITE-PROOF",
-      "to": "TASKFLOW-1-EXECUTION-BOUNDARY"
-    },
-    {
-      "from": "P0.7B-B3-BOUNDARIES",
-      "to": "MATRIX-1-CHANNEL-BOUNDARY"
-    },
-    {
-      "from": "P0.8B-READINESS",
-      "to": "UI-NATIVE-1-SHELL"
-    },
-    {
-      "from": "UI-V5",
-      "to": "UI-NATIVE-1-SHELL"
-    },
-    {
-      "from": "CTX-1-CONTEXT-COMPILER",
-      "to": "INT-2-AGENTD-CODEX-COMPOSITION"
-    },
-    {
-      "from": "INT-1-CALIBRATED-INTUITION-POLICY",
-      "to": "INT-2-AGENTD-CODEX-COMPOSITION"
-    },
-    {
-      "from": "C1-PROMPTED-MEMORY-RETRIEVAL-RANK",
-      "to": "INT-2-AGENTD-CODEX-COMPOSITION"
-    },
-    {
-      "from": "INTELLIGENCE-A0-Q0.63",
-      "to": "INT-2-AGENTD-CODEX-COMPOSITION"
-    },
-    {
-      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
-      "to": "DOC-REGISTRY-CLOSED-WORLD"
-    },
-    {
-      "from": "DOC-0-CANONICAL-DOCUMENT-CONSOLIDATION",
-      "to": "DOC-REGISTRY-CLOSED-WORLD"
-    },
-    {
-      "from": "DOC-1-V8-SEMANTIC-UPGRADE",
-      "to": "DOC-3A-SOURCE-BINDING-RECONCILIATION"
-    },
-    {
-      "from": "DOC-REGISTRY-CLOSED-WORLD",
-      "to": "DOC-3A-SOURCE-BINDING-RECONCILIATION"
-    },
-    {
-      "from": "DOC-3A-SOURCE-BINDING-RECONCILIATION",
-      "to": "DOC-3B-MODULE-TECHNICAL-DOCUMENTS"
-    },
-    {
-      "from": "DOC-3B-MODULE-TECHNICAL-DOCUMENTS",
-      "to": "DOC-3C-MODULE-DOC-CLOSED-WORLD"
-    },
-    {
-      "from": "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
-      "to": "DOC-3E-PRECODING-READINESS-CLOSED-WORLD"
-    },
-    {
-      "from": "DOC-3E-PRECODING-READINESS-CLOSED-WORLD",
-      "to": "EMB-0-EMBODIED-CONTRACTS"
-    },
-    {
-      "from": "PLATFORM-0-TYPE-BOUNDARY",
-      "to": "EMB-0-EMBODIED-CONTRACTS"
-    },
-    {
-      "from": "P0.7E-DEPENDENCY-INVERSION",
-      "to": "EMB-0-EMBODIED-CONTRACTS"
-    },
-    {
-      "from": "EMB-0-EMBODIED-CONTRACTS",
-      "to": "EMB-1-SENSOR-BUS-BODY-SCHEMA"
+      "from": "MEM-0-TYPES",
+      "to": "OBJ-1-OBJECTIVE-COMPILER"
     },
     {
       "from": "MEM-0-TYPES",
-      "to": "EMB-1-SENSOR-BUS-BODY-SCHEMA"
+      "to": "P0.7E-DEPENDENCY-INVERSION"
+    },
+    {
+      "from": "MEM-1-STORE",
+      "to": "ART-1-LEARNING-ARTIFACT-REGISTRY"
     },
     {
       "from": "MEM-1-STORE",
       "to": "EMB-1-SENSOR-BUS-BODY-SCHEMA"
     },
     {
-      "from": "MEM-READ-1-SNAPSHOT-PORT",
-      "to": "EMB-1-SENSOR-BUS-BODY-SCHEMA"
+      "from": "MEM-1-STORE",
+      "to": "LRN-1-DURABLE-EPISODE-LEDGER"
     },
     {
-      "from": "P0.8B-READINESS",
-      "to": "EMB-1-SENSOR-BUS-BODY-SCHEMA"
+      "from": "MEM-1-STORE",
+      "to": "MEM-8-PRODUCTION-WRITER"
+    },
+    {
+      "from": "MEM-1-STORE",
+      "to": "P0.7D-FAULT-MATRIX"
+    },
+    {
+      "from": "MEM-1-STORE",
+      "to": "PIM-1-PROMPT-FACTOR-REGISTRY"
+    },
+    {
+      "from": "MEM-2-RETRIEVAL",
+      "to": "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW"
+    },
+    {
+      "from": "MEM-3-FEDERATION",
+      "to": "ASM-4-FEDERATED-ORGAN-ENROLLMENT"
     },
     {
       "from": "MEM-8-PRODUCTION-WRITER",
       "to": "EMB-1-SENSOR-BUS-BODY-SCHEMA"
     },
     {
-      "from": "EMB-1-SENSOR-BUS-BODY-SCHEMA",
-      "to": "EMB-2-REFLEX-MOTOR-ACTUATION"
+      "from": "MEM-8-PRODUCTION-WRITER",
+      "to": "P0.7D-FAULT-MATRIX"
     },
     {
-      "from": "RCP-1-RUNTIME-CONTROL-PLANE",
-      "to": "EMB-2-REFLEX-MOTOR-ACTUATION"
+      "from": "MEM-READ-1-SNAPSHOT-PORT",
+      "to": "EMB-1-SENSOR-BUS-BODY-SCHEMA"
     },
     {
-      "from": "P0.7A-RUNTIME-BOOTSTRAP",
-      "to": "EMB-2-REFLEX-MOTOR-ACTUATION"
+      "from": "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+      "to": "BIO-0-NEURON-INTUITION-CONTRACTS"
     },
     {
-      "from": "P0.7B-B0-VERIFIED-USE",
-      "to": "EMB-2-REFLEX-MOTOR-ACTUATION"
+      "from": "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+      "to": "HBO-0-BELLMAN-OPERATOR-CONTRACTS"
     },
     {
-      "from": "P0.7B-B4-CALLSITE-PROOF",
-      "to": "EMB-2-REFLEX-MOTOR-ACTUATION"
+      "from": "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+      "to": "NDU-1-DETERMINISTIC-UTILITY-BASELINE"
     },
     {
-      "from": "P0.8D-VERTICAL-SLICE",
-      "to": "EMB-2-REFLEX-MOTOR-ACTUATION"
+      "from": "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+      "to": "NDU-2-AGENT-DOMAIN-HIERARCHY"
+    },
+    {
+      "from": "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+      "to": "P0.7E-DEPENDENCY-INVERSION"
+    },
+    {
+      "from": "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+      "to": "PIM-0-PROMPT-INTERVENTION-CONTRACTS"
+    },
+    {
+      "from": "NDU-0-PREFERENCE-UTILITY-CONTRACTS",
+      "to": "PLATFORM-0-TYPE-BOUNDARY"
+    },
+    {
+      "from": "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
+      "to": "HBO-2-BELLMAN-OPERATOR-SHADOW"
+    },
+    {
+      "from": "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
+      "to": "INT-1-CALIBRATED-INTUITION-POLICY"
+    },
+    {
+      "from": "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
+      "to": "NDU-2-AGENT-DOMAIN-HIERARCHY"
+    },
+    {
+      "from": "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
+      "to": "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW"
+    },
+    {
+      "from": "NDU-1-DETERMINISTIC-UTILITY-BASELINE",
+      "to": "RCP-1-RUNTIME-CONTROL-PLANE"
     },
     {
       "from": "NDU-2-AGENT-DOMAIN-HIERARCHY",
       "to": "EMB-2-REFLEX-MOTOR-ACTUATION"
     },
     {
-      "from": "EMB-2-REFLEX-MOTOR-ACTUATION",
-      "to": "EMB-3-HIL-SIM-TO-REAL-QUALIFICATION"
+      "from": "NEU-1-LOCAL-MODEL-BAKEOFF",
+      "to": "BIO-1-ELIGIBILITY-HOMEOSTASIS"
     },
     {
-      "from": "LRN-2-CAUSAL-EVALUATION",
-      "to": "EMB-3-HIL-SIM-TO-REAL-QUALIFICATION"
+      "from": "NEU-1-LOCAL-MODEL-BAKEOFF",
+      "to": "NEU-2-TEMPORAL-SIGNAL-RUNTIME"
     },
     {
-      "from": "HBO-2-BELLMAN-OPERATOR-SHADOW",
-      "to": "EMB-3-HIL-SIM-TO-REAL-QUALIFICATION"
+      "from": "NEU-2-TEMPORAL-SIGNAL-RUNTIME",
+      "to": "BIO-1-ELIGIBILITY-HOMEOSTASIS"
     },
     {
-      "from": "LONG-3-UNLEARNING-NON-RESURRECTION",
-      "to": "EMB-3-HIL-SIM-TO-REAL-QUALIFICATION"
+      "from": "NEU-2-TEMPORAL-SIGNAL-RUNTIME",
+      "to": "INT-1-CALIBRATED-INTUITION-POLICY"
     },
     {
-      "from": "DOC-3E-PRECODING-READINESS-CLOSED-WORLD",
-      "to": "ASM-0-EXTERNAL-SYSTEM-CONTRACTS"
+      "from": "OBJ-0-OBJECTIVE-CONTRACTS",
+      "to": "BIO-0-NEURON-INTUITION-CONTRACTS"
     },
     {
-      "from": "PLATFORM-0-TYPE-BOUNDARY",
-      "to": "ASM-0-EXTERNAL-SYSTEM-CONTRACTS"
+      "from": "OBJ-0-OBJECTIVE-CONTRACTS",
+      "to": "HBO-0-BELLMAN-OPERATOR-CONTRACTS"
     },
     {
-      "from": "P0.7E-DEPENDENCY-INVERSION",
-      "to": "ASM-0-EXTERNAL-SYSTEM-CONTRACTS"
+      "from": "OBJ-0-OBJECTIVE-CONTRACTS",
+      "to": "LRN-0-CAUSAL-LEARNING-CONTRACTS"
     },
     {
-      "from": "ASM-0-EXTERNAL-SYSTEM-CONTRACTS",
-      "to": "ASM-1-DISCOVERY-MANIFEST"
+      "from": "OBJ-0-OBJECTIVE-CONTRACTS",
+      "to": "NDU-0-PREFERENCE-UTILITY-CONTRACTS"
     },
     {
-      "from": "ECP-1-ENGINEERING-CONTROL-PLANE",
-      "to": "ASM-1-DISCOVERY-MANIFEST"
+      "from": "OBJ-0-OBJECTIVE-CONTRACTS",
+      "to": "OBJ-1-OBJECTIVE-COMPILER"
+    },
+    {
+      "from": "OBJ-0-OBJECTIVE-CONTRACTS",
+      "to": "P0.7E-DEPENDENCY-INVERSION"
+    },
+    {
+      "from": "OBJ-0-OBJECTIVE-CONTRACTS",
+      "to": "PIM-0-PROMPT-INTERVENTION-CONTRACTS"
+    },
+    {
+      "from": "OBJ-0-OBJECTIVE-CONTRACTS",
+      "to": "PLATFORM-0-TYPE-BOUNDARY"
+    },
+    {
+      "from": "OBJ-1-OBJECTIVE-COMPILER",
+      "to": "CTX-1-CONTEXT-COMPILER"
+    },
+    {
+      "from": "OBJ-1-OBJECTIVE-COMPILER",
+      "to": "NDU-1-DETERMINISTIC-UTILITY-BASELINE"
     },
     {
       "from": "P0.7A-RUNTIME-BOOTSTRAP",
       "to": "ASM-1-DISCOVERY-MANIFEST"
     },
     {
-      "from": "SELF-1-CODE-CANDIDATE-PIPELINE",
-      "to": "ASM-1-DISCOVERY-MANIFEST"
+      "from": "P0.7A-RUNTIME-BOOTSTRAP",
+      "to": "EMB-2-REFLEX-MOTOR-ACTUATION"
     },
     {
-      "from": "ASM-1-DISCOVERY-MANIFEST",
-      "to": "ASM-2-DEBIAN-BRIDGE-SANDBOX"
+      "from": "P0.7A-RUNTIME-BOOTSTRAP",
+      "to": "P0.7B-B0-VERIFIED-USE"
+    },
+    {
+      "from": "P0.7A-RUNTIME-BOOTSTRAP",
+      "to": "P0.8B-READINESS"
+    },
+    {
+      "from": "P0.7A-RUNTIME-BOOTSTRAP",
+      "to": "P0.8C-RESOURCE-BUDGETS"
     },
     {
       "from": "P0.7B-B0-VERIFIED-USE",
       "to": "ASM-2-DEBIAN-BRIDGE-SANDBOX"
     },
     {
+      "from": "P0.7B-B0-VERIFIED-USE",
+      "to": "EMB-2-REFLEX-MOTOR-ACTUATION"
+    },
+    {
+      "from": "P0.7B-B0-VERIFIED-USE",
+      "to": "FLEET-1-ALLOCATION-CONTRACT"
+    },
+    {
+      "from": "P0.7B-B0-VERIFIED-USE",
+      "to": "INFER-V4-T1"
+    },
+    {
+      "from": "P0.7B-B0-VERIFIED-USE",
+      "to": "P0.7B-B1A-PROVIDER-BOUNDARY"
+    },
+    {
+      "from": "P0.7B-B0-VERIFIED-USE",
+      "to": "P0.7B-B1B-MODEL-BOUNDARY"
+    },
+    {
+      "from": "P0.7B-B0-VERIFIED-USE",
+      "to": "P0.7B-B2-TOOL-NET-FS"
+    },
+    {
+      "from": "P0.7B-B0-VERIFIED-USE",
+      "to": "P0.7B-B3-BOUNDARIES"
+    },
+    {
+      "from": "P0.7B-B1A-PROVIDER-BOUNDARY",
+      "to": "INFER-V4-T1"
+    },
+    {
+      "from": "P0.7B-B1A-PROVIDER-BOUNDARY",
+      "to": "INFER-V4-T2"
+    },
+    {
+      "from": "P0.7B-B1A-PROVIDER-BOUNDARY",
+      "to": "INFER-V4-T3"
+    },
+    {
+      "from": "P0.7B-B1A-PROVIDER-BOUNDARY",
+      "to": "P0.7B-B4-CALLSITE-PROOF"
+    },
+    {
+      "from": "P0.7B-B1B-MODEL-BOUNDARY",
+      "to": "P0.7B-B4-CALLSITE-PROOF"
+    },
+    {
       "from": "P0.7B-B2-TOOL-NET-FS",
       "to": "ASM-2-DEBIAN-BRIDGE-SANDBOX"
+    },
+    {
+      "from": "P0.7B-B2-TOOL-NET-FS",
+      "to": "P0.7B-B3-BOUNDARIES"
+    },
+    {
+      "from": "P0.7B-B2-TOOL-NET-FS",
+      "to": "P0.7B-B4-CALLSITE-PROOF"
+    },
+    {
+      "from": "P0.7B-B2-TOOL-NET-FS",
+      "to": "P0.7D-FAULT-MATRIX"
+    },
+    {
+      "from": "P0.7B-B3-BOUNDARIES",
+      "to": "HEPTABAO-1-SECRET-BOUNDARY"
+    },
+    {
+      "from": "P0.7B-B3-BOUNDARIES",
+      "to": "MATRIX-1-CHANNEL-BOUNDARY"
+    },
+    {
+      "from": "P0.7B-B3-BOUNDARIES",
+      "to": "P0.7B-B4-CALLSITE-PROOF"
     },
     {
       "from": "P0.7B-B4-CALLSITE-PROOF",
       "to": "ASM-2-DEBIAN-BRIDGE-SANDBOX"
     },
     {
+      "from": "P0.7B-B4-CALLSITE-PROOF",
+      "to": "EMB-2-REFLEX-MOTOR-ACTUATION"
+    },
+    {
+      "from": "P0.7B-B4-CALLSITE-PROOF",
+      "to": "P0.7E-DEPENDENCY-INVERSION"
+    },
+    {
+      "from": "P0.7B-B4-CALLSITE-PROOF",
+      "to": "P0.8A-AST-RATCHET"
+    },
+    {
+      "from": "P0.7B-B4-CALLSITE-PROOF",
+      "to": "TASKFLOW-1-EXECUTION-BOUNDARY"
+    },
+    {
       "from": "P0.7D-FAULT-MATRIX",
       "to": "ASM-2-DEBIAN-BRIDGE-SANDBOX"
     },
     {
-      "from": "ASM-2-DEBIAN-BRIDGE-SANDBOX",
-      "to": "ASM-3-STATE-MIGRATION-QUALIFICATION"
-    },
-    {
-      "from": "LRN-2-CAUSAL-EVALUATION",
-      "to": "ASM-3-STATE-MIGRATION-QUALIFICATION"
-    },
-    {
       "from": "P0.7D-FAULT-MATRIX",
       "to": "ASM-3-STATE-MIGRATION-QUALIFICATION"
     },
     {
-      "from": "LONG-3-UNLEARNING-NON-RESURRECTION",
-      "to": "ASM-3-STATE-MIGRATION-QUALIFICATION"
+      "from": "P0.7D-FAULT-MATRIX",
+      "to": "P0.8D-VERTICAL-SLICE"
     },
     {
-      "from": "ASM-3-STATE-MIGRATION-QUALIFICATION",
-      "to": "ASM-4-FEDERATED-ORGAN-ENROLLMENT"
+      "from": "P0.7E-DEPENDENCY-INVERSION",
+      "to": "ASM-0-EXTERNAL-SYSTEM-CONTRACTS"
     },
     {
-      "from": "FLEET-1-ALLOCATION-CONTRACT",
-      "to": "ASM-4-FEDERATED-ORGAN-ENROLLMENT"
+      "from": "P0.7E-DEPENDENCY-INVERSION",
+      "to": "EMB-0-EMBODIED-CONTRACTS"
     },
     {
-      "from": "MEM-3-FEDERATION",
-      "to": "ASM-4-FEDERATED-ORGAN-ENROLLMENT"
+      "from": "P0.7E-DEPENDENCY-INVERSION",
+      "to": "P0.8A-AST-RATCHET"
+    },
+    {
+      "from": "P0.7E-DEPENDENCY-INVERSION",
+      "to": "PLATFORM-0-TYPE-BOUNDARY"
+    },
+    {
+      "from": "P0.8A-AST-RATCHET",
+      "to": "P0.8B-READINESS"
+    },
+    {
+      "from": "P0.8B-READINESS",
+      "to": "EMB-1-SENSOR-BUS-BODY-SCHEMA"
+    },
+    {
+      "from": "P0.8B-READINESS",
+      "to": "P0.8C-RESOURCE-BUDGETS"
+    },
+    {
+      "from": "P0.8B-READINESS",
+      "to": "P0.8D-VERTICAL-SLICE"
+    },
+    {
+      "from": "P0.8B-READINESS",
+      "to": "UI-NATIVE-1-SHELL"
+    },
+    {
+      "from": "P0.8C-RESOURCE-BUDGETS",
+      "to": "P0.8D-VERTICAL-SLICE"
+    },
+    {
+      "from": "P0.8C-RESOURCE-BUDGETS",
+      "to": "RCP-1-RUNTIME-CONTROL-PLANE"
+    },
+    {
+      "from": "P0.8D-VERTICAL-SLICE",
+      "to": "C1-PROMPTED-MEMORY-RETRIEVAL-RANK"
+    },
+    {
+      "from": "P0.8D-VERTICAL-SLICE",
+      "to": "EMB-2-REFLEX-MOTOR-ACTUATION"
+    },
+    {
+      "from": "P0.8D-VERTICAL-SLICE",
+      "to": "P0.9-EXTERNAL-GATES"
+    },
+    {
+      "from": "P0.9-EXTERNAL-GATES",
+      "to": "PLS-3-BOUNDED-STRUCTURAL-CANARY"
+    },
+    {
+      "from": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+      "to": "BIO-0-NEURON-INTUITION-CONTRACTS"
+    },
+    {
+      "from": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+      "to": "HBO-0-BELLMAN-OPERATOR-CONTRACTS"
+    },
+    {
+      "from": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+      "to": "MEM-4-KG"
+    },
+    {
+      "from": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+      "to": "P0.7E-DEPENDENCY-INVERSION"
+    },
+    {
+      "from": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+      "to": "PIM-1-PROMPT-FACTOR-REGISTRY"
+    },
+    {
+      "from": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+      "to": "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW"
+    },
+    {
+      "from": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+      "to": "PIM-3-FACTOR-EVOLUTION"
+    },
+    {
+      "from": "PIM-0-PROMPT-INTERVENTION-CONTRACTS",
+      "to": "PLATFORM-0-TYPE-BOUNDARY"
+    },
+    {
+      "from": "PIM-1-PROMPT-FACTOR-REGISTRY",
+      "to": "P0.7D-FAULT-MATRIX"
+    },
+    {
+      "from": "PIM-1-PROMPT-FACTOR-REGISTRY",
+      "to": "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW"
+    },
+    {
+      "from": "PIM-1-PROMPT-FACTOR-REGISTRY",
+      "to": "PIM-3-FACTOR-EVOLUTION"
+    },
+    {
+      "from": "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW",
+      "to": "CTX-1-CONTEXT-COMPILER"
+    },
+    {
+      "from": "PIM-2-PROMPT-PRICING-PORTFOLIO-SHADOW",
+      "to": "PIM-3-FACTOR-EVOLUTION"
+    },
+    {
+      "from": "PIM-3-FACTOR-EVOLUTION",
+      "to": "PLS-2-TOPOLOGY-PROPOSAL"
+    },
+    {
+      "from": "PLATFORM-0-TYPE-BOUNDARY",
+      "to": "ASM-0-EXTERNAL-SYSTEM-CONTRACTS"
+    },
+    {
+      "from": "PLATFORM-0-TYPE-BOUNDARY",
+      "to": "EMB-0-EMBODIED-CONTRACTS"
+    },
+    {
+      "from": "PLS-1-PARAMETER-PLASTICITY",
+      "to": "PLS-2-TOPOLOGY-PROPOSAL"
+    },
+    {
+      "from": "PLS-1-PARAMETER-PLASTICITY",
+      "to": "PLS-3-BOUNDED-STRUCTURAL-CANARY"
+    },
+    {
+      "from": "PLS-2-TOPOLOGY-PROPOSAL",
+      "to": "PLS-3-BOUNDED-STRUCTURAL-CANARY"
+    },
+    {
+      "from": "RCP-1-RUNTIME-CONTROL-PLANE",
+      "to": "EMB-2-REFLEX-MOTOR-ACTUATION"
+    },
+    {
+      "from": "RCP-1-RUNTIME-CONTROL-PLANE",
+      "to": "NDU-2-AGENT-DOMAIN-HIERARCHY"
+    },
+    {
+      "from": "SELF-1-CODE-CANDIDATE-PIPELINE",
+      "to": "ASM-1-DISCOVERY-MANIFEST"
+    },
+    {
+      "from": "UI-V5",
+      "to": "UI-NATIVE-1-SHELL"
     }
   ],
   "acyclicRequired": true,
