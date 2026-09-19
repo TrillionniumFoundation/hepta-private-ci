@@ -112,10 +112,13 @@ impl AgentdTopologyAnchorStoreV1 {
     }
 
     pub fn anchor(&self) -> Option<DurableTopologyRegistryAnchorV1> {
-        self.journal.state().anchor.map(|anchor| DurableTopologyRegistryAnchorV1 {
-            sequence: anchor.sequence,
-            frame_digest: anchor.frame_digest,
-        })
+        self.journal
+            .state()
+            .anchor
+            .map(|anchor| DurableTopologyRegistryAnchorV1 {
+                sequence: anchor.sequence,
+                frame_digest: anchor.frame_digest,
+            })
     }
 
     pub fn previous_anchor(&self) -> Option<DurableTopologyRegistryAnchorV1> {

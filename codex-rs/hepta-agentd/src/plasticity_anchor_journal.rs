@@ -153,9 +153,7 @@ impl AdaptiveAnchorJournalV1 {
 
     /// Start a new registry generation. Repeated fence issuance while a generation
     /// is still unacknowledged fails closed instead of skipping fence numbers.
-    pub(crate) fn issue_new_registry_fence(
-        &mut self,
-    ) -> Result<u64, AdaptiveAnchorJournalErrorV1> {
+    pub(crate) fn issue_new_registry_fence(&mut self) -> Result<u64, AdaptiveAnchorJournalErrorV1> {
         if self.state.writer_fence != 0 && self.state.anchor.is_none() {
             return Err(AdaptiveAnchorJournalErrorV1::GenerationPending);
         }
@@ -213,11 +211,7 @@ fn encode_header(magic: [u8; 8], scope: Digest32) -> Vec<u8> {
     bytes
 }
 
-fn encode_frame(
-    tag: u8,
-    writer_fence: u64,
-    anchor: Option<AdaptiveAnchorV1>,
-) -> [u8; FRAME_BYTES] {
+fn encode_frame(tag: u8, writer_fence: u64, anchor: Option<AdaptiveAnchorV1>) -> [u8; FRAME_BYTES] {
     let mut frame = [0_u8; FRAME_BYTES];
     frame[0] = tag;
     frame[1..9].copy_from_slice(&writer_fence.to_be_bytes());
@@ -267,11 +261,7 @@ fn apply_frame(
             state.anchor = None;
         }
         TAG_ANCHOR => {
-            if fence == 0
-                || fence != state.writer_fence
-                || sequence == 0
-                || digest.is_zero()
-            {
+            if fence == 0 || fence != state.writer_fence || sequence == 0 || digest.is_zero() {
                 return Err(AdaptiveAnchorJournalErrorV1::Corrupt);
             }
             let next = AdaptiveAnchorV1 {
@@ -376,8 +366,9 @@ mod tests {
             append.write_all(&[TAG_ANCHOR, 0, 0, 0]).expect("tail");
             append.sync_all().expect("sync");
         }
-        let reopened = AdaptiveAnchorJournalV1::open(file.try_clone().expect("clone"), scope, magic)
-            .expect("reopen");
+        let reopened =
+            AdaptiveAnchorJournalV1::open(file.try_clone().expect("clone"), scope, magic)
+                .expect("reopen");
         assert_eq!(reopened.state().anchor, Some(anchor));
         drop(reopened);
         assert_eq!(file.metadata().expect("metadata").len(), valid_len);
@@ -396,12 +387,13 @@ mod tests {
         }
         let mut append = file.try_clone().expect("clone");
         append.seek(SeekFrom::End(0)).expect("seek");
-        append.write_all(&[0_u8; FRAME_BYTES]).expect("corrupt frame");
+        append
+            .write_all(&[0_u8; FRAME_BYTES])
+            .expect("corrupt frame");
         append.sync_all().expect("sync");
         let length = file.metadata().expect("metadata").len();
         assert_eq!(
-            AdaptiveAnchorJournalV1::open(file.try_clone().expect("clone"), scope, magic)
-                .err(),
+            AdaptiveAnchorJournalV1::open(file.try_clone().expect("clone"), scope, magic).err(),
             Some(AdaptiveAnchorJournalErrorV1::Corrupt)
         );
         assert_eq!(file.metadata().expect("metadata").len(), length);

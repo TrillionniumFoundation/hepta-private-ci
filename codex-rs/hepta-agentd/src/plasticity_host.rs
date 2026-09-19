@@ -171,7 +171,9 @@ impl PlasticityOwnerEvidencePolicyV1 {
             bytes.push(kind.tag());
             if let Some(owners) = self.allowed_owners.get(&kind) {
                 bytes.extend_from_slice(
-                    &u32::try_from(owners.len()).unwrap_or(u32::MAX).to_be_bytes(),
+                    &u32::try_from(owners.len())
+                        .unwrap_or(u32::MAX)
+                        .to_be_bytes(),
                 );
                 for owner in owners {
                     let raw = owner.as_str().as_bytes();
@@ -396,10 +398,13 @@ impl AgentdPlasticityAnchorStoreV1 {
     }
 
     pub fn anchor(&self) -> Option<DurableRegistryAnchorV1> {
-        self.journal.state().anchor.map(|anchor| DurableRegistryAnchorV1 {
-            sequence: anchor.sequence,
-            frame_digest: anchor.frame_digest,
-        })
+        self.journal
+            .state()
+            .anchor
+            .map(|anchor| DurableRegistryAnchorV1 {
+                sequence: anchor.sequence,
+                frame_digest: anchor.frame_digest,
+            })
     }
 
     pub fn previous_anchor(&self) -> Option<DurableRegistryAnchorV1> {
@@ -579,13 +584,12 @@ pub fn resolve_agentd_plasticity_admission_v1(
     if artifact_registry_head_digest.is_zero() || ledger_snapshot.head_digest.is_zero() {
         return Err(AgentdPlasticityHostErrorV1::ArtifactBinding);
     }
-    let owner_evidence_set_digest =
-        resolve_agentd_plasticity_owner_evidence_set_v1(
-            input,
-            owner_evidence_resolver,
-            owner_evidence_policy,
-            now,
-        )?;
+    let owner_evidence_set_digest = resolve_agentd_plasticity_owner_evidence_set_v1(
+        input,
+        owner_evidence_resolver,
+        owner_evidence_policy,
+        now,
+    )?;
     Ok(PlasticityAdmissionEvidenceV1 {
         baseline_id: input.baseline_id.clone(),
         objective_digest: input.objective_digest,
@@ -894,13 +898,9 @@ mod tests {
         let resolver = RecordingResolver {
             seen: RefCell::new(Vec::new()),
         };
-        let set_digest = resolve_agentd_plasticity_owner_evidence_set_v1(
-            &input,
-            &resolver,
-            &owner_policy(),
-            50,
-        )
-        .expect("owner evidence set");
+        let set_digest =
+            resolve_agentd_plasticity_owner_evidence_set_v1(&input, &resolver, &owner_policy(), 50)
+                .expect("owner evidence set");
         assert!(!set_digest.is_zero());
 
         let seen = resolver.seen.borrow();
