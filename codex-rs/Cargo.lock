@@ -2130,6 +2130,7 @@ dependencies = [
  "codex-git-utils",
  "codex-goal-extension",
  "codex-guardian-v2",
+ "codex-hepta-codex-adapter",
  "codex-hepta-contracts",
  "codex-hepta-evidence",
  "codex-hepta-governance",
@@ -3573,7 +3574,10 @@ dependencies = [
 name = "codex-hepta-codex-adapter"
 version = "0.0.0"
 dependencies = [
+ "codex-extension-api",
  "codex-hepta-types",
+ "codex-protocol",
+ "tokio",
 ]
 
 [[package]]
