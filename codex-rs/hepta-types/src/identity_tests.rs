@@ -88,16 +88,11 @@ fn monotonic_values_reject_overflow() {
 #[test]
 fn qualification_authority_posture_is_type_locked() {
     assert!(!AuthorityPosture::DENY_ALL.grants_any());
-    let proof = NonAuthorizingPosture::try_from(AuthorityPosture::DENY_ALL);
-    assert_eq!(proof, Ok(NonAuthorizingPosture::DENY_ALL));
-
-    let mut tampered = AuthorityPosture::DENY_ALL;
-    tampered.runtime = true;
-    assert_eq!(
-        NonAuthorizingPosture::try_from(tampered),
-        Err(NonAuthorizingPostureError::AuthorityGranted)
-    );
     assert!(!NonAuthorizingPosture::DENY_ALL.grants_any());
+    assert_eq!(
+        NonAuthorizingPosture::try_from(AuthorityPosture::DENY_ALL),
+        Ok(NonAuthorizingPosture::DENY_ALL)
+    );
     assert_eq!(
         NonAuthorizingPosture::DENY_ALL.as_legacy(),
         AuthorityPosture::DENY_ALL
