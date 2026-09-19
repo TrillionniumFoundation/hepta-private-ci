@@ -153,8 +153,11 @@ impl ArtifactPublicationTransactionV1 {
         &mut self,
         registry: &ArtifactRegistry,
         receipt: RegistrySnapshotReceipt,
+        withdrawal_registry: &DatasetWithdrawalRegistry,
+        now: u64,
     ) -> Result<(), ArtifactPublicationError> {
         self.require_phase(ArtifactPublicationPhaseV1::PayloadDurable)?;
+        self.revalidate_withdrawal_frontier(withdrawal_registry, now)?;
         if receipt.binding.is_zero()
             || receipt.file_digest.is_zero()
             || receipt.head_digest.is_zero()
@@ -196,8 +199,11 @@ impl ArtifactPublicationTransactionV1 {
         witness: &RegistryHeadWitnessV1,
         requirement: &RegistryHeadRequirementV1,
         receipt: RegistryHeadWitnessReceipt,
+        withdrawal_registry: &DatasetWithdrawalRegistry,
+        now: u64,
     ) -> Result<(), ArtifactPublicationError> {
         self.require_phase(ArtifactPublicationPhaseV1::RegistryDurable)?;
+        self.revalidate_withdrawal_frontier(withdrawal_registry, now)?;
         let registry_receipt = self
             .registry_receipt
             .ok_or(ArtifactPublicationError::InternalInvariant)?;
@@ -221,9 +227,11 @@ impl ArtifactPublicationTransactionV1 {
 
     pub fn acknowledge(
         &mut self,
+        withdrawal_registry: &DatasetWithdrawalRegistry,
         now: u64,
     ) -> Result<ArtifactPublicationReceiptV1, ArtifactPublicationError> {
         self.require_phase(ArtifactPublicationPhaseV1::WitnessDurable)?;
+        self.revalidate_withdrawal_frontier(withdrawal_registry, now)?;
         if now < self.intent.admission.admitted_at {
             return Err(ArtifactPublicationError::AcknowledgementTime);
         }
@@ -294,6 +302,15 @@ impl ArtifactPublicationTransactionV1 {
             acknowledged_at: snapshot.acknowledged_at,
             state_digest: snapshot.state_digest,
         })
+    }
+
+    fn revalidate_withdrawal_frontier(
+        &self,
+        withdrawal_registry: &DatasetWithdrawalRegistry,
+        now: u64,
+    ) -> Result<(), ArtifactPublicationError> {
+        validate_artifact_publication_v3(&self.intent.admission, withdrawal_registry, now)?;
+        Ok(())
     }
 
     fn require_phase(
@@ -465,6 +482,7 @@ mod tests {
 
     use crate::ArtifactKind;
     use crate::ArtifactManifest;
+    use crate::DatasetWithdrawalNoticeV1;
     use crate::DatasetWithdrawalScopeV1;
     use crate::LearningArtifactManifestV2;
     use crate::ProvenanceModeV1;
@@ -623,24 +641,29 @@ mod tests {
     fn art_07_publication_requires_ordered_durable_phases_before_ack() {
         let mut transaction = prepared();
         assert_eq!(
-            transaction.acknowledge(20),
+            transaction.acknowledge(&withdrawal_registry(), 20),
             Err(ArtifactPublicationError::InvalidPhase)
         );
         if let Err(error) = transaction.record_payload_durable(digest("payload"), 7) {
             panic!("payload durability failed: {error}");
         }
         assert_eq!(
-            transaction.acknowledge(20),
+            transaction.acknowledge(&withdrawal_registry(), 20),
             Err(ArtifactPublicationError::InvalidPhase)
         );
 
         let registry = registry_with_candidate(Digest32::ZERO);
         let registry_receipt = snapshot_receipt(&registry);
-        if let Err(error) = transaction.record_registry_durable(&registry, registry_receipt) {
+        if let Err(error) = transaction.record_registry_durable(
+            &registry,
+            registry_receipt,
+            &withdrawal_registry(),
+            20,
+        ) {
             panic!("registry durability failed: {error}");
         }
         assert_eq!(
-            transaction.acknowledge(20),
+            transaction.acknowledge(&withdrawal_registry(), 20),
             Err(ArtifactPublicationError::InvalidPhase)
         );
 
@@ -649,10 +672,12 @@ mod tests {
             &witness,
             &head_requirement(),
             witness_receipt(&witness),
+            &withdrawal_registry(),
+            20,
         ) {
             panic!("witness durability failed: {error}");
         }
-        let receipt = match transaction.acknowledge(21) {
+        let receipt = match transaction.acknowledge(&withdrawal_registry(), 21) {
             Ok(value) => value,
             Err(error) => panic!("acknowledgement failed: {error}"),
         };
@@ -681,13 +706,18 @@ mod tests {
                 Err(error) => panic!("payload recovery failed: {error}"),
             };
         assert_eq!(
-            recovered.acknowledge(20),
+            recovered.acknowledge(&withdrawal_registry(), 20),
             Err(ArtifactPublicationError::InvalidPhase)
         );
 
         let registry = registry_with_candidate(Digest32::ZERO);
         if let Err(error) =
-            transaction.record_registry_durable(&registry, snapshot_receipt(&registry))
+            transaction.record_registry_durable(
+                &registry,
+                snapshot_receipt(&registry),
+                &withdrawal_registry(),
+                20,
+            )
         {
             panic!("registry durability failed: {error}");
         }
@@ -697,7 +727,7 @@ mod tests {
                 Err(error) => panic!("registry recovery failed: {error}"),
             };
         assert_eq!(
-            recovered.acknowledge(20),
+            recovered.acknowledge(&withdrawal_registry(), 20),
             Err(ArtifactPublicationError::InvalidPhase)
         );
 
@@ -714,7 +744,46 @@ mod tests {
                 Ok(value) => value,
                 Err(error) => panic!("witness recovery failed: {error}"),
             };
-        assert!(recovered.acknowledge(21).is_ok());
+        assert!(recovered.acknowledge(&withdrawal_registry(), 21).is_ok());
+    }
+
+    #[test]
+    fn art_07_withdrawal_advance_blocks_recovered_publication() {
+        let mut transaction = prepared();
+        if let Err(error) = transaction.record_payload_durable(digest("payload"), 7) {
+            panic!("payload durability failed: {error}");
+        }
+
+        let registry = registry_with_candidate(Digest32::ZERO);
+        let mut withdrawal = withdrawal_registry();
+        if let Err(error) = withdrawal.append(DatasetWithdrawalNoticeV1 {
+            notice_id: id("withdraw-after-admission"),
+            dataset_digest: digest("dataset-a"),
+            source_tombstone_digest: digest("dataset-a-tombstone"),
+            authority_id: id("dataset-authority"),
+            credential_chain_digest: digest("withdrawal-credential"),
+            signing_key_digest: digest("withdrawal-key"),
+            authority_epoch: 2,
+            issued_at: 21,
+        }) {
+            panic!("withdrawal fixture failed: {error}");
+        }
+
+        assert!(matches!(
+            transaction.record_registry_durable(
+                &registry,
+                snapshot_receipt(&registry),
+                &withdrawal,
+                21,
+            ),
+            Err(ArtifactPublicationError::Admission(
+                ArtifactAdmissionError::WithdrawalHeadChanged
+            ))
+        ));
+        assert_eq!(
+            transaction.phase(),
+            ArtifactPublicationPhaseV1::PayloadDurable
+        );
     }
 
     #[test]
@@ -742,7 +811,12 @@ mod tests {
             panic!("wrong registry fixture append failed: {error}");
         }
         assert_eq!(
-            transaction.record_registry_durable(&registry, snapshot_receipt(&registry)),
+            transaction.record_registry_durable(
+                &registry,
+                snapshot_receipt(&registry),
+                &withdrawal_registry(),
+                20,
+            ),
             Err(ArtifactPublicationError::RegistryProjectionMismatch)
         );
     }
