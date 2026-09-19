@@ -23,6 +23,7 @@ pub(crate) struct AgentdState {
     events: Mutex<EventBuffer>,
     automation: Mutex<Option<AutomationStore>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
+    pending_cognitive_contexts: Mutex<crate::cognitive_context::PendingCognitiveContexts>,
 }
 
 struct RuntimeState {
@@ -58,6 +59,9 @@ impl AgentdState {
             events: Mutex::new(events),
             automation: Mutex::new(None),
             cognitive: Mutex::new(None),
+            pending_cognitive_contexts: Mutex::new(
+                crate::cognitive_context::PendingCognitiveContexts::default(),
+            ),
         })
     }
 

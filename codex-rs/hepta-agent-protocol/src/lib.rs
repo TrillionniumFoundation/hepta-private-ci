@@ -138,6 +138,23 @@ impl AgentdRequest {
         }
     }
 
+    pub fn cognitive_context_finalize(
+        request_id: u64,
+        spawn_generation: u64,
+        snapshot_digest: String,
+        read_digest: String,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::CognitiveContextFinalize {
+                snapshot_digest,
+                read_digest,
+            },
+        }
+    }
+
     pub fn events(request_id: u64, spawn_generation: u64, after_cursor: u64, limit: u16) -> Self {
         Self {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
@@ -276,6 +293,10 @@ pub enum AgentdMethod {
         query: String,
         limit: u16,
     },
+    CognitiveContextFinalize {
+        snapshot_digest: String,
+        read_digest: String,
+    },
     Events {
         after_cursor: u64,
         limit: u16,
@@ -329,6 +350,10 @@ pub enum AgentdPayload {
     Lifecycle(LifecycleSnapshot),
     SessionIngress(SessionIngress),
     CognitiveContext(CognitiveContextSnapshot),
+    CognitiveContextFinalized {
+        snapshot_digest: String,
+        read_digest: String,
+    },
     AuthBusTextStatus(AuthBusTextStatus),
     Events(EventBatch),
     AutomationTask(AutomationTask),

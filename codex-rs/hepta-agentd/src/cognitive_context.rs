@@ -1,10 +1,13 @@
 //! Connect the canonical SQLite owner to the authoritative cognitive read port.
 
+use std::collections::BTreeMap;
 use std::future::Future;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_cognitive_read::AuthoritativeReadGenerationVectorV1;
+use codex_hepta_cognitive_read::AuthoritativeReadResultV1;
+use codex_hepta_cognitive_read::AuthoritativeSnapshotV1;
 use codex_hepta_cognitive_read::ReadRequest;
 use codex_hepta_cognitive_read::ReadRequestV2;
 use codex_hepta_cognitive_read::SnapshotAcquisitionRequestV1;
@@ -18,6 +21,7 @@ use codex_hepta_memory::CognitiveAccess;
 use codex_hepta_memory::CognitiveScope;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::CognitiveStoreError;
+use codex_hepta_memory::DurableCognitiveSnapshot;
 use codex_hepta_memory::RetrievalRequest;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -31,6 +35,7 @@ const MAX_CONTEXT_JSON_BYTES: usize = 24 * 1024;
 const AUTHORITATIVE_READ_LEASE_MS: u64 = 5_000;
 const AUTHORITATIVE_READ_DEADLINE_MS: u64 = 10_000;
 const AUTHORITATIVE_PURPOSE_ID: &str = "agentd:cognitive-context";
+const MAX_PENDING_AUTHORITATIVE_CONTEXTS: usize = 256;
 
 /// Only storage failures may invalidate the canonical SQLite owner. A revoked
 /// or unavailable optional ranker closes the ranked read, not other store ports.
@@ -46,6 +51,99 @@ impl From<CognitiveStoreError> for CognitiveContextError {
     }
 }
 
+/// Internal one-shot guard retained by Agentd until the real model-dispatch
+/// boundary consumes it. It never crosses the local control protocol.
+pub(crate) struct CognitiveContextGuard {
+    cut: DurableCognitiveSnapshot,
+    vector: AuthoritativeReadGenerationVectorV1,
+    acquisition: SnapshotAcquisitionRequestV1,
+    original_envelope: AuthoritativeSnapshotV1,
+    read: AuthoritativeReadResultV1,
+    ranked: bool,
+}
+
+pub(crate) struct IssuedCognitiveContext {
+    pub(crate) snapshot: CognitiveContextSnapshot,
+    guard: CognitiveContextGuard,
+}
+
+/// Bounded, short-lived, in-memory registry of issued authoritative reads.
+///
+/// Entries are one-shot and keyed by the authoritative binding digest. Missing,
+/// expired, replayed, or mismatched receipts fail closed. This registry is not
+/// durable authority; process/lifecycle fences still dominate it.
+#[derive(Default)]
+pub(crate) struct PendingCognitiveContexts {
+    entries: BTreeMap<String, CognitiveContextGuard>,
+}
+
+impl PendingCognitiveContexts {
+    pub(crate) fn issue(
+        &mut self,
+        issued: IssuedCognitiveContext,
+        now_unix_ms: u64,
+    ) -> Result<CognitiveContextSnapshot, CognitiveStoreError> {
+        self.prune(now_unix_ms);
+        if now_unix_ms >= issued.guard.original_envelope.lease_expires_unix_ms() {
+            return Err(CognitiveStoreError::Conflict(
+                "authoritative cognitive context expired before publication".to_string(),
+            ));
+        }
+        if issued.snapshot.snapshot_digest
+            != issued.guard.read.read_result.snapshot_digest().to_string()
+            || issued.snapshot.read_digest != issued.guard.read.binding_digest.to_string()
+        {
+            return Err(CognitiveStoreError::Corrupt(
+                "authoritative cognitive context receipt mismatch".to_string(),
+            ));
+        }
+        if self.entries.len() >= MAX_PENDING_AUTHORITATIVE_CONTEXTS {
+            return Err(CognitiveStoreError::Unavailable(
+                "pending authoritative cognitive context capacity exceeded".to_string(),
+            ));
+        }
+        let key = issued.snapshot.read_digest.clone();
+        if self.entries.contains_key(&key) {
+            return Err(CognitiveStoreError::Conflict(
+                "duplicate authoritative cognitive context receipt".to_string(),
+            ));
+        }
+        self.entries.insert(key, issued.guard);
+        Ok(issued.snapshot)
+    }
+
+    pub(crate) fn take(
+        &mut self,
+        snapshot_digest: &str,
+        read_digest: &str,
+        now_unix_ms: u64,
+    ) -> Result<CognitiveContextGuard, CognitiveStoreError> {
+        if snapshot_digest.len() != 64 || read_digest.len() != 64 {
+            return Err(CognitiveStoreError::Invalid(
+                "cognitive context finalization requires canonical digests".to_string(),
+            ));
+        }
+        self.prune(now_unix_ms);
+        let guard = self.entries.remove(read_digest).ok_or_else(|| {
+            CognitiveStoreError::Conflict(
+                "authoritative cognitive context receipt is missing, expired, or already consumed"
+                    .to_string(),
+            )
+        })?;
+        if guard.read.read_result.snapshot_digest().to_string() != snapshot_digest {
+            return Err(CognitiveStoreError::Conflict(
+                "authoritative cognitive context snapshot receipt mismatch".to_string(),
+            ));
+        }
+        Ok(guard)
+    }
+
+    fn prune(&mut self, now_unix_ms: u64) {
+        self.entries
+            .retain(|_, guard| now_unix_ms < guard.original_envelope.lease_expires_unix_ms());
+    }
+}
+
 /// `body_generation` is the process launch identity. `authority_epoch` is the
 /// separately fenced fleet lifecycle generation and is rebound by StateControl
 /// immediately before the returned context is consumed.
@@ -58,6 +156,33 @@ pub(crate) async fn read(
     limit: u16,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
+    Ok(
+        issue(
+            store,
+            owner,
+            body_generation,
+            authority_epoch,
+            query,
+            limit,
+            ranker,
+        )
+        .await?
+        .snapshot,
+    )
+}
+
+/// Product issuance retains the full authoritative guard inside Agentd so a
+/// downstream model worker can consume it exactly once at the real effect
+/// boundary without trusting caller-supplied authority metadata.
+pub(crate) async fn issue(
+    store: &CognitiveStore,
+    owner: &AgentId,
+    body_generation: u64,
+    authority_epoch: u64,
+    query: &str,
+    limit: u16,
+    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+) -> Result<IssuedCognitiveContext, CognitiveContextError> {
     read_with_revalidation_hook(
         store,
         owner,
@@ -83,7 +208,7 @@ async fn read_with_revalidation_hook<F, Fut>(
     limit: u16,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
     before_revalidation: F,
-) -> Result<CognitiveContextSnapshot, CognitiveContextError>
+) -> Result<IssuedCognitiveContext, CognitiveContextError>
 where
     F: FnOnce() -> Fut,
     Fut: Future<Output = Result<(), CognitiveStoreError>>,
@@ -319,7 +444,7 @@ where
         .await?;
     let current_provider = current_cut
         .authoritative_provider(
-            vector,
+            vector.clone(),
             &acquisition,
             revalidated_at_unix_ms,
             acquisition.deadline_unix_ms,
@@ -341,7 +466,71 @@ where
             .map_err(|_| CognitiveContextError::RankerUnavailable)?
             .map_err(|_| CognitiveContextError::RankerUnavailable)?;
     }
-    Ok(response)
+    Ok(IssuedCognitiveContext {
+        snapshot: response,
+        guard: CognitiveContextGuard {
+            cut,
+            vector,
+            acquisition,
+            original_envelope,
+            read,
+            ranked: ranker.is_some(),
+        },
+    })
+}
+
+/// Revalidate and consume one issued guard at the real downstream model
+/// boundary. The caller removes the guard from the registry before this async
+/// operation, so failure cannot be retried as if the same receipt were fresh.
+pub(crate) async fn finalize(
+    store: &CognitiveStore,
+    owner: &AgentId,
+    authority_epoch: u64,
+    guard: CognitiveContextGuard,
+    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+) -> Result<(), CognitiveContextError> {
+    if authority_epoch != guard.acquisition.authority_epoch || ranker.is_some() != guard.ranked {
+        return Err(CognitiveStoreError::Conflict(
+            "authoritative cognitive context host profile changed before consumption".to_string(),
+        )
+        .into());
+    }
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let scope = CognitiveScope::AgentPrivate;
+    let revalidated_at_unix_ms = now_millis()?;
+    let current_cut = store
+        .revalidate_lane_c_snapshot(
+            &access,
+            &scope,
+            &guard.cut,
+            millis_to_seconds(revalidated_at_unix_ms)?,
+        )
+        .await?;
+    let current_provider = current_cut
+        .authoritative_provider(
+            guard.vector.clone(),
+            &guard.acquisition,
+            revalidated_at_unix_ms,
+            guard.acquisition.deadline_unix_ms,
+        )
+        .map_err(authoritative_unavailable)?;
+    revalidate_authoritative_read(
+        &guard.read,
+        &guard.original_envelope,
+        current_provider.envelope(),
+        revalidated_at_unix_ms,
+        &guard.acquisition,
+    )
+    .map_err(authoritative_unavailable)?;
+
+    if let Some(ranker) = ranker {
+        let ranker = std::sync::Arc::clone(ranker);
+        tokio::task::spawn_blocking(move || ranker.revalidate())
+            .await
+            .map_err(|_| CognitiveContextError::RankerUnavailable)?
+            .map_err(|_| CognitiveContextError::RankerUnavailable)?;
+    }
+    Ok(())
 }
 
 fn authoritative_unavailable(error: SnapshotProviderError) -> CognitiveStoreError {

@@ -117,7 +117,7 @@ impl AgentdState {
                 // The model/context plan bind to the launched body; the cognitive
                 // authoritative read additionally binds the current fleet lifecycle
                 // generation as its host authority epoch.
-                let result = crate::cognitive_context::read(
+                let result = crate::cognitive_context::issue(
                     &store,
                     &self.identity.agent_id,
                     self.identity.spawn_generation,
@@ -143,7 +143,95 @@ impl AgentdState {
                     )?;
                 }
                 match result {
-                    Ok(snapshot) => AgentdPayload::CognitiveContext(snapshot),
+                    Ok(issued) => {
+                        let snapshot = match self
+                            .pending_cognitive_contexts
+                            .lock()
+                            .map_err(poisoned_state)?
+                            .issue(issued, now_ms()?)
+                        {
+                            Ok(snapshot) => snapshot,
+                            Err(error) => {
+                                return self.cognitive_error_response(
+                                    request_id,
+                                    current_generation,
+                                    error,
+                                );
+                            }
+                        };
+                        AgentdPayload::CognitiveContext(snapshot)
+                    }
+                    Err(CognitiveContextError::Store(error)) => {
+                        return self.cognitive_error_response(
+                            request_id,
+                            current_generation,
+                            error,
+                        );
+                    }
+                    Err(CognitiveContextError::RankerUnavailable) => AgentdPayload::Error {
+                        code: "cognitive_ranker_unavailable".to_string(),
+                        message: "selected ranker is unavailable; explicit reload required"
+                            .to_string(),
+                    },
+                }
+            }
+            crate::AgentdMethod::CognitiveContextFinalize {
+                snapshot_digest,
+                read_digest,
+            } => {
+                require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
+                let Some(store) = cognitive else {
+                    return self.response_with_payload(
+                        request_id,
+                        current_generation,
+                        cognitive_control_unavailable(),
+                    );
+                };
+                let guard = match self
+                    .pending_cognitive_contexts
+                    .lock()
+                    .map_err(poisoned_state)?
+                    .take(&snapshot_digest, &read_digest, now_ms()?)
+                {
+                    Ok(guard) => guard,
+                    Err(error) => {
+                        return self.cognitive_error_response(
+                            request_id,
+                            current_generation,
+                            error,
+                        );
+                    }
+                };
+                // The guard is already removed: finalization is one-shot even if
+                // storage/ranker revalidation fails or the caller disconnects.
+                let result = crate::cognitive_context::finalize(
+                    &store,
+                    &self.identity.agent_id,
+                    current_generation,
+                    guard,
+                    self.cognitive_ranker.get(),
+                )
+                .await;
+                self.refresh_generation()?;
+                {
+                    let runtime = self.runtime.lock().map_err(poisoned_state)?;
+                    if runtime.current_generation != current_generation {
+                        return Err(AgentdError::GenerationFenced(format!(
+                            "cognitive authority epoch changed during finalization: expected {current_generation}, observed {}",
+                            runtime.current_generation
+                        )));
+                    }
+                    require_cognitive_control_ready(
+                        runtime.lifecycle,
+                        runtime.app_server_ready,
+                        runtime.fenced,
+                    )?;
+                }
+                match result {
+                    Ok(()) => AgentdPayload::CognitiveContextFinalized {
+                        snapshot_digest,
+                        read_digest,
+                    },
                     Err(CognitiveContextError::Store(error)) => {
                         return self.cognitive_error_response(
                             request_id,
