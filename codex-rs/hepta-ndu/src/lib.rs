@@ -9,9 +9,11 @@
 
 #![forbid(unsafe_code)]
 
+mod coefficient_profile;
 mod conditional_moments;
 mod covariance;
 mod covariance_profile;
+mod durable_projection_store;
 mod error;
 mod evaluation_digest;
 mod evaluator;
@@ -23,6 +25,12 @@ mod protocol;
 mod recursive;
 mod scoring;
 
+pub use coefficient_profile::AdmittedNduCoefficientProfileV1;
+pub use coefficient_profile::NduCoefficientProfileError;
+pub use coefficient_profile::NduCoefficientProfileV1;
+pub use coefficient_profile::NduZQ24ProjectionV1;
+pub use coefficient_profile::admit_ndu_coefficient_profile;
+pub use coefficient_profile::quantize_z_to_q24;
 pub use conditional_moments::ConditionalMomentSampleV1;
 pub use conditional_moments::ConditionalMomentsV1;
 pub use conditional_moments::estimate_conditional_moments;
@@ -33,6 +41,8 @@ pub use covariance_profile::CovarianceConventionV1;
 pub use covariance_profile::CovarianceError;
 pub use covariance_profile::NduCovarianceProfileV1;
 pub use covariance_profile::admit_covariance_profile;
+pub use durable_projection_store::NduDurableProjectionError;
+pub use durable_projection_store::NduDurableProjectionStoreV1;
 pub use error::NduError;
 pub use evaluator::canonical_evaluation_policy_digest;
 pub use evaluator::canonical_scalarization_digest;
@@ -68,12 +78,14 @@ pub use preference::UpdateGeneration;
 pub use preference::solve_preference_target;
 pub use preference::validate_staged_updates;
 pub use projection_journal::NduProjectionEntryV1;
+pub use projection_journal::NduProjectionJournalAnchorV1;
 pub use projection_journal::NduProjectionJournalError;
 pub use projection_journal::NduProjectionJournalV1;
 pub use projection_journal::NduProjectionKindV1;
 pub use protocol::NduIterationContextV1;
 pub use protocol::NduIterationReceiptV1;
 pub use protocol::bind_solver_iteration_receipt_v1;
+pub use protocol::canonical_iteration_context_digest;
 pub use recursive::RecursiveUtilityError;
 pub use recursive::RecursiveUtilityPath;
 pub use recursive::RecursiveUtilityReceipt;

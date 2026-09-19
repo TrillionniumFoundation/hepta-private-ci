@@ -112,23 +112,29 @@
           ]
         },
         "deterministicKernel": {
-          "state": "candidate_implemented",
+          "state": "candidate_implemented_hardened",
           "evidence": [
             "evaluate_candidates_with_policy",
             "solve_preference_target",
-            "solve_backward_regression"
+            "canonical_iteration_context_digest",
+            "solve_backward_regression",
+            "admit_ndu_coefficient_profile",
+            "quantize_z_to_q24"
           ]
         },
         "durability": {
-          "state": "owner_local_reference_implemented_not_production_writer",
+          "state": "synced_anchor_bound_owner_store_source_implemented_not_activated",
           "evidence": [
-            "NduProjectionJournalV1"
+            "NduProjectionJournalV1",
+            "NduDurableProjectionStoreV1",
+            "durable_store_syncs_and_recovers_selected_projection_against_anchor"
           ]
         },
         "independentConvergenceDecision": {
-          "state": "owned_by_learning.eval_not_self_issued",
+          "state": "source_implemented_by_learning.eval_external_evidence_pending",
           "evidence": [
-            "NduConvergenceCertificateV1"
+            "NduConvergenceCertificateV1",
+            "codex_hepta_intelligence_eval::decide_ndu_convergence_v1"
           ]
         },
         "exactHeadSourceQualification": {
@@ -136,12 +142,18 @@
           "evidence": []
         },
         "productCaller": {
-          "state": "not_established",
-          "evidence": []
+          "state": "source_composed_read_only_product_execution_unproved",
+          "evidence": [
+            "codex_hepta_control_plane::evaluate_prepared_plan_with_ndu",
+            "codex_hepta_control_plane::plan_observed_context",
+            "codex_hepta_intelligence::run_read_only_vertical"
+          ]
         },
         "productionWriter": {
-          "state": "not_established",
-          "evidence": []
+          "state": "source_durable_adapter_present_host_selection_not_established",
+          "evidence": [
+            "NduDurableProjectionStoreV1"
+          ]
         },
         "independentAcceptance": {
           "state": "not_established",
@@ -273,7 +285,7 @@
   },
   "externalGates": [
     "independent non-author review",
-    "production caller and production writer composition",
+    "authenticated product execution, selected production writer and trusted external anchor distribution",
     "named-host resource and recovery measurements",
     "operator acceptance",
     "deployment and activation",

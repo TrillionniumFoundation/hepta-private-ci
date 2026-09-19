@@ -52,7 +52,7 @@ The compatibility API `evaluate_candidates` remains available, but its prior beh
 - uncertainty: maximum;
 - Pareto absolute tolerance: zero.
 
-New integrations call `evaluate_candidates_with_policy`. `NduEvaluationReceiptV2` binds the normalized policy digest in addition to the legacy evaluation digest, preventing a future aggregation change from silently reinterpreting an old result.
+New integrations call `evaluate_candidates_with_policy`; the compatibility `evaluate_candidates` entry is deprecated and the NDU source-policy CI rejects new callers outside the dedicated compatibility fixture. `NduEvaluationReceiptV2` binds the normalized policy digest in addition to the base evaluation digest. `UtilityProfile` now also requires a non-zero semantic-manifest digest and uses `hepta.ndu.utility-profile.v2`, binding units, scales, normalization, feature order and clipping semantics so an unchanged profile ID cannot silently reinterpret an old result.
 
 ### 3.1 Feasibility, Pareto and scalarization
 
@@ -95,7 +95,7 @@ P_next = (1 - eta) * P_k + eta * P_candidate
 U_k = project(instant_utility + discount * continuation_utility)
 ```
 
-`eta` is in `[1/16,1/4]`. The preference target solver emits immutable revisions and at most 64 local iteration receipts. Parent and child artifact updates cannot share one generation.
+`eta` is in `[1/16,1/4]`. Preference state and targets contain 1–64 axes and every value is in `[-1,1]`; invalid input rejects before projection. `solve_preference_target` also consumes the complete `NduIterationContextV1` before computation and binds its digest into every emitted step. An already-converged target is a zero-iteration no-op that preserves the exact revision/digest. If the residual remains above tolerance after 64 iterations, the call returns unavailable rather than returning a successor state. Explicit subject and parent identities define hierarchy staging: an actual parent/child pair cannot update in one generation, while unrelated subjects at different levels may.
 
 ## 5. Convergence, infeasibility and multiple solutions
 
@@ -112,7 +112,7 @@ These local records are not an activation certificate. They deliberately do not 
 
 The canonical `NduConvergenceCertificateV1` remains owned by `learning.eval`. It additionally binds independent evaluator identity, operating region, residuals, resource/risk conservation, perturbation evidence and the spectral-radius upper confidence bound. A certificate with a spectral-radius upper 95% bound `>=0.95`, stale objective, unsupported dimension or missing independent decision cannot activate an adaptive artifact.
 
-`bind_solver_iteration_receipt_v1` converts one local step into an owner-local protocol representation only after binding:
+`bind_solver_iteration_receipt_v1` converts one local step into an owner-local protocol representation only after recomputing the same immutable context digest that the solver embedded in the opaque local receipt. Rebinding a step to a different context rejects. The context binds:
 
 - subject ID and class;
 - immutable objective digest;
@@ -148,7 +148,7 @@ A numeric covariance fixture proves algebra only. It does not prove conditional 
 
 Preference and utility projections are append-only revisions owned by `utility.ndu`. The full semantic identity includes subject, principal scope, objective, predecessor, event and coefficient. A selected pointer changes only after the immutable projection and required independent evidence exist.
 
-`NduProjectionJournalV1` is an owner-local bounded reference implementation. Each entry binds:
+`NduProjectionJournalV1` is the bounded semantic journal. Revocation identity is scoped by objective + subject + projection payload, so equal payload digests in another scope remain independent. Each entry binds:
 
 - monotone sequence;
 - preference, utility, selection or revocation kind;
@@ -157,9 +157,9 @@ Preference and utility projections are append-only revisions owned by `utility.n
 - projection payload digest;
 - predecessor-entry and entry digests.
 
-The journal enforces equal-identity/equal-semantics replay, rejects identity drift, validates exact length and hashes on reopen, rejects truncation/unknown kind/tampering, reconstructs selected projection state and prevents revocation resurrection after restart.
+The journal enforces equal-identity/equal-semantics replay, rejects identity drift, validates exact length and hashes on reopen, rejects truncation/unknown kind/tampering, reconstructs selected projection state and prevents revocation resurrection after restart. `anchor()` exposes record count + tip digest so an independently retained witness can detect a fully rehashed alternate history.
 
-This reference does not claim an activated production writer, operating-system durability, fsync, schema migration, retention or backup qualification. Product composition must bind a selected store and prove those properties independently.
+`NduDurableProjectionStoreV1` is the owner-local durable file adapter: the host supplies a regular file and immutable binding; the adapter acquires a cooperative exclusive lock, appends one fixed record, `sync_all`s before advancing memory, uses compare-and-swap anchors, poisons indeterminate handles and requires a separately retained minimum acknowledged anchor during recovery. It does not create paths or silently recreate lost history. Containing-directory durability, trusted anchor distribution/authentication, retention, backup/restore qualification, future schema migration and activation remain selected-host obligations.
 
 ## 7. Goodhart and wireheading controls
 
@@ -191,7 +191,7 @@ Pilot ceilings are:
 
 | Dimension | Ceiling |
 |---|---:|
-| preference axes | 64 |
+| preference axes | 1–64; each value in [-1,1] |
 | utility axes | 8 |
 | risk/resource axes | 32 |
 | required organs | 32 |
@@ -219,12 +219,18 @@ Reference-host p95/p99, transient memory and persistent projection targets remai
 - `NDU-SYS-GV-010`: termination receipt reports terminal and true maximum residual separately.
 - `NDU-SYS-GV-011`: canonical iteration publication rejects missing objective/event/coefficient context.
 - `NDU-SYS-GV-012`: projection-journal reopen, tamper, truncation and revocation non-resurrection fixtures pass.
+- `NDU-SYS-GV-013`: same projection payload in two objective/subject scopes can be revoked in one scope without cross-scope revocation.
+- `NDU-SYS-GV-014`: already-converged preference solve emits zero iterations and no revision; invalid dimension/range and iteration exhaustion fail closed.
+- `NDU-SYS-GV-015`: solver receipt context rebinding rejects before protocol publication.
+- `NDU-SYS-GV-016`: utility-profile semantic manifest changes the canonical profile/evaluation binding.
+- `NDU-SYS-GV-017`: durable projection recovery proves its minimum acknowledged anchor, and stale CAS anchors cannot mutate the store.
+- `NDU-SYS-GV-018`: coefficient admission binds covariance/units/dimensions/expiry and Q24 conversion emits explicit error evidence.
 
 Exact native mappings are registered in `docs/modules/utility.ndu/IMPLEMENTATION_MAP.json`. The same implementation cannot be the sole oracle for a critical numerical claim; analytic or independent scalar fixtures remain required.
 
 ## 10. Implementation sequence
 
-Implementation order is typed contributions, explicit aggregation policy, feasibility, tolerant Pareto, optional scalarization, fixed-point preference state, local solver receipts, canonical context adapter, recursive utility, covariance shadow kernel, owner-local durability reference, exact source tests and semantic conformance.
+Implementation order is typed contributions, explicit aggregation policy, semantic-manifest binding, feasibility, tolerant Pareto, optional scalarization, bounded fixed-point preference state, context-bound local solver receipts, recursive utility, covariance shadow kernel, coefficient/profile admission, Q24 conversion evidence, scoped projection journal, synced external-anchor durable adapter, independent `learning.eval` convergence decision, exact source tests and semantic conformance.
 
 Work-package ownership is narrowed by `docs/delivery/LANE_D_WORK_PACKAGE_OVERLAY.json`:
 

@@ -12,7 +12,7 @@
 
 This specification defines a deterministic implementation baseline and a separately qualified stochastic candidate. It does not establish dynamic-preference efficacy, production activation, biological equivalence, or autonomous software evolution. The four-level hierarchy, event sourcing and deployment controls are Hepta engineering extensions. `docs/evidence/CLAIMS.json` and current independent evidence govern capability claims.
 
-Existing exported deterministic primitives in `codex-rs/hepta-ndu/src/lib.rs` include `evaluate_candidates`, `solve_preference_target`, `validate_staged_updates`, `evaluate_recursive_utility` and `mul_q32_ties_even`. Reuse compatible primitives and add owner-scoped adapters; a symbol inventory proves neither a real consumer nor an implemented stochastic solver.
+Existing exported deterministic primitives in `codex-rs/hepta-ndu/src/lib.rs` include the policy-bound evaluator, context-bound `solve_preference_target`, explicit hierarchy validation, recursive utility, durable projection adapter, covariance regression, coefficient-profile admission and Q24 conversion evidence. The legacy `evaluate_candidates` entry remains compatibility-only and is deprecated. Source-level Control/Intelligence compositions exist, but a symbol or caller inventory still does not prove authenticated product execution, stochastic efficacy, activation or release.
 
 ## 2. Symbols, dimensions, units and normalization
 
@@ -92,7 +92,7 @@ Feasibility precedes scoring. Missing support/units is unavailable, not zero cos
 
 `NDU-GV-001`: P0=0; two unit steps; drifts 0.25,-0.5; instantaneous utilities 0.5,0.25; discount 0.8; terminal utility 1. Expected real values are P=[0,0.25,-0.25], U=[1.34,1.05,1]. Q32 nearest/ties-to-even goldens are P=[0,1073741824,-1073741824], U=[5755256177,4509715661,4294967296]. Canonical reference goldens are exact; the separate adaptive zero-noise comparison uses the declared tolerance.
 
-The deterministic fixed-point solve has at most 64 iterations and residual <=2^-20; exhaustion reports unavailable. Damping, clipping or a bounded iteration count alone does not prove convergence.
+The deterministic fixed-point solve accepts 1–64 preference axes with state/target values in `[-1,1]`, requires the immutable iteration context before computation, has at most 64 iterations and residual <=2^-20, preserves an already-converged state without a new revision, and reports exhaustion as unavailable. Damping, clipping or a bounded iteration count alone does not prove convergence.
 
 ## 5. Trainable or estimated algorithm
 
@@ -108,13 +108,13 @@ Start with deterministic/scalar or tabular baselines. Add stochastic or neural c
 
 Canonical production protocols remain owned by `docs/contracts/CONTRACTS.json` and `docs/contracts/PROTOCOL_SCHEMAS.json`. This correction adds no unregistered field to an existing wire version.
 
-`NduCoefficientManifestV1` binds artifact, subject/objective class, dimensions, fixed-point scales, bounds, normalization, runtime, predecessor, expiry and rollback. The integration package must register a versioned coefficient-profile reference for the covariance/conditioning convention before admitting a stochastic implementation that needs it. An incompatible existing consumer returns unavailable; it cannot silently assume identity covariance.
+`NduCoefficientManifestV1` binds artifact, subject/objective class, dimensions, fixed-point scales, bounds, normalization, runtime, predecessor, expiry and rollback. The native `admit_ndu_coefficient_profile` now binds the registered manifest digest to normalization/runtime/coordinate/covariance/unit identities, exact driver/utility dimensions and expiry before Q24 publication. `quantize_z_to_q24` performs signed-Q24 nearest/ties-even conversion with explicit source/output/error evidence and no clipping. This owner-local admission is not external manifest authentication or runtime selection; incompatible consumers still return unavailable and never silently assume identity covariance.
 
 `NduWellPosednessCertificateV1` binds operating domain, coefficient boundedness and Lipschitz assumptions, square integrability, conditional means, generator monotonicity/dissipativity, Z growth, terminal conditions, continuity scope, solver stability and independent decision. An empirical local spectral-radius estimate is a diagnostic, not a universal well-posedness or global stability proof.
 
 `NduUpdateReceiptV1` binds subject, old/new revision, event, objective, coefficient, duration, before/after/utility digests, uncertainty, projection count, boundary and conservation residuals and disposition. The full idempotency identity is subject + objective + predecessor + event + coefficient within principal scope. A shorter local key is valid only inside an object whose immutable scope already binds the omitted fields; cross-run collision tests are mandatory.
 
-Preference/utility rows append by revision. A selected projection pointer changes atomically only after immutable data and required evidence exist. Corrections append revoked ancestry and rebuilt successors. Lineage is source -> approved feature generation -> dataset -> training code -> coefficient -> evaluation -> selected snapshot -> runtime observation. No raw secret, unrestricted prompt or consumable authority token is stored in this chain.
+Preference/utility rows append by revision. The semantic journal scopes revocation by objective + subject + projection payload. `NduDurableProjectionStoreV1` provides a host-authorized, locked, sync-before-publish append path with compare-and-swap anchors and recovery against an independently retained minimum acknowledged tip; it never recreates missing acknowledged history. A selected projection pointer changes only after immutable data and required evidence exist. Directory durability, anchor authentication/distribution, retention, backup policy and activation remain host concerns. Corrections append revoked ancestry and rebuilt successors. Lineage is source -> approved feature generation -> dataset -> training code -> coefficient -> evaluation -> selected snapshot -> runtime observation.
 
 ## 7. Numerical stability, complexity and resource bounds
 
@@ -144,7 +144,7 @@ Keep `NDU-GV-001`, projection, monotonicity, terminal-revision mismatch, parent-
 
 Add exact backward-regression cases: scalar Sigma=2dt with U_next=3m recovers Z=3 rather than 6; Sigma=[[2,1],[1,2]], B=[5,1] recovers [3,-1]; identity covariance reduces to B/dt; singular/indefinite covariance rejects; nonzero sample means require centering both terms; whitened-coordinate conversion preserves the predicted increment. A reference numeric pass proves the tested algebra, not conditional identification, a complete FBSDE solution or efficacy.
 
-Property tests require boundedness, deterministic replay, unit/profile compatibility, monotonically advancing revision, conservation, registered projection non-expansion, no hard-axis mutation and safe rollback. Faults include storage-full, corrupt manifests, expired boundaries, revocation, acknowledgement loss, process kill, covariance collapse, unsupported dimensions and wall-clock exhaustion.
+Property and negative tests require boundedness, deterministic replay, semantic-manifest compatibility, no-op revision stability, context non-rebinding, explicit hierarchy relations, scoped revocation, external-anchor recovery, unit/profile compatibility, monotonically advancing successful revisions, conservation, registered projection non-expansion, no hard-axis mutation and safe rollback. Faults include storage-full, corrupt manifests, expired boundaries, revocation, acknowledgement loss, missing acknowledged history, process kill, covariance collapse, unsupported dimensions and wall-clock exhaustion.
 
 ## 11. Quantitative acceptance gates
 

@@ -42,7 +42,7 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `utility.ndu`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate. Source-level read-only compositions now exist in `hepta-control-plane` and `hepta-intelligence`, but their presence does not prove authenticated product execution, activate `utility.ndu`, grant effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Exact current source identity and test status come from Git and current CI receipts; the shared `sourceBase` retained in implementation maps is a generation baseline rather than a cached current HEAD. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -75,6 +75,9 @@ The bounded components are:
 - `preference-state reader`
 - `bounded state updater`
 - `recursive utility evaluator`
+- `context-bound deterministic preference solver`
+- `bounded projection journal and synced anchor-bound file adapter`
+- `coefficient/covariance admission and Q24 conversion evidence`
 - `boundary-condition cache`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
@@ -122,7 +125,7 @@ Critical protocol schemas:
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+Rust types and canonical JSON represent identical semantics. `UtilityProfile` also carries a non-zero immutable semantic-manifest digest; the v2 utility-profile digest binds that manifest so units, scales, normalization, feature order and clipping semantics cannot drift behind an unchanged profile ID. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
 ## 6. Data authority, persistence and migrations
 
@@ -143,11 +146,11 @@ For every owned domain, this module is the only authoritative writer. Mutations 
 
 Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
 
-Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
+Projection domains rebuild from declared sources and publish complete generations atomically. `NduProjectionJournalV1` now scopes revocation by objective + subject + projection digest and can validate an independently retained tip anchor. `NduDurableProjectionStoreV1` is an opt-in, host-supplied regular-file adapter with an immutable binding, exclusive cooperative lock, append-only fixed records, compare-and-swap anchors and sync-before-publish ordering. It fails closed when acknowledged history disappears or file length changes unexpectedly. Directory durability, anchor authentication, retention, backup/restore policy, schema migration across future formats and production host selection remain host obligations; this source adapter is not activation by itself. Projections never become sources of truth.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/utility.ndu.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/utility.ndu.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/utility.ndu.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Preference solves require a complete `NduIterationContextV1`; every emitted local step contains an opaque digest of subject, objective, generation, event and coefficient context, and publication recomputes that digest to reject receipt rebinding. Preference state is limited to 1–64 axes in `[-1,1]`; an already converged target is a true no-op and 64-iteration exhaustion returns unavailable rather than exposing a successor as success. Use that implementation scope when composing the module.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -177,7 +180,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-Embed the deterministic evaluator under a frozen objective and versioned policy. The actual request-local context planner is described in the native host guide; it does not activate global adaptive reconfiguration. Projection journals are bounded owner-local references and must not be substituted for an independently selected production writer.
+Embed the deterministic evaluator under a frozen objective and versioned policy. The actual request-local context planner is described in the native host guide; it does not activate global adaptive reconfiguration. Source-level callers exist, but authenticated production execution is still a separate claim. The durable projection adapter requires an independently retained current anchor; a self-contained hash chain is not treated as an authenticity root.
 
 Current operating and state-format references:
 
@@ -193,7 +196,12 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-ndu/src/covariance_tests.rs](../../../codex-rs/hepta-ndu/src/covariance_tests.rs); named case: `scaled_covariance_recovers_three_instead_of_six_and_converts_microseconds`.
-- [codex-rs/hepta-ndu/src/evaluator_tests.rs](../../../codex-rs/hepta-ndu/src/evaluator_tests.rs); named case: `hard_violation_is_filtered_before_utility`.
+- [codex-rs/hepta-ndu/src/evaluator_tests.rs](../../../codex-rs/hepta-ndu/src/evaluator_tests.rs); named cases include `hard_violation_is_filtered_before_utility` and semantic-manifest digest binding.
+- [codex-rs/hepta-ndu/src/preference_tests.rs](../../../codex-rs/hepta-ndu/src/preference_tests.rs); bounds, no-op, exhaustion and explicit hierarchy relations.
+- [codex-rs/hepta-ndu/src/protocol_tests.rs](../../../codex-rs/hepta-ndu/src/protocol_tests.rs); context rebinding rejection.
+- [codex-rs/hepta-ndu/src/projection_journal_tests.rs](../../../codex-rs/hepta-ndu/src/projection_journal_tests.rs); scoped revocation and trusted-anchor replay.
+- [codex-rs/hepta-ndu/src/durable_projection_store_tests.rs](../../../codex-rs/hepta-ndu/src/durable_projection_store_tests.rs); synced recovery, stale anchors and acknowledged-history loss.
+- [codex-rs/hepta-ndu/src/coefficient_profile_tests.rs](../../../codex-rs/hepta-ndu/src/coefficient_profile_tests.rs); covariance/profile admission and Q24 conversion evidence.
 
 In `codex-rs`, run `just test -p codex-hepta-ndu`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/utility.ndu.md) separately labels target acceptance designs.
 
@@ -213,7 +221,7 @@ Source implementation completes only when the declared target root exists, publi
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+Activation verifies a named product caller through registered ports plus authenticated inputs, selected durable ownership, resource/failure behavior and current independent evidence. Read-only source compositions in Control and Intelligence are now implemented and tested, but source composition alone is not product-execution proof or activation. Shadow and qualification callers are not production callers.
 
 Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 

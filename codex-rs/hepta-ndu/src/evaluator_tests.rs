@@ -1,3 +1,5 @@
+#![allow(deprecated)]
+
 use std::fmt::Debug;
 
 use codex_hepta_types::Digest32;
@@ -8,6 +10,7 @@ use pretty_assertions::assert_eq;
 
 use super::canonical_evaluation_policy_digest;
 use super::canonical_scalarization_digest;
+use super::canonical_utility_profile_digest;
 use super::evaluate_candidates;
 use super::evaluate_candidates_with_policy;
 use super::legacy_evaluation_policy;
@@ -96,6 +99,7 @@ fn contribution(candidate: &str, success: i64, latency: i64) -> UtilityContribut
 fn profile() -> UtilityProfile {
     UtilityProfile {
         profile_id: id("utility-v1"),
+        semantic_manifest_digest: Digest32::of_bytes(b"utility-profile-semantics-v2"),
         dimensions: vec![
             (id("success"), AxisDirection::Maximize),
             (id("latency"), AxisDirection::Minimize),
@@ -120,6 +124,26 @@ fn set(contributions: Vec<UtilityContribution>) -> ContributionSet {
         generation: must(Generation::new(1)),
         contributions,
     }
+}
+
+#[test]
+fn utility_profile_digest_binds_semantic_manifest() {
+    let original = profile();
+    let original_digest = must(canonical_utility_profile_digest(&original));
+    let mut changed = original.clone();
+    changed.semantic_manifest_digest = Digest32::of_bytes(b"different-unit-scale-normalization");
+    let changed_digest = must(canonical_utility_profile_digest(&changed));
+    assert_ne!(original_digest, changed_digest);
+}
+
+#[test]
+fn utility_profile_without_semantic_manifest_rejects() {
+    let mut unbound = profile();
+    unbound.semantic_manifest_digest = Digest32::ZERO;
+    assert_eq!(
+        must_err(canonical_utility_profile_digest(&unbound)),
+        crate::NduError::EmptyProfileSemanticDigest
+    );
 }
 
 #[test]

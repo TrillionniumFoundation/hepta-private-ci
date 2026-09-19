@@ -63,6 +63,7 @@ fn fixture() -> (
     .expect("coherent snapshot");
     let profile = UtilityProfile {
         profile_id: id("available-context"),
+        semantic_manifest_digest: digest("available-context-semantics-v1"),
         dimensions: vec![(id("coverage"), AxisDirection::Maximize)],
         risk_ceilings: vec![],
         resource_ceilings: vec![],

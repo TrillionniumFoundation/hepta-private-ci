@@ -32,14 +32,58 @@
       "designOperation": "evaluate_temporal_holdout",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "decide_ndu_convergence_v1",
+      "nativeSymbol": "codex_hepta_intelligence_eval::decide_ndu_convergence_v1",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs",
+      "state": "source_implemented_independent_ndu_convergence_decision",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs",
+          "symbol": "independent_supported_evidence_can_issue_accepted_deny_all_certificate"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_convergence_tests.rs",
+          "symbol": "evaluator_cannot_certify_its_own_candidate"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "decide_ndu_convergence_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "decide_ndu_well_posedness_v1",
+      "nativeSymbol": "codex_hepta_intelligence_eval::decide_ndu_well_posedness_v1",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness.rs",
+      "state": "source_implemented_independent_ndu_well_posedness_decision",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness_tests.rs",
+          "symbol": "complete_independent_well_posedness_evidence_can_be_accepted_without_authority"
+        },
+        {
+          "path": "codex-rs/hepta-intelligence-eval/src/ndu_well_posedness_tests.rs",
+          "symbol": "evaluator_cannot_self_certify_well_posedness"
+        }
+      ],
+      "sourcePathExists": true,
+      "designOperation": "decide_ndu_well_posedness_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
+    "Bind independent NDU convergence and well-posedness evidence to authenticated product inputs and durable evaluation publication.",
+    "Bind temporal/holdout evaluation to the product nuisance-model scheduler and owner store.",
     "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
+    "independent semantic and mathematical review",
+    "live authenticated outcomes and real future-window evidence",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
   ],

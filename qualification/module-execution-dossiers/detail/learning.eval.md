@@ -12,7 +12,7 @@ Concrete source mappings are recorded in `../../../codex-rs/hepta-intelligence-e
 
 ## 2. Public operations and contract details
 
-`estimate_ope(plan, rows) -> OpeEstimate`; `estimate_cluster_intervals(plan, rows, assignments) -> ClusterOpeEstimate`; `estimate_sequential(plan, trajectories) -> SequentialEstimate`; `fit_temporal_fold(plan, training, targets) -> TemporalFoldReceipt`; `evaluate_temporal_holdout(plan, training, targets, observations, assignments) -> TemporalEvaluationReceipt`; `freeze_cross_fold_plan(plan) -> CrossFoldPlanReceiptV1`; `FinalHoldoutRegistry::consume(&frozen_plan_receipt) -> HoldoutUseReceiptV1`; `decide_independently(bundle) -> IndependentEvaluationDecisionV1`.
+`estimate_ope(plan, rows) -> OpeEstimate`; `estimate_cluster_intervals(plan, rows, assignments) -> ClusterOpeEstimate`; `estimate_sequential(plan, trajectories) -> SequentialEstimate`; `fit_temporal_fold(plan, training, targets) -> TemporalFoldReceipt`; `evaluate_temporal_holdout(plan, training, targets, observations, assignments) -> TemporalEvaluationReceipt`; `freeze_cross_fold_plan(plan) -> CrossFoldPlanReceiptV1`; `FinalHoldoutRegistry::consume(&frozen_plan_receipt) -> HoldoutUseReceiptV1`; `decide_independently(bundle) -> IndependentEvaluationDecisionV1`; `decide_ndu_convergence_v1(evidence) -> NduConvergenceCertificateV1`; `decide_ndu_well_posedness_v1(evidence, now) -> NduWellPosednessCertificateV1`.
 
 The estimand class is mandatory. A single-decision estimate cannot certify a long-horizon policy. Estimator receipts and the independent eligibility decision are separate outputs; neither selects or releases an artifact.
 
@@ -29,6 +29,10 @@ The in-memory `FinalHoldoutRegistry` consumes that typed receipt. It permits an 
 ## 4. Deterministic algorithm and scheduling
 
 Freeze all decisions before outcomes are inspected; audit candidate completeness and support; compute single-decision IPS/SNIPS/DR only under its assumptions or sequential history-conditioned DR under its own assumptions; cluster dependent trajectories; freeze the complete cross-fold analysis semantics; consume the exact sealed plan receipt once; apply preregistered monitoring and multiplicity; validate plan/use receipt integrity and equality; intersect all thresholds; and return eligible, insufficient or rejected per claim.
+
+`decide_ndu_convergence_v1` is the evaluator-owned NDU numerical/stability gate. It rejects self-evaluation, enforces at most 64 iterations, maximum residual <=2^-20 Q32, absolute conservation residual <=1 raw Q32 unit, spectral-radius upper 95% bound <0.95, and requires perturbation/stability/conservation support. Unresolved multiple solutions or missing support are unavailable, not accepted. The resulting certificate is `DENY_ALL` and cannot activate itself.
+
+`decide_ndu_well_posedness_v1` separately owns the stochastic-model assumptions gate. It rejects self-evaluation and expired evidence, requires independently digested square-integrability, coefficient-bound, Lipschitz, generator-monotonicity, terminal-Lipschitz and solver-stability evidence, and applies the registered standardized conditional-mean absolute threshold `<0.02`. Missing support is unavailable; failed assumptions reject; the certificate is opaque outside `learning.eval` and always `DENY_ALL`.
 
 Candidate eligibility requires candidate lower confidence bound beyond baseline upper confidence bound in the declared direction, every safety floor, supported metrics and the claim-specific longitudinal evidence. A system-longitudinal claim additionally requires at least three snapshots, two future windows, retention evidence and an unlearning receipt. No learned outcome model repairs zero support. An internal NDU utility increase is not an independent task-success observation.
 
@@ -50,6 +54,11 @@ System-longitudinal ESS is at least `max(400, ceil(0.1*n), stricter slice minimu
 - EVAL-02: correlated repeated decisions do not count as independent bootstrap samples.
 - EVAL-03: stricter profile wins when ESS floors differ; missing metrics block acceptance.
 - EVAL-04: future leakage, holdout reuse, role collision, old-task regression and restored deleted lineage invalidate the corresponding claim.
+- EVAL-NDU-01: evaluator identity equal to producer rejects before certificate issuance.
+- EVAL-NDU-02: spectral-radius upper bound >=0.95, iteration/residual or conservation failure rejects.
+- EVAL-NDU-03: missing support or unresolved multiple solution is unavailable; complete supported evidence can issue an accepted but authority-free certificate.
+- EVAL-NDU-04: well-posedness evidence rejects self-evaluation/expiry/failed assumptions and requires standardized conditional mean <0.02.
+- EVAL-NDU-05: both NDU certificate types are opaque source objects; downstream composition can inspect but not fabricate their fields.
 
 Every case is mapped to concrete Rust test functions in `../../lane-e/TEST_TRACEABILITY.json`. The OP-03 cross-module test also confirms that excellent in-sample fit without retention or unlearning remains insufficient.
 
@@ -61,11 +70,11 @@ Use all eighteen dossier receipt fields. Immediate revocation and stop remain ef
 
 ## 8. Current native implementation
 
-- **Implemented entrypoints:** `evaluate_temporal_holdout` in [codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs](../../../codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs). Point/sequential/temporal estimators and independent decision source implemented.
+- **Implemented entrypoints:** `evaluate_temporal_holdout` in [codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs](../../../codex-rs/hepta-intelligence-eval/src/temporal_evaluation.rs) and `decide_ndu_convergence_v1` in [codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs](../../../codex-rs/hepta-intelligence-eval/src/ndu_convergence.rs) and `decide_ndu_well_posedness_v1` in [codex-rs/hepta-intelligence-eval/src/ndu_well_posedness.rs](../../../codex-rs/hepta-intelligence-eval/src/ndu_well_posedness.rs). Point/sequential/temporal estimators, independent eligibility decision and NDU convergence decision source are implemented.
 - **State and recovery:** Temporal evaluation binds a frozen plan and exact joined held-out cohort, isolates training labels and checks cluster lineage. FinalHoldoutRegistry remains the in-memory semantic registry. DurableFinalHoldoutJournalV1 now wraps its journal with locked, synced, independently anchored file recovery; host authentication/currentness and production scheduling remain external. Signed SystemLongitudinal admission requires V3 observed-time evidence, not window IDs alone.
 - **Source tests:** [codex-rs/hepta-intelligence-eval/src/temporal_evaluation_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/temporal_evaluation_tests.rs), [codex-rs/hepta-intelligence-eval/src/closure_tests.rs](../../../codex-rs/hepta-intelligence-eval/src/closure_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md](../../../codex-rs/hepta-intelligence-eval/NATIVE_MAPPING.md), [codex-rs/hepta-intelligence-eval/EVIDENCE_ADMISSION.md](../../../codex-rs/hepta-intelligence-eval/EVIDENCE_ADMISSION.md).
-- **Remaining work:** Bind the durable holdout adapter to the product nuisance-model scheduler and independently retained current anchor; provide live authenticated outcomes and real future-window evidence; estimator fixtures cannot establish longitudinal efficacy.
+- **Remaining work:** Bind the durable holdout adapter and NDU convergence inputs to authenticated product producers, current independently retained anchors and the product scheduler; provide live authenticated outcomes, perturbation/stability evidence and real future-window evidence. Source threshold logic and fixtures cannot establish longitudinal efficacy or operator acceptance.
 
 ## 9. Native closure and remaining evidence
 
