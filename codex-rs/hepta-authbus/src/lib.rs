@@ -84,6 +84,7 @@ pub enum Error {
     SubjectMismatch,
     Replay,
     CapacityExceeded,
+    ExternalCheckpointRequired,
     InvalidSignature,
     IssuerMismatch,
 }
