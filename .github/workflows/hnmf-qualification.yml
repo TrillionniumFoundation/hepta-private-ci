@@ -3,6 +3,10 @@ name: hnmf-qualification
 on:
   pull_request:
     paths:
+      - "codex-rs/hepta-cognitive-types/**"
+      - "docs/contracts/CONTRACTS.json"
+      - "docs/contracts/PROTOCOL_SCHEMAS.json"
+      - "docs/modules/cognitive.types/PORT_SCHEMAS.json"
       - "docs/hnmf/**"
       - "qualification/hnmf-reference/**"
       - "qualification/hnmf-contract-reference/**"
@@ -14,6 +18,10 @@ on:
     branches:
       - main
     paths:
+      - "codex-rs/hepta-cognitive-types/**"
+      - "docs/contracts/CONTRACTS.json"
+      - "docs/contracts/PROTOCOL_SCHEMAS.json"
+      - "docs/modules/cognitive.types/PORT_SCHEMAS.json"
       - "docs/hnmf/**"
       - "qualification/hnmf-reference/**"
       - "qualification/hnmf-contract-reference/**"
