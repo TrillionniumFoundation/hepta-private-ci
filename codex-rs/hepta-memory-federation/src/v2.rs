@@ -210,9 +210,6 @@ impl RemoteFederatedResponseV2 {
         if !self.terminal_observed {
             return Err(FederationV2Error::MissingTerminalObservation);
         }
-        if self.observed_frontier == 0 {
-            return Err(FederationV2Error::ZeroValue("observed_frontier"));
-        }
         if self.expires_unix_ms == 0 {
             return Err(FederationV2Error::ZeroValue("response_expiry"));
         }
@@ -226,6 +223,9 @@ impl RemoteFederatedResponseV2 {
         }
         if self.items.len() > MAX_FEDERATED_RESULTS_V2 {
             return Err(FederationV2Error::ResultLimitExceeded);
+        }
+        if self.observed_frontier == 0 && !self.items.is_empty() {
+            return Err(FederationV2Error::ZeroValue("observed_frontier"));
         }
         if matches!(self.completeness, FederatedCompletenessV2::Empty) && !self.items.is_empty() {
             return Err(FederationV2Error::InvalidCompleteness);
@@ -470,7 +470,6 @@ impl FederatedResultV2 {
             }
         } else {
             if self.observed_frontier.is_none()
-                || self.observed_frontier == Some(0)
                 || self.remote_response_digest.is_none()
                 || self.authority_observation_digest.is_none()
                 || self.coverage.completed_peers != 1
@@ -481,6 +480,9 @@ impl FederatedResultV2 {
                 && (!self.items.is_empty() || self.coverage.truncated_items != 0)
             {
                 return Err(FederationV2Error::InvalidCompleteness);
+            }
+            if self.observed_frontier == Some(0) && !self.items.is_empty() {
+                return Err(FederationV2Error::InvalidCoverage);
             }
             if matches!(self.completeness, FederatedCompletenessV2::Complete)
                 && (self.items.is_empty() || self.coverage.truncated_items != 0)

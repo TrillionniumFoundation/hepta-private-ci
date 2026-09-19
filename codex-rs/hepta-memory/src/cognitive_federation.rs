@@ -626,18 +626,28 @@ impl FederatedMemoryReader {
         access: &FederationConsumerAccess,
         request: &RetrievalRequest,
     ) -> Result<FederatedRetrievalBatch, CognitiveStoreError> {
+        let (batch, _observed_frontier) = self.retrieve_with_frontier(access, request).await?;
+        Ok(batch)
+    }
+
+    pub(crate) async fn retrieve_with_frontier(
+        &self,
+        access: &FederationConsumerAccess,
+        request: &RetrievalRequest,
+    ) -> Result<(FederatedRetrievalBatch, u64), CognitiveStoreError> {
         require_authorized(
             self.validate_capability(access, request.now_unix_seconds())
                 .await?,
         )?;
         let owner_access = owner_access(&self.capability);
-        let mut batch = self
+        let (batch, observed_frontier) = self
             .owner
-            .retrieve_memory_candidates(&owner_access, request)
+            .retrieve_memory_candidates_for_scope(
+                &owner_access,
+                self.capability.scope.owner_scope(),
+                request,
+            )
             .await?;
-        batch
-            .candidates
-            .retain(|candidate| candidate.memory.scope == *self.capability.scope.owner_scope());
         require_authorized(
             self.validate_capability(access, request.now_unix_seconds())
                 .await?,
@@ -655,10 +665,13 @@ impl FederatedMemoryReader {
                 candidate,
             })
             .collect();
-        Ok(FederatedRetrievalBatch {
-            query_sha256: batch.query_sha256,
-            candidates,
-        })
+        Ok((
+            FederatedRetrievalBatch {
+                query_sha256: batch.query_sha256,
+                candidates,
+            },
+            observed_frontier,
+        ))
     }
 
     pub async fn revalidate(

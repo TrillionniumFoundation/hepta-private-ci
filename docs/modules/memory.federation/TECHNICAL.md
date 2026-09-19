@@ -179,7 +179,7 @@ The native federation contract validates scoped remote observations; its result 
 
 The Memory extension preserves requested/completed/failed/truncated coverage through pure federated and combined local+federated model-input payloads, and revalidates capability plus memory again under a bounded timeout at physical model-request assembly.
 
-The current in-process adapter's `observed_frontier` is the durable capability revision used for provenance; it is not a coherent memory-ledger snapshot frontier. A multi-process or multi-host profile must authenticate its real remote data frontier/snapshot witness. Preserve partial coverage/unavailable on timeout and invalidate evidence on revocation, generation drift or deletion.
+The in-process adapter reads `observed_frontier` from the same exact-scope SQLite snapshot that produces the candidate set; capability revision is not substituted for a data frontier. A truly empty scope may report frontier `0`, while non-empty evidence cannot. A multi-process or multi-host profile must authenticate this real remote data frontier/snapshot witness. Preserve partial coverage/unavailable on timeout and invalidate evidence on revocation, generation drift or deletion.
 
 Current operating and state-format references:
 

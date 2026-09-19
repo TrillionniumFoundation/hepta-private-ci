@@ -624,9 +624,9 @@ struct ProductReaderTransport<'a> {
 impl FederationTransportV2 for ProductReaderTransport<'_> {
     fn send_once<'a>(&'a self, query: &'a FederatedQueryV2) -> FederationTransportFuture<'a> {
         Box::pin(async move {
-            let batch = self
+            let (batch, observed_frontier) = self
                 .reader
-                .retrieve(self.access, self.request)
+                .retrieve_with_frontier(self.access, self.request)
                 .await
                 .map_err(|_| FederationV2Error::TransportRejected)?;
             let items = batch
@@ -648,7 +648,7 @@ impl FederationTransportV2 for ProductReaderTransport<'_> {
                 purpose_digest: query.purpose_digest,
                 generation_vector_digest: query.generation_vector_digest,
                 response_digest: Digest32::ZERO,
-                observed_frontier: self.reader.capability().revision().max(1),
+                observed_frontier,
                 expires_unix_ms,
                 items,
                 completeness,

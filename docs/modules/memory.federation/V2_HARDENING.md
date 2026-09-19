@@ -136,15 +136,16 @@ The focused V2 suite includes adversarial cases for:
 - revoked/stale terminal attempts contributing failed aggregate coverage;
 - combined local+federated model input preserving the federation coverage vector;
 - bounded fail-closed physical-send revalidation;
-- cancellation receipts carrying no success assumption.
+- cancellation receipts carrying no success assumption;
+- exact-scope owner memory frontier acquired from the same SQLite snapshot, including legitimate empty frontier zero.
 
 Required product qualification additionally includes Agentd composition, owner capability grant/revoke behavior, extension attachment coverage binding, exact-head tests, merge-candidate tests and target-host execution evidence.
 
 ## 9. Frontier semantics and remaining external gates
 
-The current in-process product adapter sets `RemoteFederatedResponseV2.observed_frontier` from the durable capability revision observed for that owner/capability. This is a non-zero monotone capability observation used for provenance; it is **not** a claim that one coherent remote memory-ledger snapshot frontier was acquired. Admissible items remain bound independently by exact owner, record identity/revision, content/support/validity digests, capability generation/revision, preflight/post-I/O authority observation, and final physical-send memory revalidation.
+The in-process product adapter acquires the exact-scope memory frontier from the **same SQLite read snapshot** that produces the candidate set. `RemoteFederatedResponseV2.observed_frontier` therefore describes owner memory state rather than capability state. An actually empty scope may report frontier `0`; a non-empty response may not fabricate a zero frontier. Capability generation/revision remains independently bound through the query/lease and live authority observations.
 
-A future multi-process or multi-host transport that needs a coherent remote data cut must carry and authenticate the real owner data frontier/snapshot witness rather than reinterpret the capability revision as that frontier.
+A future multi-process or multi-host transport must authenticate this real owner data frontier/snapshot witness across the transport boundary rather than deriving or substituting it locally.
 
 This hardening wave does not by itself establish:
 

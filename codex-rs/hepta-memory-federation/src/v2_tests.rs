@@ -632,6 +632,31 @@ fn post_io_observation_cannot_outlive_lease() {
 }
 
 #[test]
+fn empty_scope_can_report_zero_frontier_without_fabrication() {
+    let query = query();
+    let mut response = terminal_response(&query);
+    response.observed_frontier = 0;
+    response.items.clear();
+    response.completeness = FederatedCompletenessV2::Empty;
+    response.response_digest = Digest32::ZERO;
+    let response = response
+        .seal()
+        .unwrap_or_else(|error| panic!("valid empty response: {error}"));
+    let transport = FixtureTransport {
+        result: Ok(FederationTransportResultV2::Terminal(response)),
+    };
+    let result = execute(&transport, query.clone(), &lease(&query))
+        .unwrap_or_else(|error| panic!("valid empty result: {error}"));
+    assert!(result.items.is_empty());
+    assert_eq!(result.observed_frontier, Some(0));
+    assert_eq!(result.completeness, FederatedCompletenessV2::Empty);
+    assert_eq!(result.validity, FederatedValidityV2::Valid);
+    result
+        .validate()
+        .unwrap_or_else(|error| panic!("valid zero-frontier receipt: {error}"));
+}
+
+#[test]
 fn nonterminal_attempt_is_explicitly_indeterminate_without_retry() {
     let query = query();
     let transport = FixtureTransport {

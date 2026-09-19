@@ -31,7 +31,7 @@ For one V2 attempt:
 1. validate the exact bounded query and capability lease;
 2. obtain a live preflight authority observation, require unexpired `Current`, and reject a lease whose expiry exceeds the observed durable authority expiry before any transport dispatch;
 3. race one authenticated/read-only transport future against cancellation and the `min(query_deadline, lease_expiry)` authority horizon;
-4. verify the terminal remote response shape and recomputed response digest;
+4. acquire/verify the exact-scope owner memory frontier from the same read snapshot as the candidate set, then verify the terminal remote response shape and recomputed response digest;
 5. verify peer, exact query binding, scope and purpose;
 6. perform a second fresh post-I/O authority observation before evidence admission and reject observation-time regression;
 7. reject an observation outside the query, lease or response time horizon;
@@ -67,7 +67,8 @@ Source tests now include identities for:
 - FED-11: unobservable owner capability discovery and post-I/O revoked/stale attempts remain failed aggregate coverage instead of disappearing;
 - FED-12: a grant for another consumer workspace never enters queried coverage or transport dispatch;
 - FED-13: combined local+federated model input preserves the exact federation coverage vector;
-- FED-14: physical-send revalidation is bounded and fails closed on timeout/unavailability.
+- FED-14: physical-send revalidation is bounded and fails closed on timeout/unavailability;
+- FED-15: the owner memory frontier is read from the same exact-scope SQLite snapshot as candidates; an empty scope may truthfully report frontier zero, while non-empty evidence cannot.
 
 Test source identity is not an execution receipt. Exact-head/merge-candidate outputs determine pass/fail for the candidate revision.
 
@@ -88,5 +89,5 @@ Remote evidence retains provenance and cannot become trusted instructions. No-wr
 - **Source tests:** [codex-rs/hepta-memory-federation/src/v2_tests.rs](../../../codex-rs/hepta-memory-federation/src/v2_tests.rs), plus product composition tests in `codex-rs/hepta-memory/src/cognitive_runtime_tests.rs`. These remain test identities until current candidate execution receipts pass.
 - **Implementation and operating references:** [docs/modules/memory.federation/TECHNICAL.md](../../../docs/modules/memory.federation/TECHNICAL.md) and [docs/modules/memory.federation/V2_HARDENING.md](../../../docs/modules/memory.federation/V2_HARDENING.md).
 - **Remaining repository-controlled work:** obtain exact-candidate package/product execution receipts, update the implementation-map head attestation from those receipts, and close any compilation or integration defect they expose.
-- **Current frontier semantics:** the in-process adapter currently uses the durable capability revision as `observed_frontier` provenance. It must not be interpreted as a coherent memory-ledger snapshot frontier; exact items remain protected by record revision/digests plus live capability and final memory revalidation.
+- **Current frontier semantics:** the in-process adapter reads the exact-scope memory frontier from the same owner SQLite snapshot used for candidate retrieval. A true empty scope may produce frontier `0`; non-empty evidence requires a non-zero frontier. Capability revision remains a separate authority identity and is never substituted for the data frontier.
 - **Remaining external gates:** independent semantic/security review, genuine multi-host authenticated transport plus coherent remote data-frontier qualification if federation crosses process/host boundaries, target-host/operator acceptance, canary, promotion and release.
