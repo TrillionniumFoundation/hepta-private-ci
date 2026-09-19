@@ -7,6 +7,7 @@ use std::time::UNIX_EPOCH;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_matrix_protocol::MatrixEventId;
 use codex_hepta_matrix_store::MatrixDispatchAuthority;
+use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixDurableError;
 use codex_hepta_matrix_store::MatrixDurableStore;
 use codex_hepta_matrix_store::OutboxRecord;
@@ -153,7 +154,7 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
                     None,
                     now_ms,
                 );
-                store
+                let disposition = store
                     .mark_matrix_dispatch_indeterminate(
                         &record.stable_txn_id,
                         record.attempts,
@@ -162,7 +163,9 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
                     )
                     .await
                     .map_err(store_error)?;
-                stats.indeterminate += 1;
+                if disposition.state == MatrixDispatchState::Indeterminate {
+                    stats.indeterminate += 1;
+                }
                 stats.cancelled = true;
                 break;
             }
@@ -173,7 +176,7 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
             Ok(event_id) => {
                 let digest =
                     dispatch_observation_digest("accepted", &record, Some(&event_id), now_ms);
-                store
+                let disposition = store
                     .mark_matrix_dispatch_accepted(
                         &record.stable_txn_id,
                         record.attempts,
@@ -183,13 +186,15 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
                     )
                     .await
                     .map_err(store_error)?;
-                stats.accepted += 1;
+                if disposition.state == MatrixDispatchState::Accepted {
+                    stats.accepted += 1;
+                }
             }
             Err(MatrixTransportError::Retryable) => {
                 let digest =
                     dispatch_observation_digest("retryable-before-dispatch", &record, None, now_ms);
                 if record.attempts >= config.max_attempts {
-                    store
+                    let disposition = store
                         .mark_matrix_dispatch_failed(
                             &record.stable_txn_id,
                             record.attempts,
@@ -198,12 +203,14 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
                         )
                         .await
                         .map_err(store_error)?;
-                    stats.permanent_failure += 1;
+                    if disposition.state == MatrixDispatchState::ObservedFailed {
+                        stats.permanent_failure += 1;
+                    }
                 } else {
                     let next_attempt_at_ms = now_ms
                         .checked_add(retry_delay_ms(config, record.attempts)?)
                         .ok_or(OutboxDispatchError::Invalid)?;
-                    store
+                    let disposition = store
                         .mark_matrix_dispatch_retryable(
                             &record.stable_txn_id,
                             record.attempts,
@@ -213,7 +220,9 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
                         )
                         .await
                         .map_err(store_error)?;
-                    stats.retry_scheduled += 1;
+                    if disposition.state == MatrixDispatchState::Prepared {
+                        stats.retry_scheduled += 1;
+                    }
                 }
             }
             Err(MatrixTransportError::Indeterminate) => {
@@ -233,7 +242,7 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
             Err(MatrixTransportError::Permanent) => {
                 let digest =
                     dispatch_observation_digest("permanent-failure", &record, None, now_ms);
-                store
+                let disposition = store
                     .mark_matrix_dispatch_failed(
                         &record.stable_txn_id,
                         record.attempts,
@@ -242,7 +251,9 @@ pub async fn dispatch_outbox_once<T: MatrixOutboundTransport + ?Sized>(
                     )
                     .await
                     .map_err(store_error)?;
-                stats.permanent_failure += 1;
+                if disposition.state == MatrixDispatchState::ObservedFailed {
+                    stats.permanent_failure += 1;
+                }
             }
         }
     }
