@@ -43,8 +43,10 @@ Linearization rules:
 ```text
 DatasetSnapshotV2
   -> validate current objective, lineage and withdrawal state
-  -> fit_transition_model builds an action-conditioned tabular baseline from
-     independently observed rows
+  -> construct DatasetEvidenceBindingV1 from the already verified frozen-dataset
+     source evidence set; detached caller-supplied rows are not admitted
+  -> fit_transition_model_with_dataset_binding builds an action-conditioned
+     tabular baseline from bound independently observed rows
   -> unsupported state/action pairs return OOD instead of extrapolation
   -> validate_applicability_certificate admits only current, independently
      evaluated smooth-axis profiles with positive ellipticity and named fallback
@@ -52,7 +54,12 @@ DatasetSnapshotV2
      and measures fill distance, separation radius and mesh ratio
   -> evaluate_bellman_reference requires a complete sensor/action grid and emits
      deterministic targets, greedy actions and action gaps
-  -> optional learned implementations are compared with that reference
+  -> optional learned implementations are compared with that reference; the
+     tabular qualification path uses fit_tabular_operator_with_dataset_binding_v3
+     when source-record membership is available
+  -> host authenticates producer/evaluator actor identities before constructing
+     OperatorActorIdentityV1 values; typed admission rejects principal,
+     credential-chain and signing-key collisions
   -> admit_operator_regularity intersects rank, reconstruction gain,
      monotonicity, positivity, Hölder/Lipschitz residuals, OOD and the complete
      error-component budget
@@ -65,7 +72,9 @@ operator, neural network or production inference path exists.
 
 World-model predictions are always marked synthetic. They may support planning
 or evaluation models, but they cannot become the independent factual outcome
-that judges the same candidate.
+that judges the same candidate. `DatasetEvidenceBindingV1` is a bounded local
+membership binding, not an authentication primitive; the host derives it only
+after verifying the authoritative frozen-dataset receipt.
 
 ## 3. Artifact publication and latest-head admission
 
