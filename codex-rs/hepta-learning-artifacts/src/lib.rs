@@ -103,5 +103,8 @@ pub use storage::read_candidate_payload;
 pub use storage::read_registry_head_witness;
 pub use storage::read_registry_snapshot;
 pub use storage::write_candidate_payload;
+pub use storage::write_candidate_payload_beneath;
 pub use storage::write_registry_head_witness;
+pub use storage::write_registry_head_witness_beneath;
 pub use storage::write_registry_snapshot;
+pub use storage::write_registry_snapshot_beneath;
