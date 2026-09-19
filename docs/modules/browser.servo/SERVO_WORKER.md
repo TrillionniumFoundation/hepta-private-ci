@@ -142,13 +142,13 @@ Independent hard bounds cover origins, admitted grants, nonterminal operations, 
 
 `.github/workflows/hepta-browser-agentd-composition.yml` binds the exact Browser+Agentd source and runs full Browser tests, real `FinalUseAuthority` handoff tests (including revocation-fence release when either the `authority_enter` write or Browser admission-boundary read times out), named caller compilation and Clippy.
 
-A generated `Cargo.lock` is a candidate until reviewed/committed. A successful source workflow is not target-host or operator acceptance.
+The reviewed candidate `Cargo.lock` is committed. The exact-head worker workflow must still prove that the selected source builds and reproduces with that lock; a successful source workflow is not target-host or operator acceptance.
 
 ## 11. Target qualification and capability gaps
 
 `.github/workflows/hepta-browser-servo-deployment-qualification.yml` remains manual and main-only. It executes only the workflow-dispatch `github.sha` on `refs/heads/main`, verifies the referenced successful worker-build run came from the expected workflow on that exact main SHA, requires `cargoLockCommitted=true`, rehashes Cargo.lock/worker/SPDX/source tree, records kernel/Bubblewrap identity, reruns sandbox/worker checks and emits target execution evidence without self-issuing operator acceptance, promotion or release.
 
-Still separately required where applicable: reviewed exact `Cargo.lock` and terminal-success reproducible worker artifact/SBOM receipt; retained Linux target-host no-listener/egress/descendant enforcement evidence; cache/other persistent-storage isolation beyond the real two-profile cookie oracle; macOS/Windows equivalent isolation if targeted; functional credential/upload/download implementations if admitted later; real remote business terminal reconciliation; longer target resource/soak policy beyond the bounded source oracle; a trusted long-running authority/revocation feed; and independent operator acceptance/promotion/release.
+Still separately required where applicable: terminal-success reproducible worker artifact/SBOM receipt bound to the committed exact `Cargo.lock`; retained Linux target-host no-listener/egress/descendant enforcement evidence; cache/other persistent-storage isolation beyond the real two-profile cookie oracle; macOS/Windows equivalent isolation if targeted; functional credential/upload/download implementations if admitted later; real remote business terminal reconciliation; longer target resource/soak policy beyond the bounded source oracle; a trusted long-running authority/revocation feed; and independent operator acceptance/promotion/release.
 
 ## 12. Claim boundary
 

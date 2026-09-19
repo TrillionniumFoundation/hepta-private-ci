@@ -122,12 +122,10 @@
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [
-    "selected Servo qualification candidate requires a generated candidate Cargo.lock to be reviewed and committed"
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
     "terminal-success exact-head selected-pin build and real Browser E2E",
-    "reviewed committed Servo-worker Cargo.lock bound to the qualified build",
+    "terminal-success exact-head current-pin build must bind the committed Servo-worker Cargo.lock",
     "terminal-success reproducible worker artifact/SPDX receipt",
     "trusted Linux target-host namespace/profile/network/no-listener/descendant-cleanup qualification and platform equivalents where targeted",
     "cross-profile cookie/cache/storage isolation and target resource/soak evidence",
@@ -138,7 +136,7 @@
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,

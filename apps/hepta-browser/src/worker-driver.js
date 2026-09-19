@@ -718,7 +718,7 @@ export class SubprocessBrowserDriver {
           "launcher did not return a pipe-connected child process",
         );
       }
-      this.#processId = `servo.pid.${this.#child.pid}`;
+      this.#processId = `servo.pid.${this.#child.pid}.${randomUUID()}`;
       this.#client = new PrivateWorkerClient({
         child: this.#child,
         sessionId: this.#sessionId,

@@ -219,7 +219,7 @@ async function preparedDriver({ launcher = fakeLauncher() } = {}) {
 test("artifact-bound subprocess driver uses only the private framed channel", async () => {
   const { driver, started } = await preparedDriver();
   assert.equal(driver.supportsAbort, true);
-  assert.equal(started.processId, "servo.pid.4242");
+  assert.match(started.processId, /^servo\.pid\.4242\.[0-9a-f-]{36}$/);
   assert.match(started.profileOwnerDigest, /^[0-9a-f]{64}$/);
   const observed = await driver.observe({
     profileId: "profile.1",

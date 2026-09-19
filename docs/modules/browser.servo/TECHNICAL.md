@@ -174,7 +174,7 @@ Applicable work package:
 
 - `BROWSER-WEB-C1`
 
-Repository-side Browser/Servo worker source, private protocols, real final-use handoff and named Agentd caller source are present. Remaining sequence is evidence/platform oriented: produce/review the exact `Cargo.lock`, execute the reproducible worker build/SBOM gate, execute real Linux sandbox/worker tests on the exact candidate, bind target measurements, add platform equivalents where targeted, then obtain independent activation/acceptance/promotion/release decisions.
+Repository-side Browser/Servo worker source, private protocols, real final-use handoff, persistent Agentd ownership and the reviewed candidate `Cargo.lock` are present. Remaining sequence is evidence/platform oriented: execute the reproducible exact-head worker build/SBOM gate against that committed lock, execute real Linux sandbox/worker tests on the exact candidate, bind target measurements, add platform equivalents where targeted, then obtain independent activation/acceptance/promotion/release decisions.
 
 Credential/upload/download brokers remain separate follow-on capabilities and stay fail-closed until their authority and terminal observer are implemented.
 
@@ -233,9 +233,9 @@ separated the hardened owner boundary from a usable browser lifecycle:
   later worker failure.
 
 The selected Servo candidate and its 239-commit predecessor delta are documented
-in [SERVO_PIN_AUDIT.md](SERVO_PIN_AUDIT.md). The candidate is not a qualified
-deployment until its generated lock is reviewed/committed and exact-head build,
-real-E2E, reproducibility/SBOM and target evidence are terminal-success.
+in [SERVO_PIN_AUDIT.md](SERVO_PIN_AUDIT.md). The reviewed candidate lock is committed. The candidate is not a qualified
+deployment until exact-head locked build, real-E2E, reproducibility/SBOM and
+target evidence are terminal-success.
 
 External gates still include target-host enforcement, cross-profile cookie/cache
 isolation, target soak/resource measurements, platform equivalents where

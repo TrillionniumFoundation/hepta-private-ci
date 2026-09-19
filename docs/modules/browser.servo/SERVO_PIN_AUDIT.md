@@ -2,7 +2,7 @@
 
 **Predecessor pin:** `84bcc9ac701874fa9819e5cdee06356b961d736c` (2026-09-04)  
 **Qualification candidate:** `5cc5bd32d02619acdec5736055515e38c5840ce1` (2026-09-18)  
-**Candidate state:** source-selected, exact-head qualification pending
+**Candidate state:** source-selected, reviewed candidate lock committed, exact-head qualification pending
 
 ## 1. Decision
 
@@ -68,8 +68,11 @@ Both predecessor and candidate Servo workspace manifests declare
 `rust-version = "1.88"`. Dependency resolution is nevertheless re-generated
 for the candidate because 239 upstream commits can change the lock graph.
 
-Until the generated candidate `Cargo.lock` is reviewed and committed,
-`cargoLockCommitted=false` must keep deployment qualification closed.
+The generated candidate `Cargo.lock` from the selected dependency graph has
+been reviewed and committed. Exact-head qualification must now report
+`cargoLockCommitted=true` and bind that lock digest into the retained build
+receipt; deployment qualification remains closed until those exact-head checks
+succeed.
 
 ## 6. Promotion oracle
 
@@ -92,7 +95,8 @@ when one exact source SHA establishes all of the following:
 9. two release builds are byte-identical;
 10. dynamic-library closure, deterministic SPDX 2.3 SBOM and checksummed build
     receipt are retained;
-11. the generated candidate `Cargo.lock` is reviewed and committed before
+11. the committed candidate `Cargo.lock` matches the selected dependency graph
+    and the exact-head build receipt reports `cargoLockCommitted=true` before
     trusted target deployment qualification.
 
 Target-host soak, cross-profile storage isolation, independent operator
