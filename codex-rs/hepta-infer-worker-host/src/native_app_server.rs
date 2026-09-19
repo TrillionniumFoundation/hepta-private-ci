@@ -571,19 +571,21 @@ impl AppServerModelDriver {
                         .map(|error| error.message.chars().take(1024).collect());
                     output.terminal_observed = true;
 
-                    // thread/resume replays the current token usage snapshot.
-                    // Drain a short bounded window so a terminal recovered run
-                    // can refine missing usage without making usage mandatory.
-                    let replay_cancel = CancellationToken::new();
-                    let _ = self
-                        .observe(
-                            &mut client,
-                            &mut output,
-                            Instant::now() + Duration::from_millis(250),
-                            &replay_cancel,
-                            /*owner*/ None,
-                        )
-                        .await;
+                    // thread/resume replays the latest persisted token-usage
+                    // snapshot to this connection. Recovery waits for the exact
+                    // turn's replay under the normal RPC bound instead of using
+                    // a scheduler-sensitive fixed sleep/window. If persisted
+                    // provider history has no authoritative usage for this turn,
+                    // usage remains unknown rather than being coerced to zero.
+                    if output.observed_output_tokens.is_none() {
+                        let _ = self
+                            .reconcile_token_usage_replay(
+                                &mut client,
+                                &mut output,
+                                Instant::now() + RPC_TIMEOUT,
+                            )
+                            .await;
+                    }
                 }
                 TurnStatus::InProgress => {
                     output.status = NativeRunStatus::Indeterminate;
@@ -613,6 +615,52 @@ impl AppServerModelDriver {
         }
         let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
         Ok(Some(output))
+    }
+
+    async fn reconcile_token_usage_replay(
+        &self,
+        client: &mut RemoteAppServerClient,
+        output: &mut NativeRunOutput,
+        deadline: Instant,
+    ) -> std::result::Result<(), String> {
+        if output.observed_output_tokens.is_some() {
+            return Ok(());
+        }
+        loop {
+            let event = timeout_at(deadline, client.next_event())
+                .await
+                .map_err(|_| "persisted token-usage replay timed out".to_string())?
+                .ok_or_else(|| "provider event stream ended during usage reconciliation".to_string())?;
+            match event {
+                AppServerEvent::ServerNotification(notification) => {
+                    observe_notification(output, *notification)?;
+                    if output.observed_output_tokens.is_some() {
+                        return Ok(());
+                    }
+                }
+                AppServerEvent::ServerRequest(request) => {
+                    timeout_at(
+                        deadline,
+                        client.reject_server_request(
+                            request.id().clone(),
+                            JSONRPCErrorError {
+                                code: -32000,
+                                message: "native inference worker does not grant approvals"
+                                    .to_string(),
+                                data: None,
+                            },
+                        ),
+                    )
+                    .await
+                    .map_err(|_| "approval rejection timed out during usage reconciliation".to_string())?
+                    .map_err(|error| error.to_string())?;
+                }
+                AppServerEvent::Lagged { .. } => {
+                    return Err("provider events lost during usage reconciliation".to_string());
+                }
+                AppServerEvent::Disconnected { message } => return Err(message),
+            }
+        }
     }
 
     async fn observe(
