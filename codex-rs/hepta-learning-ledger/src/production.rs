@@ -118,6 +118,27 @@ pub fn credit_batch_admission_payload(batch: &CreditAllocationBatchV1) -> Vec<u8
 }
 
 #[must_use]
+pub fn dataset_freeze_admission_payload(request: &DatasetFreezeRequestV1) -> Vec<u8> {
+    let mut bytes = b"hepta.learning-ledger.production-dataset-freeze.v1".to_vec();
+    push_id(&mut bytes, &request.snapshot_id);
+    push_principal(&mut bytes, &request.producer);
+    bytes.extend_from_slice(request.ledger_head_digest.as_array());
+    bytes.extend_from_slice(request.objective_digest.as_array());
+    bytes.extend_from_slice(&request.eligible_frontier.to_be_bytes());
+    bytes.extend_from_slice(&request.outcome_watermark.to_be_bytes());
+    bytes.extend_from_slice(request.correction_cut_digest.as_array());
+    bytes.extend_from_slice(request.revocation_cut_digest.as_array());
+    bytes.extend_from_slice(request.inclusion_policy_digest.as_array());
+    push_len(&mut bytes, request.source_record_digests.len());
+    for digest in &request.source_record_digests {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    bytes.extend_from_slice(&request.pending_outcomes.to_be_bytes());
+    bytes.extend_from_slice(&request.censored_outcomes.to_be_bytes());
+    bytes
+}
+
+#[must_use]
 pub fn revocation_admission_payload(revocation: &Revocation) -> Vec<u8> {
     let mut bytes = b"hepta.learning-ledger.production-revocation.v1".to_vec();
     push_id(&mut bytes, &revocation.record_id);
@@ -342,6 +363,40 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
         })
     }
 
+    pub fn prepare_dataset_freeze_request(
+        &self,
+        expected_anchor: LedgerAnchor,
+        snapshot_id: StableId,
+        producer: crate::AuthenticatedPrincipalV1,
+        objective_digest: Digest32,
+        outcome_watermark: u64,
+        inclusion_policy_digest: Digest32,
+    ) -> Result<DatasetFreezeRequestV1, ProductionLedgerError> {
+        self.require_anchor(expected_anchor)?;
+        let snapshot = self.journal.snapshot()?;
+        if snapshot.head_digest != expected_anchor.chain_digest {
+            return Err(ProductionLedgerError::StaleAnchor);
+        }
+        let ledger = LearningLedger::from_snapshot(snapshot)
+            .map_err(DurableLedgerError::Semantic)?;
+        let source_record_digests = ledger.dataset_source_record_digests();
+        let (pending_outcomes, censored_outcomes) = ledger.outcome_state_counts();
+        Ok(DatasetFreezeRequestV1 {
+            snapshot_id,
+            producer,
+            ledger_head_digest: ledger.head_digest(),
+            objective_digest,
+            eligible_frontier: ledger.head_sequence(),
+            outcome_watermark,
+            correction_cut_digest: ledger.correction_cut_digest(),
+            revocation_cut_digest: ledger.revocation_cut_digest(),
+            inclusion_policy_digest,
+            source_record_digests,
+            pending_outcomes,
+            censored_outcomes,
+        })
+    }
+
     pub fn freeze_dataset_from_ledger(
         &self,
         expected_anchor: LedgerAnchor,
@@ -360,30 +415,16 @@ impl<J: DurableLearningJournal> ProductionLedgerWriter<J> {
             producer_payload,
             now,
         )?;
-
-        let snapshot = self.journal.snapshot()?;
-        if snapshot.head_digest != expected_anchor.chain_digest {
-            return Err(ProductionLedgerError::StaleAnchor);
-        }
-        let ledger = LearningLedger::from_snapshot(snapshot)
-            .map_err(|error| DurableLedgerError::Semantic(error))?;
-        let source_record_digests = ledger.dataset_source_record_digests();
-        let (pending_outcomes, censored_outcomes) = ledger.outcome_state_counts();
-
-        let request = DatasetFreezeRequestV1 {
+        let request = self.prepare_dataset_freeze_request(
+            expected_anchor,
             snapshot_id,
-            producer: producer.principal().clone(),
-            ledger_head_digest: ledger.head_digest(),
+            producer.principal().clone(),
             objective_digest,
-            eligible_frontier: ledger.head_sequence(),
             outcome_watermark,
-            correction_cut_digest: ledger.correction_cut_digest(),
-            revocation_cut_digest: ledger.revocation_cut_digest(),
             inclusion_policy_digest,
-            source_record_digests,
-            pending_outcomes,
-            censored_outcomes,
-        };
+        )?;
+        let expected_payload = dataset_freeze_admission_payload(&request);
+        require_exact_payload(producer_payload, &expected_payload)?;
         freeze_dataset_receipt_v3(request, now).map_err(Into::into)
     }
 
