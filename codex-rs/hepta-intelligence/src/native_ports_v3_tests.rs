@@ -313,7 +313,10 @@ fn fixture_inputs(
     }
 }
 
-fn run_request(snapshot: CapabilitySnapshotV2, legal: LegalActionCandidateSetV1) -> LaneFRunRequestV3 {
+fn run_request(
+    snapshot: CapabilitySnapshotV2,
+    legal: LegalActionCandidateSetV1,
+) -> LaneFRunRequestV3 {
     LaneFRunRequestV3 {
         run_id: id("run:v3-native"),
         request_digest: digest("request"),
