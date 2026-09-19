@@ -103,8 +103,10 @@ owners must provide the actual evidence.
 A product receipt must name:
 
 1. the scheduler and immutable evaluation plan store;
-2. the durable final-holdout-use registry, single-writer fence and
-   canonical persistence/reload of frozen-plan and holdout-use receipts;
+2. the durable final-holdout-use registry and canonical persistence/reload of
+   frozen-plan and holdout-use receipts; single-host deployments name their
+   exclusive owner, while multi-owner deployments name the linearizable
+   `HoldoutAnchorAuthorityV1` backend and fencing domain;
 3. the authenticated dataset, outcome-observer and candidate manifests;
 4. the exact fold assignments and nuisance-model runtime;
 5. the target host, resource measurements and incomplete/censored counts;
