@@ -25,6 +25,6 @@ fn critical_owner_routes_are_explicit() {
     );
     assert!(
         LEARNING_LEDGER_SCHEMAS.contains(&"PlasticityBatchV1")
-            && LEARNING_LEDGER_SCHEMAS.contains(&"TopologyProposalV1")
+            && LEARNING_LEDGER_SCHEMAS.contains(&"MemoryTopologyProposalV1")
     );
 }
