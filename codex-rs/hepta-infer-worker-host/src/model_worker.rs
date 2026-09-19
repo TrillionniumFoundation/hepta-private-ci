@@ -3,6 +3,7 @@
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
+use std::time::Duration;
 
 use sha2::Digest;
 use sha2::Sha256;
@@ -224,6 +225,7 @@ pub trait ModelDriver {
         &mut self,
         handle: &DriverModelHandle,
         request: &WorkerRequest,
+        response_timeout: Duration,
     ) -> Result<DriverRunObservation, Error>;
     fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error>;
 }
@@ -296,12 +298,24 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
+        let reserved_before_load = self.models.values().try_fold(0_u64, |total, loaded| {
+            total
+                .checked_add(loaded.handle.reserved_memory_bytes)
+                .ok_or(Error::ArithmeticOverflow)
+        })?;
         let handle = self.driver.load(&manifest, &self.grant)?;
         validate_identity(&handle.opaque_id, "model handle")?;
         if handle.reserved_memory_bytes == 0
             || handle.reserved_memory_bytes > self.grant.maximum_memory_bytes
             || handle.observed_memory_bytes > handle.reserved_memory_bytes
         {
+            self.driver.unload(handle)?;
+            return Err(Error::ModelCapacity);
+        }
+        let reserved_after_load = reserved_before_load
+            .checked_add(handle.reserved_memory_bytes)
+            .ok_or(Error::ArithmeticOverflow)?;
+        if reserved_after_load > self.grant.maximum_memory_bytes {
             self.driver.unload(handle)?;
             return Err(Error::ModelCapacity);
         }
@@ -374,7 +388,15 @@ impl<D: ModelDriver> InferenceWorker<D> {
             .ok_or(Error::ArithmeticOverflow)?;
         self.active_requests
             .insert(request.request_id.clone(), model_id.to_string());
-        let observed = self.driver.run(&loaded.handle, &request);
+        let response_timeout = Duration::from_millis(
+            request
+                .deadline_ms
+                .checked_sub(now_ms)
+                .ok_or(Error::DeadlineExpired)?,
+        );
+        let observed = self
+            .driver
+            .run(&loaded.handle, &request, response_timeout);
         self.active_requests.remove(&request.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
         let observed = observed?;
