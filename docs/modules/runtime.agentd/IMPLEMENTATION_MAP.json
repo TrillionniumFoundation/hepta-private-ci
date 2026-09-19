@@ -65,6 +65,11 @@
           "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
           "kind": "daemon_recovery",
           "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+          "kind": "named_product_caller_unit",
+          "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
       "sourceSemantics": "The live control path admits a bounded run, freezes request/objective/body/artifact/authority/deadline identity, and durably records the resulting revision before reply.",
@@ -95,7 +100,7 @@
           "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
-      "sourceSemantics": "The live control path records a bounded cancellation reason and distinguishes local pre-dispatch terminal cancellation from post-dispatch cancellation intent; physical interrupt wiring remains a repository gap.",
+      "sourceSemantics": "The live control path durably records bounded cancellation intent. The named native-app-server inference caller pairs post-dispatch intent with a real TurnInterrupt and matching terminal/indeterminate observation; other direct callers are not yet universally composed.",
       "operation": "cancel_run",
       "nativeSymbol": "pub(crate) fn run_cancel(",
       "sourcePath": "codex-rs/hepta-agentd/src/state.rs",
@@ -131,8 +136,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind the normal non-test Codex turn path to Agentd RunStart/RunAttachContext/RunMarkDispatched/RunObserveTerminal so actual turn execution, rather than only the local control API, drives lifecycle state.",
-    "Bind RunCancel and deadline-triggered cancellation intent to the actual Codex App Server interrupt and matching terminal acknowledgement path; do not equate a recorded cancelling state with a physical interrupt."
+    "Compose the remaining direct SessionIngress product consumer(s), notably hepta-matrixd queue/turn execution, into the Agentd lifecycle API or enforce an equivalent host-side lifecycle hook before claiming universal per-Agent run coverage.",
+    "Define and enforce the bare RunCancel contract for callers outside the native inference composition: the native-app-server inference caller now pairs cancellation intent with a real TurnInterrupt and terminal observation, but RunCancel by itself remains a durable intent rather than proof of physical interruption."
   ],
   "externalEvidenceGates": [
     "deployed Agentd process and authenticated socket/generation identity",
@@ -156,7 +161,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "composed_native_app_server_inference_only",
   "productionWriterState": "not_established",
   "owner": "agent-runtime",
   "deputy": "runtime-control",
