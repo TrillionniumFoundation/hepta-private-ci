@@ -84,6 +84,54 @@ fn platform_grant_signature_binds_session_operation_and_payload() {
 }
 
 #[test]
+fn revoked_signing_key_is_rejected_on_next_grant_verification() {
+    let temp = TempDir::new().unwrap();
+    let (signing, _keys, key_path) = key_fixture(temp.path());
+    let now = now_unix_ms().unwrap();
+    let mut grant = SignedPlatformGrantV1 {
+        key_id: "release.key".to_owned(),
+        session_id: "session.1".to_owned(),
+        session_generation: 9,
+        operation_id: "operation.revoked".to_owned(),
+        action: PlatformAction::CopyText,
+        payload_digest: D1.to_owned(),
+        expires_unix_ms: now + 60_000,
+        signature_base64: String::new(),
+    };
+    grant.signature_base64 = STANDARD.encode(
+        signing
+            .sign(grant.signing_message().as_bytes())
+            .to_bytes(),
+    );
+    let public = STANDARD.encode(signing.verifying_key().to_bytes());
+    std::fs::write(
+        &key_path,
+        serde_json::to_vec(&serde_json::json!({
+            "schema": "hepta.native-trusted-keys.v1",
+            "keys": {"release.key": public},
+            "revoked_key_ids": ["release.key"]
+        }))
+        .unwrap(),
+    )
+    .unwrap();
+    let keys = TrustedKeySet::from_path(&key_path).unwrap();
+    let error = keys
+        .verify_platform_grant(
+            &grant,
+            PlatformGrantContext {
+                session_id: "session.1",
+                session_generation: 9,
+                operation_id: "operation.revoked",
+                action: PlatformAction::CopyText,
+                payload_digest: D1,
+                now_unix_ms: now,
+            },
+        )
+        .unwrap_err();
+    assert!(error.to_string().contains("revoked"));
+}
+
+#[test]
 fn signed_update_stages_activates_and_confirms_with_predecessor_backup() {
     let temp = TempDir::new().unwrap();
     let (signing, keys, key_path) = key_fixture(temp.path());
