@@ -91,9 +91,14 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
             continue
 
         if path.startswith("docs/"):
-            # Machine documentation is checked for projection drift. Only
-            # explicitly runtime-consumed registries acquire native scope.
+            # Declarative documentation stays on the derived/static path.
+            # Executable or unfamiliar file types under docs/ are not trusted
+            # as prose merely because of their directory and retain the
+            # conservative full-repository fallback.
             derived = True
+            if PurePosixPath(path).suffix not in {".md", ".json", ".yaml", ".yml"}:
+                selected.update(GROUPS)
+                full_repo = True
             continue
 
         if path.startswith("apps/hepta-browser/"):
