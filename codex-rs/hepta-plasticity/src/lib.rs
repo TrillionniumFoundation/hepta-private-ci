@@ -54,6 +54,7 @@ pub use types::TopologyCandidateV3;
 pub use types::TopologyDelta;
 pub use types::TopologyDeltaV3;
 pub use types::TopologyOperation;
+pub use types::TopologyOperationV3;
 pub use types::TopologyProposalRequestV3;
 pub use types::TopologyProposalV3;
 
