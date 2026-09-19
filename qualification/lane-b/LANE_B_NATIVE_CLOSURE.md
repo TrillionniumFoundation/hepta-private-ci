@@ -53,9 +53,9 @@ External evidence gates:
 
 ## 4. `runtime.agentd`
 
-Owns a bounded owner-private crash-recovery lifecycle journal, immutable run snapshot references and runtime-health composition state; product-domain facts remain with their canonical owners.
+Owns a bounded owner-private crash-recovery lifecycle journal, immutable run snapshot references, bounded cancellation-ack deadlines and runtime-health composition state. Lifecycle mutations are synced before the live coordinator advances; product-domain facts remain with their canonical owners.
 
-Agentd preserves dispatch-boundary uncertainty, never redispatches an unobserved external run after restart, and accepts success/failure/cancel terminality only from the delegated execution owner.
+Agentd preserves dispatch-boundary uncertainty, never redispatches an unobserved external run after restart, and accepts success/failure/cancel terminality only from the delegated execution owner. Post-dispatch cancellation carries a 5-second durable acknowledgement deadline; expiry becomes `indeterminate`, not fabricated cancellation.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
