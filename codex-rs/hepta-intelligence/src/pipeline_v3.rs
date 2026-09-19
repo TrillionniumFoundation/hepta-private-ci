@@ -8,7 +8,6 @@
 //! Agentd handoff and learning-decision recording. This module never invokes a
 //! model, tool or provider and never grants effect authority.
 
-use std::collections::BTreeSet;
 use std::error::Error;
 use std::fmt;
 
