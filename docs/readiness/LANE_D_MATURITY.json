@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "lane": "LANE-D-OBJECTIVE-VALUE",
   "authorityDelta": "none",
-  "interpretation": "Each dimension is independent. A materialized source root does not imply a production caller, independent qualification, activation or release.",
+  "interpretation": "Each dimension is independent. Source-level named product composition may exist without product execution proof, a selected production writer, independent qualification, activation or release. Exact candidate identity is resolved dynamically from Git and CI rather than cached as live status.",
   "modules": [
     {
       "module": "objective.compiler",
@@ -136,8 +136,12 @@
           "evidence": []
         },
         "productCaller": {
-          "state": "not_established",
-          "evidence": []
+          "state": "source_composed_unqualified",
+          "evidence": [
+            "codex-rs/hepta-control-plane/src/planner_ndu.rs::evaluate_prepared_plan_with_ndu",
+            "codex-rs/hepta-control-plane/src/planner_context.rs::plan_observed_context",
+            "codex-rs/hepta-intelligence/src/vertical.rs::run_read_only_vertical"
+          ]
         },
         "productionWriter": {
           "state": "not_established",
@@ -222,8 +226,10 @@
           "evidence": []
         },
         "productCaller": {
-          "state": "not_established",
-          "evidence": []
+          "state": "source_composed_unqualified",
+          "evidence": [
+            "codex-rs/hepta-agentd/src/cognitive_context.rs::plan_observed_context"
+          ]
         },
         "productionWriter": {
           "state": "not_established",

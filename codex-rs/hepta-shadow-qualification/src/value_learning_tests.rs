@@ -18,11 +18,15 @@ use codex_hepta_ndu::AxisLimit;
 use codex_hepta_ndu::AxisValue;
 use codex_hepta_ndu::ContributionSet;
 use codex_hepta_ndu::EvaluationDisposition;
+use codex_hepta_ndu::NduError;
+use codex_hepta_ndu::NduEvaluationReceipt;
 use codex_hepta_ndu::FeasibilityPosture;
 use codex_hepta_ndu::RequiredOrganSet;
+use codex_hepta_ndu::ScalarizationProfile;
 use codex_hepta_ndu::UtilityContribution;
 use codex_hepta_ndu::UtilityProfile;
-use codex_hepta_ndu::evaluate_candidates;
+use codex_hepta_ndu::evaluate_candidates_with_policy;
+use codex_hepta_ndu::legacy_evaluation_policy;
 use codex_hepta_objective::ActionClass;
 use codex_hepta_objective::ConfirmationPolicy;
 use codex_hepta_objective::Constraint;
@@ -52,6 +56,15 @@ fn must<T, E: Debug>(result: Result<T, E>) -> T {
 
 fn id(value: &str) -> StableId {
     must(StableId::new(value))
+}
+
+fn evaluate_compat(
+    set: ContributionSet,
+    profile: UtilityProfile,
+    scalarization: Option<ScalarizationProfile>,
+) -> Result<NduEvaluationReceipt, NduError> {
+    let policy = legacy_evaluation_policy(&profile)?;
+    Ok(evaluate_candidates_with_policy(set, profile, scalarization, policy)?.base)
 }
 
 fn manifest(artifact_id: &str, objective_digest: Digest32) -> ArtifactManifest {
@@ -159,7 +172,7 @@ fn objective_to_ndu_to_independent_learning_ledger_is_replayable_and_revocable()
         3
     );
 
-    let evaluation = must(evaluate_candidates(
+    let evaluation = must(evaluate_compat(
         ContributionSet {
             objective_digest,
             generation: must(Generation::new(1)),
@@ -181,6 +194,9 @@ fn objective_to_ndu_to_independent_learning_ledger_is_replayable_and_revocable()
         },
         UtilityProfile {
             profile_id: id("utility-profile-v1"),
+            axis_registry_digest: Digest32::of_bytes(b"shadow-utility-axis-registry-v1"),
+            normalization_manifest_digest:
+                Digest32::of_bytes(b"shadow-utility-normalization-q32-v1"),
             dimensions: vec![(id("success"), AxisDirection::Maximize)],
             risk_ceilings: vec![AxisLimit {
                 axis: id("privacy-risk"),

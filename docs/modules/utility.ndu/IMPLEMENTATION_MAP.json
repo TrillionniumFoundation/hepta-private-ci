@@ -13,8 +13,8 @@
     "codex-rs/hepta-ndu"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_composed",
+  "productCallerState": "source_composed_unqualified",
+  "productionWriterState": "not_established",
   "operations": [
     {
       "operation": "evaluate_candidates",
@@ -119,16 +119,15 @@
       "inputs": [
         "PreferenceState",
         "target AxisValue set",
-        "eta"
+        "eta",
+        "canonical solver-context digest"
       ],
       "outputs": [
-        "PreferenceState",
-        "NduSolverTerminationReceipt",
-        "NduSolverIterationReceipt list"
+        "PreferenceSolveOutcome"
       ],
-      "state": "source_implemented_local_solver",
+      "state": "source_implemented_context_bound_local_solver",
       "authority": "none",
-      "nonClaim": "local termination is not NduConvergenceCertificateV1",
+      "nonClaim": "local convergence is not NduConvergenceCertificateV1; bounded exhaustion returns unavailable without publishing a candidate state",
       "tests": [
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
@@ -136,7 +135,23 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "parent_and_child_updates_cannot_share_generation"
+          "symbol": "already_converged_solve_is_a_true_noop"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "preference_dimension_and_value_bounds_fail_at_api_boundary"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "iteration_bound_is_unavailable_and_does_not_publish_candidate_state"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "actual_parent_and_child_updates_cannot_share_generation"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "unrelated_hierarchy_levels_may_update_in_same_generation"
         }
       ],
       "designOperation": "solve_preference_target",
@@ -150,7 +165,7 @@
       "sourcePath": "codex-rs/hepta-ndu/src/protocol.rs",
       "inputs": [
         "NduIterationContextV1",
-        "NduSolverIterationReceipt"
+        "context-bound NduSolverIterationReceipt"
       ],
       "outputs": [
         "owner-local NduIterationReceiptV1"
@@ -161,6 +176,10 @@
         {
           "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
           "symbol": "local_step_requires_complete_context_before_protocol_publication"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
+          "symbol": "solver_receipt_cannot_be_rebound_to_another_context"
         },
         {
           "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
@@ -222,6 +241,10 @@
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
           "symbol": "truncation_and_tampering_fail_closed"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "revocation_is_scoped_by_objective_and_subject"
         }
       ],
       "designOperation": "NduProjectionJournalV1",
@@ -248,7 +271,8 @@
     "exactHeadQualification": "required",
     "independentConvergenceDecision": "owned_by_learning.eval_not_self_issued",
     "activation": "not_established",
-    "release": "not_established"
+    "release": "not_established",
+    "productCaller": "source_composed_unqualified"
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
   "declaredRoots": [
@@ -266,19 +290,39 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "sourceProductComposition": true
   },
   "sourceBase": {
     "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
     "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Bind stateful preference/utility projection mutation to a selected production owner store with qualified durability and recovery.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the production claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
+  ],
+  "sourceIdentityPolicy": "resolve_exact_candidate_from_git_and_ci",
+  "sourceBaseInterpretation": "implementation_map_generation_baseline_not_live_head",
+  "productCallerEvidence": [
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_ndu.rs",
+      "symbol": "evaluate_prepared_plan_with_ndu",
+      "state": "source_composed_authority_free"
+    },
+    {
+      "path": "codex-rs/hepta-control-plane/src/planner_context.rs",
+      "symbol": "plan_observed_context",
+      "state": "source_composed_authority_free"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/vertical.rs",
+      "symbol": "run_read_only_vertical",
+      "state": "source_composed_authority_free"
+    }
   ]
 }

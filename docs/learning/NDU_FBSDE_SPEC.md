@@ -34,7 +34,7 @@ Existing exported deterministic primitives in `codex-rs/hepta-ndu/src/lib.rs` in
 
 Normalization, units, feature order, clipping locations, scales and conditional-moment conventions belong to immutable artifacts bound into `RunStartSnapshotV1`. `COST_k` is not the covariance matrix. Convert microseconds to the declared solver time unit with checked arithmetic; never silently treat microseconds as seconds. Reject invalid dimensions, non-finite numbers, unknown units and missing profiles. Pre-clipping violations and projection counts remain observable.
 
-Signed Q32 and Q24 are distinct from the HNMF ppm/toward-zero reference. Conversion records bind both profiles, rounding, units, source/output digests and absolute error. Identifier, authority, deletion, fence and deadline fields are exact; they never pass through approximate numerical conversion.
+Signed Q32 and Q24 are distinct from the HNMF ppm/toward-zero reference. The native deterministic utility profile now binds immutable axis-registry and normalization/fixed-point-scale manifest digests. Conversion records for the stochastic path must still bind both numeric profiles, rounding, units, source/output digests and absolute error; that production Q24 conversion evidence remains a separate admission gate. Identifier, authority, deletion, fence and deadline fields are exact; they never pass through approximate numerical conversion.
 
 ## 3. Formal model and invariants
 
@@ -73,7 +73,7 @@ The backward Euler candidate is
 
 Conditional expectations use only pre-boundary features. Event duration, stopping, censoring and history conditioning are manifest fields. Future outcomes may label training rows but cannot enter runtime features. A stochastic approximation is not identical to the deterministic discounted baseline for an arbitrary generator.
 
-Hard constraints are filtered before Pareto/scalarization. Preferences may change bounded allocation, exploration, evidence effort and abstention, never success criteria, observer identity, privacy, consent or authority. Parent/child exchange only bounded budget, shadow price, continuation utility, uncertainty, residual and expiry via `NduBoundaryConditionV1`. Freeze the parent revision; accept a candidate state with damping `P_next=(1-eta)P_old+eta*P_candidate`, eta in [1/16,1/4]. Do not select parent and child parameter artifacts in the same generation.
+Hard constraints are filtered before Pareto/scalarization. Preferences may change bounded allocation, exploration, evidence effort and abstention, never success criteria, observer identity, privacy, consent or authority. Parent/child exchange only bounded budget, shadow price, continuation utility, uncertainty, residual and expiry via `NduBoundaryConditionV1`. Freeze the parent revision; accept a candidate state with damping `P_next=(1-eta)P_old+eta*P_candidate`, eta in [1/16,1/4]. Concrete subject and parent identity define the hierarchy edge: do not select an actual parent and child parameter artifact in the same generation, but do not reject unrelated subjects merely because their subject classes differ.
 
 ## 4. Deterministic reference algorithm
 
@@ -92,7 +92,7 @@ Feasibility precedes scoring. Missing support/units is unavailable, not zero cos
 
 `NDU-GV-001`: P0=0; two unit steps; drifts 0.25,-0.5; instantaneous utilities 0.5,0.25; discount 0.8; terminal utility 1. Expected real values are P=[0,0.25,-0.25], U=[1.34,1.05,1]. Q32 nearest/ties-to-even goldens are P=[0,1073741824,-1073741824], U=[5755256177,4509715661,4294967296]. Canonical reference goldens are exact; the separate adaptive zero-noise comparison uses the declared tolerance.
 
-The deterministic fixed-point solve has at most 64 iterations and residual <=2^-20; exhaustion reports unavailable. Damping, clipping or a bounded iteration count alone does not prove convergence.
+The deterministic fixed-point solve has at most 64 iterations and residual <=2^-20; exhaustion reports unavailable. The native API now enforces preference dimension <=64 and values in [-1,1], requires a canonical solver-context digest before emitting receipts, preserves the predecessor on exhaustion, and treats already-converged input as a zero-iteration no-op. Damping, clipping or a bounded iteration count alone does not prove convergence.
 
 ## 5. Trainable or estimated algorithm
 
@@ -106,7 +106,7 @@ Start with deterministic/scalar or tabular baselines. Add stochastic or neural c
 
 ## 6. Data, protocol and lineage schema
 
-Canonical production protocols remain owned by `docs/contracts/CONTRACTS.json` and `docs/contracts/PROTOCOL_SCHEMAS.json`. This correction adds no unregistered field to an existing wire version.
+Canonical production protocols remain owned by `docs/contracts/CONTRACTS.json` and `docs/contracts/PROTOCOL_SCHEMAS.json`. Owner-local Rust hardening does not silently change an admitted external wire version. External V2 admission, coefficient-profile admission, Q24 coordinate conversion evidence, conditional identification and independent FBSDE/convergence qualification remain explicit integration gates.
 
 `NduCoefficientManifestV1` binds artifact, subject/objective class, dimensions, fixed-point scales, bounds, normalization, runtime, predecessor, expiry and rollback. The integration package must register a versioned coefficient-profile reference for the covariance/conditioning convention before admitting a stochastic implementation that needs it. An incompatible existing consumer returns unavailable; it cannot silently assume identity covariance.
 
@@ -144,7 +144,7 @@ Keep `NDU-GV-001`, projection, monotonicity, terminal-revision mismatch, parent-
 
 Add exact backward-regression cases: scalar Sigma=2dt with U_next=3m recovers Z=3 rather than 6; Sigma=[[2,1],[1,2]], B=[5,1] recovers [3,-1]; identity covariance reduces to B/dt; singular/indefinite covariance rejects; nonzero sample means require centering both terms; whitened-coordinate conversion preserves the predicted increment. A reference numeric pass proves the tested algebra, not conditional identification, a complete FBSDE solution or efficacy.
 
-Property tests require boundedness, deterministic replay, unit/profile compatibility, monotonically advancing revision, conservation, registered projection non-expansion, no hard-axis mutation and safe rollback. Faults include storage-full, corrupt manifests, expired boundaries, revocation, acknowledgement loss, process kill, covariance collapse, unsupported dimensions and wall-clock exhaustion.
+Property and adversarial tests require boundedness, deterministic replay, unit/profile compatibility, monotone revision only when state actually advances, no-op revision stability, bounded-exhaustion unavailability, solver-context non-rebinding, scoped revocation, conservation, registered projection non-expansion, no hard-axis mutation and safe rollback. Faults include storage-full, corrupt manifests, expired boundaries, revocation, acknowledgement loss, process kill, covariance collapse, unsupported dimensions and wall-clock exhaustion.
 
 ## 11. Quantitative acceptance gates
 

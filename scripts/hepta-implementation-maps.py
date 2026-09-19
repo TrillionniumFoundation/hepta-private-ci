@@ -69,6 +69,23 @@ def parse_entrypoints(module: str):
     return entries
 
 
+def product_caller_state(module_id: str) -> str:
+    """Report source composition without promoting it to production proof."""
+    if module_id == "utility.ndu":
+        callers = (
+            ROOT / "codex-rs/hepta-control-plane/src/planner_ndu.rs",
+            ROOT / "codex-rs/hepta-control-plane/src/planner_context.rs",
+            ROOT / "codex-rs/hepta-intelligence/src/vertical.rs",
+        )
+        if all(path.is_file() for path in callers):
+            return "source_composed_unqualified"
+    if module_id == "control.runtime":
+        caller = ROOT / "codex-rs/hepta-agentd/src/cognitive_context.rs"
+        if caller.is_file():
+            return "source_composed_unqualified"
+    return "not_composed"
+
+
 def map_for(module: dict, source_base: dict, lanes: dict):
     mid = module["id"]
     roots = [x["path"] for x in module["rootBindings"]]
@@ -100,7 +117,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "resolvedRoots": resolve_source_roots(ROOT, module),
         "sourceRootPresent": all((ROOT / x).exists() for x in roots),
         "productionImplementation": False,
-        "productCallerState": "not_composed",
+        "productCallerState": product_caller_state(mid),
         "productionWriterState": "not_established",
         "operations": operations,
         "repositoryControlledGaps": [
@@ -334,6 +351,14 @@ def verify():
             continue
         if "sourceRootPresent" not in row or "productionImplementation" not in row:
             failures.append(f"{mid}: status model")
+        expected_caller_state = product_caller_state(mid)
+        if mid in {"utility.ndu", "control.runtime"} and row.get(
+            "productCallerState"
+        ) != expected_caller_state:
+            failures.append(
+                f"{mid}: source composition drift "
+                f"({row.get('productCallerState')} != {expected_caller_state})"
+            )
         for op in ops:
             if not op.get("operation"):
                 failures.append(f"{mid}: operation id")
