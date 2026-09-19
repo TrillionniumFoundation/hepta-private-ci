@@ -198,9 +198,12 @@ impl AuthoritativeSnapshotV1 {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AuthoritativeReadResultV1 {
+    pub provider_id: StableId,
     pub request_digest: Digest32,
     pub snapshot_receipt_digest: Digest32,
+    pub source_snapshot_digest: Digest32,
     pub generation_vector_digest: Digest32,
+    pub lease_expires_unix_ms: u64,
     pub read_result: ReadResultV2,
     pub binding_digest: Digest32,
     pub authority: AuthorityPosture,
@@ -210,22 +213,65 @@ impl AuthoritativeReadResultV1 {
     pub fn validate(&self) -> Result<(), SnapshotProviderError> {
         if self.request_digest.is_zero()
             || self.snapshot_receipt_digest.is_zero()
+            || self.source_snapshot_digest.is_zero()
             || self.generation_vector_digest.is_zero()
             || self.binding_digest.is_zero()
         {
             return Err(SnapshotProviderError::EmptyDigest);
         }
+        if self.lease_expires_unix_ms == 0 {
+            return Err(SnapshotProviderError::InvalidLeaseWindow);
+        }
+        if self.read_result.snapshot_digest() != self.source_snapshot_digest {
+            return Err(SnapshotProviderError::ReadSnapshotMismatch);
+        }
         if self.authority.grants_any() {
             return Err(SnapshotProviderError::AuthorityGranted);
         }
         let expected = compute_authoritative_read_digest(
+            &self.provider_id,
             self.request_digest,
             self.snapshot_receipt_digest,
+            self.source_snapshot_digest,
             self.generation_vector_digest,
+            self.lease_expires_unix_ms,
             self.read_result.receipt_digest(),
         );
         if expected != self.binding_digest {
             return Err(SnapshotProviderError::ReceiptDigestMismatch);
+        }
+        Ok(())
+    }
+
+    /// Revalidate this completed read immediately before downstream consumption.
+    ///
+    /// The caller must reacquire current state from the authoritative owners
+    /// instead of replaying the original envelope. A changed authority epoch,
+    /// external generation, cognitive frontier, model/profile pin, scope,
+    /// purpose, or source snapshot fails closed. The original lease remains a
+    /// hard upper bound even when the refreshed envelope grants a later lease.
+    pub fn validate_for_consumption(
+        &self,
+        now_unix_ms: u64,
+        request: &SnapshotAcquisitionRequestV1,
+        current: &AuthoritativeSnapshotV1,
+    ) -> Result<(), SnapshotProviderError> {
+        self.validate()?;
+        if now_unix_ms >= self.lease_expires_unix_ms {
+            return Err(SnapshotProviderError::LeaseExpired);
+        }
+        request.validate(now_unix_ms)?;
+        if self.request_digest != request.digest() {
+            return Err(SnapshotProviderError::AcquisitionRequestMismatch);
+        }
+        current.validate_for_request(now_unix_ms, request)?;
+        if self.provider_id != *current.provider_id() {
+            return Err(SnapshotProviderError::ProviderMismatch);
+        }
+        if self.source_snapshot_digest != current.snapshot().snapshot_digest
+            || self.generation_vector_digest != current.snapshot_key().vector_digest
+        {
+            return Err(SnapshotProviderError::GenerationGone);
         }
         Ok(())
     }
@@ -246,18 +292,27 @@ pub fn read_authoritative<P: AuthoritativeCognitiveSnapshotProvider>(
     let request_digest = acquisition_request.digest();
     let read_result =
         read_v2(&envelope.snapshot, read_request).map_err(SnapshotProviderError::Read)?;
+    let provider_id = envelope.provider_id.clone();
+    let source_snapshot_digest = envelope.snapshot.snapshot_digest;
     let generation_vector_digest = envelope.snapshot_key.vector_digest;
     let snapshot_receipt_digest = envelope.receipt_digest;
+    let lease_expires_unix_ms = envelope.lease_expires_unix_ms;
     let binding_digest = compute_authoritative_read_digest(
+        &provider_id,
         request_digest,
         snapshot_receipt_digest,
+        source_snapshot_digest,
         generation_vector_digest,
+        lease_expires_unix_ms,
         read_result.receipt_digest(),
     );
     let result = AuthoritativeReadResultV1 {
+        provider_id,
         request_digest,
         snapshot_receipt_digest,
+        source_snapshot_digest,
         generation_vector_digest,
+        lease_expires_unix_ms,
         read_result,
         binding_digest,
         authority: AuthorityPosture::DENY_ALL,
@@ -282,6 +337,8 @@ pub enum SnapshotProviderError {
     StaleTombstoneFrontier,
     SnapshotIntegrity,
     ReadSnapshotMismatch,
+    AcquisitionRequestMismatch,
+    ProviderMismatch,
     ReceiptDigestMismatch,
     AuthorityGranted,
     EmptyDigest,
@@ -317,21 +374,27 @@ fn compute_snapshot_receipt_digest(
 }
 
 fn compute_authoritative_read_digest(
+    provider_id: &StableId,
     request_digest: Digest32,
     snapshot_receipt_digest: Digest32,
+    source_snapshot_digest: Digest32,
     generation_vector_digest: Digest32,
+    lease_expires_unix_ms: u64,
     read_receipt_digest: Digest32,
 ) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(AUTHORITATIVE_READ_DOMAIN);
+    push_id(&mut bytes, provider_id);
     for digest in [
         request_digest,
         snapshot_receipt_digest,
+        source_snapshot_digest,
         generation_vector_digest,
         read_receipt_digest,
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
+    push_u64(&mut bytes, lease_expires_unix_ms);
     Digest32::of_bytes(&bytes)
 }
 
