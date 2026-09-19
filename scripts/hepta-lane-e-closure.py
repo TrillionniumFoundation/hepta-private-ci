@@ -42,6 +42,12 @@ EXPECTED_OPERATIONS = {
         "finalize_credit_batch",
         "freeze_dataset",
         "append_shadow_decision",
+        "ProductionLedgerWriter::append_authenticated_outcome",
+        "ProductionLedgerWriter::append_credit_batch",
+        "ProductionLedgerWriter::freeze_dataset_from_ledger",
+        "ProductionLedgerWriter::append_unlearning_lineage",
+        "DurableAnchorWitness::publish",
+        "build_ledger_index_checkpoint",
     },
     "learning.artifacts": {
         "validate_artifact_manifest_v2",
