@@ -277,54 +277,7 @@ impl LaneFCompositionReceiptV3 {
 
         match self.disposition {
             PipelineDispositionV3::HostHandoffAccepted => {
-                let envelope = self
-                    .host_envelope
-                    .as_ref()
-                    .ok_or(PipelineErrorV3::InvalidReceipt("missing host envelope"))?;
-                envelope.validate().map_err(PipelineErrorV3::Contract)?;
-                if envelope.run_id != self.run_id || envelope.snapshot_digest != self.snapshot_digest {
-                    return Err(PipelineErrorV3::InvalidReceipt("host envelope identity"));
-                }
-                let stage = |wanted| {
-                    self.stages
-                        .iter()
-                        .find(|trace| trace.stage == wanted)
-                        .ok_or(PipelineErrorV3::InvalidReceipt("missing host stage"))
-                };
-                let legal = stage(LaneFStageV3::LegalSetBuilt)?;
-                let utility = stage(LaneFStageV3::UtilityEvaluated)?;
-                let evaluation = stage(LaneFStageV3::EvaluationAdmitted)?;
-                let intuition = stage(LaneFStageV3::IntuitionDecided)?;
-                let context = stage(LaneFStageV3::ContextCompiled)?;
-                let host = stage(LaneFStageV3::HostEnvelopeBuilt)?;
-                if envelope.candidate_set_digest != legal.output_digest
-                    || envelope.utility_digest != utility.output_digest
-                    || envelope.evaluation_digest != evaluation.output_digest
-                    || envelope.neural_digest
-                        != stage_completed_digest(&self.stages, LaneFStageV3::NeuralSignalCollected)
-                    || envelope.prompt_digest
-                        != stage_completed_digest(&self.stages, LaneFStageV3::PromptPortfolioBuilt)
-                    || envelope.intuition_digest != intuition.output_digest
-                    || envelope.context_digest != context.output_digest
-                    || host.predecessor_digest != context.output_digest
-                    || host.output_digest != envelope.envelope_digest
-                {
-                    return Err(PipelineErrorV3::InvalidReceipt("host envelope stage binding"));
-                }
-                let context_index = self
-                    .stages
-                    .iter()
-                    .position(|trace| trace.stage == LaneFStageV3::ContextCompiled)
-                    .ok_or(PipelineErrorV3::InvalidReceipt("missing context stage"))?;
-                if digest_prefix(
-                    &self.run_id,
-                    self.snapshot_digest,
-                    &self.stages[..=context_index],
-                    context.output_digest,
-                )? != envelope.pre_handoff_digest
-                {
-                    return Err(PipelineErrorV3::InvalidReceipt("pre-handoff binding"));
-                }
+                validate_host_envelope(self)?;
                 if !self
                     .stages
                     .iter()
@@ -337,6 +290,8 @@ impl LaneFCompositionReceiptV3 {
             }
             PipelineDispositionV3::Abstained => {
                 if self.host_envelope.is_some()
+                    || self.stages.last().map(|trace| trace.stage)
+                        != Some(LaneFStageV3::LearningRecorded)
                     || !matches!(
                         self.stages
                             .iter()
@@ -350,6 +305,8 @@ impl LaneFCompositionReceiptV3 {
             }
             PipelineDispositionV3::SlowPath => {
                 if self.host_envelope.is_some()
+                    || self.stages.last().map(|trace| trace.stage)
+                        != Some(LaneFStageV3::LearningRecorded)
                     || !matches!(
                         self.stages
                             .iter()
@@ -362,6 +319,9 @@ impl LaneFCompositionReceiptV3 {
                 }
             }
             PipelineDispositionV3::Failed(class) => {
+                if self.host_envelope.is_some() {
+                    validate_host_envelope(self)?;
+                }
                 if !matches!(
                     self.stages.last().map(|trace| trace.outcome),
                     Some(StageOutcomeV3::Failed(actual)) if actual == class
@@ -387,6 +347,59 @@ impl LaneFCompositionReceiptV3 {
         }
         Ok(())
     }
+}
+
+fn validate_host_envelope(receipt: &LaneFCompositionReceiptV3) -> Result<(), PipelineErrorV3> {
+    let envelope = receipt
+        .host_envelope
+        .as_ref()
+        .ok_or(PipelineErrorV3::InvalidReceipt("missing host envelope"))?;
+    envelope.validate().map_err(PipelineErrorV3::Contract)?;
+    if envelope.run_id != receipt.run_id || envelope.snapshot_digest != receipt.snapshot_digest {
+        return Err(PipelineErrorV3::InvalidReceipt("host envelope identity"));
+    }
+    let stage = |wanted| {
+        receipt
+            .stages
+            .iter()
+            .find(|trace| trace.stage == wanted)
+            .ok_or(PipelineErrorV3::InvalidReceipt("missing host stage"))
+    };
+    let legal = stage(LaneFStageV3::LegalSetBuilt)?;
+    let utility = stage(LaneFStageV3::UtilityEvaluated)?;
+    let evaluation = stage(LaneFStageV3::EvaluationAdmitted)?;
+    let intuition = stage(LaneFStageV3::IntuitionDecided)?;
+    let context = stage(LaneFStageV3::ContextCompiled)?;
+    let host = stage(LaneFStageV3::HostEnvelopeBuilt)?;
+    if envelope.candidate_set_digest != legal.output_digest
+        || envelope.utility_digest != utility.output_digest
+        || envelope.evaluation_digest != evaluation.output_digest
+        || envelope.neural_digest
+            != stage_completed_digest(&receipt.stages, LaneFStageV3::NeuralSignalCollected)
+        || envelope.prompt_digest
+            != stage_completed_digest(&receipt.stages, LaneFStageV3::PromptPortfolioBuilt)
+        || envelope.intuition_digest != intuition.output_digest
+        || envelope.context_digest != context.output_digest
+        || host.predecessor_digest != context.output_digest
+        || host.output_digest != envelope.envelope_digest
+    {
+        return Err(PipelineErrorV3::InvalidReceipt("host envelope stage binding"));
+    }
+    let context_index = receipt
+        .stages
+        .iter()
+        .position(|trace| trace.stage == LaneFStageV3::ContextCompiled)
+        .ok_or(PipelineErrorV3::InvalidReceipt("missing context stage"))?;
+    if digest_prefix(
+        &receipt.run_id,
+        receipt.snapshot_digest,
+        &receipt.stages[..=context_index],
+        context.output_digest,
+    )? != envelope.pre_handoff_digest
+    {
+        return Err(PipelineErrorV3::InvalidReceipt("pre-handoff binding"));
+    }
+    Ok(())
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
