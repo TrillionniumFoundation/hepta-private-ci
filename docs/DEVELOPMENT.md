@@ -241,6 +241,8 @@ Authority, lease, CAS, truth and writer-ownership axes are never noised or learn
 
 Operator learning uses a fixed, versioned `OperatorSensorCore` that is separate from the causal replay ledger. Runtime experience may not silently replace the sensor core. Coverage, fill distance, separation radius, mesh ratio, OOD margin, effective rank and resource budget are measured.
 
+Training inputs are admitted from a self-verifying frozen `DatasetSnapshotReceiptV3`, not from an independently caller-supplied dataset digest. Every consumed tabular/world-model row must name a source record in that receipt. Applicability and regularity have separate structural kernels and authenticated product/qualification wrappers; the latter consume cryptographically verified evaluator evidence, bind the exact structural receipt, and verify evaluator independence from the generator. Authentication proves who attested to exact bytes, not scientific truth, selection or promotion authority.
+
 The target architecture separates continuation-value branch encoding, smooth state trunk and Lipschitz/categorical action trunk. Low separation rank is an empirical requirement, not an assumption disguised as evidence. Reconstruction must be bounded, monotone/positive where required and approximately non-expansive in the declared norm. Residual Bellman mode is permitted only for a measured near-greedy active set; off-policy candidates use a direct target or action-gap head.
 
 Control steps are chosen at meaningful event/episode boundaries. The system does not run a full Bellman solver at every token or micro-event.
