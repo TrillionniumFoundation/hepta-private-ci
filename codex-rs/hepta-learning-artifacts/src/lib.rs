@@ -19,6 +19,8 @@ mod pinned;
 mod publication;
 mod registry;
 mod storage;
+#[cfg(test)]
+mod test_support;
 
 pub use admission_v3::ArtifactAdmissionError;
 pub use admission_v3::WithdrawalBoundArtifactAdmissionV3;
