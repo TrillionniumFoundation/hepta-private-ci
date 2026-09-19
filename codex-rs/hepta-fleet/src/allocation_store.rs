@@ -340,6 +340,7 @@ impl FleetAllocationStoreSnapshotV1 {
 
 pub struct FleetAllocationStore {
     root: PathBuf,
+    registry: FleetRegistry,
     _lock: File,
 }
 
@@ -351,7 +352,11 @@ impl FleetAllocationStore {
         lock.try_lock()
             .map_err(|_| FleetAllocationStoreError::WriterBusy)?;
         cleanup_incomplete_snapshots(&root)?;
-        let store = Self { root, _lock: lock };
+        let store = Self {
+            root,
+            registry: registry.clone(),
+            _lock: lock,
+        };
         if store.latest_revision()?.is_none() {
             store.write_snapshot(&FleetAllocationStoreSnapshotV1::empty())?;
         }
@@ -445,8 +450,23 @@ impl FleetAllocationStore {
             .checked_add(lease_lifetime_ms)
             .ok_or(FleetAllocationStoreError::ArithmeticOverflow)?;
         let state = self.load()?;
+        let roster = self
+            .registry
+            .load()
+            .map_err(|error| FleetAllocationStoreError::Registry(error.to_string()))?;
 
         for request in requests {
+            let record = roster
+                .agent(&request.agent_id)
+                .ok_or_else(|| FleetAllocationStoreError::UnknownAgent(request.agent_id.clone()))?;
+            let manifest_budget = FleetResourceVectorV1::from_manifest_budget(&record.manifest.resources);
+            if !request.minimum.fits_within(manifest_budget)
+                || !request.desired.fits_within(manifest_budget)
+            {
+                return Err(FleetAllocationStoreError::AgentBudgetExceeded(
+                    request.agent_id.clone(),
+                ));
+            }
             if state
                 .grants
                 .values()
@@ -1200,6 +1220,12 @@ pub enum FleetAllocationStoreError {
     AuthorityEpochMismatch,
     #[error("invalid fleet consumption observation")]
     InvalidObservation,
+    #[error("unknown fleet allocation agent {0}")]
+    UnknownAgent(AgentId),
+    #[error("fleet allocation exceeds registered agent budget {0}")]
+    AgentBudgetExceeded(AgentId),
+    #[error("fleet registry access failed: {0}")]
+    Registry(String),
     #[error("fleet allocation arithmetic overflow")]
     ArithmeticOverflow,
     #[error("fleet placement: {0}")]
