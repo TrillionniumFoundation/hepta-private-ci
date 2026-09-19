@@ -22,6 +22,8 @@ use sqlx::Row;
 use sqlx::SqliteConnection;
 use sqlx::TypeInfo;
 use sqlx::ValueRef;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use super::COGNITIVE_DB_FILENAME;
 use super::CognitiveStore;
@@ -54,13 +56,75 @@ pub struct CognitiveRecoveryAnchor {
     pub state_digest: Sha256Digest,
 }
 
+const WRITER_FENCE_PROFILE: &str = "hepta:cognitive:writer-fence:v1";
+
+/// Exact active writer head retained by the trusted host beside the current-cut
+/// anchor. The lease-chain digest binds the fencing token without exposing it.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct CognitiveRecoveryWriterFence {
+    pub profile: String,
+    pub owner_agent_id: AgentId,
+    pub lease_id: String,
+    pub lease_sequence: u64,
+    pub generation: u64,
+    pub authority_epoch: u64,
+    pub owner_epoch: u64,
+    pub lease_expires_at_unix_seconds: u64,
+    pub lease_sha256: Sha256Digest,
+}
+
+impl CognitiveRecoveryWriterFence {
+    fn validate(&self, owner: &AgentId) -> Result<(), CognitiveRecoveryError> {
+        if self.profile != WRITER_FENCE_PROFILE {
+            return Err(CognitiveRecoveryError::Invalid(
+                "unsupported cognitive recovery writer-fence profile".to_string(),
+            ));
+        }
+        if &self.owner_agent_id != owner {
+            return Err(CognitiveRecoveryError::AccessDenied(
+                "cognitive recovery writer-fence owner mismatch".to_string(),
+            ));
+        }
+        if self.lease_id.trim().is_empty()
+            || self.lease_id.len() > 512
+            || self.lease_id.as_bytes().contains(&0)
+            || self.lease_sequence == 0
+            || self.generation == 0
+            || self.authority_epoch == 0
+            || self.owner_epoch == 0
+            || self.lease_expires_at_unix_seconds == 0
+        {
+            return Err(CognitiveRecoveryError::Invalid(
+                "invalid cognitive recovery writer fence".to_string(),
+            ));
+        }
+        Sha256Digest::parse(self.lease_sha256.as_str().to_string()).map_err(|_| {
+            CognitiveRecoveryError::Invalid(
+                "invalid cognitive recovery writer-fence digest".to_string(),
+            )
+        })?;
+        Ok(())
+    }
+}
+
 /// Current recovery disposition supplied by the trusted host. Revocation wins
 /// before any filesystem access. An exact witness is an integrity input, not a
 /// grant. Cold-image reads require an exact comparison; writer recovery remains
 /// unavailable until a descriptor-safe writer backend and fence exist.
+#[derive(Clone, Copy)]
 pub enum CognitiveRecoveryRequirement<'a> {
     ExactCurrentCut(&'a CognitiveRecoveryAnchor),
+    ExactCurrentCutAndWriterFence {
+        anchor: &'a CognitiveRecoveryAnchor,
+        writer_fence: &'a CognitiveRecoveryWriterFence,
+    },
     Revoked,
+}
+
+struct ValidatedRecoveryRequirement<'a> {
+    anchor: &'a CognitiveRecoveryAnchor,
+    writer_fence: Option<&'a CognitiveRecoveryWriterFence>,
 }
 
 /// Fail-closed recovery admission outcome.
@@ -95,41 +159,138 @@ impl CognitiveStore {
         Ok(anchor)
     }
 
-    /// Validate an existing database's filesystem identity, then fail closed.
+    /// Capture the exact active host-bound writer head that must accompany a
+    /// writer recovery request. The host retains/authenticates this separately.
+    pub async fn recovery_writer_fence(
+        &self,
+        lease_id: &str,
+    ) -> Result<CognitiveRecoveryWriterFence, CognitiveStoreError> {
+        if lease_id.trim().is_empty() || lease_id.len() > 512 || lease_id.as_bytes().contains(&0) {
+            return Err(CognitiveStoreError::Invalid(
+                "invalid cognitive recovery lease id".to_string(),
+            ));
+        }
+        let row = sqlx::query(
+            "SELECT lease_sequence, generation, state, authority_epoch, owner_epoch,
+                    lease_expires_at_unix_seconds, lease_sha256
+             FROM cognitive_local_leases
+             WHERE lease_id = ? AND owner_agent_id = ?
+             ORDER BY lease_sequence DESC LIMIT 1",
+        )
+        .bind(lease_id)
+        .bind(self.owner_agent_id.as_str())
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(unavailable)?
+        .ok_or_else(|| CognitiveStoreError::AccessDenied(
+            "cognitive recovery writer lease does not exist".to_string(),
+        ))?;
+        let state: String = row.try_get("state").map_err(unavailable)?;
+        if state != "active" {
+            return Err(CognitiveStoreError::AccessDenied(
+                "cognitive recovery writer lease is not active".to_string(),
+            ));
+        }
+        let lease_sequence = positive_u64(
+            row.try_get("lease_sequence").map_err(unavailable)?,
+            "lease sequence",
+        )?;
+        let generation = positive_u64(
+            row.try_get("generation").map_err(unavailable)?,
+            "lease generation",
+        )?;
+        let authority_epoch = positive_u64(
+            row.try_get::<Option<i64>, _>("authority_epoch")
+                .map_err(unavailable)?
+                .ok_or_else(|| CognitiveStoreError::AccessDenied(
+                    "cognitive recovery writer lease is not authority-bound".to_string(),
+                ))?,
+            "authority epoch",
+        )?;
+        let owner_epoch = positive_u64(
+            row.try_get::<Option<i64>, _>("owner_epoch")
+                .map_err(unavailable)?
+                .ok_or_else(|| CognitiveStoreError::AccessDenied(
+                    "cognitive recovery writer lease is not owner-bound".to_string(),
+                ))?,
+            "owner epoch",
+        )?;
+        let lease_expires_at_unix_seconds = positive_u64(
+            row.try_get::<Option<i64>, _>("lease_expires_at_unix_seconds")
+                .map_err(unavailable)?
+                .ok_or_else(|| CognitiveStoreError::AccessDenied(
+                    "cognitive recovery writer lease has no expiry".to_string(),
+                ))?,
+            "lease expiry",
+        )?;
+        let now = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map_err(|error| CognitiveStoreError::Unavailable(error.to_string()))?
+            .as_secs();
+        if now >= lease_expires_at_unix_seconds {
+            return Err(CognitiveStoreError::AccessDenied(
+                "cognitive recovery writer lease is expired".to_string(),
+            ));
+        }
+        let lease_sha256: String = row.try_get("lease_sha256").map_err(unavailable)?;
+        let lease_sha256 = Sha256Digest::parse(lease_sha256).map_err(CognitiveStoreError::Corrupt)?;
+        Ok(CognitiveRecoveryWriterFence {
+            profile: WRITER_FENCE_PROFILE.to_string(),
+            owner_agent_id: self.owner_agent_id.clone(),
+            lease_id: lease_id.to_string(),
+            lease_sequence,
+            generation,
+            authority_epoch,
+            owner_epoch,
+            lease_expires_at_unix_seconds,
+            lease_sha256,
+        })
+    }
+
+    /// Validate an existing database's current cut and writer fence against a
+    /// descriptor-bound cold image, then fail closed until the writable VFS is
+    /// available. This never falls back to ordinary path-based opening.
     ///
-    /// The current state backend has no descriptor-backed SQLite VFS, current
-    /// writer-fence input, or non-reconnecting connection. Consequently even
-    /// an exact current-cut witness cannot enable recovery. This function never
-    /// opens SQLite, begins a transaction, queries state, or mutates sidecars.
+    /// The state backend still has no descriptor-backed writable SQLite VFS or
+    /// non-reconnecting writer connection. Before returning that one remaining
+    /// unavailable result, this path proves the exact current cut and the
+    /// independently retained active writer head against a cold descriptor copy.
     pub async fn open_with_recovery(
         layout: &HeptaAgentLayout,
         requirement: CognitiveRecoveryRequirement<'_>,
     ) -> Result<Self, CognitiveRecoveryError> {
-        validate_requirement(layout, requirement)?;
-        let path = layout.cognitive_root().join(COGNITIVE_DB_FILENAME);
-        let sqlite_home = AbsolutePathBuf::try_from(layout.cognitive_root().to_path_buf())
-            .map_err(|error| CognitiveRecoveryError::Invalid(error.to_string()))?;
-        let guard = SqliteConfig::from_sqlite_home(sqlite_home)
-            .bind_existing_recovery_database(&path)
-            .map_err(recovery_error)?;
-        guard
-            .verify_inspection_unchanged()
-            .map_err(recovery_error)?;
-        Err(recovery_error(SqliteRecoveryError::Unavailable))
+        let validated = validate_requirement(layout, requirement)?;
+        let writer_fence = validated.writer_fence.ok_or_else(|| {
+            CognitiveRecoveryError::Unavailable(
+                "cognitive writer recovery requires an independently retained current writer fence"
+                    .to_string(),
+            )
+        })?;
+        let recovered = Self::open_read_only_recovery(layout, requirement).await?;
+        recovered.verify_writer_fence(writer_fence).await?;
+        recovered.close().await;
+        Err(CognitiveRecoveryError::Unavailable(
+            "cognitive current cut and writer fence verified; descriptor-backed writable SQLite VFS is not implemented"
+                .to_string(),
+        ))
     }
 }
 
 fn validate_requirement<'a>(
     layout: &HeptaAgentLayout,
     requirement: CognitiveRecoveryRequirement<'a>,
-) -> Result<&'a CognitiveRecoveryAnchor, CognitiveRecoveryError> {
-    let expected = match requirement {
+) -> Result<ValidatedRecoveryRequirement<'a>, CognitiveRecoveryError> {
+    let (expected, writer_fence) = match requirement {
         CognitiveRecoveryRequirement::Revoked => {
             return Err(CognitiveRecoveryError::AccessDenied(
                 "cognitive recovery is revoked".to_string(),
             ));
         }
-        CognitiveRecoveryRequirement::ExactCurrentCut(anchor) => anchor,
+        CognitiveRecoveryRequirement::ExactCurrentCut(anchor) => (anchor, None),
+        CognitiveRecoveryRequirement::ExactCurrentCutAndWriterFence {
+            anchor,
+            writer_fence,
+        } => (anchor, Some(writer_fence)),
     };
     if expected.owner_agent_id != *layout.agent_id() {
         return Err(CognitiveRecoveryError::AccessDenied(
@@ -143,7 +304,20 @@ fn validate_requirement<'a>(
             "unsupported cognitive recovery profile or schema".to_string(),
         ));
     }
-    Ok(expected)
+    if let Some(writer_fence) = writer_fence {
+        writer_fence.validate(layout.agent_id())?;
+    }
+    Ok(ValidatedRecoveryRequirement {
+        anchor: expected,
+        writer_fence,
+    })
+}
+
+fn positive_u64(value: i64, label: &str) -> Result<u64, CognitiveStoreError> {
+    u64::try_from(value)
+        .ok()
+        .filter(|value| *value > 0)
+        .ok_or_else(|| CognitiveStoreError::Corrupt(format!("invalid cognitive recovery {label}")))
 }
 
 fn recovery_error(error: SqliteRecoveryError) -> CognitiveRecoveryError {
