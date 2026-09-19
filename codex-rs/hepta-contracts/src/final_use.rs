@@ -90,6 +90,10 @@ pub struct FinalUseRevocations {
 #[serde(deny_unknown_fields)]
 struct State {
     head: FinalUseRevocations,
+    /// Replay truth is serialized in the fixed-record claims journal. Keep
+    /// backward-compatible deserialization of legacy JSON snapshots, but do
+    /// not serialize this unbounded set back into authority.json.
+    #[serde(default, skip_serializing)]
     used_nonces: BTreeSet<[u8; 32]>,
     #[serde(skip)]
     failed: bool,
