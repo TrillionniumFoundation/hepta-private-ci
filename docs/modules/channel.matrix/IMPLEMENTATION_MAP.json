@@ -59,7 +59,7 @@
           "command": "just test -p codex-hepta-matrixd --lib"
         }
       ],
-      "sourceSemantics": "Prepares the existing durable outbox stable transaction in MatrixDurableStore, binding payload, room/session generation and available authority/grant identity before dispatch.",
+      "sourceSemantics": "Prepares the existing durable outbox stable transaction in MatrixDurableStore, binding payload and room/session generation while freezing the exact available authority/grant identity before the first effect.",
       "operation": "prepare_send",
       "nativeSymbol": "pub fn prepare_send(",
       "sourcePath": "codex-rs/hepta-matrixd/src/send_observer.rs",
