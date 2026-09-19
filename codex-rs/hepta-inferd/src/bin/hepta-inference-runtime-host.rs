@@ -318,6 +318,8 @@ mod tests {
     fn issuer_protocol_resolves_the_exact_runtime_binding() {
         use codex_hepta_contracts::FinalUseGrant;
         use std::os::unix::net::UnixListener;
+        use std::time::SystemTime;
+        use std::time::UNIX_EPOCH;
 
         let nonce = SystemTime::now()
             .duration_since(UNIX_EPOCH)
