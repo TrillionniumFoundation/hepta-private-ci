@@ -16,6 +16,9 @@ fn output() -> NativeRunOutput {
         terminal_observed: false,
         stop_reason: None,
         owner_authority: NativeOwnerAuthority::Unverified,
+        final_use_authority: NativeFinalUseAuthority::Unverified,
+        output_sha256: None,
+        output_retained: true,
     }
 }
 
@@ -291,6 +294,11 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     )
     .await
     .unwrap();
+    assert!(!output.succeeded());
+    output.final_use_authority = NativeFinalUseAuthority::Verified {
+        authority_epoch: 1,
+        grant_id: "grant-1".to_string(),
+    };
     assert!(output.succeeded());
     output.status = NativeRunStatus::Interrupted;
     assert!(!output.succeeded());

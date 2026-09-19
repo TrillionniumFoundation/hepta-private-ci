@@ -18,6 +18,10 @@ fn request(id: &str) -> NativeRequest {
         worker_generation: 4,
         model: "actual-model".to_string(),
         payload_digest: "a".repeat(64),
+        operation_id: Some(format!("operation-{id}")),
+        quota_reservation_digest: Some("c".repeat(64)),
+        resource_snapshot_digest: Some("d".repeat(64)),
+        worker_assignment_digest: Some("f".repeat(64)),
     }
 }
 
@@ -26,6 +30,7 @@ fn dispatch() -> NativeDispatch {
         thread_id: "thread-1".to_string(),
         model_provider: "provider".to_string(),
         context_digest: "b".repeat(64),
+        authority_binding_digest: Some("e".repeat(64)),
     }
 }
 
@@ -41,6 +46,9 @@ fn output(status: NativeRunStatus, tokens: Option<u64>) -> NativeRunOutput {
         observed_output_tokens: tokens,
         stop_reason: None,
         owner_authority: NativeOwnerAuthority::Unverified,
+        final_use_authority: NativeFinalUseAuthority::Unverified,
+        output_sha256: None,
+        output_retained: true,
     }
 }
 
@@ -332,11 +340,12 @@ fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
         output: old_output,
     };
     let mut json = serde_json::to_value(event).unwrap();
-    json["Observe"]["output"]
-        .as_object_mut()
-        .unwrap()
-        .remove("owner_authority");
-    // Write an actual pre-upgrade observation record with the field absent.
+    let legacy = json["Observe"]["output"].as_object_mut().unwrap();
+    legacy.remove("owner_authority");
+    legacy.remove("final_use_authority");
+    legacy.remove("output_sha256");
+    legacy.remove("output_retained");
+    // Write an actual pre-upgrade observation record with the fields absent.
     control
         .append(&format!(
             "{JOURNAL_PREFIX}{}\n",
@@ -360,6 +369,67 @@ fn legacy_journal_completion_without_authority_cannot_be_replayed_as_success() {
     control.settle_native("r1", replayed.clone()).unwrap();
     replayed.owner_authority = NativeOwnerAuthority::ObservedReady;
     assert_eq!(control.settle_native("r1", replayed), Err(Error::Conflict));
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn receipt_only_settlement_persists_digest_without_model_text() {
+    let path = path("receipt-only");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    start(&mut control, "r1");
+    let mut observed = output(NativeRunStatus::Completed, Some(9));
+    observed.owner_authority = NativeOwnerAuthority::ObservedReady;
+    observed.final_use_authority = NativeFinalUseAuthority::Verified {
+        authority_epoch: 7,
+        grant_id: "grant-1".to_string(),
+    };
+    let live_text = observed.output.clone();
+    let settled = control.settle_native_receipt_only("r1", observed).unwrap();
+    let persisted = settled.observation.as_ref().unwrap();
+    assert_eq!(persisted.output, "");
+    assert!(!persisted.output_retained);
+    let expected_digest = Digest32::of_bytes(live_text.as_bytes()).to_string();
+    assert_eq!(
+        persisted.output_sha256.as_deref(),
+        Some(expected_digest.as_str())
+    );
+    assert!(persisted.succeeded());
+    drop(control);
+
+    let bytes = std::fs::read(&path).unwrap();
+    assert!(
+        !bytes
+            .windows(live_text.len())
+            .any(|window| window == live_text.as_bytes())
+    );
+    let reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    let replayed = reopened
+        .native_record("r1")
+        .unwrap()
+        .observation
+        .as_ref()
+        .unwrap();
+    assert_eq!(replayed.output, "");
+    assert!(!replayed.output_retained);
+    assert!(replayed.succeeded());
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn terminal_unverified_final_use_cannot_be_retroactively_authorized() {
+    let path = path("final-use-upgrade");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    start(&mut control, "r1");
+    let terminal = output(NativeRunStatus::Completed, Some(3));
+    control.settle_native("r1", terminal.clone()).unwrap();
+    let mut upgraded = terminal;
+    upgraded.final_use_authority = NativeFinalUseAuthority::Verified {
+        authority_epoch: 1,
+        grant_id: "grant-1".to_string(),
+    };
+    assert_eq!(control.settle_native("r1", upgraded), Err(Error::Conflict));
     drop(control);
     std::fs::remove_file(path).unwrap();
 }

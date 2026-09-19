@@ -1,13 +1,16 @@
 //! Local durable admission around the actual App Server driver.
 
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_core::durable_control::native::NativeFinalUseAuthority;
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
+use codex_hepta_types::Digest32;
 use sha2::Digest;
 use sha2::Sha256;
 use tokio_util::sync::CancellationToken;
 
 use super::AppServerModelDriver;
+use super::NativeExecutionAuthority;
 use super::NativeOwnerAuthority;
 use super::NativeRunOutput;
 use super::NativeRunStatus;
@@ -15,9 +18,14 @@ use super::Result;
 
 /// Explicit local capacity policy; the first request pins the journal's limit.
 /// This limits admitted runs, not provider tokens, billing or device memory.
+#[derive(Clone, Debug)]
 pub struct NativeAdmission {
+    pub operation_id: String,
     pub request_id: String,
     pub maximum_in_flight: usize,
+    pub quota_reservation_digest: Digest32,
+    pub resource_snapshot_digest: Digest32,
+    pub worker_assignment_digest: Digest32,
 }
 
 impl AppServerModelDriver {
@@ -28,6 +36,7 @@ impl AppServerModelDriver {
         &self,
         control: &mut DurableInferenceControl,
         admission: NativeAdmission,
+        authorization: Option<&NativeExecutionAuthority>,
         prompt: String,
         context_query: Option<String>,
         cancellation: &CancellationToken,
@@ -42,17 +51,25 @@ impl AppServerModelDriver {
             return Err("context query must contain 1..2048 bytes".into());
         }
         let request = NativeRequest {
-            request_id: admission.request_id,
+            request_id: admission.request_id.clone(),
             principal_id: self.config.agent_id.to_string(),
             worker_generation: self.config.generation,
             model: self.config.model.clone(),
             payload_digest: digest(&serde_json::to_vec(&(
-                "hepta.native-request.v1",
+                "hepta.native-request.v2",
+                &admission.operation_id,
                 &prompt,
                 &context_query,
                 &self.config.agentd_socket,
                 self.config.timeout.as_millis(),
+                admission.quota_reservation_digest.to_string(),
+                admission.resource_snapshot_digest.to_string(),
+                admission.worker_assignment_digest.to_string(),
             ))?),
+            operation_id: Some(admission.operation_id.clone()),
+            quota_reservation_digest: Some(admission.quota_reservation_digest.to_string()),
+            resource_snapshot_digest: Some(admission.resource_snapshot_digest.to_string()),
+            worker_assignment_digest: Some(admission.worker_assignment_digest.to_string()),
         };
         let record = control.reserve_native(request, admission.maximum_in_flight)?;
         if let Some(reason) = &record.pre_dispatch_stop {
@@ -73,23 +90,36 @@ impl AppServerModelDriver {
                 observed_output_tokens: None,
                 terminal_observed: false,
                 owner_authority: NativeOwnerAuthority::Unverified,
+                final_use_authority: NativeFinalUseAuthority::Unverified,
+                output_sha256: None,
+                output_retained: true,
                 stop_reason: Some(
                     "reopened after possible dispatch; reservation held, no replay".to_string(),
                 ),
             };
-            control.settle_native(&record.request.request_id, output.clone())?;
-            return Ok(output);
+            let settled = control.settle_native_receipt_only(&record.request.request_id, output)?;
+            return settled
+                .observation
+                .ok_or_else(|| "missing durable native observation".into());
         }
         let request_id = record.request.request_id;
         match self
-            .run_once(control, &request_id, prompt, context_query, cancellation)
+            .run_once(
+                control,
+                &request_id,
+                &admission,
+                authorization,
+                prompt,
+                context_query,
+                cancellation,
+            )
             .await
         {
             Ok(output) => {
                 if !output.terminal_observed && cancellation.is_cancelled() {
                     control.cancel_native(&request_id)?;
                 }
-                control.settle_native(&request_id, output.clone())?;
+                control.settle_native_receipt_only(&request_id, output.clone())?;
                 Ok(output)
             }
             Err(error) => {

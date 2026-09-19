@@ -7,6 +7,8 @@ use std::collections::BTreeMap;
 use serde::Deserialize;
 use serde::Serialize;
 
+use codex_hepta_types::Digest32;
+
 use super::DurableInferenceControl;
 use super::Error;
 use super::validate_digest;
@@ -23,6 +25,19 @@ pub struct NativeRequest {
     pub model: String,
     /// Binds the prompt, optional query, exact socket and execution timeout.
     pub payload_digest: String,
+    /// Operation identity supplied by the kernel.operations composition root.
+    /// Historical journals omit this field and therefore remain unverified.
+    #[serde(default)]
+    pub operation_id: Option<String>,
+    /// Digest of the external quota reservation bound into final-use authority.
+    #[serde(default)]
+    pub quota_reservation_digest: Option<String>,
+    /// Digest of the eligible resource/worker snapshot bound into authority.
+    #[serde(default)]
+    pub resource_snapshot_digest: Option<String>,
+    /// Digest of the deterministic worker assignment selected from that snapshot.
+    #[serde(default)]
+    pub worker_assignment_digest: Option<String>,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -49,6 +64,24 @@ pub enum NativeOwnerAuthority {
     },
 }
 
+/// Final-use authority is independent from owner health and provider terminality.
+/// Historical records default to Unverified and can never be upgraded after a
+/// terminal observation.
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(tag = "state", rename_all = "snake_case", deny_unknown_fields)]
+pub enum NativeFinalUseAuthority {
+    #[default]
+    Unverified,
+    Verified {
+        authority_epoch: u64,
+        grant_id: String,
+    },
+}
+
+fn default_true() -> bool {
+    true
+}
+
 /// Fields observed by the native client, never a provider billing assertion.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -64,6 +97,14 @@ pub struct NativeRunOutput {
     pub stop_reason: Option<String>,
     #[serde(default)]
     pub owner_authority: NativeOwnerAuthority,
+    #[serde(default)]
+    pub final_use_authority: NativeFinalUseAuthority,
+    /// Digest of the model text when the journal stores receipt-only output.
+    #[serde(default)]
+    pub output_sha256: Option<String>,
+    /// False means the durable journal retained only output_sha256, not text.
+    #[serde(default = "default_true")]
+    pub output_retained: bool,
 }
 
 impl NativeRunOutput {
@@ -73,6 +114,10 @@ impl NativeRunOutput {
         self.terminal_observed
             && self.status == NativeRunStatus::Completed
             && self.owner_authority == NativeOwnerAuthority::ObservedReady
+            && matches!(
+                self.final_use_authority,
+                NativeFinalUseAuthority::Verified { .. }
+            )
     }
 }
 
@@ -94,6 +139,9 @@ pub struct NativeDispatch {
     pub model_provider: String,
     /// Exact serialized additional context, including its owner snapshot.
     pub context_digest: String,
+    /// Digest of the exact FinalUseBinding durably committed before turn/start.
+    #[serde(default)]
+    pub authority_binding_digest: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -279,6 +327,23 @@ impl DurableInferenceControl {
         )
     }
 
+    /// Persist only a content digest for provider output. The caller keeps the
+    /// in-memory text for the live response, while replay exposes an explicit
+    /// receipt-only observation instead of retaining sensitive model text.
+    pub fn settle_native_receipt_only(
+        &mut self,
+        request_id: &str,
+        mut output: NativeRunOutput,
+    ) -> Result<NativeRunRecord, Error> {
+        if !output.output_retained || output.output_sha256.is_some() {
+            return Err(Error::Conflict);
+        }
+        output.output_sha256 = Some(Digest32::of_bytes(output.output.as_bytes()).to_string());
+        output.output.clear();
+        output.output_retained = false;
+        self.settle_native(request_id, output)
+    }
+
     pub fn native_record(&self, request_id: &str) -> Option<&NativeRunRecord> {
         self.native.records.get(request_id)
     }
@@ -325,6 +390,30 @@ impl NativeJournal {
             validate_identity(&request.request_id, "native request")?;
             validate_identity(&request.principal_id, "native principal")?;
             validate_digest(&request.payload_digest, "native payload")?;
+            let evidence_count = [
+                request.operation_id.is_some(),
+                request.quota_reservation_digest.is_some(),
+                request.resource_snapshot_digest.is_some(),
+                request.worker_assignment_digest.is_some(),
+            ]
+            .into_iter()
+            .filter(|present| *present)
+            .count();
+            if evidence_count != 0 && evidence_count != 4 {
+                return Err(Error::InvalidIdentity("native admission evidence"));
+            }
+            if let Some(operation_id) = &request.operation_id {
+                validate_identity(operation_id, "native operation")?;
+            }
+            if let Some(digest) = &request.quota_reservation_digest {
+                validate_digest(digest, "native quota reservation")?;
+            }
+            if let Some(digest) = &request.resource_snapshot_digest {
+                validate_digest(digest, "native resource snapshot")?;
+            }
+            if let Some(digest) = &request.worker_assignment_digest {
+                validate_digest(digest, "native worker assignment")?;
+            }
             if request.worker_generation == 0
                 || request.model.is_empty()
                 || request.model.len() > 256
@@ -384,6 +473,9 @@ impl NativeJournal {
                 validate_identity(&dispatch.thread_id, "native thread")?;
                 validate_identity(&dispatch.model_provider, "native provider")?;
                 validate_digest(&dispatch.context_digest, "native context")?;
+                if let Some(digest) = &dispatch.authority_binding_digest {
+                    validate_digest(digest, "native final-use binding")?;
+                }
                 record.dispatch = Some(dispatch);
                 record.state = NativeReservationState::Dispatching;
             }
@@ -446,10 +538,36 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
     {
         return Err(Error::CapacityExceeded);
     }
+    match (&output.output_sha256, output.output_retained) {
+        (Some(digest), true) => {
+            validate_digest(digest, "native output")?;
+            if Digest32::of_bytes(output.output.as_bytes()).to_string() != *digest {
+                return Err(Error::Conflict);
+            }
+        }
+        (Some(digest), false) => {
+            validate_digest(digest, "native output")?;
+            if !output.output.is_empty() {
+                return Err(Error::Conflict);
+            }
+        }
+        (None, true) => {}
+        (None, false) => return Err(Error::InvalidIdentity("native output receipt")),
+    }
     if let NativeOwnerAuthority::Lost { reason } = &output.owner_authority
         && (reason.is_empty() || reason.len() > 4096)
     {
         return Err(Error::InvalidIdentity("owner authority loss reason"));
+    }
+    if let NativeFinalUseAuthority::Verified {
+        authority_epoch,
+        grant_id,
+    } = &output.final_use_authority
+    {
+        if *authority_epoch == 0 {
+            return Err(Error::InvalidIdentity("final-use authority epoch"));
+        }
+        validate_identity(grant_id, "final-use grant")?;
     }
     if output.terminal_observed == (output.status == NativeRunStatus::Indeterminate)
         || (output.turn_id.is_empty()
@@ -467,13 +585,25 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
             || (previous.terminal_observed
                 && previous.owner_authority == NativeOwnerAuthority::Unverified
                 && output.owner_authority == NativeOwnerAuthority::ObservedReady)
+            || (matches!(
+                previous.final_use_authority,
+                NativeFinalUseAuthority::Verified { .. }
+            ) && previous.final_use_authority != output.final_use_authority)
+            || (previous.terminal_observed
+                && previous.final_use_authority == NativeFinalUseAuthority::Unverified
+                && matches!(
+                    output.final_use_authority,
+                    NativeFinalUseAuthority::Verified { .. }
+                ))
         {
             return Err(Error::Conflict);
         }
         if previous.terminal_observed
             && (previous.status != output.status
                 || !output.terminal_observed
-                || previous.output != output.output)
+                || previous.output != output.output
+                || previous.output_sha256 != output.output_sha256
+                || previous.output_retained != output.output_retained)
         {
             return Err(Error::Conflict);
         }
