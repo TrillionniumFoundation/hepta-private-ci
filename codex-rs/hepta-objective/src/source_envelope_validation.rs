@@ -4,6 +4,9 @@ use std::fmt;
 
 use crate::ObjectiveSourceEnvelopeV1;
 
+const MAX_SOURCE_CONSTRAINTS: usize = 246;
+const MAX_COMPILED_PREDICATES: usize = 128;
+
 /// Structural errors contain field paths/counts, never unrestricted source text.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum ObjectiveStructureError {
@@ -124,7 +127,7 @@ impl ObjectiveSourceEnvelopeV1 {
             &intent.constraints,
             "constraints",
             /*minimum*/ 1,
-            /*maximum*/ 256,
+            /*maximum*/ MAX_SOURCE_CONSTRAINTS,
             |value| &value.constraint_id,
         )?;
         for constraint in &intent.constraints {
@@ -169,6 +172,17 @@ impl ObjectiveSourceEnvelopeV1 {
                 "requirement.evidenceSourceId",
                 /*maximum*/ 256,
             )?;
+        }
+        let compiled_predicates = intent.success_predicates.len()
+            + intent.terminal_conditions.len()
+            + intent.evidence_requirements.len();
+        if compiled_predicates > MAX_COMPILED_PREDICATES {
+            return Err(ObjectiveStructureError::CollectionCount {
+                field: "compiledPredicates",
+                actual: compiled_predicates,
+                minimum: 3,
+                maximum: MAX_COMPILED_PREDICATES,
+            });
         }
         text_bytes(
             &intent.risk.abstention_rule,

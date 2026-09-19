@@ -11,8 +11,8 @@
     "codex-rs/hepta-objective"
   ],
   "authorityDelta": "none",
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_applicable_stateless",
+  "productCallerState": "source_composed_not_activated",
+  "productionWriterState": "destination_owner_durable_run_start_journal_composed",
   "operations": [
     {
       "operation": "decode_source_envelope_json_v1",
@@ -90,14 +90,14 @@
       "inputs": [
         "ObjectiveSourceEnvelopeV1",
         "ObjectiveAdmissionProfileV1",
-        "ObjectiveAdmissionContextV1"
+        "preverified ObjectiveAdmissionContextV1 with authentication receipt digest"
       ],
       "outputs": [
         "ObjectiveAdmissionReceiptV1",
         "ObjectiveCompileReceipt",
         "ObjectiveConflictReceipt"
       ],
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_product_composed_not_activated",
       "authority": "deny_all",
       "tests": [
         {
@@ -115,6 +115,14 @@
         {
           "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
           "symbol": "risk_profile_ordering_is_monotone"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+          "symbol": "zero_authentication_receipt_digest_rejects_preverified_context"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+          "symbol": "implicit_abstain_reserves_final_source_action_slot_before_native_compile"
         }
       ],
       "designOperation": "admit_and_compile_objective_v1",
@@ -152,35 +160,30 @@
       "sourcePathExists": true
     },
     {
-      "operation": "compile",
-      "nativeSymbol": "codex_hepta_objective::compile",
-      "sourcePath": "codex-rs/hepta-objective/src/compiler.rs",
+      "operation": "compile_admitted_objective_v1",
+      "nativeSymbol": "codex_hepta_objective::compile_admitted_objective_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/objective_admission.rs",
       "inputs": [
-        "ObjectiveSourceEnvelope"
+        "opaque AdmittedObjectiveV1"
       ],
       "outputs": [
-        "ObjectiveCompileReceipt",
-        "ObjectiveConflictReceipt"
+        "ObjectiveAdmissionOutcomeV1"
       ],
-      "state": "source_implemented",
+      "state": "source_implemented_opaque_admitted_boundary",
       "authority": "none",
       "tests": [
         {
-          "path": "codex-rs/hepta-objective/src/compiler_tests.rs",
-          "symbol": "maximum_caller_set_compiles_to_exactly_128_actions"
-        },
-        {
-          "path": "codex-rs/hepta-objective/src/compiler_tests.rs",
-          "symbol": "intrinsic_abstain_cannot_be_forbidden"
-        },
-        {
-          "path": "codex-rs/hepta-objective/src/compiler_tests.rs",
-          "symbol": "contradictory_hard_bounds_return_inclusion_minimal_pair"
+          "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+          "symbol": "complete_profile_bound_envelope_compiles_without_dropping_fields"
         }
       ],
-      "designOperation": "compile",
+      "designOperation": "compile_admitted_objective_v1",
       "mappingClass": "owner_native",
-      "delegatedCallees": [],
+      "delegatedCallees": [
+        "compiler::compile",
+        "scalar_adapter::scalar_conflict",
+        "check_feasibility_v1"
+      ],
       "sourcePathExists": true
     }
   ],
@@ -192,9 +195,9 @@
   ],
   "completion": {
     "specification": "complete",
-    "source": "candidate_implemented",
-    "exactHeadQualification": "required",
-    "productComposition": "not_established",
+    "source": "candidate_implemented_and_source_composed",
+    "exactHeadQualification": "required_current_candidate",
+    "productComposition": "source_composed_not_activated",
     "independentAcceptance": "not_established",
     "activation": "not_established",
     "release": "not_established"
@@ -218,16 +221,28 @@
     "release": false
   },
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "7133c42ea464ba4c18f656fd409f6e612e295ad8",
+    "tree": "ebcff711027dc4ba6cded4b4a1f28de96bacdf10"
   },
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run current exact-head package/product tests and deterministic synthetic-merge qualification before changing productExecutionProved.",
+    "Retain sourceBase equal to scripts/hepta-implementation-maps.py current_source_base() for every registered module."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
-  ]
+    "named target-host p95/p99/resource measurement using OBJECTIVE_TARGET_HOST_MEASUREMENT.md",
+    "operator acceptance, canary, activation, promotion and release"
+  ],
+  "productCallerEvidence": [
+    "codex-rs/hepta-agentd/src/objective_runtime.rs",
+    "codex-rs/hepta-intelligence/src/objective_run.rs",
+    "codex-rs/hepta-learning-ledger/src/run_start.rs"
+  ],
+  "authenticationBoundary": {
+    "state": "source_composed_owner_trust_required",
+    "productOwner": "runtime.agentd",
+    "verifier": "codex_hepta_authbus::SignedMessage::authenticate",
+    "preverifiedLibraryContext": "ObjectiveAdmissionContextV1",
+    "receiptBinding": "ObjectiveAdmissionContextV1.authentication_receipt_digest -> admitted_source_digest -> durable RunStart record"
+  }
 }

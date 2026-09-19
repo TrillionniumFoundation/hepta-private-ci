@@ -49,6 +49,13 @@ pub use pipeline::StageOutcomeV1;
 pub use pipeline::StageTraceV1;
 pub use pipeline::run_shadow_pipeline;
 
+mod objective_run;
+
+pub use objective_run::ObjectiveRunBindingsV1;
+pub use objective_run::ObjectiveRunError;
+pub use objective_run::PublishedObjectiveRunV1;
+pub use objective_run::compile_and_publish_objective_run_v1;
+
 mod vertical;
 
 use std::collections::BTreeSet;

@@ -1,3 +1,6 @@
+use std::hint::black_box;
+use std::time::Instant;
+
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Revision;
@@ -15,14 +18,18 @@ use super::ObjectivePredicateProfileV1;
 use super::ObjectiveResourceAxisProfileV1;
 use super::ObjectiveResourceProfileV1;
 use super::ObjectiveRiskProfileV1;
+use super::ObjectiveRetryDispositionV1;
 use super::ObjectiveSoftDimensionProfileV1;
 use super::ObjectiveSourceAuthenticationV1;
 use super::admit_and_compile_objective_v1;
+use super::admit_objective_v1;
 use super::canonical_objective_intent_digest_v1;
+use super::compile_admitted_objective_v1;
 use crate::ConfirmationPolicy;
 use crate::ConstraintClass;
 use crate::ObjectiveConstraintComparatorV1;
 use crate::ObjectiveEvidenceRequirementV1;
+use crate::ObjectiveError;
 use crate::ObjectivePredicateComparatorV1;
 use crate::ObjectiveProvenanceV1;
 use crate::ObjectiveResourcesV1;
@@ -236,6 +243,7 @@ fn context(
         revision: Revision::new(7).expect("revision"),
         now_unix_micros: NOW_MICROS,
         selected_profile_digest: profile.digest().expect("profile digest"),
+        authentication_receipt_digest: digest("preverified-auth-receipt"),
         source_authentication: ObjectiveSourceAuthenticationV1::Principal {
             principal_scope_digest: envelope.principal_scope_digest,
             source_digest: envelope.structured_intent.provenance.source_digest,
@@ -297,6 +305,20 @@ fn semantic_array_reordering_preserves_intent_digest() {
     assert_eq!(
         canonical_objective_intent_digest_v1(&first).expect("first digest"),
         canonical_objective_intent_digest_v1(&second).expect("second digest")
+    );
+}
+
+#[test]
+fn zero_authentication_receipt_digest_rejects_preverified_context() {
+    let profile = profile();
+    let envelope = envelope();
+    let mut context = context(&profile, &envelope);
+    context.authentication_receipt_digest = Digest32::ZERO;
+
+    assert_eq!(
+        ObjectiveAdmissionError::SourceAuthenticationMismatch,
+        admit_objective_v1(&envelope, &profile, &context)
+            .expect_err("preverified authentication receipt must be bound")
     );
 }
 
@@ -455,5 +477,116 @@ fn risk_profile_ordering_is_monotone() {
         profile
             .digest()
             .expect_err("non-monotone risk profile must reject")
+    );
+}
+
+#[test]
+fn implicit_abstain_reserves_final_source_action_slot_before_native_compile() {
+    let mut profile = profile();
+    profile.actions = (0..128)
+        .map(|index| ObjectiveActionProfileV1 {
+            source_action_class: format!("action-{index:03}"),
+            action_id: id(&format!("mapped-action-{index:03}")),
+        })
+        .collect();
+    let mut envelope = envelope();
+    envelope.structured_intent.legal_action_classes =
+        (0..128).map(|index| format!("action-{index:03}")).collect();
+    envelope.structured_intent.confirmation_action_classes.clear();
+    envelope.structured_intent.forbidden_action_classes.clear();
+    refresh_intent_digest(&mut envelope);
+    let context = context(&profile, &envelope);
+
+    assert_eq!(
+        admit_objective_v1(&envelope, &profile, &context)
+            .expect_err("implicit abstain must reserve one slot"),
+        ObjectiveAdmissionError::Structure(crate::ObjectiveStructureError::CollectionCount {
+            field: "legalActionClasses",
+            actual: 128,
+            minimum: 1,
+            maximum: 127,
+        })
+    );
+}
+
+#[test]
+fn obj_e007_retry_is_variant_specific_not_blind() {
+    assert_eq!(
+        ObjectiveAdmissionError::SourceStale.retry_disposition(),
+        ObjectiveRetryDispositionV1::FreshSourceRequired
+    );
+    assert_eq!(
+        ObjectiveAdmissionError::SourceFromFuture.retry_disposition(),
+        ObjectiveRetryDispositionV1::ClockAdvanceMayHelp
+    );
+    assert_eq!(
+        ObjectiveAdmissionError::DeadlineExpired.retry_disposition(),
+        ObjectiveRetryDispositionV1::RequestMutationRequired
+    );
+    assert_eq!(
+        ObjectiveAdmissionError::Compiler(ObjectiveError::FeasibilityBudgetExhausted)
+            .retry_disposition(),
+        ObjectiveRetryDispositionV1::FreshFeasibilityBudgetAllowed
+    );
+}
+
+#[test]
+fn two_phase_admission_matches_convenience_wrapper() {
+    let profile = profile();
+    let envelope = envelope();
+    let context = context(&profile, &envelope);
+
+    let direct =
+        admit_and_compile_objective_v1(&envelope, &profile, &context).expect("direct compile");
+    let admitted = admit_objective_v1(&envelope, &profile, &context).expect("admit");
+    assert_eq!(admitted.receipt(), &direct.receipt);
+    let staged = compile_admitted_objective_v1(admitted).expect("staged compile");
+    assert_eq!(staged, direct);
+}
+
+
+fn measurement_sample_count(default: usize, maximum: usize) -> usize {
+    std::env::var("HEPTA_OBJECTIVE_MEASUREMENT_SAMPLES")
+        .ok()
+        .and_then(|value| value.parse::<usize>().ok())
+        .filter(|value| (1..=maximum).contains(value))
+        .unwrap_or(default)
+}
+
+fn measured_percentiles(mut samples_ns: Vec<u128>) -> (u128, u128, u128) {
+    samples_ns.sort_unstable();
+    let pick = |percent: usize| {
+        let index = (samples_ns.len() - 1) * percent / 100;
+        samples_ns[index]
+    };
+    (pick(50), pick(95), pick(99))
+}
+
+#[test]
+#[ignore = "run only on a named target host through hepta-objective-target-measure.py"]
+fn measurement_ordinary_admission_compile_v1() {
+    let profile = profile();
+    let envelope = envelope();
+    let context = context(&profile, &envelope);
+    let samples = measurement_sample_count(1_000, 100_000);
+    let mut timings = Vec::with_capacity(samples);
+
+    for _ in 0..samples {
+        let started = Instant::now();
+        let outcome = admit_and_compile_objective_v1(&envelope, &profile, &context)
+            .expect("measurement fixture must admit and compile");
+        timings.push(started.elapsed().as_nanos());
+        black_box(outcome);
+    }
+
+    let (p50, p95, p99) = measured_percentiles(timings);
+    println!(
+        "OBJECTIVE_MEASUREMENT={}",
+        serde_json::json!({
+            "schema": "hepta.objective-target-measurement.v1",
+            "path": "ordinary_authenticated_admission_compile",
+            "samples": samples,
+            "latencyNanoseconds": {"p50": p50, "p95": p95, "p99": p99}
+        })
     );
 }

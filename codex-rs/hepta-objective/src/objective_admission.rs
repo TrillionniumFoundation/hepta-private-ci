@@ -198,11 +198,19 @@ impl ObjectiveSourceAuthenticationV1 {
     }
 }
 
+/// Preverified library admission context.
+///
+/// This structure does not authenticate an external caller by construction.
+/// A product owner must first verify the external authentication material
+/// against its current trust/revocation state, then bind the resulting
+/// verification receipt digest here. The canonical Agentd product path does so
+/// with an opaque AuthBus `AuthenticatedMessage`.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ObjectiveAdmissionContextV1 {
     pub revision: Revision,
     pub now_unix_micros: u64,
     pub selected_profile_digest: Digest32,
+    pub authentication_receipt_digest: Digest32,
     pub source_authentication: ObjectiveSourceAuthenticationV1,
 }
 
@@ -214,6 +222,7 @@ pub struct ObjectiveAdmissionReceiptV1 {
     pub supplied_source_digest: Digest32,
     pub intent_digest: Digest32,
     pub admitted_source_digest: Digest32,
+    pub authentication_receipt_digest: Digest32,
     pub observed_at_unix_micros: u64,
     pub deadline_unix_micros: Option<u64>,
     pub authority: AuthorityPosture,
@@ -223,6 +232,28 @@ pub struct ObjectiveAdmissionReceiptV1 {
 pub struct ObjectiveAdmissionOutcomeV1 {
     pub receipt: ObjectiveAdmissionReceiptV1,
     pub compile_result: Result<ObjectiveCompileReceipt, ObjectiveConflictReceipt>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct AdmittedObjectiveV1 {
+    source: ObjectiveSourceEnvelope,
+    receipt: ObjectiveAdmissionReceiptV1,
+}
+
+impl AdmittedObjectiveV1 {
+    #[must_use]
+    pub fn receipt(&self) -> &ObjectiveAdmissionReceiptV1 {
+        &self.receipt
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ObjectiveRetryDispositionV1 {
+    NeverUnchangedRequest,
+    RequestMutationRequired,
+    FreshSourceRequired,
+    ClockAdvanceMayHelp,
+    FreshFeasibilityBudgetAllowed,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -297,6 +328,22 @@ impl ObjectiveAdmissionError {
             | Self::DeadlineExpired => "OBJ-E007",
             Self::InvalidTerminality => "OBJ-E008",
             Self::Compiler(error) => error.code(),
+        }
+    }
+
+    #[must_use]
+    pub const fn retry_disposition(&self) -> ObjectiveRetryDispositionV1 {
+        match self {
+            Self::SourceFromFuture => ObjectiveRetryDispositionV1::ClockAdvanceMayHelp,
+            Self::SourceStale => ObjectiveRetryDispositionV1::FreshSourceRequired,
+            Self::LocaleNotAllowed
+            | Self::DeadlineMissing
+            | Self::DeadlineBeforeObservation
+            | Self::DeadlineExpired => ObjectiveRetryDispositionV1::RequestMutationRequired,
+            Self::Compiler(ObjectiveError::FeasibilityBudgetExhausted) => {
+                ObjectiveRetryDispositionV1::FreshFeasibilityBudgetAllowed
+            }
+            _ => ObjectiveRetryDispositionV1::NeverUnchangedRequest,
         }
     }
 }
@@ -417,17 +464,25 @@ pub fn canonical_objective_intent_digest_v1(
     Ok(intent_digest_unchecked(envelope))
 }
 
-/// Admit a complete source envelope and invoke the existing deterministic
-/// compiler without dropping any represented source field.
-pub fn admit_and_compile_objective_v1(
+/// Authenticate and normalize a complete source envelope into an opaque admitted
+/// objective. The returned type is the only normal public input accepted by the
+/// deterministic compiler.
+///
+/// Admission verifies structure, profile identity, authenticated source context,
+/// principal scope, source/intent/schema/normalization digests, locale, freshness
+/// and deadline before constructing the owner-internal compiler IR.
+pub fn admit_objective_v1(
     envelope: &ObjectiveSourceEnvelopeV1,
     profile: &ObjectiveAdmissionProfileV1,
     context: &ObjectiveAdmissionContextV1,
-) -> Result<ObjectiveAdmissionOutcomeV1, ObjectiveAdmissionError> {
+) -> Result<AdmittedObjectiveV1, ObjectiveAdmissionError> {
     envelope.validate_structure()?;
     let profile_digest = profile.digest()?;
     if context.selected_profile_digest != profile_digest {
         return Err(ObjectiveAdmissionError::ProfileDigestMismatch);
+    }
+    if context.authentication_receipt_digest.is_zero() {
+        return Err(ObjectiveAdmissionError::SourceAuthenticationMismatch);
     }
     if envelope.input_schema_digest != profile.expected_input_schema_digest {
         return Err(ObjectiveAdmissionError::InputSchemaMismatch);
@@ -496,11 +551,15 @@ pub fn admit_and_compile_objective_v1(
         }
     }
 
-    let admitted_source_digest =
-        admitted_source_digest(envelope, profile_digest, &context.source_authentication);
+    let admitted_source_digest = admitted_source_digest(
+        envelope,
+        profile_digest,
+        context.authentication_receipt_digest,
+        &context.source_authentication,
+    );
     let source = adapt_source(envelope, profile, context, admitted_source_digest)?;
-    let compile_result = crate::compile(source)?;
-    Ok(ObjectiveAdmissionOutcomeV1 {
+    Ok(AdmittedObjectiveV1 {
+        source,
         receipt: ObjectiveAdmissionReceiptV1 {
             profile_id: profile.profile_id.clone(),
             profile_revision: profile.profile_revision,
@@ -508,12 +567,35 @@ pub fn admit_and_compile_objective_v1(
             supplied_source_digest,
             intent_digest,
             admitted_source_digest,
+            authentication_receipt_digest: context.authentication_receipt_digest,
             observed_at_unix_micros,
             deadline_unix_micros,
             authority: AuthorityPosture::DENY_ALL,
         },
+    })
+}
+
+/// Compile only a value that has already crossed the authenticated admission
+/// boundary. No raw source-envelope constructor is exposed on the normal public
+/// surface.
+pub fn compile_admitted_objective_v1(
+    admitted: AdmittedObjectiveV1,
+) -> Result<ObjectiveAdmissionOutcomeV1, ObjectiveAdmissionError> {
+    let compile_result = crate::compiler::compile(admitted.source)?;
+    Ok(ObjectiveAdmissionOutcomeV1 {
+        receipt: admitted.receipt,
         compile_result,
     })
+}
+
+/// Convenience wrapper preserving the V1 all-in-one API while enforcing the
+/// same opaque admitted-objective boundary internally.
+pub fn admit_and_compile_objective_v1(
+    envelope: &ObjectiveSourceEnvelopeV1,
+    profile: &ObjectiveAdmissionProfileV1,
+    context: &ObjectiveAdmissionContextV1,
+) -> Result<ObjectiveAdmissionOutcomeV1, ObjectiveAdmissionError> {
+    compile_admitted_objective_v1(admit_objective_v1(envelope, profile, context)?)
 }
 
 fn validate_authentication(
@@ -622,6 +704,23 @@ fn adapt_source(
             },
         });
     }
+    let abstain = stable_id("abstain", "intrinsicAbstain")?;
+    let maximum_legal_actions = if allowed_actions.iter().any(|action| action.id == abstain) {
+        128
+    } else {
+        127
+    };
+    if allowed_actions.len() > maximum_legal_actions {
+        return Err(ObjectiveAdmissionError::Structure(
+            ObjectiveStructureError::CollectionCount {
+                field: "legalActionClasses",
+                actual: allowed_actions.len(),
+                minimum: 1,
+                maximum: maximum_legal_actions,
+            },
+        ));
+    }
+
     let mut forbidden_actions = Vec::new();
     for source in &envelope.structured_intent.forbidden_action_classes {
         forbidden_actions.push(action_mapping(profile, source)?.action_id.clone());
@@ -1359,10 +1458,12 @@ fn intent_digest_unchecked(envelope: &ObjectiveSourceEnvelopeV1) -> Digest32 {
 fn admitted_source_digest(
     envelope: &ObjectiveSourceEnvelopeV1,
     profile_digest: Digest32,
+    authentication_receipt_digest: Digest32,
     authentication: &ObjectiveSourceAuthenticationV1,
 ) -> Digest32 {
     let mut bytes = b"hepta.objective.admitted-source.v1".to_vec();
     push_digest(&mut bytes, profile_digest);
+    push_digest(&mut bytes, authentication_receipt_digest);
     push_text(&mut bytes, &envelope.request_id);
     push_digest(&mut bytes, envelope.principal_scope_digest);
     push_digest(&mut bytes, envelope.intent_digest);

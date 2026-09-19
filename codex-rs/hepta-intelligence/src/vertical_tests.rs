@@ -272,6 +272,7 @@ fn objective_context(
         revision: revision(7),
         now_unix_micros: NOW_MICROS,
         selected_profile_digest: must(profile.digest()),
+        authentication_receipt_digest: digest("vertical-preverified-auth"),
         source_authentication: ObjectiveSourceAuthenticationV1::Principal {
             principal_scope_digest: envelope.principal_scope_digest,
             source_digest: envelope.structured_intent.provenance.source_digest,
