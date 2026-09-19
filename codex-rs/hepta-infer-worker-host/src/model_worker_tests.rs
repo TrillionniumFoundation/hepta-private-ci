@@ -87,6 +87,7 @@ fn manifest() -> ModelManifest {
         license_digest: "9".repeat(64),
         sbom_digest: "a".repeat(64),
         runtime_digest: "7".repeat(64),
+        runtime_config_digest: "c".repeat(64),
         device_digest: "8".repeat(64),
         maximum_tokens: 128,
     }
