@@ -31,6 +31,7 @@ pub use authority_trust::AuthorityClock;
 pub use authority_trust::AuthorityFrontierStore;
 pub use authority_trust::AuthorityTrustError;
 pub use authority_trust::SystemAuthorityClock;
+pub use authority_lease::deliver_authority_lease_with_witness;
 
 pub use final_use::FinalUseAuthority;
 pub use final_use::FinalUseBinding;
@@ -44,7 +45,9 @@ pub use final_use::SignedFinalUseGrant;
 pub use final_use::VerifiedUseToken;
 pub use final_use::claim_final_use;
 pub use final_use::deliver_final_use;
+pub use final_use::deliver_final_use_with_witness;
 pub use final_use::dispatch_final_use;
+pub use final_use::dispatch_final_use_with_witness;
 pub use final_use_control::FinalUseApproval;
 pub use final_use_control::FinalUseApprovalVerifier;
 pub use final_use_control::FinalUseControlError;
