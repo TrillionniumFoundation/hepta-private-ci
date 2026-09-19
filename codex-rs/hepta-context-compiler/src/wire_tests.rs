@@ -1,4 +1,4 @@
-use std::error::Error;
+use std::error::Error as StdError;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -13,12 +13,15 @@ use crate::ContextItem;
 use crate::ContextRole;
 
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("test id")
+    let Ok(value) = StableId::new(value) else {
+        panic!("test identifier rejected");
+    };
+    value
 }
 
 #[test]
 fn compiler_composes_into_admitted_v2_transport_without_serializing_authority(
-) -> Result<(), Box<dyn Error>> {
+) -> Result<(), Box<dyn StdError>> {
     let request = CompilationRequest {
         compilation_id: id("compile.wire.v2"),
         run_snapshot_digest: Digest32::of_bytes(b"snapshot"),
@@ -50,7 +53,7 @@ fn compiler_composes_into_admitted_v2_transport_without_serializing_authority(
 
 #[test]
 fn context_wire_rejects_unknown_fields_and_duplicate_id_partitions(
-) -> Result<(), Box<dyn Error>> {
+) -> Result<(), Box<dyn StdError>> {
     let digest = Digest32::of_bytes(b"context");
     let invalid = WireEnvelopeV2::new(
         id(CONTEXT_COMPILATION_WIRE_SCHEMA_V2),
