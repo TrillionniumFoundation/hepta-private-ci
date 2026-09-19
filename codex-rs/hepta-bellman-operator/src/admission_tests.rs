@@ -109,9 +109,8 @@ fn world_samples() -> Vec<WorldModelSampleV1> {
 #[test]
 fn op_07_tabular_fit_binds_verified_dataset_receipt_and_rows() {
     let receipt = dataset_receipt();
-    let artifact =
-        fit_tabular_operator_from_dataset_receipt(operator_plan(&receipt), &receipt, 50)
-            .expect("receipt-bound fit");
+    let artifact = fit_tabular_operator_from_dataset_receipt(operator_plan(&receipt), &receipt, 50)
+        .expect("receipt-bound fit");
     assert_eq!(artifact.dataset_digest, receipt.snapshot.dataset_digest);
 
     let mut wrong_dataset = operator_plan(&receipt);
@@ -132,13 +131,9 @@ fn op_07_tabular_fit_binds_verified_dataset_receipt_and_rows() {
 #[test]
 fn op_07_world_model_takes_dataset_identity_from_verified_receipt() {
     let receipt = dataset_receipt();
-    let model = fit_transition_model_from_dataset_receipt(
-        id("world-model"),
-        &receipt,
-        world_samples(),
-        50,
-    )
-    .expect("receipt-bound world model");
+    let model =
+        fit_transition_model_from_dataset_receipt(id("world-model"), &receipt, world_samples(), 50)
+            .expect("receipt-bound world model");
     assert_eq!(model.dataset_digest, receipt.snapshot.dataset_digest);
 
     let mut outside = world_samples();
@@ -306,21 +301,11 @@ fn op_08_applicability_requires_authenticated_independent_evaluator_binding() {
         payload,
     );
     let evaluator = verifier
-        .verify(
-            LearningEvidenceRoleV1::Evaluator,
-            &signed,
-            payload,
-            50,
-        )
+        .verify(LearningEvidenceRoleV1::Evaluator, &signed, payload, 50)
         .expect("authenticated evaluator");
     assert_eq!(
-        validate_applicability_certificate_authenticated(
-            &certificate,
-            &generator,
-            &evaluator,
-            50,
-        )
-        .expect("authenticated admission"),
+        validate_applicability_certificate_authenticated(&certificate, &generator, &evaluator, 50,)
+            .expect("authenticated admission"),
         structural
     );
 
@@ -340,12 +325,7 @@ fn op_08_applicability_requires_authenticated_independent_evaluator_binding() {
         )
         .expect("authentic but wrong payload");
     assert_eq!(
-        validate_applicability_certificate_authenticated(
-            &certificate,
-            &generator,
-            &wrong,
-            50,
-        ),
+        validate_applicability_certificate_authenticated(&certificate, &generator, &wrong, 50,),
         Err(OperatorAdmissionError::EvidencePayload)
     );
 }
@@ -374,8 +354,7 @@ fn op_08_regularity_requires_authenticated_evaluator_binding() {
             50,
         )
         .expect("authenticated evaluator");
-    let admission =
-        admit_operator_regularity_authenticated(assessment, &generator, &evaluator, 50)
-            .expect("authenticated regularity admission");
+    let admission = admit_operator_regularity_authenticated(assessment, &generator, &evaluator, 50)
+        .expect("authenticated regularity admission");
     assert_eq!(admission.assessment_digest, structural);
 }
