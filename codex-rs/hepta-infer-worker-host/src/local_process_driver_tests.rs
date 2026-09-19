@@ -213,6 +213,105 @@ fn real_local_process_driver_loads_runs_and_unloads_digest_pinned_runtime() {
 }
 
 #[test]
+fn local_process_driver_run_is_bounded_by_the_request_deadline() {
+    let mut fixture = Fixture::new();
+    fs::write(
+        &fixture.runtime,
+        r#"#!/usr/bin/env python3
+import json
+import sys
+import time
+
+PROTOCOL = "hepta.local-model-driver.v1"
+handle = "local.handle.deadline"
+
+for line in sys.stdin:
+    request = json.loads(line)
+    op = request.get("op")
+    if op == "load":
+        model = request["model"]
+        print(json.dumps({
+            "protocol": PROTOCOL,
+            "op": "loaded",
+            "model_id": model["model_id"],
+            "model_digest": model["model_digest"],
+            "runtime_digest": model["runtime_digest"],
+            "device_digest": model["device_digest"],
+            "handle_id": handle,
+            "reserved_memory_bytes": 1024,
+            "observed_memory_bytes": 512,
+        }), flush=True)
+    elif op == "run":
+        time.sleep(5)
+        print(json.dumps({
+            "protocol": PROTOCOL,
+            "op": "run_result",
+            "handle_id": handle,
+            "request_id": request["request_id"],
+            "terminal_observed": True,
+            "succeeded": True,
+            "output": "too-late",
+            "consumed_tokens": 1,
+            "observed_memory_bytes": 512,
+        }), flush=True)
+    elif op == "unload":
+        print(json.dumps({
+            "protocol": PROTOCOL,
+            "op": "unloaded",
+            "handle_id": handle,
+        }), flush=True)
+        sys.exit(0)
+"#,
+    )
+    .unwrap();
+    fixture.manifest.runtime_digest = sha256_file(&fixture.runtime).unwrap();
+
+    let verified =
+        VerifiedResourceGrant::trusted_in_process(100, fixture.grant()).unwrap();
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.local.deadline".to_string(),
+        9,
+        verified,
+        fixture.driver(),
+    )
+    .unwrap();
+    worker
+        .load_model(100, fixture.manifest.clone())
+        .expect("load");
+
+    let input = "deadline".to_string();
+    let payload_digest = sha256(input.as_bytes());
+    let started = Instant::now();
+    let observed = worker
+        .run(
+            100,
+            &fixture.manifest.model_id,
+            WorkerRequest {
+                request_id: "request.local.deadline".to_string(),
+                reservation_id: "reservation.local.deadline".to_string(),
+                model_digest: fixture.manifest.model_digest.clone(),
+                input,
+                payload_digest: payload_digest.clone(),
+                maximum_tokens: 16,
+                deadline_ms: 150,
+                lease_payload_digest: payload_digest,
+                reservation_model_digest: fixture.manifest.model_digest.clone(),
+                reservation_maximum_tokens: 16,
+                cancelled: false,
+            },
+        )
+        .expect("bounded indeterminate result");
+
+    assert_eq!(observed.status, ExecutionStatus::Indeterminate);
+    assert!(!observed.terminal_observed);
+    assert!(
+        started.elapsed() < Duration::from_secs(1),
+        "runtime wait exceeded the request deadline bound"
+    );
+}
+
+#[test]
 fn local_process_driver_rejects_artifact_mutation_before_spawn() {
     let fixture = Fixture::new();
     fs::write(&fixture.artifacts.weights_path, b"mutated-after-selection").unwrap();
