@@ -2436,4 +2436,111 @@ mod final_use_dispatch_tests {
             .expect("nonce remains unused");
         drop(token);
     }
+
+    #[tokio::test]
+    async fn queued_identity_survives_owner_handoff_and_dispatches_once_under_new_final_use() {
+        let temp = TempDir::new().expect("temp");
+        let store = store(&temp).await;
+        let owner = store.owner_agent_id().clone();
+        let old = ProductionDurableWriter::open(
+            store.clone(),
+            production_authority(owner.clone()),
+            &FinalUseVerifier,
+            "production:h4:queued-handoff",
+            1,
+        )
+        .await
+        .expect("old writer");
+        let queued = old
+            .admit(
+                "occurrence:queued-handoff",
+                "memory.write",
+                "{\"fact\":\"handoff\"}",
+            )
+            .await
+            .expect("queued");
+        assert_eq!(queued.inherited_from_generation, None);
+        let expiry = old.authority().lease_expires_at_unix_seconds;
+        old.lease
+            .expire_lease_at_unix_seconds(expiry)
+            .await
+            .expect("explicit timeout terminalization");
+        drop(old);
+
+        let next_authority = ProductionAuthorityLease::from_verified_parts(
+            owner.clone(),
+            Sha256Digest::for_bytes(b"production-grant-next"),
+            31,
+            42,
+            now_unix_seconds().expect("clock") + 7_200,
+            ProductionAuthorityToken::from_verified_bytes(b"production-token-next".to_vec())
+                .expect("token"),
+        )
+        .expect("next authority");
+        let successor = ProductionDurableWriter::open(
+            store,
+            next_authority,
+            &FinalUseVerifier,
+            "production:h4:queued-handoff",
+            2,
+        )
+        .await
+        .expect("successor writer");
+        let inherited = successor
+            .recover_inherited_queued("occurrence:queued-handoff")
+            .await
+            .expect("recover inherited")
+            .expect("queued predecessor row");
+        assert_eq!(inherited.inherited_from_generation, Some(1));
+        assert_eq!(inherited.event_id, queued.event_id);
+        assert_eq!(inherited.outbox_id, queued.outbox_id);
+
+        let authority_dir = temp.path().join("final-use-handoff");
+        std::fs::create_dir(&authority_dir).expect("authority dir");
+        std::fs::set_permissions(
+            &authority_dir,
+            std::fs::Permissions::from_mode(0o700),
+        )
+        .expect("authority permissions");
+        let issuer = SigningKey::from_bytes(&[84; 32]);
+        let final_use = FinalUseAuthority::open_state_dir(
+            &authority_dir,
+            "final-use-owner".to_string(),
+            issuer.verifying_key().to_bytes(),
+            FinalUseRevocations {
+                authority_epoch: 71,
+                revision: 1,
+                revoked_grant_ids: BTreeSet::new(),
+            },
+        )
+        .expect("final-use authority");
+        let target = Arc::new(CountingTarget::new("destination:cognitive-store"));
+        let dispatcher =
+            ProductionFinalUseOutboxDispatcher::attach(final_use, target.clone());
+        let binding = FinalUseBinding {
+            subject_id: owner.as_str().to_string(),
+            destination_id: target.destination_id().to_string(),
+            request_sha256: digest_bytes(&operation_digest(successor.authority(), &inherited))
+                .expect("request digest"),
+            scope_sha256: [9; 32],
+            payload_sha256: digest_bytes(&inherited.payload_sha256).expect("payload digest"),
+        };
+        let signed =
+            signed_final_use(&issuer, binding.clone(), "final-use-handoff", [13; 32]);
+        let result = dispatcher
+            .dispatch(&successor, &signed, &binding, inherited)
+            .await
+            .expect("successor dispatch");
+        assert_eq!(result.state, LocalOutcomeState::Committed);
+        assert_eq!(target.calls(), 1);
+        assert_eq!(
+            successor
+                .status("occurrence:queued-handoff")
+                .await
+                .expect("terminal status"),
+            LocalOutcomeState::Committed
+        );
+        let counts = successor.lease.snapshot_counts().await.expect("counts");
+        assert_eq!(counts.outbox_rows, 1, "handoff reuses one durable outbox identity");
+    }
 }
