@@ -130,3 +130,7 @@ impl fmt::Display for WireAdapterError {
 }
 
 impl StdError for WireAdapterError {}
+
+#[cfg(test)]
+#[path = "wire_tests.rs"]
+mod tests;
