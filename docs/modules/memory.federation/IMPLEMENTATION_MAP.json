@@ -18,28 +18,37 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "composed_candidate_pending_execution",
+  "productionWriterState": "not_applicable_read_only",
   "operations": [
     {
       "operation": "execute_once",
       "nativeSymbol": "execute_once",
       "sourcePath": "codex-rs/hepta-memory-federation/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_hardened_candidate_pending_execution",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-federation/src/v2_tests.rs",
+        "codex-rs/hepta-memory/src/cognitive_runtime_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "execute_once",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        "codex-rs/hepta-memory/src/cognitive_runtime.rs",
+        "codex-rs/hepta-agentd/src/runtime.rs",
+        "codex-rs/ext/hepta-memory/src/cognitive/federation.rs"
+      ]
     },
     {
       "operation": "observe_cancellation",
       "nativeSymbol": "observe_cancellation",
       "sourcePath": "codex-rs/hepta-memory-federation/src/v2.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_hardened_candidate_pending_execution",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-memory-federation/src/v2_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "observe_cancellation",
       "mappingClass": "owner_native",
@@ -47,11 +56,12 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Run exact-current-head focused/package/product-composition/all-target/strict-lint checks and deterministic merge-candidate checks; fix any defect before changing productExecutionProved.",
+    "Keep the legacy AvailableFederated/FederatedRecallSet surface compatibility-only; Agentd product composition must use AvailableFederatedV2 and preserve explicit coverage/failure semantics."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
+    "independent semantic and security review",
+    "multi-host authenticated transport qualification when federation crosses a process or host boundary",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
   ],

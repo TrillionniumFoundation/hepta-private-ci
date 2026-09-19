@@ -296,6 +296,7 @@ pub enum FederationTransportOutcomeV2 {
     NoTerminalObservation,
 }
 
+#[allow(clippy::large_enum_variant)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum FederationTransportResultV2 {
     Terminal(RemoteFederatedResponseV2),
