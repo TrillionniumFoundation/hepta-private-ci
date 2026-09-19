@@ -523,11 +523,11 @@ impl QualificationEvidenceStore<'_> {
         .bind(envelope.receipt_kind.as_str())
         .bind(envelope.issuer_role.as_str())
         .bind(issuer.issuer_id.as_str())
-        .bind(issuer.key_epoch.get().to_be_bytes().as_slice())
+        .bind(issuer.key_epoch.get().to_be_bytes().to_vec())
         .bind(signing_identity_sha256.as_str())
         .bind(message.claims.message_id.as_str())
-        .bind(message.claims.sequence.to_be_bytes().as_slice())
-        .bind(message.claims.expires_at_ms.to_be_bytes().as_slice())
+        .bind(message.claims.sequence.to_be_bytes().to_vec())
+        .bind(message.claims.expires_at_ms.to_be_bytes().to_vec())
         .bind(payload_sha256.as_str())
         .bind(envelope_sha256.as_str())
         .bind(
@@ -542,7 +542,7 @@ impl QualificationEvidenceStore<'_> {
                 .as_ref()
                 .map(EvidenceId::as_str),
         )
-        .bind(envelope.observed_unix_ms.to_be_bytes().as_slice())
+        .bind(envelope.observed_unix_ms.to_be_bytes().to_vec())
         .bind(
             envelope
                 .expires_unix_ms
