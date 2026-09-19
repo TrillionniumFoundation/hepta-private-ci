@@ -65,22 +65,24 @@ def source_fingerprint_paths(
 
 
 def fingerprint_path(rel: str) -> dict[str, object]:
-    tracked = [
-        path
-        for path in git("ls-files", "-z", "--", rel).split("\0")
-        if path
-    ]
+    tracked: list[tuple[str, str, str]] = []
+    for record in git("ls-files", "-s", "-z", "--", rel).split("\0"):
+        if not record:
+            continue
+        metadata, path = record.split("\t", 1)
+        mode = metadata.split()[0]
+        blob = git("hash-object", "--", path)
+        tracked.append((path, mode, blob))
     if not tracked:
         raise ValueError(f"no tracked source files under {rel}")
     digest = hashlib.sha256()
     digest.update(b"hepta.module-source-fingerprint.v1\0")
-    for path in sorted(tracked):
+    for path, mode, blob in sorted(tracked):
         raw_path = path.encode("utf-8")
-        data = (ROOT / path).read_bytes()
         digest.update(len(raw_path).to_bytes(4, "big"))
         digest.update(raw_path)
-        digest.update(len(data).to_bytes(8, "big"))
-        digest.update(data)
+        digest.update(mode.encode("ascii"))
+        digest.update(blob.encode("ascii"))
     return {
         "algorithm": "sha256",
         "digest": digest.hexdigest(),
@@ -112,6 +114,16 @@ def lane_by_module():
     }
 
 
+def tests_for_source(source: str | None) -> list[str]:
+    if not source:
+        return []
+    path = Path(source)
+    if path.suffix != ".rs":
+        return []
+    candidate = path.with_name(f"{path.stem}_tests.rs")
+    return [str(candidate)] if (ROOT / candidate).is_file() else []
+
+
 def parse_entrypoints(module: str):
     path = ROOT / f"qualification/module-execution-dossiers/detail/{module}.md"
     text = path.read_text(encoding="utf-8") if path.exists() else ""
@@ -131,7 +143,7 @@ def parse_entrypoints(module: str):
                 "sourcePath": source,
                 "state": "source_implemented_not_product_composed",
                 "authority": "none",
-                "tests": [],
+                "tests": tests_for_source(source),
                 "sourcePathExists": source_path.is_file(),
             }
         )
@@ -241,8 +253,9 @@ def migrate_map(
         else:
             op.setdefault("mappingClass", "owner_native")
         op.setdefault("delegatedCallees", [])
-        op.setdefault("tests", [])
         source = op.get("sourcePath")
+        if not op.get("tests"):
+            op["tests"] = tests_for_source(source)
         op["sourcePathExists"] = bool(source and (ROOT / source).is_file())
         operations.append(op)
     if not operations:
