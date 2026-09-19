@@ -1,3 +1,6 @@
+use std::hint::black_box;
+use std::time::Instant;
+
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Revision;
@@ -472,4 +475,50 @@ fn two_phase_admission_matches_convenience_wrapper() {
     assert_eq!(admitted.receipt(), &direct.receipt);
     let staged = compile_admitted_objective_v1(admitted).expect("staged compile");
     assert_eq!(staged, direct);
+}
+
+fn measurement_sample_count(default: usize, maximum: usize) -> usize {
+    std::env::var("HEPTA_OBJECTIVE_MEASUREMENT_SAMPLES")
+        .ok()
+        .and_then(|value| value.parse::<usize>().ok())
+        .filter(|value| (1..=maximum).contains(value))
+        .unwrap_or(default)
+}
+
+fn measured_percentiles(mut samples_ns: Vec<u128>) -> (u128, u128, u128) {
+    samples_ns.sort_unstable();
+    let pick = |percent: usize| {
+        let index = (samples_ns.len() - 1) * percent / 100;
+        samples_ns[index]
+    };
+    (pick(50), pick(95), pick(99))
+}
+
+#[test]
+#[ignore = "run only on a named target host through hepta-objective-target-measure.py"]
+fn measurement_ordinary_admission_compile_v1() {
+    let profile = profile();
+    let envelope = envelope();
+    let context = context(&profile, &envelope);
+    let samples = measurement_sample_count(1_000, 100_000);
+    let mut timings = Vec::with_capacity(samples);
+
+    for _ in 0..samples {
+        let started = Instant::now();
+        let outcome = admit_and_compile_objective_v1(&envelope, &profile, &context)
+            .expect("measurement fixture must admit and compile");
+        timings.push(started.elapsed().as_nanos());
+        black_box(outcome);
+    }
+
+    let (p50, p95, p99) = measured_percentiles(timings);
+    println!(
+        "OBJECTIVE_MEASUREMENT={}",
+        serde_json::json!({
+            "schema": "hepta.objective-target-measurement.v1",
+            "path": "ordinary_authenticated_admission_compile",
+            "samples": samples,
+            "latencyNanoseconds": {"p50": p50, "p95": p95, "p99": p99}
+        })
+    );
 }
