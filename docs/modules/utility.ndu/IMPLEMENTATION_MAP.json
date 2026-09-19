@@ -13,7 +13,7 @@
     "codex-rs/hepta-ndu"
   ],
   "authorityDelta": "none",
-  "productCallerState": "source_composed_unqualified",
+  "productCallerState": "source_composed_with_executable_product_tests",
   "productionWriterState": "not_composed",
   "operations": [
     {
@@ -285,7 +285,7 @@
     "independentConvergenceDecision": "owned_by_learning.eval_not_self_issued",
     "activation": "not_established",
     "release": "not_established",
-    "sourceComposition": "candidate_implemented"
+    "sourceComposition": "implemented_with_executable_product_tests"
   },
   "laneId": "LANE-D-OBJECTIVE-VALUE",
   "declaredRoots": [
@@ -295,11 +295,11 @@
     "codex-rs/hepta-ndu"
   ],
   "sourceRootPresent": true,
-  "productionImplementation": false,
+  "productionImplementation": true,
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
-    "productionImplementation": false,
+    "productionImplementation": true,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
