@@ -214,11 +214,13 @@ fn compact_checkpoint_and_proof_are_non_authoritative() {
         .validate()
         .unwrap_or_else(|error| panic!("valid proof: {error}"));
 
-    proof.authority = AuthorityPosture {
-        runtime: true,
-        ..AuthorityPosture::DENY_ALL
-    };
-    assert_eq!(proof.validate(), Err(LaneCContractError::AuthorityGranted));
+    assert_eq!(
+        AuthorityPosture::try_from_flags(codex_hepta_types::AuthorityFlagsV1 {
+            runtime: true,
+            ..codex_hepta_types::AuthorityFlagsV1::default()
+        }),
+        Err(codex_hepta_types::AuthorityPostureError::GrantRequested)
+    );
 }
 
 #[test]

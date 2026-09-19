@@ -209,11 +209,12 @@ fn legacy_v1_migration_digest_is_fixed() {
 
 #[test]
 fn legacy_v1_read_rejects_authority_and_missing_opaque_digest() {
-    let mut proposal = legacy_proposal();
-    proposal.authority.selection = true;
     assert_eq!(
-        read_versioned_proposal(1, ProposalRecord::LegacyV1(Box::new(proposal))),
-        Err(Error::AuthorityGranted)
+        AuthorityPosture::try_from_flags(codex_hepta_types::AuthorityFlagsV1 {
+            selection: true,
+            ..codex_hepta_types::AuthorityFlagsV1::default()
+        }),
+        Err(codex_hepta_types::AuthorityPostureError::GrantRequested)
     );
 
     let mut proposal = legacy_proposal();
@@ -633,11 +634,12 @@ fn read_validation_rejects_tampered_metrics_digest_profile_and_authority() {
         Err(Error::NormProfileMismatch)
     );
 
-    let mut tampered = proposal;
-    tampered.authority.runtime = true;
     assert_eq!(
-        verify_parameter_proposal_v2(&tampered),
-        Err(Error::AuthorityGranted)
+        AuthorityPosture::try_from_flags(codex_hepta_types::AuthorityFlagsV1 {
+            runtime: true,
+            ..codex_hepta_types::AuthorityFlagsV1::default()
+        }),
+        Err(codex_hepta_types::AuthorityPostureError::GrantRequested)
     );
 }
 

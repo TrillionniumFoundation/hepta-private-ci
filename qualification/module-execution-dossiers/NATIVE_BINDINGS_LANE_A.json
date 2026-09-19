@@ -2,7 +2,7 @@
   "schema": "hepta.native-source-observations.lane-a.v1",
   "schemaVersion": 1,
   "lane": "LANE-A-FOUNDATION",
-  "sourceCodeCommit": "adc7414fce248fe65c4078263953d3a6f39423a2",
+  "sourceCodeCommit": "d7af096f28fa9989388939efa0e6600b52a43952",
   "moduleCoverage": 7,
   "coverageScope": "registered primary source paths and historical observations; current source identity is generated for the actual Git HEAD and tree",
   "evidenceClass": "source_observation_only",
@@ -20,13 +20,14 @@
   "observations": [
     {
       "module": "platform.types",
-      "path": "codex-rs/hepta-types/src/numeric_conversion.rs",
-      "blobSha": "34ac6fb5ff34a177f88e59abce76626d075d92e0",
+      "path": "codex-rs/hepta-types/src/lib.rs",
+      "blobSha": "ddf76c5bd5473dc3ad6b7939b4b6f61e03dbb926",
       "exports": [
+        "validate_id",
+        "canonical_digest_v1",
+        "ContractRegistryV1",
         "rescale_signal",
-        "NumericSignalV1",
-        "NumericErrorBoundV1",
-        "NumericConversionReceiptV1"
+        "rescale_signal_registered"
       ]
     },
     {
@@ -109,6 +110,6 @@
   "interpretation": "Historical blobSha values record earlier source observations and do not freeze future implementations. Current verification checks registered module ownership, paths and observed source identifiers against committed checkout bytes, and emits actual sourceSha, sourceTree and per-file blobSha alongside historicalBlobSha. Lane A rows override the corresponding general rows. Source identity proves neither complete operation coverage nor production callers, activation, external effects, independent acceptance, promotion or release.",
   "sourceCodeCommitRole": "provenance_only_non_authoritative",
   "candidateBinding": "runtime_head_tree_and_source_blob_receipt",
-  "sourceObservationDigest": "20ffe4334377ab580b65f294930003e1a644fca7239f85423b0fb7bf5f5a9107",
+  "sourceObservationDigest": "eb4edf3c8575a1788ab07cb90b988cb40befd515a6cb6631ef2bb1d7efe7ace1",
   "blobShaRole": "historical_observation_only"
 }

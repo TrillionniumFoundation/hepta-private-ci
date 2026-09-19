@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-types/src/numeric_conversion.rs](../../../codex-rs/hepta-types/src/numeric_conversion.rs); observed identifiers include `rescale_signal`, `NumericSignalV1`, `NumericErrorBoundV1`, `NumericConversionReceiptV1`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.types.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.types.md) for the implemented subset and remaining product work.
+The registered source root is `codex-rs/hepta-types`. Current native entrypoints include `validate_id`, `canonical_digest_v1`, `ContractRegistryV1`, `rescale_signal`, and `rescale_signal_registered`; the canonical encoding and cross-language vectors are frozen in `CANONICAL_DIGEST_V1.md` and `CANONICAL_V1_CONFORMANCE.json`. This is source navigation evidence, not proof of product execution or external acceptance. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/platform.types.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.types.md).
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -171,10 +171,14 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-types/src/bounded_tests.rs](../../../codex-rs/hepta-types/src/bounded_tests.rs); named case: `text_and_bytes_enforce_exact_bound`.
-- [codex-rs/hepta-types/src/digest_tests.rs](../../../codex-rs/hepta-types/src/digest_tests.rs); named case: `sha256_round_trip_is_canonical`.
+- [codex-rs/hepta-types/src/bounded_tests.rs](../../../codex-rs/hepta-types/src/bounded_tests.rs): borrowed/pre-allocation and UTF-8 byte-bound cases.
+- [codex-rs/hepta-types/src/identity_tests.rs](../../../codex-rs/hepta-types/src/identity_tests.rs): exhaustive StableId ASCII grammar, profiled IDs/namespaces, monotonic overflow and sealed authority.
+- [codex-rs/hepta-types/src/canonical_digest_tests.rs](../../../codex-rs/hepta-types/src/canonical_digest_tests.rs): frozen bytes/digest, canonical ordering and malformed-input rejection.
+- [codex-rs/hepta-types/src/registry_tests.rs](../../../codex-rs/hepta-types/src/registry_tests.rs): immutable lookup, deterministic registry digest, duplicate/capacity rejection.
+- [codex-rs/hepta-types/src/numeric_conversion_tests.rs](../../../codex-rs/hepta-types/src/numeric_conversion_tests.rs): rounding, overflow, mismatch and registry-enforced normalization.
+- [codex-rs/hepta-types/CANONICAL_V1_CONFORMANCE.json](../../../codex-rs/hepta-types/CANONICAL_V1_CONFORMANCE.json) with independent Python and TypeScript verifier sources under `conformance/`.
 
-In `codex-rs`, run `just test -p codex-hepta-types`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/platform.types.md) separately labels target acceptance designs.
+In `codex-rs`, run `just test -p codex-hepta-types`. Lane A CI additionally runs the Python and TypeScript canonical-vector oracles on both exact HEAD and deterministic synthetic merge. Commands are invocations, not stored results; workflow artifacts are the candidate receipts.
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -554,8 +558,11 @@ This receipt records repository source bindings for the current documentation ca
 
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
-| `rescale_signal` | `rescale_signal` | `codex-rs/hepta-types/src/numeric_conversion.rs` | `pending` |
-| `stableid` | `StableId` | `codex-rs/hepta-types/src/identity.rs` | `pending` |
+| `validate_id` | `validate_id` | `codex-rs/hepta-types/src/identity.rs` | `codex-rs/hepta-types/src/identity_tests.rs` |
+| `canonical_digest_v1` | `canonical_digest_v1` | `codex-rs/hepta-types/src/canonical_digest.rs` | `codex-rs/hepta-types/src/canonical_digest_tests.rs` |
+| `contract_registry_v1` | `ContractRegistryV1` | `codex-rs/hepta-types/src/registry.rs` | `codex-rs/hepta-types/src/registry_tests.rs` |
+| `rescale_signal` | `rescale_signal` | `codex-rs/hepta-types/src/numeric_conversion.rs` | `codex-rs/hepta-types/src/numeric_conversion_tests.rs` |
+| `rescale_signal_registered` | `rescale_signal_registered` | `codex-rs/hepta-types/src/numeric_conversion.rs` | `codex-rs/hepta-types/src/numeric_conversion_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
 - Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.

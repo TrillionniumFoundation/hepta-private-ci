@@ -7,19 +7,24 @@
     {
       "protocolId": "hepta.platform.types.primitives.v1",
       "module": "platform.types",
-      "kind": "in_process_semantic_types",
+      "kind": "in_process_semantic_and_canonical_types",
       "source": [
         "codex-rs/hepta-types/src/bounded.rs",
-        "codex-rs/hepta-types/src/digest.rs",
         "codex-rs/hepta-types/src/identity.rs",
-        "codex-rs/hepta-types/src/fixed.rs"
+        "codex-rs/hepta-types/src/digest.rs",
+        "codex-rs/hepta-types/src/canonical_digest.rs",
+        "codex-rs/hepta-types/src/registry.rs",
+        "codex-rs/hepta-types/src/fixed.rs",
+        "codex-rs/hepta-types/CANONICAL_V1_CONFORMANCE.json"
       ],
       "invariants": [
-        "bounded values reject empty and oversized content",
-        "stable identifiers preserve exact accepted bytes",
+        "bounded values reject empty and oversized content and borrowed constructors validate before allocation",
+        "stable-v1 preserves the original grammar while module-v1 and namespaced-v1 reject noncanonical identifiers",
         "generation revision and logical sequence are nonzero u64 values",
-        "Digest32 is exactly 32 bytes",
-        "types grant no runtime or effect authority"
+        "Digest32 is exactly 32 bytes and shared commitments use domain-separated length-framed canonical digest V1",
+        "canonical fields and map keys have deterministic ordering while arrays retain semantic order",
+        "immutable registry definitions resolve by canonical digest with bounded capacity and no mutable global registry",
+        "AuthorityPosture has only a sealed deny-all representation and types grant no runtime or effect authority"
       ]
     },
     {
