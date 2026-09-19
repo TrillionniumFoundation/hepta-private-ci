@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "2b209faf9b6c46746c07c4359be6b13e7a44ee89",
+    "tree": "de17ec74becb8c70390360b3ac8d1640de4d83e8"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "browser.servo",
@@ -108,7 +108,8 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "boundCargoPackagesMapped": true
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
@@ -120,5 +121,20 @@
   "sourceRoot": [
     "apps/hepta-browser",
     "third_party/servo-patches"
-  ]
+  ],
+  "sourceBaseSemantics": "generation_provenance_only_freshness_is_source_fingerprint",
+  "sourceFingerprintPolicy": "git-tracked-content-sha256-v1",
+  "boundCargoPackages": [],
+  "sourceFingerprints": {
+    "apps/hepta-browser": {
+      "algorithm": "sha256",
+      "digest": "352c4fe6d204fcbbc06a70a46dcf7d7d5e5baf82b85d180382a1c8840680568d",
+      "trackedFiles": 6
+    },
+    "third_party/servo-patches": {
+      "algorithm": "sha256",
+      "digest": "28d8c8ed91b6c9dc216760093924014d03a47ba03fe45cc1e6af38d1eda73e96",
+      "trackedFiles": 2
+    }
+  }
 }

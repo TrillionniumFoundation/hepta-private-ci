@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "2b209faf9b6c46746c07c4359be6b13e7a44ee89",
+    "tree": "de17ec74becb8c70390360b3ac8d1640de4d83e8"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -132,7 +132,8 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "boundCargoPackagesMapped": true
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
@@ -143,5 +144,17 @@
   "technicalGuide": "docs/modules/automation.taskflow/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-automation"
-  ]
+  ],
+  "sourceBaseSemantics": "generation_provenance_only_freshness_is_source_fingerprint",
+  "sourceFingerprintPolicy": "git-tracked-content-sha256-v1",
+  "boundCargoPackages": [
+    "codex-rs/hepta-automation"
+  ],
+  "sourceFingerprints": {
+    "codex-rs/hepta-automation": {
+      "algorithm": "sha256",
+      "digest": "b081c8127caf859f3f89c293285eff208677097a5cf7cd971df7e858ac0ab61c",
+      "trackedFiles": 22
+    }
+  }
 }

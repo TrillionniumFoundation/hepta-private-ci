@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "2b209faf9b6c46746c07c4359be6b13e7a44ee89",
+    "tree": "de17ec74becb8c70390360b3ac8d1640de4d83e8"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "channel.matrix",
@@ -110,7 +110,8 @@
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false
+    "release": false,
+    "boundCargoPackagesMapped": true
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
@@ -122,5 +123,35 @@
   "sourceRoot": [
     "codex-rs/hepta-matrix-sdk",
     "codex-rs/hepta-matrixd"
-  ]
+  ],
+  "sourceBaseSemantics": "generation_provenance_only_freshness_is_source_fingerprint",
+  "sourceFingerprintPolicy": "git-tracked-content-sha256-v1",
+  "boundCargoPackages": [
+    "codex-rs/hepta-matrix-protocol",
+    "codex-rs/hepta-matrix-sdk",
+    "codex-rs/hepta-matrix-store",
+    "codex-rs/hepta-matrixd"
+  ],
+  "sourceFingerprints": {
+    "codex-rs/hepta-matrix-protocol": {
+      "algorithm": "sha256",
+      "digest": "e90c64491b5c34f7b717daedd36e08483c47278eaf770b0a3a83d3d44e251ea5",
+      "trackedFiles": 4
+    },
+    "codex-rs/hepta-matrix-sdk": {
+      "algorithm": "sha256",
+      "digest": "71940b92c3ec1e717d8bdc781bead6f7c7ff8c659d2497d2acf92f19db6635a8",
+      "trackedFiles": 13
+    },
+    "codex-rs/hepta-matrix-store": {
+      "algorithm": "sha256",
+      "digest": "1428398ed8dde54d4909bb4caa1ef06969c363eeff666a944329b7bb5bc88eed",
+      "trackedFiles": 16
+    },
+    "codex-rs/hepta-matrixd": {
+      "algorithm": "sha256",
+      "digest": "6762c198b1a5297b8207d472611bdceca7a2b80d832cd6f7965da2b8175e3103",
+      "trackedFiles": 18
+    }
+  }
 }
