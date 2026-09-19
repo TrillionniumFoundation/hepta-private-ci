@@ -36,7 +36,6 @@ pub use identity::IdProfileV1;
 pub use identity::IdentityError;
 pub use identity::LogicalSequence;
 pub use identity::NonAuthorizingPosture;
-pub use identity::NonAuthorizingPostureError;
 pub use identity::Revision;
 pub use identity::StableId;
 pub use identity::validate_id;
