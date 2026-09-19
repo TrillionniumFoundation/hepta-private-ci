@@ -225,6 +225,17 @@ impl DurableLedger {
             Ok(self.core.snapshot())
         }
     }
+
+    pub fn anchor(&self) -> Result<LedgerAnchor, DurableLedgerError> {
+        if self.poisoned {
+            Err(DurableLedgerError::Poisoned)
+        } else {
+            Ok(LedgerAnchor {
+                sequence: self.core.head_sequence(),
+                chain_digest: self.core.head_digest(),
+            })
+        }
+    }
 }
 
 /// Inspect a closed, fully witnessed segment through a host-authorized read-only
