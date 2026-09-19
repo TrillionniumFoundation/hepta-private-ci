@@ -66,7 +66,7 @@ roll back together. Equal identity and semantics replay idempotently; different
 semantics conflict. Startup checks the audit chain. Additive v2/v3/v4/v5 stores migrate
 transactionally to v6; historical generations without current package bindings remain
 unusable and require a new generation. A future version is rejected before any
-schema or journal-mode write. A database claiming v5 but missing a required table
+schema or journal-mode write. A database claiming v6 but missing a required table
 is rejected. A corrupted store must be quarantined and restored from a verified
 backup; startup does not silently reconstruct acceptance or change owner facts.
 
