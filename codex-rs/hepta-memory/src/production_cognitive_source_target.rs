@@ -6,15 +6,10 @@
 //! delivery is idempotent at the destination instead of relying on source-side
 //! bookkeeping alone.
 
-use std::future::Future;
-use std::pin::Pin;
-
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
 use serde::Deserialize;
 use serde::Serialize;
-use sqlx::Row;
-
 use crate::CognitiveAccess;
 use crate::CognitiveScope;
 use crate::CognitiveStore;
