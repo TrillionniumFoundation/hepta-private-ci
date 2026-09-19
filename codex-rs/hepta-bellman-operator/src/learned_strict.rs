@@ -1,7 +1,8 @@
 //! Strict admission wrapper for the simplest-sufficient tabular operator.
 //!
-//! The original V1 functions remain available. This additive surface rejects
-//! duplicate underlying evidence even when callers relabel samples, and uses
+//! The default V1 fit now also rejects duplicate underlying evidence. This
+//! additive surface is retained for compatibility with callers that depend on
+//! the V2 error vocabulary, and uses
 //! the artifact's canonical cell ordering for binary lookup after an O(n)
 //! validation on every call. Use LoadedTabularOperatorV1 for once-validated
 //! persisted candidates and O(log n) repeated lookups.
