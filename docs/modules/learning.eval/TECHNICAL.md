@@ -554,4 +554,6 @@ The bootstrap source-location obligation for `learning.eval` is implemented by w
 
 - `codex-rs/hepta-intelligence-eval`
 
+`learning.eval` now also contains the source-level `evaluate_ndu_convergence_v1` decision kernel for the owned `NduConvergenceCertificateV1` boundary. It consumes NDU local termination evidence and independently checks evaluator/producer separation plus the registered residual, resource/risk, boundary, martingale-mean, multiple-solution, operating-region and spectral-radius evidence. The result carries no authority and does not manufacture real observations or independent acceptance.
+
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
