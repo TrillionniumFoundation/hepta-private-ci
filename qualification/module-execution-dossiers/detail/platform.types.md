@@ -20,7 +20,7 @@ stores and APIs; do not create another authority or execution spine.
 `validate_id(raw, id_profile) -> StableId | InvalidId` checks byte count,
 alphabet and profile namespace without allocating a second unrestricted copy.
 V1 profiles preserve the legacy StableId grammar and add explicit namespaced,
-execution, schema, receipt and artifact forms. Validation never case-folds or
+execution, schema, normalization, receipt and artifact forms. Validation never case-folds or
 normalizes invalid user IDs into valid identities.
 
 `rescale_signal(source, target) -> (NumericSignalV1, ConversionReceipt) |
@@ -43,10 +43,10 @@ network, or establish production trust.
 No authoritative state, clocks, credentials, filesystem handles or
 process-global mutable registries. Numeric-profile and contract-definition
 registries are immutable inputs. A conversion receipt contains source/target
-profile IDs, input/output digests and a rational absolute-error bound. New
-Platform Types receipts carry `NonAuthorizingPosture`, whose representation
-cannot contain authority. Legacy `AuthorityPosture` remains a compatibility
-and tamper-test representation, not an authority token.
+profile IDs, input/output digests and a rational absolute-error bound. `AuthorityPosture` itself is deny-only by construction, and new Platform Types
+receipts use the likewise deny-only `NonAuthorizingPosture`. Raw protocol
+authority flags must be validated by their owning protocol before shared typed
+values are constructed; no Platform Types value can be widened into authority.
 
 Authority/fence identifiers are exact integers or opaque IDs and must never
 pass through approximate rescaling.
