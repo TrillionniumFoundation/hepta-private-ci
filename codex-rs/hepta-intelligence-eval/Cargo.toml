@@ -5,10 +5,19 @@ name = "codex-hepta-intelligence-eval"
 version.workspace = true
 publish = false
 
+[features]
+default = []
+trusted-inprocess-eval = []
+
 [lib]
 name = "codex_hepta_intelligence_eval"
 path = "src/lib.rs"
 doctest = false
+
+[[test]]
+name = "operator_claim"
+path = "tests/operator_claim.rs"
+required-features = ["trusted-inprocess-eval"]
 
 [lints]
 workspace = true
