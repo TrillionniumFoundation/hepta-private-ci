@@ -149,6 +149,11 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
         state.refresh_generation()?;
         state.attach_automation_operations(Arc::new(host))?;
     }
+    // Materialize the executable module topology before serving. This makes
+    // module attachment part of the runtime control state rather than a set of
+    // unrelated fields that can silently drift from one another.
+    let _runtime_topology = state.runtime_topology_snapshot()?;
+
     let cancellation = CancellationToken::new();
     let control = AgentdControlServer::bind(
         identity.control_socket.clone(),
