@@ -1,0 +1,65 @@
+name: Matrix real Synapse qualification
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-matrix-protocol/**"
+      - "codex-rs/hepta-matrix-store/**"
+      - "codex-rs/hepta-matrix-sdk/**"
+      - "codex-rs/hepta-matrixd/**"
+      - ".github/workflows/hepta-matrix-real-synapse.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-matrix-real-synapse-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualify:
+    name: Real Synapse exact-candidate qualification
+    runs-on: [self-hosted, macOS, ARM64, macbook]
+    timeout-minutes: 90
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact source identity
+        shell: bash
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
+          mkdir -p "$RUNNER_TEMP/hepta-matrix-real-synapse"
+          {
+            echo "candidate_sha=$(git rev-parse HEAD)"
+            echo "candidate_tree=$(git rev-parse HEAD^{tree})"
+          } > "$RUNNER_TEMP/hepta-matrix-real-synapse/source-identity.txt"
+
+      - name: Run pinned real Synapse qualification
+        shell: bash
+        run: |
+          set -euo pipefail
+          codex-rs/hepta-matrixd/tests/fixtures/run-hermetic-synapse.sh             --source-root "$GITHUB_WORKSPACE"             --source-mode exact             --artifacts-dir "$RUNNER_TEMP/hepta-matrix-real-synapse"
+
+      - name: Assert source remained immutable
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Publish exact-candidate qualification receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: matrix-real-synapse-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/hepta-matrix-real-synapse
+          if-no-files-found: error
