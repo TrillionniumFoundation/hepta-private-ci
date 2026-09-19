@@ -17,6 +17,7 @@ mod qualification;
 mod sdk;
 mod sync;
 
+pub use authority::MATRIX_FINAL_USE_REQUEST_SCHEMA_VERSION;
 pub use authority::MatrixAuthorityError;
 pub use authority::MatrixFinalUseRequest;
 pub use authority::MatrixGrantFuture;
