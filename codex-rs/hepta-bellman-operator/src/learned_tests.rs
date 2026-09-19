@@ -144,7 +144,6 @@ fn op_05_tabular_prediction_is_synthetic_and_domain_bounded() {
     );
 }
 
-
 #[test]
 fn op_05_tabular_operator_rejects_relabelled_duplicate_evidence() {
     let mut samples = vec![
