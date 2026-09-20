@@ -62,12 +62,8 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         .map(KernelFinalUseGate::open)
         .transpose()?
         .map(Arc::new);
-    let runtime = NativeShellRuntime::new(
-        Box::new(backend),
-        Box::new(platform),
-        final_use,
-        journal,
-    );
+    let runtime =
+        NativeShellRuntime::new(Box::new(backend), Box::new(platform), final_use, journal);
     let updater = UpdateManager::new(trusted_keys.clone(), config.state_dir.join("updates"))?;
     let pending_update_path = updater.pending_path();
     let activate_update_on_exit = Arc::new(AtomicBool::new(false));
@@ -100,7 +96,9 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             None => default_updater_helper(&target)?,
         };
         if !helper.is_file() {
-            return Err(format!("native updater helper is unavailable: {}", helper.display()).into());
+            return Err(
+                format!("native updater helper is unavailable: {}", helper.display()).into(),
+            );
         }
         Command::new(&helper)
             .arg(&pending_update_path)
@@ -198,7 +196,10 @@ fn default_updater_helper(current_exe: &Path) -> Result<PathBuf, Box<dyn std::er
         .ok_or("native executable has no parent directory")?;
     #[cfg(target_os = "macos")]
     {
-        if executable_dir.file_name().is_some_and(|name| name == "MacOS") {
+        if executable_dir
+            .file_name()
+            .is_some_and(|name| name == "MacOS")
+        {
             let contents = executable_dir
                 .parent()
                 .ok_or("macOS native executable has no Contents directory")?;
