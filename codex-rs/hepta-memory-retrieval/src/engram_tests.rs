@@ -565,9 +565,22 @@ fn target_host_hnmf_reports_latency_percentiles_at_candidate_ceiling() {
 }
 
 #[test]
-#[ignore = "target-host structural-ceiling probe; run explicitly with --ignored --nocapture"]
+#[ignore = "target-host full-ceiling probe; run explicitly with --ignored --nocapture"]
 fn target_host_hnmf_validates_full_structural_ceiling() {
+    fn percentile(values: &[u128], numerator: usize, denominator: usize) -> u128 {
+        assert!(!values.is_empty());
+        let rank = values
+            .len()
+            .saturating_mul(numerator)
+            .saturating_add(denominator.saturating_sub(1))
+            / denominator;
+        values[rank.saturating_sub(1).min(values.len() - 1)]
+    }
+
     let cue = cue();
+    let candidates = (1..=512_u64)
+        .map(|number| candidate(number, FixedQ32::ONE.raw()))
+        .collect::<Vec<_>>();
     let nodes = (1..=4096_u64)
         .map(|number| {
             node(
@@ -607,8 +620,35 @@ fn target_host_hnmf_validates_full_structural_ceiling() {
     snapshot.validate().expect("structural ceiling validates");
     let validate_us = validate_started.elapsed().as_micros();
 
+    let policy = retrieval_policy(16);
+    let dynamics = EngramDynamicsPolicyV1::product_default().expect("dynamics");
+    assert_eq!(dynamics.maximum_settling_steps, MAX_ENGRAM_SETTLING_STEPS);
+
+    let mut micros = Vec::with_capacity(50);
+    let mut last_resources = None;
+    for _ in 0..50 {
+        let started = std::time::Instant::now();
+        let packet = recall_with_engram(&cue, &policy, candidates.clone(), &snapshot, &dynamics)
+            .expect("full-ceiling HNMF recall");
+        micros.push(started.elapsed().as_micros());
+        assert!(packet.selections.len() <= 16);
+        last_resources = packet.engram.map(|receipt| receipt.resources);
+    }
+    micros.sort_unstable();
+    let resources = last_resources.expect("resource receipt");
+    assert_eq!(resources.candidate_records, 512);
+    assert_eq!(resources.expanded_nodes, 4096);
+    assert_eq!(resources.traversed_synapses, 131_072);
+    assert_eq!(resources.settling_steps, 4);
+
     eprintln!(
-        "{{\"schema\":\"hepta.memory-retrieval.target-host.v1\",\"phase\":\"hnmf-structural-ceiling\",\"nodes\":4096,\"synapses\":32768,\"build_us\":{},\"validate_us\":{}}}",
-        build_us, validate_us,
+        "{{\"schema\":\"hepta.memory-retrieval.target-host.v1\",\"phase\":\"hnmf-full-ceiling\",\"candidate_events\":512,\"nodes\":4096,\"synapses\":32768,\"iterations\":50,\"settling_steps\":4,\"p50_us\":{},\"p95_us\":{},\"p99_us\":{},\"build_us\":{},\"validate_us\":{},\"active_nodes\":{},\"traversed_synapses\":{}}}",
+        percentile(&micros, 50, 100),
+        percentile(&micros, 95, 100),
+        percentile(&micros, 99, 100),
+        build_us,
+        validate_us,
+        resources.active_nodes,
+        resources.traversed_synapses,
     );
 }

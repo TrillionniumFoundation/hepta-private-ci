@@ -731,6 +731,18 @@ pub fn settle_engram(
         .iter()
         .map(|node_id| (node_id.clone(), FixedQ32::ZERO))
         .collect::<BTreeMap<_, _>>();
+    let mut incoming_synapses = BTreeMap::new();
+    for synapse in &snapshot.synapses {
+        if expanded.contains(&synapse.source_node_id)
+            && expanded.contains(&synapse.target_node_id)
+        {
+            incoming_synapses
+                .entry(synapse.target_node_id.clone())
+                .or_insert_with(Vec::new)
+                .push(synapse);
+        }
+    }
+
     let mut last_paths = Vec::new();
     let mut traversed_synapses = 0_usize;
     for _step in 0..policy.maximum_settling_steps {
@@ -753,9 +765,11 @@ pub fn settle_engram(
                 )
                 .and_then(|value| value.checked_sub(node.threshold))
                 .map_err(|_| EngramErrorV1::Arithmetic)?;
-            for synapse in snapshot.synapses.iter().filter(|synapse| {
-                synapse.target_node_id == *node_id && expanded.contains(&synapse.source_node_id)
-            }) {
+            for synapse in incoming_synapses
+                .get(node_id)
+                .into_iter()
+                .flat_map(|synapses| synapses.iter().copied())
+            {
                 traversed_synapses = traversed_synapses
                     .checked_add(1)
                     .ok_or(EngramErrorV1::Arithmetic)?;
