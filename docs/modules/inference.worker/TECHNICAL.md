@@ -68,7 +68,7 @@ The module accepts only registered, bounded, versioned inputs. It rejects unknow
 
 Non-goals include becoming a general state store, bypassing the Codex execution spine, interpreting model prose as authority, minting an authority consumed by the same component, or converting qualification evidence into deployment authority. A façade may sequence modules but may not own their facts.
 
-“Isolated” is deliberately narrow at the source boundary: exact owner/generation fencing, stable provider execution identity, bounded local-runtime protocol/resource accounting, exact artifact/runtime binding and fail-closed recovery. This crate does **not** by itself prove cgroup limits, Linux namespaces, seccomp/Landlock, GPU device ACL/MIG, network isolation or filesystem sandboxing. Those guarantees belong to the selected launcher/host and require deployment evidence; see [Production Readiness §3](./PRODUCTION_READINESS.md#3-isolation-guarantees-and-non-guarantees).
+“Isolated” is deliberately narrow at the source boundary: exact owner/generation fencing, stable provider execution identity, bounded local-runtime protocol/resource accounting, exact artifact/runtime binding and fail-closed recovery. This crate does **not** by itself prove cgroup limits, Linux namespaces, seccomp/Landlock, GPU device ACL/MIG, network isolation or filesystem sandboxing. Those guarantees belong to the selected launcher/host and require deployment evidence; see [Production Readiness §3–4](./PRODUCTION_READINESS.md#3-isolation-guarantees).
 
 ## 4. Internal architecture and component decomposition
 
