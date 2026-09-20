@@ -38,7 +38,7 @@ Every current-generation V3 decision carries one exact scorer-owned commitment c
 - canonical candidate-identity digest;
 - exact scored/policy-output digest covering utility, calibrated confidence, OOD outputs and randomized assignment probabilities.
 
-The random draw is excluded from the scorer commitment. Assignment probabilities are policy outputs and are signed by the scorer/policy-output owner; the RandomSource separately signs the same distribution context together with its stream/counter/draw so a valid draw cannot be transplanted onto a different distribution.
+The random draw is excluded from the scorer commitment. The commitment does bind the exact `risk_class` and an `assignment_distribution_digest` covering Deterministic-vs-CounterBased mode, abstain mass and candidate assignment probabilities. These bindings are tamper commitments, not a transfer of risk or RNG authority to the scorer. The RandomSource separately signs the same randomized distribution context together with its stream/counter/draw so neither a valid draw nor a CounterBased decision can be transplanted or downgraded into a different assignment mode.
 
 `decide_calibrated_v3` validates the commitment against both the canonical profile and the exact request before selection. Mutating one candidate score, model identity, feature snapshot, generation or scorer schema after commitment fails closed.
 
