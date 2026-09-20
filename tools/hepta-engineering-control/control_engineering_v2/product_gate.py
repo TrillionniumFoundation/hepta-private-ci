@@ -1,7 +1,7 @@
 """Repository product caller for the Engineering Control Plane.
 
 The caller runs only after repository qualification jobs succeed. It proves that
-the actual repository CI composes the SQLite v8 named product owner across planning,
+the actual repository CI composes the SQLite v9 named product owner across planning,
 fenced worker lifecycle, durable integration reconciliation and reopen recovery.
 Its in-process signatures/digests are explicit execution fixtures, not independent
 acceptance or external observations. It never grants merge, deployment, promotion,
