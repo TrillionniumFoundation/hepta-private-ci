@@ -107,7 +107,7 @@ class OwnerTransactionTests(unittest.TestCase):
                 EngineeringStore(path)
             self.assertEqual(path.read_bytes(), before)
 
-    def test_schema_v5_adds_distributed_fence_frontier(self):
+    def test_schema_v5_adds_distributed_fence_and_worker_lifecycle(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "owner.sqlite3"
             with EngineeringStore(path):
@@ -122,11 +122,14 @@ class OwnerTransactionTests(unittest.TestCase):
             with EngineeringStore(path) as store:
                 self.assertEqual(
                     store.connection.execute("PRAGMA user_version").fetchone()[0],
-                    6,
+                    7,
                 )
                 for table in (
                     "distributed_cluster_frontiers",
                     "distributed_fence_frontiers",
+                    "orchestration_generations",
+                    "worker_registrations",
+                    "worker_claims",
                 ):
                     self.assertIsNotNone(
                         store.connection.execute(
@@ -153,7 +156,7 @@ class OwnerTransactionTests(unittest.TestCase):
             with EngineeringStore(path) as store:
                 self.assertEqual(store.audit_projection(), before)
                 self.assertEqual(
-                    store.connection.execute("PRAGMA user_version").fetchone()[0], 6
+                    store.connection.execute("PRAGMA user_version").fetchone()[0], 7
                 )
                 self.assertEqual(
                     store.connection.execute(

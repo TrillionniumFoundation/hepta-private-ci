@@ -107,6 +107,7 @@ from .sandbox_control import (
     SandboxExecutionResult,
 )
 from .product_gate import verify_product_receipt_pair
+from .product_runtime import EngineeringControlProduct
 from .production import (
     ProductionReadinessDecision,
     ProductionReadinessFacts,
@@ -159,6 +160,7 @@ __all__ = [
     "CompletionReceipt",
     "EngineeringAssignment",
     "EngineeringCapacity",
+    "EngineeringControlProduct",
     "EngineeringPlan",
     "EngineeringWorkPackage",
     "DistributedFenceReceipt",

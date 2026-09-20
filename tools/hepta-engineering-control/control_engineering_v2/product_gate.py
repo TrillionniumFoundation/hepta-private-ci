@@ -18,16 +18,15 @@ import re
 import tempfile
 import time
 
-from .control_plane import DENIED_AUTHORITIES, EngineeringStore, WorkEnvelope
+from .control_plane import DENIED_AUTHORITIES, WorkEnvelope
 from .evidence import SignatureTrustStore
 from .git_security import run_git, run_git_bytes
+from .product_runtime import EngineeringControlProduct
 from .orchestration import (
     EngineeringCapacity,
     EngineeringWorkPackage,
     ReviewCapacity,
     WorkerProfile,
-    issue_repository_work_envelope,
-    plan_engineering_work,
 )
 
 _SHA1 = re.compile(r"[0-9a-f]{40}\Z")
@@ -239,16 +238,14 @@ def build_product_receipt(
         rollback_cost_q32=0,
     )
     with tempfile.TemporaryDirectory(prefix="hepta-engineering-product-") as directory:
-        with EngineeringStore(Path(directory) / "engineering.sqlite3") as store:
-            issue_repository_work_envelope(
-                root,
-                store,
-                envelope,
-                expected_repository=EXPECTED_REPOSITORY,
-                now_ns=now,
-            )
-            plan = plan_engineering_work(
-                store,
+        with EngineeringControlProduct(
+            Path(directory) / "engineering.sqlite3",
+            root,
+            expected_repository=EXPECTED_REPOSITORY,
+            trust_store=_RejectingTrustStore(),
+        ) as product:
+            product.admit_repository_envelope(envelope, now_ns=now)
+            plan = product.plan_work(
                 envelope,
                 (package,),
                 (
@@ -260,12 +257,11 @@ def build_product_receipt(
                     ),
                 ),
                 (),
-                _RejectingTrustStore(),
                 EngineeringCapacity(1, (ReviewCapacity("architecture", 1),)),
                 generation_id=f"product-generation-{tested_sha[:20]}",
                 now_ns=now,
             )
-            anchor = store.audit_anchor()
+            anchor = product.audit_anchor()
 
     if tuple(row.package_id for row in plan.assignments) != (
         "control.engineering.repository-product-gate",
