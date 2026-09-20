@@ -491,7 +491,6 @@ impl QualificationEvidenceStore<'_> {
         validate_independent_decision(
             envelope,
             issuer,
-            message,
             &signing_identity_sha256,
             &candidate_evidence_set_digest,
             now,
@@ -817,7 +816,6 @@ async fn validate_lineage_references(
 fn validate_independent_decision(
     envelope: &QualificationEvidenceEnvelopeV1,
     issuer: &IssuerRegistration,
-    message: &SignedMessage,
     signing_identity_sha256: &Sha256Digest,
     expected_evidence_set_digest: &Sha256Digest,
     now: u64,
@@ -842,7 +840,6 @@ fn validate_independent_decision(
         || receipt.evidence_set_digest != *expected_evidence_set_digest
         || envelope.expires_unix_ms != Some(receipt.expires_unix_ms)
         || receipt.expires_unix_ms <= now
-        || receipt.expires_unix_ms > message.claims.expires_at_ms
     {
         return Err(EvidenceError::InvalidRecord(
             "independent decision identity, role, candidate or expiry is not bound to authenticated admission"
