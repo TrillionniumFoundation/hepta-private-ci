@@ -150,6 +150,8 @@ struct Fixture {
     authority: codex_hepta_contracts::FinalUseAuthority,
     signing: SigningKey,
     next_nonce: u8,
+    _store_dir: tempfile::TempDir,
+    _authority_dir: tempfile::TempDir,
 }
 
 fn fixture() -> Fixture {
@@ -163,8 +165,6 @@ fn fixture() -> Fixture {
     )
     .expect("private authority permissions");
 
-    let store_path = store_dir.keep();
-    let authority_path = authority_dir.keep();
     let signing = SigningKey::from_bytes(&[91; 32]);
     let head = FinalUseRevocations {
         authority_epoch: 1,
@@ -172,7 +172,7 @@ fn fixture() -> Fixture {
         revoked_grant_ids: BTreeSet::new(),
     };
     let authority = codex_hepta_contracts::FinalUseAuthority::open_state_dir(
-        &authority_path,
+        authority_dir.path(),
         "ndu-issuer".to_string(),
         signing.verifying_key().to_bytes(),
         head,
@@ -180,7 +180,7 @@ fn fixture() -> Fixture {
     .expect("authority");
 
     let owner = NduAuthenticatedOwnerV1::open(
-        &store_path,
+        store_dir.path(),
         authority.clone(),
         NduOwnerContextV1 {
             principal_id: id("agentd-principal"),
@@ -199,6 +199,8 @@ fn fixture() -> Fixture {
         authority,
         signing,
         next_nonce: 1,
+        _store_dir: store_dir,
+        _authority_dir: authority_dir,
     }
 }
 
