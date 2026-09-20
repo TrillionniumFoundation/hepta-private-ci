@@ -1,4 +1,7 @@
 use std::fs;
+use std::sync::Arc;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
 
 use super::*;
 use codex_hepta_contracts::AgentId;
@@ -122,4 +125,95 @@ fn targeted_read_preserves_lifecycle_and_resource_fences() {
         state.refresh_generation(),
         Err(AgentdError::GenerationFenced(_))
     ));
+}
+
+
+struct FakeNeuronRuntimePort {
+    calls: Arc<AtomicU64>,
+}
+
+impl codex_hepta_intelligence::NeuronRuntimeProductPort for FakeNeuronRuntimePort {
+    fn consume(
+        &self,
+        input: codex_hepta_intelligence::NeuronTickInputV1,
+        _observation: codex_hepta_intelligence::RuntimeTickObservationV1,
+    ) -> Result<
+        codex_hepta_intelligence::NeuronConsumerReceiptV1,
+        codex_hepta_intelligence::NeuronConsumerErrorV1,
+    > {
+        self.calls.fetch_add(1, Ordering::Relaxed);
+        let checkpoint = codex_hepta_types::Digest32::of_bytes(b"agentd-neuron-checkpoint");
+        Ok(codex_hepta_intelligence::NeuronConsumerReceiptV1 {
+            tick_id: input.tick_id,
+            checkpoint_digest: checkpoint,
+            neuron_signal_digest: codex_hepta_types::Digest32::of_bytes(b"agentd-neuron-signal"),
+            confidence_ppm: 900_000,
+            ood_ppm: 10_000,
+            disposition: codex_hepta_intelligence::NeuronConsumerDispositionV1::AdvisorySignal,
+            receipt_digest: codex_hepta_types::Digest32::of_bytes(b"agentd-neuron-receipt"),
+            authority: codex_hepta_types::AuthorityPosture::DENY_ALL,
+        })
+    }
+}
+
+fn neuron_tick_input() -> codex_hepta_intelligence::NeuronTickInputV1 {
+    let features = vec![1_i64];
+    codex_hepta_intelligence::NeuronTickInputV1 {
+        tick_id: codex_hepta_types::StableId::new("agentd.neuron.tick.1")
+            .expect("valid neuron tick id"),
+        subject_id: codex_hepta_types::StableId::new("agentd.neuron.subject.1")
+            .expect("valid neuron subject id"),
+        logical_sequence: 1,
+        monotonic_time_micros: 1,
+        checkpoint_digest: codex_hepta_types::Digest32::ZERO,
+        input_feature_digest: codex_hepta_types::Digest32::of_bytes(b"feature"),
+        feature_vector_q24: features,
+        objective_digest: codex_hepta_types::Digest32::of_bytes(b"objective"),
+        ndu_snapshot_digest: codex_hepta_types::Digest32::of_bytes(b"ndu"),
+        body_generation: None,
+        modulator_digest: None,
+    }
+}
+
+#[test]
+fn real_agentd_state_holds_calls_and_generation_fences_neuron_owner_port() {
+    let (_temp, registry, state) = fixture().expect("runtime fixture");
+    let calls = Arc::new(AtomicU64::new(0));
+    state
+        .attach_neuron_runtime_port(Arc::new(FakeNeuronRuntimePort {
+            calls: Arc::clone(&calls),
+        }))
+        .expect("attach neuron runtime port");
+
+    let receipt = state
+        .consume_neuron_tick(
+            neuron_tick_input(),
+            codex_hepta_intelligence::RuntimeTickObservationV1 {
+                now_unix_micros: 2,
+                queue_age_micros: 0,
+            },
+        )
+        .expect("consume neuron tick");
+    assert_eq!(receipt.tick_id.as_str(), "agentd.neuron.tick.1");
+    assert!(!receipt.authority.grants_any());
+    assert_eq!(calls.load(Ordering::Relaxed), 1);
+
+    registry
+        .compare_and_transition(
+            &state.identity.agent_id,
+            /*expected_generation*/ 2,
+            AgentLifecycle::Draining,
+        )
+        .expect("draining");
+    assert!(matches!(
+        state.consume_neuron_tick(
+            neuron_tick_input(),
+            codex_hepta_intelligence::RuntimeTickObservationV1 {
+                now_unix_micros: 3,
+                queue_age_micros: 0,
+            },
+        ),
+        Err(AgentdError::GenerationFenced(_))
+    ));
+    assert_eq!(calls.load(Ordering::Relaxed), 1);
 }
