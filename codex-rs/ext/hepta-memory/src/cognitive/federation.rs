@@ -95,14 +95,14 @@ impl FederatedCognitiveExtension {
         ))
     }
 
-    async fn revalidate(
+    async fn revalidate_many(
         &self,
         access: &FederationConsumerAccess,
-        binding: &FederatedMemoryRevalidationBinding,
+        bindings: &[FederatedMemoryRevalidationBinding],
         now_unix_seconds: i64,
-    ) -> Result<FederatedRevalidationStatus, CognitiveStoreError> {
+    ) -> Result<Vec<FederatedRevalidationStatus>, CognitiveStoreError> {
         self.runtime
-            .revalidate_product_federated(access, binding, now_unix_seconds)
+            .revalidate_product_federated_batch(access, bindings, now_unix_seconds)
             .await
     }
 
@@ -153,11 +153,17 @@ impl FederatedCognitiveExtension {
         let now = now_unix_seconds()?;
         let access =
             FederationConsumerAccess::new(self.consumer_agent_id()?, workspace_digest(input.cwd));
+        let Ok(statuses) = self
+            .revalidate_many(&access, &prepared.bindings, now)
+            .await
+        else {
+            return None;
+        };
+        if statuses.len() != prepared.bindings.len() {
+            return None;
+        }
         let mut explanations = Vec::with_capacity(prepared.bindings.len());
-        for binding in &prepared.bindings {
-            let Ok(status) = self.revalidate(&access, binding, now).await else {
-                return None;
-            };
+        for status in statuses {
             let FederatedRevalidationStatus::Current(explanation) = status else {
                 return None;
             };
