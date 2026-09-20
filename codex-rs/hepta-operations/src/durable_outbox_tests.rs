@@ -140,6 +140,7 @@ async fn expired_claim_requires_higher_generation_and_ack_is_fenced() {
                 &stable_id("outbox:ui:1"),
                 generation(10),
                 digest(b"stale-ack"),
+                1_600,
             )
             .await
             .expect_err("stale claimant cannot acknowledge"),
@@ -152,6 +153,7 @@ async fn expired_claim_requires_higher_generation_and_ack_is_fenced() {
             &stable_id("outbox:ui:1"),
             generation(11),
             ack_digest,
+            1_600,
         )
         .await
         .expect("current claim acknowledgement");
@@ -212,6 +214,18 @@ async fn equal_claim_is_idempotent_but_expired_same_generation_cannot_self_takeo
         .expect("same owner live claim");
     assert_eq!(same, first);
 
+    assert_eq!(
+        ledger
+            .acknowledge_outbox(
+                &stable_id("outbox:ui:1"),
+                generation(20),
+                digest(b"late-ack"),
+                11_000,
+            )
+            .await
+            .expect_err("expired lease cannot acknowledge"),
+        OperationError::StaleGeneration
+    );
     assert_eq!(
         ledger
             .claim_outbox(&stable_id("outbox:ui:1"), generation(20), 11_000, 1_000)
