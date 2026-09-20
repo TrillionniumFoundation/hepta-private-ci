@@ -101,6 +101,45 @@ fn draft(id: &str, schedule: AutomationSchedule, due: u64) -> AutomationTaskDraf
 }
 
 #[tokio::test]
+async fn claim_freezes_schedule_revision_before_occurrence_materialization() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75100",
+        AutomationSchedule::Once,
+        100,
+    );
+    store.create_task(&task).await.expect("create task");
+
+    let lease = store
+        .claim_due(100, 1, 30_000)
+        .await
+        .expect("claim")
+        .expect("lease");
+    assert_eq!(lease.schedule_revision, 1);
+
+    assert!(matches!(
+        store
+            .set_schedule_policy(
+                task.task_id,
+                1,
+                AutomationMissedRunPolicy::Coalesce,
+                AutomationOverlapPolicy::Forbid,
+                101,
+            )
+            .await,
+        Err(AutomationError::Conflict)
+    ));
+
+    let occurrence = store
+        .materialize_occurrence(&lease, 102)
+        .await
+        .expect("materialize frozen revision");
+    assert_eq!(occurrence.schedule_revision, lease.schedule_revision);
+    assert_eq!(occurrence.scheduled_for_ms, lease.scheduled_for_ms);
+}
+
+#[tokio::test]
 async fn queue_submission_is_not_occurrence_or_taskflow_success() {
     let fixture = Fixture::new();
     let store = AutomationStore::open(&fixture.layout).await.expect("store");
