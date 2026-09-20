@@ -285,12 +285,15 @@ impl LongHorizonSegmentedLedgerV1 {
             self.semantic.cancel_prepared(prepared);
             return Err(DurableLedgerError::Capacity.into());
         }
+        // From the first physical consistency check onward, uncertainty or
+        // corruption requires recovery. An error must not leave an apparently
+        // healthy handle that can attest checkpoints or acknowledge retries.
+        self.poisoned = true;
         if self.active.seek(SeekFrom::End(0))? != self.length {
             self.semantic.cancel_prepared(prepared);
             return Err(DurableLedgerError::Corrupt.into());
         }
 
-        self.poisoned = true;
         self.active
             .write_all(&frame)
             .and_then(|()| self.active.sync_all())
