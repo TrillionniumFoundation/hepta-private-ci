@@ -49,11 +49,12 @@ use codex_hepta_codex_adapter::TURN_START_METHOD_ID;
 use codex_hepta_codex_adapter::adapt as adapt_codex;
 use codex_hepta_codex_adapter::request_digest as codex_request_digest;
 use codex_hepta_contracts::AgentId;
-use codex_hepta_contracts::EnteredUseToken;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::VerifiedUseToken;
+use codex_hepta_contracts::VerifiedUseTokenWitnessV1;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
+use codex_hepta_infer_core::durable_control::native::NativePreEffectAbortToken;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
@@ -81,10 +82,22 @@ type Result<T> = std::result::Result<T, Box<dyn std::error::Error + Send + Sync>
 pub type TurnStartAuthorityFuture<'a> =
     Pin<Box<dyn Future<Output = Result<VerifiedUseToken>> + Send + 'a>>;
 
-/// Host-owned final-use port. runtime.codex can request a claim for the exact
-/// final binding, but it cannot construct a VerifiedUseToken itself.
+pub type TurnStartDispatchBoundary<'a> = Box<
+    dyn FnOnce(&VerifiedUseTokenWitnessV1) -> Result<NativePreEffectAbortToken> + 'a,
+>;
+
+/// Host-owned final-use port. runtime.codex may request an opaque claim for the
+/// exact binding, but final entry remains owned by kernel.authority. The
+/// callback may only commit the local durable write-ahead transition.
 pub trait TurnStartAuthorizer: Send + Sync {
     fn claim<'a>(&'a self, binding: FinalUseBinding) -> TurnStartAuthorityFuture<'a>;
+
+    fn dispatch<'a>(
+        &'a self,
+        token: VerifiedUseToken,
+        binding: &'a FinalUseBinding,
+        boundary: TurnStartDispatchBoundary<'a>,
+    ) -> Result<(NativePreEffectAbortToken, VerifiedUseTokenWitnessV1)>;
 }
 
 fn unix_now_ms() -> Result<u64> {
@@ -194,7 +207,6 @@ fn final_use_binding(
 
 async fn send_authorized_turn_start(
     client: &mut RemoteAppServerClient,
-    _entered: EnteredUseToken,
     params: TurnStartParams,
 ) -> std::result::Result<TurnStartResponse, TypedRequestError> {
     client
@@ -701,11 +713,6 @@ impl AppServerModelDriver {
                 return Err("final-use authorization exceeded the runtime.codex deadline".into());
             }
         };
-        if verified_use.witness_sha256() == [0; 32] {
-            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-            return Err("kernel.authority returned an empty final-use witness".into());
-        }
-
         // Authority acquisition may have waited on an external policy owner.
         // Revalidate the exact Agent generation/session after that await so a
         // grant for a generation that was fenced meanwhile cannot cross the
@@ -754,34 +761,36 @@ impl AppServerModelDriver {
             return Err(error);
         }
 
-        let authority_witness = Digest32::from_array(verified_use.witness_sha256()).to_string();
-        // Final revocation/expiry checking happens after every authority and
-        // owner-generation await. If this fails, no durable dispatch marker
-        // exists and the reservation is released as definitely unsent.
-        let entered_use = verified_use.enter(&authority_binding)?;
-        if !entered_use.matches(&authority_binding) {
-            let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-            return Err("kernel.authority final-use binding mismatch at entry".into());
-        }
-        // Write-ahead dispatch is committed after final-use entry but before
-        // the first App Server turn/start await. The live process receives a
-        // non-serializable abort token so deadline/cancellation changes during
-        // the fsync can still be proven unsent. Recovery never receives it.
-        let (_, pre_effect_abort) = control.dispatch_native_with_pre_effect_abort(
-            request_id,
-            NativeDispatch {
-                thread_id: started.thread.id.clone(),
-                model_provider: started.model_provider.clone(),
-                context_digest: control::digest(&serde_json::to_vec(
-                    &turn_start_params.additional_context,
-                )?),
-                codex_session_id: Some(started.thread.session_id.clone()),
-                codex_deadline_ms: Some(codex_deadline_ms),
-                codex_payload_digest: Some(exact_turn_payload_digest),
-                codex_authority_witness_sha256: Some(authority_witness),
-                codex_request_digest: Some(exact_codex_request_digest.to_string()),
-            },
+        // Revalidate at the authority owner after all preceding awaits. The
+        // authority witness is created before the synchronous durable dispatch
+        // callback and is written into the same dispatch record. No provider
+        // or network I/O is permitted inside this linearization callback.
+        let (pre_effect_abort, authority_witness) = turn_start_authorizer.dispatch(
+            verified_use,
+            &authority_binding,
+            Box::new(|witness| {
+                witness.validate()?;
+                let authority_witness =
+                    Digest32::of_bytes(&serde_json::to_vec(witness)?).to_string();
+                let (_, pre_effect_abort) = control.dispatch_native_with_pre_effect_abort(
+                    request_id,
+                    NativeDispatch {
+                        thread_id: started.thread.id.clone(),
+                        model_provider: started.model_provider.clone(),
+                        context_digest: control::digest(&serde_json::to_vec(
+                            &turn_start_params.additional_context,
+                        )?),
+                        codex_session_id: Some(started.thread.session_id.clone()),
+                        codex_deadline_ms: Some(codex_deadline_ms),
+                        codex_payload_digest: Some(exact_turn_payload_digest),
+                        codex_authority_witness_sha256: Some(authority_witness),
+                        codex_request_digest: Some(exact_codex_request_digest.to_string()),
+                    },
+                )?;
+                Ok(pre_effect_abort)
+            }),
         )?;
+        authority_witness.validate()?;
         let send_budget = if cancellation.is_cancelled() {
             Err("cancelled after durable dispatch but before turn/start".to_string())
         } else {
@@ -803,7 +812,7 @@ impl AppServerModelDriver {
         drop(pre_effect_abort);
         let response = timeout(
             send_budget,
-            send_authorized_turn_start(&mut client, entered_use, turn_start_params),
+            send_authorized_turn_start(&mut client, turn_start_params),
         )
         .await;
         let turn = match response {
