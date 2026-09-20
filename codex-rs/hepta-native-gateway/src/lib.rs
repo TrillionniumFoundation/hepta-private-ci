@@ -5,6 +5,8 @@
 
 #![forbid(unsafe_code)]
 
+pub mod control_gateway;
+
 use std::env;
 use std::net::SocketAddr;
 use std::sync::Arc;
