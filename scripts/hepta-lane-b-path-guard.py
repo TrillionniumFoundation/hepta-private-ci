@@ -106,6 +106,32 @@ def verify(root: Path = ROOT) -> int:
 
     maps: dict[str, dict[str, Any]] = {}
     roots: dict[str, list[str]] = {}
+
+    def load_owner_roots(module: str) -> list[str]:
+        if module in roots:
+            return roots[module]
+        owner_map_path = root / "docs" / "modules" / module / "IMPLEMENTATION_MAP.json"
+        need(owner_map_path.is_file(), f"{module}: delegated owner")
+        owner_row = load(owner_map_path)
+        need(owner_row.get("module") == module, f"{module}: delegated owner identity")
+        resolved_roots = owner_row.get("resolvedRoots")
+        need(
+            isinstance(resolved_roots, list)
+            and resolved_roots
+            and all(isinstance(item, str) and item for item in resolved_roots),
+            f"{module}: delegated owner roots",
+        )
+        for owner_root in resolved_roots:
+            candidate_root = root / owner_root
+            canonical_path(
+                root,
+                owner_root,
+                f"{module}: delegated owner root",
+                require_file=candidate_root.is_file(),
+            )
+        roots[module] = resolved_roots
+        return resolved_roots
+
     for entry in entries:
         need(isinstance(entry, dict), "module index entry")
         module = entry.get("module")
@@ -135,6 +161,17 @@ def verify(root: Path = ROOT) -> int:
             )
         maps[module] = row
         roots[module] = resolved_roots
+
+    # Cross-lane delegated callees (for example channel.matrix -> kernel.authority)
+    # are valid dependencies, but the Lane B truth index intentionally contains only
+    # Lane B owner modules. Resolve those delegated owners from their canonical module
+    # implementation maps instead of forcing them to masquerade as Lane B owners.
+    for row in maps.values():
+        for item in row.get("operations", []):
+            for delegate in item.get("delegatedCallees", []):
+                delegated_owner = delegate.get("ownerModule") if isinstance(delegate, dict) else None
+                if isinstance(delegated_owner, str) and delegated_owner not in roots:
+                    load_owner_roots(delegated_owner)
 
     operations = tests = delegates = 0
     for module, row in maps.items():
