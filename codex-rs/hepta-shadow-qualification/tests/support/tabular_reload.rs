@@ -1,3 +1,7 @@
+// This file is a process-isolation test fixture: malformed fixture construction is
+// terminal by design. Production reload paths return typed errors instead.
+#![allow(clippy::expect_used)]
+
 //! Cross-owner engineering test: real tabular fit, existing artifact storage,
 //! independent process loading and revocation-safe rollback. Fixture pins are
 //! not deployment authorization or scientific evidence of task improvement.
