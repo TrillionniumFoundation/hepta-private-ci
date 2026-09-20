@@ -184,7 +184,7 @@ fn authoritative_usage_reconciliation_is_exact_idempotent_and_durable() {
 
     let evidence = "d".repeat(64);
     let reconciled = control
-        .reconcile_native_usage("r1", 27, evidence.clone())
+        .reconcile_native_usage_unchecked("r1", 27, evidence.clone())
         .unwrap();
     assert_eq!(reconciled.usage_evidence_digest, Some(evidence.clone()));
     assert_eq!(
@@ -197,16 +197,16 @@ fn authoritative_usage_reconciliation_is_exact_idempotent_and_durable() {
     );
     assert_eq!(
         control
-            .reconcile_native_usage("r1", 27, evidence.clone())
+            .reconcile_native_usage_unchecked("r1", 27, evidence.clone())
             .unwrap(),
         reconciled
     );
     assert_eq!(
-        control.reconcile_native_usage("r1", 26, evidence),
+        control.reconcile_native_usage_unchecked("r1", 26, evidence),
         Err(Error::Conflict)
     );
     assert_eq!(
-        control.reconcile_native_usage("r1", 27, "e".repeat(64)),
+        control.reconcile_native_usage_unchecked("r1", 27, "e".repeat(64)),
         Err(Error::Conflict)
     );
 
@@ -220,7 +220,7 @@ fn authoritative_usage_reconciliation_is_exact_idempotent_and_durable() {
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     start(&mut control, "r1");
     assert_eq!(
-        control.reconcile_native_usage("r1", 1, "f".repeat(64)),
+        control.reconcile_native_usage_unchecked("r1", 1, "f".repeat(64)),
         Err(Error::TerminalObservationMissing)
     );
     drop(control);
