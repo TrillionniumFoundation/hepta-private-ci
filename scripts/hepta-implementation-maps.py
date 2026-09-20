@@ -342,6 +342,37 @@ def verify():
             source = op.get("sourcePath")
             if source and not (ROOT / source).is_file():
                 failures.append(f"{mid}: missing source {source}")
+        if mid in STRICT_SOURCE_BASE_MODULES and isinstance(source_base, dict):
+            source_commit = source_base.get("commit")
+            evidence_paths = set(row.get("resolvedRoots") or [])
+            for op in ops:
+                source = op.get("sourcePath")
+                if source:
+                    evidence_paths.add(source)
+                for key in ("tests", "delegatedCallees"):
+                    for evidence_path in op.get(key, []):
+                        if evidence_path:
+                            evidence_paths.add(evidence_path)
+            if source_commit and evidence_paths:
+                drift = subprocess.run(
+                    [
+                        "git",
+                        "diff",
+                        "--quiet",
+                        source_commit,
+                        "HEAD",
+                        "--",
+                        *sorted(evidence_paths),
+                    ],
+                    cwd=ROOT,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+                if drift.returncode == 1:
+                    failures.append(f"{mid}: mapped source/evidence changed after source base")
+                elif drift.returncode != 0:
+                    failures.append(f"{mid}: cannot compare source base to HEAD")
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
