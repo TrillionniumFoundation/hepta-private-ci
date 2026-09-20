@@ -16,6 +16,7 @@ use crate::SupervisorConfig;
 use crate::SupervisorError;
 use crate::SupervisorEvent;
 use crate::SupervisorEventKind;
+use crate::release_transaction::DurableReleaseTransaction;
 use crate::signed_intent::SignedSupervisorIntent;
 
 pub(crate) const MAX_FAULT_BYTES: usize = 512;
@@ -148,6 +149,9 @@ pub(crate) struct AgentSlot<P> {
     pub control_revision: u64,
     pub events: BoundedQueue<SupervisorEvent>,
     pub logs: BoundedQueue<ProcessLog>,
+    /// Durable witness for the one release transition currently being
+    /// processed, for both local and externally-authorized callers.
+    pub release_transaction: Option<DurableReleaseTransaction>,
     /// Durable witness for the one externally-authorized release mutation
     /// currently being processed, if any.
     pub signed_intent: Option<SignedSupervisorIntent>,
@@ -168,6 +172,7 @@ impl<P> AgentSlot<P> {
             control_revision: 0,
             events: BoundedQueue::new(config.event_capacity),
             logs: BoundedQueue::new(config.log_capacity),
+            release_transaction: None,
             signed_intent: None,
         }
     }
