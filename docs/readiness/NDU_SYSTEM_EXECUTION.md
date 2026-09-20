@@ -180,6 +180,8 @@ The V1 writer provides:
 
 The file image remains bounded to the 4096-record journal ceiling. The lock is advisory and assumes a host-private directory; a hostile process that ignores the lock is outside this mechanism's threat model.
 
+`NduProjectionStoreV1` is the initial V1 on-disk store format; V1 schema-open validation rejects unknown/corrupt images, and no fictitious predecessor migration is claimed. Any future format change requires an explicit deterministic migrator plus rollback compatibility evidence. Retention is fail-closed at the bounded record limit rather than silently compacting or deleting revocation history.
+
 This source candidate does **not** establish production activation. Target-host filesystem behavior, non-Unix atomic-replace/directory-durability equivalence, host authentication and enrollment, retention policy, encrypted/off-host backup transport, restore drills, monitoring, independent acceptance, canary and release remain separately governed evidence. `productionWriterState` therefore remains fail-closed until those boundaries are qualified and selected.
 
 ## 7. Goodhart and wireheading controls
@@ -259,7 +261,7 @@ Work-package ownership is narrowed by `docs/delivery/LANE_D_WORK_PACKAGE_OVERLAY
 
 The legacy `NDU-2-AGENT-DOMAIN-HIERARCHY` identifier remains in historical DAGs but is superseded for new source mutation by this overlay. No package gains positive authority.
 
-Repository-controlled source completion requires the implementation map, source tests, strict lint, semantic checker, exact-head workflows and synthetic merge checks. Existing control-plane and intelligence callsites establish bounded integration surfaces; authenticated production composition, selected production writer activation, independent convergence decision, target-host qualification and release remain separately governed.
+Repository-controlled source completion requires the implementation map, source tests, strict lint, semantic checker, exact-head workflows and synthetic merge checks. A concrete request-local read-only path is established as `runtime.agentd cognitive_context -> control plan_observed_context -> evaluate_prepared_plan_with_ndu -> NDU V2 evaluator`, and the dedicated NDU workflow runs focused Control caller regressions. This establishes bounded product execution only for that read-only/planning profile. Authenticated production NDU owner/caller composition, selected production writer activation, independent convergence decision, target-host qualification and release remain separately governed.
 
 ## 11. Coding-entry checklist
 
