@@ -22,6 +22,10 @@ use crate::production_writer::ProductionTargetOutcome;
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_operations::OperationIntent;
+use codex_hepta_operations::OperationKey;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
 
@@ -114,16 +118,61 @@ impl CognitiveSourceOutboxTarget {
         Ok(Self { store, access })
     }
 
-    fn decode_request(&self, request: &ProductionDispatchRequest) -> Result<SourceDraft, String> {
+    fn decode_request(
+        &self,
+        request: &ProductionDispatchRequest,
+    ) -> Result<(SourceDraft, Option<Sha256Digest>), String> {
         if request.topic != COGNITIVE_SOURCE_TOPIC_V1 {
             return Err(format!(
                 "unexpected cognitive source topic {:?}",
                 request.topic
             ));
         }
+        if request.operation_destination_id != COGNITIVE_SOURCE_DESTINATION_V1 {
+            return Err("durable operation destination does not match cognitive source target".to_string());
+        }
+        if request.operation_owner_id != self.store.owner_agent_id().as_str() {
+            return Err("durable operation owner does not match cognitive source store".to_string());
+        }
+        if request.idempotency_key != request.occurrence_key {
+            return Err("dispatch idempotency key must equal operation id".to_string());
+        }
         if Sha256Digest::for_bytes(request.payload_json.as_bytes()) != request.payload_sha256 {
             return Err("dispatch payload digest mismatch".to_string());
         }
+
+        let payload_digest = request
+            .payload_sha256
+            .as_str()
+            .parse::<Digest32>()
+            .map_err(|_| "dispatch payload digest is not a canonical Digest32".to_string())?;
+        let expected_predecessor = request
+            .expected_predecessor_sha256
+            .as_ref()
+            .map(|digest| digest.as_str().parse::<Digest32>())
+            .transpose()
+            .map_err(|_| "dispatch predecessor digest is not a canonical Digest32".to_string())?;
+        let intent = OperationIntent {
+            key: OperationKey {
+                id: StableId::new(request.occurrence_key.clone())
+                    .map_err(|error| format!("invalid durable operation id: {error}"))?,
+                payload_digest,
+            },
+            scope: StableId::new(request.operation_scope_id.clone())
+                .map_err(|error| format!("invalid durable operation scope: {error}"))?,
+            owner: StableId::new(request.operation_owner_id.clone())
+                .map_err(|error| format!("invalid durable operation owner: {error}"))?,
+            destination: StableId::new(request.operation_destination_id.clone())
+                .map_err(|error| format!("invalid durable operation destination: {error}"))?,
+            expected_predecessor,
+        };
+        intent
+            .validate()
+            .map_err(|error| format!("invalid durable operation intent: {error}"))?;
+        if intent.semantic_digest().to_string() != request.operation_semantic_sha256.as_str() {
+            return Err("destination recomputation rejected operation semantic digest".to_string());
+        }
+
         let operation: CognitiveSourceOperationV1 = serde_json::from_str(&request.payload_json)
             .map_err(|error| format!("invalid cognitive source operation JSON: {error}"))?;
         if operation.event_key != request.idempotency_key {
@@ -132,35 +181,21 @@ impl CognitiveSourceOutboxTarget {
                     .to_string(),
             );
         }
-        operation.into_draft()
+        Ok((operation.into_draft()?, request.expected_predecessor_sha256.clone()))
     }
 
     fn receipt(id: &SourceRevisionId) -> String {
         format!("{}:{}", id.source_id.as_str(), id.revision)
     }
 
-    pub async fn observe_terminal(
+    async fn exact_count(
         &self,
-        request: &ProductionDispatchRequest,
-    ) -> CognitiveSourceTerminalObservation {
-        let draft = match self.decode_request(request) {
-            Ok(draft) => draft,
-            Err(reason) => return CognitiveSourceTerminalObservation::Quarantined { reason },
-        };
-        if let Err(error) = self.store.authorize(&self.access, &draft.scope) {
-            return CognitiveSourceTerminalObservation::Quarantined {
-                reason: error.to_string(),
-            };
-        }
-        let source_id = SourceEventId::for_event(
-            self.store.owner_agent_id(),
-            &draft.scope,
-            draft.kind,
-            &draft.event_key,
-        );
+        draft: &SourceDraft,
+        source_id: &SourceEventId,
+    ) -> Result<i64, sqlx::Error> {
         let content_sha256 = Sha256Digest::for_bytes(&draft.content);
         let (scope_kind, workspace_sha256) = draft.scope.database_parts();
-        let exact: Result<i64, sqlx::Error> = sqlx::query_scalar(
+        sqlx::query_scalar(
             "SELECT COUNT(*) FROM source_ledger
              WHERE source_id = ? AND source_revision = 1 AND owner_agent_id = ?
                AND scope_kind = ? AND workspace_sha256 IS ? AND source_kind = ?
@@ -175,19 +210,40 @@ impl CognitiveSourceOutboxTarget {
         .bind(content_sha256.as_str())
         .bind(draft.observed_at_unix_seconds)
         .fetch_one(&self.store.pool)
-        .await;
-        let exact = match exact {
+        .await
+    }
+
+    pub async fn observe_terminal(
+        &self,
+        request: &ProductionDispatchRequest,
+    ) -> CognitiveSourceTerminalObservation {
+        let (draft, _expected_predecessor) = match self.decode_request(request) {
             Ok(value) => value,
+            Err(reason) => return CognitiveSourceTerminalObservation::Quarantined { reason },
+        };
+        if let Err(error) = self.store.authorize(&self.access, &draft.scope) {
+            return CognitiveSourceTerminalObservation::Quarantined {
+                reason: error.to_string(),
+            };
+        }
+        let source_id = SourceEventId::for_event(
+            self.store.owner_agent_id(),
+            &draft.scope,
+            draft.kind,
+            &draft.event_key,
+        );
+        match self.exact_count(&draft, &source_id).await {
+            Ok(1) => {
+                return CognitiveSourceTerminalObservation::Applied {
+                    receipt: Self::receipt(&SourceRevisionId::new(source_id)),
+                };
+            }
+            Ok(_) => {}
             Err(error) => {
                 return CognitiveSourceTerminalObservation::Unavailable {
                     reason: error.to_string(),
                 };
             }
-        };
-        if exact == 1 {
-            return CognitiveSourceTerminalObservation::Applied {
-                receipt: Self::receipt(&SourceRevisionId::new(source_id)),
-            };
         }
 
         let same_identity: Result<i64, sqlx::Error> = sqlx::query_scalar(
@@ -211,22 +267,121 @@ impl CognitiveSourceOutboxTarget {
 impl ProductionOutboxTarget for CognitiveSourceOutboxTarget {
     fn dispatch<'a>(&'a self, request: ProductionDispatchRequest) -> ProductionDispatchFuture<'a> {
         Box::pin(async move {
-            let draft = match self.decode_request(&request) {
-                Ok(draft) => draft,
+            let (draft, expected_predecessor) = match self.decode_request(&request) {
+                Ok(value) => value,
                 Err(reason) => return ProductionTargetOutcome::Rejected { reason },
             };
-            match self.store.append_source(&self.access, &draft).await {
-                Ok(id) => ProductionTargetOutcome::Committed {
-                    receipt: Self::receipt(&id),
-                },
+            let mut transaction = match self.store.pool.begin_with("BEGIN IMMEDIATE").await {
+                Ok(transaction) => transaction,
+                Err(error) => {
+                    return ProductionTargetOutcome::Indeterminate {
+                        reason: error.to_string(),
+                    };
+                }
+            };
+            if let Err(error) = self.store.authorize(&self.access, &draft.scope) {
+                return ProductionTargetOutcome::Rejected {
+                    reason: error.to_string(),
+                };
+            }
+
+            let source_id = SourceEventId::for_event(
+                self.store.owner_agent_id(),
+                &draft.scope,
+                draft.kind,
+                &draft.event_key,
+            );
+            let content_sha256 = Sha256Digest::for_bytes(&draft.content);
+            let (scope_kind, workspace_sha256) = draft.scope.database_parts();
+            let exact: Result<i64, sqlx::Error> = sqlx::query_scalar(
+                "SELECT COUNT(*) FROM source_ledger
+                 WHERE source_id = ? AND source_revision = 1 AND owner_agent_id = ?
+                   AND scope_kind = ? AND workspace_sha256 IS ? AND source_kind = ?
+                   AND content = ? AND content_sha256 = ? AND observed_at_unix_seconds = ?",
+            )
+            .bind(source_id.as_str())
+            .bind(self.store.owner_agent_id().as_str())
+            .bind(scope_kind)
+            .bind(workspace_sha256)
+            .bind(draft.kind.as_str())
+            .bind(&draft.content)
+            .bind(content_sha256.as_str())
+            .bind(draft.observed_at_unix_seconds)
+            .fetch_one(&mut *transaction)
+            .await;
+            match exact {
+                Ok(1) => {
+                    if let Err(error) = transaction.commit().await {
+                        return ProductionTargetOutcome::Indeterminate {
+                            reason: error.to_string(),
+                        };
+                    }
+                    return ProductionTargetOutcome::Committed {
+                        receipt: Self::receipt(&SourceRevisionId::new(source_id)),
+                    };
+                }
+                Ok(_) => {}
+                Err(error) => {
+                    return ProductionTargetOutcome::Indeterminate {
+                        reason: error.to_string(),
+                    };
+                }
+            }
+
+            let same_identity: Result<i64, sqlx::Error> = sqlx::query_scalar(
+                "SELECT COUNT(*) FROM source_ledger WHERE source_id = ? AND source_revision = 1",
+            )
+            .bind(source_id.as_str())
+            .fetch_one(&mut *transaction)
+            .await;
+            match same_identity {
+                Ok(0) => {}
+                Ok(_) => {
+                    return ProductionTargetOutcome::Rejected {
+                        reason: "destination source identity exists with different semantics"
+                            .to_string(),
+                    };
+                }
+                Err(error) => {
+                    return ProductionTargetOutcome::Indeterminate {
+                        reason: error.to_string(),
+                    };
+                }
+            }
+
+            // source_ledger is create-only: the authoritative predecessor for
+            // an absent source identity is None. Compare the operation CAS
+            // expectation while holding the same BEGIN IMMEDIATE transaction
+            // that will publish the destination row.
+            if expected_predecessor.is_some() {
+                return ProductionTargetOutcome::NotApplied {
+                    reason: "destination predecessor/CAS mismatch: source identity has no predecessor"
+                        .to_string(),
+                };
+            }
+
+            let id = match self
+                .store
+                .append_source_tx(&mut transaction, &self.access, &draft)
+                .await
+            {
+                Ok(id) => id,
                 Err(
                     CognitiveStoreError::Invalid(reason)
                     | CognitiveStoreError::AccessDenied(reason)
                     | CognitiveStoreError::Conflict(reason),
-                ) => ProductionTargetOutcome::Rejected { reason },
+                ) => return ProductionTargetOutcome::Rejected { reason },
                 Err(
                     CognitiveStoreError::Corrupt(reason) | CognitiveStoreError::Unavailable(reason),
-                ) => ProductionTargetOutcome::Indeterminate { reason },
+                ) => return ProductionTargetOutcome::Indeterminate { reason },
+            };
+            if let Err(error) = transaction.commit().await {
+                return ProductionTargetOutcome::Indeterminate {
+                    reason: error.to_string(),
+                };
+            }
+            ProductionTargetOutcome::Committed {
+                receipt: Self::receipt(&id),
             }
         })
     }
