@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3d224d5c98bee6fed070d434e6e7213572eb705a",
-    "tree": "6e3a9bd48e5194b2c6859fdac5480c1391a54dea"
+    "commit": "672470a45b9b1605dd270911309b0e591917166e",
+    "tree": "d90b945361a2e7ed3daafb021ae7b52921fd13fc"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.store",
@@ -19,7 +19,7 @@
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "normal_agentd_runtime_capability_composed_external_bootstrap_pending",
-  "productionWriterState": "sealed_durable_writer_source_bound_qualification_pending",
+  "productionWriterState": "sealed_same_transaction_provenance_writer_source_bound_qualification_pending",
   "operations": [
     {
       "operation": "semantic_revision_ledger",
@@ -103,7 +103,7 @@
       "operation": "production_mutation_capability",
       "nativeSymbol": "ProductionCognitiveMutationCapability",
       "sourcePath": "codex-rs/hepta-memory/src/production_writer.rs",
-      "state": "sealed_live_verified_capability_source_implemented_raw_owner_handle_private",
+      "state": "sealed_live_verified_same_transaction_provenance_source_implemented_qualification_pending",
       "authority": "externally_verified_final_use",
       "tests": [
         "codex-rs/hepta-memory/src/production_writer.rs",
@@ -111,7 +111,7 @@
         "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs"
       ],
       "sourcePathExists": true,
-      "designOperation": "remember_correct_forget_production_capability",
+      "designOperation": "remember_correct_forget_with_atomic_authority_and_operation_provenance",
       "mappingClass": "canonical_capability",
       "delegatedCallees": [
         "hepta-memory::CognitiveStore"
@@ -132,12 +132,28 @@
       "delegatedCallees": [
         "AdmittedCognitiveStoreV2::append_admitted"
       ]
+    },
+    {
+      "operation": "canonical_durable_memory_event_binding",
+      "nativeSymbol": "bind_canonical_event_to_durable_receipt",
+      "sourcePath": "codex-rs/hepta-cognitive-store/src/v2.rs",
+      "state": "source_implemented_product_receipt_bound_qualification_pending",
+      "authority": "deny_all_binding_receipt",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "bind_memory_event_to_authoritative_source_revision_and_production_receipt",
+      "mappingClass": "canonical_bridge",
+      "delegatedCallees": [
+        "ProductionCognitiveMutationReceiptV1"
+      ]
     }
   ],
   "repositoryControlledGaps": [
     "Obtain terminal-success exact-head and deterministic synthetic-merge receipts for this source baseline, including child-process crash/reopen and 256/16384 PERF-DURABLE artifacts.",
-    "Bind production semantic mutation provenance durably to operation identity, authority grant/epochs, final payload digest and predecessor in the same authoritative transaction.",
-    "Bridge canonical MemoryEventV1 source_revision from the durable source owner before claiming full canonical provenance equivalence or production composition.",
+    "Qualify the same-transaction production provenance path under semantic-validation failure, response loss/restart and live authority revocation without weakening fail-closed replay semantics.",
+    "Define and qualify long-term ancestry-safe retention/pruning beyond bounded paging; logical tombstones must not be reported as physical erasure, backup deletion, derived-artifact revocation or model unlearning.",
     "Keep productionImplementation false until the normal-runtime sealed capability path compiles/tests on the exact candidate and product execution evidence is current.",
     "Standalone deployment must receive an independently authenticated current-cut witness and externally verified live production authority from its host; Agentd must not self-mint either."
   ],
@@ -160,13 +176,23 @@
   ],
   "sourceBaseSemantics": "exact_non_projection_source_snapshot",
   "canonicalMemoryEventMigration": {
-    "state": "shadow_co_observation_source_integrated",
+    "state": "shadow_and_production_durable_bridge_source_integrated",
     "legacyAuthoritativeSurface": "MemoryAdmissionCandidateV1 -> MemoryRecord / MemoryWriteReceiptV1",
     "canonicalObservedSurface": "cognitive.types::hnmf::MemoryEventV1",
     "provesPayloadSemanticEquivalence": false,
     "verifiesVerificationState": true,
     "verifiesSourceIdDigestObservedTime": true,
     "verifiesSourceRevisionEquivalence": false,
+    "legacyShadowSourceRevisionLimit": "MemoryAdmissionEvidenceV1 has no source_revision",
+    "productionDurableBridge": {
+      "sourceImplemented": true,
+      "verifiesSourceId": true,
+      "verifiesSourceDigest": true,
+      "verifiesSourceRevision": true,
+      "verifiesObservedTime": true,
+      "bindsProductionReceiptDigest": true,
+      "authority": "DENY_ALL"
+    },
     "postCommitFailurePossible": false,
     "productionWriterReplacement": false
   }
