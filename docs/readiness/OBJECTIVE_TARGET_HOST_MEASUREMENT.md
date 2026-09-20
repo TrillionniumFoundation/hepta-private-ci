@@ -51,7 +51,10 @@ A GitHub-hosted CI runner is development evidence only. Closing
 `LANE-D-EXT-HOST-MEASUREMENT` requires the target-host qualification owner to
 bind this output to the selected deployment host profile, resource policy and
 candidate identity and to retain any additional CPU/RSS/IO observations required
-by that host profile.
+by that host profile. The selected filesystem profile must also qualify crash/power-loss
+behavior for the durable RunStart file and its containing-directory entry. Unix source
+performs directory `sync_all` after initial journal creation; non-Unix source does not
+claim an equivalent receipt without host-specific evidence.
 
 ## 4. Acceptance boundary
 
