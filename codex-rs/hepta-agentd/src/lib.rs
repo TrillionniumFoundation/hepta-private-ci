@@ -17,6 +17,7 @@ mod control;
 mod error;
 mod event_buffer;
 mod lane_b_runtime;
+mod neuron_runtime;
 mod production_writer_host;
 mod qualification_writer;
 mod runtime;
@@ -74,6 +75,7 @@ pub use lane_b_runtime::RunPhase;
 pub use lane_b_runtime::RunReceipt;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
+pub use neuron_runtime::AgentdNeuronOwner;
 pub use production_writer_host::AgentdProductionWriterHost;
 pub use runtime::run;
 
