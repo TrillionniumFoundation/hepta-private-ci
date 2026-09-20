@@ -2,6 +2,7 @@ use super::*;
 use crate::ForgetMemoryDraft;
 use crate::KgEntityFactDraft;
 use crate::KgFactSetDraft;
+use crate::KgRelationFactDraft;
 use crate::MemoryDraft;
 use crate::MemoryRevisionDraft;
 use crate::cognitive_test_support::agent_id;
@@ -148,6 +149,105 @@ async fn saturated_channels_observe_limits_before_dedup_and_preserve_top_four() 
             .await
             .expect("repeat")
     );
+}
+
+#[tokio::test]
+async fn typed_kg_relations_feed_only_their_declared_retrieval_channels() {
+    let temp = TempDir::new().expect("temp");
+    let owner = agent_id(/*suffix*/ 91);
+    let store = CognitiveStore::open(&layout(&temp, &owner))
+        .await
+        .expect("store");
+    let access = CognitiveAccess::agent_private(owner);
+    let content = "Beacon cause procedure contradiction.";
+    store
+        .remember_with_kg(
+            &access,
+            &source(CognitiveScope::AgentPrivate, "typed-relations", content),
+            &MemoryDraft {
+                stable_key: "typed-relations".to_string(),
+                revision: revision(CognitiveScope::AgentPrivate, content),
+            },
+            &KgFactSetDraft {
+                entities: vec![
+                    KgEntityFactDraft {
+                        key: "beacon".to_string(),
+                        entity_type: "topic".to_string(),
+                        label: "Beacon".to_string(),
+                    },
+                    KgEntityFactDraft {
+                        key: "target".to_string(),
+                        entity_type: "topic".to_string(),
+                        label: "Target".to_string(),
+                    },
+                ],
+                relations: vec![
+                    KgRelationFactDraft {
+                        key: "cause".to_string(),
+                        from_entity_key: "beacon".to_string(),
+                        to_entity_key: "target".to_string(),
+                        relation: KgRelationSemanticV1::Causes.relation().to_string(),
+                    },
+                    KgRelationFactDraft {
+                        key: "procedure".to_string(),
+                        from_entity_key: "beacon".to_string(),
+                        to_entity_key: "target".to_string(),
+                        relation: KgRelationSemanticV1::ProcedureStep.relation().to_string(),
+                    },
+                    KgRelationFactDraft {
+                        key: "contradiction".to_string(),
+                        from_entity_key: "beacon".to_string(),
+                        to_entity_key: "target".to_string(),
+                        relation: KgRelationSemanticV1::Contradicts.relation().to_string(),
+                    },
+                ],
+            },
+        )
+        .await
+        .expect("typed KG memory");
+
+    let observation = store
+        .observe_memory_retrieval(
+            &access,
+            &RetrievalRequest::new("Beacon", /*now_unix_seconds*/ 200),
+        )
+        .await
+        .expect("observation");
+    let count = |channel| {
+        observation
+            .channels()
+            .iter()
+            .find(|row| row.channel == channel)
+            .map(|row| row.candidate_count)
+            .expect("declared channel")
+    };
+
+    assert_eq!(
+        count(RetrievalChannel::GraphOneHop),
+        0,
+        "generic graph retrieval must exclude typed semantic edges"
+    );
+    assert!(count(RetrievalChannel::Causal) > 0);
+    assert!(count(RetrievalChannel::Procedural) > 0);
+    assert!(count(RetrievalChannel::ContradictionSupport) > 0);
+    assert!(observation.candidates().iter().any(|candidate| {
+        candidate
+            .channel_ranks
+            .iter()
+            .any(|rank| rank.channel == RetrievalChannel::Causal)
+    }));
+    assert!(observation.candidates().iter().any(|candidate| {
+        candidate
+            .channel_ranks
+            .iter()
+            .any(|rank| rank.channel == RetrievalChannel::Procedural)
+    }));
+    assert!(observation.candidates().iter().any(|candidate| {
+        candidate
+            .channel_ranks
+            .iter()
+            .any(|rank| rank.channel == RetrievalChannel::ContradictionSupport)
+    }));
 }
 
 #[tokio::test]
