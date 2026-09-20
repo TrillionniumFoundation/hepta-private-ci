@@ -550,6 +550,7 @@ pub enum PlannerError {
     SnapshotExpired,
     UnknownCandidateOwner { candidate: String, owner: String },
     InvalidResourceReservation(String),
+    ResourceProfileMismatch,
     MissingResourceAxis { candidate: String, axis: String },
     UnknownResourceAxis { candidate: String, axis: String },
     AbstainUnavailable,
@@ -598,6 +599,9 @@ impl fmt::Display for PlannerError {
                     "invalid essential resource reservation for {axis}"
                 )
             }
+            Self::ResourceProfileMismatch => {
+                formatter.write_str("resource profile digest does not bind exact reservations")
+            }
             Self::MissingResourceAxis { candidate, axis } => {
                 write!(
                     formatter,
@@ -632,6 +636,26 @@ impl fmt::Display for PlannerError {
 }
 
 impl StdError for PlannerError {}
+
+pub fn canonical_resource_profile_digest(
+    reservations: &[ResourceReservationV1],
+) -> Result<Digest32, PlannerError> {
+    if reservations.is_empty() || reservations.len() > MAX_RESOURCE_RESERVATIONS {
+        return Err(PlannerError::LimitExceeded("resource reservations"));
+    }
+    let mut normalized = reservations.to_vec();
+    normalized.sort_by(|left, right| left.axis.cmp(&right.axis));
+    validate_reservations(&normalized)?;
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(b"hepta.control.resource-profile.v1");
+    push_len(&mut bytes, normalized.len());
+    for reservation in &normalized {
+        push_id(&mut bytes, &reservation.axis);
+        bytes.extend_from_slice(&reservation.endowment.raw().to_be_bytes());
+        bytes.extend_from_slice(&reservation.essential_floor.raw().to_be_bytes());
+    }
+    Ok(Digest32::of_bytes(&bytes))
+}
 
 pub fn collect_snapshot(
     mut request: SnapshotRequestV1,
@@ -759,6 +783,11 @@ pub fn prepare_plan(
         .resource_reservations
         .sort_by(|left, right| left.axis.cmp(&right.axis));
     validate_reservations(&request.resource_reservations)?;
+    if canonical_resource_profile_digest(&request.resource_reservations)?
+        != request.resource_profile_digest
+    {
+        return Err(PlannerError::ResourceProfileMismatch);
+    }
 
     let source_candidate_set_digest = digest_candidates(&request.candidates);
     let reservation_map: BTreeMap<_, _> = request

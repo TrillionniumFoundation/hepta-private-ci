@@ -83,3 +83,10 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
     let other = AgentId::parse("00000000-0000-4000-8000-000000000120").unwrap();
     assert!(read(&store, &other, 1, "lemon", 4, None).await.is_err());
 }
+
+#[test]
+fn planner_clock_is_process_monotonic() {
+    let first = super::monotonic_micros().expect("monotonic clock");
+    let second = super::monotonic_micros().expect("monotonic clock");
+    assert!(second >= first);
+}
