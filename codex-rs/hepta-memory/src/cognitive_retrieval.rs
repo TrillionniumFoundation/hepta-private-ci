@@ -168,6 +168,7 @@ struct EntitySeed {
     generation: i64,
     generation_sha256: Option<Sha256Digest>,
     canonical_entity_id: String,
+    memory: MemoryKey,
 }
 
 impl CognitiveStore {
@@ -657,6 +658,7 @@ impl CognitiveStore {
                         generation,
                         generation_sha256,
                         canonical_entity_id,
+                        memory,
                     }))
                 })();
                 result.transpose()
