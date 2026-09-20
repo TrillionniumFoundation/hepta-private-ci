@@ -1,4 +1,5 @@
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
 use sqlx::Row;
@@ -23,6 +24,51 @@ pub struct EvidenceRecoverySnapshotV1 {
 }
 
 impl HeptaEvidenceStore {
+    pub async fn bind_recovery_store_id(&self, store_id: &str) -> Result<(), EvidenceError> {
+        StableId::new(store_id.to_string()).map_err(|error| {
+            EvidenceError::InvalidRecord(format!("invalid evidence recovery store id: {error}"))
+        })?;
+        let mut transaction = self
+            .pool
+            .begin_with("BEGIN IMMEDIATE")
+            .await
+            .map_err(classify_sqlx_error)?;
+        let existing: Option<String> = sqlx::query_scalar(
+            "SELECT store_id FROM evidence_recovery_identity WHERE singleton = 1",
+        )
+        .fetch_optional(&mut *transaction)
+        .await
+        .map_err(classify_sqlx_error)?;
+        match existing {
+            Some(existing) if existing != store_id => {
+                transaction.rollback().await.map_err(classify_sqlx_error)?;
+                return Err(EvidenceError::IdempotencyConflict {
+                    record_id: "evidence_recovery_identity".to_string(),
+                });
+            }
+            Some(_) => {}
+            None => {
+                sqlx::query(
+                    "INSERT INTO evidence_recovery_identity (singleton, store_id) VALUES (1, ?)",
+                )
+                .bind(store_id)
+                .execute(&mut *transaction)
+                .await
+                .map_err(classify_sqlx_error)?;
+            }
+        }
+        transaction.commit().await.map_err(classify_sqlx_error)
+    }
+
+    pub async fn recovery_store_id(&self) -> Result<Option<String>, EvidenceError> {
+        sqlx::query_scalar(
+            "SELECT store_id FROM evidence_recovery_identity WHERE singleton = 1",
+        )
+        .fetch_optional(&self.pool)
+        .await
+        .map_err(classify_sqlx_error)
+    }
+
     pub async fn recovery_snapshot(&self) -> Result<EvidenceRecoverySnapshotV1, EvidenceError> {
         let migration_rows = sqlx::query(
             "SELECT version, description, checksum
