@@ -33,6 +33,8 @@ STORE_TABLES = frozenset(
         "orchestration_generations",
         "worker_registrations",
         "worker_claims",
+        "worker_heartbeat_observations",
+        "worker_result_observations",
         "worker_completion_observations",
         "integration_queue_generations",
         "integration_queue_items",
