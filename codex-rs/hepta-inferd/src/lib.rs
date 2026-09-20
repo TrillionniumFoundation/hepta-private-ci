@@ -12,6 +12,7 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+pub mod local_worker_host;
 pub mod worker_port;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
