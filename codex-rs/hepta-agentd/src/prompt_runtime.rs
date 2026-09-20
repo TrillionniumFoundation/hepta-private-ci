@@ -550,8 +550,16 @@ fn validate_state(state: &PromptRuntimeState) -> Result<(), AgentdPromptRuntimeE
             .map_err(|_| AgentdPromptRuntimeError::CorruptState)?;
     }
 
-    let dispatch_order = state.dispatch_order.iter().collect::<BTreeSet<_>>();
-    let terminal_order = state.terminal_order.iter().collect::<BTreeSet<_>>();
+    let dispatch_order = state
+        .dispatch_order
+        .iter()
+        .cloned()
+        .collect::<BTreeSet<_>>();
+    let terminal_order = state
+        .terminal_order
+        .iter()
+        .cloned()
+        .collect::<BTreeSet<_>>();
     if dispatch_order.len() != state.dispatch_order.len()
         || terminal_order.len() != state.terminal_order.len()
         || state
@@ -566,6 +574,12 @@ fn validate_state(state: &PromptRuntimeState) -> Result<(), AgentdPromptRuntimeE
         return Err(AgentdPromptRuntimeError::CorruptState);
     }
 
+    let finalized_keys = state
+        .terminal_records
+        .values()
+        .filter(|terminal| terminal_clears_stage(terminal))
+        .map(terminal_key)
+        .collect::<BTreeSet<_>>();
     let mut unresolved_keys = BTreeSet::new();
     for dispatch in state.dispatch_records.values() {
         dispatch
@@ -581,15 +595,14 @@ fn validate_state(state: &PromptRuntimeState) -> Result<(), AgentdPromptRuntimeE
                 return Err(AgentdPromptRuntimeError::CorruptState);
             }
         }
-        let stage_required = match terminal {
-            None => true,
-            Some(terminal) => match terminal.outcome {
-                PromptRuntimeTerminalOutcomeV1::Indeterminate
-                | PromptRuntimeTerminalOutcomeV1::NotDispatched => true,
-                PromptRuntimeTerminalOutcomeV1::Delivered => terminal.end_turn != Some(true),
-                PromptRuntimeTerminalOutcomeV1::Rejected => false,
-            },
-        };
+        let unresolved = terminal.is_none()
+            || terminal.is_some_and(|value| {
+                value.outcome == PromptRuntimeTerminalOutcomeV1::Indeterminate
+            });
+        if unresolved && finalized_keys.contains(&key) {
+            return Err(AgentdPromptRuntimeError::CorruptState);
+        }
+        let stage_required = unresolved || !finalized_keys.contains(&key);
         if stage_required {
             let Some(staged) = state.staged.get(&key) else {
                 return Err(AgentdPromptRuntimeError::CorruptState);
@@ -598,14 +611,8 @@ fn validate_state(state: &PromptRuntimeState) -> Result<(), AgentdPromptRuntimeE
                 return Err(AgentdPromptRuntimeError::CorruptState);
             }
         }
-        if terminal.is_none()
-            || terminal.is_some_and(|value| {
-                value.outcome == PromptRuntimeTerminalOutcomeV1::Indeterminate
-            })
-        {
-            if !unresolved_keys.insert(key) {
-                return Err(AgentdPromptRuntimeError::CorruptState);
-            }
+        if unresolved && !unresolved_keys.insert(key) {
+            return Err(AgentdPromptRuntimeError::CorruptState);
         }
     }
     for terminal in state.terminal_records.values() {
