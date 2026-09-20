@@ -115,18 +115,23 @@ turn missing/corrupt state into an empty registry.
 1. `claim(signed, expected)` validates the exact binding, signer and signature.
 2. Under the owner mutex it checks the current clock, epoch and revocations,
    rejects a consumed nonce or full registry, and persists the nonce claim.
-3. It samples time again after disk I/O, then returns a private, non-cloneable,
-   non-serializable `VerifiedUseToken`. The claim is the dispatch admission
-   point; rejection or expiry after persistence does not refund the nonce.
+3. It samples time again after disk I/O, snapshots the exact durable revocation
+   head, and returns a private, non-cloneable, non-serializable
+   `VerifiedUseToken`. Its witness hashes the signed grant plus that exact
+   claim-time authority epoch/revision/revoked-set frontier. The claim is the
+   dispatch admission point; rejection or expiry after persistence does not
+   refund the nonce.
 4. A synchronous consumer may call `with_verified_use`; it verifies that the
-   token and authority share the same owner, rechecks binding, time, epoch and
-   the currently trusted durable revocation head, and enters the bounded callback
-   while holding the revocation mutex.
+   token and authority share the same owner, rechecks binding/time/epoch/revocation,
+   and additionally requires the current durable head to equal the claim-time
+   head before entering the bounded callback under the revocation mutex.
 5. An asynchronous effect adapter calls `VerifiedUseToken::enter(expected)`
    immediately before its first effectful await. The same live checks run under
-   the owner mutex and consume the token, returning a private
-   `EnteredUseToken`. The adapter then releases the mutex before network I/O;
-   the entered token proves one effect entry only and is not permission to retry.
+   the owner mutex and the current head must exactly equal the claim-time head.
+   Any frontier advance requires a fresh claim before effect entry. A successful
+   entry consumes the token and returns a private `EnteredUseToken`; the adapter
+   then releases the mutex before network I/O. The entered token proves one effect
+   entry only and is not permission to retry.
 6. Trusted host ports may read `revocation_head()` to compare an independently
    authenticated external feed. A fresher head is not discovered automatically:
    it must arrive through the host's revocation-distribution path and pass
@@ -154,9 +159,9 @@ refuses further operations.
 | `open_state_dir` | Pin trust, validate private storage, acquire the process lock and load/initialize state |
 | `revocation_head` | Read the locally trusted durable head for comparison; this grants no signing or effect authority and does not fetch a fresher head |
 | `update_revocations` | Apply only an authenticated newer revision; same-epoch revocations cannot be removed |
-| `claim` | Burn one valid nonce before effect dispatch; never reuse the grant on retry |
-| `with_verified_use` | Consume that token at the final synchronous secret-use boundary |
-| `VerifiedUseToken::enter` | Recheck and consume the token at an asynchronous first-effect boundary; the returned `EnteredUseToken` is single-entry and not retry authority |
+| `claim` | Burn one valid nonce, snapshot the exact durable revocation frontier and bind that frontier into the token witness before effect dispatch; never reuse the grant on retry |
+| `with_verified_use` | Consume that token at the final synchronous secret-use boundary only if the claim-time frontier is still exact-current |
+| `VerifiedUseToken::enter` | Recheck and consume the token at an asynchronous first-effect boundary only if the claim-time frontier is still exact-current; the returned `EnteredUseToken` is single-entry and not retry authority |
 | `InvalidGrant`, `InvalidSignature`, `BindingMismatch` | Reject the proposal; do not dispatch |
 | `EpochMismatch`, `Revoked`, `NotYetValid`, `Expired` | Reject stale or currently unauthorized use under the locally trusted head |
 | `AlreadyClaimed`, `CapacityExceeded` | Require owner reconciliation/new authorization or an epoch transition |
