@@ -196,6 +196,8 @@ pub struct PlasticityOwnerEvidenceQueryV1 {
     pub evidence_digest: Digest32,
     pub objective_digest: Digest32,
     pub selected_artifact_digest: Digest32,
+    pub artifact_registry_head_digest: Digest32,
+    pub qualification_evidence_head_digest: Digest32,
     pub window: ProposalWindowV2,
     pub dataset_digest: Digest32,
     pub baseline_generation: Generation,
@@ -272,6 +274,8 @@ pub fn verify_agentd_plasticity_owner_evidence_v1(
         || receipt.evidence_digest != query.evidence_digest
         || receipt.objective_digest != query.objective_digest
         || receipt.selected_artifact_digest != query.selected_artifact_digest
+        || receipt.artifact_registry_head_digest != query.artifact_registry_head_digest
+        || receipt.qualification_evidence_head_digest != query.qualification_evidence_head_digest
         || receipt.window != query.window
         || receipt.dataset_digest != query.dataset_digest
         || receipt.baseline_generation != query.baseline_generation
@@ -307,6 +311,8 @@ pub fn verify_agentd_plasticity_owner_evidence_v1(
         receipt.owner_receipt_digest,
         receipt.objective_digest,
         receipt.selected_artifact_digest,
+        receipt.artifact_registry_head_digest,
+        receipt.qualification_evidence_head_digest,
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
@@ -336,6 +342,8 @@ fn validate_owner_evidence_query(
     if query.evidence_digest.is_zero()
         || query.objective_digest.is_zero()
         || query.selected_artifact_digest.is_zero()
+        || query.artifact_registry_head_digest.is_zero()
+        || query.qualification_evidence_head_digest.is_zero()
         || query.window.window_digest.is_zero()
         || query.dataset_digest.is_zero()
     {
@@ -504,6 +512,8 @@ pub fn resolve_agentd_plasticity_owner_evidence_set_v1(
     input: &AgentdPlasticityAdmissionInputV1,
     resolver: &dyn PlasticityOwnerEvidenceResolverV1,
     policy: &PlasticityOwnerEvidencePolicyV1,
+    artifact_registry_head_digest: Digest32,
+    qualification_evidence_head_digest: Digest32,
     now: u64,
 ) -> Result<Digest32, AgentdPlasticityHostErrorV1> {
     if input.generator_profile.selected_artifact_digest != input.generated.selected_artifact_digest
@@ -539,7 +549,15 @@ pub fn resolve_agentd_plasticity_owner_evidence_set_v1(
         digests.push(verify_agentd_plasticity_owner_evidence_v1(
             resolver,
             policy,
-            &owner_evidence_query(input, kind, evidence_digest, None, now),
+            &owner_evidence_query(
+                input,
+                kind,
+                evidence_digest,
+                None,
+                artifact_registry_head_digest,
+                qualification_evidence_head_digest,
+                now,
+            ),
         )?);
     }
 
@@ -558,6 +576,8 @@ pub fn resolve_agentd_plasticity_owner_evidence_set_v1(
                 PlasticityOwnerEvidenceKindV1::ParameterSignal,
                 signal.evidence_digest,
                 Some(signal),
+                artifact_registry_head_digest,
+                qualification_evidence_head_digest,
                 now,
             ),
         )?);
@@ -579,6 +599,8 @@ fn owner_evidence_query(
     kind: PlasticityOwnerEvidenceKindV1,
     evidence_digest: Digest32,
     signal: Option<&ParameterPlasticitySignalV3>,
+    artifact_registry_head_digest: Digest32,
+    qualification_evidence_head_digest: Digest32,
     now: u64,
 ) -> PlasticityOwnerEvidenceQueryV1 {
     PlasticityOwnerEvidenceQueryV1 {
@@ -586,6 +608,8 @@ fn owner_evidence_query(
         evidence_digest,
         objective_digest: input.objective_digest,
         selected_artifact_digest: input.generated.selected_artifact_digest,
+        artifact_registry_head_digest,
+        qualification_evidence_head_digest,
         window: input.generated.window.clone(),
         dataset_digest: input.dataset_digest,
         baseline_generation: input.baseline_generation,
@@ -638,6 +662,8 @@ pub fn resolve_agentd_plasticity_admission_v1(
         input,
         owner_evidence_resolver,
         owner_evidence_policy,
+        artifact_registry_head_digest,
+        ledger_snapshot.head_digest,
         now,
     )?;
     Ok(PlasticityAdmissionEvidenceV1 {
@@ -817,6 +843,8 @@ mod tests {
                 owner_receipt_digest: digest(b"owner-receipt"),
                 objective_digest: query.objective_digest,
                 selected_artifact_digest: query.selected_artifact_digest,
+                artifact_registry_head_digest: query.artifact_registry_head_digest,
+                qualification_evidence_head_digest: query.qualification_evidence_head_digest,
                 window: query.window.clone(),
                 dataset_digest: query.dataset_digest,
                 baseline_generation: query.baseline_generation,
@@ -850,6 +878,8 @@ mod tests {
             evidence_digest: digest(b"update-rule"),
             objective_digest: digest(b"objective"),
             selected_artifact_digest: digest(b"artifact"),
+            artifact_registry_head_digest: digest(b"artifact-head"),
+            qualification_evidence_head_digest: digest(b"ledger-head"),
             window: ProposalWindowV2 {
                 window_id: StableId::new("window:owner-evidence").expect("id"),
                 window_digest: digest(b"window"),
@@ -959,7 +989,14 @@ mod tests {
             seen: RefCell::new(Vec::new()),
         };
         let set_digest =
-            resolve_agentd_plasticity_owner_evidence_set_v1(&input, &resolver, &owner_policy(), 50)
+            resolve_agentd_plasticity_owner_evidence_set_v1(
+                &input,
+                &resolver,
+                &owner_policy(),
+                digest(b"artifact-head"),
+                digest(b"ledger-head"),
+                50,
+            )
                 .expect("owner evidence set");
         assert!(!set_digest.is_zero());
 
