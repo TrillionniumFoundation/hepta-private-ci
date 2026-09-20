@@ -56,11 +56,29 @@
       "designOperation": "lane_c_snapshot",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "append_admitted_with_canonical_shadow",
+      "nativeSymbol": "AdmittedCognitiveStoreV2::append_admitted_with_canonical_shadow",
+      "sourcePath": "codex-rs/hepta-cognitive-store/src/v2.rs",
+      "state": "source_implemented_shadow_only_not_product_composed",
+      "authority": "existing_store_authority_only_no_new_authority",
+      "tests": [
+        "codex-rs/hepta-cognitive-store/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical_memory_event_shadow_write",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "AdmittedCognitiveStoreV2::append_admitted"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Qualify append_admitted_with_canonical_shadow on exact source-head and deterministic synthetic merge without changing the durable writer claim.",
+    "Add an authoritative source-revision bridge before claiming full MemoryEventV1 provenance equivalence; legacy MemoryAdmissionEvidenceV1 has no source_revision field.",
+    "Compose canonical MemoryEventV1 ingestion through the existing durable hepta-memory writer owner before changing productionImplementation or productionWriterState.",
+    "Retain one cognitive database and one write authority; do not create a parallel HNMF store."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -78,5 +96,16 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-cognitive-store"
-  ]
+  ],
+  "canonicalMemoryEventMigration": {
+    "state": "shadow_co_observation_source_candidate",
+    "legacyAuthoritativeSurface": "MemoryAdmissionCandidateV1 -> MemoryRecord / MemoryWriteReceiptV1",
+    "canonicalObservedSurface": "cognitive.types::hnmf::MemoryEventV1",
+    "provesPayloadSemanticEquivalence": false,
+    "verifiesVerificationState": true,
+    "verifiesSourceIdDigestObservedTime": true,
+    "verifiesSourceRevisionEquivalence": false,
+    "postCommitFailurePossible": false,
+    "productionWriterReplacement": false
+  }
 }
