@@ -32,12 +32,26 @@ pub struct AgentdIdentity {
     pub app_server_socket: PathBuf,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum CognitiveRetrievalMode {
+    Compatibility,
+    HnmfRequired,
+}
+
+impl CognitiveRetrievalMode {
+    #[must_use]
+    pub const fn requires_current_context(self) -> bool {
+        matches!(self, Self::HnmfRequired)
+    }
+}
+
 pub struct AgentdConfig {
     identity: AgentdIdentity,
     registry: FleetRegistry,
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    cognitive_retrieval_mode: CognitiveRetrievalMode,
     cognitive_retrieval_context: Option<std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     cognitive_retrieval_learning: Option<std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
 }
@@ -145,6 +159,7 @@ impl AgentdConfig {
             _writer_lock: writer_lock,
             authbus_trust_file: None,
             cognitive_ranker: None,
+            cognitive_retrieval_mode: CognitiveRetrievalMode::Compatibility,
             cognitive_retrieval_context: None,
             cognitive_retrieval_learning: None,
         })
@@ -182,6 +197,18 @@ impl AgentdConfig {
 
     pub(crate) fn cognitive_ranker(&self) -> Option<std::sync::Arc<crate::PinnedCognitiveRanker>> {
         self.cognitive_ranker.clone()
+    }
+
+    /// Select the retrieval product profile explicitly. Compatibility preserves
+    /// the legacy owner-ranked path. HnmfRequired forbids startup without a
+    /// current authenticated retrieval context and never silently falls back.
+    pub fn with_cognitive_retrieval_mode(mut self, mode: CognitiveRetrievalMode) -> Self {
+        self.cognitive_retrieval_mode = mode;
+        self
+    }
+
+    pub(crate) fn cognitive_retrieval_mode(&self) -> CognitiveRetrievalMode {
+        self.cognitive_retrieval_mode
     }
 
     /// Attach an authenticated external-generation/engram currentness source.
