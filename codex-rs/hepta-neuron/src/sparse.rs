@@ -177,6 +177,20 @@ impl SparseCheckpoint {
         self.sequence
     }
 
+    /// Canonical digest of the recurrent temporal-state vector only.
+    ///
+    /// This is intentionally distinct from the full checkpoint digest so the
+    /// registered NeuronSignalReceiptV1/NeuronCheckpointV1 protocol cannot
+    /// silently substitute whole-checkpoint identity for temporal state.
+    pub fn temporal_state_digest(&self) -> Digest32 {
+        let mut bytes = b"hepta.neuron.temporal-state.q24.v1".to_vec();
+        bytes.extend_from_slice(&(self.temporal.len() as u64).to_be_bytes());
+        for value in &self.temporal {
+            bytes.extend_from_slice(&value.to_be_bytes());
+        }
+        Digest32::of_bytes(&bytes)
+    }
+
     /// Upper bound for a canonical checkpoint encoding of the current state.
     pub fn bounded_encoded_bytes(&self) -> usize {
         let fixed = 6 * std::mem::size_of::<Digest32>() + 2 * std::mem::size_of::<u64>();
