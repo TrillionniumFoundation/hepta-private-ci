@@ -456,6 +456,7 @@ def verify_authority_posture(findings: Findings) -> None:
         ROOT / "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
         ROOT / "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
         ROOT / "codex-rs/hepta-bellman-operator/src/reference.rs",
+        ROOT / "codex-rs/hepta-bellman-operator/src/authenticated.rs",
         ROOT / "codex-rs/hepta-bellman-operator/src/world_model.rs",
         ROOT / "codex-rs/hepta-intelligence-eval/src/closure.rs",
     ]
@@ -552,7 +553,12 @@ def verify_workflow(findings: Findings) -> None:
         "workflow_gate_missing",
         "workflow is missing synthetic-merge job",
     )
+
     findings.require(
+        "BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}" in text,
+        "workflow_push_base_missing",
+        "workflow must bind push-main synthetic merge to github.event.before",
+    )    findings.require(
         not TEMPORARY_WORKFLOW_PATH.exists(),
         "temporary_workflow_present",
         "temporary generated-file materializer must not remain in the candidate",
