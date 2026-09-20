@@ -15,6 +15,7 @@ const ETA_MIN_RAW: i64 = 1_i64 << 28;
 const ETA_MAX_RAW: i64 = 1_i64 << 30;
 const RESIDUAL_TOLERANCE_RAW: i64 = 1_i64 << 12;
 const MAX_ITERATIONS: u32 = 64;
+const MAX_PREFERENCE_DIMENSIONS: usize = 64;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PreferenceState {
@@ -239,9 +240,9 @@ pub fn solve_preference_target(
     if !(ETA_MIN_RAW..=ETA_MAX_RAW).contains(&eta.raw()) {
         return Err(NduError::InvalidEta);
     }
-    normalize_values(&mut target)?;
+    normalize_preference_values(&mut target)?;
     let mut state = initial;
-    normalize_values(&mut state.values)?;
+    normalize_preference_values(&mut state.values)?;
     if state
         .values
         .iter()
@@ -261,9 +262,23 @@ pub fn solve_preference_target(
         return Err(NduError::StateDigestMismatch);
     }
     let predecessor_digest = state.state_digest;
+    let initial_residual_raw = maximum_residual(&state.values, &target)?;
+    if initial_residual_raw <= RESIDUAL_TOLERANCE_RAW {
+        let termination = NduSolverTerminationReceipt {
+            disposition: SolveDisposition::Converged,
+            iterations: 0,
+            terminal_residual_raw: initial_residual_raw,
+            maximum_residual_raw: initial_residual_raw,
+            projection_count: 0,
+            predecessor_digest,
+            terminal_state_digest: state.state_digest,
+        };
+        return Ok((state, termination, Vec::new()));
+    }
+
     let mut receipts = Vec::new();
     let mut total_projection_count = 0_u32;
-    let mut maximum_residual_raw = 0_i64;
+    let mut maximum_residual_raw = initial_residual_raw;
 
     for iteration in 1..=MAX_ITERATIONS {
         let (next, receipt) = update_once(&state, &target, eta, iteration)?;
@@ -373,7 +388,7 @@ impl PreferenceState {
         subject_class: SubjectClass,
         mut values: Vec<AxisValue>,
     ) -> Result<Self, NduError> {
-        normalize_values(&mut values)?;
+        normalize_preference_values(&mut values)?;
         let revision = Revision::new(/*value*/ 1).map_err(|_| NduError::Arithmetic)?;
         let state_digest = digest_state(
             &subject_id,
@@ -393,14 +408,40 @@ impl PreferenceState {
     }
 }
 
-fn normalize_values(values: &mut [AxisValue]) -> Result<(), NduError> {
+fn normalize_preference_values(values: &mut [AxisValue]) -> Result<(), NduError> {
+    if values.is_empty() || values.len() > MAX_PREFERENCE_DIMENSIONS {
+        return Err(NduError::PreferenceDimensionLimitExceeded);
+    }
     values.sort();
+    let lower = FixedQ32::from_raw(-FixedQ32::ONE.raw());
+    for value in values.iter() {
+        if value.value < lower || value.value > FixedQ32::ONE {
+            return Err(NduError::PreferenceValueOutOfRange(
+                value.axis.to_string(),
+            ));
+        }
+    }
     for window in values.windows(2) {
         if window[0].axis == window[1].axis {
             return Err(NduError::DuplicateAxis(window[0].axis.to_string()));
         }
     }
     Ok(())
+}
+
+fn maximum_residual(current: &[AxisValue], target: &[AxisValue]) -> Result<i64, NduError> {
+    let mut maximum = 0_i64;
+    for (current, target) in current.iter().zip(target) {
+        let residual = target
+            .value
+            .checked_sub(current.value)
+            .map_err(|_| NduError::Arithmetic)?
+            .raw()
+            .checked_abs()
+            .ok_or(NduError::Arithmetic)?;
+        maximum = maximum.max(residual);
+    }
+    Ok(maximum)
 }
 
 fn digest_state(
