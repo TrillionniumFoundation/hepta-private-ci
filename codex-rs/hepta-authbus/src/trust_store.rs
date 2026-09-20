@@ -35,7 +35,7 @@ impl AuthBusAuthorityStore {
         spec: IssuerSpec,
     ) -> Result<IssuerRecord, AuthBusAuthorityError> {
         let mut tx = begin(&self.pool).await?;
-        let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_issuer_registry")
+        let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_issuer_registry WHERE state != 'retired'")
             .fetch_one(&mut *tx)
             .await
             .map_err(storage)?;
@@ -68,7 +68,7 @@ impl AuthBusAuthorityStore {
         expected_revision: u64,
     ) -> Result<IssuerRecord, AuthBusAuthorityError> {
         let mut tx = begin(&self.pool).await?;
-        let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_issuer_registry")
+        let count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM authbus_issuer_registry WHERE state != 'retired'")
             .fetch_one(&mut *tx)
             .await
             .map_err(storage)?;
