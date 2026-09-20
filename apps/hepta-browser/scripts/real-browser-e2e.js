@@ -185,6 +185,10 @@ let otherAllowedHits = 0;
 let profileACookieHeader = null;
 let profileBCookieHeader = null;
 let cacheProbeHits = 0;
+let expiryBackgroundHits = 0;
+let expiryDelayedNavigationHits = 0;
+let closeBackgroundHits = 0;
+let closeDelayedNavigationHits = 0;
 const hanging = new Set();
 
 const forbidden = await listen((_request, response) => {
@@ -200,6 +204,44 @@ const otherAllowed = await listen((_request, response) => {
 const otherAllowedOrigin = `http://127.0.0.1:${otherAllowed.address().port}`;
 
 const app = await listen((request, response) => {
+  if (request.url === "/expiry-background-ping") {
+    expiryBackgroundHits += 1;
+    response.writeHead(204);
+    response.end();
+    return;
+  }
+  if (request.url === "/expiry-delayed-navigation") {
+    expiryDelayedNavigationHits += 1;
+    response.end("expiry navigation escaped containment");
+    return;
+  }
+  if (request.url === "/close-background-ping") {
+    closeBackgroundHits += 1;
+    response.writeHead(204);
+    response.end();
+    return;
+  }
+  if (request.url === "/close-delayed-navigation") {
+    closeDelayedNavigationHits += 1;
+    response.end("close navigation escaped containment");
+    return;
+  }
+  if (request.url === "/expiry-background") {
+    response.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    response.end(`<html><body>expiry-background<script>
+setInterval(()=>fetch("/expiry-background-ping",{cache:"no-store"}).catch(()=>{}),50);
+setTimeout(()=>{ location.href="/expiry-delayed-navigation"; },8500);
+</script></body></html>`);
+    return;
+  }
+  if (request.url === "/close-background") {
+    response.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    response.end(`<html><body>close-background<script>
+setInterval(()=>fetch("/close-background-ping",{cache:"no-store"}).catch(()=>{}),50);
+setTimeout(()=>{ location.href="/close-delayed-navigation"; },1500);
+</script></body></html>`);
+    return;
+  }
   if (request.url === "/cache-probe.js") {
     cacheProbeHits += 1;
     response.writeHead(200, {
@@ -469,6 +511,149 @@ try {
     generation: 1,
   });
   assert.equal(closed.terminalObserved, true);
+
+  // Profile expiry is a process/network lease, not admission-only. A page that
+  // keeps fetching and schedules a later navigation must be physically
+  // contained when the lease expires.
+  const expiryDriver = realDriver(join(root, "profiles-expiry"));
+  const expiryHost = new BrowserProfileHost({
+    driver: expiryDriver,
+    authority: authority(),
+    journal: new FileBrowserOperationJournal(join(root, "expiry-journal.log")),
+    driverCallTimeoutMs: 10_000,
+  });
+  const expiryAction = {
+    kind: "navigate",
+    url: `${origin}/expiry-background`,
+    policyDigest: D1,
+    expectedRevision: 41,
+  };
+  const expiryGrant = grant(
+    "navigate",
+    browserActionDigest(expiryAction),
+    origin,
+    "expiry-background",
+  );
+  const expiryAtMs = Date.now() + 8_000;
+  await expiryHost.openProfile({
+    profileId: "profile.expiry",
+    principalId: "principal.expiry",
+    manifestDigest: D1,
+    grantDigest: D2,
+    generation: 1,
+    expiresAtMs: expiryAtMs,
+    allowedOrigins: [origin],
+    effectGrants: [expiryGrant],
+  });
+  const expiryInput = operation({
+    profileId: "profile.expiry",
+    principalId: "principal.expiry",
+    generation: 1,
+    operationId: "operation.expiry.navigate",
+    pageGeneration: 0,
+    typedAction: expiryAction,
+    origin,
+    effectGrant: expiryGrant,
+  });
+  assert.equal(
+    (await settle(
+      expiryHost,
+      expiryInput,
+      await expiryHost.navigateOrAct(expiryInput),
+    )).status,
+    "succeeded",
+  );
+  await new Promise((resolve) => setTimeout(resolve, 350));
+  assert.ok(expiryBackgroundHits > 0, "background fetch must run before expiry");
+  await new Promise((resolve) =>
+    setTimeout(resolve, Math.max(0, expiryAtMs - Date.now() + 750)),
+  );
+  const expiryHitsAfterContainment = expiryBackgroundHits;
+  await new Promise((resolve) => setTimeout(resolve, 750));
+  assert.equal(
+    expiryBackgroundHits,
+    expiryHitsAfterContainment,
+    "background fetch must stop after profile expiry containment",
+  );
+  assert.equal(
+    expiryDelayedNavigationHits,
+    0,
+    "delayed navigation must not cross an expired profile lease",
+  );
+  await expiryHost.closeProfile({
+    profileId: "profile.expiry",
+    principalId: "principal.expiry",
+    generation: 1,
+  });
+
+  // Explicit owner close is the current early-revocation ceremony for a
+  // profile lease. It must also terminate background fetch/navigation.
+  const closeDriver = realDriver(join(root, "profiles-close-revoke"));
+  const closeHost = new BrowserProfileHost({
+    driver: closeDriver,
+    authority: authority(),
+    journal: new FileBrowserOperationJournal(join(root, "close-journal.log")),
+    driverCallTimeoutMs: 10_000,
+  });
+  const closeAction = {
+    kind: "navigate",
+    url: `${origin}/close-background`,
+    policyDigest: D1,
+    expectedRevision: 43,
+  };
+  const closeGrant = grant(
+    "navigate",
+    browserActionDigest(closeAction),
+    origin,
+    "close-background",
+  );
+  await closeHost.openProfile({
+    profileId: "profile.close",
+    principalId: "principal.close",
+    manifestDigest: D1,
+    grantDigest: D2,
+    generation: 1,
+    expiresAtMs: Date.now() + 120_000,
+    allowedOrigins: [origin],
+    effectGrants: [closeGrant],
+  });
+  const closeInput = operation({
+    profileId: "profile.close",
+    principalId: "principal.close",
+    generation: 1,
+    operationId: "operation.close.navigate",
+    pageGeneration: 0,
+    typedAction: closeAction,
+    origin,
+    effectGrant: closeGrant,
+  });
+  assert.equal(
+    (await settle(
+      closeHost,
+      closeInput,
+      await closeHost.navigateOrAct(closeInput),
+    )).status,
+    "succeeded",
+  );
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  assert.ok(closeBackgroundHits > 0, "background fetch must run before close");
+  await closeHost.closeProfile({
+    profileId: "profile.close",
+    principalId: "principal.close",
+    generation: 1,
+  });
+  const closeHitsAfterContainment = closeBackgroundHits;
+  await new Promise((resolve) => setTimeout(resolve, 1_700));
+  assert.equal(
+    closeBackgroundHits,
+    closeHitsAfterContainment,
+    "background fetch must stop after owner close/revocation",
+  );
+  assert.equal(
+    closeDelayedNavigationHits,
+    0,
+    "delayed navigation must not cross owner close/revocation",
+  );
 
   // Two simultaneous profile generations must not share cookies.
   const isolationDriver = realPool(join(root, "profiles-isolation"), 2);
@@ -775,6 +960,10 @@ try {
       createFilePersistedEffectReconciler(receiptRoot, {
         observerId,
         verifyingKeyHex,
+        minimumObserverGeneration: 1,
+        minimumObservedAtUnixMs: unsignedObservation.observedAtUnixMs - 1_000,
+        currentFrontierDigest: unsignedObservation.frontierDigest,
+        maxFutureSkewMs: 60_000,
       }),
     ),
     authority: authority(),
@@ -800,6 +989,8 @@ try {
       crossOriginSubresourceDenied: true,
       redirectEscapeDenied: true,
       profileAllowedCrossOriginRedirectDeniedByEffectGrant: true,
+      profileExpiryContainsBackgroundNetwork: true,
+      profileCloseRevocationContainsBackgroundNetwork: true,
       revocationRaceBlockedUntilDispatchBoundary: true,
       authenticatedPersistedCrashReconciliation: true,
       persistedCrashReconciliation: true,
