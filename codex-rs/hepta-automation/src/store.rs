@@ -1080,6 +1080,20 @@ async fn verify_store(pool: &SqlitePool, owner_agent_id: &AgentId) -> Result<(),
     if owner != owner_agent_id.as_str() {
         return Err(AutomationError::AccessDenied);
     }
+    let destination_objects: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM sqlite_schema
+         WHERE name IN (
+             'destination_operation_dedupe',
+             'destination_operation_dedupe_immutable',
+             'destination_operation_dedupe_no_delete'
+         )",
+    )
+    .fetch_one(pool)
+    .await
+    .map_err(unavailable)?;
+    if destination_objects != 3 {
+        return Err(AutomationError::Corrupt);
+    }
     let foreign: i64 =
         sqlx::query_scalar("SELECT COUNT(*) FROM automation_tasks WHERE owner_agent_id != ?")
             .bind(owner_agent_id.as_str())
