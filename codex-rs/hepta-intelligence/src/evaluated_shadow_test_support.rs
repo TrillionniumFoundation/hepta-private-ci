@@ -478,7 +478,7 @@ fn provider_inputs(snapshot_id: StableId) -> Provider {
             decision_at: 20,
             actions: vec![id("a"), id("b")],
         });
-        let observation = |a_probability: u32, b_probability: u32| OpeRow {
+        let observation = |a_probability: u64, b_probability: u64| OpeRow {
             decision_id: decision_id.clone(),
             chosen_action: id("a"),
             complete_candidates: true,

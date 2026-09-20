@@ -368,7 +368,7 @@ fn signed_context(
         Ok(value) => value,
         Err(error) => panic!("trust: {error}"),
     };
-    let mut sign = |principal: &AuthenticatedPrincipalV1,
+    let sign = |principal: &AuthenticatedPrincipalV1,
                     key: &SigningKey,
                     role: LearningEvidenceRoleV1,
                     payload: &[u8]| {
