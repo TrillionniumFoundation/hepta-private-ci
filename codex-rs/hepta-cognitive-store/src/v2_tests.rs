@@ -727,11 +727,14 @@ fn paged_snapshot_rejects_forged_cursor_and_broken_page_ancestry() {
     );
 }
 
-
 #[test]
 fn canonical_event_shadow_binds_exact_admission_and_write_receipt() {
     let mut store = store();
-    let candidate = candidate("memory:canonical:1", "content:v1", MemoryAdmissionKind::Observation);
+    let candidate = candidate(
+        "memory:canonical:1",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
     let event = canonical_event("memory:canonical:1");
     let write_intent = intent(&store, "intent:canonical:1", &candidate);
     let result = store
@@ -748,7 +751,10 @@ fn canonical_event_shadow_binds_exact_admission_and_write_receipt() {
         .unwrap_or_else(|error| panic!("canonical shadow receipt: {error}"));
     assert_eq!(result.shadow_receipt.event_id, event.event_id);
     assert_eq!(result.shadow_receipt.candidate_digest, candidate.digest());
-    assert_eq!(result.shadow_receipt.record_digest, result.write_receipt.record_digest);
+    assert_eq!(
+        result.shadow_receipt.record_digest,
+        result.write_receipt.record_digest
+    );
     assert_eq!(
         result.shadow_receipt.snapshot_vector_digest,
         result.write_receipt.snapshot_key.vector_digest
@@ -759,7 +765,11 @@ fn canonical_event_shadow_binds_exact_admission_and_write_receipt() {
 #[test]
 fn canonical_event_shadow_rejects_provenance_or_verification_drift_before_write() {
     let mut store = store();
-    let candidate = candidate("memory:canonical:2", "content:v1", MemoryAdmissionKind::Observation);
+    let candidate = candidate(
+        "memory:canonical:2",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
 
     let mut wrong_source = canonical_event("memory:canonical:2");
     wrong_source.provenance[0].source_sha256 = contract_digest("different-source");
@@ -793,7 +803,11 @@ fn canonical_event_shadow_rejects_provenance_or_verification_drift_before_write(
 #[test]
 fn canonical_event_shadow_receipt_tamper_fails_closed() {
     let mut store = store();
-    let candidate = candidate("memory:canonical:3", "content:v1", MemoryAdmissionKind::Observation);
+    let candidate = candidate(
+        "memory:canonical:3",
+        "content:v1",
+        MemoryAdmissionKind::Observation,
+    );
     let write_intent = intent(&store, "intent:canonical:3", &candidate);
     let result = store
         .append_admitted_with_canonical_shadow(
