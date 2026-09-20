@@ -708,7 +708,11 @@ fn require_run_reconciliation_ready(
     lifecycle: AgentLifecycle,
     fenced: bool,
 ) -> Result<(), AgentdError> {
-    if matches!(lifecycle, AgentLifecycle::Running | AgentLifecycle::Draining) && !fenced {
+    if matches!(
+        lifecycle,
+        AgentLifecycle::Running | AgentLifecycle::Draining
+    ) && !fenced
+    {
         Ok(())
     } else {
         Err(AgentdError::Protocol(
@@ -730,9 +734,7 @@ fn internal_run_snapshot(value: crate::AgentRunSnapshot) -> crate::RunSnapshot {
     }
 }
 
-fn internal_context_attachment(
-    value: crate::AgentContextAttachment,
-) -> crate::ContextAttachment {
+fn internal_context_attachment(value: crate::AgentContextAttachment) -> crate::ContextAttachment {
     crate::ContextAttachment {
         run_id: value.run_id,
         request_digest: value.request_digest,
