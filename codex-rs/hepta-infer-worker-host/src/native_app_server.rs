@@ -640,15 +640,13 @@ impl AppServerModelDriver {
                 let reason: String = observed.error().message.chars().take(1024).collect();
                 match receipt.status {
                     AdapterStatus::Overloaded | AdapterStatus::Rejected => {
-                        let (status, retry_safe_before_admission) = match receipt.status {
-                            AdapterStatus::Overloaded => {
-                                (NativeDispatchRejectionStatus::Overloaded, true)
-                            }
-                            AdapterStatus::Rejected => {
-                                (NativeDispatchRejectionStatus::Rejected, false)
-                            }
-                            _ => unreachable!("matched above"),
+                        let overloaded = receipt.status == AdapterStatus::Overloaded;
+                        let status = if overloaded {
+                            NativeDispatchRejectionStatus::Overloaded
+                        } else {
+                            NativeDispatchRejectionStatus::Rejected
                         };
+                        let retry_safe_before_admission = overloaded;
                         let response_digest = receipt
                             .response_digest
                             .ok_or("server rejection receipt omitted response digest")?;
