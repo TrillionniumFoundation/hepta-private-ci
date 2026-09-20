@@ -87,6 +87,10 @@ pub struct ScoringCommitmentV1 {
     pub objective_class_digest: Digest32,
     pub state_digest: Digest32,
     pub policy_digest: Digest32,
+    /// Exact risk classification presented to this decision. The scorer does
+    /// not own risk authority; binding it here prevents post-signature caller
+    /// rebinding to a weaker fast-path class.
+    pub risk_class: RiskClass,
     pub model_artifact_digest: Digest32,
     pub scorer_contract_digest: Digest32,
     pub feature_snapshot_digest: Digest32,
@@ -95,6 +99,9 @@ pub struct ScoringCommitmentV1 {
     pub score_semantics_digest: Digest32,
     pub candidate_identity_digest: Digest32,
     pub scored_candidates_digest: Digest32,
+    /// Scorer-owned distribution semantics (deterministic vs randomized,
+    /// abstain mass and candidate probabilities), excluding RNG stream/draw.
+    pub assignment_distribution_digest: Digest32,
     pub generation: u64,
     pub sequence: u64,
 }
@@ -215,6 +222,28 @@ pub fn canonical_scored_candidates_digest_v1(
     Ok(Digest32::of_bytes(&bytes))
 }
 
+pub fn canonical_assignment_distribution_digest_v1(
+    request: &CalibratedDecisionRequestV1,
+) -> Result<Digest32, QualifiedCalibratedError> {
+    let mut bytes = b"hepta.intuition.assignment-distribution.v1\0".to_vec();
+    match &request.assignment {
+        AssignmentModeV1::Deterministic => bytes.push(0),
+        AssignmentModeV1::CounterBased {
+            abstain_probability,
+            ..
+        } => {
+            bytes.push(1);
+            bytes.extend_from_slice(&abstain_probability.raw().to_be_bytes());
+        }
+    }
+    push_len(&mut bytes, request.candidates.len())?;
+    for candidate in &request.candidates {
+        push_id(&mut bytes, &candidate.candidate_id)?;
+        bytes.extend_from_slice(&candidate.assignment_probability.raw().to_be_bytes());
+    }
+    Ok(Digest32::of_bytes(&bytes))
+}
+
 pub fn scoring_commitment_for_request_v1(
     request: &CalibratedDecisionRequestV1,
     profile: &CanonicalPolicyProfileV1,
@@ -233,6 +262,7 @@ pub fn scoring_commitment_for_request_v1(
         objective_class_digest: request.objective_class_digest,
         state_digest: request.state_digest,
         policy_digest: request.policy_digest,
+        risk_class: request.risk_class,
         model_artifact_digest: profile.scorer.model_artifact_digest,
         scorer_contract_digest: profile.scorer.scorer_contract_digest,
         feature_snapshot_digest,
@@ -241,6 +271,7 @@ pub fn scoring_commitment_for_request_v1(
         score_semantics_digest: profile.scorer.score_semantics_digest,
         candidate_identity_digest: canonical_candidate_identity_digest_v1(&request.candidates)?,
         scored_candidates_digest: canonical_scored_candidates_digest_v1(&request.candidates)?,
+        assignment_distribution_digest: canonical_assignment_distribution_digest_v1(request)?,
         generation: request.policy_generation,
         sequence: request.sequence,
     };
@@ -264,6 +295,10 @@ pub fn canonical_scoring_commitment_digest_v1(
         ("score semantics", commitment.score_semantics_digest),
         ("candidate identity", commitment.candidate_identity_digest),
         ("scored candidates", commitment.scored_candidates_digest),
+        (
+            "assignment distribution",
+            commitment.assignment_distribution_digest,
+        ),
     ] {
         if digest.is_zero() {
             return Err(QualifiedCalibratedError::EmptyScoringDigest(name));
@@ -284,9 +319,11 @@ pub fn canonical_scoring_commitment_digest_v1(
         commitment.score_semantics_digest,
         commitment.candidate_identity_digest,
         commitment.scored_candidates_digest,
+        commitment.assignment_distribution_digest,
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
+    bytes.push(risk_class_code(commitment.risk_class));
     bytes.extend_from_slice(&commitment.generation.to_be_bytes());
     bytes.extend_from_slice(&commitment.sequence.to_be_bytes());
     Ok(Digest32::of_bytes(&bytes))
@@ -545,6 +582,11 @@ fn validate_scoring_commitment_for_request(
             "policy",
         ));
     }
+    if scoring.risk_class != request.risk_class {
+        return Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
+            "risk class",
+        ));
+    }
     if scoring.model_artifact_digest != profile.scorer.model_artifact_digest {
         return Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
             "model artifact",
@@ -580,6 +622,13 @@ fn validate_scoring_commitment_for_request(
     {
         return Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
             "scored candidates",
+        ));
+    }
+    if scoring.assignment_distribution_digest
+        != canonical_assignment_distribution_digest_v1(request)?
+    {
+        return Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
+            "assignment distribution",
         ));
     }
     Ok(())
@@ -644,6 +693,14 @@ const fn risk_requires_slow_path(rule: CanonicalRiskRuleV1, risk: RiskClass) -> 
             matches!(risk, RiskClass::Elevated | RiskClass::High)
         }
         CanonicalRiskRuleV1::AlwaysSlowPath => true,
+    }
+}
+
+const fn risk_class_code(risk: RiskClass) -> u8 {
+    match risk {
+        RiskClass::Low => 0,
+        RiskClass::Elevated => 1,
+        RiskClass::High => 2,
     }
 }
 
