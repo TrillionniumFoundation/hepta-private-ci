@@ -225,6 +225,84 @@ fn final_delivered_terminal_releases_staged_turn() {
 }
 
 #[test]
+fn not_dispatched_retry_then_final_delivery_reopens_without_stale_stage_requirement() {
+    let temporary = tempfile::tempdir().expect("tempdir");
+    let root = temporary.path().join("prompt-runtime");
+    let value = attachment();
+    let first_digest = digest("provider-request-not-dispatched");
+    let second_digest = digest("provider-request-retry-final");
+    {
+        let owner = AgentdPromptRuntimeOwner::open_state_dir(&root).expect("open owner");
+        stage_raw(&owner, "thread:one", "turn:one", value.clone());
+        owner
+            .record_dispatch(dispatch(
+                &value,
+                "thread:one",
+                "turn:one",
+                "attempt:first",
+                "request:first",
+                first_digest,
+            ))
+            .unwrap_or_else(|error| panic!("first dispatch: {error}"));
+        owner
+            .record(PromptRuntimeTerminalRecordV1 {
+                compilation_id: value.compilation_id.clone(),
+                context_attachment_digest: value.context_attachment_digest,
+                context_payload_digest: value.context_payload_digest,
+                source_binding_digest: value.source_binding_digest,
+                thread_id: "thread:one".to_owned(),
+                turn_id: "turn:one".to_owned(),
+                attempt_id: "attempt:first".to_owned(),
+                request_binding_id: "request:first".to_owned(),
+                provider_request_digest: first_digest,
+                outcome: PromptRuntimeTerminalOutcomeV1::NotDispatched,
+                end_turn: None,
+                terminal_reason_code: Some("pre_send_cancel".to_owned()),
+                delivery_observation: None,
+                observed_unix_ms: 10,
+            })
+            .unwrap_or_else(|error| panic!("not-dispatched record: {error}"));
+        owner
+            .record_dispatch(dispatch(
+                &value,
+                "thread:one",
+                "turn:one",
+                "attempt:second",
+                "request:second",
+                second_digest,
+            ))
+            .unwrap_or_else(|error| panic!("second dispatch: {error}"));
+        owner
+            .record(delivered_terminal(
+                &value,
+                "attempt:second",
+                "request:second",
+                second_digest,
+                11,
+            ))
+            .unwrap_or_else(|error| panic!("delivered record: {error}"));
+        assert_eq!(owner.staged_count().expect("staged count"), 0);
+    }
+
+    let reopened = AgentdPromptRuntimeOwner::open_state_dir(&root).expect("reopen owner");
+    assert_eq!(reopened.staged_count().expect("staged count"), 0);
+    assert_eq!(
+        reopened
+            .terminal_record("attempt:first")
+            .expect("first terminal")
+            .map(|record| record.outcome),
+        Some(PromptRuntimeTerminalOutcomeV1::NotDispatched)
+    );
+    assert_eq!(
+        reopened
+            .terminal_record("attempt:second")
+            .expect("second terminal")
+            .map(|record| record.outcome),
+        Some(PromptRuntimeTerminalOutcomeV1::Delivered)
+    );
+}
+
+#[test]
 fn dispatch_without_terminal_reopens_as_unknown_and_blocks_blind_retry() {
     let temporary = tempfile::tempdir().expect("tempdir");
     let root = temporary.path().join("prompt-runtime");
