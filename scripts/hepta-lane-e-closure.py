@@ -556,6 +556,7 @@ def verify_workflow(findings: Findings) -> None:
         ("actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373", "workflow is missing pinned provenance attestation"),
         ("actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02", "workflow is missing retained qualification artifact"),
         ("trusted-inprocess-eval", "workflow is missing explicit compatibility-surface verification"),
+        ("--test operator_claim", "workflow is missing the trusted compatibility regression"),
         ("decide_with_signed_evidence_v2", "workflow is missing signed production-surface verification"),
         ("FencedFinalHoldoutOwnerV1", "workflow is missing fenced-owner production-surface verification"),
     ):
