@@ -1074,10 +1074,9 @@ pub fn request_execution_grants(
 
     let mut requests = Vec::with_capacity(candidate.final_payload_digests.len());
     if !candidate.final_payload_digests.is_empty() {
-        let binding = candidate
-            .execution_binding
-            .as_ref()
-            .ok_or_else(|| PlannerError::MissingExecutionBinding(candidate.candidate_id.to_string()))?;
+        let binding = candidate.execution_binding.as_ref().ok_or_else(|| {
+            PlannerError::MissingExecutionBinding(candidate.candidate_id.to_string())
+        })?;
         for payload_digest in &candidate.final_payload_digests {
             let mut request = GrantRequestV1 {
                 operation_id: candidate.operation_id.clone(),
