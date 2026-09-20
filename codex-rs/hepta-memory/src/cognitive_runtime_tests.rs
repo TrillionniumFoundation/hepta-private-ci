@@ -84,6 +84,31 @@ async fn product_v2_runtime_reads_only_explicit_grants_and_preserves_coverage() 
         )
         .await
         .expect("owner memory");
+    let second_citation = owner
+        .append_source(
+            &owner_access,
+            &source(
+                CognitiveScope::AgentPrivate,
+                "runtime-v2-source-secondary",
+                "Canonical federation secondary evidence.",
+            ),
+        )
+        .await
+        .expect("second owner source");
+    owner
+        .remember_memory(
+            &owner_access,
+            &MemoryDraft {
+                stable_key: "runtime-v2-memory-secondary".to_string(),
+                revision: memory_revision(
+                    CognitiveScope::AgentPrivate,
+                    "Canonical federation secondary evidence.",
+                    second_citation,
+                ),
+            },
+        )
+        .await
+        .expect("second owner memory");
     let consumer_workspace = workspace("runtime-v2-consumer");
     let capability = owner
         .grant_federated_recall(
@@ -115,13 +140,42 @@ async fn product_v2_runtime_reads_only_explicit_grants_and_preserves_coverage() 
     assert_eq!(coverage.completed_peers, 1);
     assert_eq!(coverage.failed_peers, 0);
     assert_eq!(coverage.truncated_items, 0);
-    assert_eq!(batch.candidates.len(), 1);
-    assert_eq!(batch.candidates[0].source_agent_id, owner_id);
-    assert_eq!(
-        batch.candidates[0].candidate.memory.content,
-        "Canonical federation product evidence."
+    assert_eq!(batch.candidates.len(), 2);
+    assert!(
+        batch
+            .candidates
+            .iter()
+            .all(|candidate| candidate.source_agent_id == owner_id)
     );
-    let binding = batch.candidates[0].revalidation.clone();
+    let mut contents = batch
+        .candidates
+        .iter()
+        .map(|candidate| candidate.candidate.memory.content.as_str())
+        .collect::<Vec<_>>();
+    contents.sort_unstable();
+    assert_eq!(
+        contents,
+        vec![
+            "Canonical federation product evidence.",
+            "Canonical federation secondary evidence.",
+        ]
+    );
+    let bindings = batch
+        .candidates
+        .iter()
+        .map(|candidate| candidate.revalidation.clone())
+        .collect::<Vec<_>>();
+    let statuses = runtime
+        .revalidate_product_federated_batch(&access, &bindings, 150)
+        .await
+        .expect("batch physical-send revalidation");
+    assert_eq!(statuses.len(), bindings.len());
+    assert!(
+        statuses
+            .iter()
+            .all(|status| matches!(status, FederatedRevalidationStatus::Current(_)))
+    );
+    let binding = bindings[0].clone();
     assert!(matches!(
         runtime
             .revalidate_product_federated(&access, &binding, 150)
@@ -143,6 +197,20 @@ async fn product_v2_runtime_reads_only_explicit_grants_and_preserves_coverage() 
             FederationRevalidationDrift::CapabilityMissing | FederationRevalidationDrift::Revoked
         )
     ));
+    let revoked_statuses = runtime
+        .revalidate_product_federated_batch(&access, &bindings, 152)
+        .await
+        .expect("post-revoke batch physical-send revalidation");
+    assert_eq!(revoked_statuses.len(), bindings.len());
+    assert!(revoked_statuses.iter().all(|status| {
+        matches!(
+            status,
+            FederatedRevalidationStatus::Stale(
+                FederationRevalidationDrift::CapabilityMissing
+                    | FederationRevalidationDrift::Revoked
+            )
+        )
+    }));
     let (revoked_batch, revoked_coverage) = runtime
         .retrieve_product_federated(&access, &RetrievalRequest::new("Canonical federation", 152))
         .await
