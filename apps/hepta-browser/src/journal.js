@@ -344,13 +344,18 @@ export class FileBrowserOperationJournal {
   #retiredPath;
   #tail = Promise.resolve();
   #rewriteCounter = 0;
+  #faultInjector;
 
-  constructor(path) {
+  constructor(path, { faultInjector = null } = {}) {
     if (typeof path !== "string" || !isAbsolute(path)) {
       throw new TypeError("browser journal path must be absolute");
     }
+    if (faultInjector !== null && typeof faultInjector !== "function") {
+      throw new TypeError("browser journal faultInjector must be a function or null");
+    }
     this.#path = path;
     this.#retiredPath = `${path}.retired`;
+    this.#faultInjector = faultInjector;
   }
 
   async assertProfileGenerationAvailable(profileId, generation) {
@@ -435,6 +440,7 @@ export class FileBrowserOperationJournal {
         }
         retired.set(profileId, generation);
         await this.#rewriteRetired(retired);
+        this.#fault("retired_high_water_committed_before_journal_rewrite");
       }
 
       const records = await this.#load();
@@ -589,11 +595,13 @@ export class FileBrowserOperationJournal {
     try {
       await handle.writeFile(body, "utf8");
       await handle.sync();
+      this.#fault("retired_temp_fsynced_before_rename");
     } finally {
       await handle.close();
     }
     try {
       await rename(temporary, this.#retiredPath);
+      this.#fault("retired_renamed_before_parent_fsync");
       const parent = await open(
         dirname(this.#retiredPath),
         constants.O_RDONLY | noFollow,
@@ -779,11 +787,13 @@ export class FileBrowserOperationJournal {
     try {
       await handle.writeFile(body, "utf8");
       await handle.sync();
+      this.#fault("compact_temp_fsynced_before_rename");
     } finally {
       await handle.close();
     }
     try {
       await rename(temporary, this.#path);
+      this.#fault("compact_renamed_before_parent_fsync");
       const parent = await open(dirname(this.#path), constants.O_RDONLY | noFollow);
       try {
         await parent.sync();
@@ -794,6 +804,10 @@ export class FileBrowserOperationJournal {
       await rm(temporary, { force: true }).catch(() => {});
       throw error;
     }
+  }
+
+  #fault(name) {
+    this.#faultInjector?.(name);
   }
 
   #serialize(operation) {
