@@ -69,7 +69,7 @@ Ingress binds enrolled homeserver, user, device, room and encryption generation;
 
 ## 9. Browser path
 
-The browser owner freezes manifest, profile, principal, process and page generations, origins, effect grants and expiry. Every action revalidates page/document generation, final destination, payload digest and current authority. Redirect, input, upload, download and credential use are distinct capabilities. A driver fixture proves the boundary contract, not a deployed Servo process or a remote business outcome.
+The browser owner freezes manifest, profile, principal, process and page generations, origins, effect grants and expiry. Every action revalidates page/document generation, final destination, payload digest and current authority. Redirect and admitted input effects are separately typed capabilities. Credential, upload and download are out of scope for the current Browser release and remain fail-closed until separately versioned and qualified. A driver fixture proves the boundary contract, not a deployed Servo process or a remote business outcome.
 
 ## 10. UI path
 
@@ -104,7 +104,7 @@ Stop new admission; persist drain intent; cancel only provably pre-effect work; 
 
 ## 15. Source maturity
 
-The truth registry records source-boundary mappings for all 39 operations. Supervisor and Codex are native runtime spines; Fleet, inference, TaskFlow and Matrix include native owner ledgers/adapters; Agentd now owns its own run coordinator; Browser/Web/Native provide bounded driver/client boundaries. The component mappings do not close repository-controlled integration work. Durable owner wiring, actual local model/browser drivers and runtime composition remain implementation tasks in addition to external qualification.
+The truth registry records source-boundary mappings for all 43 operations. Supervisor and Codex are native runtime spines; Fleet, inference, TaskFlow and Matrix include native owner ledgers/adapters; Agentd now owns its own run coordinator; Browser/Web/Native provide bounded driver/client boundaries. The component mappings do not close repository-controlled integration work. Durable owner wiring, actual local model/browser drivers and runtime composition remain implementation tasks in addition to external qualification.
 
 ## 16. Evidence package required for activation
 
