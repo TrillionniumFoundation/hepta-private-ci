@@ -308,6 +308,36 @@ fn public_union_and_packet_validators_reject_structural_tampering() {
 }
 
 #[test]
+fn public_packet_validator_rejects_impossible_counts_after_rehash() {
+    let cue = cue();
+    let mut policy = policy();
+    policy.minimum_distinct_channels = 1;
+    let candidates = vec![
+        candidate(record(1), RetrievalChannelV1::Lexical, 1),
+        candidate(record(2), RetrievalChannelV1::Entity, 1),
+    ];
+    let packet =
+        recall(&cue, &policy, candidates).unwrap_or_else(|error| panic!("recall: {error}"));
+
+    let mut impossible_omission = packet.clone();
+    impossible_omission.omitted_count =
+        u32::try_from(MAX_GENERATION_BOUND_CANDIDATES).expect("bound");
+    impossible_omission.packet_digest = impossible_omission.compute_packet_digest();
+    assert_eq!(
+        impossible_omission.validate(),
+        Err(RecallErrorV1::CandidateLimitExceeded)
+    );
+
+    let mut impossible_channels = packet;
+    impossible_channels.distinct_channels = RETRIEVAL_CHANNEL_COUNT + 1;
+    impossible_channels.packet_digest = impossible_channels.compute_packet_digest();
+    assert_eq!(
+        impossible_channels.validate(),
+        Err(RecallErrorV1::InvalidRecallChannelCount)
+    );
+}
+
+#[test]
 fn property_all_candidate_permutations_have_one_union_and_recall() {
     let cue = cue();
     let mut policy = policy();
