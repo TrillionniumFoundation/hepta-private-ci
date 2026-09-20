@@ -30,6 +30,8 @@ sqlx = { workspace = true }
 zeroize = { workspace = true }
 
 [dev-dependencies]
+codex-hepta-intelligence = { path = "../hepta-intelligence" }
+codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
 ed25519-dalek = { workspace = true }
 tempfile = { workspace = true }
 tokio = { workspace = true, features = ["macros", "rt"] }
