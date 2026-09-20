@@ -22,8 +22,11 @@ The native qualification facade is
 Append authenticates the issuer with the existing AuthBus Ed25519 contract,
 binds candidate/tree/role to the signed subject, and advances durable replay
 state in the same SQLite transaction as the evidence insert. Verification
-preserves claim classes, expiry, correction/revocation lineage and distinct
-authenticated principals for required independent roles.
+preserves claim classes, evidence expiry, correction/revocation lineage and distinct
+authenticated principals for required independent roles. Corrections and ordinary
+revocations are owner-principal/role scoped; only a currently trusted `security`
+issuer may cross that boundary for emergency revocation. AuthBus message expiry
+controls admission freshness and is not reused as durable evidence expiry.
 
 A named product caller is composed in Agentd when the operator explicitly
 provides `--evidence-trust-file`. Agentd advertises `kernel.evidence@1.0`
