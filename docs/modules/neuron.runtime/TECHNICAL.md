@@ -140,7 +140,7 @@ Projection domains rebuild from declared sources and publish complete generation
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/neuron.runtime.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/neuron.runtime.md).
+The current owner source is `NeuronRuntime` in [codex-rs/hepta-neuron/src/runtime.rs](../../../codex-rs/hepta-neuron/src/runtime.rs). One tick verifies the canonical owner input, obtains an exact inference-control feature receipt through `InferenceControlModelPort`, computes the deterministic sparse successor, commits the journal before publication, evaluates calibrated/OOD/resource disposition, and advances an independently retained `AnchorWitnessStore`. Journal and witness uncertainty are fail-closed and poison the affected handle instead of fabricating acknowledgement. [codex-rs/hepta-intelligence/src/neuron_runtime.rs](../../../codex-rs/hepta-intelligence/src/neuron_runtime.rs) is a named source-composed caller, but no Agentd daemon activation or product-execution receipt is implied.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -171,7 +171,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-The native sparse tick is a library operation. A host owns SparseJournal, model/config/body scope and independently retained recovery anchor. Reopen using the same exact profile; never retry a failed anchored recovery without the anchor. An encoder digest in a request is not evidence that a local model was executed.
+The native sparse tick remains a pure mechanism, while `NeuronRuntime` is the owner composition boundary. The selected model tuple is accepted only through the registered inference-control feature receipt and binds model manifest, weights, tokenizer, preprocessor, quantization, runtime and device identity. `SparseJournal` and `FileAnchorWitnessStore` are separate synced stores; journal commit precedes witness publication and reopen reconciles committed-but-unacknowledged suffixes. A digest-only encoder claim is still not evidence of model execution. The current durable Q24 mechanism is explicitly the single-population/same-width compatibility profile; the target distinct temporal/activation multi-population profile requires a versioned mechanism rather than an in-place replay change.
 
 Current operating and state-format references:
 
@@ -185,8 +185,13 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-neuron/src/journal_anchor_tests.rs](../../../codex-rs/hepta-neuron/src/journal_anchor_tests.rs); named case: `anchored_reopen_preserves_the_exact_receipt_and_all_bytes`.
-- [codex-rs/hepta-neuron/src/journal_tests.rs](../../../codex-rs/hepta-neuron/src/journal_tests.rs); named case: `committed_checkpoint_and_receipt_survive_reopen`.
+- [codex-rs/hepta-neuron/src/runtime_tests.rs](../../../codex-rs/hepta-neuron/src/runtime_tests.rs) — canonical owner composition, calibration/OOD/resource fail-closed behavior and acknowledgement reconciliation.
+- [codex-rs/hepta-neuron/src/inference_control_tests.rs](../../../codex-rs/hepta-neuron/src/inference_control_tests.rs) — exact inference-control feature-receipt binding and model tuple drift rejection.
+- [codex-rs/hepta-neuron/src/journal_anchor_tests.rs](../../../codex-rs/hepta-neuron/src/journal_anchor_tests.rs) and [journal_segment_tests.rs](../../../codex-rs/hepta-neuron/src/journal_segment_tests.rs) — anchored reopen, rollback detection and bounded segment continuation.
+- [codex-rs/hepta-neuron/src/witness_tests.rs](../../../codex-rs/hepta-neuron/src/witness_tests.rs) — independent durable acknowledgement witness.
+- [codex-rs/hepta-neuron/src/plasticity_tests.rs](../../../codex-rs/hepta-neuron/src/plasticity_tests.rs) — committed eligibility history, independent modulator, explicit parameter-group mapping and bounded next-snapshot sufficient statistics.
+- [codex-rs/hepta-neuron/src/deletion_tests.rs](../../../codex-rs/hepta-neuron/src/deletion_tests.rs) — fail-closed successor-generation deletion rebuild without state reuse.
+- [codex-rs/hepta-neuron/src/qualification_tests.rs](../../../codex-rs/hepta-neuron/src/qualification_tests.rs) — resource aggregation and deterministic ablation transforms; these tests do not manufacture future-window evidence.
 
 In `codex-rs`, run `just test -p codex-hepta-neuron`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/neuron.runtime.md) separately labels target acceptance designs.
 
