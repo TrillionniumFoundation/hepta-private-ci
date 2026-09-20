@@ -163,6 +163,12 @@ impl AppServerModelDriver {
             Some(query) => Some(owner.cognitive_context(query, /*limit*/ 4).await?),
             None => None,
         };
+        let owner_context_digest = context
+            .as_ref()
+            .map(|snapshot| -> Result<_> {
+                Ok(control::digest(&serde_json::to_vec(snapshot)?))
+            })
+            .transpose()?;
         let additional_context = context
             .map(|snapshot| -> Result<_> {
                 let value = serde_json::to_string(&snapshot)?;
@@ -188,6 +194,7 @@ impl AppServerModelDriver {
                 thread_id: started.thread.id.clone(),
                 model_provider: started.model_provider.clone(),
                 context_digest: control::digest(&serde_json::to_vec(&additional_context)?),
+                owner_context_digest,
             },
         )?;
         let response = timeout(
