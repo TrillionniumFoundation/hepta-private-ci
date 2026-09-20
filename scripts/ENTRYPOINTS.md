@@ -23,6 +23,7 @@ This generated index maps every repository script to workflow, just/make or manu
 | `scripts/verify_hepta_callers.py` | `active` | CI | `.github/workflows/lane-a-foundation.yml`, `.github/workflows/repo-checks.yml` |
 | `scripts/test_hepta_paper_evidence.py` | `active` | CI | `.github/workflows/hepta-cns-embodiment.yml` |
 | `scripts/hepta-implementation-maps.py` | `active` | CI, indirect | `scripts/hepta-module-docs.py` |
+| `scripts/hepta-ui-control-source-base.py` | `active` | CI | `.github/workflows/hepta-ui-control.yml` |
 | `scripts/test_hepta_ci_source_identity.py` | `active` | CI | `.github/workflows/hepta-consolidated-source.yml` |
 | `scripts/verify_lane_a_foundation.py` | `active` | CI | `.github/workflows/lane-a-foundation.yml` |
 | `scripts/hepta-module-docs.py` | `active` | CI | `.github/workflows/hepta-algorithm-docs.yml`, `.github/workflows/hepta-audit-remediation.yml`, `.github/workflows/hepta-cns-embodiment.yml`, `.github/workflows/hepta-converged-learning.yml`, `.github/workflows/hepta-deployment-handoff.yml`, `.github/workflows/hepta-development-docs.yml`, `.github/workflows/hepta-diagnostic-source-export.yml`, `.github/workflows/hepta-implementation-readiness.yml` |
