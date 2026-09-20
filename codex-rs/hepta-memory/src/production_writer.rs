@@ -1394,11 +1394,7 @@ mod tests {
             .unwrap(),
         );
         let queued = writer
-            .admit(
-                "occurrence:post-open-revoke",
-                "memory.write",
-                "payload",
-            )
+            .admit("occurrence:post-open-revoke", "memory.write", "payload")
             .await
             .unwrap();
 
@@ -1410,11 +1406,7 @@ mod tests {
         ));
         assert!(matches!(
             writer
-                .admit(
-                    "occurrence:post-open-revoke:new",
-                    "memory.write",
-                    "payload",
-                )
+                .admit("occurrence:post-open-revoke:new", "memory.write", "payload",)
                 .await,
             Err(ProductionWriterError::AuthorityRejected(_))
         ));
