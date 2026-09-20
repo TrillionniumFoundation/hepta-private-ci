@@ -125,7 +125,14 @@ Focused tests live in:
 - `src/ope_tests.rs` and `src/ope_confidence_tests.rs`;
 - `src/sequential_tests.rs`;
 - `src/temporal_fold_tests.rs` and `src/temporal_evaluation_tests.rs`;
-- `src/closure_tests.rs`.
+- `src/closure_tests.rs`;
+- `src/durable_holdout_tests.rs`, including stale-replica, CAS outcome-unknown,
+  capacity-before-reservation and failed-local-write fencing cases;
+- `tests/signed_qualification_e2e.rs` for the signed V2 production admission chain.
+
+The Lane E workflow also executes the signed `evaluated_shadow` runtime consumer,
+an eight-iteration adversarial qualification stress audit and an 85% evaluator
+line-coverage gate before emitting commit-addressed evidence.
 
 Cross-crate composition is exercised by
 `../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. Exact dossier IDs,
