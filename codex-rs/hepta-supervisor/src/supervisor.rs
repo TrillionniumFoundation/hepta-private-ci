@@ -728,11 +728,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             let selection = selection.with_status(ReleaseSelectionStatus::Queued)?;
             write_release_selection(record.layout.run_root(), &selection)?;
-            let receipt = ProductionMutationReceipt::queued(
-                grant,
-                queued.intent_sha256.clone(),
-                next_control_revision,
-            );
+            let receipt = ProductionMutationReceipt::queued(grant, next_control_revision);
             slot.signed_intent = Some(queued);
             Ok(receipt)
         })
@@ -884,7 +880,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             .ok_or_else(|| SupervisorError::Invalid("control revision overflow".to_string()))?;
         Ok(Some(ProductionMutationReceipt {
             grant_sha256: intent.grant_sha256,
-            intent_sha256: intent.intent_sha256,
+            intent_sha256: Some(intent.intent_sha256),
             agent_id: intent.agent_id,
             transition: intent.transition,
             source_release: intent.source_release,
@@ -1019,7 +1015,7 @@ impl<D: ProcessDriver> Supervisor<D> {
 
             Ok(ProductionMutationReceipt {
                 grant_sha256: terminal_intent.grant_sha256,
-                intent_sha256: terminal_intent.intent_sha256,
+                intent_sha256: Some(terminal_intent.intent_sha256),
                 agent_id: terminal_intent.agent_id,
                 transition: terminal_intent.transition,
                 source_release: terminal_intent.source_release,
