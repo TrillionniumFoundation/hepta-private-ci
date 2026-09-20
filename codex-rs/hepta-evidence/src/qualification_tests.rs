@@ -777,6 +777,88 @@ async fn correction_and_revocation_are_append_only_and_non_resurrecting() {
 }
 
 #[tokio::test]
+async fn lineage_mutation_is_principal_scoped_with_security_revocation_exception() {
+    let temp = TempDir::new().expect("temp");
+    let sqlite = config(&temp);
+    let store = HeptaEvidenceStore::open(&sqlite).await.expect("open");
+    let observed = now_ms();
+
+    let (owner, owner_key) = issuer("principal:lineage-owner", 22);
+    let base = evidence(
+        "evidence:lineage-owner-base",
+        candidate('b'),
+        EvidenceClaimClassV1::Conformance,
+        EvidenceIssuerRoleV1::Reviewer,
+        observed,
+        None,
+        json!({"version": 1}),
+    );
+    append(&store, &owner, &owner_key, &base, 1)
+        .await
+        .expect("owner base");
+
+    let (other, other_key) = issuer("principal:lineage-other", 23);
+    let forged_correction = lineage(
+        "evidence:lineage-forged-correction",
+        base.evidence_id.as_str(),
+        base.evidence_id.as_str(),
+        &base,
+        EvidenceReceiptKindV1::Correction,
+        observed.saturating_add(1),
+    );
+    assert!(matches!(
+        append(&store, &other, &other_key, &forged_correction, 1).await,
+        Err(EvidenceError::InvalidRecord(_))
+    ));
+
+    let forged_revocation = lineage(
+        "evidence:lineage-forged-revocation",
+        base.evidence_id.as_str(),
+        base.evidence_id.as_str(),
+        &base,
+        EvidenceReceiptKindV1::Revocation,
+        observed.saturating_add(2),
+    );
+    assert!(matches!(
+        append(&store, &other, &other_key, &forged_revocation, 1).await,
+        Err(EvidenceError::InvalidRecord(_))
+    ));
+
+    let (security, security_key) = issuer("principal:lineage-security", 24);
+    let mut security_revocation = lineage(
+        "evidence:lineage-security-revocation",
+        base.evidence_id.as_str(),
+        base.evidence_id.as_str(),
+        &base,
+        EvidenceReceiptKindV1::Revocation,
+        observed.saturating_add(3),
+    );
+    security_revocation.issuer_role = EvidenceIssuerRoleV1::Security;
+    append(&store, &security, &security_key, &security_revocation, 1)
+        .await
+        .expect("security revocation");
+
+    assert!(matches!(
+        store
+            .qualification()
+            .verify_chain(&VerifyChainRequestV1 {
+                candidate: base.candidate.clone(),
+                claim_class: EvidenceClaimClassV1::Conformance,
+                required_roles: vec![EvidenceIssuerRoleV1::Reviewer],
+                now_unix_ms: observed.saturating_add(4),
+            })
+            .await
+            .expect("verify security-revoked"),
+        EvidenceDispositionV1::Missing
+    ));
+
+    store.pool.close().await;
+    HeptaEvidenceStore::open(&sqlite)
+        .await
+        .expect("reopen accepts authorized security revocation");
+}
+
+#[tokio::test]
 async fn replay_sequence_is_consumed_atomically_with_insert() {
     let temp = TempDir::new().expect("temp");
     let store = HeptaEvidenceStore::open(&config(&temp))
