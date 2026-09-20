@@ -227,11 +227,15 @@ pub type PromptRuntimePrepareFuture = Pin<
             + 'static,
     >,
 >;
+pub type PromptRuntimeDispatchFuture =
+    Pin<Box<dyn Future<Output = Result<(), PromptRuntimeHostError>> + Send + 'static>>;
 pub type PromptRuntimeRecordFuture =
     Pin<Box<dyn Future<Output = Result<(), PromptRuntimeHostError>> + Send + 'static>>;
 
 type PromptRuntimePrepareFn =
     dyn Fn(PromptRuntimePrepareRequest) -> PromptRuntimePrepareFuture + Send + Sync + 'static;
+type PromptRuntimeDispatchFn =
+    dyn Fn(PromptRuntimeDispatchRecordV1) -> PromptRuntimeDispatchFuture + Send + Sync + 'static;
 type PromptRuntimeRecordFn =
     dyn Fn(PromptRuntimeTerminalRecordV1) -> PromptRuntimeRecordFuture + Send + Sync + 'static;
 
@@ -241,17 +245,20 @@ type PromptRuntimeRecordFn =
 pub struct PromptRuntimeHost {
     capability_id: Arc<str>,
     prepare: Arc<PromptRuntimePrepareFn>,
+    dispatch: Arc<PromptRuntimeDispatchFn>,
     record: Arc<PromptRuntimeRecordFn>,
 }
 
 impl PromptRuntimeHost {
-    pub fn new<P, R>(
+    pub fn new<P, D, R>(
         capability_id: impl Into<String>,
         prepare: P,
+        dispatch: D,
         record: R,
     ) -> Result<Self, PromptRuntimeError>
     where
         P: Fn(PromptRuntimePrepareRequest) -> PromptRuntimePrepareFuture + Send + Sync + 'static,
+        D: Fn(PromptRuntimeDispatchRecordV1) -> PromptRuntimeDispatchFuture + Send + Sync + 'static,
         R: Fn(PromptRuntimeTerminalRecordV1) -> PromptRuntimeRecordFuture + Send + Sync + 'static,
     {
         let capability_id = capability_id.into();
@@ -260,6 +267,7 @@ impl PromptRuntimeHost {
         Ok(Self {
             capability_id: Arc::from(capability_id),
             prepare: Arc::new(prepare),
+            dispatch: Arc::new(dispatch),
             record: Arc::new(record),
         })
     }
@@ -269,6 +277,13 @@ impl PromptRuntimeHost {
         request: PromptRuntimePrepareRequest,
     ) -> Result<Option<PromptRuntimeAttachmentV1>, PromptRuntimeHostError> {
         (self.prepare)(request).await
+    }
+
+    async fn dispatch(
+        &self,
+        record: PromptRuntimeDispatchRecordV1,
+    ) -> Result<(), PromptRuntimeHostError> {
+        (self.dispatch)(record).await
     }
 
     async fn record(
@@ -292,11 +307,53 @@ impl PartialEq for PromptRuntimeHost {
     fn eq(&self, other: &Self) -> bool {
         self.capability_id == other.capability_id
             && Arc::ptr_eq(&self.prepare, &other.prepare)
+            && Arc::ptr_eq(&self.dispatch, &other.dispatch)
             && Arc::ptr_eq(&self.record, &other.record)
     }
 }
 
 impl Eq for PromptRuntimeHost {}
+
+/// Durable pre-send claim for one physical provider attempt.
+///
+/// The owning host records this before the provider effect boundary is crossed.
+/// A crash after this claim but before a terminal record is therefore
+/// reconciled as unknown/indeterminate and must never authorize blind retry.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptRuntimeDispatchRecordV1 {
+    pub compilation_id: StableId,
+    pub context_attachment_digest: Digest32,
+    pub context_payload_digest: Digest32,
+    pub source_binding_digest: Digest32,
+    pub thread_id: String,
+    pub turn_id: String,
+    pub attempt_id: String,
+    pub request_binding_id: String,
+    pub provider_request_digest: Digest32,
+    pub dispatched_unix_ms: u64,
+}
+
+impl PromptRuntimeDispatchRecordV1 {
+    pub fn validate(&self) -> Result<(), PromptRuntimeError> {
+        if self.context_attachment_digest.is_zero()
+            || self.context_payload_digest.is_zero()
+            || self.source_binding_digest.is_zero()
+            || self.provider_request_digest.is_zero()
+            || self.thread_id.is_empty()
+            || self.thread_id.len() > 256
+            || self.turn_id.is_empty()
+            || self.turn_id.len() > 256
+            || self.attempt_id.is_empty()
+            || self.attempt_id.len() > 256
+            || self.request_binding_id.is_empty()
+            || self.request_binding_id.len() > 256
+            || self.dispatched_unix_ms == 0
+        {
+            return Err(PromptRuntimeError::InvalidProviderBinding);
+        }
+        Ok(())
+    }
+}
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum PromptRuntimeTerminalOutcomeV1 {
@@ -589,6 +646,25 @@ impl ModelProviderPolicyContributor for PromptRuntimeExtension {
                 lease_payload_digest: provider_request_digest,
                 deadline_ms: attachment.deadline_ms,
             };
+            let dispatch_record = PromptRuntimeDispatchRecordV1 {
+                compilation_id: attachment.compilation_id.clone(),
+                context_attachment_digest: attachment.context_attachment_digest,
+                context_payload_digest: attachment.context_payload_digest,
+                source_binding_digest: attachment.source_binding_digest,
+                thread_id: input.thread_id.to_owned(),
+                turn_id: input.turn_id.to_owned(),
+                attempt_id: input.attempt_id.to_owned(),
+                request_binding_id: input.request_binding_id.to_owned(),
+                provider_request_digest,
+                dispatched_unix_ms: dispatch_unix_ms,
+            };
+            dispatch_record.validate().map_err(runtime_policy_error)?;
+            self.host.dispatch(dispatch_record).await.map_err(|error| {
+                ModelProviderPolicyError::new(
+                    error.reason_code().to_owned(),
+                    error.detail().to_owned(),
+                )
+            })?;
             Ok(ModelProviderPolicyDecision::Allow {
                 lease: Box::new(PromptRuntimeAttemptLease {
                     host: self.host.clone(),
