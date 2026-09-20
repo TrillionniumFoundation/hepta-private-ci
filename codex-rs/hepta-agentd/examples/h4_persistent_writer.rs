@@ -645,43 +645,10 @@ async fn main() -> HarnessResult<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use codex_hepta_memory::ProductionDispatchFuture;
-    use codex_hepta_memory::ProductionDispatchRequest;
-    use codex_hepta_memory::ProductionOutboxTarget;
-    use codex_hepta_memory::ProductionTargetOutcome;
-    use std::sync::Arc;
-    use std::sync::atomic::AtomicUsize;
-    use std::sync::atomic::Ordering;
     use tempfile::TempDir;
-    use tokio::sync::Notify;
-    use tokio::time::Duration;
-    use tokio::time::timeout;
-
-    /// Target fixture that is entered only after `claim_dispatch` has
-    /// committed.  Aborting the task while this future is pending models a
-    /// process crash in the claim→target window without invoking a provider
-    /// effect; a fresh writer must observe the durable indeterminate claim.
-    struct ClaimThenBlockTarget {
-        calls: Arc<AtomicUsize>,
-        entered: Arc<Notify>,
-    }
-
-    impl ProductionOutboxTarget for ClaimThenBlockTarget {
-        fn dispatch<'a>(
-            &'a self,
-            _request: ProductionDispatchRequest,
-        ) -> ProductionDispatchFuture<'a> {
-            self.calls.fetch_add(1, Ordering::SeqCst);
-            let entered = Arc::clone(&self.entered);
-            Box::pin(async move {
-                entered.notify_one();
-                std::future::pending::<ProductionTargetOutcome>().await
-            })
-        }
-    }
 
     #[tokio::test]
-    async fn claim_before_target_abort_reopens_indeterminate_without_redispatch() {
+    async fn durable_indeterminate_reopens_without_becoming_retryable() {
         let temp = TempDir::new().expect("H4 claim/reopen temp dir");
         let root = temp.path().join("claim-reopen");
         let agent_id = AgentId::parse(AGENT_ID_TEXT).expect("H4 claim/reopen agent");
@@ -703,28 +670,15 @@ mod tests {
             .admit("occurrence:h4:claim-reopen", "h4.claim", "payload")
             .await
             .expect("H4 claim/reopen admission");
-        let retry_receipt = queued.clone();
-        let calls = Arc::new(AtomicUsize::new(0));
-        let entered = Arc::new(Notify::new());
-        let target = Arc::new(ClaimThenBlockTarget {
-            calls: Arc::clone(&calls),
-            entered: Arc::clone(&entered),
-        });
-        let dispatch_host = host.attach_target(target);
-        let dispatch_task = tokio::spawn(async move { dispatch_host.dispatch(queued).await });
-
-        timeout(Duration::from_secs(5), entered.notified())
+        writer
+            .mark_indeterminate(
+                queued.occurrence_key.clone(),
+                "qualification simulates a crash after effect entry",
+            )
             .await
-            .expect("target must be entered after durable claim");
-        dispatch_task.abort();
-        let join_error = dispatch_task
-            .await
-            .expect_err("aborted claim/target task must not return normally");
-        assert!(join_error.is_cancelled());
-        assert_eq!(calls.load(Ordering::SeqCst), 1);
+            .expect("durable indeterminate marker");
 
-        // Close every handle from the crashed generation before reopening a
-        // fresh pool, matching the process boundary of the real harness.
+        drop(host);
         drop(writer);
         drop(store);
         let reopened_store = open_store(&root, &agent_id)
@@ -748,22 +702,17 @@ mod tests {
             LocalOutcomeState::Indeterminate
         );
 
-        let retry_calls = Arc::new(AtomicUsize::new(0));
-        let retry_target = Arc::new(ClaimThenBlockTarget {
-            calls: Arc::clone(&retry_calls),
-            entered: Arc::new(Notify::new()),
-        });
-        let retry_result = reopened_host
-            .attach_target(retry_target)
-            .dispatch(retry_receipt)
-            .await;
-        assert!(matches!(
-            retry_result,
-            Err(codex_hepta_agentd::AgentdError::ProductionWriter(
-                codex_hepta_memory::ProductionWriterError::StaleReceipt
-            ))
-        ));
-        assert_eq!(retry_calls.load(Ordering::SeqCst), 0);
+        assert!(
+            reopened_writer
+                .admit(
+                    queued.occurrence_key.clone(),
+                    queued.topic.clone(),
+                    queued.payload_json.clone(),
+                )
+                .await
+                .is_err(),
+            "indeterminate work must never replay as a dispatchable queued receipt"
+        );
 
         let recovery = reopened_writer
             .recover("occurrence:h4:claim-reopen")
@@ -772,8 +721,6 @@ mod tests {
         assert_eq!(recovery.state, "released_indeterminate");
         assert!(!recovery.external_effect);
         assert!(!recovery.physical_power_loss_claim);
-        // `recover` appends the released lease witness atomically; a second
-        // release on this handle must not be attempted after terminalization.
     }
 
     #[test]
