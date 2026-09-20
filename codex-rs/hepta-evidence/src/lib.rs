@@ -53,6 +53,7 @@ pub use qualification::EvidenceClaimClassV1;
 pub use qualification::EvidenceDispositionV1;
 pub use qualification::EvidenceId;
 pub use qualification::EvidenceIssuerRoleV1;
+pub use qualification::EvidenceIssuerTrustBindingV1;
 pub use qualification::EvidenceReceiptKindV1;
 pub use qualification::EvidenceReferenceV1;
 pub use qualification::IndependentDecisionReceiptV1;
