@@ -67,6 +67,7 @@ pub use run_start::RunStartAnchor;
 pub use run_start::RunStartAppendDisposition;
 pub use run_start::RunStartAppendReceipt;
 pub use run_start::RunStartAuthenticationV1;
+pub use run_start::RunStartConflictRecordV1;
 pub use run_start::RunStartJournal;
 pub use run_start::RunStartObjectiveDispositionV1;
 pub use run_start::RunStartRecordV1;
