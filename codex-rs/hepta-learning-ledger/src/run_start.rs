@@ -16,6 +16,7 @@ use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
 
+use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
@@ -62,11 +63,15 @@ pub struct RunStartAuthenticationV1 {
 /// identity without reconstructing or trusting ambient caller state.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RunStartAdmissionBindingV1 {
+    pub profile_id: StableId,
+    pub profile_revision: u64,
     pub profile_digest: Digest32,
+    pub supplied_source_digest: Digest32,
     pub intent_digest: Digest32,
     pub admitted_source_digest: Digest32,
     pub observed_at_unix_micros: u64,
     pub deadline_unix_micros: u64,
+    pub authority: AuthorityPosture,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -523,16 +528,22 @@ fn validate_record(record: &RunStartRecordV1) -> Result<(), RunStartStoreError> 
     {
         return Err(RunStartStoreError::InvalidSnapshot("authentication"));
     }
-    if record.admission.observed_at_unix_micros == 0
+    if record.admission.profile_revision == 0
+        || record.admission.observed_at_unix_micros == 0
         || record.admission.deadline_unix_micros <= record.admission.observed_at_unix_micros
+        || record.admission.authority.grants_any()
     {
-        return Err(RunStartStoreError::InvalidSnapshot("admissionTime"));
+        return Err(RunStartStoreError::InvalidSnapshot("admission"));
     }
     let snapshot = &record.snapshot;
     for (name, digest) in [
         ("scopeDigest", record.authentication.scope_digest),
         ("signedBodyDigest", record.authentication.signed_body_digest),
         ("profileDigest", record.admission.profile_digest),
+        (
+            "suppliedSourceDigest",
+            record.admission.supplied_source_digest,
+        ),
         ("intentDigest", record.admission.intent_digest),
         (
             "admittedSourceDigest",
@@ -578,15 +589,21 @@ fn validate_conflict_record(
     {
         return Err(RunStartStoreError::InvalidSnapshot("authentication"));
     }
-    if record.admission.observed_at_unix_micros == 0
+    if record.admission.profile_revision == 0
+        || record.admission.observed_at_unix_micros == 0
         || record.admission.deadline_unix_micros <= record.admission.observed_at_unix_micros
+        || record.admission.authority.grants_any()
     {
-        return Err(RunStartStoreError::InvalidSnapshot("admissionTime"));
+        return Err(RunStartStoreError::InvalidSnapshot("admission"));
     }
     for (name, digest) in [
         ("scopeDigest", record.authentication.scope_digest),
         ("signedBodyDigest", record.authentication.signed_body_digest),
         ("profileDigest", record.admission.profile_digest),
+        (
+            "suppliedSourceDigest",
+            record.admission.supplied_source_digest,
+        ),
         ("intentDigest", record.admission.intent_digest),
         (
             "admittedSourceDigest",
@@ -623,11 +640,15 @@ fn encode_record(record: &RunStartRecordV1) -> Vec<u8> {
     push_digest(&mut bytes, record.authentication.scope_digest);
     push_digest(&mut bytes, record.authentication.signed_body_digest);
     bytes.extend_from_slice(&record.authentication.signature);
+    push_id(&mut bytes, &record.admission.profile_id);
+    push_u64(&mut bytes, record.admission.profile_revision);
     push_digest(&mut bytes, record.admission.profile_digest);
+    push_digest(&mut bytes, record.admission.supplied_source_digest);
     push_digest(&mut bytes, record.admission.intent_digest);
     push_digest(&mut bytes, record.admission.admitted_source_digest);
     push_u64(&mut bytes, record.admission.observed_at_unix_micros);
     push_u64(&mut bytes, record.admission.deadline_unix_micros);
+    push_authority(&mut bytes, record.admission.authority);
     push_u64(
         &mut bytes,
         match record.disposition {
@@ -661,11 +682,15 @@ fn encode_conflict_record(record: &RunStartConflictRecordV1) -> Vec<u8> {
     push_digest(&mut bytes, record.authentication.scope_digest);
     push_digest(&mut bytes, record.authentication.signed_body_digest);
     bytes.extend_from_slice(&record.authentication.signature);
+    push_id(&mut bytes, &record.admission.profile_id);
+    push_u64(&mut bytes, record.admission.profile_revision);
     push_digest(&mut bytes, record.admission.profile_digest);
+    push_digest(&mut bytes, record.admission.supplied_source_digest);
     push_digest(&mut bytes, record.admission.intent_digest);
     push_digest(&mut bytes, record.admission.admitted_source_digest);
     push_u64(&mut bytes, record.admission.observed_at_unix_micros);
     push_u64(&mut bytes, record.admission.deadline_unix_micros);
+    push_authority(&mut bytes, record.admission.authority);
     push_id(&mut bytes, &record.run_id);
     push_digest(&mut bytes, record.runtime_body_digest);
     push_digest(&mut bytes, record.conflict_digest);
@@ -700,11 +725,15 @@ fn decode_record(input: &[u8]) -> Result<RunStartRecordV1, RunStartStoreError> {
             .map_err(|_| RunStartStoreError::Corrupt)?,
     };
     let admission = RunStartAdmissionBindingV1 {
+        profile_id: reader.id()?,
+        profile_revision: reader.u64()?,
         profile_digest: reader.digest()?,
+        supplied_source_digest: reader.digest()?,
         intent_digest: reader.digest()?,
         admitted_source_digest: reader.digest()?,
         observed_at_unix_micros: reader.u64()?,
         deadline_unix_micros: reader.u64()?,
+        authority: reader.authority()?,
     };
     let disposition = match reader.u64()? {
         0 => RunStartObjectiveDispositionV1::Compiled,
@@ -763,11 +792,15 @@ fn decode_conflict_record(
             .map_err(|_| RunStartStoreError::Corrupt)?,
     };
     let admission = RunStartAdmissionBindingV1 {
+        profile_id: reader.id()?,
+        profile_revision: reader.u64()?,
         profile_digest: reader.digest()?,
+        supplied_source_digest: reader.digest()?,
         intent_digest: reader.digest()?,
         admitted_source_digest: reader.digest()?,
         observed_at_unix_micros: reader.u64()?,
         deadline_unix_micros: reader.u64()?,
+        authority: reader.authority()?,
     };
     let record = RunStartConflictRecordV1 {
         authentication,
@@ -968,6 +1001,21 @@ fn push_len(bytes: &mut Vec<u8>, value: usize) {
     bytes.extend_from_slice(&converted.to_be_bytes());
 }
 
+fn push_authority(bytes: &mut Vec<u8>, authority: AuthorityPosture) {
+    for value in [
+        authority.runtime,
+        authority.production_writer,
+        authority.model_invocation,
+        authority.provider_dispatch,
+        authority.external_effect,
+        authority.selection,
+        authority.promotion,
+        authority.release,
+    ] {
+        bytes.push(u8::from(value));
+    }
+}
+
 struct Reader<'a>(&'a [u8]);
 impl Reader<'_> {
     fn bytes(&mut self, count: usize) -> Result<&[u8], RunStartStoreError> {
@@ -996,6 +1044,22 @@ impl Reader<'_> {
     }
     fn u64(&mut self) -> Result<u64, RunStartStoreError> {
         Ok(u64::from_be_bytes(self.take()?))
+    }
+    fn authority(&mut self) -> Result<AuthorityPosture, RunStartStoreError> {
+        let values = self.take::<8>()?;
+        if values.iter().any(|value| *value > 1) {
+            return Err(RunStartStoreError::Corrupt);
+        }
+        Ok(AuthorityPosture {
+            runtime: values[0] != 0,
+            production_writer: values[1] != 0,
+            model_invocation: values[2] != 0,
+            provider_dispatch: values[3] != 0,
+            external_effect: values[4] != 0,
+            selection: values[5] != 0,
+            promotion: values[6] != 0,
+            release: values[7] != 0,
+        })
     }
     fn len(&mut self) -> Result<usize, RunStartStoreError> {
         Ok(u32::from_be_bytes(self.take()?) as usize)
