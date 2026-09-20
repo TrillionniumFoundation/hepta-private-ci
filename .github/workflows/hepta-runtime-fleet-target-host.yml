@@ -1,0 +1,139 @@
+name: Hepta runtime.fleet target-host qualification
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "codex-rs/hepta-fleet/**"
+      - "codex-rs/hepta-supervisor/**"
+      - "docs/modules/runtime.fleet/**"
+      - "qualification/module-execution-dossiers/detail/runtime.fleet.md"
+      - ".github/workflows/hepta-runtime-fleet-target-host.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-runtime-fleet-target-host-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  target-host:
+    if: github.ref == 'refs/heads/main'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - profile: rog
+            runs_on: '["self-hosted","linux","x64","rog"]'
+          - profile: pocket4
+            runs_on: '["self-hosted","linux","x64","pocket4"]'
+          - profile: macbook
+            runs_on: '["self-hosted","macOS","ARM64","macbook"]'
+    name: Fleet target host / ${{ matrix.profile }}
+    runs-on: ${{ fromJSON(matrix.runs_on) }}
+    timeout-minutes: 90
+    env:
+      RUST_BACKTRACE: "1"
+      TMPDIR: /tmp
+    steps:
+      - name: Check out protected main
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind exact protected source
+        id: identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF}" = refs/heads/main
+          test "$(git rev-parse HEAD)" = "${GITHUB_SHA}"
+          echo "head=$(git rev-parse HEAD)" >> "${GITHUB_OUTPUT}"
+          echo "tree=$(git rev-parse HEAD^{tree})" >> "${GITHUB_OUTPUT}"
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+
+      - name: Verify exact implementation truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-implementation-maps.py verify
+          python3 scripts/hepta-lane-b-path-guard.py verify
+          python3 scripts/hepta-lane-b-truth.py verify
+
+      - name: Verify Fleet and Supervisor formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml             --package codex-hepta-fleet             --package codex-hepta-supervisor -- --check
+
+      - name: Execute Fleet durable placement and reconciliation
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-fleet --lib -- --nocapture --test-threads=1
+
+      - name: Execute Supervisor native process and Fleet gates
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-supervisor --lib -- --nocapture --test-threads=1
+
+      - name: Record target-host resource identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/hepta-fleet-target-host"
+          python3 - <<'PY' > "${RUNNER_TEMP}/hepta-fleet-target-host/receipt.json"
+          import json
+          import os
+          import platform
+          import subprocess
+
+          def output(*args):
+              try:
+                  return subprocess.check_output(args, text=True, stderr=subprocess.STDOUT).strip()
+              except Exception as exc:
+                  return f"unavailable:{type(exc).__name__}"
+
+          receipt = {
+              "schema": "hepta.runtime-fleet-target-host-receipt.v1",
+              "sourceSha": os.environ["GITHUB_SHA"],
+              "sourceTree": output("git", "rev-parse", "HEAD^{tree}"),
+              "runnerName": os.environ.get("RUNNER_NAME", ""),
+              "runnerOs": os.environ.get("RUNNER_OS", ""),
+              "runnerArch": os.environ.get("RUNNER_ARCH", ""),
+              "platform": platform.platform(),
+              "logicalCpuCount": os.cpu_count(),
+              "uname": output("uname", "-a"),
+              "authorityGranted": False,
+              "activationGranted": False,
+              "releaseGranted": False,
+          }
+          print(json.dumps(receipt, sort_keys=True))
+          PY
+          cat "${RUNNER_TEMP}/hepta-fleet-target-host/receipt.json"
+
+      - name: Retain target-host receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runtime-fleet-target-host-${{ matrix.profile }}-${{ steps.identity.outputs.head }}
+          path: ${{ runner.temp }}/hepta-fleet-target-host/receipt.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Assert tracked source remains clean
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
