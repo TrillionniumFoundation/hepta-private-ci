@@ -18,6 +18,7 @@ use codex_hepta_plasticity::{
 use codex_hepta_types::{AuthorityPosture, Digest32, Generation, StableId};
 
 const TOPOLOGY_DESTINATION: &str = "runtime.hepta-live-shell.topology";
+const TOPOLOGY_RECOVERY_DESTINATION: &str = "runtime.hepta-live-shell.topology-recovery";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RuntimeTopologySnapshotV1 {
@@ -146,6 +147,33 @@ pub(crate) fn validate_runtime_topology_transition_v1(
     current_generation: Generation,
     request: &RuntimeTopologyApplyRequestV1,
 ) -> Result<ValidatedRuntimeTopologyTransitionV1, RuntimeTopologyExecutionError> {
+    validate_runtime_topology_transition_for_destination_v1(
+        current_route,
+        current_generation,
+        request,
+        TOPOLOGY_DESTINATION,
+    )
+}
+
+pub(crate) fn validate_runtime_topology_recovery_v1(
+    current_route: &CnsRouteV1,
+    current_generation: Generation,
+    request: &RuntimeTopologyApplyRequestV1,
+) -> Result<ValidatedRuntimeTopologyTransitionV1, RuntimeTopologyExecutionError> {
+    validate_runtime_topology_transition_for_destination_v1(
+        current_route,
+        current_generation,
+        request,
+        TOPOLOGY_RECOVERY_DESTINATION,
+    )
+}
+
+fn validate_runtime_topology_transition_for_destination_v1(
+    current_route: &CnsRouteV1,
+    current_generation: Generation,
+    request: &RuntimeTopologyApplyRequestV1,
+    destination_id: &str,
+) -> Result<ValidatedRuntimeTopologyTransitionV1, RuntimeTopologyExecutionError> {
     let rebuilt = admit_governed_topology_v1(
         request.governed.proposal.clone(),
         request.governed.handoffs.clone(),
@@ -225,7 +253,7 @@ pub(crate) fn validate_runtime_topology_transition_v1(
     );
     let binding = FinalUseBinding {
         subject_id: request.accepted_subject_id.to_string(),
-        destination_id: TOPOLOGY_DESTINATION.to_string(),
+        destination_id: destination_id.to_string(),
         request_sha256: final_use_request_digest.into_array(),
         scope_sha256: scope_digest.into_array(),
         payload_sha256: payload_digest.into_array(),
@@ -251,6 +279,16 @@ pub fn runtime_topology_final_use_binding_v1(
 ) -> Result<FinalUseBinding, RuntimeTopologyExecutionError> {
     Ok(
         validate_runtime_topology_transition_v1(&current.route, current.route.generation, request)?
+            .binding,
+    )
+}
+
+pub fn runtime_topology_recovery_final_use_binding_v1(
+    current: &RuntimeTopologySnapshotV1,
+    request: &RuntimeTopologyApplyRequestV1,
+) -> Result<FinalUseBinding, RuntimeTopologyExecutionError> {
+    Ok(
+        validate_runtime_topology_recovery_v1(&current.route, current.route.generation, request)?
             .binding,
     )
 }
