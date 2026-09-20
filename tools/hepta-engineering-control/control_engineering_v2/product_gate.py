@@ -19,7 +19,6 @@ import tempfile
 import time
 
 from .control_plane import DENIED_AUTHORITIES, WorkEnvelope
-from .evidence import SignatureTrustStore
 from .git_security import run_git, run_git_bytes
 from .product_runtime import EngineeringControlProduct
 from .orchestration import (
@@ -361,10 +360,7 @@ def _verify_product_receipt(
         or canonical.get("allowedWritePaths")
         != ["tools/hepta-engineering-control/**"]
         or canonical.get("developmentAfter")
-        != [
-            "DOC-3C-MODULE-DOC-CLOSED-WORLD",
-            "DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD",
-        ]
+        != ["DOC-2-DEFAULT-BRANCH-SELECTION"]
         or canonical.get("activationAfter")
         != ["DOC-2-DEFAULT-BRANCH-SELECTION"]
     ):

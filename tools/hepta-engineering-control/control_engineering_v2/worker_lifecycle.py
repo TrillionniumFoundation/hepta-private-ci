@@ -397,7 +397,7 @@ def claim_assignment(
         digest = semantic_digest(identity)
         claim_id = digest[:32]
         store.connection.execute(
-            "INSERT INTO worker_claims VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            "INSERT INTO worker_claims VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (
                 claim_id,
                 generation_id,
