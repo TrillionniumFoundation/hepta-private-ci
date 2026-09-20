@@ -20,7 +20,7 @@ neural input, prompt, context, model invocation or external dispatch adapters.
 The eighth method is implemented here, bypassing the host's `record_learning`.
 It no longer receives a raw `DurableLearningJournal` or constructs a weak V1
 `LedgerEvent::Decision`. The caller supplies one `LedgerWriter`, which owns the
-durable backend, the activated signer distribution and an independently durable
+durable backend, the pinned-root-authenticated signer distribution and an independently durable
 acknowledgement witness.
 
 Before any host port is invoked, the evaluated-shadow adapter deterministically
@@ -30,7 +30,7 @@ calibrated decision. The candidate set is augmented with the reserved explicit
 `CandidateSetCompletenessReceiptV1` with `omitted_count_bound == 0`. The
 registered generator must sign the exact bytes returned by
 `decision_signing_payload_v2`. The writer verifies that evidence against its
-activated trust distribution before committing an
+root-authenticated activated trust distribution before committing an
 `AuthenticatedDecisionRecordV2`.
 
 `LearningRecorded` carries the actual committed chain digest only after both
@@ -72,11 +72,15 @@ frontier, not a backup or a replacement for directory durability.
 
 ## Capability boundary
 
-Hosts must supply a current `LearningTrustDistributionV1` from their authority
-source, activate it monotonically with `activate_learning_trust`, authenticate
+Hosts pin a current `LearningTrustRootV1` public key and supply a
+`SignedLearningTrustDistributionV1` from their authority source.
+`activate_learning_trust` verifies the root signature, scope and validity window
+and enforces monotonic distribution/authority generation before the writer is
+constructed. Hosts separately own root provisioning/rotation ceremony, distribution
+transport and private-key custody. They also authenticate
 raw data and calibration/OOD measurements, supply correctly generated assignment
 draws, persist frozen plans before collecting holdouts, and durably prevent
-holdout reuse. The activated distribution binds generation, effective time,
+holdout reuse. The activated distribution binds the pinned root identity/digest, generation, effective time,
 scope, objective, authority epoch, signer keys, controller identities and roles.
 
 A self-verifying dataset manifest is not proof of raw observations. Signed
