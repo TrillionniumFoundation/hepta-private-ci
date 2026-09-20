@@ -70,7 +70,8 @@ jobs:
           set -euo pipefail
           cd "$RUNNER_TEMP/hepta-offline-inputs"
           tar -czf dependencies.tar.gz vendor offline-config.toml lock.sha256 source-sha.txt
-          sha256sum compiler.tar.gz dependencies.tar.gz source.tar.gz source.bundle test-tools.tar.gz > SHA256SUMS
+          sha256sum compiler.tar.gz dependencies.tar.gz source.tar.gz test-tools.tar.gz > SHA256SUMS
+          sha256sum source.bundle > GIT_SHA256SUMS
           git -C "$GITHUB_WORKSPACE" diff --exit-code
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -79,11 +80,56 @@ jobs:
             ${{ runner.temp }}/hepta-offline-inputs/compiler.tar.gz
             ${{ runner.temp }}/hepta-offline-inputs/dependencies.tar.gz
             ${{ runner.temp }}/hepta-offline-inputs/source.tar.gz
-            ${{ runner.temp }}/hepta-offline-inputs/source.bundle
             ${{ runner.temp }}/hepta-offline-inputs/source-sha.txt
             ${{ runner.temp }}/hepta-offline-inputs/source-tree.txt
             ${{ runner.temp }}/hepta-offline-inputs/test-tools.tar.gz
             ${{ runner.temp }}/hepta-offline-inputs/SHA256SUMS
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error
+      # Keep each archive below the connector download limit. Git history is
+      # independently downloadable and is not a reason to duplicate toolchains.
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-offline-source-git-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/hepta-offline-inputs/source.bundle
+            ${{ runner.temp }}/hepta-offline-inputs/GIT_SHA256SUMS
+            ${{ runner.temp }}/hepta-offline-inputs/source-sha.txt
+            ${{ runner.temp }}/hepta-offline-inputs/source-tree.txt
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error
+      - name: Export the existing checksum-verified x86 V8 pair
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: |
+          set -euo pipefail
+          python3 - <<'PYV8'
+          import hashlib
+          import os
+          import shutil
+          from pathlib import Path
+          from codex_package.targets import TARGET_SPECS
+          from codex_package.v8 import resolve_codex_v8_cargo_env
+          pair = resolve_codex_v8_cargo_env(TARGET_SPECS["x86_64-unknown-linux-gnu"])
+          if set(pair) != {"RUSTY_V8_ARCHIVE", "RUSTY_V8_SRC_BINDING_PATH"}:
+              raise RuntimeError("expected the verified archive/binding pair")
+          destination = Path(os.environ["RUNNER_TEMP"]) / "hepta-offline-v8"
+          destination.mkdir()
+          checksums = []
+          for name, source in sorted(pair.items()):
+              target = destination / Path(source).name
+              shutil.copyfile(source, target)
+              digest = hashlib.sha256(target.read_bytes()).hexdigest()
+              checksums.append(f"{digest}  {target.name}\n")
+          (destination / "SHA256SUMS").write_text("".join(checksums))
+          PYV8
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-offline-v8-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-offline-v8/*
           retention-days: 3
           compression-level: 0
           if-no-files-found: error
