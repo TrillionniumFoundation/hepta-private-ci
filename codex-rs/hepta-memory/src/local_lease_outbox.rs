@@ -4354,16 +4354,133 @@ pub(crate) async fn verify_outbox_chain_integrity(
         .map(|_| ())
 }
 
+fn checked_event_row(
+    lease_id: &str,
+    row: &sqlx::sqlite::SqliteRow,
+) -> Result<EventRow, LocalLeaseOutboxError> {
+    let event = EventRow {
+        sequence: read_u64(row, "event_sequence")?,
+        event_id: row
+            .try_get("event_id")
+            .map_err(crate::cognitive_store::unavailable)?,
+        occurrence_key: row
+            .try_get("occurrence_key")
+            .map_err(crate::cognitive_store::unavailable)?,
+        owner_agent_id: parse_agent(row, "owner_agent_id")?,
+        generation: read_u64(row, "generation")?,
+        fencing_token: row
+            .try_get("fencing_token")
+            .map_err(crate::cognitive_store::unavailable)?,
+        kind: row
+            .try_get("event_kind")
+            .map_err(crate::cognitive_store::unavailable)?,
+        payload_json: row
+            .try_get("payload_json")
+            .map_err(crate::cognitive_store::unavailable)?,
+        payload_sha256: digest_from_row(row, "payload_sha256")?,
+        previous_sha256: digest_from_row(row, "previous_sha256")?,
+        event_sha256: digest_from_row(row, "event_sha256")?,
+    };
+    if Sha256Digest::for_bytes(event.payload_json.as_bytes()) != event.payload_sha256 {
+        return Err(corrupt("incremental event payload digest mismatch"));
+    }
+    let expected = event_digest(
+        lease_id,
+        event.sequence,
+        &event.event_id,
+        &event.occurrence_key,
+        &event.owner_agent_id,
+        event.generation,
+        &event.fencing_token,
+        &event.kind,
+        &event.payload_sha256,
+        &event.previous_sha256,
+    );
+    if expected != event.event_sha256 {
+        return Err(corrupt("incremental event row digest mismatch"));
+    }
+    Ok(event)
+}
+
+fn checked_outbox_row(
+    lease_id: &str,
+    row: &sqlx::sqlite::SqliteRow,
+) -> Result<OutboxRow, LocalLeaseOutboxError> {
+    let outbox = OutboxRow {
+        sequence: read_u64(row, "outbox_sequence")?,
+        outbox_id: row
+            .try_get("outbox_id")
+            .map_err(crate::cognitive_store::unavailable)?,
+        event_id: row
+            .try_get("event_id")
+            .map_err(crate::cognitive_store::unavailable)?,
+        occurrence_key: row
+            .try_get("occurrence_key")
+            .map_err(crate::cognitive_store::unavailable)?,
+        owner_agent_id: parse_agent(row, "owner_agent_id")?,
+        generation: read_u64(row, "generation")?,
+        fencing_token: row
+            .try_get("fencing_token")
+            .map_err(crate::cognitive_store::unavailable)?,
+        topic: row
+            .try_get("topic")
+            .map_err(crate::cognitive_store::unavailable)?,
+        payload_json: row
+            .try_get("payload_json")
+            .map_err(crate::cognitive_store::unavailable)?,
+        payload_sha256: digest_from_row(row, "payload_sha256")?,
+        previous_sha256: digest_from_row(row, "previous_sha256")?,
+        outbox_sha256: digest_from_row(row, "outbox_sha256")?,
+    };
+    if Sha256Digest::for_bytes(outbox.payload_json.as_bytes()) != outbox.payload_sha256 {
+        return Err(corrupt("incremental outbox payload digest mismatch"));
+    }
+    let expected = outbox_digest(
+        lease_id,
+        outbox.sequence,
+        &outbox.outbox_id,
+        &outbox.event_id,
+        &outbox.occurrence_key,
+        &outbox.owner_agent_id,
+        outbox.generation,
+        &outbox.fencing_token,
+        &outbox.topic,
+        &outbox.payload_sha256,
+        &outbox.previous_sha256,
+    );
+    if expected != outbox.outbox_sha256 {
+        return Err(corrupt("incremental outbox row digest mismatch"));
+    }
+    Ok(outbox)
+}
+
 async fn find_admission(
     transaction: &mut Transaction<'_, Sqlite>,
     lease_id: &str,
     occurrence_key: &str,
     owner: &AgentId,
 ) -> Result<Option<EventRow>, LocalLeaseOutboxError> {
-    let events = verify_event_chain(transaction, lease_id, owner).await?;
-    Ok(events
-        .into_iter()
-        .find(|event| event.occurrence_key == occurrence_key && event.kind == "admitted"))
+    let row = sqlx::query(
+        "SELECT event_sequence, event_id, occurrence_key, owner_agent_id,
+                generation, fencing_token, event_kind, payload_json,
+                payload_sha256, previous_sha256, event_sha256
+         FROM cognitive_local_events
+         WHERE lease_id = ? AND occurrence_key = ? AND event_kind = 'admitted'
+         LIMIT 1",
+    )
+    .bind(lease_id)
+    .bind(occurrence_key)
+    .fetch_optional(&mut **transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
+    row.map(|row| {
+        let event = checked_event_row(lease_id, &row)?;
+        if event.owner_agent_id != *owner {
+            return Err(corrupt("admission row belongs to a foreign owner"));
+        }
+        Ok(event)
+    })
+    .transpose()
 }
 
 async fn find_transition(
@@ -4373,10 +4490,28 @@ async fn find_transition(
     kind: &str,
     owner: &AgentId,
 ) -> Result<Option<EventRow>, LocalLeaseOutboxError> {
-    let events = verify_event_chain(transaction, lease_id, owner).await?;
-    Ok(events
-        .into_iter()
-        .find(|event| event.occurrence_key == occurrence_key && event.kind == kind))
+    let row = sqlx::query(
+        "SELECT event_sequence, event_id, occurrence_key, owner_agent_id,
+                generation, fencing_token, event_kind, payload_json,
+                payload_sha256, previous_sha256, event_sha256
+         FROM cognitive_local_events
+         WHERE lease_id = ? AND occurrence_key = ? AND event_kind = ?
+         LIMIT 1",
+    )
+    .bind(lease_id)
+    .bind(occurrence_key)
+    .bind(kind)
+    .fetch_optional(&mut **transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
+    row.map(|row| {
+        let event = checked_event_row(lease_id, &row)?;
+        if event.owner_agent_id != *owner {
+            return Err(corrupt("transition row belongs to a foreign owner"));
+        }
+        Ok(event)
+    })
+    .transpose()
 }
 
 async fn find_outbox(
@@ -4385,10 +4520,27 @@ async fn find_outbox(
     occurrence_key: &str,
     owner: &AgentId,
 ) -> Result<Option<OutboxRow>, LocalLeaseOutboxError> {
-    let rows = verify_outbox_chain(transaction, lease_id, owner).await?;
-    Ok(rows
-        .into_iter()
-        .find(|row| row.occurrence_key == occurrence_key))
+    let row = sqlx::query(
+        "SELECT outbox_sequence, outbox_id, event_id, occurrence_key,
+                owner_agent_id, generation, fencing_token, topic, payload_json,
+                payload_sha256, previous_sha256, outbox_sha256
+         FROM cognitive_local_outbox
+         WHERE lease_id = ? AND occurrence_key = ?
+         LIMIT 1",
+    )
+    .bind(lease_id)
+    .bind(occurrence_key)
+    .fetch_optional(&mut **transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
+    row.map(|row| {
+        let outbox = checked_outbox_row(lease_id, &row)?;
+        if outbox.owner_agent_id != *owner {
+            return Err(corrupt("outbox row belongs to a foreign owner"));
+        }
+        Ok(outbox)
+    })
+    .transpose()
 }
 
 async fn lease_fence_is_terminal(
@@ -4420,23 +4572,37 @@ async fn current_outcome(
     occurrence_key: &str,
     owner: &AgentId,
 ) -> Result<LocalOutcomeState, LocalLeaseOutboxError> {
-    let events = verify_event_chain(transaction, lease_id, owner).await?;
-    let mut state = LocalOutcomeState::Queued;
-    for event in events
-        .iter()
-        .filter(|event| event.occurrence_key == occurrence_key)
-    {
-        state = match event.kind.as_str() {
-            "admitted" => LocalOutcomeState::Queued,
-            "indeterminate" => LocalOutcomeState::Indeterminate,
-            "reconcile_committed" => LocalOutcomeState::Committed,
-            "reconcile_rejected" => LocalOutcomeState::Rejected,
-            "reconcile_still_indeterminate" => LocalOutcomeState::Indeterminate,
-            "rolled_back" => LocalOutcomeState::RolledBack,
-            other => return Err(corrupt(format!("unknown event kind {other:?}"))),
-        };
+    let rows = sqlx::query(
+        "SELECT event_sequence, event_id, occurrence_key, owner_agent_id,
+                generation, fencing_token, event_kind, payload_json,
+                payload_sha256, previous_sha256, event_sha256
+         FROM cognitive_local_events
+         WHERE lease_id = ? AND occurrence_key = ?
+         ORDER BY event_sequence",
+    )
+    .bind(lease_id)
+    .bind(occurrence_key)
+    .fetch_all(&mut **transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
+    let mut states = BTreeMap::new();
+    let mut seen_kinds = BTreeSet::new();
+    for row in rows {
+        let event = checked_event_row(lease_id, &row)?;
+        if event.owner_agent_id != *owner {
+            return Err(corrupt("occurrence event belongs to a foreign owner"));
+        }
+        advance_outcome_state(
+            &mut states,
+            &mut seen_kinds,
+            occurrence_key,
+            &event.kind,
+        )?;
     }
-    Ok(state)
+    Ok(states
+        .get(occurrence_key)
+        .copied()
+        .unwrap_or(LocalOutcomeState::Queued))
 }
 
 async fn next_event_sequence(
