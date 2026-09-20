@@ -350,8 +350,11 @@ def generate():
 def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
+    candidate_source_base = current_source_base()
     failures = []
     source_bases = set()
+    candidate_bound_maps = 0
+    exact_observed_fallback_maps = 0
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -381,6 +384,23 @@ def verify():
             failures.append(f"{mid}: source base")
         else:
             source_bases.add((source_base["commit"], source_base["tree"]))
+            policy = row.get("sourceIdentityPolicy", "legacy_shared_batch")
+            if policy not in {"legacy_shared_batch", "candidate_or_exact_observation_v1"}:
+                failures.append(f"{mid}: unknown source identity policy")
+            elif policy == "candidate_or_exact_observation_v1":
+                if source_base == candidate_source_base:
+                    candidate_bound_maps += 1
+                elif row.get("observedAtHead") is not None:
+                    # validate_observed_source below proves that the recorded
+                    # owner-source commit/tree is in current history and that
+                    # every declared observed path is byte-unchanged through
+                    # the current candidate. This is the non-self-referential
+                    # exact-source form for tracked implementation maps.
+                    exact_observed_fallback_maps += 1
+                else:
+                    failures.append(
+                        f"{mid}: stale source base without exact observed source"
+                    )
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -422,6 +442,8 @@ def verify():
                 "modules": len(modules),
                 "maps": len(modules),
                 "productionImplementationProved": False,
+                "candidateBoundMaps": candidate_bound_maps,
+                "exactObservedFallbackMaps": exact_observed_fallback_maps,
             },
             sort_keys=True,
         )
