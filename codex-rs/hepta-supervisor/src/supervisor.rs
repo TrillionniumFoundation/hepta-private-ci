@@ -451,7 +451,12 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<(), SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
             supervisor.upgrade_slot(
-                agent_id, slot, target, now, /*explicit_rollback*/ false,
+                agent_id,
+                slot,
+                target,
+                now,
+                /*explicit_rollback*/ false,
+                /*authority*/ None,
             )
         })
     }
@@ -462,7 +467,14 @@ impl<D: ProcessDriver> Supervisor<D> {
                 .previous_release
                 .clone()
                 .ok_or_else(|| SupervisorError::NoPreviousRelease(agent_id.clone()))?;
-            supervisor.upgrade_slot(agent_id, slot, target, now, /*explicit_rollback*/ true)
+            supervisor.upgrade_slot(
+                agent_id,
+                slot,
+                target,
+                now,
+                /*explicit_rollback*/ true,
+                /*authority*/ None,
+            )
         })
     }
 
@@ -550,7 +562,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             slot.signed_intent = Some(intent.clone());
             let explicit_rollback = grant.transition == H7H89ProductionTransition::Rollback;
             if let Err(error) =
-                supervisor.upgrade_slot(agent_id, slot, target, now, explicit_rollback)
+                supervisor.upgrade_slot(
+                    agent_id,
+                    slot,
+                    target,
+                    now,
+                    explicit_rollback,
+                    Some((grant.digest().clone(), expected_authority_epoch)),
+                )
             {
                 let recovery = intent
                     .with_status(SignedIntentStatus::RecoveryRequired)
