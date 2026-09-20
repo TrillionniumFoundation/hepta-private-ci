@@ -145,6 +145,54 @@ fn runtime_fixture() -> RuntimeFixture {
 }
 
 #[tokio::test]
+async fn production_compact_host_is_composed_against_running_owner_store() {
+    let fixture = runtime_fixture();
+    fixture
+        .registry
+        .compare_and_transition(&fixture.identity.agent_id, 1, AgentLifecycle::Running)
+        .expect("running generation");
+    fixture.state.refresh_generation().expect("refresh running");
+    fixture
+        .state
+        .mark_app_server_ready()
+        .expect("mark App Server ready");
+
+    let store = Arc::new(
+        codex_hepta_memory::CognitiveStore::open(&fixture.identity.layout)
+            .await
+            .expect("cognitive store"),
+    );
+    fixture
+        .state
+        .attach_cognitive_store(Arc::clone(&store))
+        .expect("attach cognitive owner");
+    let host = Arc::new(
+        crate::AgentdCompactCheckpointHost::new(&fixture.state, store)
+            .expect("compact product host"),
+    );
+    fixture
+        .state
+        .attach_compact_checkpoint_host(Arc::clone(&host))
+        .expect("attach compact product host");
+
+    assert_eq!(
+        crate::AGENTD_COMPACT_CHECKPOINT_CAPABILITY_ID,
+        "hepta-agentd:compact-checkpoint-production:v1"
+    );
+    assert!(crate::AGENTD_COMPACT_CHECKPOINT_PRODUCTION_CALLER);
+    assert!(fixture.state.compact_checkpoint_host().is_some());
+
+    let scope_id = codex_hepta_types::StableId::new("scope:not-yet-published")
+        .expect("scope id");
+    assert!(
+        host.current(&scope_id)
+            .await
+            .expect("query current compact checkpoint")
+            .is_none()
+    );
+}
+
+#[tokio::test]
 async fn duplicate_automation_attachment_does_not_replace_the_live_store() {
     let fixture = runtime_fixture();
     fixture
