@@ -200,6 +200,147 @@ class IntegrationControllerTests(unittest.TestCase):
                         now_ns=self.now + 2,
                     )
 
+    def test_identical_observation_retry_is_revision_stable_noop(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with EngineeringStore(Path(temporary) / "engineering.sqlite3") as store:
+                self.publish(store)
+                first = reconcile_integration_item(
+                    store,
+                    "queue-a",
+                    "package-a",
+                    current_base_commit=self.base_commit,
+                    current_base_tree=self.base_tree,
+                    candidate_digest="1" * 64,
+                    now_ns=self.now + 2,
+                )
+                generation = integration_queue_generation(store, "queue-a")
+                anchor = store.audit_anchor()
+                replay = reconcile_integration_item(
+                    store,
+                    "queue-a",
+                    "package-a",
+                    current_base_commit=self.base_commit,
+                    current_base_tree=self.base_tree,
+                    candidate_digest="1" * 64,
+                    now_ns=self.now + 3,
+                )
+                self.assertEqual(replay, first)
+                self.assertEqual(
+                    integration_queue_generation(store, "queue-a").revision,
+                    generation.revision,
+                )
+                self.assertEqual(store.audit_anchor(), anchor)
+
+    def test_repeated_base_drift_is_revision_stable_noop(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with EngineeringStore(Path(temporary) / "engineering.sqlite3") as store:
+                self.publish(store)
+                first = reconcile_integration_item(
+                    store,
+                    "queue-a",
+                    "package-a",
+                    current_base_commit="9" * 40,
+                    current_base_tree="8" * 40,
+                    now_ns=self.now + 2,
+                )
+                generation = integration_queue_generation(store, "queue-a")
+                anchor = store.audit_anchor()
+                replay = reconcile_integration_item(
+                    store,
+                    "queue-a",
+                    "package-a",
+                    current_base_commit="9" * 40,
+                    current_base_tree="8" * 40,
+                    now_ns=self.now + 3,
+                )
+                self.assertEqual(replay, first)
+                self.assertEqual(
+                    integration_queue_generation(store, "queue-a").revision,
+                    generation.revision,
+                )
+                self.assertEqual(store.audit_anchor(), anchor)
+
+    def test_review_and_ci_cannot_precede_candidate_binding(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with EngineeringStore(Path(temporary) / "engineering.sqlite3") as store:
+                self.publish(store)
+                with self.assertRaisesRegex(
+                    ValueError, "integration_review_before_candidate"
+                ):
+                    reconcile_integration_item(
+                        store,
+                        "queue-a",
+                        "package-a",
+                        current_base_commit=self.base_commit,
+                        current_base_tree=self.base_tree,
+                        review_digest="2" * 64,
+                        now_ns=self.now + 2,
+                    )
+                with self.assertRaisesRegex(ValueError, "integration_ci_before_review"):
+                    reconcile_integration_item(
+                        store,
+                        "queue-a",
+                        "package-a",
+                        current_base_commit=self.base_commit,
+                        current_base_tree=self.base_tree,
+                        candidate_digest="1" * 64,
+                        ci_digest="3" * 64,
+                        now_ns=self.now + 3,
+                    )
+
+    def test_terminal_retry_is_idempotent_but_conflicting_terminal_is_rejected(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with EngineeringStore(Path(temporary) / "engineering.sqlite3") as store:
+                self.publish(store)
+                ready = reconcile_integration_item(
+                    store,
+                    "queue-a",
+                    "package-a",
+                    current_base_commit=self.base_commit,
+                    current_base_tree=self.base_tree,
+                    candidate_digest="1" * 64,
+                    review_digest="2" * 64,
+                    ci_digest="3" * 64,
+                    now_ns=self.now + 2,
+                )
+                self.assertEqual(ready.state, "ready_external_merge")
+                terminal = reconcile_integration_item(
+                    store,
+                    "queue-a",
+                    "package-a",
+                    current_base_commit=self.base_commit,
+                    current_base_tree=self.base_tree,
+                    terminal_outcome="merged_observed",
+                    now_ns=self.now + 3,
+                )
+                generation = integration_queue_generation(store, "queue-a")
+                anchor = store.audit_anchor()
+                replay = reconcile_integration_item(
+                    store,
+                    "queue-a",
+                    "package-a",
+                    current_base_commit="9" * 40,
+                    current_base_tree="8" * 40,
+                    terminal_outcome="merged_observed",
+                    now_ns=self.now + 4,
+                )
+                self.assertEqual(replay, terminal)
+                self.assertEqual(
+                    integration_queue_generation(store, "queue-a").revision,
+                    generation.revision,
+                )
+                self.assertEqual(store.audit_anchor(), anchor)
+                with self.assertRaisesRegex(ValueError, "integration_item_terminal"):
+                    reconcile_integration_item(
+                        store,
+                        "queue-a",
+                        "package-a",
+                        current_base_commit=self.base_commit,
+                        current_base_tree=self.base_tree,
+                        terminal_outcome="terminal_failure",
+                        now_ns=self.now + 5,
+                    )
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -259,9 +259,9 @@
       "nativeSymbol": "build_product_receipt",
       "ownerSymbol": "build_product_receipt",
       "tests": [
-        "ProductGateTests.test_pull_request_product_caller_composes_v2_orchestrator",
+        "ProductGateTests.test_pull_request_product_caller_executes_full_lifecycle_and_reconciliation",
         "ProductGateTests.test_source_push_requires_exact_head",
-        "ProductGateTests.test_pull_request_source_head_product_caller_composes_same_v2_path",
+        "ProductGateTests.test_pull_request_source_head_product_caller_executes_same_full_path",
         "ProductGateTests.test_base_merge_lane_is_invalid_on_push",
         "ProductGateTests.test_missing_canonical_work_package_registry_fails_closed",
         "ProductGateTests.test_tampered_canonical_engineering_package_fails_closed",
@@ -269,7 +269,7 @@
         "ProductGateTests.test_product_receipt_pair_rejects_tamper_and_lane_drift"
       ],
       "state": "source_implemented",
-      "capabilityCeiling": "exact-source/base-merge product execution receipt bound to canonical ECP-1 registry truth only; no merge or release authority"
+      "capabilityCeiling": "exact-source/base-merge product execution receipt proving the full composed worker/reopen/integration state-machine path with explicit CI reference fixtures; independent completion/review/merge observations are not proved"
     },
     {
       "designOperation": "verify_product_receipt_pair",
@@ -302,10 +302,30 @@
       "nativeSymbol": "EngineeringControlProduct",
       "ownerSymbol": "EngineeringControlProduct",
       "tests": [
-        "EngineeringControlProductTests.test_named_product_owner_composes_repository_store_and_plan"
+        "EngineeringControlProductTests.test_named_product_owner_composes_repository_store_and_plan",
+        "ProductGateTests.test_pull_request_product_caller_executes_full_lifecycle_and_reconciliation",
+        "ProductGateTests.test_pull_request_source_head_product_caller_executes_same_full_path"
       ],
       "state": "source_implemented_product_execution_pending",
-      "capabilityCeiling": "named durable product owner composition without merge/release/deployment authority"
+      "capabilityCeiling": "named SQLite v8 durable product owner composing planning, fenced worker lifecycle and integration reconciliation; CI product execution is fixture-bound and grants no independent acceptance/merge/release/deployment authority"
+    },
+    {
+      "designOperation": "durable_integration_queue_reconciliation",
+      "nativeModule": "control_engineering_v2.integration_controller",
+      "nativeSymbol": "reconcile_integration_item",
+      "ownerSymbol": "publish_integration_queue / reconcile_integration_item",
+      "tests": [
+        "IntegrationControllerTests.test_evidence_progression_reopen_and_terminal_observation",
+        "IntegrationControllerTests.test_base_drift_invalidates_generation_and_requires_replan",
+        "IntegrationControllerTests.test_observation_digest_drift_invalidates_instead_of_replacing",
+        "IntegrationControllerTests.test_terminal_outcome_cannot_skip_review_or_ci",
+        "IntegrationControllerTests.test_identical_observation_retry_is_revision_stable_noop",
+        "IntegrationControllerTests.test_repeated_base_drift_is_revision_stable_noop",
+        "IntegrationControllerTests.test_review_and_ci_cannot_precede_candidate_binding",
+        "IntegrationControllerTests.test_terminal_retry_is_idempotent_but_conflicting_terminal_is_rejected"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "durable base-bound ordered candidate→review→CI observation state up to ready_external_merge plus immutable terminal observation; identical retries are revision/audit-stable no-ops and never grant merge authority"
     },
     {
       "designOperation": "github_reviewer_identity_observation",
@@ -345,6 +365,7 @@
     "tools/hepta-engineering-control/test_external_controls.py",
     "tools/hepta-engineering-control/test_product_gate.py",
     "tools/hepta-engineering-control/test_worker_lifecycle.py",
-    "tools/hepta-engineering-control/test_product_runtime.py"
+    "tools/hepta-engineering-control/test_product_runtime.py",
+    "tools/hepta-engineering-control/test_integration_controller.py"
   ]
 }

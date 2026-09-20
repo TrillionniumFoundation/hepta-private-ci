@@ -70,7 +70,7 @@ class ProductGateTests(unittest.TestCase):
         source_tree = "e" * 40
         merge_tree = "d" * 40
         receipt = {
-            "schema": "hepta.control-engineering-product-execution.v2",
+            "schema": "hepta.control-engineering-product-execution.v4",
             "mode": lane,
             "ciIdentity": {
                 "repository": product_gate.EXPECTED_REPOSITORY,
@@ -126,7 +126,8 @@ class ProductGateTests(unittest.TestCase):
                 "completedState": "completed_observed",
                 "reopenedState": "completed_observed",
                 "resultDigest": "5" * 64,
-                "independentlyObservedCompletion": True,
+                "independentlyObservedCompletion": False,
+                "completionEvidenceClass": "ci_reference_hmac_fixture",
                 "trustClass": "ci_reference_hmac_fixture",
             },
             "integrationReconciliation": {
@@ -136,11 +137,15 @@ class ProductGateTests(unittest.TestCase):
                 "state": "ready_external_merge",
                 "reopenedState": "ready_external_merge",
                 "mergeAuthority": False,
+                "observationEvidenceClass": "ci_reference_digest_fixture",
+                "externalObservationProved": False,
             },
             "productCallerComposed": True,
-            "workerLifecycleObserved": True,
-            "integrationReconciliationObserved": True,
-            "reopenRecoveryObserved": True,
+            "workerLifecycleFixtureExecuted": True,
+            "integrationReconciliationFixtureExecuted": True,
+            "reopenRecoveryFixtureExecuted": True,
+            "independentCompletionProved": False,
+            "externalIntegrationObservationProved": False,
             "productTestsUpstreamRequired": True,
             "runtimeAuthority": False,
             "mergeAuthority": False,
@@ -154,7 +159,7 @@ class ProductGateTests(unittest.TestCase):
         ).hexdigest()
         return receipt
 
-    def test_pull_request_product_caller_composes_v2_orchestrator(self):
+    def test_pull_request_product_caller_executes_full_lifecycle_and_reconciliation(self):
         source = "a" * 40
         base = "b" * 40
         merge = "c" * 40
@@ -229,7 +234,7 @@ class ProductGateTests(unittest.TestCase):
         self.assertFalse(receipt["mergeAuthority"])
         self.assertFalse(receipt["releaseAuthority"])
 
-    def test_pull_request_source_head_product_caller_composes_same_v2_path(self):
+    def test_pull_request_source_head_product_caller_executes_same_full_path(self):
         source = "a" * 40
         base = "b" * 40
         source_tree = "e" * 40

@@ -1,9 +1,11 @@
 """Repository product caller for the Engineering Control Plane.
 
-The caller runs only after repository qualification jobs succeed.  It proves that
-the actual repository CI composes the v2 durable owner and resource-aware
-orchestrator.  It never grants merge, deployment, promotion, release or runtime
-authority.
+The caller runs only after repository qualification jobs succeed. It proves that
+the actual repository CI composes the SQLite v8 named product owner across planning,
+fenced worker lifecycle, durable integration reconciliation and reopen recovery.
+Its in-process signatures/digests are explicit execution fixtures, not independent
+acceptance or external observations. It never grants merge, deployment, promotion,
+release or runtime authority.
 """
 
 from __future__ import annotations
@@ -452,7 +454,7 @@ def build_product_receipt(
         raise RuntimeError("product_caller_authority_delta")
 
     receipt = {
-        "schema": "hepta.control-engineering-product-execution.v3",
+        "schema": "hepta.control-engineering-product-execution.v4",
         "mode": mode,
         "ciIdentity": {
             "repository": repository_full_name,
@@ -480,7 +482,8 @@ def build_product_receipt(
             "completedState": completed_state,
             "reopenedState": reopened_claim_state,
             "resultDigest": result_digest,
-            "independentlyObservedCompletion": True,
+            "independentlyObservedCompletion": False,
+            "completionEvidenceClass": "ci_reference_hmac_fixture",
             "trustClass": "ci_reference_hmac_fixture",
         },
         "integrationReconciliation": {
@@ -490,11 +493,15 @@ def build_product_receipt(
             "state": integration_state,
             "reopenedState": reopened_integration_state,
             "mergeAuthority": False,
+            "observationEvidenceClass": "ci_reference_digest_fixture",
+            "externalObservationProved": False,
         },
         "productCallerComposed": True,
-        "workerLifecycleObserved": True,
-        "integrationReconciliationObserved": True,
-        "reopenRecoveryObserved": True,
+        "workerLifecycleFixtureExecuted": True,
+        "integrationReconciliationFixtureExecuted": True,
+        "reopenRecoveryFixtureExecuted": True,
+        "independentCompletionProved": False,
+        "externalIntegrationObservationProved": False,
         "productTestsUpstreamRequired": True,
         "runtimeAuthority": False,
         "mergeAuthority": False,
@@ -517,12 +524,14 @@ def _verify_product_receipt(
     if not isinstance(value, Mapping):
         raise ValueError("product_receipt_shape")
     if (
-        value.get("schema") != "hepta.control-engineering-product-execution.v3"
+        value.get("schema") != "hepta.control-engineering-product-execution.v4"
         or value.get("mode") != expected_lane
         or value.get("productCallerComposed") is not True
-        or value.get("workerLifecycleObserved") is not True
-        or value.get("integrationReconciliationObserved") is not True
-        or value.get("reopenRecoveryObserved") is not True
+        or value.get("workerLifecycleFixtureExecuted") is not True
+        or value.get("integrationReconciliationFixtureExecuted") is not True
+        or value.get("reopenRecoveryFixtureExecuted") is not True
+        or value.get("independentCompletionProved") is not False
+        or value.get("externalIntegrationObservationProved") is not False
         or value.get("productTestsUpstreamRequired") is not True
     ):
         raise ValueError("product_receipt_identity")
@@ -603,7 +612,8 @@ def _verify_product_receipt(
         not isinstance(lifecycle, Mapping)
         or lifecycle.get("completedState") != "completed_observed"
         or lifecycle.get("reopenedState") != "completed_observed"
-        or lifecycle.get("independentlyObservedCompletion") is not True
+        or lifecycle.get("independentlyObservedCompletion") is not False
+        or lifecycle.get("completionEvidenceClass") != "ci_reference_hmac_fixture"
         or lifecycle.get("trustClass") != "ci_reference_hmac_fixture"
         or not isinstance(lifecycle.get("claimId"), str)
         or not lifecycle["claimId"]
@@ -615,6 +625,8 @@ def _verify_product_receipt(
         or integration.get("state") != "ready_external_merge"
         or integration.get("reopenedState") != "ready_external_merge"
         or integration.get("mergeAuthority") is not False
+        or integration.get("observationEvidenceClass") != "ci_reference_digest_fixture"
+        or integration.get("externalObservationProved") is not False
         or not isinstance(integration.get("queueGenerationId"), str)
         or not integration["queueGenerationId"]
     ):
@@ -894,7 +906,7 @@ def main(argv: list[str] | None = None) -> int:
         print(
             json.dumps(
                 {
-                    "schema": "hepta.control-engineering-product-execution.v3",
+                    "schema": "hepta.control-engineering-product-execution.v4",
                     "status": "rejected",
                     "error": str(error),
                     "authorityGranted": False,

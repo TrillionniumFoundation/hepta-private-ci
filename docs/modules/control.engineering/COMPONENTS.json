@@ -496,7 +496,7 @@
         "authorityMinted": 0
       },
       "rollback": "production admission remains blocked until fresh externally authenticated, role-separated custody and control receipts exist",
-      "physicalState": "SQLite v7 distributed_fence_frontiers high-water mark plus externally signed revocation/fence receipts, owner-state audit snapshot binding and subject-bound HSM/KMS custody receipts"
+      "physicalState": "SQLite v8 distributed_fence_frontiers high-water mark plus externally signed revocation/fence receipts, owner-state audit snapshot binding and subject-bound HSM/KMS custody receipts"
     },
     {
       "id": "repository-product-caller",
@@ -506,7 +506,7 @@
         "main",
         "verify_product_receipt_pair"
       ],
-      "state": "source_implemented_dual_lane_execution_pending",
+      "state": "source_implemented_v4_fixture_dual_lane_execution_pending",
       "failureModel": [
         "repository_identity_mismatch",
         "ordered_merge_parent_mismatch",
@@ -514,14 +514,18 @@
         "product_receipt_digest_mismatch",
         "product_receipt_pair_ci_identity",
         "product_receipt_pair_merge_identity",
-        "product_receipt_pair_canonical_drift"
+        "product_receipt_pair_canonical_drift",
+        "product_worker_lifecycle_not_recovered",
+        "product_integration_reconciliation_not_recovered",
+        "product_reopen_audit_anchor_drift"
       ],
       "resourceBounds": {
         "runtimeAuthority": 0,
         "mergeAuthority": 0,
         "releaseAuthority": 0
       },
-      "rollback": "discard the lane receipts/pair receipt; no product transition is authorized"
+      "rollback": "discard the lane receipts/pair receipt; no product transition is authorized",
+      "physicalState": "Repository CI executes SQLite v8 planning, fenced worker lifecycle, integration reconciliation and reopen recovery using explicit reference fixture identities; external independent observations remain separate."
     },
     {
       "id": "durable-worker-lifecycle",
@@ -536,7 +540,7 @@
         "expire_stale_claims"
       ],
       "state": "source_implemented",
-      "physicalState": "SQLite v7 orchestration_generations, worker_registrations and worker_claims",
+      "physicalState": "SQLite v8 orchestration_generations, worker_registrations and worker_claims",
       "failureModel": [
         "worker_profile_drift",
         "claim_lease_invalid",
@@ -556,8 +560,8 @@
       "symbols": [
         "EngineeringControlProduct"
       ],
-      "state": "source_implemented_product_execution_pending",
-      "physicalState": "One named owner composes repository identity, SQLite v7 EngineeringStore, trust verifier, planner and worker lifecycle",
+      "state": "source_implemented_fixture_execution_pending",
+      "physicalState": "One named owner composes repository identity, SQLite v8 EngineeringStore, trust verifier, planner, fenced worker lifecycle and durable integration reconciliation",
       "failureModel": [
         "source_identity_mismatch",
         "repository_mismatch",
@@ -567,6 +571,37 @@
         "ambientAuthority": 0
       },
       "rollback": "close the owner and reopen a schema-compatible predecessor; committed owner facts are never rewritten"
+    },
+    {
+      "id": "integration-reconciliation-controller",
+      "source": "tools/hepta-engineering-control/control_engineering_v2/integration_controller.py",
+      "symbols": [
+        "IntegrationQueueGeneration",
+        "IntegrationQueueItem",
+        "publish_integration_queue",
+        "reconcile_integration_item",
+        "integration_queue_generation",
+        "integration_queue_item"
+      ],
+      "state": "source_implemented",
+      "physicalState": "SQLite v8 integration_queue_generations and integration_queue_items",
+      "failureModel": [
+        "integration_generation_unknown",
+        "integration_item_unknown",
+        "integration_plan_invalid",
+        "integration_generation_identity_conflict",
+        "integration_generation_requires_replan",
+        "integration_item_terminal",
+        "integration_terminal_before_ready",
+        "integration_review_before_candidate",
+        "integration_ci_before_review",
+        "integration_generation_terminal"
+      ],
+      "resourceBounds": {
+        "mergeAuthority": 0,
+        "releaseAuthority": 0
+      },
+      "rollback": "identical observation/base-drift/terminal retries are stable no-ops; drifted evidence invalidates the generation and requires a fresh queue from a fresh orchestration generation; prior terminal observations are immutable"
     },
     {
       "id": "github-review-identity-observer",

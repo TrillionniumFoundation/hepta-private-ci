@@ -266,6 +266,10 @@ def _invalidate_generation_for_base_drift(
     current_base_tree: str,
     now: int,
 ) -> None:
+    if str(generation["state"]) == "requires_replan":
+        return
+    if str(generation["state"]) == "terminal":
+        raise EngineeringError("integration_generation_terminal")
     store.connection.execute(
         "UPDATE integration_queue_items SET state='invalidated',"
         "reason='base_drift',revision=revision+1,updated_unix_ns=? "
@@ -325,24 +329,6 @@ def reconcile_integration_item(
         ).fetchone()
         if generation is None:
             raise EngineeringError("integration_generation_unknown")
-        if (
-            str(generation["base_commit"]) != current_base_commit
-            or str(generation["base_tree"]) != current_base_tree
-        ):
-            _invalidate_generation_for_base_drift(
-                store, generation, current_base_commit, current_base_tree, now
-            )
-            row = store.connection.execute(
-                "SELECT * FROM integration_queue_items "
-                "WHERE queue_generation_id=? AND package_id=?",
-                (queue_generation_id, package_id),
-            ).fetchone()
-            if row is None:
-                raise EngineeringError("integration_item_unknown")
-            return _item(row)
-        if str(generation["state"]) == "requires_replan":
-            raise EngineeringError("integration_generation_requires_replan")
-
         row = store.connection.execute(
             "SELECT * FROM integration_queue_items "
             "WHERE queue_generation_id=? AND package_id=?",
@@ -350,7 +336,45 @@ def reconcile_integration_item(
         ).fetchone()
         if row is None:
             raise EngineeringError("integration_item_unknown")
-        if str(row["state"]) not in _MUTABLE_STATES:
+
+        row_state = str(row["state"])
+        if row_state in _TERMINAL_STATES:
+            stored_terminal = None if row["terminal_outcome"] is None else str(row["terminal_outcome"])
+            replay_matches = (
+                terminal_outcome is not None
+                and terminal_outcome == stored_terminal
+                and all(
+                    supplied is None
+                    or supplied == (None if row[column] is None else str(row[column]))
+                    for supplied, column in (
+                        (candidate_digest, "candidate_digest"),
+                        (review_digest, "review_digest"),
+                        (ci_digest, "ci_digest"),
+                    )
+                )
+            )
+            if replay_matches:
+                return _item(row)
+            raise EngineeringError("integration_item_terminal")
+
+        if (
+            str(generation["base_commit"]) != current_base_commit
+            or str(generation["base_tree"]) != current_base_tree
+        ):
+            _invalidate_generation_for_base_drift(
+                store, generation, current_base_commit, current_base_tree, now
+            )
+            current = store.connection.execute(
+                "SELECT * FROM integration_queue_items "
+                "WHERE queue_generation_id=? AND package_id=?",
+                (queue_generation_id, package_id),
+            ).fetchone()
+            return _item(current)
+        if str(generation["state"]) == "requires_replan":
+            raise EngineeringError("integration_generation_requires_replan")
+        if str(generation["state"]) == "terminal":
+            raise EngineeringError("integration_generation_terminal")
+        if row_state not in _MUTABLE_STATES:
             raise EngineeringError("integration_item_terminal")
 
         observed = {
@@ -363,6 +387,16 @@ def reconcile_integration_item(
             "review": review_digest,
             "ci": ci_digest,
         }
+        effective_candidate = observed["candidate"] or supplied["candidate"]
+        effective_review = observed["review"] or supplied["review"]
+        if supplied["review"] is not None and effective_candidate is None:
+            raise EngineeringError("integration_review_before_candidate")
+        if supplied["ci"] is not None and (
+            effective_candidate is None or effective_review is None
+        ):
+            raise EngineeringError("integration_ci_before_review")
+
+        changed = False
         for kind in ("candidate", "review", "ci"):
             if (
                 observed[kind] is not None
@@ -404,6 +438,10 @@ def reconcile_integration_item(
                 return _item(invalid)
             if observed[kind] is None and supplied[kind] is not None:
                 observed[kind] = supplied[kind]
+                changed = True
+
+        if not changed and terminal_outcome is None:
+            return _item(row)
 
         if observed["candidate"] is None:
             state = "awaiting_candidate_evidence"
