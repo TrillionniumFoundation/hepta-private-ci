@@ -18,16 +18,18 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "registered_runtime_native_caller_source_implemented_execution_pending",
   "productionWriterState": "not_established",
   "operations": [
     {
       "operation": "run_read_only_vertical",
       "nativeSymbol": "run_read_only_vertical",
       "sourcePath": "codex-rs/hepta-intelligence/src/vertical.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_compatibility_surface",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-intelligence/src/vertical_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "run_read_only_vertical",
       "mappingClass": "owner_native",
@@ -37,18 +39,103 @@
       "operation": "run_evaluated_shadow_v1",
       "nativeSymbol": "run_evaluated_shadow_v1",
       "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_qualification_compatibility_surface",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs"
+      ],
       "sourcePathExists": true,
       "designOperation": "run_evaluated_shadow_v1",
       "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "learning.eval",
+        "learning.ledger",
+        "intuition.policy"
+      ]
+    },
+    {
+      "operation": "build_legal_candidates_v1",
+      "nativeSymbol": "build_legal_candidates_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/contracts_v1.rs",
+      "state": "source_implemented_v3_contract",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/contracts_v1.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "build_legal_candidates_v1",
+      "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "run_composition_v3",
+      "nativeSymbol": "run_composition_v3",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_v3.rs",
+      "state": "source_implemented_registered_product_caller_execution_pending",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/pipeline_v3_tests.rs",
+        "codex-rs/hepta-intelligence/src/native_ports_v3_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "run_composition_v3",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "objective.compiler",
+        "utility.ndu",
+        "learning.eval",
+        "neuron.runtime",
+        "prompt.optimizer",
+        "intuition.policy",
+        "context.compiler",
+        "runtime.agentd",
+        "learning.ledger"
+      ]
+    },
+    {
+      "operation": "run_composition_v3_with_control",
+      "nativeSymbol": "run_composition_v3_with_control",
+      "sourcePath": "codex-rs/hepta-intelligence/src/pipeline_v3.rs",
+      "state": "source_implemented_registered_product_caller_execution_pending",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/pipeline_v3_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "run_composition_v3_with_control",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "objective.compiler",
+        "utility.ndu",
+        "learning.eval",
+        "neuron.runtime",
+        "prompt.optimizer",
+        "intuition.policy",
+        "context.compiler",
+        "runtime.agentd",
+        "learning.ledger"
+      ]
+    },
+    {
+      "operation": "append_outcome_credit_v1",
+      "nativeSymbol": "append_outcome_credit_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/outcome_credit.rs",
+      "state": "source_implemented_terminal_learning_closure_execution_pending",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/outcome_credit.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "post_execution_outcome_credit_closure",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "learning.ledger"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Execute AgentRunCoordinator::run_native_intelligence_v3 with authenticated current owner inputs, the exact frozen implementation generations, actual Codex delivery/terminal observations, and durable Outcome/Credit reconciliation.",
+    "Run exact-head and deterministic synthetic-merge tests before changing the product-execution claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
