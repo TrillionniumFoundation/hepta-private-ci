@@ -62,11 +62,11 @@ Test identities are not execution receipts. Exact-head and ordered-parent synthe
 
 ## 7. Integration, rollback and capability ceiling
 
-The opt-in Agentd context path can consume an authenticated `CurrentMemoryRetrievalContext`. With that context present it obtains the owner read cut, observes the complete bounded pre-top-four generator output, executes HNMF recall, optionally applies the separately selected learned reranker to the HNMF-selected set, packs the bounded response, runs NDU context planning, revalidates the Lane C cut/retrieval context/ranker, and records the final delivered subset through the durable learning-ledger owner when configured.
+Agentd now exposes an explicit retrieval product mode. `CognitiveRetrievalMode::Compatibility` retains the existing owner-ranked compatibility path. `CognitiveRetrievalMode::HnmfRequired` requires an authenticated `CurrentMemoryRetrievalContext` at startup and rejects startup when it is absent. With the required profile active, Agentd obtains the owner read cut, observes the complete bounded pre-top-four generator output, executes HNMF recall, optionally applies the separately selected learned reranker only to the HNMF-selected set, packs the bounded response, runs NDU context planning, revalidates the Lane C cut/retrieval context/ranker, and records the final delivered subset through the durable learning-ledger owner when configured.
 
-The ordinary CLI does not synthesize a retrieval generation, engram or learned model. A missing/revoked current context fails closed rather than silently falling back to stale HNMF state. Compatibility retrieval remains available when no HNMF currentness source is explicitly composed; that compatibility path is not evidence for the new policy.
+The ordinary CLI does not synthesize a retrieval generation, engram or learned model. Once `HnmfRequired` is selected, a missing, revoked or changed current context fails closed; it cannot silently downgrade to compatibility. Compatibility mode remains an explicitly separate profile and is not evidence for HNMF product execution.
 
-Rollback removes the optional current-context/learning attachments and restores the compatible owner retrieval path. Cached or restored answers may not bypass current tombstones or revision revalidation.
+Rollback is an explicit profile/configuration action that removes the HNMF-required selection and its current-context/learning attachments before restoring the compatible owner retrieval path. Cached or restored answers may not bypass current tombstones or revision revalidation.
 
 Immediate revocation/stop remains effective across frozen snapshots. Preserve every applicable external gate; no generator self-acceptance, self-merge, self-selection or self-release.
 
