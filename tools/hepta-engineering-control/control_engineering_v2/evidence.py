@@ -10,6 +10,7 @@ import re
 import subprocess
 import time
 from collections.abc import Mapping
+from typing import Protocol
 
 from .control_plane import (
     EngineeringError,
@@ -72,6 +73,22 @@ class EvidenceDecision:
     activation_authority: bool = False
     promotion_authority: bool = False
     release_authority: bool = False
+
+
+class SignatureTrustStore(Protocol):
+    """Pluggable signer/verifier port; production may be backed by HSM/KMS."""
+
+    def sign(self, value: object, issuer: str, signing_identity: str) -> str:
+        ...
+
+    def verify(
+        self,
+        value: object,
+        issuer: str,
+        signing_identity: str,
+        signature: str,
+    ) -> bool:
+        ...
 
 
 class HmacTrustStore:
@@ -167,7 +184,7 @@ def verify_integration_evidence(
     source_execution: ExecutionReceipt,
     merge_execution: ExecutionReceipt,
     independence: EvaluatorIndependenceReceipt,
-    trust_store: HmacTrustStore,
+    trust_store: SignatureTrustStore,
     *,
     expected_document_set_digest: str,
     now_ns: int | None = None,

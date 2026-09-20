@@ -1,4 +1,4 @@
--- Canonical engineering owner schema, version 5. Applied in one transaction.
+-- Canonical engineering owner schema, version 6. Applied in one transaction.
 
 CREATE TABLE IF NOT EXISTS work_envelopes(
   envelope_id TEXT PRIMARY KEY,
@@ -38,6 +38,37 @@ CREATE TABLE IF NOT EXISTS assignment_generations(
   blocked_json BLOB NOT NULL,
   created_unix_ns INTEGER NOT NULL
 );
+CREATE TABLE IF NOT EXISTS distributed_cluster_frontiers(
+  cluster_id TEXT PRIMARY KEY,
+  leader_id TEXT NOT NULL,
+  leader_term INTEGER NOT NULL CHECK(leader_term >= 1),
+  revocation_frontier_sequence INTEGER NOT NULL CHECK(revocation_frontier_sequence >= 1),
+  revocation_frontier_digest TEXT NOT NULL,
+  updated_unix_ns INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS distributed_fence_frontiers(
+  cluster_id TEXT NOT NULL,
+  holder TEXT NOT NULL,
+  leader_id TEXT NOT NULL,
+  leader_term INTEGER NOT NULL CHECK(leader_term >= 1),
+  revocation_frontier_sequence INTEGER NOT NULL CHECK(revocation_frontier_sequence >= 1),
+  revocation_frontier_digest TEXT NOT NULL,
+  fence_receipt_digest TEXT NOT NULL,
+  lease_id TEXT NOT NULL,
+  authority_epoch INTEGER NOT NULL CHECK(authority_epoch >= 1),
+  fencing_token INTEGER NOT NULL CHECK(fencing_token >= 1),
+  lease_revision INTEGER NOT NULL CHECK(lease_revision >= 1),
+  source_commit TEXT NOT NULL,
+  source_tree TEXT NOT NULL,
+  observed_unix_ns INTEGER NOT NULL,
+  expires_unix_ns INTEGER NOT NULL,
+  updated_unix_ns INTEGER NOT NULL,
+  PRIMARY KEY(cluster_id, holder)
+);
+CREATE INDEX IF NOT EXISTS idx_distributed_fence_frontiers_order
+  ON distributed_fence_frontiers(cluster_id, leader_term, revocation_frontier_sequence);
+
 CREATE TABLE IF NOT EXISTS integration_decisions(
   decision_id TEXT PRIMARY KEY,
   evidence_digest TEXT NOT NULL,

@@ -1,0 +1,701 @@
+"""Authenticated engineering orchestration above the durable Lane G owner.
+
+This layer closes the gap between the low-level path/DAG scheduler and the
+Engineering Control Plane contract.  It consumes authenticated completion/source
+facts plus explicit worker, CI and review capacity.  Outputs are proposals only:
+workers must still acquire fenced path leases and merge/release remain external.
+"""
+
+from __future__ import annotations
+
+from collections.abc import Iterable
+from dataclasses import asdict, dataclass
+import json
+from pathlib import Path
+import subprocess
+import time
+
+from .control_plane import (
+    EngineeringError,
+    EngineeringStore,
+    WorkEnvelope,
+    WorkPackage,
+    _validate_package,
+    bounded_tuple,
+    canonical_json,
+    checked_id,
+    checked_sha256,
+    canonical_paths,
+    path_is_within,
+    path_sets_overlap,
+    semantic_digest,
+)
+from .evidence import CanonicalSourceReceipt, SignatureTrustStore
+
+MAX_WORKERS = 256
+MAX_SKILLS = 64
+MAX_REVIEW_ROLES = 16
+MAX_CAPACITY_UNITS = 1_000_000
+MAX_SCORE_ABS = 1 << 62
+
+
+@dataclass(frozen=True)
+class CompletionReceipt:
+    package_id: str
+    source_commit: str
+    source_tree: str
+    generation_id: str
+    generation_digest: str
+    result_digest: str
+    issuer: str
+    signing_identity: str
+    observed_unix_ns: int
+    expires_unix_ns: int
+    passed: bool = False
+    signature: str = ""
+
+
+@dataclass(frozen=True)
+class WorkerProfile:
+    worker_id: str
+    skills: tuple[str, ...]
+    capacity_units: int
+    allowed_paths: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class ReviewCapacity:
+    role: str
+    slots: int
+
+
+@dataclass(frozen=True)
+class EngineeringWorkPackage:
+    priority: int
+    package_id: str
+    predecessors: tuple[str, ...]
+    write_paths: tuple[str, ...]
+    required_skills: tuple[str, ...] = ()
+    capacity_units: int = 1
+    ci_units: int = 1
+    review_roles: tuple[str, ...] = ()
+    expected_value_q32: int = 0
+    architecture_debt_q32: int = 0
+    rollback_cost_q32: int = 0
+
+
+@dataclass(frozen=True)
+class EngineeringCapacity:
+    ci_units: int
+    review: tuple[ReviewCapacity, ...]
+
+
+@dataclass(frozen=True)
+class EngineeringAssignment:
+    package_id: str
+    worker_id: str
+    score_q32: int
+    ci_units: int
+    review_roles: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class MergeQueueProposal:
+    position: int
+    package_id: str
+    state: str
+    score_q32: int
+    merge_authority: bool = False
+    release_authority: bool = False
+
+
+@dataclass(frozen=True)
+class EngineeringPlan:
+    generation_id: str
+    envelope_id: str
+    assignments: tuple[EngineeringAssignment, ...]
+    blocked: tuple[tuple[str, str], ...]
+    integration_order: tuple[str, ...]
+    merge_queue: tuple[MergeQueueProposal, ...]
+    base_schedule_digest: str
+    completion_frontier_digest: str
+    runtime_authority: bool = False
+    merge_authority: bool = False
+    release_authority: bool = False
+
+
+def _git(root: Path, *args: str) -> str:
+    try:
+        result = subprocess.run(
+            ["git", "-C", str(root), *args],
+            check=False,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=30,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        raise EngineeringError("git_read_failed") from None
+    if result.returncode != 0 or len(result.stdout.encode("utf-8")) > 1_048_576:
+        raise EngineeringError("git_read_failed")
+    return result.stdout.strip()
+
+
+def _normal_remote(value: str) -> str:
+    value = value.strip().removesuffix(".git").removesuffix("/")
+    if value.startswith("git@github.com:"):
+        return value.removeprefix("git@github.com:")
+    for prefix in ("https://github.com/", "http://github.com/"):
+        if value.startswith(prefix):
+            return value.removeprefix(prefix)
+    return value
+
+
+def issue_repository_work_envelope(
+    root: str | Path,
+    store: EngineeringStore,
+    envelope: WorkEnvelope,
+    *,
+    expected_repository: str,
+    now_ns: int | None = None,
+) -> WorkEnvelope:
+    """Issue only after directly observing the exact canonical Git object."""
+    repository = Path(root).resolve()
+    head = _git(repository, "rev-parse", "HEAD")
+    tree = _git(repository, "rev-parse", "HEAD^{tree}")
+    status = _git(
+        repository,
+        "status",
+        "--porcelain=v2",
+        "--untracked-files=all",
+    )
+    if status:
+        raise EngineeringError("source_worktree_dirty")
+    remote = _normal_remote(_git(repository, "config", "--get", "remote.origin.url"))
+    if remote != expected_repository:
+        raise EngineeringError("repository_mismatch")
+    if head != envelope.source_commit or tree != envelope.source_tree:
+        raise EngineeringError("source_identity_mismatch")
+    return store.issue_work_envelope(envelope, now_ns=now_ns)
+
+
+def issue_signed_work_envelope(
+    store: EngineeringStore,
+    envelope: WorkEnvelope,
+    source: CanonicalSourceReceipt,
+    trust_store: SignatureTrustStore,
+    *,
+    expected_repository: str,
+    expected_document_set_digest: str,
+    now_ns: int | None = None,
+) -> WorkEnvelope:
+    """Remote-service admission path using a signed canonical-source receipt."""
+    now = time.time_ns() if now_ns is None else now_ns
+    if type(now) is not int or now < 0:
+        raise EngineeringError("invalid_time")
+    checked_sha256(expected_document_set_digest, "document_set_digest")
+    if source.repository_full_name != expected_repository:
+        raise EngineeringError("repository_mismatch")
+    if (
+        source.source_commit != envelope.source_commit
+        or source.source_tree != envelope.source_tree
+        or source.document_set_digest != expected_document_set_digest
+    ):
+        raise EngineeringError("source_identity_mismatch")
+    if source.issuer != "source_authority":
+        raise EngineeringError("source_issuer_role")
+    if not (
+        type(source.observed_unix_ns) is int
+        and type(source.expires_unix_ns) is int
+        and source.observed_unix_ns <= now < source.expires_unix_ns
+    ):
+        raise EngineeringError("source_receipt_stale")
+    if envelope.expires_unix_ns > source.expires_unix_ns:
+        raise EngineeringError("source_receipt_window_exceeded")
+    if not trust_store.verify(
+        source, source.issuer, source.signing_identity, source.signature
+    ):
+        raise EngineeringError("source_receipt_signature")
+    return store.issue_work_envelope(envelope, now_ns=now)
+
+
+def _verify_completion(
+    receipt: CompletionReceipt,
+    envelope: WorkEnvelope,
+    store: EngineeringStore,
+    trust_store: SignatureTrustStore,
+    now: int,
+) -> None:
+    checked_id(receipt.package_id, "package_id")
+    checked_id(receipt.generation_id, "generation_id")
+    checked_sha256(receipt.generation_digest, "generation_digest")
+    checked_sha256(receipt.result_digest, "result_digest")
+    if receipt.generation_digest == "0" * 64 or receipt.result_digest == "0" * 64:
+        raise EngineeringError("completion_receipt_digest")
+    if receipt.source_commit != envelope.source_commit or receipt.source_tree != envelope.source_tree:
+        raise EngineeringError("completion_source_mismatch")
+    # Completion is an independently observed predecessor fact, not a
+    # self-attestation by the package being scheduled.  Package-owner intent may
+    # be carried elsewhere, but only the CI/execution observer can advance the
+    # completed predecessor frontier used by this production orchestrator.
+    if receipt.issuer != "ci_executor":
+        raise EngineeringError("completion_issuer_role")
+    if receipt.passed is not True:
+        raise EngineeringError("completion_not_successful")
+    if not (
+        type(receipt.observed_unix_ns) is int
+        and type(receipt.expires_unix_ns) is int
+        and receipt.observed_unix_ns <= now < receipt.expires_unix_ns
+    ):
+        raise EngineeringError("completion_receipt_stale")
+    if not trust_store.verify(
+        receipt, receipt.issuer, receipt.signing_identity, receipt.signature
+    ):
+        raise EngineeringError("completion_receipt_signature")
+    generation = store.connection.execute(
+        "SELECT envelope_id,semantic_digest,assigned_json,created_unix_ns "
+        "FROM assignment_generations WHERE generation_id=?",
+        (receipt.generation_id,),
+    ).fetchone()
+    if generation is None:
+        raise EngineeringError("completion_generation_unknown")
+    if (
+        str(generation["envelope_id"]) != envelope.envelope_id
+        or str(generation["semantic_digest"]) != receipt.generation_digest
+    ):
+        raise EngineeringError("completion_generation_mismatch")
+    if receipt.observed_unix_ns < int(generation["created_unix_ns"]):
+        raise EngineeringError("completion_receipt_before_generation")
+    if receipt.expires_unix_ns > envelope.expires_unix_ns:
+        raise EngineeringError("completion_receipt_window_exceeds_envelope")
+    assigned_raw = generation["assigned_json"]
+    if isinstance(assigned_raw, str):
+        assigned_text = assigned_raw
+    else:
+        try:
+            assigned_text = bytes(assigned_raw).decode("utf-8")
+        except (TypeError, UnicodeDecodeError):
+            raise EngineeringError("completion_generation_invalid") from None
+    try:
+        assigned = json.loads(assigned_text)
+    except json.JSONDecodeError:
+        raise EngineeringError("completion_generation_invalid") from None
+    if not isinstance(assigned, list) or receipt.package_id not in assigned:
+        raise EngineeringError("completion_package_not_assigned")
+    frontier = store.assignment_frontier(receipt.generation_id)
+    if (
+        frontier["envelopeId"] != envelope.envelope_id
+        or frontier["sourceCommit"] != envelope.source_commit
+        or frontier["sourceTree"] != envelope.source_tree
+    ):
+        raise EngineeringError("completion_frontier_mismatch")
+
+
+def _score(package: EngineeringWorkPackage) -> int:
+    values = (
+        package.expected_value_q32,
+        package.architecture_debt_q32,
+        package.rollback_cost_q32,
+    )
+    if any(type(value) is not int or abs(value) > MAX_SCORE_ABS for value in values):
+        raise EngineeringError("invalid_package_score")
+    return (
+        package.expected_value_q32
+        - package.architecture_debt_q32
+        - package.rollback_cost_q32
+    )
+
+
+def plan_engineering_work(
+    store: EngineeringStore,
+    envelope: WorkEnvelope,
+    packages: Iterable[EngineeringWorkPackage],
+    workers: Iterable[WorkerProfile],
+    completion_receipts: Iterable[CompletionReceipt],
+    trust_store: SignatureTrustStore,
+    capacity: EngineeringCapacity,
+    *,
+    generation_id: str,
+    now_ns: int | None = None,
+) -> EngineeringPlan:
+    """Atomically publish the exact resource-aware assignment generation."""
+    now = time.time_ns() if now_ns is None else now_ns
+    if type(now) is not int or now < 0:
+        raise EngineeringError("invalid_time")
+    if not isinstance(store, EngineeringStore):
+        raise EngineeringError("invalid_engineering_store")
+    checked_id(generation_id, "generation_id")
+    if not isinstance(envelope, WorkEnvelope):
+        raise EngineeringError("invalid_envelope")
+
+    package_values = bounded_tuple(packages, 4096, "package_limit_exceeded")
+    worker_values = bounded_tuple(workers, MAX_WORKERS, "worker_limit_exceeded")
+    receipt_values = bounded_tuple(
+        completion_receipts, 4096, "completed_limit_exceeded"
+    )
+    if not isinstance(capacity, EngineeringCapacity):
+        raise EngineeringError("invalid_engineering_capacity")
+    if (
+        type(capacity.ci_units) is not int
+        or not 0 <= capacity.ci_units <= MAX_CAPACITY_UNITS
+        or not isinstance(capacity.review, tuple)
+        or len(capacity.review) > MAX_REVIEW_ROLES
+    ):
+        raise EngineeringError("invalid_ci_capacity")
+
+    if any(not isinstance(value, EngineeringWorkPackage) for value in package_values):
+        raise EngineeringError("invalid_engineering_package")
+    if any(not isinstance(value, WorkerProfile) for value in worker_values):
+        raise EngineeringError("invalid_worker_profile")
+    if any(not isinstance(value, CompletionReceipt) for value in receipt_values):
+        raise EngineeringError("invalid_completion_receipt")
+
+    package_ids = [value.package_id for value in package_values]
+    if len(package_ids) != len(set(package_ids)):
+        raise EngineeringError("duplicate_package_identity")
+    worker_ids = [value.worker_id for value in worker_values]
+    if len(worker_ids) != len(set(worker_ids)):
+        raise EngineeringError("duplicate_worker_identity")
+
+    worker_scopes: dict[str, tuple[str, ...]] = {}
+    for worker in worker_values:
+        checked_id(worker.worker_id, "worker_id")
+        if (
+            type(worker.capacity_units) is not int
+            or not 0 <= worker.capacity_units <= MAX_CAPACITY_UNITS
+        ):
+            raise EngineeringError("invalid_worker_capacity")
+        if (
+            not isinstance(worker.skills, tuple)
+            or len(worker.skills) > MAX_SKILLS
+            or len(set(worker.skills)) != len(worker.skills)
+        ):
+            raise EngineeringError("invalid_worker_skills")
+        for skill in worker.skills:
+            checked_id(skill, "worker_skill")
+        if (
+            not isinstance(worker.allowed_paths, tuple)
+            or not worker.allowed_paths
+            or len(worker.allowed_paths) > 256
+        ):
+            raise EngineeringError("invalid_worker_paths")
+        worker_scopes[worker.worker_id] = canonical_paths(worker.allowed_paths)
+
+    review_template: dict[str, int] = {}
+    for row in capacity.review:
+        if not isinstance(row, ReviewCapacity):
+            raise EngineeringError("invalid_review_capacity")
+        checked_id(row.role, "review_role")
+        if (
+            row.role in review_template
+            or type(row.slots) is not int
+            or not 0 <= row.slots <= MAX_CAPACITY_UNITS
+        ):
+            raise EngineeringError("invalid_review_capacity")
+        review_template[row.role] = row.slots
+
+    envelope_scope = canonical_paths(envelope.allowed_paths)
+    normalized_packages: list[tuple[EngineeringWorkPackage, WorkPackage]] = []
+    for package in package_values:
+        checked_id(package.package_id, "package_id")
+        if (
+            not isinstance(package.predecessors, tuple)
+            or not isinstance(package.write_paths, tuple)
+            or type(package.capacity_units) is not int
+            or not 1 <= package.capacity_units <= MAX_CAPACITY_UNITS
+            or type(package.ci_units) is not int
+            or not 0 <= package.ci_units <= MAX_CAPACITY_UNITS
+            or not isinstance(package.required_skills, tuple)
+            or len(package.required_skills) > MAX_SKILLS
+            or len(set(package.required_skills)) != len(package.required_skills)
+            or not isinstance(package.review_roles, tuple)
+            or len(package.review_roles) > MAX_REVIEW_ROLES
+            or len(set(package.review_roles)) != len(package.review_roles)
+        ):
+            raise EngineeringError("invalid_package_capacity")
+        for skill in package.required_skills:
+            checked_id(skill, "required_skill")
+        for role in package.review_roles:
+            checked_id(role, "required_review_role")
+        _score(package)
+        native = _validate_package(
+            WorkPackage(
+                package.priority,
+                package.package_id,
+                package.predecessors,
+                package.write_paths,
+            )
+        )
+        if any(
+            not path_is_within(path, envelope_scope)
+            for path in native.write_paths
+        ):
+            raise EngineeringError("package_path_outside_envelope")
+        normalized_packages.append((package, native))
+
+    completed: dict[str, CompletionReceipt] = {}
+    for receipt in receipt_values:
+        if receipt.package_id in completed:
+            raise EngineeringError("duplicate_completion_receipt")
+        _verify_completion(receipt, envelope, store, trust_store, now)
+        completed[receipt.package_id] = receipt
+
+    completed_ids = frozenset(completed)
+    store._verify_package_graph(
+        tuple(native for _, native in normalized_packages),
+        completed_ids,
+    )
+
+    normalized_package_rows = []
+    for package, native in normalized_packages:
+        row = asdict(package)
+        row["predecessors"] = native.predecessors
+        row["write_paths"] = native.write_paths
+        normalized_package_rows.append(row)
+    normalized_worker_rows = []
+    for worker in worker_values:
+        row = asdict(worker)
+        row["allowed_paths"] = worker_scopes[worker.worker_id]
+        normalized_worker_rows.append(row)
+
+    with store._transaction():
+        persisted = store._get_envelope(envelope.envelope_id, now)
+        try:
+            persisted_allowed = tuple(
+                json.loads(bytes(persisted["allowed_paths_json"]).decode("utf-8"))
+            )
+            persisted_denied = tuple(
+                json.loads(
+                    bytes(persisted["denied_authorities_json"]).decode("utf-8")
+                )
+            )
+        except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+            raise EngineeringError("orchestration_envelope_state_invalid") from None
+        if (
+            str(persisted["source_commit"]) != envelope.source_commit
+            or str(persisted["source_tree"]) != envelope.source_tree
+            or str(persisted["objective_digest"]) != envelope.objective_digest
+            or str(persisted["contract_digest"]) != envelope.contract_digest
+            or str(persisted["owner"]) != envelope.owner
+            or persisted_allowed != canonical_paths(envelope.allowed_paths)
+            or persisted_denied != tuple(sorted(envelope.denied_authorities))
+            or int(persisted["maximum_assignments"]) != envelope.maximum_assignments
+            or int(persisted["expires_unix_ns"]) != envelope.expires_unix_ns
+            or int(persisted["revision"]) != envelope.revision
+        ):
+            raise EngineeringError("orchestration_envelope_binding_mismatch")
+
+        store._expire_leases(now)
+        active_rows = store._active_lease_rows(now)
+        active_paths: list[str] = []
+        for row in active_rows:
+            try:
+                active_paths.extend(
+                    json.loads(bytes(row["paths_json"]).decode("utf-8"))
+                )
+            except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+                raise EngineeringError("invalid_lease_paths_encoding") from None
+
+        worker_remaining = {
+            row.worker_id: row.capacity_units for row in worker_values
+        }
+        review_remaining = dict(review_template)
+        ci_remaining = capacity.ci_units
+        selected_paths: list[str] = []
+        assignments: list[EngineeringAssignment] = []
+        blocked: dict[str, str] = {}
+
+        for package, _native in normalized_packages:
+            if package.package_id in completed_ids:
+                blocked[package.package_id] = "already_completed"
+
+        ready: list[tuple[EngineeringWorkPackage, WorkPackage]] = []
+        for package, native in normalized_packages:
+            if package.package_id in completed_ids:
+                continue
+            missing = tuple(sorted(set(native.predecessors) - completed_ids))
+            if missing:
+                blocked[package.package_id] = "missing_predecessor:" + missing[0]
+                continue
+            if path_sets_overlap(native.write_paths, tuple(active_paths)):
+                blocked[package.package_id] = "active_path_lease"
+                continue
+            ready.append((package, native))
+
+        ordered = sorted(
+            ready,
+            key=lambda item: (
+                -_score(item[0]),
+                item[0].priority,
+                item[0].package_id,
+            ),
+        )
+        assignment_limit = min(
+            int(persisted["maximum_assignments"]),
+            128,
+        )
+        for package, native in ordered:
+            if len(assignments) >= assignment_limit:
+                blocked[package.package_id] = "assignment_limit"
+                continue
+            if path_sets_overlap(native.write_paths, tuple(selected_paths)):
+                blocked[package.package_id] = "batch_path_conflict"
+                continue
+
+            required = set(package.required_skills)
+            eligible_workers = []
+            for worker in worker_values:
+                if not required.issubset(set(worker.skills)):
+                    continue
+                if any(
+                    not path_is_within(path, worker_scopes[worker.worker_id])
+                    for path in native.write_paths
+                ):
+                    continue
+                if worker_remaining[worker.worker_id] < package.capacity_units:
+                    continue
+                eligible_workers.append(worker)
+            if not eligible_workers:
+                blocked[package.package_id] = "worker_skill_or_capacity"
+                continue
+            if ci_remaining < package.ci_units:
+                blocked[package.package_id] = "ci_capacity"
+                continue
+            missing_review = next(
+                (
+                    role
+                    for role in package.review_roles
+                    if review_remaining.get(role, 0) <= 0
+                ),
+                None,
+            )
+            if missing_review is not None:
+                blocked[package.package_id] = "review_capacity:" + missing_review
+                continue
+
+            worker = sorted(
+                eligible_workers,
+                key=lambda row: (
+                    -worker_remaining[row.worker_id],
+                    row.worker_id,
+                ),
+            )[0]
+            worker_remaining[worker.worker_id] -= package.capacity_units
+            ci_remaining -= package.ci_units
+            for role in package.review_roles:
+                review_remaining[role] -= 1
+            selected_paths.extend(native.write_paths)
+            assignments.append(
+                EngineeringAssignment(
+                    package.package_id,
+                    worker.worker_id,
+                    _score(package),
+                    package.ci_units,
+                    tuple(sorted(package.review_roles)),
+                )
+            )
+
+        assigned = tuple(row.package_id for row in assignments)
+        blocked_rows = tuple(sorted(blocked.items()))
+        integration_order = assigned
+        merge_queue = tuple(
+            MergeQueueProposal(
+                index + 1,
+                row.package_id,
+                "awaiting_candidate_evidence",
+                row.score_q32,
+            )
+            for index, row in enumerate(assignments)
+        )
+        completion_frontier_digest = semantic_digest(
+            [asdict(completed[key]) for key in sorted(completed)]
+        )
+
+        from .hardening import bind_assignment_frontier
+
+        bind_assignment_frontier(store, persisted, generation_id, now)
+        generation_digest = semantic_digest(
+            {
+                "profile": "resource-aware-engineering-v1",
+                "envelopeId": envelope.envelope_id,
+                "packages": sorted(
+                    normalized_package_rows,
+                    key=lambda row: row["package_id"],
+                ),
+                "workers": sorted(
+                    normalized_worker_rows,
+                    key=lambda row: row["worker_id"],
+                ),
+                "capacity": {
+                    "ciUnits": capacity.ci_units,
+                    "review": [
+                        asdict(row)
+                        for row in sorted(
+                            capacity.review,
+                            key=lambda row: row.role,
+                        )
+                    ],
+                },
+                "completionFrontierDigest": completion_frontier_digest,
+                "assigned": assigned,
+                "blocked": blocked_rows,
+                "assignments": [asdict(row) for row in assignments],
+                "integrationOrder": integration_order,
+                "mergeQueue": [asdict(row) for row in merge_queue],
+            }
+        )
+        existing = store.connection.execute(
+            "SELECT semantic_digest,assigned_json,blocked_json,created_unix_ns "
+            "FROM assignment_generations WHERE generation_id=?",
+            (generation_id,),
+        ).fetchone()
+        if existing is not None:
+            if str(existing["semantic_digest"]) != generation_digest:
+                raise EngineeringError("generation_identity_conflict")
+            try:
+                stored_assigned = tuple(
+                    json.loads(bytes(existing["assigned_json"]).decode("utf-8"))
+                )
+                stored_blocked = tuple(
+                    tuple(item)
+                    for item in json.loads(
+                        bytes(existing["blocked_json"]).decode("utf-8")
+                    )
+                )
+            except (TypeError, UnicodeDecodeError, json.JSONDecodeError):
+                raise EngineeringError("assignment_generation_invalid") from None
+            if stored_assigned != assigned or stored_blocked != blocked_rows:
+                raise EngineeringError("assignment_generation_invalid")
+        else:
+            store.connection.execute(
+                "INSERT INTO assignment_generations VALUES(?,?,?,?,?,?)",
+                (
+                    generation_id,
+                    envelope.envelope_id,
+                    generation_digest,
+                    canonical_json(assigned),
+                    canonical_json(blocked_rows),
+                    now,
+                ),
+            )
+            store._append_audit(
+                "assignment_generation_published",
+                {
+                    "generationId": generation_id,
+                    "envelopeId": envelope.envelope_id,
+                    "semanticDigest": generation_digest,
+                    "profile": "resource-aware-engineering-v1",
+                },
+                now,
+            )
+
+    return EngineeringPlan(
+        generation_id,
+        envelope.envelope_id,
+        tuple(assignments),
+        blocked_rows,
+        integration_order,
+        merge_queue,
+        generation_digest,
+        completion_frontier_digest,
+    )

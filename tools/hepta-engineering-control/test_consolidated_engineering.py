@@ -14,6 +14,7 @@ import unittest
 from control_engineering_v2 import (
     EngineeringError,
     EngineeringStore,
+    ProductionReadinessFacts,
     WorkEnvelope,
     WorkPackage,
     bind_candidate_evidence,
@@ -106,6 +107,35 @@ class OwnerTransactionTests(unittest.TestCase):
                 EngineeringStore(path)
             self.assertEqual(path.read_bytes(), before)
 
+    def test_schema_v5_adds_distributed_fence_frontier(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "owner.sqlite3"
+            with EngineeringStore(path):
+                pass
+            with sqlite3.connect(path) as connection:
+                connection.execute("DROP TABLE distributed_fence_frontiers")
+                connection.execute("DROP TABLE distributed_cluster_frontiers")
+                connection.execute("PRAGMA user_version=5")
+                connection.execute(
+                    "UPDATE engineering_schema_meta SET schema_version=5"
+                )
+            with EngineeringStore(path) as store:
+                self.assertEqual(
+                    store.connection.execute("PRAGMA user_version").fetchone()[0],
+                    6,
+                )
+                for table in (
+                    "distributed_cluster_frontiers",
+                    "distributed_fence_frontiers",
+                ):
+                    self.assertIsNotNone(
+                        store.connection.execute(
+                            "SELECT 1 FROM sqlite_master "
+                            "WHERE type='table' AND name=?",
+                            (table,),
+                        ).fetchone()
+                    )
+
     def test_schema_v3_migrates_without_losing_owner_facts(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "owner.sqlite3"
@@ -123,7 +153,7 @@ class OwnerTransactionTests(unittest.TestCase):
             with EngineeringStore(path) as store:
                 self.assertEqual(store.audit_projection(), before)
                 self.assertEqual(
-                    store.connection.execute("PRAGMA user_version").fetchone()[0], 5
+                    store.connection.execute("PRAGMA user_version").fetchone()[0], 6
                 )
                 self.assertEqual(
                     store.connection.execute(
@@ -368,6 +398,82 @@ class EngineeringCliTests(unittest.TestCase):
             timeout=30,
         )
 
+
+    def readiness_facts(self):
+        return ProductionReadinessFacts(
+            repository_full_name="TrillionniumFoundation/hepta-private-ci",
+            expected_repository_full_name="TrillionniumFoundation/hepta-private-ci",
+            source_commit="a" * 40,
+            source_tree="b" * 40,
+            source_receipt_digest="1" * 64,
+            candidate_evidence_verified=True,
+            native_symbol_mapping_verified=True,
+            native_symbol_mapping_digest="2" * 64,
+            product_caller="hepta-production-engineering-host",
+            product_test_receipt_digest="3" * 64,
+            exact_source_ci_passed=True,
+            synthetic_merge_ci_passed=True,
+            product_tests_passed=True,
+            generator_identity="engineering-generator",
+            reviewer_identity="independent-reviewer",
+            independent_review_accepted=True,
+            review_receipt_digest="4" * 64,
+            authorized_handoff=True,
+            handoff_receipt_digest="5" * 64,
+            external_key_custody=True,
+            key_custody_receipt_digest="6" * 64,
+            strong_sandbox_observed=True,
+            strong_sandbox_receipt_digest="7" * 64,
+            deployment_target_digest="8" * 64,
+            deployment_observed=True,
+            deployment_receipt_digest="9" * 64,
+            rollback_rehearsed=True,
+            rollback_receipt_digest="a" * 64,
+            source_product_receipt_digest="b" * 64,
+            merge_product_receipt_digest="c" * 64,
+            orchestration_product_receipt_digest=semantic_digest(
+                {"sourceHead": "b" * 64, "baseMerge": "c" * 64}
+            ),
+            sandbox_controller_verified=True,
+            sandbox_controller_receipt_digest="d" * 64,
+            generated_test_mutation_gate_verified=True,
+            generated_test_mutation_receipt_digest="e" * 64,
+            distributed_fencing_verified=True,
+            distributed_fencing_receipt_digest="f" * 64,
+            external_audit_anchor_verified=True,
+            external_audit_anchor_receipt_digest="1" * 64,
+        )
+
+    def test_readiness_cli_cannot_certify_caller_supplied_facts(self):
+        complete = self.write("readiness-complete.json", asdict(self.readiness_facts()))
+
+        rejected = self.command(
+            "production-readiness", "--facts", complete, "--require", "deployment"
+        )
+        self.assertEqual(rejected.returncode, 1)
+        self.assertEqual(
+            json.loads(rejected.stderr)["error"],
+            "authenticated_readiness_composition_required",
+        )
+
+        projected = self.command("readiness-projection", "--facts", complete)
+        self.assertEqual(projected.returncode, 0, projected.stderr)
+        payload = json.loads(projected.stdout)
+        self.assertEqual(payload["qualificationClass"], "projection_only")
+        self.assertFalse(payload["authenticated"])
+        self.assertFalse(payload["authorityGranted"])
+        self.assertTrue(payload["decision"]["production_implementation_ready"])
+        self.assertTrue(payload["decision"]["deployment_readiness_ready"])
+
+        blocked_facts = replace(self.readiness_facts(), external_key_custody=False)
+        blocked = self.write("readiness-blocked.json", asdict(blocked_facts))
+        projected_blocked = self.command("readiness-projection", "--facts", blocked)
+        self.assertEqual(projected_blocked.returncode, 0, projected_blocked.stderr)
+        self.assertIn(
+            "external_key_custody_missing",
+            json.loads(projected_blocked.stdout)["decision"]["deployment_blockers"],
+        )
+
     def test_schedule_persists_and_replays_an_identical_generation(self):
         value = OwnerTransactionTests().envelope()
         envelope = self.write("envelope.json", asdict(value))
@@ -394,7 +500,12 @@ class EngineeringCliTests(unittest.TestCase):
             (first.returncode, second.returncode), (0, 0), first.stderr + second.stderr
         )
         self.assertEqual(json.loads(first.stdout), json.loads(second.stdout))
-        result = json.loads(first.stdout)["assignment"]
+        payload = json.loads(first.stdout)
+        self.assertEqual(payload["qualificationClass"], "local_compatibility_only")
+        self.assertFalse(payload["canonicalSourceAuthenticated"])
+        self.assertFalse(payload["completionAuthenticated"])
+        self.assertFalse(payload["productOrchestrationEvidence"])
+        result = payload["assignment"]
         self.assertEqual(result["assigned"], ["a"])
         self.assertEqual(result["blocked"], [["b", "missing_predecessor:a"]])
 

@@ -11,11 +11,10 @@
       "nativeSymbol": "issue_work_envelope",
       "ownerSymbol": "EngineeringStore.issue_work_envelope",
       "tests": [
-        "StoreTests.test_fenced_lease_schedule_reopen_and_audit",
-        "StoreTests.test_envelope_and_generation_semantic_conflicts"
+        "OrchestrationTests.test_package_root_does_not_export_unauthenticated_scheduler_aliases"
       ],
-      "state": "source_implemented",
-      "capabilityCeiling": "immutable engineering envelope only"
+      "state": "compatibility_only_fail_closed_by_default",
+      "capabilityCeiling": "local fixture envelope only with explicit compatibility_only; product admission requires authenticated_source_admission"
     },
     {
       "designOperation": "schedule_ready_packages",
@@ -23,11 +22,10 @@
       "nativeSymbol": "schedule_ready_packages",
       "ownerSymbol": "EngineeringStore.schedule_ready_packages",
       "tests": [
-        "StoreTests.test_fenced_lease_schedule_reopen_and_audit",
-        "StoreTests.test_cycle_and_out_of_scope_paths_reject"
+        "OrchestrationTests.test_package_root_does_not_export_unauthenticated_scheduler_aliases"
       ],
-      "state": "source_implemented",
-      "capabilityCeiling": "assignment proposal only"
+      "state": "compatibility_only_fail_closed_by_default",
+      "capabilityCeiling": "local fixture assignment only with explicit compatibility_only; product scheduling requires resource_aware_engineering_orchestration"
     },
     {
       "designOperation": "acquire_path_lease",
@@ -46,7 +44,10 @@
       "nativeSymbol": "generate_candidate",
       "ownerSymbol": "generate_candidates",
       "tests": [
-        "CandidateTests.test_no_change_dedupe_and_protected_paths"
+        "CandidateTests.test_no_change_dedupe_and_protected_paths",
+        "test_candidate_changeset.CandidateChangeSetTests.test_inline_oracle_source_is_immutable_even_without_test_filename",
+        "test_candidate_changeset.CandidateChangeSetTests.test_atomic_multi_file_candidate_is_one_identity",
+        "test_candidate_changeset.CandidateChangeSetTests.test_rename_is_bound_as_two_path_change"
       ],
       "state": "source_implemented",
       "capabilityCeiling": "draft and no-change candidates only"
@@ -126,10 +127,158 @@
       "nativeSymbol": "main",
       "ownerSymbol": "EngineeringStore and sandbox_candidate",
       "tests": [
-        "test_consolidated_engineering.EngineeringCliTests"
+        "test_consolidated_engineering.EngineeringCliTests",
+        "EngineeringCliTests.test_readiness_cli_cannot_certify_caller_supplied_facts"
       ],
       "state": "source_implemented",
-      "capabilityCeiling": "assignment projection or bounded qualification only"
+      "capabilityCeiling": "local compatibility scheduling/qualification or non-authoritative readiness projection only"
+    },
+    {
+      "designOperation": "evaluate_production_readiness",
+      "nativeModule": "control_engineering_v2.production",
+      "nativeSymbol": "evaluate_production_readiness",
+      "ownerSymbol": "evaluate_production_readiness",
+      "tests": [
+        "ProductionReadinessTests.test_complete_verified_fact_set_closes_both_readiness_dimensions",
+        "ProductionReadinessTests.test_product_caller_and_tests_gate_production_implementation",
+        "ProductionReadinessTests.test_independent_identity_and_live_delivery_gate_deployment"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "already-authenticated-fact projection only; not an authenticator or deployment certificate"
+    },
+    {
+      "designOperation": "authenticated_source_admission",
+      "nativeModule": "control_engineering_v2.orchestration",
+      "nativeSymbol": "issue_repository_work_envelope",
+      "ownerSymbol": "issue_repository_work_envelope",
+      "tests": [
+        "OrchestrationTests.test_repository_envelope_binds_real_head_tree_and_remote",
+        "OrchestrationTests.test_repository_envelope_rejects_dirty_and_untracked_source",
+        "OrchestrationTests.test_signed_source_receipt_caps_work_envelope_lifetime"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "exact local Git or signed canonical-source admission only"
+    },
+    {
+      "designOperation": "resource_aware_engineering_orchestration",
+      "nativeModule": "control_engineering_v2.orchestration",
+      "nativeSymbol": "plan_engineering_work",
+      "ownerSymbol": "plan_engineering_work",
+      "tests": [
+        "OrchestrationTests.test_authenticated_completion_and_multidimensional_capacity",
+        "OrchestrationTests.test_unsigned_completion_cannot_satisfy_predecessor",
+        "OrchestrationTests.test_signed_completion_requires_real_durable_assignment_generation",
+        "OrchestrationTests.test_plan_rejects_envelope_not_identical_to_admitted_owner_state",
+        "OrchestrationTests.test_plan_rejects_duplicate_and_unbounded_capacity_dimensions",
+        "OrchestrationTests.test_worker_scope_is_canonicalized_before_matching",
+        "OrchestrationTests.test_value_ordering_and_durable_generation_are_identical",
+        "OrchestrationTests.test_infeasible_high_score_does_not_consume_assignment_slot",
+        "OrchestrationTests.test_completion_cannot_predate_or_outlive_its_owner_generation",
+        "OrchestrationTests.test_resource_planner_rejects_package_outside_envelope",
+        "OrchestrationTests.test_package_owner_self_attestation_cannot_complete_predecessor"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "assignment/integration-order/merge-queue proposals only"
+    },
+    {
+      "designOperation": "atomic_candidate_changeset",
+      "nativeModule": "control_engineering_v2.candidate",
+      "nativeSymbol": "generate_candidates",
+      "ownerSymbol": "generate_candidates",
+      "tests": [
+        "CandidateChangeSetTests.test_atomic_multi_file_candidate_is_one_identity",
+        "CandidateChangeSetTests.test_rename_is_bound_as_two_path_change",
+        "CandidateChangeSetTests.test_atomic_changeset_can_create_only_required_parent_directories",
+        "CandidateChangeSetTests.test_rename_can_create_required_destination_parent_directory"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "bounded draft/no-change/single-or-atomic-multi-file/rename candidates only"
+    },
+    {
+      "designOperation": "sandbox_execution_control",
+      "nativeModule": "control_engineering_v2.sandbox_control",
+      "nativeSymbol": "SandboxCoordinator",
+      "ownerSymbol": "SandboxCoordinator.execute",
+      "tests": [
+        "SandboxCoordinatorTests.test_infrastructure_failure_retries_at_most_twice",
+        "SandboxCoordinatorTests.test_semantic_failure_is_never_retried",
+        "SandboxCoordinatorTests.test_saturated_admission_fails_without_unbounded_wait",
+        "SandboxCoordinatorTests.test_posix_admission_ceiling_is_shared_across_coordinators"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "bounded host-wide qualification admission on POSIX; multi-host authority remains external"
+    },
+    {
+      "designOperation": "candidate_oracle_immutability",
+      "nativeModule": "control_engineering_v2.candidate",
+      "nativeSymbol": "is_candidate_oracle_path",
+      "ownerSymbol": "generate_candidates",
+      "tests": [
+        "CandidatePolicyTests.test_candidate_can_never_edit_its_own_oracle_paths"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "candidate cannot mutate evaluator-owned oracle paths"
+    },
+    {
+      "designOperation": "mutation_testing",
+      "nativeModule": "control_engineering_v2.mutation_testing",
+      "nativeSymbol": "run_mutation_testing",
+      "ownerSymbol": "run_mutation_testing",
+      "tests": [
+        "MutationTestingTests.test_baseline_passes_and_all_mutants_must_be_killed",
+        "MutationTestingTests.test_surviving_mutant_fails_gate"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "qualification evidence only"
+    },
+    {
+      "designOperation": "production_external_controls",
+      "nativeModule": "control_engineering_v2.external_controls",
+      "nativeSymbol": "verify_production_controls",
+      "ownerSymbol": "verify_production_controls",
+      "tests": [
+        "ExternalControlTests.test_external_fence_binds_current_local_and_distributed_frontiers",
+        "ExternalControlTests.test_revocation_frontier_requires_order_freshness_and_signature",
+        "ExternalControlTests.test_audit_anchor_must_match_current_store_head_and_source",
+        "ExternalControlTests.test_empty_audit_chain_cannot_be_externally_attested_as_valid",
+        "ExternalControlTests.test_key_custody_requires_hardware_external_boundary_and_roles",
+        "ExternalControlTests.test_key_custody_rejects_one_key_or_receipt_for_separated_roles",
+        "ExternalControlTests.test_production_controls_compose_current_fence_anchor_and_separate_keys",
+        "ExternalControlTests.test_persisted_distributed_frontier_rejects_restart_replay",
+        "ExternalControlTests.test_audit_anchor_detects_owner_table_tampering_without_audit_event"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "persisted distributed-fence admission plus external audit/key-custody verification only; no external authority minted"
+    },
+    {
+      "designOperation": "repository_product_caller",
+      "nativeModule": "control_engineering_v2.product_gate",
+      "nativeSymbol": "build_product_receipt",
+      "ownerSymbol": "build_product_receipt",
+      "tests": [
+        "ProductGateTests.test_pull_request_product_caller_composes_v2_orchestrator",
+        "ProductGateTests.test_source_push_requires_exact_head",
+        "ProductGateTests.test_pull_request_source_head_product_caller_composes_same_v2_path",
+        "ProductGateTests.test_base_merge_lane_is_invalid_on_push",
+        "ProductGateTests.test_missing_canonical_work_package_registry_fails_closed",
+        "ProductGateTests.test_tampered_canonical_engineering_package_fails_closed",
+        "ProductGateTests.test_product_receipt_pair_binds_both_exact_lanes",
+        "ProductGateTests.test_product_receipt_pair_rejects_tamper_and_lane_drift"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "exact-source/base-merge product execution receipt bound to canonical ECP-1 registry truth only; no merge or release authority"
+    },
+    {
+      "designOperation": "verify_product_receipt_pair",
+      "nativeModule": "control_engineering_v2.product_gate",
+      "nativeSymbol": "verify_product_receipt_pair",
+      "ownerSymbol": "verify_product_receipt_pair",
+      "tests": [
+        "ProductGateTests.test_product_receipt_pair_binds_both_exact_lanes",
+        "ProductGateTests.test_product_receipt_pair_rejects_tamper_and_lane_drift"
+      ],
+      "state": "source_implemented",
+      "capabilityCeiling": "dual-lane exact-source/base-merge product evidence binding only; no merge or release authority"
     }
   ],
   "negativeAuthorityInvariants": [
@@ -149,6 +298,13 @@
     "tools/hepta-engineering-control/test_lane_g_hardening.py",
     "tools/hepta-engineering-control/test_lane_g_closure.py",
     "tools/hepta-engineering-control/test_lane_g_seal.py",
-    "tools/hepta-engineering-control/test_consolidated_engineering.py"
+    "tools/hepta-engineering-control/test_consolidated_engineering.py",
+    "tools/hepta-engineering-control/test_production_readiness.py",
+    "tools/hepta-engineering-control/test_orchestration.py",
+    "tools/hepta-engineering-control/test_candidate_changeset.py",
+    "tools/hepta-engineering-control/test_sandbox_control.py",
+    "tools/hepta-engineering-control/test_mutation_testing.py",
+    "tools/hepta-engineering-control/test_external_controls.py",
+    "tools/hepta-engineering-control/test_product_gate.py"
   ]
 }
