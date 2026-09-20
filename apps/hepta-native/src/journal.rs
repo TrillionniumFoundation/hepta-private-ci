@@ -157,12 +157,9 @@ impl OperationJournal {
 
     pub fn upsert(&mut self, record: OperationRecord) -> Result<(), ShellError> {
         record.validate()?;
-        if let Some(index) = self
-            .operations
-            .iter()
-            .position(|existing| existing.key == record.key)
-        {
-            let existing = &self.operations[index];
+        let mut next = self.operations.clone();
+        if let Some(index) = next.iter().position(|existing| existing.key == record.key) {
+            let existing = &next[index];
             if existing.payload_digest != record.payload_digest || existing.action != record.action
             {
                 return Err(ShellError::State(
@@ -175,16 +172,18 @@ impl OperationJournal {
                     existing.phase, record.phase
                 )));
             }
-            self.operations[index] = record;
+            next[index] = record;
         } else {
-            if self.operations.len() >= MAX_OPERATION_RECORDS {
+            if next.len() >= MAX_OPERATION_RECORDS {
                 return Err(ShellError::State(format!(
                     "operation journal reached {MAX_OPERATION_RECORDS} records"
                 )));
             }
-            self.operations.push(record);
+            next.push(record);
         }
-        self.persist()
+        self.persist(&next)?;
+        self.operations = next;
+        Ok(())
     }
 
     pub fn compact_terminal(&mut self, keep_latest: usize) -> Result<(), ShellError> {
@@ -196,8 +195,9 @@ impl OperationJournal {
         if terminal_count <= keep_latest {
             return Ok(());
         }
+        let mut next = self.operations.clone();
         let mut remove = terminal_count - keep_latest;
-        self.operations.retain(|record| {
+        next.retain(|record| {
             if remove > 0 && record.phase == OperationPhase::Terminal {
                 remove -= 1;
                 false
@@ -205,13 +205,15 @@ impl OperationJournal {
                 true
             }
         });
-        self.persist()
+        self.persist(&next)?;
+        self.operations = next;
+        Ok(())
     }
 
-    fn persist(&self) -> Result<(), ShellError> {
+    fn persist(&self, operations: &[OperationRecord]) -> Result<(), ShellError> {
         let state = JournalFile {
             schema: JOURNAL_SCHEMA.to_owned(),
-            operations: self.operations.clone(),
+            operations: operations.to_vec(),
         };
         let bytes = serde_json::to_vec(&state)?;
         if bytes.len() as u64 > MAX_JOURNAL_BYTES {
