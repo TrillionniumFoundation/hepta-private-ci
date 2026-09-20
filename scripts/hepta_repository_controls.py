@@ -52,6 +52,13 @@ def required_checks(protection: dict[str, Any], evaluator_app: int) -> dict[str,
     require(positive_integer(reviews.get("required_approving_review_count")), "No approving review is required")
     require(reviews.get("dismiss_stale_reviews") is True, "Stale reviews are not dismissed")
     require(reviews.get("require_last_push_approval") is True, "Last push need not have independent approval")
+    # A CODEOWNERS file alone does not require its designated owners to review.
+    # Unknown, missing and truthy non-boolean values are not an observed policy.
+    require(reviews.get("require_code_owner_reviews") is True,
+            "Designated code-owner review is not required by live protection")
+    resolution = protection.get("required_conversation_resolution")
+    require(isinstance(resolution, dict) and resolution.get("enabled") is True,
+            "Unresolved review conversations do not block merging")
     bypass = reviews.get("bypass_pull_request_allowances", {})
     require(isinstance(bypass, dict), "Malformed review bypass allowances")
     for kind in ("users", "teams", "apps"):

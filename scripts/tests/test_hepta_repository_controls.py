@@ -18,8 +18,10 @@ def fixture():
     protection = {
         "enforce_admins": {"enabled": True},
         "allow_force_pushes": {"enabled": False}, "allow_deletions": {"enabled": False},
+        "required_conversation_resolution": {"enabled": True},
         "required_pull_request_reviews": {"required_approving_review_count": 1,
             "dismiss_stale_reviews": True, "require_last_push_approval": True,
+            "require_code_owner_reviews": True,
             "bypass_pull_request_allowances": {"users": [], "teams": [], "apps": []}},
         "required_status_checks": {"strict": True, "contexts": [controls.BLOCKING_CONTEXT], "checks": [
             {"context": controls.BLOCKING_CONTEXT, "app_id": 9999},
@@ -44,6 +46,38 @@ class RepositoryControlTests(unittest.TestCase):
 
     def test_strict_observed_profile(self):
         self.assertEqual(self.validate(), [100, 200])
+
+    def test_codeowners_file_does_not_replace_enforced_owner_review(self):
+        for value in (False, None, 0, 1, "true", [], {}):
+            with self.subTest(value=value):
+                self.protection["required_pull_request_reviews"]["require_code_owner_reviews"] = value
+                with self.assertRaisesRegex(controls.ControlError, "code-owner review"):
+                    self.validate()
+
+    def test_missing_codeowner_review_policy_fails_closed(self):
+        del self.protection["required_pull_request_reviews"]["require_code_owner_reviews"]
+        with self.assertRaisesRegex(controls.ControlError, "code-owner review"):
+            self.validate()
+
+    def test_unknown_or_disabled_conversation_policy_fails_closed(self):
+        for value in (None, False, True, {}, {"enabled": False},
+                      {"enabled": None}, {"enabled": 1}, {"enabled": "true"}):
+            with self.subTest(value=value):
+                self.protection["required_conversation_resolution"] = value
+                with self.assertRaisesRegex(controls.ControlError, "review conversations"):
+                    self.validate()
+
+    def test_missing_conversation_policy_fails_closed(self):
+        del self.protection["required_conversation_resolution"]
+        with self.assertRaisesRegex(controls.ControlError, "review conversations"):
+            self.validate()
+
+    def test_unenforced_owner_policy_rejects_before_loading_check_history(self):
+        self.protection["required_pull_request_reviews"]["require_code_owner_reviews"] = False
+        with patch.object(controls, "api", side_effect=[self.branch, self.protection]) as api:
+            with self.assertRaisesRegex(controls.ControlError, "code-owner review"):
+                controls.observe(REPO, SHA, APP)
+        self.assertEqual(api.call_count, 2)
 
     def test_main_unprotected(self):
         self.branch["protected"] = False
@@ -167,7 +201,7 @@ class RepositoryControlTests(unittest.TestCase):
     def test_pagination_reads_beyond_first_page(self):
         first = [{"id": i} for i in range(100)]
         with patch.object(controls, "api", side_effect=[{"check_runs": first}, {"check_runs": [{"id": 101}]}]) as api:
-            result = controls.collect_checks(REPO, SHA)
+            result = controls.collect_checks(REPO, SHA,)
         self.assertEqual(len(result), 101)
         self.assertIn("page=2", api.call_args_list[1].args[0])
 

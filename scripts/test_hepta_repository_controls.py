@@ -23,10 +23,12 @@ def fixture():
         "enforce_admins": {"enabled": True},
         "allow_force_pushes": {"enabled": False},
         "allow_deletions": {"enabled": False},
+        "required_conversation_resolution": {"enabled": True},
         "required_pull_request_reviews": {
             "required_approving_review_count": 1,
             "dismiss_stale_reviews": True,
             "require_last_push_approval": True,
+            "require_code_owner_reviews": True,
             "bypass_pull_request_allowances": {"users": [], "teams": [], "apps": []},
         },
         "required_status_checks": {
