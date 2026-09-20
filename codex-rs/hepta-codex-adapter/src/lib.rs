@@ -41,6 +41,9 @@ pub const OVERLOADED_ERROR_CODE: i64 = -32_001;
 pub struct AppServerRequestBinding {
     pub source_admission_digest: Digest32,
     pub agent_generation: Generation,
+    /// App Server session identity returned by thread/start and bound into the
+    /// exact request receipt before turn/start can cross the effect boundary.
+    pub session_id: StableId,
     pub protocol_id: StableId,
     pub app_server_version: String,
     pub codex_home_digest: Digest32,
@@ -196,7 +199,7 @@ pub fn adapt_observed_server_rejection(
 #[must_use]
 pub fn request_digest(intent: &CodexOperationIntent) -> Digest32 {
     let mut bytes = Vec::new();
-    bytes.extend_from_slice(b"hepta.codex.adapter.request.v4");
+    bytes.extend_from_slice(b"hepta.codex.adapter.request.v5");
     push_id(&mut bytes, &intent.operation_id);
     push_id(&mut bytes, &intent.thread_id);
     push_id(&mut bytes, &intent.method_id);
@@ -209,6 +212,7 @@ pub fn request_digest(intent: &CodexOperationIntent) -> Digest32 {
             bytes.push(1);
             bytes.extend_from_slice(binding.source_admission_digest.as_array());
             bytes.extend_from_slice(&binding.agent_generation.get().to_be_bytes());
+            push_id(&mut bytes, &binding.session_id);
             push_id(&mut bytes, &binding.protocol_id);
             push_text(&mut bytes, &binding.app_server_version);
             bytes.extend_from_slice(binding.codex_home_digest.as_array());
