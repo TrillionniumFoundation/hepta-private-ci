@@ -9,6 +9,20 @@ The normal source/merge CI must be green before measurements are interpreted.
 Do not convert CI duration, simulator timing or a different host population into
 a target-host claim.
 
+## Qualification-host evidence collector
+
+`.github/workflows/hepta-memory-retrieval-qualification-host.yml` executes all three
+release-mode probes on an exact PR/source SHA, records the source tree and runner
+identity, captures kernel/CPU/memory/Rust toolchain facts, preserves raw stdout/
+stderr plus GNU `/usr/bin/time -v` output, and uploads the complete record as a
+30-day workflow artifact. A GitHub-hosted run is useful reproducible
+qualification-host evidence; it is **not** the approved named production target
+host and cannot satisfy target-host acceptance by relabeling the runner.
+
+The same commands must be repeated on the approved named target host after the
+source/merge gates are green. That target-host receipt must preserve the same
+identity and raw-measurement fields before any performance claim advances.
+
 ## 1. Owner SQLite / source-revalidation probe
 
 From `codex-rs` on the named target host:

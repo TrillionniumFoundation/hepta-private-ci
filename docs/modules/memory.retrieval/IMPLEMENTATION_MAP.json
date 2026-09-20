@@ -2,7 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "557c9c71b009c0becaa6260e88e6b130a2798e6c"
+    "commit": "66cebba86a84016743af5406dfae49a5e0c1e601",
+    "tree": "3b235011e50992e51e88538fc14f0c734c1c8c31"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -108,12 +109,13 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Obtain green exact-head and ordered-parent synthetic-merge receipts for the converged candidate, including package tests, all-target Clippy and clean source.",
-    "Qualify the authenticated CurrentMemoryRetrievalContext provider and the explicit HnmfRequired Agentd profile; Compatibility remains a separate non-HNMF product mode."
+    "Obtain green exact-head and ordered-parent synthetic-merge receipts for the converged candidate, including package tests, all-target Clippy, formatting and clean source.",
+    "Qualify an authenticated CurrentMemoryRetrievalContext provider for the explicit HnmfRequired Agentd profile; Compatibility is a separate mode and rejects an attached HNMF context.",
+    "Run the checked-in qualification-host probes and then repeat them on an approved named target host before making target-host performance claims."
   ],
   "externalEvidenceGates": [
     "independent semantic review and acceptance",
-    "named target-host p50/p95/p99 latency, throughput, CPU, RSS/peak-memory, allocation and SQLite/revalidation measurements",
+    "approved named target-host p50/p95/p99 latency, throughput, CPU, RSS/peak-memory, allocation and SQLite/revalidation measurements",
     "actual vector/causal/procedural/contradiction generator-owner qualification when those policy channels are enabled",
     "independently observed learned-ranker propensity/outcome evidence for causal utility claims",
     "operator acceptance, canary, promotion and release"
