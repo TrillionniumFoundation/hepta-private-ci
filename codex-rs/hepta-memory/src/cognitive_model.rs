@@ -349,6 +349,30 @@ pub struct KgRelationFactDraft {
     pub relation: String,
 }
 
+/// Closed-world relation semantics consumed by typed retrieval channels.
+///
+/// KG draft predicates are canonicalized to lower-case tokens before storage.
+/// These exact tokens are therefore the only predicates that may enter the
+/// causal, procedural, or contradiction-support retrieval channels.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum KgRelationSemanticV1 {
+    Causes,
+    ProcedureStep,
+    Contradicts,
+}
+
+impl KgRelationSemanticV1 {
+    #[must_use]
+    pub const fn relation(self) -> &'static str {
+        match self {
+            Self::Causes => "causes",
+            Self::ProcedureStep => "procedure_step",
+            Self::Contradicts => "contradicts",
+        }
+    }
+}
+
 #[derive(Clone, Debug, Default, Eq, PartialEq, Serialize)]
 pub struct KgFactSetDraft {
     pub entities: Vec<KgEntityFactDraft>,
