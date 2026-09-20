@@ -6,6 +6,7 @@ use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_kg::publish_generation;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -29,6 +30,7 @@ use crate::cognitive_kg_store::ProjectionNode;
 use crate::cognitive_kg_store::canonical_generation_from_projection;
 use crate::cognitive_kg_store::graph_source_vector_digest_tx;
 use crate::cognitive_kg_store::input_heads_digest;
+use crate::cognitive_kg_store::load_canonical_generation_tx;
 use crate::cognitive_kg_store::output_digest;
 use crate::cognitive_model::COGNITIVE_SCHEMA_VERSION;
 use crate::cognitive_model::CognitiveAccess;
@@ -1191,7 +1193,29 @@ async fn verify_current_projection_contents(
                         "KG current projection `{projection_scope}` canonical V2 semantics failed reconstruction"
                     )));
                 }
-                Sha256Digest::parse(publication_sha256).map_err(CognitiveStoreError::Corrupt)?;
+                let predecessor = if generation_u64 == 1 {
+                    None
+                } else {
+                    Some(
+                        load_canonical_generation_tx(
+                            &mut transaction,
+                            &projection_scope,
+                            generation - 1,
+                        )
+                        .await?,
+                    )
+                };
+                let publication =
+                    publish_generation(predecessor.as_ref(), &canonical).map_err(|error| {
+                        CognitiveStoreError::Corrupt(format!(
+                            "KG current projection `{projection_scope}` publication receipt failed canonical reconstruction: {error}"
+                        ))
+                    })?;
+                if publication_sha256 != publication.publication_digest.to_string() {
+                    return Err(CognitiveStoreError::Corrupt(format!(
+                        "KG current projection `{projection_scope}` publication receipt failed canonical reconstruction"
+                    )));
+                }
             }
             _ => {
                 return Err(CognitiveStoreError::Corrupt(format!(

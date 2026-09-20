@@ -633,6 +633,93 @@ async fn reopen_recomputes_current_projection_digests_and_exact_fts_rows() {
 }
 
 #[tokio::test]
+async fn reopen_rejects_canonical_generation_and_publication_digest_tamper() {
+    let generation_temp = TempDir::new().expect("generation semantics temp dir");
+    let generation_owner = agent_id(86);
+    let generation_store = seeded_projection_store(&generation_temp, &generation_owner).await;
+    let mut generation_connection = generation_store
+        .pool
+        .acquire()
+        .await
+        .expect("generation semantics tamper connection");
+    let semantics_trigger: String = sqlx::query_scalar(
+        "SELECT sql FROM sqlite_schema
+         WHERE name = 'kg_projection_generation_semantics_no_update'",
+    )
+    .fetch_one(&mut *generation_connection)
+    .await
+    .expect("semantics trigger SQL");
+    sqlx::query("DROP TRIGGER kg_projection_generation_semantics_no_update")
+        .execute(&mut *generation_connection)
+        .await
+        .expect("drop semantics trigger");
+    sqlx::query(
+        "UPDATE kg_projection_generation_semantics
+         SET generation_sha256 = ?",
+    )
+    .bind(Sha256Digest::for_bytes(b"tampered canonical generation").as_str())
+    .execute(&mut *generation_connection)
+    .await
+    .expect("tamper canonical generation digest");
+    sqlx::query(sqlx::AssertSqlSafe(semantics_trigger.as_str()))
+        .execute(&mut *generation_connection)
+        .await
+        .expect("restore semantics trigger");
+    drop(generation_connection);
+    generation_store.pool.close().await;
+    drop(generation_store);
+
+    let generation_error =
+        match CognitiveStore::open(&layout(&generation_temp, &generation_owner)).await {
+            Ok(_) => panic!("tampered canonical generation digest must fail reopen"),
+            Err(error) => error,
+        };
+    expect_corrupt_with(generation_error, "canonical V2 semantics");
+
+    let publication_temp = TempDir::new().expect("publication semantics temp dir");
+    let publication_owner = agent_id(87);
+    let publication_store = seeded_projection_store(&publication_temp, &publication_owner).await;
+    let mut publication_connection = publication_store
+        .pool
+        .acquire()
+        .await
+        .expect("publication semantics tamper connection");
+    let semantics_trigger: String = sqlx::query_scalar(
+        "SELECT sql FROM sqlite_schema
+         WHERE name = 'kg_projection_generation_semantics_no_update'",
+    )
+    .fetch_one(&mut *publication_connection)
+    .await
+    .expect("semantics trigger SQL");
+    sqlx::query("DROP TRIGGER kg_projection_generation_semantics_no_update")
+        .execute(&mut *publication_connection)
+        .await
+        .expect("drop semantics trigger");
+    sqlx::query(
+        "UPDATE kg_projection_generation_semantics
+         SET publication_sha256 = ?",
+    )
+    .bind(Sha256Digest::for_bytes(b"tampered canonical publication").as_str())
+    .execute(&mut *publication_connection)
+    .await
+    .expect("tamper canonical publication digest");
+    sqlx::query(sqlx::AssertSqlSafe(semantics_trigger.as_str()))
+        .execute(&mut *publication_connection)
+        .await
+        .expect("restore semantics trigger");
+    drop(publication_connection);
+    publication_store.pool.close().await;
+    drop(publication_store);
+
+    let publication_error =
+        match CognitiveStore::open(&layout(&publication_temp, &publication_owner)).await {
+            Ok(_) => panic!("tampered canonical publication digest must fail reopen"),
+            Err(error) => error,
+        };
+    expect_corrupt_with(publication_error, "publication receipt");
+}
+
+#[tokio::test]
 async fn reopen_rejects_0008_migration_checksum_drift_without_repair() {
     let temp = TempDir::new().expect("migration checksum temp dir");
     let owner = agent_id(85);
