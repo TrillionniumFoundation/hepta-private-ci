@@ -64,8 +64,7 @@ impl MatrixFinalUseBroker {
         let config: MatrixFinalUseHostConfig =
             read_private_json(&config_path, HOST_CONFIG_MAX_BYTES)?;
         if config.schema_version != BROKER_SCHEMA_VERSION
-            || !(MIN_BROKER_TIMEOUT_MS..=MAX_BROKER_TIMEOUT_MS)
-                .contains(&config.request_timeout_ms)
+            || !(MIN_BROKER_TIMEOUT_MS..=MAX_BROKER_TIMEOUT_MS).contains(&config.request_timeout_ms)
         {
             return Err(MatrixFinalUseBrokerError::InvalidConfiguration);
         }
@@ -112,9 +111,7 @@ impl MatrixFinalUseBroker {
         if head.authority_epoch == current.authority_epoch && head.revision == current.revision {
             return Ok(());
         }
-        if head.authority_epoch < current.authority_epoch
-            || head.revision <= current.revision
-        {
+        if head.authority_epoch < current.authority_epoch || head.revision <= current.revision {
             return Err(MatrixAuthorityError::Rejected);
         }
         self.authority
@@ -233,9 +230,7 @@ fn read_private_json<T: serde::de::DeserializeOwned>(
     }
     let file: File = rustix::fs::open(
         path,
-        rustix::fs::OFlags::RDONLY
-            | rustix::fs::OFlags::NOFOLLOW
-            | rustix::fs::OFlags::CLOEXEC,
+        rustix::fs::OFlags::RDONLY | rustix::fs::OFlags::NOFOLLOW | rustix::fs::OFlags::CLOEXEC,
         rustix::fs::Mode::empty(),
     )
     .map_err(|_| MatrixFinalUseBrokerError::UnsafePath)?

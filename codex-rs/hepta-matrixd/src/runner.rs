@@ -39,11 +39,11 @@ use crate::MatrixAppServerBridge;
 use crate::MatrixBridgeConfig;
 use crate::MatrixRuntime;
 use crate::MatrixdConfig;
-use crate::final_use::MatrixFinalUseBroker;
 use crate::control::MatrixdConnectionState;
 use crate::control::MatrixdControlIdentity;
 use crate::control::MatrixdControlServer;
 use crate::control::MatrixdControlState;
+use crate::final_use::MatrixFinalUseBroker;
 
 const MATRIXD_CLIENT_VERSION: &str = env!("CARGO_PKG_VERSION");
 const INBOX_RECOVERY_LIMIT: usize = 1_024;

@@ -289,12 +289,9 @@ async fn handle_final_use_broker_connection(
 ) -> Result<()> {
     let mut reader = BufReader::new(stream);
     let mut frame = Vec::new();
-    let read = timeout(
-        Duration::from_secs(5),
-        reader.read_until(b'\n', &mut frame),
-    )
-    .await
-    .context("final-use broker request timed out")??;
+    let read = timeout(Duration::from_secs(5), reader.read_until(b'\n', &mut frame))
+        .await
+        .context("final-use broker request timed out")??;
     if read == 0 {
         return Ok(());
     }
@@ -313,8 +310,7 @@ async fn handle_final_use_broker_connection(
         "final-use broker received an unknown Matrix subject"
     );
     ensure!(
-        request.request.operation_id
-            == format!("matrix.send:{}", request.request.stable_txn_id),
+        request.request.operation_id == format!("matrix.send:{}", request.request.stable_txn_id),
         "final-use broker operation identity drifted"
     );
 

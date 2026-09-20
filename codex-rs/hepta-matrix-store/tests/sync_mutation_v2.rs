@@ -15,10 +15,10 @@ use codex_hepta_matrix_store::ChangeKind;
 use codex_hepta_matrix_store::InboxDraft;
 use codex_hepta_matrix_store::InboxQueuedDraft;
 use codex_hepta_matrix_store::InboxState;
+use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixDurableConfig;
 use codex_hepta_matrix_store::MatrixDurableError;
 use codex_hepta_matrix_store::MatrixDurableStore;
-use codex_hepta_matrix_store::MatrixDispatchState;
 use codex_hepta_matrix_store::MatrixEventId;
 use codex_hepta_matrix_store::MatrixRoomId;
 use codex_hepta_matrix_store::MatrixUserId;
@@ -1028,7 +1028,8 @@ async fn caller_persisted_outbox_attempt_survives_a_later_room_leave() -> TestRe
 }
 
 #[tokio::test]
-async fn dispatch_observation_survives_reopen_and_redaction_preserves_send_evidence() -> TestResult {
+async fn dispatch_observation_survives_reopen_and_redaction_preserves_send_evidence() -> TestResult
+{
     let temp = TempDir::new()?;
     let agent_id = agent()?;
     let store_layout = layout(&temp, &agent_id)?;
@@ -1065,12 +1066,7 @@ async fn dispatch_observation_survives_reopen_and_redaction_preserves_send_evide
 
     let sent_event_id = event("$durable-outbound")?;
     store
-        .record_outbox_transport_accepted(
-            &txn_id,
-            claimed.attempts,
-            &sent_event_id,
-            12,
-        )
+        .record_outbox_transport_accepted(&txn_id, claimed.attempts, &sent_event_id, 12)
         .await?;
     store
         .mark_outbox_retry(&txn_id, claimed.attempts, 12, 20)
@@ -1110,12 +1106,7 @@ async fn dispatch_observation_survives_reopen_and_redaction_preserves_send_evide
         },
     };
     store
-        .apply_sync_decision_v2(&commit(
-            None,
-            "dispatch-s1",
-            14,
-            vec![outbound_observation],
-        ))
+        .apply_sync_decision_v2(&commit(None, "dispatch-s1", 14, vec![outbound_observation]))
         .await?;
     let succeeded = store
         .dispatch_for_txn(&txn_id)

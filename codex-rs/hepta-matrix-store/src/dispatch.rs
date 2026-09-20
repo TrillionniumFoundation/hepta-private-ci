@@ -128,7 +128,8 @@ impl MatrixDurableStore {
         {
             return Err(MatrixDurableError::Conflict);
         }
-        let existing = authority_claim_by_attempt_tx(&mut transaction, txn_id, claim.attempt).await?;
+        let existing =
+            authority_claim_by_attempt_tx(&mut transaction, txn_id, claim.attempt).await?;
         if let Some(existing) = existing {
             if &existing == claim {
                 transaction.commit().await.map_err(unavailable)?;
@@ -213,7 +214,9 @@ impl MatrixDurableStore {
         if now_ms < record.updated_at_ms {
             return Err(MatrixDurableError::Invalid);
         }
-        let payload_digest = Sha256Digest::for_bytes(&record.payload).as_str().to_string();
+        let payload_digest = Sha256Digest::for_bytes(&record.payload)
+            .as_str()
+            .to_string();
         if let Some(authority) = authority {
             validate_authority(authority, &payload_digest)?;
         }
@@ -238,12 +241,10 @@ impl MatrixDurableStore {
         .await
         .map_err(unavailable)?
         .ok_or(MatrixDurableError::Conflict)?;
-        let logical_outbox_id: String = identity
-            .try_get("logical_outbox_id")
-            .map_err(unavailable)?;
-        let stored_payload_digest: String = identity
-            .try_get("payload_sha256")
-            .map_err(unavailable)?;
+        let logical_outbox_id: String =
+            identity.try_get("logical_outbox_id").map_err(unavailable)?;
+        let stored_payload_digest: String =
+            identity.try_get("payload_sha256").map_err(unavailable)?;
         if stored_payload_digest != payload_digest {
             return Err(MatrixDurableError::Corrupt);
         }
@@ -663,20 +664,17 @@ impl MatrixDurableStore {
                 .await
                 .map_err(unavailable)?
                 .ok_or(MatrixDurableError::Conflict)?;
-                let stored_room = MatrixRoomId::parse(
-                    row.try_get::<String, _>("room_id").map_err(unavailable)?,
-                )
-                .map_err(|_| MatrixDurableError::Corrupt)?;
+                let stored_room =
+                    MatrixRoomId::parse(row.try_get::<String, _>("room_id").map_err(unavailable)?)
+                        .map_err(|_| MatrixDurableError::Corrupt)?;
                 if stored_room != *room_id {
                     return Err(MatrixDurableError::Conflict);
                 }
                 let logical_outbox_id: String =
                     row.try_get("logical_outbox_id").map_err(unavailable)?;
-                let payload_digest: String =
-                    row.try_get("payload_sha256").map_err(unavailable)?;
+                let payload_digest: String = row.try_get("payload_sha256").map_err(unavailable)?;
                 let attempts = to_u64(row.try_get("attempts").map_err(unavailable)?)?.max(1);
-                let prepared_at_ms =
-                    to_u64(row.try_get("created_at_ms").map_err(unavailable)?)?;
+                let prepared_at_ms = to_u64(row.try_get("created_at_ms").map_err(unavailable)?)?;
                 let operation_id = operation_id(txn_id);
                 sqlx::query(
                     "INSERT INTO matrix_dispatch_ledger (
@@ -694,7 +692,10 @@ impl MatrixDurableStore {
                 .bind(&operation_id)
                 .bind(&logical_outbox_id)
                 .bind(room_id.as_str())
-                .bind(row.try_get::<i64, _>("binding_revision").map_err(unavailable)?)
+                .bind(
+                    row.try_get::<i64, _>("binding_revision")
+                        .map_err(unavailable)?,
+                )
                 .bind(row.try_get::<i64, _>("generation").map_err(unavailable)?)
                 .bind(&payload_digest)
                 .bind(event_id.as_str())
@@ -719,14 +720,7 @@ impl MatrixDurableStore {
                     observed_at_ms,
                 )
                 .await?;
-                settle_outbox_sent_tx(
-                    self,
-                    transaction,
-                    &record,
-                    event_id,
-                    observed_at_ms,
-                )
-                .await?;
+                settle_outbox_sent_tx(self, transaction, &record, event_id, observed_at_ms).await?;
                 return Ok(record);
             }
         };
@@ -871,14 +865,7 @@ impl MatrixDurableStore {
             terminal_observed_at_ms: Some(observed_at_ms),
             ..existing
         };
-        settle_outbox_sent_tx(
-            self,
-            transaction,
-            &record,
-            target_event_id,
-            observed_at_ms,
-        )
-        .await?;
+        settle_outbox_sent_tx(self, transaction, &record, target_event_id, observed_at_ms).await?;
         Ok(Some(record))
     }
 }
@@ -890,14 +877,13 @@ async fn settle_outbox_sent_tx(
     event_id: &MatrixEventId,
     observed_at_ms: u64,
 ) -> Result<(), MatrixDurableError> {
-    let row = sqlx::query(
-        "SELECT state, sent_event_id FROM outbox_messages WHERE stable_txn_id = ?",
-    )
-    .bind(dispatch.stable_txn_id.as_str())
-    .fetch_optional(&mut **transaction)
-    .await
-    .map_err(unavailable)?
-    .ok_or(MatrixDurableError::Corrupt)?;
+    let row =
+        sqlx::query("SELECT state, sent_event_id FROM outbox_messages WHERE stable_txn_id = ?")
+            .bind(dispatch.stable_txn_id.as_str())
+            .fetch_optional(&mut **transaction)
+            .await
+            .map_err(unavailable)?
+            .ok_or(MatrixDurableError::Corrupt)?;
     let state: String = row.try_get("state").map_err(unavailable)?;
     let prior_event: Option<String> = row.try_get("sent_event_id").map_err(unavailable)?;
     if let Some(prior_event) = prior_event {
@@ -968,9 +954,7 @@ fn authority_claim_from_row(
         device_id: row.try_get("device_id").map_err(unavailable)?,
         session_generation: to_u64(row.try_get("session_generation").map_err(unavailable)?)?,
         authority_epoch: to_u64(row.try_get("authority_epoch").map_err(unavailable)?)?,
-        revocation_revision: to_u64(
-            row.try_get("revocation_revision").map_err(unavailable)?,
-        )?,
+        revocation_revision: to_u64(row.try_get("revocation_revision").map_err(unavailable)?)?,
         grant_id: row.try_get("grant_id").map_err(unavailable)?,
         request_digest: row.try_get("request_sha256").map_err(unavailable)?,
         scope_digest: row.try_get("scope_sha256").map_err(unavailable)?,
@@ -1005,7 +989,9 @@ async fn dispatch_by_txn_tx(
     .transpose()
 }
 
-fn dispatch_from_row(row: &sqlx::sqlite::SqliteRow) -> Result<MatrixDispatchRecord, MatrixDurableError> {
+fn dispatch_from_row(
+    row: &sqlx::sqlite::SqliteRow,
+) -> Result<MatrixDispatchRecord, MatrixDurableError> {
     let operation_id: String = row.try_get("operation_id").map_err(unavailable)?;
     let logical_outbox_id: String = row.try_get("logical_outbox_id").map_err(unavailable)?;
     validate_stored_identity(&operation_id)?;
@@ -1024,12 +1010,15 @@ fn dispatch_from_row(row: &sqlx::sqlite::SqliteRow) -> Result<MatrixDispatchReco
             return Err(MatrixDurableError::Corrupt);
         }
     }
-    let transport_observation_digest: Option<String> =
-        row.try_get("transport_observation_sha256").map_err(unavailable)?;
-    let send_observation_digest: Option<String> =
-        row.try_get("send_observation_sha256").map_err(unavailable)?;
-    let redaction_observation_digest: Option<String> =
-        row.try_get("redaction_observation_sha256").map_err(unavailable)?;
+    let transport_observation_digest: Option<String> = row
+        .try_get("transport_observation_sha256")
+        .map_err(unavailable)?;
+    let send_observation_digest: Option<String> = row
+        .try_get("send_observation_sha256")
+        .map_err(unavailable)?;
+    let redaction_observation_digest: Option<String> = row
+        .try_get("redaction_observation_sha256")
+        .map_err(unavailable)?;
     for digest in [
         transport_observation_digest.as_deref(),
         send_observation_digest.as_deref(),
@@ -1054,10 +1043,8 @@ fn dispatch_from_row(row: &sqlx::sqlite::SqliteRow) -> Result<MatrixDispatchReco
         )
         .map_err(|_| MatrixDurableError::Corrupt)?,
         logical_outbox_id,
-        room_id: MatrixRoomId::parse(
-            row.try_get::<String, _>("room_id").map_err(unavailable)?,
-        )
-        .map_err(|_| MatrixDurableError::Corrupt)?,
+        room_id: MatrixRoomId::parse(row.try_get::<String, _>("room_id").map_err(unavailable)?)
+            .map_err(|_| MatrixDurableError::Corrupt)?,
         binding_revision: to_u64(row.try_get("binding_revision").map_err(unavailable)?)?,
         generation: to_u64(row.try_get("generation").map_err(unavailable)?)?,
         payload_digest,
@@ -1176,10 +1163,7 @@ fn validate_authority_claim(
         (claim.matrix_user_id.as_str(), 255_usize),
         (claim.device_id.as_str(), 255_usize),
     ] {
-        if value.is_empty()
-            || value.len() > maximum
-            || value.chars().any(char::is_control)
-        {
+        if value.is_empty() || value.len() > maximum || value.chars().any(char::is_control) {
             return Err(MatrixDurableError::Invalid);
         }
     }
@@ -1217,8 +1201,7 @@ fn validate_authority(
 }
 
 fn validate_identity(value: &str) -> Result<(), MatrixDurableError> {
-    if !(1..=512).contains(&value.len())
-        || !value.bytes().all(|byte| (b' '..=b'~').contains(&byte))
+    if !(1..=512).contains(&value.len()) || !value.bytes().all(|byte| (b' '..=b'~').contains(&byte))
     {
         return Err(MatrixDurableError::Invalid);
     }
