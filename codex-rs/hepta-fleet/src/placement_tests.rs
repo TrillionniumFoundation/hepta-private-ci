@@ -31,6 +31,14 @@ fn host(id: &str, domain: &str, generation: u64, turns: u64) -> HostObservation 
     }
 }
 
+fn measurement(observation: HostObservation) -> FleetCapacityMeasurementV1 {
+    FleetCapacityMeasurementV1 {
+        measurement_source_id: "fleet-observer".to_string(),
+        observation,
+        uncertainty: FleetResourceVectorV1::default(),
+    }
+}
+
 fn request(id: &str, index: usize, minimum: u64, desired: u64) -> FleetPlacementRequestV1 {
     FleetPlacementRequestV1 {
         allocation_id: format!("allocation.{id}"),
@@ -165,12 +173,12 @@ fn exact_final_use_authority_commits_the_complete_plan_generation() {
 #[test]
 fn capacity_observation_requires_authority_bound_to_exact_payload() {
     let (_temp, store) = store();
-    let observation = host("host-a", "rack-a", 1, 8);
-    let binding = capacity_observation_binding("fleet-observer", 0, &observation)
+    let measurement = measurement(host("host-a", "rack-a", 1, 8));
+    let binding = capacity_observation_binding("fleet-observer", 0, &measurement)
         .expect("binding");
     let (_authority_dir, authority, signed) = authority(binding, 6);
-    let mut changed = observation.clone();
-    changed.capacity.concurrent_turns = 9;
+    let mut changed = measurement.clone();
+    changed.observation.capacity.concurrent_turns = 9;
     assert!(matches!(
         admit_host_with_authority(
             &store,
@@ -184,4 +192,19 @@ fn capacity_observation_requires_authority_bound_to_exact_payload() {
         Err(FleetPlacementError::Authority(_))
     ));
     assert_eq!(store.load(200).expect("unchanged").generation(), 0);
+
+    let mut wrong_source = measurement.clone();
+    wrong_source.measurement_source_id = "other-observer".to_string();
+    assert!(matches!(
+        capacity_observation_binding("fleet-observer", 0, &wrong_source),
+        Err(FleetPlacementError::Invalid(_))
+    ));
+
+    let mut impossible_uncertainty = measurement;
+    impossible_uncertainty.uncertainty.concurrent_turns =
+        impossible_uncertainty.observation.capacity.concurrent_turns + 1;
+    assert!(matches!(
+        capacity_observation_binding("fleet-observer", 0, &impossible_uncertainty),
+        Err(FleetPlacementError::Invalid(_))
+    ));
 }
