@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "413c08e913d3021e04557e5847810b39cbc631e6",
-    "tree": "b348fbfc1afc27889fe8a4cbf8f52d7fdc3778ad"
+    "commit": "14318b93a54ffb1aa959ceb4a28e9e81f14325dc",
+    "tree": "349a80ad93c6eee797278858a32340457f1e47f1"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.store",
@@ -116,10 +116,28 @@
       "delegatedCallees": [
         "hepta-memory::CognitiveStore"
       ]
+    },
+    {
+      "operation": "canonical_memory_event_shadow",
+      "nativeSymbol": "AdmittedCognitiveStoreV2::append_admitted_with_canonical_shadow",
+      "sourcePath": "codex-rs/hepta-cognitive-store/src/v2.rs",
+      "state": "source_implemented_shadow_only_not_product_composed",
+      "authority": "existing_store_authority_only_no_new_authority",
+      "tests": [
+        "codex-rs/hepta-cognitive-store/src/v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical_memory_event_shadow_write",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "AdmittedCognitiveStoreV2::append_admitted"
+      ]
     }
   ],
   "repositoryControlledGaps": [
     "Obtain terminal-success exact-head and deterministic synthetic-merge receipts for this source baseline, including child-process crash/reopen and 256/16384 PERF-DURABLE artifacts.",
+    "Bind production semantic mutation provenance durably to operation identity, authority grant/epochs, final payload digest and predecessor in the same authoritative transaction.",
+    "Bridge canonical MemoryEventV1 source_revision from the durable source owner before claiming full canonical provenance equivalence or production composition.",
     "Keep productionImplementation false until the normal-runtime sealed capability path compiles/tests on the exact candidate and product execution evidence is current.",
     "Standalone deployment must receive an independently authenticated current-cut witness and externally verified live production authority from its host; Agentd must not self-mint either."
   ],
@@ -139,5 +157,17 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-cognitive-store"
-  ]
+  ],
+  "sourceBaseSemantics": "exact_non_projection_source_snapshot",
+  "canonicalMemoryEventMigration": {
+    "state": "shadow_co_observation_source_integrated",
+    "legacyAuthoritativeSurface": "MemoryAdmissionCandidateV1 -> MemoryRecord / MemoryWriteReceiptV1",
+    "canonicalObservedSurface": "cognitive.types::hnmf::MemoryEventV1",
+    "provesPayloadSemanticEquivalence": false,
+    "verifiesVerificationState": true,
+    "verifiesSourceIdDigestObservedTime": true,
+    "verifiesSourceRevisionEquivalence": false,
+    "postCommitFailurePossible": false,
+    "productionWriterReplacement": false
+  }
 }
