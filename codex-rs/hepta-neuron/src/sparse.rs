@@ -183,12 +183,33 @@ impl SparseCheckpoint {
     /// registered NeuronSignalReceiptV1/NeuronCheckpointV1 protocol cannot
     /// silently substitute whole-checkpoint identity for temporal state.
     pub fn temporal_state_digest(&self) -> Digest32 {
-        let mut bytes = b"hepta.neuron.temporal-state.q24.v1".to_vec();
-        bytes.extend_from_slice(&(self.temporal.len() as u64).to_be_bytes());
-        for value in &self.temporal {
-            bytes.extend_from_slice(&value.to_be_bytes());
-        }
-        Digest32::of_bytes(&bytes)
+        digest_q24(b"hepta.neuron.temporal-state.q24.v1", &self.temporal)
+    }
+
+    pub fn activation_digest(&self) -> Digest32 {
+        digest_q24(b"hepta.neuron.activation.q24.v1", &self.activation)
+    }
+
+    pub fn threshold_digest(&self) -> Digest32 {
+        digest_q24(b"hepta.neuron.threshold.q24.v1", &self.threshold)
+    }
+
+    pub fn eligibility_digest(&self) -> Digest32 {
+        digest_q24(b"hepta.neuron.eligibility.q24.v1", &self.eligibility)
+    }
+
+    pub fn active_indices(&self) -> Vec<u32> {
+        self.activation
+            .iter()
+            .enumerate()
+            .filter(|(_, value)| **value > 0)
+            .map(|(index, _)| index as u32)
+            .collect()
+    }
+
+    pub fn active_fraction_ppm(&self) -> u32 {
+        let active = self.activation.iter().filter(|value| **value > 0).count();
+        (active * 1_000_000 / self.activation.len()) as u32
     }
 
     /// Upper bound for a canonical checkpoint encoding of the current state.
@@ -413,6 +434,15 @@ pub fn sparse_tick(
         authority: AuthorityPosture::DENY_ALL,
     };
     Ok((next, receipt))
+}
+
+fn digest_q24(domain: &[u8], values: &[i64]) -> Digest32 {
+    let mut bytes = domain.to_vec();
+    bytes.extend_from_slice(&(values.len() as u64).to_be_bytes());
+    for value in values {
+        bytes.extend_from_slice(&value.to_be_bytes());
+    }
+    Digest32::of_bytes(&bytes)
 }
 
 // Inputs are bounded before this helper. i128 handles products exactly.
