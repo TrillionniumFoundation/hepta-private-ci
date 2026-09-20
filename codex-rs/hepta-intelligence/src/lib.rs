@@ -24,11 +24,19 @@ pub use capability_snapshot::CapabilitySnapshotRequestV2;
 pub use capability_snapshot::CapabilitySnapshotV2;
 
 mod pipeline_v2;
+mod prompt_delivery;
+mod prompt_registry_adapter_v1;
 
 pub use pipeline_v2::LaneFRunRequestV2;
 pub use pipeline_v2::LaneFShadowPipelineReceiptV2;
 pub use pipeline_v2::PipelineErrorV2;
 pub use pipeline_v2::run_shadow_pipeline_v2;
+pub use prompt_delivery::PromptRegistryCompilationErrorV2;
+pub use prompt_delivery::PromptRegistryCompilationRequestV2;
+pub use prompt_delivery::PromptRegistryCompiledContextV2;
+pub use prompt_delivery::compile_prompt_registry_v2;
+pub use prompt_registry_adapter_v1::PromptRegistryAdapterErrorV1;
+pub use prompt_registry_adapter_v1::PromptRegistryCandidateAdapterV1;
 
 mod pipeline;
 
