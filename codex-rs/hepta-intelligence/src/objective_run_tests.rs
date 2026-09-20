@@ -412,7 +412,7 @@ fn exact_product_retry_is_idempotent_and_semantic_drift_conflicts() {
 }
 
 #[test]
-fn compiler_conflict_never_publishes_run_start() {
+fn compiler_conflict_is_durably_published_without_runtime_snapshot() {
     let fixture = Fixture::new();
     let mut journal = DurableRunStartJournal::create(
         fixture.file(),
@@ -425,15 +425,54 @@ fn compiler_conflict_never_publishes_run_start() {
     envelope.structured_intent.forbidden_action_classes = vec!["read".to_string()];
     refresh(&mut envelope);
     let context = context(&profile, &envelope);
-    assert!(matches!(
-        compile_and_publish_objective_run_v1(
-            &envelope,
-            &profile,
-            &context,
-            bindings("run-conflict", Digest32::ZERO),
-            &mut journal,
-        ),
-        Err(ObjectiveRunError::Conflict(_))
-    ));
+    let first = compile_and_publish_objective_run_v1(
+        &envelope,
+        &profile,
+        &context,
+        bindings("run-conflict", Digest32::ZERO),
+        &mut journal,
+    );
+    let (conflict, publication) = match first {
+        Err(ObjectiveRunError::Conflict {
+            conflict,
+            publication,
+        }) => (conflict, publication),
+        other => panic!("expected durable conflict, got {other:?}"),
+    };
+    assert_eq!(
+        RunStartAppendDisposition::Appended,
+        publication.disposition
+    );
     assert!(journal.records().expect("records").is_empty());
+    let durable = journal
+        .get_conflict(&id("run-conflict"))
+        .expect("read conflict")
+        .expect("durable conflict");
+    assert_eq!(durable.conflict_digest, conflict.conflict_digest);
+    assert_eq!(
+        Digest32::of_bytes(&durable.conflict_receipt_bytes),
+        conflict.conflict_digest
+    );
+
+    let retry = compile_and_publish_objective_run_v1(
+        &envelope,
+        &profile,
+        &context,
+        bindings("run-conflict", Digest32::ZERO),
+        &mut journal,
+    );
+    match retry {
+        Err(ObjectiveRunError::Conflict {
+            conflict: replayed,
+            publication: replay,
+        }) => {
+            assert_eq!(replayed, conflict);
+            assert_eq!(
+                RunStartAppendDisposition::IdempotentReplay,
+                replay.disposition
+            );
+            assert_eq!(replay.chain_digest, publication.chain_digest);
+        }
+        other => panic!("expected idempotent durable conflict, got {other:?}"),
+    }
 }
