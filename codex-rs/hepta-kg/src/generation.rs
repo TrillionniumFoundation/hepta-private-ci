@@ -237,6 +237,22 @@ pub fn apply_incremental_delta(
     }
     ensure_unique_ids("remove_node", &delta.remove_node_ids)?;
     ensure_unique_edge_ids("remove_edge", &delta.remove_edge_identities)?;
+    let mut upsert_node_ids = BTreeSet::new();
+    if delta
+        .upsert_nodes
+        .iter()
+        .any(|node| !upsert_node_ids.insert(node.node_id.clone()))
+    {
+        return Err(KnowledgeGenerationErrorV2::DuplicateDeltaIdentity);
+    }
+    let mut upsert_edge_ids = BTreeSet::new();
+    if delta
+        .upsert_edges
+        .iter()
+        .any(|edge| !upsert_edge_ids.insert(edge.identity.clone()))
+    {
+        return Err(KnowledgeGenerationErrorV2::DuplicateDeltaIdentity);
+    }
 
     let mut nodes = predecessor
         .nodes
