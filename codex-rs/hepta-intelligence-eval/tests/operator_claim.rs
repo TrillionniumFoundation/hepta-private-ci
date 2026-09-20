@@ -1,3 +1,5 @@
+#![cfg(feature = "trusted-inprocess-eval")]
+
 use codex_hepta_intelligence_eval::CrossFoldPartitionV1;
 use codex_hepta_intelligence_eval::CrossFoldPlanV1;
 use codex_hepta_intelligence_eval::EvaluationClaimScopeV1;
@@ -8,7 +10,7 @@ use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::MetricContractV1;
 use codex_hepta_intelligence_eval::MetricGateV1;
-use codex_hepta_intelligence_eval::decide_independently;
+use codex_hepta_intelligence_eval::trusted_inprocess::decide_independently;
 use codex_hepta_intelligence_eval::freeze_cross_fold_plan;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_types::Digest32;
