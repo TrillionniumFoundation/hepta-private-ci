@@ -45,6 +45,7 @@ async fn admit(
         .admit_authbus_message(
             &issuer,
             &message,
+            &message.claims.subject_id,
             message.claims.scope_digest,
             message.claims.payload_digest,
         )
@@ -96,6 +97,7 @@ async fn rejected_authentication_does_not_consume_sequence() {
         .admit_authbus_message(
             &issuer,
             &message,
+            &message.claims.subject_id,
             message.claims.scope_digest,
             message.claims.payload_digest,
         )

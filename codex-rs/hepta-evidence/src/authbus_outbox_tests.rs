@@ -161,6 +161,7 @@ async fn failed_insert_rolls_back_replay_and_direct_admission_cannot_be_upgraded
         .admit_authbus_message(
             &issuer,
             &message,
+            &message.claims.subject_id,
             message.claims.scope_digest,
             message.claims.payload_digest,
         )

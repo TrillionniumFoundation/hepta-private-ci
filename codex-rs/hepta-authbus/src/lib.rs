@@ -103,6 +103,7 @@ pub enum Error {
     Revoked,
     Expired,
     ScopeMismatch,
+    SubjectMismatch,
     PayloadMismatch,
     Replay,
     CapacityExceeded,
