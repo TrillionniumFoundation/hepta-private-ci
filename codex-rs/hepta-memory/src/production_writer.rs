@@ -916,20 +916,37 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
         facts: &'a KgFactSetDraft,
     ) -> ProductionCognitiveMutationFuture<'a> {
         Box::pin(async move {
-            self.execute_semantic_mutation(
+            self.writer.verify_current_authority().await?;
+            let prepared = self.prepare_semantic_mutation(
                 "remember",
                 source,
-                /*expected_predecessor_revision*/ None,
+                None,
                 &(draft, facts),
-                |transaction| {
-                    Box::pin(
-                        self.writer
-                            .store()
-                            .remember_with_kg_tx(transaction, access, source, draft, facts),
-                    )
-                },
-            )
-            .await
+            )?;
+            let mut transaction = self
+                .writer
+                .store()
+                .pool
+                .begin_with("BEGIN IMMEDIATE")
+                .await
+                .map_err(crate::cognitive_store::unavailable)?;
+            let queued = self
+                .admit_prepared_mutation(&mut transaction, &prepared)
+                .await?;
+            let write = self
+                .writer
+                .store()
+                .remember_with_kg_tx(&mut transaction, access, source, draft, facts)
+                .await?;
+            let receipt = self
+                .finish_prepared_mutation(&mut transaction, prepared, queued, write)
+                .await?;
+            transaction
+                .commit()
+                .await
+                .map_err(crate::cognitive_store::unavailable)?;
+            receipt.validate()?;
+            Ok(receipt)
         })
     }
 
@@ -943,24 +960,45 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
         facts: &'a KgFactSetDraft,
     ) -> ProductionCognitiveMutationFuture<'a> {
         Box::pin(async move {
-            self.execute_semantic_mutation(
+            self.writer.verify_current_authority().await?;
+            let prepared = self.prepare_semantic_mutation(
                 "correct",
                 source,
                 Some(expected_revision),
                 &(memory_id.as_str(), draft, facts),
-                |transaction| {
-                    Box::pin(self.writer.store().correct_with_kg_tx(
-                        transaction,
-                        access,
-                        memory_id,
-                        expected_revision,
-                        source,
-                        draft,
-                        facts,
-                    ))
-                },
-            )
-            .await
+            )?;
+            let mut transaction = self
+                .writer
+                .store()
+                .pool
+                .begin_with("BEGIN IMMEDIATE")
+                .await
+                .map_err(crate::cognitive_store::unavailable)?;
+            let queued = self
+                .admit_prepared_mutation(&mut transaction, &prepared)
+                .await?;
+            let write = self
+                .writer
+                .store()
+                .correct_with_kg_tx(
+                    &mut transaction,
+                    access,
+                    memory_id,
+                    expected_revision,
+                    source,
+                    draft,
+                    facts,
+                )
+                .await?;
+            let receipt = self
+                .finish_prepared_mutation(&mut transaction, prepared, queued, write)
+                .await?;
+            transaction
+                .commit()
+                .await
+                .map_err(crate::cognitive_store::unavailable)?;
+            receipt.validate()?;
+            Ok(receipt)
         })
     }
 
@@ -973,51 +1011,67 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
         draft: &'a ForgetMemoryDraft,
     ) -> ProductionCognitiveMutationFuture<'a> {
         Box::pin(async move {
-            self.execute_semantic_mutation(
+            self.writer.verify_current_authority().await?;
+            let prepared = self.prepare_semantic_mutation(
                 "forget",
                 source,
                 Some(expected_revision),
                 &(memory_id.as_str(), draft),
-                |transaction| {
-                    Box::pin(self.writer.store().forget_with_kg_tx(
-                        transaction,
-                        access,
-                        memory_id,
-                        expected_revision,
-                        source,
-                        draft,
-                    ))
-                },
-            )
-            .await
+            )?;
+            let mut transaction = self
+                .writer
+                .store()
+                .pool
+                .begin_with("BEGIN IMMEDIATE")
+                .await
+                .map_err(crate::cognitive_store::unavailable)?;
+            let queued = self
+                .admit_prepared_mutation(&mut transaction, &prepared)
+                .await?;
+            let write = self
+                .writer
+                .store()
+                .forget_with_kg_tx(
+                    &mut transaction,
+                    access,
+                    memory_id,
+                    expected_revision,
+                    source,
+                    draft,
+                )
+                .await?;
+            let receipt = self
+                .finish_prepared_mutation(&mut transaction, prepared, queued, write)
+                .await?;
+            transaction
+                .commit()
+                .await
+                .map_err(crate::cognitive_store::unavailable)?;
+            receipt.validate()?;
+            Ok(receipt)
         })
     }
 }
 
-type SemanticMutationTxFuture<'a> = Pin<
-    Box<
-        dyn Future<Output = Result<CognitiveWriteReceipt, CognitiveStoreError>>
-            + Send
-            + 'a,
-    >,
->;
+struct PreparedProductionCognitiveMutation {
+    mutation_kind: String,
+    operation_digest: Sha256Digest,
+    input_payload_sha256: Sha256Digest,
+    source_content_sha256: Sha256Digest,
+    source_observed_at_unix_seconds: i64,
+    expected_predecessor_revision: Option<u64>,
+    occurrence_key: String,
+    intent_json: String,
+}
 
 impl ProductionCognitiveMutationCapability {
-    async fn execute_semantic_mutation<T, F>(
+    fn prepare_semantic_mutation<T: Serialize + ?Sized>(
         &self,
         mutation_kind: &str,
         source: &SourceDraft,
         expected_predecessor_revision: Option<u64>,
         semantic_input: &T,
-        mutate: F,
-    ) -> Result<ProductionCognitiveMutationReceiptV1, ProductionCognitiveMutationError>
-    where
-        T: Serialize + ?Sized,
-        F: for<'tx> FnOnce(
-            &'tx mut sqlx::Transaction<'_, sqlx::Sqlite>,
-        ) -> SemanticMutationTxFuture<'tx>,
-    {
-        self.writer.verify_current_authority().await?;
+    ) -> Result<PreparedProductionCognitiveMutation, ProductionCognitiveMutationError> {
         let input_payload_sha256 =
             production_cognitive_input_digest(mutation_kind, source, semantic_input)?;
         let source_content_sha256 = Sha256Digest::for_bytes(&source.content);
@@ -1043,38 +1097,54 @@ impl ProductionCognitiveMutationCapability {
             owner_agent_id: self.writer.store().owner_agent_id().as_str(),
         })
         .map_err(|error| ProductionWriterError::Invalid(error.to_string()))?;
+        Ok(PreparedProductionCognitiveMutation {
+            mutation_kind: mutation_kind.to_string(),
+            operation_digest,
+            input_payload_sha256,
+            source_content_sha256,
+            source_observed_at_unix_seconds: source.observed_at_unix_seconds,
+            expected_predecessor_revision,
+            occurrence_key,
+            intent_json,
+        })
+    }
 
-        let mut transaction = self
-            .writer
-            .store()
-            .pool
-            .begin_with("BEGIN IMMEDIATE")
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
-        let queued = self
+    async fn admit_prepared_mutation(
+        &self,
+        transaction: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        prepared: &PreparedProductionCognitiveMutation,
+    ) -> Result<QueuedReceipt, ProductionCognitiveMutationError> {
+        let admission = self
             .writer
             .lease
             .admit_in_transaction(
-                &mut transaction,
-                occurrence_key.clone(),
+                transaction,
+                prepared.occurrence_key.clone(),
                 PRODUCTION_COGNITIVE_MUTATION_TOPIC.to_string(),
-                intent_json,
+                prepared.intent_json.clone(),
             )
             .await
             .map_err(ProductionWriterError::from)?;
-        let queued = match queued {
+        Ok(match admission {
             LocalAdmission::Queued(receipt) | LocalAdmission::Replay(receipt) => receipt,
-        };
+        })
+    }
 
-        let write = mutate(&mut transaction).await?;
+    async fn finish_prepared_mutation(
+        &self,
+        transaction: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
+        prepared: PreparedProductionCognitiveMutation,
+        queued: QueuedReceipt,
+        write: CognitiveWriteReceipt,
+    ) -> Result<ProductionCognitiveMutationReceiptV1, ProductionCognitiveMutationError> {
         let write_digest = production_cognitive_write_digest(&write)?;
         let commit_json = serde_json::to_string(&ProductionCognitiveMutationCommitJournalV1 {
             schema_version: PRODUCTION_COGNITIVE_MUTATION_SCHEMA_VERSION,
             namespace: PRODUCTION_COGNITIVE_MUTATION_NAMESPACE,
-            operation_digest: &operation_digest,
+            operation_digest: &prepared.operation_digest,
             write_digest: &write_digest,
-            source_content_sha256: &source_content_sha256,
-            source_observed_at_unix_seconds: source.observed_at_unix_seconds,
+            source_content_sha256: &prepared.source_content_sha256,
+            source_observed_at_unix_seconds: prepared.source_observed_at_unix_seconds,
             memory_id: write.memory.id.memory_id.as_str(),
             memory_revision: write.memory.id.revision,
             source_id: write.source.source_id.as_str(),
@@ -1085,23 +1155,19 @@ impl ProductionCognitiveMutationCapability {
         let terminal = self
             .writer
             .lease
-            .apply_in_transaction(&mut transaction, occurrence_key, commit_json)
+            .apply_in_transaction(transaction, prepared.occurrence_key, commit_json)
             .await
             .map_err(ProductionWriterError::from)?;
-        transaction
-            .commit()
-            .await
-            .map_err(crate::cognitive_store::unavailable)?;
 
         let mut receipt = ProductionCognitiveMutationReceiptV1 {
             schema_version: PRODUCTION_COGNITIVE_MUTATION_SCHEMA_VERSION,
             namespace: PRODUCTION_COGNITIVE_MUTATION_NAMESPACE.to_string(),
-            mutation_kind: mutation_kind.to_string(),
-            operation_digest,
-            input_payload_sha256,
-            source_content_sha256,
-            source_observed_at_unix_seconds: source.observed_at_unix_seconds,
-            expected_predecessor_revision,
+            mutation_kind: prepared.mutation_kind,
+            operation_digest: prepared.operation_digest,
+            input_payload_sha256: prepared.input_payload_sha256,
+            source_content_sha256: prepared.source_content_sha256,
+            source_observed_at_unix_seconds: prepared.source_observed_at_unix_seconds,
+            expected_predecessor_revision: prepared.expected_predecessor_revision,
             authority_grant_digest: self.writer.authority.grant_digest.clone(),
             authority_epoch: self.writer.authority.authority_epoch,
             owner_epoch: self.writer.authority.owner_epoch,
@@ -1116,7 +1182,6 @@ impl ProductionCognitiveMutationCapability {
             external_effect: false,
         };
         receipt.receipt_sha256 = receipt.compute_receipt_sha256();
-        receipt.validate()?;
         Ok(receipt)
     }
 }
