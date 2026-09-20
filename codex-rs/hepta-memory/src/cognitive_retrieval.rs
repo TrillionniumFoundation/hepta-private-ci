@@ -688,7 +688,7 @@ impl CognitiveStore {
             }
             let remaining = MAX_RETRIEVAL_CHANNEL_CANDIDATES - result.len();
             let typed_relation = semantic.map(KgRelationSemanticV1::relation).unwrap_or("");
-            let generic = i64::from(semantic.is_none());
+            let generic = if semantic.is_none() { 1_i64 } else { 0_i64 };
             let rows = sqlx::query(
                 "WITH canonical_support_nodes AS (
                      SELECT node_id
