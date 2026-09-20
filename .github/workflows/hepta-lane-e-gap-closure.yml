@@ -13,8 +13,10 @@ on:
       - codex-rs/hepta-intelligence-eval/**
       - codex-rs/hepta-shadow-qualification/**
       - docs/lane-e/**
+      - docs/modules/learning.operator/**
       - qualification/lane-e/**
       - scripts/hepta-lane-e-closure.py
+      - scripts/hepta-implementation-maps.py
       - .github/workflows/hepta-lane-e-gap-closure.yml
 
 permissions:
@@ -63,6 +65,7 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta-lane-e-closure.py self-test
           python3 scripts/hepta-lane-e-closure.py verify
+          python3 scripts/hepta-implementation-maps.py verify
 
       - name: Locked all-target compilation
         working-directory: codex-rs
@@ -188,6 +191,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta-lane-e-closure.py verify
+          python3 scripts/hepta-implementation-maps.py verify
 
       - name: Compile merged candidate
         working-directory: codex-rs
