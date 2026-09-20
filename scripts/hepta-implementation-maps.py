@@ -89,6 +89,19 @@ def source_root_drift(commit: str, roots: list[str]) -> list[str]:
     return [path for path in output.split("\0") if path]
 
 
+def verify_map_source_freshness(
+    value: object, label: str, roots: list[str]
+) -> tuple[str, str]:
+    commit, tree = verify_source_base(value, label)
+    drift = source_root_drift(commit, roots)
+    if drift:
+        raise ValueError(
+            f"{label}: mapped source changed after sourceBase {commit}: "
+            + ", ".join(drift[:8])
+        )
+    return commit, tree
+
+
 def lane_by_module():
     return {
         m: lane["id"]
@@ -362,11 +375,6 @@ def verify():
         if row.get("laneId") != lanes.get(mid):
             failures.append(f"{mid}: lane")
         source_base = row.get("sourceBase")
-        try:
-            source_commit, _source_tree = verify_source_base(source_base, mid)
-        except (ValueError, subprocess.SubprocessError) as exc:
-            failures.append(str(exc))
-            source_commit = None
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -377,13 +385,7 @@ def verify():
             resolved = resolve_source_roots(ROOT, module)
             if row.get("resolvedRoots") != resolved:
                 failures.append(f"{mid}: resolved source roots")
-            if source_commit is not None:
-                drift = source_root_drift(source_commit, roots + resolved)
-                if drift:
-                    failures.append(
-                        f"{mid}: mapped source changed after sourceBase "
-                        f"{source_commit}: {', '.join(drift[:8])}"
-                    )
+            verify_map_source_freshness(source_base, mid, roots + resolved)
         except (ValueError, OSError, subprocess.SubprocessError) as exc:
             failures.append(f"{mid}: source alias: {exc}")
         ops = row.get("operations")
