@@ -235,6 +235,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-command-records"
           log="$RUNNER_TEMP/hepta-command-records/prompt-registry-qualification.log"
           : > "$log"
           python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/prompt-registry-tests.json" -- \
