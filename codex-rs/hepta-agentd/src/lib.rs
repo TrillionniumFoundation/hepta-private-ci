@@ -78,6 +78,7 @@ pub use learning_operator_host::AgentdOfflineOperatorHostV1;
 pub use learning_operator_host::LearningOperatorHostError;
 pub use learning_operator_host::OfflineOperatorCandidateReceiptV1;
 pub use learning_operator_host::OfflineOperatorCandidateRequestV1;
+pub use learning_operator_host::OfflineOperatorPayloadTargetV1;
 pub use learning_operator_host::OfflineOperatorJournalDispositionV1;
 pub use learning_operator_host::OfflineOperatorJournalError;
 pub use learning_operator_host::OfflineOperatorJournalReceiptV1;

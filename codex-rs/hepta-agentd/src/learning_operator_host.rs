@@ -52,6 +52,7 @@ use codex_hepta_learning_artifacts::LifecycleActorEvidenceV2;
 use codex_hepta_learning_artifacts::LifecycleActorRoleV2;
 use codex_hepta_learning_artifacts::PinnedCandidateSpec;
 use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
+use codex_hepta_learning_artifacts::read_candidate_payload;
 use codex_hepta_learning_artifacts::write_candidate_payload;
 use codex_hepta_learning_artifacts::write_registry_snapshot;
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
@@ -228,10 +229,10 @@ impl OfflineOperatorJournalV1 {
             if existing.request_digest != request_digest {
                 return Err(OfflineOperatorJournalError::OperationConflict);
             }
-            if existing.phase == OfflineOperatorPhaseV1::Prepared {
-                return Ok(self.replay_receipt(&existing));
-            }
-            return Err(OfflineOperatorJournalError::InvalidTransition);
+            let prepared = self
+                .record_for_phase(&operation_id, OfflineOperatorPhaseV1::Prepared)
+                .ok_or(OfflineOperatorJournalError::Corrupt)?;
+            return Ok(self.replay_receipt(prepared));
         }
         self.append_record(
             operation_id,
@@ -257,11 +258,11 @@ impl OfflineOperatorJournalV1 {
         if existing.request_digest != request_digest {
             return Err(OfflineOperatorJournalError::OperationConflict);
         }
-        if existing.phase == phase {
-            if existing.stage_digest != stage_digest {
+        if let Some(record) = self.record_for_phase(operation_id, phase) {
+            if record.request_digest != request_digest || record.stage_digest != stage_digest {
                 return Err(OfflineOperatorJournalError::OperationConflict);
             }
-            return Ok(self.replay_receipt(&existing));
+            return Ok(self.replay_receipt(record));
         }
         if !allowed_phase_transition(existing.phase, phase) {
             return Err(OfflineOperatorJournalError::InvalidTransition);
@@ -274,6 +275,16 @@ impl OfflineOperatorJournalV1 {
             .iter()
             .rev()
             .find(|record| &record.operation_id == operation_id)
+    }
+
+    fn record_for_phase(
+        &self,
+        operation_id: &StableId,
+        phase: OfflineOperatorPhaseV1,
+    ) -> Option<&OfflineOperatorJournalRecordV1> {
+        self.records
+            .iter()
+            .find(|record| &record.operation_id == operation_id && record.phase == phase)
     }
 
     fn replay_receipt(
@@ -572,6 +583,11 @@ impl From<io::Error> for OfflineOperatorJournalError {
     }
 }
 
+pub enum OfflineOperatorPayloadTargetV1 {
+    Create(CreateOnlyArtifactFile),
+    Existing(File),
+}
+
 pub struct OfflineOperatorCandidateRequestV1<'a> {
     pub operation_id: StableId,
     pub dataset: &'a DatasetSnapshotReceiptV3,
@@ -582,7 +598,7 @@ pub struct OfflineOperatorCandidateRequestV1<'a> {
     pub producer_actor: LifecycleActorEvidenceV2,
     pub evaluator_actor: LifecycleActorEvidenceV2,
     pub manifest: ArtifactManifest,
-    pub payload_target: CreateOnlyArtifactFile,
+    pub payload_target: OfflineOperatorPayloadTargetV1,
     pub registry_snapshot_target: CreateOnlyArtifactFile,
     pub registry_binding: Digest32,
     pub evaluation: IndependentEvaluationBundleV1,
@@ -690,7 +706,7 @@ impl AgentdOfflineOperatorHostV1 {
             event_id: request.register_event_id,
             manifest: request.manifest.clone(),
         })?;
-        write_candidate_payload(
+        persist_or_reconcile_payload(
             request.payload_target,
             &staged_registry,
             &request.manifest.artifact_id,
@@ -713,8 +729,8 @@ impl AgentdOfflineOperatorHostV1 {
                 "producer lifecycle actor does not identify the trainer",
             ));
         }
-        let trained_lifecycle = lifecycle.append(
-            lifecycle.head_digest(),
+        let (trained_event_digest, trained_chain_digest) = ensure_lifecycle_event(
+            lifecycle,
             &model.producer_id,
             request.producer_actor.clone(),
             ArtifactLifecycleEventV1 {
@@ -733,8 +749,8 @@ impl AgentdOfflineOperatorHostV1 {
         *registry = staged_registry;
         let published_stage_digest = Digest32::of_parts(&[
             publication_digest.as_array(),
-            trained_lifecycle.event_digest.as_array(),
-            trained_lifecycle.head_digest.as_array(),
+            trained_event_digest.as_array(),
+            trained_chain_digest.as_array(),
         ]);
         self.journal.advance(
             &request.operation_id,
@@ -773,8 +789,8 @@ impl AgentdOfflineOperatorHostV1 {
             request.now,
         )?;
         let evaluation_digest = digest_evaluation_decision(&evaluation);
-        let evaluated_lifecycle = lifecycle.append(
-            lifecycle.head_digest(),
+        let (evaluated_event_digest, evaluated_chain_digest) = ensure_lifecycle_event(
+            lifecycle,
             &model.producer_id,
             request.evaluator_actor.clone(),
             ArtifactLifecycleEventV1 {
@@ -792,8 +808,8 @@ impl AgentdOfflineOperatorHostV1 {
         )?;
         let evaluated_stage_digest = Digest32::of_parts(&[
             evaluation_digest.as_array(),
-            evaluated_lifecycle.event_digest.as_array(),
-            evaluated_lifecycle.head_digest.as_array(),
+            evaluated_event_digest.as_array(),
+            evaluated_chain_digest.as_array(),
         ]);
         if evaluation.decision.disposition
             != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
@@ -993,6 +1009,60 @@ fn digest_product_request(
         Digest32::of_bytes(&request.candidate_evidence.signing_bytes()).as_array(),
     );
     Ok(Digest32::of_bytes(&bytes))
+}
+
+fn persist_or_reconcile_payload(
+    target: OfflineOperatorPayloadTargetV1,
+    registry: &ArtifactRegistry,
+    artifact_id: &StableId,
+    expected_bytes: &[u8],
+) -> Result<Digest32, LearningOperatorHostError> {
+    match target {
+        OfflineOperatorPayloadTargetV1::Create(file) => {
+            Ok(write_candidate_payload(file, registry, artifact_id, expected_bytes)?)
+        }
+        OfflineOperatorPayloadTargetV1::Existing(file) => {
+            let observed = read_candidate_payload(file, registry, artifact_id)?;
+            if observed != expected_bytes {
+                return Err(LearningOperatorHostError::Binding(
+                    "existing artifact payload differs from deterministic replay",
+                ));
+            }
+            Ok(Digest32::of_bytes(&observed))
+        }
+    }
+}
+
+fn ensure_lifecycle_event(
+    lifecycle: &mut ArtifactLifecycleJournalV2,
+    producer_id: &StableId,
+    actor: LifecycleActorEvidenceV2,
+    event: ArtifactLifecycleEventV1,
+    now: u64,
+) -> Result<(Digest32, Digest32), LearningOperatorHostError> {
+    if let Some(existing) = lifecycle
+        .records()
+        .iter()
+        .find(|record| record.event.event_id == event.event_id)
+    {
+        if existing.producer_id != *producer_id
+            || existing.actor != actor
+            || existing.event != event
+        {
+            return Err(LearningOperatorHostError::Binding(
+                "lifecycle event identity was reused with different semantics",
+            ));
+        }
+        return Ok((existing.event_digest, existing.chain_digest));
+    }
+    let receipt = lifecycle.append(
+        lifecycle.head_digest(),
+        producer_id,
+        actor,
+        event,
+        now,
+    )?;
+    Ok((receipt.event_digest, receipt.head_digest))
 }
 
 fn digest_lifecycle_actor(
