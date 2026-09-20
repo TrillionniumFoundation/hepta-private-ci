@@ -379,6 +379,25 @@ fn unconfirmed_activation_rolls_back_to_predecessor() {
 
 #[test]
 fn interrupted_activation_is_reconciled_to_predecessor_before_restart() {
+    const CHILD_PENDING: &str = "HEPTA_NATIVE_UPDATER_CHILD_PENDING";
+    const CHILD_KEYS: &str = "HEPTA_NATIVE_UPDATER_CHILD_KEYS";
+    const CHILD_TARGET: &str = "HEPTA_NATIVE_UPDATER_CHILD_TARGET";
+    const CHILD_READY: &str = "HEPTA_NATIVE_UPDATER_CHILD_READY";
+
+    if let (Some(pending), Some(keys), Some(target), Some(ready)) = (
+        std::env::var_os(CHILD_PENDING),
+        std::env::var_os(CHILD_KEYS),
+        std::env::var_os(CHILD_TARGET),
+        std::env::var_os(CHILD_READY),
+    ) {
+        let keys = TrustedKeySet::from_path(Path::new(&keys)).unwrap();
+        activate_staged_update(Path::new(&pending), &keys, Path::new(&target), 1).unwrap();
+        std::fs::write(ready, b"activated").unwrap();
+        loop {
+            std::thread::park();
+        }
+    }
+
     let temp = TempDir::new().unwrap();
     let (signing, keys, key_path) = key_fixture(temp.path());
     let root = temp.path().join("updates");
@@ -411,10 +430,34 @@ fn interrupted_activation_is_reconciled_to_predecessor_before_restart() {
             .to_bytes(),
     );
     manager.verify_and_stage(manifest, &package, 1).unwrap();
-    let keys = TrustedKeySet::from_path(&key_path).unwrap();
-    activate_staged_update(&manager.pending_path(), &keys, &predecessor, 1).unwrap();
+
+    let ready = temp.path().join("updater-child.ready");
+    let mut child = std::process::Command::new(std::env::current_exe().unwrap())
+        .args([
+            "--exact",
+            "interrupted_activation_is_reconciled_to_predecessor_before_restart",
+            "--nocapture",
+        ])
+        .env(CHILD_PENDING, manager.pending_path())
+        .env(CHILD_KEYS, &key_path)
+        .env(CHILD_TARGET, &predecessor)
+        .env(CHILD_READY, &ready)
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .spawn()
+        .unwrap();
+
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+    while !ready.exists() && std::time::Instant::now() < deadline {
+        std::thread::sleep(std::time::Duration::from_millis(10));
+    }
+    assert!(ready.exists(), "updater child did not reach activated-unconfirmed state");
     assert_eq!(std::fs::read(&predecessor).unwrap(), b"candidate");
 
+    child.kill().unwrap();
+    child.wait().unwrap();
+
+    let keys = TrustedKeySet::from_path(&key_path).unwrap();
     let reopened = UpdateManager::new(keys, root).unwrap();
     assert!(reopened.recover_interrupted_activation().unwrap());
     assert_eq!(std::fs::read(&predecessor).unwrap(), b"predecessor");
