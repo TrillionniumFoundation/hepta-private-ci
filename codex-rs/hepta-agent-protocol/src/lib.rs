@@ -35,7 +35,7 @@ pub const MAX_EVENT_BATCH: u16 = 256;
 pub const MAX_FEDERATION_CONTROL_LIST: u16 = 128;
 pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_ID: &str = "run.lifecycle";
 pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_MAJOR: u16 = 1;
-pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR: u16 = 0;
+pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR: u16 = 1;
 pub const MAX_RUN_CANCEL_REASON_BYTES: usize = 512;
 pub const AGENTD_OVERLOAD_RETRY_AFTER_MS: u64 = 50;
 pub const AGENTD_CONTROL_OVERLOAD_FRAME: &[u8] =
@@ -156,6 +156,7 @@ pub struct AgentRunReceipt {
     pub authority_epoch: u64,
     pub deadline_ms: u64,
     pub cancel_reason: Option<String>,
+    pub cancel_ack_deadline_ms: Option<u64>,
     pub terminal_observed: bool,
     pub idempotent: bool,
 }
@@ -447,6 +448,23 @@ impl AgentdRequest {
             method: AgentdMethod::RunRecoverIndeterminate { recovery },
         }
     }
+
+    pub fn run_release_closed(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        expected_revision: u64,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunReleaseClosed {
+                run_id,
+                expected_revision,
+            },
+        }
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -497,6 +515,10 @@ pub enum AgentdMethod {
     },
     RunRecoverIndeterminate {
         recovery: AgentRunRecovery,
+    },
+    RunReleaseClosed {
+        run_id: String,
+        expected_revision: u64,
     },
     AutomationCreate {
         draft: AutomationTaskDraft,
@@ -958,6 +980,19 @@ mod tests {
         assert_eq!(
             serde_json::from_slice::<AgentdRequest>(&recover_bytes).expect("parse recovery"),
             recover
+        );
+
+        let release = AgentdRequest::run_release_closed(
+            16,
+            4,
+            "run.1".to_string(),
+            10,
+        );
+        let release_bytes = serde_json::to_vec(&release).expect("serialize release");
+        assert!(release_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&release_bytes).expect("parse release"),
+            release
         );
     }
 
