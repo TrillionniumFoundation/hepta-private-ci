@@ -122,14 +122,14 @@ fn signed_pair(
         &producer_key,
         "producer",
         LearningEvidenceRoleV1::Generator,
-        &super::producer_payload(evidence),
+        &super::ndu_well_posedness_producer_signing_payload_v1(evidence),
     );
     let evaluator = sign(
         &verifier,
         &evaluator_key,
         "evaluator",
         LearningEvidenceRoleV1::Evaluator,
-        &super::evaluator_payload(evidence),
+        &super::ndu_well_posedness_evaluator_signing_payload_v1(evidence),
     );
     (verifier, producer, evaluator)
 }
