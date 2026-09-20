@@ -216,13 +216,10 @@ impl CognitiveRuntime {
     /// through explicit compatibility APIs, but it must not be selected by a
     /// product caller through a generic "has federation" check.
     pub fn has_product_federation(&self) -> bool {
-        match self {
-            Self::AvailableFederatedV2 { owner_layouts, .. } => !owner_layouts.is_empty(),
-            Self::Absent
-            | Self::Available(_)
-            | Self::AvailableFederated { .. }
-            | Self::Unavailable(_) => false,
-        }
+        matches!(
+            self,
+            Self::AvailableFederatedV2 { owner_layouts, .. } if !owner_layouts.is_empty()
+        )
     }
 
     pub fn federation_consumer_agent_id(&self) -> Option<&AgentId> {
