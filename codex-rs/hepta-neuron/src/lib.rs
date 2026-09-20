@@ -49,6 +49,7 @@ pub use operation::RuntimeOperationError;
 pub use plasticity::EligibilityParameterGroupV1;
 pub use plasticity::ModulatorBroadcastRowV1;
 pub use plasticity::ParameterGroupStatisticV1;
+pub use plasticity::PlasticityAncestryV1;
 pub use plasticity::PlasticityError;
 pub use plasticity::PlasticitySampleV1;
 pub use plasticity::PlasticitySufficientStatisticsV1;
