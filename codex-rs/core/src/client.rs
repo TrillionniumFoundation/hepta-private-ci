@@ -2104,6 +2104,14 @@ impl ModelClientSession {
                     }
                 }
             }
+            if self.encoded_request_body_observer.is_some()
+                && admitted_provider_attempt.is_none()
+            {
+                return Err(CodexErr::Fatal(
+                    "exact encoded request observation requires an admitted provider-policy attempt"
+                        .to_string(),
+                ));
+            }
             let inference_trace_attempt = inference_trace.start_attempt();
             inference_trace_attempt.add_request_headers(&mut options.extra_headers);
             inference_trace_attempt.record_started(&request);
@@ -2716,6 +2724,9 @@ impl ModelClientSession {
         if !self.client.responses_websocket_enabled() {
             return Ok(());
         }
+        if self.encoded_request_body_observer.is_some() {
+            return Ok(());
+        }
         // Turn-input contributors finish preparing their turn-local state before this
         // context is handed to the provider client. Freeze the same active-contributor
         // predicate used by the physical-send resolver: an active ephemeral input may
@@ -2907,7 +2918,9 @@ impl ModelClientSession {
         let wire_api = self.client.state.provider.info().wire_api;
         match wire_api {
             WireApi::Responses => {
-                if self.client.responses_websocket_enabled() && !ephemeral_model_input_requires_http
+                if self.client.responses_websocket_enabled()
+                    && !ephemeral_model_input_requires_http
+                    && self.encoded_request_body_observer.is_none()
                 {
                     let request_trace = current_span_w3c_trace_context();
                     match self
