@@ -46,6 +46,7 @@ fn attachment() -> PromptRuntimeAttachmentV1 {
 }
 
 fn host(
+    dispatch_records: Arc<StdMutex<Vec<PromptRuntimeDispatchRecordV1>>>,
     terminal_records: Arc<StdMutex<Vec<PromptRuntimeTerminalRecordV1>>>,
 ) -> PromptRuntimeHost {
     PromptRuntimeHost::new(
@@ -53,6 +54,16 @@ fn host(
         |_request| {
             let attachment = attachment();
             Box::pin(async move { Ok(Some(attachment)) })
+        },
+        move |record| {
+            let dispatch_records = Arc::clone(&dispatch_records);
+            Box::pin(async move {
+                dispatch_records
+                    .lock()
+                    .unwrap_or_else(std::sync::PoisonError::into_inner)
+                    .push(record);
+                Ok(())
+            })
         },
         move |record| {
             let terminal_records = Arc::clone(&terminal_records);
@@ -78,9 +89,10 @@ fn stores() -> (ExtensionData, ExtensionData, ExtensionData) {
 
 #[tokio::test]
 async fn developer_attachment_reaches_physical_provider_terminal_observation() {
+    let dispatches = Arc::new(StdMutex::new(Vec::new()));
     let records = Arc::new(StdMutex::new(Vec::new()));
     let extension = PromptRuntimeExtension {
-        host: host(Arc::clone(&records)),
+        host: host(Arc::clone(&dispatches), Arc::clone(&records)),
     };
     let (session_store, thread_store, turn_store) = stores();
     let thread_id =
@@ -131,6 +143,17 @@ async fn developer_attachment_reaches_physical_provider_terminal_observation() {
     let ModelProviderPolicyDecision::Allow { lease } = decision else {
         panic!("exercise-bound prompt must admit the physical provider send");
     };
+    {
+        let dispatches = dispatches
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        assert_eq!(dispatches.len(), 1);
+        assert_eq!(dispatches[0].attempt_id, "provider-attempt:1");
+        assert_eq!(
+            dispatches[0].provider_request_digest,
+            Digest32::from_str(wire.as_str()).unwrap_or_else(|error| panic!("{error}"))
+        );
+    }
     lease
         .finish(ModelProviderTerminal::Completed {
             response_id_sha256: provider_digest("response-id"),
@@ -164,9 +187,10 @@ async fn developer_attachment_reaches_physical_provider_terminal_observation() {
 
 #[tokio::test]
 async fn not_dispatched_never_fabricates_delivery_credit() {
+    let dispatches = Arc::new(StdMutex::new(Vec::new()));
     let records = Arc::new(StdMutex::new(Vec::new()));
     let extension = PromptRuntimeExtension {
-        host: host(Arc::clone(&records)),
+        host: host(Arc::clone(&dispatches), Arc::clone(&records)),
     };
     let (session_store, thread_store, turn_store) = stores();
     let thread_id =
@@ -214,6 +238,13 @@ async fn not_dispatched_never_fabricates_delivery_credit() {
     let ModelProviderPolicyDecision::Allow { lease } = decision else {
         panic!("provider send should reach the real terminal owner");
     };
+    assert_eq!(
+        dispatches
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
+            .len(),
+        1
+    );
     lease
         .finish(ModelProviderTerminal::NotDispatched {
             reason_code: "cancelled_before_send".to_owned(),
