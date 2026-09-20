@@ -36,9 +36,10 @@ The module is stateless and has no durability. `ContractRegistryV1` is an
 immutable caller-owned value, not an ambient or process-global registry. The
 module is a library-only dependency; its values grant no runtime or effect
 authority. New Platform Types receipts use `NonAuthorizingPosture`, a type
-that cannot represent a granted authority flag. Legacy `AuthorityPosture`
-remains a public compatibility/tamper representation for existing records and
-negative tests and is not an authority token.
+that cannot represent a granted authority flag. `AuthorityPosture` remains the
+compatibility name used by existing deny-all records, but its representation is
+also sealed: safe code cannot construct a widened or granting posture from it.
+Neither type is an authority token.
 
 ## Target-only design
 
