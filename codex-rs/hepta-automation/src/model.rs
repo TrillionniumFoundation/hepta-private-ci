@@ -157,6 +157,10 @@ pub struct AutomationTask {
 pub struct AutomationLease {
     pub task: AutomationTask,
     pub occurrence: u64,
+    /// Immutable schedule revision that produced `scheduled_for_ms`.
+    /// This is frozen in `automation_runs` by the claim transaction so a
+    /// later policy update cannot relabel an already-due instant.
+    pub schedule_revision: u64,
     pub scheduled_for_ms: u64,
     pub client_user_message_id: String,
     pub lease_generation: u64,
