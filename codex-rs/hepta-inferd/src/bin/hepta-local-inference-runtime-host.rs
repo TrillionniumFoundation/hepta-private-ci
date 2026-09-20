@@ -56,6 +56,7 @@ struct HostConfig {
     resource_grant: ResourceGrantConfig,
     runtime_executable: PathBuf,
     sandbox_launcher: PathBuf,
+    sandbox_launcher_digest: String,
     immutable_artifact_root: PathBuf,
     maximum_protocol_line_bytes: usize,
     response_timeout_ms: u64,
@@ -183,6 +184,7 @@ fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let mut driver = LocalProcessDriverConfig::new(config.runtime_executable.clone(), models)
         .with_production_isolation(
             config.sandbox_launcher.clone(),
+            config.sandbox_launcher_digest.clone(),
             config.immutable_artifact_root.clone(),
         );
     driver.maximum_protocol_line_bytes = config.maximum_protocol_line_bytes;
