@@ -188,9 +188,9 @@ Source implementation completes only when the declared target root exists, publi
 
 ## 14. Activation, compatibility and retirement
 
-Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
+Activation composes a named product caller through registered ports and verifies authority, configuration, resource and failure behavior. Agentd now makes retrieval mode explicit through `CognitiveRetrievalMode`: `Compatibility` retains the owner-ranked compatibility path, while `HnmfRequired` refuses startup unless a current authenticated retrieval-context provider is configured. After startup, provider currentness/revocation failures fail the request; the required profile never silently falls back to compatibility. Shadow and qualification callers are not production callers. Source-complete modules remain inactive until activation predecessors and evidence gates pass.
 
-Compatibility adapters are temporary. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
+Compatibility adapters are temporary and are not evidence for HNMF product execution. Retirement requires all named callers migrated, no old-path use, oracle parity where required, rehearsed rollback and independent acceptance. Retirement preserves historical evidence and durable-record interpretability.
 
 ## 15. Definition of module completion
 
