@@ -46,7 +46,7 @@ None.
 
 ### Native source and scope
 
-The registered primary source is [codex-rs/hepta-cognitive-read/src/v2.rs](../../../codex-rs/hepta-cognitive-read/src/v2.rs); observed identifiers include `ReadRequestV2`, `ReadResultV2`, `read_v2`, `binding_digest`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.read.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md) for the implemented subset and remaining product work.
+The registered primary source is [codex-rs/hepta-cognitive-read/src/v2.rs](../../../codex-rs/hepta-cognitive-read/src/v2.rs), with authoritative acquisition and canonical MemoryEvent shadow projection in [src/authoritative.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative.rs); observed identifiers include `ReadRequestV2`, `ReadResultV2`, `read_v2`, `AuthoritativeReadResultV1`, and `adapt_authoritative_read_to_canonical_shadow_v1`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/cognitive.read.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md) for the implemented subset and remaining product work.
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -163,6 +163,10 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 Acquire a cut through the existing SQLite owner, then call the crate-native ReadRequestV2 reader. Before delivery compare exact revision/content digests and revalidate time as well as frontiers. Release snapshot handles on completion/cancel; the historical cut does not lease future external effects.
 
+### Canonical MemoryEvent authoritative shadow read
+
+`adapt_authoritative_read_to_canonical_shadow_v1` accepts only an already validated `AuthoritativeReadResultV1`, not an arbitrary caller snapshot. Each returned legacy record must have an explicit ID/revision/digest binding to a complete canonical `MemoryEventV1`; the adapter never infers event identity or reuses the legacy record digest as the canonical event digest. It verifies citation source ID/digest sets against canonical provenance, rejects live/tombstone lifecycle disagreement, binds the source snapshot receipt, generation vector and exact read receipt into one deny-all shadow receipt, and revalidates every canonical event/digest when the shadow receipt is checked. Legacy citations do not carry source revision, so source-revision equivalence remains an explicit gap. `ReadResultV2` remains the compatibility read and this shadow receipt grants no final-use/model-attachment authority.
+
 Current operating and state-format references:
 
 - [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md).
@@ -175,7 +179,7 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs](../../../codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs); named case: `existing_sqlite_writes_are_readable_by_new_lane_c_after_reopen`.
-- [codex-rs/hepta-cognitive-read/src/authoritative_tests.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative_tests.rs); named case: `authoritative_read_binds_provider_vector_and_query`.
+- [codex-rs/hepta-cognitive-read/src/authoritative_tests.rs](../../../codex-rs/hepta-cognitive-read/src/authoritative_tests.rs); covers provider/vector/query binding plus canonical shadow exact-record mapping, citation/provenance and lifecycle rejection, and row/receipt tamper failure.
 
 In `codex-rs`, run `just test -p codex-hepta-memory -p codex-hepta-cognitive-read`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/cognitive.read.md) separately labels target acceptance designs.
 
