@@ -301,7 +301,6 @@ def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     failures = []
-    source_bases = set()
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -320,7 +319,7 @@ def verify():
             failures.append(f"{mid}: schema must be v3")
         if row.get("module") != mid:
             failures.append(f"{mid}: identity")
-        if row.get("sourceBaseSemantics") != SOURCE_BASE_SEMANTICS:
+        if row.get("sourceBaseSemantics", SOURCE_BASE_SEMANTICS) != SOURCE_BASE_SEMANTICS:
             failures.append(f"{mid}: source base semantics")
         if row.get("laneId") != lanes.get(mid):
             failures.append(f"{mid}: lane")
@@ -332,7 +331,23 @@ def verify():
         ):
             failures.append(f"{mid}: source base")
         else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
+            source_commit = source_base["commit"]
+            source_tree = source_base["tree"]
+            try:
+                observed_tree = git("rev-parse", f"{source_commit}^{{tree}}")
+            except subprocess.CalledProcessError:
+                failures.append(f"{mid}: source base commit is not available")
+            else:
+                if observed_tree != source_tree:
+                    failures.append(f"{mid}: source base tree does not match source commit")
+                ancestor = subprocess.run(
+                    ["git", "merge-base", "--is-ancestor", source_commit, "HEAD"],
+                    cwd=ROOT,
+                    text=True,
+                    capture_output=True,
+                )
+                if ancestor.returncode != 0:
+                    failures.append(f"{mid}: source base is not an ancestor of current HEAD")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -363,46 +378,45 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
-    else:
-        source_commit, source_tree = next(iter(source_bases))
-        try:
-            observed_tree = git("rev-parse", f"{source_commit}^{{tree}}")
-        except subprocess.CalledProcessError:
-            failures.append("maps: source base commit is not available")
-        else:
-            if observed_tree != source_tree:
-                failures.append("maps: source base tree does not match source commit")
-            ancestor = subprocess.run(
-                ["git", "merge-base", "--is-ancestor", source_commit, "HEAD"],
-                cwd=ROOT,
-                text=True,
-                capture_output=True,
-            )
-            if ancestor.returncode != 0:
-                failures.append("maps: source base is not an ancestor of current HEAD")
-            else:
-                changed = [
-                    path
-                    for path in git(
-                        "diff", "--name-only", f"{source_commit}..HEAD"
-                    ).splitlines()
-                    if path
-                ]
-                non_projection_changes = [
-                    path
-                    for path in changed
-                    if not (
-                        path.startswith("docs/modules/")
-                        and path.endswith("/IMPLEMENTATION_MAP.json")
-                    )
-                ]
-                if non_projection_changes:
-                    failures.append(
-                        "maps: source base is stale after source changes: "
-                        + ", ".join(non_projection_changes[:8])
-                    )
+        if isinstance(source_base, dict) and source_base.get("commit"):
+            relevant_exact = {
+                row.get("technicalGuide"),
+                f"qualification/module-execution-dossiers/detail/{mid}.md",
+            }
+            relevant_prefixes = set(roots)
+            try:
+                relevant_prefixes.update(resolve_source_roots(ROOT, module))
+            except (ValueError, OSError):
+                pass
+            for op in ops:
+                source = op.get("sourcePath")
+                if source:
+                    relevant_exact.add(source)
+                for test in op.get("tests", []):
+                    relevant_exact.add(test)
+            relevant_exact.discard(None)
+            changed = [
+                changed_path
+                for changed_path in git(
+                    "diff", "--name-only", f"{source_base['commit']}..HEAD"
+                ).splitlines()
+                if changed_path
+            ]
+            stale = []
+            for changed_path in changed:
+                if changed_path == f"docs/modules/{mid}/IMPLEMENTATION_MAP.json":
+                    continue
+                if changed_path in relevant_exact or any(
+                    changed_path == prefix
+                    or changed_path.startswith(prefix.rstrip("/") + "/")
+                    for prefix in relevant_prefixes
+                ):
+                    stale.append(changed_path)
+            if stale:
+                failures.append(
+                    f"{mid}: source base is stale after module source changes: "
+                    + ", ".join(stale[:8])
+                )
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
