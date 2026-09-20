@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "6443dd3ab68653737c2e6b1ce333c14adb367fa6",
-    "tree": "d8fc789d5e668f49a06294c69d6a1c205c4158a6"
+    "commit": "27cf793f09998eb99b44d1873ad13e0ea017dd4c",
+    "tree": "7eb407cef0d18ecaa55de37b6c234e89928226e6"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.evidence",
@@ -18,8 +18,8 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": true,
-  "productCallerState": "agentd_composed_feature_gated",
-  "productionWriterState": "agentd_authenticated_writer_established_feature_gated",
+  "productCallerState": "agentd_composed_config_gated",
+  "productionWriterState": "agentd_authenticated_writer_established_config_gated",
   "operations": [
     {
       "operation": "append_receipt",
@@ -67,6 +67,26 @@
       "delegatedCallees": []
     },
     {
+      "operation": "recovery_snapshot",
+      "nativeSymbol": "HeptaEvidenceStore::recovery_snapshot",
+      "sourcePath": "codex-rs/hepta-evidence/src/recovery_frontier.rs",
+      "state": "source_implemented_product_consumed",
+      "authority": "read_only_recovery_snapshot",
+      "tests": [
+        "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "recovery_snapshot",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "sourcePath": "codex-rs/hepta-agentd/src/evidence_frontier.rs",
+          "nativeSymbol": "verify_evidence_recovery_frontier",
+          "role": "product_restore_verifier"
+        }
+      ]
+    },
+    {
       "operation": "append_provider_effect_intent",
       "nativeSymbol": "append_provider_effect_intent",
       "sourcePath": "codex-rs/hepta-evidence/src/provider_effect_store.rs",
@@ -98,7 +118,7 @@
   "repositoryControlledGaps": [],
   "externalEvidenceGates": [
     "independent exact-candidate acceptance",
-    "concrete external signed monotonic frontier backend and restore ceremony",
+    "external monotonic CAS/latest-frontier backend and backup publication ceremony",
     "operator acceptance, canary, promotion and release"
   ],
   "claimBoundary": {
