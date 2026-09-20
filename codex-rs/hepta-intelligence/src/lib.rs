@@ -31,6 +31,12 @@ pub use plasticity_product::plasticity_admission_signing_payload_v1;
 pub use plasticity_product::propose_authenticated_parameter_plasticity_v1;
 
 mod topology_product;
+mod topology_canary_product;
+
+pub use topology_canary_product::AuthenticatedStructuralCanaryErrorV1;
+pub use topology_canary_product::AuthenticatedStructuralCanaryReceiptV1;
+pub use topology_canary_product::observe_authenticated_structural_canary_v1;
+pub use topology_canary_product::structural_canary_observation_signing_payload_v1;
 
 pub use topology_product::TopologyAdmissionEvidenceV1;
 pub use topology_product::TopologyPlasticityProductErrorV1;
