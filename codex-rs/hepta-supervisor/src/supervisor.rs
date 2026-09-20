@@ -149,6 +149,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 logs: slot.logs.items.iter().cloned().collect(),
                 control_revision: slot.control_revision,
                 restart_pending: slot.restart_pending,
+                restart_attempt: slot.restart_attempt,
                 release_state_generation: slot.release_state_generation,
                 runtime_phase: slot.runtime.as_ref().map(|runtime| match runtime.phase {
                     crate::runtime::RuntimePhase::AwaitingHealth { .. } => {
