@@ -35,7 +35,7 @@ mod durable_outbox;
 pub use durable_outbox::DurableOutboxRecord;
 pub use durable_outbox::DurableOutboxState;
 
-const SCHEMA_VERSION: i64 = 1;
+const SCHEMA_VERSION: i64 = 2;
 const MAX_DURABLE_OPERATION_RECORDS: i64 = MAX_MODEL_OPERATION_RECORDS as i64;
 
 const SELECT_RECORD: &str = r#"
