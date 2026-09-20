@@ -296,16 +296,16 @@ pub fn canonical_runtime_config_v1(
         .map_err(|_| NeuronProtocolError::InvalidField("state dimensions"))?;
     let inhibition_edges = u32::try_from(native.inhibition.len())
         .map_err(|_| NeuronProtocolError::InvalidField("state dimensions"))?;
-    let top_k = u64::try_from(native.top_k)
-        .map_err(|_| NeuronProtocolError::InvalidField("topKPolicy"))?;
-    let native_width = u64::try_from(native.width)
-        .map_err(|_| NeuronProtocolError::InvalidField("topKPolicy"))?;
+    let top_k =
+        u64::try_from(native.top_k).map_err(|_| NeuronProtocolError::InvalidField("topKPolicy"))?;
+    let native_width =
+        u64::try_from(native.width).map_err(|_| NeuronProtocolError::InvalidField("topKPolicy"))?;
     let ratio = top_k
         .checked_mul(u64::from(PPM))
         .ok_or(NeuronProtocolError::InvalidField("topKPolicy"))?
         / native_width;
-    let ratio = u32::try_from(ratio)
-        .map_err(|_| NeuronProtocolError::InvalidField("topKPolicy"))?;
+    let ratio =
+        u32::try_from(ratio).map_err(|_| NeuronProtocolError::InvalidField("topKPolicy"))?;
     let value = NeuronRuntimeConfigProtocolV1 {
         config_id: config.config_id.clone(),
         generation: config.generation,
@@ -463,8 +463,8 @@ pub fn canonical_checkpoint_v1(
         return Err(NeuronProtocolError::BindingMismatch("checkpoint summaries"));
     }
     let active_indices = committed_active_indices(checkpoint)?;
-    let active_count =
-        u64::try_from(active_indices.len()).map_err(|_| NeuronProtocolError::InvalidField("activation"))?;
+    let active_count = u64::try_from(active_indices.len())
+        .map_err(|_| NeuronProtocolError::InvalidField("activation"))?;
     let width = u64::try_from(checkpoint.activation_q24().len())
         .map_err(|_| NeuronProtocolError::InvalidField("activation"))?;
     let sparsity_ppm = u32::try_from(
@@ -775,17 +775,15 @@ fn validate_runtime_config(
     Ok(())
 }
 
-fn inhibition_digest_v1(
-    native: &crate::SparseConfig,
-) -> Result<Digest32, NeuronProtocolError> {
+fn inhibition_digest_v1(native: &crate::SparseConfig) -> Result<Digest32, NeuronProtocolError> {
     let mut bytes = b"hepta.neuron.inhibition.q24.v1".to_vec();
-    let width = u64::try_from(native.width)
-        .map_err(|_| NeuronProtocolError::InvalidField("inhibition"))?;
+    let width =
+        u64::try_from(native.width).map_err(|_| NeuronProtocolError::InvalidField("inhibition"))?;
     bytes.extend_from_slice(&width.to_be_bytes());
     let mut edges = native.inhibition.clone();
     edges.sort();
-    let count = u64::try_from(edges.len())
-        .map_err(|_| NeuronProtocolError::InvalidField("inhibition"))?;
+    let count =
+        u64::try_from(edges.len()).map_err(|_| NeuronProtocolError::InvalidField("inhibition"))?;
     bytes.extend_from_slice(&count.to_be_bytes());
     for edge in edges {
         let source = u64::try_from(edge.source)
@@ -799,9 +797,7 @@ fn inhibition_digest_v1(
     Ok(Digest32::of_bytes(&bytes))
 }
 
-fn validate_tick_receipt(
-    value: &NeuronTickReceiptProtocolV1,
-) -> Result<(), NeuronProtocolError> {
+fn validate_tick_receipt(value: &NeuronTickReceiptProtocolV1) -> Result<(), NeuronProtocolError> {
     for (field, digest) in [
         ("checkpointAfter", value.checkpoint_after),
         ("activationDigest", value.activation_digest),
@@ -813,7 +809,10 @@ fn validate_tick_receipt(
         }
     }
     if value.active_indices.len() > MAX_ACTIVE_INDICES
-        || value.active_indices.windows(2).any(|pair| pair[0] >= pair[1])
+        || value
+            .active_indices
+            .windows(2)
+            .any(|pair| pair[0] >= pair[1])
         || value.sparsity_ppm > PPM
         || value.confidence_ppm > PPM
         || value.ood_ppm > PPM
