@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "96bab8860488846d386e5e38fca512483584d1e0",
-    "tree": "c2d5bb1ad0bd2060a034e6189b4d77808c06ab3a"
+    "commit": "bb16bb1789fae3ccc3d25e0dca0d23af0e7ab38e",
+    "tree": "211710e61118002eedfcc9fe1def7c908daa7e0f"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -191,12 +191,15 @@
   "observedSourcePaths": [
     "codex-rs/hepta-automation",
     "codex-rs/hepta-agentd",
+    "codex-rs/hepta-operations",
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-types",
     "codex-rs/Cargo.lock"
   ],
   "observedAtHead": {
-    "commit": "96bab8860488846d386e5e38fca512483584d1e0",
-    "tree": "c2d5bb1ad0bd2060a034e6189b4d77808c06ab3a",
-    "interpretation": "exact automation/Agentd/lockfile source observation after durable effect composition, recovery fail-stop, dispatch-unknown semantics, FK-preserving process fault injection, final-use nonce hardening, explicit revocation-race/compensation-crash qualification, and exact rustfmt; later documentation/projection/verifier commits do not change the observed source paths, and qualification results remain separate"
+    "commit": "bb16bb1789fae3ccc3d25e0dca0d23af0e7ab38e",
+    "tree": "211710e61118002eedfcc9fe1def7c908daa7e0f",
+    "interpretation": "exact TaskFlow/Agentd/kernel.operations source observation after schedule-revision claim linearization, producer-owned OperationIntentV1 composition, final-use nonce hardening, revocation-race/compensation-crash coverage, after-provider-contact fault injection, and exact Rust formatting; later commits are documentation/projection truth updates only, and qualification results remain separate"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
 }
