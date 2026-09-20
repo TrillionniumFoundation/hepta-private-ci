@@ -35,13 +35,16 @@ impl CognitiveRetrievalLearningSink {
         request_id: u64,
         observation: &RetrievalAssignmentObservationV1,
     ) -> Result<AppendReceipt, String> {
-        self.append_with_delivery(
+        self.append_with_delivery_policy(
             owner,
             body_generation,
             request_id,
             observation,
-            &observation.selected_candidates,
-            !observation.selected_candidates.is_empty(),
+            &[],
+            false,
+            None,
+            None,
+            ProbabilityQ32::ONE,
         )
     }
 
@@ -53,6 +56,7 @@ impl CognitiveRetrievalLearningSink {
         observation: &RetrievalAssignmentObservationV1,
         delivered_candidates: &[RetrievalCandidateIdentityV1],
         context_exposed: bool,
+        published_context_digest: Option<Digest32>,
     ) -> Result<AppendReceipt, String> {
         self.append_with_delivery_policy(
             owner,
@@ -61,6 +65,7 @@ impl CognitiveRetrievalLearningSink {
             observation,
             delivered_candidates,
             context_exposed,
+            published_context_digest,
             None,
             ProbabilityQ32::ONE,
         )
@@ -75,6 +80,7 @@ impl CognitiveRetrievalLearningSink {
         observation: &RetrievalAssignmentObservationV1,
         delivered_candidates: &[RetrievalCandidateIdentityV1],
         context_exposed: bool,
+        published_context_digest: Option<Digest32>,
         downstream_policy_digest: Option<Digest32>,
         delivery_propensity: ProbabilityQ32,
     ) -> Result<AppendReceipt, String> {
@@ -106,6 +112,7 @@ impl CognitiveRetrievalLearningSink {
             observation,
             delivered_candidates,
             context_exposed,
+            published_context_digest,
             downstream_policy_digest,
             delivery_propensity,
         )
