@@ -270,6 +270,7 @@ fn recovery_rehydrates_only_an_indeterminate_non_redispatchable_run() {
         context_digest: digest('7'),
         compilation_receipt_digest: digest('8'),
         cancel_reason: Some("process_restart".to_string()),
+        learning_decision: None,
     };
     let recovered = coordinator
         .recover_indeterminate(recovery.clone())
@@ -294,6 +295,42 @@ fn recovery_rehydrates_only_an_indeterminate_non_redispatchable_run() {
         .expect("terminal reconciliation");
     assert_receipt(&observed, 10, RunPhase::Succeeded, Some("process_restart"));
     assert!(observed.terminal_observed);
+}
+
+#[test]
+fn indeterminate_recovery_preserves_exact_learning_decision_binding() {
+    let binding = LearningDecisionBindingV3 {
+        episode_id: v3_id("episode:run.1"),
+        event_digest: v3_digest("decision-event:run.1"),
+        chain_digest: v3_digest("decision-chain:run.1"),
+    };
+    let mut restarted = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    let recovered = restarted
+        .recover_indeterminate(RunRecovery {
+            snapshot: snapshot(),
+            revision: 9,
+            context_digest: digest('7'),
+            compilation_receipt_digest: digest('8'),
+            cancel_reason: Some("process_restart".to_string()),
+            learning_decision: Some(binding.clone()),
+        })
+        .expect("recover with decision binding");
+    assert_eq!(recovered.phase, RunPhase::Indeterminate);
+    restarted
+        .require_learning_closure_binding(
+            "run.1",
+            &binding.episode_id,
+            binding.chain_digest,
+        )
+        .expect("recovered binding must authorize exact terminal learning closure");
+    assert_eq!(
+        restarted.require_learning_closure_binding(
+            "run.1",
+            &binding.episode_id,
+            v3_digest("wrong-chain"),
+        ),
+        Err(AgentRunError::LearningDecisionBindingMismatch)
+    );
 }
 
 #[test]
@@ -418,7 +455,7 @@ fn intelligence_envelope_attaches_to_the_named_runtime_run() {
         .expect("admit run");
 
     let attached = coordinator
-        .attach_intelligence_envelope(1, &envelope)
+        .attach_intelligence_envelope(200, 1, &envelope)
         .expect("attach intelligence");
     assert_eq!(attached.phase, RunPhase::ContextAttached);
     assert_eq!(
@@ -427,13 +464,13 @@ fn intelligence_envelope_attaches_to_the_named_runtime_run() {
     );
 
     let repeated = coordinator
-        .attach_intelligence_envelope(1, &envelope)
+        .attach_intelligence_envelope(200, 1, &envelope)
         .expect("idempotent attachment");
     assert!(repeated.idempotent);
     assert_eq!(repeated.revision, attached.revision);
 
     let dispatched = coordinator
-        .mark_dispatched(envelope.run_id.as_str(), attached.revision)
+        .mark_dispatched(300, envelope.run_id.as_str(), attached.revision)
         .expect("dispatch through existing runtime");
     assert_eq!(dispatched.phase, RunPhase::Dispatched);
 }
