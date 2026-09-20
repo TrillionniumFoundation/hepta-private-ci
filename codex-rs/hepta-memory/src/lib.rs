@@ -29,6 +29,7 @@ mod logical_turn_registry;
 mod memory_admission;
 mod model_receipt;
 mod neuron_proposal;
+mod production_compact;
 mod production_writer;
 mod recall;
 mod shadow_advisory;
@@ -345,6 +346,16 @@ pub use neuron_proposal::NeuronProposalError;
 pub use neuron_proposal::NeuronProposalInput;
 pub use neuron_proposal::NeuronProposalPhase;
 pub use neuron_proposal::shadow_neuron_propose;
+pub use production_compact::PRODUCTION_COMPACT_OWNER_EXTERNAL_EFFECTS;
+pub use production_compact::PRODUCTION_COMPACT_OWNER_KG_WRITE_AUTHORITY;
+pub use production_compact::PRODUCTION_COMPACT_OWNER_NAMESPACE;
+pub use production_compact::PRODUCTION_COMPACT_OWNER_SCHEMA_VERSION;
+pub use production_compact::PRODUCTION_COMPACT_OWNER_WRITER;
+pub use production_compact::ProductionCompactError;
+pub use production_compact::ProductionCompactFenceV1;
+pub use production_compact::ProductionCompactPublicationReceiptV1;
+pub use production_compact::ProductionCompactPublishDisposition;
+pub use production_compact::ProductionCompactReloadV1;
 pub use production_writer::PRODUCTION_DURABLE_WRITER_JOURNAL_MODE;
 pub use production_writer::PRODUCTION_DURABLE_WRITER_NAMESPACE;
 pub use production_writer::PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION;
@@ -456,6 +467,10 @@ mod h7_feedback_tests;
 #[cfg(test)]
 #[path = "model_receipt_tests.rs"]
 mod model_receipt_tests;
+
+#[cfg(test)]
+#[path = "production_compact_tests.rs"]
+mod production_compact_tests;
 
 #[cfg(test)]
 mod cognitive_test_support;
