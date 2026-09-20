@@ -74,8 +74,10 @@ impl AppServerModelDriver {
                 return Ok(output.clone());
             }
             if let Some(reconciled) = self.reconcile_existing(&record, &prompt).await? {
-                control.settle_native(&record.request.request_id, reconciled.clone())?;
-                return Ok(reconciled);
+                let settled = control.settle_native(&record.request.request_id, reconciled)?;
+                return settled
+                    .observation
+                    .ok_or_else(|| "durable reconciliation omitted its normalized observation".into());
             }
             if let Some(output) = record.observation {
                 return Ok(output);
@@ -113,8 +115,10 @@ impl AppServerModelDriver {
                 if !output.terminal_observed && cancellation.is_cancelled() {
                     control.cancel_native(&request_id)?;
                 }
-                control.settle_native(&request_id, output.clone())?;
-                Ok(output)
+                let settled = control.settle_native(&request_id, output)?;
+                settled
+                    .observation
+                    .ok_or_else(|| "durable execution settlement omitted its normalized observation".into())
             }
             Err(error) => {
                 if control
