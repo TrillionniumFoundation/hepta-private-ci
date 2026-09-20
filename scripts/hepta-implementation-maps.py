@@ -181,7 +181,10 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
-            "sourceBase": row.get("sourceBase") or source_base,
+            # Rebind every migrated map to the source snapshot that generated
+            # it. Keeping an old non-empty sourceBase allowed all maps to drift
+            # together while verify still passed.
+            "sourceBase": source_base,
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -316,7 +319,24 @@ def verify():
         ):
             failures.append(f"{mid}: source base")
         else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
+            source_commit = source_base["commit"]
+            source_tree = source_base["tree"]
+            source_bases.add((source_commit, source_tree))
+            try:
+                actual_tree = git("rev-parse", f"{source_commit}^{{tree}}")
+            except subprocess.CalledProcessError:
+                failures.append(f"{mid}: source commit is unavailable")
+            else:
+                if actual_tree != source_tree:
+                    failures.append(f"{mid}: source commit/tree mismatch")
+                ancestor = subprocess.run(
+                    ["git", "merge-base", "--is-ancestor", source_commit, "HEAD"],
+                    cwd=ROOT,
+                    text=True,
+                    capture_output=True,
+                )
+                if ancestor.returncode != 0:
+                    failures.append(f"{mid}: source base is not an ancestor of HEAD")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -334,19 +354,49 @@ def verify():
             continue
         if "sourceRootPresent" not in row or "productionImplementation" not in row:
             failures.append(f"{mid}: status model")
+        mapped_source_paths = set(roots)
         for op in ops:
             if not op.get("operation"):
                 failures.append(f"{mid}: operation id")
             if "nativeSymbol" not in op or "sourcePath" not in op:
                 failures.append(f"{mid}: canonical operation fields")
             source = op.get("sourcePath")
-            if source and not (ROOT / source).is_file():
-                failures.append(f"{mid}: missing source {source}")
+            if source:
+                mapped_source_paths.add(source)
+                if not (ROOT / source).is_file():
+                    failures.append(f"{mid}: missing source {source}")
+            for test in op.get("tests", []):
+                if isinstance(test, dict) and test.get("path"):
+                    mapped_source_paths.add(test["path"])
+            for callee in op.get("delegatedCallees", []):
+                if isinstance(callee, dict) and callee.get("path"):
+                    mapped_source_paths.add(callee["path"])
+        if isinstance(source_base, dict) and source_base.get("commit"):
+            drift = subprocess.run(
+                [
+                    "git",
+                    "diff",
+                    "--quiet",
+                    f"{source_base['commit']}..HEAD",
+                    "--",
+                    *sorted(mapped_source_paths),
+                ],
+                cwd=ROOT,
+                text=True,
+                capture_output=True,
+            )
+            if drift.returncode == 1:
+                failures.append(f"{mid}: mapped source drift after sourceBase")
+            elif drift.returncode not in (0, 1):
+                failures.append(f"{mid}: mapped source drift check failed")
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
     if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
+        failures.append(
+            f"maps: source snapshot drift ({len(source_bases)} identities); "
+            "run migrate after the source-bearing candidate is frozen"
+        )
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
