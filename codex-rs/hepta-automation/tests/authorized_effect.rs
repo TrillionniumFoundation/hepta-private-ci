@@ -6,6 +6,9 @@
 
 use std::collections::BTreeSet;
 use std::os::unix::fs::PermissionsExt;
+use std::sync::mpsc;
+use std::thread;
+use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -33,6 +36,7 @@ use codex_hepta_automation::TaskFlowTransition;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::Sha256Digest;
@@ -205,6 +209,18 @@ async fn prepared_effect_store(
     AuthorizedEffectIntent,
     FinalUseBinding,
 ) {
+    prepared_effect_store_for(fixture, intent()).await
+}
+
+async fn prepared_effect_store_for(
+    fixture: &Fixture,
+    effect: AuthorizedEffectIntent,
+) -> (
+    AutomationStore,
+    TaskFlowFence,
+    AuthorizedEffectIntent,
+    FinalUseBinding,
+) {
     let store = AutomationStore::open(&fixture.layout)
         .await
         .expect("open store");
@@ -245,7 +261,6 @@ async fn prepared_effect_store(
         .expect("start run");
     assert_eq!(started.state, TaskFlowRunState::Running);
 
-    let effect = intent();
     let intent_digest = effect.digest().expect("intent digest");
     store
         .prepare_taskflow_step(
@@ -331,6 +346,70 @@ impl AuthorizedEffectDriver for RecordingDriver {
                 Err(AuthorizedEffectDriverError::BeforeProviderContact)
             }
         }
+    }
+}
+
+struct RevocationRaceDriver {
+    calls: usize,
+    authority: FinalUseAuthority,
+    grant_id: String,
+    revoker: Option<thread::JoinHandle<Result<(), FinalUseError>>>,
+}
+
+impl RevocationRaceDriver {
+    fn new(authority: FinalUseAuthority, grant_id: impl Into<String>) -> Self {
+        Self {
+            calls: 0,
+            authority,
+            grant_id: grant_id.into(),
+            revoker: None,
+        }
+    }
+
+    fn join_revoker(&mut self) {
+        self.revoker
+            .take()
+            .expect("revocation thread")
+            .join()
+            .expect("revocation thread join")
+            .expect("revocation update after dispatch");
+    }
+}
+
+impl AuthorizedEffectDriver for RevocationRaceDriver {
+    fn dispatch(
+        &mut self,
+        request: &AuthorizedEffectRequest<'_>,
+    ) -> Result<AuthorizedEffectProviderReceipt, AuthorizedEffectDriverError> {
+        self.calls += 1;
+        assert_eq!(
+            request.intent_digest,
+            &request.intent.digest().expect("driver intent digest")
+        );
+        let authority = self.authority.clone();
+        let grant_id = self.grant_id.clone();
+        let (started_tx, started_rx) = mpsc::channel();
+        let revoker = thread::spawn(move || {
+            started_tx.send(()).expect("signal revocation attempt");
+            authority.update_revocations(FinalUseRevocations {
+                authority_epoch: 9,
+                revision: 2,
+                revoked_grant_ids: BTreeSet::from([grant_id]),
+            })
+        });
+        started_rx
+            .recv_timeout(Duration::from_secs(1))
+            .expect("revocation thread reached final-use fence");
+        thread::sleep(Duration::from_millis(25));
+        assert!(
+            !revoker.is_finished(),
+            "revocation update must not enter while provider dispatch owns the final-use fence"
+        );
+        self.revoker = Some(revoker);
+        Ok(AuthorizedEffectProviderReceipt {
+            outcome: AuthorizedEffectOutcome::Succeeded,
+            receipt_digest: Sha256Digest::for_bytes(b"revocation-race-success"),
+        })
     }
 }
 
@@ -590,4 +669,144 @@ async fn proven_pre_contact_failure_never_blindly_redispatches_same_attempt() {
         driver.calls, 1,
         "same durable attempt must not cross the provider boundary twice"
     );
+}
+
+#[tokio::test]
+async fn revocation_race_is_fenced_across_the_physical_provider_call() {
+    let fixture = Fixture::new();
+    let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
+    let grant_id = "revocation-race";
+    let (authority, signed, _authority_dir) = final_use(expected.clone(), grant_id);
+    let mut driver = RevocationRaceDriver::new(authority.clone(), grant_id);
+
+    let receipt = store
+        .execute_authorized_taskflow_effect(
+            &authority,
+            &mut driver,
+            &effect,
+            &owner,
+            &signed,
+            &expected,
+            "authorized-effect-dispatch",
+            30,
+        )
+        .await
+        .expect("dispatch under one final-use revocation fence");
+    assert_eq!(driver.calls, 1);
+    assert_eq!(receipt.state, TaskFlowStepState::Reconciled);
+    assert_eq!(
+        receipt.final_outcome,
+        Some(TaskFlowReconcileOutcome::Succeeded)
+    );
+
+    driver.join_revoker();
+
+    let mut must_not_dispatch =
+        RecordingDriver::receipt(AuthorizedEffectOutcome::Succeeded, b"must-not-dispatch");
+    assert!(
+        store
+            .execute_authorized_taskflow_effect(
+                &authority,
+                &mut must_not_dispatch,
+                &effect,
+                &owner,
+                &signed,
+                &expected,
+                "authorized-effect-dispatch",
+                31,
+            )
+            .await
+            .is_err(),
+        "a post-dispatch revocation cannot turn historical success into a fresh dispatch"
+    );
+    assert_eq!(must_not_dispatch.calls, 0);
+}
+
+#[tokio::test]
+async fn compensation_crash_preserves_intent_identity_and_requires_reconciliation() {
+    let fixture = Fixture::new();
+    let mut compensation = intent();
+    compensation.compensation_for = Some("matrix.original-send".to_string());
+    let expected_digest = compensation.digest().expect("compensation intent digest");
+    let (store, owner, compensation, expected) =
+        prepared_effect_store_for(&fixture, compensation).await;
+    let (authority, signed, _authority_dir) =
+        final_use(expected.clone(), "compensation-crash");
+    let mut ambiguous =
+        RecordingDriver::receipt(AuthorizedEffectOutcome::Indeterminate, b"compensation-unknown");
+
+    let first = store
+        .execute_authorized_taskflow_effect(
+            &authority,
+            &mut ambiguous,
+            &compensation,
+            &owner,
+            &signed,
+            &expected,
+            "compensation-dispatch",
+            30,
+        )
+        .await
+        .expect("ambiguous compensation dispatch");
+    assert_eq!(ambiguous.calls, 1);
+    assert_eq!(first.state, TaskFlowStepState::Recorded);
+    assert_eq!(
+        first.observation,
+        Some(TaskFlowStepObservation::Indeterminate)
+    );
+
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen after compensation crash");
+    let pending = reopened
+        .pending_authorized_taskflow_effects(8)
+        .await
+        .expect("pending compensation");
+    assert_eq!(pending.len(), 1);
+    assert_eq!(pending[0].intent_digest, expected_digest);
+    assert_eq!(pending[0].run_id, compensation.run_id);
+
+    let recovered = reopened
+        .recover_authorized_taskflow_effect(
+            &compensation.run_id,
+            &compensation.step_id,
+            compensation.attempt,
+            &owner,
+            AuthorizedEffectRecovery::Observed(AuthorizedEffectProviderReceipt {
+                outcome: AuthorizedEffectOutcome::Failed,
+                receipt_digest: Sha256Digest::for_bytes(b"compensation-terminal-failure"),
+            }),
+            31,
+        )
+        .await
+        .expect("reconcile compensation after crash");
+    let AuthorizedEffectRecoveryResult::Observed(receipt) = recovered else {
+        panic!("compensation recovery must append terminal provider evidence");
+    };
+    assert_eq!(receipt.state, TaskFlowStepState::Reconciled);
+    assert_eq!(
+        receipt.final_outcome,
+        Some(TaskFlowReconcileOutcome::Failed)
+    );
+
+    let mut must_not_dispatch =
+        RecordingDriver::receipt(AuthorizedEffectOutcome::Succeeded, b"must-not-dispatch");
+    assert!(
+        reopened
+            .execute_authorized_taskflow_effect(
+                &authority,
+                &mut must_not_dispatch,
+                &compensation,
+                &owner,
+                &signed,
+                &expected,
+                "compensation-dispatch",
+                32,
+            )
+            .await
+            .is_err(),
+        "reconciled compensation must never be replayed as a new effect"
+    );
+    assert_eq!(must_not_dispatch.calls, 0);
 }
