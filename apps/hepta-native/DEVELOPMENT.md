@@ -8,7 +8,7 @@ The product shell uses `eframe 0.36.2` / `egui` with the native `winit` integrat
 
 | Platform | Product build | Accessibility | DPI/windowing | Platform effects | Packaging status |
 | --- | --- | --- | --- | --- | --- |
-| Windows x86_64 | first-class shell | AccessKit | native winit | effect adapters compile, but kernel final-use admission is fail-closed until a Windows durable authority store is qualified | CI unsigned zip |
+| Windows x86_64 | first-class shell | AccessKit | native winit | kernel final-use durable store + local effect adapters are source-composed; installed notification identity/target-host permission evidence remain external | CI unsigned zip |
 | macOS arm64/x86_64 | first-class | AccessKit | native winit | open/reveal/clipboard/notification launcher | CI unsigned archive; signing/notarization external |
 | Linux x86_64 | first-class | AccessKit | X11/Wayland via winit | open/reveal/clipboard/`notify-send` | CI unsigned archive |
 
@@ -28,7 +28,7 @@ The shell does not embed a browser and does not create a second Hepta execution 
 - `tests/runtime.rs` — session fencing, retry, restart and reconciliation tests.
 - `tests/security_updater.rs` — signed grant and signed update tests.
 
-The legacy `src/native.js` / `src/shell-runtime.js` tests remain compatibility/source-boundary fixtures until all registered callers and qualification maps point to the Rust product entrypoints.
+The former JavaScript `src/native.js` / `src/shell-runtime.js` boundary has been retired from this candidate; the Rust executable and its integration tests are the only canonical `ui.native` product surface.
 
 ## 3. Runtime correctness and crash semantics
 
@@ -76,7 +76,7 @@ durable Prepared
 
 `VerifiedUseToken` is non-cloneable and non-serializable; the UI cannot mint one. A matching pair of caller-supplied digests is not authority. Revocation is loaded from the explicit absolute `--final-use-authority` host configuration before claim and again before physical adapter entry. Trust identity or state-directory changes in place fail closed.
 
-If no final-use authority is composed, the shell records a rejected no-dispatch terminal result. The kernel authority store currently has a strong Unix implementation (owner-only directory, process lock, no-follow opens, atomic rename and file/directory fsync) and intentionally rejects non-Unix storage. Therefore Windows platform effects remain fail-closed/read-only until kernel.authority gains an equivalent Windows durable store; the Windows UI/build/packaging path does not fall back to a weaker native-local grant system.
+If no final-use authority is composed, the shell records a rejected no-dispatch terminal result. The kernel authority store has platform-specific durable implementations for Unix and Windows. Unix uses owner-only/no-follow file semantics plus file/directory fsync; Windows uses the `hepta-private-state` private-directory boundary and dedicated durability tests. Neither platform falls back to a native-local signer or weaker replay registry.
 
 The local platform policy is a second ceiling, not authority. Paths must be absolute, canonicalizable and underneath one of the explicitly configured roots. Clipboard/notification classes are disabled unless their local policy switches are present.
 ## 5. Session/keychain and loopback authentication boundary
@@ -112,7 +112,7 @@ The selected shell has four views: runtime, operations, updates and accessibilit
 
 The Updates view accepts absolute signed-manifest/package paths, performs signature/target/predecessor staging through `UpdateManager`, and can request activation. Activation first closes the GUI; only after `eframe::run_native` returns does `main` spawn the independent updater helper. The helper re-verifies the pending record and new binary, rolls back on failure, and uses a bounded Windows permission-denied retry to bridge the executable-file-lock handoff.
 
-The runtime view consumes the existing read-only loopback gateway. Platform mutation consumption is source-composed behind the kernel final-use boundary, but no Agentd/gateway product endpoint currently delivers `SignedFinalUseGrant` values to the GUI. That upstream grant-delivery integration remains a repository-controlled gap; the shell does not create a signer or backend writer to hide it.
+The runtime view consumes the existing read-only loopback gateway. Platform mutation consumption is source-composed behind the kernel final-use boundary. The product authority ingress is deliberately separate: the GUI accepts an independently issued `SignedFinalUseGrant` file for the exact displayed binding. Automated Agentd/gateway grant delivery is not required for source closure and must not turn the read-only gateway into an authority issuer or mutation owner.
 
 ## 8. Development configuration
 
@@ -192,7 +192,7 @@ Kernel final-use host configuration example:
 }
 ```
 
-The final-use signer remains the independent supervisor-owned `hepta-final-use-signer`; its private seed never belongs in the GUI, keyring session store, or native state directory. On Windows this configuration currently fails closed because the kernel durable authority store is not yet implemented for that OS.
+The final-use signer remains the independent supervisor-owned `hepta-final-use-signer`; its private seed never belongs in the GUI, keyring session store, or native state directory. Windows uses the kernel-owned durable authority store added in this candidate; production trust roots and target-host acceptance remain separately governed.
 
 ## 9. Qualification
 
@@ -212,7 +212,7 @@ CI output is not a production-release receipt. The generated artifacts are inten
 
 ## 10. Remaining external gates
 
-Repository-controlled gaps that remain open are the upstream product delivery of independently issued `SignedFinalUseGrant` values and an equivalent durable `kernel.authority` final-use store for Windows. Until those close, platform mutation product execution is not complete on all targets.
+Repository-controlled closure now uses the operator-selected independently issued `SignedFinalUseGrant` as the product authority ingress and includes durable kernel final-use stores for Unix and Windows. Remaining repository gates are reproducible dependency locking, current exact-head/merge-candidate execution receipts, and packaged fault/restart qualification bound to the final candidate.
 
 Repository implementation cannot self-issue these facts:
 
