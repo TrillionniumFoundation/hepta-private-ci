@@ -12,6 +12,8 @@ use ed25519_dalek::Signature;
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 use serde::Serialize;
+use sha2::Digest;
+use sha2::Sha256;
 
 #[path = "final_use_store.rs"]
 mod store;
@@ -118,11 +120,70 @@ impl fmt::Debug for FinalUseAuthority {
 pub struct VerifiedUseToken {
     owner: Arc<Inner>,
     grant: FinalUseGrant,
+    witness_sha256: [u8; 32],
 }
 
 impl fmt::Debug for VerifiedUseToken {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str("VerifiedUseToken([REDACTED])")
+    }
+}
+
+/// Non-constructible proof that a verified final-use token crossed its last
+/// revocation/expiry check immediately before an asynchronous effect entry.
+///
+/// The token is deliberately non-cloneable and carries no signing capability.
+/// Once this value exists, later revocation applies to future entries; it
+/// cannot retroactively prove that an already-entered external effect stopped.
+pub struct EnteredUseToken {
+    _owner: Arc<Inner>,
+    binding: FinalUseBinding,
+    witness_sha256: [u8; 32],
+}
+
+impl fmt::Debug for EnteredUseToken {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str("EnteredUseToken([REDACTED])")
+    }
+}
+
+impl EnteredUseToken {
+    pub fn matches(&self, expected: &FinalUseBinding) -> bool {
+        &self.binding == expected
+    }
+
+    pub const fn witness_sha256(&self) -> [u8; 32] {
+        self.witness_sha256
+    }
+}
+
+impl VerifiedUseToken {
+    pub const fn witness_sha256(&self) -> [u8; 32] {
+        self.witness_sha256
+    }
+
+    /// Revalidate this claimed grant at the final asynchronous effect entry.
+    /// This consumes the token so one claim cannot authorize two entries.
+    pub fn enter(self, expected: &FinalUseBinding) -> Result<EnteredUseToken, FinalUseError> {
+        if &self.grant.binding != expected {
+            return Err(FinalUseError::BindingMismatch);
+        }
+        let state = self
+            .owner
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        validate_live(&self.grant, &state.head)?;
+        let entered = EnteredUseToken {
+            _owner: Arc::clone(&self.owner),
+            binding: self.grant.binding,
+            witness_sha256: self.witness_sha256,
+        };
+        drop(state);
+        Ok(entered)
     }
 }
 
@@ -145,6 +206,20 @@ impl FinalUseAuthority {
             state: Mutex::new(state),
             store,
         })))
+    }
+
+    /// Return the currently trusted durable revocation head. This is metadata
+    /// only; it grants no authority and exposes no signing material.
+    pub fn revocation_head(&self) -> Result<FinalUseRevocations, FinalUseError> {
+        let state = self
+            .0
+            .state
+            .lock()
+            .map_err(|_| FinalUseError::Unavailable)?;
+        if state.failed {
+            return Err(FinalUseError::Unavailable);
+        }
+        Ok(state.head.clone())
     }
 
     /// Called only by the trusted host, not from a provider response or grant.
@@ -222,10 +297,32 @@ impl FinalUseAuthority {
         // Persistence can outlast a short grant. Never admit a dispatch using
         // the time sampled before that I/O; its nonce stays consumed on expiry.
         validate_live(&signed.grant, &state.head)?;
+        let mut witness = b"hepta.kernel.authority.final-use-witness.v1\0".to_vec();
+        witness.extend_from_slice(&input);
+        witness.extend_from_slice(&signed.signature);
+        let witness_sha256: [u8; 32] = Sha256::digest(&witness).into();
         Ok(VerifiedUseToken {
             owner: Arc::clone(&self.0),
             grant: signed.grant.clone(),
+            witness_sha256,
         })
+    }
+
+    /// Consume a verified token at the final admission point for an
+    /// asynchronous external effect. The live authority check happens while
+    /// holding the revocation mutex; the mutex is released before the caller
+    /// performs network I/O. This models an effect that has already entered:
+    /// a later revocation can deny future entries but cannot erase or safely
+    /// retry an in-flight effect.
+    pub fn enter_verified_use(
+        &self,
+        token: VerifiedUseToken,
+        expected: &FinalUseBinding,
+    ) -> Result<EnteredUseToken, FinalUseError> {
+        if !Arc::ptr_eq(&self.0, &token.owner) {
+            return Err(FinalUseError::BindingMismatch);
+        }
+        token.enter(expected)
     }
 
     /// Revalidate live authority after asynchronous work and before releasing a
