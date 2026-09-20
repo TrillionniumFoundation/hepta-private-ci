@@ -34,6 +34,30 @@ pub enum EngramPopulationV1 {
     MetaMemory,
 }
 
+impl EngramPopulationV1 {
+    pub const ALL: [Self; 7] = [
+        Self::SensoryTrace,
+        Self::EpisodicBinding,
+        Self::SemanticConcept,
+        Self::ProceduralSkill,
+        Self::PredictiveWorld,
+        Self::UtilitySalience,
+        Self::MetaMemory,
+    ];
+
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::SensoryTrace => "sensory_trace",
+            Self::EpisodicBinding => "episodic_binding",
+            Self::SemanticConcept => "semantic_concept",
+            Self::ProceduralSkill => "procedural_skill",
+            Self::PredictiveWorld => "predictive_world",
+            Self::UtilitySalience => "utility_salience",
+            Self::MetaMemory => "meta_memory",
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum SynapseRelationV1 {
@@ -45,6 +69,12 @@ pub enum SynapseRelationV1 {
     Supports,
     Inhibitory,
     Contradicts,
+}
+
+impl SynapseRelationV1 {
+    pub const fn is_negative(self) -> bool {
+        matches!(self, Self::Inhibitory | Self::Contradicts)
+    }
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
