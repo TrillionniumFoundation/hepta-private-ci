@@ -53,6 +53,12 @@ The reviewer signs the canonical envelope using the AuthBus qualification
 scope/subject produced by `kernel_evidence_claims` or the equivalent native
 helper.
 
+The AuthBus message expiry is the freshness window for admitting that signed
+message. It is deliberately separate from `IndependentDecisionReceiptV1.expires_unix_ms`;
+the independently chosen decision lifetime may extend beyond the short ingress
+authentication window, subject to the receipt's own bounded expiry and later
+revocation/correction semantics.
+
 ## Admission
 
 A production/qualification Agentd with an owner-installed evidence trust
