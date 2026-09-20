@@ -239,7 +239,7 @@ impl BaoClient {
         request: &BaoReadRequest,
         evidence: &mut E,
         consumer: impl FnOnce(&[u8]) -> Result<(), ()>,
-    ) -> Result<Option<BaoSecretReceipt>, BaoAuthBusError> {
+    ) -> Result<BaoSecretReceipt, BaoAuthBusError> {
         if admission.policy_revision == 0
             || admission.expected_quota_revision == 0
             || admission.amount == 0
@@ -492,7 +492,7 @@ async fn settle_observed<E: BaoAuthBusEvidenceProvider>(
     observed_cost: u64,
     terminal_evidence_digest: Digest32,
     receipt: Option<BaoSecretReceipt>,
-) -> Result<BaoSecretReceipt, BaoAuthBusError> {
+) -> Result<Option<BaoSecretReceipt>, BaoAuthBusError> {
     let time = match authbus
         .observe_trusted_time_attestation(&evidence.trusted_time()?)
         .await
