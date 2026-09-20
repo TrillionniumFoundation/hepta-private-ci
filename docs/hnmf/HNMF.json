@@ -127,6 +127,8 @@
         "thresholdQ16",
         "targetActivityPpm",
         "confidencePpm",
+        "validFromUnixMs",
+        "validToUnixMs",
         "snapshotGeneration"
       ]
     },
@@ -140,6 +142,7 @@
         "weightQ16",
         "delaySteps",
         "plasticityClass",
+        "eligibilityPpm",
         "supportManifestSha256",
         "snapshotGeneration"
       ]
@@ -251,7 +254,11 @@
     "modulatorEquation": "clip(w_u*utility + w_p*prediction_error + w_n*novelty - w_r*risk - w_o*ood)",
     "plasticityEquation": "candidate_delta = clip(eta * modulator * eligibility - decay - interference)",
     "currentRunMutationAllowed": false,
-    "onlineTopologyActivationAllowed": false
+    "onlineTopologyActivationAllowed": false,
+    "q16One": 65536,
+    "q16UnitRange": "[-65536,65536]",
+    "q16ToPpm": "trunc_toward_zero(q16*1000000/65536)",
+    "proposalDeltaBinding": "deltaPpm == trunc_toward_zero((newQ16-oldQ16)*1000000/65536)"
   },
   "candidateChannels": [
     "lexical",
