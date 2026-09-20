@@ -224,6 +224,9 @@ async fn reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown(
                 codex_connection_id: Some(9),
                 codex_session_id: Some("session-1".to_string()),
                 codex_deadline_ms: Some(10_000),
+                codex_authority_epoch: None,
+                codex_revocation_revision: None,
+                codex_revocation_head_sha256: None,
                 codex_authority_witness_sha256: Some("1".repeat(64)),
             },
         )
