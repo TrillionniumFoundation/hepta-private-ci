@@ -14,6 +14,7 @@ use anyhow::ensure;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::ReleaseId;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
@@ -48,6 +49,29 @@ async fn product_binary_is_single_instance_owner_only_and_bad_frames_are_isolate
     let health = client.health().await?;
     ensure!(health.ready && health.registered_agents == 1);
     let initial_epoch = health.supervisor_epoch;
+
+    // The legacy v2 wire variants remain decodable for compatibility, but
+    // the daemon product has no unsigned release execution path.
+    let stopped = client.snapshot(agent_id.clone()).await?;
+    let unsigned_upgrade = client
+        .upgrade(
+            stopped.control_fence.clone(),
+            ReleaseId::parse("unsigned-v2")?,
+        )
+        .await
+        .expect_err("unsigned daemon upgrade must be rejected");
+    ensure!(
+        unsigned_upgrade.to_string().contains("production_authority_required"),
+        "unsigned upgrade failed for the wrong reason: {unsigned_upgrade}"
+    );
+    let unsigned_rollback = client
+        .rollback(stopped.control_fence)
+        .await
+        .expect_err("unsigned daemon rollback must be rejected");
+    ensure!(
+        unsigned_rollback.to_string().contains("production_authority_required"),
+        "unsigned rollback failed for the wrong reason: {unsigned_rollback}"
+    );
     ensure!(
         std::fs::metadata(registry.layout().supervisor_socket())?
             .permissions()
