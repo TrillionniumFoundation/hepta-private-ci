@@ -198,18 +198,8 @@ impl SparseCheckpoint {
         digest_q24(b"hepta.neuron.eligibility.q24.v1", &self.eligibility)
     }
 
-    pub fn active_indices(&self) -> Vec<u32> {
-        self.activation
-            .iter()
-            .enumerate()
-            .filter(|(_, value)| **value > 0)
-            .map(|(index, _)| index as u32)
-            .collect()
-    }
-
-    pub fn active_fraction_ppm(&self) -> u32 {
-        let active = self.activation.iter().filter(|value| **value > 0).count();
-        (active * 1_000_000 / self.activation.len()) as u32
+    pub(crate) fn activation_q24(&self) -> &[i64] {
+        &self.activation
     }
 
     /// Upper bound for a canonical checkpoint encoding of the current state.
