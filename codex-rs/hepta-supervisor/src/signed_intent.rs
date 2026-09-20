@@ -34,14 +34,7 @@ pub enum SignedIntentStatus {
     Queued,
     Committed,
     RolledBack,
-    Failed,
     RecoveryRequired,
-}
-
-impl SignedIntentStatus {
-    pub const fn is_terminal(self) -> bool {
-        matches!(self, Self::Committed | Self::RolledBack | Self::Failed)
-    }
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -215,13 +208,6 @@ pub fn write_intent(
     drop(file);
     publish::publish(&temp, &final_path)?;
     Ok(())
-}
-
-pub(crate) fn publish_durable(
-    staging: &Path,
-    destination: &Path,
-) -> std::io::Result<()> {
-    publish::publish(staging, destination)
 }
 
 #[cfg(test)]
