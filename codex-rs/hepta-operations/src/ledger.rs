@@ -161,7 +161,7 @@ impl OperationLedger {
             return Err(OperationError::InvalidDigest("terminal outcome"));
         }
         let record = self.record_mut(operation_id)?;
-        if observer_generation != record.owner_generation {
+        if observer_generation.get() < record.owner_generation.get() {
             return Err(OperationError::StaleGeneration);
         }
         if terminal_matches(&record.state, outcome, outcome_digest) {
