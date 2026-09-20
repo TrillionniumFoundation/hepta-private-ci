@@ -201,6 +201,50 @@ async fn legacy_federation_is_not_admitted_to_product_attachment_api() {
 }
 
 #[tokio::test]
+async fn legacy_compatibility_helper_cannot_downgrade_product_v2_runtime() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner_id = agent_id(88);
+    let consumer_id = agent_id(89);
+    let owner_layout = layout(&temp, &owner_id);
+    let consumer_layout = layout(&temp, &consumer_id);
+    let owner = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("owner store");
+    let consumer = CognitiveStore::open(&consumer_layout)
+        .await
+        .expect("consumer store");
+    let owner_access = CognitiveAccess::agent_private(owner_id);
+    let consumer_workspace = workspace("runtime-v2-no-legacy-downgrade");
+    owner
+        .grant_federated_recall(
+            &owner_access,
+            &FederationGrantRequest {
+                consumer_agent_id: consumer_id.clone(),
+                scope: FederationGrantScope::new(
+                    CognitiveScope::AgentPrivate,
+                    consumer_workspace,
+                ),
+                effective_at_unix_seconds: 100,
+                expires_at_unix_seconds: 1_000,
+            },
+        )
+        .await
+        .expect("grant");
+    let readers = FederatedMemoryReader::discover(&owner_layout, &consumer_id, 150)
+        .await
+        .expect("legacy discovery");
+    let legacy = FederatedRecallSet::new(consumer_id.clone(), readers)
+        .expect("legacy recall set");
+
+    let runtime = CognitiveRuntime::from_open_result(Ok(consumer))
+        .with_federation_sources(consumer_id, vec![owner_layout])
+        .with_federation(legacy);
+
+    assert!(runtime.has_product_federation());
+    assert!(runtime.federation().is_none());
+}
+
+#[tokio::test]
 async fn product_v2_unobservable_owner_is_explicit_failed_discovery_coverage() {
     let temp = TempDir::new().expect("temp dir");
     let owner_id = agent_id(84);
