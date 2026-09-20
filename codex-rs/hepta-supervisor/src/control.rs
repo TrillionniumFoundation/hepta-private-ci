@@ -13,6 +13,8 @@ use crate::runtime::AgentSlot;
 use crate::runtime::DeferredAgentActionKind;
 use crate::runtime::RuntimePhase;
 use crate::runtime::deadline;
+use crate::restart_budget::RestartBudgetError;
+use crate::restart_budget::claim_restart;
 use crate::runtime::driver_error;
 
 impl<D: ProcessDriver> Supervisor<D> {
@@ -122,6 +124,21 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.release_change.is_some() {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
         }
+        let record = self.record(agent_id)?;
+        let claim = claim_restart(
+            record.layout.run_root(),
+            self.config.restart_max_attempts,
+            self.config.restart_window,
+            self.config.restart_backoff_base,
+        )
+        .map_err(|error| match error {
+            RestartBudgetError::Exhausted => {
+                SupervisorError::RestartBudgetExhausted(agent_id.clone())
+            }
+            other => SupervisorError::Invalid(other.to_string()),
+        })?;
+        slot.restart_attempt = claim.attempt;
+        slot.restart_not_before = Some(deadline(now, claim.backoff)?);
         let release = slot.active_release.clone().or_else(|| {
             slot.last_command
                 .clone()
@@ -130,9 +147,12 @@ impl<D: ProcessDriver> Supervisor<D> {
         let release =
             release.ok_or_else(|| SupervisorError::NoPreviousCommand(agent_id.clone()))?;
         if slot.runtime.is_none() {
-            return self.start_release_slot(agent_id, slot, release, now);
+            slot.restart_pending = true;
+            let generation = record.lifecycle.generation;
+            slot.event(generation, SupervisorEventKind::RestartQueued);
+            return Ok(());
         }
-        let lifecycle = self.record(agent_id)?.lifecycle.lifecycle;
+        let lifecycle = record.lifecycle.lifecycle;
         let result = if matches!(
             lifecycle,
             AgentLifecycle::Running | AgentLifecycle::Draining
