@@ -45,10 +45,10 @@ use codex_hepta_codex_adapter::adapt_observed_server_rejection;
 use codex_hepta_codex_adapter::adapt_request;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+pub use codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 use codex_hepta_infer_core::durable_control::native::NativeDispatchRejection;
 use codex_hepta_infer_core::durable_control::native::NativeDispatchRejectionStatus;
-pub use codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus;
 pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
@@ -298,9 +298,7 @@ impl AppServerModelDriver {
             Ok(Err(RemoteObservedTypedRequestError::Server { observed })) => {
                 let receipt = adapt_observed_server_rejection(&adapter_intent, &observed)?;
                 let (status, retry_safe_before_admission) = match receipt.status {
-                    AdapterStatus::Overloaded => {
-                        (NativeDispatchRejectionStatus::Overloaded, true)
-                    }
+                    AdapterStatus::Overloaded => (NativeDispatchRejectionStatus::Overloaded, true),
                     AdapterStatus::Rejected => (NativeDispatchRejectionStatus::Rejected, false),
                     _ => return Err("unexpected adapter rejection status".into()),
                 };
@@ -334,9 +332,7 @@ impl AppServerModelDriver {
                 }
             }
             Err(_) => {
-                if let Some(turn) =
-                    reconcile_turn_start(&mut client, &started.thread.id).await?
-                {
+                if let Some(turn) = reconcile_turn_start(&mut client, &started.thread.id).await? {
                     turn
                 } else {
                     let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
