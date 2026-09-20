@@ -1,6 +1,10 @@
 use std::net::SocketAddr;
+use std::path::Path;
 use std::path::PathBuf;
+use std::process::Command;
 use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use hepta_native::backend::LoopbackGatewayBackend;
 use hepta_native::journal::OperationJournal;
@@ -13,6 +17,7 @@ use hepta_native::security::SignedEndpointManifestV1;
 use hepta_native::security::TrustedKeySet;
 use hepta_native::session_store::GatewayCredentialStore;
 use hepta_native::ui::HeptaNativeApp;
+use hepta_native::updater::UpdateManager;
 
 fn main() {
     if let Err(error) = run() {
@@ -39,12 +44,13 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         serde_json::from_slice(&std::fs::read(&config.endpoint_manifest)?)?;
     let verified_endpoint = signed_manifest.verify(&trusted_keys)?;
     let manifest: EndpointManifest = verified_endpoint.manifest;
+    let protocol_version = manifest.protocol_version;
     let address: SocketAddr = manifest.address.parse()?;
     let bearer_token =
         GatewayCredentialStore::default().load(&verified_endpoint.gateway_credential_account)?;
     let backend = LoopbackGatewayBackend::new(address, bearer_token)?;
     let policy = PlatformPolicy::new(
-        config.allowed_roots,
+        config.allowed_roots.clone(),
         config.allow_clipboard,
         config.allow_notifications,
     )?;
@@ -52,6 +58,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let journal = OperationJournal::open(config.state_dir.join("operation-journal.json"))?;
     let final_use = config
         .final_use_authority
+        .clone()
         .map(KernelFinalUseGate::open)
         .transpose()?
         .map(Arc::new);
@@ -61,10 +68,14 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         final_use,
         journal,
     );
+    let updater = UpdateManager::new(trusted_keys.clone(), config.state_dir.join("updates"))?;
+    let pending_update_path = updater.pending_path();
+    let activate_update_on_exit = Arc::new(AtomicBool::new(false));
     let app = HeptaNativeApp::new(
         runtime,
         manifest,
-        config.state_dir.join("updates/pending-update.json"),
+        updater,
+        Arc::clone(&activate_update_on_exit),
     )?;
 
     let native_options = eframe::NativeOptions {
@@ -81,6 +92,23 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         native_options,
         Box::new(move |_cc| Ok(Box::new(app))),
     )?;
+
+    if activate_update_on_exit.load(Ordering::SeqCst) {
+        let target = std::env::current_exe()?;
+        let helper = match config.updater_helper {
+            Some(path) => path,
+            None => default_updater_helper(&target)?,
+        };
+        if !helper.is_file() {
+            return Err(format!("native updater helper is unavailable: {}", helper.display()).into());
+        }
+        Command::new(&helper)
+            .arg(&pending_update_path)
+            .arg(&config.trusted_keys)
+            .arg(&target)
+            .arg(protocol_version.to_string())
+            .spawn()?;
+    }
     Ok(())
 }
 
@@ -89,6 +117,7 @@ struct AppConfig {
     endpoint_manifest: PathBuf,
     trusted_keys: PathBuf,
     final_use_authority: Option<PathBuf>,
+    updater_helper: Option<PathBuf>,
     state_dir: PathBuf,
     allowed_roots: Vec<PathBuf>,
     allow_clipboard: bool,
@@ -100,6 +129,7 @@ impl AppConfig {
         let mut endpoint_manifest = None;
         let mut trusted_keys = None;
         let mut final_use_authority = None;
+        let mut updater_helper = None;
         let mut state_dir = None;
         let mut allowed_roots = Vec::new();
         let mut allow_clipboard = false;
@@ -120,6 +150,10 @@ impl AppConfig {
                     final_use_authority =
                         Some(absolute_arg(args.get(index), "--final-use-authority")?);
                 }
+                "--updater-helper" => {
+                    index += 1;
+                    updater_helper = Some(absolute_arg(args.get(index), "--updater-helper")?);
+                }
                 "--state-dir" => {
                     index += 1;
                     state_dir = Some(absolute_arg(args.get(index), "--state-dir")?);
@@ -138,6 +172,7 @@ impl AppConfig {
             endpoint_manifest: endpoint_manifest.ok_or("missing --endpoint-manifest")?,
             trusted_keys: trusted_keys.ok_or("missing --trusted-keys")?,
             final_use_authority,
+            updater_helper,
             state_dir: state_dir.ok_or("missing --state-dir")?,
             allowed_roots,
             allow_clipboard,
@@ -155,4 +190,24 @@ fn absolute_arg(
         return Err(format!("{option} path must be absolute").into());
     }
     Ok(path)
+}
+
+fn default_updater_helper(current_exe: &Path) -> Result<PathBuf, Box<dyn std::error::Error>> {
+    let executable_dir = current_exe
+        .parent()
+        .ok_or("native executable has no parent directory")?;
+    #[cfg(target_os = "macos")]
+    {
+        if executable_dir.file_name().is_some_and(|name| name == "MacOS") {
+            let contents = executable_dir
+                .parent()
+                .ok_or("macOS native executable has no Contents directory")?;
+            return Ok(contents.join("Helpers").join("hepta-native-updater"));
+        }
+    }
+    #[cfg(target_os = "windows")]
+    let name = "hepta-native-updater.exe";
+    #[cfg(not(target_os = "windows"))]
+    let name = "hepta-native-updater";
+    Ok(executable_dir.join(name))
 }
