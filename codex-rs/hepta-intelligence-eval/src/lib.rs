@@ -38,10 +38,47 @@ pub use closure::MetricContractV1;
 pub use closure::MetricGateV1;
 pub use closure::MetricRoleContractV2;
 pub use closure::MetricRoleV2;
-pub use closure::decide_independently;
-pub use closure::decide_independently_v2;
+pub(crate) use closure::decide_independently;
+pub(crate) use closure::decide_independently_v2;
 pub use closure::freeze_cross_fold_plan;
 pub use closure::freeze_cross_fold_plan_v2;
+
+/// Trusted in-process compatibility surface.
+///
+/// This module is absent from default builds. It must never be used as a
+/// qualification or production ingress because its direct decision functions
+/// consume asserted principals rather than signature-verified evidence.
+#[cfg(feature = "trusted-inprocess-eval")]
+pub mod trusted_inprocess {
+    use super::*;
+
+    /// Legacy threshold comparator retained only for bounded compatibility tests.
+    #[deprecated(
+        note = "trusted in-process compatibility only; production must use signed evaluation admission"
+    )]
+    pub fn evaluate_legacy_inprocess_v1(
+        request: EvaluationRequest,
+    ) -> Result<EvaluationReceipt, Error> {
+        super::evaluate(request)
+    }
+
+    /// Direct V1 evaluator for trusted in-process compatibility only.
+    pub fn decide_independently(
+        bundle: IndependentEvaluationBundleV1,
+        now: u64,
+    ) -> Result<IndependentEvaluationDecisionV1, EvaluationClosureError> {
+        super::decide_independently(bundle, now)
+    }
+
+    /// Direct V2 evaluator for trusted in-process compatibility only.
+    pub fn decide_independently_v2(
+        bundle: IndependentEvaluationBundleV1,
+        metric_roles: Vec<MetricRoleContractV2>,
+        now: u64,
+    ) -> Result<IndependentEvaluationDecisionV1, EvaluationClosureError> {
+        super::decide_independently_v2(bundle, metric_roles, now)
+    }
+}
 pub use holdout_journal::FinalHoldoutJournalError;
 pub use holdout_journal::FinalHoldoutJournalReceiptV1;
 pub use holdout_journal::FinalHoldoutJournalRecordV1;
@@ -159,7 +196,7 @@ impl fmt::Display for Error {
 }
 impl StdError for Error {}
 
-pub fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Error> {
+fn evaluate(mut request: EvaluationRequest) -> Result<EvaluationReceipt, Error> {
     if request.evaluator_id == request.candidate_producer_id {
         return Err(Error::SelfEvaluation);
     }
