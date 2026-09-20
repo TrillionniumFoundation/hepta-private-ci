@@ -52,6 +52,7 @@ pub enum DurableLedgerError {
     InvalidAnchor,
     Busy,
     NotRegular,
+    NotDirectory,
     AlreadyInitialized,
     MissingHeader,
     BindingMismatch,
