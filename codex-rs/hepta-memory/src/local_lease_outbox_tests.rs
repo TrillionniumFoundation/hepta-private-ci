@@ -2849,6 +2849,90 @@ async fn operation_event_and_outbox_are_one_atomic_transaction_across_every_faul
 }
 
 #[tokio::test]
+async fn sqlite_full_aborts_operation_event_and_outbox_atomically_and_reopens_cleanly() {
+    let temp = TempDir::new().expect("temp dir");
+    let store = opened_store(&temp, 155).await;
+    let lease_id = "lease:sqlite-full";
+    let handle = acquired(
+        store
+            .acquire_host_bound_lease(
+                lease_id,
+                23,
+                33,
+                1,
+                "fence:sqlite-full",
+                unix_seconds() + 3_600,
+            )
+            .await
+            .expect("bound lease"),
+    );
+
+    // Remove free-list slack, checkpoint the WAL, then freeze max_page_count at
+    // the exact current database size. The next large transactional append
+    // must exercise SQLite's deterministic SQLITE_FULL path.
+    sqlx::query("VACUUM")
+        .execute(&store.pool)
+        .await
+        .expect("compact fixture");
+    let _ = sqlx::query("PRAGMA wal_checkpoint(TRUNCATE)")
+        .execute(&store.pool)
+        .await;
+    let page_count: i64 = sqlx::query_scalar("PRAGMA page_count")
+        .fetch_one(&store.pool)
+        .await
+        .expect("page count");
+    assert!(page_count > 0);
+    sqlx::query(&format!("PRAGMA max_page_count = {page_count}"))
+        .execute(&store.pool)
+        .await
+        .expect("freeze page budget");
+
+    let before = handle.snapshot_counts().await.expect("before counts");
+    let before_operations = operation_rows(&store, lease_id).await;
+    let payload = format!("{{\"blob\":\"{}\"}}", "x".repeat(60_000));
+    let operation = durable_operation(
+        store.owner_agent_id(),
+        "operation:sqlite-full",
+        "destination:cognitive-store",
+        &payload,
+    );
+    let error = handle
+        .admit_operation(operation, "memory.write", &payload)
+        .await
+        .expect_err("storage-full append must fail");
+    let message = error.to_string().to_ascii_lowercase();
+    assert!(
+        message.contains("full") || message.contains("disk"),
+        "expected SQLITE_FULL-class error, got {error}"
+    );
+
+    assert_eq!(
+        handle.snapshot_counts().await.expect("after counts"),
+        before,
+        "storage exhaustion must not leave a partial event/outbox row"
+    );
+    assert_eq!(
+        operation_rows(&store, lease_id).await,
+        before_operations,
+        "storage exhaustion must not leave a partial operation row"
+    );
+
+    drop(handle);
+    store.pool.close().await;
+    let reopened = opened_store(&temp, 155).await;
+    assert_eq!(
+        operation_rows(&reopened, lease_id).await,
+        before_operations,
+        "reopen after SQLITE_FULL must preserve the last committed operation cut"
+    );
+    let integrity: String = sqlx::query_scalar("PRAGMA quick_check")
+        .fetch_one(&reopened.pool)
+        .await
+        .expect("quick check");
+    assert_eq!(integrity, "ok");
+}
+
+#[tokio::test]
 async fn legacy_admission_cannot_be_upgraded_to_operation_and_bound_operation_cannot_downgrade() {
     let temp = TempDir::new().expect("temp dir");
     let store = opened_store(&temp, 154).await;
