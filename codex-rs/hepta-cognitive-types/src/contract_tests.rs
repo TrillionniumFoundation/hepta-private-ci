@@ -473,10 +473,12 @@ fn replay_receipts_bind_candidate_and_source_bucket_counts() {
     duplicate_bucket.resource_receipt.selected_count = 2;
     duplicate_bucket.resource_receipt.candidate_count = 2;
     duplicate_bucket.selected_event_ids.push(id("event:2"));
-    duplicate_bucket.source_bucket_counts.push(SourceBucketCountV1 {
-        source_bucket: 1,
-        selected_count: 1,
-    });
+    duplicate_bucket
+        .source_bucket_counts
+        .push(SourceBucketCountV1 {
+            source_bucket: 1,
+            selected_count: 1,
+        });
     assert!(duplicate_bucket.validate().is_err());
 }
 
