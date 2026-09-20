@@ -40,6 +40,9 @@ Owned logical domains remain:
 | atomically append conserved credit | `LedgerWriter::append_credit_batch` | `src/production.rs` | implemented |
 | append source→dataset→artifact unlearning lineage | `LedgerWriter::append_unlearning` | `src/production.rs` | implemented |
 | derive/freeze dataset from current ledger | `LedgerWriter::freeze_dataset`, `freeze_dataset_from_ledger` | `src/production.rs` | implemented |
+| revalidate frozen dataset at final use | `LedgerWriter::revalidate_dataset_snapshot` | `src/production.rs` | implemented |
+| sync containing directory before publication/topology witness | `sync_directory_handle`, `LedgerWriter::rotate_segment` | `src/production.rs` | implemented |
+| source-composed terminal Outcome/correction/CreditBatch caller | `append_observed_outcome_v2`, `append_outcome_credit_v2` | `../hepta-intelligence/src/outcome_credit_v2.rs` | implemented; live daemon binding pending |
 | canonical registered protocol views | `LearningDecisionV1`, `OutcomeReceiptV1`, `CreditAssignmentReceiptV1`, `DatasetSnapshotV1`, `LearningEpisodeV1` | `src/protocol.rs` | implemented |
 | build/verify rebuildable read index | `build_ledger_index_checkpoint`, `verify_ledger_index_checkpoint` | `src/checkpoint.rs` | implemented |
 | cryptographically admit signed evidence | `LearningEvidenceVerifierV1` | `src/signed_evidence.rs` | implemented |
@@ -101,7 +104,10 @@ new product composition does not use it.
 eligible frontier, correction cut, revocation cut or outcome watermark. It
 rebuilds the current ledger, selects active authenticated decision/outcome/credit
 facts for the requested objective, derives those frontiers and then emits the
-self-verifying `DatasetSnapshotReceiptV3`.
+self-verifying `DatasetSnapshotReceiptV3`. Immediately before final artifact
+use, `LedgerWriter::revalidate_dataset_snapshot` verifies the historical receipt
+and requires every frozen source digest to remain in the current canonical active
+projection; later correction, revocation or unlearning therefore fails closed.
 
 `UnlearningLineageEventV1` explicitly records
 source-record → dataset-snapshot → artifact invalidation with authenticated
@@ -127,13 +133,14 @@ its generation and verifier context.
 `LedgerWriter` does not acknowledge a newly appended ledger fact until the
 corresponding witness frontier is synced. A ledger may lead the witness by only
 one exact record during lost-acknowledgement reconciliation. Segmented rotation
-is performed through `LedgerWriter::rotate_segment`, which witnesses the new
-segment topology before reporting success.
+is performed through `LedgerWriter::rotate_segment`. The host supplies an
+authorized handle for the actual containing directory; the writer synchronizes
+that directory after successor initialization and before advancing the witness
+to the new topology.
 
 The host still owns pinned-root provisioning/rotation ceremony, distribution transport,
-trusted file opening, directory synchronization, witness
-placement/isolation, key-distribution transport, encryption and physical
-durability qualification.
+trusted file and directory opening/identity, witness placement/isolation,
+key-distribution transport, encryption and physical durability qualification.
 
 ## Canonical protocol compatibility
 
@@ -185,21 +192,24 @@ Focused tests include:
 - `src/protocol_tests.rs`;
 - `src/checkpoint_tests.rs`.
 
-Cross-crate composition is exercised by the evaluated-shadow tests in
-`../hepta-intelligence` and Lane-E qualification sources. Exact-head and
-synthetic-merge CI remain execution evidence; test source alone is not a pass
-receipt.
+Cross-crate composition is exercised by the evaluated-shadow tests and
+`../hepta-intelligence/src/outcome_credit_v2.rs`, including correction and
+partial-commit reconciliation. The executable
+`examples/target_host_qualification.rs` measures exact-head append/rotation/
+reopen/storage/RSS behavior on a named target host while keeping power-loss,
+longitudinal-efficacy and activation claims false. Exact-head and synthetic-merge
+CI remain source execution evidence; test source alone is not a pass receipt.
 
 ## Remaining external/product evidence
 
 Repository source can implement the writer and a qualification consumer, but it
 cannot self-issue:
 
-1. a named live product process/callsite using `LedgerWriter`;
+1. daemon-owned invocation of the source-composed Decision and terminal-closure callsites using `LedgerWriter`;
 2. the operator's current signer-distribution transport and key custody;
 3. the physical placement/durability/isolation of ledger and witness files;
 4. live independent terminal observations;
-5. target-host latency, recovery and storage-growth measurements;
+5. an actual run of the target-host harness on each selected deployment class, including latency, recovery, throughput, storage and RSS evidence;
 6. independent semantic acceptance, canary, selection, promotion or release.
 
 Those are separate evidence gates and must not be inferred from this source
