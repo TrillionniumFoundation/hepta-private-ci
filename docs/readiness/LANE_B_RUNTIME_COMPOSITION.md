@@ -31,7 +31,7 @@ runtime.supervisor daemon
 runtime.fleet remains a separate allocation-lease owner
 ```
 
-Embedding a library does not transfer data ownership. Agentd owns an explicit admission coordinator in its own source root and separately names Codex callees. Fleet calculation does not become a lease until the fleet owner commits the exact grant and fence.
+Embedding a library does not transfer data ownership. Agentd owns an explicit admission coordinator in its own source root and separately names Codex callees. Fleet calculation does not become a lease until the fleet owner commits the exact grant and fence. The current source performs unbound placement, exact final-use-authorized durable commit, and supervisor-side grant consumption when a local Fleet host identity is configured.
 
 ## 4. Immutable run identity
 
@@ -104,7 +104,7 @@ Stop new admission; persist drain intent; cancel only provably pre-effect work; 
 
 ## 15. Source maturity
 
-The truth registry records source-boundary mappings for all 39 operations. Supervisor and Codex are native runtime spines; Fleet, inference, TaskFlow and Matrix include native owner ledgers/adapters; Agentd now owns its own run coordinator; Browser/Web/Native provide bounded driver/client boundaries. The component mappings do not close repository-controlled integration work. Durable owner wiring, actual local model/browser drivers and runtime composition remain implementation tasks in addition to external qualification.
+The truth registry records source-boundary mappings for all 39 operations. Supervisor and Codex are native runtime spines; Fleet, inference, TaskFlow and Matrix include native owner ledgers/adapters; Agentd now owns its own run coordinator; Browser/Web/Native provide bounded driver/client boundaries. The component mappings do not close repository-controlled integration work. Fleet durable owner wiring and supervisor consumption are now source-composed. Other Lane B gaps (including actual local model/browser drivers where still listed) remain module-specific implementation tasks, and all target-host/deployment/independent qualification remains external.
 
 ## 16. Evidence package required for activation
 
