@@ -16,6 +16,7 @@ jobs:
       argument_comment_lint: ${{ steps.detect.outputs.argument_comment_lint }}
       argument_comment_lint_package: ${{ steps.detect.outputs.argument_comment_lint_package }}
       codex: ${{ steps.detect.outputs.codex }}
+      ui_native: ${{ steps.detect.outputs.ui_native }}
       workflows: ${{ steps.detect.outputs.workflows }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -40,11 +41,13 @@ jobs:
           fi
 
           codex=false
+          ui_native=false
           argument_comment_lint=false
           argument_comment_lint_package=false
           workflows=false
           for f in "${files[@]}"; do
             [[ $f == codex-rs/* ]] && codex=true
+            [[ $f == apps/hepta-native/* || $f == codex-rs/hepta-native-gateway/* || $f == codex-rs/hepta-contracts/* || $f == codex-rs/hepta-private-state/* || $f == docs/modules/ui.native/* || $f == qualification/module-execution-dossiers/detail/ui.native.md ]] && ui_native=true
             [[ $f == codex-rs/* || $f == tools/argument-comment-lint/* || $f == justfile ]] && argument_comment_lint=true
             [[ $f == defs.bzl || $f == workspace_root_test_launcher.sh.tpl || $f == workspace_root_test_launcher.bat.tpl ]] && argument_comment_lint=true
             [[ $f == tools/argument-comment-lint/* || $f == .github/workflows/rust-ci.yml || $f == .github/workflows/rust-ci-full.yml ]] && argument_comment_lint_package=true
@@ -54,6 +57,7 @@ jobs:
           echo "argument_comment_lint=$argument_comment_lint" >> "$GITHUB_OUTPUT"
           echo "argument_comment_lint_package=$argument_comment_lint_package" >> "$GITHUB_OUTPUT"
           echo "codex=$codex" >> "$GITHUB_OUTPUT"
+          echo "ui_native=$ui_native" >> "$GITHUB_OUTPUT"
           echo "workflows=$workflows" >> "$GITHUB_OUTPUT"
 
       - name: Check for a clean worktree
@@ -266,3 +270,90 @@ jobs:
           NEEDS_CHANGED_OUTPUTS_CODEX: ${{ needs.changed.outputs.codex }}
           NEEDS_CHANGED_OUTPUTS_WORKFLOWS: ${{ needs.changed.outputs.workflows }}
           NEEDS_CHANGED_OUTPUTS_ARGUMENT_COMMENT_LINT_PACKAGE: ${{ needs.changed.outputs.argument_comment_lint_package }}
+
+  ui_native:
+    name: ui.native - ${{ matrix.name }}
+    needs: changed
+    if: ${{ needs.changed.outputs.ui_native == 'true' }}
+    timeout-minutes: ${{ matrix.timeout_minutes }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux
+            runner: ubuntu-24.04
+            timeout_minutes: 45
+          - name: macOS
+            runner: macos-15
+            timeout_minutes: 60
+          - name: Windows
+            runner: windows-latest
+            timeout_minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+
+      - name: Install Linux native UI dependencies
+        if: ${{ runner.os == 'Linux' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev libgl1-mesa-dev libssl-dev
+
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: rustfmt,clippy
+
+      - name: Resolve native lock
+        working-directory: apps/hepta-native
+        run: cargo generate-lockfile
+
+      - name: Format native product
+        working-directory: apps/hepta-native
+        run: cargo fmt --check
+
+      - name: Clippy native product
+        working-directory: apps/hepta-native
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Test native product and fault recovery
+        working-directory: apps/hepta-native
+        run: cargo test --all-targets
+
+      - name: Test native gateway
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-native-gateway
+
+      - name: Qualify Windows kernel final-use store
+        if: ${{ runner.os == 'Windows' }}
+        working-directory: codex-rs
+        run: cargo test -p codex-hepta-contracts final_use::windows_tests::
+
+      - name: Build native release binaries
+        working-directory: apps/hepta-native
+        run: cargo build --release --bins
+
+      - name: Package smoke - Unix
+        if: ${{ runner.os != 'Windows' }}
+        working-directory: apps/hepta-native
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf dist/product
+          mkdir -p dist/product
+          cp target/release/hepta-native target/release/hepta-native-updater target/release/hepta-native-credential dist/product/
+          ./dist/product/hepta-native --self-test
+
+      - name: Package smoke - Windows
+        if: ${{ runner.os == 'Windows' }}
+        working-directory: apps/hepta-native
+        shell: pwsh
+        run: |
+          Remove-Item -Recurse -Force dist/product -ErrorAction SilentlyContinue
+          New-Item -ItemType Directory -Force dist/product | Out-Null
+          Copy-Item target/release/hepta-native.exe,target/release/hepta-native-updater.exe,target/release/hepta-native-credential.exe dist/product/
+          .\dist\product\hepta-native.exe --self-test
