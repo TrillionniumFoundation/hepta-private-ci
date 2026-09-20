@@ -1,5 +1,4 @@
 use std::sync::Arc;
-use std::sync::Mutex;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::time::SystemTime;
@@ -33,8 +32,8 @@ use codex_hepta_types::StableId;
 
 use crate::CurrentMemoryRetrievalContext;
 
-use super::CognitiveContextError;
-use super::read_with_retrieval_context;
+use crate::cognitive_context::CognitiveContextError;
+use crate::cognitive_context::read_with_retrieval_context;
 
 #[derive(Clone)]
 struct SwitchingContext {
