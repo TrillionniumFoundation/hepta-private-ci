@@ -116,6 +116,7 @@ impl LockedFileFinalHoldoutCasStoreV1 {
         }
 
         let mut state: Option<FinalHoldoutCasRecordV1> = None;
+        let mut minimum_witnessed = minimum.is_none();
         let mut cursor = HEADER;
         while cursor < bytes.len() {
             let raw = bytes
@@ -138,8 +139,11 @@ impl LockedFileFinalHoldoutCasStoreV1 {
                 return Err(LockedFileCasErrorV1::Corrupt);
             }
             state = Some(replay_event(binding, state, payload)?);
+            if minimum.is_some_and(|anchor| state.as_ref().is_some_and(|record| record_anchor(record) == anchor)) {
+                minimum_witnessed = true;
+            }
         }
-        validate_minimum(state.as_ref(), minimum)?;
+        validate_minimum(state.as_ref(), minimum, minimum_witnessed)?;
         file.sync_all()
             .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;
         Ok(Self {
@@ -394,17 +398,16 @@ fn decode_fence(payload: &[u8]) -> Result<HoldoutWriterFenceV1, LockedFileCasErr
 fn validate_minimum(
     state: Option<&FinalHoldoutCasRecordV1>,
     minimum: Option<FinalHoldoutCasAnchorV1>,
+    witnessed: bool,
 ) -> Result<(), LockedFileCasErrorV1> {
     let Some(minimum) = minimum else {
         return Ok(());
     };
     let state = state.ok_or(LockedFileCasErrorV1::Rollback)?;
     let current = record_anchor(state);
-    if current.fence_generation < minimum.fence_generation
+    if !witnessed
+        || current.fence_generation < minimum.fence_generation
         || current.record_count < minimum.record_count
-        || (current.fence_generation == minimum.fence_generation
-            && current.record_count == minimum.record_count
-            && current.state_digest != minimum.state_digest)
     {
         return Err(LockedFileCasErrorV1::Rollback);
     }

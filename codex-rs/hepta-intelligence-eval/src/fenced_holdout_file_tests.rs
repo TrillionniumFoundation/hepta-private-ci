@@ -251,3 +251,53 @@ fn child_process_observes_lock_then_recovers_after_owner_exit() {
     };
     assert!(recovered.success());
 }
+
+
+#[test]
+fn longer_divergent_history_cannot_skip_the_retained_minimum_prefix() {
+    let temp = TempFile::new();
+    let store = LockedFileFinalHoldoutCasStoreV1::create(temp.create(), digest("binding"))
+        .unwrap_or_else(|error| panic!("create store: {error}"));
+    let mut first = owner(store, None);
+    let fence = first.fence().clone();
+    let store = first.into_store();
+    drop(store);
+    let pre_minimum = fs::read(&temp.path)
+        .unwrap_or_else(|error| panic!("read pre-minimum backup: {error}"));
+
+    let store = LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), None)
+        .unwrap_or_else(|error| panic!("recover store: {error}"));
+    let mut canonical = FencedFinalHoldoutOwnerV1::recover(store, digest("binding"), fence.clone())
+        .unwrap_or_else(|error| panic!("recover canonical owner: {error}"));
+    canonical
+        .consume(&plan("canonical-plan"))
+        .unwrap_or_else(|error| panic!("consume canonical plan: {error}"));
+    let retained = canonical.anchor();
+    let store = canonical.into_store();
+    drop(store);
+
+    fs::write(&temp.path, pre_minimum)
+        .unwrap_or_else(|error| panic!("restore pre-minimum backup: {error}"));
+    let store = LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), digest("binding"), None)
+        .unwrap_or_else(|error| panic!("recover divergent base: {error}"));
+    let mut divergent = FencedFinalHoldoutOwnerV1::recover(store, digest("binding"), fence)
+        .unwrap_or_else(|error| panic!("recover divergent owner: {error}"));
+    divergent
+        .consume(&plan("divergent-plan-a"))
+        .unwrap_or_else(|error| panic!("consume divergent a: {error}"));
+    divergent
+        .consume(&plan("divergent-plan-b"))
+        .unwrap_or_else(|error| panic!("consume divergent b: {error}"));
+    let store = divergent.into_store();
+    drop(store);
+
+    assert_eq!(
+        LockedFileFinalHoldoutCasStoreV1::recover(
+            temp.open(),
+            digest("binding"),
+            Some(retained),
+        )
+        .err(),
+        Some(LockedFileCasErrorV1::Rollback)
+    );
+}
