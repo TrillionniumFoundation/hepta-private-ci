@@ -37,7 +37,8 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [
         "EngineeringStore.issue_work_envelope"
-      ]
+      ],
+      "sourceBlob": "aad56312a146bd4b22e1ae4ab690a32e1be65a92"
     },
     {
       "operation": "plan_engineering_work",
@@ -56,7 +57,8 @@
       "delegatedCallees": [
         "EngineeringStore._transaction",
         "bind_assignment_frontier"
-      ]
+      ],
+      "sourceBlob": "aad56312a146bd4b22e1ae4ab690a32e1be65a92"
     },
     {
       "operation": "generate_candidates",
@@ -75,7 +77,8 @@
       ],
       "sourcePathExists": true,
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "2e227293eb8359ca7df7c7397df3621c9641927c"
     },
     {
       "operation": "sandbox_candidate",
@@ -91,7 +94,8 @@
       ],
       "sourcePathExists": true,
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "2e227293eb8359ca7df7c7397df3621c9641927c"
     },
     {
       "operation": "run_mutation_testing",
@@ -109,7 +113,8 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [
         "SandboxCoordinator.execute"
-      ]
+      ],
+      "sourceBlob": "60fef0290956f7f064c8e61264cc10e5cfdd2702"
     },
     {
       "operation": "verify_integration_evidence",
@@ -125,7 +130,8 @@
       ],
       "sourcePathExists": true,
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "66011955d7263d1249333ddc6e9b0746fd0c8be1"
     },
     {
       "operation": "record_integration_decision",
@@ -143,7 +149,8 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [
         "EngineeringStore.record_integration_decision"
-      ]
+      ],
+      "sourceBlob": "dac5309812dc6a885d64524b48842f04414f40c8"
     },
     {
       "operation": "admit_distributed_fence",
@@ -162,7 +169,8 @@
       "delegatedCallees": [
         "EngineeringStore._transaction",
         "EngineeringStore._append_audit"
-      ]
+      ],
+      "sourceBlob": "30607dadc50bf2e003b278fb8a32ca94b35649cf"
     },
     {
       "operation": "verify_production_controls",
@@ -182,7 +190,8 @@
         "verify_persisted_distributed_fence",
         "verify_external_audit_anchor",
         "verify_external_key_custody"
-      ]
+      ],
+      "sourceBlob": "30607dadc50bf2e003b278fb8a32ca94b35649cf"
     },
     {
       "operation": "build_product_receipt",
@@ -209,7 +218,8 @@
         "observe_claim_completion",
         "publish_integration_queue",
         "reconcile_integration_item"
-      ]
+      ],
+      "sourceBlob": "2f61bb83a8081a39f4532315fa10e5548bfaffc4"
     },
     {
       "operation": "claim_assignment",
@@ -231,7 +241,8 @@
         "worker_registrations",
         "worker_claims",
         "worker_completion_observations"
-      ]
+      ],
+      "sourceBlob": "9cf353ef5a0fd25719286219691eb7bdb030611a"
     },
     {
       "operation": "EngineeringControlProduct",
@@ -262,7 +273,8 @@
         "publish_integration_queue",
         "reconcile_integration_item",
         "worker_completion_observations"
-      ]
+      ],
+      "sourceBlob": "72ae653f77ab164e03b1968717bec801299c9683"
     },
     {
       "operation": "reconcile_integration_item",
@@ -281,7 +293,8 @@
       "delegatedCallees": [
         "integration_queue_generations",
         "integration_queue_items"
-      ]
+      ],
+      "sourceBlob": "73deaafcbe6840372b2f4d45e6b7ac8d10b31eb9"
     },
     {
       "operation": "bind_github_review_observations",
@@ -297,7 +310,8 @@
       ],
       "sourcePathExists": true,
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "2f61bb83a8081a39f4532315fa10e5548bfaffc4"
     }
   ],
   "repositoryControlledGaps": [
@@ -328,5 +342,6 @@
     "authority": "exact-head-and-deterministic-synthetic-merge execution receipts",
     "embeddedCommit": false,
     "reason": "sourceBase binds the observed main integration base; the evolving candidate head is established by CI/product execution receipts to avoid self-reference."
-  }
+  },
+  "mappingSourceIdentityMode": "exact_blob"
 }
