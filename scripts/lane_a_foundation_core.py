@@ -305,7 +305,7 @@ def validate_platform_types_vector(root: Path = ROOT) -> None:
         or value.get("typeId") != "platform.types:golden"
         or value.get("encodedLength") != 254
         or len(encoded) != 254
-        or not encoded.startswith(b"HEPTA-CANONICAL-DIGEST-V1\\0")
+        or not encoded.startswith(b"HEPTA-CANONICAL-DIGEST-V1\0")
         or hashlib.sha256(encoded).hexdigest() != expected_digest
         or expected_digest
         != "8ef482c0a0cd42aee59638898402103024004fbb0ea189d5673d4d6455c2a53d"
