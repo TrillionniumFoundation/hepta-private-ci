@@ -171,3 +171,131 @@ fn legacy_record_without_protocol_identity_is_rejected_at_final_use() {
     legacy.objective_function_v1_bytes.clear();
     assert!(ensure_runtime_record(&mut coordinator, &legacy, 1).is_err());
 }
+
+#[cfg(unix)]
+#[test]
+fn recovered_authentication_rejects_revoked_and_stale_owner_trust() {
+    use std::os::unix::fs::PermissionsExt;
+
+    use codex_hepta_authbus::SignedMessageClaims;
+    use codex_hepta_contracts::AgentId;
+    use codex_hepta_fleet::AgentManifest;
+    use codex_hepta_fleet::FleetRegistry;
+    use codex_hepta_fleet::ResourceBudget;
+    use codex_hepta_fleet::WorkspaceBinding;
+    use codex_hepta_paths::HeptaFleetRoot;
+    use ed25519_dalek::Signer;
+    use ed25519_dalek::SigningKey;
+
+    use crate::AgentdIdentity;
+    use crate::authbus_trust::TextTrust;
+
+    let temp = tempfile::tempdir().expect("temp");
+    let root = temp.path().canonicalize().expect("canonical root");
+    let fleet = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet root");
+    let registry = FleetRegistry::initialize(fleet.clone()).expect("registry");
+    let workspace = root.join("workspace");
+    std::fs::create_dir(&workspace).expect("workspace");
+    let agent =
+        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent id");
+    let manifest = AgentManifest::new(
+        agent.clone(),
+        WorkspaceBinding::new(&workspace, &fleet).expect("workspace binding"),
+        ResourceBudget::local_default(),
+    )
+    .expect("manifest");
+    let registered = registry.register(manifest).expect("register");
+    let identity = AgentdIdentity {
+        agent_id: agent,
+        spawn_generation: 1,
+        fleet_root: fleet.as_path().to_path_buf(),
+        workspace,
+        resources: registered.manifest.resources,
+        home_root: registered.layout.home_root().to_path_buf(),
+        run_root: registered.layout.run_root().to_path_buf(),
+        control_socket: registered.layout.agentd_control_socket().to_path_buf(),
+        app_server_socket: registered.layout.app_server_socket().to_path_buf(),
+        layout: registered.layout,
+    };
+    std::fs::set_permissions(
+        &identity.home_root,
+        std::fs::Permissions::from_mode(0o700),
+    )
+    .expect("private home");
+
+    let key = SigningKey::from_bytes(&[83; 32]);
+    let trust_path = identity.home_root.join("objective-trust.json");
+    let write_trust = |key_epoch: u64, revoked: bool| {
+        let public_key_hex = key
+            .verifying_key()
+            .as_bytes()
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>();
+        let json = serde_json::json!({
+            "schema_version": 1,
+            "agent_id": identity.agent_id.as_str(),
+            "issuer_id": "issuer.objective",
+            "key_epoch": key_epoch,
+            "public_key_hex": public_key_hex,
+            "revoked": revoked,
+            "thread_ids": ["thread.objective"]
+        });
+        std::fs::write(
+            &trust_path,
+            serde_json::to_vec(&json).expect("trust json"),
+        )
+        .expect("write trust");
+        std::fs::set_permissions(&trust_path, std::fs::Permissions::from_mode(0o600))
+            .expect("private trust");
+    };
+
+    let now_ms = 10_000;
+    let mut durable = record(
+        "run.trust",
+        21,
+        RunStartObjectiveDispositionV1::Compiled,
+    );
+    let claims = SignedMessageClaims {
+        issuer_id: id("issuer.objective"),
+        key_epoch: codex_hepta_types::Generation::new(1).expect("epoch"),
+        message_id: id("message.run.trust"),
+        subject_id: StableId::new(identity.agent_id.as_str()).expect("subject"),
+        scope_digest: objective_scope(&identity),
+        payload_digest: digest("signed:run.trust"),
+        sequence: 21,
+        expires_at_ms: now_ms + 60_000,
+    };
+    durable.authentication = RunStartAuthenticationV1 {
+        issuer_id: claims.issuer_id.clone(),
+        key_epoch: claims.key_epoch.get(),
+        message_id: claims.message_id.clone(),
+        sequence: claims.sequence,
+        expires_at_ms: claims.expires_at_ms,
+        scope_digest: claims.scope_digest,
+        signed_body_digest: claims.payload_digest,
+        signature: key.sign(&claims.signing_bytes()).to_bytes(),
+    };
+
+    write_trust(/*key_epoch*/ 1, /*revoked*/ false);
+    let current = TextTrust::load(&trust_path, &identity).expect("current trust");
+    assert!(
+        authentication_is_current(&durable, &current, &identity, now_ms)
+            .expect("current authentication")
+    );
+
+    write_trust(/*key_epoch*/ 1, /*revoked*/ true);
+    let revoked = TextTrust::load(&trust_path, &identity).expect("revoked trust");
+    assert!(
+        !authentication_is_current(&durable, &revoked, &identity, now_ms)
+            .expect("revoked authentication")
+    );
+
+    write_trust(/*key_epoch*/ 2, /*revoked*/ false);
+    let stale = TextTrust::load(&trust_path, &identity).expect("rotated trust");
+    assert!(
+        !authentication_is_current(&durable, &stale, &identity, now_ms)
+            .expect("stale authentication")
+    );
+}
+
