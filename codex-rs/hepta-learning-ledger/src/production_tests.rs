@@ -436,3 +436,115 @@ fn production_writer_recovers_against_independent_witness() {
     );
     assert_eq!(recovered.snapshot().unwrap().records().len(), 1);
 }
+
+
+#[test]
+fn lost_ack_after_ledger_sync_reconciles_exact_decision_into_witness() {
+    let fixture = Fixture::new();
+    let trust = activated_trust();
+    let request = decision();
+    let payload = decision_signing_payload_v2(&request).unwrap();
+    let evidence = sign(
+        trust.verifier(),
+        "generator",
+        LearningEvidenceRoleV1::Generator,
+        &payload,
+    );
+    let verified = trust
+        .verifier()
+        .verify(
+            LearningEvidenceRoleV1::Generator,
+            &evidence,
+            &payload,
+            50,
+        )
+        .unwrap();
+    let principal = verified.principal().clone();
+    let event = LedgerEvent::AuthenticatedDecisionV2(AuthenticatedDecisionRecordV2 {
+        record_id: request.record_id.clone(),
+        episode_id: request.episode_id.clone(),
+        run_snapshot_digest: request.run_snapshot_digest,
+        objective_digest: request.objective_digest,
+        policy_digest: request.policy_digest,
+        generator_id: principal.principal_id.clone(),
+        generator_controller_id: verified.controller_id().clone(),
+        generator_credential_chain_digest: principal.credential_chain_digest,
+        generator_signing_key_digest: principal.signing_key_digest,
+        generator_scope_digest: principal.scope_digest,
+        generator_authority_epoch: principal.authority_epoch,
+        candidate_ids: request.candidate_ids.clone(),
+        selected_candidate_id: request.selected_candidate_id.clone(),
+        selected_propensity: request.selected_propensity,
+        candidate_completeness_digest: validate_production_completeness(&request).unwrap(),
+        support_digest: request.support_digest,
+        authentication_digest: signed_evidence_digest(&evidence),
+    }));
+
+    let mut raw = DurableLedger::create(fixture.file("ledger"), binding(), 64).unwrap();
+    let committed = raw.append(Digest32::ZERO, event).unwrap();
+    drop(raw);
+    drop(LedgerWitnessStore::create(
+        fixture.file("witness"),
+        binding(),
+    )
+    .unwrap());
+
+    let ledger = DurableLedger::recover(
+        fixture.file("ledger"),
+        binding(),
+        64,
+        LedgerRecovery::Unacknowledged,
+    )
+    .unwrap();
+    let witness = LedgerWitnessStore::recover(fixture.file("witness"), binding()).unwrap();
+    let mut writer = LedgerWriter::from_durable(ledger, witness, trust).unwrap();
+    assert_eq!(writer.witness_frontier().unwrap().anchor.sequence, 0);
+
+    let reconciled = writer
+        .append_decision(Digest32::ZERO, request, &evidence, 50)
+        .unwrap();
+    assert_eq!(reconciled.disposition, AppendDisposition::IdempotentReplay);
+    assert_eq!(reconciled.chain_digest, committed.chain_digest);
+    let frontier = writer.witness_frontier().unwrap();
+    assert_eq!(frontier.anchor.sequence, 1);
+    assert_eq!(frontier.anchor.chain_digest, committed.chain_digest);
+}
+
+#[test]
+fn corrupt_or_missing_witness_history_never_falls_back_to_reinitialization() {
+    let corrupt = Fixture::new();
+    {
+        let mut writer = corrupt.writer();
+        let request = decision();
+        let payload = decision_signing_payload_v2(&request).unwrap();
+        let evidence = sign(
+            writer.verifier(),
+            "generator",
+            LearningEvidenceRoleV1::Generator,
+            &payload,
+        );
+        writer
+            .append_decision(Digest32::ZERO, request, &evidence, 50)
+            .unwrap();
+    }
+    let mut bytes = fs::read(corrupt.root.join("witness")).unwrap();
+    assert!(bytes.len() > 72);
+    bytes[80] ^= 0x40;
+    fs::write(corrupt.root.join("witness"), bytes).unwrap();
+    assert_eq!(
+        LedgerWitnessStore::recover(corrupt.file("witness"), binding()).err(),
+        Some(DurableLedgerError::Corrupt)
+    );
+
+    let missing = Fixture::new();
+    drop(LedgerWitnessStore::create(
+        missing.file("witness"),
+        binding(),
+    )
+    .unwrap());
+    missing.file("witness").set_len(0).unwrap();
+    assert_eq!(
+        LedgerWitnessStore::recover(missing.file("witness"), binding()).err(),
+        Some(DurableLedgerError::MissingHeader)
+    );
+}
