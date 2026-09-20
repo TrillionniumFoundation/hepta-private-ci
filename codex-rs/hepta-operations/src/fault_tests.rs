@@ -240,7 +240,7 @@ async fn child_process_crash_boundary_helper() {
 
     if scenario == "during-effect" {
         let _never = store
-            .execute_authorized(authorized, |_| {
+            .execute_authorized::<()>(authorized, |_| {
                 std::fs::write(&effect_marker, b"effect-entered")
                     .expect("physical effect marker");
                 std::process::exit(82);
