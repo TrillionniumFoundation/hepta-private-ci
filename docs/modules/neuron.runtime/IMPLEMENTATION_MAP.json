@@ -18,37 +18,120 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "named_intelligence_caller_source_implemented_not_agentd_activated",
+  "productionWriterState": "durable_owner_and_external_witness_source_implemented_not_activated",
   "operations": [
     {
-      "operation": "sparse_tick",
-      "nativeSymbol": "sparse_tick",
-      "sourcePath": "codex-rs/hepta-neuron/src/sparse.rs",
-      "state": "source_implemented_not_product_composed",
+      "operation": "neuron_runtime_tick",
+      "nativeSymbol": "NeuronRuntime::tick",
+      "sourcePath": "codex-rs/hepta-neuron/src/runtime.rs",
+      "state": "source_implemented_owner_not_activated",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-neuron/src/runtime_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "sparse_tick",
+      "designOperation": "neuron_runtime_tick",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "InferenceControlModelPort",
+        "SparseJournal",
+        "AnchorWitnessStore"
+      ]
+    },
+    {
+      "operation": "inference_control_model_port",
+      "nativeSymbol": "InferenceControlModelPort",
+      "sourcePath": "codex-rs/hepta-neuron/src/inference_control.rs",
+      "state": "source_implemented_authenticated_owner_adapter",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-neuron/src/inference_control_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "inference_control_model_port",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "inference.control::NeuronFeatureReceiptV1"
+      ]
+    },
+    {
+      "operation": "sparse_journal",
+      "nativeSymbol": "SparseJournal",
+      "sourcePath": "codex-rs/hepta-neuron/src/journal.rs",
+      "state": "source_implemented_durable_owner_primitive",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-neuron/src/journal_anchor_tests.rs",
+        "codex-rs/hepta-neuron/src/journal_segment_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "sparse_journal",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     },
     {
-      "operation": "sparsejournal",
-      "nativeSymbol": "SparseJournal",
-      "sourcePath": "codex-rs/hepta-neuron/src/journal.rs",
-      "state": "source_implemented_not_product_composed",
+      "operation": "anchor_witness_store",
+      "nativeSymbol": "FileAnchorWitnessStore",
+      "sourcePath": "codex-rs/hepta-neuron/src/witness.rs",
+      "state": "source_implemented_durable_external_witness",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-neuron/src/witness_tests.rs"
+      ],
       "sourcePathExists": true,
-      "designOperation": "sparsejournal",
+      "designOperation": "anchor_witness_store",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "plasticity_statistics",
+      "nativeSymbol": "accumulate_plasticity",
+      "sourcePath": "codex-rs/hepta-neuron/src/plasticity.rs",
+      "state": "source_implemented_next_snapshot_statistics_only",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-neuron/src/plasticity_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "plasticity_statistics",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "deletion_rebuild_admission",
+      "nativeSymbol": "validate_deletion_rebuild",
+      "sourcePath": "codex-rs/hepta-neuron/src/deletion.rs",
+      "state": "source_implemented_fail_closed_rebuild_admission",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-neuron/src/deletion_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "deletion_rebuild_admission",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "qualification_surfaces",
+      "nativeSymbol": "summarize_resource_samples",
+      "sourcePath": "codex-rs/hepta-neuron/src/qualification.rs",
+      "state": "source_implemented_evidence_binding_not_empirical_acceptance",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-neuron/src/qualification_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "qualification_surfaces",
       "mappingClass": "owner_native",
       "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind every operation to an authenticated consumer callsite and owner store.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "Compose NeuronRuntime through runtime.agentd with a concrete current inference.control implementation and selected artifact/witness lifecycle; the named intelligence caller is not production activation.",
+    "Close the registered canonical JSON Neuron protocol adapters, including canonical NeuronCheckpointV1 publication, rather than treating owner-local structs as the wire contract.",
+    "Implement and qualify the target multi-population mechanism with distinct temporal/activation dimensions; the current SparseConfig remains a single-population same-width compatibility profile.",
+    "Run exact-head and deterministic synthetic-merge product tests before changing productionImplementation or productExecutionProved."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
