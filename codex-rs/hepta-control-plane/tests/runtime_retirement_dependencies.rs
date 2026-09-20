@@ -70,7 +70,9 @@ fn provider_waits_for_active_quarantined_and_draining_dependents() {
         let before = registry.snapshot();
         assert_eq!(
             registry.begin_retire(&id("provider"), generation()),
-            Err(RuntimeModuleRegistryError::SelectedDependent(id("consumer")))
+            Err(RuntimeModuleRegistryError::SelectedDependent(id(
+                "consumer"
+            )))
         );
         assert_eq!(registry.snapshot(), before);
         assert_eq!(
@@ -80,14 +82,24 @@ fn provider_waits_for_active_quarantined_and_draining_dependents() {
                 .lifecycle,
             RuntimeModuleLifecycleV1::Active
         );
-        registry.begin_retire(&id("consumer"), generation()).unwrap();
+        registry
+            .begin_retire(&id("consumer"), generation())
+            .unwrap();
         assert_eq!(
             registry.begin_retire(&id("provider"), generation()),
-            Err(RuntimeModuleRegistryError::SelectedDependent(id("consumer")))
+            Err(RuntimeModuleRegistryError::SelectedDependent(id(
+                "consumer"
+            )))
         );
-        registry.finish_retire(&id("consumer"), generation()).unwrap();
-        registry.begin_retire(&id("provider"), generation()).unwrap();
-        registry.finish_retire(&id("provider"), generation()).unwrap();
+        registry
+            .finish_retire(&id("consumer"), generation())
+            .unwrap();
+        registry
+            .begin_retire(&id("provider"), generation())
+            .unwrap();
+        registry
+            .finish_retire(&id("provider"), generation())
+            .unwrap();
         assert!(registry.snapshot().active.is_empty());
         assert_eq!(registry.active_generation(&id("provider")), None);
     }
@@ -97,7 +109,9 @@ fn provider_waits_for_active_quarantined_and_draining_dependents() {
 fn finish_rechecks_consumers_selected_during_the_drain_window() {
     let mut registry = RuntimeModuleRegistryV1::new();
     select(&mut registry, abi("provider", &[]));
-    registry.begin_retire(&id("provider"), generation()).unwrap();
+    registry
+        .begin_retire(&id("provider"), generation())
+        .unwrap();
     // The registry is not the host's dependency admission evaluator. Even if a
     // caller admits a consumer during this interval, retirement must not free
     // the provider reservation until that consumer has finished draining.
@@ -127,7 +141,9 @@ fn finish_rechecks_consumers_selected_during_the_drain_window() {
     registry
         .finish_retire(&id("late-consumer"), generation())
         .unwrap();
-    registry.finish_retire(&id("provider"), generation()).unwrap();
+    registry
+        .finish_retire(&id("provider"), generation())
+        .unwrap();
     assert_eq!(registry.active_generation(&id("provider")), None);
 }
 
@@ -138,8 +154,12 @@ fn unselected_candidate_does_not_pin_a_provider_forever() {
     registry
         .register_candidate(abi("pending-consumer", &["provider"]))
         .unwrap();
-    registry.begin_retire(&id("provider"), generation()).unwrap();
-    registry.finish_retire(&id("provider"), generation()).unwrap();
+    registry
+        .begin_retire(&id("provider"), generation())
+        .unwrap();
+    registry
+        .finish_retire(&id("provider"), generation())
+        .unwrap();
     assert!(registry.snapshot().active.is_empty());
     assert_eq!(
         registry
