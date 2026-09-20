@@ -153,7 +153,6 @@ fn binding(intent: &AuthorizedEffectIntent) -> FinalUseBinding {
 fn final_use(
     binding: FinalUseBinding,
     grant_id: &str,
-    nonce: u8,
 ) -> (FinalUseAuthority, SignedFinalUseGrant, tempfile::TempDir) {
     let issuer = SigningKey::from_bytes(&[47; 32]);
     let now = u64::try_from(
@@ -168,7 +167,7 @@ fn final_use(
         signer_id: "security-owner".to_string(),
         authority_epoch: 9,
         grant_id: grant_id.to_string(),
-        nonce: [nonce; 32],
+        nonce: digest_bytes(&Sha256Digest::for_bytes(grant_id.as_bytes())),
         binding,
         not_before_unix_ms: now.saturating_sub(1_000),
         expires_at_unix_ms: now + 30_000,
@@ -339,7 +338,7 @@ impl AuthorizedEffectDriver for RecordingDriver {
 async fn final_use_binding_drift_rejects_before_dispatch_and_does_not_burn_grant() {
     let fixture = Fixture::new();
     let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
-    let (authority, signed, _authority_dir) = final_use(expected.clone(), "binding-drift", 1);
+    let (authority, signed, _authority_dir) = final_use(expected.clone(), "binding-drift");
     let mut wrong = expected.clone();
     wrong.destination_id = "provider:other".to_string();
     let mut driver = RecordingDriver::receipt(AuthorizedEffectOutcome::Succeeded, b"success");
@@ -394,7 +393,7 @@ async fn final_use_binding_drift_rejects_before_dispatch_and_does_not_burn_grant
 async fn successful_effect_is_at_most_once_for_one_durable_step_attempt() {
     let fixture = Fixture::new();
     let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
-    let (authority, signed, _authority_dir) = final_use(expected.clone(), "at-most-once", 2);
+    let (authority, signed, _authority_dir) = final_use(expected.clone(), "at-most-once");
     let mut driver = RecordingDriver::receipt(AuthorizedEffectOutcome::Succeeded, b"success");
 
     let first = store
@@ -439,7 +438,7 @@ async fn successful_effect_is_at_most_once_for_one_durable_step_attempt() {
 async fn indeterminate_effect_reopens_without_redispatch_then_reconciles_terminally() {
     let fixture = Fixture::new();
     let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
-    let (authority, signed, _authority_dir) = final_use(expected.clone(), "indeterminate", 3);
+    let (authority, signed, _authority_dir) = final_use(expected.clone(), "indeterminate");
     let mut ambiguous =
         RecordingDriver::receipt(AuthorizedEffectOutcome::Indeterminate, b"ambiguous");
 
@@ -540,7 +539,7 @@ async fn indeterminate_effect_reopens_without_redispatch_then_reconciles_termina
 async fn proven_pre_contact_failure_never_blindly_redispatches_same_attempt() {
     let fixture = Fixture::new();
     let (store, owner, effect, expected) = prepared_effect_store(&fixture).await;
-    let (authority, signed, _authority_dir) = final_use(expected.clone(), "before-contact", 4);
+    let (authority, signed, _authority_dir) = final_use(expected.clone(), "before-contact");
     let mut driver = RecordingDriver::before_provider_contact();
 
     assert!(matches!(
