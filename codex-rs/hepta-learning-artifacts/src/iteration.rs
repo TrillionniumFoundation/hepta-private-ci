@@ -106,6 +106,11 @@ impl IterationCandidateV1 {
         {
             return Err("candidate digests must be non-zero".to_string());
         }
+        // A rollback target is a distinct candidate identity. Checking this
+        // here also rejects malformed records before any state transition.
+        if self.predecessor.as_ref() == Some(&self.candidate_id) {
+            return Err("candidate cannot be its own rollback predecessor".to_string());
+        }
         if self.state != IterationCandidateStateV1::Drafted && self.predecessor.is_none() {
             return Err("candidate state requires an exact rollback predecessor".to_string());
         }
@@ -297,6 +302,39 @@ mod tests {
                         Err(_) => assert_eq!(value, before),
                     }
                 }
+            }
+        }
+    }
+
+    #[test]
+    fn self_predecessor_is_rejected_in_every_candidate_state() {
+        use IterationCandidateStateV1::*;
+        let states = [
+            Drafted,
+            StaticallyValidated,
+            SandboxTested,
+            IndependentlyEvaluated,
+            ReviewRequested,
+            AcceptedCandidate,
+            Selected,
+            Promoted,
+            Released,
+            Rejected,
+            Quarantined,
+            Superseded,
+        ];
+        let envelope = envelope();
+        for state in states {
+            let mut value = candidate(state, true);
+            value.predecessor = Some(value.candidate_id.clone());
+            let before = value.clone();
+            assert_eq!(
+                value.validate(&envelope),
+                Err("candidate cannot be its own rollback predecessor".to_string()),
+            );
+            for next in states {
+                assert!(value.transition(&envelope, next).is_err());
+                assert_eq!(value, before);
             }
         }
     }
