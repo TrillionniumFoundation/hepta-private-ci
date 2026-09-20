@@ -703,6 +703,136 @@ impl ProductionDurableWriter {
         Ok(self.lease.reconcile(occurrence_key, outcome).await?.into())
     }
 
+    /// Discover and reconcile a bounded batch of operations whose latest
+    /// durable source state is indeterminate. Discovery is destination-scoped
+    /// and reconciliation calls only the target observer, never dispatch.
+    pub async fn reconcile_target_batch<T>(
+        &self,
+        target: &T,
+        limit: usize,
+    ) -> Result<usize, ProductionWriterError>
+    where
+        T: FinalUseProductionOutboxTarget + ?Sized,
+    {
+        self.verify_authority().await?;
+        if !(1..=256).contains(&limit) {
+            return Err(ProductionWriterError::Invalid(
+                "reconcile batch limit must be 1..=256".to_string(),
+            ));
+        }
+        let operation_ids = sqlx::query_scalar::<_, String>(
+            "SELECT o.operation_id
+             FROM cognitive_operation_ledger o
+             WHERE o.lease_id = ? AND o.destination_id = ?
+               AND (
+                   SELECT e.event_kind
+                   FROM cognitive_local_events e
+                   WHERE e.lease_id = o.lease_id
+                     AND e.occurrence_key = o.operation_id
+                   ORDER BY e.event_sequence DESC
+                   LIMIT 1
+               ) IN ('indeterminate', 'reconcile_still_indeterminate')
+             ORDER BY o.prepared_at_unix_seconds, o.operation_id
+             LIMIT ?",
+        )
+        .bind(self.lease_id())
+        .bind(target.destination_id())
+        .bind(i64::try_from(limit).map_err(|_| {
+            ProductionWriterError::Invalid("reconcile batch limit overflow".to_string())
+        })?)
+        .fetch_all(&self.store.pool)
+        .await
+        .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
+
+        let mut reconciled = 0_usize;
+        for operation_id in operation_ids {
+            let request = self
+                .reconciliation_request(&operation_id, target.destination_id())
+                .await?;
+            match target.observe_terminal(&request).await {
+                ProductionTerminalObservation::Applied { .. } => {
+                    self.reconcile(&operation_id, LocalReconcileOutcome::Committed)
+                        .await?;
+                    reconciled += 1;
+                }
+                ProductionTerminalObservation::NotApplied { .. }
+                | ProductionTerminalObservation::Quarantined { .. } => {
+                    self.reconcile(&operation_id, LocalReconcileOutcome::Rejected)
+                        .await?;
+                    reconciled += 1;
+                }
+                ProductionTerminalObservation::Indeterminate { .. } => {
+                    self.reconcile(&operation_id, LocalReconcileOutcome::StillIndeterminate)
+                        .await?;
+                    reconciled += 1;
+                }
+                ProductionTerminalObservation::Unavailable { .. } => {}
+            }
+        }
+        Ok(reconciled)
+    }
+
+    async fn reconciliation_request(
+        &self,
+        occurrence_key: &str,
+        destination_id: &str,
+    ) -> Result<ProductionDispatchRequest, ProductionWriterError> {
+        let operation = self
+            .lease
+            .verify_operation_dispatch_binding(occurrence_key, destination_id)
+            .await
+            .map_err(|error| match error {
+                LocalLeaseOutboxError::StaleFence(_)
+                | LocalLeaseOutboxError::IllegalTransition(_)
+                | LocalLeaseOutboxError::CasConflict(_) => ProductionWriterError::StaleReceipt,
+                other => ProductionWriterError::Local(other),
+            })?;
+        let (topic, payload_json, payload_sha256): (String, String, String) =
+            sqlx::query_as(
+                "SELECT topic, payload_json, payload_sha256
+                 FROM cognitive_local_outbox
+                 WHERE lease_id = ? AND occurrence_key = ?
+                 LIMIT 1",
+            )
+            .bind(self.lease_id())
+            .bind(occurrence_key)
+            .fetch_optional(&self.store.pool)
+            .await
+            .map_err(|error| ProductionWriterError::Durability(error.to_string()))?
+            .ok_or_else(|| {
+                ProductionWriterError::Durability(
+                    "indeterminate operation is missing its durable outbox row".to_string(),
+                )
+            })?;
+        let payload_sha256 = Sha256Digest::parse(&payload_sha256)
+            .map_err(ProductionWriterError::Invalid)?;
+        let operation_digest = dispatch_operation_digest(
+            &self.authority.grant_digest,
+            self.lease_id(),
+            occurrence_key,
+            &topic,
+            &payload_sha256,
+            &operation.operation_semantic_sha256,
+            operation.expected_predecessor_sha256.as_ref(),
+        );
+        Ok(ProductionDispatchRequest {
+            schema_version: PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION,
+            namespace: PRODUCTION_DURABLE_WRITER_NAMESPACE.to_string(),
+            lease_id: self.lease_id().to_string(),
+            occurrence_key: occurrence_key.to_string(),
+            topic,
+            payload_json,
+            payload_sha256,
+            idempotency_key: occurrence_key.to_string(),
+            operation_scope_id: operation.scope_id,
+            operation_owner_id: operation.owner_id,
+            operation_destination_id: operation.destination_id,
+            operation_semantic_sha256: operation.operation_semantic_sha256,
+            expected_predecessor_sha256: operation.expected_predecessor_sha256,
+            operation_digest,
+        })
+    }
+
     pub async fn mark_indeterminate(
         &self,
         occurrence_key: impl Into<String>,
