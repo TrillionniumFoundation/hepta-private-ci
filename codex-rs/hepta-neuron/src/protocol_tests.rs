@@ -208,12 +208,9 @@ fn checkpoint_publication_rejects_forged_owner_summary() {
     tick.eligibility_digest = Digest32::of_bytes(b"forged");
     assert_eq!(
         canonical_checkpoint_v1(&config, &checkpoint, &tick, 1_900_000_000_000).err(),
-        Some(NeuronProtocolError::BindingMismatch(
-            "checkpoint summaries"
-        ))
+        Some(NeuronProtocolError::BindingMismatch("checkpoint summaries"))
     );
 }
-
 
 #[test]
 fn canonical_tick_input_roundtrip_rejects_unknown_fields() {
@@ -279,7 +276,6 @@ fn canonical_tick_receipt_projects_only_registered_resource_fields() {
     );
 }
 
-
 #[test]
 fn canonical_runtime_config_roundtrip_rejects_unknown_fields() {
     let native = native_config();
@@ -305,10 +301,7 @@ fn canonical_runtime_config_roundtrip_rejects_unknown_fields() {
         Some(value) => value,
         None => panic!("runtime config DTO must be an object"),
     };
-    object.insert(
-        "unknownCritical".to_owned(),
-        serde_json::Value::Bool(true),
-    );
+    object.insert("unknownCritical".to_owned(), serde_json::Value::Bool(true));
     let changed = checked(serde_json::to_vec(&json));
     assert_eq!(
         decode_neuron_runtime_config_v1(&changed).err(),
