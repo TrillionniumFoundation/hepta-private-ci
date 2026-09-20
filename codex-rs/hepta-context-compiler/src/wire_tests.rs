@@ -48,6 +48,14 @@ fn compiler_composes_into_admitted_v2_transport_without_serializing_authority(
     assert_eq!(decoded.compilation_id, receipt.compilation_id.to_string());
     assert_eq!(decoded.context_digest, receipt.context_digest.to_string());
     assert!(!String::from_utf8_lossy(envelope.payload()).contains("authority"));
+    assert!(matches!(
+        encode_compilation_receipt_wire_v2(
+            &receipt,
+            id("runtime.agentd"),
+            Generation::new(2)?,
+        ),
+        Err(ContextWireError::UnexpectedProducer(_))
+    ));
     Ok(())
 }
 
@@ -85,6 +93,20 @@ fn context_wire_rejects_unknown_fields_and_duplicate_id_partitions(
         Err(ContextWireError::Codec(SchemaCodecError::Rejected(
             "duplicate context id"
         )))
+    ));
+
+    let wrong_producer = WireEnvelopeV2::new(
+        id(CONTEXT_COMPILATION_WIRE_SCHEMA_V2),
+        id("runtime.agentd"),
+        Generation::new(1)?,
+        format!(
+            "{{\"compilation_id\":\"compile.1\",\"trusted_instruction_ids\":[],\"untrusted_evidence_ids\":[],\"omitted_ids\":[],\"used_tokens\":0,\"context_digest\":\"{digest}\"}}"
+        )
+        .into_bytes(),
+    )?;
+    assert!(matches!(
+        decode_compilation_receipt_wire_v2(&wrong_producer),
+        Err(ContextWireError::UnexpectedProducer(_))
     ));
     Ok(())
 }
