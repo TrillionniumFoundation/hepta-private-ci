@@ -23,6 +23,7 @@ mod qualification_receipt;
 mod receipt;
 mod stable_id;
 
+pub use final_use::EnteredUseToken;
 pub use final_use::FinalUseAuthority;
 pub use final_use::FinalUseBinding;
 pub use final_use::FinalUseError;
