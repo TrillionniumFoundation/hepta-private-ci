@@ -1071,7 +1071,7 @@ impl CognitiveStoreImageV2 {
                 .snapshot_key
                 .vector
                 .knowledge_fact_frontier
-                .checked_sub(u64::from(first_record.kind == MemoryKind::Fact))
+                .checked_sub(if first_record.kind == MemoryKind::Fact { 1 } else { 0 })
                 .ok_or(CognitiveStoreV2Error::ImageFrontierMismatch(
                     "knowledge_fact",
                 ))?;
@@ -1080,7 +1080,7 @@ impl CognitiveStoreImageV2 {
                 .snapshot_key
                 .vector
                 .tombstone_frontier
-                .checked_sub(u64::from(first_record.state == RecordState::Tombstone))
+                .checked_sub(if first_record.state == RecordState::Tombstone { 1 } else { 0 })
                 .ok_or(CognitiveStoreV2Error::ImageFrontierMismatch("tombstone"))?;
 
             for entry in &inserted_receipts {
@@ -1094,10 +1094,10 @@ impl CognitiveStoreImageV2 {
                     .checked_add(1)
                     .ok_or(CognitiveStoreV2Error::FrontierOverflow)?;
                 expected_facts = expected_facts
-                    .checked_add(u64::from(record.kind == MemoryKind::Fact))
+                    .checked_add(if record.kind == MemoryKind::Fact { 1 } else { 0 })
                     .ok_or(CognitiveStoreV2Error::FrontierOverflow)?;
                 expected_tombstones = expected_tombstones
-                    .checked_add(u64::from(record.state == RecordState::Tombstone))
+                    .checked_add(if record.state == RecordState::Tombstone { 1 } else { 0 })
                     .ok_or(CognitiveStoreV2Error::FrontierOverflow)?;
                 let vector = &entry.receipt.snapshot_key.vector;
                 if entry.receipt.committed_frontier != expected_memory
