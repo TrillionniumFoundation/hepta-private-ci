@@ -39,7 +39,7 @@ use crate::schema_validation::verify_schema_manifest;
 // The filename is the store-lineage boundary. Frozen vNext used lineage 1 with
 // a different meaning for migration 0004, so this migration set must never
 // open or extend that database.
-const EVIDENCE_DB_FILENAME: &str = "hepta_evidence_2.sqlite";
+use crate::recovery_frontier::EVIDENCE_DATABASE_LINEAGE;
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -72,7 +72,7 @@ pub struct HeptaEvidenceStore {
 
 impl HeptaEvidenceStore {
     pub async fn open(sqlite: &SqliteConfig) -> Result<Self, EvidenceError> {
-        let path = sqlite.home().join(EVIDENCE_DB_FILENAME);
+        let path = sqlite.home().join(EVIDENCE_DATABASE_LINEAGE);
         let pool = sqlite
             .open_durable_evidence_pool(&path)
             .await
