@@ -170,16 +170,6 @@ pub struct AgentRunCancellation {
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
-pub struct AgentRunRecovery {
-    pub snapshot: AgentRunSnapshot,
-    pub revision: u64,
-    pub context_digest: String,
-    pub compilation_receipt_digest: String,
-    pub cancel_reason: Option<String>,
-}
-
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
 pub struct AgentdRequest {
     pub schema_version: u32,
     pub request_id: u64,
@@ -436,19 +426,6 @@ impl AgentdRequest {
         }
     }
 
-    pub fn run_recover_indeterminate(
-        request_id: u64,
-        spawn_generation: u64,
-        recovery: AgentRunRecovery,
-    ) -> Self {
-        Self {
-            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
-            request_id,
-            spawn_generation,
-            method: AgentdMethod::RunRecoverIndeterminate { recovery },
-        }
-    }
-
     pub fn run_release_closed(
         request_id: u64,
         spawn_generation: u64,
@@ -512,9 +489,6 @@ pub enum AgentdMethod {
     },
     RunStatus {
         run_id: String,
-    },
-    RunRecoverIndeterminate {
-        recovery: AgentRunRecovery,
     },
     RunReleaseClosed {
         run_id: String,
@@ -965,21 +939,6 @@ mod tests {
         assert_eq!(
             serde_json::from_slice::<AgentdRequest>(&cancel_bytes).expect("parse cancellation"),
             cancel
-        );
-
-        let recovery = AgentRunRecovery {
-            snapshot,
-            revision: 4,
-            context_digest: "5".repeat(64),
-            compilation_receipt_digest: "6".repeat(64),
-            cancel_reason: Some("process_restart".to_string()),
-        };
-        let recover = AgentdRequest::run_recover_indeterminate(15, 4, recovery);
-        let recover_bytes = serde_json::to_vec(&recover).expect("serialize recovery");
-        assert!(recover_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
-        assert_eq!(
-            serde_json::from_slice::<AgentdRequest>(&recover_bytes).expect("parse recovery"),
-            recover
         );
 
         let release = AgentdRequest::run_release_closed(16, 4, "run.1".to_string(), 10);
