@@ -1,5 +1,6 @@
 use std::path::PathBuf;
 
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory::H7ArtifactVerifier;
 use codex_hepta_paths::HeptaFleetRoot;
 use tokio_util::sync::CancellationToken;
@@ -9,21 +10,32 @@ async fn main() -> anyhow::Result<()> {
     let options = parse_options()?;
     let cancellation = CancellationToken::new();
     spawn_shutdown_signal(cancellation.clone());
-    match (options.grant_verifier, options.revocation_frontier) {
-        (Some(verifier), Some(revocation_frontier)) => {
+    match (
+        options.grant_verifier,
+        options.revocation_frontier,
+        options.compatibility_receipt_sha256,
+    ) {
+        (
+            Some(verifier),
+            Some(revocation_frontier),
+            Some(compatibility_receipt_sha256),
+        ) => {
             codex_hepta_supervisor::run_supervisord_with_grant_verifier(
                 options.fleet_root,
                 cancellation,
                 verifier,
                 revocation_frontier,
+                compatibility_receipt_sha256,
             )
             .await?;
         }
-        (None, None) => {
+        (None, None, None) => {
             codex_hepta_supervisor::run_supervisord(options.fleet_root, cancellation).await?
         }
         _ => {
-            anyhow::bail!("production verifier and revocation frontier must be configured together")
+            anyhow::bail!(
+                "production verifier, revocation frontier and compatibility receipt must be configured together"
+            )
         }
     }
     Ok(())
@@ -33,6 +45,7 @@ struct Options {
     fleet_root: HeptaFleetRoot,
     grant_verifier: Option<codex_hepta_supervisor::H7H89ProductionGrantVerifier>,
     revocation_frontier: Option<u64>,
+    compatibility_receipt_sha256: Option<Sha256Digest>,
 }
 
 fn parse_options() -> anyhow::Result<Options> {
@@ -45,6 +58,7 @@ fn parse_options() -> anyhow::Result<Options> {
     let mut h7_signer_id = None;
     let mut h7_signer_epoch = None;
     let mut revocation_frontier = None;
+    let mut compatibility_receipt_sha256 = None;
     while let Some(flag) = arguments.next() {
         let value = arguments
             .next()
@@ -60,8 +74,11 @@ fn parse_options() -> anyhow::Result<Options> {
             Some("--revocation-frontier") if revocation_frontier.is_none() => {
                 revocation_frontier = Some(value)
             }
+            Some("--compatibility-receipt-sha256") if compatibility_receipt_sha256.is_none() => {
+                compatibility_receipt_sha256 = Some(value)
+            }
             _ => anyhow::bail!(
-                "usage: hepta-supervisord --fleet-root ABSOLUTE_PATH [--grant-verifier-key ABSOLUTE_PATH --grant-signer-id ID --grant-signer-epoch N --h7-verifier-key ABSOLUTE_PATH --h7-signer-id ID --h7-signer-epoch N --revocation-frontier N]"
+                "usage: hepta-supervisord --fleet-root ABSOLUTE_PATH [--grant-verifier-key ABSOLUTE_PATH --grant-signer-id ID --grant-signer-epoch N --h7-verifier-key ABSOLUTE_PATH --h7-signer-id ID --h7-signer-epoch N --revocation-frontier N --compatibility-receipt-sha256 SHA256]"
             ),
         }
     }
@@ -76,8 +93,9 @@ fn parse_options() -> anyhow::Result<Options> {
         h7_signer_id,
         h7_signer_epoch,
         revocation_frontier,
+        compatibility_receipt_sha256,
     ) {
-        (None, None, None, None, None, None, None) => (None, None),
+        (None, None, None, None, None, None, None, None) => (None, None, None),
         (
             Some(key_path),
             Some(signer_id),
@@ -86,6 +104,7 @@ fn parse_options() -> anyhow::Result<Options> {
             Some(h7_signer_id),
             Some(h7_signer_epoch),
             Some(revocation_frontier),
+            Some(compatibility_receipt_sha256),
         ) => {
             let grant_epoch = parse_epoch(signer_epoch, "grant signer epoch")?;
             let h7_epoch = parse_epoch(h7_signer_epoch, "H7 signer epoch")?;
@@ -95,6 +114,10 @@ fn parse_options() -> anyhow::Result<Options> {
             let h7_key = load_public_key(PathBuf::from(h7_key_path), "H7 verifier key")?;
             let h7_verifier = H7ArtifactVerifier::from_bytes(h7_signer_id, h7_epoch, h7_key)?;
             let revocation_frontier = parse_epoch(revocation_frontier, "revocation frontier")?;
+            let compatibility_receipt_sha256 = parse_sha256(
+                compatibility_receipt_sha256,
+                "compatibility receipt SHA-256",
+            )?;
             (
                 Some(load_grant_verifier(
                     PathBuf::from(key_path),
@@ -105,16 +128,18 @@ fn parse_options() -> anyhow::Result<Options> {
                     h7_verifier,
                 )?),
                 Some(revocation_frontier),
+                Some(compatibility_receipt_sha256),
             )
         }
         _ => anyhow::bail!(
-            "grant/H7 verifier tuples and --revocation-frontier must be supplied together"
+            "grant/H7 verifier tuples, --revocation-frontier and --compatibility-receipt-sha256 must be supplied together"
         ),
     };
     Ok(Options {
         fleet_root,
         grant_verifier: production_config.0,
         revocation_frontier: production_config.1,
+        compatibility_receipt_sha256: production_config.2,
     })
 }
 
@@ -157,6 +182,13 @@ fn load_public_key(path: PathBuf, label: &str) -> anyhow::Result<[u8; 32]> {
         key
     };
     Ok(key)
+}
+
+fn parse_sha256(value: std::ffi::OsString, label: &str) -> anyhow::Result<Sha256Digest> {
+    let value = value
+        .into_string()
+        .map_err(|_| anyhow::anyhow!("{label} is not UTF-8"))?;
+    Sha256Digest::parse(value).map_err(|error| anyhow::anyhow!("{label} is invalid: {error}"))
 }
 
 fn parse_epoch(value: std::ffi::OsString, label: &str) -> anyhow::Result<u64> {
