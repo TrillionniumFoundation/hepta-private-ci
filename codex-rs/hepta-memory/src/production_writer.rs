@@ -284,6 +284,7 @@ mod production_cognitive_mutation_sealed {
 /// semantic mutations, but cannot open the durable owner, mint authority, or
 /// manufacture a current-cut witness through this interface. The trait is
 /// sealed: only this durable-owner crate can mint an implementation.
+#[allow(private_bounds)]
 pub trait ProductionCognitiveMutation:
     production_cognitive_mutation_sealed::Sealed + Send + Sync
 {
