@@ -704,7 +704,7 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
         predecessor,
         LaneFStageV3::IntuitionDecided,
         control.now_unix_micros(),
-    );
+    )?;
     let intuition = timed_call(
         &request,
         snapshot_digest,
@@ -810,7 +810,7 @@ pub fn run_composition_v3_with_control<P: LaneFV3Ports, C: CompositionControlV3>
             predecessor,
             LaneFStageV3::HostHandoffAccepted,
             control.now_unix_micros(),
-        );
+        )?;
         let accepted = timed_call(
             &request,
             snapshot_digest,
