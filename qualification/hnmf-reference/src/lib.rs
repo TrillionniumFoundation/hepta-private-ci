@@ -9,6 +9,16 @@
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 
+use codex_hepta_cognitive_types::hnmf::{
+    ContractIdV1, MemoryEventV1, MemoryLifecycleV1,
+};
+pub use codex_hepta_cognitive_types::hnmf::{
+    ModalityKindV1 as ReferenceModalityKind, PrivacyClassV1 as ReferencePrivacyClass,
+};
+pub use codex_hepta_cognitive_types::hnmf_learning::{
+    EngramPopulationV1 as ReferenceEngramPopulation, SynapseRelationV1 as ReferenceSynapseRelation,
+};
+
 pub const PPM: i64 = 1_000_000;
 pub const CURRENT_RUN_MUTATION_ALLOWED: bool = false;
 pub const ONLINE_TOPOLOGY_ACTIVATION_ALLOWED: bool = false;
@@ -26,110 +36,12 @@ pub type EventId = u64;
 pub type EpisodeId = u64;
 pub type NodeId = u64;
 
-#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub enum ReferenceModalityKind {
-    Text,
-    Image,
-    Audio,
-    Video,
-    CodeAst,
-    GuiState,
-    ToolTrajectory,
-    StructuredData,
-    Sensor,
-}
-
-impl ReferenceModalityKind {
-    pub const ALL: [Self; 9] = [
-        Self::Text,
-        Self::Image,
-        Self::Audio,
-        Self::Video,
-        Self::CodeAst,
-        Self::GuiState,
-        Self::ToolTrajectory,
-        Self::StructuredData,
-        Self::Sensor,
-    ];
-
-    pub const fn as_str(self) -> &'static str {
-        match self {
-            Self::Text => "text",
-            Self::Image => "image",
-            Self::Audio => "audio",
-            Self::Video => "video",
-            Self::CodeAst => "code_ast",
-            Self::GuiState => "gui_state",
-            Self::ToolTrajectory => "tool_trajectory",
-            Self::StructuredData => "structured_data",
-            Self::Sensor => "sensor",
-        }
-    }
-}
-
-#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub enum ReferenceEngramPopulation {
-    SensoryTrace,
-    EpisodicBinding,
-    SemanticConcept,
-    ProceduralSkill,
-    PredictiveWorld,
-    UtilitySalience,
-    MetaMemory,
-}
-
-impl ReferenceEngramPopulation {
-    pub const ALL: [Self; 7] = [
-        Self::SensoryTrace,
-        Self::EpisodicBinding,
-        Self::SemanticConcept,
-        Self::ProceduralSkill,
-        Self::PredictiveWorld,
-        Self::UtilitySalience,
-        Self::MetaMemory,
-    ];
-
-    pub const fn as_str(self) -> &'static str {
-        match self {
-            Self::SensoryTrace => "sensory_trace",
-            Self::EpisodicBinding => "episodic_binding",
-            Self::SemanticConcept => "semantic_concept",
-            Self::ProceduralSkill => "procedural_skill",
-            Self::PredictiveWorld => "predictive_world",
-            Self::UtilitySalience => "utility_salience",
-            Self::MetaMemory => "meta_memory",
-        }
-    }
-}
-
-#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
-pub enum ReferenceSynapseRelation {
-    Associative,
-    Temporal,
-    Causal,
-    Procedural,
-    Predictive,
-    Supports,
-    Inhibitory,
-    Contradicts,
-}
-
-impl ReferenceSynapseRelation {
-    const fn is_negative(self) -> bool {
-        matches!(self, Self::Inhibitory | Self::Contradicts)
-    }
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum ReferencePrivacyClass {
-    AgentPrivate,
-    WorkspacePrivate,
-}
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ReferenceEventFeatures {
     pub id: EventId,
     pub episode_id: EpisodeId,
+    pub canonical_event_id: ContractIdV1,
+    pub canonical_episode_id: ContractIdV1,
     pub modalities: BTreeSet<ReferenceModalityKind>,
     pub semantic_keys: BTreeSet<String>,
     pub source_sha256: BTreeSet<String>,
@@ -142,6 +54,51 @@ pub struct ReferenceEventFeatures {
 }
 
 impl ReferenceEventFeatures {
+    pub fn from_canonical(
+        id: EventId,
+        episode_id: EpisodeId,
+        event: &MemoryEventV1,
+        utility_ppm: i32,
+        risk_ppm: u32,
+    ) -> Result<Self, ReferenceFabricError> {
+        event
+            .validate()
+            .map_err(|_| ReferenceFabricError::Invalid("canonical memory event"))?;
+        let valid_from_unix_ms = i64::try_from(event.observed_interval.start_unix_ms)
+            .map_err(|_| ReferenceFabricError::Invalid("canonical event time overflow"))?;
+        let valid_to_unix_ms = event
+            .observed_interval
+            .end_unix_ms
+            .map(i64::try_from)
+            .transpose()
+            .map_err(|_| ReferenceFabricError::Invalid("canonical event time overflow"))?;
+        let value = Self {
+            id,
+            episode_id,
+            canonical_event_id: event.event_id.clone(),
+            canonical_episode_id: event.episode_id.clone(),
+            modalities: event
+                .modality_spans
+                .iter()
+                .map(|span| span.modality)
+                .collect(),
+            semantic_keys: event.semantic_keys.clone(),
+            source_sha256: event
+                .provenance
+                .iter()
+                .map(|source| source.source_sha256.to_string())
+                .collect(),
+            privacy: event.scope.privacy_class(),
+            valid_from_unix_ms,
+            valid_to_unix_ms,
+            utility_ppm,
+            risk_ppm,
+            tombstoned: matches!(event.lifecycle, MemoryLifecycleV1::Tombstoned { .. }),
+        };
+        value.validate()?;
+        Ok(value)
+    }
+
     pub fn validate(&self) -> Result<(), ReferenceFabricError> {
         if self.id == 0 || self.episode_id == 0 {
             return Err(ReferenceFabricError::Invalid(
@@ -1509,6 +1466,10 @@ mod tests {
         ReferenceEventFeatures {
             id,
             episode_id,
+            canonical_event_id: ContractIdV1::new(format!("reference:event:{id}"))
+                .expect("valid canonical event id"),
+            canonical_episode_id: ContractIdV1::new(format!("reference:episode:{episode_id}"))
+                .expect("valid canonical episode id"),
             modalities: set(modalities.iter().copied()),
             semantic_keys: set(keys.iter().map(|value| (*value).to_string())),
             source_sha256: set([digest(char::from_digit(id as u32 % 6 + 10, 16).unwrap())]),
