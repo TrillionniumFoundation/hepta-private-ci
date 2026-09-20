@@ -891,6 +891,201 @@ mod tests {
         }
     }
 
+    async fn open_calendar_test_store() -> (tempfile::TempDir, AutomationStore) {
+        use codex_hepta_contracts::AgentId;
+        use codex_hepta_fleet::AgentManifest;
+        use codex_hepta_fleet::FleetRegistry;
+        use codex_hepta_fleet::ResourceBudget;
+        use codex_hepta_fleet::WorkspaceBinding;
+        use codex_hepta_paths::HeptaFleetRoot;
+
+        let temp = tempfile::tempdir().expect("temp root");
+        let root = temp.path().canonicalize().expect("canonical temp root");
+        let fleet_root = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet root");
+        let registry = FleetRegistry::initialize(fleet_root.clone()).expect("fleet registry");
+        let workspace = root.join("workspace");
+        std::fs::create_dir(&workspace).expect("workspace");
+        let workspace = workspace.canonicalize().expect("canonical workspace");
+        let manifest = AgentManifest::new(
+            AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent id"),
+            WorkspaceBinding::new(workspace, &fleet_root).expect("workspace binding"),
+            ResourceBudget::local_default(),
+        )
+        .expect("manifest");
+        let layout = registry.register(manifest).expect("register agent").layout;
+        let store = AutomationStore::open(&layout).await.expect("open store");
+        (temp, store)
+    }
+
+    fn utc_daily_schedule() -> AutomationCalendarScheduleV2 {
+        let profile = AutomationTimeZoneProfileV1 {
+            timezone_id: "Etc/UTC".to_string(),
+            tzdb_digest: digest(b"tzdb-backlog"),
+            valid_from_utc_ms: 0,
+            valid_until_utc_ms: 40 * DAY,
+            initial_offset_seconds: 0,
+            transitions: Vec::new(),
+        };
+        AutomationCalendarScheduleV2 {
+            timezone_id: profile.timezone_id.clone(),
+            tzdb_digest: profile.tzdb_digest.clone(),
+            start_at_utc_ms: DAY,
+            end_at_utc_ms: Some(30 * DAY),
+            every_days: 1,
+            local_time_ms: (2 * HOUR) as u32,
+            dst_gap_policy: AutomationDstGapPolicy::Skip,
+            dst_overlap_policy: AutomationDstOverlapPolicy::First,
+            clock_profile: profile,
+        }
+    }
+
+    async fn create_backlog_task(
+        store: &AutomationStore,
+        schedule: &AutomationCalendarScheduleV2,
+        missed_run: AutomationMissedRunPolicy,
+    ) -> AutomationTask {
+        let draft = AutomationTaskDraft::new(
+            "019153a4-3088-7e03-a56a-9b1964f75ddd",
+            "calendar backlog prompt",
+            AutomationSchedule::Once,
+            DAY,
+            1,
+        );
+        store
+            .create_calendar_task_v2(
+                &draft,
+                schedule,
+                missed_run,
+                AutomationOverlapPolicy::Allow,
+            )
+            .await
+            .expect("create calendar task")
+    }
+
+    async fn advance_backlog(
+        store: &AutomationStore,
+        task_id: AutomationTaskId,
+        scheduled_for_ms: u64,
+        observed_at_ms: u64,
+        missed_run: AutomationMissedRunPolicy,
+    ) -> AutomationTask {
+        let mut tx = store.taskflow_pool().begin().await.expect("begin");
+        let advanced = advance_calendar_schedule_v2(
+            &mut tx,
+            store,
+            task_id,
+            scheduled_for_ms,
+            observed_at_ms,
+            AutomationSchedulePolicy {
+                revision: 1,
+                missed_run,
+                overlap: AutomationOverlapPolicy::Allow,
+            },
+        )
+        .await
+        .expect("advance calendar");
+        assert!(advanced);
+        tx.commit().await.expect("commit");
+        store
+            .task(task_id)
+            .await
+            .expect("read task")
+            .expect("task exists")
+    }
+
+    #[tokio::test]
+    async fn missed_run_skip_jumps_past_the_observation_frontier() {
+        let (_temp, store) = open_calendar_test_store().await;
+        let schedule = utc_daily_schedule();
+        let task = create_backlog_task(&store, &schedule, AutomationMissedRunPolicy::Skip).await;
+        let scheduled = task.next_run_at_ms.expect("first run");
+        let observed = 10 * DAY + 12 * HOUR;
+        let advanced = advance_backlog(
+            &store,
+            task.task_id,
+            scheduled,
+            observed,
+            AutomationMissedRunPolicy::Skip,
+        )
+        .await;
+        assert_eq!(
+            advanced.next_run_at_ms,
+            schedule
+                .first_at_or_after(observed + 1)
+                .expect("future schedule")
+        );
+        assert!(advanced.next_run_at_ms.is_some_and(|next| next > observed));
+        store.close().await;
+    }
+
+    #[tokio::test]
+    async fn missed_run_coalesce_materializes_only_the_latest_past_instant() {
+        let (_temp, store) = open_calendar_test_store().await;
+        let schedule = utc_daily_schedule();
+        let task =
+            create_backlog_task(&store, &schedule, AutomationMissedRunPolicy::Coalesce).await;
+        let first = task.next_run_at_ms.expect("first run");
+        let observed = 10 * DAY + 12 * HOUR;
+        let coalesced = advance_backlog(
+            &store,
+            task.task_id,
+            first,
+            observed,
+            AutomationMissedRunPolicy::Coalesce,
+        )
+        .await;
+        let latest = schedule
+            .latest_at_or_before(observed)
+            .expect("latest schedule")
+            .expect("coalesced instant");
+        assert_eq!(coalesced.next_run_at_ms, Some(latest));
+        assert!(latest <= observed);
+
+        let future = advance_backlog(
+            &store,
+            task.task_id,
+            latest,
+            observed,
+            AutomationMissedRunPolicy::Coalesce,
+        )
+        .await;
+        assert!(future.next_run_at_ms.is_some_and(|next| next > observed));
+        store.close().await;
+    }
+
+    #[tokio::test]
+    async fn missed_run_catch_up_is_bounded_then_skips_the_remaining_backlog() {
+        let (_temp, store) = open_calendar_test_store().await;
+        let schedule = utc_daily_schedule();
+        let policy = AutomationMissedRunPolicy::CatchUp { max_occurrences: 3 };
+        let task = create_backlog_task(&store, &schedule, policy).await;
+        let observed = 10 * DAY + 12 * HOUR;
+        let mut scheduled = task.next_run_at_ms.expect("first run");
+
+        for expected_day in [2_u64, 3, 4] {
+            let advanced =
+                advance_backlog(&store, task.task_id, scheduled, observed, policy).await;
+            let expected = expected_day * DAY + 2 * HOUR;
+            assert_eq!(advanced.next_run_at_ms, Some(expected));
+            scheduled = expected;
+        }
+
+        let after_budget =
+            advance_backlog(&store, task.task_id, scheduled, observed, policy).await;
+        assert_eq!(
+            after_budget.next_run_at_ms,
+            schedule
+                .first_at_or_after(observed + 1)
+                .expect("post-catch-up schedule")
+        );
+        assert!(
+            after_budget
+                .next_run_at_ms
+                .is_some_and(|next| next > observed)
+        );
+        store.close().await;
+    }
+
     #[test]
     fn dst_gap_policy_is_explicit_and_deterministic() {
         let transition = 100 * DAY + 10 * HOUR;
@@ -996,7 +1191,7 @@ mod tests {
             clock_profile: profile,
         };
         let draft = AutomationTaskDraft::new(
-            "thread-calendar",
+            "019153a4-3088-7e03-a56a-9b1964f75ddd",
             "calendar prompt",
             AutomationSchedule::Once,
             DAY,
