@@ -67,8 +67,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     let host: HostConfig = serde_json::from_slice(&read_host_config(Path::new(&host_path))?)?;
     validate_host_config(&host)?;
-    let grant: SignedFinalUseGrant =
-        serde_json::from_slice(&bounded_regular_file(Path::new(&grant_path), MAX_GRANT_BYTES)?)?;
+    let grant: SignedFinalUseGrant = serde_json::from_slice(&bounded_regular_file(
+        Path::new(&grant_path),
+        MAX_GRANT_BYTES,
+    )?)?;
 
     let authority = FinalUseAuthority::open_state_dir(
         &host.authority_state_dir,
@@ -123,7 +125,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let output = result?;
     println!("{}", serde_json::to_string(&output)?);
     if !output.terminal_observed {
-        return Err("provider outcome remains indeterminate; no replacement dispatch was issued".into());
+        return Err(
+            "provider outcome remains indeterminate; no replacement dispatch was issued".into(),
+        );
     }
     if !output.succeeded() {
         return Err("provider run did not complete under current owner authority".into());
@@ -131,7 +135,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     Ok(())
 }
 
-fn validate_host_config(config: &HostConfig) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+fn validate_host_config(
+    config: &HostConfig,
+) -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     if !config.agentd_socket.is_absolute()
         || !config.journal.is_absolute()
         || !config.authority_state_dir.is_absolute()
