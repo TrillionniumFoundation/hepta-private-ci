@@ -128,7 +128,16 @@ fn ledger_at(path: &std::path::Path, fixture: &Fixture) -> LedgerWriter {
         digest("host-authorized-ledger"),
     )
     .unwrap();
-    LedgerWriter::from_durable(ledger, witness, fixture.trust_activation()).unwrap()
+    let ledger_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
+    let witness_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
+    LedgerWriter::from_durable(
+        ledger,
+        witness,
+        fixture.trust_activation(),
+        &ledger_directory,
+        &witness_directory,
+    )
+    .unwrap()
 }
 
 #[test]
@@ -188,8 +197,16 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
         .unwrap();
     let witness =
         LedgerWitnessStore::recover(witness, digest("host-authorized-ledger")).unwrap();
-    let mut reopened =
-        LedgerWriter::from_durable(reopened_ledger, witness, fixture.trust_activation()).unwrap();
+    let ledger_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
+    let witness_directory = std::fs::File::open(path.parent().unwrap()).unwrap();
+    let mut reopened = LedgerWriter::from_durable(
+        reopened_ledger,
+        witness,
+        fixture.trust_activation(),
+        &ledger_directory,
+        &witness_directory,
+    )
+    .unwrap();
     assert_eq!(reopened.records().unwrap(), expected_records);
     let replay = run_evaluated_shadow_v1(
         fixture.request(),
