@@ -161,6 +161,46 @@ def verify() -> int:
     for module in MODULES:
         verify_map(module)
 
+    objective_map = load(MAPS["objective.compiler"])
+    objective_operations = {
+        operation["operation"] for operation in objective_map["operations"]
+    }
+    required_objective_operations = {
+        "decode_source_envelope_json_v1",
+        "validate_structure",
+        "canonical_objective_intent_digest_v1",
+        "admit_objective_v1",
+        "compile_admitted_objective_v1",
+        "check_feasibility_v1",
+        "encode_objective_function_v1",
+        "decode_objective_function_v1",
+    }
+    need(
+        required_objective_operations <= objective_operations,
+        "objective.compiler canonical operation mapping incomplete",
+    )
+    need(
+        objective_map.get("canonicalProductOperations")
+        == [
+            "decode_source_envelope_json_v1",
+            "validate_structure",
+            "admit_objective_v1",
+            "compile_admitted_objective_v1",
+            "encode_objective_function_v1",
+            "decode_objective_function_v1",
+        ],
+        "objective.compiler canonical product operation order",
+    )
+    wrapper = next(
+        operation
+        for operation in objective_map["operations"]
+        if operation["operation"] == "admit_and_compile_objective_v1"
+    )
+    need(
+        wrapper.get("productRole") == "compatibility_not_canonical_product_path",
+        "objective.compiler convenience wrapper product-role drift",
+    )
+
     objective = (
         ROOT / "codex-rs/hepta-objective/src/objective_admission.rs"
     ).read_text(encoding="utf-8")
