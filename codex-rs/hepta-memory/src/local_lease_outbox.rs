@@ -1698,19 +1698,30 @@ impl LocalLeaseOutbox {
             .map_err(crate::cognitive_store::unavailable)?;
         let lease = self.current_lease(&mut transaction).await?;
         ensure_current_active(&lease, self)?;
-        let events =
-            verify_event_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
-        let outbox =
-            verify_outbox_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
-        verify_event_outbox_pairing(&events, &outbox)?;
-        verify_operation_ledger(
+        let admission = find_admission(
             &mut transaction,
             &self.lease_id,
+            occurrence_key,
             &self.owner_agent_id,
-            &events,
-            &outbox,
         )
-        .await?;
+        .await?
+        .ok_or_else(|| {
+            LocalLeaseOutboxError::StaleFence(
+                "production dispatch admission is missing".to_string(),
+            )
+        })?;
+        let outbox = find_outbox(
+            &mut transaction,
+            &self.lease_id,
+            occurrence_key,
+            &self.owner_agent_id,
+        )
+        .await?
+        .ok_or_else(|| {
+            LocalLeaseOutboxError::StaleFence(
+                "production dispatch outbox is missing".to_string(),
+            )
+        })?;
         let operation = find_operation(&mut transaction, occurrence_key)
             .await?
             .ok_or_else(|| {
@@ -1718,23 +1729,29 @@ impl LocalLeaseOutbox {
                     "production dispatch requires a durable operation ledger row".to_string(),
                 )
             })?;
-        if operation.destination_id != destination_id {
+        let intent = verify_operation_row_incremental(
+            &operation,
+            &self.lease_id,
+            &self.owner_agent_id,
+            &admission,
+            &outbox,
+        )?;
+        if intent.destination.as_str() != destination_id {
             return Err(LocalLeaseOutboxError::StaleFence(
                 "durable operation destination does not match attached target".to_string(),
             ));
         }
-        let operation_semantic_sha256 = Sha256Digest::parse(&operation.semantic_sha256)
+        let operation_semantic_sha256 = Sha256Digest::parse(intent.semantic_digest().to_string())
             .map_err(|_| corrupt("durable operation semantic digest is invalid"))?;
-        let expected_predecessor_sha256 = operation
-            .expected_predecessor_sha256
-            .as_deref()
-            .map(Sha256Digest::parse)
+        let expected_predecessor_sha256 = intent
+            .expected_predecessor
+            .map(|digest| Sha256Digest::parse(digest.to_string()))
             .transpose()
             .map_err(|_| corrupt("durable operation predecessor digest is invalid"))?;
         let binding = DurableOperationDispatchBinding {
-            scope_id: operation.scope_id,
-            owner_id: operation.owner_id,
-            destination_id: operation.destination_id,
+            scope_id: intent.scope.as_str().to_string(),
+            owner_id: intent.owner.as_str().to_string(),
+            destination_id: intent.destination.as_str().to_string(),
             operation_semantic_sha256,
             expected_predecessor_sha256,
         };
@@ -2083,12 +2100,18 @@ impl LocalLeaseOutbox {
         let operation = find_operation(&mut transaction, occurrence_key).await?;
         let expected = match operation {
             Some(operation) => {
-                let semantic = Sha256Digest::parse(&operation.semantic_sha256)
+                let intent = verify_operation_row_incremental(
+                    &operation,
+                    &self.lease_id,
+                    &self.owner_agent_id,
+                    &admission,
+                    &outbox,
+                )?;
+                let semantic = Sha256Digest::parse(intent.semantic_digest().to_string())
                     .map_err(|_| corrupt("dispatch claim operation semantic digest is invalid"))?;
-                let predecessor = operation
-                    .expected_predecessor_sha256
-                    .as_deref()
-                    .map(Sha256Digest::parse)
+                let predecessor = intent
+                    .expected_predecessor
+                    .map(|digest| Sha256Digest::parse(digest.to_string()))
                     .transpose()
                     .map_err(|_| corrupt("dispatch claim predecessor digest is invalid"))?;
                 dispatch_operation_digest(
@@ -2475,11 +2498,6 @@ impl LocalLeaseOutbox {
             .map_err(crate::cognitive_store::unavailable)?;
         let lease = self.current_lease(&mut transaction).await?;
         ensure_current_active(&lease, self)?;
-        let events =
-            verify_event_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
-        let outbox_rows =
-            verify_outbox_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
-        verify_event_outbox_pairing(&events, &outbox_rows)?;
         let admission = find_admission(
             &mut transaction,
             &self.lease_id,
