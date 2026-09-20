@@ -142,6 +142,11 @@
           "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
           "kind": "durable_step_and_terminal_propagation",
           "command": "cargo test -p codex-hepta-automation --test durable_causal_chain"
+        },
+        {
+          "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
+          "kind": "final_use_provider_at_most_once_and_recovery",
+          "command": "cargo test -p codex-hepta-automation --test authorized_effect"
         }
       ],
       "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding immediately around provider entry, appends an immutable provider-attempt row before contact, and records initial plus terminal reconciliation evidence without blind redispatch.",
@@ -188,9 +193,9 @@
     "codex-rs/hepta-agentd"
   ],
   "observedAtHead": {
-    "commit": "62e9eb340269b0034cfbb17df14266daebd02f4e",
-    "tree": "2efa9135da8dfe5a5fff8034eaa88a8f5a11179a",
-    "interpretation": "exact automation/Agentd owner-source observation after recovery fail-stop, dispatch-unknown test convergence, and SQLx durable-receipt fixture repair; later wire-format and documentation/projection commits do not change the observed owner paths, and qualification results remain separate"
+    "commit": "2d5e50622ca05a4d1119b7999597b744aaa90417",
+    "tree": "2ea4107fde9738737d53dc26995a4959f9e0ae1e",
+    "interpretation": "exact automation/Agentd owner-source observation after final-use provider dispatch, at-most-once replay, indeterminate reopen/reconciliation, recovery fail-stop, and durable-receipt test convergence; later documentation/projection/verifier commits do not change the observed owner paths, and qualification results remain separate"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
 }
