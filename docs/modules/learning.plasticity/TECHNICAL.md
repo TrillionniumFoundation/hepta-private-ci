@@ -168,7 +168,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-The native plasticity crate remains candidate-only with durable parameter/topology proposal registries. Preserve the proposal version and exact predecessor; V1 read compatibility is not permission to emit new V1 writes. Structural split/merge/rewire is consumed only by the separate `codex-hepta-runtime` execution owner after governed writer-handoff validation and a single-use FinalUse grant; this does not give `learning.plasticity` topology-apply authority.
+The native plasticity crate remains candidate-only with durable parameter/topology proposal registries. Preserve the proposal version and exact predecessor; V1 read compatibility is not permission to emit new V1 writes. Structural split/merge/rewire is consumed only by the separate `codex-hepta-runtime` execution owner after governed writer-handoff validation and a single-use FinalUse grant. Healthy replacement and stopped/quarantined recovery are separate runtime transitions with distinct FinalUse destinations; neither gives `learning.plasticity` topology-apply authority.
 
 Current operating and state-format references:
 
