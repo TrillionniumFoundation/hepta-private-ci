@@ -408,20 +408,23 @@ def build_product_receipt(
                 base_tree=integration_base_tree,
                 now_ns=now + 7,
             )
+            candidate_observation_digest = hashlib.sha256(
+                ("candidate:" + tested_sha).encode("ascii")
+            ).hexdigest()
+            review_observation_digest = hashlib.sha256(
+                ("review-observation:" + tested_sha).encode("ascii")
+            ).hexdigest()
+            ci_observation_digest = hashlib.sha256(
+                ("ci-observation:" + tested_sha).encode("ascii")
+            ).hexdigest()
             integration = product.reconcile_integration(
                 queue.queue_generation_id,
                 package.package_id,
                 current_base_commit=integration_base_commit,
                 current_base_tree=integration_base_tree,
-                candidate_digest=hashlib.sha256(
-                    ("candidate:" + tested_sha).encode("ascii")
-                ).hexdigest(),
-                review_digest=hashlib.sha256(
-                    ("review-observation:" + tested_sha).encode("ascii")
-                ).hexdigest(),
-                ci_digest=hashlib.sha256(
-                    ("ci-observation:" + tested_sha).encode("ascii")
-                ).hexdigest(),
+                candidate_digest=candidate_observation_digest,
+                review_digest=review_observation_digest,
+                ci_digest=ci_observation_digest,
                 now_ns=now + 8,
             )
             anchor = product.audit_anchor()
@@ -435,15 +438,67 @@ def build_product_receipt(
             expected_repository=EXPECTED_REPOSITORY,
             trust_store=lifecycle_trust,
         ) as reopened:
-            reopened_claim_state = reopened.claim_state(completed_claim_id).state
+            replayed_registration_digest = reopened.register_worker(
+                registration,
+                now_ns=now + 9,
+            )
+            replayed_lease = reopened.acquire_lease(
+                lease.lease_id,
+                envelope.envelope_id,
+                worker_id,
+                ("tools/hepta-engineering-control",),
+                authority_epoch=1,
+                expires_unix_ns=now + 240_000_000_000,
+                now_ns=now + 9,
+            )
+            replayed_claim = reopened.claim(
+                plan.generation_id,
+                package.package_id,
+                worker_id,
+                lease.lease_id,
+                heartbeat_ttl_ns=60_000_000_000,
+                now_ns=now + 9,
+            )
+            replayed_heartbeat = reopened.heartbeat(
+                heartbeat,
+                heartbeat_ttl_ns=60_000_000_000,
+                now_ns=now + 9,
+            )
+            replayed_result = reopened.submit_result(
+                result,
+                now_ns=now + 9,
+            )
+            replayed_completion = reopened.observe_completion(
+                completed_claim_id,
+                envelope,
+                completion,
+                now_ns=now + 9,
+            )
+            replayed_integration = reopened.reconcile_integration(
+                queue_generation_id,
+                package.package_id,
+                current_base_commit=integration_base_commit,
+                current_base_tree=integration_base_tree,
+                candidate_digest=candidate_observation_digest,
+                review_digest=review_observation_digest,
+                ci_digest=ci_observation_digest,
+                now_ns=now + 9,
+            )
+            reopened_claim_state = replayed_completion.state
             reopened_completion_observation_digest = (
                 reopened.completion_observation_digest(completed_claim_id)
             )
-            reopened_integration_state = reopened.integration_item(
-                queue_generation_id,
-                package.package_id,
-            ).state
+            reopened_integration_state = replayed_integration.state
             reopened_anchor = reopened.audit_anchor()
+            if (
+                replayed_registration_digest != registration_digest
+                or replayed_lease.lease_id != lease.lease_id
+                or replayed_claim.claim_id != completed_claim_id
+                or replayed_heartbeat.claim_id != completed_claim_id
+                or replayed_result.claim_id != completed_claim_id
+                or replayed_completion.claim_id != completed_claim_id
+            ):
+                raise RuntimeError("product_reopen_ack_replay_mismatch")
 
     if completed_state != "completed_observed" or reopened_claim_state != "completed_observed":
         raise RuntimeError("product_worker_lifecycle_not_recovered")
