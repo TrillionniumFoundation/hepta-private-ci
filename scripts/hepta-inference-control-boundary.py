@@ -114,7 +114,9 @@ def verify() -> None:
     for needle in (
         "NativeWorkerPort::new(NativeWorkerConfig",
         "final_use_authority: authority",
-        "NativeExecutionPolicy { quota, resource }",
+        "NativeExecutionPolicy::authenticate(",
+        "NativePolicyTrust {",
+        "NativePolicySignature {",
         "maximum_output_tokens",
         "maximum_budget_units",
         "final_use_issuer_socket",
