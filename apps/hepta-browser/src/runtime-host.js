@@ -213,6 +213,7 @@ export class BrowserProfileHost {
               manifestDigest,
               grantDigest,
               generation,
+              expiresAtMs,
               allowedOrigins: [...allowedOrigins],
             },
             expiresAtMs,
