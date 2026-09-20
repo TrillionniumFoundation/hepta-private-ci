@@ -92,6 +92,27 @@ CREATE INDEX IF NOT EXISTS idx_worker_claims_assignment
 CREATE INDEX IF NOT EXISTS idx_worker_claims_worker
   ON worker_claims(worker_id, state, heartbeat_deadline_unix_ns);
 
+CREATE TABLE IF NOT EXISTS worker_heartbeat_observations(
+  claim_id TEXT NOT NULL REFERENCES worker_claims(claim_id),
+  receipt_digest TEXT NOT NULL UNIQUE,
+  prior_revision INTEGER NOT NULL CHECK(prior_revision >= 1),
+  resulting_revision INTEGER NOT NULL CHECK(resulting_revision > prior_revision),
+  observed_unix_ns INTEGER NOT NULL,
+  expires_unix_ns INTEGER NOT NULL,
+  recorded_unix_ns INTEGER NOT NULL,
+  PRIMARY KEY(claim_id, resulting_revision)
+);
+
+CREATE TABLE IF NOT EXISTS worker_result_observations(
+  claim_id TEXT PRIMARY KEY REFERENCES worker_claims(claim_id),
+  receipt_digest TEXT NOT NULL UNIQUE,
+  outcome TEXT NOT NULL CHECK(outcome IN ('success','infra_failure','semantic_failure')),
+  result_digest TEXT NOT NULL,
+  observed_unix_ns INTEGER NOT NULL,
+  expires_unix_ns INTEGER NOT NULL,
+  recorded_unix_ns INTEGER NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS worker_completion_observations(
   claim_id TEXT PRIMARY KEY REFERENCES worker_claims(claim_id),
   completion_digest TEXT NOT NULL UNIQUE,
