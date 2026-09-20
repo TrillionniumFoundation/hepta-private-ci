@@ -179,11 +179,23 @@
     {
       "script": "scripts/hepta-implementation-maps.py",
       "callers": [
+        ".github/workflows/hepta-contract-gate.yml",
+        ".github/workflows/hepta-runtime-fleet-target-host.yml",
         "scripts/hepta-module-docs.py"
       ],
       "entrypointKinds": [
         "CI",
         "indirect"
+      ],
+      "status": "active"
+    },
+    {
+      "script": "scripts/test_hepta_implementation_maps.py",
+      "callers": [
+        ".github/workflows/hepta-contract-gate.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
       ],
       "status": "active"
     },
@@ -487,9 +499,21 @@
       "status": "candidate-archive"
     },
     {
+      "script": "scripts/hepta-lane-b-path-guard.py",
+      "callers": [
+        ".github/workflows/hepta-lane-b-truth.yml",
+        ".github/workflows/hepta-runtime-fleet-target-host.yml"
+      ],
+      "entrypointKinds": [
+        "CI"
+      ],
+      "status": "active"
+    },
+    {
       "script": "scripts/hepta-lane-b-truth.py",
       "callers": [
-        ".github/workflows/hepta-lane-b-truth.yml"
+        ".github/workflows/hepta-lane-b-truth.yml",
+        ".github/workflows/hepta-runtime-fleet-target-host.yml"
       ],
       "entrypointKinds": [
         "CI"
