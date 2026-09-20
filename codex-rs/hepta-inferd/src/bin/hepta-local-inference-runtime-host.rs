@@ -1269,8 +1269,75 @@ mod tests {
             Some(3)
         );
         drop(owner);
+
+        use codex_hepta_contracts::FinalUseGrant;
+        use ed25519_dalek::Signer as _;
+        use ed25519_dalek::SigningKey;
+        let authority_dir = path.with_extension("usage-authority");
+        std::fs::create_dir_all(&authority_dir).unwrap();
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            let mut permissions = std::fs::metadata(&authority_dir).unwrap().permissions();
+            permissions.set_mode(0o700);
+            std::fs::set_permissions(&authority_dir, permissions).unwrap();
+        }
+        let signing = SigningKey::from_bytes(&[31_u8; 32]);
+        let authority = FinalUseAuthority::open_state_dir(
+            &authority_dir,
+            "local-usage-authority".to_string(),
+            signing.verifying_key().to_bytes(),
+            FinalUseRevocations {
+                authority_epoch: 5,
+                revision: 1,
+                revoked_grant_ids: BTreeSet::new(),
+            },
+        )
+        .unwrap();
+        let settlement = UsageSettlement {
+            request_id: "request.local.terminal".to_string(),
+            consumed_tokens: 3,
+            usage_units: 7,
+            evidence_digest: "b".repeat(64),
+        };
+        let binding = control
+            .lock()
+            .unwrap()
+            .usage_settlement_binding(&settlement)
+            .unwrap();
+        let grant = FinalUseGrant {
+            schema_version: 1,
+            signer_id: "local-usage-authority".to_string(),
+            authority_epoch: 5,
+            grant_id: "local-usage.1".to_string(),
+            nonce: [19_u8; 32],
+            binding,
+            not_before_unix_ms: now.saturating_sub(1000),
+            expires_at_unix_ms: now + 60_000,
+        };
+        let signed = SignedFinalUseGrant {
+            signature: signing
+                .sign(&grant.signing_bytes().unwrap())
+                .to_bytes()
+                .to_vec(),
+            grant,
+        };
+        let settled = control
+            .lock()
+            .unwrap()
+            .settle_usage_authorized(&authority, &signed, settlement)
+            .unwrap();
+        assert_eq!(settled.state, RequestState::Completed);
+        let owner = control.lock().unwrap();
+        let record = owner.get("request.local.terminal").unwrap();
+        assert!(record.usage_observed);
+        assert_eq!(record.consumed_tokens, 3);
+        assert_eq!(record.usage_units, 7);
+        drop(owner);
         drop(control);
+        drop(authority);
         std::fs::remove_file(path).unwrap();
+        std::fs::remove_dir_all(authority_dir).unwrap();
     }
 
     #[test]
