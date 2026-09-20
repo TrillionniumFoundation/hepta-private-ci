@@ -168,8 +168,8 @@
     "codex-rs/hepta-fleet"
   ],
   "implementationHead": {
-    "commit": "ea21012afd2b081755ba5961d212d572a399e867",
-    "meaning": "current-main source-only runtime.fleet closure head after capacity provenance and durable publication fault-matrix hardening; verifier compares owner-root and composed-source Git object identities against current HEAD"
+    "commit": "92dc335e0b0797bc86e7762966fb16913b3e5c08",
+    "meaning": "current-main source-only runtime.fleet closure head after capacity provenance, durable publication fault-matrix and locked dependency hardening; verifier compares owner-root and composed-source Git object identities against current HEAD"
   },
   "sourceComposition": {
     "runtimeConsumer": {
@@ -191,6 +191,11 @@
     "reconciliation": {
       "path": "codex-rs/hepta-fleet/src/runtime_use.rs",
       "symbol": "reconcile_consumption_with_authority"
+    },
+    "workspaceLock": {
+      "path": "codex-rs/Cargo.lock",
+      "symbol": "codex-hepta-fleet dependency closure",
+      "semantics": "Exact locked dependency set used by Fleet/Supervisor qualification."
     }
   }
 }
