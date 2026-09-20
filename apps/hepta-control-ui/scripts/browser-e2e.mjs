@@ -77,6 +77,13 @@ async function readJson(req) {
 
 const securityHeaders = JSON.parse(await readFile(join(dist, "security-headers.json"), "utf8"));
 const baseIndex = await readFile(join(dist, "index.html"), "utf8");
+const generatedCsp = securityHeaders["Content-Security-Policy"] ?? "";
+if (typeof generatedCsp !== "string" || !generatedCsp.includes("manifest-src 'self'")) {
+  throw new Error("generated CSP does not allow the same-origin web manifest");
+}
+if (!baseIndex.includes("manifest-src 'self'")) {
+  throw new Error("index CSP does not allow the same-origin web manifest");
+}
 const e2eDriver = `
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 async function waitFor(predicate, timeout = 5000) {
