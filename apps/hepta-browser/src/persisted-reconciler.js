@@ -1,10 +1,21 @@
+import {
+  createHash,
+  createPublicKey,
+  verify as verifySignature,
+} from "node:crypto";
 import { constants } from "node:fs";
 import { lstat, open, realpath } from "node:fs/promises";
 import { isAbsolute, join, resolve } from "node:path";
 
 const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
 const DIGEST = /^[0-9a-f]{64}$/;
+const SIGNATURE = /^[0-9a-f]{128}$/;
 const MAX_RECEIPT_BYTES = 65_536;
+const ED25519_SPKI_PREFIX = Buffer.from("302a300506032b6570032100", "hex");
+const SIGNING_DOMAIN = Buffer.from(
+  "hepta.browser.persisted-effect-observation.v2\0",
+  "utf8",
+);
 
 function stableId(value, name) {
   if (typeof value !== "string" || !STABLE_ID.test(value)) {
@@ -41,6 +52,45 @@ function exactKeys(value, keys, name) {
   }
 }
 
+function unsignedReceipt(receipt) {
+  return {
+    schema: receipt.schema,
+    version: receipt.version,
+    observerId: receipt.observerId,
+    observerGeneration: receipt.observerGeneration,
+    observedAtUnixMs: receipt.observedAtUnixMs,
+    frontierDigest: receipt.frontierDigest,
+    profileId: receipt.profileId,
+    profileGeneration: receipt.profileGeneration,
+    operationId: receipt.operationId,
+    requestDigest: receipt.requestDigest,
+    semanticDigest: receipt.semanticDigest,
+    terminalObserved: receipt.terminalObserved,
+    status: receipt.status,
+    outcomeDigest: receipt.outcomeDigest,
+  };
+}
+
+export function persistedEffectObservationSigningBytes(receipt) {
+  return Buffer.concat([
+    SIGNING_DOMAIN,
+    Buffer.from(JSON.stringify(unsignedReceipt(receipt)), "utf8"),
+  ]);
+}
+
+function rawEd25519PublicKey(value) {
+  if (typeof value !== "string" || !DIGEST.test(value) || /^0+$/.test(value)) {
+    throw new TypeError(
+      "persisted reconciler verifyingKeyHex must be 32-byte lowercase hex",
+    );
+  }
+  return createPublicKey({
+    key: Buffer.concat([ED25519_SPKI_PREFIX, Buffer.from(value, "hex")]),
+    format: "der",
+    type: "spki",
+  });
+}
+
 async function requirePrivateRoot(path) {
   const metadata = await lstat(path);
   if (!metadata.isDirectory() || metadata.isSymbolicLink()) {
@@ -56,12 +106,16 @@ async function requirePrivateRoot(path) {
 
 export class FilePersistedEffectReconciler {
   #root;
+  #observerId;
+  #verifyingKey;
 
-  constructor(root) {
+  constructor(root, { observerId, verifyingKeyHex }) {
     if (typeof root !== "string" || !isAbsolute(root)) {
       throw new TypeError("persisted reconciler root must be absolute");
     }
     this.#root = resolve(root);
+    this.#observerId = stableId(observerId, "persisted reconciler observerId");
+    this.#verifyingKey = rawEd25519PublicKey(verifyingKeyHex);
   }
 
   async observe(input) {
@@ -86,7 +140,7 @@ export class FilePersistedEffectReconciler {
           requestDigest,
           semanticDigest,
           terminalObserved: false,
-          observationReason: "trusted_persisted_receipt_unavailable",
+          observationReason: "authenticated_persisted_receipt_unavailable",
         });
       }
       throw error;
@@ -104,6 +158,7 @@ export class FilePersistedEffectReconciler {
     } finally {
       await handle.close();
     }
+
     let receipt;
     try {
       receipt = JSON.parse(body);
@@ -115,6 +170,10 @@ export class FilePersistedEffectReconciler {
       [
         "schema",
         "version",
+        "observerId",
+        "observerGeneration",
+        "observedAtUnixMs",
+        "frontierDigest",
         "profileId",
         "profileGeneration",
         "operationId",
@@ -123,16 +182,38 @@ export class FilePersistedEffectReconciler {
         "terminalObserved",
         "status",
         "outcomeDigest",
+        "signature",
       ],
       "persisted reconciliation receipt",
     );
     if (
-      receipt.schema !== "hepta.browser.persisted-effect-observation.v1" ||
-      receipt.version !== 1 ||
+      receipt.schema !== "hepta.browser.persisted-effect-observation.v2" ||
+      receipt.version !== 2 ||
       receipt.terminalObserved !== true
     ) {
-      throw new TypeError("persisted reconciliation receipt is not a terminal v1 observation");
+      throw new TypeError(
+        "persisted reconciliation receipt is not a terminal signed v2 observation",
+      );
     }
+    if (
+      stableId(receipt.observerId, "receipt.observerId") !== this.#observerId
+    ) {
+      throw new TypeError(
+        "persisted reconciliation receipt observer is not the configured authority",
+      );
+    }
+    const observerGeneration = positiveInteger(
+      receipt.observerGeneration,
+      "receipt.observerGeneration",
+    );
+    const observedAtUnixMs = positiveInteger(
+      receipt.observedAtUnixMs,
+      "receipt.observedAtUnixMs",
+    );
+    const frontierDigest = digest(
+      receipt.frontierDigest,
+      "receipt.frontierDigest",
+    );
     if (
       stableId(receipt.profileId, "receipt.profileId") !== input.profileId ||
       positiveInteger(receipt.profileGeneration, "receipt.profileGeneration") !== generation ||
@@ -146,6 +227,24 @@ export class FilePersistedEffectReconciler {
       throw new TypeError("persisted reconciliation receipt status is not registered");
     }
     const outcomeDigest = digest(receipt.outcomeDigest, "receipt.outcomeDigest");
+    if (typeof receipt.signature !== "string" || !SIGNATURE.test(receipt.signature)) {
+      throw new TypeError(
+        "persisted reconciliation receipt signature must be lowercase Ed25519 hex",
+      );
+    }
+
+    const signingBytes = persistedEffectObservationSigningBytes(receipt);
+    const signature = Buffer.from(receipt.signature, "hex");
+    if (!verifySignature(null, signingBytes, this.#verifyingKey, signature)) {
+      throw new TypeError(
+        "persisted reconciliation receipt signature is not authentic",
+      );
+    }
+    const evidenceDigest = createHash("sha256")
+      .update(signingBytes)
+      .update(signature)
+      .digest("hex");
+
     return Object.freeze({
       operationId,
       requestDigest,
@@ -153,12 +252,17 @@ export class FilePersistedEffectReconciler {
       terminalObserved: true,
       status: receipt.status,
       outcomeDigest,
-      observationReason: "trusted_persisted_receipt",
+      observerId: this.#observerId,
+      observerGeneration,
+      observedAtUnixMs,
+      frontierDigest,
+      evidenceDigest,
+      observationReason: "authenticated_persisted_receipt",
     });
   }
 }
 
-export function createFilePersistedEffectReconciler(root) {
-  const reconciler = new FilePersistedEffectReconciler(root);
+export function createFilePersistedEffectReconciler(root, options) {
+  const reconciler = new FilePersistedEffectReconciler(root, options);
   return (input) => reconciler.observe(input);
 }
