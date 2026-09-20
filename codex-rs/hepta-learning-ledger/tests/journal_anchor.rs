@@ -141,7 +141,7 @@ fn check_membership<J: DurableLearningJournal>(
 }
 
 #[test]
-fn segmented_frontiers_survive_rotation_retry_and_recovery() -> TestResult {
+fn segmented_frontiers_recover() -> TestResult {
     let files = Files::new()?;
     let mut journal = files.segmented()?;
     journal.append(Digest32::ZERO, decision(0)?)?;
@@ -169,7 +169,7 @@ fn segmented_frontiers_survive_rotation_retry_and_recovery() -> TestResult {
 }
 
 #[test]
-fn single_file_frontiers_are_exact_and_reads_preserve_the_head() -> TestResult {
+fn single_file_frontiers_are_exact() -> TestResult {
     let files = Files::new()?;
     let mut journal = DurableLedger::create(files.create("journal")?, binding(), 8)?;
     journal.append(Digest32::ZERO, decision(0)?)?;
@@ -179,7 +179,7 @@ fn single_file_frontiers_are_exact_and_reads_preserve_the_head() -> TestResult {
 }
 
 #[test]
-fn rejected_rotation_preserves_frontier_and_accepts_the_next_write() -> TestResult {
+fn rejected_rotation_keeps_owner_ready() -> TestResult {
     let files = Files::new()?;
     let mut journal = files.segmented()?;
     journal.append(Digest32::ZERO, decision(0)?)?;
@@ -204,7 +204,7 @@ fn change_file_length(file: &File) -> std::io::Result<()> {
 
 #[cfg(unix)]
 #[test]
-fn poisoned_segmented_journal_cannot_certify_even_the_empty_frontier() -> TestResult {
+fn poisoned_segmented_frontiers_fail() -> TestResult {
     let files = Files::new()?;
     let mut journal = files.segmented()?;
     journal.append(Digest32::ZERO, decision(0)?)?;
@@ -229,7 +229,7 @@ fn poisoned_segmented_journal_cannot_certify_even_the_empty_frontier() -> TestRe
 
 #[cfg(unix)]
 #[test]
-fn poisoned_single_file_journal_cannot_certify_even_the_empty_frontier() -> TestResult {
+fn poisoned_single_file_frontiers_fail() -> TestResult {
     let files = Files::new()?;
     let mut journal = DurableLedger::create(files.create("journal")?, binding(), 8)?;
     journal.append(Digest32::ZERO, decision(0)?)?;
@@ -278,7 +278,7 @@ mod long_horizon {
     }
 
     #[test]
-    fn observed_corruption_requires_checkpointed_recovery_not_same_handle_retry() -> TestResult {
+    fn corruption_requires_recovery() -> TestResult {
         let files = Files::new()?;
         let mut journal = create(&files)?;
         journal.append(Digest32::ZERO, decision(0)?)?;
@@ -339,7 +339,7 @@ mod long_horizon {
     }
 
     #[test]
-    fn semantic_conflict_and_capacity_preserve_a_usable_owner() -> TestResult {
+    fn conflict_capacity_preserve_owner() -> TestResult {
         let files = Files::new()?;
         let mut journal = create(&files)?;
         journal.append(Digest32::ZERO, decision(0)?)?;
