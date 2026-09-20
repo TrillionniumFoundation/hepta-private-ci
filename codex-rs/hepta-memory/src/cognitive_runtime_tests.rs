@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
@@ -7,6 +9,8 @@ use crate::CognitiveScope;
 use crate::CognitiveStore;
 use crate::CognitiveStoreError;
 use crate::CognitiveUnavailableReason;
+use crate::FederatedMemoryReader;
+use crate::FederatedRecallSet;
 use crate::FederatedRevalidationStatus;
 use crate::FederationConsumerAccess;
 use crate::FederationGrantRequest;
@@ -143,6 +147,57 @@ async fn product_v2_runtime_reads_only_explicit_grants_and_preserves_coverage() 
         .expect("revoked federation remains a bounded read result");
     assert!(revoked_batch.candidates.is_empty());
     assert_eq!(revoked_coverage.completed_peers, 0);
+}
+
+#[tokio::test]
+async fn legacy_federation_is_not_admitted_to_product_attachment_api() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner_id = agent_id(86);
+    let consumer_id = agent_id(87);
+    let owner_layout = layout(&temp, &owner_id);
+    let consumer_layout = layout(&temp, &consumer_id);
+    let owner = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("owner store");
+    let consumer = CognitiveStore::open(&consumer_layout)
+        .await
+        .expect("consumer store");
+    let owner_access = CognitiveAccess::agent_private(owner_id);
+    let consumer_workspace = workspace("runtime-legacy-consumer");
+    owner
+        .grant_federated_recall(
+            &owner_access,
+            &FederationGrantRequest {
+                consumer_agent_id: consumer_id.clone(),
+                scope: FederationGrantScope::new(
+                    CognitiveScope::AgentPrivate,
+                    consumer_workspace.clone(),
+                ),
+                effective_at_unix_seconds: 100,
+                expires_at_unix_seconds: 1_000,
+            },
+        )
+        .await
+        .expect("grant");
+    let readers = FederatedMemoryReader::discover(&owner_layout, &consumer_id, 150)
+        .await
+        .expect("legacy discovery");
+    let federation = FederatedRecallSet::new(consumer_id.clone(), readers)
+        .expect("legacy recall set");
+    let runtime = CognitiveRuntime::AvailableFederated {
+        store: Arc::new(consumer),
+        federation: Arc::new(federation),
+    };
+    assert!(runtime.has_federation());
+    assert!(!runtime.has_product_federation());
+
+    let access = FederationConsumerAccess::new(consumer_id, consumer_workspace);
+    assert!(matches!(
+        runtime
+            .retrieve_product_federated(&access, &RetrievalRequest::new("anything", 150))
+            .await,
+        Err(CognitiveStoreError::AccessDenied(_))
+    ));
 }
 
 #[tokio::test]
