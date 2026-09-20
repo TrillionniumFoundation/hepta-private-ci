@@ -110,7 +110,8 @@ pub fn build_legal_candidates_v1(
                 candidate.candidate_id.to_string(),
             ));
         }
-        if candidate.action_digest.is_zero()
+        if matches!(candidate.candidate_id.as_str(), "abstain" | "shadow:slow-path")
+            || candidate.action_digest.is_zero()
             || candidate.support_digest.is_zero()
             || candidate.support_ppm > MAX_SUPPORT_PPM
             || candidate.support_ppm < support_floor_ppm
