@@ -2,8 +2,9 @@
 //!
 //! Legacy applicability/regularity validators remain deterministic structural
 //! checks. Qualification-scoped external evaluation uses the host-owned
-//! LearningEvidenceVerifierV1 so a nonzero credential digest or caller-supplied
-//! boolean can never be mistaken for authenticated independent evidence.
+//! LearningEvidenceVerifierV1 and signed role separation so a nonzero credential
+//! digest or caller-supplied boolean can never be mistaken for authenticated
+//! independent evidence.
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -12,8 +13,10 @@ use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
 use codex_hepta_learning_ledger::SignedEvidenceError;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_learning_ledger::verify_signed_role_separation;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
 use crate::OperatorApplicabilityCertificateV1;
 use crate::OperatorClosureError;
@@ -25,6 +28,8 @@ use crate::validate_applicability_certificate;
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AuthenticatedOperatorApplicabilityAdmissionV2 {
     pub certificate_digest: Digest32,
+    pub generator_id: StableId,
+    pub evaluator_id: StableId,
     pub trust_digest: Digest32,
     pub authentication_digest: Digest32,
     pub authority: AuthorityPosture,
@@ -33,6 +38,8 @@ pub struct AuthenticatedOperatorApplicabilityAdmissionV2 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AuthenticatedOperatorRegularityAdmissionV2 {
     pub admission: OperatorRegularityAdmissionV1,
+    pub generator_id: StableId,
+    pub evaluator_id: StableId,
     pub trust_digest: Digest32,
     pub authentication_digest: Digest32,
     pub authority: AuthorityPosture,
@@ -59,32 +66,44 @@ pub fn operator_regularity_signing_payload_v2(
 
 pub fn admit_signed_operator_applicability_v2(
     certificate: &OperatorApplicabilityCertificateV1,
-    evidence: &SignedLearningEvidenceV1,
+    generator_evidence: &SignedLearningEvidenceV1,
+    evaluator_evidence: &SignedLearningEvidenceV1,
     verifier: &LearningEvidenceVerifierV1,
     now: u64,
 ) -> Result<AuthenticatedOperatorApplicabilityAdmissionV2, AuthenticatedOperatorEvidenceError> {
     let payload = operator_applicability_signing_payload_v2(certificate, now)?;
-    let verified = verifier.verify(
-        LearningEvidenceRoleV1::Evaluator,
-        evidence,
+    let generator = verifier.verify(
+        LearningEvidenceRoleV1::Generator,
+        generator_evidence,
         &payload,
         now,
     )?;
-    if verified.principal().principal_id != certificate.evaluator_id
-        || verified.principal().credential_chain_digest
+    let evaluator = verifier.verify(
+        LearningEvidenceRoleV1::Evaluator,
+        evaluator_evidence,
+        &payload,
+        now,
+    )?;
+    verify_signed_role_separation(&generator, &evaluator, now)?;
+    if evaluator.principal().principal_id != certificate.evaluator_id
+        || evaluator.principal().credential_chain_digest
             != certificate.evaluator_credential_digest
     {
         return Err(AuthenticatedOperatorEvidenceError::IdentityBinding);
     }
+
     let certificate_digest = validate_applicability_certificate(certificate, now)?;
     Ok(AuthenticatedOperatorApplicabilityAdmissionV2 {
         certificate_digest,
+        generator_id: generator.principal().principal_id.clone(),
+        evaluator_id: evaluator.principal().principal_id.clone(),
         trust_digest: verifier.trust_digest(),
         authentication_digest: authentication_digest(
             b"hepta.bellman-operator.applicability-auth.v2",
             verifier.trust_digest(),
             certificate_digest,
-            evidence,
+            generator_evidence,
+            evaluator_evidence,
         ),
         authority: AuthorityPosture::DENY_ALL,
     })
@@ -92,33 +111,45 @@ pub fn admit_signed_operator_applicability_v2(
 
 pub fn admit_signed_operator_regularity_v2(
     assessment: &OperatorRegularityAssessmentV1,
-    evidence: &SignedLearningEvidenceV1,
+    generator_evidence: &SignedLearningEvidenceV1,
+    evaluator_evidence: &SignedLearningEvidenceV1,
     verifier: &LearningEvidenceVerifierV1,
     now: u64,
 ) -> Result<AuthenticatedOperatorRegularityAdmissionV2, AuthenticatedOperatorEvidenceError> {
     let payload = operator_regularity_signing_payload_v2(assessment)?;
-    let verified = verifier.verify(
-        LearningEvidenceRoleV1::Evaluator,
-        evidence,
+    let generator = verifier.verify(
+        LearningEvidenceRoleV1::Generator,
+        generator_evidence,
         &payload,
         now,
     )?;
-    if verified.principal().principal_id != assessment.evaluator_id
-        || verified.principal().credential_chain_digest
+    let evaluator = verifier.verify(
+        LearningEvidenceRoleV1::Evaluator,
+        evaluator_evidence,
+        &payload,
+        now,
+    )?;
+    verify_signed_role_separation(&generator, &evaluator, now)?;
+    if evaluator.principal().principal_id != assessment.evaluator_id
+        || evaluator.principal().credential_chain_digest
             != assessment.evaluator_credential_digest
     {
         return Err(AuthenticatedOperatorEvidenceError::IdentityBinding);
     }
+
     let admission = admit_operator_regularity(assessment.clone())?;
     let assessment_digest = admission.assessment_digest;
     Ok(AuthenticatedOperatorRegularityAdmissionV2 {
         admission,
+        generator_id: generator.principal().principal_id.clone(),
+        evaluator_id: evaluator.principal().principal_id.clone(),
         trust_digest: verifier.trust_digest(),
         authentication_digest: authentication_digest(
             b"hepta.bellman-operator.regularity-auth.v2",
             verifier.trust_digest(),
             assessment_digest,
-            evidence,
+            generator_evidence,
+            evaluator_evidence,
         ),
         authority: AuthorityPosture::DENY_ALL,
     })
@@ -128,13 +159,16 @@ fn authentication_digest(
     domain: &[u8],
     trust_digest: Digest32,
     subject_digest: Digest32,
-    evidence: &SignedLearningEvidenceV1,
+    generator_evidence: &SignedLearningEvidenceV1,
+    evaluator_evidence: &SignedLearningEvidenceV1,
 ) -> Digest32 {
     let mut bytes = domain.to_vec();
     bytes.extend_from_slice(trust_digest.as_array());
     bytes.extend_from_slice(subject_digest.as_array());
-    bytes.extend_from_slice(Digest32::of_bytes(&evidence.signing_bytes()).as_array());
-    bytes.extend_from_slice(&evidence.signature);
+    for evidence in [generator_evidence, evaluator_evidence] {
+        bytes.extend_from_slice(Digest32::of_bytes(&evidence.signing_bytes()).as_array());
+        bytes.extend_from_slice(&evidence.signature);
+    }
     Digest32::of_bytes(&bytes)
 }
 
@@ -178,15 +212,23 @@ mod tests {
     use super::*;
     use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
     use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
-    use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
     use codex_hepta_learning_ledger::TrustedLearningSignerV1;
     use codex_hepta_types::FixedQ32;
-    use codex_hepta_types::StableId;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
 
     use crate::ApplicabilityDecisionV1;
     use crate::OperatorErrorComponentV1;
+
+    struct Fixture {
+        verifier: LearningEvidenceVerifierV1,
+        generator_key: SigningKey,
+        evaluator_key: SigningKey,
+        generator: AuthenticatedPrincipalV1,
+        evaluator: AuthenticatedPrincipalV1,
+        scope: Digest32,
+        objective: Digest32,
+    }
 
     fn id(value: &str) -> StableId {
         StableId::new(value.to_owned()).expect("valid fixture id")
@@ -196,45 +238,68 @@ mod tests {
         Digest32::of_bytes(value.as_bytes())
     }
 
-    struct Fixture {
-        verifier: LearningEvidenceVerifierV1,
-        key: SigningKey,
-        principal: AuthenticatedPrincipalV1,
+    fn principal(
+        name: &str,
+        credential: &str,
+        key: &SigningKey,
         scope: Digest32,
-        objective: Digest32,
-    }
-
-    fn fixture() -> Fixture {
-        let key = SigningKey::from_bytes(&[7; 32]);
-        let verifying_key = key.verifying_key().to_bytes();
-        let scope = digest("scope");
-        let objective = digest("objective");
-        let principal = AuthenticatedPrincipalV1 {
-            principal_id: id("independent-evaluator"),
-            credential_chain_digest: digest("evaluator-credential"),
-            signing_key_digest: Digest32::of_bytes(&verifying_key),
+    ) -> AuthenticatedPrincipalV1 {
+        AuthenticatedPrincipalV1 {
+            principal_id: id(name),
+            credential_chain_digest: digest(credential),
+            signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
             scope_digest: scope,
             authority_epoch: 11,
             authenticated_at: 10,
             expires_at: 100,
-        };
+        }
+    }
+
+    fn fixture() -> Fixture {
+        let generator_key = SigningKey::from_bytes(&[5; 32]);
+        let evaluator_key = SigningKey::from_bytes(&[7; 32]);
+        let scope = digest("scope");
+        let objective = digest("objective");
+        let generator = principal(
+            "operator-generator",
+            "generator-credential",
+            &generator_key,
+            scope,
+        );
+        let evaluator = principal(
+            "independent-evaluator",
+            "evaluator-credential",
+            &evaluator_key,
+            scope,
+        );
         let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
             scope_digest: scope,
             objective_digest: objective,
             authority_epoch: 11,
-            signers: vec![TrustedLearningSignerV1 {
-                principal: principal.clone(),
-                controller_id: id("independent-controller"),
-                verifying_key,
-                roles: vec![LearningEvidenceRoleV1::Evaluator],
-                revoked_at: None,
-            }],
+            signers: vec![
+                TrustedLearningSignerV1 {
+                    principal: generator.clone(),
+                    controller_id: id("generator-controller"),
+                    verifying_key: generator_key.verifying_key().to_bytes(),
+                    roles: vec![LearningEvidenceRoleV1::Generator],
+                    revoked_at: None,
+                },
+                TrustedLearningSignerV1 {
+                    principal: evaluator.clone(),
+                    controller_id: id("evaluator-controller"),
+                    verifying_key: evaluator_key.verifying_key().to_bytes(),
+                    roles: vec![LearningEvidenceRoleV1::Evaluator],
+                    revoked_at: None,
+                },
+            ],
         })
         .expect("host trust");
         Fixture {
             verifier,
-            key,
-            principal,
+            generator_key,
+            evaluator_key,
+            generator,
+            evaluator,
             scope,
             objective,
         }
@@ -245,9 +310,22 @@ mod tests {
         payload: &[u8],
         role: LearningEvidenceRoleV1,
     ) -> SignedLearningEvidenceV1 {
+        let (principal, key, evidence_id) = match role {
+            LearningEvidenceRoleV1::Generator => (
+                &fixture.generator,
+                &fixture.generator_key,
+                "generator-evidence",
+            ),
+            LearningEvidenceRoleV1::Evaluator => (
+                &fixture.evaluator,
+                &fixture.evaluator_key,
+                "evaluator-evidence",
+            ),
+            LearningEvidenceRoleV1::Observer => panic!("observer not used in operator fixture"),
+        };
         let mut evidence = SignedLearningEvidenceV1 {
-            evidence_id: id("operator-evidence"),
-            principal_id: fixture.principal.principal_id.clone(),
+            evidence_id: id(evidence_id),
+            principal_id: principal.principal_id.clone(),
             role,
             trust_digest: fixture.verifier.trust_digest(),
             scope_digest: fixture.scope,
@@ -258,7 +336,7 @@ mod tests {
             payload_digest: Digest32::of_bytes(payload),
             signature: [0; 64],
         };
-        evidence.signature = fixture.key.sign(&evidence.signing_bytes()).to_bytes();
+        evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
         evidence
     }
 
@@ -316,14 +394,18 @@ mod tests {
         let certificate = certificate();
         let payload =
             operator_applicability_signing_payload_v2(&certificate, 50).expect("payload");
-        let evidence = sign(&fixture, &payload, LearningEvidenceRoleV1::Evaluator);
+        let generator = sign(&fixture, &payload, LearningEvidenceRoleV1::Generator);
+        let evaluator = sign(&fixture, &payload, LearningEvidenceRoleV1::Evaluator);
         let admitted = admit_signed_operator_applicability_v2(
             &certificate,
-            &evidence,
+            &generator,
+            &evaluator,
             &fixture.verifier,
             50,
         )
         .expect("authenticated admission");
+        assert_eq!(admitted.generator_id, id("operator-generator"));
+        assert_eq!(admitted.evaluator_id, id("independent-evaluator"));
         assert_eq!(admitted.trust_digest, fixture.verifier.trust_digest());
         assert_eq!(admitted.authority, AuthorityPosture::DENY_ALL);
 
@@ -331,7 +413,8 @@ mod tests {
         altered.fallback_digest = digest("changed-fallback");
         assert!(admit_signed_operator_applicability_v2(
             &altered,
-            &evidence,
+            &generator,
+            &evaluator,
             &fixture.verifier,
             50,
         )
@@ -343,10 +426,11 @@ mod tests {
         let fixture = fixture();
         let assessment = assessment();
         let payload = operator_regularity_signing_payload_v2(&assessment).expect("payload");
-        let wrong_role = sign(&fixture, &payload, LearningEvidenceRoleV1::Generator);
+        let generator = sign(&fixture, &payload, LearningEvidenceRoleV1::Generator);
         assert!(admit_signed_operator_regularity_v2(
             &assessment,
-            &wrong_role,
+            &generator,
+            &generator,
             &fixture.verifier,
             50,
         )
@@ -356,11 +440,13 @@ mod tests {
         wrong_identity.evaluator_id = id("different-evaluator");
         let payload =
             operator_regularity_signing_payload_v2(&wrong_identity).expect("payload");
-        let evidence = sign(&fixture, &payload, LearningEvidenceRoleV1::Evaluator);
+        let generator = sign(&fixture, &payload, LearningEvidenceRoleV1::Generator);
+        let evaluator = sign(&fixture, &payload, LearningEvidenceRoleV1::Evaluator);
         assert_eq!(
             admit_signed_operator_regularity_v2(
                 &wrong_identity,
-                &evidence,
+                &generator,
+                &evaluator,
                 &fixture.verifier,
                 50,
             ),
