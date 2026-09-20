@@ -24,6 +24,11 @@ from .orchestration import EngineeringPlan
 
 _SHA1 = re.compile(r"[0-9a-f]{40}\Z")
 _TERMINAL_STATES = frozenset({"terminal_merged", "terminal_failed"})
+_STAGE_ISSUERS = {
+    "candidate": "engineering_evidence_binder",
+    "review": "github_review_observer",
+    "ci": "ci_executor",
+}
 _MUTABLE_STATES = frozenset(
     {
         "awaiting_candidate_evidence",
@@ -32,6 +37,20 @@ _MUTABLE_STATES = frozenset(
         "ready_external_merge",
     }
 )
+
+
+@dataclass(frozen=True)
+class IntegrationStageReceipt:
+    queue_generation_id: str
+    package_id: str
+    stage: str
+    evidence_digest: str
+    accepted: bool
+    issuer: str
+    signing_identity: str
+    observed_unix_ns: int
+    expires_unix_ns: int
+    signature: str = ""
 
 
 @dataclass(frozen=True)
@@ -308,6 +327,69 @@ def _invalidate_generation_for_base_drift(
             "currentBaseTree": current_base_tree,
         },
         now,
+    )
+
+
+def observe_integration_stage(
+    store: EngineeringStore,
+    queue_generation_id: str,
+    package_id: str,
+    *,
+    current_base_commit: str,
+    current_base_tree: str,
+    receipt: IntegrationStageReceipt,
+    trust_store: SignatureTrustStore,
+    now_ns: int | None = None,
+) -> IntegrationQueueItem:
+    """Verify one typed stage observation before mutating integration readiness."""
+    if not isinstance(store, EngineeringStore):
+        raise EngineeringError("invalid_engineering_store")
+    if not isinstance(receipt, IntegrationStageReceipt):
+        raise EngineeringError("integration_stage_receipt_required")
+    checked_id(queue_generation_id, "queue_generation_id")
+    checked_id(package_id, "package_id")
+    now = store._now(now_ns)
+    if (
+        receipt.queue_generation_id != queue_generation_id
+        or receipt.package_id != package_id
+        or receipt.stage not in _STAGE_ISSUERS
+        or receipt.issuer != _STAGE_ISSUERS.get(receipt.stage)
+        or receipt.accepted is not True
+    ):
+        raise EngineeringError("integration_stage_receipt_binding")
+    checked_sha256(receipt.evidence_digest, "integration_stage_evidence_digest")
+    if receipt.evidence_digest == "0" * 64:
+        raise EngineeringError("integration_stage_receipt_binding")
+    if (
+        not receipt.signing_identity
+        or type(receipt.observed_unix_ns) is not int
+        or type(receipt.expires_unix_ns) is not int
+        or receipt.observed_unix_ns > now
+        or receipt.expires_unix_ns <= receipt.observed_unix_ns
+        or now >= receipt.expires_unix_ns
+        or not trust_store.verify(
+            receipt,
+            receipt.issuer,
+            receipt.signing_identity,
+            receipt.signature,
+        )
+    ):
+        raise EngineeringError("integration_stage_receipt_binding")
+    observation_digest = semantic_digest(asdict(receipt))
+    supplied = {
+        "candidate": {"candidate_digest": observation_digest},
+        "review": {"review_digest": observation_digest},
+        "ci": {"ci_digest": observation_digest},
+    }[receipt.stage]
+    return reconcile_integration_item(
+        store,
+        queue_generation_id,
+        package_id,
+        current_base_commit=current_base_commit,
+        current_base_tree=current_base_tree,
+        trust_store=trust_store,
+        now_ns=now,
+        **supplied,
     )
 
 
