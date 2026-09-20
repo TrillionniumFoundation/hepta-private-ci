@@ -23,11 +23,11 @@ Declared exclusive target roots:
 - `apps/hepta-browser`
 - `third_party/servo-patches`
 
-Both roots are present. The selected upstream qualification candidate is `servo/servo@5cc5bd32d02619acdec5736055515e38c5840ce1` in `third_party/servo-patches/MANIFEST.json`. It replaces predecessor `84bcc9ac701874fa9819e5cdee06356b961d736c` only after exact-head locked-build, real-E2E and reproducibility evidence; see [SERVO_PIN_AUDIT.md](SERVO_PIN_AUDIT.md).
+Both roots are present. The selected upstream qualification candidate is `servo/servo@b5a1f5e6ec6f8685d40cd389802ced7abe4980f6` in `third_party/servo-patches/MANIFEST.json`, replacing immediate predecessor candidate `5cc5bd32d02619acdec5736055515e38c5840ce1`. The 13-commit advance deliberately includes upstream `07777aaa...`, whose general WebView double-borrow hardening changes `WebView::load()`, a direct Hepta worker callsite. Because that window also changes Servo's Cargo graph, the existing worker lock is predecessor evidence only: exact-head worker CI must generate the b5a1 candidate lock, that exact lock must be reviewed and committed, and then locked build/E2E/reproducibility must rerun before target qualification; see [SERVO_PIN_AUDIT.md](SERVO_PIN_AUDIT.md).
 
 The current repository-owned implementation includes `browser.js`, `action.js`, `bridge.js`, `runtime.js`, `runtime-host.js`, `runtime-contract.js`, `runtime-boundary.js`, the versioned durable `journal.js`, authenticated `persisted-reconciler.js`, `worker-protocol.js`, `worker-driver.js`, the Agentd parent protocol/service, and `servo-worker/`. Cross-owner product composition is present in `codex-rs/hepta-agentd/src/browser_servo.rs`, `browser_revocation_feed.rs`, `runtime.rs` and `state_control.rs`. The one-shot `hepta-agentd-browser` binary is diagnostic/qualification only.
 
-The strict implementation map binds the exact mapped source/evidence snapshot at `44cdb5e35649efd4c1ac3158fddb10c9270d2947` / tree `2de770e678de936de42dfb9e19730804a5a013e7`. Because a Git commit cannot embed its own future SHA/tree, later map/verifier/document-only commits are admissible only when the strict verifier proves zero drift under every mapped Browser root, test and Agentd callee.
+The strict implementation map binds the exact mapped source/evidence snapshot at `b5a022dbe7c69e5b2063429cd4dec52ccd9ca7a6` / tree `0a8d46bc0895d4bd581ae5aed5ef2dfa5f5a63d3`. Because a Git commit cannot embed its own future SHA/tree, later map/verifier/document-only commits are admissible only when the strict verifier proves zero drift under every mapped Browser root, test and Agentd callee.
 
 A worker source tree is not a qualified worker artifact. The candidate still requires exact-SHA build/SBOM receipts, target-host evidence and the independently governed activation/acceptance decisions.
 
@@ -248,10 +248,12 @@ separated the hardened owner boundary from a usable browser lifecycle:
   capabilities; ingress rejects them as future capability instead of allowing a
   later worker failure.
 
-The selected Servo candidate and its 239-commit predecessor delta are documented
-in [SERVO_PIN_AUDIT.md](SERVO_PIN_AUDIT.md). The reviewed candidate lock is committed. The candidate is not a qualified
-deployment until exact-head locked build, real-E2E, reproducibility/SBOM and
-target evidence are terminal-success.
+The selected b5a1 Servo candidate and its 13-commit delta from the 5cc5 predecessor
+are documented in [SERVO_PIN_AUDIT.md](SERVO_PIN_AUDIT.md). The b5a1 candidate
+lock is **not yet committed**. The first exact-head worker run must generate and
+retain that lock candidate; after review the exact bytes must be committed and a
+second exact-head locked run must pass build, real-E2E, reproducibility/SBOM
+before target qualification can consume the artifact.
 
 External gates still include target-host enforcement, retained cross-profile cookie/localStorage/cache
 isolation evidence, target soak/resource measurements, platform equivalents where
