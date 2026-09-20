@@ -22,6 +22,7 @@ use std::sync::mpsc;
 use std::thread;
 use std::time::Duration;
 
+use crate::browser_revocation_feed::BrowserRevocationFeed;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseError;
@@ -703,6 +704,7 @@ pub struct BrowserServoHostConfig {
     pub authority_epoch: u64,
     pub revocation_revision: u64,
     pub revoked_grant_ids: BTreeSet<String>,
+    pub revocation_feed_path: PathBuf,
     pub node_path: PathBuf,
     pub service_path: PathBuf,
     pub service_sha256: String,
@@ -764,16 +766,23 @@ pub fn open_browser_servo_port_from_file(
             "Browser authority epoch/revision must be non-zero".into(),
         ));
     }
+    let bootstrap_revocations = FinalUseRevocations {
+        authority_epoch: config.authority_epoch,
+        revision: config.revocation_revision,
+        revoked_grant_ids: config.revoked_grant_ids.clone(),
+    };
     let authority = FinalUseAuthority::open_state_dir(
         &config.authority_state_dir,
         config.signer_id,
         config.verifying_key,
-        FinalUseRevocations {
-            authority_epoch: config.authority_epoch,
-            revision: config.revocation_revision,
-            revoked_grant_ids: config.revoked_grant_ids,
-        },
+        bootstrap_revocations.clone(),
     )?;
+    let revocation_feed = BrowserRevocationFeed::start(
+        authority.clone(),
+        config.revocation_feed_path,
+        bootstrap_revocations,
+    )
+    .map_err(BrowserServoError::RevocationFeed)?;
     let process = BrowserServoProcessConfig {
         node_path: config.node_path,
         service_path: config.service_path,
@@ -794,7 +803,11 @@ pub fn open_browser_servo_port_from_file(
         max_processes: config.max_processes,
         driver_timeout_ms: config.driver_timeout_ms,
     };
-    PersistentBrowserServoControl::new(authority, process)
+    PersistentBrowserServoControl::new_with_revocation_feed(
+        authority,
+        process,
+        revocation_feed,
+    )
 }
 
 pub struct PersistentBrowserServoControl {
@@ -802,6 +815,7 @@ pub struct PersistentBrowserServoControl {
     process: BrowserServoProcessConfig,
     frame_timeout: Duration,
     port: Mutex<Option<BrowserServoPort<ChildBrowserTransport>>>,
+    revocation_feed: Option<BrowserRevocationFeed>,
 }
 
 impl fmt::Debug for PersistentBrowserServoControl {
@@ -809,6 +823,7 @@ impl fmt::Debug for PersistentBrowserServoControl {
         f.debug_struct("PersistentBrowserServoControl")
             .field("process", &self.process)
             .field("port", &"[PRIVATE RESTARTABLE BROWSER CHILD]")
+            .field("live_revocation_feed", &self.revocation_feed.is_some())
             .finish()
     }
 }
@@ -817,6 +832,22 @@ impl PersistentBrowserServoControl {
     pub fn new(
         authority: FinalUseAuthority,
         process: BrowserServoProcessConfig,
+    ) -> Result<Self, BrowserServoError> {
+        Self::new_internal(authority, process, None)
+    }
+
+    fn new_with_revocation_feed(
+        authority: FinalUseAuthority,
+        process: BrowserServoProcessConfig,
+        revocation_feed: BrowserRevocationFeed,
+    ) -> Result<Self, BrowserServoError> {
+        Self::new_internal(authority, process, Some(revocation_feed))
+    }
+
+    fn new_internal(
+        authority: FinalUseAuthority,
+        process: BrowserServoProcessConfig,
+        revocation_feed: Option<BrowserRevocationFeed>,
     ) -> Result<Self, BrowserServoError> {
         process.validate()?;
         let frame_timeout = process.parent_frame_timeout()?;
@@ -828,10 +859,17 @@ impl PersistentBrowserServoControl {
             process,
             frame_timeout,
             port: Mutex::new(Some(port)),
+            revocation_feed,
         })
     }
 
     pub fn call(&self, call: BrowserServoCall) -> Result<Value, BrowserServoError> {
+        if call.method.requires_final_use()
+            && let Some(feed) = &self.revocation_feed
+        {
+            feed.refresh_now()
+                .map_err(BrowserServoError::RevocationFeed)?;
+        }
         let mut guard = self.port.lock().map_err(|_| {
             BrowserServoError::Unavailable("persistent Browser owner mutex is poisoned".into())
         })?;
@@ -1281,6 +1319,8 @@ pub enum BrowserServoError {
     Indeterminate(String),
     #[error("Browser service unavailable: {0}")]
     Unavailable(String),
+    #[error("Browser live revocation feed rejected current authority state: {0}")]
+    RevocationFeed(String),
     #[error("Browser final-use authority rejected request: {0}")]
     Authority(#[from] FinalUseError),
 }
