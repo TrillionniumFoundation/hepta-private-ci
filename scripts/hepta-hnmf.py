@@ -128,6 +128,14 @@ CANONICAL_RUST_TOKENS = [
     "pub fn encode_wire_v1",
     "pub fn decode_wire_v1",
     "pub fn canonical_contract_digest_v1",
+    "pub fn validate_cross_modal_binding_against_event_v1",
+    "pub valid_from_unix_ms: u64",
+    "pub eligibility_ppm: i32",
+    "pub const Q16_ONE: i32 = 65_536",
+    "abstaining recall contains selected events",
+    "selectedEvent.revision",
+    "weight proposal delta",
+    "threshold proposal delta",
 ]
 
 REFERENCE_RUST_TOKENS = [
