@@ -158,6 +158,25 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
             .is_some_and(|digest| digest.len() == 64),
         "durable dispatch omitted the final-use authority witness"
     );
+    let dispatch = record
+        .dispatch
+        .as_ref()
+        .context("durable runtime.codex dispatch disappeared")?;
+    ensure!(
+        dispatch.codex_authority_epoch == Some(9),
+        "durable dispatch omitted or changed the final-use authority epoch"
+    );
+    ensure!(
+        dispatch.codex_revocation_revision == Some(1),
+        "durable dispatch omitted or changed the final-use revocation revision"
+    );
+    ensure!(
+        dispatch
+            .codex_revocation_head_sha256
+            .as_deref()
+            .is_some_and(|digest| digest.len() == 64),
+        "durable dispatch omitted the exact final-use revocation-head digest"
+    );
     ensure!(
         record
             .observation
