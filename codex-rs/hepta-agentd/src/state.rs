@@ -9,6 +9,7 @@ use codex_hepta_memory::CognitiveStore;
 use crate::AgentdError;
 use crate::AgentdEventKind;
 use crate::AgentdIdentity;
+use crate::AgentdCompactCheckpointHost;
 use crate::EventBuffer;
 
 #[path = "state_control.rs"]
@@ -23,6 +24,7 @@ pub(crate) struct AgentdState {
     events: Mutex<EventBuffer>,
     automation: Mutex<Option<AutomationStore>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
+    compact_checkpoint_host: std::sync::OnceLock<Arc<AgentdCompactCheckpointHost>>,
 }
 
 struct RuntimeState {
@@ -58,6 +60,7 @@ impl AgentdState {
             events: Mutex::new(events),
             automation: Mutex::new(None),
             cognitive: Mutex::new(None),
+            compact_checkpoint_host: std::sync::OnceLock::new(),
         })
     }
 
@@ -78,6 +81,23 @@ impl AgentdState {
         }
         *cognitive = Some(store);
         Ok(())
+    }
+
+    pub(crate) fn attach_compact_checkpoint_host(
+        &self,
+        host: Arc<AgentdCompactCheckpointHost>,
+    ) -> Result<(), AgentdError> {
+        self.compact_checkpoint_host
+            .set(host)
+            .map_err(|_| AgentdError::Protocol(
+                "compact checkpoint host was attached more than once".to_string()
+            ))
+    }
+
+    pub(crate) fn compact_checkpoint_host(
+        &self,
+    ) -> Option<Arc<AgentdCompactCheckpointHost>> {
+        self.compact_checkpoint_host.get().cloned()
     }
 
     pub(crate) fn attach_automation_store(
@@ -191,6 +211,21 @@ impl AgentdState {
         {
             return Err(AgentdError::GenerationFenced(
                 "agentd qualification writer is unavailable until the running App Server is ready"
+                    .to_string(),
+            ));
+        }
+        Ok(runtime.current_generation)
+    }
+
+    pub(crate) fn production_compact_authority(&self) -> Result<u64, AgentdError> {
+        self.refresh_generation()?;
+        let runtime = self.runtime.lock().map_err(poisoned_state)?;
+        if runtime.lifecycle != AgentLifecycle::Running
+            || !runtime.app_server_ready
+            || runtime.fenced
+        {
+            return Err(AgentdError::GenerationFenced(
+                "production compact publisher requires a running, ready, unfenced Agentd"
                     .to_string(),
             ));
         }
