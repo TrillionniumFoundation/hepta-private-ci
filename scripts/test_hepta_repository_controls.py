@@ -107,12 +107,12 @@ class RepositoryControlTests(unittest.TestCase):
 
     def test_observation_does_not_authorize_activation(self):
         branch, protection, checks = fixture()
-        responses = [branch, protection, {"check_runs": checks}, branch, protection]
+        responses = [branch, protection, {"check_runs": checks}, {"check_runs": checks}, branch, protection]
         with patch.object(controls, "api", side_effect=responses) as api:
             result = controls.observe(REPO, SHA, EVALUATOR)
         self.assertTrue(result["repository_control_profile_passed"])
         self.assertFalse(result["activation_authorized"])
-        self.assertEqual(api.call_count, 5)
+        self.assertEqual(api.call_count, 6)
 
     def test_branch_or_protection_change_during_observation_is_rejected(self):
         for change in ("head", "protection"):
@@ -122,7 +122,7 @@ class RepositoryControlTests(unittest.TestCase):
                 after["commit"]["sha"] = "b" * 40
             else:
                 current["required_status_checks"]["strict"] = False
-            responses = [branch, protection, {"check_runs": checks}, after, current]
+            responses = [branch, protection, {"check_runs": checks}, {"check_runs": checks}, after, current]
             with patch.object(controls, "api", side_effect=responses):
                 with self.subTest(change=change), self.assertRaises(controls.ControlError):
                     controls.observe(REPO, SHA, EVALUATOR)
@@ -156,6 +156,77 @@ class RepositoryControlTests(unittest.TestCase):
                           return_value=SimpleNamespace(stdout='{"ok": true}')) as run:
             self.assertEqual(controls.api("repos/owner/repo/branches/main"), {"ok": True})
         self.assertEqual(run.call_args.args[0][:4], ["gh", "api", "--method", "GET"])
+
+
+    def observe_check_transition(self, initial, current):
+        branch, protection, _ = fixture()
+        responses = [branch, protection, {"check_runs": initial},
+                     {"check_runs": current}, branch, protection]
+        with patch.object(controls, "api", side_effect=responses):
+            return controls.observe(REPO, SHA, EVALUATOR)
+
+    def test_same_check_rerun_invalidates_read_success(self):
+        for status, conclusion in [("queued", None), ("in_progress", None),
+                                   ("completed", "failure"), ("completed", "cancelled")]:
+            _, _, initial = fixture()
+            current = copy.deepcopy(initial)
+            current[1].update(status=status, conclusion=conclusion)
+            with self.subTest(status=status, conclusion=conclusion):
+                with self.assertRaises(controls.ControlError):
+                    self.observe_check_transition(initial, current)
+
+    def test_new_green_check_still_changes_observation_identity(self):
+        _, _, initial = fixture()
+        current = copy.deepcopy(initial)
+        current[1]["id"] = 3
+        with self.assertRaisesRegex(controls.ControlError, "check runs changed"):
+            self.observe_check_transition(initial, current)
+
+    def test_required_check_disappearance_fails_closed(self):
+        _, _, initial = fixture()
+        with self.assertRaises(controls.ControlError):
+            self.observe_check_transition(initial, initial[:1])
+
+    def test_new_pending_check_invalidates_read_success(self):
+        _, _, initial = fixture()
+        latest = copy.deepcopy(initial[1])
+        latest.update(id=3, status="queued", conclusion=None)
+        with self.assertRaises(controls.ControlError):
+            self.observe_check_transition(initial, initial + [latest])
+
+    def test_unrelated_check_changes_do_not_block_observation(self):
+        _, _, initial = fixture()
+        optional = {"id": 99, "name": "optional-diagnostics", "head_sha": SHA,
+                    "status": "queued", "conclusion": None,
+                    "app": {"id": 15368, "slug": "github-actions"}}
+        result = self.observe_check_transition(initial, [optional, *reversed(initial)])
+        self.assertEqual(result["check_run_ids"], [1, 2])
+        self.assertFalse(result["activation_authorized"])
+
+    def test_new_untrusted_publisher_cannot_change_required_identity(self):
+        _, _, initial = fixture()
+        untrusted = copy.deepcopy(initial[1])
+        untrusted.update(id=99, status="queued", conclusion=None)
+        untrusted["app"]["id"] += 1
+        result = self.observe_check_transition(initial, initial + [untrusted])
+        self.assertEqual(result["check_run_ids"], [1, 2])
+
+    def test_second_check_read_transport_failure_is_not_stale_success(self):
+        branch, protection, checks = fixture()
+        denied = subprocess.CalledProcessError(1, ["gh", "api"], stderr="HTTP 403")
+        with patch.object(controls, "api", side_effect=[branch, protection,
+                                                      {"check_runs": checks}, denied]):
+            with self.assertRaises(subprocess.CalledProcessError):
+                controls.observe(REPO, SHA, EVALUATOR)
+
+    def test_ambient_host_cannot_redirect_repository_observation(self):
+        with patch.dict(controls.os.environ, {"GH_HOST": "untrusted.example"}):
+            with patch.object(controls.subprocess, "run",
+                              return_value=SimpleNamespace(stdout='{}')) as run:
+                controls.api("repos/owner/repo/branches/main")
+        args = run.call_args.args[0]
+        self.assertEqual(args[args.index("--hostname") + 1], "github.com")
+        self.assertEqual(run.call_args.kwargs["timeout"], controls.API_TIMEOUT_SECONDS)
 
 
 if __name__ == "__main__":

@@ -121,7 +121,7 @@ def validate_observation(branch: dict[str, Any], protection: dict[str, Any],
 
 
 def api(path: str) -> Any:
-    result = subprocess.run(["gh", "api", "--method", "GET", path], check=True,
+    result = subprocess.run(["gh", "api", "--method", "GET", "--hostname", "github.com", path], check=True,
                             text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                             timeout=API_TIMEOUT_SECONDS)
     return json.loads(result.stdout)
@@ -145,7 +145,7 @@ def observe(repository: str, expected_sha: str, evaluator_app: int) -> dict[str,
     require(bool(REPOSITORY.fullmatch(repository))
             and all(part not in (".", "..") for part in repository.split("/")), "Invalid repository")
     require(bool(SHA.fullmatch(expected_sha)), "Invalid expected SHA")
-    require(positive_integer(evaluator_app), "Missing indepently provisioned evaluator App ID")
+    require(positive_integer(evaluator_app), "Missing independently provisioned evaluator App ID")
     branch_path = f"repos/{repository}/branches/main"
     protection_path = branch_path + "/protection"
     before = api(branch_path)
@@ -158,6 +158,16 @@ def observe(repository: str, expected_sha: str, evaluator_app: int) -> dict[str,
     required_checks(protection, evaluator_app)
     accepted = validate_observation(before, protection, collect_checks(repository, expected_sha),
                                     expected_sha=expected_sha, evaluator_app=evaluator_app)
+    # A rerun can invalidate the earlier green result without moving main or
+    # changing protection. Re-observe only the required exact-head checks; an
+    # unrelated workflow must not make the observation perpetually unstable.
+    current_accepted = validate_observation(
+        before, protection, collect_checks(repository, expected_sha),
+        expected_sha=expected_sha, evaluator_app=evaluator_app)
+    require(accepted == current_accepted, "Required check runs changed during the observation")
+    # Bracket both paginated check reads with the branch and policy reads. This
+    # detects observed drift, not an atomic GitHub snapshot or permission to
+    # merge: server-side protection must enforce the actual merge boundary.
     after, current_protection = api(branch_path), api(protection_path)
     require(isinstance(after, dict) and after.get("commit", {}).get("sha") == expected_sha
             and after.get("protected") is True, "main moved during the observation")

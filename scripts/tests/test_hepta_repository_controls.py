@@ -142,7 +142,7 @@ class RepositoryControlTests(unittest.TestCase):
         with self.assertRaises(controls.ControlError): self.validate()
 
     def test_activation_is_not_self_authorized(self):
-        responses = [self.branch, self.protection, {"check_runs": self.checks}, self.branch, self.protection]
+        responses = [self.branch, self.protection, {"check_runs": self.checks}, {"check_runs": self.checks}, self.branch, self.protection]
         with patch.object(controls, "api", side_effect=responses):
             result = controls.observe(REPO, SHA, APP)
         self.assertTrue(result["repository_control_profile_passed"])
@@ -151,13 +151,13 @@ class RepositoryControlTests(unittest.TestCase):
     def test_policy_drift_during_observation_fails(self):
         after = deepcopy(self.protection); after["enforce_admins"]["enabled"] = False
         with patch.object(controls, "api", side_effect=[self.branch, self.protection,
-                                                      {"check_runs": self.checks}, self.branch, after]):
+                                                      {"check_runs": self.checks}, {"check_runs": self.checks}, self.branch, after]):
             with self.assertRaises(controls.ControlError): controls.observe(REPO, SHA, APP)
 
     def test_main_drift_during_observation_fails(self):
         after = deepcopy(self.branch); after["commit"]["sha"] = "3" * 40
         with patch.object(controls, "api", side_effect=[self.branch, self.protection,
-                                                      {"check_runs": self.checks}, after, self.protection]):
+                                                      {"check_runs": self.checks}, {"check_runs": self.checks}, after, self.protection]):
             with self.assertRaises(controls.ControlError): controls.observe(REPO, SHA, APP)
 
     def test_api_denial_cannot_be_replaced_with_source_policy(self):
