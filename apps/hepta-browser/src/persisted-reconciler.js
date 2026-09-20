@@ -38,6 +38,13 @@ function positiveInteger(value, name) {
   return value;
 }
 
+function nonNegativeInteger(value, name) {
+  if (!Number.isSafeInteger(value) || value < 0) {
+    throw new TypeError(`${name} must be a non-negative safe integer`);
+  }
+  return value;
+}
+
 function exactKeys(value, keys, name) {
   if (value === null || typeof value !== "object" || Array.isArray(value)) {
     throw new TypeError(`${name} must be an object`);
@@ -108,14 +115,50 @@ export class FilePersistedEffectReconciler {
   #root;
   #observerId;
   #verifyingKey;
+  #minimumObserverGeneration;
+  #minimumObservedAtUnixMs;
+  #currentFrontierDigest;
+  #now;
+  #maxFutureSkewMs;
 
-  constructor(root, { observerId, verifyingKeyHex }) {
+  constructor(
+    root,
+    {
+      observerId,
+      verifyingKeyHex,
+      minimumObserverGeneration,
+      minimumObservedAtUnixMs,
+      currentFrontierDigest,
+      now = () => Date.now(),
+      maxFutureSkewMs = 60_000,
+    },
+  ) {
     if (typeof root !== "string" || !isAbsolute(root)) {
       throw new TypeError("persisted reconciler root must be absolute");
     }
     this.#root = resolve(root);
     this.#observerId = stableId(observerId, "persisted reconciler observerId");
     this.#verifyingKey = rawEd25519PublicKey(verifyingKeyHex);
+    this.#minimumObserverGeneration = positiveInteger(
+      minimumObserverGeneration,
+      "persisted reconciler minimumObserverGeneration",
+    );
+    this.#minimumObservedAtUnixMs = positiveInteger(
+      minimumObservedAtUnixMs,
+      "persisted reconciler minimumObservedAtUnixMs",
+    );
+    this.#currentFrontierDigest = digest(
+      currentFrontierDigest,
+      "persisted reconciler currentFrontierDigest",
+    );
+    if (typeof now !== "function") {
+      throw new TypeError("persisted reconciler now must be a function");
+    }
+    this.#now = now;
+    this.#maxFutureSkewMs = nonNegativeInteger(
+      maxFutureSkewMs,
+      "persisted reconciler maxFutureSkewMs",
+    );
   }
 
   async observe(input) {
@@ -214,6 +257,25 @@ export class FilePersistedEffectReconciler {
       receipt.frontierDigest,
       "receipt.frontierDigest",
     );
+    if (observerGeneration < this.#minimumObserverGeneration) {
+      throw new TypeError("persisted reconciliation receipt observer generation is stale");
+    }
+    if (observedAtUnixMs < this.#minimumObservedAtUnixMs) {
+      throw new TypeError("persisted reconciliation receipt observation time is stale");
+    }
+    const nowUnixMs = positiveInteger(
+      this.#now(),
+      "persisted reconciliation current time",
+    );
+    if (
+      nowUnixMs > Number.MAX_SAFE_INTEGER - this.#maxFutureSkewMs ||
+      observedAtUnixMs > nowUnixMs + this.#maxFutureSkewMs
+    ) {
+      throw new TypeError("persisted reconciliation receipt observation time is in the future");
+    }
+    if (frontierDigest !== this.#currentFrontierDigest) {
+      throw new TypeError("persisted reconciliation receipt frontier is stale");
+    }
     if (
       stableId(receipt.profileId, "receipt.profileId") !== input.profileId ||
       positiveInteger(receipt.profileGeneration, "receipt.profileGeneration") !== generation ||
