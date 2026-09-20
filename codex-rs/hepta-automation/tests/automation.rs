@@ -934,6 +934,9 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     // Remove every post-v1 object in reverse dependency order, then rewind the
     // migration ledger so reopening exercises the real v1 -> latest path.
     for statement in [
+        "DROP TRIGGER IF EXISTS automation_legacy_dispatch_reconciliations_no_update",
+        "DROP TRIGGER IF EXISTS automation_legacy_dispatch_reconciliations_no_delete",
+        "DROP TABLE IF EXISTS automation_legacy_dispatch_reconciliations",
         "DROP VIEW IF EXISTS automation_occurrence",
         "DROP VIEW IF EXISTS automation_schedule",
         "DROP TRIGGER IF EXISTS automation_runs_schedule_revision_required_insert",
@@ -1091,6 +1094,171 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
             .await
             .is_err(),
         "migration must restore the immutable metadata trigger"
+    );
+    pool.close().await;
+}
+
+#[tokio::test]
+async fn legacy_unknown_without_frozen_revision_requires_absence_proof_before_new_claim() {
+    let fixture = FleetFixture::new(1);
+    let layout = &fixture.layouts[0];
+    let store = AutomationStore::open(layout).await.expect("open store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75019",
+        AutomationSchedule::Once,
+        100,
+    );
+    store.create_task(&task).await.expect("create task");
+    let lease = store
+        .claim_due(100, 1, 60_000)
+        .await
+        .expect("claim")
+        .expect("due lease");
+    let database_path = store.path().to_path_buf();
+    store.close().await;
+
+    // Recreate the exact compatibility shape left by migration 0014 for a
+    // pre-v14 dispatch-unknown row: the provider identity is durable, but the
+    // historical schedule revision was never frozen and no qualified
+    // occurrence exists. Never guess the current revision for this row.
+    let sqlite_home = AbsolutePathBuf::from_absolute_path(layout.automation_root())
+        .expect("absolute sqlite home");
+    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_durable_evidence_pool(&database_path)
+        .await
+        .expect("open compatibility fixture");
+    sqlx::query("DROP TRIGGER automation_runs_schedule_revision_no_update")
+        .execute(&pool)
+        .await
+        .expect("drop revision immutability for fixture");
+    sqlx::query(
+        "UPDATE automation_runs SET schedule_revision = NULL
+         WHERE task_id = ? AND occurrence = ?",
+    )
+    .bind(task.task_id.to_string())
+    .bind(i64::try_from(lease.occurrence).expect("occurrence fits sqlite"))
+    .execute(&pool)
+    .await
+    .expect("erase historical revision");
+    sqlx::query(
+        "CREATE TRIGGER automation_runs_schedule_revision_no_update
+         BEFORE UPDATE OF schedule_revision ON automation_runs
+         WHEN NEW.schedule_revision IS NOT OLD.schedule_revision
+         BEGIN
+             SELECT RAISE(ABORT, 'automation run schedule revision is immutable');
+         END",
+    )
+    .execute(&pool)
+    .await
+    .expect("restore revision immutability");
+    sqlx::query(
+        "INSERT INTO automation_dispatch_outcomes (
+            task_id, occurrence, client_user_message_id, outcome, observed_at_ms
+         ) VALUES (?, ?, ?, 'uncertain', ?)",
+    )
+    .bind(task.task_id.to_string())
+    .bind(i64::try_from(lease.occurrence).expect("occurrence fits sqlite"))
+    .bind(&lease.client_user_message_id)
+    .bind(101_i64)
+    .execute(&pool)
+    .await
+    .expect("insert legacy uncertainty");
+    pool.close().await;
+
+    let store = AutomationStore::open(layout)
+        .await
+        .expect("reopen preserved legacy ambiguity");
+    let uncertain = store
+        .uncertain_dispatches(8)
+        .await
+        .expect("list uncertainty");
+    assert_eq!(uncertain.len(), 1);
+    assert_eq!(uncertain[0].client_user_message_id, lease.client_user_message_id);
+
+    let admitted = store
+        .reconcile_uncertain_occurrence_admitted(
+            task.task_id,
+            lease.occurrence,
+            &AutomationQueueReceipt {
+                queued_submission_id: "legacy-admitted".to_string(),
+                client_user_message_id: lease.client_user_message_id.clone(),
+            },
+            102,
+        )
+        .await;
+    assert_eq!(
+        admitted,
+        Err(AutomationError::DispatchUnknown),
+        "provider admission cannot manufacture a missing historical schedule revision"
+    );
+    assert_eq!(
+        store
+            .uncertain_dispatches(8)
+            .await
+            .expect("uncertainty remains")
+            .len(),
+        1
+    );
+
+    let proof = Sha256Digest::for_bytes(b"legacy-provider-proven-absent");
+    store
+        .reconcile_uncertain_occurrence_absent(
+            task.task_id,
+            lease.occurrence,
+            &lease.client_user_message_id,
+            &proof,
+            103,
+        )
+        .await
+        .expect("reconcile legacy absence");
+    assert!(
+        store
+            .uncertain_dispatches(8)
+            .await
+            .expect("uncertainty cleared")
+            .is_empty()
+    );
+
+    // The old unqualified run is retired. A subsequent claim does not reuse
+    // its occurrence/client identity and freezes the current schedule revision.
+    let next = store
+        .claim_due(104, 2, 60_000)
+        .await
+        .expect("claim after proven absence")
+        .expect("task remains due");
+    assert_eq!(next.occurrence, lease.occurrence + 1);
+    assert_eq!(next.schedule_revision, 1);
+    assert_ne!(next.client_user_message_id, lease.client_user_message_id);
+    store.close().await;
+
+    let sqlite_home = AbsolutePathBuf::from_absolute_path(layout.automation_root())
+        .expect("absolute sqlite home");
+    let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        .open_durable_evidence_pool(&database_path)
+        .await
+        .expect("inspect reconciliation evidence");
+    let stored_proof: String = sqlx::query_scalar(
+        "SELECT proof_digest FROM automation_legacy_dispatch_reconciliations
+         WHERE task_id = ? AND occurrence = ?",
+    )
+    .bind(task.task_id.to_string())
+    .bind(i64::try_from(lease.occurrence).expect("occurrence fits sqlite"))
+    .fetch_one(&pool)
+    .await
+    .expect("read legacy proof");
+    assert_eq!(stored_proof, proof.as_str());
+    assert!(
+        sqlx::query(
+            "UPDATE automation_legacy_dispatch_reconciliations
+             SET proof_digest = ? WHERE task_id = ? AND occurrence = ?",
+        )
+        .bind(Sha256Digest::for_bytes(b"forged-proof").as_str())
+        .bind(task.task_id.to_string())
+        .bind(i64::try_from(lease.occurrence).expect("occurrence fits sqlite"))
+        .execute(&pool)
+        .await
+        .is_err(),
+        "legacy reconciliation evidence must remain append-only"
     );
     pool.close().await;
 }
