@@ -12,22 +12,30 @@ The central truth is a closed index. Detailed module roots, ownership, terminal 
 
 ## 2. `runtime.supervisor`
 
-Owns generation-fenced process lifecycle and release transition records; user-task truth remains outside this module.
+Owns generation-fenced process lifecycle, durable bounded restart state and the unified durable release-transition journal; Fleet owns immutable release catalog/allow-revoke admission facts and user-task truth remains outside this module.
 
-The process driver and current-generation health observations establish process terminality, not user-task success.
+The exact process driver, Agentd readiness/drain acknowledgements and current-generation observations establish lifecycle terminality; drain acknowledgement closes admission but never establishes user-task success.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
 | `start_instance` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn start(` |
 | `observe_health` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn tick(` |
 | `drain` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn drain(` |
+| `stop_instance` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn stop(` |
+| `kill_instance` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn kill(` |
+| `restart_instance` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn restart(` |
 | `load_next` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn upgrade(` |
+| `rollback_release` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn rollback(` |
+| `signed_upgrade` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn apply_production_grant(` |
+| `signed_rollback` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn apply_production_grant(` |
+| `reconcile_signed_intent` | `owner_native` | `codex-rs/hepta-supervisor/src/supervisor.rs` — `pub fn resolve_production_recovery(` |
 
 External evidence gates:
 
-- deployed binary and host identity
-- target-host watchdog/start/drain measurements
-- independent operational acceptance
+- exact deployed hepta-supervisord binary, host identity and externally pinned production grant/H7 verifier configuration
+- target-host startup, watchdog, typed Agentd drain, bounded restart and signed-recovery crash/fault/latency measurements
+- deployment and independent verification of the external release-policy/authority distribution feeding Fleet allow/revoke state and signer rotation
+- independent operational acceptance of signed upgrade, rollback and recovery outcomes
 
 ## 3. `runtime.fleet`
 
@@ -240,6 +248,6 @@ External evidence gates:
 
 ## 13. Cross-module acceptance boundary
 
-All 39 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
+All 46 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
 
 Repository source closure does not self-issue real model/provider execution, Servo or Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, external-owner consent, independent acceptance, selection, promotion or release.
