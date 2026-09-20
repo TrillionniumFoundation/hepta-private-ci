@@ -463,17 +463,13 @@ fn validate_support_digests(event: &LedgerEvent) -> Result<(), LedgerError> {
                 .published_context_digest
                 .is_some_and(Digest32::is_zero)
             {
-                return Err(LedgerError::EmptyDigest(
-                    "retrieval published context",
-                ));
+                return Err(LedgerError::EmptyDigest("retrieval published context"));
             }
             if value
                 .downstream_policy_digest
                 .is_some_and(Digest32::is_zero)
             {
-                return Err(LedgerError::EmptyDigest(
-                    "retrieval downstream policy",
-                ));
+                return Err(LedgerError::EmptyDigest("retrieval downstream policy"));
             }
             if value
                 .enumerated_candidate_digests
