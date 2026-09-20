@@ -75,10 +75,7 @@ pub struct LocalProcessDriverConfig {
 }
 
 impl LocalProcessDriverConfig {
-    pub fn new(
-        runtime_executable: PathBuf,
-        models: BTreeMap<String, LocalModelArtifacts>,
-    ) -> Self {
+    pub fn new(runtime_executable: PathBuf, models: BTreeMap<String, LocalModelArtifacts>) -> Self {
         Self {
             runtime_executable,
             models,
@@ -244,7 +241,11 @@ impl LocalProcessDriver {
         artifacts: &VerifiedArtifacts,
     ) -> Result<(), Error> {
         for (path, digest, label) in [
-            (&self.runtime_executable, &manifest.runtime_digest, "runtime"),
+            (
+                &self.runtime_executable,
+                &manifest.runtime_digest,
+                "runtime",
+            ),
             (&artifacts.weights, &manifest.weights_digest, "weights"),
             (
                 &artifacts.tokenizer,
@@ -485,7 +486,10 @@ impl ModelDriver for LocalProcessDriver {
             });
         }
         let output = optional_string_field(&response, "output")?;
-        if output.as_ref().is_some_and(|value| value.len() > MAX_OUTPUT_BYTES) {
+        if output
+            .as_ref()
+            .is_some_and(|value| value.len() > MAX_OUTPUT_BYTES)
+        {
             process.terminate();
             return Err(driver_error("local runtime output byte limit exceeded"));
         }
@@ -525,7 +529,9 @@ impl ModelDriver for LocalProcessDriver {
             || require_string(&response, "handle_id", &handle.opaque_id).is_err()
         {
             process.terminate();
-            return Err(driver_error("local runtime unload acknowledgement mismatch"));
+            return Err(driver_error(
+                "local runtime unload acknowledgement mismatch",
+            ));
         }
         self.shutdown_after_ack(&mut process)
     }
@@ -566,21 +572,19 @@ fn spawn_protocol_reader(
                 {
                     Ok(read) => read,
                     Err(error) => {
-                        let _ = sender.send(Err(format!(
-                            "local runtime protocol read failed: {error}"
-                        )));
+                        let _ = sender
+                            .send(Err(format!("local runtime protocol read failed: {error}")));
                         return;
                     }
                 };
                 if read == 0 {
-                    let _ = sender.send(Err(
-                        "local runtime closed its protocol stream".to_string(),
-                    ));
+                    let _ =
+                        sender.send(Err("local runtime closed its protocol stream".to_string()));
                     return;
                 }
                 if read > maximum_bytes || !line.ends_with('\n') {
                     let _ = sender.send(Err(
-                        "local runtime protocol line exceeded its bound".to_string(),
+                        "local runtime protocol line exceeded its bound".to_string()
                     ));
                     return;
                 }
@@ -621,7 +625,9 @@ fn verify_regular_file(
     }
     let metadata = fs::symlink_metadata(path).map_err(io_error)?;
     if metadata.file_type().is_symlink() || !metadata.is_file() {
-        return Err(driver_error(format!("{label} must be a regular non-symlink file")));
+        return Err(driver_error(format!(
+            "{label} must be a regular non-symlink file"
+        )));
     }
     let canonical = fs::canonicalize(path).map_err(io_error)?;
     if let Some(expected) = expected_digest

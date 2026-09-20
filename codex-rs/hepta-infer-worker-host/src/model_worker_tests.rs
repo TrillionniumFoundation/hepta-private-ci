@@ -100,15 +100,14 @@ fn request() -> WorkerRequest {
 
 #[test]
 fn loads_runs_and_unloads_exact_model_tuple() {
-    let mut worker =
-        InferenceWorker::new(
-            100,
-            "worker.1".to_string(),
-            3,
-            VerifiedResourceGrant::trusted_in_process(100, grant()).unwrap(),
-            Driver::default(),
-        )
-            .expect("worker");
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.1".to_string(),
+        3,
+        VerifiedResourceGrant::trusted_in_process(100, grant()).unwrap(),
+        Driver::default(),
+    )
+    .expect("worker");
     let loaded = worker.load_model(100, manifest()).expect("load");
     assert!(loaded.terminal_observed);
     let observed = worker.run(100, "model.1", request()).expect("run");
@@ -141,25 +140,21 @@ fn aggregate_reserved_memory_cannot_exceed_the_worker_grant() {
     let mut second = manifest();
     second.model_id = "model.2".to_string();
     second.model_digest = "b".repeat(64);
-    assert_eq!(
-        worker.load_model(100, second),
-        Err(Error::ModelCapacity)
-    );
+    assert_eq!(worker.load_model(100, second), Err(Error::ModelCapacity));
     assert_eq!(worker.models.len(), 1);
     assert_eq!(worker.driver.loaded, 1);
 }
 
 #[test]
 fn rejects_changed_tokenizer_model_or_payload_tuple() {
-    let mut worker =
-        InferenceWorker::new(
-            100,
-            "worker.1".to_string(),
-            3,
-            VerifiedResourceGrant::trusted_in_process(100, grant()).unwrap(),
-            Driver::default(),
-        )
-            .expect("worker");
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.1".to_string(),
+        3,
+        VerifiedResourceGrant::trusted_in_process(100, grant()).unwrap(),
+        Driver::default(),
+    )
+    .expect("worker");
     worker.load_model(100, manifest()).expect("load");
     let mut changed = request();
     changed.lease_payload_digest = "4".repeat(64);
@@ -181,14 +176,14 @@ fn lost_driver_terminality_is_indeterminate() {
         indeterminate: true,
         ..Driver::default()
     };
-    let mut worker =
-        InferenceWorker::new(
-            100,
-            "worker.1".to_string(),
-            3,
-            VerifiedResourceGrant::trusted_in_process(100, grant()).unwrap(),
-            driver,
-        ).expect("worker");
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.1".to_string(),
+        3,
+        VerifiedResourceGrant::trusted_in_process(100, grant()).unwrap(),
+        driver,
+    )
+    .expect("worker");
     worker.load_model(100, manifest()).expect("load");
     let observed = worker.run(100, "model.1", request()).expect("run");
     assert_eq!(observed.status, ExecutionStatus::Indeterminate);
@@ -200,11 +195,7 @@ fn lost_driver_terminality_is_indeterminate() {
 struct Verifier;
 
 impl ResourceGrantVerifier for Verifier {
-    fn verify(
-        &self,
-        _now_ms: u64,
-        _grant: &ResourceGrant,
-    ) -> Result<GrantVerification, Error> {
+    fn verify(&self, _now_ms: u64, _grant: &ResourceGrant) -> Result<GrantVerification, Error> {
         Ok(GrantVerification::Authenticated {
             authority_id: "fleet.authority".to_string(),
             evidence_digest: "a".repeat(64),
@@ -297,14 +288,8 @@ fn kernel_final_use_verifier_authenticates_one_exact_worker_generation() {
             && worker_id == "worker.1"
     ));
 
-    InferenceWorker::new(
-        100,
-        "worker.1".to_string(),
-        3,
-        verified,
-        Driver::default(),
-    )
-    .expect("exact authenticated worker subject");
+    InferenceWorker::new(100, "worker.1".to_string(), 3, verified, Driver::default())
+        .expect("exact authenticated worker subject");
 
     assert_eq!(
         VerifiedResourceGrant::verify_final_use(
@@ -326,13 +311,7 @@ fn kernel_final_use_verifier_authenticates_one_exact_worker_generation() {
 fn authenticated_resource_grant_cannot_cross_worker_subjects() {
     let verified = VerifiedResourceGrant::verify_with(100, grant(), &Verifier).unwrap();
     assert!(matches!(
-        InferenceWorker::new(
-            100,
-            "worker.2".to_string(),
-            3,
-            verified,
-            Driver::default(),
-        ),
+        InferenceWorker::new(100, "worker.2".to_string(), 3, verified, Driver::default(),),
         Err(Error::InvalidGrant)
     ));
 }

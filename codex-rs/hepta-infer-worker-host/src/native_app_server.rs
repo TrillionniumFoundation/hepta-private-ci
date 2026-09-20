@@ -44,8 +44,8 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
-pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 use codex_hepta_infer_core::durable_control::native::NativeFinalUseAuthority;
+pub use codex_hepta_infer_core::durable_control::native::NativeOwnerAuthority;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 pub use codex_hepta_infer_core::durable_control::native::NativeRunStatus;
 use codex_protocol::user_input::user_input_payload_sha256;
@@ -283,11 +283,7 @@ impl AppServerModelDriver {
             }
         };
         let admitted_authority = policy::claimed_authority(&durable_witness);
-        let response = timeout(
-            RPC_TIMEOUT,
-            pending.response_typed::<TurnStartResponse>(),
-        )
-        .await;
+        let response = timeout(RPC_TIMEOUT, pending.response_typed::<TurnStartResponse>()).await;
         let turn = match response {
             Ok(Ok(response)) => response.turn,
             _ => {
@@ -498,9 +494,8 @@ impl AppServerModelDriver {
         let turn_id = match reconciled.outcome {
             ThreadQueueReconcileOutcome::Persisted { turn_id } if !turn_id.is_empty() => turn_id,
             ThreadQueueReconcileOutcome::Missing | ThreadQueueReconcileOutcome::Cancelled => {
-                let reason =
-                    "Core exact client-message reconciliation proved no durable admission"
-                        .to_string();
+                let reason = "Core exact client-message reconciliation proved no durable admission"
+                    .to_string();
                 control.reconcile_native_no_admission(request_id, reason)?;
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Ok(None);
@@ -512,7 +507,8 @@ impl AppServerModelDriver {
             ThreadQueueReconcileOutcome::Queued { .. } => {
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err(
-                    "Core reconciliation found a queued identity for a direct inference turn".into(),
+                    "Core reconciliation found a queued identity for a direct inference turn"
+                        .into(),
                 );
             }
         };
@@ -608,8 +604,9 @@ impl AppServerModelDriver {
                 TurnStatus::InProgress => {
                     output.status = NativeRunStatus::Indeterminate;
                     output.terminal_observed = false;
-                    output.stop_reason =
-                        Some("Core admission reconciled; original turn is still in progress".into());
+                    output.stop_reason = Some(
+                        "Core admission reconciled; original turn is still in progress".into(),
+                    );
                 }
             }
         } else {
@@ -620,12 +617,8 @@ impl AppServerModelDriver {
         }
 
         if !matches!(output.owner_authority, NativeOwnerAuthority::Lost { .. }) {
-            let _ = verify_owner_health(
-                &mut output,
-                owner.health(),
-                Instant::now() + RPC_TIMEOUT,
-            )
-            .await;
+            let _ = verify_owner_health(&mut output, owner.health(), Instant::now() + RPC_TIMEOUT)
+                .await;
         }
         if cancellation.is_cancelled() && !output.terminal_observed {
             control.cancel_native(request_id)?;
