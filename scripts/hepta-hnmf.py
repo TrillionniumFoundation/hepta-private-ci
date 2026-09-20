@@ -94,6 +94,7 @@ REQUIRED_FILES = [
     "docs/hnmf/GAPS.json",
     "docs/contracts/CONTRACTS.json",
     "docs/contracts/PROTOCOL_SCHEMAS.json",
+    "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json",
     "codex-rs/hepta-cognitive-types/src/hnmf.rs",
     "codex-rs/hepta-cognitive-types/src/hnmf_learning.rs",
     "codex-rs/hepta-cognitive-types/src/wire.rs",
@@ -164,7 +165,23 @@ FORBIDDEN_REFERENCE_CONTRACT_TOKENS = [
     "pub struct PlasticityBatch",
     "pub enum TopologyOperation",
     "pub struct ForgetBatch",
+
 ]
+
+EXPECTED_PORT_TARGETS = {
+    "ModulePort::cognitive.types::cognitive.read": "cognitive.read",
+    "ModulePort::cognitive.types::cognitive.store": "cognitive.store",
+    "ModulePort::cognitive.types::knowledge.graph": "knowledge.graph",
+    "ModulePort::cognitive.types::learning.ledger": "learning.ledger",
+}
+
+EXPECTED_LOCAL_PORT_TYPES = {
+    "ModulePort::cognitive.types::cognitive.store": [
+        "MemoryAdmissionCandidateV1",
+        "MemoryWriteIntentV1",
+        "MemoryWriteReceiptV1",
+    ],
+}
 
 RUST_TESTS = [
     "cross_modal_pattern_completion_recalls_episode",
@@ -231,6 +248,7 @@ def verify() -> int:
     gaps = load_json("docs/hnmf/GAPS.json")
     contracts = load_json("docs/contracts/CONTRACTS.json")
     protocol_schemas = load_json("docs/contracts/PROTOCOL_SCHEMAS.json")
+    implementation_map = load_json("docs/modules/cognitive.types/IMPLEMENTATION_MAP.json")
 
     need(spec.get("schema") == "hepta.hnmf.qualification.v1", "spec schema")
     need(has_schema_version(spec, 1), "spec schema version")
@@ -253,6 +271,48 @@ def verify() -> int:
         item.get("id"): item for item in protocol_schemas.get("protocols", [])
     }
     contract_rows = {item.get("id"): item for item in contracts.get("contracts", [])}
+    need(
+        implementation_map.get("module") == "cognitive.types",
+        "cognitive.types implementation-map identity",
+    )
+    need(
+        implementation_map.get("canonicalTypeSource") == "codex-rs/hepta-cognitive-types",
+        "canonical cognitive type source",
+    )
+    need(
+        implementation_map.get("sourceBaseSemantics")
+        == "legacy_registry_baseline_only_not_exact_head_evidence"
+        and implementation_map.get("exactCandidateIdentitySource")
+        == "exact_head_and_synthetic_merge_ci_receipts",
+        "implementation-map source identity semantics",
+    )
+    port_bindings = implementation_map.get("portSchemaBindings")
+    need(
+        isinstance(port_bindings, dict)
+        and set(port_bindings) == set(EXPECTED_PORT_TARGETS),
+        "cognitive.types port schema binding closure",
+    )
+    canonical_protocol_ids = {
+        item.get("id") for item in protocol_schemas.get("protocols", [])
+    }
+    for port_id, target in EXPECTED_PORT_TARGETS.items():
+        expected = sorted(
+            row["id"]
+            for row in contracts.get("contracts", [])
+            if row.get("kind") == "typed_protocol"
+            and row.get("producer") == "cognitive.types"
+            and target in row.get("consumers", [])
+        )
+        actual = sorted(port_bindings.get(port_id, []))
+        need(actual == expected, port_id + " exact schema projection")
+        need(
+            set(actual) <= canonical_protocol_ids,
+            port_id + " registered schema closure",
+        )
+    need(
+        implementation_map.get("portLocalTypeBindings") == EXPECTED_LOCAL_PORT_TYPES,
+        "cognitive.types typed-local port binding closure",
+    )
     for item in spec["protocols"]:
         protocol_id = item["id"]
         canonical = canonical_protocols.get(protocol_id)
@@ -431,6 +491,10 @@ def verify() -> int:
         "cargo check --manifest-path qualification/hnmf-reference/Cargo.toml --all-targets --locked",
         "cargo test --manifest-path qualification/hnmf-reference/Cargo.toml --locked",
         "python3 qualification/cognitive-types-v1/verify_vectors.py",
+        "cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types -- --check",
+        "cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets",
+        "cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets -- -D warnings",
+        "cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types",
     ]:
         need(command in workflow, f"workflow command {command}")
 
