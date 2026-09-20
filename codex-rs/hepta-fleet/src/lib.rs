@@ -49,6 +49,7 @@ pub use model::AgentManifest;
 pub use model::ResourceBudget;
 pub use model::WorkspaceBinding;
 pub use placement::FLEET_PLACEMENT_POLICY_VERSION;
+pub use placement::FleetCapacityMeasurementV1;
 pub use placement::FleetPlacementCommitV1;
 pub use placement::FleetPlacementError;
 pub use placement::FleetPlacementPlanV1;
