@@ -59,6 +59,7 @@ EXPECTED_OPERATIONS = {
         "fit_tabular_operator",
         "fit_tabular_operator_strict_v2",
         "verify_operator_dataset_v2",
+        "build_targets_bound_v2",
         "fit_tabular_operator_bound_v2",
         "fit_transition_model_bound_v2",
         "admit_signed_operator_applicability_v2",
