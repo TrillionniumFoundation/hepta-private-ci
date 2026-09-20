@@ -240,15 +240,12 @@ fn conflict_receipt(
 ) -> ObjectiveConflictReceipt {
     conflicting_ids.sort();
     conflicting_ids.dedup();
-    let mut bytes = Vec::new();
-    bytes.extend_from_slice(CONFLICT_DIGEST_DOMAIN);
-    push_id(&mut bytes, &source.request_id);
-    push_u64(&mut bytes, source.revision.get());
-    push_digest(&mut bytes, source.source_digest);
-    push_len(&mut bytes, conflicting_ids.len());
-    for id in &conflicting_ids {
-        push_id(&mut bytes, id);
-    }
+    let bytes = encode_conflict_semantics(
+        &source.request_id,
+        source.revision.get(),
+        source.source_digest,
+        &conflicting_ids,
+    );
     ObjectiveConflictReceipt {
         request_id: source.request_id.clone(),
         revision: source.revision,
@@ -256,6 +253,42 @@ fn conflict_receipt(
         conflicting_ids,
         conflict_digest: Digest32::of_bytes(&bytes),
     }
+}
+
+/// Canonical native bytes whose SHA-256 digest is
+/// `ObjectiveConflictReceipt::conflict_digest`.
+///
+/// Durable product owners retain these bytes alongside the authenticated
+/// admission binding so a recovered hard-conflict outcome can be verified
+/// without trusting a caller-provided digest.
+#[must_use]
+pub fn canonical_native_objective_conflict_bytes_v1(
+    conflict: &ObjectiveConflictReceipt,
+) -> Vec<u8> {
+    encode_conflict_semantics(
+        &conflict.request_id,
+        conflict.revision.get(),
+        conflict.source_digest,
+        &conflict.conflicting_ids,
+    )
+}
+
+fn encode_conflict_semantics(
+    request_id: &StableId,
+    revision: u64,
+    source_digest: Digest32,
+    conflicting_ids: &[StableId],
+) -> Vec<u8> {
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(CONFLICT_DIGEST_DOMAIN);
+    push_id(&mut bytes, request_id);
+    push_u64(&mut bytes, revision);
+    push_digest(&mut bytes, source_digest);
+    push_len(&mut bytes, conflicting_ids.len());
+    for id in conflicting_ids {
+        push_id(&mut bytes, id);
+    }
+    bytes
 }
 
 fn digest_constraints(constraints: &[Constraint]) -> Digest32 {
