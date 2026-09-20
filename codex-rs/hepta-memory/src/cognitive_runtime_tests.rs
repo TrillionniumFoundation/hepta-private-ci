@@ -123,7 +123,9 @@ async fn product_v2_runtime_reads_only_explicit_grants_and_preserves_coverage() 
     );
     let binding = batch.candidates[0].revalidation.clone();
     assert!(matches!(
-        runtime.revalidate_product_federated(&access, &binding, 150).await,
+        runtime
+            .revalidate_product_federated(&access, &binding, 150)
+            .await,
         Ok(FederatedRevalidationStatus::Current(_))
     ));
 
@@ -182,8 +184,8 @@ async fn legacy_federation_is_not_admitted_to_product_attachment_api() {
     let readers = FederatedMemoryReader::discover(&owner_layout, &consumer_id, 150)
         .await
         .expect("legacy discovery");
-    let federation = FederatedRecallSet::new(consumer_id.clone(), readers)
-        .expect("legacy recall set");
+    let federation =
+        FederatedRecallSet::new(consumer_id.clone(), readers).expect("legacy recall set");
     let runtime = CognitiveRuntime::AvailableFederated {
         store: Arc::new(consumer),
         federation: Arc::new(federation),
@@ -220,10 +222,7 @@ async fn legacy_compatibility_helper_cannot_downgrade_product_v2_runtime() {
             &owner_access,
             &FederationGrantRequest {
                 consumer_agent_id: consumer_id.clone(),
-                scope: FederationGrantScope::new(
-                    CognitiveScope::AgentPrivate,
-                    consumer_workspace,
-                ),
+                scope: FederationGrantScope::new(CognitiveScope::AgentPrivate, consumer_workspace),
                 effective_at_unix_seconds: 100,
                 expires_at_unix_seconds: 1_000,
             },
@@ -233,8 +232,7 @@ async fn legacy_compatibility_helper_cannot_downgrade_product_v2_runtime() {
     let readers = FederatedMemoryReader::discover(&owner_layout, &consumer_id, 150)
         .await
         .expect("legacy discovery");
-    let legacy = FederatedRecallSet::new(consumer_id.clone(), readers)
-        .expect("legacy recall set");
+    let legacy = FederatedRecallSet::new(consumer_id.clone(), readers).expect("legacy recall set");
 
     let runtime = CognitiveRuntime::from_open_result(Ok(consumer))
         .with_federation_sources(consumer_id, vec![owner_layout])
