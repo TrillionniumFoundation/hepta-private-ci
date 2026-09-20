@@ -38,7 +38,7 @@ pub struct AgentdConfig {
     _writer_lock: File,
     authbus_trust_file: Option<PathBuf>,
     cognitive_ranker: Option<std::sync::Arc<crate::PinnedCognitiveRanker>>,
-    plasticity_runtime: Option<crate::PlasticityRuntimeOwnerV1>,
+    plasticity_bootstrap: Option<crate::PlasticityRuntimeBootstrapV1>,
 }
 
 impl AgentdConfig {
@@ -144,7 +144,7 @@ impl AgentdConfig {
             _writer_lock: writer_lock,
             authbus_trust_file: None,
             cognitive_ranker: None,
-            plasticity_runtime: None,
+            plasticity_bootstrap: None,
         })
     }
 
@@ -182,24 +182,27 @@ impl AgentdConfig {
         self.cognitive_ranker.clone()
     }
 
-    /// Attach the one long-lived governed plasticity owner for this Agentd
-    /// generation. The owner is constructed from already-opened authoritative
-    /// stores and independent anchor domains; there is no ambient default.
-    pub fn with_plasticity_runtime(
+    /// Attach one explicitly constructed governed plasticity bootstrap envelope.
+    /// Agentd itself consumes the envelope, creates the bounded channel, retains
+    /// the sole mutable owner and stores the producer handle in daemon state.
+    /// There is no ambient/default plasticity writer.
+    pub fn with_plasticity_runtime_bootstrap(
         mut self,
-        runtime: crate::PlasticityRuntimeOwnerV1,
+        bootstrap: crate::PlasticityRuntimeBootstrapV1,
     ) -> Result<Self, AgentdError> {
-        if self.plasticity_runtime.is_some() {
+        if self.plasticity_bootstrap.is_some() {
             return Err(AgentdError::Invalid(
-                "plasticity runtime already configured".to_string(),
+                "plasticity runtime bootstrap already configured".to_string(),
             ));
         }
-        self.plasticity_runtime = Some(runtime);
+        self.plasticity_bootstrap = Some(bootstrap);
         Ok(self)
     }
 
-    pub(crate) fn take_plasticity_runtime(&mut self) -> Option<crate::PlasticityRuntimeOwnerV1> {
-        self.plasticity_runtime.take()
+    pub(crate) fn take_plasticity_runtime_bootstrap(
+        &mut self,
+    ) -> Option<crate::PlasticityRuntimeBootstrapV1> {
+        self.plasticity_bootstrap.take()
     }
 
     pub fn identity(&self) -> &AgentdIdentity {
