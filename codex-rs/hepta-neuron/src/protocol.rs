@@ -721,7 +721,7 @@ pub fn decode_neuron_checkpoint_v1(
 fn validate_runtime_config(
     value: &NeuronRuntimeConfigProtocolV1,
 ) -> Result<(), NeuronProtocolError> {
-    if value.config_id.as_str().as_bytes().len() > 128 {
+    if value.config_id.as_str().len() > 128 {
         return Err(NeuronProtocolError::InvalidIdentity("configId"));
     }
     for (field, digest) in [
@@ -766,7 +766,7 @@ fn validate_runtime_config(
         || value.checkpoint_bytes == 0
         || !(1_000_000..=4_000_000).contains(&value.write_amplification_ppm)
         || value.expiry_utc.is_empty()
-        || value.expiry_utc.as_bytes().len() > 64
+        || value.expiry_utc.len() > 64
         || !value.expiry_utc.contains('T')
         || !value.expiry_utc.ends_with('Z')
     {
@@ -947,7 +947,7 @@ fn ensure_activation_summary_bytes(
 }
 
 fn parse_id(value: &str, field: &'static str) -> Result<StableId, NeuronProtocolError> {
-    if value.as_bytes().len() > 128 {
+    if value.len() > 128 {
         return Err(NeuronProtocolError::InvalidIdentity(field));
     }
     StableId::new(value.to_owned()).map_err(|_| NeuronProtocolError::InvalidIdentity(field))
