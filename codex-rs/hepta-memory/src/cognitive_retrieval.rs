@@ -168,7 +168,6 @@ struct EntitySeed {
     generation: i64,
     generation_sha256: Option<Sha256Digest>,
     canonical_entity_id: String,
-    memory: MemoryKey,
 }
 
 impl CognitiveStore {
@@ -658,7 +657,6 @@ impl CognitiveStore {
                         generation,
                         generation_sha256,
                         canonical_entity_id,
-                        memory,
                     }))
                 })();
                 result.transpose()
@@ -816,16 +814,12 @@ impl CognitiveStore {
         let seeds = seeds
             .iter()
             .map(
-                |(scope, generation, canonical_entity_id, memory)| -> Result<_, CognitiveStoreError> {
+                |(scope, generation, canonical_entity_id, _memory)| -> Result<_, CognitiveStoreError> {
                     Ok(EntitySeed {
                         projection_scope: scope.projection_key(),
                         generation: to_i64(generation.get(), "projection generation")?,
                         generation_sha256: None,
                         canonical_entity_id: canonical_entity_id.clone(),
-                        memory: MemoryKey {
-                            memory_id: memory.memory_id.as_str().to_string(),
-                            revision: memory.revision,
-                        },
                     })
                 },
             )
