@@ -1176,7 +1176,11 @@ pub async fn run_main_with_transport_options(
                         let running_turn_count = *running_turn_count_rx.borrow();
                         shutdown_state.on_signal(signal, connections.len(), running_turn_count);
                     }
-                    changed = running_turn_count_rx.changed(), if graceful_signal_restart_enabled && shutdown_state.requested() => {
+                    // External product drain disables the process-level signal handler but still
+                    // has to wake on every running-turn transition. Otherwise the ingress can be
+                    // closed while an in-flight turn reaches zero without ever advancing the
+                    // graceful drain state machine.
+                    changed = running_turn_count_rx.changed(), if shutdown_state.requested() => {
                         if changed.is_err() {
                             warn!("running-turn watcher closed during graceful restart drain");
                         }
