@@ -61,10 +61,13 @@ EXPECTED_OPERATIONS = {
     },
     "learning.eval": {
         "estimate_ope",
+        "estimate_cluster_intervals",
         "estimate_sequential",
-        "freeze_cross_fold_plan_v2",
-        "FinalHoldoutRegistry::consume",
+        "freeze_product_evaluation_plan_v1",
+        "ProductEvaluationRunnerV1::evaluate_temporal_comparison",
+        "ProductEvaluationRunnerV1::qualify_and_persist",
         "FencedFinalHoldoutOwnerV1::consume",
+        "LockedFileFinalHoldoutCasStoreV1",
         "decide_with_signed_evidence_v2",
         "decide_with_signed_longitudinal_evidence_v3",
     },
@@ -74,6 +77,7 @@ EXPECTED_CRATES = {
     "codex-hepta-learning-artifacts",
     "codex-hepta-bellman-operator",
     "codex-hepta-intelligence-eval",
+    "codex-hepta-intelligence",
     "codex-hepta-shadow-qualification",
 }
 
@@ -551,7 +555,7 @@ def verify_workflow(findings: Findings) -> None:
     for token, message in (
         ("learning-eval-qualification:", "workflow is missing learning-eval qualification job"),
         ("cargo-llvm-cov@0.9.1", "workflow is missing pinned learning-eval coverage tooling"),
-        ("fenced_holdout::tests", "workflow is missing fenced holdout stress execution"),
+        ("fenced_holdout", "workflow is missing fenced holdout stress execution"),
         ("qualification.json", "workflow is missing commit-addressed qualification manifest"),
         ("actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373", "workflow is missing pinned provenance attestation"),
         ("actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02", "workflow is missing retained qualification artifact"),
@@ -559,6 +563,9 @@ def verify_workflow(findings: Findings) -> None:
         ("--test operator_claim", "workflow is missing the trusted compatibility regression"),
         ("decide_with_signed_evidence_v2", "workflow is missing signed production-surface verification"),
         ("FencedFinalHoldoutOwnerV1", "workflow is missing fenced-owner production-surface verification"),
+        ("ProductEvaluationRunnerV1", "workflow is missing product-evaluation production-surface verification"),
+        ("evaluated_shadow", "workflow is missing terminal product-receipt consumer execution"),
+        ("--fail-under-lines 85", "workflow is missing enforced evaluator coverage floor"),
     ):
         findings.require(
             token in text,

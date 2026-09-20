@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "product_runner_source_composed_evaluated_shadow_migration_pending",
+  "productCallerState": "product_qualification_receipt_consumed_by_evaluated_shadow",
   "productionWriterState": "qualification_evidence_sink_contract_composed_target_host_binding_unproved",
   "operations": [
     {
@@ -191,10 +191,26 @@
       "designOperation": "signed_v3_longitudinal_admission",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "run_evaluated_shadow_v1",
+      "nativeSymbol": "codex_hepta_intelligence::run_evaluated_shadow_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
+      "state": "source_product_consumer_implemented",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+        "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "consume_product_qualification_receipt",
+      "mappingClass": "delegated_product_consumer",
+      "delegatedCallees": [
+        "ProductQualificationReceiptV1::validate_integrity"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Migrate the existing evaluated-shadow consumer from low-level signed admission to ProductQualificationReceiptV1 so the product runner becomes the only product qualification composition.",
     "Obtain passing exact-head and ordered-parent synthetic-merge learning.eval qualification artifacts for the final immutable candidate."
   ],
   "externalEvidenceGates": [
