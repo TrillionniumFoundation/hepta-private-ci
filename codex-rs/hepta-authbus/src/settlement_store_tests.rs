@@ -125,6 +125,28 @@ fn evidence(
 }
 
 #[tokio::test]
+async fn dispatch_rejects_effect_digest_drift_before_crossing_the_boundary() {
+    let (_root, store, _decision, reservation) = configured().await;
+    assert!(matches!(
+        store
+            .mark_dispatch_attempted(
+                &reservation.reservation_id,
+                /*expected_revision*/ 1,
+                Digest32::of_bytes(b"other-effect"),
+                sample(5, 1_500),
+            )
+            .await,
+        Err(AuthBusAuthorityError::InvalidTransition)
+    ));
+    let current = store
+        .reservation(&reservation.reservation_id)
+        .await
+        .expect("reservation remains readable");
+    assert_eq!(current.state, ReservationState::Held);
+    assert_eq!(current.effect_digest, reservation.effect_digest);
+}
+
+#[tokio::test]
 async fn completed_settlement_is_conservative_and_idempotent() {
     let (_root, store, _decision, reservation) = configured().await;
     let dispatched = store

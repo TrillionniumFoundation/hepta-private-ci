@@ -41,6 +41,9 @@ impl AuthBusAuthorityStore {
         let mut tx = begin(&self.pool).await?;
         advance_time(&mut tx, &time).await?;
         let mut reservation = load_reservation(&mut tx, reservation_id).await?;
+        if dispatch_digest != reservation.effect_digest {
+            return Err(AuthBusAuthorityError::InvalidTransition);
+        }
         let quota = load_quota(&mut tx, &reservation.quota_key).await?;
         require_current_policy(&mut tx, &reservation, &quota, &time).await?;
         if reservation.state == ReservationState::DispatchAttempted
