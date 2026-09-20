@@ -10,7 +10,8 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 
 use codex_hepta_cognitive_types::hnmf::{
-    ContractIdV1, MemoryEventV1, MemoryLifecycleV1,
+    ContractIdV1, MemoryEventV1, MemoryLifecycleV1, MAX_LABEL_BYTES, MAX_PROVENANCE,
+    MAX_SEMANTIC_KEYS,
 };
 pub use codex_hepta_cognitive_types::hnmf::{
     ModalityKindV1 as ReferenceModalityKind, PrivacyClassV1 as ReferencePrivacyClass,
@@ -18,19 +19,24 @@ pub use codex_hepta_cognitive_types::hnmf::{
 pub use codex_hepta_cognitive_types::hnmf_learning::{
     EngramPopulationV1 as ReferenceEngramPopulation, SynapseRelationV1 as ReferenceSynapseRelation,
 };
+use codex_hepta_cognitive_types::hnmf_learning::{
+    MAX_ACTIVATION_PATHS, MAX_ACTIVE_NODES, MAX_ACTIVE_PER_POPULATION, MAX_CANDIDATE_EVENTS,
+    MAX_CUE_SEEDS as CANONICAL_MAX_CUE_SEEDS, MAX_NODES, MAX_RECALL_EVENTS,
+    MAX_RECURRENT_STEPS, MAX_SYNAPSES, MAX_WEIGHT_DELTA_PPM,
+};
 
-pub const PPM: i64 = 1_000_000;
+pub const PPM: i64 = codex_hepta_cognitive_types::hnmf::PPM as i64;
 pub const CURRENT_RUN_MUTATION_ALLOWED: bool = false;
 pub const ONLINE_TOPOLOGY_ACTIVATION_ALLOWED: bool = false;
 pub const PRODUCTION_AUTHORITY: bool = false;
 pub const EXTERNAL_EFFECTS_ALLOWED: bool = false;
 
-pub const MAX_EVENT_SEMANTIC_KEYS: usize = 64;
-pub const MAX_EVENT_SOURCES: usize = 32;
-pub const MAX_CUE_KEYS: usize = 64;
-pub const MAX_CUE_SEEDS: usize = 64;
+pub const MAX_EVENT_SEMANTIC_KEYS: usize = MAX_SEMANTIC_KEYS;
+pub const MAX_EVENT_SOURCES: usize = MAX_PROVENANCE;
+pub const MAX_CUE_KEYS: usize = MAX_SEMANTIC_KEYS;
+pub const MAX_CUE_SEEDS: usize = CANONICAL_MAX_CUE_SEEDS;
 pub const MAX_SUPPORT_EVENTS: usize = 64;
-pub const MAX_TOPOLOGY_LABEL_BYTES: usize = 128;
+pub const MAX_TOPOLOGY_LABEL_BYTES: usize = MAX_LABEL_BYTES;
 
 pub type EventId = u64;
 pub type EpisodeId = u64;
@@ -264,20 +270,20 @@ pub struct ReferenceFabricConfig {
 impl Default for ReferenceFabricConfig {
     fn default() -> Self {
         Self {
-            maximum_candidate_events: 512,
-            maximum_nodes: 4096,
-            maximum_synapses: 32768,
-            maximum_active_nodes: 4096,
-            maximum_active_per_population: 64,
-            maximum_recurrent_steps: 4,
-            maximum_recall_events: 16,
-            maximum_activation_paths: 32,
+            maximum_candidate_events: MAX_CANDIDATE_EVENTS,
+            maximum_nodes: MAX_NODES,
+            maximum_synapses: MAX_SYNAPSES,
+            maximum_active_nodes: MAX_ACTIVE_NODES,
+            maximum_active_per_population: MAX_ACTIVE_PER_POPULATION,
+            maximum_recurrent_steps: MAX_RECURRENT_STEPS,
+            maximum_recall_events: MAX_RECALL_EVENTS,
+            maximum_activation_paths: MAX_ACTIVATION_PATHS,
             leak_ppm: 350_000,
             lateral_inhibition_ppm: 80_000,
             trace_decay_ppm: 800_000,
             learning_rate_ppm: 100_000,
             homeostasis_rate_ppm: 20_000,
-            maximum_weight_delta_ppm: 50_000,
+            maximum_weight_delta_ppm: MAX_WEIGHT_DELTA_PPM,
             ood_abstain_ppm: 800_000,
             minimum_confidence_ppm: 250_000,
             contradiction_forces_abstention: true,
@@ -288,21 +294,21 @@ impl Default for ReferenceFabricConfig {
 impl ReferenceFabricConfig {
     pub fn validate(self) -> Result<(), ReferenceFabricError> {
         if self.maximum_candidate_events == 0
-            || self.maximum_candidate_events > 512
+            || self.maximum_candidate_events > MAX_CANDIDATE_EVENTS
             || self.maximum_nodes == 0
-            || self.maximum_nodes > 4096
+            || self.maximum_nodes > MAX_NODES
             || self.maximum_synapses == 0
-            || self.maximum_synapses > 32768
+            || self.maximum_synapses > MAX_SYNAPSES
             || self.maximum_active_nodes == 0
             || self.maximum_active_nodes > self.maximum_nodes
             || self.maximum_active_per_population == 0
-            || self.maximum_active_per_population > 64
+            || self.maximum_active_per_population > MAX_ACTIVE_PER_POPULATION
             || self.maximum_recurrent_steps == 0
-            || self.maximum_recurrent_steps > 4
+            || self.maximum_recurrent_steps > MAX_RECURRENT_STEPS
             || self.maximum_recall_events == 0
-            || self.maximum_recall_events > 16
+            || self.maximum_recall_events > MAX_RECALL_EVENTS
             || self.maximum_activation_paths == 0
-            || self.maximum_activation_paths > 32
+            || self.maximum_activation_paths > MAX_ACTIVATION_PATHS
         {
             return Err(ReferenceFabricError::BoundExceeded("fabric structural bound"));
         }
