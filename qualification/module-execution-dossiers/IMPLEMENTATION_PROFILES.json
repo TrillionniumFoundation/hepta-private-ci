@@ -960,11 +960,11 @@
       "guide": "docs/modules/cognitive.store/TECHNICAL.md",
       "design": "qualification/module-execution-dossiers/detail/cognitive.store.md",
       "implementationState": "specified_not_product_evidence",
-      "apiContract": "Canonical module façade: hepta-cognitive-store::AdmittedCognitiveStoreV2 for semantic qualification and hepta-cognitive-store::DurableCognitiveStore / ProductionDurableWriter for the existing SQLite owner. AgentdProductionWriterHost is the named product caller. No replacement database is introduced.",
-      "stateAndEncoding": "The semantic V1/V2 ledgers are bounded in-memory models. The physical authoritative owner is hepta-memory::CognitiveStore over cognitive_1.sqlite3 with immutable source/memory/fact lineage, current heads, WAL+FULL production writer fencing, exact-cut recovery anchors and an active-generation pointer.",
-      "linearizationAndRecovery": "BEGIN IMMEDIATE/CAS mutations remain single-owner. Writable recovery fences ordinary store handles, copies retained database/WAL/journal descriptors into a private generation, checks exact current-cut equality, schema/integrity and external production authority/fence, checkpoints, then atomically publishes the active generation. Ordinary open is not a recovery fallback.",
+      "apiContract": "Canonical module façade: hepta-cognitive-store::AdmittedCognitiveStoreV2 remains the semantic qualification model; durable product writes use the existing hepta-memory SQLite owner only through a live-verified ProductionDurableWriter that mints the sealed ProductionCognitiveMutationCapability. Agentd carries that capability through normal App Server composition without introducing a replacement database.",
+      "stateAndEncoding": "The semantic V1/V2 ledgers are bounded in-memory models. The physical authoritative owner is hepta-memory::CognitiveStore over cognitive_1.sqlite3. memory_ledger owns Memory/source/tombstone lineage; knowledge_fact_ledger is the memory-revision-bound authoritative fact-set subledger in kg_revision_fact_sets/entities/relations, committed with the owning Memory revision and never given an independent fact writer/head. WAL+FULL writer fencing, exact-cut recovery anchors and the active-generation pointer protect the physical owner.",
+      "linearizationAndRecovery": "BEGIN IMMEDIATE/CAS mutations remain single-owner. Production semantic mutation revalidates the retained external verifier immediately before the owner mutation. Writable recovery fences ordinary store handles, copies identity-bound database/WAL/journal descriptors into a private generation, checks exact current-cut equality, schema/integrity and production authority/fence, checkpoints, then publishes the active generation; post-rename publication uncertainty is Indeterminate. Ordinary open is not a production-writer recovery fallback.",
       "algorithmAndBounds": "V2 accepts only Verified admission, reserves hard revision capacity for tombstones, bounds the intent journal and binds image receipts/frontiers to retained history. Semantic pages bind exact generation-vector+sequence. Durable pages keyset-page <=512 heads and reconstruct complete selected ancestry under 16384-revision/65536-citation page budgets while binding global deletion/source/fact/KG state.",
-      "acceptanceOracle": "Two writers with same predecessor yield one success and one conflict. Reopen after commit retains event. Restoring a pre-forget snapshot overlays tombstone before reads. A tombstone alone is not model unlearning.",
+      "acceptanceOracle": "Two writers with the same Memory predecessor yield one success and one conflict; correction publishes one complete successor fact set and forget publishes a tombstoned revision with an empty fact set. Reopen after commit retains the exact owner cut. Restoring a pre-forget valid backup is rejected by the independently retained cut. Revocation between writer open and a later semantic write prevents the owner cut from advancing. A tombstone alone is not model unlearning.",
       "nativeMappingRequired": true,
       "productTestsExecuted": false,
       "deploymentQualified": false,
@@ -991,12 +991,14 @@
             "symbol": "AgentdProductionWriterHost"
           }
         ],
-        "stateAndRecovery": "The canonical cognitive-store façade delegates durable ownership to the one existing hepta-memory SQLite owner. Descriptor-bound writable recovery, shared/exclusive open fencing, proof-bound durable paging and a named Agentd product caller are source-implemented; independent currentness/authority inputs and activation remain external.",
+        "stateAndRecovery": "The canonical cognitive-store façade delegates durable ownership to the one existing hepta-memory SQLite owner. Descriptor-bound writable recovery, shared/exclusive open fencing, proof-bound durable paging, live final-use authority revalidation and a sealed semantic mutation capability are source-implemented. Normal Agentd/App Server composition can carry only the minted capability; independent currentness/authority inputs, standalone deployment bootstrap and activation remain external.",
         "testFiles": [
           "codex-rs/hepta-cognitive-store/src/v2_tests.rs",
           "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
           "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
-          "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs"
+          "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+          "codex-rs/state/src/sqlite_recovery_tests.rs",
+          "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs"
         ],
         "runtimeDocuments": [
           "codex-rs/hepta-memory/LANE_C_SQLITE.md",
@@ -1004,8 +1006,8 @@
           ".github/workflows/hepta-consolidated-source.yml"
         ],
         "remainingWork": [
-          "Retain and authenticate the latest exact current-cut witness outside the cognitive database and supply a current externally verified production authority lease.",
-          "Obtain exact-head and synthetic-merge execution receipts, maximum-retained PERF-DURABLE artifacts, independent semantic review and target-host qualification before activation/acceptance.",
+          "Retain and authenticate the latest exact current-cut witness outside the cognitive database and supply a current externally verified production authority lease/verifier; the standalone Agentd binary must not self-mint either.",
+          "Obtain exact-head and synthetic-merge execution receipts, the child-process crash/reopen receipt, 256/16384 PERF-DURABLE artifacts, independent semantic review and target-host qualification before raising productionImplementation or activation/acceptance.",
           "Keep physical erasure, derived-artifact revocation and model unlearning separate from logical tombstones."
         ]
       }
