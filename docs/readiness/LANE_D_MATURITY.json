@@ -88,7 +88,8 @@
           "state": "candidate_complete",
           "evidence": [
             "docs/readiness/NDU_SYSTEM_EXECUTION.md",
-            "docs/learning/NDU_FBSDE_SPEC.md"
+            "docs/learning/NDU_FBSDE_SPEC.md",
+            "docs/modules/utility.ndu/STATUS.md"
           ]
         },
         "canonicalProtocolRegistration": {
@@ -108,7 +109,8 @@
         "nativeApiMapping": {
           "state": "candidate_complete",
           "evidence": [
-            "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json"
+            "docs/modules/utility.ndu/IMPLEMENTATION_MAP.json",
+            "currentSourceEvidence implementationCommit 3b2ca4d2a92829e52cfa63da2d62ead07ca1c94b"
           ]
         },
         "deterministicKernel": {
@@ -147,19 +149,27 @@
         },
         "exactHeadSourceQualification": {
           "state": "pending_current_candidate_workflows",
-          "evidence": []
+          "evidence": [
+            ".github/workflows/hepta-ndu-recursion.yml now covers pull_request, main push and manual dispatch and runs Control NDU caller regressions; this definition is not itself a pass receipt"
+          ]
         },
         "productCaller": {
-          "state": "bounded_repository_callsites_present_not_production_composed",
+          "state": "request_local_read_only_established_authenticated_production_not_composed",
           "evidence": [
+            "codex-rs/hepta-agentd/src/cognitive_context.rs",
+            "codex-rs/hepta-control-plane/src/planner_context.rs",
             "codex-rs/hepta-control-plane/src/planner_ndu.rs",
-            "codex-rs/hepta-intelligence/src/vertical.rs"
+            "codex-rs/hepta-control-plane/src/planner_context_tests.rs",
+            "codex-rs/hepta-control-plane/src/planner_ndu_tests.rs"
           ]
         },
         "productionWriter": {
-          "state": "not_established",
+          "state": "durable_writer_source_candidate_not_selected_or_activated",
           "evidence": [
-            "NduProjectionStoreV1 source candidate is not activation evidence"
+            "NduProjectionStoreV1",
+            "durable_writer_round_trips_selected_and_revoked_state",
+            "older_valid_backup_cannot_remove_a_later_revocation",
+            "indeterminate_handle_fails_closed_until_reopen"
           ]
         },
         "independentAcceptance": {
