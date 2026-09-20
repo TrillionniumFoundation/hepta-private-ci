@@ -1050,6 +1050,11 @@ fn safe_rejection(
             "selected release is not allowed for this Agent",
             actual,
         ),
+        SupervisorError::Registry(FleetRegistryError::ReleaseRevoked { .. }) => error_payload(
+            "release_revoked",
+            "selected release is revoked for this Agent",
+            actual,
+        ),
         SupervisorError::NoPreviousRelease(_) => error_payload(
             "no_previous_release",
             "selected Agent has no previous release",
