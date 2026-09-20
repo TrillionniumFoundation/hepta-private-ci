@@ -67,6 +67,7 @@ from .evidence import (
 from .integration_controller import (
     IntegrationQueueGeneration,
     IntegrationQueueItem,
+    IntegrationTerminalReceipt,
     integration_queue_generation,
     integration_queue_item,
     publish_integration_queue,
@@ -185,6 +186,7 @@ __all__ = [
     "KeyCustodyReceipt",
     "IntegrationQueueGeneration",
     "IntegrationQueueItem",
+    "IntegrationTerminalReceipt",
     "LeaseReceipt",
     "MergeQueueProposal",
     "Mutation",
