@@ -80,7 +80,10 @@ impl FederatedCognitiveExtension {
         access: &FederationConsumerAccess,
         request: &RetrievalRequest,
     ) -> Result<(FederatedRetrievalBatch, [u32; 4]), CognitiveStoreError> {
-        let (batch, coverage) = self.runtime.retrieve_federated(access, request).await?;
+        let (batch, coverage) = self
+            .runtime
+            .retrieve_product_federated(access, request)
+            .await?;
         Ok((
             batch,
             [
@@ -99,7 +102,7 @@ impl FederatedCognitiveExtension {
         now_unix_seconds: i64,
     ) -> Result<FederatedRevalidationStatus, CognitiveStoreError> {
         self.runtime
-            .revalidate_federated(access, binding, now_unix_seconds)
+            .revalidate_product_federated(access, binding, now_unix_seconds)
             .await
     }
 
