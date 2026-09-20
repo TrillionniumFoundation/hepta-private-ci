@@ -25,10 +25,21 @@ interpreted as the Hölder/operator qualification profile.
 | build fixed sensor core | `build_sensor_core` | `src/reference.rs` | implemented |
 | execute tabular Bellman reference | `evaluate_bellman_reference` | `src/reference.rs` | implemented |
 | fit complete simplest-sufficient operator | `fit_tabular_operator` | `src/learned.rs` | implemented |
+| verify frozen training dataset | `VerifiedOperatorDatasetV2::from_receipt` | `src/dataset_binding.rs` | implemented |
+| fit receipt-bound tabular operator | `fit_tabular_operator_bound_v2` | `src/dataset_binding.rs` | implemented |
+| fit receipt-bound world model | `fit_transition_model_bound_v2` | `src/dataset_binding.rs` | implemented |
 | predict only a fitted sensor/action cell | `predict_tabular_operator` | `src/learned.rs` | implemented |
 | admit rank/gain/shape/OOD/error budget | `admit_operator_regularity` | `src/reference.rs` | implemented |
+| authenticate applicability evidence | `admit_signed_operator_applicability_v2` | `src/authenticated.rs` | implemented |
+| authenticate regularity evidence | `admit_signed_operator_regularity_v2` | `src/authenticated.rs` | implemented |
 | fit action-conditioned tabular dynamics | `fit_transition_model` | `src/world_model.rs` | implemented |
 | predict supported transition distribution | `predict_transition` | `src/world_model.rs` | implemented |
+
+## Frozen dataset and authenticated evaluator boundaries
+
+`VerifiedOperatorDatasetV2::from_receipt` verifies the full `DatasetSnapshotReceiptV3` digest preimage and keeps the frozen dataset identity private. The bound tabular/world-model fit APIs require the training rows' evidence digests to equal the frozen source-record set exactly; callers cannot substitute a detached dataset digest, omit one frozen row or add a foreign row. A future profile that intentionally transforms one source record into multiple training rows needs a separately typed projection receipt rather than weakening this invariant.
+
+`admit_signed_operator_applicability_v2` and `admit_signed_operator_regularity_v2` reuse `LearningEvidenceVerifierV1`: Ed25519 signature, evaluator role, principal, credential-chain identity, scope/objective, authority epoch, lifetime and revocation are checked against host-owned trust. The legacy structural validators remain compatible deterministic cores, but a nonzero evaluator digest or `dominant_component_approved` boolean alone is not authenticated independent evidence. Cryptographic provenance does not self-prove scientific validity or organizational independence.
 
 ## Applicability and sensor core
 
@@ -124,7 +135,9 @@ Focused tests live in:
 - `src/learned_tests.rs`;
 - `src/world_model_tests.rs`;
 - `src/loaded_tests.rs`;
-- `src/loaded_world_model_tests.rs`.
+- `src/loaded_world_model_tests.rs`;
+- `src/authenticated.rs` (OP-06 signed-evidence regressions);
+- `src/dataset_binding.rs` (OP-07 V3 dataset-binding regressions).
 
 Cross-crate composition is exercised by
 `../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. Exact dossier IDs,
