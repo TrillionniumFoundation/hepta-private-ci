@@ -270,7 +270,7 @@ pub(crate) async fn run_automation_scheduler(
         if let Err(error) =
             automation_recovery::reconcile_one(scheduler.store(), &state, &identity, now_ms).await
         {
-            return stop_after_recovery_error(error, &state);
+            return stop_after_recovery_error(error, &state, &cancellation).await;
         }
 
         tokio::select! {
@@ -356,13 +356,17 @@ async fn stop_after_automation_error(
     wait_for_cancellation(cancellation).await
 }
 
-fn stop_after_recovery_error(error: AgentdError, state: &AgentdState) -> Result<(), AgentdError> {
+async fn stop_after_recovery_error(
+    error: AgentdError,
+    state: &AgentdState,
+    cancellation: &CancellationToken,
+) -> Result<(), AgentdError> {
     if matches!(error, AgentdError::GenerationFenced(_)) {
         state.mark_fenced();
-    } else {
-        state.mark_automation_unavailable()?;
+        return Err(error);
     }
-    Err(error)
+    state.mark_automation_unavailable()?;
+    wait_for_cancellation(cancellation).await
 }
 
 async fn wait_for_cancellation(cancellation: &CancellationToken) -> Result<(), AgentdError> {
