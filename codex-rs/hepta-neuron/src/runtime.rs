@@ -60,7 +60,11 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
     /// Start a fresh generation after authenticated deletion/withdrawal
     /// processing. The predecessor checkpoint is bound for lineage only and is
     /// never loaded into the successor runtime.
-    // The bootstrap tuple is atomic across generation, store, config, witness and lineage;\n    // splitting it into independently reusable partial objects would permit mixed-generation use.\n    #[allow(clippy::too_many_arguments)]\n    pub fn bootstrap_after_deletion(\n        file: File,
+    // The bootstrap tuple is atomic across generation, store, config, witness and lineage;
+    // splitting it into independently reusable partial objects would permit mixed-generation use.
+    #[allow(clippy::too_many_arguments)]
+    pub fn bootstrap_after_deletion(
+        file: File,
         native: SparseConfig,
         scope: JournalScope,
         max_records: usize,
