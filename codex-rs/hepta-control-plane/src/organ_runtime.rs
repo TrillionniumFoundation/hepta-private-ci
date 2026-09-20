@@ -25,8 +25,7 @@ pub const MAX_ORGAN_MESSAGE_BYTES: usize = 64 * 1024;
 pub trait TrustedReadOnlyOrganV1: fmt::Debug + Send {
     fn id(&self) -> &StableId;
     fn start(&mut self) -> Result<(), OrganHandlerFaultV1>;
-    fn handle(&mut self, input_port: usize, payload: &[u8])
-    -> Result<Vec<u8>, OrganHandlerFaultV1>;
+    fn handle(&mut self, input_port: usize, payload: &[u8]) -> Result<Vec<u8>, OrganHandlerFaultV1>;
     fn stop(&mut self) -> Result<(), OrganHandlerFaultV1>;
 }
 
