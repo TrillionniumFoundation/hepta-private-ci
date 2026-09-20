@@ -10,13 +10,13 @@ pub enum PolicyEffect {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TrustedTimeSample {
-    pub wall_time_ms: u64,
-    pub source_revision: u64,
-    pub source_digest: Digest32,
+    pub(crate) wall_time_ms: u64,
+    pub(crate) source_revision: u64,
+    pub(crate) source_digest: Digest32,
 }
 
 impl TrustedTimeSample {
-    pub fn new(
+    pub(crate) fn new(
         wall_time_ms: u64,
         source_revision: u64,
         source_digest: Digest32,
@@ -31,6 +31,18 @@ impl TrustedTimeSample {
             source_revision,
             source_digest,
         })
+    }
+
+    pub fn wall_time_ms(&self) -> u64 {
+        self.wall_time_ms
+    }
+
+    pub fn source_revision(&self) -> u64 {
+        self.source_revision
+    }
+
+    pub fn source_digest(&self) -> Digest32 {
+        self.source_digest
     }
 }
 
@@ -189,4 +201,12 @@ pub enum AuthBusAuthorityError {
     StalePolicyRevision,
     #[error("AuthBus authority state capacity exceeded")]
     CapacityExceeded,
+    #[error("AuthBus external authority checkpoint indicates rollback or drift")]
+    RollbackDetected,
+    #[error("AuthBus owner has not completed restart reconciliation")]
+    RecoveryRequired,
+    #[error("AuthBus authority checkpoint file is unsafe or unavailable")]
+    UnsafeCheckpoint,
+    #[error("AuthBus policy cannot be retired while reservations still reference it")]
+    PolicyInUse,
 }
