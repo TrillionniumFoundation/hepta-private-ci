@@ -35,7 +35,6 @@ pub use codex_hepta_agent_protocol::AgentContextAttachment;
 pub use codex_hepta_agent_protocol::AgentRunCancellation;
 pub use codex_hepta_agent_protocol::AgentRunPhase;
 pub use codex_hepta_agent_protocol::AgentRunReceipt;
-pub use codex_hepta_agent_protocol::AgentRunRecovery;
 pub use codex_hepta_agent_protocol::AgentRunSnapshot;
 pub use codex_hepta_agent_protocol::AgentdCapability;
 pub use codex_hepta_agent_protocol::AgentdCapabilitySet;
