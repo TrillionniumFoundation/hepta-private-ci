@@ -146,6 +146,11 @@ pub(crate) fn decode_event(mut input: &[u8]) -> Result<LedgerEvent, DurableLedge
                 1 => true,
                 _ => return Err(DurableLedgerError::Corrupt),
             },
+            published_context_digest: match reader.byte()? {
+                0 => None,
+                1 => Some(reader.digest()?),
+                _ => return Err(DurableLedgerError::Corrupt),
+            },
             omitted_by_policy_limits: u32::from_be_bytes(reader.take()?),
             assignment_propensity: ProbabilityQ32::from_raw(u64::from_be_bytes(reader.take()?))
                 .map_err(|_| DurableLedgerError::Corrupt)?,
