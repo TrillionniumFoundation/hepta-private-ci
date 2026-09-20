@@ -229,11 +229,25 @@ impl RuntimeTasks {
     /// Wait for one task, isolate optional failures, and propagate required ones.
     /// JoinSet preserves task identity across panic and select cancellation.
     pub async fn observe_next(&mut self) -> Result<(), AgentdError> {
-        let completion =
-            self.tasks.join_next_with_id().await.ok_or_else(|| {
-                AgentdError::Protocol("runtime has no remaining tasks".to_string())
-            })?;
-        self.observe(completion)
+        if self.stopped {
+            return Err(AgentdError::Protocol("runtime host is stopping".to_string()));
+        }
+        let result = match self.tasks.join_next_with_id().await {
+            Some(completion) => self.observe(completion),
+            None => Err(AgentdError::Protocol(
+                "runtime has no remaining tasks".to_string(),
+            )),
+        };
+        if result.is_err() {
+            // A consumed task completion must not consume the shared safety
+            // fence. This also applies when retire_optional, rather than
+            // run_until, observes it and its caller handles the returned error.
+            // Successful optional quarantine and an unfinished drain timeout
+            // do not reach this branch and remain locally isolated.
+            self.stopped = true;
+            self.cancellation.cancel();
+        }
+        result
     }
 
     fn observe(
@@ -356,3 +370,7 @@ mod tests;
 #[cfg(test)]
 #[path = "runtime_service_retirement_tests.rs"]
 mod retirement_tests;
+
+#[cfg(test)]
+#[path = "runtime_task_fence_tests.rs"]
+mod failure_latch_tests;
