@@ -6,6 +6,8 @@ use codex_app_server_protocol::RequestId;
 use codex_app_server_protocol::ServerNotification;
 use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
+use codex_app_server_protocol::ThreadItem;
+use codex_app_server_protocol::ThreadReadResponse;
 use codex_app_server_protocol::TurnItemsView;
 use serde_json::json;
 
@@ -69,6 +71,77 @@ pub(super) fn terminal(status: TurnStatus) -> RemoteAppServerObservedEvent {
             },
         ))),
         CONNECTION_ID,
+        Some(SERVER_VERSION.to_string()),
+        Some(CODEX_HOME.to_string()),
+    )
+}
+
+fn recovery_input(text: &str) -> Vec<codex_app_server_protocol::UserInput> {
+    vec![codex_app_server_protocol::UserInput::Text {
+        text: text.to_string(),
+        text_elements: Vec::new(),
+    }]
+}
+
+fn recovery_turn(
+    id: &str,
+    client_id: &str,
+    text: &str,
+    status: TurnStatus,
+) -> Turn {
+    Turn {
+        id: id.to_string(),
+        items: vec![
+            ThreadItem::UserMessage {
+                id: format!("user:{id}"),
+                client_id: Some(client_id.to_string()),
+                content: recovery_input(text),
+            },
+            ThreadItem::AgentMessage {
+                id: format!("agent:{id}"),
+                text: "recovered answer".to_string(),
+                phase: None,
+                memory_citation: None,
+                delivery: None,
+            },
+        ],
+        items_view: TurnItemsView::Full,
+        error: None,
+        status,
+        started_at: Some(1),
+        completed_at: Some(2),
+        duration_ms: Some(1),
+    }
+}
+
+fn reconciliation_response(
+    session_id: &str,
+    turns: Vec<Turn>,
+) -> RemoteAppServerObservedResponse<ThreadReadResponse> {
+    let mut response: ThreadReadResponse = serde_json::from_value(json!({
+        "thread": {
+            "id": "thread:test",
+            "sessionId": session_id,
+            "preview": "",
+            "ephemeral": true,
+            "modelProvider": "openai",
+            "createdAt": 1,
+            "updatedAt": 2,
+            "recencyAt": 2,
+            "status": {"type": "idle"},
+            "cwd": "/tmp",
+            "cliVersion": "test",
+            "source": "exec",
+            "turns": []
+        }
+    }))
+    .unwrap();
+    response.thread.turns = turns;
+    RemoteAppServerObservedResponse::from_test_response(
+        response,
+        THREAD_READ_RPC_METHOD.to_string(),
+        RequestId::Integer(20),
+        /*new recovery connection*/ 99,
         Some(SERVER_VERSION.to_string()),
         Some(CODEX_HOME.to_string()),
     )
@@ -191,6 +264,115 @@ fn unbound_wire_intent_cannot_consume_terminal_witness() {
     assert_eq!(
         adapt_observed_event(&intent, &id("turn:test"), &terminal(TurnStatus::Completed)),
         Err(Error::ProductBindingRequired)
+    );
+}
+
+#[test]
+fn thread_read_recovery_requires_exact_stable_message_and_input() {
+    let intent = product_intent();
+    let observed = reconciliation_response(
+        "session:test",
+        vec![recovery_turn(
+            "turn:recovered",
+            "request:test",
+            "hello",
+            TurnStatus::Completed,
+        )],
+    );
+    let receipt = adapt_observed_thread_read_reconciliation(
+        &intent,
+        "request:test",
+        &recovery_input("hello"),
+        &observed,
+    )
+    .unwrap()
+    .unwrap();
+    assert_eq!(receipt.status, AdapterStatus::Succeeded);
+    assert_eq!(receipt.turn_id, Some(id("turn:recovered")));
+    assert!(receipt.correlation_digest.is_some());
+
+    assert_eq!(
+        adapt_observed_thread_read_reconciliation(
+            &intent,
+            "request:test",
+            &recovery_input("different"),
+            &observed,
+        ),
+        Err(Error::CorrelationMismatch("reconciliation user input"))
+    );
+}
+
+#[test]
+fn thread_read_recovery_rejects_session_drift_and_duplicate_turns() {
+    let intent = product_intent();
+    let wrong_session = reconciliation_response(
+        "session:other",
+        vec![recovery_turn(
+            "turn:recovered",
+            "request:test",
+            "hello",
+            TurnStatus::Completed,
+        )],
+    );
+    assert_eq!(
+        adapt_observed_thread_read_reconciliation(
+            &intent,
+            "request:test",
+            &recovery_input("hello"),
+            &wrong_session,
+        ),
+        Err(Error::CorrelationMismatch("reconciliation session"))
+    );
+
+    let duplicate = reconciliation_response(
+        "session:test",
+        vec![
+            recovery_turn(
+                "turn:one",
+                "request:test",
+                "hello",
+                TurnStatus::Completed,
+            ),
+            recovery_turn(
+                "turn:two",
+                "request:test",
+                "hello",
+                TurnStatus::Completed,
+            ),
+        ],
+    );
+    assert_eq!(
+        adapt_observed_thread_read_reconciliation(
+            &intent,
+            "request:test",
+            &recovery_input("hello"),
+            &duplicate,
+        ),
+        Err(Error::CorrelationMismatch("reconciliation duplicate turn"))
+    );
+}
+
+#[test]
+fn thread_read_recovery_keeps_in_progress_indeterminate() {
+    let intent = product_intent();
+    let observed = reconciliation_response(
+        "session:test",
+        vec![recovery_turn(
+            "turn:running",
+            "request:test",
+            "hello",
+            TurnStatus::InProgress,
+        )],
+    );
+    assert_eq!(
+        adapt_observed_thread_read_reconciliation(
+            &intent,
+            "request:test",
+            &recovery_input("hello"),
+            &observed,
+        )
+        .unwrap(),
+        None
     );
 }
 
