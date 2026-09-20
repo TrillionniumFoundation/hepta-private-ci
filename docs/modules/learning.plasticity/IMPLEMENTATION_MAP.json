@@ -18,8 +18,8 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "agentd_host_adapter_entrypoint_source_implemented_not_runtime_executed_or_target_host_qualified",
-  "productionWriterState": "agentd_append_only_parameter_and_topology_anchor_fence_journal_source_implemented_not_target_host_qualified",
+  "productCallerState": "agentd_long_lived_plasticity_owner_source_composed_not_target_host_executed_or_qualified",
+  "productionWriterState": "agentd_append_only_parameter_and_topology_anchor_fence_journal_source_implemented_independent_domain_target_host_unproved",
   "operations": [
     {
       "operation": "propose_v2",
@@ -124,14 +124,15 @@
       "operation": "authenticated_product_composition",
       "nativeSymbol": "propose_authenticated_parameter_plasticity_v1",
       "sourcePath": "codex-rs/hepta-intelligence/src/plasticity_product.rs",
-      "state": "adapter_implemented_called_by_agentd_host_entrypoint_pairwise_roles_not_target_host_qualified",
+      "state": "adapter_implemented_called_by_long_lived_agentd_owner_pairwise_roles_and_durable_no_change_terminal_not_target_host_qualified",
       "authority": "proposal_append_only",
       "tests": [
         "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::authenticated_product_path_generates_evaluates_appends_and_commits_anchor",
         "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::product_path_rejects_generator_evaluator_controller_collision",
         "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::product_path_rejects_observer_evaluator_controller_collision",
         "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::durable_v2_evaluation_digest_binds_governed_admission_context",
-        "codex-rs/hepta-learning-ledger/src/signed_evidence_tests.rs::observer_and_evaluator_require_pairwise_independence"
+        "codex-rs/hepta-learning-ledger/src/signed_evidence_tests.rs::observer_and_evaluator_require_pairwise_independence",
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::no_admissible_update_is_independently_attested_and_durably_recorded"
       ],
       "sourcePathExists": true,
       "designOperation": "authenticated_product_composition",
@@ -172,14 +173,33 @@
       "delegatedCallees": []
     },
     {
+      "operation": "agentd_plasticity_runtime_owner",
+      "nativeSymbol": "PlasticityRuntimeOwnerV1",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
+      "state": "long_lived_agentd_daemon_owner_source_composed_generation_fenced_bounded_queue_not_target_host_executed",
+      "authority": "proposal_registry_only",
+      "tests": [
+        "codex-rs/hepta-agentd/src/plasticity_runtime.rs::tests::runtime_queue_capacity_is_bounded"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "agentd_plasticity_runtime_owner",
+      "mappingClass": "delegated_composition",
+      "delegatedCallees": [
+        "learning.artifacts",
+        "learning.ledger",
+        "learning.eval"
+      ]
+    },
+    {
       "operation": "agentd_parameter_host",
       "nativeSymbol": "propose_agentd_plasticity_v1",
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
-      "state": "host_adapter_entrypoint_source_implemented_owner_evidence_required_not_runtime_executed_or_target_host_qualified",
+      "state": "host_entrypoint_called_by_long_lived_agentd_owner_source_composed_not_target_host_qualified",
       "authority": "proposal_registry_only",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::anchor_store_fence_is_monotonic_and_reopen_preserves_acknowledged_state",
-        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::authenticated_product_path_generates_evaluates_appends_and_commits_anchor"
+        "codex-rs/hepta-intelligence/src/plasticity_product_tests.rs::authenticated_product_path_generates_evaluates_appends_and_commits_anchor",
+        "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::retained_external_anchor_blocks_rolled_back_registry_reopen"
       ],
       "sourcePathExists": true,
       "designOperation": "agentd_parameter_host",
@@ -194,13 +214,14 @@
       "operation": "agentd_owner_evidence_resolution",
       "nativeSymbol": "resolve_agentd_plasticity_owner_evidence_set_v1",
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
-      "state": "host_enforced_context_freshness_and_evidence_kind_owner_allowlist_concrete_deployment_adapters_required",
+      "state": "host_enforced_live_frontier_exact_signal_value_and_owner_allowlist_dynamic_owner_adapters_still_required",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::owner_evidence_receipt_is_context_bound",
         "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::owner_evidence_rejects_context_substitution",
         "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::owner_evidence_set_includes_mutation_policy_and_canonical_kinds",
-        "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::owner_evidence_policy_rejects_authenticated_wrong_owner"
+        "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::owner_evidence_policy_rejects_authenticated_wrong_owner",
+        "codex-rs/hepta-agentd/src/plasticity_host.rs::tests::owner_evidence_rejects_parameter_signal_value_substitution"
       ],
       "sourcePathExists": true,
       "designOperation": "agentd_owner_evidence_resolution",
@@ -209,6 +230,24 @@
         "learning.artifacts",
         "learning.ledger",
         "kernel.evidence"
+      ]
+    },
+    {
+      "operation": "concrete_owner_evidence_adapters",
+      "nativeSymbol": "ConcretePlasticityOwnerEvidenceResolverV1",
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs",
+      "state": "dataset_and_policy_owner_adapters_bind_live_ledger_and_artifact_frontiers_dynamic_signal_owners_fail_closed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs::tests::concrete_dataset_and_policy_adapters_bind_live_frontiers",
+        "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs::tests::concrete_adapters_reject_rollback_frontiers_and_missing_dynamic_owner"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "concrete_owner_evidence_adapters",
+      "mappingClass": "delegated_composition",
+      "delegatedCallees": [
+        "learning.artifacts",
+        "learning.ledger"
       ]
     },
     {
@@ -262,7 +301,7 @@
       "operation": "agentd_topology_host",
       "nativeSymbol": "propose_agentd_topology_plasticity_v1",
       "sourcePath": "codex-rs/hepta-agentd/src/topology_plasticity_host.rs",
-      "state": "host_adapter_entrypoint_source_implemented_external_anchor_not_runtime_executed_or_target_host_qualified",
+      "state": "host_entrypoint_called_by_long_lived_agentd_owner_external_anchor_not_target_host_qualified",
       "authority": "proposal_registry_only",
       "tests": [
         "codex-rs/hepta-agentd/src/topology_plasticity_host.rs::tests::topology_anchor_store_preserves_fence_and_anchor",
@@ -310,17 +349,34 @@
       "designOperation": "structural_canary_controller",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "authenticated_structural_canary_observation",
+      "nativeSymbol": "observe_authenticated_structural_canary_v1",
+      "sourcePath": "codex-rs/hepta-intelligence/src/topology_canary_product.rs",
+      "state": "source_implemented_observer_signature_binds_exact_plan_and_observation_no_topology_apply_authority",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-intelligence/src/topology_canary_product.rs::tests::payload_binds_every_caller_asserted_canary_fact"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authenticated_structural_canary_observation",
+      "mappingClass": "delegated_composition",
+      "delegatedCallees": [
+        "learning.ledger"
+      ]
     }
   ],
   "repositoryControlledGaps": [
-    "Run exact-head and deterministic synthetic-merge compilation, tests, lint, document verification and Lane F qualification for this final source/document head.",
-    "Bind PlasticityOwnerEvidenceResolverV1 to concrete authoritative owner-store adapters in the selected deployment and exercise owner-policy, freshness and provenance failures before changing productionImplementation or productExecutionProved."
+    "Run exact-head and deterministic synthetic-merge compilation, tests, strict lint, document verification, Agentd process qualification and Lane F qualification for this final source/document head.",
+    "Bind the remaining dynamic Modulator, ModulatorBroadcast, Eligibility and ParameterSignal evidence classes to their concrete authoritative owner stores in the selected deployment; the Dataset and immutable Policy paths are concrete and fail closed when dynamic owners are unavailable."
   ],
   "externalEvidenceGates": [
     "independent semantic and security review",
-    "target-host product execution, concrete owner-evidence adapter qualification and telemetry",
+    "target-host execution with the anchor/fence journal placed in a rollback domain physically independent from each proposal registry, plus crash/recovery telemetry",
     "operator acceptance and incident-recovery exercise",
-    "real bounded structural canary execution, promotion, activation and release"
+    "real topology application/migration owner execution with authenticated canary telemetry, forced fault, actual rollback and reconciliation",
+    "promotion, activation and release"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
