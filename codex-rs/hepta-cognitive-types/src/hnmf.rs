@@ -544,6 +544,30 @@ impl CrossModalBindingV1 {
     }
 }
 
+/// Validate a separately transported cross-modal binding against the exact
+/// canonical event that supplies its span identities. Structural validation of
+/// the binding alone cannot prove that referenced spans exist or span distinct
+/// modalities.
+pub fn validate_cross_modal_binding_against_event_v1(
+    event: &MemoryEventV1,
+    binding: &CrossModalBindingV1,
+) -> Result<(), HnmfContractError> {
+    event.validate()?;
+    binding.validate()?;
+    if binding.event_id != event.event_id {
+        return Err(HnmfContractError::Conflict("binding event"));
+    }
+    let canonical = event
+        .cross_modal_bindings
+        .iter()
+        .find(|candidate| candidate.binding_id == binding.binding_id)
+        .ok_or(HnmfContractError::Missing("binding in event"))?;
+    if canonical != binding {
+        return Err(HnmfContractError::Conflict("binding/event payload"));
+    }
+    Ok(())
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ProvenanceRefV1 {
