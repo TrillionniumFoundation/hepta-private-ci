@@ -14,8 +14,8 @@
   "resolvedRoots": [
     "codex-rs/hepta-supervisor"
   ],
-  "stateOwnerDisposition": "Owns generation-fenced process lifecycle, durable restart-budget state, signed production release-selection records, and release transition records; user-task truth remains outside this module.",
-  "terminalObserverDisposition": "The process driver and current-generation health observations establish process terminality. Drain admission acknowledgement only proves new admission stopped; user-task/effect completion requires a separate trusted terminal observer.",
+  "stateOwnerDisposition": "Owns generation-fenced process lifecycle, durable bounded restart state, signed release-selection records and release-transition recovery; user-task truth remains outside this module.",
+  "terminalObserverDisposition": "The exact process driver, Agentd readiness/drain acknowledgements and current-generation observations establish lifecycle terminality; drain acknowledgement closes admission but never establishes user-task success.",
   "operations": [
     {
       "designOperation": "start_instance",
@@ -30,11 +30,16 @@
       "tests": [
         {
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
-          "kind": "native_unit",
+          "kind": "native_unit_and_launch_faults",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/unix_tests.rs",
+          "kind": "native_process_identity",
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Creates a generation-fenced managed process from a registered agent and bounded configuration.",
+      "sourceSemantics": "Creates a generation-fenced managed process from a registered release, retains failed lease-publication children under hard-kill quarantine, and recovers exact process identity without PID-only trust.",
       "operation": "start_instance",
       "nativeSymbol": "pub fn start(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -53,21 +58,16 @@
       "tests": [
         {
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
-          "kind": "fault_and_lifecycle",
-          "command": "just test -p codex-hepta-supervisor --lib"
-        },
-        {
-          "path": "codex-rs/hepta-supervisor/src/restart_budget.rs",
-          "kind": "restart_budget_recovery",
+          "kind": "fault_lifecycle_and_restart_budget",
           "command": "just test -p codex-hepta-supervisor --lib"
         },
         {
           "path": "codex-rs/hepta-supervisor/src/unix_tests.rs",
-          "kind": "native_identity_and_health",
+          "kind": "readiness_and_generation_fences",
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Consumes exact current-generation process observations, advances lifecycle state, and applies a durable bounded exponential restart budget on unexpected primary-Agent exit.",
+      "sourceSemantics": "Consumes exact Agentd/process observations under the active generation, requires readiness gates before Running, fences stale processes, and advances bounded durable restart/recovery state without inferring task success.",
       "operation": "observe_health",
       "nativeSymbol": "pub fn tick(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -86,16 +86,16 @@
       "tests": [
         {
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
-          "kind": "fault_and_lifecycle",
+          "kind": "drain_stop_and_restart",
           "command": "just test -p codex-hepta-supervisor --lib"
         },
         {
           "path": "codex-rs/hepta-supervisor/src/unix_tests.rs",
-          "kind": "native_drain_transport",
+          "kind": "agentd_drain_ack_generation_fence",
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Transitions the current generation to Draining, asks Agentd to stop new admission over the generation-bound control RPC, and waits for a trusted drained observation or the bounded drain deadline before stopping the process.",
+      "sourceSemantics": "Transitions the lifecycle fence to Draining, requires an exact Agentd Drain acknowledgement that closes admission for the current spawn/draining generation, and never relabels unknown in-flight work as complete.",
       "operation": "drain",
       "nativeSymbol": "pub fn drain(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -114,42 +114,39 @@
       "tests": [
         {
           "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
-          "kind": "upgrade_and_rollback",
-          "command": "just test -p codex-hepta-supervisor --lib"
-        },
-        {
-          "path": "codex-rs/hepta-supervisor/src/signed_authority.rs",
-          "kind": "signed_release_authority",
+          "kind": "upgrade_rollback_and_recovery",
           "command": "just test -p codex-hepta-supervisor --lib"
         },
         {
           "path": "codex-rs/hepta-supervisor/src/release_selection.rs",
-          "kind": "durable_release_selection",
+          "kind": "durable_selection_integrity",
+          "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_authority.rs",
+          "kind": "signed_release_and_recovery_authority",
           "command": "just test -p codex-hepta-supervisor --lib"
         }
       ],
-      "sourceSemantics": "Production release transitions consume independently signed authority bound to current immutable release bytes, durable selection evidence, CAS fences and current release allowance; rollback re-resolves the predecessor before launch.",
+      "sourceSemantics": "In production-authority mode consumes an independently signed exact release selection, binds source/target manifest and executable digests plus compatibility/frontier/CAS facts, rejects unsigned release changes, re-admits rollback against current provenance/frontier, and requires an independent signed recovery decision for ambiguous outcomes.",
       "operation": "load_next",
       "nativeSymbol": "pub fn upgrade(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true
     }
   ],
-  "repositoryControlledGaps": [
-    "Bind promotion readiness to a real current owner observation for critical-store integrity and capability-revocation availability; current Agentd health proves exact generation/App Server readiness but not that complete authority frontier.",
-    "Provide a trusted in-flight drain terminal/reconciliation observer. The native drain RPC now stops new Agentd admission, but the Unix process observer does not infer drained=true from acknowledgement and therefore waits the bounded drain deadline when no stronger observer exists."
-  ],
+  "repositoryControlledGaps": [],
   "externalEvidenceGates": [
-    "deployed binary and host identity",
-    "target-host watchdog/start/drain/restart measurements",
-    "independent operational acceptance of signed release transition and rollback",
-    "target-host authority/revocation readiness observation"
+    "exact deployed hepta-supervisord binary, host identity and production verifier/frontier configuration",
+    "target-host startup, watchdog, Agentd drain, bounded restart and signed-recovery fault/latency measurements",
+    "deployed current revocation/compatibility-frontier distribution and rotation procedure",
+    "independent operational acceptance of signed upgrade, rollback and recovery outcomes"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": false,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
     "productExecutionComplete": false,
     "deploymentQualificationComplete": false,
     "independentAcceptanceComplete": false,
