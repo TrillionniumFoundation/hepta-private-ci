@@ -15,8 +15,8 @@ use crate::AutomationOccurrenceState;
 use crate::AutomationOccurrenceTerminalState;
 use crate::AutomationQueueReceipt;
 use crate::AutomationStore;
-use crate::AutomationTaskState;
 use crate::AutomationTaskId;
+use crate::AutomationTaskState;
 use crate::TaskFlowError;
 
 impl AutomationStore {
@@ -169,7 +169,6 @@ impl AutomationStore {
         self.release_uncertain_for_retry(task_id, occurrence, client_user_message_id)
             .await
     }
-
 }
 
 fn to_i64(value: u64) -> Result<i64, AutomationError> {
