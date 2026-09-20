@@ -35,11 +35,18 @@ use crate::SecretLeaseMetadataV1;
 use crate::SecretLeaseStore;
 
 pub type BaoConsumerCallback = Arc<dyn Fn(&[u8]) -> Result<(), ()> + Send + Sync + 'static>;
+pub type BaoLeaseConsumerCallback = Arc<
+    dyn Fn(&SecretLeaseMetadataV1, u64, &str, &[u8]) -> Result<(), ()>
+        + Send
+        + Sync
+        + 'static,
+>;
 
 #[derive(Clone)]
 pub struct RegisteredBaoConsumer {
     id: String,
     callback: BaoConsumerCallback,
+    lease_callback: BaoLeaseConsumerCallback,
 }
 
 impl fmt::Debug for RegisteredBaoConsumer {
@@ -59,7 +66,33 @@ impl RegisteredBaoConsumer {
         if !consumer_id(&id) {
             return Err(BaoFinalUseHostError::InvalidConsumerId);
         }
-        Ok(Self { id, callback })
+        let lease_callback_source = Arc::clone(&callback);
+        let lease_callback: BaoLeaseConsumerCallback =
+            Arc::new(move |_metadata, _authority_epoch, _grant_id, secret| {
+                lease_callback_source(secret)
+            });
+        Ok(Self {
+            id,
+            callback,
+            lease_callback,
+        })
+    }
+
+    /// Register a consumer whose dynamic-lease delivery is explicitly aware of
+    /// the committed lease metadata and the issuance grant frontier.
+    pub fn new_lease_aware(
+        id: String,
+        callback: BaoConsumerCallback,
+        lease_callback: BaoLeaseConsumerCallback,
+    ) -> Result<Self, BaoFinalUseHostError> {
+        if !consumer_id(&id) {
+            return Err(BaoFinalUseHostError::InvalidConsumerId);
+        }
+        Ok(Self {
+            id,
+            callback,
+            lease_callback,
+        })
     }
 
     pub fn id(&self) -> &str {
@@ -74,8 +107,8 @@ pub struct BaoFinalUseHost {
     approval_verifier: FinalUseApprovalVerifier,
     revocation_verifier: FinalUseRevocationFeedVerifier,
     clock: Arc<dyn AuthorityClock>,
-    revocation_fresh_until_unix_ms: Mutex<u64>,
-    consumers: BTreeMap<String, BaoConsumerCallback>,
+    revocation_fresh_until_unix_ms: Arc<Mutex<u64>>,
+    consumers: BTreeMap<String, RegisteredBaoConsumer>,
 }
 
 impl fmt::Debug for BaoFinalUseHost {
@@ -99,10 +132,7 @@ impl BaoFinalUseHost {
     ) -> Result<Self, BaoFinalUseHostError> {
         let mut registry = BTreeMap::new();
         for consumer in consumers {
-            if registry
-                .insert(consumer.id, consumer.callback)
-                .is_some()
-            {
+            if registry.insert(consumer.id.clone(), consumer).is_some() {
                 return Err(BaoFinalUseHostError::DuplicateConsumer);
             }
         }
@@ -114,7 +144,7 @@ impl BaoFinalUseHost {
             approval_verifier,
             revocation_verifier,
             clock,
-            revocation_fresh_until_unix_ms: Mutex::new(0),
+            revocation_fresh_until_unix_ms: Arc::new(Mutex::new(0)),
             consumers: registry,
         })
     }
@@ -178,9 +208,25 @@ impl BaoFinalUseHost {
             .cloned()
             .ok_or(BaoFinalUseHostError::UnregisteredConsumer)?;
         client
-            .consume_kv_v2(&self.authority, grant, request, move |secret| consumer(secret))
+            .consume_kv_v2(&self.authority, grant, request, move |secret| {
+                (consumer.callback)(secret)
+            })
             .await
             .map_err(BaoFinalUseHostError::Client)
+    }
+
+    /// Build a read-only guard used by a registered consumer after a dynamic
+    /// secret has been delivered. The guard shares the live revocation-feed
+    /// freshness fence and revalidates the durable lease on every use.
+    pub fn lease_use_guard(&self, store: SecretLeaseStore) -> BaoLeaseUseGuard {
+        BaoLeaseUseGuard {
+            authority: self.authority.clone(),
+            clock: Arc::clone(&self.clock),
+            revocation_fresh_until_unix_ms: Arc::clone(
+                &self.revocation_fresh_until_unix_ms,
+            ),
+            store,
+        }
     }
 
     fn ensure_revocation_fresh(&self) -> Result<(), BaoFinalUseHostError> {
@@ -219,6 +265,8 @@ impl BaoFinalUseHost {
             .get(&request.consumer_id)
             .cloned()
             .ok_or(BaoFinalUseHostError::UnregisteredConsumer)?;
+        let authority_epoch = grant.grant.authority_epoch;
+        let grant_id = grant.grant.grant_id.clone();
         client
             .request_secret_lease(
                 store,
@@ -226,7 +274,14 @@ impl BaoFinalUseHost {
                 grant,
                 request,
                 receipt_key,
-                move |secret| consumer(secret),
+                move |metadata, secret| {
+                    (consumer.lease_callback)(
+                        metadata,
+                        authority_epoch,
+                        &grant_id,
+                        secret,
+                    )
+                },
             )
             .await
             .map_err(BaoFinalUseHostError::Lease)
@@ -307,6 +362,73 @@ fn consumer_id(value: &str) -> bool {
             .all(|b| b.is_ascii_alphanumeric() || b"_-.:".contains(&b))
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct BaoLeaseUseWitness {
+    pub lease_id: String,
+    pub consumer_id: String,
+    pub rotation_generation: u64,
+    pub authority_epoch: u64,
+    pub grant_id: String,
+}
+
+#[derive(Clone)]
+pub struct BaoLeaseUseGuard {
+    authority: FinalUseAuthority,
+    clock: Arc<dyn AuthorityClock>,
+    revocation_fresh_until_unix_ms: Arc<Mutex<u64>>,
+    store: SecretLeaseStore,
+}
+
+impl fmt::Debug for BaoLeaseUseGuard {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("BaoLeaseUseGuard")
+            .field("authority", &self.authority)
+            .field("store", &self.store)
+            .field("revocation_feed", &"[LIVE SIGNED FEED]")
+            .finish()
+    }
+}
+
+impl BaoLeaseUseGuard {
+    pub async fn validate(
+        &self,
+        witness: &BaoLeaseUseWitness,
+    ) -> Result<SecretLeaseMetadataV1, BaoFinalUseHostError> {
+        let now_unix_ms = self
+            .clock
+            .now_unix_ms()
+            .map_err(BaoFinalUseHostError::Trust)?;
+        let fresh_until = *self
+            .revocation_fresh_until_unix_ms
+            .lock()
+            .map_err(|_| BaoFinalUseHostError::Unavailable)?;
+        if fresh_until == 0 || now_unix_ms >= fresh_until {
+            return Err(BaoFinalUseHostError::StaleRevocationFeed);
+        }
+        if !self
+            .authority
+            .grant_is_current(witness.authority_epoch, &witness.grant_id)
+            .map_err(BaoFinalUseHostError::Authority)?
+        {
+            return Err(BaoFinalUseHostError::GrantNoLongerCurrent);
+        }
+        let lease = self
+            .store
+            .lease(&witness.lease_id)
+            .await
+            .map_err(|error| BaoFinalUseHostError::Lease(BaoLeaseError::Store(error)))?
+            .ok_or(BaoFinalUseHostError::Lease(BaoLeaseError::LeaseUnavailable))?;
+        if lease.consumer_id != witness.consumer_id
+            || lease.rotation_generation != witness.rotation_generation
+            || !lease.is_usable_at(now_unix_ms)
+        {
+            return Err(BaoFinalUseHostError::Lease(BaoLeaseError::LeaseUnavailable));
+        }
+        Ok(lease)
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum BaoFinalUseHostError {
     InvalidConsumerId,
@@ -316,6 +438,8 @@ pub enum BaoFinalUseHostError {
     StaleRevocationFeed,
     Unavailable,
     Trust(AuthorityTrustError),
+    Authority(codex_hepta_contracts::FinalUseError),
+    GrantNoLongerCurrent,
     Control(FinalUseControlError),
     Client(BaoClientError),
     Lease(BaoLeaseError),
