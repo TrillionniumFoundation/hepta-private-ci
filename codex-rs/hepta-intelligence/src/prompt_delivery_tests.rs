@@ -114,6 +114,12 @@ fn admitted_registry(
     registry
         .admit_factor_final_use(&authority, &signed, &factor.factor_id, scope, evidence)
         .expect("admit factor through final-use authority");
+    let admitted_factor = registry
+        .registry()
+        .expect("registry remains readable after admission")
+        .factor(&factor.factor_id)
+        .cloned()
+        .expect("admitted factor remains present");
 
     let tuple = PromptModelTupleV2 {
         model_id: id("model:hepta-test"),
@@ -144,7 +150,7 @@ fn admitted_registry(
     let realization_actor = id("publisher:prompt");
     let realization_scope = digest("scope:realization:prompt");
     let authority_binding = final_use_realization_binding(
-        &factor,
+        &admitted_factor,
         &realization_actor,
         realization_scope,
         &realization,
