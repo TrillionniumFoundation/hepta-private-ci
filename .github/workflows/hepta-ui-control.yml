@@ -6,6 +6,8 @@ on:
       - "apps/hepta-control-ui/**"
       - "docs/modules/ui.control/**"
       - "qualification/module-execution-dossiers/detail/ui.control.md"
+      - "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
+      - ".github/actions/hepta-synthetic-merge/**"
       - ".github/workflows/hepta-ui-control.yml"
   push:
     branches: [main]
@@ -13,6 +15,8 @@ on:
       - "apps/hepta-control-ui/**"
       - "docs/modules/ui.control/**"
       - "qualification/module-execution-dossiers/detail/ui.control.md"
+      - "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
+      - ".github/actions/hepta-synthetic-merge/**"
       - ".github/workflows/hepta-ui-control.yml"
   workflow_dispatch:
 
