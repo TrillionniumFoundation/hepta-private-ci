@@ -86,6 +86,7 @@ impl ContextSerializerV2 for FramingSerializer {
 struct TestDeliveryVerifier {
     accept: bool,
     recorded_at_unix_ms: u64,
+    expected_witness: Option<Sha256Digest>,
 }
 
 impl ContextProviderDeliveryVerifierV2 for TestDeliveryVerifier {
@@ -109,9 +110,13 @@ impl ContextProviderDeliveryVerifierV2 for TestDeliveryVerifier {
         else {
             return Err("provider input witness missing".to_string());
         };
-        let expected_witness =
+        let preparation_witness =
             Sha256Digest::for_bytes(preparation.preparation_digest().as_array());
-        if witness != &expected_witness {
+        let expected_witness = self
+            .expected_witness
+            .as_ref()
+            .unwrap_or(&preparation_witness);
+        if witness != expected_witness {
             return Err("delivery witness rejected".to_string());
         }
         Ok(ContextProviderDeliveryDecisionV2 {
@@ -125,6 +130,7 @@ fn delivery_verifier() -> TestDeliveryVerifier {
     TestDeliveryVerifier {
         accept: true,
         recorded_at_unix_ms: 20,
+        expected_witness: None,
     }
 }
 
@@ -719,6 +725,78 @@ fn provider_receipt_bound_to_exact_payload_and_pre_dispatch_witness_creates_deli
 }
 
 #[test]
+fn provider_owned_attempt_witness_is_authenticated_by_delivery_verifier() {
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let (trusted, realized) = candidate(
+        "item:trusted",
+        ContextRoleV2::TrustedInstruction,
+        20,
+        FixedQ32::ONE,
+        &snapshot,
+    );
+    let compiled = compile_v2(request(vec![trusted], 100))
+        .unwrap_or_else(|error| panic!("valid compilation: {error}"));
+    let serialization = record_serialization(
+        &compiled,
+        &profile(),
+        id("serialization:1"),
+        vec![realized],
+        &FramingSerializer { overhead: 0 },
+        &ByteTokenizer,
+    )
+    .unwrap_or_else(|error| panic!("valid serialization: {error}"));
+    let attachment = build_attachment(
+        &compiled,
+        &serialization,
+        &profile(),
+        &snapshot,
+        id("attachment:1"),
+    )
+    .unwrap_or_else(|error| panic!("valid attachment: {error}"));
+    let preparation = prepare_delivery_v2(
+        &compiled,
+        &serialization,
+        &attachment,
+        &profile(),
+        &snapshot,
+        id("preparation:1"),
+    )
+    .unwrap_or_else(|error| panic!("valid delivery preparation: {error}"));
+    let provider_owned_witness = Sha256Digest::for_bytes(b"provider-owned-attempt-witness");
+    let provider = provider_receipt(
+        &serialization,
+        &preparation,
+        "provider",
+        "model",
+        None,
+        Some(provider_owned_witness.clone()),
+        completed_terminal(),
+    );
+    let verifier = TestDeliveryVerifier {
+        accept: true,
+        recorded_at_unix_ms: 20,
+        expected_witness: Some(provider_owned_witness),
+    };
+
+    let delivery = observe_delivery(
+        &preparation,
+        &attachment,
+        &serialization,
+        &profile(),
+        id("delivery:1"),
+        &provider,
+        &verifier,
+        25,
+    )
+    .unwrap_or_else(|error| panic!("provider-owned witness should verify: {error}"));
+
+    assert_eq!(
+        delivery.disposition(),
+        ContextDeliveryDispositionV2::Delivered
+    );
+}
+
+#[test]
 fn provider_payload_binding_must_match_exact_serialized_payload() {
     let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
     let (candidate, realized) = candidate(
@@ -959,6 +1037,7 @@ fn independent_provider_evidence_verifier_is_required() {
     let rejecting = TestDeliveryVerifier {
         accept: false,
         recorded_at_unix_ms: 20,
+        expected_witness: None,
     };
 
     assert!(matches!(
