@@ -80,7 +80,7 @@
           "command": "cargo test --manifest-path apps/hepta-native/Cargo.toml --test runtime"
         }
       ],
-      "sourceSemantics": "Computes the final payload digest in Rust, verifies a short-lived signed grant and current local policy, durably records Invoking before OS entry, deduplicates by session-incarnation operation key and reconciles indeterminate effects without replay.",
+      "sourceSemantics": "Computes the final payload binding in Rust, durably claims kernel FinalUseAuthority nonce/revocation state, records Invoking before effect entry, consumes VerifiedUseToken under a second current revocation check, deduplicates by session-incarnation operation key and reconciles indeterminate effects without replay.",
       "operation": "request_platform_capability",
       "nativeSymbol": "pub fn request_platform_capability(",
       "sourcePath": "apps/hepta-native/src/runtime.rs",
@@ -111,7 +111,9 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Observe current exact-head and merge-candidate execution receipts for the final claim-bearing candidate before setting productionImplementation/productExecutionComplete true."
+    "Compose an upstream Agentd/gateway product path that delivers independently issued SignedFinalUseGrant values for exact native platform operations; ui.native must not mint its own authority.",
+    "Implement and qualify an equivalent durable kernel.authority final-use store for Windows; until then Windows platform effects remain fail-closed/read-only.",
+    "Commit a reproducible native Cargo.lock and observe current exact-head plus Windows/macOS/Linux merge-candidate execution receipts for the final claim-bearing candidate before setting source/product completion flags."
   ],
   "externalEvidenceGates": [
     "production Authenticode, Apple Developer ID/notarization and Linux distribution signing/repository ownership",
@@ -135,7 +137,7 @@
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "composed_candidate",
+  "productCallerState": "read_only_composed_effect_consumer_source_only",
   "productionWriterState": "not_applicable_no_authoritative_domain_writer",
   "owner": "ui-platform",
   "deputy": "accessibility",
