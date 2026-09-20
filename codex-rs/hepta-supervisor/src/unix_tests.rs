@@ -12,18 +12,22 @@ use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
 use codex_hepta_agent_protocol::AgentdPayload;
 use codex_hepta_agent_protocol::AgentdRequest;
 use codex_hepta_agent_protocol::AgentdResponse;
+use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_agent_protocol::HealthSnapshot;
+use codex_hepta_agent_protocol::ReadinessSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_fleet::ReleaseId;
 use codex_hepta_matrix_protocol::MAX_MATRIXD_CONTROL_FRAME_BYTES;
 use pretty_assertions::assert_eq;
 
+use super::AgentDrainRequestIdentity;
 use super::AgentHealthProbeIdentity;
 use super::MatrixHealthProbeIdentity;
 use super::UnixProcessDriver;
 use super::query_agent_health_once;
 use super::query_matrix_health_once;
+use super::request_agent_drain;
 use crate::AdoptSpec;
 use crate::Adoption;
 use crate::AgentCommand;
@@ -264,6 +268,57 @@ fn health_probe_requires_exact_agent_generation_pid_and_roots() {
 }
 
 #[test]
+fn agent_drain_requires_exact_draining_generation_ack() {
+    let temp = tempfile::tempdir().expect("temporary directory");
+    let socket = temp.path().join("agentd-drain.sock");
+    let agent_id =
+        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("valid agent id");
+    let identity = AgentDrainRequestIdentity {
+        agent_id: agent_id.clone(),
+        spawn_generation: 7,
+        control_socket: socket.clone(),
+    };
+
+    for (current_generation, accepted) in [(9_u64, true), (8_u64, false)] {
+        remove_socket(&socket);
+        let listener = UnixListener::bind(&socket).expect("bind drain socket");
+        let response_agent = agent_id.clone();
+        let worker = std::thread::spawn(move || {
+            let (stream, _) = listener.accept().expect("accept drain request");
+            let mut reader = BufReader::new(stream);
+            let mut request_bytes = Vec::new();
+            reader
+                .read_until(b'\n', &mut request_bytes)
+                .expect("read drain request");
+            let request: AgentdRequest =
+                serde_json::from_slice(&request_bytes).expect("typed drain request");
+            assert!(matches!(
+                request.method,
+                codex_hepta_agent_protocol::AgentdMethod::Drain
+            ));
+            let response = AgentdResponse {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: request.request_id,
+                agent_id: response_agent,
+                spawn_generation: 7,
+                current_generation,
+                payload: AgentdPayload::Drain(DrainSnapshot {
+                    admission_stopped: true,
+                    drain_accepted: true,
+                }),
+            };
+            let mut stream = reader.into_inner();
+            serde_json::to_writer(&mut stream, &response).expect("write drain response");
+            stream.write_all(b"\n").expect("terminate drain response");
+        });
+
+        assert_eq!(request_agent_drain(&identity).is_ok(), accepted);
+        worker.join().expect("drain server joins");
+    }
+    remove_socket(&socket);
+}
+
+#[test]
 fn matrix_health_transport_rejects_response_larger_than_one_mib() {
     let temp = tempfile::tempdir().expect("temporary directory");
     let socket = temp.path().join("matrix-probe.sock");
@@ -361,19 +416,91 @@ fn serve_and_probe(
 ) -> bool {
     remove_socket(&identity.control_socket);
     let listener = UnixListener::bind(&identity.control_socket).expect("bind probe socket");
+    let needs_readiness = match &response.payload {
+        AgentdPayload::Health(health) => {
+            let generation_matches = match health.lifecycle {
+                codex_hepta_fleet::AgentLifecycle::Starting => {
+                    response.current_generation == identity.spawn_generation
+                }
+                codex_hepta_fleet::AgentLifecycle::Running => identity
+                    .spawn_generation
+                    .checked_add(1)
+                    .is_some_and(|generation| response.current_generation == generation),
+                codex_hepta_fleet::AgentLifecycle::Draining => identity
+                    .spawn_generation
+                    .checked_add(2)
+                    .is_some_and(|generation| response.current_generation == generation),
+                codex_hepta_fleet::AgentLifecycle::Stopped
+                | codex_hepta_fleet::AgentLifecycle::Failed => false,
+            };
+            response.schema_version == AGENTD_CONTROL_SCHEMA_VERSION
+                && response.agent_id == identity.agent_id
+                && response.spawn_generation == identity.spawn_generation
+                && generation_matches
+                && !health.fenced
+                && health.process_id == identity.process_id
+                && health.workspace == identity.workspace
+                && health.home_root == identity.home_root
+                && health.run_root == identity.run_root
+                && health.promotion_ready
+                && matches!(
+                    health.lifecycle,
+                    codex_hepta_fleet::AgentLifecycle::Starting
+                        | codex_hepta_fleet::AgentLifecycle::Running
+                )
+        }
+        _ => false,
+    };
+    let readiness_generation = response.current_generation;
+    let readiness_admission_open = matches!(
+        &response.payload,
+        AgentdPayload::Health(health)
+            if health.lifecycle == codex_hepta_fleet::AgentLifecycle::Running
+    );
+    let readiness_agent = response.agent_id.clone();
+    let readiness_spawn_generation = response.spawn_generation;
     let worker = std::thread::spawn(move || {
-        let (stream, _) = listener.accept().expect("accept probe");
+        let (stream, _) = listener.accept().expect("accept health probe");
         let mut reader = BufReader::new(stream);
         let mut request_bytes = Vec::new();
         reader
             .read_until(b'\n', &mut request_bytes)
-            .expect("read request");
+            .expect("read health request");
         let request: AgentdRequest =
             serde_json::from_slice(&request_bytes).expect("typed health request");
         response.request_id = request.request_id;
         let mut stream = reader.into_inner();
-        serde_json::to_writer(&mut stream, &response).expect("write response");
-        stream.write_all(b"\n").expect("terminate response");
+        serde_json::to_writer(&mut stream, &response).expect("write health response");
+        stream.write_all(b"\n").expect("terminate health response");
+        drop(stream);
+
+        if needs_readiness {
+            let (stream, _) = listener.accept().expect("accept readiness probe");
+            let mut reader = BufReader::new(stream);
+            let mut request_bytes = Vec::new();
+            reader
+                .read_until(b'\n', &mut request_bytes)
+                .expect("read readiness request");
+            let request: AgentdRequest =
+                serde_json::from_slice(&request_bytes).expect("typed readiness request");
+            assert!(matches!(request.method, codex_hepta_agent_protocol::AgentdMethod::Readiness));
+            let readiness = AgentdResponse {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: request.request_id,
+                agent_id: readiness_agent,
+                spawn_generation: readiness_spawn_generation,
+                current_generation: readiness_generation,
+                payload: AgentdPayload::Readiness(ReadinessSnapshot {
+                    critical_stores_ready: true,
+                    revocation_ready: true,
+                    required_ports_ready: true,
+                    admission_open: readiness_admission_open,
+                }),
+            };
+            let mut stream = reader.into_inner();
+            serde_json::to_writer(&mut stream, &readiness).expect("write readiness response");
+            stream.write_all(b"\n").expect("terminate readiness response");
+        }
     });
     let result = query_agent_health_once(identity, request_id)
         .expect("health probe completes")
