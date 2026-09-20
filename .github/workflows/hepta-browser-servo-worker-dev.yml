@@ -16,6 +16,7 @@ on:
     branches:
       - main
       - codex/browser-servo-effect-closure-20260917
+      - codex/browser-servo-product-closure-20260920
     paths:
       - 'apps/hepta-browser/servo-worker/**'
       - 'apps/hepta-browser/src/**'
@@ -173,6 +174,25 @@ jobs:
           set -euo pipefail
           node apps/hepta-browser/scripts/real-worker-smoke.js worker-evidence/hepta-servo-worker | tee worker-evidence/real-worker-smoke.json
 
+      - name: Exercise real Servo Browser E2E through grant-scoped egress
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/hepta-browser/scripts/real-worker-e2e.js worker-evidence/hepta-servo-worker | tee worker-evidence/real-worker-e2e.json
+          python3 - <<'PY'
+          import json, pathlib
+          e2e = json.loads(pathlib.Path("worker-evidence/real-worker-e2e.json").read_text())
+          assert e2e["open"] is True
+          assert e2e["navigate"] is True
+          assert e2e["observe"] is True
+          assert e2e["type"] is True
+          assert e2e["click"] is True
+          assert e2e["formNavigationObserved"] is True
+          assert e2e["redirectEscapeDenied"] is True
+          assert e2e["durableTerminalDrain"] is True
+          assert e2e["close"] is True
+          PY
+
       - name: Generate deterministic SPDX 2.3 SBOM and build receipt
         shell: bash
         run: |
@@ -203,6 +223,7 @@ jobs:
               'reproducibleIndependentBuilds': True,
               'linuxSandboxProbe': json.loads((root / 'linux-sandbox-probe.json').read_text()),
               'realWorkerSmoke': json.loads((root / 'real-worker-smoke.json').read_text()),
+              'realWorkerE2e': json.loads((root / 'real-worker-e2e.json').read_text()),
           }
           (root / 'build-receipt.json').write_text(json.dumps(receipt, sort_keys=True, separators=(',', ':')) + '\n', encoding='utf-8')
           PY
