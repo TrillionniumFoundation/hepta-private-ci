@@ -99,6 +99,8 @@ REQUIRED_FILES = [
     "codex-rs/hepta-cognitive-types/src/hnmf_learning.rs",
     "codex-rs/hepta-cognitive-types/src/wire.rs",
     "codex-rs/hepta-cognitive-types/src/contract_tests.rs",
+    "codex-rs/hepta-cognitive-types/fuzz/Cargo.toml",
+    "codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs",
     "qualification/cognitive-types-v1/verify_vectors.py",
     "qualification/hnmf-reference/Cargo.toml",
     "qualification/hnmf-reference/Cargo.lock",
@@ -452,6 +454,15 @@ def verify() -> int:
     for token in CANONICAL_RUST_TOKENS:
         need(token in canonical_rust, f"canonical cognitive contract token {token}")
 
+    fuzz_source = (
+        ROOT / "codex-rs/hepta-cognitive-types/fuzz/fuzz_targets/decode_contracts.rs"
+    ).read_text(encoding="utf-8")
+    for protocol_id in PROTOCOLS:
+        need(
+            f"decode_wire_v1::<{protocol_id}>" in fuzz_source,
+            protocol_id + " fuzz decoder coverage",
+        )
+
     rust_path = "qualification/hnmf-reference/src/lib.rs"
     rust = (ROOT / rust_path).read_text(encoding="utf-8")
     need(len(rust.encode("utf-8")) >= 25_000, "algorithm reference runtime too small")
@@ -495,6 +506,7 @@ def verify() -> int:
         "cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets",
         "cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets -- -D warnings",
         "cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types",
+        "cargo check --manifest-path codex-rs/hepta-cognitive-types/fuzz/Cargo.toml --all-targets",
     ]:
         need(command in workflow, f"workflow command {command}")
 
