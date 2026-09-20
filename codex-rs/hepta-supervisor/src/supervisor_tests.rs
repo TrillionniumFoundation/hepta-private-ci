@@ -19,12 +19,12 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetAllocationStore;
-use codex_hepta_fleet::FleetCapacityObservationSourceV1;
 use codex_hepta_fleet::FleetHolderDispositionV1;
-use codex_hepta_fleet::FleetHostObservationV1;
 use codex_hepta_fleet::FleetPlacementRequestV1;
 use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::FleetResourceVectorV1;
+use codex_hepta_fleet::LocalCapacityObserverV1;
+use codex_hepta_fleet::LocalCapacityPolicyV1;
 use codex_hepta_fleet::ReleaseId;
 use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
@@ -1348,22 +1348,19 @@ fn durable_fleet_grant_is_consumed_by_spawn_and_released_by_observed_exit()
     let (mut supervisor, _) =
         Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
 
-    let unix_ms = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64;
-    supervisor.admit_fleet_host_observation(FleetHostObservationV1::new(
+    let observer = LocalCapacityObserverV1::new(
         "host.local".to_string(),
         "rack.local".to_string(),
-        1,
-        1,
-        unix_ms.saturating_sub(1),
-        unix_ms + 120_000,
-        FleetCapacityObservationSourceV1::LocalKernel,
-        FleetResourceVectorV1 {
-            concurrent_turns: 2,
-            memory_mib: 8_192,
-            tool_processes: 32,
-            turn_queue_slots: 512,
+        LocalCapacityPolicyV1 {
+            maximum_concurrent_turns: 2,
+            maximum_tool_processes: 32,
+            maximum_turn_queue_slots: 512,
+            memory_reserve_mib: 0,
+            observation_ttl_ms: 120_000,
         },
-    )?)?;
+    )?;
+    let observation = supervisor.observe_and_admit_local_fleet_host(&observer, 1, 1)?;
+    let unix_ms = observation.observed_at_unix_ms;
 
     let prepared = supervisor.prepare_fleet_allocation(
         "principal.1",

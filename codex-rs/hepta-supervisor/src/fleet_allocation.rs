@@ -11,6 +11,7 @@ use codex_hepta_fleet::FleetConsumptionDispositionV1;
 use codex_hepta_fleet::FleetConsumptionObservationV1;
 use codex_hepta_fleet::FleetHostObservationV1;
 use codex_hepta_fleet::FleetPlacementRequestV1;
+use codex_hepta_fleet::LocalCapacityObserverV1;
 use codex_hepta_fleet::FleetPreparedAllocationV1;
 
 use crate::AgentRelease;
@@ -19,13 +20,20 @@ use crate::Supervisor;
 use crate::SupervisorError;
 
 impl<D: ProcessDriver> Supervisor<D> {
-    pub fn admit_fleet_host_observation(
+    pub fn observe_and_admit_local_fleet_host(
         &self,
-        observation: FleetHostObservationV1,
-    ) -> Result<(), SupervisorError> {
+        observer: &LocalCapacityObserverV1,
+        generation: u64,
+        revision: u64,
+    ) -> Result<FleetHostObservationV1, SupervisorError> {
+        let observation = observer
+            .observe(generation, revision)
+            .map_err(allocation_error)?;
+        let admitted = observation.observation().clone();
         FleetAllocationStore::open(&self.registry)
-            .and_then(|store| store.admit_host(observation).map(|_| ()))
-            .map_err(allocation_error)
+            .and_then(|store| store.admit_local_host(observation).map(|_| ()))
+            .map_err(allocation_error)?;
+        Ok(admitted)
     }
 
     pub fn prepare_fleet_allocation(

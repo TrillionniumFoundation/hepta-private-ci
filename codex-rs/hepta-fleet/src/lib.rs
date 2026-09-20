@@ -52,6 +52,7 @@ pub use allocation_store::FleetHolderDispositionV1;
 pub use allocation_store::FleetHostObservationV1;
 pub use allocation_store::FleetPreparedAllocationV1;
 pub use allocation_store::lease_renewal_binding;
+pub use capacity_observer::LocalCapacityObservationV1;
 pub use capacity_observer::LocalCapacityObserverError;
 pub use capacity_observer::LocalCapacityObserverV1;
 pub use capacity_observer::LocalCapacityPolicyV1;

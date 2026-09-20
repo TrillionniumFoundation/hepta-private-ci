@@ -20,6 +20,7 @@ use thiserror::Error;
 
 use crate::FleetPlacementRequestV1;
 use crate::FleetRegistry;
+use crate::LocalCapacityObservationV1;
 use crate::FleetResourceVectorV1;
 use crate::LocalAllocationError;
 use crate::LocalHostCapacityCandidateV1;
@@ -386,7 +387,14 @@ impl FleetAllocationStore {
         Ok(state)
     }
 
-    pub fn admit_host(
+    pub fn admit_local_host(
+        &self,
+        observation: LocalCapacityObservationV1,
+    ) -> Result<FleetAllocationStoreSnapshotV1, FleetAllocationStoreError> {
+        self.admit_host(observation.into_observation())
+    }
+
+    pub(crate) fn admit_host(
         &self,
         observation: FleetHostObservationV1,
     ) -> Result<FleetAllocationStoreSnapshotV1, FleetAllocationStoreError> {

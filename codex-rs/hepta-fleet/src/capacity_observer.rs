@@ -34,6 +34,21 @@ impl LocalCapacityPolicyV1 {
 }
 
 #[derive(Clone, Debug)]
+pub struct LocalCapacityObservationV1 {
+    observation: FleetHostObservationV1,
+}
+
+impl LocalCapacityObservationV1 {
+    pub fn observation(&self) -> &FleetHostObservationV1 {
+        &self.observation
+    }
+
+    pub(crate) fn into_observation(self) -> FleetHostObservationV1 {
+        self.observation
+    }
+}
+
+#[derive(Clone, Debug)]
 pub struct LocalCapacityObserverV1 {
     host_id: String,
     failure_domain_id: String,
@@ -61,7 +76,7 @@ impl LocalCapacityObserverV1 {
         &self,
         generation: u64,
         revision: u64,
-    ) -> Result<FleetHostObservationV1, LocalCapacityObserverError> {
+    ) -> Result<LocalCapacityObservationV1, LocalCapacityObserverError> {
         if generation == 0 || revision == 0 {
             return Err(LocalCapacityObserverError::InvalidGeneration);
         }
@@ -76,7 +91,7 @@ impl LocalCapacityObserverV1 {
         let valid_until_unix_ms = now_unix_ms
             .checked_add(self.policy.observation_ttl_ms)
             .ok_or(LocalCapacityObserverError::Clock)?;
-        FleetHostObservationV1::new(
+        let observation = FleetHostObservationV1::new(
             self.host_id.clone(),
             self.failure_domain_id.clone(),
             generation,
@@ -91,7 +106,8 @@ impl LocalCapacityObserverV1 {
                 turn_queue_slots: self.policy.maximum_turn_queue_slots,
             },
         )
-        .map_err(LocalCapacityObserverError::Store)
+        .map_err(LocalCapacityObserverError::Store)?;
+        Ok(LocalCapacityObservationV1 { observation })
     }
 }
 
