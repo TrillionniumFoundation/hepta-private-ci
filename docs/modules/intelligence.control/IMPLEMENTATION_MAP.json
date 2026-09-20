@@ -18,7 +18,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "registered_agentd_source_callsite_daemon_composition_pending",
+  "productCallerState": "agentd_state_owned_source_callsite_appserver_invocation_pending",
   "productionWriterState": "not_applicable_facade_uses_registered_owner_writers",
   "operations": [
     {
@@ -230,8 +230,8 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Wire AgentRunCoordinator and the canonical V3 intelligence path into the real Agentd daemon/App Server product composition under the runtime.agentd owner package; the current Agentd source callsite is not invoked by runtime.rs/state_control.rs/main.rs.",
-    "Bind CurrentCapabilitySnapshotProviderV3 to authenticated current owner/trust surfaces. Agentd source code enforces exact final-use snapshot equality immediately before handoff, but intelligence.control does not mint provider authenticity.",
+    "Invoke the AgentdState-owned canonical V3 seam from the real App Server turn-admission path with authenticated owner inputs; daemon state ownership is composed, but ordinary product turns do not yet call it.",
+    "Bind CurrentCapabilitySnapshotProviderV3 to authenticated current owner/trust surfaces. Agentd enforces exact final-use snapshot equality immediately before handoff; intelligence.control must not self-mint provider authenticity.",
     "Connect the existing Codex/App Server execution spine after the authority-free Agentd handoff with separately owned final-use model/effect authority and actual delivery/terminal evidence.",
     "Use owner-side cancellable I/O or isolated workers for blocking V3 ports and durable ledger calls; the synchronous coordinator cannot preempt a call that never returns.",
     "Run exact-head and deterministic synthetic-merge qualification for this exact candidate before advancing source-complete or product-execution claims."
@@ -252,19 +252,25 @@
     "release": false,
     "canonicalV3GraphSourceImplemented": true,
     "nativeContractsMaterialized": true,
-    "namedAgentdProductCallerSourceComposed": false,
+    "namedAgentdProductCallerSourceComposed": true,
     "finalUseCapabilityFreshnessFenceSourceImplemented": true,
     "durableDecisionOutcomeCreditSourceImplemented": true,
     "namedAgentdSourceCallsiteComposed": true,
-    "realDaemonComposition": false
+    "realDaemonComposition": true,
+    "agentdStateOwnsCanonicalV3Caller": true,
+    "appServerTurnInvocationComposed": false
   },
   "sourceRoot": [
     "codex-rs/hepta-intelligence"
   ],
   "productCallers": [
     {
+      "path": "codex-rs/hepta-agentd/src/state_intelligence.rs",
+      "symbol": "AgentdState::run_native_intelligence_v3"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "symbol": "AgentRunCoordinator::run_native_intelligence_v3"
+      "symbol": "AgentRunCoordinator::run_native_intelligence_v3_with_control"
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_host.rs",
