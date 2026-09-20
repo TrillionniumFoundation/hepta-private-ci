@@ -1,6 +1,9 @@
 use std::collections::BTreeMap;
 
+use codex_hepta_intelligence::CapabilitySnapshotV2;
 use codex_hepta_intelligence::CompositionControlV3;
+use codex_hepta_intelligence::CurrentCapabilitySnapshotErrorV3;
+use codex_hepta_intelligence::CurrentCapabilitySnapshotProviderV3;
 use codex_hepta_intelligence::DurableLearningJournal;
 use codex_hepta_intelligence::IntelligenceHostEnvelopeV1;
 use codex_hepta_intelligence::LaneFCompositionReceiptV3;
@@ -170,6 +173,8 @@ struct AgentdRuntimePorts<'a, P> {
     inner: &'a mut P,
     coordinator: &'a mut AgentRunCoordinator,
     expected_revision: u64,
+    frozen_snapshot: CapabilitySnapshotV2,
+    current_snapshot_provider: Option<&'a mut dyn CurrentCapabilitySnapshotProviderV3>,
 }
 
 impl<P: LaneFV3Ports> LaneFV3Ports for AgentdRuntimePorts<'_, P> {
@@ -218,6 +223,30 @@ impl<P: LaneFV3Ports> LaneFV3Ports for AgentdRuntimePorts<'_, P> {
             || input.predecessor_digest != envelope.envelope_digest
         {
             return Err(agentd_handoff_failure(input, envelope, "handoff-binding"));
+        }
+
+        if let Some(provider) = self.current_snapshot_provider.as_deref_mut() {
+            let current = provider.current_snapshot().map_err(|error| {
+                let class = match error {
+                    CurrentCapabilitySnapshotErrorV3::Unavailable => {
+                        PortFailureClassV3::Unavailable
+                    }
+                    CurrentCapabilitySnapshotErrorV3::Rejected => PortFailureClassV3::Rejected,
+                };
+                agentd_handoff_failure_with_class(
+                    input,
+                    envelope,
+                    class,
+                    "final-use-capability-snapshot",
+                )
+            })?;
+            self.frozen_snapshot.revalidate_current(&current).map_err(|_| {
+                agentd_handoff_failure(
+                    input,
+                    envelope,
+                    "stale-final-use-capability-snapshot",
+                )
+            })?;
         }
 
         let proposal = self.inner.accept_host_envelope(input, envelope)?;
@@ -276,13 +305,27 @@ fn agentd_handoff_failure(
     envelope: &IntelligenceHostEnvelopeV1,
     reason: &str,
 ) -> PortFailureV3 {
+    agentd_handoff_failure_with_class(
+        input,
+        envelope,
+        PortFailureClassV3::Rejected,
+        reason,
+    )
+}
+
+fn agentd_handoff_failure_with_class(
+    input: &PortInputV3,
+    envelope: &IntelligenceHostEnvelopeV1,
+    class: PortFailureClassV3,
+    reason: &str,
+) -> PortFailureV3 {
     let mut bytes = b"hepta.agentd.runtime-intelligence-handoff-failure.v1\0".to_vec();
     bytes.extend_from_slice(input.snapshot_digest.as_array());
     bytes.extend_from_slice(input.predecessor_digest.as_array());
     bytes.extend_from_slice(envelope.envelope_digest.as_array());
     bytes.extend_from_slice(reason.as_bytes());
     PortFailureV3 {
-        class: PortFailureClassV3::Rejected,
+        class,
         evidence_digest: Digest32::of_bytes(&bytes),
     }
 }
@@ -440,12 +483,35 @@ impl AgentRunCoordinator {
         ports: &mut P,
         control: &C,
     ) -> Result<IntelligenceRunReceiptV3, AgentRunError> {
+        self.run_intelligence_v3_with_control_and_currentness(
+            expected_revision,
+            request,
+            ports,
+            control,
+            None,
+        )
+    }
+
+    fn run_intelligence_v3_with_control_and_currentness<
+        P: LaneFV3Ports,
+        C: CompositionControlV3,
+    >(
+        &mut self,
+        expected_revision: u64,
+        request: LaneFRunRequestV3,
+        ports: &mut P,
+        control: &C,
+        current_snapshot_provider: Option<&mut dyn CurrentCapabilitySnapshotProviderV3>,
+    ) -> Result<IntelligenceRunReceiptV3, AgentRunError> {
         let run_id = request.run_id.clone();
+        let frozen_snapshot = request.snapshot.clone();
         let composition = {
             let mut runtime_ports = AgentdRuntimePorts {
                 inner: ports,
                 coordinator: self,
                 expected_revision,
+                frozen_snapshot,
+                current_snapshot_provider,
             };
             run_composition_v3_with_control(request, &mut runtime_ports, control)
                 .map_err(|_| AgentRunError::IntelligenceCompositionFailed)?
@@ -474,6 +540,7 @@ impl AgentRunCoordinator {
         expected_revision: u64,
         request: LaneFRunRequestV3,
         inputs: NativeV3OwnerInputs,
+        current_snapshot_provider: &mut dyn CurrentCapabilitySnapshotProviderV3,
         ledger: &mut dyn DurableLearningJournal,
         expected_ledger_head: Digest32,
     ) -> Result<IntelligenceRunReceiptV3, AgentRunError> {
@@ -481,6 +548,7 @@ impl AgentRunCoordinator {
             expected_revision,
             request,
             inputs,
+            current_snapshot_provider,
             ledger,
             expected_ledger_head,
             &NeverCancelledV3,
@@ -492,6 +560,7 @@ impl AgentRunCoordinator {
         expected_revision: u64,
         request: LaneFRunRequestV3,
         inputs: NativeV3OwnerInputs,
+        current_snapshot_provider: &mut dyn CurrentCapabilitySnapshotProviderV3,
         ledger: &mut dyn DurableLearningJournal,
         expected_ledger_head: Digest32,
         control: &C,
@@ -502,8 +571,13 @@ impl AgentRunCoordinator {
             expected_ledger_head,
             AgentdIntelligenceHostV1,
         );
-        let mut receipt =
-            self.run_intelligence_v3_with_control(expected_revision, request, &mut ports, control)?;
+        let mut receipt = self.run_intelligence_v3_with_control_and_currentness(
+            expected_revision,
+            request,
+            &mut ports,
+            control,
+            Some(current_snapshot_provider),
+        )?;
         receipt.durable_decision_chain_digest =
             ports.learning_append().map(|append| append.chain_digest);
         Ok(receipt)
