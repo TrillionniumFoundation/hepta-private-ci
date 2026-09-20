@@ -493,7 +493,7 @@ pub fn population_sparse_tick_v2(
             .ok_or(PopulationSparseError::Arithmetic)?;
     }
 
-    for index in 0..config.activation_width {
+    for (index, projected_value) in projected.iter().copied().enumerate() {
         let active = if next.activation[index] > 0 { Q } else { 0 };
         let old_rate = previous.map_or(0, |value| value.activity[index]);
         next.activity[index] = mul(config.activity_decay_q24, old_rate)
@@ -512,7 +512,7 @@ pub fn population_sparse_tick_v2(
             .ok_or(PopulationSparseError::Arithmetic)?;
         let old_eligibility = previous.map_or(0, |value| value.eligibility[index]);
         next.eligibility[index] = mul(config.eligibility_decay_q24, old_eligibility)
-            .checked_add(mul(projected[index], next.activation[index]))
+            .checked_add(mul(projected_value, next.activation[index]))
             .ok_or(PopulationSparseError::Arithmetic)?;
     }
     let eligibility_norm = next
