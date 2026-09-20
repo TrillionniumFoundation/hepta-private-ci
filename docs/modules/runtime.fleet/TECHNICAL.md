@@ -161,7 +161,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-FleetRegistry is operated by the existing supervisor owner. Open the same registry and preserve generation/fence identity during lifecycle changes. The separate lease_ledger is an in-memory component; durable resource grants and real capacity observations remain implementation work. Do not launch a second fleet writer.
+FleetRegistry remains the existing supervisor owner. `FleetAllocationStore` now persists host observations, grants, lease fences, holder observations and reconciliation state as create-only generation snapshots under the same fleet state root. `plan_placement_v1` performs host placement before weighted allocation; `commit_placement_with_authority` revalidates the exact final payload through `FinalUseAuthority` before one durable generation is published. Supervisor process start/restart/upgrade/rollback and process adoption consume the durable grant when `HEPTA_FLEET_HOST_ID` is configured. `observe_local_host_capacity_v1` measures logical CPU and physical memory on supported hosts and combines them with explicit soft-axis policy before signed admission. Target-host measurements and independent deployment acceptance remain external qualification, not source claims. Do not launch a second fleet writer.
 
 Current operating and state-format references:
 
@@ -175,7 +175,11 @@ Current operating and state-format references:
 Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-fleet/src/allocation_tests.rs](../../../codex-rs/hepta-fleet/src/allocation_tests.rs); named case: `weighted_allocation_reserves_minimums_and_conserves_capacity`.
-- [codex-rs/hepta-fleet/src/lease_ledger_tests.rs](../../../codex-rs/hepta-fleet/src/lease_ledger_tests.rs); named case: `conserves_capacity_and_reuses_identical_grant`.
+- [codex-rs/hepta-fleet/src/lease_ledger_tests.rs](../../../codex-rs/hepta-fleet/src/lease_ledger_tests.rs); capacity, renewal/revocation fencing, terminal-GC and stale-release fence cases.
+- [codex-rs/hepta-fleet/src/allocation_store_tests.rs](../../../codex-rs/hepta-fleet/src/allocation_store_tests.rs); durable reopen, stale-writer, corruption/staging and bounded-history cases.
+- [codex-rs/hepta-fleet/src/placement_tests.rs](../../../codex-rs/hepta-fleet/src/placement_tests.rs); deterministic placement and exact final-use authority cases.
+- [codex-rs/hepta-fleet/src/runtime_use_tests.rs](../../../codex-rs/hepta-fleet/src/runtime_use_tests.rs); runtime consumer and unresolved-holder reconciliation cases.
+- [codex-rs/hepta-supervisor/src/supervisor_tests.rs](../../../codex-rs/hepta-supervisor/src/supervisor_tests.rs); configured Fleet host start denial/admission cases.
 
 In `codex-rs`, run `just test -p codex-hepta-fleet`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md) separately labels target acceptance designs.
 
@@ -258,10 +262,17 @@ This receipt records repository source bindings for the current documentation ca
 
 | Operation | Native symbol | Source path | Tests |
 |---|---|---|---|
-| `admit_host` | `pub fn admit_host(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
-| `allocate` | `pub fn issue(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
-| `renew_or_revoke` | `pub fn renew_or_revoke(` | `codex-rs/hepta-fleet/src/lease_ledger.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs` |
+| `admit_host` | `pub fn admit_host_with_authority(` | `codex-rs/hepta-fleet/src/placement.rs` | `codex-rs/hepta-fleet/src/placement_tests.rs` |
+| `allocate` | `pub fn commit_placement_with_authority(` | `codex-rs/hepta-fleet/src/placement.rs` | `codex-rs/hepta-fleet/src/allocation_tests.rs`, `placement_tests.rs` |
+| `renew_or_revoke` | `pub fn renew_or_revoke(` | `codex-rs/hepta-fleet/src/allocation_store.rs` | `codex-rs/hepta-fleet/src/lease_ledger_tests.rs`, `runtime_use_tests.rs` |
 
-- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
-- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+- Historical provenance remains in `sourceBase`; the latest source-only stacked implementation head is recorded separately as `implementationHead` in `IMPLEMENTATION_MAP.json`.
+- Durable owner storage, placement, final-use-authorized commit, active-grant read, holder reconciliation, and a real supervisor process-boundary consumer are present in source.
+- Physical capacity observations have a native Linux/macOS observer, but exact target-host measurements, runtime deployment qualification, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+
+
+## 18. 2026-09 runtime.fleet source-closure update
+
+The current stacked source implementation adds one canonical four-axis resource model, durable generation-fenced allocation storage, unbound host placement, exact final-use authority binding, runtime grant consumption, holder reconciliation, and a supervisor-owned host-capacity observer. The source boundary is designed to fail closed on stale generations, malformed durable state, stale lease fences, unresolved holders and mismatched host/Agent/resource scope.
+
+The remaining gates are not repository source TODOs: exact-head CI must pass for the candidate; supported target hosts must supply measured observation evidence; partition/restart/expiry scenarios must be run on enrolled hosts; and independent acceptance/activation/release remain external decisions.
