@@ -71,6 +71,25 @@ jobs:
             --github-output "$GITHUB_OUTPUT"
       - name: Verify Cargo lockfile integrity
         run: python3 scripts/verify_cargo_lock.py
+      - name: Formatting without tested-source mutation
+        id: formatting
+        if: steps.execution.outputs.run_native == 'true'
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -uo pipefail
+          status=0
+          cargo fmt --package codex-hepta-learning-ledger --package codex-hepta-learning-artifacts --package codex-hepta-intelligence-eval --package codex-hepta-neuron --package codex-hepta-ndu --package codex-hepta-shadow-qualification -- --check >"$RUNNER_TEMP/hepta-learning-rustfmt.txt" 2>&1 || status=$?
+          cat "$RUNNER_TEMP/hepta-learning-rustfmt.txt"
+          exit "$status"
+      - name: Retain actionable formatting diagnostics
+        if: always() && steps.formatting.outcome == 'failure'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-learning-rustfmt-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/hepta-learning-rustfmt.txt
+          if-no-files-found: error
+          retention-days: 7
       - name: Install pinned repository test tools
         if: steps.execution.outputs.run_native == 'true'
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
@@ -112,10 +131,6 @@ jobs:
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: cargo clippy --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron -p codex-hepta-ndu -p codex-hepta-shadow-qualification --all-targets -- -D warnings
-      - name: Formatting without tested-source mutation
-        if: steps.execution.outputs.run_native == 'true'
-        working-directory: codex-rs
-        run: cargo fmt --package codex-hepta-learning-ledger --package codex-hepta-learning-artifacts --package codex-hepta-intelligence-eval --package codex-hepta-neuron --package codex-hepta-ndu --package codex-hepta-shadow-qualification -- --check
       - name: Unmodified source
         if: always()
         shell: bash

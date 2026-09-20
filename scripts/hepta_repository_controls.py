@@ -10,9 +10,12 @@ closed rather than treating unrelated rulesets as effective branch protection.
 from __future__ import annotations
 
 import argparse
+import base64
+import http.client
 import json
 import os
 import re
+import ssl
 import subprocess
 import sys
 from typing import Any
@@ -21,6 +24,8 @@ REPOSITORY = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+\Z")
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 BLOCKING_CONTEXT = "CI required"
 EVALUATION_CONTEXT = "hepta-independent-evaluation"
+API_TIMEOUT_SECONDS = 30
+MAX_TRANSPORT_RESPONSE_BYTES = 65536
 
 
 class ControlError(RuntimeError):
@@ -71,6 +76,12 @@ def required_checks(protection: dict[str, Any], evaluator_app: int) -> dict[str,
     require(BLOCKING_CONTEXT in result, f"{BLOCKING_CONTEXT} is not required by live protection")
     require(result.get(EVALUATION_CONTEXT) == evaluator_app,
             "Independent evaluation is not required from the exact trusted App")
+    # A context name without its publisher binding can be satisfied by a
+    # different App. The independent evaluator must not also own blocking CI.
+    require(all(positive_integer(app_id) for app_id in result.values()),
+            "Every required check must pin its publisher App")
+    require(result[BLOCKING_CONTEXT] != evaluator_app,
+            "Blocking CI and independent evaluation share an App identity")
     return result
 
 
@@ -91,6 +102,7 @@ def validate_observation(branch: dict[str, Any], protection: dict[str, Any],
                 continue
             observed_app = check.get("app", {})
             require(isinstance(observed_app, dict), "Check source App is unknown")
+            require(positive_integer(observed_app.get("id")), "Check source App identity is invalid")
             if app_id is not None and observed_app.get("id") != app_id:
                 continue
             require(positive_integer(check.get("id")), "Check identity is missing")
@@ -110,7 +122,8 @@ def validate_observation(branch: dict[str, Any], protection: dict[str, Any],
 
 def api(path: str) -> Any:
     result = subprocess.run(["gh", "api", "--method", "GET", path], check=True,
-                            text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                            text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                            timeout=API_TIMEOUT_SECONDS)
     return json.loads(result.stdout)
 
 
@@ -121,6 +134,7 @@ def collect_checks(repository: str, sha: str) -> list[dict[str, Any]]:
         require(isinstance(response, dict) and isinstance(response.get("check_runs"), list),
                 "Cannot observe check runs")
         items = response["check_runs"]
+        require(len(items) <= 100, "Check page exceeds its requested bound")
         result.extend(items)
         if len(items) < 100:
             return result
@@ -137,6 +151,9 @@ def observe(repository: str, expected_sha: str, evaluator_app: int) -> dict[str,
     before = api(branch_path)
     protection = api(protection_path)  # 403/404 is an error, never a default policy.
     require(isinstance(before, dict) and isinstance(protection, dict), "Incomplete repository observation")
+    require(before.get("name") == "main" and before.get("protected") is True
+            and before.get("commit", {}).get("sha") == expected_sha,
+            "main is unprotected or differs from the expected head")
     # Validate policy before asking for potentially many check records.
     required_checks(protection, evaluator_app)
     accepted = validate_observation(before, protection, collect_checks(repository, expected_sha),
@@ -151,17 +168,59 @@ def observe(repository: str, expected_sha: str, evaluator_app: int) -> dict[str,
             "scope": "read-only observation; independent credential isolation is not established here"}
 
 
+def observe_write_transport_denial(repository: str, token: str) -> dict[str, Any]:
+    """Observe an explicit GitHub receive-pack denial without attempting a write.
+
+    A GET of the smart-HTTP advertisement does not upload Git objects or update
+    refs. Only GitHub's explicit 403 write-access rejection qualifies; generic
+    HTTP failures, redirects, bad credentials and timeouts remain unknown. This
+    is not proof of branch-rule enforcement or independent credential custody.
+    """
+    require(bool(REPOSITORY.fullmatch(repository))
+            and all(part not in (".", "..") for part in repository.split("/")), "Invalid repository")
+    require(isinstance(token, str) and bool(token.strip()), "Missing workflow token")
+    identity = api(f"repos/{repository}")
+    require(isinstance(identity, dict) and identity.get("full_name") == repository
+            and positive_integer(identity.get("id")), "Repository identity could not be confirmed")
+    authorization = base64.b64encode(f"x-access-token:{token}".encode()).decode("ascii")
+    connection = http.client.HTTPSConnection(
+        "github.com", timeout=API_TIMEOUT_SECONDS, context=ssl.create_default_context())
+    try:
+        connection.request("GET", f"/{repository}.git/info/refs?service=git-receive-pack",
+                           headers={"Authorization": f"Basic {authorization}",
+                                    "User-Agent": "hepta-read-only-control-observer"})
+        response = connection.getresponse()
+        body = response.read(MAX_TRANSPORT_RESPONSE_BYTES + 1)
+        require(len(body) <= MAX_TRANSPORT_RESPONSE_BYTES, "Transport response exceeds the observation bound")
+        require(response.status == 403
+                and body.strip() == b"Write access to repository not granted.",
+                "Write transport did not return an explicit permission denial; authorization is unknown")
+    except (OSError, http.client.HTTPException) as error:
+        # Do not include request headers, tokens or remote response bodies.
+        raise ControlError("Write-transport observation failed; authorization is unknown") from error
+    finally:
+        connection.close()
+    return {"write_transport_denied": True, "activation_authorized": False,
+            "credential_separation_proven": False}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", required=True)
     parser.add_argument("--expected-sha", required=True)
+    parser.add_argument("--probe-write-denial", action="store_true",
+                        help="require a non-mutating explicit write-transport rejection")
     args = parser.parse_args()
     try:
         app_id = int(os.environ.get("HEPTA_EVALUATOR_APP_ID", "0"))
-        print(json.dumps(observe(args.repo, args.expected_sha, app_id), sort_keys=True))
+        observation = observe(args.repo, args.expected_sha, app_id)
+        if args.probe_write_denial:
+            observation["write_transport_observation"] = observe_write_transport_denial(
+                args.repo, os.environ.get("GH_TOKEN", ""))
+        print(json.dumps(observation, sort_keys=True))
         return 0
     except (ControlError, TypeError, AttributeError, ValueError, KeyError, OSError,
-            subprocess.CalledProcessError) as error:
+            subprocess.SubprocessError) as error:
         print(f"FAIL_HEPTA_REPOSITORY_CONTROLS: {type(error).__name__}: {error}", file=sys.stderr)
         return 1
 
