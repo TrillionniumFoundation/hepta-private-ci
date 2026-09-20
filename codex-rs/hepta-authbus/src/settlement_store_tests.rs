@@ -276,3 +276,103 @@ async fn revoked_policy_blocks_dispatch_and_held_expiry_refunds() {
         .expect("quota snapshot");
     assert_eq!((quota.available, quota.reserved, quota.consumed), (10, 0, 0));
 }
+
+
+#[tokio::test]
+async fn explicit_cancel_refunds_only_undispatched_reservation() {
+    let (_root, store, _decision, reservation) = configured().await;
+    let cancelled = store
+        .cancel_reservation(
+            &reservation.reservation_id,
+            reservation.revision,
+            sample(5, 1_500),
+        )
+        .await
+        .expect("cancel held reservation");
+    assert_eq!(cancelled.state, ReservationState::Cancelled);
+    let quota = store
+        .quota_snapshot(&reservation.quota_key)
+        .await
+        .expect("quota snapshot");
+    assert_eq!((quota.available, quota.reserved, quota.consumed), (10, 0, 0));
+    assert_eq!(
+        store
+            .cancel_reservation(
+                &reservation.reservation_id,
+                reservation.revision,
+                sample(6, 1_600),
+            )
+            .await
+            .expect("cancel retry"),
+        cancelled
+    );
+}
+
+#[tokio::test]
+async fn sqlite_rejects_illegal_state_jump_and_live_row_deletion() {
+    let (_root, store, _decision, reservation) = configured().await;
+    let illegal = sqlx::query(
+        "UPDATE authbus_quota_reservation SET state = 'settled'
+         WHERE reservation_id = ?",
+    )
+    .bind(reservation.reservation_id.as_str())
+    .execute(&store.pool)
+    .await;
+    assert!(illegal.is_err(), "direct illegal state jump was accepted");
+
+    let deleted = sqlx::query(
+        "DELETE FROM authbus_quota_reservation WHERE reservation_id = ?",
+    )
+    .bind(reservation.reservation_id.as_str())
+    .execute(&store.pool)
+    .await;
+    assert!(deleted.is_err(), "live reservation deletion was accepted");
+}
+
+#[tokio::test]
+async fn terminal_compaction_preserves_operation_idempotency_without_lifetime_capacity_use() {
+    let (_root, store, decision, reservation) = configured().await;
+    let dispatched = store
+        .mark_dispatch_attempted(
+            &reservation.reservation_id,
+            reservation.revision,
+            reservation.effect_digest,
+            sample(5, 1_500),
+        )
+        .await
+        .expect("mark dispatch");
+    let key = SigningKey::from_bytes(&[33; 32]);
+    let signed = evidence(&key, &dispatched, SettlementStatus::Completed, 5, 1_600);
+    store
+        .settle(&issuer(&key), &signed, sample(6, 1_600))
+        .await
+        .expect("settle");
+    assert_eq!(
+        store
+            .compact_terminal_reservations(/*older_than_ms*/ 2_000, /*limit*/ 16)
+            .await
+            .expect("compact"),
+        1
+    );
+    let retry = store
+        .reserve(
+            &decision,
+            ReservationRequest {
+                quota_key: reservation.quota_key.clone(),
+                operation_id: reservation.operation_id.clone(),
+                amount: reservation.amount,
+                effect_digest: reservation.effect_digest,
+                expected_quota_revision: 1,
+                expires_at_ms: reservation.expires_at_ms,
+            },
+            sample(7, 1_700),
+        )
+        .await
+        .expect("archived exact retry");
+    assert_eq!(retry.state, ReservationState::Settled);
+    let quota = store
+        .quota_snapshot(&reservation.quota_key)
+        .await
+        .expect("quota snapshot");
+    assert_eq!((quota.available, quota.reserved, quota.consumed), (5, 0, 5));
+}
