@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "eb16f47caf5429f660de7394a797e601f97064c2",
-    "tree": "24492f5dc182dc7a5994300d04ec922dd08a7e54"
+    "commit": "e0d78276505a091a213d3efad51e44f2cb42e6bd",
+    "tree": "493ba2c17e9f9a83907b19aa060fcf4caa882425"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "knowledge.graph",
@@ -112,5 +112,21 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-kg"
+  ],
+  "sourceBaseSemantics": "module_source_snapshot_zero_diff_to_candidate",
+  "compositionRoots": [
+    "codex-rs/hepta-memory/Cargo.toml",
+    "codex-rs/hepta-memory/migrations/0011_kg_generation_semantics.sql",
+    "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+    "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+    "codex-rs/hepta-memory/src/cognitive_model.rs",
+    "codex-rs/hepta-memory/src/cognitive_store.rs",
+    "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+    "codex-rs/hepta-memory/src/lib.rs",
+    "codex-rs/ext/hepta-memory/src/cognitive/federation.rs",
+    "codex-rs/ext/hepta-memory/src/cognitive/tools.rs",
+    "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs",
+    "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs"
   ]
 }
