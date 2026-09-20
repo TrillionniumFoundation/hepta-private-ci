@@ -193,7 +193,9 @@ impl AdmittedCognitiveStoreV2 {
                     receipt
                         .validate()
                         .map_err(CognitiveStoreV2Error::Contract)?;
-                    if self.intent_journal.len() >= self.maximum_intent_journal_entries {
+                    if self.intent_journal.len()
+                        >= ordinary_journal_capacity_for(self.maximum_record_revisions)
+                    {
                         return Err(CognitiveStoreV2Error::IntentJournalCapacityExceeded);
                     }
                     self.intent_journal.insert(
@@ -546,9 +548,12 @@ impl AdmittedCognitiveStoreV2 {
         } else if current_count >= self.maximum_record_revisions {
             return Err(CognitiveStoreV2Error::CapacityExceeded);
         }
-        if record.state != RecordState::Tombstone
-            && self.intent_journal.len() >= self.maximum_intent_journal_entries
-        {
+        let journal_capacity = if record.state == RecordState::Tombstone {
+            self.maximum_intent_journal_entries
+        } else {
+            ordinary_journal_capacity_for(self.maximum_record_revisions)
+        };
+        if self.intent_journal.len() >= journal_capacity {
             return Err(CognitiveStoreV2Error::IntentJournalCapacityExceeded);
         }
         record
@@ -602,16 +607,6 @@ impl AdmittedCognitiveStoreV2 {
         receipt
             .validate()
             .map_err(CognitiveStoreV2Error::Contract)?;
-
-        // Privacy/safety revocation must not be blocked by a saturated retry
-        // journal. Tombstones are allowed to shed one deterministic retained
-        // retry receipt after every fallible preflight has completed.
-        if record.state == RecordState::Tombstone
-            && self.intent_journal.len() >= self.maximum_intent_journal_entries
-            && let Some(evicted) = self.intent_journal.keys().next().cloned()
-        {
-            self.intent_journal.remove(&evicted);
-        }
 
         self.histories.entry(record_id).or_default().push(record);
         self.sequence = next_sequence;
@@ -1225,6 +1220,16 @@ fn journal_capacity_for(maximum_record_revisions: usize) -> usize {
     maximum_record_revisions
         .saturating_mul(4)
         .min(MAX_V2_INTENT_JOURNAL_ENTRIES)
+        .max(1)
+}
+
+/// Reserve one journal slot for every ordinary revision slot so a live head can
+/// still be tombstoned without evicting any previously committed intent receipt.
+/// This preserves bounded retry/idempotency identity while keeping revocation
+/// independent from ordinary retry pressure.
+fn ordinary_journal_capacity_for(maximum_record_revisions: usize) -> usize {
+    journal_capacity_for(maximum_record_revisions)
+        .saturating_sub(maximum_record_revisions)
         .max(1)
 }
 
