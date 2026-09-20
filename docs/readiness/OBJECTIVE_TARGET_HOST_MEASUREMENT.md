@@ -24,10 +24,22 @@ Rust/Cargo versions and release build profile.
 
 ## 2. Separately measured paths
 
-The ordinary fixture executes the complete source-owned path
-`admit_and_compile_objective_v1` with a frozen authenticated context and
-admission profile. The measurement timer surrounds admission plus deterministic
-compile, not Cargo startup.
+The ordinary fixture executes the canonical source-owned product path with a
+frozen authenticated context and admission profile:
+
+```text
+admit_objective_v1
+-> opaque AdmittedObjectiveV1
+-> compile_admitted_objective_v1
+-> encode_objective_function_v1
+-> exact canonical JSON decode/round-trip validation
+```
+
+The measurement timer surrounds authenticated admission, deterministic compile
+and canonical `ObjectiveFunctionV1` projection/validation. It does not include
+Cargo startup. The compatibility convenience wrapper
+`admit_and_compile_objective_v1` is not used as the target-host measurement
+surface.
 
 The conflict fixture executes a 256-hard-atom scalar conflict that requires the
 maximum 257 feasibility-oracle calls. Its timer surrounds

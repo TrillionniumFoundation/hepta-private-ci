@@ -41,6 +41,7 @@ use crate::ObjectiveSourceEnvelopeV1;
 use crate::ObjectiveSourcePredicateV1;
 use crate::ObjectiveSourceTrustV1;
 use crate::ObjectiveStructuredIntentV1;
+use crate::encode_objective_function_v1;
 
 const OBSERVED_MICROS: u64 = 1_788_861_600_000_000;
 const NOW_MICROS: u64 = OBSERVED_MICROS + 1_000_000;
@@ -505,9 +506,23 @@ fn measurement_ordinary_admission_compile_v1() {
 
     for _ in 0..samples {
         let started = Instant::now();
-        let outcome = admit_and_compile_objective_v1(&envelope, &profile, &context)
-            .expect("measurement fixture must admit and compile");
+        let admitted =
+            admit_objective_v1(&envelope, &profile, &context).expect("measurement admission");
+        let outcome =
+            compile_admitted_objective_v1(admitted).expect("measurement admitted compile");
+        let compiled = outcome
+            .compile_result
+            .as_ref()
+            .expect("measurement fixture must compile without conflict");
+        let protocol = encode_objective_function_v1(
+            compiled,
+            &envelope,
+            &profile,
+            &outcome.receipt,
+        )
+        .expect("measurement canonical ObjectiveFunctionV1 projection");
         timings.push(started.elapsed().as_nanos());
+        black_box(protocol);
         black_box(outcome);
     }
 
