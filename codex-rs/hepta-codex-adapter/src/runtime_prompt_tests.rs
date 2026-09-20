@@ -174,10 +174,9 @@ async fn developer_attachment_reaches_physical_provider_terminal_observation() {
         record.provider_request_digest,
         Digest32::from_str(wire.as_str()).unwrap_or_else(|error| panic!("{error}"))
     );
-    let observation = record
-        .delivery_observation
-        .as_ref()
-        .unwrap_or_else(|| panic!("completed provider send must yield canonical delivery evidence"));
+    let observation = record.delivery_observation.as_ref().unwrap_or_else(|| {
+        panic!("completed provider send must yield canonical delivery evidence")
+    });
     assert!(observation.delivered);
     assert_eq!(observation.compilation_id, id("compilation:prompt-runtime"));
     record
