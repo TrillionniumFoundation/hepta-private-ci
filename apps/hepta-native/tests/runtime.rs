@@ -11,6 +11,7 @@ use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use ed25519_dalek::Signer as _;
 use ed25519_dalek::SigningKey;
+use hepta_native::backend::AuthenticatedRuntimeStatus;
 use hepta_native::backend::BackendAdapter;
 use hepta_native::error::ShellError;
 use hepta_native::journal::OperationJournal;
@@ -46,8 +47,14 @@ impl BackendAdapter for MockBackend {
             .ok_or_else(|| ShellError::Backend("no mock session".to_owned()))
     }
 
-    fn runtime_status(&mut self) -> Result<serde_json::Value, ShellError> {
-        Ok(serde_json::json!({"status":"ok"}))
+    fn runtime_status(&mut self) -> Result<AuthenticatedRuntimeStatus, ShellError> {
+        Ok(AuthenticatedRuntimeStatus {
+            value: serde_json::json!({
+                "status": "ok",
+                "state": {"runtime_snapshot_generation": 7}
+            }),
+            body_digest: D2.to_owned(),
+        })
     }
 
     fn close(&mut self, _session: &SessionIncarnation) -> Result<(), ShellError> {
@@ -249,6 +256,32 @@ fn runtime_fixture(
         Some(final_use),
         OperationJournal::open(temp.path().join("operations.json")).unwrap(),
     )
+}
+
+#[test]
+fn authenticated_backend_status_owns_view_identity() {
+    let temp = TempDir::new().unwrap();
+    let (final_use, _, _) = authority_fixture(&temp);
+    let platform_state = Arc::new(Mutex::new(PlatformState::default()));
+    let session = SessionIncarnation {
+        endpoint_id: "runtime.1".to_owned(),
+        session_id: "session.authenticated-view".to_owned(),
+        generation: 11,
+    };
+    let mut runtime = runtime_fixture(&temp, vec![session], platform_state, final_use);
+    runtime.connect_runtime(&manifest()).unwrap();
+
+    let (presentation, status) = runtime.refresh_runtime_view().unwrap();
+    assert_eq!(presentation.session_generation, 11);
+    assert_eq!(presentation.generation, 7);
+    assert_eq!(presentation.revision, 1);
+    assert_eq!(presentation.digest, D2);
+    assert_eq!(status["state"]["runtime_snapshot_generation"], 7);
+
+    let (second, _) = runtime.refresh_runtime_view().unwrap();
+    assert_eq!(second.generation, 7);
+    assert_eq!(second.revision, 2);
+    assert_eq!(second.digest, D2);
 }
 
 #[test]
