@@ -1,4 +1,4 @@
-name: ui-native-cross-platform-probe
+name: ui-native-cross-platform-qualification
 on:
   push:
     branches:
@@ -7,8 +7,9 @@ permissions:
   contents: read
 jobs:
   linux:
-    name: ui.native Linux probe
+    name: ui.native Linux exact head
     runs-on: ubuntu-24.04
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -16,14 +17,29 @@ jobs:
           persist-credentials: false
       - shell: bash
         run: test "$(git rev-parse HEAD)" = "5344d19e03551505e6a903f3820e448a9faa0a31"
-      - working-directory: apps/hepta-native
-        run: cargo --version
+      - shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev libgl1-mesa-dev libssl-dev
       - working-directory: apps/hepta-native
         run: cargo generate-lockfile
+      - working-directory: apps/hepta-native
+        run: cargo fmt --check
+      - working-directory: apps/hepta-native
+        run: cargo clippy --all-targets --all-features -- -D warnings
+      - working-directory: apps/hepta-native
+        run: cargo test --all-targets
+      - working-directory: codex-rs
+        run: cargo test -p codex-hepta-native-gateway
+      - working-directory: apps/hepta-native
+        run: cargo build --release --bins
+      - working-directory: apps/hepta-native
+        run: ./target/release/hepta-native --self-test
 
   macos:
-    name: ui.native macOS probe
+    name: ui.native macOS exact head
     runs-on: macos-15
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -32,13 +48,24 @@ jobs:
       - shell: bash
         run: test "$(git rev-parse HEAD)" = "5344d19e03551505e6a903f3820e448a9faa0a31"
       - working-directory: apps/hepta-native
-        run: cargo --version
-      - working-directory: apps/hepta-native
         run: cargo generate-lockfile
+      - working-directory: apps/hepta-native
+        run: cargo fmt --check
+      - working-directory: apps/hepta-native
+        run: cargo clippy --all-targets --all-features -- -D warnings
+      - working-directory: apps/hepta-native
+        run: cargo test --all-targets
+      - working-directory: codex-rs
+        run: cargo test -p codex-hepta-native-gateway
+      - working-directory: apps/hepta-native
+        run: cargo build --release --bins
+      - working-directory: apps/hepta-native
+        run: ./target/release/hepta-native --self-test
 
   windows:
-    name: ui.native Windows probe
+    name: ui.native Windows exact head
     runs-on: windows-latest
+    timeout-minutes: 75
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -47,7 +74,18 @@ jobs:
       - shell: bash
         run: test "$(git rev-parse HEAD)" = "5344d19e03551505e6a903f3820e448a9faa0a31"
       - working-directory: apps/hepta-native
-        run: cargo --version
-      - working-directory: apps/hepta-native
         run: cargo generate-lockfile
-
+      - working-directory: apps/hepta-native
+        run: cargo fmt --check
+      - working-directory: apps/hepta-native
+        run: cargo clippy --all-targets --all-features -- -D warnings
+      - working-directory: apps/hepta-native
+        run: cargo test --all-targets
+      - working-directory: codex-rs
+        run: cargo test -p codex-hepta-native-gateway
+      - working-directory: codex-rs
+        run: cargo test -p codex-hepta-contracts final_use::windows_tests::
+      - working-directory: apps/hepta-native
+        run: cargo build --release --bins
+      - working-directory: apps/hepta-native
+        run: .\target\release\hepta-native.exe --self-test
