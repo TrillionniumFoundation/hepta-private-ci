@@ -576,9 +576,6 @@ impl NativeJournal {
                     dispatch.codex_connection_id.is_some(),
                     dispatch.codex_session_id.is_some(),
                     dispatch.codex_deadline_ms.is_some(),
-                    dispatch.codex_authority_epoch.is_some(),
-                    dispatch.codex_revocation_revision.is_some(),
-                    dispatch.codex_revocation_head_sha256.is_some(),
                     dispatch.codex_authority_witness_sha256.is_some(),
                 ];
                 if extended_codex_fields.iter().any(|present| *present)
@@ -587,6 +584,19 @@ impl NativeJournal {
                 {
                     return Err(Error::InvalidIdentity(
                         "native codex extended dispatch binding",
+                    ));
+                }
+                let frontier_fields = [
+                    dispatch.codex_authority_epoch.is_some(),
+                    dispatch.codex_revocation_revision.is_some(),
+                    dispatch.codex_revocation_head_sha256.is_some(),
+                ];
+                if frontier_fields.iter().any(|present| *present)
+                    && (!extended_codex_fields.iter().all(|present| *present)
+                        || !frontier_fields.iter().all(|present| *present))
+                {
+                    return Err(Error::InvalidIdentity(
+                        "native codex authority frontier binding",
                     ));
                 }
                 if let Some(digest) = &dispatch.codex_payload_digest {
@@ -720,7 +730,10 @@ impl NativeJournal {
     }
 }
 
-fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> Result<(), Error> {
+fn apply_observation(
+    record: &mut NativeRunRecord,
+    mut output: NativeRunOutput,
+) -> Result<(), Error> {
     let dispatch = record.dispatch.as_ref().ok_or(Error::AssignmentMismatch)?;
     if output.thread_id != dispatch.thread_id
         || output.model_provider != dispatch.model_provider
@@ -742,6 +755,20 @@ fn apply_observation(record: &mut NativeRunRecord, output: NativeRunOutput) -> R
     }
     if let Some(digest) = &output.codex_terminal_correlation_digest {
         validate_digest(digest, "native codex terminal correlation")?;
+    }
+    let complete_frontier = dispatch.codex_authority_epoch.is_some()
+        && dispatch.codex_revocation_revision.is_some()
+        && dispatch.codex_revocation_head_sha256.is_some();
+    if output.terminal_observed
+        && output.boundary_status == NativeBoundaryStatus::Succeeded
+        && dispatch.codex_request_digest.is_some()
+        && !complete_frontier
+    {
+        output.boundary_status = NativeBoundaryStatus::Quarantined;
+        output.stop_reason = Some(
+            "historical runtime.codex dispatch lacks claim-time authority frontier; terminal truth retained but success qualification denied"
+                .to_string(),
+        );
     }
     if output.terminal_observed
         && dispatch.codex_request_digest.is_some()
