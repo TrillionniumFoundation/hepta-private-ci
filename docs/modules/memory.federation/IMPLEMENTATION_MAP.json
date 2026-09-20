@@ -79,9 +79,9 @@
   "headAttestation": {
     "candidateBranch": "fix/memory-federation-v2-closure-20260920",
     "baseCommit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "candidateHead": "fc05fb3255f9bc9db37496b1141abec5c2a4db11",
-    "candidateTree": "c6cda06865ba50f1c66224c531fe8117a2172191",
-    "headMeaning": "frozen canonical_v2 query_bound_ordered_response_integrity live_pre_post_io_authority interruptible_single_attempt_transport agentd_product_composition v2_only_attachment_and_no_legacy_downgrade exact_scope_same_snapshot_frontier explicit_coverage one_peer_engine_multi_peer_product_orchestrator truth_surface_and_derived_index_sync candidate immediately before qualification metadata",
+    "candidateHead": "b5e48612218fcf675384eb6c2294a9e47278b162",
+    "candidateTree": "91709d316cf53643896ae181251a93d0b0d11c76",
+    "headMeaning": "frozen canonical_v2 query_bound_ordered_response_integrity live_pre_post_io_authority interruptible_single_attempt_transport agentd_product_composition v2_only_attachment_and_no_legacy_downgrade exact_scope_same_snapshot_frontier explicit_coverage one_peer_engine_multi_peer_product_orchestrator truth_surface_derived_index_sync and canonical_profile_claim_state candidate immediately before qualification metadata",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
       "remote_response_field_binding",
@@ -127,7 +127,7 @@
       "qualification/module-execution-dossiers/DETAILS.json",
       "qualification/module-execution-dossiers/IMPLEMENTATION_PROFILES.json"
     ],
-    "note": "sourceBase remains the repository-wide historical identity shared by all module maps. candidateHead/candidateTree attest the frozen current-main convergence candidate before metadata-only attestation commits. Only this implementation map and the module-scoped final-verification receipt may change after that candidate without invalidating the attestation. The candidate enforces ordered query-bound response integrity, Partial+[] preservation, live pre/post-I/O authority, interruptible single-attempt transport, exact-scope same-snapshot owner data frontier, V2-only product attachment, and prevention of legacy helper downgrade. The canonical crate is the one-peer checked engine; <=16-peer discovery/aggregation is product-orchestrator policy. Current V2 contracts are in-process Rust contracts, not an authenticated cross-host wire protocol. productExecutionProved, productionImplementation, activation, acceptance, promotion and release remain false until their independent evidence gates pass.",
+    "note": "sourceBase remains the repository-wide historical identity shared by all module maps. candidateHead/candidateTree attest the frozen current-main convergence candidate before metadata-only attestation commits. Only this implementation map and the module-scoped final-verification receipt may change after that candidate without invalidating the attestation. The candidate enforces ordered query-bound response integrity, Partial+[] preservation, live pre/post-I/O authority, interruptible single-attempt transport, exact-scope same-snapshot owner data frontier, V2-only product attachment, and prevention of legacy helper downgrade. The canonical crate is the one-peer checked engine; <=16-peer discovery/aggregation is product-orchestrator policy. Current V2 contracts are in-process Rust contracts, not an authenticated cross-host wire protocol. The canonical implementation-profile claim state remains specified_not_product_evidence until execution gates pass. productExecutionProved, productionImplementation, activation, acceptance, promotion and release remain false until their independent evidence gates pass.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json",
       "qualification/memory-federation/FINAL_V2_VERIFICATION.md"
