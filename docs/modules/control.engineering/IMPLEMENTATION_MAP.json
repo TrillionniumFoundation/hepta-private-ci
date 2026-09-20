@@ -217,9 +217,9 @@
         "submit_worker_result",
         "observe_claim_completion",
         "publish_integration_queue",
-        "reconcile_integration_item"
+        "observe_integration_stage"
       ],
-      "sourceBlob": "acf8710219df4a4acb07c787ed90f37df051098d"
+      "sourceBlob": "ad4738d8483ee33f46c8ee65a8f9cf7bfe7ab059"
     },
     {
       "operation": "claim_assignment",
@@ -271,17 +271,17 @@
         "heartbeat_claim",
         "submit_worker_result",
         "publish_integration_queue",
-        "reconcile_integration_item",
+        "observe_integration_stage",
         "worker_completion_observations"
       ],
-      "sourceBlob": "72ae653f77ab164e03b1968717bec801299c9683"
+      "sourceBlob": "355f913adca40e8092aeab80fa1054b362bc1ec0"
     },
     {
-      "operation": "reconcile_integration_item",
-      "designOperation": "durable_integration_queue_reconciliation",
-      "nativeSymbol": "reconcile_integration_item",
+      "operation": "observe_integration_stage",
+      "designOperation": "authenticated_integration_stage_reconciliation",
+      "nativeSymbol": "observe_integration_stage",
       "sourcePath": "tools/hepta-engineering-control/control_engineering_v2/integration_controller.py",
-      "state": "source_implemented",
+      "state": "source_implemented_authenticated_stage_boundary",
       "authority": "none",
       "tests": [
         {
@@ -291,10 +291,11 @@
       "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": [
+        "reconcile_integration_item",
         "integration_queue_generations",
         "integration_queue_items"
       ],
-      "sourceBlob": "73deaafcbe6840372b2f4d45e6b7ac8d10b31eb9"
+      "sourceBlob": "f4766f1428d380401c55967dfaf12a20fbd4a20b"
     },
     {
       "operation": "bind_github_review_observations",
@@ -311,7 +312,7 @@
       "sourcePathExists": true,
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "acf8710219df4a4acb07c787ed90f37df051098d"
+      "sourceBlob": "ad4738d8483ee33f46c8ee65a8f9cf7bfe7ab059"
     }
   ],
   "repositoryControlledGaps": [
