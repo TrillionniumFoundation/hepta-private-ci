@@ -130,6 +130,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         target: AgentRelease,
         now: Instant,
         explicit_rollback: bool,
+        authority: Option<(codex_hepta_contracts::Sha256Digest, u64)>,
     ) -> Result<(), SupervisorError> {
         if slot.release_change.is_some() || slot.restart_pending {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
@@ -162,6 +163,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             explicit_rollback,
             lifecycle.generation,
         )?;
+        if let Some((grant_sha256, authority_epoch)) = authority {
+            self.bind_release_transaction_authority(
+                agent_id,
+                slot,
+                grant_sha256,
+                authority_epoch,
+            )?;
+        }
         slot.release_change = Some(ReleaseChange {
             origin: current.clone(),
             target: target.clone(),
