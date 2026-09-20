@@ -16,8 +16,6 @@ use codex_hepta_cognitive_store::ForgetMemoryDraft;
 use codex_hepta_cognitive_store::KgFactSetDraft;
 use codex_hepta_cognitive_store::MemoryDraft;
 use codex_hepta_cognitive_store::MemoryRevisionDraft;
-use codex_hepta_cognitive_store::SourceDraft;
-use codex_hepta_cognitive_store::StableMemoryId;
 use codex_hepta_cognitive_store::ProductionAuthorityLease;
 use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
 use codex_hepta_cognitive_store::ProductionCognitiveMutation;
@@ -29,6 +27,8 @@ use codex_hepta_cognitive_store::ProductionOutboxTarget;
 use codex_hepta_cognitive_store::ProductionQueuedReceipt;
 #[cfg(feature = "qualification-cognitive-write")]
 use codex_hepta_cognitive_store::ProductionWriterError;
+use codex_hepta_cognitive_store::SourceDraft;
+use codex_hepta_cognitive_store::StableMemoryId;
 
 use crate::AgentdConfig;
 use crate::AgentdError;
@@ -169,7 +169,9 @@ impl AgentdProductionWriterHost {
                 "production cognitive mutation capability is not attached".to_string(),
             )
         })?;
-        Ok(mutation.remember_with_kg(access, source, draft, facts).await?)
+        Ok(mutation
+            .remember_with_kg(access, source, draft, facts)
+            .await?)
     }
 
     pub async fn correct_with_kg(
@@ -187,14 +189,7 @@ impl AgentdProductionWriterHost {
             )
         })?;
         Ok(mutation
-            .correct_with_kg(
-                access,
-                memory_id,
-                expected_revision,
-                source,
-                draft,
-                facts,
-            )
+            .correct_with_kg(access, memory_id, expected_revision, source, draft, facts)
             .await?)
     }
 
@@ -260,4 +255,3 @@ impl AgentdProductionWriterHost {
         Ok(dispatcher.dispatch(self.writer.as_ref(), receipt).await?)
     }
 }
-
