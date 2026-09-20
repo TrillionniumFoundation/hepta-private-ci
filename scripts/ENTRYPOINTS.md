@@ -22,7 +22,8 @@ This generated index maps every repository script to workflow, just/make or manu
 | `scripts/hepta-install-live-gateway` | `candidate-archive` | manual/indirect | — |
 | `scripts/verify_hepta_callers.py` | `active` | CI | `.github/workflows/lane-a-foundation.yml`, `.github/workflows/repo-checks.yml` |
 | `scripts/test_hepta_paper_evidence.py` | `active` | CI | `.github/workflows/hepta-cns-embodiment.yml` |
-| `scripts/hepta-implementation-maps.py` | `active` | CI, indirect | `scripts/hepta-module-docs.py` |
+| `scripts/hepta-implementation-maps.py` | `active` | CI, indirect | `.github/workflows/hepta-contract-gate.yml`, `.github/workflows/hepta-runtime-fleet-target-host.yml`, `scripts/hepta-module-docs.py` |
+| `scripts/test_hepta_implementation_maps.py` | `active` | CI | `.github/workflows/hepta-contract-gate.yml` |
 | `scripts/test_hepta_ci_source_identity.py` | `active` | CI | `.github/workflows/hepta-consolidated-source.yml` |
 | `scripts/verify_lane_a_foundation.py` | `active` | CI | `.github/workflows/lane-a-foundation.yml` |
 | `scripts/hepta-module-docs.py` | `active` | CI | `.github/workflows/hepta-algorithm-docs.yml`, `.github/workflows/hepta-audit-remediation.yml`, `.github/workflows/hepta-cns-embodiment.yml`, `.github/workflows/hepta-converged-learning.yml`, `.github/workflows/hepta-deployment-handoff.yml`, `.github/workflows/hepta-development-docs.yml`, `.github/workflows/hepta-diagnostic-source-export.yml`, `.github/workflows/hepta-implementation-readiness.yml` |
@@ -51,7 +52,8 @@ This generated index maps every repository script to workflow, just/make or manu
 | `scripts/hepta-lane-d-semantic-conformance.py` | `active` | CI | `.github/workflows/hepta-lane-d-semantic-conformance.yml` |
 | `scripts/start-codex-exec.sh` | `candidate-archive` | manual/indirect | — |
 | `scripts/hepta-live-soak.sh` | `candidate-archive` | manual/indirect | — |
-| `scripts/hepta-lane-b-truth.py` | `active` | CI | `.github/workflows/hepta-lane-b-truth.yml` |
+| `scripts/hepta-lane-b-path-guard.py` | `active` | CI | `.github/workflows/hepta-lane-b-truth.yml`, `.github/workflows/hepta-runtime-fleet-target-host.yml` |
+| `scripts/hepta-lane-b-truth.py` | `active` | CI | `.github/workflows/hepta-lane-b-truth.yml`, `.github/workflows/hepta-runtime-fleet-target-host.yml` |
 | `scripts/hepta-watchdog.sh` | `candidate-archive` | manual/indirect | — |
 | `scripts/test_hepta_gap_closure.py` | `candidate-archive` | manual/indirect | — |
 | `scripts/hepta_ci_v8.py` | `active` | CI | `.github/workflows/hepta-consolidated-source.yml` |
