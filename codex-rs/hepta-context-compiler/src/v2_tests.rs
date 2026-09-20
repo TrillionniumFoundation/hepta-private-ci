@@ -201,13 +201,37 @@ fn verified_snapshot(
 ) -> VerifiedAdmissionSnapshotV2 {
     let raw = ContextAdmissionSnapshotV2::new(
         id(snapshot_id),
+        digest("scope"),
+        digest("authority-domain"),
         observed_unix_ms,
         revocation_epoch,
         revoked,
+        true,
+        None,
     )
     .unwrap_or_else(|error| panic!("valid snapshot: {error}"));
     verify_admission_snapshot_v2(raw, &verifier())
         .unwrap_or_else(|error| panic!("verified snapshot: {error}"))
+}
+
+fn verified_successor_snapshot(
+    snapshot_id: &str,
+    observed_unix_ms: u64,
+    revocation_epoch: u64,
+    revoked: Vec<StableId>,
+    predecessor: &VerifiedAdmissionSnapshotV2,
+) -> Result<VerifiedAdmissionSnapshotV2, ContextCompilerV2Error> {
+    let raw = ContextAdmissionSnapshotV2::new(
+        id(snapshot_id),
+        predecessor.scope_digest(),
+        predecessor.authority_domain_digest(),
+        observed_unix_ms,
+        revocation_epoch,
+        revoked,
+        true,
+        Some(predecessor.snapshot_digest()),
+    )?;
+    verify_admission_snapshot_successor_v2(raw, predecessor, &verifier())
 }
 
 fn content_bytes(item_id: &str, token_count: u64) -> Vec<u8> {
@@ -243,6 +267,7 @@ fn candidate(
             source_digest: source_digest,
             generation_vector_digest: digest("generation-vector"),
             scope_digest: digest("scope"),
+            authority_domain_digest: digest("authority-domain"),
             contains_secret: false,
         },
         1,
@@ -277,6 +302,7 @@ fn request(candidates: Vec<ContextCandidateV2>, token_budget: u64) -> ContextCom
         prompt_portfolio_digest: digest("portfolio"),
         generation_vector_digest: digest("generation-vector"),
         scope_digest: digest("scope"),
+        authority_domain_digest: digest("authority-domain"),
         admission_verifier_digest: digest("admission-verifier"),
         model_profile: profile(),
         token_budget,
@@ -422,6 +448,7 @@ fn well_formed_admission_digest_is_not_enough_without_verifier_acceptance() {
             source_digest: digest("source:item:trusted"),
             generation_vector_digest: digest("generation-vector"),
             scope_digest: digest("scope"),
+            authority_domain_digest: digest("authority-domain"),
             contains_secret: false,
         },
         1,
@@ -474,6 +501,7 @@ fn admission_expires_at_the_exact_expiry_instant() {
             source_digest: digest("source:item:expiry"),
             generation_vector_digest: digest("generation-vector"),
             scope_digest: digest("scope"),
+            authority_domain_digest: digest("authority-domain"),
             contains_secret: false,
         },
         1,
@@ -506,6 +534,124 @@ fn verified_admission_cannot_be_reused_across_request_scope() {
         compile_v2(scoped_request),
         Err(ContextCompilerV2Error::AdmissionBindingMismatch(
             "item:scoped".to_string()
+        ))
+    );
+}
+
+#[test]
+fn snapshot_scope_and_authority_domain_are_part_of_admission_truth() {
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let content = content_bytes("item:domain", 20);
+    let record = ContextAdmissionRecordV2::new(
+        id("admission:item:domain"),
+        ContextAdmissionBindingV2 {
+            item_id: id("item:domain"),
+            role: ContextRoleV2::UntrustedEvidence,
+            content_digest: Digest32::of_bytes(&content),
+            source_digest: digest("source:item:domain"),
+            generation_vector_digest: digest("generation-vector"),
+            scope_digest: digest("scope"),
+            authority_domain_digest: digest("different-authority-domain"),
+            contains_secret: false,
+        },
+        1,
+        1_000,
+    )
+    .unwrap_or_else(|error| panic!("valid record: {error}"));
+
+    assert_eq!(
+        verify_admission_v2(record, &snapshot, &verifier()),
+        Err(ContextCompilerV2Error::AdmissionSnapshotDomainMismatch(
+            "item:domain".to_string()
+        ))
+    );
+}
+
+#[test]
+fn successor_snapshot_rejects_revocation_resurrection() {
+    let revoked = id("admission:revoked");
+    let predecessor = verified_snapshot("snapshot:revoked", 10, 1, vec![revoked.clone()]);
+    assert_eq!(
+        verified_successor_snapshot("snapshot:resurrected", 20, 2, Vec::new(), &predecessor),
+        Err(ContextCompilerV2Error::RevocationResurrection(
+            revoked.to_string()
+        ))
+    );
+}
+
+#[test]
+fn revocation_and_mandatory_reference_bounds_fail_closed() {
+    let too_many_revocations = (0..=MAX_REVOKED_ADMISSIONS_V2)
+        .map(|index| id(&format!("admission:revoked:{index}")))
+        .collect::<Vec<_>>();
+    assert_eq!(
+        ContextAdmissionSnapshotV2::new(
+            id("snapshot:oversized"),
+            digest("scope"),
+            digest("authority-domain"),
+            10,
+            1,
+            too_many_revocations,
+            true,
+            None,
+        ),
+        Err(ContextCompilerV2Error::RevocationLimitExceeded)
+    );
+
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let (candidate, _) = candidate(
+        "item:required",
+        ContextRoleV2::UntrustedEvidence,
+        1,
+        FixedQ32::ONE,
+        &snapshot,
+    );
+    let mut bounded_request = request(vec![candidate], 100);
+    bounded_request.mandatory_groups = vec![MandatoryContextGroupV2 {
+        group_id: id("group:oversized"),
+        item_ids: (0..=MAX_MANDATORY_REFERENCES_V2)
+            .map(|index| id(&format!("item:required:{index}")))
+            .collect(),
+        reason_digest: digest("oversized-mandatory-set"),
+    }];
+    assert_eq!(
+        compile_v2(bounded_request),
+        Err(ContextCompilerV2Error::MandatoryReferenceLimitExceeded)
+    );
+}
+
+#[test]
+fn raw_candidate_and_realization_bytes_are_bounded_before_serialization() {
+    let oversized = vec![b'x'; MAX_CONTEXT_ITEM_BYTES_V2 + 1];
+    assert_eq!(
+        TokenizationReceiptV2::from_exact_bytes(id("item:oversized"), &oversized, &ByteTokenizer),
+        Err(ContextCompilerV2Error::CandidateContentTooLarge(
+            "item:oversized".to_string()
+        ))
+    );
+
+    let snapshot = verified_snapshot("snapshot:1", 10, 1, Vec::new());
+    let (candidate, mut realized) = candidate(
+        "item:realized",
+        ContextRoleV2::UntrustedEvidence,
+        1,
+        FixedQ32::ONE,
+        &snapshot,
+    );
+    let compiled = compile_v2(request(vec![candidate], 100))
+        .unwrap_or_else(|error| panic!("valid compilation: {error}"));
+    realized.content = vec![b'x'; MAX_CONTEXT_ITEM_BYTES_V2 + 1];
+    assert_eq!(
+        record_serialization(
+            &compiled,
+            &profile(),
+            id("serialization:oversized"),
+            vec![realized],
+            &FramingSerializer { overhead: 0 },
+            &ByteTokenizer,
+        ),
+        Err(ContextCompilerV2Error::RealizedContentTooLarge(
+            "item:realized".to_string()
         ))
     );
 }
@@ -1244,6 +1390,7 @@ fn tokenizer_generation_secret_and_profile_drift_fail_closed() {
             source_digest: digest("source:item:secret"),
             generation_vector_digest: digest("generation-vector"),
             scope_digest: digest("scope"),
+            authority_domain_digest: digest("authority-domain"),
             contains_secret: true,
         },
         1,

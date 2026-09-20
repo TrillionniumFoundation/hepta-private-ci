@@ -30,6 +30,10 @@ use codex_hepta_types::StableId;
 
 pub const MAX_CONTEXT_CANDIDATES_V2: usize = 4_096;
 pub const MAX_CONTEXT_GROUPS_V2: usize = 256;
+pub const MAX_MANDATORY_REFERENCES_V2: usize = 4_096;
+pub const MAX_REVOKED_ADMISSIONS_V2: usize = 4_096;
+pub const MAX_CONTEXT_ITEM_BYTES_V2: usize = 1024 * 1024;
+pub const MAX_REALIZATION_BYTES_V2: usize = 16 * 1024 * 1024;
 pub const MAX_CONTEXT_TOKENS_V2: u64 = 1_000_000;
 pub const MAX_SERIALIZED_PAYLOAD_BYTES_V2: usize = 16 * 1024 * 1024;
 
@@ -116,6 +120,11 @@ impl TokenizationReceiptV2 {
         content: &[u8],
         tokenizer: &impl ExactTokenizerV2,
     ) -> Result<Self, ContextCompilerV2Error> {
+        if content.len() > MAX_CONTEXT_ITEM_BYTES_V2 {
+            return Err(ContextCompilerV2Error::CandidateContentTooLarge(
+                item_id.to_string(),
+            ));
+        }
         let tokenizer_digest = tokenizer.tokenizer_digest();
         ensure_digest("tokenizer", tokenizer_digest)?;
         let token_count = tokenizer.count_tokens(content)?;
@@ -192,6 +201,7 @@ pub struct ContextAdmissionBindingV2 {
     pub source_digest: Digest32,
     pub generation_vector_digest: Digest32,
     pub scope_digest: Digest32,
+    pub authority_domain_digest: Digest32,
     pub contains_secret: bool,
 }
 
@@ -204,6 +214,7 @@ pub struct ContextAdmissionRecordV2 {
     pub source_digest: Digest32,
     pub generation_vector_digest: Digest32,
     pub scope_digest: Digest32,
+    pub authority_domain_digest: Digest32,
     pub contains_secret: bool,
     pub issued_unix_ms: u64,
     pub expires_unix_ms: u64,
@@ -225,6 +236,7 @@ impl ContextAdmissionRecordV2 {
             source_digest: binding.source_digest,
             generation_vector_digest: binding.generation_vector_digest,
             scope_digest: binding.scope_digest,
+            authority_domain_digest: binding.authority_domain_digest,
             contains_secret: binding.contains_secret,
             issued_unix_ms,
             expires_unix_ms,
@@ -240,6 +252,7 @@ impl ContextAdmissionRecordV2 {
         ensure_digest("admission_source", self.source_digest)?;
         ensure_digest("admission_generation_vector", self.generation_vector_digest)?;
         ensure_digest("admission_scope", self.scope_digest)?;
+        ensure_digest("admission_authority_domain", self.authority_domain_digest)?;
         if self.issued_unix_ms == 0 || self.expires_unix_ms <= self.issued_unix_ms {
             return Err(ContextCompilerV2Error::InvalidAdmissionTime(
                 self.admission_id.to_string(),
@@ -262,6 +275,7 @@ impl ContextAdmissionRecordV2 {
         push_digest(&mut bytes, self.source_digest);
         push_digest(&mut bytes, self.generation_vector_digest);
         push_digest(&mut bytes, self.scope_digest);
+        push_digest(&mut bytes, self.authority_domain_digest);
         bytes.push(u8::from(self.contains_secret));
         push_u64(&mut bytes, self.issued_unix_ms);
         push_u64(&mut bytes, self.expires_unix_ms);
@@ -272,19 +286,31 @@ impl ContextAdmissionRecordV2 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ContextAdmissionSnapshotV2 {
     pub snapshot_id: StableId,
+    pub scope_digest: Digest32,
+    pub authority_domain_digest: Digest32,
     pub observed_unix_ms: u64,
     pub revocation_epoch: u64,
     pub revoked_admission_ids: Vec<StableId>,
+    pub revocation_set_complete: bool,
+    pub predecessor_snapshot_digest: Option<Digest32>,
     pub snapshot_digest: Digest32,
 }
 
 impl ContextAdmissionSnapshotV2 {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         snapshot_id: StableId,
+        scope_digest: Digest32,
+        authority_domain_digest: Digest32,
         observed_unix_ms: u64,
         revocation_epoch: u64,
         mut revoked_admission_ids: Vec<StableId>,
+        revocation_set_complete: bool,
+        predecessor_snapshot_digest: Option<Digest32>,
     ) -> Result<Self, ContextCompilerV2Error> {
+        if revoked_admission_ids.len() > MAX_REVOKED_ADMISSIONS_V2 {
+            return Err(ContextCompilerV2Error::RevocationLimitExceeded);
+        }
         revoked_admission_ids.sort();
         for pair in revoked_admission_ids.windows(2) {
             if pair[0] == pair[1] {
@@ -295,9 +321,13 @@ impl ContextAdmissionSnapshotV2 {
         }
         let mut snapshot = Self {
             snapshot_id,
+            scope_digest,
+            authority_domain_digest,
             observed_unix_ms,
             revocation_epoch,
             revoked_admission_ids,
+            revocation_set_complete,
+            predecessor_snapshot_digest,
             snapshot_digest: Digest32::ZERO,
         };
         snapshot.snapshot_digest = snapshot.compute_digest();
@@ -306,8 +336,22 @@ impl ContextAdmissionSnapshotV2 {
     }
 
     pub fn validate_shape(&self) -> Result<(), ContextCompilerV2Error> {
+        ensure_digest("admission_snapshot_scope", self.scope_digest)?;
+        ensure_digest(
+            "admission_snapshot_authority_domain",
+            self.authority_domain_digest,
+        )?;
         if self.observed_unix_ms == 0 {
             return Err(ContextCompilerV2Error::InvalidAdmissionSnapshotTime);
+        }
+        if self.revoked_admission_ids.len() > MAX_REVOKED_ADMISSIONS_V2 {
+            return Err(ContextCompilerV2Error::RevocationLimitExceeded);
+        }
+        if !self.revocation_set_complete {
+            return Err(ContextCompilerV2Error::IncompleteRevocationSnapshot);
+        }
+        if let Some(predecessor) = self.predecessor_snapshot_digest {
+            ensure_digest("admission_snapshot_predecessor", predecessor)?;
         }
         for pair in self.revoked_admission_ids.windows(2) {
             if pair[0] >= pair[1] {
@@ -325,9 +369,19 @@ impl ContextAdmissionSnapshotV2 {
         let mut bytes = Vec::new();
         bytes.extend_from_slice(ADMISSION_SNAPSHOT_DOMAIN);
         push_id(&mut bytes, &self.snapshot_id);
+        push_digest(&mut bytes, self.scope_digest);
+        push_digest(&mut bytes, self.authority_domain_digest);
         push_u64(&mut bytes, self.observed_unix_ms);
         push_u64(&mut bytes, self.revocation_epoch);
         push_ids(&mut bytes, &self.revoked_admission_ids);
+        bytes.push(u8::from(self.revocation_set_complete));
+        match self.predecessor_snapshot_digest {
+            Some(predecessor) => {
+                bytes.push(1);
+                push_digest(&mut bytes, predecessor);
+            }
+            None => bytes.push(0),
+        }
         Digest32::of_bytes(&bytes)
     }
 }
@@ -356,6 +410,16 @@ impl VerifiedAdmissionSnapshotV2 {
     }
 
     #[must_use]
+    pub const fn scope_digest(&self) -> Digest32 {
+        self.snapshot.scope_digest
+    }
+
+    #[must_use]
+    pub const fn authority_domain_digest(&self) -> Digest32 {
+        self.snapshot.authority_domain_digest
+    }
+
+    #[must_use]
     pub const fn observed_unix_ms(&self) -> u64 {
         self.snapshot.observed_unix_ms
     }
@@ -373,25 +437,83 @@ impl VerifiedAdmissionSnapshotV2 {
     }
 }
 
+fn finish_verified_snapshot(
+    snapshot: ContextAdmissionSnapshotV2,
+    verifier_digest: Digest32,
+) -> VerifiedAdmissionSnapshotV2 {
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(VERIFIED_SNAPSHOT_DOMAIN);
+    push_digest(&mut bytes, snapshot.snapshot_digest);
+    push_digest(&mut bytes, verifier_digest);
+    VerifiedAdmissionSnapshotV2 {
+        snapshot,
+        verifier_digest,
+        verification_digest: Digest32::of_bytes(&bytes),
+    }
+}
+
 pub fn verify_admission_snapshot_v2(
     snapshot: ContextAdmissionSnapshotV2,
     verifier: &impl ContextAdmissionVerifierV2,
 ) -> Result<VerifiedAdmissionSnapshotV2, ContextCompilerV2Error> {
     snapshot.validate_shape()?;
+    if snapshot.predecessor_snapshot_digest.is_some() {
+        return Err(ContextCompilerV2Error::UnexpectedSnapshotPredecessor);
+    }
     let verifier_digest = verifier.verifier_digest();
     ensure_digest("admission_verifier", verifier_digest)?;
     if !verifier.verify_snapshot(&snapshot) {
         return Err(ContextCompilerV2Error::AdmissionSnapshotUnverified);
     }
-    let mut bytes = Vec::new();
-    bytes.extend_from_slice(VERIFIED_SNAPSHOT_DOMAIN);
-    push_digest(&mut bytes, snapshot.snapshot_digest);
-    push_digest(&mut bytes, verifier_digest);
-    Ok(VerifiedAdmissionSnapshotV2 {
-        snapshot,
-        verifier_digest,
-        verification_digest: Digest32::of_bytes(&bytes),
-    })
+    Ok(finish_verified_snapshot(snapshot, verifier_digest))
+}
+
+pub fn verify_admission_snapshot_successor_v2(
+    snapshot: ContextAdmissionSnapshotV2,
+    predecessor: &VerifiedAdmissionSnapshotV2,
+    verifier: &impl ContextAdmissionVerifierV2,
+) -> Result<VerifiedAdmissionSnapshotV2, ContextCompilerV2Error> {
+    snapshot.validate_shape()?;
+    let verifier_digest = verifier.verifier_digest();
+    ensure_digest("admission_verifier", verifier_digest)?;
+    if verifier_digest != predecessor.verifier_digest() {
+        return Err(ContextCompilerV2Error::AdmissionVerifierMismatch(
+            "snapshot".to_string(),
+        ));
+    }
+    if !verifier.verify_snapshot(&snapshot) {
+        return Err(ContextCompilerV2Error::AdmissionSnapshotUnverified);
+    }
+    if snapshot.predecessor_snapshot_digest != Some(predecessor.snapshot_digest()) {
+        return Err(ContextCompilerV2Error::SnapshotPredecessorMismatch);
+    }
+    if snapshot.scope_digest != predecessor.scope_digest()
+        || snapshot.authority_domain_digest != predecessor.authority_domain_digest()
+    {
+        return Err(ContextCompilerV2Error::SnapshotDomainMismatch);
+    }
+    if snapshot.observed_unix_ms < predecessor.observed_unix_ms()
+        || snapshot.revocation_epoch < predecessor.revocation_epoch()
+    {
+        return Err(ContextCompilerV2Error::StaleAdmissionSnapshot);
+    }
+    if snapshot.revocation_epoch == predecessor.revocation_epoch()
+        && snapshot.revoked_admission_ids != predecessor.snapshot.revoked_admission_ids
+    {
+        return Err(ContextCompilerV2Error::RevocationFrontierMismatch);
+    }
+    for admission_id in &predecessor.snapshot.revoked_admission_ids {
+        if snapshot
+            .revoked_admission_ids
+            .binary_search(admission_id)
+            .is_err()
+        {
+            return Err(ContextCompilerV2Error::RevocationResurrection(
+                admission_id.to_string(),
+            ));
+        }
+    }
+    Ok(finish_verified_snapshot(snapshot, verifier_digest))
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -403,6 +525,7 @@ pub struct VerifiedAdmissionV2 {
     source_digest: Digest32,
     generation_vector_digest: Digest32,
     scope_digest: Digest32,
+    authority_domain_digest: Digest32,
     contains_secret: bool,
     expires_unix_ms: u64,
     verifier_digest: Digest32,
@@ -434,6 +557,7 @@ impl VerifiedAdmissionV2 {
         &self,
         candidate: &ContextCandidateV2,
         expected_scope_digest: Digest32,
+        expected_authority_domain_digest: Digest32,
         expected_verifier_digest: Digest32,
     ) -> Result<(), ContextCompilerV2Error> {
         if self.item_id != candidate.item_id
@@ -442,6 +566,7 @@ impl VerifiedAdmissionV2 {
             || self.source_digest != candidate.source_digest
             || self.generation_vector_digest != candidate.generation_vector_digest
             || self.scope_digest != expected_scope_digest
+            || self.authority_domain_digest != expected_authority_domain_digest
         {
             return Err(ContextCompilerV2Error::AdmissionBindingMismatch(
                 candidate.item_id.to_string(),
@@ -467,6 +592,13 @@ impl VerifiedAdmissionV2 {
         &self,
         current_snapshot: &VerifiedAdmissionSnapshotV2,
     ) -> Result<(), ContextCompilerV2Error> {
+        if self.scope_digest != current_snapshot.scope_digest()
+            || self.authority_domain_digest != current_snapshot.authority_domain_digest()
+        {
+            return Err(ContextCompilerV2Error::AdmissionSnapshotDomainMismatch(
+                self.item_id.to_string(),
+            ));
+        }
         if self.verifier_digest != current_snapshot.verifier_digest {
             return Err(ContextCompilerV2Error::AdmissionVerifierMismatch(
                 self.item_id.to_string(),
@@ -500,6 +632,7 @@ impl VerifiedAdmissionV2 {
         push_digest(&mut bytes, self.source_digest);
         push_digest(&mut bytes, self.generation_vector_digest);
         push_digest(&mut bytes, self.scope_digest);
+        push_digest(&mut bytes, self.authority_domain_digest);
         bytes.push(u8::from(self.contains_secret));
         push_u64(&mut bytes, self.expires_unix_ms);
         push_digest(&mut bytes, self.verifier_digest);
@@ -522,6 +655,13 @@ pub fn verify_admission_v2(
     ensure_digest("admission_verifier", verifier_digest)?;
     if verifier_digest != snapshot.verifier_digest {
         return Err(ContextCompilerV2Error::AdmissionVerifierMismatch(
+            record.item_id.to_string(),
+        ));
+    }
+    if record.scope_digest != snapshot.scope_digest()
+        || record.authority_domain_digest != snapshot.authority_domain_digest()
+    {
+        return Err(ContextCompilerV2Error::AdmissionSnapshotDomainMismatch(
             record.item_id.to_string(),
         ));
     }
@@ -558,6 +698,7 @@ pub fn verify_admission_v2(
         source_digest: record.source_digest,
         generation_vector_digest: record.generation_vector_digest,
         scope_digest: record.scope_digest,
+        authority_domain_digest: record.authority_domain_digest,
         contains_secret: record.contains_secret,
         expires_unix_ms: record.expires_unix_ms,
         verifier_digest,
@@ -640,6 +781,7 @@ impl ContextCandidateV2 {
         &self,
         expected_generation_vector_digest: Digest32,
         expected_scope_digest: Digest32,
+        expected_authority_domain_digest: Digest32,
         expected_admission_verifier_digest: Digest32,
         profile: &ContextModelProfileV2,
     ) -> Result<(), ContextCompilerV2Error> {
@@ -672,6 +814,7 @@ impl ContextCandidateV2 {
         self.admission.validate_for_candidate(
             self,
             expected_scope_digest,
+            expected_authority_domain_digest,
             expected_admission_verifier_digest,
         )?;
         Ok(())
@@ -692,6 +835,7 @@ pub struct ContextCompilationRequestV2 {
     pub prompt_portfolio_digest: Digest32,
     pub generation_vector_digest: Digest32,
     pub scope_digest: Digest32,
+    pub authority_domain_digest: Digest32,
     pub admission_verifier_digest: Digest32,
     pub model_profile: ContextModelProfileV2,
     pub token_budget: u64,
@@ -707,6 +851,7 @@ pub struct ContextCompilationReceiptV2 {
     prompt_portfolio_digest: Digest32,
     generation_vector_digest: Digest32,
     scope_digest: Digest32,
+    authority_domain_digest: Digest32,
     admission_verifier_digest: Digest32,
     model_profile_digest: Digest32,
     candidate_set_digest: Digest32,
@@ -753,6 +898,11 @@ impl ContextCompilationReceiptV2 {
     }
 
     #[must_use]
+    pub const fn authority_domain_digest(&self) -> Digest32 {
+        self.authority_domain_digest
+    }
+
+    #[must_use]
     pub const fn context_digest(&self) -> Digest32 {
         self.context_digest
     }
@@ -773,6 +923,7 @@ impl ContextCompilationReceiptV2 {
             ("prompt_portfolio", self.prompt_portfolio_digest),
             ("generation_vector", self.generation_vector_digest),
             ("scope", self.scope_digest),
+            ("authority_domain", self.authority_domain_digest),
             ("admission_verifier", self.admission_verifier_digest),
             ("model_profile", self.model_profile_digest),
             ("candidate_set", self.candidate_set_digest),
@@ -809,6 +960,7 @@ impl ContextCompilationReceiptV2 {
             self.prompt_portfolio_digest,
             self.generation_vector_digest,
             self.scope_digest,
+            self.authority_domain_digest,
             self.admission_verifier_digest,
             self.model_profile_digest,
             self.candidate_set_digest,
@@ -871,6 +1023,7 @@ impl CompiledContextV2 {
             candidate.admission.validate_for_candidate(
                 candidate,
                 self.receipt.scope_digest,
+                self.receipt.authority_domain_digest,
                 self.receipt.admission_verifier_digest,
             )?;
         }
@@ -890,6 +1043,7 @@ pub fn compile_v2(
         ("prompt_portfolio", request.prompt_portfolio_digest),
         ("generation_vector", request.generation_vector_digest),
         ("scope", request.scope_digest),
+        ("authority_domain", request.authority_domain_digest),
         ("admission_verifier", request.admission_verifier_digest),
         ("truncation_policy", request.truncation_policy_digest),
     ] {
@@ -915,6 +1069,7 @@ pub fn compile_v2(
         candidate.validate(
             request.generation_vector_digest,
             request.scope_digest,
+            request.authority_domain_digest,
             request.admission_verifier_digest,
             &request.model_profile,
         )?;
@@ -930,7 +1085,14 @@ pub fn compile_v2(
         .mandatory_groups
         .sort_by(|left, right| left.group_id.cmp(&right.group_id));
     let mut group_ids = BTreeSet::new();
+    let mut mandatory_reference_count = 0_usize;
     for group in &mut request.mandatory_groups {
+        mandatory_reference_count = mandatory_reference_count
+            .checked_add(group.item_ids.len())
+            .ok_or(ContextCompilerV2Error::Arithmetic)?;
+        if mandatory_reference_count > MAX_MANDATORY_REFERENCES_V2 {
+            return Err(ContextCompilerV2Error::MandatoryReferenceLimitExceeded);
+        }
         if !group_ids.insert(group.group_id.clone()) {
             return Err(ContextCompilerV2Error::DuplicateMandatoryGroup(
                 group.group_id.to_string(),
@@ -1033,6 +1195,7 @@ pub fn compile_v2(
         prompt_portfolio_digest: request.prompt_portfolio_digest,
         generation_vector_digest: request.generation_vector_digest,
         scope_digest: request.scope_digest,
+        authority_domain_digest: request.authority_domain_digest,
         admission_verifier_digest: request.admission_verifier_digest,
         model_profile_digest,
         candidate_set_digest,
@@ -1928,7 +2091,19 @@ fn validate_realizations(
         return Err(ContextCompilerV2Error::RealizationSetMismatch);
     }
     let mut by_id = BTreeMap::<StableId, ContextRealizedItemV2>::new();
+    let mut realization_bytes = 0_usize;
     for realization in realizations {
+        if realization.content.len() > MAX_CONTEXT_ITEM_BYTES_V2 {
+            return Err(ContextCompilerV2Error::RealizedContentTooLarge(
+                realization.item_id.to_string(),
+            ));
+        }
+        realization_bytes = realization_bytes
+            .checked_add(realization.content.len())
+            .ok_or(ContextCompilerV2Error::Arithmetic)?;
+        if realization_bytes > MAX_REALIZATION_BYTES_V2 {
+            return Err(ContextCompilerV2Error::RealizationBytesExceeded);
+        }
         let item_id = realization.item_id.clone();
         if by_id.insert(item_id.clone(), realization).is_some() {
             return Err(ContextCompilerV2Error::DuplicateRealization(
@@ -2059,6 +2234,7 @@ pub enum ContextCompilerV2Error {
     InvalidModelContextLimit,
     InvalidTokenBudget,
     InvalidTokenCount(String),
+    CandidateContentTooLarge(String),
     InvalidSerializedTokenCount,
     DuplicateCandidate(String),
     DuplicateMandatoryGroup(String),
@@ -2075,6 +2251,13 @@ pub enum ContextCompilerV2Error {
     InvalidAdmissionSnapshotTime,
     DuplicateRevocation(String),
     NonCanonicalRevocationList,
+    RevocationLimitExceeded,
+    IncompleteRevocationSnapshot,
+    UnexpectedSnapshotPredecessor,
+    SnapshotPredecessorMismatch,
+    SnapshotDomainMismatch,
+    RevocationFrontierMismatch,
+    RevocationResurrection(String),
     AdmissionRecordUnverified(String),
     AdmissionSnapshotUnverified,
     AdmissionNotYetValid(String),
@@ -2082,7 +2265,9 @@ pub enum ContextCompilerV2Error {
     AdmissionRevoked(String),
     AdmissionBindingMismatch(String),
     AdmissionVerifierMismatch(String),
+    AdmissionSnapshotDomainMismatch(String),
     StaleAdmissionSnapshot,
+    MandatoryReferenceLimitExceeded,
     InsufficientMandatoryBudget {
         required_tokens: u64,
         token_budget: u64,
@@ -2096,6 +2281,8 @@ pub enum ContextCompilerV2Error {
     DuplicateRealization(String),
     RealizedRoleMismatch(String),
     RealizedContentMismatch(String),
+    RealizedContentTooLarge(String),
+    RealizationBytesExceeded,
     EmptySerializedPayload,
     SerializedPayloadTooLarge,
     SerializedTokenBudgetExceeded {

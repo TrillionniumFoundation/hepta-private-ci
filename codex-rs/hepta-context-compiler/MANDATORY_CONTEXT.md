@@ -38,8 +38,17 @@ and therefore are not the normative proof path for exact tokenizer, revocation
 or delivery semantics.
 
 The normative V2 path in `src/v2.rs` closes those source-level gaps without
-changing the V1 wire meaning:
+changing the V1 wire meaning. The verified V2 compiler-to-runtime handoff is an
+in-process typed Rust API: V2 proof objects and final payload bytes do not cross
+`platform.wire`. The separately registered `hepta.context-compilation-receipt.v2`
+wire schema remains a compatibility transport for the legacy V1 compilation
+receipt and must not be interpreted as the verified V2 proof chain:
 
+- every admission snapshot is verifier-authenticated, bound to request scope
+  and an authority-domain digest, declares a complete cumulative revocation set,
+  and is bounded to 4096 revoked admission ids. Successor verification binds the
+  predecessor snapshot and rejects revocation resurrection; an oversized
+  cumulative set fails closed rather than silently pruning history;
 - every candidate carries `VerifiedAdmissionV2`, produced only by
   `verify_admission_v2` from an admission record, an authenticated
   `VerifiedAdmissionSnapshotV2` and the configured
@@ -107,9 +116,14 @@ delivery receipt, selection decision, or authority grant.
 Native acceptance cases are in `src/v2_tests.rs`, `src/lib_tests.rs`,
 `src/requirements_tests.rs` and `src/candidate_bound_tests.rs`. V2 cases
 cover verifier rejection of otherwise well-formed admission records,
-role-binding confusion, compile-to-attach and attach-to-send revocation,
-mandatory-group provenance, actual realization-byte drift, exact final-payload
-tokenization and framing overflow, plus transport payload mismatch.
+scope/authority-domain binding, cumulative no-resurrection snapshots,
+revocation/mandatory/raw-byte resource ceilings, role-binding confusion,
+compile-to-attach and attach-to-send revocation, mandatory-group provenance,
+actual realization-byte drift, exact final-payload tokenization and framing
+overflow, plus transport payload mismatch. Candidate bytes are capped at 1 MiB
+per item; pre-serialization realized bytes are capped at 16 MiB aggregate;
+mandatory references and cumulative revoked admission ids are each capped at
+4096.
 
 Run with `just test --locked -p codex-hepta-context-compiler`. These are native
 contract tests. Concrete product caller composition, target-host adapter
