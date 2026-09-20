@@ -44,11 +44,13 @@ There is no blind retry. Dropping the transport future is the in-flight cancella
 
 Product `CognitiveRuntime::AvailableFederatedV2` applies this boundary per currently enrolled owner. Aggregate coverage preserves requested, completed, failed and truncated counts. A scope/transport failure is not relabeled as a successful empty result. A clean discovery with no active grant consumes no request slot. An active grant for a different consumer-workspace digest is filtered before enrollment and never triggers transport. An owner store whose enrollment state cannot be observed contributes a bounded failed slot. Post-I/O revoked/stale terminal attempts also contribute failed aggregate coverage because they produced no admissible evidence.
 
+Ownership is intentionally split at this boundary: `memory.federation::execute_once` is a **one-peer checked engine** and every native `FederatedResultV2` has `requested_peers = 1`. The `<=16` peer discovery/fan-out/aggregation policy is owned by the product orchestrator in `codex-hepta-memory::CognitiveRuntime::AvailableFederatedV2`, which invokes the canonical engine once per admitted peer under one total request horizon. The canonical crate must not grow a second peer registry or product scheduler; the product orchestrator must not reimplement response integrity or authority admission.
+
 ## 5. Capacity and performance profile
 
-Canonical V2 accepts at most 512 remote evidence items in one response. Product federation retains the existing `MAX_FEDERATION_SOURCES_PER_AGENT` source ceiling and the memory retrieval result ceiling. Agentd product composition uses a bounded total recall horizon and no engine-owned retry queue.
+Canonical V2 accepts at most 512 remote evidence items for one peer and never performs multi-peer orchestration internally. Product federation retains the existing `MAX_FEDERATION_SOURCES_PER_AGENT = 16` source ceiling and the memory retrieval result ceiling. Agentd product composition owns bounded peer iteration/aggregation under one total recall horizon and no engine-owned retry queue.
 
-Pilot <=16 queried peers per request and <=512 result IDs total remain architecture ceilings rather than production latency measurements. The selected host still requires exact-candidate timing/resource evidence before activation or release.
+The <=16-peer / <=512-final-ID values are enforced architecture bounds, not production latency or concurrency claims. The current in-process adapter is not evidence that a future network transport can meet the same budget; cross-host activation still requires measured fan-out, overload and cancellation behavior on the selected host.
 
 ## 6. Concrete verification cases
 
