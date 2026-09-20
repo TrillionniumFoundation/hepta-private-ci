@@ -120,6 +120,11 @@ impl DurablePromptRegistry {
         self.store.fail_directory_sync_after_rename_once.set(true);
     }
 
+    #[cfg(test)]
+    fn fail_storage_full_before_rename_once(&self) {
+        self.store.fail_storage_full_before_rename_once.set(true);
+    }
+
     pub fn register_factor(
         &mut self,
         factor: PromptFactor,
@@ -1206,6 +1211,8 @@ struct Store {
     _lock: File,
     #[cfg(test)]
     fail_directory_sync_after_rename_once: Cell<bool>,
+    #[cfg(test)]
+    fail_storage_full_before_rename_once: Cell<bool>,
 }
 
 impl Store {
@@ -1220,6 +1227,8 @@ impl Store {
             _lock: lock,
             #[cfg(test)]
             fail_directory_sync_after_rename_once: Cell::new(false),
+            #[cfg(test)]
+            fail_storage_full_before_rename_once: Cell::new(false),
         };
         let has_state = entry_exists(&store.root, "registry.json")?;
         if !has_state {
@@ -1260,12 +1269,15 @@ impl Store {
         if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_STATE_BYTES {
             return Err(DurableRegistryError::CapacityExceeded);
         }
+        #[cfg(test)]
+        if self.fail_storage_full_before_rename_once.replace(false) {
+            return Err(DurableRegistryError::StorageFull);
+        }
         let mut file = open_private(&self.root, "registry.next", Access::Create)?;
-        file.set_len(0)
-            .map_err(|_| DurableRegistryError::Unavailable)?;
+        file.set_len(0).map_err(map_precommit_io)?;
         file.write_all(&bytes)
             .and_then(|()| file.sync_all())
-            .map_err(|_| DurableRegistryError::Unavailable)?;
+            .map_err(map_precommit_io)?;
         replace_state(&self.root)?;
         // After rename succeeds the durable outcome is unknown if directory
         // fsync fails. The caller must poison this writer and reopen/reconcile;
@@ -1391,6 +1403,14 @@ fn replace_state(_directory: &File) -> Result<(), DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
 
+fn map_precommit_io(error: std::io::Error) -> DurableRegistryError {
+    if matches!(error.raw_os_error(), Some(28) | Some(112)) {
+        DurableRegistryError::StorageFull
+    } else {
+        DurableRegistryError::Unavailable
+    }
+}
+
 #[derive(Debug)]
 pub enum DurableRegistryError {
     Core(Error),
@@ -1399,6 +1419,7 @@ pub enum DurableRegistryError {
     Corrupt,
     CapacityExceeded,
     ConfigurationMismatch,
+    StorageFull,
     Unavailable,
     UnsafeStateDirectory,
     StateLocked,
@@ -2419,6 +2440,191 @@ mod tests {
             validate_restored(&lifecycle_drift),
             Err(DurableRegistryError::Corrupt)
         ));
+    }
+
+    #[test]
+    fn concurrent_writer_is_rejected_by_owner_lock() {
+        let temporary = tempfile::tempdir().expect("tempdir");
+        let root = temporary.path().join("registry-lock");
+        let first = DurablePromptRegistry::open_state_dir(&root, 64).expect("first owner");
+        assert!(matches!(
+            DurablePromptRegistry::open_state_dir(&root, 64),
+            Err(DurableRegistryError::StateLocked)
+        ));
+        drop(first);
+        DurablePromptRegistry::open_state_dir(&root, 64).expect("reopen after owner exit");
+    }
+
+    #[test]
+    fn storage_full_before_rename_keeps_predecessor_live_and_reopenable() {
+        let temporary = tempfile::tempdir().expect("tempdir");
+        let root = temporary.path().join("registry-storage-full");
+        let mut durable =
+            DurablePromptRegistry::open_state_dir(&root, 64).expect("initialize registry");
+        let first = PromptFactor {
+            factor_id: id("factor:storage-predecessor"),
+            proposer_id: id("proposer:storage"),
+            semantic_version: id("v1"),
+            semantic_purpose: "preserve predecessor".to_owned(),
+            authority_class: "registered_prompt_factor".to_owned(),
+            eligible_objective_dimensions: vec![id("dimension:truth")],
+            content_digest: digest("factor:storage-predecessor"),
+            source: FactorSource::GovernedInternal,
+            lifecycle: Lifecycle::Draft,
+        };
+        durable.register_factor(first.clone()).expect("persist predecessor");
+        let failed = PromptFactor {
+            factor_id: id("factor:storage-failed"),
+            content_digest: digest("factor:storage-failed"),
+            ..first
+        };
+        durable.fail_storage_full_before_rename_once();
+        assert!(matches!(
+            durable.register_factor(failed.clone()),
+            Err(DurableRegistryError::StorageFull)
+        ));
+        assert!(durable
+            .registry()
+            .expect("live predecessor")
+            .factor(&failed.factor_id)
+            .is_none());
+        assert!(!durable.requires_reopen());
+        drop(durable);
+
+        let reopened =
+            DurablePromptRegistry::open_state_dir(&root, 64).expect("reopen predecessor");
+        assert!(reopened
+            .registry()
+            .expect("registry")
+            .factor(&failed.factor_id)
+            .is_none());
+    }
+
+    #[test]
+    fn truncated_state_fails_closed_on_reopen() {
+        let temporary = tempfile::tempdir().expect("tempdir");
+        let root = temporary.path().join("registry-truncated");
+        let factor = PromptFactor {
+            factor_id: id("factor:truncate"),
+            proposer_id: id("proposer:truncate"),
+            semantic_version: id("v1"),
+            semantic_purpose: "truncate corruption".to_owned(),
+            authority_class: "registered_prompt_factor".to_owned(),
+            eligible_objective_dimensions: vec![id("dimension:truth")],
+            content_digest: digest("factor:truncate"),
+            source: FactorSource::GovernedInternal,
+            lifecycle: Lifecycle::Draft,
+        };
+        {
+            let mut durable =
+                DurablePromptRegistry::open_state_dir(&root, 64).expect("initialize registry");
+            durable.register_factor(factor).expect("persist factor");
+        }
+        let path = root.join("registry.json");
+        let bytes = std::fs::read(&path).expect("state bytes");
+        std::fs::write(&path, &bytes[..bytes.len() / 2]).expect("truncate state");
+        assert!(matches!(
+            DurablePromptRegistry::open_state_dir(&root, 64),
+            Err(DurableRegistryError::Corrupt)
+        ));
+    }
+
+    #[test]
+    fn failed_v1_migration_does_not_overwrite_predecessor_bytes() {
+        let temporary = tempfile::tempdir().expect("tempdir");
+        let root = temporary.path().join("registry-bad-migration");
+        std::fs::DirBuilder::new()
+            .mode(0o700)
+            .create(&root)
+            .expect("state dir");
+        let stored = StoredV1 {
+            schema: 1,
+            revision: 4,
+            lifecycle_frontier: 4,
+            revocation_frontier: 0,
+            maximum_records: 64,
+            factors: vec![StoredFactor {
+                factor_id: "factor:invalid-revocation".to_owned(),
+                proposer_id: "proposer:migration".to_owned(),
+                semantic_version: "v1".to_owned(),
+                semantic_purpose: String::new(),
+                authority_class: String::new(),
+                eligible_objective_dimensions: Vec::new(),
+                content_digest: digest("factor:invalid-revocation").into_array(),
+                source: 0,
+                lifecycle: 3,
+            }],
+            realizations: Vec::new(),
+            bindings: Vec::new(),
+        };
+        let bytes = serde_json::to_vec(&stored).expect("serialize invalid legacy state");
+        let path = root.join("registry.json");
+        let mut file = std::fs::OpenOptions::new()
+            .create_new(true)
+            .write(true)
+            .mode(0o600)
+            .open(&path)
+            .expect("legacy state");
+        file.write_all(&bytes).expect("legacy bytes");
+        file.sync_all().expect("legacy fsync");
+        drop(file);
+
+        assert!(matches!(
+            DurablePromptRegistry::open_state_dir(&root, 64),
+            Err(DurableRegistryError::Corrupt)
+        ));
+        assert_eq!(std::fs::read(path).expect("predecessor bytes"), bytes);
+    }
+
+    #[test]
+    fn exact_state_backup_restores_without_resurrection_or_digest_drift() {
+        let temporary = tempfile::tempdir().expect("tempdir");
+        let source_root = temporary.path().join("registry-source");
+        let restore_root = temporary.path().join("registry-restore");
+        let factor = PromptFactor {
+            factor_id: id("factor:backup"),
+            proposer_id: id("proposer:backup"),
+            semantic_version: id("v1"),
+            semantic_purpose: "backup restore".to_owned(),
+            authority_class: "registered_prompt_factor".to_owned(),
+            eligible_objective_dimensions: vec![id("dimension:truth")],
+            content_digest: digest("factor:backup"),
+            source: FactorSource::GovernedInternal,
+            lifecycle: Lifecycle::Draft,
+        };
+        let expected_digest = {
+            let mut durable =
+                DurablePromptRegistry::open_state_dir(&source_root, 64).expect("source owner");
+            durable.register_factor(factor.clone()).expect("persist factor");
+            durable
+                .revoke_factor(
+                    &factor.factor_id,
+                    &id("actor:backup"),
+                    digest("reason:backup"),
+                    7,
+                )
+                .expect("revoke factor");
+            durable.registry().expect("registry").snapshot_digest()
+        };
+        std::fs::DirBuilder::new()
+            .mode(0o700)
+            .create(&restore_root)
+            .expect("restore dir");
+        std::fs::copy(
+            source_root.join("registry.json"),
+            restore_root.join("registry.json"),
+        )
+        .expect("copy backup");
+
+        let restored =
+            DurablePromptRegistry::open_state_dir(&restore_root, 64).expect("restore owner");
+        let registry = restored.registry().expect("registry");
+        assert_eq!(registry.snapshot_digest(), expected_digest);
+        assert_eq!(
+            registry.factor(&factor.factor_id).map(|record| record.lifecycle),
+            Some(Lifecycle::Revoked)
+        );
+        assert_ne!(registry.revocation_frontier(), 0);
     }
 
     #[test]
