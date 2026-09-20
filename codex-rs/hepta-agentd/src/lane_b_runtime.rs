@@ -97,12 +97,22 @@ pub struct RunReceipt {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LearningDecisionBindingV3 {
+    pub episode_id: StableId,
+    pub event_digest: Digest32,
+    pub chain_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct IntelligenceRunReceiptV3 {
     pub composition: LaneFCompositionReceiptV3,
     pub runtime: Option<RunReceipt>,
     /// Present only for the native product caller after the real durable
     /// LearningRecorded append succeeds.
     pub durable_decision_chain_digest: Option<Digest32>,
+    /// Exact owner-observed Decision binding used to authorize a later
+    /// terminal Outcome/Credit closure for this run.
+    pub learning_decision: Option<LearningDecisionBindingV3>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -143,6 +153,8 @@ pub enum AgentRunError {
     InvalidIntelligenceEnvelope,
     IntelligenceCompositionFailed,
     TerminalObservationRequired,
+    LearningDecisionBindingRequired,
+    LearningDecisionBindingMismatch,
     ArithmeticOverflow,
 }
 
@@ -153,6 +165,7 @@ struct RunRecord {
     phase: RunPhase,
     context_digest: Option<String>,
     compilation_receipt_digest: Option<String>,
+    learning_decision: Option<LearningDecisionBindingV3>,
 }
 
 /// Owner-local Lane B coordinator for Agentd.
@@ -369,6 +382,7 @@ impl AgentRunCoordinator {
             phase: RunPhase::Admitted,
             context_digest: None,
             compilation_receipt_digest: None,
+            learning_decision: None,
         };
         let result = receipt(&record, /*idempotent*/ false);
         self.runs.insert(snapshot.run_id, record);
@@ -529,6 +543,7 @@ impl AgentRunCoordinator {
             composition,
             runtime,
             durable_decision_chain_digest: None,
+            learning_decision: None,
         })
     }
 
@@ -565,6 +580,8 @@ impl AgentRunCoordinator {
         expected_ledger_head: Digest32,
         control: &C,
     ) -> Result<IntelligenceRunReceiptV3, AgentRunError> {
+        let run_id = request.run_id.clone();
+        let episode_id = inputs.learning.episode_id.clone();
         let mut ports = NativeV3OwnerPorts::new(
             inputs,
             ledger,
@@ -578,9 +595,59 @@ impl AgentRunCoordinator {
             control,
             Some(current_snapshot_provider),
         )?;
-        receipt.durable_decision_chain_digest =
-            ports.learning_append().map(|append| append.chain_digest);
+        if let Some(append) = ports.learning_append().cloned() {
+            let binding = LearningDecisionBindingV3 {
+                episode_id,
+                event_digest: append.event_digest,
+                chain_digest: append.chain_digest,
+            };
+            self.bind_learning_decision(run_id.as_str(), binding.clone())?;
+            receipt.runtime = self.run(run_id.as_str());
+            receipt.durable_decision_chain_digest = Some(binding.chain_digest);
+            receipt.learning_decision = Some(binding);
+        }
         Ok(receipt)
+    }
+
+    fn bind_learning_decision(
+        &mut self,
+        run_id: &str,
+        binding: LearningDecisionBindingV3,
+    ) -> Result<(), AgentRunError> {
+        if binding.event_digest.is_zero() || binding.chain_digest.is_zero() {
+            return Err(AgentRunError::LearningDecisionBindingMismatch);
+        }
+        let record = self
+            .runs
+            .get_mut(run_id)
+            .ok_or(AgentRunError::RunNotFound)?;
+        if let Some(existing) = &record.learning_decision {
+            return if existing == &binding {
+                Ok(())
+            } else {
+                Err(AgentRunError::LearningDecisionBindingMismatch)
+            };
+        }
+        record.learning_decision = Some(binding);
+        advance_revision(record)?;
+        Ok(())
+    }
+
+    fn require_learning_closure_binding(
+        &self,
+        run_id: &str,
+        episode_id: &StableId,
+        expected_ledger_head: Digest32,
+    ) -> Result<(), AgentRunError> {
+        let record = self.runs.get(run_id).ok_or(AgentRunError::RunNotFound)?;
+        let binding = record
+            .learning_decision
+            .as_ref()
+            .ok_or(AgentRunError::LearningDecisionBindingRequired)?;
+        if &binding.episode_id != episode_id || binding.chain_digest != expected_ledger_head {
+            return Err(AgentRunError::LearningDecisionBindingMismatch);
+        }
+        Ok(())
     }
 
     pub fn mark_dispatched(
@@ -698,6 +765,12 @@ impl AgentRunCoordinator {
                 AgentRunError::InvalidIdentity("intelligence closure run"),
             ));
         }
+        self.require_learning_closure_binding(
+            run_id,
+            &closure.episode_id,
+            closure.expected_ledger_head,
+        )
+        .map_err(IntelligenceTerminalClosureErrorV3::Runtime)?;
         let runtime = self
             .observe_terminal(run_id, expected_revision, phase, true)
             .map_err(IntelligenceTerminalClosureErrorV3::Runtime)?;
