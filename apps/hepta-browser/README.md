@@ -60,7 +60,7 @@ node --test apps/hepta-browser/test/*.test.js
 node --check apps/hepta-browser/src/*.js
 ```
 
-Cross-owner Agentd qualification additionally runs the real `FinalUseAuthority` Browser handoff tests and compiles/lints the named `hepta-agentd-browser` caller. The current-pin worker gate runs `cargo check --locked` plus worker unit tests, the full Browser tests, the real Bubblewrap probe, two release builds, byte equality, dynamic-library closure, real worker smoke, deterministic SPDX SBOM and a checksum-bound build receipt. The trusted main-only target gate accepts only a successful exact-main worker-build run with a reviewed committed `Cargo.lock`, and rehashes the lock, worker, SBOM and source tree before target qualification.
+Cross-owner Agentd qualification additionally runs the real `FinalUseAuthority` Browser handoff tests, including a real protected-file revocation-feed race, and compiles/lints the named `hepta-agentd-browser` caller. The current-pin worker gate runs `cargo check --locked` plus worker unit tests, the full Browser tests, the real Bubblewrap probe, two release builds, byte equality, dynamic-library closure, real worker smoke, a real worker revocation-boundary race, two-profile cookie/localStorage/HTTP-cache isolation, no-nonloopback-listener inspection, bounded RSS/FD soak, deterministic SPDX SBOM and a checksum-bound build receipt. The trusted main-only target gate accepts only a successful exact-main worker-build run with a reviewed committed `Cargo.lock`, rehashes the lock/worker/SBOM/source tree and reruns the target isolation/capacity oracles before qualification.
 
 For the exact completion boundary see `docs/modules/browser.servo/TECHNICAL.md`, `docs/modules/browser.servo/SERVO_WORKER.md`, `docs/modules/browser.servo/IMPLEMENTATION_MAP.json` and `qualification/module-execution-dossiers/detail/browser.servo.md`.
 
@@ -101,11 +101,13 @@ The selected upstream Servo qualification candidate is
 
 
 The real qualification path also proves that one profile actually retains its
-own cookie before asserting that a second simultaneous profile does not receive
-it. The same E2E checks forbidden subresources and redirects, while the broker
-unit suite binds HTTPS CONNECT to the exact granted authority and port. A
-32-cycle real-worker soak records RSS and file-descriptor bounds. Target-host
-execution receipts remain distinct from these source oracles.
+own cookie and localStorage state and reuses its own HTTP cache entry before
+asserting that a second simultaneous profile receives none of A's cookie/storage/cache
+state. The same E2E checks forbidden subresources and redirects plus absence of
+non-loopback worker listeners, while the broker unit suite binds HTTPS CONNECT
+to the exact granted authority and port. A 32-cycle real-worker soak hard-fails
+above +512 MiB peak RSS, +256 MiB terminal RSS or +32 FDs. Target-host execution
+receipts remain distinct from these source oracles.
 
 
 ## Current product platform scope

@@ -63,7 +63,7 @@ Agentd verifies that challenge against the independently signed final-use bindin
 
 A successful pipe write is not the final-use boundary. Only the worker-side admission ACK releases the revocation fence as crossed, so queue wait and final worker-side stale-state validation remain inside the live revocation fence. Worker/page/business terminality after admission is a separate observation and reconciliation claim.
 
-A concurrent revocation update cannot become current between final-use validation and worker admission. The product race oracle updates the real protected feed file while a Browser effect holds `FinalUseAuthority`; the background feed remains at the old revision until the real worker boundary releases the same fence, then advances the revision. Agentd never waits forever while holding that fence: the parent private channel has hard bounded frame read/write deadlines derived from the bounded Browser driver timeout. If the Browser child stops consuming `authority_enter` or stops producing an admission/rejection boundary, the production transport signals termination of that child before returning `Indeterminate`; the existing parent-death sandbox contract then contains the worker, and target qualification separately verifies descendant cleanup. A worker-confirmed pre-dispatch rejection is a terminal failed/no-dispatch outcome; timeout, channel loss or other uncertainty without such proof remains indeterminate. A post-boundary timeout/error cannot make the operation identity fresh or authorize redispatch.
+A concurrent revocation update cannot become current between final-use validation and Browser admission. The Agentd race oracle updates the real owner-UID/single-link protected feed file while a Browser effect holds `FinalUseAuthority`; the background feed remains at the old revision until the Browser dispatch/rejection boundary releases the same fence, then advances the revision. The separate real-Servo E2E drives an actual worker and independently proves an authority revocation race remains blocked until that worker emits `dispatch_boundary`. Exact-head closure requires both results. Agentd never waits forever while holding that fence: the parent private channel has hard bounded frame read/write deadlines derived from the bounded Browser driver timeout. If the Browser child stops consuming `authority_enter` or stops producing an admission/rejection boundary, the production transport signals termination of that child before returning `Indeterminate`; the existing parent-death sandbox contract then contains the worker, and target qualification separately verifies descendant cleanup. A worker-confirmed pre-dispatch rejection is a terminal failed/no-dispatch outcome; timeout, channel loss or other uncertainty without such proof remains indeterminate. A post-boundary timeout/error cannot make the operation identity fresh or authorize redispatch.
 
 ## 4. Proposal provenance and typed action boundary
 
@@ -152,7 +152,7 @@ The reviewed candidate `Cargo.lock` is committed. The exact-head worker workflow
 
 `.github/workflows/hepta-browser-servo-deployment-qualification.yml` remains manual and main-only. It executes only the workflow-dispatch `github.sha` on `refs/heads/main`, verifies the referenced successful worker-build run came from the expected workflow on that exact main SHA, requires `cargoLockCommitted=true`, rehashes Cargo.lock/worker/SPDX/source tree, records kernel/Bubblewrap identity, reruns sandbox/worker checks and emits target execution evidence without self-issuing operator acceptance, promotion or release.
 
-Still separately required where applicable: terminal-success reproducible worker artifact/SBOM receipt bound to the committed exact `Cargo.lock`; retained Linux target-host no-listener/egress/descendant enforcement evidence; cache/other persistent-storage isolation beyond the real two-profile cookie oracle; functional credential/upload/download implementations if admitted later; actual signed remote-business terminal observations from the configured independent observer where business terminality is claimed; longer target resource/soak policy beyond the bounded source oracle; and independent operator acceptance/promotion/release. macOS/Windows are not current target platforms; they require equivalent isolation implementations before entering qualified scope.
+Still separately required where applicable: terminal-success reproducible worker artifact/SBOM receipt bound to the committed exact `Cargo.lock`; retained Linux target-host no-listener/egress/descendant enforcement evidence; retained two-profile cookie/localStorage/HTTP-cache isolation evidence; functional credential/upload/download implementations if admitted later; actual signed remote-business terminal observations from the configured independent observer where business terminality is claimed; retained 32-cycle RSS/FD soak evidence under the selected hard growth ceilings; and independent operator acceptance/promotion/release. macOS/Windows are not current target platforms; they require equivalent isolation implementations before entering qualified scope.
 
 ## 12. Claim boundary
 
@@ -212,8 +212,9 @@ executing it again.
 The egress qualification suite separately checks exact HTTP origin admission,
 HTTPS CONNECT authority+port+ClientHello-SNI binding, forbidden subresource
 denial, effect-scoped denial of a redirect to a second profile-allowed origin,
-production denial of mapped/private address classes, and two-profile cookie
-isolation. The broker does not terminate TLS;
+production denial of mapped/private address classes, two-profile cookie/localStorage/HTTP-cache
+isolation, no non-loopback listener in the worker namespace, and bounded 32-cycle RSS/FD growth.
+The broker does not terminate TLS;
 after the pre-connect SNI admission check, Servo still performs end-to-end
 certificate and TLS validation inside the CONNECT tunnel.
 

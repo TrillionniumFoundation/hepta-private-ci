@@ -89,14 +89,14 @@ The current worker is one Servo / one WebView per profile generation. The pilot 
 
 - **BROWSER-01:** stale page/document/navigation/action-surface state cannot cross worker admission; every effect invalidates the prior observation and the next new effect requires a fresh observation.
 - **BROWSER-02:** page content cannot widen authority; typed action/worker protocol are closed-world; target Linux isolation probe denies direct external egress.
-- **BROWSER-03:** source allocates a fresh principal-bound private profile directory; real cross-principal cookie/cache/storage isolation remains a target-host Servo evidence gate.
+- **BROWSER-03:** source allocates a fresh principal-bound private profile directory; real-worker qualification proves A retains its own cookie/localStorage/cache entry while B receives neither A cookie/storage nor A cache state, with exact target-host retention still required.
 - **BROWSER-04:** durable intent precedes worker admission; a pipe write alone is not the final-use boundary; worker-confirmed pre-dispatch rejection is terminal failed/no-dispatch; post-boundary timeout/error remains indeterminate; process-loss recovery reconciles without redispatch.
 - **BROWSER-05:** proposal navigation ID/policy digest/expected revision are bound into the final effect identity.
 - **BROWSER-06:** `type.text`/credential bytes are absent from the durable journal.
 - **BROWSER-07:** worker response must echo exact request kind and payload digest; protocol drift fails the channel.
 - **BROWSER-08:** bounded mutation queue rejects overload instead of accumulating unbounded waiters.
 - **BROWSER-09:** journal hydration rejects malformed/unknown records; a torn final append recovers only the validated prefix; compaction/retirement crash cuts preserve operation identity and non-resurrection.
-- **BROWSER-10:** the persistent Agentd product owner consumes an owner-private monotonic revocation feed; a real feed update begun during final-use stays behind the same fence until worker admission and becomes current afterwards.
+- **BROWSER-10:** the persistent Agentd product owner consumes an owner-UID/single-link protected monotonic revocation feed; the Agentd boundary test proves a real feed update stays behind the same final-use fence, while the separate real-Servo E2E proves a revocation race stays blocked until an actual worker reaches dispatch admission.
 - **BROWSER-11:** a post-process-loss terminal result is accepted only with the configured observer's valid Ed25519 v2 receipt; observer substitution, outcome/signature drift and semantic substitution reject.
 - **BROWSER-12:** the operation journal stores `terminalEvidenceDigest` for authenticated recovered terminality while ordinary live-worker terminal observations may leave it null.
 
@@ -104,7 +104,7 @@ The current worker is one Servo / one WebView per profile generation. The pilot 
 
 Repository/source gates include complete Browser Node tests and JS syntax checks; exact current-pin worker `cargo check --locked` plus worker unit tests; real Bubblewrap sandbox probe; two deterministic release builds with byte equality; dynamic-library closure, worker smoke, worker SHA-256 and deterministic SPDX SBOM; real Agentd `FinalUseAuthority` handoff test, named caller compile and Clippy; and Lane-B exact-source and deterministic synthetic-merge checks.
 
-Still separately open until exact receipts exist: terminal-success exact-SHA reproducible worker artifact/SBOM bound to the committed worker `Cargo.lock`; independent Linux target-host no-listener/no-egress/descendant/profile isolation evidence; functional credential broker and upload/download terminal observers if enabled; actual signed remote-business terminal receipts where business terminality is claimed; target resource/soak measurements; independent operator acceptance, promotion and release. Linux is the current product target; macOS/Windows remain outside qualified scope until equivalent isolation launchers exist.
+Still separately open until exact receipts exist: terminal-success exact-SHA reproducible worker artifact/SBOM bound to the committed worker `Cargo.lock`; retained Linux target-host no-nonloopback-listener/no-egress/descendant evidence; retained cookie/localStorage/HTTP-cache profile isolation evidence; functional credential broker and upload/download terminal observers if enabled; actual signed remote-business terminal receipts where business terminality is claimed; retained RSS/FD soak measurements under the selected hard ceilings; independent operator acceptance, promotion and release. Linux is the current product target; macOS/Windows remain outside qualified scope until equivalent isolation launchers exist.
 
 These are evidence/activation gates, not permission to weaken source semantics. The repository candidate must remain truthful while they are open.
 
@@ -133,3 +133,6 @@ independent acceptance, promotion and release remain external gates.
 ## 12. Current platform and concurrency boundary
 
 The active deployment design is Linux-only and fails closed on non-Linux hosts. The worker pool's 16-profile default is resident capacity; Agentd's private Browser parent port remains one-in-flight, so cross-profile parent RPCs may head-of-line block. Multiplexing is deliberately deferred until after correctness and exact-host qualification and would require a separately versioned protocol/evidence set.
+
+- **BROWSER-13:** real-worker qualification inspects the worker network namespace and rejects every listening socket not bound to IPv4/IPv6 loopback.
+- **BROWSER-14:** the 32-cycle real-worker soak fails if peak RSS grows by more than 512 MiB, terminal RSS by more than 256 MiB, or FDs by more than 32 over the first sample.

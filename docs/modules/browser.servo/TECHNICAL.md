@@ -186,7 +186,7 @@ The normal product topology is now the long-running Agentd process owning one pe
 
 Documentation completion requires current guide/map/dossier and closed-world validation. Source completion requires exact source plus candidate tests. Composition source now includes a named Agentd caller and live final-use handoff. Qualification requires the exact worker/build/host tuple and current CI receipts. Independent acceptance, activation, promotion and release remain separately governed.
 
-The current candidate may claim hardened Browser owner source; real current-pin Servo worker source; bounded semantic page observation source; strict durable recovery; private worker/parent protocols; Linux sandbox/probe source; and named Agentd caller source. It may **not** claim a reproducibly qualified worker artifact, deployed target-host isolation, long-running production activation, functional secret broker, real remote business terminality, independent operator acceptance, promotion or release.
+The current candidate may claim hardened Browser owner source; real current-pin Servo worker source; bounded semantic page observation source; strict durable recovery; private worker/parent protocols; Linux sandbox/probe source; persistent Agentd ownership with owner-UID/single-link protected live revocation feed; signed persisted-terminal observer verification; and named Agentd caller source. It may **not** claim a reproducibly qualified worker artifact, deployed target-host isolation, long-running production activation, functional secret broker, real remote business terminality, independent operator acceptance, promotion or release.
 
 ## 16. V8.2 pre-coding implementation-readiness overlay
 
@@ -247,8 +247,8 @@ in [SERVO_PIN_AUDIT.md](SERVO_PIN_AUDIT.md). The reviewed candidate lock is comm
 deployment until exact-head locked build, real-E2E, reproducibility/SBOM and
 target evidence are terminal-success.
 
-External gates still include target-host enforcement, cross-profile cookie/cache
-isolation, target soak/resource measurements, platform equivalents where
+External gates still include target-host enforcement, retained cross-profile cookie/localStorage/cache
+isolation evidence, target soak/resource measurements, platform equivalents where
 targeted, independently trusted remote business terminal observations, operator
 acceptance, promotion and release.
 
@@ -264,11 +264,18 @@ consume trusted recovery evidence without redispatch.
 The real Browser qualification path also checks HTTP subresource escape, a
 redirect to a second profile-allowed origin that is outside the current effect
 destination grant, exact HTTPS CONNECT authority/port/ClientHello-SNI admission,
-same-profile cookie persistence, cross-profile cookie isolation, and a 32-cycle
-worker RSS/FD soak. These are source qualification
-oracles until an exact target-host run produces retained evidence.
+same-profile cookie persistence, cross-profile cookie/localStorage/HTTP-cache isolation,
+absence of non-loopback worker listeners, and a 32-cycle worker RSS/FD soak with
+hard peak/terminal RSS-growth ceilings of 512 MiB / 256 MiB and FD-growth ceiling
+of +32. These are source qualification oracles until an exact target-host run
+produces retained evidence.
 
 
 ### Current platform scope
 
 The repository product launcher is intentionally **Linux-only** at this stage: `agentd-service-main.js` rejects non-Linux hosts and the qualified isolation design is Bubblewrap + prlimit. macOS and Windows are outside the current qualified deployment scope; they may enter scope only after equivalent filesystem/network/process/resource isolation adapters and exact-host evidence exist. The 16-profile pool is resident worker capacity, while the current parent Browser port remains one-in-flight; parent RPC multiplexing is a later capacity design and is not required to claim the current serialized control semantics.
+
+
+### Revocation race evidence split
+
+The Agentd final-use suite updates the real owner-private `hepta.browser.revocation-feed.v1` file and proves its monotonic revision cannot advance through the same `FinalUseAuthority` fence before the Browser dispatch/rejection boundary. Separately, the real-Servo E2E proves a revocation race against an actual worker stays blocked until that worker reaches `dispatch_boundary`. Exact-head closure requires both receipts; neither is substituted for the other.

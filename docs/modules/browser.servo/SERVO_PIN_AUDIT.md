@@ -140,20 +140,22 @@ when one exact source SHA establishes all of the following:
    observe -> close` E2E;
 5. grant-scoped egress permits the admitted origin, binds HTTPS CONNECT to the
    exact authority/port, and denies ungranted subresource and redirect targets;
-6. two simultaneous profiles prove cookie persistence within A and absence of
-   A's cookie in B;
+6. two simultaneous profiles prove cookie and localStorage persistence within A,
+   absence of A's cookie/storage in B, and an HTTP cache entry is reused by A
+   but fetched independently by B;
 7. a revocation update started after final-use entry remains blocked until the
    real Servo worker reaches the dispatch admission boundary;
-8. crash recovery remains indeterminate until an exact trusted persisted-effect
-   receipt is supplied;
-9. a bounded 32-cycle real-worker RSS/FD soak completes without unbounded FD
-   growth;
-10. two release builds are byte-identical;
-11. dynamic-library closure, deterministic SPDX 2.3 SBOM and checksummed build
+8. crash recovery remains indeterminate until an exact Ed25519-authenticated
+   persisted-effect v2 receipt from the configured observer is supplied;
+9. the worker namespace exposes no non-loopback listening socket;
+10. a bounded 32-cycle real-worker RSS/FD soak stays under +512 MiB peak RSS,
+    +256 MiB terminal RSS and +32 FD growth;
+11. two release builds are byte-identical;
+12. dynamic-library closure, deterministic SPDX 2.3 SBOM and checksummed build
     receipt are retained;
-12. the committed candidate `Cargo.lock` matches the selected dependency graph
+13. the committed candidate `Cargo.lock` matches the selected dependency graph
     and the exact-head build receipt reports `cargoLockCommitted=true` before
     trusted target deployment qualification.
 
-Target-host soak, cross-profile storage isolation, independent operator
+Target-host retention of the above isolation/soak receipts, independent operator
 acceptance, promotion and release remain separate evidence/decision gates.
