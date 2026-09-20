@@ -23,6 +23,7 @@ const MAGIC: &[u8; 8] = b"HEPTRS01";
 const HEADER: usize = 72;
 const FRAME_OVERHEAD: usize = 112;
 const RECORD_DOMAIN: &[u8] = b"hepta.run-start-record.v1";
+const CONFLICT_RECORD_DOMAIN: &[u8] = b"hepta.run-start-conflict.v1";
 const CHAIN_DOMAIN: &[u8] = b"hepta.run-start-chain.v1";
 const MAX_RECORDS: usize = 4096;
 const MAX_OBJECTIVE_SEMANTIC_BYTES: usize = 256 * 1024;
@@ -86,6 +87,21 @@ pub struct RunStartRecordV1 {
     pub objective_semantic_bytes: Vec<u8>,
 }
 
+/// Durable hard-conflict outcome for an authenticated objective admission.
+///
+/// Conflict receipts do not create a runtime snapshot. They still consume the
+/// same durable run identity and signed replay sequence so restart/retry cannot
+/// forget that the exact admitted request terminated in a hard conflict.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct RunStartConflictRecordV1 {
+    pub authentication: RunStartAuthenticationV1,
+    pub admission: RunStartAdmissionBindingV1,
+    pub run_id: StableId,
+    pub runtime_body_digest: Digest32,
+    pub conflict_digest: Digest32,
+    pub conflict_receipt_bytes: Vec<u8>,
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum RunStartAppendDisposition {
     Appended,
@@ -147,12 +163,34 @@ impl From<io::Error> for RunStartStoreError {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+enum StoredRunStartRecord {
+    Run(RunStartRecordV1),
+    Conflict(RunStartConflictRecordV1),
+}
+
+impl StoredRunStartRecord {
+    fn run_id(&self) -> &StableId {
+        match self {
+            Self::Run(record) => &record.snapshot.run_id,
+            Self::Conflict(record) => &record.run_id,
+        }
+    }
+
+    fn authentication(&self) -> &RunStartAuthenticationV1 {
+        match self {
+            Self::Run(record) => &record.authentication,
+            Self::Conflict(record) => &record.authentication,
+        }
+    }
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 struct StoredRunStart {
     sequence: u64,
     predecessor_chain_digest: Digest32,
     record_digest: Digest32,
     chain_digest: Digest32,
-    record: RunStartRecordV1,
+    record: StoredRunStartRecord,
 }
 
 type ReplayedRunStarts = (Vec<StoredRunStart>, BTreeMap<StableId, usize>, u64, u64);
@@ -264,19 +302,43 @@ impl DurableRunStartJournal {
         expected_predecessor: Digest32,
         record: RunStartRecordV1,
     ) -> Result<RunStartAppendReceipt, RunStartStoreError> {
+        validate_record(&record)?;
+        self.append_outcome(expected_predecessor, StoredRunStartRecord::Run(record))
+    }
+
+    /// Append a durable hard-conflict outcome through the same predecessor
+    /// chain and run-identity index as successful run starts.
+    pub fn append_conflict(
+        &mut self,
+        expected_predecessor: Digest32,
+        record: RunStartConflictRecordV1,
+    ) -> Result<RunStartAppendReceipt, RunStartStoreError> {
+        validate_conflict_record(&record)?;
+        self.append_outcome(
+            expected_predecessor,
+            StoredRunStartRecord::Conflict(record),
+        )
+    }
+
+    fn append_outcome(
+        &mut self,
+        expected_predecessor: Digest32,
+        record: StoredRunStartRecord,
+    ) -> Result<RunStartAppendReceipt, RunStartStoreError> {
         if self.poisoned {
             return Err(RunStartStoreError::Poisoned);
         }
-        validate_record(&record)?;
-        let record_digest = Digest32::of_bytes(&encode_record(&record));
-        if let Some(index) = self.by_run.get(&record.snapshot.run_id).copied() {
+        let payload = encode_outcome_record(&record);
+        let record_digest = Digest32::of_bytes(&payload);
+        let run_id = record.run_id().clone();
+        if let Some(index) = self.by_run.get(&run_id).copied() {
             let existing = &self.records[index];
             if existing.record_digest != record_digest || existing.record != record {
                 return Err(RunStartStoreError::Conflict);
             }
             // Exact run identity is sufficient for idempotent replay even when
-            // later runs have advanced the journal head. The predecessor fence
-            // applies only to new appends.
+            // later outcomes have advanced the journal head. The predecessor
+            // fence applies only to new appends.
             return Ok(RunStartAppendReceipt {
                 disposition: RunStartAppendDisposition::IdempotentReplay,
                 sequence: existing.sequence,
@@ -318,8 +380,7 @@ impl DurableRunStartJournal {
             .and_then(|()| self.file.0.sync_all())
             .map_err(|_| RunStartStoreError::Indeterminate)?;
         let index = self.records.len();
-        self.by_run
-            .insert(stored.record.snapshot.run_id.clone(), index);
+        self.by_run.insert(run_id, index);
         self.records.push(stored);
         self.durable_length = next_length;
         self.poisoned = false;
@@ -335,7 +396,41 @@ impl DurableRunStartJournal {
         if self.poisoned {
             return Err(RunStartStoreError::Poisoned);
         }
-        Ok(self.records.iter().map(|value| &value.record).collect())
+        Ok(self
+            .records
+            .iter()
+            .filter_map(|value| match &value.record {
+                StoredRunStartRecord::Run(record) => Some(record),
+                StoredRunStartRecord::Conflict(_) => None,
+            })
+            .collect())
+    }
+
+    pub fn conflicts(&self) -> Result<Vec<&RunStartConflictRecordV1>, RunStartStoreError> {
+        if self.poisoned {
+            return Err(RunStartStoreError::Poisoned);
+        }
+        Ok(self
+            .records
+            .iter()
+            .filter_map(|value| match &value.record {
+                StoredRunStartRecord::Run(_) => None,
+                StoredRunStartRecord::Conflict(record) => Some(record),
+            })
+            .collect())
+    }
+
+    pub fn authentication_records(
+        &self,
+    ) -> Result<Vec<(&RunStartAuthenticationV1, &StableId)>, RunStartStoreError> {
+        if self.poisoned {
+            return Err(RunStartStoreError::Poisoned);
+        }
+        Ok(self
+            .records
+            .iter()
+            .map(|value| (value.record.authentication(), value.record.run_id()))
+            .collect())
     }
 
     pub fn get(&self, run_id: &StableId) -> Result<Option<&RunStartRecordV1>, RunStartStoreError> {
@@ -346,7 +441,27 @@ impl DurableRunStartJournal {
             .by_run
             .get(run_id)
             .and_then(|index| self.records.get(*index))
-            .map(|value| &value.record))
+            .and_then(|value| match &value.record {
+                StoredRunStartRecord::Run(record) => Some(record),
+                StoredRunStartRecord::Conflict(_) => None,
+            }))
+    }
+
+    pub fn get_conflict(
+        &self,
+        run_id: &StableId,
+    ) -> Result<Option<&RunStartConflictRecordV1>, RunStartStoreError> {
+        if self.poisoned {
+            return Err(RunStartStoreError::Poisoned);
+        }
+        Ok(self
+            .by_run
+            .get(run_id)
+            .and_then(|index| self.records.get(*index))
+            .and_then(|value| match &value.record {
+                StoredRunStartRecord::Run(_) => None,
+                StoredRunStartRecord::Conflict(record) => Some(record),
+            }))
     }
 
     #[must_use]
@@ -370,6 +485,12 @@ pub trait RunStartJournal: sealed::Journal {
         expected_predecessor: Digest32,
         record: RunStartRecordV1,
     ) -> Result<RunStartAppendReceipt, RunStartStoreError>;
+
+    fn append_objective_conflict(
+        &mut self,
+        expected_predecessor: Digest32,
+        record: RunStartConflictRecordV1,
+    ) -> Result<RunStartAppendReceipt, RunStartStoreError>;
 }
 
 impl RunStartJournal for DurableRunStartJournal {
@@ -379,6 +500,14 @@ impl RunStartJournal for DurableRunStartJournal {
         record: RunStartRecordV1,
     ) -> Result<RunStartAppendReceipt, RunStartStoreError> {
         self.append(expected_predecessor, record)
+    }
+
+    fn append_objective_conflict(
+        &mut self,
+        expected_predecessor: Digest32,
+        record: RunStartConflictRecordV1,
+    ) -> Result<RunStartAppendReceipt, RunStartStoreError> {
+        self.append_conflict(expected_predecessor, record)
     }
 }
 
@@ -435,6 +564,54 @@ fn validate_record(record: &RunStartRecordV1) -> Result<(), RunStartStoreError> 
     Ok(())
 }
 
+fn validate_conflict_record(
+    record: &RunStartConflictRecordV1,
+) -> Result<(), RunStartStoreError> {
+    if record.authentication.key_epoch == 0
+        || record.authentication.sequence == 0
+        || record.authentication.expires_at_ms == 0
+        || record
+            .authentication
+            .signature
+            .iter()
+            .all(|byte| *byte == 0)
+    {
+        return Err(RunStartStoreError::InvalidSnapshot("authentication"));
+    }
+    if record.admission.observed_at_unix_micros == 0
+        || record.admission.deadline_unix_micros <= record.admission.observed_at_unix_micros
+    {
+        return Err(RunStartStoreError::InvalidSnapshot("admissionTime"));
+    }
+    for (name, digest) in [
+        ("scopeDigest", record.authentication.scope_digest),
+        ("signedBodyDigest", record.authentication.signed_body_digest),
+        ("profileDigest", record.admission.profile_digest),
+        ("intentDigest", record.admission.intent_digest),
+        (
+            "admittedSourceDigest",
+            record.admission.admitted_source_digest,
+        ),
+        ("runtimeBodyDigest", record.runtime_body_digest),
+        ("conflictDigest", record.conflict_digest),
+    ] {
+        if digest.is_zero() {
+            return Err(RunStartStoreError::InvalidSnapshot(name));
+        }
+    }
+    if record.conflict_receipt_bytes.is_empty()
+        || record.conflict_receipt_bytes.len() > MAX_OBJECTIVE_SEMANTIC_BYTES
+    {
+        return Err(RunStartStoreError::InvalidSnapshot(
+            "conflictReceiptBytes",
+        ));
+    }
+    if Digest32::of_bytes(&record.conflict_receipt_bytes) != record.conflict_digest {
+        return Err(RunStartStoreError::ObjectiveDigestMismatch);
+    }
+    Ok(())
+}
+
 fn encode_record(record: &RunStartRecordV1) -> Vec<u8> {
     let snapshot = &record.snapshot;
     let mut bytes = RECORD_DOMAIN.to_vec();
@@ -472,6 +649,36 @@ fn encode_record(record: &RunStartRecordV1) -> Vec<u8> {
     push_len(&mut bytes, record.objective_semantic_bytes.len());
     bytes.extend_from_slice(&record.objective_semantic_bytes);
     bytes
+}
+
+fn encode_conflict_record(record: &RunStartConflictRecordV1) -> Vec<u8> {
+    let mut bytes = CONFLICT_RECORD_DOMAIN.to_vec();
+    push_id(&mut bytes, &record.authentication.issuer_id);
+    push_u64(&mut bytes, record.authentication.key_epoch);
+    push_id(&mut bytes, &record.authentication.message_id);
+    push_u64(&mut bytes, record.authentication.sequence);
+    push_u64(&mut bytes, record.authentication.expires_at_ms);
+    push_digest(&mut bytes, record.authentication.scope_digest);
+    push_digest(&mut bytes, record.authentication.signed_body_digest);
+    bytes.extend_from_slice(&record.authentication.signature);
+    push_digest(&mut bytes, record.admission.profile_digest);
+    push_digest(&mut bytes, record.admission.intent_digest);
+    push_digest(&mut bytes, record.admission.admitted_source_digest);
+    push_u64(&mut bytes, record.admission.observed_at_unix_micros);
+    push_u64(&mut bytes, record.admission.deadline_unix_micros);
+    push_id(&mut bytes, &record.run_id);
+    push_digest(&mut bytes, record.runtime_body_digest);
+    push_digest(&mut bytes, record.conflict_digest);
+    push_len(&mut bytes, record.conflict_receipt_bytes.len());
+    bytes.extend_from_slice(&record.conflict_receipt_bytes);
+    bytes
+}
+
+fn encode_outcome_record(record: &StoredRunStartRecord) -> Vec<u8> {
+    match record {
+        StoredRunStartRecord::Run(record) => encode_record(record),
+        StoredRunStartRecord::Conflict(record) => encode_conflict_record(record),
+    }
 }
 
 fn decode_record(input: &[u8]) -> Result<RunStartRecordV1, RunStartStoreError> {
@@ -535,8 +742,65 @@ fn decode_record(input: &[u8]) -> Result<RunStartRecordV1, RunStartStoreError> {
     Ok(record)
 }
 
+fn decode_conflict_record(
+    input: &[u8],
+) -> Result<RunStartConflictRecordV1, RunStartStoreError> {
+    let input = input
+        .strip_prefix(CONFLICT_RECORD_DOMAIN)
+        .ok_or(RunStartStoreError::Corrupt)?;
+    let mut reader = Reader(input);
+    let authentication = RunStartAuthenticationV1 {
+        issuer_id: reader.id()?,
+        key_epoch: reader.u64()?,
+        message_id: reader.id()?,
+        sequence: reader.u64()?,
+        expires_at_ms: reader.u64()?,
+        scope_digest: reader.digest()?,
+        signed_body_digest: reader.digest()?,
+        signature: reader
+            .bytes(64)?
+            .try_into()
+            .map_err(|_| RunStartStoreError::Corrupt)?,
+    };
+    let admission = RunStartAdmissionBindingV1 {
+        profile_digest: reader.digest()?,
+        intent_digest: reader.digest()?,
+        admitted_source_digest: reader.digest()?,
+        observed_at_unix_micros: reader.u64()?,
+        deadline_unix_micros: reader.u64()?,
+    };
+    let record = RunStartConflictRecordV1 {
+        authentication,
+        admission,
+        run_id: reader.id()?,
+        runtime_body_digest: reader.digest()?,
+        conflict_digest: reader.digest()?,
+        conflict_receipt_bytes: {
+            let length = reader.len()?;
+            if length == 0 || length > MAX_OBJECTIVE_SEMANTIC_BYTES {
+                return Err(RunStartStoreError::Corrupt);
+            }
+            reader.bytes(length)?.to_vec()
+        },
+    };
+    if !reader.0.is_empty() || validate_conflict_record(&record).is_err() {
+        return Err(RunStartStoreError::Corrupt);
+    }
+    Ok(record)
+}
+
+fn decode_outcome_record(input: &[u8]) -> Result<StoredRunStartRecord, RunStartStoreError> {
+    if input.starts_with(RECORD_DOMAIN) {
+        return decode_record(input).map(StoredRunStartRecord::Run);
+    }
+    if input.starts_with(CONFLICT_RECORD_DOMAIN) {
+        return decode_conflict_record(input).map(StoredRunStartRecord::Conflict);
+    }
+    Err(RunStartStoreError::Corrupt)
+}
+
 fn encode_frame(stored: &StoredRunStart) -> Result<Vec<u8>, RunStartStoreError> {
-    let payload = encode_record(&stored.record);
+    let payload = encode_outcome_record(&stored.record);
     if payload.len() > MAX_OBJECTIVE_SEMANTIC_BYTES + 1024 {
         return Err(RunStartStoreError::Capacity);
     }
@@ -630,8 +894,8 @@ fn replay_frames(
             return Err(RunStartStoreError::Corrupt);
         }
         let payload_end = 48 + size;
-        let record = decode_record(&frame[48..payload_end])?;
-        if by_run.contains_key(&record.snapshot.run_id) {
+        let record = decode_outcome_record(&frame[48..payload_end])?;
+        if by_run.contains_key(record.run_id()) {
             return Err(RunStartStoreError::Corrupt);
         }
         let record_digest = Digest32::of_bytes(&frame[48..payload_end]);
@@ -644,7 +908,7 @@ fn replay_frames(
             return Err(RunStartStoreError::Corrupt);
         }
         let index = records.len();
-        by_run.insert(record.snapshot.run_id.clone(), index);
+        by_run.insert(record.run_id().clone(), index);
         records.push(StoredRunStart {
             sequence,
             predecessor_chain_digest: predecessor,
