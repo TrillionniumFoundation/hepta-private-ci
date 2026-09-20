@@ -576,7 +576,7 @@ fn validate_input(
         input.input_digest,
     ]
     .iter()
-    .any(Digest32::is_zero)
+    .any(|digest| digest.is_zero())
         || input.temporal_drive_q24.len() != config.temporal_width
         || input.prediction_q24.len() != config.activation_width
         || input
