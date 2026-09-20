@@ -297,6 +297,7 @@ pub struct AgentSupervisorSnapshot {
     pub logs: Vec<ProcessLog>,
     pub(crate) control_revision: u64,
     pub(crate) restart_pending: bool,
+    pub(crate) restart_attempt: u32,
     pub(crate) release_state_generation: u64,
     pub(crate) runtime_phase: Option<ControlRuntimePhase>,
     pub(crate) runtime_release: Option<String>,
