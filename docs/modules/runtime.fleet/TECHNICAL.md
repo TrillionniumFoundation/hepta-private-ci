@@ -141,6 +141,8 @@ The [current native implementation](../../../qualification/module-execution-doss
 
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
+Release allowance revocation is durable: `FleetRegistry::revoke_release` removes the exact per-Agent allowance and synchronizes the owning release directory. Installed immutable bytes remain available for forensic provenance, but future `resolve_release`/release-selection admission fails closed until a separately authorized allowance is created again. This is the revocation primitive consumed by Supervisor rollback re-admission.
+
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
 ## 9. Security, privacy and threat controls
