@@ -262,6 +262,7 @@ impl DurableOperationLedger {
         intent_id: &StableId,
         owner_generation: Generation,
         acknowledgement_digest: Digest32,
+        now_ms: u64,
     ) -> Result<DurableOutboxRecord, OperationError> {
         if acknowledgement_digest.is_zero() {
             return Err(OperationError::InvalidDigest("outbox acknowledgement"));
@@ -277,9 +278,13 @@ impl DurableOperationLedger {
         let attempts = match current.state {
             DurableOutboxState::Claimed {
                 owner_generation: existing,
+                lease_expires_at_ms,
                 attempts,
+            } if existing == owner_generation && lease_expires_at_ms > now_ms => attempts,
+            DurableOutboxState::Claimed {
+                owner_generation: existing,
                 ..
-            } if existing == owner_generation => attempts,
+            } if existing == owner_generation => return Err(OperationError::StaleGeneration),
             DurableOutboxState::Claimed { .. } => return Err(OperationError::StaleGeneration),
             DurableOutboxState::Pending => return Err(OperationError::NotClaimed),
             DurableOutboxState::Acknowledged {
