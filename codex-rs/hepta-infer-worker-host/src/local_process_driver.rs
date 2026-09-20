@@ -72,6 +72,7 @@ pub struct LocalProcessDriverConfig {
     /// responsible for OS/filesystem/network/uid/cgroup/namespace/seccomp/LSM
     /// and device isolation; the worker binds it and the immutable CAS root.
     pub sandbox_launcher: Option<PathBuf>,
+    pub sandbox_launcher_digest: Option<String>,
     pub immutable_artifact_root: Option<PathBuf>,
     pub maximum_protocol_line_bytes: usize,
     /// Absolute ceiling for load/run/unload protocol responses. Per-request
@@ -86,6 +87,7 @@ impl LocalProcessDriverConfig {
             runtime_executable,
             models,
             sandbox_launcher: None,
+            sandbox_launcher_digest: None,
             immutable_artifact_root: None,
             maximum_protocol_line_bytes: DEFAULT_MAX_PROTOCOL_LINE_BYTES,
             response_timeout: DEFAULT_RESPONSE_TIMEOUT,
@@ -96,9 +98,11 @@ impl LocalProcessDriverConfig {
     pub fn with_production_isolation(
         mut self,
         sandbox_launcher: PathBuf,
+        sandbox_launcher_digest: String,
         immutable_artifact_root: PathBuf,
     ) -> Self {
         self.sandbox_launcher = Some(sandbox_launcher);
+        self.sandbox_launcher_digest = Some(sandbox_launcher_digest);
         self.immutable_artifact_root = Some(immutable_artifact_root);
         self
     }
@@ -150,9 +154,16 @@ impl LocalProcessDriver {
         {
             return Err(driver_error("invalid local runtime bounds"));
         }
-        if config.sandbox_launcher.is_some() != config.immutable_artifact_root.is_some() {
+        let isolation_fields = [
+            config.sandbox_launcher.is_some(),
+            config.sandbox_launcher_digest.is_some(),
+            config.immutable_artifact_root.is_some(),
+        ];
+        if isolation_fields.iter().any(|value| *value)
+            && isolation_fields.iter().any(|value| !*value)
+        {
             return Err(driver_error(
-                "sandbox launcher and immutable artifact root must be configured together",
+                "sandbox launcher, launcher digest and immutable artifact root must be configured together",
             ));
         }
         let runtime_executable =
@@ -166,8 +177,13 @@ impl LocalProcessDriver {
             }
             config.immutable_artifact_root = Some(fs::canonicalize(root).map_err(io_error)?);
         }
-        if let Some(launcher) = &config.sandbox_launcher {
-            let launcher = verify_regular_file(launcher, None, "sandbox launcher")?;
+        if let (Some(launcher), Some(digest), Some(root)) = (
+            &config.sandbox_launcher,
+            &config.sandbox_launcher_digest,
+            &config.immutable_artifact_root,
+        ) {
+            let launcher = verify_regular_file(launcher, Some(digest), "sandbox launcher")?;
+            verify_immutable_content_address(root, &launcher, digest, "sandbox launcher")?;
             #[cfg(unix)]
             {
                 use std::os::unix::fs::PermissionsExt;
@@ -272,10 +288,15 @@ impl LocalProcessDriver {
     }
 
     fn spawn_runtime(&self) -> Result<RuntimeProcess, Error> {
-        let mut command = if let (Some(launcher), Some(root)) = (
+        let mut command = if let (Some(launcher), Some(digest), Some(root)) = (
             &self.config.sandbox_launcher,
+            &self.config.sandbox_launcher_digest,
             &self.config.immutable_artifact_root,
         ) {
+            if sha256_file(launcher)? != *digest {
+                return Err(driver_error("sandbox launcher changed before execution"));
+            }
+            verify_immutable_content_address(root, launcher, digest, "sandbox launcher")?;
             let mut command = Command::new(launcher);
             command
                 .arg("--hepta-sandbox-v1")
@@ -580,6 +601,10 @@ impl ModelDriver for LocalProcessDriver {
             }
             break response;
         };
+        if cancel_sent {
+            process.terminate();
+            return Ok(indeterminate(process.observed_memory_bytes));
+        }
         if require_string(&response, "protocol", LOCAL_RUNTIME_PROTOCOL).is_err()
             || require_string(&response, "op", "run_result").is_err()
             || require_string(&response, "handle_id", &handle.opaque_id).is_err()
