@@ -224,6 +224,64 @@ fn pre_dispatch_stop_releases_without_claiming_provider_terminal() {
 }
 
 #[test]
+fn one_shot_pre_effect_abort_releases_only_the_live_write_ahead() {
+    let path = path("pre-effect-abort");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
+    let stopped = control
+        .abort_native_before_effect(token, "final-use denied before send".to_string())
+        .unwrap();
+    assert_eq!(stopped.state, NativeReservationState::Released);
+    assert_eq!(
+        stopped.pre_dispatch_stop.as_deref(),
+        Some("final-use denied before send")
+    );
+    assert_eq!(stopped.observation, None);
+    control.reserve_native(request("r2"), 1).unwrap();
+
+    drop(control);
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(reopened.native_record("r1"), Some(&stopped));
+    assert_eq!(
+        reopened.stop_native_before_dispatch("r1", "already stopped".to_string()),
+        Err(Error::InvalidTransition)
+    );
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
+fn lost_pre_effect_abort_token_becomes_reconcile_only_on_reopen() {
+    let path = path("pre-effect-recovery");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request("r1"), 1).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
+    drop(token);
+    drop(control);
+
+    let mut reopened = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(
+        reopened.native_record("r1").unwrap().state,
+        NativeReservationState::Dispatching
+    );
+    assert_eq!(
+        reopened.stop_native_before_dispatch("r1", "recovered".to_string()),
+        Err(Error::InvalidTransition)
+    );
+    assert_eq!(
+        reopened.reserve_native(request("r2"), 1),
+        Err(Error::CapacityExceeded)
+    );
+    drop(reopened);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn explicit_dispatch_rejection_releases_without_claiming_provider_terminal() {
     let path = path("dispatch-rejected");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
