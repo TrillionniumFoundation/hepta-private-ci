@@ -13,16 +13,21 @@ product host authenticates generator and immutable objective
   -> CandidateSetCompletenessReceiptV1 binds generator code, grammar,
      hard filters, deterministic truncation, canonical order and omission bound
   -> shadow or product policy emits one selected candidate and positive propensity
-  -> learning.ledger appends the immutable decision under its single writer
+  -> LedgerWriter authenticates the generator and durably appends one immutable
+     AuthenticatedDecisionV2 under the single learning.ledger owner
   -> effect owner or trusted observer authenticates independently from the generator
   -> AuthenticatedOutcomeV1 remains pending, censored or terminal according to
      OutcomeWatermarkV1; missing outcome never becomes zero
-  -> corrections name a predecessor and append new facts
+  -> LedgerWriter appends outcomes/corrections against the current linear
+     predecessor head; stale branches and forks fail closed
   -> independent allocator finalizes one CreditAllocationBatchV1 whose
-     allocations plus residual exactly equal the terminal outcome
-  -> learning.ledger freezes DatasetSnapshotV2 against an exact ledger head,
-     eligible frontier, outcome watermark, correction cut, revocation cut and
-     inclusion policy
+     allocations plus residual exactly equal the current terminal outcome, and
+     LedgerWriter commits the whole batch as one durable event
+  -> LedgerWriter derives source rows, eligible frontier, outcome watermark,
+     correction cut and revocation/unlearning cut from canonical replay and emits
+     the owner-native self-verifying DatasetSnapshotReceiptV3
+  -> canonical cross-module publication uses the registered DatasetSnapshotV1
+     compatibility adapter; V3 is not silently treated as an unregistered wire schema
 ```
 
 Linearization rules:
@@ -35,13 +40,16 @@ Linearization rules:
    censored outcome requires a reason but no invented value.
 4. Credit is published as a finalized batch. Individual allocations do not
    become authoritative before conservation succeeds.
-5. Dataset freeze sorts and deduplicates source record digests. The emitted
-   digest is independent of caller ordering and immutable for the bound cuts.
+5. Dataset freeze derives source rows and all cuts from current canonical replay;
+   callers cannot self-report those frontiers. The owner-native V3 receipt is
+   self-verifying, while the registered cross-module compatibility view remains
+   `DatasetSnapshotV1` until a V3 wire schema is explicitly registered.
 
 ## 2. Dataset to operator and world-model candidates
 
 ```text
-DatasetSnapshotV2
+verified owner-native DatasetSnapshotReceiptV3
+  -> adapt to registered DatasetSnapshotV1 for canonical cross-module exchange
   -> validate current objective, lineage and withdrawal state
   -> fit_transition_model builds an action-conditioned tabular baseline from
      independently observed rows
@@ -160,8 +168,9 @@ is never an implicit reuse of an expired grant or a stale backup marker.
 ## 6. Correction, deletion and non-resurrection
 
 ```text
-source owner appends correction or deletion tombstone
-  -> learning.ledger advances the correction/revocation cut
+source owner supplies authenticated correction or unlearning authority
+  -> LedgerWriter appends correction or explicit UnlearningLineageV1
+  -> learning.ledger advances the correction/revocation cut without rewriting history
   -> DatasetWithdrawalRegistry durably records the withdrawn dataset digest
   -> all directly matching artifacts are revoked
   -> lineage eligibility makes descendants unavailable
