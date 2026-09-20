@@ -174,6 +174,60 @@ fn missing_terminal_usage_can_be_completed_without_changing_the_outcome() {
 }
 
 #[test]
+fn authoritative_usage_reconciliation_is_exact_idempotent_and_durable() {
+    let path = path("authoritative-usage");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    start(&mut control, "r1");
+    control
+        .settle_native("r1", output(NativeRunStatus::Completed, None))
+        .unwrap();
+
+    let evidence = "d".repeat(64);
+    let reconciled = control
+        .reconcile_native_usage("r1", 27, evidence.clone())
+        .unwrap();
+    assert_eq!(reconciled.usage_evidence_digest, Some(evidence.clone()));
+    assert_eq!(
+        reconciled
+            .observation
+            .as_ref()
+            .unwrap()
+            .observed_output_tokens,
+        Some(27)
+    );
+    assert_eq!(
+        control
+            .reconcile_native_usage("r1", 27, evidence.clone())
+            .unwrap(),
+        reconciled
+    );
+    assert_eq!(
+        control.reconcile_native_usage("r1", 26, evidence),
+        Err(Error::Conflict)
+    );
+    assert_eq!(
+        control.reconcile_native_usage("r1", 27, "e".repeat(64)),
+        Err(Error::Conflict)
+    );
+
+    drop(control);
+    let control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert_eq!(control.native_record("r1"), Some(&reconciled));
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+
+    let path = path("usage-before-terminal");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    start(&mut control, "r1");
+    assert_eq!(
+        control.reconcile_native_usage("r1", 1, "f".repeat(64)),
+        Err(Error::TerminalObservationMissing)
+    );
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+#[test]
 fn pre_dispatch_stop_releases_without_claiming_provider_terminal() {
     let path = path("before");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
