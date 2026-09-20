@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "f278a89eea18fccb6d37b876aa5679863a64139d",
+    "tree": "5baa144717d4b3e3c596501fb56ce911d009e728"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "browser.servo",
@@ -120,5 +120,6 @@
   "sourceRoot": [
     "apps/hepta-browser",
     "third_party/servo-patches"
-  ]
+  ],
+  "sourceBasePolicy": "latest_declared_root_commit_v1"
 }

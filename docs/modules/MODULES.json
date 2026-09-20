@@ -333,6 +333,10 @@
         {
           "path": "codex-rs/hepta-fleet",
           "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-paths",
+          "mode": "exclusive"
         }
       ],
       "hotPathPolicy": {
@@ -349,7 +353,8 @@
       "source_root_present": true,
       "production_implementation": false,
       "sourceEvidenceRoots": [
-        "codex-rs/hepta-fleet"
+        "codex-rs/hepta-fleet",
+        "codex-rs/hepta-paths"
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "FLEET-1-ALLOCATION-CONTRACT",

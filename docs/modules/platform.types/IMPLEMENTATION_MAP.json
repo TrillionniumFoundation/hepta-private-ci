@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "eeaadb09061c6100f257e1bc5273803909bef32c",
+    "tree": "13c3fd6895fb4eabcc9a46213476b8d18ca13c18"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "platform.types",
@@ -18,9 +18,131 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "partially_composed",
   "productionWriterState": "not_established",
   "operations": [
+    {
+      "operation": "bounded_values",
+      "nativeSymbol": "BoundedText",
+      "sourcePath": "codex-rs/hepta-types/src/bounded.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/bounded_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "bounded_values",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "BoundedText",
+        "BoundedBytes"
+      ]
+    },
+    {
+      "operation": "stable_id",
+      "nativeSymbol": "StableId",
+      "sourcePath": "codex-rs/hepta-types/src/identity.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/identity_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "stable_id",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "StableId"
+      ],
+      "productCallers": [
+        "codex-rs/hepta-control-plane/src/organ_runtime.rs",
+        "codex-rs/hepta-runtime/src/organs.rs"
+      ]
+    },
+    {
+      "operation": "monotonic_identity",
+      "nativeSymbol": "Generation",
+      "sourcePath": "codex-rs/hepta-types/src/identity.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/identity_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "monotonic_identity",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "Generation",
+        "Revision",
+        "LogicalSequence"
+      ],
+      "productCallers": [
+        "codex-rs/hepta-control-plane/src/organ_runtime.rs",
+        "codex-rs/hepta-runtime/src/organs.rs"
+      ]
+    },
+    {
+      "operation": "digest32",
+      "nativeSymbol": "Digest32",
+      "sourcePath": "codex-rs/hepta-types/src/digest.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/digest_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "digest32",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "Digest32"
+      ],
+      "productCallers": [
+        "codex-rs/hepta-runtime/src/organs.rs"
+      ]
+    },
+    {
+      "operation": "non_authorizing_posture",
+      "nativeSymbol": "AuthorityPosture",
+      "sourcePath": "codex-rs/hepta-types/src/identity.rs",
+      "state": "source_implemented_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/identity_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "non_authorizing_posture",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "AuthorityPosture",
+        "NonAuthorizingPosture"
+      ],
+      "productCallers": [
+        "codex-rs/hepta-control-plane/src/organ_runtime.rs",
+        "codex-rs/hepta-runtime/src/organs.rs"
+      ]
+    },
+    {
+      "operation": "fixed_q32_probability",
+      "nativeSymbol": "FixedQ32",
+      "sourcePath": "codex-rs/hepta-types/src/fixed.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/fixed_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "fixed_q32_probability",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "publicSymbols": [
+        "FixedQ32",
+        "ProbabilityQ32"
+      ]
+    },
     {
       "operation": "validate_id",
       "nativeSymbol": "validate_id",
@@ -119,8 +241,9 @@
     }
   ],
   "repositoryControlledGaps": [
-    "Candidate-bound exact-head and deterministic synthetic-merge workflow receipts remain required for every changed source candidate.",
-    "Bind shared contracts to a named product consumer before changing the product-composition claim boundary."
+    "Compose canonical digest/registry and numeric-conversion surfaces into named product consumers before changing their capability-level composition state.",
+    "RandomStreamManifestV1, ExternalSystemManifestV1 and SensorCalibrationManifestV1 remain registry-owned target protocols with native source pending.",
+    "Run exact-head and deterministic synthetic-merge tests for the exact candidate."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -138,5 +261,7 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-types"
-  ]
+  ],
+  "productComposition": "partial_by_capability",
+  "sourceBasePolicy": "latest_declared_root_commit_v1"
 }

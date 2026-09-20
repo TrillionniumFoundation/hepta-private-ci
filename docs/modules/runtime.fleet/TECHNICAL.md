@@ -31,14 +31,17 @@ Plane `control`, kind `domain`, state model `stateful` and architecture role `ex
 Declared exclusive target roots:
 
 - `codex-rs/hepta-fleet`
+- `codex-rs/hepta-paths`
 
 Existing declared roots at this exact source snapshot:
 
 - `codex-rs/hepta-fleet`
+- `codex-rs/hepta-paths`
 
 Non-authoritative implementation evidence roots:
 
 - `codex-rs/hepta-fleet`
+- `codex-rs/hepta-paths`
 
 Declared roots not yet present:
 
@@ -47,6 +50,12 @@ None.
 `existing_bound` is a source-location fact: the declared roots exist. The source and test references below identify what can be inspected and invoked; only exact-candidate execution receipts establish that the checks passed. This status does not establish runtime composition, operator acceptance, selection, promotion or release. Any source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide together.
 
 ### Native source and scope
+
+`codex-rs/hepta-paths` is the module-owned typed path-geometry support root
+for state/fleet/agent layouts. It defines path identity and normalization only;
+it does not create stores, migrate schemas or acquire writer authority. Keeping
+it under `runtime.fleet` avoids making the pure `platform.types` foundation
+depend on runtime filesystem/environment geometry.
 
 The registered primary source is [codex-rs/hepta-fleet/src/registry.rs](../../../codex-rs/hepta-fleet/src/registry.rs); observed identifiers include `FleetRegistry`, `FleetSnapshot`, `AgentRecord`, `initialize`, `open_existing`, `register`. This is a source navigation binding, not proof that every target operation or production consumer exists. Read the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md#8-current-native-implementation) alongside the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.fleet.md) for the implemented subset and remaining product work.
 

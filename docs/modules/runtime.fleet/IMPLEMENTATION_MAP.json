@@ -2,17 +2,19 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "5b26176c53c6f69f8e06145c02bfc6e2c38cdb6b",
+    "tree": "4e597f5bf90fbdc06972d8b83f07ed07a199c19f"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.fleet",
   "sourceMaturity": "native_ledger_and_allocator",
   "declaredRoots": [
-    "codex-rs/hepta-fleet"
+    "codex-rs/hepta-fleet",
+    "codex-rs/hepta-paths"
   ],
   "resolvedRoots": [
-    "codex-rs/hepta-fleet"
+    "codex-rs/hepta-fleet",
+    "codex-rs/hepta-paths"
   ],
   "stateOwnerDisposition": "Owns coherent host enrollment and allocation-lease records; consumers enforce grants locally.",
   "terminalObserverDisposition": "Current-fence reconciliation records the observed holder disposition; pure allocation arithmetic cannot self-attest use.",
@@ -118,6 +120,8 @@
   "deputy": "runtime-control",
   "technicalGuide": "docs/modules/runtime.fleet/TECHNICAL.md",
   "sourceRoot": [
-    "codex-rs/hepta-fleet"
-  ]
+    "codex-rs/hepta-fleet",
+    "codex-rs/hepta-paths"
+  ],
+  "sourceBasePolicy": "latest_declared_root_commit_v1"
 }

@@ -269,8 +269,8 @@
     "release": false
   },
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "3eb239b1bfc67a76756da46031a9b8fd7a941d98",
+    "tree": "5589db77441070c1a31ca3a6ac930ebcc3e46c5d"
   },
   "repositoryControlledGaps": [
     "Bind every operation to an authenticated consumer callsite and owner store.",
@@ -280,5 +280,6 @@
     "independent semantic review",
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
-  ]
+  ],
+  "sourceBasePolicy": "latest_declared_root_commit_v1"
 }

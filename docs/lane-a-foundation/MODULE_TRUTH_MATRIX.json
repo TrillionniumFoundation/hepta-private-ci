@@ -41,14 +41,17 @@
       },
       "currentCapabilities": [
         "bounded byte/text values",
-        "profiled stable identifiers, monotonic values and non-authorizing posture",
+        "profiled stable identifiers, monotonic values, digest primitive and non-authorizing posture",
         "canonical digest framing and immutable schema/normalization registry",
         "fixed-point probability and registry-gated numeric-signal conversion"
       ],
       "targetOnlyCapabilities": [
         "cross-language generated bindings",
         "ambient mutable runtime schema registry",
-        "production numeric-profile admission and named product composition"
+        "production numeric-profile admission and named product composition",
+        "RandomStreamManifestV1 registry ownership is target-only/source-pending",
+        "ExternalSystemManifestV1 registry ownership is target-only/source-pending",
+        "SensorCalibrationManifestV1 registry ownership is target-only/source-pending"
       ],
       "sourceAnchors": [
         {

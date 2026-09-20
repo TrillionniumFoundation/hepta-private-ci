@@ -5,7 +5,7 @@ Status: durable agent registry plus bounded in-memory capacity/lease component i
 
 ## 1. Source and work envelope
 
-Roots: `codex-rs/hepta-fleet`.
+Roots: `codex-rs/hepta-fleet`, `codex-rs/hepta-paths`.
 Packages: `FLEET-1-ALLOCATION-CONTRACT`.
 
 Operation signatures below describe the target contract. Section 8 identifies the implemented native subset and remaining integration; names in section 2 are not automatically native API symbols. Preserve existing stores and APIs; do not create another authority or execution spine.
@@ -46,6 +46,7 @@ Use all eighteen dossier receipt fields. Immediate revocation/stop remains effec
 ## 8. Current native implementation
 
 - **Implemented entrypoints:** `FleetRegistry` in [codex-rs/hepta-fleet/src/registry.rs](../../../codex-rs/hepta-fleet/src/registry.rs); `admit_host` in [codex-rs/hepta-fleet/src/lease_ledger.rs](../../../codex-rs/hepta-fleet/src/lease_ledger.rs); `renew_or_revoke` in [codex-rs/hepta-fleet/src/lease_ledger.rs](../../../codex-rs/hepta-fleet/src/lease_ledger.rs). Durable agent registry plus bounded in-memory capacity/lease component implemented.
+- **Typed path geometry:** `HeptaStateRoot`, `HeptaStateLayout`, `HeptaFleetRoot` and agent layouts in `codex-rs/hepta-paths`; these are authority-free path contracts, not durable writers.
 - **State and recovery:** FleetRegistry persists agent manifests and generation-specific lifecycle JSON under the existing fleet layout. The separate BTreeMap allocation ledger tracks resources/epoch/expiry and is not the durable grant authority.
 - **Source tests:** [codex-rs/hepta-fleet/src/registry_tests.rs](../../../codex-rs/hepta-fleet/src/registry_tests.rs), [codex-rs/hepta-fleet/src/lease_ledger_tests.rs](../../../codex-rs/hepta-fleet/src/lease_ledger_tests.rs). These are test identities, not execution receipts for this documentation revision.
 - **Implementation and operating references:** [docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json](../../../docs/modules/runtime.fleet/IMPLEMENTATION_MAP.json), [docs/readiness/LANE_B_RUNTIME_COMPOSITION.md](../../../docs/readiness/LANE_B_RUNTIME_COMPOSITION.md).

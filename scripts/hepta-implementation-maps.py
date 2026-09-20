@@ -24,6 +24,48 @@ def current_source_base() -> dict[str, str]:
     return {"commit": git("rev-parse", "HEAD"), "tree": git("rev-parse", "HEAD^{tree}")}
 
 
+SOURCE_BASE_POLICY = "latest_declared_root_commit_v1"
+
+
+def latest_module_source_base(module: dict) -> dict[str, str]:
+    """Bind a map to the newest commit that actually changed its source roots.
+
+    Implementation maps are committed source-navigation metadata, so embedding
+    the containing HEAD SHA would be self-referential.  Instead we bind each
+    module to the newest source-bearing commit reachable from HEAD and require
+    the module's resolved roots to be byte-identical from that commit through
+    the current candidate.
+    """
+    roots = resolve_source_roots(ROOT, module)
+    if not roots:
+        raise RuntimeError(f"{module['id']}: no resolved source roots")
+    commit = git("log", "-1", "--format=%H", "HEAD", "--", *roots)
+    if not commit:
+        raise RuntimeError(f"{module['id']}: no source-bearing commit")
+    return {
+        "commit": commit,
+        "tree": git("rev-parse", f"{commit}^{{tree}}"),
+    }
+
+
+def source_roots_match_head(module: dict, source_commit: str) -> bool:
+    """Return true only when no resolved source root drifted after source_commit."""
+    roots = resolve_source_roots(ROOT, module)
+    process = subprocess.run(
+        ["git", "diff", "--quiet", source_commit, "HEAD", "--", *roots],
+        cwd=ROOT,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if process.returncode not in (0, 1):
+        raise RuntimeError(
+            f"{module['id']}: git diff failed for source base {source_commit}: "
+            f"{process.stderr.strip()}"
+        )
+    return process.returncode == 0
+
+
 def load(rel: str):
     return json.loads((ROOT / rel).read_text(encoding="utf-8"))
 
@@ -91,6 +133,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "schema": "hepta.module-implementation-map.v3",
         "schemaVersion": 3,
         "sourceBase": source_base,
+        "sourceBasePolicy": SOURCE_BASE_POLICY,
         "laneId": lanes[mid],
         "module": mid,
         "owner": module["owner"],
@@ -181,7 +224,8 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
-            "sourceBase": row.get("sourceBase") or source_base,
+            "sourceBase": source_base,
+            "sourceBasePolicy": SOURCE_BASE_POLICY,
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -241,13 +285,13 @@ def migrate():
     modules = load("docs/modules/MODULES.json")["modules"]
     by_id = {m["id"]: m for m in modules}
     lanes = lane_by_module()
-    source_base = current_source_base()
     changed = []
     for path in sorted((ROOT / "docs/modules").glob("*/IMPLEMENTATION_MAP.json")):
         row = json.loads(path.read_text(encoding="utf-8"))
         module = by_id.get(row.get("module") or path.parent.name)
         if module is None:
             continue
+        source_base = latest_module_source_base(module)
         if (
             row.get("schema") == "hepta.module-implementation-map.v3"
             and row.get("schemaVersion") == 3
@@ -266,12 +310,9 @@ def migrate():
 def generate():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
-    source_base = {
-        "commit": git("rev-parse", "HEAD"),
-        "tree": git("rev-parse", "HEAD^{tree}"),
-    }
     written = []
     for module in modules:
+        source_base = latest_module_source_base(module)
         path = ROOT / f"docs/modules/{module['id']}/IMPLEMENTATION_MAP.json"
         if path.exists():
             continue
@@ -287,7 +328,7 @@ def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
     failures = []
-    source_bases = set()
+    candidate_source_base = current_source_base()
     for module in modules:
         mid = module["id"]
         path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
@@ -316,7 +357,20 @@ def verify():
         ):
             failures.append(f"{mid}: source base")
         else:
-            source_bases.add((source_base["commit"], source_base["tree"]))
+            try:
+                expected_source_base = latest_module_source_base(module)
+                if source_base != expected_source_base:
+                    failures.append(
+                        f"{mid}: source base drift "
+                        f"(map={source_base.get('commit')} expected="
+                        f"{expected_source_base['commit']})"
+                    )
+                elif not source_roots_match_head(module, source_base["commit"]):
+                    failures.append(f"{mid}: declared source roots drift after source base")
+            except (RuntimeError, subprocess.SubprocessError, ValueError, OSError) as exc:
+                failures.append(f"{mid}: source base verification failed: {exc}")
+        if row.get("sourceBasePolicy") != SOURCE_BASE_POLICY:
+            failures.append(f"{mid}: source base policy")
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
@@ -345,8 +399,6 @@ def verify():
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
-    if len(source_bases) != 1:
-        failures.append(f"maps: source base drift ({len(source_bases)} identities)")
     if failures:
         raise SystemExit("FAIL_HEPTA_IMPLEMENTATION_MAPS: " + "; ".join(failures))
     print(
@@ -356,6 +408,8 @@ def verify():
                 "modules": len(modules),
                 "maps": len(modules),
                 "productionImplementationProved": False,
+                "candidateSourceBase": candidate_source_base,
+                "sourceBasePolicy": SOURCE_BASE_POLICY,
             },
             sort_keys=True,
         )

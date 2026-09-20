@@ -527,6 +527,11 @@ This generated projection binds `platform.types` to the current canonical contra
 
 <!-- END GENERATED EXACT REGISTRY PROJECTION -->
 
+Registry ownership is not native implementation. In this candidate,
+`RandomStreamManifestV1` remains a registry-owned target protocol with
+`source_pending` native status in `codex-rs/hepta-types`; the generated
+projection above must not be read as a source-completion claim.
+
 ## 16. V8.2 pre-coding implementation-readiness overlay
 
 The canonical readiness overlay binds `platform.types` to primary lane `LANE-A-FOUNDATION`. The following implementation-level specifications are mandatory alongside Sections 1–15:
@@ -545,6 +550,11 @@ Consumed readiness protocols:
 
 - `ParallelLaneEnvelopeV1`
 
+`ExternalSystemManifestV1` and `SensorCalibrationManifestV1` are owned here
+at the readiness-registry level but remain `source_pending` as native
+`codex-rs/hepta-types` contracts. Registry ownership alone is not source
+implementation.
+
 Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
 
 ### Readiness implementation work packages
@@ -556,13 +566,34 @@ The following additional work packages are source-planning envelopes introduced 
 
 ## 17. Source implementation receipt
 
-This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
+This receipt records repository source bindings for the current documentation
+candidate. It is navigation evidence only; it does not claim activation,
+operator acceptance, promotion or release.
 
-| Operation | Native symbol | Source path | Tests |
-|---|---|---|---|
-| `rescale_signal` | `rescale_signal` | `codex-rs/hepta-types/src/numeric_conversion.rs` | `pending` |
-| `stableid` | `StableId` | `codex-rs/hepta-types/src/identity.rs` | `pending` |
+| Operation/surface | Native symbol | Source path | Tests | Product composition |
+|---|---|---|---|---|
+| bounded values | `BoundedText` / `BoundedBytes` | `codex-rs/hepta-types/src/bounded.rs` | `bounded_tests.rs` | not composed |
+| stable identity | `StableId` | `codex-rs/hepta-types/src/identity.rs` | `identity_tests.rs` | control-plane + runtime callers |
+| monotonic identity | `Generation` / `Revision` / `LogicalSequence` | `codex-rs/hepta-types/src/identity.rs` | `identity_tests.rs` | Generation used by control-plane + runtime |
+| raw digest | `Digest32` | `codex-rs/hepta-types/src/digest.rs` | `digest_tests.rs` | runtime caller |
+| non-authorizing posture | `AuthorityPosture` / `NonAuthorizingPosture` | `codex-rs/hepta-types/src/identity.rs` | `identity_tests.rs` | legacy deny-only posture used by control-plane + runtime |
+| fixed-point primitives | `FixedQ32` / `ProbabilityQ32` | `codex-rs/hepta-types/src/fixed.rs` | `fixed_tests.rs` | not composed |
+| profiled ID validation | `validate_id` | `codex-rs/hepta-types/src/identity.rs` | `identity_tests.rs` | not directly composed |
+| canonical semantic digest | `canonical_digest_v1` | `codex-rs/hepta-types/src/canonical_digest.rs` | Rust + Python + Node frozen vectors | not composed |
+| immutable definition registry | `ContractRegistryV1::require` | `codex-rs/hepta-types/src/registry.rs` | `registry_tests.rs` | not composed |
+| numeric conversion | `rescale_signal` | `codex-rs/hepta-types/src/numeric_conversion.rs` | `numeric_conversion_tests.rs` | not composed |
+| registry-gated numeric conversion | `rescale_signal_registered` | `codex-rs/hepta-types/src/numeric_conversion.rs` | `numeric_conversion_tests.rs` | not composed |
 
-- Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
-- Consumer callsites and durable owner stores remain an explicit follow-up when not listed above.
-- Production implementation, runtime composition, independent acceptance, activation, and release remain false until their separate evidence gates pass.
+The authoritative operation list and exact test paths are in
+`IMPLEMENTATION_MAP.json`. Its `sourceBase` uses
+`latest_declared_root_commit_v1`: the newest commit that actually changed the
+module's resolved source roots, with the verifier requiring zero source-root
+drift from that commit to the candidate HEAD. This avoids an impossible
+self-reference to the commit containing the map itself while still rejecting
+stale source mappings.
+
+`RandomStreamManifestV1`, `ExternalSystemManifestV1` and
+`SensorCalibrationManifestV1` remain registry-owned target protocols with
+native source pending. Production implementation, complete product composition,
+independent acceptance, activation and release remain false until their
+separate evidence gates pass.

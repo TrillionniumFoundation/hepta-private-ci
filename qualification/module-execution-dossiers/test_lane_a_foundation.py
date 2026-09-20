@@ -106,9 +106,10 @@ class LaneAFoundationTruthTests(unittest.TestCase):
                 with self.assertRaises(verify.VerificationError):
                     verify.validate_capability_map(self.matrix, value)
 
-    def test_unproven_production_caller_is_rejected(self) -> None:
+    def test_unregistered_production_caller_is_rejected(self) -> None:
         value = deepcopy(self.capability_map)
-        value["entries"][0]["productionCaller"] = "unproven-product"
+        value["entries"][0]["productionCaller"] = ["codex-rs/unregistered-product.rs"]
+        value["entries"][0]["productComposition"] = "named_product_callers"
         with self.assertRaises(verify.VerificationError):
             verify.validate_capability_map(self.matrix, value)
 

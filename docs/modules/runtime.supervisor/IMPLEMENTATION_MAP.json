@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "7027d6656cc04af3f2a07ade09a38a89a4fbfb1e",
+    "tree": "17f8283dd1792716cfe31f439b38ff96a626fdd5"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.supervisor",
@@ -140,5 +140,6 @@
   "technicalGuide": "docs/modules/runtime.supervisor/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-supervisor"
-  ]
+  ],
+  "sourceBasePolicy": "latest_declared_root_commit_v1"
 }

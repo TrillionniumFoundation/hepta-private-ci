@@ -8,6 +8,7 @@ import os
 import re
 import subprocess
 import sys
+import tomllib
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
@@ -93,6 +94,21 @@ def read_text(path: Path) -> str:
         raise VerificationError(f"cannot read UTF-8 {path}: {error}") from error
 
 
+def registered_product_callers(crate: str, root: Path = ROOT) -> set[str]:
+    manifest = tomllib.loads(
+        read_text(root / "codex-rs/hepta-contracts/CALLERS.toml")
+    )
+    for surface in manifest.get("surface", []):
+        if surface.get("crate") == crate:
+            callers = surface.get("product_callers")
+            if not isinstance(callers, list) or not all(
+                isinstance(path, str) and path for path in callers
+            ):
+                raise VerificationError(f"{crate}: invalid product caller manifest")
+            return set(callers)
+    raise VerificationError(f"{crate}: missing product caller manifest")
+
+
 def validate_anchor(owner: str, item: Any, root: Path = ROOT) -> None:
     if not isinstance(item, dict) or not isinstance(item.get("path"), str):
         raise VerificationError(f"{owner}: invalid source/test anchor")
@@ -155,8 +171,28 @@ def validate_capability_map(
             or row.get("activation") != state["activation"]
         ):
             raise VerificationError(f"{capability_id}: matrix state mismatch")
-        if row.get("productionCaller") is not None:
-            raise VerificationError(f"{capability_id}: unproven production caller")
+        callers = row.get("productionCaller")
+        composition = row.get("productComposition", "not_composed")
+        if callers is None:
+            if composition != "not_composed":
+                raise VerificationError(
+                    f"{capability_id}: product composition without named callers"
+                )
+        else:
+            if (
+                module != "platform.types"
+                or not isinstance(callers, list)
+                or not callers
+                or not all(isinstance(path, str) and path for path in callers)
+                or composition != "named_product_callers"
+            ):
+                raise VerificationError(f"{capability_id}: invalid product caller claim")
+            registered = registered_product_callers("codex-hepta-types", root)
+            for caller in callers:
+                if caller not in registered or not (root / caller).is_file():
+                    raise VerificationError(
+                        f"{capability_id}: unregistered product caller {caller}"
+                    )
         if row.get("receiptStatus") != "native_workflow_required":
             raise VerificationError(f"{capability_id}: invalid receipt status")
         symbols = row.get("publicSymbols")

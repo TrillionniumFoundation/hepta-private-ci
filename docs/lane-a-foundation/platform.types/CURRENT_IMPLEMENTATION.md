@@ -45,7 +45,13 @@ Neither type is an authority token.
 
 Generated cross-language bindings, an ambient mutable runtime schema registry,
 production numeric-profile admission and named product composition remain
-target-only. The repository now freezes a language-neutral canonical-digest
+target-only.
+
+The canonical registries also assign `RandomStreamManifestV1`,
+`ExternalSystemManifestV1` and `SensorCalibrationManifestV1` to
+`platform.types`. Those assignments are target ownership only: no native Rust
+type for those three protocols exists in `codex-rs/hepta-types` in this
+candidate, so all three remain `source_pending`. The repository now freezes a language-neutral canonical-digest
 vector and independently verifies it in Rust, Python and Node, but this does not
 claim generated bindings or a production consumer.
 

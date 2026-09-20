@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "7e8379b3954808d4138a7bd2f3773f75691291a3",
-    "tree": "ff9fa6baf95a35fd2f49816e0a80097688f2aeeb"
+    "commit": "f5cabb538b75c0b67da9e0988749b01d8402125a",
+    "tree": "b2793e2e10cc9565ffdb8ba21690c197d334a25b"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "secrets.heptabao",
@@ -69,5 +69,6 @@
   "sourceRoot": [
     "external/HeptaBao",
     "codex-rs/hepta-bao-adapter"
-  ]
+  ],
+  "sourceBasePolicy": "latest_declared_root_commit_v1"
 }

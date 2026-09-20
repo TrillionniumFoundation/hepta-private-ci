@@ -3,6 +3,7 @@
 import copy
 import importlib.util
 import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -104,6 +105,80 @@ class SourceRootTests(unittest.TestCase):
         )
         self.assertEqual(result["sourceBase"], source_base)
         self.assertFalse(result["claimBoundary"]["activation"])
+
+    def test_source_base_tracks_latest_source_commit_not_document_only_head(self):
+        repo = self.root / "repo"
+        repo.mkdir()
+        subprocess.run(["git", "init", "-q"], cwd=repo, check=True)
+        subprocess.run(["git", "config", "user.name", "Hepta Test"], cwd=repo, check=True)
+        subprocess.run(
+            ["git", "config", "user.email", "hepta-test@example.invalid"],
+            cwd=repo,
+            check=True,
+        )
+        source = repo / "source"
+        docs = repo / "docs"
+        source.mkdir()
+        docs.mkdir()
+        (source / "lib.rs").write_text("pub fn first() {}\n", encoding="utf-8")
+        subprocess.run(["git", "add", "."], cwd=repo, check=True)
+        subprocess.run(["git", "commit", "-qm", "source"], cwd=repo, check=True)
+        source_commit = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=repo,
+            text=True,
+            capture_output=True,
+            check=True,
+        ).stdout.strip()
+        source_tree = subprocess.run(
+            ["git", "rev-parse", "HEAD^{tree}"],
+            cwd=repo,
+            text=True,
+            capture_output=True,
+            check=True,
+        ).stdout.strip()
+
+        (docs / "guide.md").write_text("documentation only\n", encoding="utf-8")
+        subprocess.run(["git", "add", "."], cwd=repo, check=True)
+        subprocess.run(["git", "commit", "-qm", "docs"], cwd=repo, check=True)
+        docs_head = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            cwd=repo,
+            text=True,
+            capture_output=True,
+            check=True,
+        ).stdout.strip()
+        self.assertNotEqual(source_commit, docs_head)
+
+        spec = importlib.util.spec_from_file_location(
+            "implementation_maps_source_base",
+            Path(__file__).with_name("hepta-implementation-maps.py"),
+        )
+        maps = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(maps)
+        module = {"id": "fixture", "rootBindings": [{"path": "source"}]}
+        with mock.patch.object(maps, "ROOT", repo):
+            self.assertEqual(
+                maps.latest_module_source_base(module),
+                {"commit": source_commit, "tree": source_tree},
+            )
+            self.assertTrue(maps.source_roots_match_head(module, source_commit))
+
+            (source / "lib.rs").write_text("pub fn second() {}\n", encoding="utf-8")
+            subprocess.run(["git", "add", "."], cwd=repo, check=True)
+            subprocess.run(["git", "commit", "-qm", "source-2"], cwd=repo, check=True)
+            source_head = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=repo,
+                text=True,
+                capture_output=True,
+                check=True,
+            ).stdout.strip()
+            self.assertEqual(
+                maps.latest_module_source_base(module)["commit"],
+                source_head,
+            )
+            self.assertFalse(maps.source_roots_match_head(module, source_commit))
 
     def test_identity_version_and_authority_mismatches_reject(self):
         original = copy.deepcopy(self.binding)
