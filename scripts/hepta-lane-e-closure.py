@@ -453,11 +453,11 @@ def verify_product_writer_exclusivity(findings: Findings) -> None:
         "codex-rs/hepta-shadow-qualification",
     }
     forbidden = {
-        "DurableLearningJournal": "legacy durable journal trait",
-        "LedgerEvent::Decision": "raw V1 Decision append",
-        "LedgerEvent::Outcome": "raw V1 Outcome append",
-        "LedgerEvent::Credit": "raw V1 Credit append",
-        "LedgerEvent::Revocation": "raw V1 Revocation append",
+        r"\bDurableLearningJournal\b": "legacy durable journal trait",
+        r"LedgerEvent::Decision\b": "raw V1 Decision append",
+        r"LedgerEvent::Outcome\b": "raw V1 Outcome append",
+        r"LedgerEvent::Credit\b": "raw V1 Credit append",
+        r"LedgerEvent::Revocation\b": "raw V1 Revocation append",
     }
 
     for path in (ROOT / "codex-rs").rglob("*.rs"):
@@ -472,9 +472,9 @@ def verify_product_writer_exclusivity(findings: Findings) -> None:
             continue
 
         text = path.read_text(encoding="utf-8")
-        for token, description in forbidden.items():
+        for pattern, description in forbidden.items():
             findings.require(
-                token not in text,
+                re.search(pattern, text) is None,
                 "legacy_learning_writer_product_bypass",
                 f"{relative} uses {description}; product learning writes must use LedgerWriter",
             )
