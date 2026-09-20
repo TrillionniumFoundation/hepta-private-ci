@@ -811,11 +811,7 @@ pub fn open_browser_servo_port_from_file(
         max_processes: config.max_processes,
         driver_timeout_ms: config.driver_timeout_ms,
     };
-    PersistentBrowserServoControl::new_with_revocation_feed(
-        authority,
-        process,
-        revocation_feed,
-    )
+    PersistentBrowserServoControl::new_with_revocation_feed(authority, process, revocation_feed)
 }
 
 pub struct PersistentBrowserServoControl {
@@ -1117,11 +1113,7 @@ impl ChildBrowserTransport {
                 "HEPTA_BROWSER_DRIVER_TIMEOUT_MS",
                 config.driver_timeout_ms.to_string(),
             );
-        if let (
-            Some(path),
-            Some(observer_id),
-            Some(verifying_key),
-        ) = (
+        if let (Some(path), Some(observer_id), Some(verifying_key)) = (
             config.reconciliation_root.as_ref(),
             config.reconciliation_observer_id.as_ref(),
             config.reconciliation_verifying_key.as_ref(),
@@ -1473,11 +1465,8 @@ mod tests {
         #[cfg(unix)]
         {
             use std::os::unix::fs::PermissionsExt;
-            std::fs::set_permissions(
-                state.path(),
-                std::fs::Permissions::from_mode(0o700),
-            )
-            .expect("secure authority tempdir permissions");
+            std::fs::set_permissions(state.path(), std::fs::Permissions::from_mode(0o700))
+                .expect("secure authority tempdir permissions");
         }
         state
     }
