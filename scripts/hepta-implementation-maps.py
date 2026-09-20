@@ -139,6 +139,16 @@ def parse_entrypoints(module: str):
 def map_for(module: dict, source_base: dict, lanes: dict):
     mid = module["id"]
     roots = [x["path"] for x in module["rootBindings"]]
+    existing_path = ROOT / f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
+    composition_roots = []
+    if existing_path.is_file():
+        try:
+            existing = json.loads(existing_path.read_text(encoding="utf-8"))
+            value = existing.get("compositionRoots", [])
+            if isinstance(value, list) and all(isinstance(item, str) for item in value):
+                composition_roots = value
+        except (OSError, json.JSONDecodeError):
+            pass
     operations = parse_entrypoints(mid)
     if not operations:
         # Keep the map explicit even where the dossier has not named a native
@@ -165,6 +175,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "technicalGuide": module["technicalDocument"],
         "declaredRoots": roots,
         "resolvedRoots": resolve_source_roots(ROOT, module),
+        "compositionRoots": composition_roots,
         "sourceRootPresent": all((ROOT / x).exists() for x in roots),
         "productionImplementation": False,
         "productCallerState": "not_composed",
@@ -381,11 +392,29 @@ def verify():
             declared = [declared]
         if declared != roots:
             failures.append(f"{mid}: declared roots")
+        composition = row.get("compositionRoots", [])
+        if not isinstance(composition, list) or not all(
+            isinstance(item, str) for item in composition
+        ):
+            failures.append(f"{mid}: composition roots")
+            composition = []
+        else:
+            for item in composition:
+                candidate = Path(item)
+                if (
+                    candidate.is_absolute()
+                    or ".." in candidate.parts
+                    or any(token in item for token in ("*", "?", "[", "]"))
+                    or not (ROOT / candidate).exists()
+                ):
+                    failures.append(f"{mid}: invalid composition root {item}")
         try:
             resolved = resolve_source_roots(ROOT, module)
             if row.get("resolvedRoots") != resolved:
                 failures.append(f"{mid}: resolved source roots")
-            verify_map_source_freshness(source_base, mid, roots + resolved)
+            verify_map_source_freshness(
+                source_base, mid, roots + resolved + composition
+            )
         except (ValueError, OSError, subprocess.SubprocessError) as exc:
             failures.append(f"{mid}: source alias: {exc}")
         ops = row.get("operations")

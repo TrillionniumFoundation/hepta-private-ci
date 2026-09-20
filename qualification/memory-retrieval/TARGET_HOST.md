@@ -41,8 +41,9 @@ revalidation. It prints one
 and revalidation p50/p95/p99 microseconds. GNU `time -v` supplies process CPU
 and maximum resident-set observations for the same command.
 
-The fixture exercises a large store relative to the current per-channel
-32-candidate owner limits; it does not assert full-store recall.
+The fixture exercises a large store relative to the current seven per-channel
+32-candidate owner limits (maximum 224 raw owner events before union); it does
+not assert full-store recall.
 
 ## 2. HNMF candidate-ceiling probe
 
@@ -101,7 +102,9 @@ downstream outcomes. If the optional learned ranker changes ordering, its policy
 identity and propensity must be logged independently of the deterministic HNMF
 propensity.
 
-Vector, causal, procedural and contradiction-support channels require their
-actual owner implementations and currentness receipts before an enabled policy
-can be called complete. Operator acceptance, canary, promotion and release
+The typed causal, procedural and contradiction-support channels are supplied by
+the durable SQLite KG projection under reserved semantic relation values and are
+kept separate from generic graph evidence. Vector still requires a real current
+encoder/vector-index owner and currentness receipt before that policy channel can
+be enabled. Operator acceptance, canary, promotion and release
 remain separately governed.

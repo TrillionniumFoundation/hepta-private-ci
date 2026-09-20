@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "66cebba86a84016743af5406dfae49a5e0c1e601",
-    "tree": "3b235011e50992e51e88538fc14f0c734c1c8c31"
+    "commit": "db5e6fd41b2b2c83c284df3807c82ddcebe65b1a",
+    "tree": "d8c144890022485f21a48a8dc570da6c5938a8c4"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "memory.retrieval",
@@ -111,12 +111,13 @@
   "repositoryControlledGaps": [
     "Obtain green exact-head and ordered-parent synthetic-merge receipts for the converged candidate, including package tests, all-target Clippy, formatting and clean source.",
     "Qualify an authenticated CurrentMemoryRetrievalContext provider for the explicit HnmfRequired Agentd profile; Compatibility is a separate mode and rejects an attached HNMF context.",
-    "Run the checked-in qualification-host probes and then repeat them on an approved named target host before making target-host performance claims."
+    "Run the checked-in qualification-host probes and then repeat them on an approved named target host before making target-host performance claims.",
+    "Bind a real current encoder/vector-index owner before enabling the Vector policy channel; lexical or learned-ranker scores must never be relabelled as vector evidence."
   ],
   "externalEvidenceGates": [
     "independent semantic review and acceptance",
     "approved named target-host p50/p95/p99 latency, throughput, CPU, RSS/peak-memory, allocation and SQLite/revalidation measurements",
-    "actual vector/causal/procedural/contradiction generator-owner qualification when those policy channels are enabled",
+    "actual encoder/vector-index owner qualification before the Vector policy channel is enabled",
     "independently observed learned-ranker propensity/outcome evidence for causal utility claims",
     "operator acceptance, canary, promotion and release"
   ],
@@ -131,5 +132,22 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-memory-retrieval"
+  ],
+  "compositionRoots": [
+    "codex-rs/hepta-memory/src/cognitive_model.rs",
+    "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
+    "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs",
+    "codex-rs/hepta-memory/src/cognitive_retrieval_adapter.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_context.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+    "codex-rs/hepta-agentd/src/config.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-learning-ledger/src/model.rs",
+    "codex-rs/hepta-learning-ledger/src/ledger.rs",
+    "codex-rs/hepta-learning-ledger/src/retrieval_assignment.rs",
+    "codex-rs/hepta-learning-ledger/src/durable_codec.rs"
   ]
 }
