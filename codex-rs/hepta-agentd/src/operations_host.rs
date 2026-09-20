@@ -301,6 +301,13 @@ async fn reconcile_reopened_operations(
             return Ok(());
         }
         for record in &unsettled {
+            let record = source
+                .adopt_unsettled_generation(
+                    &record.intent.scope_id,
+                    &record.intent.operation_id,
+                    generation,
+                )
+                .await?;
             match automation.observe_task_operation(&record.intent).await? {
                 Some(receipt) => {
                     source
