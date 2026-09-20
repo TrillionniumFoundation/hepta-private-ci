@@ -98,6 +98,7 @@ def map_for(module: dict, source_base: dict, lanes: dict):
         "schemaVersion": 3,
         "sourceBase": source_base,
         "sourceBaseRole": "integration_baseline",
+        "mappingSourceIdentityMode": "path_only",
         "currentCandidateIdentityAuthority": {
             "authority": "exact-head-and-deterministic-synthetic-merge execution receipts",
             "embeddedCommit": False,
@@ -206,6 +207,9 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
             "owner": row.get("owner", module["owner"]),
             "deputy": row.get("deputy", module["deputy"]),
             "technicalGuide": row.get("technicalGuide", module["technicalDocument"]),
+            "mappingSourceIdentityMode": row.get(
+                "mappingSourceIdentityMode", "path_only"
+            ),
             "declaredRoots": declared,
             "resolvedRoots": resolve_source_roots(ROOT, module),
             "sourceRootPresent": all((ROOT / x).exists() for x in declared),
@@ -360,6 +364,9 @@ def verify():
             "observed_default_branch_integration_base_for_this_candidate",
         }:
             failures.append(f"{mid}: source base role")
+        mapping_identity_mode = row.get("mappingSourceIdentityMode", "path_only")
+        if mapping_identity_mode not in {"path_only", "exact_blob"}:
+            failures.append(f"{mid}: mapping source identity mode")
         identity_authority = row.get("currentCandidateIdentityAuthority")
         if identity_authority is not None:
             if (
@@ -394,6 +401,24 @@ def verify():
             source = op.get("sourcePath")
             if source and not (ROOT / source).is_file():
                 failures.append(f"{mid}: missing source {source}")
+            if mapping_identity_mode == "exact_blob":
+                source_blob = op.get("sourceBlob")
+                if (
+                    not source
+                    or not isinstance(source_blob, str)
+                    or re.fullmatch(r"[0-9a-f]{40}", source_blob) is None
+                ):
+                    failures.append(f"{mid}: exact source blob {op.get('operation')}")
+                else:
+                    try:
+                        current_blob = git("rev-parse", f"HEAD:{source}")
+                    except subprocess.CalledProcessError:
+                        failures.append(f"{mid}: source blob unavailable {source}")
+                    else:
+                        if current_blob != source_blob:
+                            failures.append(
+                                f"{mid}: source blob drift {op.get('operation')}"
+                            )
         boundary = row.get("claimBoundary") or row.get("completion")
         if not isinstance(boundary, dict):
             failures.append(f"{mid}: claim boundary")
@@ -407,6 +432,7 @@ def verify():
                 "maps": len(modules),
                 "productionImplementationProved": False,
                 "sourceBaseSemantics": "integration_baseline_not_candidate_identity",
+                "mappingSourceIdentityModes": ["path_only", "exact_blob"],
                 "candidateIdentity": current_identity,
             },
             sort_keys=True,
