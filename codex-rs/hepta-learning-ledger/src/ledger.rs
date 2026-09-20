@@ -35,6 +35,8 @@ struct DecisionIndex {
     record_id: StableId,
     policy_id: StableId,
     controller_id: Option<StableId>,
+    credential_chain_digest: Option<Digest32>,
+    signing_key_digest: Option<Digest32>,
 }
 
 #[derive(Clone, Debug)]
@@ -43,6 +45,8 @@ struct OutcomeIndex {
     episode_id: StableId,
     observer_id: StableId,
     controller_id: Option<StableId>,
+    credential_chain_digest: Option<Digest32>,
+    signing_key_digest: Option<Digest32>,
     terminal: bool,
     value: Option<FixedQ32>,
     lineage_managed: bool,
@@ -319,7 +323,19 @@ impl LearningLedger {
             ));
         }
         let decision = self.decision_for_episode(&outcome.episode_id)?;
-        if decision.policy_id == outcome.observer_id {
+        if decision.controller_id.is_none()
+            || decision.credential_chain_digest.is_none()
+            || decision.signing_key_digest.is_none()
+        {
+            return Err(LedgerError::AuthenticatedDecisionRequired(
+                outcome.episode_id.to_string(),
+            ));
+        }
+        if decision.policy_id == outcome.observer_id
+            || decision.controller_id.as_ref() == Some(&outcome.observer_controller_id)
+            || decision.credential_chain_digest == Some(outcome.observer_credential_chain_digest)
+            || decision.signing_key_digest == Some(outcome.observer_signing_key_digest)
+        {
             return Err(LedgerError::PolicySelfLabelsOutcome);
         }
         validate_authenticated_outcome_state(outcome)?;
@@ -390,7 +406,23 @@ impl LearningLedger {
             ));
         }
         let decision = self.decision_for_episode(&batch.episode_id)?;
+        if decision.controller_id.is_none()
+            || decision.credential_chain_digest.is_none()
+            || decision.signing_key_digest.is_none()
+        {
+            return Err(LedgerError::AuthenticatedDecisionRequired(
+                batch.episode_id.to_string(),
+            ));
+        }
         let outcome = self.effective_outcome(&batch.outcome_id)?;
+        if outcome.controller_id.is_none()
+            || outcome.credential_chain_digest.is_none()
+            || outcome.signing_key_digest.is_none()
+        {
+            return Err(LedgerError::AuthenticatedOutcomeRequired(
+                batch.outcome_id.to_string(),
+            ));
+        }
         if outcome.episode_id != batch.episode_id {
             return Err(LedgerError::OutcomeEpisodeMismatch);
         }
@@ -401,6 +433,10 @@ impl LearningLedger {
             || outcome.observer_id == batch.allocator_id
             || decision.controller_id.as_ref() == Some(&batch.allocator_controller_id)
             || outcome.controller_id.as_ref() == Some(&batch.allocator_controller_id)
+            || decision.credential_chain_digest == Some(batch.allocator_credential_chain_digest)
+            || outcome.credential_chain_digest == Some(batch.allocator_credential_chain_digest)
+            || decision.signing_key_digest == Some(batch.allocator_signing_key_digest)
+            || outcome.signing_key_digest == Some(batch.allocator_signing_key_digest)
         {
             return Err(LedgerError::CreditAllocatorNotIndependent);
         }
@@ -537,6 +573,8 @@ impl LearningLedger {
                         record_id: value.record_id.clone(),
                         policy_id: value.policy_id.clone(),
                         controller_id: None,
+                        credential_chain_digest: None,
+                        signing_key_digest: None,
                     },
                 );
             }
@@ -547,6 +585,8 @@ impl LearningLedger {
                         record_id: value.record_id.clone(),
                         policy_id: value.generator_id.clone(),
                         controller_id: Some(value.generator_controller_id.clone()),
+                        credential_chain_digest: Some(value.generator_credential_chain_digest),
+                        signing_key_digest: Some(value.generator_signing_key_digest),
                     },
                 );
             }
@@ -558,6 +598,8 @@ impl LearningLedger {
                         episode_id: value.episode_id.clone(),
                         observer_id: value.observer_id.clone(),
                         controller_id: None,
+                        credential_chain_digest: None,
+                        signing_key_digest: None,
                         terminal: value.finality == OutcomeFinality::Terminal,
                         value: Some(value.value),
                         lineage_managed: false,
@@ -572,6 +614,8 @@ impl LearningLedger {
                         episode_id: value.episode_id.clone(),
                         observer_id: value.observer_id.clone(),
                         controller_id: Some(value.observer_controller_id.clone()),
+                        credential_chain_digest: Some(value.observer_credential_chain_digest),
+                        signing_key_digest: Some(value.observer_signing_key_digest),
                         terminal: value.terminality == AuthenticatedOutcomeTerminality::Terminal,
                         value: value.value,
                         lineage_managed: true,

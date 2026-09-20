@@ -17,9 +17,11 @@ pub enum LedgerError {
     EpisodeAlreadyExists(String),
     EpisodeNotFound(String),
     EpisodeRevoked(String),
+    AuthenticatedDecisionRequired(String),
     OutcomeAlreadyExists(String),
     OutcomeNotFound(String),
     OutcomeRevoked(String),
+    AuthenticatedOutcomeRequired(String),
     OutcomeEpisodeMismatch,
     OutcomeNotTerminal,
     OutcomeStateMismatch,
@@ -71,7 +73,9 @@ impl LedgerError {
             | Self::IdentityConflict(_) => "LRN-E003",
             Self::EpisodeNotFound(_)
             | Self::EpisodeRevoked(_)
+            | Self::AuthenticatedDecisionRequired(_)
             | Self::OutcomeNotFound(_)
+            | Self::AuthenticatedOutcomeRequired(_)
             | Self::OutcomeRevoked(_)
             | Self::OutcomePredecessorNotFound(_) => "LRN-E004",
             Self::OutcomeEpisodeMismatch
@@ -132,9 +136,17 @@ impl fmt::Display for LedgerError {
             Self::EpisodeAlreadyExists(id) => write!(formatter, "episode already exists: {id}"),
             Self::EpisodeNotFound(id) => write!(formatter, "episode not found: {id}"),
             Self::EpisodeRevoked(id) => write!(formatter, "episode decision is revoked: {id}"),
+            Self::AuthenticatedDecisionRequired(id) => write!(
+                formatter,
+                "authenticated V2 decision required for episode: {id}"
+            ),
             Self::OutcomeAlreadyExists(id) => write!(formatter, "outcome already exists: {id}"),
             Self::OutcomeNotFound(id) => write!(formatter, "outcome not found: {id}"),
             Self::OutcomeRevoked(id) => write!(formatter, "outcome is revoked: {id}"),
+            Self::AuthenticatedOutcomeRequired(id) => write!(
+                formatter,
+                "authenticated V2 outcome required: {id}"
+            ),
             Self::OutcomeEpisodeMismatch => {
                 formatter.write_str("outcome and credit episode identities differ")
             }
