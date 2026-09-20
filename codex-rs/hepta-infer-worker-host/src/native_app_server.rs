@@ -466,7 +466,8 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err(error.into());
         }
-        let deadline = Instant::now() + self.config.timeout;
+        let deadline =
+            Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
         let result = self
             .observe(
                 &mut client,
@@ -628,6 +629,10 @@ fn remaining_before(deadline_ms: u64) -> Result<Duration> {
         return Err("runtime.codex request deadline elapsed before effect entry".into());
     }
     Ok(Duration::from_millis(deadline_ms - now_ms))
+}
+
+fn observation_budget_from(now_ms: u64, deadline_ms: u64) -> Duration {
+    Duration::from_millis(deadline_ms.saturating_sub(now_ms))
 }
 
 fn validate_post_authority_fence(
