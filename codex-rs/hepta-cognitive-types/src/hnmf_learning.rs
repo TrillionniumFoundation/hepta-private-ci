@@ -21,6 +21,7 @@ pub const MAX_ACTIVATION_PATHS: usize = 32;
 pub const MAX_REPLAY_CANDIDATES: usize = 4_096;
 pub const MAX_REPLAY_SELECTION: usize = 256;
 pub const MAX_WEIGHT_DELTA_PPM: i32 = 50_000;
+pub const Q16_ONE: i32 = 65_536;
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 #[serde(rename_all = "snake_case")]
@@ -97,6 +98,8 @@ pub struct EngramNodeV1 {
     pub threshold_q16: i32,
     pub target_activity_ppm: u32,
     pub confidence_ppm: u32,
+    pub valid_from_unix_ms: u64,
+    pub valid_to_unix_ms: Option<u64>,
     pub snapshot_generation: ContractGenerationV1,
 }
 
@@ -106,8 +109,16 @@ impl EngramNodeV1 {
             return Err(HnmfContractError::Invalid("engram modality mask"));
         }
         validate_keys(&self.semantic_keys)?;
+        validate_unit_q16(self.threshold_q16, "engram threshold")?;
         ppm(self.target_activity_ppm, "engram target activity")?;
         ppm(self.confidence_ppm, "engram confidence")?;
+        if self.valid_from_unix_ms == 0
+            || self
+                .valid_to_unix_ms
+                .is_some_and(|end| end <= self.valid_from_unix_ms)
+        {
+            return Err(HnmfContractError::Invalid("engram validity interval"));
+        }
         Ok(())
     }
 }
@@ -121,6 +132,7 @@ pub struct SynapseV1 {
     pub weight_q16: i32,
     pub delay_steps: u16,
     pub plasticity_class: PlasticityClassV1,
+    pub eligibility_ppm: i32,
     pub support_manifest_sha256: ContractDigestV1,
     pub snapshot_generation: ContractGenerationV1,
 }
@@ -132,6 +144,10 @@ impl SynapseV1 {
         }
         if self.delay_steps > 4_096 {
             return Err(HnmfContractError::Invalid("synapse delay"));
+        }
+        validate_unit_q16(self.weight_q16, "synapse weight")?;
+        if !(-(PPM as i32)..=PPM as i32).contains(&self.eligibility_ppm) {
+            return Err(HnmfContractError::Invalid("synapse eligibility"));
         }
         Ok(())
     }
@@ -259,6 +275,15 @@ pub struct SelectedEventRefV1 {
     pub event_digest: ContractDigestV1,
 }
 
+impl SelectedEventRefV1 {
+    fn validate(&self) -> Result<(), HnmfContractError> {
+        if self.revision == 0 {
+            return Err(HnmfContractError::ZeroValue("selectedEvent.revision"));
+        }
+        Ok(())
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ActiveNodeV1 {
@@ -375,6 +400,9 @@ impl RecallPacketV1 {
         ensure_strict_order(&self.active_nodes, "activeNodes")?;
         ensure_strict_order(&self.activation_paths, "activationPaths")?;
         ensure_strict_order(&self.contradictions, "contradictions")?;
+        for selected in &self.selected_events {
+            selected.validate()?;
+        }
         for node in &self.active_nodes {
             node.validate()?;
         }
@@ -394,8 +422,16 @@ impl RecallPacketV1 {
                 "recall resource receipt binding",
             ));
         }
-        if self.abstain.is_none() && self.selected_events.is_empty() {
-            return Err(HnmfContractError::Invalid("empty non-abstaining recall"));
+        match (self.abstain, self.selected_events.is_empty()) {
+            (None, false) | (Some(_), true) => {}
+            (None, true) => {
+                return Err(HnmfContractError::Invalid("empty non-abstaining recall"));
+            }
+            (Some(_), false) => {
+                return Err(HnmfContractError::Invalid(
+                    "abstaining recall contains selected events",
+                ));
+            }
         }
         Ok(())
     }
@@ -513,6 +549,11 @@ impl WeightProposalV1 {
         {
             return Err(HnmfContractError::Invalid("weight proposal"));
         }
+        validate_unit_q16(self.old_weight_q16, "old weight")?;
+        validate_unit_q16(self.new_weight_q16, "new weight")?;
+        if q16_delta_ppm(self.old_weight_q16, self.new_weight_q16)? != self.delta_ppm {
+            return Err(HnmfContractError::Conflict("weight proposal delta"));
+        }
         Ok(())
     }
 }
@@ -530,6 +571,11 @@ impl ThresholdProposalV1 {
     fn validate(&self) -> Result<(), HnmfContractError> {
         if i64::from(self.delta_ppm).abs() > i64::from(MAX_WEIGHT_DELTA_PPM) {
             return Err(HnmfContractError::Invalid("threshold proposal"));
+        }
+        validate_unit_q16(self.old_threshold_q16, "old threshold")?;
+        validate_unit_q16(self.new_threshold_q16, "new threshold")?;
+        if q16_delta_ppm(self.old_threshold_q16, self.new_threshold_q16)? != self.delta_ppm {
+            return Err(HnmfContractError::Conflict("threshold proposal delta"));
         }
         Ok(())
     }
@@ -705,6 +751,22 @@ impl ForgetPropagationReceiptV1 {
         ensure_strict_order(&self.retired_node_ids, "retiredNodeIds")?;
         ensure_strict_order(&self.retired_synapses, "retiredSynapses")
     }
+}
+
+fn validate_unit_q16(value: i32, field: &'static str) -> Result<(), HnmfContractError> {
+    if !(-Q16_ONE..=Q16_ONE).contains(&value) {
+        return Err(HnmfContractError::Invalid(field));
+    }
+    Ok(())
+}
+
+fn q16_delta_ppm(old: i32, new: i32) -> Result<i32, HnmfContractError> {
+    let delta = i64::from(new) - i64::from(old);
+    let scaled = delta
+        .checked_mul(i64::from(PPM))
+        .ok_or(HnmfContractError::Invalid("q16 delta overflow"))?
+        / i64::from(Q16_ONE);
+    i32::try_from(scaled).map_err(|_| HnmfContractError::Invalid("q16 delta overflow"))
 }
 
 fn ensure_strict_order<T: Ord>(values: &[T], field: &'static str) -> Result<(), HnmfContractError> {
