@@ -42,6 +42,8 @@ use crate::LocalReplayFinalization;
 use crate::QueuedReceipt;
 use crate::local_lease_outbox::InheritedQueuedReceipt;
 use crate::local_lease_outbox::dispatch_operation_digest;
+use crate::operation_claims;
+use crate::operation_claims::DurableDispatchClaim;
 
 /// Schema version of the externally-authorized H4 writer boundary.
 pub const PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION: u32 = 1;
@@ -51,6 +53,9 @@ pub const PRODUCTION_DURABLE_WRITER_NAMESPACE: &str = "production_durable_writer
 pub const PRODUCTION_DURABLE_WRITER_JOURNAL_MODE: &str = "wal";
 /// SQLite `PRAGMA synchronous` value for FULL.
 pub const PRODUCTION_DURABLE_WRITER_SYNCHRONOUS_FULL: i64 = 2;
+/// Default owner-local lease held while one queued operation is being moved
+/// from retryable/pre-dispatch state into the irreversible Indeterminate fence.
+pub const PRODUCTION_DISPATCH_CLAIM_LEASE_MS: u64 = 30_000;
 
 /// Errors returned by the production writer and dispatcher boundary.
 #[derive(Debug, thiserror::Error)]
@@ -595,6 +600,49 @@ impl ProductionDurableWriter {
             scope_sha256: digest_bytes(&Sha256Digest::for_bytes(operation.scope_id.as_bytes()))?,
             payload_sha256: digest_bytes(&request.payload_sha256)?,
         })
+    }
+
+    /// Acquire the durable owner-local dispatch lease for one exact queued
+    /// operation. This lease is retryable only before the one-shot
+    /// Indeterminate/effect-entry fence is written.
+    pub async fn claim_dispatch_lease(
+        &self,
+        receipt: &ProductionQueuedReceipt,
+        lease_duration_ms: u64,
+    ) -> Result<DurableDispatchClaim, ProductionWriterError> {
+        self.verify_authority().await?;
+        self.validate_queued_receipt(receipt)?;
+        Ok(operation_claims::claim(
+            &self.store,
+            &receipt.occurrence_key,
+            self.generation(),
+            self.lease.fencing_token(),
+            now_unix_ms()?,
+            lease_duration_ms,
+        )
+        .await?)
+    }
+
+    /// Extend a live pre-dispatch claim. Renewal never makes an entered or
+    /// indeterminate operation retryable.
+    pub async fn renew_dispatch_claim(
+        &self,
+        claim: &DurableDispatchClaim,
+        lease_duration_ms: u64,
+    ) -> Result<DurableDispatchClaim, ProductionWriterError> {
+        self.verify_authority().await?;
+        if claim.owner_generation != self.generation()
+            || claim.fencing_token != self.lease.fencing_token()
+        {
+            return Err(ProductionWriterError::StaleReceipt);
+        }
+        Ok(operation_claims::renew(
+            &self.store,
+            claim,
+            now_unix_ms()?,
+            lease_duration_ms,
+        )
+        .await?)
     }
 
     pub async fn recover(
