@@ -80,7 +80,7 @@ pub struct SignedFinalUseGrant {
 
 /// Trusted host update. Increasing revision is mandatory; epoch changes fence
 /// every earlier grant. The authority persists the head and claimed nonces.
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct FinalUseRevocations {
     pub authority_epoch: u64,
@@ -120,6 +120,7 @@ impl fmt::Debug for FinalUseAuthority {
 pub struct VerifiedUseToken {
     owner: Arc<Inner>,
     grant: FinalUseGrant,
+    claimed_head: FinalUseRevocations,
     witness_sha256: [u8; 32],
 }
 
@@ -162,6 +163,14 @@ impl VerifiedUseToken {
         self.witness_sha256
     }
 
+    pub const fn claimed_authority_epoch(&self) -> u64 {
+        self.claimed_head.authority_epoch
+    }
+
+    pub const fn claimed_revocation_revision(&self) -> u64 {
+        self.claimed_head.revision
+    }
+
     /// Revalidate this claimed grant at the final asynchronous effect entry.
     /// This consumes the token so one claim cannot authorize two entries.
     pub fn enter(self, expected: &FinalUseBinding) -> Result<EnteredUseToken, FinalUseError> {
@@ -177,6 +186,9 @@ impl VerifiedUseToken {
             return Err(FinalUseError::Unavailable);
         }
         validate_live(&self.grant, &state.head)?;
+        if state.head != self.claimed_head {
+            return Err(FinalUseError::StaleRevocationHead);
+        }
         let entered = EnteredUseToken {
             _owner: Arc::clone(&self.owner),
             binding: self.grant.binding,
@@ -297,13 +309,18 @@ impl FinalUseAuthority {
         // Persistence can outlast a short grant. Never admit a dispatch using
         // the time sampled before that I/O; its nonce stays consumed on expiry.
         validate_live(&signed.grant, &state.head)?;
-        let mut witness = b"hepta.kernel.authority.final-use-witness.v1\0".to_vec();
+        let claimed_head = state.head.clone();
+        let mut witness = b"hepta.kernel.authority.final-use-witness.v2\0".to_vec();
         witness.extend_from_slice(&input);
         witness.extend_from_slice(&signed.signature);
+        witness.extend(
+            serde_json::to_vec(&claimed_head).map_err(|_| FinalUseError::InvalidTrust)?,
+        );
         let witness_sha256: [u8; 32] = Sha256::digest(&witness).into();
         Ok(VerifiedUseToken {
             owner: Arc::clone(&self.0),
             grant: signed.grant.clone(),
+            claimed_head,
             witness_sha256,
         })
     }
