@@ -882,9 +882,11 @@ impl H7H89ProductionGrant {
 pub struct ProductionMutationReceipt {
     pub grant_sha256: Sha256Digest,
     /// Digest of the durable supervisor intent that an independent recovery
-    /// signer must bind. Exposing the digest makes recovery operable through
-    /// the registered status RPC without granting access to the private file.
-    pub intent_sha256: Sha256Digest,
+    /// signer must bind. It is emitted by the new status/recovery RPCs, but
+    /// omitted from the pre-existing MutationAccepted response so schema-v2
+    /// clients do not receive an unknown critical field.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub intent_sha256: Option<Sha256Digest>,
     pub agent_id: String,
     pub transition: H7H89ProductionTransition,
     pub source_release: String,
@@ -909,12 +911,11 @@ pub enum ProductionMutationStatus {
 impl ProductionMutationReceipt {
     pub(crate) fn queued(
         grant: &H7H89ProductionGrant,
-        intent_sha256: Sha256Digest,
         control_revision: u64,
     ) -> Self {
         Self {
             grant_sha256: grant.grant_sha256.clone(),
-            intent_sha256,
+            intent_sha256: None,
             agent_id: grant.agent_id.clone(),
             transition: grant.transition,
             source_release: grant.source_release.clone(),
