@@ -76,9 +76,9 @@ pub struct CanonicalPolicyProfileV1 {
     pub ood_expires_after_sequence: u64,
 }
 
-/// Exact upstream scorer/policy-output commitment for one decision. It binds
-/// assignment probabilities as policy outputs but excludes the random draw; the
-/// RandomSource separately authenticates the stream/counter/draw context.
+/// Exact upstream learned-scorer commitment for one decision. It binds model,
+/// feature and learned score outputs only. Assignment probabilities belong to
+/// the exact request and, for randomized decisions, the RandomSource evidence.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ScoringCommitmentV1 {
     pub commitment_digest: Digest32,
@@ -87,10 +87,6 @@ pub struct ScoringCommitmentV1 {
     pub objective_class_digest: Digest32,
     pub state_digest: Digest32,
     pub policy_digest: Digest32,
-    /// Exact risk classification presented to this decision. The scorer does
-    /// not own risk authority; binding it here prevents post-signature caller
-    /// rebinding to a weaker fast-path class.
-    pub risk_class: RiskClass,
     pub model_artifact_digest: Digest32,
     pub scorer_contract_digest: Digest32,
     pub feature_snapshot_digest: Digest32,
@@ -99,9 +95,6 @@ pub struct ScoringCommitmentV1 {
     pub score_semantics_digest: Digest32,
     pub candidate_identity_digest: Digest32,
     pub scored_candidates_digest: Digest32,
-    /// Scorer-owned distribution semantics (deterministic vs randomized,
-    /// abstain mass and candidate probabilities), excluding RNG stream/draw.
-    pub assignment_distribution_digest: Digest32,
     pub generation: u64,
     pub sequence: u64,
 }
@@ -203,9 +196,9 @@ pub fn canonical_candidate_identity_digest_v1(
     Ok(Digest32::of_bytes(&bytes))
 }
 
-/// Exact scorer/policy-output digest. Assignment probabilities are included:
-/// they are policy outputs, not randomness. The RandomSource independently
-/// signs the distribution context together with its stream/counter/draw.
+/// Exact learned-scorer output digest. Assignment probabilities are deliberately
+/// excluded because they are not learned scorer outputs; the RequestAttestor attests
+/// the exact request and RandomSource authenticates randomized distribution context.
 pub fn canonical_scored_candidates_digest_v1(
     candidates: &[CalibratedActionCandidateV1],
 ) -> Result<Digest32, QualifiedCalibratedError> {
@@ -216,30 +209,7 @@ pub fn canonical_scored_candidates_digest_v1(
         bytes.extend_from_slice(&candidate.utility.raw().to_be_bytes());
         bytes.extend_from_slice(&candidate.calibrated_confidence.raw().to_be_bytes());
         bytes.extend_from_slice(&candidate.ood_score.raw().to_be_bytes());
-        bytes.extend_from_slice(&candidate.assignment_probability.raw().to_be_bytes());
         bytes.extend_from_slice(candidate.support_digest.as_array());
-    }
-    Ok(Digest32::of_bytes(&bytes))
-}
-
-pub fn canonical_assignment_distribution_digest_v1(
-    request: &CalibratedDecisionRequestV1,
-) -> Result<Digest32, QualifiedCalibratedError> {
-    let mut bytes = b"hepta.intuition.assignment-distribution.v1\0".to_vec();
-    match &request.assignment {
-        AssignmentModeV1::Deterministic => bytes.push(0),
-        AssignmentModeV1::CounterBased {
-            abstain_probability,
-            ..
-        } => {
-            bytes.push(1);
-            bytes.extend_from_slice(&abstain_probability.raw().to_be_bytes());
-        }
-    }
-    push_len(&mut bytes, request.candidates.len())?;
-    for candidate in &request.candidates {
-        push_id(&mut bytes, &candidate.candidate_id)?;
-        bytes.extend_from_slice(&candidate.assignment_probability.raw().to_be_bytes());
     }
     Ok(Digest32::of_bytes(&bytes))
 }
@@ -262,7 +232,6 @@ pub fn scoring_commitment_for_request_v1(
         objective_class_digest: request.objective_class_digest,
         state_digest: request.state_digest,
         policy_digest: request.policy_digest,
-        risk_class: request.risk_class,
         model_artifact_digest: profile.scorer.model_artifact_digest,
         scorer_contract_digest: profile.scorer.scorer_contract_digest,
         feature_snapshot_digest,
@@ -271,7 +240,6 @@ pub fn scoring_commitment_for_request_v1(
         score_semantics_digest: profile.scorer.score_semantics_digest,
         candidate_identity_digest: canonical_candidate_identity_digest_v1(&request.candidates)?,
         scored_candidates_digest: canonical_scored_candidates_digest_v1(&request.candidates)?,
-        assignment_distribution_digest: canonical_assignment_distribution_digest_v1(request)?,
         generation: request.policy_generation,
         sequence: request.sequence,
     };
@@ -295,10 +263,6 @@ pub fn canonical_scoring_commitment_digest_v1(
         ("score semantics", commitment.score_semantics_digest),
         ("candidate identity", commitment.candidate_identity_digest),
         ("scored candidates", commitment.scored_candidates_digest),
-        (
-            "assignment distribution",
-            commitment.assignment_distribution_digest,
-        ),
     ] {
         if digest.is_zero() {
             return Err(QualifiedCalibratedError::EmptyScoringDigest(name));
@@ -319,11 +283,9 @@ pub fn canonical_scoring_commitment_digest_v1(
         commitment.score_semantics_digest,
         commitment.candidate_identity_digest,
         commitment.scored_candidates_digest,
-        commitment.assignment_distribution_digest,
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
-    bytes.push(risk_class_code(commitment.risk_class));
     bytes.extend_from_slice(&commitment.generation.to_be_bytes());
     bytes.extend_from_slice(&commitment.sequence.to_be_bytes());
     Ok(Digest32::of_bytes(&bytes))
@@ -368,7 +330,6 @@ pub fn canonical_completeness_evidence_payload_v1(
     bytes.extend_from_slice(&request.sequence.to_be_bytes());
     bytes.extend_from_slice(&request.completeness.candidate_count.to_be_bytes());
     bytes.extend_from_slice(&request.completeness.omitted_count_bound.to_be_bytes());
-    bytes.push(risk_class_code(request.risk_class));
     Ok(bytes)
 }
 
@@ -380,6 +341,19 @@ pub fn canonical_profile_qualification_evidence_payload_v1(
     let profile_digest = canonical_policy_profile_digest_v1(profile)?;
     let mut bytes = b"hepta.intuition.profile-qualification-evidence.v1\0".to_vec();
     bytes.extend_from_slice(profile_digest.as_array());
+    Ok(bytes)
+}
+
+/// RequestAttestor-owned exact request attestation. This closes the ownership gap for
+/// decision-time fields that are not owned by the generator, scorer, evaluator
+/// or random source (notably the risk classification) and prevents a caller
+/// from recomputing a locally valid request digest after mutating them.
+pub fn canonical_exact_request_evidence_payload_v1(
+    request: &CalibratedDecisionRequestV1,
+) -> Result<Vec<u8>, QualifiedCalibratedError> {
+    let request_digest = canonical_calibrated_request_digest_v1(request)?;
+    let mut bytes = b"hepta.intuition.exact-request-evidence.v1\0".to_vec();
+    bytes.extend_from_slice(request_digest.as_array());
     Ok(bytes)
 }
 
@@ -583,11 +557,6 @@ fn validate_scoring_commitment_for_request(
             "policy",
         ));
     }
-    if scoring.risk_class != request.risk_class {
-        return Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
-            "risk class",
-        ));
-    }
     if scoring.model_artifact_digest != profile.scorer.model_artifact_digest {
         return Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
             "model artifact",
@@ -623,13 +592,6 @@ fn validate_scoring_commitment_for_request(
     {
         return Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
             "scored candidates",
-        ));
-    }
-    if scoring.assignment_distribution_digest
-        != canonical_assignment_distribution_digest_v1(request)?
-    {
-        return Err(QualifiedCalibratedError::ScoringCommitmentMismatch(
-            "assignment distribution",
         ));
     }
     Ok(())
@@ -694,14 +656,6 @@ const fn risk_requires_slow_path(rule: CanonicalRiskRuleV1, risk: RiskClass) -> 
             matches!(risk, RiskClass::Elevated | RiskClass::High)
         }
         CanonicalRiskRuleV1::AlwaysSlowPath => true,
-    }
-}
-
-const fn risk_class_code(risk: RiskClass) -> u8 {
-    match risk {
-        RiskClass::Low => 0,
-        RiskClass::Elevated => 1,
-        RiskClass::High => 2,
     }
 }
 
