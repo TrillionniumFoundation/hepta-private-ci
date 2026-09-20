@@ -82,6 +82,7 @@ async fn configured() -> (
                 quota_key: quota.quota_key,
                 operation_id: id("operation:one"),
                 amount: 7,
+                effect_digest: Digest32::of_bytes(b"dispatch"),
                 expected_quota_revision: 1,
                 expires_at_ms: 5_000,
             },

@@ -40,6 +40,7 @@ pub struct ReservationRequest {
     pub quota_key: StableId,
     pub operation_id: StableId,
     pub amount: u64,
+    pub effect_digest: Digest32,
     pub expected_quota_revision: u64,
     pub expires_at_ms: u64,
 }
@@ -52,6 +53,7 @@ pub struct QuotaReservation {
     pub period_id: StableId,
     pub principal: StableId,
     pub amount: u64,
+    pub effect_digest: Digest32,
     pub policy_id: StableId,
     pub policy_revision: u64,
     pub policy_decision_digest: Digest32,

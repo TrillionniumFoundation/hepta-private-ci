@@ -152,6 +152,7 @@ impl AuthBusAuthorityStore {
         time: TrustedTimeSample,
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
         if request.amount == 0
+            || request.effect_digest.is_zero()
             || request.expected_quota_revision == 0
             || request.expires_at_ms <= time.wall_time_ms
         {
@@ -240,9 +241,9 @@ impl AuthBusAuthorityStore {
         sqlx::query(
             "INSERT INTO authbus_quota_reservation
              (reservation_id, operation_id, quota_key, period_id, principal, amount,
-              policy_id, policy_revision, policy_decision_digest, state, revision,
+              effect_digest, policy_id, policy_revision, policy_decision_digest, state, revision,
               expires_at_ms, created_at_ms, updated_at_ms)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'held', ?, ?, ?, ?)",
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'held', ?, ?, ?, ?)",
         )
         .bind(reservation_id.as_str())
         .bind(request.operation_id.as_str())
@@ -250,6 +251,7 @@ impl AuthBusAuthorityStore {
         .bind(quota.period_id.as_str())
         .bind(quota.principal.as_str())
         .bind(u64_bytes(request.amount))
+        .bind(request.effect_digest.as_array().as_slice())
         .bind(decision.policy_id().as_str())
         .bind(u64_bytes(decision.policy_revision()))
         .bind(decision.decision_digest().as_array().as_slice())
@@ -367,6 +369,7 @@ fn reservation_from_row(row: &SqliteRow) -> Result<QuotaReservation, AuthBusAuth
         period_id: stable_id(row.try_get("period_id").map_err(storage)?)?,
         principal: stable_id(row.try_get("principal").map_err(storage)?)?,
         amount,
+        effect_digest: Digest32::from_array(blob_array::<32>(row, "effect_digest")?),
         policy_id: stable_id(row.try_get("policy_id").map_err(storage)?)?,
         policy_revision: nonzero_u64(row, "policy_revision")?,
         policy_decision_digest: Digest32::from_array(blob_array::<32>(
@@ -384,6 +387,7 @@ fn reservation_from_row(row: &SqliteRow) -> Result<QuotaReservation, AuthBusAuth
         settlement_digest: optional_digest(row, "settlement_digest")?,
     };
     if reservation.policy_decision_digest.is_zero()
+        || reservation.effect_digest.is_zero()
         || reservation.updated_at_ms < reservation.created_at_ms
     {
         return Err(AuthBusAuthorityError::CorruptState(
@@ -401,6 +405,7 @@ fn reservation_matches(
     existing.quota_key == request.quota_key
         && existing.operation_id == request.operation_id
         && existing.amount == request.amount
+        && existing.effect_digest == request.effect_digest
         && existing.policy_id == *decision.policy_id()
         && existing.policy_revision == decision.policy_revision()
         && existing.policy_decision_digest == decision.decision_digest()
@@ -415,6 +420,7 @@ fn reservation_id(
     crate::push_id(&mut bytes, &request.operation_id);
     crate::push_id(&mut bytes, &request.quota_key);
     bytes.extend_from_slice(&request.amount.to_be_bytes());
+    bytes.extend_from_slice(request.effect_digest.as_array());
     bytes.extend_from_slice(decision.decision_digest().as_array());
     bytes.extend_from_slice(&request.expires_at_ms.to_be_bytes());
     StableId::new(format!("reservation:{}", Digest32::of_bytes(&bytes)))

@@ -74,6 +74,7 @@ async fn simultaneous_last_unit_reservations_cannot_both_succeed() {
         quota_key: quota.quota_key.clone(),
         operation_id: id(operation),
         amount: 1,
+        effect_digest: Digest32::of_bytes(operation.as_bytes()),
         expected_quota_revision: 1,
         expires_at_ms: 5_000,
     };
@@ -111,6 +112,7 @@ async fn exact_reservation_retry_is_idempotent_and_changed_amount_conflicts() {
         quota_key: quota.quota_key.clone(),
         operation_id: id("operation:one"),
         amount: 7,
+        effect_digest: Digest32::of_bytes(b"effect:one"),
         expected_quota_revision: 1,
         expires_at_ms: 5_000,
     };

@@ -20,6 +20,7 @@ CREATE TABLE authbus_quota_reservation (
     period_id TEXT NOT NULL,
     principal TEXT NOT NULL,
     amount BLOB NOT NULL CHECK (length(amount) = 8),
+    effect_digest BLOB NOT NULL CHECK (length(effect_digest) = 32),
     policy_id TEXT NOT NULL,
     policy_revision BLOB NOT NULL CHECK (length(policy_revision) = 8),
     policy_decision_digest BLOB NOT NULL CHECK (length(policy_decision_digest) = 32),
@@ -41,7 +42,7 @@ CREATE INDEX authbus_reservation_quota_state
     ON authbus_quota_reservation(quota_key, state);
 
 CREATE TRIGGER authbus_reservation_immutable BEFORE UPDATE OF
-    reservation_id, operation_id, quota_key, period_id, principal, amount,
+    reservation_id, operation_id, quota_key, period_id, principal, amount, effect_digest,
     policy_id, policy_revision, policy_decision_digest, expires_at_ms, created_at_ms
     ON authbus_quota_reservation
 BEGIN
