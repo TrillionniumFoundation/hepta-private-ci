@@ -126,6 +126,7 @@ fn fixture() -> (
                     candidate_id: id(name),
                     operation_id: id(&format!("operation-{name}")),
                     plan_digest: digest(name),
+                    execution_binding: None,
                     required_owner_ids: vec![id("state-reader")],
                     final_payload_digests: vec![],
                     resource_costs: vec![PlannerAxisValueV1 {

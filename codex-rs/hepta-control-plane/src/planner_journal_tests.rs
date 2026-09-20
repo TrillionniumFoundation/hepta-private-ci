@@ -9,6 +9,7 @@ use codex_hepta_types::StableId;
 use super::PlannerJournalError;
 use super::PlannerJournalKindV1;
 use super::PlannerJournalV1;
+use crate::ExecutionGrantBindingV1;
 use crate::FeasiblePlanReceiptV1;
 use crate::NduPlanEvaluationInputV1;
 use crate::OwnerReadinessV1;
@@ -79,6 +80,11 @@ fn candidate(name: &str) -> PlanCandidateV1 {
         candidate_id: id(name),
         operation_id: id(&format!("operation-{name}")),
         plan_digest: digest(&format!("plan:{name}")),
+        execution_binding: (name != "abstain").then(|| ExecutionGrantBindingV1 {
+            subject_id: id("agent-alpha"),
+            destination_id: id("provider-primary"),
+            scope_digest: digest(&format!("scope:{name}")),
+        }),
         required_owner_ids: vec![id("planner")],
         final_payload_digests: (name != "abstain")
             .then(|| digest(&format!("payload:{name}")))

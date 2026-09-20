@@ -7,6 +7,7 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 use pretty_assertions::assert_eq;
 
+use super::ExecutionGrantBindingV1;
 use super::NduPlanEvaluationInputV1;
 use super::OwnerReadinessV1;
 use super::OwnerSummaryV1;
@@ -85,6 +86,11 @@ fn candidate(name: &str, resource: i64) -> PlanCandidateV1 {
         candidate_id: id(name),
         operation_id: id(&format!("operation-{name}")),
         plan_digest: digest(&format!("plan:{name}")),
+        execution_binding: (name != "abstain").then(|| ExecutionGrantBindingV1 {
+            subject_id: id("agent-alpha"),
+            destination_id: id("provider-primary"),
+            scope_digest: digest(&format!("scope:{name}")),
+        }),
         required_owner_ids: vec![id("planner")],
         final_payload_digests: (name != "abstain")
             .then(|| digest(&format!("payload:{name}")))
@@ -167,6 +173,11 @@ fn coherent_snapshot_prepares_finalizes_and_emits_authority_free_grant_requests(
         grants.requests[0].final_payload_digest,
         digest("payload:work")
     );
+    assert_eq!(grants.requests[0].subject_id, id("agent-alpha"));
+    assert_eq!(grants.requests[0].destination_id, id("provider-primary"));
+    assert_eq!(grants.requests[0].scope_digest, digest("scope:work"));
+    assert!(grants.requests[0].digest_is_valid());
+    assert!(!grants.requests[0].request_digest().is_zero());
     assert!(!grants.authority.grants_any());
 }
 
@@ -466,5 +477,49 @@ fn resource_profile_digest_must_match_exact_reservations() {
     assert_eq!(
         must_err(prepare_plan(&snapshot, request)),
         PlannerError::ResourceProfileMismatch
+    );
+}
+
+#[test]
+fn effect_candidate_requires_execution_binding() {
+    let snapshot = must(collect_snapshot(
+        snapshot_request(),
+        vec![summary(OwnerReadinessV1::Ready, 950, 1_800)],
+    ));
+    let mut request = planning_request(1);
+    request
+        .candidates
+        .iter_mut()
+        .find(|candidate| candidate.candidate_id == id("work"))
+        .expect("work candidate")
+        .execution_binding = None;
+
+    assert_eq!(
+        must_err(prepare_plan(&snapshot, request)),
+        PlannerError::MissingExecutionBinding("work".to_string())
+    );
+}
+
+#[test]
+fn authority_free_candidate_rejects_execution_binding() {
+    let snapshot = must(collect_snapshot(
+        snapshot_request(),
+        vec![summary(OwnerReadinessV1::Ready, 950, 1_800)],
+    ));
+    let mut request = planning_request(1);
+    request
+        .candidates
+        .iter_mut()
+        .find(|candidate| candidate.candidate_id == id("abstain"))
+        .expect("abstain candidate")
+        .execution_binding = Some(ExecutionGrantBindingV1 {
+            subject_id: id("agent-alpha"),
+            destination_id: id("provider-primary"),
+            scope_digest: digest("scope:abstain"),
+        });
+
+    assert_eq!(
+        must_err(prepare_plan(&snapshot, request)),
+        PlannerError::UnexpectedExecutionBinding("abstain".to_string())
     );
 }

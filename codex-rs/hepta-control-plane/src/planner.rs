@@ -145,10 +145,18 @@ pub struct PlannerAxisValueV1 {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ExecutionGrantBindingV1 {
+    pub subject_id: StableId,
+    pub destination_id: StableId,
+    pub scope_digest: Digest32,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PlanCandidateV1 {
     pub candidate_id: StableId,
     pub operation_id: StableId,
     pub plan_digest: Digest32,
+    pub execution_binding: Option<ExecutionGrantBindingV1>,
     pub required_owner_ids: Vec<StableId>,
     pub final_payload_digests: Vec<Digest32>,
     pub resource_costs: Vec<PlannerAxisValueV1>,
@@ -500,11 +508,27 @@ pub struct GrantRequestV1 {
     pub operation_id: StableId,
     pub candidate_id: StableId,
     pub plan_digest: Digest32,
+    pub subject_id: StableId,
+    pub destination_id: StableId,
+    pub scope_digest: Digest32,
     pub final_payload_digest: Digest32,
     pub objective_digest: Digest32,
     pub snapshot_digest: Digest32,
     pub revocation_frontier_digest: Digest32,
     pub expires_at_micros: u64,
+    request_digest: Digest32,
+}
+
+impl GrantRequestV1 {
+    #[must_use]
+    pub const fn request_digest(&self) -> Digest32 {
+        self.request_digest
+    }
+
+    #[must_use]
+    pub fn digest_is_valid(&self) -> bool {
+        self.request_digest == digest_grant_request(self)
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -551,6 +575,8 @@ pub enum PlannerError {
     UnknownCandidateOwner { candidate: String, owner: String },
     InvalidResourceReservation(String),
     ResourceProfileMismatch,
+    MissingExecutionBinding(String),
+    UnexpectedExecutionBinding(String),
     MissingResourceAxis { candidate: String, axis: String },
     UnknownResourceAxis { candidate: String, axis: String },
     AbstainUnavailable,
@@ -602,6 +628,14 @@ impl fmt::Display for PlannerError {
             Self::ResourceProfileMismatch => {
                 formatter.write_str("resource profile digest does not bind exact reservations")
             }
+            Self::MissingExecutionBinding(candidate) => write!(
+                formatter,
+                "effectful candidate {candidate} is missing final-use subject/destination/scope binding"
+            ),
+            Self::UnexpectedExecutionBinding(candidate) => write!(
+                formatter,
+                "authority-free candidate {candidate} carries an unexpected final-use binding"
+            ),
             Self::MissingResourceAxis { candidate, axis } => {
                 write!(
                     formatter,
@@ -1038,20 +1072,31 @@ pub fn request_execution_grants(
         })
         .ok_or(PlannerError::PreparedPlanMismatch)?;
 
-    let requests: Vec<_> = candidate
-        .final_payload_digests
-        .iter()
-        .map(|payload_digest| GrantRequestV1 {
-            operation_id: candidate.operation_id.clone(),
-            candidate_id: candidate.candidate_id.clone(),
-            plan_digest: candidate.plan_digest,
-            final_payload_digest: *payload_digest,
-            objective_digest: receipt.objective_digest,
-            snapshot_digest: receipt.snapshot_digest,
-            revocation_frontier_digest: receipt.revocation_frontier_digest,
-            expires_at_micros: receipt.expires_at_micros,
-        })
-        .collect();
+    let mut requests = Vec::with_capacity(candidate.final_payload_digests.len());
+    if !candidate.final_payload_digests.is_empty() {
+        let binding = candidate
+            .execution_binding
+            .as_ref()
+            .ok_or_else(|| PlannerError::MissingExecutionBinding(candidate.candidate_id.to_string()))?;
+        for payload_digest in &candidate.final_payload_digests {
+            let mut request = GrantRequestV1 {
+                operation_id: candidate.operation_id.clone(),
+                candidate_id: candidate.candidate_id.clone(),
+                plan_digest: candidate.plan_digest,
+                subject_id: binding.subject_id.clone(),
+                destination_id: binding.destination_id.clone(),
+                scope_digest: binding.scope_digest,
+                final_payload_digest: *payload_digest,
+                objective_digest: receipt.objective_digest,
+                snapshot_digest: receipt.snapshot_digest,
+                revocation_frontier_digest: receipt.revocation_frontier_digest,
+                expires_at_micros: receipt.expires_at_micros,
+                request_digest: Digest32::ZERO,
+            };
+            request.request_digest = digest_grant_request(&request);
+            requests.push(request);
+        }
+    }
     let request_set_digest = digest_grant_requests(receipt.receipt_digest, &requests);
     Ok(GrantRequestSetV1 {
         plan_receipt_digest: receipt.receipt_digest,
@@ -1110,6 +1155,22 @@ fn validate_candidates(
             .any(|digest| digest.is_zero())
         {
             return Err(PlannerError::EmptyDigest("candidate final payload"));
+        }
+        match (&candidate.execution_binding, candidate.final_payload_digests.is_empty()) {
+            (None, false) => {
+                return Err(PlannerError::MissingExecutionBinding(
+                    candidate.candidate_id.to_string(),
+                ));
+            }
+            (Some(_), true) => {
+                return Err(PlannerError::UnexpectedExecutionBinding(
+                    candidate.candidate_id.to_string(),
+                ));
+            }
+            (Some(binding), false) => {
+                require_digest(binding.scope_digest, "candidate execution scope")?;
+            }
+            (None, true) => {}
         }
         candidate.required_owner_ids.sort();
         reject_duplicate_ids(&candidate.required_owner_ids, PlannerError::DuplicateOwner)?;
@@ -1314,6 +1375,7 @@ fn digest_candidates(candidates: &[PlanCandidateV1]) -> Digest32 {
         push_id(&mut bytes, &candidate.candidate_id);
         push_id(&mut bytes, &candidate.operation_id);
         push_digest(&mut bytes, candidate.plan_digest);
+        push_execution_binding(&mut bytes, candidate.execution_binding.as_ref());
         candidate.required_owner_ids.sort();
         push_ids(&mut bytes, &candidate.required_owner_ids);
         candidate.final_payload_digests.sort();
@@ -1387,22 +1449,43 @@ fn digest_plan_receipt(receipt: &FeasiblePlanReceiptV1) -> Digest32 {
     Digest32::of_bytes(&bytes)
 }
 
+fn digest_grant_request(request: &GrantRequestV1) -> Digest32 {
+    let mut bytes = Vec::new();
+    bytes.extend_from_slice(b"hepta.control.grant-request.v1");
+    push_id(&mut bytes, &request.operation_id);
+    push_id(&mut bytes, &request.candidate_id);
+    push_digest(&mut bytes, request.plan_digest);
+    push_id(&mut bytes, &request.subject_id);
+    push_id(&mut bytes, &request.destination_id);
+    push_digest(&mut bytes, request.scope_digest);
+    push_digest(&mut bytes, request.final_payload_digest);
+    push_digest(&mut bytes, request.objective_digest);
+    push_digest(&mut bytes, request.snapshot_digest);
+    push_digest(&mut bytes, request.revocation_frontier_digest);
+    push_u64(&mut bytes, request.expires_at_micros);
+    Digest32::of_bytes(&bytes)
+}
+
 fn digest_grant_requests(plan_receipt_digest: Digest32, requests: &[GrantRequestV1]) -> Digest32 {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(b"hepta.control.grant-request-set.v1");
     push_digest(&mut bytes, plan_receipt_digest);
     push_len(&mut bytes, requests.len());
     for request in requests {
-        push_id(&mut bytes, &request.operation_id);
-        push_id(&mut bytes, &request.candidate_id);
-        push_digest(&mut bytes, request.plan_digest);
-        push_digest(&mut bytes, request.final_payload_digest);
-        push_digest(&mut bytes, request.objective_digest);
-        push_digest(&mut bytes, request.snapshot_digest);
-        push_digest(&mut bytes, request.revocation_frontier_digest);
-        push_u64(&mut bytes, request.expires_at_micros);
+        push_digest(&mut bytes, request.request_digest);
     }
     Digest32::of_bytes(&bytes)
+}
+
+fn push_execution_binding(bytes: &mut Vec<u8>, binding: Option<&ExecutionGrantBindingV1>) {
+    if let Some(binding) = binding {
+        bytes.push(1);
+        push_id(bytes, &binding.subject_id);
+        push_id(bytes, &binding.destination_id);
+        push_digest(bytes, binding.scope_digest);
+    } else {
+        bytes.push(0);
+    }
 }
 
 fn push_axis_values(bytes: &mut Vec<u8>, values: &[PlannerAxisValueV1]) {

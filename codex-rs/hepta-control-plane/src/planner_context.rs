@@ -151,6 +151,7 @@ pub fn plan_observed_context(
                 } else {
                     Digest32::of_bytes(b"hepta.control.context-abstain.v1")
                 },
+                execution_binding: None,
                 required_owner_ids: vec![observed.owner_id.clone()],
                 final_payload_digests: vec![],
                 resource_costs: vec![PlannerAxisValueV1 {

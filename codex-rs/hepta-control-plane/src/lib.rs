@@ -93,6 +93,7 @@ pub use organ_wire::admit_compiled_body_graph_v2;
 pub use organ_wire::compiled_body_graph_digest_v2;
 pub use organ_wire::decode_compiled_body_graph_v2;
 pub use organ_wire::encode_compiled_body_graph_v2;
+pub use planner::ExecutionGrantBindingV1;
 pub use planner::FeasiblePlanReceiptV1;
 pub use planner::GlobalStateSnapshotV1;
 pub use planner::GrantRequestSetV1;
