@@ -299,7 +299,7 @@ For `learning.ledger`, this document grants no runtime, production, model, provi
 
 #### `LRN-1-DURABLE-EPISODE-LEDGER`
 
-- State: `planned`; priority: `1`; parallel class: `contract_coordinated`.
+- State: `source_implemented`; priority: `1`; parallel class: `contract_coordinated`.
 - Owner/deputy: `learning-platform` / `cognitive-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-learning-ledger/**`
