@@ -19,6 +19,8 @@ use codex_hepta_types::StableId;
 
 pub use runtime_prompt::PromptRuntimeAttachmentV1;
 pub use runtime_prompt::PromptRuntimeDeveloperFragmentV1;
+pub use runtime_prompt::PromptRuntimeDispatchFuture;
+pub use runtime_prompt::PromptRuntimeDispatchRecordV1;
 pub use runtime_prompt::PromptRuntimeError;
 pub use runtime_prompt::PromptRuntimeHost;
 pub use runtime_prompt::PromptRuntimeHostError;
