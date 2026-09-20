@@ -130,7 +130,7 @@ def refresh_indexes(check):
             if include_metrics:
                 updates.update(
                     bytes=len(text.encode("utf-8")),
-                    words=len(re.findall(r"\\b[\\w.-]+\\b", text)),
+                    words=len(re.findall(r"\b[\w.-]+\b", text)),
                 )
             row.update(updates)
         rendered = (
@@ -159,11 +159,41 @@ def refresh_derived(check):
     packages = load("docs/delivery/WORK_PACKAGES.json")["packages"]
     threats = load("docs/security/THREAT_MODEL.json")["threats"]
 
-    module_map = {row["id"]: row for row in modules["modules"]}
-    changed = []
+    def unique_rows(rows, key, label):
+        result = {}
+        for row in rows:
+            identity = row[key]
+            need(identity not in result, "duplicate " + label + " " + identity)
+            result[identity] = row
+        return result
 
-    for row in bindings["bindings"]:
-        module = module_map[row["module"]]
+    module_map = unique_rows(modules["modules"], "id", "canonical module")
+    old_bindings = unique_rows(bindings["bindings"], "module", "binding")
+    old_docs = unique_rows(docs["modules"], "module", "document")
+    need(bool(module_map), "empty canonical module registry")
+    # Preflight the entire input before writing either derived file. Missing
+    # guides remain real work; a generated row must not fabricate documentation.
+    for module_id, module in module_map.items():
+        need(re.fullmatch(r"[A-Za-z0-9_-]+(?:\.[A-Za-z0-9_-]+)*", module_id),
+             "invalid canonical module ID")
+        expected = f"docs/modules/{module_id}/TECHNICAL.md"
+        guide = (ROOT / expected).resolve()
+        need(module["technicalDocument"] == expected, module_id + " stable doc path")
+        need(guide.is_relative_to(ROOT.resolve()) and guide.is_file(),
+             module_id + " guide missing or outside repository")
+        need(bool(guide.read_text(encoding="utf-8").strip()), module_id + " empty guide")
+
+    # Membership comes only from MODULES.json: additions and removals do not
+    # require hand-edited projection rows. Preserve module-local navigation
+    # metadata for surviving rows, but never inherit another module's evidence.
+    bindings["bindings"] = []
+    docs["modules"] = []
+    for module_id, module in module_map.items():
+        row = dict(old_bindings.get(module_id, {
+            "module": module_id,
+            "sourceEvidenceRoots": [],
+            "interpretation": "generated_navigation_only_not_execution_evidence",
+        }))
         declared = [binding["path"] for binding in module["rootBindings"]]
         existing = [item for item in declared if (ROOT / item).exists()]
         row.update(
@@ -177,17 +207,8 @@ def refresh_derived(check):
             bootstrapWorkPackage=module["bootstrapWorkPackage"],
             technicalDocument=module["technicalDocument"],
         )
-
-    rendered_bindings = json.dumps(bindings, indent=2, ensure_ascii=False) + "\n"
-    bindings_path = ROOT / "docs/modules/SOURCE_BINDINGS.json"
-    if rendered_bindings != bindings_path.read_text(encoding="utf-8"):
-        changed.append("docs/modules/SOURCE_BINDINGS.json")
-        if not check:
-            bindings_path.write_text(rendered_bindings, encoding="utf-8")
-
-    for row in docs["modules"]:
-        module_id = row["module"]
-        module = module_map[module_id]
+        bindings["bindings"].append(row)
+        row = dict(old_docs.get(module_id, {"module": module_id}))
         produced = sorted(c["id"] for c in contracts if c["producer"] == module_id)
         consumed = sorted(c["id"] for c in contracts if module_id in c["consumers"])
         touched = set(produced + consumed)
@@ -210,15 +231,18 @@ def refresh_derived(check):
             ),
             threats=sorted(t["id"] for t in threats if t["owner"] == module_id),
         )
+        docs["modules"].append(row)
 
-    rendered_docs = json.dumps(docs, indent=2, ensure_ascii=False) + "\n"
-    docs_path = ROOT / "docs/modules/MODULE_DOCS.json"
-    if rendered_docs != docs_path.read_text(encoding="utf-8"):
-        changed.append("docs/modules/MODULE_DOCS.json")
-        if not check:
-            docs_path.write_text(rendered_docs, encoding="utf-8")
-
+    rendered = {
+        "docs/modules/SOURCE_BINDINGS.json": json.dumps(bindings, indent=2, ensure_ascii=False) + "\n",
+        "docs/modules/MODULE_DOCS.json": json.dumps(docs, indent=2, ensure_ascii=False) + "\n",
+    }
+    changed = [path for path, text in rendered.items()
+               if (ROOT / path).read_text(encoding="utf-8") != text]
     need(not check or not changed, "generated module projection drift: " + ", ".join(changed))
+    if not check:
+        for path in changed:
+            (ROOT / path).write_text(rendered[path], encoding="utf-8")
     print(json.dumps({"updatedDerived": changed, "checkOnly": check}))
     return 0
 

@@ -11,6 +11,7 @@ import argparse
 import json
 import re
 import subprocess
+from pathlib import Path
 from pathlib import PurePosixPath
 from typing import Iterable
 
@@ -202,6 +203,20 @@ def main() -> None:
         parser.error("an exact --base is required unless --full is explicitly selected")
     paths = [] if args.full else changed_paths(args.base, args.head)
     scope = select(paths, force_full=args.full)
+    if not args.full:
+        from hepta_ci_dependencies import plan, presentation_input
+
+        if any(presentation_input(path) for path in paths):
+            # A .md file can be a real include_str! input. Do not let the outer
+            # job skip consumers that the native dependency planner selects.
+            impact = plan(Path.cwd(), args.base, args.head)
+            if impact["full_workspace"]:
+                scope = select([], force_full=True)
+            else:
+                for package in impact["packages"]:
+                    root = package.removeprefix("codex-")
+                    extra = select([f"codex-rs/{root}/src/lib.rs"])
+                    scope = {key: value or extra[key] for key, value in scope.items()}
     print(json.dumps({"source_head": args.head, "base": args.base, "paths": paths, "scope": scope}, sort_keys=True))
     if args.github_output:
         with open(args.github_output, "a", encoding="utf-8") as stream:

@@ -41,6 +41,9 @@ class Graph:
     edges: frozenset[tuple[str, str, bool]]
     members: frozenset[str] | None = None
     conservative: bool = False
+    # Exact non-Cargo inputs embedded by Rust macros in either revision.
+    external_inputs: frozenset[tuple[str, str]] = frozenset()
+    opaque_input_consumers: frozenset[str] = frozenset()
 
     @property
     def targets(self) -> set[str]:
@@ -60,6 +63,99 @@ def matches(path: str, pattern: str) -> bool:
         return i < len(parts) and fnmatch.fnmatchcase(parts[i], patterns[j]) and match(i + 1, j + 1)
 
     return match(0, 0)
+
+
+# Match the same presentation-only paths used by the outer scope selector.
+# Embedded inputs are accounted for FIRST, even when their suffix is .md.
+PRESENTATION_INPUTS = frozenset({
+    "README.md", "CONTRIBUTING.md", "docs/modules/SOURCE_BINDINGS.json",
+    "docs/modules/MODULE_DOCS.json",
+})
+INCLUDE = re.compile(r"\binclude(?:_str|_bytes)?\s*!\s*[({\[]")
+INCLUDE_LITERAL = re.compile(
+    r'(?:r(?P<hashes>#{0,16})"(?P<raw>.*?)"(?P=hashes)|"(?P<plain>(?:\\.|[^"\\])*)")',
+    re.S,
+)
+
+
+def presentation_input(path: str) -> bool:
+    return path in PRESENTATION_INPUTS or (
+        path.startswith("docs/") and path.endswith(".md")
+    ) or path.startswith("qualification/module-execution-dossiers/detail/") and path.endswith(".md")
+
+
+def embedded_inputs(root: Path, revision: str, owners: dict[str, str]):
+    """Read exact-tree includes without executing candidate build scripts.
+
+    Literal includes give precise edges. Computed paths conservatively select
+    their consumers for presentation changes. Follow included Rust sources too;
+    an unrelated workspace's source must not widen this workspace's test plan.
+    Comments may over-select. Both old and new graphs retain removed edges.
+    """
+    result = subprocess.run(
+        ["git", "--no-replace-objects", "-C", str(root), "grep", "-l", "-z", "-E",
+         r"include(_str|_bytes)?", revision, "--", "*.rs"],
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+    )
+    if result.returncode not in (0, 1):
+        raise subprocess.CalledProcessError(result.returncode, result.args,
+                                            result.stdout, result.stderr)
+    sources, pending = set(), []
+    prefix = revision + ":"
+    for record in result.stdout.split(b"\0"):
+        if not record:
+            continue
+        value = record.decode("utf-8")
+        if not value.startswith(prefix):
+            raise ValueError("unexpected exact-tree grep identity")
+        path = value[len(prefix):]
+        sources.add(path)
+        folder = posixpath.dirname(path)
+        while folder and folder not in owners:
+            folder = posixpath.dirname(folder)
+        if folder:
+            pending.append((path, owners[folder]))
+
+    @lru_cache(maxsize=None)
+    def references(path: str):
+        text = git(root, "show", f"{revision}:{path}").decode("utf-8")
+        targets, opaque = set(), False
+        for include in INCLUDE.finditer(text):
+            start = re.compile(r"\s*").match(text, include.end()).end()
+            literal = INCLUDE_LITERAL.match(text, start)
+            if literal is None:
+                opaque = True
+                continue
+            try:
+                relative = (literal.group("raw") if literal.group("raw") is not None
+                            else json.loads('"' + literal.group("plain") + '"'))
+            except (ValueError, TypeError):
+                opaque = True
+                continue
+            if "\\" in relative or "\0" in relative or posixpath.isabs(relative):
+                opaque = True
+                continue
+            target = posixpath.normpath(posixpath.join(posixpath.dirname(path), relative))
+            if target == ".." or target.startswith("../"):
+                opaque = True
+            else:
+                targets.add(target)
+        return targets, opaque
+
+    inputs, opaque, visited = set(), set(), set()
+    while pending:
+        path, owner = pending.pop()
+        if (path, owner) in visited:
+            continue
+        visited.add((path, owner))
+        targets, unknown = references(path)
+        if unknown:
+            opaque.add(owner)
+        for target in targets:
+            inputs.add((target, owner))
+            if target in sources:
+                pending.append((target, owner))
+    return frozenset(inputs), frozenset(opaque)
 
 
 def graph(root: Path, revision: str) -> Graph:
@@ -146,12 +242,17 @@ def graph(root: Path, revision: str) -> Graph:
     # Deprecated version-qualified replacements have different resolver
     # semantics. Keep the conservative escape hatch instead of guessing.
     conservative = bool(root_manifest.get("replace"))
-    return Graph(owners, edges, frozenset(owners[p] for p in members), conservative)
+    inputs, opaque = embedded_inputs(root, revision, owners)
+    return Graph(owners, edges, frozenset(owners[p] for p in members), conservative,
+                 inputs, opaque)
 
 
 def select_packages(paths: Iterable[str], before: Graph, after: Graph) -> dict:
     changed = set()
     reasons = set()
+    input_owners: dict[str, set[str]] = {}
+    for path, owner in before.external_inputs | after.external_inputs:
+        input_owners.setdefault(path, set()).add(owner)
     # Resolve each revision independently: adding/removing a nested package
     # changes its parent's ownership even when the workspace manifest is unchanged.
     for path in paths:
@@ -164,7 +265,12 @@ def select_packages(paths: Iterable[str], before: Graph, after: Graph) -> dict:
         if path.startswith((".cargo/", f"{WORKSPACE}/.cargo/", ".github/", "scripts/")):
             reasons.add(f"shared CI input: {path}")
             continue
-        owned = False
+        consumers = input_owners.get(path, set())
+        changed.update(consumers)
+        if presentation_input(path):
+            changed.update(before.opaque_input_consumers | after.opaque_input_consumers)
+            continue
+        owned = bool(consumers)
         for mapping in (before.owners, after.owners):
             # Walking ancestors costs path depth, not a scan of every package
             # for every changed file. Only the deepest owner in each tree counts.

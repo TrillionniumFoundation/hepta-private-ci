@@ -149,5 +149,134 @@ renamed = { package = "leaf", path = "leaf" }
             ci.plan(self.root, self.base, head)
 
 
+class DocumentInputTests(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.tmp.cleanup)
+        self.root = Path(self.tmp.name)
+        self.git("init", "-q")
+        self.git("config", "user.name", "Regression")
+        self.git("config", "user.email", "regression@example.invalid")
+        self.write("codex-rs/Cargo.toml", '[workspace]\nmembers=["leaf","host","other"]\n')
+        for name in ("leaf", "host", "other"):
+            self.write(f"codex-rs/{name}/Cargo.toml", f'[package]\nname="{name}"\nversion="0.1.0"\n')
+            self.write(f"codex-rs/{name}/src/lib.rs", "pub fn value() -> u32 { 1 }\n")
+        self.write("codex-rs/host/Cargo.toml", '[package]\nname="host"\nversion="0.1.0"\n[dependencies]\nleaf={path="../leaf"}\n')
+        self.doc = "docs/modules/example/TECHNICAL.md"
+        self.write(self.doc, "# Module\n")
+        self.base = self.commit()
+
+    def git(self, *args):
+        return ci.git(self.root, *args).decode().strip()
+
+    def write(self, path, text):
+        target = self.root / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(text, encoding="utf-8")
+
+    def commit(self):
+        self.git("add", ".")
+        self.git("commit", "-qm", "fixture")
+        return self.git("rev-parse", "HEAD")
+
+    def test_code_and_module_guide_stay_scoped(self):
+        self.write("codex-rs/leaf/src/lib.rs", "pub fn value() -> u32 { 2 }\n")
+        self.write(self.doc, "# Updated explanation\n")
+        result = ci.plan(self.root, self.base, self.commit())
+        self.assertFalse(result["full_workspace"])
+        self.assertEqual(result["packages"], ["host", "leaf"])
+
+    def test_pure_documentation_requires_no_cargo(self):
+        self.write(self.doc, "# Only explanation changed\n")
+        result = ci.plan(self.root, self.base, self.commit())
+        self.assertFalse(result["full_workspace"])
+        self.assertEqual(result["packages"], [])
+
+    def test_embedded_markdown_still_selects_its_consumer(self):
+        self.write("codex-rs/leaf/src/lib.rs", 'const DOC: &str = include_str!("../../../' + self.doc + '");\n')
+        base = self.commit()
+        self.write(self.doc, "# Compiled input changed\n")
+        result = ci.plan(self.root, base, self.commit())
+        self.assertFalse(result["full_workspace"])
+        self.assertEqual(result["packages"], ["host", "leaf"])
+
+    def test_removed_include_edge_keeps_former_consumer(self):
+        self.write("codex-rs/leaf/src/lib.rs", 'const DOC: &str = include_str!("../../../' + self.doc + '");\n')
+        base = self.commit()
+        self.write("codex-rs/leaf/src/lib.rs", "// include removed\n")
+        self.write(self.doc, "# Updated\n")
+        self.assertEqual(ci.plan(self.root, base, self.commit())["packages"], ["host", "leaf"])
+
+    def test_rust_includes_follow_external_rust_sources(self):
+        self.write("codex-rs/leaf/src/lib.rs", 'include!("../../../shared/helper.rs");\n')
+        self.write("shared/helper.rs", 'const DOC: &str = include_str!("../' + self.doc + '");\n')
+        base = self.commit()
+        self.write(self.doc, "# Transitive input\n")
+        self.assertEqual(ci.plan(self.root, base, self.commit())["packages"], ["host", "leaf"])
+
+    def test_raw_multiline_include_and_filename_newline(self):
+        self.write("codex-rs/leaf/src/a\nfile.rs", 'const DOC: &str = include_str! (\nr##"../../../' + self.doc + '"##\n);\n')
+        base = self.commit()
+        self.write(self.doc, "# Raw-string input\n")
+        self.assertEqual(ci.plan(self.root, base, self.commit())["packages"], ["host", "leaf"])
+
+    def test_computed_include_is_conservative_per_consumer(self):
+        self.write("codex-rs/leaf/src/lib.rs", 'const DOC: &str = include_str!(concat!(env!("ROOT"), "/guide.md"));\n')
+        base = self.commit()
+        self.write(self.doc, "# Potential computed input\n")
+        self.assertEqual(ci.plan(self.root, base, self.commit())["packages"], ["host", "leaf"])
+
+    def test_unrelated_workspace_does_not_force_all_packages(self):
+        self.write("apps/independent/src/lib.rs", 'const X: &str = include_str!(concat!(env!("ROOT"), "/x"));\n')
+        base = self.commit()
+        self.write(self.doc, "# Plain prose\n")
+        self.assertEqual(ci.plan(self.root, base, self.commit())["packages"], [])
+
+    def test_canonical_json_is_not_classified_as_prose(self):
+        self.write("docs/modules/MODULES.json", '{"modules":[]}\n')
+        self.assertTrue(ci.plan(self.root, self.base, self.commit())["full_workspace"])
+
+    def test_embedded_catalog_has_real_dependency(self):
+        path = "docs/modules/MODULES.json"
+        self.write(path, "{}\n")
+        self.write("codex-rs/leaf/src/lib.rs", 'const C: &str = include_str!("../../../' + path + '");\n')
+        base = self.commit()
+        self.write(path, '{"modules":[]}\n')
+        result = ci.plan(self.root, base, self.commit())
+        self.assertFalse(result["full_workspace"])
+        self.assertEqual(result["packages"], ["host", "leaf"])
+
+    def test_unknown_input_plus_prose_still_falls_back(self):
+        self.write("assets/unknown.dat", "input")
+        self.write(self.doc, "# Updated\n")
+        self.assertTrue(ci.plan(self.root, self.base, self.commit())["full_workspace"])
+
+    def test_missing_base_does_not_become_document_only_success(self):
+        self.write(self.doc, "# Updated\n")
+        self.assertTrue(ci.plan(self.root, "f" * 40, self.commit())["full_workspace"])
+
+    def test_outer_scope_keeps_plain_documentation_lightweight(self):
+        self.write(self.doc, "# Only explanation changed\n")
+        head = self.commit()
+        scope_script = SCRIPT.with_name("hepta_ci_scope.py")
+        result = subprocess.run(
+            [sys.executable, str(scope_script), "--base", self.base, "--head", head],
+            cwd=self.root, capture_output=True, text=True, check=True,
+        )
+        self.assertFalse(json.loads(result.stdout)["scope"]["native"])
+
+    def test_outer_scope_cannot_skip_an_embedded_document(self):
+        self.write("codex-rs/leaf/src/lib.rs", 'const DOC: &str = include_str!("../../../' + self.doc + '");\n')
+        base = self.commit()
+        self.write(self.doc, "# Compiled input changed\n")
+        head = self.commit()
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT.with_name("hepta_ci_scope.py")),
+             "--base", base, "--head", head],
+            cwd=self.root, capture_output=True, text=True, check=True,
+        )
+        self.assertTrue(json.loads(result.stdout)["scope"]["native"])
+
+
 if __name__ == "__main__":
     unittest.main()
