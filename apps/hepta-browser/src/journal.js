@@ -42,6 +42,7 @@ const RECORD_KEYS = [
   "requestDigest",
   "semanticDigest",
   "status",
+  "terminalEvidenceDigest",
   "terminalObserved",
   "verifiedUseTokenWitnessDigest",
 ].sort();
@@ -155,10 +156,19 @@ function validateDurableRecord(value, type) {
     throw new TypeError("journal status is not registered");
   }
   boundedReason(record.observationReason);
+  const terminalEvidenceDigest = digest(
+    record.terminalEvidenceDigest,
+    "terminalEvidenceDigest",
+    { nullable: true },
+  );
   if (record.status === "indeterminate") {
-    if (record.terminalObserved !== false || record.outcomeDigest !== null) {
+    if (
+      record.terminalObserved !== false ||
+      record.outcomeDigest !== null ||
+      terminalEvidenceDigest !== null
+    ) {
       throw new TypeError(
-        "indeterminate journal record cannot claim a terminal outcome",
+        "indeterminate journal record cannot claim a terminal outcome or evidence",
       );
     }
   } else {
@@ -166,6 +176,14 @@ function validateDurableRecord(value, type) {
       throw new TypeError("terminal journal status requires terminalObserved=true");
     }
     digest(record.outcomeDigest, "outcomeDigest");
+    if (
+      record.observationReason === "authenticated_persisted_receipt" &&
+      terminalEvidenceDigest === null
+    ) {
+      throw new TypeError(
+        "authenticated persisted terminal observation requires evidence digest",
+      );
+    }
   }
   if (type === "dispatch" && record.status !== "indeterminate") {
     throw new TypeError("dispatch journal record must begin indeterminate");
