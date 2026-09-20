@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "ea44d961243f67140bdc17de842662e62b363769",
-    "tree": "8ea6ca0daa7a3ba32aee0065ad2d4c365f228d60"
+    "commit": "f75783374e95afbf1cd974746afdfa619960f2c4",
+    "tree": "dbef75b2dbeca45209177a811014ccc816a127fa"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
@@ -20,7 +20,7 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "explicit_read_consumer_composed_default_learning_loop_not_wired",
   "productionWriterState": "not_established",
   "operations": [
     {
@@ -171,7 +171,7 @@
       "operation": "loadedtabularoperatorv1_from_pinned_payload",
       "nativeSymbol": "LoadedTabularOperatorV1::from_pinned_payload",
       "sourcePath": "codex-rs/hepta-bellman-operator/src/loaded.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_explicit_read_consumer_composed",
       "authority": "none",
       "tests": [
         {
@@ -186,7 +186,13 @@
       "sourcePathExists": true,
       "designOperation": "loadedtabularoperatorv1_from_pinned_payload",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+          "symbol": "PinnedCognitiveRanker::load",
+          "state": "read_only_product_consumer"
+        }
+      ]
     },
     {
       "operation": "fit_transition_model",
@@ -297,11 +303,100 @@
       "designOperation": "verify_receipt",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "verify_operator_dataset_v2",
+      "nativeSymbol": "VerifiedOperatorDatasetV2::from_receipt",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+          "symbol": "op_07_bound_tabular_fit_consumes_exact_v3_dataset_rows"
+        },
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+          "symbol": "op_07_bound_fit_rejects_detached_digest_or_row_set"
+        }
+      ],
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "sourcePathExists": true,
+      "designOperation": "verify_operator_dataset_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "fit_tabular_operator_bound_v2",
+      "nativeSymbol": "fit_tabular_operator_bound_v2",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+          "symbol": "op_07_bound_tabular_fit_consumes_exact_v3_dataset_rows"
+        }
+      ],
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "sourcePathExists": true,
+      "designOperation": "fit_tabular_operator_bound_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "fit_transition_model_bound_v2",
+      "nativeSymbol": "fit_transition_model_bound_v2",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/dataset_binding.rs",
+          "symbol": "op_07_bound_world_model_takes_dataset_identity_from_receipt"
+        }
+      ],
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "sourcePathExists": true,
+      "designOperation": "fit_transition_model_bound_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "admit_signed_operator_applicability_v2",
+      "nativeSymbol": "admit_signed_operator_applicability_v2",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
+          "symbol": "op_06_signed_applicability_authenticates_exact_evaluator_and_payload"
+        }
+      ],
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "sourcePathExists": true,
+      "designOperation": "admit_signed_operator_applicability_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "admit_signed_operator_regularity_v2",
+      "nativeSymbol": "admit_signed_operator_regularity_v2",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
+          "symbol": "op_06_signed_regularity_rejects_role_or_identity_drift"
+        }
+      ],
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "sourcePathExists": true,
+      "designOperation": "admit_signed_operator_regularity_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Compose only independently pinned loaded predictors; raw artifact/model predictors remain compatibility-only.",
-    "Run exact-head and deterministic synthetic-merge tests before changing the claim boundary."
+    "The explicit Agentd read-ranking consumer is composed, but the default train → evaluate → independently select → new-process reload product loop is not wired.",
+    "Exact-head and deterministic synthetic-merge qualification must pass before changing the source-qualified claim boundary."
   ],
   "externalEvidenceGates": [
     "independent semantic and mathematical review",
@@ -320,5 +415,18 @@
   "sourceRoot": [
     "codex-rs/hepta-bellman-operator",
     "codex-rs/hepta-operator-acceptance"
+  ],
+  "productCallers": [
+    {
+      "caller": "runtime.agentd::PinnedCognitiveRanker",
+      "sourcePath": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+      "state": "explicit_read_ranking_consumer",
+      "authority": "read_only_no_training_no_selection_no_effects",
+      "consumes": [
+        "LoadedTabularOperatorV1::from_pinned_payload",
+        "LoadedTabularOperatorV1::predict"
+      ],
+      "currentness": "revalidates learning.artifacts registry/revocation before every ranking use"
+    }
   ]
 }
