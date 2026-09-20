@@ -373,6 +373,58 @@ fn response_digest_binds_items_and_completeness() {
 }
 
 #[test]
+fn response_digest_binds_item_order_used_for_bounded_selection() {
+    let query = query();
+    let original = terminal_response(&query);
+    let original_digest = original.response_digest;
+
+    let mut reordered = terminal_response(&query);
+    reordered.items.swap(0, 2);
+    assert_ne!(reordered.compute_response_digest(), original_digest);
+
+    let transport = FixtureTransport {
+        result: Ok(FederationTransportResultV2::Terminal(reordered)),
+    };
+    assert_eq!(
+        execute(&transport, query.clone(), &lease(&query)),
+        Err(FederationV2Error::DigestMismatch("response"))
+    );
+}
+
+#[test]
+fn partial_empty_response_remains_partial() {
+    let query = query();
+    let response = RemoteFederatedResponseV2 {
+        peer_id: query.peer_id.clone(),
+        query_binding_digest: query.binding_digest(),
+        scope_digest: query.scope_digest,
+        purpose_digest: query.purpose_digest,
+        generation_vector_digest: query.generation_vector_digest,
+        response_digest: Digest32::ZERO,
+        observed_frontier: 7,
+        expires_unix_ms: 80,
+        items: Vec::new(),
+        completeness: FederatedCompletenessV2::Partial,
+        terminal_observed: true,
+    }
+    .seal()
+    .unwrap_or_else(|error| panic!("valid partial empty response: {error}"));
+    let transport = FixtureTransport {
+        result: Ok(FederationTransportResultV2::Terminal(response)),
+    };
+    let result = execute(&transport, query.clone(), &lease(&query))
+        .unwrap_or_else(|error| panic!("valid partial empty result: {error}"));
+
+    assert!(result.items.is_empty());
+    assert_eq!(result.completeness, FederatedCompletenessV2::Partial);
+    assert_eq!(result.validity, FederatedValidityV2::Valid);
+    assert_eq!(result.coverage.truncated_items, 0);
+    result
+        .validate()
+        .unwrap_or_else(|error| panic!("valid partial empty receipt: {error}"));
+}
+
+#[test]
 fn response_cannot_replay_across_query_binding() {
     let first = query();
     let response = terminal_response(&first);
