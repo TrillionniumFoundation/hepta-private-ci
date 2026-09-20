@@ -159,7 +159,11 @@ impl RuntimeOrgans {
 }
 
 fn build_host(root: HeptaStateRoot, state: Arc<dyn RuntimeStateAdapter>) -> Result<StatusHost> {
-    build_host_generation(root, state, Generation::new(/*value*/ 1)?)
+    let mut host = build_host_generation(root, state, Generation::new(/*value*/ 1)?)?;
+    host.host
+        .start_all()
+        .context("start compiled-in status organs")?;
+    Ok(host)
 }
 
 fn build_host_generation(
@@ -305,10 +309,8 @@ fn build_host_generation(
             },
         })
         .collect();
-    let mut host = verified.into_hierarchical_host(hierarchy, catalog)?;
+    let host = verified.into_hierarchical_host(hierarchy, catalog)?;
     let route = host.route(&control_system, &ingress, /*output_port*/ 0)?;
-    host.start_all()
-        .context("start compiled-in status organs")?;
     Ok(StatusHost { host, route })
 }
 
