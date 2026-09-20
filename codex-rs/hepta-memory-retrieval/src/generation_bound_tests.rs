@@ -3,7 +3,9 @@ use super::*;
 use codex_hepta_cognitive_types::Citation;
 use codex_hepta_cognitive_types::MemoryKind;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
+use codex_hepta_cognitive_types::hnmf::ContractIdV1;
 use codex_hepta_cognitive_types::hnmf_learning::RecallAbstainReasonV1 as CanonicalRecallAbstainReasonV1;
+use codex_hepta_cognitive_types::hnmf_learning::SelectedEventRefV1 as CanonicalSelectedEventRefV1;
 use codex_hepta_cognitive_types::hnmf_learning::RecallResourceReceiptV1 as CanonicalRecallResourceReceiptV1;
 use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
 use codex_hepta_types::Generation;
@@ -108,8 +110,32 @@ fn canonical_digest(value: &str) -> ContractDigestV1 {
         .unwrap_or_else(|error| panic!("valid canonical digest: {error}"))
 }
 
-fn canonical_context(candidate_count: u16) -> CanonicalRecallShadowContextV1 {
+fn canonical_context(
+    legacy: &RecallPacketV1,
+    candidate_count: u16,
+) -> CanonicalRecallShadowContextV1 {
+    let selection_bindings = legacy
+        .selections
+        .iter()
+        .enumerate()
+        .map(|(index, selection)| CanonicalRecallSelectionBindingV1 {
+            legacy_record_id: selection.record_id.clone(),
+            legacy_record_revision: selection.record_revision,
+            legacy_record_digest: selection.record_digest,
+            canonical_event: CanonicalSelectedEventRefV1 {
+                event_id: ContractIdV1::new(format!("event:{}", index + 1))
+                    .unwrap_or_else(|error| panic!("valid canonical event id: {error}")),
+                revision: selection.record_revision.get(),
+                event_digest: canonical_digest(&format!("canonical-event-{index}")),
+            },
+        })
+        .collect();
     CanonicalRecallShadowContextV1 {
+        legacy_cue_digest: legacy.cue_digest,
+        legacy_candidate_union_digest: legacy.candidate_union_digest,
+        legacy_generation_vector_digest: legacy.generation_vector_digest,
+        canonical_cue_digest: canonical_digest("canonical-cue"),
+        selection_bindings,
         event_snapshot_digest: canonical_digest("event-snapshot"),
         engram_snapshot_digest: canonical_digest("engram-snapshot"),
         active_nodes: Vec::new(),
@@ -274,11 +300,12 @@ fn legacy_recall_projects_to_canonical_shadow_without_fabricating_authority() {
 
     let canonical = adapt_generation_bound_recall_to_canonical_shadow_v1(
         &legacy,
-        canonical_context(2),
+        canonical_context(&legacy, 2),
     )
     .unwrap_or_else(|error| panic!("canonical shadow projection: {error}"));
 
-    assert_eq!(canonical.cue_digest.digest(), legacy.cue_digest);
+    assert_eq!(canonical.cue_digest, canonical_digest("canonical-cue"));
+    assert_ne!(canonical.cue_digest.digest(), legacy.cue_digest);
     assert_eq!(canonical.selected_events.len(), legacy.selections.len());
     assert!(canonical.abstain.is_none());
     assert!(canonical
@@ -300,7 +327,7 @@ fn legacy_abstention_maps_to_canonical_abstention_without_selected_events() {
 
     let canonical = adapt_generation_bound_recall_to_canonical_shadow_v1(
         &legacy,
-        canonical_context(1),
+        canonical_context(&legacy, 1),
     )
     .unwrap_or_else(|error| panic!("canonical abstention: {error}"));
 
@@ -340,3 +367,40 @@ fn canonical_shadow_receipt_cannot_undercount_legacy_selection() {
     );
 }
 
+
+#[test]
+fn canonical_shadow_bridge_rejects_cross_packet_or_selection_drift() {
+    let cue = cue();
+    let policy = policy();
+    let first = record(1);
+    let second = record(2);
+    let legacy = recall(
+        &cue,
+        &policy,
+        vec![
+            candidate(first.clone(), RetrievalChannelV1::Lexical, 1),
+            candidate(first, RetrievalChannelV1::Entity, 1),
+            candidate(second.clone(), RetrievalChannelV1::Lexical, 2),
+            candidate(second, RetrievalChannelV1::Entity, 2),
+        ],
+    )
+    .unwrap_or_else(|error| panic!("legacy recall: {error}"));
+
+    let mut wrong_packet = canonical_context(&legacy, 2);
+    wrong_packet.legacy_cue_digest = digest("different-legacy-cue");
+    assert_eq!(
+        adapt_generation_bound_recall_to_canonical_shadow_v1(&legacy, wrong_packet),
+        Err(RecallErrorV1::CanonicalAdapter(
+            "canonical shadow context is bound to a different legacy packet"
+        ))
+    );
+
+    let mut wrong_selection = canonical_context(&legacy, 2);
+    wrong_selection.selection_bindings[0].legacy_record_digest = digest("drifted-record");
+    assert_eq!(
+        adapt_generation_bound_recall_to_canonical_shadow_v1(&legacy, wrong_selection),
+        Err(RecallErrorV1::CanonicalAdapter(
+            "missing exact canonical binding for legacy selection"
+        ))
+    );
+}
