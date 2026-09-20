@@ -198,7 +198,8 @@ impl LeaseLedger {
         if current.lease_generation != expected_lease_generation {
             return Err(Error::StaleLease);
         }
-        if current.authority_epoch != authority_epoch || current.semantic_digest != semantic_digest {
+        if current.authority_epoch != authority_epoch || current.semantic_digest != semantic_digest
+        {
             return Err(Error::Conflict);
         }
         match disposition {

@@ -364,9 +364,7 @@ impl FleetAllocationStore {
         Ok(store)
     }
 
-    pub fn load(
-        &self,
-    ) -> Result<FleetAllocationStoreSnapshotV1, FleetAllocationStoreError> {
+    pub fn load(&self) -> Result<FleetAllocationStoreSnapshotV1, FleetAllocationStoreError> {
         let revision = self
             .latest_revision()?
             .ok_or(FleetAllocationStoreError::CorruptStore)?;
@@ -425,9 +423,7 @@ impl FleetAllocationStore {
                 }
             }
         }
-        state
-            .hosts
-            .insert(observation.host_id.clone(), observation);
+        state.hosts.insert(observation.host_id.clone(), observation);
         self.commit_state(state)
     }
 
@@ -459,7 +455,8 @@ impl FleetAllocationStore {
             let record = roster
                 .agent(&request.agent_id)
                 .ok_or_else(|| FleetAllocationStoreError::UnknownAgent(request.agent_id.clone()))?;
-            let manifest_budget = FleetResourceVectorV1::from_manifest_budget(&record.manifest.resources);
+            let manifest_budget =
+                FleetResourceVectorV1::from_manifest_budget(&record.manifest.resources);
             if !request.minimum.fits_within(manifest_budget)
                 || !request.desired.fits_within(manifest_budget)
             {
@@ -533,8 +530,13 @@ impl FleetAllocationStore {
             grant.validate()?;
             grants.push(grant);
         }
-        let final_use_binding =
-            allocation_final_use_binding(principal_id, authority_epoch, state.revision, requests, &grants)?;
+        let final_use_binding = allocation_final_use_binding(
+            principal_id,
+            authority_epoch,
+            state.revision,
+            requests,
+            &grants,
+        )?;
         Ok(FleetPreparedAllocationV1 {
             store_revision: state.revision,
             principal_id: principal_id.to_string(),
@@ -753,7 +755,10 @@ impl FleetAllocationStore {
                 || grant.expires_at_unix_ms <= now_unix_ms
                 || state.grants.contains_key(&grant.allocation_id)
                 || state.terminal_grants.contains_key(&grant.allocation_id)
-                || state.grants.values().any(|row| row.agent_id == grant.agent_id)
+                || state
+                    .grants
+                    .values()
+                    .any(|row| row.agent_id == grant.agent_id)
             {
                 return Err(FleetAllocationStoreError::Conflict);
             }
@@ -1152,9 +1157,7 @@ fn digest_json(value: &impl Serialize) -> Result<Sha256Digest, FleetAllocationSt
     Ok(Sha256Digest::for_bytes(&bytes))
 }
 
-fn digest_array<T: Serialize + ?Sized>(
-    value: &T,
-) -> Result<[u8; 32], FleetAllocationStoreError> {
+fn digest_array<T: Serialize + ?Sized>(value: &T) -> Result<[u8; 32], FleetAllocationStoreError> {
     let bytes = serde_json::to_vec(value).map_err(|_| FleetAllocationStoreError::Encode)?;
     Ok(Sha256::digest(bytes).into())
 }

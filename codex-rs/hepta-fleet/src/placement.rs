@@ -87,13 +87,17 @@ pub fn place_and_allocate_v1(
             validate_identifier(domain, "failure_domain_id")?;
         }
         if !request_ids.insert(request.request_id.clone()) {
-            return Err(LocalAllocationError::DuplicateRequest(request.request_id.clone()));
+            return Err(LocalAllocationError::DuplicateRequest(
+                request.request_id.clone(),
+            ));
         }
         if !allocation_ids.insert(request.allocation_id.clone()) {
             return Err(LocalAllocationError::InvalidIdentifier("allocation_id"));
         }
         if !agent_ids.insert(request.agent_id.clone()) {
-            return Err(LocalAllocationError::DuplicateAgent(request.agent_id.to_string()));
+            return Err(LocalAllocationError::DuplicateAgent(
+                request.agent_id.to_string(),
+            ));
         }
         if request.minimum.is_zero() && request.desired.is_zero() {
             return Err(LocalAllocationError::EmptyDesiredResources(
@@ -126,12 +130,9 @@ pub fn place_and_allocate_v1(
             {
                 continue;
             }
-            let used = reserved
-                .get(&host.host_id)
-                .copied()
-                .ok_or(LocalAllocationError::ArithmeticInvariant(
-                    "placement reservation",
-                ))?;
+            let used = reserved.get(&host.host_id).copied().ok_or(
+                LocalAllocationError::ArithmeticInvariant("placement reservation"),
+            )?;
             let Some(after) = used.checked_add(request.minimum) else {
                 return Err(LocalAllocationError::ArithmeticInvariant(
                     "placement minimum sum",
@@ -211,20 +212,19 @@ fn normalized_load(
     used: FleetResourceVectorV1,
     capacity: FleetResourceVectorV1,
 ) -> Result<u128, LocalAllocationError> {
-    FleetResourceAxisV1::ALL.iter().try_fold(0_u128, |sum, axis| {
-        let numerator = u128::from(axis.read(used));
-        let denominator = u128::from(axis.read(capacity).max(1));
-        let scaled = numerator
-            .checked_mul(1_000_000)
-            .ok_or(LocalAllocationError::ArithmeticInvariant(
-                "placement load scale",
-            ))?
-            / denominator;
-        sum.checked_add(scaled)
-            .ok_or(LocalAllocationError::ArithmeticInvariant(
-                "placement load sum",
-            ))
-    })
+    FleetResourceAxisV1::ALL
+        .iter()
+        .try_fold(0_u128, |sum, axis| {
+            let numerator = u128::from(axis.read(used));
+            let denominator = u128::from(axis.read(capacity).max(1));
+            let scaled = numerator.checked_mul(1_000_000).ok_or(
+                LocalAllocationError::ArithmeticInvariant("placement load scale"),
+            )? / denominator;
+            sum.checked_add(scaled)
+                .ok_or(LocalAllocationError::ArithmeticInvariant(
+                    "placement load sum",
+                ))
+        })
 }
 
 fn validate_identifier(value: &str, label: &'static str) -> Result<(), LocalAllocationError> {

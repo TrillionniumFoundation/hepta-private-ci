@@ -14,8 +14,8 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
-use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::FleetAllocationStore;
@@ -1339,19 +1339,16 @@ fn finish_release_drain(
     assert_eq!(supervisor.tick(now), TickReport::default());
 }
 
-
 #[test]
-fn durable_fleet_grant_is_consumed_by_spawn_and_released_by_observed_exit(
-) -> Result<(), Box<dyn std::error::Error>> {
+fn durable_fleet_grant_is_consumed_by_spawn_and_released_by_observed_exit()
+-> Result<(), Box<dyn std::error::Error>> {
     let fleet = TestFleet::new()?;
     let control = FakeControl::default();
     let now = Instant::now();
     let (mut supervisor, _) =
         Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
 
-    let unix_ms = SystemTime::now()
-        .duration_since(UNIX_EPOCH)?
-        .as_millis() as u64;
+    let unix_ms = SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis() as u64;
     supervisor.admit_fleet_host_observation(FleetHostObservationV1::new(
         "host.local".to_string(),
         "rack.local".to_string(),

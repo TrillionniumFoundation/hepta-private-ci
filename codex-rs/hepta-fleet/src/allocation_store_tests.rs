@@ -27,20 +27,8 @@ impl Fixture {
         let temp = tempfile::tempdir()?;
         let fleet_root = HeptaFleetRoot::parse(temp.path().join("fleet"))?;
         let registry = FleetRegistry::initialize(fleet_root.clone())?;
-        let first = register(
-            &registry,
-            &fleet_root,
-            temp.path(),
-            1,
-            "workspace-first",
-        )?;
-        let second = register(
-            &registry,
-            &fleet_root,
-            temp.path(),
-            2,
-            "workspace-second",
-        )?;
+        let first = register(&registry, &fleet_root, temp.path(), 1, "workspace-first")?;
+        let second = register(&registry, &fleet_root, temp.path(), 2, "workspace-second")?;
         Ok(Self {
             _temp: temp,
             registry,
@@ -59,10 +47,7 @@ impl Fixture {
         #[cfg(unix)]
         {
             use std::os::unix::fs::PermissionsExt;
-            std::fs::set_permissions(
-                &directory,
-                std::fs::Permissions::from_mode(/*mode*/ 0o700),
-            )?;
+            std::fs::set_permissions(&directory, std::fs::Permissions::from_mode(/*mode*/ 0o700))?;
         }
         let authority = FinalUseAuthority::open_state_dir(
             &directory,
@@ -177,8 +162,8 @@ fn signed_for(
 }
 
 #[test]
-fn fleet_01_over_capacity_batch_preserves_floors_and_durable_conservation(
-) -> Result<(), Box<dyn std::error::Error>> {
+fn fleet_01_over_capacity_batch_preserves_floors_and_durable_conservation()
+-> Result<(), Box<dyn std::error::Error>> {
     let fixture = Fixture::new()?;
     let now = now_ms();
     let store = FleetAllocationStore::open(&fixture.registry)?;
@@ -227,8 +212,8 @@ fn fleet_01_over_capacity_batch_preserves_floors_and_durable_conservation(
 }
 
 #[test]
-fn fleet_02_expiry_or_restart_uncertainty_never_double_allocates_hard_capacity(
-) -> Result<(), Box<dyn std::error::Error>> {
+fn fleet_02_expiry_or_restart_uncertainty_never_double_allocates_hard_capacity()
+-> Result<(), Box<dyn std::error::Error>> {
     let fixture = Fixture::new()?;
     let now = now_ms();
     let store = FleetAllocationStore::open(&fixture.registry)?;
@@ -313,8 +298,8 @@ fn fleet_03_permuted_requests_and_hosts_produce_identical_placement_digest() {
 }
 
 #[test]
-fn fleet_04_requests_cannot_invent_enrollment_or_inherit_final_use_authority(
-) -> Result<(), Box<dyn std::error::Error>> {
+fn fleet_04_requests_cannot_invent_enrollment_or_inherit_final_use_authority()
+-> Result<(), Box<dyn std::error::Error>> {
     let fixture = Fixture::new()?;
     let now = now_ms();
     let store = FleetAllocationStore::open(&fixture.registry)?;
@@ -347,10 +332,7 @@ fn fleet_04_requests_cannot_invent_enrollment_or_inherit_final_use_authority(
         expires_at_unix_ms: now + 30_000,
     };
     let signed = SignedFinalUseGrant {
-        signature: issuer
-            .sign(&grant.signing_bytes()?)
-            .to_bytes()
-            .to_vec(),
+        signature: issuer.sign(&grant.signing_bytes()?).to_bytes().to_vec(),
         grant,
     };
     assert_eq!(

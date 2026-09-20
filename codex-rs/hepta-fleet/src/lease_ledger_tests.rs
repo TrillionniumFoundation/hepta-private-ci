@@ -58,29 +58,13 @@ fn conserves_capacity_and_reuses_identical_grant() {
 fn renewal_and_revocation_are_generation_fenced() {
     let mut ledger = LeaseLedger::new();
     ledger.admit_host(host()).expect("host");
-    ledger
-        .issue(200, grant("one", 5, 80_000))
-        .expect("grant");
+    ledger.issue(200, grant("one", 5, 80_000)).expect("grant");
     assert_eq!(
-        ledger.renew_or_revoke(
-            300,
-            "one",
-            2,
-            3,
-            &"1".repeat(64),
-            LeaseDisposition::Revoke,
-        ),
+        ledger.renew_or_revoke(300, "one", 2, 3, &"1".repeat(64), LeaseDisposition::Revoke,),
         Err(Error::StaleLease)
     );
     let revoked = ledger
-        .renew_or_revoke(
-            300,
-            "one",
-            1,
-            3,
-            &"1".repeat(64),
-            LeaseDisposition::Revoke,
-        )
+        .renew_or_revoke(300, "one", 1, 3, &"1".repeat(64), LeaseDisposition::Revoke)
         .expect("revoke");
     assert!(revoked.revoked);
     assert_eq!(revoked.lease_generation, 2);
