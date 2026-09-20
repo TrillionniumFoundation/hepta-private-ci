@@ -174,8 +174,7 @@ jobs:
           cargo build --manifest-path apps/hepta-native/Cargo.toml --release --bins
           ./apps/hepta-native/target/release/hepta-native --self-test
           cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-native-gateway
-          cargo test -p codex-hepta-matrixd --bin hepta-matrix-send-observer
-          cd ..
+          cargo test --manifest-path codex-rs/Cargo.toml -p codex-hepta-matrixd --bin hepta-matrix-send-observer
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
