@@ -636,6 +636,34 @@ fn replay_receipts_bind_candidate_and_source_bucket_counts() {
 }
 
 #[test]
+fn bounded_arbitrary_byte_decoder_smoke_covers_all_registered_contracts() {
+    let mut seed = 0x9e37_79b9_7f4a_7c15_u64;
+    for case in 0..256usize {
+        let len = 1 + (case % 257);
+        let mut bytes = vec![0u8; len];
+        for byte in &mut bytes {
+            seed ^= seed << 13;
+            seed ^= seed >> 7;
+            seed ^= seed << 17;
+            *byte = seed as u8;
+        }
+
+        let _ = decode_wire_v1::<ModalitySpanRefV1>(&bytes);
+        let _ = decode_wire_v1::<MemoryEventV1>(&bytes);
+        let _ = decode_wire_v1::<CrossModalBindingV1>(&bytes);
+        let _ = decode_wire_v1::<EngramNodeV1>(&bytes);
+        let _ = decode_wire_v1::<SynapseV1>(&bytes);
+        let _ = decode_wire_v1::<MemoryCueV1>(&bytes);
+        let _ = decode_wire_v1::<RecallPacketV1>(&bytes);
+        let _ = decode_wire_v1::<OutcomeSignalV1>(&bytes);
+        let _ = decode_wire_v1::<ReplaySelectionReceiptV1>(&bytes);
+        let _ = decode_wire_v1::<PlasticityBatchV1>(&bytes);
+        let _ = decode_wire_v1::<TopologyProposalV1>(&bytes);
+        let _ = decode_wire_v1::<ForgetPropagationReceiptV1>(&bytes);
+    }
+}
+
+#[test]
 fn canonical_wire_roundtrip_property_holds_across_registered_contracts() {
     macro_rules! roundtrip {
         ($value:expr, $type:ty) => {{
