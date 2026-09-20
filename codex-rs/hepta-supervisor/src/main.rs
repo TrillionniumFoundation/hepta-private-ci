@@ -9,16 +9,20 @@ async fn main() -> anyhow::Result<()> {
     let options = parse_options()?;
     let cancellation = CancellationToken::new();
     spawn_shutdown_signal(cancellation.clone());
-    match options.grant_verifier {
-        Some(verifier) => {
+    match (options.grant_verifier, options.revocation_frontier) {
+        (Some(verifier), Some(revocation_frontier)) => {
             codex_hepta_supervisor::run_supervisord_with_grant_verifier(
                 options.fleet_root,
                 cancellation,
                 verifier,
+                revocation_frontier,
             )
             .await?;
         }
-        None => codex_hepta_supervisor::run_supervisord(options.fleet_root, cancellation).await?,
+        (None, None) => {
+            codex_hepta_supervisor::run_supervisord(options.fleet_root, cancellation).await?
+        }
+        _ => anyhow::bail!("production verifier and revocation frontier must be configured together"),
     }
     Ok(())
 }
@@ -26,6 +30,7 @@ async fn main() -> anyhow::Result<()> {
 struct Options {
     fleet_root: HeptaFleetRoot,
     grant_verifier: Option<codex_hepta_supervisor::H7H89ProductionGrantVerifier>,
+    revocation_frontier: Option<u64>,
 }
 
 fn parse_options() -> anyhow::Result<Options> {
@@ -37,6 +42,7 @@ fn parse_options() -> anyhow::Result<Options> {
     let mut h7_key_path = None;
     let mut h7_signer_id = None;
     let mut h7_signer_epoch = None;
+    let mut revocation_frontier = None;
     while let Some(flag) = arguments.next() {
         let value = arguments
             .next()
@@ -49,23 +55,27 @@ fn parse_options() -> anyhow::Result<Options> {
             Some("--h7-verifier-key") if h7_key_path.is_none() => h7_key_path = Some(value),
             Some("--h7-signer-id") if h7_signer_id.is_none() => h7_signer_id = Some(value),
             Some("--h7-signer-epoch") if h7_signer_epoch.is_none() => h7_signer_epoch = Some(value),
+            Some("--revocation-frontier") if revocation_frontier.is_none() => {
+                revocation_frontier = Some(value)
+            }
             _ => anyhow::bail!(
-                "usage: hepta-supervisord --fleet-root ABSOLUTE_PATH [--grant-verifier-key ABSOLUTE_PATH --grant-signer-id ID --grant-signer-epoch N --h7-verifier-key ABSOLUTE_PATH --h7-signer-id ID --h7-signer-epoch N]"
+                "usage: hepta-supervisord --fleet-root ABSOLUTE_PATH [--grant-verifier-key ABSOLUTE_PATH --grant-signer-id ID --grant-signer-epoch N --h7-verifier-key ABSOLUTE_PATH --h7-signer-id ID --h7-signer-epoch N --revocation-frontier N]"
             ),
         }
     }
     let fleet_root = HeptaFleetRoot::parse(PathBuf::from(
         fleet_root.ok_or_else(|| anyhow::anyhow!("--fleet-root is required"))?,
     ))?;
-    let grant_verifier = match (
+    let production_config = match (
         key_path,
         signer_id,
         signer_epoch,
         h7_key_path,
         h7_signer_id,
         h7_signer_epoch,
+        revocation_frontier,
     ) {
-        (None, None, None, None, None, None) => None,
+        (None, None, None, None, None, None, None) => (None, None),
         (
             Some(key_path),
             Some(signer_id),
@@ -73,6 +83,7 @@ fn parse_options() -> anyhow::Result<Options> {
             Some(h7_key_path),
             Some(h7_signer_id),
             Some(h7_signer_epoch),
+            Some(revocation_frontier),
         ) => {
             let grant_epoch = parse_epoch(signer_epoch, "grant signer epoch")?;
             let h7_epoch = parse_epoch(h7_signer_epoch, "H7 signer epoch")?;
@@ -81,20 +92,30 @@ fn parse_options() -> anyhow::Result<Options> {
                 .map_err(|_| anyhow::anyhow!("H7 signer id is not UTF-8"))?;
             let h7_key = load_public_key(PathBuf::from(h7_key_path), "H7 verifier key")?;
             let h7_verifier = H7ArtifactVerifier::from_bytes(h7_signer_id, h7_epoch, h7_key)?;
-            Some(load_grant_verifier(
-                PathBuf::from(key_path),
-                signer_id
-                    .into_string()
-                    .map_err(|_| anyhow::anyhow!("signer id is not UTF-8"))?,
-                grant_epoch,
-                h7_verifier,
-            )?)
+            let revocation_frontier = parse_epoch(
+                revocation_frontier,
+                "revocation frontier",
+            )?;
+            (
+                Some(load_grant_verifier(
+                    PathBuf::from(key_path),
+                    signer_id
+                        .into_string()
+                        .map_err(|_| anyhow::anyhow!("signer id is not UTF-8"))?,
+                    grant_epoch,
+                    h7_verifier,
+                )?),
+                Some(revocation_frontier),
+            )
         }
-        _ => anyhow::bail!("grant and H7 verifier key/id/epoch triplets must be supplied together"),
+        _ => anyhow::bail!(
+            "grant/H7 verifier tuples and --revocation-frontier must be supplied together"
+        ),
     };
     Ok(Options {
         fleet_root,
-        grant_verifier,
+        grant_verifier: production_config.0,
+        revocation_frontier: production_config.1,
     })
 }
 
