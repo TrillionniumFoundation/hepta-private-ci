@@ -40,8 +40,12 @@ pub const LOCAL_LEASE_OUTBOX_KG_WRITE_AUTHORITY: bool = false;
 pub const LOCAL_LEASE_OUTBOX_PRODUCTION_CALLER: bool = false;
 
 const MAX_LEASE_ROWS: usize = 4_096;
-const MAX_EVENT_ROWS: usize = 16_384;
-const MAX_OUTBOX_ROWS: usize = 16_384;
+/// Production owner ceiling for one lease/shard. This is deliberately above
+/// the 100k pending-operation target because one operation appends admission,
+/// dispatch and terminal/reconciliation events.
+const MAX_EVENT_ROWS: usize = 400_000;
+const MAX_OUTBOX_ROWS: usize = 100_000;
+const MAX_OPERATION_ROWS: usize = 100_000;
 const GENESIS_LEASE_SHA256: &[u8] = b"hepta-memory:local-lease:genesis:v1";
 const GENESIS_EVENT_SHA256: &[u8] = b"hepta-memory:local-event:genesis:v1";
 const GENESIS_OUTBOX_SHA256: &[u8] = b"hepta-memory:local-outbox:genesis:v1";
@@ -68,6 +72,11 @@ pub enum LocalLeaseOutboxError {
     Serialization(String),
     #[error("local lease/outbox clock failed: {0}")]
     Clock(String),
+    #[error("{resource} capacity exceeded; maximum is {maximum}")]
+    CapacityExceeded {
+        resource: &'static str,
+        maximum: usize,
+    },
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -3558,6 +3567,19 @@ async fn insert_operation(
     payload_sha256: &Sha256Digest,
     binding: &LocalLeaseBinding,
 ) -> Result<(), LocalLeaseOutboxError> {
+    let operation_rows: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM cognitive_operation_ledger WHERE lease_id = ?",
+    )
+    .bind(&handle.lease_id)
+    .fetch_one(&mut **transaction)
+    .await
+    .map_err(crate::cognitive_store::unavailable)?;
+    if usize::try_from(operation_rows).unwrap_or(usize::MAX) >= MAX_OPERATION_ROWS {
+        return Err(LocalLeaseOutboxError::CapacityExceeded {
+            resource: "durable operation ledger",
+            maximum: MAX_OPERATION_ROWS,
+        });
+    }
     let prepared_at = now_unix_seconds()?;
     sqlx::query(
         "INSERT INTO cognitive_operation_ledger (
@@ -4384,8 +4406,14 @@ async fn next_event_sequence(
     .fetch_one(&mut **transaction)
     .await
     .map_err(crate::cognitive_store::unavailable)?;
-    Ok(value
-        .unwrap_or(0)
+    let current = value.unwrap_or(0);
+    if usize::try_from(current).unwrap_or(usize::MAX) >= MAX_EVENT_ROWS {
+        return Err(LocalLeaseOutboxError::CapacityExceeded {
+            resource: "durable event journal",
+            maximum: MAX_EVENT_ROWS,
+        });
+    }
+    Ok(current
         .checked_add(1)
         .ok_or_else(|| LocalLeaseOutboxError::Invalid("event sequence overflow".to_string()))?
         as u64)
@@ -4402,8 +4430,14 @@ async fn next_outbox_sequence(
     .fetch_one(&mut **transaction)
     .await
     .map_err(crate::cognitive_store::unavailable)?;
-    Ok(value
-        .unwrap_or(0)
+    let current = value.unwrap_or(0);
+    if usize::try_from(current).unwrap_or(usize::MAX) >= MAX_OUTBOX_ROWS {
+        return Err(LocalLeaseOutboxError::CapacityExceeded {
+            resource: "durable outbox",
+            maximum: MAX_OUTBOX_ROWS,
+        });
+    }
+    Ok(current
         .checked_add(1)
         .ok_or_else(|| LocalLeaseOutboxError::Invalid("outbox sequence overflow".to_string()))?
         as u64)
