@@ -35,6 +35,8 @@ _AUDIT_STATE_TABLES = (
     "orchestration_generations",
     "worker_registrations",
     "worker_claims",
+    "integration_queue_generations",
+    "integration_queue_items",
     "distributed_cluster_frontiers",
     "distributed_fence_frontiers",
     "integration_decisions",
