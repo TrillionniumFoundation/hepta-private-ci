@@ -15,8 +15,12 @@ const CONNECTION_ID: u64 = 17;
 const SERVER_VERSION: &str = "1.2.3";
 const CODEX_HOME: &str = "/tmp/hepta-agent-home";
 
-fn id(v: &str) -> StableId { StableId::new(v).expect("valid id") }
-fn digest(v: &[u8]) -> Digest32 { Digest32::of_bytes(v) }
+fn id(v: &str) -> StableId {
+    StableId::new(v).expect("valid id")
+}
+fn digest(v: &[u8]) -> Digest32 {
+    Digest32::of_bytes(v)
+}
 
 pub(super) fn product_intent() -> CodexOperationIntent {
     let payload = digest(b"physical-turn-start-payload");
@@ -68,8 +72,10 @@ fn terminal_outcomes_remain_distinct_and_authority_free() {
         (TurnStatus::Failed, AdapterStatus::Failed),
         (TurnStatus::Interrupted, AdapterStatus::Interrupted),
     ] {
-        let receipt = adapt_observed_event(&product_intent(), &id("turn:test"), &terminal(turn_status))
-            .unwrap().unwrap();
+        let receipt =
+            adapt_observed_event(&product_intent(), &id("turn:test"), &terminal(turn_status))
+                .unwrap()
+                .unwrap();
         assert_eq!(receipt.status, expected);
         assert!(receipt.correlation_digest.is_some());
         assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
