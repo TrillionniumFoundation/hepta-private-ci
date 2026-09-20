@@ -47,6 +47,7 @@ const MAX_HOST_CONFIG_BYTES: u64 = 65_536;
 const MAX_BROWSER_PROFILES: u64 = 64;
 const JS_SAFE_INTEGER: u64 = 9_007_199_254_740_991;
 const MAX_DRIVER_TIMEOUT_MS: u64 = 120_000;
+const MAX_RECONCILIATION_FUTURE_SKEW_MS: u64 = 300_000;
 const PARENT_FRAME_GRACE_MS: u64 = 5_000;
 const DEFAULT_PARENT_FRAME_TIMEOUT_MS: u64 = 35_000;
 const MAX_PARENT_FRAME_TIMEOUT_MS: u64 = MAX_DRIVER_TIMEOUT_MS + PARENT_FRAME_GRACE_MS;
@@ -715,6 +716,10 @@ pub struct BrowserServoHostConfig {
     pub reconciliation_root: Option<PathBuf>,
     pub reconciliation_observer_id: Option<String>,
     pub reconciliation_verifying_key: Option<String>,
+    pub reconciliation_minimum_observer_generation: Option<u64>,
+    pub reconciliation_minimum_observed_at_unix_ms: Option<u64>,
+    pub reconciliation_current_frontier_digest: Option<String>,
+    pub reconciliation_max_future_skew_ms: Option<u64>,
     pub bwrap_path: PathBuf,
     pub bwrap_sha256: String,
     pub prlimit_path: PathBuf,
@@ -800,6 +805,16 @@ pub fn open_browser_servo_port_from_file(
             .as_deref()
             .map(|value| parse_digest_text(value, "reconciliation_verifying_key"))
             .transpose()?,
+        reconciliation_minimum_observer_generation: config
+            .reconciliation_minimum_observer_generation,
+        reconciliation_minimum_observed_at_unix_ms: config
+            .reconciliation_minimum_observed_at_unix_ms,
+        reconciliation_current_frontier_digest: config
+            .reconciliation_current_frontier_digest
+            .as_deref()
+            .map(|value| parse_digest_text(value, "reconciliation_current_frontier_digest"))
+            .transpose()?,
+        reconciliation_max_future_skew_ms: config.reconciliation_max_future_skew_ms,
         bwrap_path: config.bwrap_path,
         bwrap_sha256: parse_digest_text(&config.bwrap_sha256, "bwrap_sha256")?,
         prlimit_path: config.prlimit_path,
@@ -946,6 +961,10 @@ pub struct BrowserServoProcessConfig {
     pub reconciliation_root: Option<PathBuf>,
     pub reconciliation_observer_id: Option<String>,
     pub reconciliation_verifying_key: Option<[u8; 32]>,
+    pub reconciliation_minimum_observer_generation: Option<u64>,
+    pub reconciliation_minimum_observed_at_unix_ms: Option<u64>,
+    pub reconciliation_current_frontier_digest: Option<[u8; 32]>,
+    pub reconciliation_max_future_skew_ms: Option<u64>,
     pub bwrap_path: PathBuf,
     pub bwrap_sha256: [u8; 32],
     pub prlimit_path: PathBuf,
@@ -979,24 +998,48 @@ impl BrowserServoProcessConfig {
             self.reconciliation_root.as_ref(),
             self.reconciliation_observer_id.as_ref(),
             self.reconciliation_verifying_key.as_ref(),
+            self.reconciliation_minimum_observer_generation,
+            self.reconciliation_minimum_observed_at_unix_ms,
+            self.reconciliation_current_frontier_digest.as_ref(),
+            self.reconciliation_max_future_skew_ms,
         ) {
-            (None, None, None) => {}
-            (Some(path), Some(observer_id), Some(verifying_key)) => {
+            (None, None, None, None, None, None, None) => {}
+            (
+                Some(path),
+                Some(observer_id),
+                Some(verifying_key),
+                Some(minimum_generation),
+                Some(minimum_observed_at),
+                Some(current_frontier),
+                Some(max_future_skew_ms),
+            ) => {
                 if !path.is_absolute() {
                     return Err(BrowserServoError::Invalid(
                         "Browser reconciliation root path must be absolute".into(),
                     ));
                 }
                 stable_id(observer_id, "Browser reconciliation observer id")?;
-                if *verifying_key == [0; 32] {
+                if *verifying_key == [0; 32] || *current_frontier == [0; 32] {
                     return Err(BrowserServoError::Invalid(
-                        "Browser reconciliation verifying key must be non-zero".into(),
+                        "Browser reconciliation verifying key/frontier must be non-zero".into(),
+                    ));
+                }
+                if minimum_generation == 0
+                    || minimum_generation > JS_SAFE_INTEGER
+                    || minimum_observed_at == 0
+                    || minimum_observed_at > JS_SAFE_INTEGER
+                    || max_future_skew_ms == 0
+                    || max_future_skew_ms > MAX_RECONCILIATION_FUTURE_SKEW_MS
+                {
+                    return Err(BrowserServoError::Invalid(
+                        "Browser reconciliation currentness policy is outside its hard bounds"
+                            .into(),
                     ));
                 }
             }
             _ => {
                 return Err(BrowserServoError::Invalid(
-                    "Browser persisted reconciliation requires root, observer id and verifying key together"
+                    "Browser persisted reconciliation requires root, observer id, verifying key, minimum generation/time, current frontier and future-skew bound together"
                         .into(),
                 ));
             }
@@ -1113,10 +1156,22 @@ impl ChildBrowserTransport {
                 "HEPTA_BROWSER_DRIVER_TIMEOUT_MS",
                 config.driver_timeout_ms.to_string(),
             );
-        if let (Some(path), Some(observer_id), Some(verifying_key)) = (
+        if let (
+            Some(path),
+            Some(observer_id),
+            Some(verifying_key),
+            Some(minimum_generation),
+            Some(minimum_observed_at),
+            Some(current_frontier),
+            Some(max_future_skew_ms),
+        ) = (
             config.reconciliation_root.as_ref(),
             config.reconciliation_observer_id.as_ref(),
             config.reconciliation_verifying_key.as_ref(),
+            config.reconciliation_minimum_observer_generation,
+            config.reconciliation_minimum_observed_at_unix_ms,
+            config.reconciliation_current_frontier_digest.as_ref(),
+            config.reconciliation_max_future_skew_ms,
         ) {
             command
                 .env("HEPTA_BROWSER_RECONCILIATION_ROOT", path)
@@ -1124,6 +1179,22 @@ impl ChildBrowserTransport {
                 .env(
                     "HEPTA_BROWSER_RECONCILIATION_VERIFYING_KEY",
                     hex_lower(verifying_key),
+                )
+                .env(
+                    "HEPTA_BROWSER_RECONCILIATION_MIN_OBSERVER_GENERATION",
+                    minimum_generation.to_string(),
+                )
+                .env(
+                    "HEPTA_BROWSER_RECONCILIATION_MIN_OBSERVED_AT_UNIX_MS",
+                    minimum_observed_at.to_string(),
+                )
+                .env(
+                    "HEPTA_BROWSER_RECONCILIATION_CURRENT_FRONTIER_DIGEST",
+                    hex_lower(current_frontier),
+                )
+                .env(
+                    "HEPTA_BROWSER_RECONCILIATION_MAX_FUTURE_SKEW_MS",
+                    max_future_skew_ms.to_string(),
                 );
         }
         command
