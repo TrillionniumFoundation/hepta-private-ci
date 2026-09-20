@@ -72,9 +72,7 @@ impl AgentdState {
             .map_err(|_| AgentdError::Protocol("plasticity runtime already attached".to_string()))
     }
 
-    pub(crate) fn plasticity_runtime(
-        &self,
-    ) -> Option<crate::PlasticityRuntimeHandleV1> {
+    pub(crate) fn plasticity_runtime(&self) -> Option<crate::PlasticityRuntimeHandleV1> {
         self.plasticity_runtime.get().cloned()
     }
 
