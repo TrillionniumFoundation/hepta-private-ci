@@ -249,7 +249,7 @@ impl SparseJournal {
                 .map_err(|_| JournalError::Indeterminate)?;
             file.sync_all().map_err(|_| JournalError::Indeterminate)?;
         } else {
-            validate_exact_header(&mut file, &header, SUCCESSOR_HEADER, SUCCESSOR_MAGIC)?;
+            validate_exact_header(&mut file, &header, SUCCESSOR_HEADER, *SUCCESSOR_MAGIC)?;
         }
         Self::recover_frames(
             file,
