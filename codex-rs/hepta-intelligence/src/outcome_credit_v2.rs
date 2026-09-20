@@ -522,12 +522,9 @@ mod tests {
         let decision = append_decision(&mut writer);
 
         let initial = outcome("outcome-record-1", "outcome-1", None, 100);
-        let first = append_observed_outcome_v2(
-            &mut writer,
-            observed_request(&writer, decision.chain_digest, initial),
-            50,
-        )
-        .expect("initial outcome");
+        let initial_request = observed_request(&writer, decision.chain_digest, initial);
+        let first = append_observed_outcome_v2(&mut writer, initial_request, 50)
+            .expect("initial outcome");
 
         let corrected = outcome(
             "outcome-record-2",
