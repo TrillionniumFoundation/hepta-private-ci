@@ -16,7 +16,7 @@ runs admitted checks under a bounded sandbox controller; performs evaluator-owne
 mutation testing; verifies source/execution/evaluator evidence; records signed
 candidate-bound review eligibility; exposes distributed-fence, external-audit-anchor
 and external-key-custody admission contracts; and composes consent-bound dormant
-external-system proposals. The repository CI includes a named v2 product caller.
+external-system proposals. The repository CI includes a named v4 product caller over the SQLite v9 owner.
 That caller fail-closed reads the canonical work-package registry from the exact
 `HEAD:docs/delivery/WORK_PACKAGES.json` Git blob (not checkout-filtered worktree
 bytes) and binds its blob OID plus registry/package digests to the tested tree. It
@@ -28,7 +28,7 @@ On pull requests the named product caller executes independently against source-
 and the deterministic base-merge candidate. CI retains both lane receipts, then a
 separate aggregation job recomputes each receipt digest, checks common repository/run/source
 identity, ordered merge parents, canonical ECP blob/package identity and zero authority,
-and emits `hepta.control-engineering-product-receipt-pair.v1`. Production-readiness
+and emits `hepta.control-engineering-product-receipt-pair.v2`. Production-readiness
 projection requires both lane digests and their canonical receipt-set digest; one lane
 plus caller-supplied booleans cannot satisfy product composition. It is not a learned code
 generator, merge service or autonomous release agent.
@@ -55,7 +55,7 @@ must provide the separate owner authorization required by its own contract.
 | `closure.py` | Source-tree and freshness-window binding, dormant assimilation | Seal and public facade |
 | `seal.py` | Signed evidence seals, replay prevention, review and durable eligibility | Public package and facade |
 | `external_controls.py` | Distributed fencing, external audit anchor over both audit head and durable owner-state snapshot, and subject-bound HSM/KMS custody receipt admission | Production worker/deployment composition |
-| `product_gate.py` | Named repository CI product caller over the v2 durable owner/orchestrator; PR qualification emits separate source-head and base-merge execution receipts | `hepta-consolidated-source.yml` |
+| `product_gate.py` | Named repository CI product caller over the SQLite v9 durable owner/orchestrator, worker lifecycle and integration reconciler; PR qualification emits separate source-head and base-merge execution receipts | `hepta-consolidated-source.yml` |
 | `cli.py` | Bounded JSON ingress and local operations | `python -m control_engineering_v2`, installed CLI |
 
 There are no import-time store patches or alternate clone sandbox owners. The
