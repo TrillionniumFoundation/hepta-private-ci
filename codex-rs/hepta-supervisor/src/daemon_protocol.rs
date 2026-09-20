@@ -526,7 +526,7 @@ mod tests {
     fn signed_mutation_response_round_trips_its_bound_production_receipt() {
         let receipt = ProductionMutationReceipt {
             grant_sha256: Sha256Digest::for_bytes(b"grant"),
-            intent_sha256: Sha256Digest::for_bytes(b"intent"),
+            intent_sha256: None,
             agent_id: AGENT_ID.to_string(),
             transition: H7H89ProductionTransition::Upgrade,
             source_release: "agentd-v1".to_string(),
@@ -558,12 +558,14 @@ mod tests {
             serde_json::Value::String(receipt.grant_sha256.as_str().to_owned())
         );
         assert_eq!(
-            json["payload"]["production_receipt"]["intent_sha256"],
-            serde_json::Value::String(receipt.intent_sha256.as_str().to_owned())
-        );
-        assert_eq!(
             json["payload"]["production_receipt"]["status"],
             serde_json::Value::String("queued".to_string())
+        );
+        assert!(
+            json["payload"]["production_receipt"]
+                .get("intent_sha256")
+                .is_none(),
+            "pre-existing MutationAccepted wire must not gain a critical field"
         );
         for field in [
             "production_authority",
