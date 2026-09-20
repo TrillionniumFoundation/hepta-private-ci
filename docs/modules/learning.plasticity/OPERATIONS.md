@@ -9,14 +9,19 @@ claims. A deployment may be stricter but must not silently relax them.
 The product-workspace adapter entrypoint is
 `codex-rs/hepta-intelligence::propose_authenticated_parameter_plasticity_v1`.
 It can construct and persist a proposal only. It has no selection, training,
-installation, runtime-topology, promotion or release authority. `codex-rs/hepta-agentd::propose_agentd_plasticity_v1` is now the source-level host
-callsite. It recomputes the current artifact and durable learning-ledger frontiers
+installation, runtime-topology, promotion or release authority. `codex-rs/hepta-agentd::propose_agentd_plasticity_v1` is now called by the long-lived
+`PlasticityRuntimeOwnerV1` supervised from the real Agentd `runtime.rs` task set. It recomputes the current artifact and durable learning-ledger frontiers
 and requires context-bound owner evidence for dataset, update-rule, modulator,
-modulator-broadcast, eligibility, mutation-policy and per-parameter signal digests
-before invoking the adapter. A complete evidence-kind→owner allowlist is enforced
+modulator-broadcast, eligibility, mutation-policy and per-parameter signals before
+invoking the adapter. Every owner query binds the live artifact/ledger heads; parameter
+signals additionally bind the exact eligibility, modulator, learning-rate and bound
+values used by deterministic generation. `DatasetSnapshotReceiptV3` and immutable
+Policy artifacts have concrete owner adapters; unresolved dynamic owners fail closed. A complete evidence-kind→owner allowlist is enforced
 separately from resolver authentication, so a valid receipt from the wrong owner
-cannot satisfy admission. This source composition is not evidence that a deployed
-target host executed or accepted it, so product execution remains unproved.
+cannot satisfy admission. The owner is attached explicitly through `AgentdConfig`, uses a bounded in-process
+queue and is fenced by the current Running/ready Agentd generation. No public plasticity
+wire method or fallback writer is created. This source composition is not evidence that
+a deployed target host executed or accepted it, so product execution remains unproved.
 
 The selected host owns four independent facts: current learning-evidence trust state,
 current artifact/evidence frontier witness, authoritative owner-evidence resolution,
@@ -31,6 +36,7 @@ generation rollover and anchor persistence are serialized by the journal.
 
 An adapter append is acknowledged only after `PlasticityAnchorCommitterV1` durably
 persists the resulting current registry anchor in that independent rollback domain.
+The repository fault fixture also holds the external acknowledgement while presenting a rolled-back header-only registry and requires reopen to fail with `AcknowledgedHistoryMissing`; this proves the reconciliation rule, not physical storage-domain independence.
 If the anchor commit fails after the registry append, the adapter writer is poisoned,
 returns `AnchorPersistenceFailed`, and MUST NOT perform another operation until an
 anchored reopen reconciles the durable file with previously acknowledged history.
@@ -56,7 +62,7 @@ lineage mismatch, excess regression or an unverified rollback causes terminal ab
 The receipt binds the complete plan and a rolling chain over every observation;
 reaching the minimum successful-step threshold remains `Running` until an explicit
 `finish()` transition.
-An Accepted source receipt is still not activation authority and is not evidence of a
+`observe_authenticated_structural_canary_v1` is the product-facing observation boundary. A current trusted `Observer` must sign the plan digest and every observation field (health/evidence, regression count, safety violation, lineage mismatch and rollback verification) before the state machine is called. Direct caller assertions are therefore not accepted by the composed canary path. An Accepted source receipt is still not activation authority and is not evidence of a
 real host canary run.
 
 ## Required events
@@ -91,7 +97,8 @@ credentials, dataset records and payload bytes are prohibited from logs.
 - **Authentication:** page on any accepted request whose authenticated Generator,
   Observer and Evaluator do not satisfy pairwise signed-role separation, or whose
   owner-evidence receipt, including the mutation-policy receipt, cannot be resolved
-  against its exact artifact/window/dataset context and evidence-kind owner allowlist;
+  against its exact live artifact/ledger frontier, artifact/window/dataset context,
+  per-signal values and evidence-kind owner allowlist;
   the implementation is expected to make these states unreachable.
 - **Mutation grammar provenance:** reject a parameter mutation policy whose canonical
   `MutationGrammarManifestV1` semantic digest is zero, missing or differs from the
@@ -145,15 +152,17 @@ A production activation claim requires target-host execution evidence in additio
 the implemented Agentd source callsites, plus an exact-head and synthetic-merge run
 covering: V3 deterministic generation, trust-region
 rejection, signature expiry/revocation, generator/evaluator and observer/evaluator
-controller collisions, missing evaluation, owner-evidence missing/stale/context
-substitution, stale/frontier witness, anchored reopen, failed external-anchor
+controller collisions, missing evaluation, independently-attested durable no-update
+terminal behavior, owner-evidence missing/stale/context or signal-value substitution,
+concrete dataset/policy live-frontier rollback rejection, stale/frontier witness,
+anchored reopen, failed external-anchor
 commit and poisoned-writer behavior, old-prefix rollback, incomplete-tail recovery,
 writer-fence mismatch, append-only anchor-journal crash-tail recovery and complete-frame
 corruption rejection, zero-complete-frame bootstrap recovery plus complete-unacknowledged
 history rejection, monotonic generation rollover, canonical mutation-grammar digest
 binding, evidence-kind wrong-owner denial, typed parameter-mutation-policy
 protected-surface denial, topology writer-handoff validation, topology anchored reopen,
-topology self-activation denial,
+topology self-activation denial, authenticated structural-canary observation binding,
 and structural-canary abort semantics. A real bounded canary must additionally emit
 host telemetry and operator evidence. Until those receipts exist, product execution,
 activation and release remain false even when source compilation/tests pass.
