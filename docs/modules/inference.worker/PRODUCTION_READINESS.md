@@ -234,8 +234,9 @@ of these are true:
 - exact source commit/tree and synthetic merge candidate are recorded;
 - package tests, all-target build and strict Clippy pass on that exact candidate;
 - the named deployed hosted-provider product caller reaches
-  `NativeWorkerPort::execute`, and any selected local-model profile has a
-  separately authenticated local product caller;
+  `NativeWorkerPort::execute`; for a selected local-model profile, the deployed
+  `hepta-local-inference-runtime-host` must prove its authenticated resource
+  generation, live revocation feed and sandbox/device configuration;
 - protected signer trust/revocation state is configured outside the worker;
 - economic quota and hardware-capacity authority are composed;
 - real model/runtime/device qualification above is attached;
