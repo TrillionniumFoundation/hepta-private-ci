@@ -267,7 +267,7 @@ fn signed_admission_persists_scope_evidence_and_grant_lineage() {
     let event = registry
         .lifecycle_events()
         .last()
-        .expect("admission lifecycle event");
+        .must("admission lifecycle event");
     assert_eq!(event.kind, LifecycleEventKind::Admitted);
     assert_eq!(event.actor_id, id("reviewer:1"));
     assert_eq!(event.admission_grant_id, Some(id("admission:1")));
@@ -393,11 +393,11 @@ fn verified_admission_rejects_clock_rollback_between_verify_and_commit() {
 
 #[test]
 fn record_capacity_rejects_atomically() {
-    let mut registry = PromptRegistry::new(1).expect("bounded registry");
+    let mut registry = PromptRegistry::new(1).must("bounded registry");
     let first = factor(FactorSource::GovernedInternal);
     registry
         .register_factor(first)
-        .expect("first record fits capacity");
+        .must("first record fits capacity");
     let before = registry.clone();
 
     let mut second = factor(FactorSource::GovernedInternal);
