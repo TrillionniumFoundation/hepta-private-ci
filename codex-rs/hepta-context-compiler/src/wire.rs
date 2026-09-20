@@ -189,9 +189,7 @@ pub fn compile_to_wire_v2(
     Ok((receipt, envelope))
 }
 
-fn require_context_compilation_producer(
-    producer: &StableId,
-) -> Result<(), ContextWireError> {
+fn require_context_compilation_producer(producer: &StableId) -> Result<(), ContextWireError> {
     if producer.as_str() != CONTEXT_COMPILATION_WIRE_PRODUCER_V2 {
         return Err(ContextWireError::UnexpectedProducer(producer.clone()));
     }
