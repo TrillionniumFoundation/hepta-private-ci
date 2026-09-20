@@ -950,6 +950,13 @@ fn read_private_file(
     if metadata.file_type().is_symlink() || !metadata.is_file() {
         return Err("host input must be a regular non-symlink file".into());
     }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        if metadata.permissions().mode() & 0o077 != 0 {
+            return Err("host input must not be group/world accessible".into());
+        }
+    }
     let mut bytes = Vec::new();
     fs::File::open(path)?
         .take((maximum + 1) as u64)
@@ -1000,4 +1007,191 @@ fn control_state_name(state: RequestState) -> &'static str {
 
 fn usage() -> &'static str {
     "usage: hepta-local-inference-runtime-host serve ABS_CONFIG.json SIGNED_RESOURCE_GRANT.json"
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn test_path(label: &str) -> PathBuf {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        std::env::temp_dir().join(format!(
+            "hepta-local-product-{label}-{}-{nonce}.journal",
+            std::process::id()
+        ))
+    }
+
+    fn manifest() -> ModelManifest {
+        ModelManifest {
+            model_id: "model.local.product".to_string(),
+            model_digest: "1".repeat(64),
+            weights_digest: "2".repeat(64),
+            tokenizer_digest: "3".repeat(64),
+            preprocessor_digest: "4".repeat(64),
+            quantization_digest: "5".repeat(64),
+            runtime_digest: "6".repeat(64),
+            device_digest: "7".repeat(64),
+            maximum_tokens: 128,
+        }
+    }
+
+    #[test]
+    fn run_is_derived_from_durable_assignment_and_commits_entry_fence() {
+        let path = test_path("assignment");
+        let input = "durable input".to_string();
+        let payload_digest = sha256(input.as_bytes());
+        let mut owner = DurableInferenceControl::open(&path, 16).unwrap();
+        owner
+            .submit(
+                100,
+                ControlInferenceRequest {
+                    request_id: "request.local.product".to_string(),
+                    principal_id: "principal.local".to_string(),
+                    model_digest: "1".repeat(64),
+                    payload_digest: payload_digest.clone(),
+                    maximum_tokens: 32,
+                    deadline_ms: 9_000,
+                    semantic_digest: "8".repeat(64),
+                },
+            )
+            .unwrap();
+        owner
+            .reserve(
+                100,
+                "request.local.product",
+                1,
+                ControlReservation {
+                    reservation_id: "reservation.local.product".to_string(),
+                    quota_units: 90,
+                    maximum_tokens: 40,
+                    authority_epoch: 2,
+                    valid_until_ms: 8_000,
+                },
+            )
+            .unwrap();
+        owner
+            .assign(
+                "request.local.product",
+                2,
+                Assignment {
+                    worker_id: "worker.local.product".to_string(),
+                    worker_generation: 7,
+                    assignment_digest: "9".repeat(64),
+                },
+            )
+            .unwrap();
+        let control = Arc::new(Mutex::new(owner));
+        let request = prepare_run(
+            &control,
+            "request.local.product",
+            input.clone(),
+            &manifest(),
+            "worker.local.product",
+            7,
+        )
+        .unwrap();
+
+        assert_eq!(request.input, input);
+        assert_eq!(request.payload_digest, payload_digest);
+        assert_eq!(request.reservation_id, "reservation.local.product");
+        assert_eq!(request.maximum_tokens, 32);
+        assert_eq!(request.reservation_maximum_tokens, 40);
+        assert_eq!(request.deadline_ms, 9_000);
+        assert_eq!(
+            control
+                .lock()
+                .unwrap()
+                .get("request.local.product")
+                .unwrap()
+                .state,
+            RequestState::Running
+        );
+
+        drop(control);
+        std::fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn a_second_run_after_entry_is_marked_indeterminate_not_replayed() {
+        let path = test_path("no-replay");
+        let input = "once".to_string();
+        let payload_digest = sha256(input.as_bytes());
+        let mut owner = DurableInferenceControl::open(&path, 16).unwrap();
+        owner
+            .submit(
+                100,
+                ControlInferenceRequest {
+                    request_id: "request.local.once".to_string(),
+                    principal_id: "principal.local".to_string(),
+                    model_digest: "1".repeat(64),
+                    payload_digest,
+                    maximum_tokens: 16,
+                    deadline_ms: 9_000,
+                    semantic_digest: "8".repeat(64),
+                },
+            )
+            .unwrap();
+        owner
+            .reserve(
+                100,
+                "request.local.once",
+                1,
+                ControlReservation {
+                    reservation_id: "reservation.local.once".to_string(),
+                    quota_units: 50,
+                    maximum_tokens: 16,
+                    authority_epoch: 2,
+                    valid_until_ms: 8_000,
+                },
+            )
+            .unwrap();
+        owner
+            .assign(
+                "request.local.once",
+                2,
+                Assignment {
+                    worker_id: "worker.local.product".to_string(),
+                    worker_generation: 7,
+                    assignment_digest: "9".repeat(64),
+                },
+            )
+            .unwrap();
+        let control = Arc::new(Mutex::new(owner));
+        prepare_run(
+            &control,
+            "request.local.once",
+            input.clone(),
+            &manifest(),
+            "worker.local.product",
+            7,
+        )
+        .unwrap();
+        assert!(
+            prepare_run(
+                &control,
+                "request.local.once",
+                input,
+                &manifest(),
+                "worker.local.product",
+                7,
+            )
+            .is_err()
+        );
+        assert_eq!(
+            control
+                .lock()
+                .unwrap()
+                .get("request.local.once")
+                .unwrap()
+                .state,
+            RequestState::Indeterminate
+        );
+
+        drop(control);
+        std::fs::remove_file(path).unwrap();
+    }
 }
