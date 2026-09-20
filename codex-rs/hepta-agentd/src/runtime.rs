@@ -100,6 +100,7 @@ pub async fn run(config: AgentdConfig, arg0_paths: Arg0DispatchPaths) -> Result<
     if let Some(store) = automation_store.as_ref() {
         state.attach_automation_store(store.clone())?;
     }
+    state.mark_runtime_prerequisites_ready()?;
     let cancellation = CancellationToken::new();
     let control = AgentdControlServer::bind(
         identity.control_socket.clone(),

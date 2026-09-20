@@ -49,21 +49,34 @@ impl AgentdState {
             )));
         }
         self.refresh_generation()?;
-        let (current_generation, lifecycle, app_server_ready, fenced) = {
+        let (
+            current_generation,
+            lifecycle,
+            app_server_ready,
+            critical_stores_ready,
+            revocation_ready,
+            required_ports_ready,
+            admission_open,
+            fenced,
+        ) = {
             let runtime = self.runtime.lock().map_err(poisoned_state)?;
             (
                 runtime.current_generation,
                 runtime.lifecycle,
                 runtime.app_server_ready,
+                runtime.critical_stores_ready,
+                runtime.revocation_ready,
+                runtime.required_ports_ready,
+                runtime.admission_open,
                 runtime.fenced,
             )
         };
         let automation = self.automation.lock().map_err(poisoned_state)?.clone();
         let cognitive = self.cognitive.lock().map_err(poisoned_state)?.clone();
-        // CognitiveStore is a required owner for production readiness. Automation
-        // remains an explicitly optional plane and therefore does not gate core
-        // Agent readiness.
-        let critical_owners_ready = cognitive.is_some();
+        // Automation remains an explicitly optional plane and therefore does
+        // not gate core Agent readiness. The required cognitive owner is
+        // represented by critical_stores_ready, which is frozen only after
+        // owner-local startup completes under the generation fence.
         let payload = match method {
             crate::AgentdMethod::Capabilities => {
                 AgentdPayload::Capabilities(crate::AgentdCapabilitySet::empty())
@@ -73,11 +86,16 @@ impl AgentdState {
                     lifecycle,
                     AgentLifecycle::Starting | AgentLifecycle::Running
                 ) && app_server_ready
-                    && critical_owners_ready
+                    && critical_stores_ready
+                    && revocation_ready
+                    && required_ports_ready
                     && !fenced,
                 ready: lifecycle == AgentLifecycle::Running
                     && app_server_ready
-                    && critical_owners_ready
+                    && critical_stores_ready
+                    && revocation_ready
+                    && required_ports_ready
+                    && admission_open
                     && !fenced,
                 fenced,
                 lifecycle,
@@ -91,9 +109,22 @@ impl AgentdState {
                 app_server_ready,
                 fenced,
             }),
+            crate::AgentdMethod::Readiness => AgentdPayload::Readiness(crate::ReadinessSnapshot {
+                critical_stores_ready,
+                revocation_ready,
+                required_ports_ready,
+                admission_open,
+            }),
             crate::AgentdMethod::Drain => AgentdPayload::Drain(self.request_drain()?),
             crate::AgentdMethod::SessionIngress => {
-                if lifecycle != AgentLifecycle::Running || !app_server_ready || fenced {
+                if lifecycle != AgentLifecycle::Running
+                    || !app_server_ready
+                    || !critical_stores_ready
+                    || !revocation_ready
+                    || !required_ports_ready
+                    || !admission_open
+                    || fenced
+                {
                     AgentdPayload::Error {
                         code: "not_ready".to_string(),
                         message: "session ingress is unavailable until this generation is ready"
@@ -115,7 +146,15 @@ impl AgentdState {
                 )
             }
             crate::AgentdMethod::CognitiveContext { query, limit } => {
-                require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
+                require_cognitive_control_ready(
+                    lifecycle,
+                    app_server_ready,
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                    fenced,
+                )?;
                 let Some(store) = cognitive else {
                     return self.response_with_payload(
                         request_id,
@@ -140,6 +179,10 @@ impl AgentdState {
                     require_cognitive_control_ready(
                         runtime.lifecycle,
                         runtime.app_server_ready,
+                        runtime.critical_stores_ready,
+                        runtime.revocation_ready,
+                        runtime.required_ports_ready,
+                        runtime.admission_open,
                         runtime.fenced,
                     )?;
                 }
@@ -178,7 +221,15 @@ impl AgentdState {
                 }
             }
             crate::AgentdMethod::AutomationCreate { draft } => {
-                require_automation_ready(lifecycle, app_server_ready, fenced)?;
+                require_automation_ready(
+                    lifecycle,
+                    app_server_ready,
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                    fenced,
+                )?;
                 match automation {
                     Some(store) => self.automation_result(
                         store.create_task(&draft).await,
@@ -188,7 +239,15 @@ impl AgentdState {
                 }
             }
             crate::AgentdMethod::AutomationList { limit } => {
-                require_automation_ready(lifecycle, app_server_ready, fenced)?;
+                require_automation_ready(
+                    lifecycle,
+                    app_server_ready,
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                    fenced,
+                )?;
                 if !(1..=256).contains(&limit) {
                     return Err(AgentdError::Invalid(
                         "automation list limit must be between 1 and 256".to_string(),
@@ -203,7 +262,15 @@ impl AgentdState {
                 }
             }
             crate::AgentdMethod::AutomationCancel { task_id } => {
-                require_automation_ready(lifecycle, app_server_ready, fenced)?;
+                require_automation_ready(
+                    lifecycle,
+                    app_server_ready,
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                    fenced,
+                )?;
                 match automation {
                     Some(store) => self.automation_result(
                         store.cancel_task(task_id, now_ms()?).await,
@@ -217,7 +284,15 @@ impl AgentdState {
                 enabled,
                 resume_at_ms,
             } => {
-                require_automation_ready(lifecycle, app_server_ready, fenced)?;
+                require_automation_ready(
+                    lifecycle,
+                    app_server_ready,
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                    fenced,
+                )?;
                 match automation {
                     Some(store) => self.automation_result(
                         store
@@ -233,7 +308,15 @@ impl AgentdState {
                 owner_scope,
                 lifetime_seconds,
             } => {
-                require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
+                require_cognitive_control_ready(
+                    lifecycle,
+                    app_server_ready,
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                    fenced,
+                )?;
                 let Some(store) = cognitive else {
                     return self.response_with_payload(
                         request_id,
@@ -319,7 +402,15 @@ impl AgentdState {
                 )?)
             }
             crate::AgentdMethod::MemoryFederationRevoke { capability_id } => {
-                require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
+                require_cognitive_control_ready(
+                    lifecycle,
+                    app_server_ready,
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                    fenced,
+                )?;
                 let Some(store) = cognitive else {
                     return self.response_with_payload(
                         request_id,
@@ -375,7 +466,15 @@ impl AgentdState {
                 AgentdPayload::MemoryFederationCapability(federation_snapshot(status)?)
             }
             crate::AgentdMethod::MemoryFederationList { limit } => {
-                require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
+                require_cognitive_control_ready(
+                    lifecycle,
+                    app_server_ready,
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                    fenced,
+                )?;
                 if !(1..=crate::MAX_FEDERATION_CONTROL_LIST).contains(&limit) {
                     return Err(AgentdError::Invalid(format!(
                         "memory federation list limit must be 1..={}",
@@ -407,7 +506,15 @@ impl AgentdState {
                 }
             }
             crate::AgentdMethod::MemoryFederationStatus { capability_id } => {
-                require_cognitive_control_ready(lifecycle, app_server_ready, fenced)?;
+                require_cognitive_control_ready(
+                    lifecycle,
+                    app_server_ready,
+                    critical_stores_ready,
+                    revocation_ready,
+                    required_ports_ready,
+                    admission_open,
+                    fenced,
+                )?;
                 let Some(store) = cognitive else {
                     return self.response_with_payload(
                         request_id,
@@ -530,9 +637,20 @@ fn cognitive_control_unavailable() -> AgentdPayload {
 fn require_cognitive_control_ready(
     lifecycle: AgentLifecycle,
     app_server_ready: bool,
+    critical_stores_ready: bool,
+    revocation_ready: bool,
+    required_ports_ready: bool,
+    admission_open: bool,
     fenced: bool,
 ) -> Result<(), AgentdError> {
-    if lifecycle == AgentLifecycle::Running && app_server_ready && !fenced {
+    if lifecycle == AgentLifecycle::Running
+        && app_server_ready
+        && critical_stores_ready
+        && revocation_ready
+        && required_ports_ready
+        && admission_open
+        && !fenced
+    {
         Ok(())
     } else {
         Err(AgentdError::Protocol(
@@ -596,9 +714,20 @@ fn federation_snapshot(
 fn require_automation_ready(
     lifecycle: AgentLifecycle,
     app_server_ready: bool,
+    critical_stores_ready: bool,
+    revocation_ready: bool,
+    required_ports_ready: bool,
+    admission_open: bool,
     fenced: bool,
 ) -> Result<(), AgentdError> {
-    if lifecycle == AgentLifecycle::Running && app_server_ready && !fenced {
+    if lifecycle == AgentLifecycle::Running
+        && app_server_ready
+        && critical_stores_ready
+        && revocation_ready
+        && required_ports_ready
+        && admission_open
+        && !fenced
+    {
         Ok(())
     } else {
         Err(AgentdError::Protocol(

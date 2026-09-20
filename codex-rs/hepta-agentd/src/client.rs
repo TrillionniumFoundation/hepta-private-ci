@@ -24,6 +24,7 @@ use crate::DrainSnapshot;
 use crate::EventBatch;
 use crate::HealthSnapshot;
 use crate::LifecycleSnapshot;
+use crate::ReadinessSnapshot;
 use crate::MAX_CONTROL_FRAME_BYTES;
 use crate::MemoryFederationCapabilityId;
 use crate::MemoryFederationCapabilitySnapshot;
@@ -97,6 +98,20 @@ impl AgentdClient {
             .payload
         {
             AgentdPayload::Lifecycle(snapshot) => Ok(snapshot),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn readiness(&self) -> Result<ReadinessSnapshot, AgentdError> {
+        match self
+            .send(AgentdRequest::readiness(
+                self.request_id(),
+                self.spawn_generation,
+            ))
+            .await?
+            .payload
+        {
+            AgentdPayload::Readiness(snapshot) => Ok(snapshot),
             payload => unexpected(payload),
         }
     }

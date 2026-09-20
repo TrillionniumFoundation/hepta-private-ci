@@ -32,6 +32,10 @@ struct RuntimeState {
     current_generation: u64,
     lifecycle: AgentLifecycle,
     app_server_ready: bool,
+    critical_stores_ready: bool,
+    revocation_ready: bool,
+    required_ports_ready: bool,
+    admission_open: bool,
     fenced: bool,
 }
 
@@ -54,6 +58,10 @@ impl AgentdState {
                 current_generation: identity.spawn_generation,
                 lifecycle: AgentLifecycle::Starting,
                 app_server_ready: false,
+                critical_stores_ready: false,
+                revocation_ready: false,
+                required_ports_ready: false,
+                admission_open: false,
                 fenced: false,
             }),
             identity,
@@ -168,7 +176,23 @@ impl AgentdState {
             runtime.current_generation = record.lifecycle.generation;
             runtime.lifecycle = record.lifecycle.lifecycle;
             if runtime.lifecycle != AgentLifecycle::Running {
+                runtime.admission_open = false;
+            }
+            if matches!(
+                runtime.lifecycle,
+                AgentLifecycle::Draining | AgentLifecycle::Stopped | AgentLifecycle::Failed
+            ) {
                 runtime.app_server_ready = false;
+                runtime.required_ports_ready = false;
+            }
+            if runtime.lifecycle == AgentLifecycle::Running
+                && runtime.app_server_ready
+                && runtime.critical_stores_ready
+                && runtime.revocation_ready
+                && runtime.required_ports_ready
+                && !runtime.fenced
+            {
+                runtime.admission_open = true;
             }
             self.events
                 .lock()
@@ -191,6 +215,10 @@ impl AgentdState {
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
         if runtime.lifecycle != AgentLifecycle::Running
             || !runtime.app_server_ready
+            || !runtime.critical_stores_ready
+            || !runtime.revocation_ready
+            || !runtime.required_ports_ready
+            || !runtime.admission_open
             || runtime.fenced
         {
             return Err(AgentdError::GenerationFenced(
@@ -201,10 +229,31 @@ impl AgentdState {
         Ok(runtime.current_generation)
     }
 
+    /// Marks owner-local prerequisites after all mandatory stores have opened
+    /// under the current generation fence. The default Agentd host has no
+    /// production effect authority, so its revocation posture is the explicit
+    /// zero-authority baseline. A future effect-authorized composition must
+    /// replace this with a live external revocation witness before admission.
+    pub(crate) fn mark_runtime_prerequisites_ready(&self) -> Result<(), AgentdError> {
+        let critical_stores_ready = self.cognitive.lock().map_err(poisoned_state)?.is_some();
+        let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+        runtime.critical_stores_ready = critical_stores_ready;
+        runtime.revocation_ready = true;
+        Ok(())
+    }
+
     pub(crate) fn mark_app_server_ready(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
         if !runtime.app_server_ready {
             runtime.app_server_ready = true;
+            runtime.required_ports_ready = true;
+            if runtime.lifecycle == AgentLifecycle::Running
+                && runtime.critical_stores_ready
+                && runtime.revocation_ready
+                && !runtime.fenced
+            {
+                runtime.admission_open = true;
+            }
             self.events
                 .lock()
                 .map_err(poisoned_state)?
@@ -216,6 +265,8 @@ impl AgentdState {
     pub(crate) fn mark_draining(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
         runtime.app_server_ready = false;
+        runtime.required_ports_ready = false;
+        runtime.admission_open = false;
         self.app_server_drain.request_drain();
         self.events
             .lock()
@@ -266,6 +317,8 @@ impl AgentdState {
     pub(crate) fn mark_fenced(&self) {
         if let Ok(mut runtime) = self.runtime.lock() {
             runtime.app_server_ready = false;
+            runtime.required_ports_ready = false;
+            runtime.admission_open = false;
             runtime.fenced = true;
         }
         if let Ok(mut events) = self.events.lock() {
@@ -282,6 +335,10 @@ impl AgentdState {
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
         Ok(runtime.lifecycle == AgentLifecycle::Running
             && runtime.app_server_ready
+            && runtime.critical_stores_ready
+            && runtime.revocation_ready
+            && runtime.required_ports_ready
+            && runtime.admission_open
             && !runtime.fenced)
     }
 }
