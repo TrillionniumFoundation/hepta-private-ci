@@ -167,7 +167,7 @@ impl EngramSnapshotV1 {
         mut synapses: Vec<SynapseV1>,
     ) -> Result<Self, EngramErrorV1> {
         nodes.sort_by(|left, right| left.node_id.cmp(&right.node_id));
-        synapses.sort_by(|left, right| synapse_key(left).cmp(&synapse_key(right)));
+        synapses.sort_by_key(|synapse| synapse_key(synapse));
         let mut value = Self {
             generation_vector_digest,
             engram_generation_digest,
@@ -535,10 +535,10 @@ impl EngramRecallReceiptV1 {
             )) {
                 return Err(EngramErrorV1::DuplicateSynapse);
             }
-            if let Some(left) = previous_path {
-                if !activation_path_before(left, path) {
-                    return Err(EngramErrorV1::NonCanonical("activation_paths"));
-                }
+            if let Some(left) = previous_path
+                && !activation_path_before(left, path)
+            {
+                return Err(EngramErrorV1::NonCanonical("activation_paths"));
             }
             previous_path = Some(path);
         }
