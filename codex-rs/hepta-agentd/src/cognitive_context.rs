@@ -421,6 +421,14 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
             })
             .collect::<Result<Vec<RetrievalCandidateIdentityV1>, _>>()?;
         let context_exposed = !delivered_candidates.is_empty();
+        let published_context_digest = if context_exposed {
+            Some(Digest32::of_bytes(
+                &serde_json::to_vec(&response)
+                    .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?,
+            ))
+        } else {
+            None
+        };
         let sink = std::sync::Arc::clone(sink);
         let owner = owner.clone();
         tokio::task::spawn_blocking(move || {
@@ -431,6 +439,7 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
                 &assignment,
                 &delivered_candidates,
                 context_exposed,
+                published_context_digest,
                 downstream_policy_digest,
                 delivery_propensity,
             )
