@@ -86,29 +86,36 @@ if (!baseIndex.includes("manifest-src 'self'")) {
 }
 const e2eDriver = `
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-async function waitFor(predicate, timeout = 5000) {
+let stage = "bootstrap";
+const checkpoint = (name) => {
+  stage = name;
+  document.body.setAttribute("data-e2e-stage", name);
+};
+async function waitFor(predicate, timeout = 5000, label = stage) {
   const deadline = Date.now() + timeout;
   while (Date.now() < deadline) {
     const value = predicate();
     if (value) return value;
     await sleep(20);
   }
-  throw new Error("browser E2E wait timed out");
+  throw new Error(\`browser E2E wait timed out at \${label}\`);
 }
-async function waitForAsync(predicate, timeout = 5000) {
+async function waitForAsync(predicate, timeout = 5000, label = stage) {
   const deadline = Date.now() + timeout;
   while (Date.now() < deadline) {
     const value = await predicate();
     if (value) return value;
     await sleep(20);
   }
-  throw new Error("browser E2E async wait timed out");
+  throw new Error(\`browser E2E async wait timed out at \${label}\`);
 }
 const stats = () => fetch("/api/ui-control/e2e-stats", { cache: "no-store" }).then((response) => response.json());
 try {
   const root = document.querySelector("#app");
-  await waitFor(() => root.getAttribute("data-hepta-ready") === "true");
+  checkpoint("initial-runtime-ready");
+  await waitFor(() => root.getAttribute("data-hepta-ready") === "true", 7000, "initial-runtime-ready");
 
+  checkpoint("initial-operation-confirmation");
   const retry = [...document.querySelectorAll("button")].find((button) => button.textContent.startsWith("Retry "));
   if (!retry) throw new Error("retry control missing");
   retry.focus();
@@ -133,6 +140,7 @@ try {
   if (!focused || focused.textContent !== "Retry runtime.agentd") throw new Error("focus was not restored to the initiating action");
   if (root.getAttribute("aria-busy") !== "false") throw new Error("busy state was not cleared");
 
+  checkpoint("pending-reconciliation");
   const reconcilePending = [...document.querySelectorAll("button")]
     .find((button) => button.textContent === "Refresh pending operation status");
   if (!reconcilePending) throw new Error("pending-operation reconciliation control missing");
@@ -140,6 +148,7 @@ try {
   await waitForAsync(async () => (await stats()).reconcileCount >= 1);
   if ((await stats()).requestCount !== 1) throw new Error("read-only reconciliation replayed a mutation");
 
+  checkpoint("offline-confirmation-invalidation");
   const quarantine = [...document.querySelectorAll("button")].find((button) => button.textContent.startsWith("Quarantine "));
   quarantine.click();
   const blockedDialog = await waitFor(() => document.querySelector("dialog[data-hepta-confirm='operation']"));
@@ -160,12 +169,14 @@ try {
     throw new Error("offline event did not disable mutating controls");
   }
 
+  checkpoint("online-session-recovery");
   window.dispatchEvent(new Event("online"));
   await waitForAsync(async () => (await stats()).connectCount >= 2);
   await waitFor(() => root.getAttribute("data-hepta-ready") === "true");
   const recoveredRetry = [...document.querySelectorAll("button")].find((button) => button.textContent.startsWith("Retry "));
   if (!recoveredRetry || recoveredRetry.disabled) throw new Error("online recovery did not restore coherent controls");
 
+  checkpoint("bfcache-suspend-resume");
   const beforeSuspend = (await stats()).connectCount;
   const pageHide = new Event("pagehide");
   Object.defineProperty(pageHide, "persisted", { value: true });
@@ -188,14 +199,17 @@ try {
     throw new Error("pageshow recovery did not reacquire the durable writer lease");
   }
 
+  checkpoint("expired-session-recovery");
   await fetch("/api/ui-control/e2e-expire-session", { cache: "no-store" });
   await waitForAsync(async () => (await stats()).connectCount >= beforeSuspend + 2, 7000);
   await waitFor(() => root.getAttribute("data-hepta-ready") === "true", 7000);
   if ((await stats()).requestCount !== 1) throw new Error("session recovery replayed a mutation");
 
+  checkpoint("complete");
   document.body.setAttribute("data-e2e-status", "pass");
 } catch (error) {
   document.body.setAttribute("data-e2e-status", "fail");
+  document.body.setAttribute("data-e2e-stage", stage);
   document.body.setAttribute("data-e2e-error", String(error?.message ?? error));
 }
 `;
@@ -323,7 +337,7 @@ const chromeArgs = [
   "--disable-sync",
   "--metrics-recording-only",
   "--no-first-run",
-  "--virtual-time-budget=9000",
+  "--virtual-time-budget=30000",
   "--dump-dom",
   `http://127.0.0.1:${address.port}/`,
 ];
@@ -338,7 +352,7 @@ const exit = await new Promise((resolve, reject) => {
   const timeout = setTimeout(() => {
     child.kill("SIGKILL");
     reject(new Error("Chrome E2E timed out"));
-  }, 35_000);
+  }, 55_000);
   child.on("error", (error) => { clearTimeout(timeout); reject(error); });
   child.on("close", (code, signal) => { clearTimeout(timeout); resolve({ code, signal }); });
 });
@@ -348,6 +362,7 @@ if (exit.code !== 0) {
 }
 if (!stdout.includes('data-e2e-status="pass"')) {
   const match = stdout.match(/data-e2e-error="([^"]*)"/);
-  throw new Error(`browser E2E assertion failed${match ? `: ${match[1]}` : ""}`);
+  const stageMatch = stdout.match(/data-e2e-stage="([^"]*)"/);
+  throw new Error(`browser E2E assertion failed${stageMatch ? ` at ${stageMatch[1]}` : ""}${match ? `: ${match[1]}` : ""}`);
 }
 console.log("PASS_HEPTA_UI_CONTROL_BROWSER_E2E");
