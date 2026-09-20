@@ -379,22 +379,39 @@ fn unconfirmed_activation_rolls_back_to_predecessor() {
 
 #[test]
 fn interrupted_activation_is_reconciled_to_predecessor_before_restart() {
-    let (temp, keys, signing) = key_fixture();
+    let temp = TempDir::new().unwrap();
+    let (signing, keys, key_path) = key_fixture(temp.path());
     let root = temp.path().join("updates");
-    let manager = UpdateManager::new(keys.clone(), root.clone()).unwrap();
+    let manager = UpdateManager::new(keys, root.clone()).unwrap();
     let predecessor = temp.path().join("hepta-native");
     let package = temp.path().join("candidate");
     std::fs::write(&predecessor, b"predecessor").unwrap();
     std::fs::write(&package, b"candidate").unwrap();
 
-    let manifest = signed_update_manifest(
-        &signing,
-        hepta_native::updater::digest_file(&package).unwrap(),
-        hepta_native::updater::digest_file(&predecessor).unwrap(),
-        "selector.1",
-        "generator.1",
+    let now = now_unix_ms().unwrap();
+    let mut manifest = SignedUpdateManifestV1 {
+        schema: "hepta.native-update.v1".to_owned(),
+        package_digest: digest_file(&package).unwrap(),
+        predecessor_digest: digest_file(&predecessor).unwrap(),
+        evidence_digest: sha256_hex(b"restart-recovery-evidence"),
+        platform: std::env::consts::OS.to_owned(),
+        architecture: std::env::consts::ARCH.to_owned(),
+        backend_protocol_version: 1,
+        channel: "stable".to_owned(),
+        selected_by: "release.reviewer".to_owned(),
+        generator_principal: "release.builder".to_owned(),
+        issued_unix_ms: now.saturating_sub(1000),
+        expires_unix_ms: now + 60_000,
+        key_id: "release.key".to_owned(),
+        signature_base64: String::new(),
+    };
+    manifest.signature_base64 = STANDARD.encode(
+        signing
+            .sign(manifest.signing_message().as_bytes())
+            .to_bytes(),
     );
     manager.verify_and_stage(manifest, &package, 1).unwrap();
+    let keys = TrustedKeySet::from_path(&key_path).unwrap();
     activate_staged_update(&manager.pending_path(), &keys, &predecessor, 1).unwrap();
     assert_eq!(std::fs::read(&predecessor).unwrap(), b"candidate");
 
