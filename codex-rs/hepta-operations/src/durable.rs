@@ -34,6 +34,7 @@ mod durable_outbox;
 
 pub use durable_outbox::DurableOutboxRecord;
 pub use durable_outbox::DurableOutboxState;
+pub use durable_outbox::MAX_DURABLE_OUTBOX_PAYLOAD_BYTES;
 
 const SCHEMA_VERSION: i64 = 2;
 const MAX_DURABLE_OPERATION_RECORDS: i64 = MAX_MODEL_OPERATION_RECORDS as i64;
