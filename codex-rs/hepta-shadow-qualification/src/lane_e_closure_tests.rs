@@ -131,10 +131,8 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
     let evaluation_scope = digest("lane-e-evaluation-scope");
     generator.scope_digest = evaluation_scope;
     evaluator.scope_digest = evaluation_scope;
-    generator.signing_key_digest =
-        Digest32::of_bytes(&generator_key.verifying_key().to_bytes());
-    evaluator.signing_key_digest =
-        Digest32::of_bytes(&evaluator_key.verifying_key().to_bytes());
+    generator.signing_key_digest = Digest32::of_bytes(&generator_key.verifying_key().to_bytes());
+    evaluator.signing_key_digest = Digest32::of_bytes(&evaluator_key.verifying_key().to_bytes());
 
     let candidate_receipt = CandidateSetCompletenessReceiptV1 {
         set_id: id("candidate-set-1"),
@@ -437,16 +435,11 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
             &evaluation_payload,
         ),
     };
-    let evaluation = match decide_with_signed_evidence_v2(
-        bundle,
-        metric_roles,
-        &evidence,
-        &verifier,
-        50,
-    ) {
-        Ok(decision) => decision.decision,
-        Err(error) => panic!("signed independent evaluation failed: {error}"),
-    };
+    let evaluation =
+        match decide_with_signed_evidence_v2(bundle, metric_roles, &evidence, &verifier, 50) {
+            Ok(decision) => decision.decision,
+            Err(error) => panic!("signed independent evaluation failed: {error}"),
+        };
     assert_eq!(
         evaluation.disposition,
         IndependentEvaluationDispositionV1::EligibleForIndependentSelection
