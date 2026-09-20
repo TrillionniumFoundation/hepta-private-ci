@@ -93,7 +93,7 @@ The product adapter is read-only. It does not enroll peers, mint capability gran
 
 `CognitiveRuntime::AvailableFederated` and `FederatedRecallSet` remain available for compatibility-focused tests and callers. Agentd product composition is migrated to `AvailableFederatedV2`.
 
-This distinction is enforced in source, not only by convention: product model-input registration requires `CognitiveRuntime::has_product_federation()`, and the extension calls `retrieve_product_federated` / `revalidate_product_federated`. Those APIs reject `AvailableFederated`; the legacy variant remains reachable only through explicit compatibility surfaces and therefore cannot silently stand in for the canonical module contract.
+This distinction is enforced in source, not only by convention: product model-input registration requires `CognitiveRuntime::has_product_federation()`, and the extension calls `retrieve_product_federated` / `revalidate_product_federated`. Those APIs reject `AvailableFederated`; the legacy variant remains reachable only through explicit compatibility surfaces and therefore cannot silently stand in for the canonical module contract. In addition, the compatibility `with_federation()` helper preserves an already-composed `AvailableFederatedV2` runtime instead of downgrading it to the legacy variant.
 
 ## 7. Coverage semantics
 
@@ -138,6 +138,7 @@ The focused V2 suite includes adversarial cases for:
 - revoked/stale terminal attempts contributing failed aggregate coverage;
 - combined local+federated model input preserving the federation coverage vector;
 - bounded fail-closed physical-send revalidation;
+- legacy compatibility composition cannot downgrade an already-composed V2 product runtime;
 - cancellation receipts carrying no success assumption;
 - exact-scope owner memory frontier acquired from the same SQLite snapshot, including legitimate empty frontier zero.
 
