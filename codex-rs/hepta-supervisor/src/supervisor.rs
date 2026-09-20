@@ -936,6 +936,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         verifier: &H7H89ProductionGrantVerifier,
         expected_authority_epoch: u64,
         expected_revocation_frontier: u64,
+        expected_compatibility_receipt_sha256: &Sha256Digest,
         now_unix_seconds: u64,
     ) -> Result<ProductionMutationReceipt, SupervisorError> {
         self.with_slot(agent_id, |supervisor, slot| {
