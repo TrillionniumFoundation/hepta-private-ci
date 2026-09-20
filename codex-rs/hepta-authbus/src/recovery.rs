@@ -402,3 +402,7 @@ fn push(bytes: &mut Vec<u8>, value: &[u8]) {
     bytes.extend_from_slice(&(value.len() as u64).to_be_bytes());
     bytes.extend_from_slice(value);
 }
+
+#[cfg(test)]
+#[path = "recovery_tests.rs"]
+mod tests;
