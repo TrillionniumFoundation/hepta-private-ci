@@ -603,6 +603,8 @@ export class SubprocessBrowserDriver {
   #persistedReconciler = null;
   #egressBroker = null;
   #allowPrivateNetworkForTests = false;
+  #expiryTimer = null;
+  #expiresAtMs = null;
 
   constructor({
     workerPath,
@@ -663,6 +665,10 @@ export class SubprocessBrowserDriver {
     const generation = positiveInteger(input.generation, "generation");
     const manifestDigest = expectedDigest(input.manifestDigest, "manifestDigest");
     const grantDigest = expectedDigest(input.grantDigest, "grantDigest");
+    const expiresAtMs = positiveInteger(input.expiresAtMs, "expiresAtMs");
+    if (expiresAtMs <= Date.now()) {
+      throw new TypeError("browser profile process/network lease has expired");
+    }
     await this.#launcher.verify();
     const verifiedWorkerBytes = await this.#readVerifiedWorkerArtifact();
     await ensurePrivateProfileRoot(this.#profileRoot);
@@ -725,15 +731,18 @@ export class SubprocessBrowserDriver {
         sessionId: this.#sessionId,
         generation: this.#generation,
       });
+      const workerInput = { ...input };
+      delete workerInput.expiresAtMs;
       const observed = await this.#client.request(
         "start",
         `${profileId}.${generation}`,
-        input,
+        workerInput,
         { signal },
       );
       if (observed.started !== true) {
         throw new TypeError("worker did not acknowledge start");
       }
+      this.#armExpiry(expiresAtMs);
       return {
         started: true,
         processId: this.#processId,
@@ -747,6 +756,7 @@ export class SubprocessBrowserDriver {
       this.#sessionId = null;
       this.#generation = null;
       this.#processId = null;
+      this.#clearExpiryTimer();
       throw error;
     }
   }
@@ -847,6 +857,7 @@ export class SubprocessBrowserDriver {
 
   async contain(input) {
     this.#requireSession(input);
+    this.#clearExpiryTimer();
     const broker = this.#egressBroker;
     this.#egressBroker = null;
     this.#client?.close();
@@ -858,6 +869,7 @@ export class SubprocessBrowserDriver {
   }
 
   async stop(input, { signal } = {}) {
+    this.#clearExpiryTimer();
     const generation = input.generation ?? input.profileGeneration;
     if (
       input.profileId !== this.#sessionId ||
@@ -887,6 +899,44 @@ export class SubprocessBrowserDriver {
       this.#client = null;
       this.#child = null;
       await this.#cleanupProfile();
+    }
+  }
+
+  #armExpiry(expiresAtMs) {
+    this.#clearExpiryTimer();
+    this.#expiresAtMs = expiresAtMs;
+    const arm = () => {
+      if (!this.#child || this.#expiresAtMs === null) return;
+      const remaining = this.#expiresAtMs - Date.now();
+      if (remaining <= 0) {
+        void this.#containExpiredLease();
+        return;
+      }
+      this.#expiryTimer = setTimeout(arm, Math.min(remaining, 2_147_000_000));
+      this.#expiryTimer.unref?.();
+    };
+    arm();
+  }
+
+  #clearExpiryTimer() {
+    if (this.#expiryTimer !== null) clearTimeout(this.#expiryTimer);
+    this.#expiryTimer = null;
+    this.#expiresAtMs = null;
+  }
+
+  async #containExpiredLease() {
+    this.#clearExpiryTimer();
+    const broker = this.#egressBroker;
+    this.#egressBroker = null;
+    this.#client?.close();
+    this.#child?.kill?.("SIGKILL");
+    this.#client = null;
+    this.#child = null;
+    try {
+      await broker?.close();
+    } catch {
+      // Expiry is fail-closed: the process is already killed and the private
+      // broker reference is detached even if socket cleanup itself fails.
     }
   }
 
