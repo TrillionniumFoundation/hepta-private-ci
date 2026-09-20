@@ -24,12 +24,12 @@ semantics.
 Native operations are:
 
 - `QualificationEvidenceStore::append_receipt(authenticated_issuer, signed_message, envelope) -> EvidenceId | EvidenceError`;
-- `QualificationEvidenceStore::verify_chain(VerifyChainRequestV1) -> EvidenceDispositionV1`;
+- `QualificationEvidenceStore::verify_chain(VerifyChainRequestV1, current_trust) -> EvidenceDispositionV1`;
 - `QualificationEvidenceStore::query_claim(candidate, claim_class) -> bounded EvidenceReferenceV1[]`.
 
 The Agentd product path exposes the same semantic operations through bounded
 control methods and reloads the owner-controlled multi-issuer trust registry
-immediately before physical append.
+immediately before physical append and before positive verification.
 
 Append verifies the exact canonical envelope signature, issuer/key epoch,
 candidate/tree/role subject, replay sequence, admission expiry, role allowlist and
@@ -42,9 +42,12 @@ insert share one `BEGIN IMMEDIATE` transaction.
 
 Verification checks exact candidate/tree and claim class, canonical envelope and
 payload digests, expiry, correction/revocation lineage and required role
-coverage. Multiple required independent roles must be satisfiable by distinct
-authenticated principals; different display names or roles on one principal do
-not establish independence.
+coverage and current issuer/key/role trust. Multiple required independent roles
+must be satisfiable by both distinct authenticated principals and distinct
+signing identities; different display names, different principal strings
+sharing one Ed25519 key, or multiple roles on one principal do not establish
+independence. Removed, revoked, role-mismatched or key-rotated evidence becomes
+conflicting for positive verification.
 
 ## 3. State records and transaction design
 
@@ -76,8 +79,10 @@ decision, conditions and expiry.
 7. Reconstruct canonical rows on read/open and fail closed on projection/digest
    drift.
 8. Resolve active evidence after corrections, revocations and expiry.
-9. Satisfy multiple independent roles only with distinct authenticated
-   principals.
+9. Revalidate each positive evidence issuer against the current host trust
+   snapshot.
+10. Satisfy multiple independent roles only with distinct authenticated
+    principals and signing identities.
 
 A fixture cannot be upgraded to hardware, provider effect, longitudinal,
 production-caller or independent-acceptance evidence.
@@ -101,8 +106,9 @@ capacity evidence remains required before activation.
 
 ## 6. Concrete verification cases
 
-- **EVID-01:** one authenticated principal cannot satisfy
-  generator/evaluator or other multi-role independence; distinct principals can.
+- **EVID-01:** one authenticated principal or one shared signing identity
+  cannot satisfy generator/evaluator or other multi-role independence; distinct
+  principals with distinct signing identities can.
 - **EVID-02:** evidence for a different tree is missing and expired evidence is
   expired/unavailable.
 - **EVID-03:** canonical payload/projection corruption and broken predecessor
@@ -110,8 +116,13 @@ capacity evidence remains required before activation.
 - **EVID-04:** fixture/hardware and other claim classes are not substitutable.
 - Exact signed retry is idempotent; payload drift conflicts.
 - Correction/revocation history survives reopen without resurrection.
-- Real Agentd product test exercises append -> query -> verify, two independent
-  decision principals, terminal-observer evidence and revocation reload.
+- Real Agentd product test exercises append -> query -> verify, wrong
+  candidate/tree, wrong role, replay, expired ingress, key rotation/revocation,
+  two independent decision principals, terminal-observer evidence and current
+  trust reload at append/verify boundaries.
+- Recovery tests sign the deterministic local recovery snapshot, admit the exact
+  image, then replace SQLite with a valid older image and require startup to
+  fail `recovery_required`.
 
 Source test identities are not independent acceptance receipts. Exact-head and
 synthetic-merge execution receipts are produced by the dedicated workflow.
@@ -127,10 +138,13 @@ identities. Repository-authored code/tests cannot self-issue an independent
 external acceptance. The exact candidate must be reviewed and signed by an
 external authorized principal.
 
-Local SQLite verification is not an external anti-rollback oracle. Production
-backup/restore must satisfy
-`docs/lane-a-foundation/kernel.evidence/RECOVERY_FRONTIER_V1.md`; a concrete
-independently retained frontier backend remains an activation prerequisite.
+Local SQLite verification is not an external anti-rollback oracle. The source
+now computes deterministic migration/qualification/replay frontiers, binds an
+immutable store identity and verifies an independently signed frontier before
+Agentd attaches the evidence host when that profile is configured. Production
+backup/restore must still satisfy
+`docs/lane-a-foundation/kernel.evidence/RECOVERY_FRONTIER_V1.md`; the concrete
+durable monotonic CAS/checkpoint service remains an activation prerequisite.
 
 ## 8. Current native implementation
 
@@ -143,7 +157,13 @@ independently retained frontier backend remains an activation prerequisite.
 - **Product caller/writer:** Agentd
   [evidence_host.rs](../../../codex-rs/hepta-agentd/src/evidence_host.rs) with
   [evidence_trust.rs](../../../codex-rs/hepta-agentd/src/evidence_trust.rs) and
-  control/client operations.
+  control/client operations; positive verification consumes the freshly loaded
+  current trust snapshot.
+- **Recovery frontier:** deterministic local snapshot and immutable store
+  identity in
+  [recovery_frontier.rs](../../../codex-rs/hepta-evidence/src/recovery_frontier.rs);
+  signed external startup/restore verification in
+  [evidence_frontier.rs](../../../codex-rs/hepta-agentd/src/evidence_frontier.rs).
 - **Terminal observer boundary:** `terminal_observer` is a separately
   registered evidence role; the real Agentd product test persists a
   provider-effect terminal observation from a distinct principal.
