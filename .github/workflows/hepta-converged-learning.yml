@@ -69,6 +69,16 @@ jobs:
             --base "$BASE_SHA" \
             --lane "${{ matrix.lane }}" \
             --github-output "$GITHUB_OUTPUT"
+          # Measure only affected ledger inputs, not unrelated learning edits.
+          set +e
+          git diff --quiet "$BASE_SHA" HEAD -- codex-rs/hepta-learning-ledger/ codex-rs/hepta-types/ codex-rs/Cargo.toml codex-rs/Cargo.lock .github/workflows/hepta-converged-learning.yml
+          ledger_diff=$?
+          set -e
+          case "$ledger_diff" in
+            0) echo 'measure_ledger=false' >> "$GITHUB_OUTPUT" ;;
+            1) echo 'measure_ledger=true' >> "$GITHUB_OUTPUT" ;;
+            *) exit "$ledger_diff" ;;
+          esac
       - name: Verify Cargo lockfile integrity
         run: python3 scripts/verify_cargo_lock.py
       - name: Formatting without tested-source mutation
@@ -131,6 +141,27 @@ jobs:
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
         run: cargo clippy --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts -p codex-hepta-intelligence-eval -p codex-hepta-neuron -p codex-hepta-ndu -p codex-hepta-shadow-qualification --all-targets -- -D warnings
+      - name: Measure bounded long-horizon file behavior
+        id: ledger_measure
+        if: steps.execution.outputs.run_native == 'true' && steps.execution.outputs.measure_ledger == 'true'
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/hepta-long-horizon-measurement"
+          mkdir -p "$out"
+          { git rev-parse HEAD HEAD^{tree}; rustc --version; uname -sm; } > "$out/environment.txt"
+          cargo build --locked --release -p codex-hepta-learning-ledger --example long_horizon_scale
+          sha256sum target/release/examples/long_horizon_scale > "$out/binary.sha256"
+          timeout 180s target/release/examples/long_horizon_scale 10000 "$RUNNER_TEMP/hepta-long-horizon-data" | tee "$out/measurements.jsonl"
+      - name: Retain real-file measurements
+        if: always() && steps.ledger_measure.outcome != 'skipped'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-long-horizon-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/hepta-long-horizon-measurement/
+          if-no-files-found: error
+          retention-days: 7
       - name: Unmodified source
         if: always()
         shell: bash
