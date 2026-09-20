@@ -158,7 +158,6 @@ impl PlasticityOwnerEvidenceResolverV1 for ConcretePlasticityOwnerEvidenceResolv
     }
 }
 
-
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PlasticityDynamicSignalBindingV1 {
     pub layer_id: StableId,
@@ -253,15 +252,17 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
             }
             let width = checkpoint.eligibility_q24().len();
             if binding_map.values().any(|binding| {
-                usize::try_from(binding.eligibility_index)
-                    .map_or(true, |index| index >= width)
+                usize::try_from(binding.eligibility_index).map_or(true, |index| index >= width)
             }) {
                 return Err(PlasticityOwnerEvidenceErrorV1::InvalidReceipt);
             }
         }
 
-        let modulator_digest =
-            plasticity_modulator_digest_v1(objective_digest, ndu_subject_digest, &modulator_values)?;
+        let modulator_digest = plasticity_modulator_digest_v1(
+            objective_digest,
+            ndu_subject_digest,
+            &modulator_values,
+        )?;
         let ndu_prefix = {
             let journal = ndu_journal
                 .read()
@@ -279,8 +280,7 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
                 .collect::<Vec<_>>()
         };
 
-        let broadcast_digest =
-            plasticity_modulator_broadcast_digest_v1(binding_map.values())?;
+        let broadcast_digest = plasticity_modulator_broadcast_digest_v1(binding_map.values())?;
         let manifest = broadcast_artifacts
             .manifest(&broadcast_artifact_id)
             .ok_or(PlasticityOwnerEvidenceErrorV1::Missing)?;
@@ -310,9 +310,7 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
         })
     }
 
-    fn current_modulator(
-        &self,
-    ) -> Result<(Digest32, Digest32), PlasticityOwnerEvidenceErrorV1> {
+    fn current_modulator(&self) -> Result<(Digest32, Digest32), PlasticityOwnerEvidenceErrorV1> {
         let digest = plasticity_modulator_digest_v1(
             self.objective_digest,
             self.ndu_subject_digest,
@@ -379,7 +377,9 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
             .broadcast_artifacts
             .manifest(&self.broadcast_artifact_id)
             .ok_or(PlasticityOwnerEvidenceErrorV1::Missing)?;
-        if !self.broadcast_artifacts.is_eligible(&self.broadcast_artifact_id)
+        if !self
+            .broadcast_artifacts
+            .is_eligible(&self.broadcast_artifact_id)
             || manifest.kind != ArtifactKind::Policy
             || manifest.objective_digest != self.objective_digest
         {
@@ -518,9 +518,7 @@ impl PlasticityOwnerEvidenceResolverV1 for PlasticityDynamicOwnerEvidenceResolve
                     self.expires_at,
                 ))
             }
-            PlasticityOwnerEvidenceKindV1::ParameterSignal => {
-                self.resolve_parameter_signal(query)
-            }
+            PlasticityOwnerEvidenceKindV1::ParameterSignal => self.resolve_parameter_signal(query),
             _ => Err(PlasticityOwnerEvidenceErrorV1::Unavailable),
         }
     }
@@ -626,7 +624,13 @@ pub fn plasticity_parameter_signal_digest_v1(
     let mut bytes = b"hepta.neuron.parameter-plasticity-signal.v1\0".to_vec();
     push_id_checked(&mut bytes, layer_id)?;
     push_id_checked(&mut bytes, parameter_id)?;
-    for value in [eligibility, modulator, learning_rate, lower_bound, upper_bound] {
+    for value in [
+        eligibility,
+        modulator,
+        learning_rate,
+        lower_bound,
+        upper_bound,
+    ] {
         bytes.extend_from_slice(&value.raw().to_be_bytes());
     }
     for digest in [eligibility_digest, modulator_digest, broadcast_digest] {
@@ -966,7 +970,6 @@ mod tests {
         assert_eq!(mutation.owner_id, id("owner:mutation-policy"));
     }
 
-
     const Q24: i64 = 1_i64 << 24;
 
     fn sparse_config() -> SparseConfig {
@@ -1055,9 +1058,13 @@ mod tests {
             .expect("select NDU projection");
         let ndu = Arc::new(RwLock::new(ndu_journal));
 
-        let mut journal =
-            SparseJournal::open(tempfile().expect("neuron file"), sparse_config(), sparse_scope(), 8)
-                .expect("open neuron journal");
+        let mut journal = SparseJournal::open(
+            tempfile().expect("neuron file"),
+            sparse_config(),
+            sparse_scope(),
+            8,
+        )
+        .expect("open neuron journal");
         let receipt = journal
             .commit(Digest32::ZERO, &first_tick())
             .expect("commit neuron checkpoint");
@@ -1088,9 +1095,8 @@ mod tests {
             eligibility_index: 0,
             modulator_weights: vec![FixedQ32::ONE],
         };
-        let broadcast_digest =
-            plasticity_modulator_broadcast_digest_v1(std::iter::once(&binding))
-                .expect("broadcast digest");
+        let broadcast_digest = plasticity_modulator_broadcast_digest_v1(std::iter::once(&binding))
+            .expect("broadcast digest");
         let mut artifacts = ArtifactRegistry::new();
         artifacts
             .append(ArtifactEvent::Register {
@@ -1293,10 +1299,7 @@ mod tests {
                 PlasticityOwnerEvidenceKindV1::MutationPolicy,
                 id("owner:mutation-policy"),
             ),
-            (
-                PlasticityOwnerEvidenceKindV1::Modulator,
-                id("owner:wrong"),
-            ),
+            (PlasticityOwnerEvidenceKindV1::Modulator, id("owner:wrong")),
             (
                 PlasticityOwnerEvidenceKindV1::ModulatorBroadcast,
                 id("owner:broadcast"),
@@ -1332,8 +1335,7 @@ mod tests {
         signal.layer_id = Some(id("layer:dynamic"));
         signal.parameter_id = Some(id("parameter:dynamic"));
         signal.signal_eligibility = Some(fixture.eligibility);
-        signal.signal_modulator =
-            Some(FixedQ32::from_raw(fixture.modulator.raw() + 1));
+        signal.signal_modulator = Some(FixedQ32::from_raw(fixture.modulator.raw() + 1));
         signal.signal_learning_rate = Some(fixture.learning_rate);
         signal.signal_lower_bound = Some(fixture.lower_bound);
         signal.signal_upper_bound = Some(fixture.upper_bound);
