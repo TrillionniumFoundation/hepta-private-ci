@@ -33,8 +33,12 @@ The tagged JSON request has `"operation":"h7_envelope"` or
 `"operation":"production_grant"` and rejects unknown fields. H7 requests
 contain the validated `H7Artifact`, optional OPE, transition, runtime
 generation/predecessor and validity window. Production-grant requests contain
-the exact H7 envelope, UUID agent id, source/target release, transition, CAS
-revisions, authority epoch, signer id/epoch and validity window.
+the exact H7 envelope, UUID agent id, source/target release, transition, source
+and target release-manifest SHA-256 digests, target Agentd and optional Matrixd
+program SHA-256 digests, independently produced compatibility and current
+revocation-frontier evidence digests, CAS revisions, authority epoch, signer
+id/epoch and validity window. These fields are part of the signed preimage; a
+runtime request cannot replace them after the ceremony.
 
 The response is tagged JSON with either `envelope` or `grant`. The H7 envelope
 remains `local_qualification_only`; only the separately signed production
@@ -44,10 +48,14 @@ used as a substitute signing preimage.
 
 ## Ceremony checks
 
-The external authority must independently pin both public keys and verify the
-H7 envelope before authorizing a production grant. After signing, the runtime
-owner verifies the envelope/grant with the pinned public keys and exact CAS
-fences. A successful local verification does not transfer trust-root
+The external authority must independently pin both public keys, verify the H7
+envelope, resolve compatibility, and capture the current revocation frontier
+before authorizing a production grant. After signing, the runtime owner verifies
+the envelope/grant with the pinned public keys, exact CAS fences, current
+authority epoch, and current Fleet release manifest/program bytes. The
+compatibility and revocation-frontier digests are evidence bindings rather than
+a supervisor-owned policy engine; their issuing owners remain responsible for
+freshness and semantics. A successful local verification does not transfer trust-root
 ownership. Never copy the private key into the repository, daemon, Mac,
 small-host filesystem, or Dropbox.
 
