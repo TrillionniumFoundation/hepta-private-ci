@@ -190,9 +190,7 @@ generation from that anchor. Cross-host deployment of this backend additionally
 requires a shared filesystem with qualified linearizable lock and fsync
 semantics.
 
-The existing evaluated-shadow caller still invokes low-level signed V2 admission
-and is a migration path, not the canonical complete evaluation composition.
-Source closure requires moving that consumer to `ProductQualificationReceiptV1`.
+The evaluated-shadow caller now consumes only the sealed `ProductQualificationReceiptV1`, rechecks current trust/dataset/candidate bindings and never re-runs low-level signed admission. This leaves one repository-controlled product qualification spine.
 
 ## 7. Runtime, concurrency and transaction model
 
@@ -267,7 +265,7 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Product composition now exists in the declared root; target-host composition requires the named evidence sink/holdout namespace and migration of evaluated-shadow to the product qualification receipt. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Product composition now exists and the evaluated-shadow consumer is bound to the product qualification receipt; target-host composition still requires the named evidence sink/holdout namespace. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
 For `learning.eval`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
