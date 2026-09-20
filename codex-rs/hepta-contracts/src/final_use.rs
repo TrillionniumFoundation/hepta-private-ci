@@ -363,6 +363,9 @@ impl FinalUseAuthority {
             return Err(FinalUseError::Unavailable);
         }
         validate_live(&token.grant, &state.head)?;
+        if state.head != token.claimed_head {
+            return Err(FinalUseError::StaleRevocationHead);
+        }
         let result = consumer();
         drop(state);
         Ok(result)
