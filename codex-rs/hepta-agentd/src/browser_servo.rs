@@ -713,6 +713,8 @@ pub struct BrowserServoHostConfig {
     pub profile_root: PathBuf,
     pub journal_path: PathBuf,
     pub reconciliation_root: Option<PathBuf>,
+    pub reconciliation_observer_id: Option<String>,
+    pub reconciliation_verifying_key: Option<String>,
     pub bwrap_path: PathBuf,
     pub bwrap_sha256: String,
     pub prlimit_path: PathBuf,
@@ -792,6 +794,12 @@ pub fn open_browser_servo_port_from_file(
         profile_root: config.profile_root,
         journal_path: config.journal_path,
         reconciliation_root: config.reconciliation_root,
+        reconciliation_observer_id: config.reconciliation_observer_id,
+        reconciliation_verifying_key: config
+            .reconciliation_verifying_key
+            .as_deref()
+            .map(|value| parse_digest_text(value, "reconciliation_verifying_key"))
+            .transpose()?,
         bwrap_path: config.bwrap_path,
         bwrap_sha256: parse_digest_text(&config.bwrap_sha256, "bwrap_sha256")?,
         prlimit_path: config.prlimit_path,
@@ -940,6 +948,8 @@ pub struct BrowserServoProcessConfig {
     pub profile_root: PathBuf,
     pub journal_path: PathBuf,
     pub reconciliation_root: Option<PathBuf>,
+    pub reconciliation_observer_id: Option<String>,
+    pub reconciliation_verifying_key: Option<[u8; 32]>,
     pub bwrap_path: PathBuf,
     pub bwrap_sha256: [u8; 32],
     pub prlimit_path: PathBuf,
@@ -969,12 +979,31 @@ impl BrowserServoProcessConfig {
                 )));
             }
         }
-        if let Some(path) = self.reconciliation_root.as_ref()
-            && !path.is_absolute()
-        {
-            return Err(BrowserServoError::Invalid(
-                "Browser reconciliation root path must be absolute".into(),
-            ));
+        match (
+            self.reconciliation_root.as_ref(),
+            self.reconciliation_observer_id.as_ref(),
+            self.reconciliation_verifying_key.as_ref(),
+        ) {
+            (None, None, None) => {}
+            (Some(path), Some(observer_id), Some(verifying_key)) => {
+                if !path.is_absolute() {
+                    return Err(BrowserServoError::Invalid(
+                        "Browser reconciliation root path must be absolute".into(),
+                    ));
+                }
+                stable_id(observer_id, "Browser reconciliation observer id")?;
+                if *verifying_key == [0; 32] {
+                    return Err(BrowserServoError::Invalid(
+                        "Browser reconciliation verifying key must be non-zero".into(),
+                    ));
+                }
+            }
+            _ => {
+                return Err(BrowserServoError::Invalid(
+                    "Browser persisted reconciliation requires root, observer id and verifying key together"
+                        .into(),
+                ));
+            }
         }
         for (value, name) in [
             (self.max_profiles, "Browser max profiles"),
@@ -1088,8 +1117,22 @@ impl ChildBrowserTransport {
                 "HEPTA_BROWSER_DRIVER_TIMEOUT_MS",
                 config.driver_timeout_ms.to_string(),
             );
-        if let Some(path) = config.reconciliation_root.as_ref() {
-            command.env("HEPTA_BROWSER_RECONCILIATION_ROOT", path);
+        if let (
+            Some(path),
+            Some(observer_id),
+            Some(verifying_key),
+        ) = (
+            config.reconciliation_root.as_ref(),
+            config.reconciliation_observer_id.as_ref(),
+            config.reconciliation_verifying_key.as_ref(),
+        ) {
+            command
+                .env("HEPTA_BROWSER_RECONCILIATION_ROOT", path)
+                .env("HEPTA_BROWSER_RECONCILIATION_OBSERVER_ID", observer_id)
+                .env(
+                    "HEPTA_BROWSER_RECONCILIATION_VERIFYING_KEY",
+                    hex_lower(verifying_key),
+                );
         }
         command
             .stdin(Stdio::piped())
