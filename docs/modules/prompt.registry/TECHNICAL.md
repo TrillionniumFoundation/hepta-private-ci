@@ -44,11 +44,30 @@ None.
 
 `existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `prompt.registry`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
+### Current state interpretation
+
+The module has independent source, composition and activation states:
+
+| Layer | Current state |
+| --- | --- |
+| deterministic registry core | source implemented |
+| durable owner / reopen / migration | source implemented |
+| reviewer-signature admission compatibility | source implemented, non-authoritative compatibility/test verifier |
+| kernel final-use authenticated admission and lifecycle mutation | source implemented |
+| FinalUse-governed payload-backed realization and exact dereference | source implemented |
+| named non-test source consumer | source composed in `intelligence.control` |
+| deployed runtime owner / product activation | not established |
+| terminal real-model payload observation | not proved |
+| independent acceptance / canary / promotion / release | not granted |
+
+A later work package may therefore remain `planned` even when prerequisite native primitives exist, and a source-implemented primitive does not imply runtime activation.
+
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:
 
 - `platform.types`
+- `kernel.authority`
 - `kernel.operations`
 
 Authoritative write domains:
@@ -70,10 +89,13 @@ Non-goals include becoming a general state store, bypassing the Codex execution 
 
 The bounded components are:
 
-- `schema and migration owner`
+- `deterministic registry core`
+- `signed admission verifier and kernel final-use adapter`
+- `durable schema and migration owner`
 - `transactional writer`
 - `snapshot read port`
-- `integrity and lineage verifier`
+- `payload dereference and integrity verifier`
+- `immutable lifecycle lineage journal`
 
 Ingress validates identity, version, size, scope and revision before domain logic. The deterministic core receives typed values and is testable without network, filesystem or process-global state unless the module owns that boundary. State-bearing components use one transaction boundary per logical mutation. Publication occurs only after invariants and lineage checks pass.
 
@@ -88,6 +110,7 @@ Produced contracts:
 - `DomainRead::prompt_factor_lifecycleV1`
 - `DomainRead::prompt_factor_registryV1`
 - `DomainRead::prompt_realization_registryV1`
+- `ModulePort::prompt.registry::intelligence.control`
 - `ModulePort::prompt.registry::knowledge.graph`
 - `ModulePort::prompt.registry::prompt.optimizer`
 - `PromptFactorV1`
@@ -97,6 +120,7 @@ Consumed contracts:
 
 - `DomainRead::cross_owner_outboxV1`
 - `DomainRead::operation_ledgerV1`
+- `ModulePort::kernel.authority::prompt.registry`
 - `ModulePort::kernel.operations::prompt.registry`
 - `ModulePort::platform.types::prompt.registry`
 
@@ -124,13 +148,13 @@ Read-only data dependencies:
 
 For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
 
-Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
+Migrations are deterministic and checksum-bound. The current source implementation stores a schema-versioned owner snapshot under a single-writer lock, verifies file ownership/mode/link count, writes `registry.next`, fsyncs it, atomically renames it to `registry.json`, and fsyncs the state directory before publishing the new in-process image. Reopen replays lifecycle lineage, validates materialized lifecycle state, record/binding/payload/supersession relationships, active-profile uniqueness, revocation frontier and the whole-registry digest. If rename succeeds but directory fsync fails, the result is `IndeterminateDurability`; the in-process owner is poisoned and rejects authoritative reads or writes until reopen/reconciliation. The v1 compatibility migration preserves lifecycle/revocation state and emits explicit imported-lineage events; migration never resets a revoked factor to an admitted state, and canonical V1 projection fails closed when original semantic/model lineage was absent. Rollback across a schema boundary must restore state compatible with the binary.
 
 Projection domains rebuild from declared sources and publish complete generations atomically. Projections never become sources of truth. Retention and deletion preserve lineage and prevent resurrection through indexes, caches, artifacts or backup restore.
 
 ## 7. Runtime, concurrency and transaction model
 
-The [current native implementation](../../../qualification/module-execution-dossiers/detail/prompt.registry.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.registry.md).
+The [current native implementation](../../../qualification/module-execution-dossiers/detail/prompt.registry.md#8-current-native-implementation) keeps `PromptRegistry` as a deterministic in-memory domain core and makes `DurablePromptRegistry` the authoritative source-level writer. A mutation is applied to a cloned core, durably committed, and only then published to the live process image, so storage failure cannot expose an uncommitted state. The state directory admits one writer through a lock file. Runtime activation must instantiate this durable wrapper rather than the raw core.
 
 [Shared concurrency and transaction requirements](../README.md#shared-concurrency-and-transactions) apply at the corresponding owner boundary.
 
@@ -154,16 +178,23 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.registry.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-prompt-registry/src/lib.rs](../../../codex-rs/hepta-prompt-registry/src/lib.rs) and the linked implementation components.
 
+The source test `pilot_capacity_fixture_reports_bounded_owner_costs` exercises the 128-factor pilot read bound and emits state-size/read/commit/reopen diagnostics on the executing CI host. Those numbers are diagnostics only: they are not target-host p50/p95/p99 qualification and do not change the activation claim boundary.
+
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Use the registry owner for immutable factor/realization revisions and lifecycle updates. Optimizers receive read-only views. Revalidate revocation and model/tokenizer compatibility at actual delivery; an inserted factor is not automatically selected. A host must separately bind durable persistence rather than treating an in-memory registry image as a service.
+Use the registry owner for immutable factor/realization revisions and lifecycle updates. Optimizers receive read-only views. Revalidate revocation, context profile and exact model/tokenizer/template/tool-schema compatibility at actual payload dereference; an inserted factor is not automatically selected. Admission supports a compatibility reviewer-signature verifier and the production-intended kernel final-use adapter. The final-use path binds reviewer, exact factor identity/content, reviewed scope and evidence to an independently signed operation grant and inherits authority epoch, revocation-head, expiry and single-use nonce fencing. Admission lineage retains reviewer, grant ID, scope and evidence in the lifecycle journal.
 
 Current operating and state-format references:
 
-- [codex-rs/hepta-prompt-registry/src/lib.rs](../../../codex-rs/hepta-prompt-registry/src/lib.rs).
-- [codex-rs/hepta-prompt-registry/src/v2.rs](../../../codex-rs/hepta-prompt-registry/src/v2.rs).
+- [codex-rs/hepta-prompt-registry/src/lib.rs](../../../codex-rs/hepta-prompt-registry/src/lib.rs) — deterministic factor/realization core and immutable lifecycle journal.
+- [codex-rs/hepta-prompt-registry/src/admission.rs](../../../codex-rs/hepta-prompt-registry/src/admission.rs) — compatibility reviewer-signature grants, kernel final-use admission binding/verification and opaque verified admission.
+- [codex-rs/hepta-prompt-registry/src/durable.rs](../../../codex-rs/hepta-prompt-registry/src/durable.rs) — single-writer durable owner, reopen validation and schema migration.
+- [codex-rs/hepta-prompt-registry/src/delivery.rs](../../../codex-rs/hepta-prompt-registry/src/delivery.rs) — payload-backed realization registration, supersession and dereference.
+- [codex-rs/hepta-prompt-registry/src/protocol.rs](../../../codex-rs/hepta-prompt-registry/src/protocol.rs) — native canonical JSON codecs for `PromptFactorV1` and `PromptRealizationV1`.
+- [codex-rs/hepta-prompt-registry/src/v2.rs](../../../codex-rs/hepta-prompt-registry/src/v2.rs) — context-profile-bound exact compatibility snapshots.
+- [codex-rs/hepta-intelligence/src/prompt_delivery.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery.rs) — source-level consumer that dereferences actual bytes, compiles trusted candidates, deterministically serializes selected bytes and binds the payload digest into `ContextSerializationReceiptV2` and `ContextAttachmentV2`.
 
 [Shared observability and operations requirements](../README.md#shared-observability-and-operations) specify safe events and alert classes; concrete deployment thresholds require the selected host profile.
 
@@ -171,8 +202,11 @@ Current operating and state-format references:
 
 Current focused test sources (source references, not pass receipts):
 
-- [codex-rs/hepta-prompt-registry/src/lib_tests.rs](../../../codex-rs/hepta-prompt-registry/src/lib_tests.rs); named case: `external_material_cannot_admit_itself`.
-- [codex-rs/hepta-prompt-registry/src/v2_tests.rs](../../../codex-rs/hepta-prompt-registry/src/v2_tests.rs); named case: `every_state_change_allocates_one_revision_and_identical_retry_does_not`.
+- [codex-rs/hepta-prompt-registry/src/lib_tests.rs](../../../codex-rs/hepta-prompt-registry/src/lib_tests.rs); named cases include `external_material_cannot_admit_itself`, signed admission lineage, expiry-at-use and atomic record-capacity rejection.
+- [codex-rs/hepta-prompt-registry/src/v2_tests.rs](../../../codex-rs/hepta-prompt-registry/src/v2_tests.rs); named cases cover one-revision mutations, exact tuples, required-factor starvation, canonical filter ordering, active-profile conflicts, explicit supersession, exact payload dereference and atomic payload-capacity rejection.
+- [codex-rs/hepta-prompt-registry/src/durable.rs](../../../codex-rs/hepta-prompt-registry/src/durable.rs); unit cases cover schema migration, unresolved legacy canonical-projection rejection, restart/non-resurrection of revocation, post-rename indeterminate-durability poisoning/reopen, restore-invariant corruption rejection, final-use nonce replay rejection, authority revocation fencing and a 128-factor pilot capacity fixture that records owner-state bytes plus read/commit/reopen timing diagnostics.
+- [codex-rs/hepta-prompt-registry/src/protocol.rs](../../../codex-rs/hepta-prompt-registry/src/protocol.rs); unit cases cover canonical JSON round trips and unknown-field rejection.
+- [codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs](../../../codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs); cross-crate cases validate optimizer exercise receipts against the authenticated current registry source, bind exact selected realization bytes/admission lineage into `context.compiler`, make the selected portfolio mandatory, and reject registry/model/revocation drift.
 
 In `codex-rs`, run `just test -p codex-hepta-prompt-registry`. The command is a test invocation, not a stored result. Inspect the exact-candidate output for passes, failures and skips. The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.registry.md) separately labels target acceptance designs.
 
@@ -198,7 +232,14 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 ## 15. Definition of module completion
 
-Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
+Status axes are intentionally separate and must not be collapsed into one label:
+
+- `PIM-0-PROMPT-INTERVENTION-CONTRACTS` is `source_implemented` in the canonical work-package registry.
+- `PIM-1-PROMPT-FACTOR-REGISTRY` is `source_implemented_execution_pending`: the durable registry source slice, authenticated lifecycle, canonical projections, exercise-bound delivery and focused fault/capacity fixtures are present, while exact-head/merge-candidate execution is still pending. `MEM-1-STORE` remains an open development/activation predecessor and therefore blocks activation, not truthful source-state reporting.
+- `PIM-3-FACTOR-EVOLUTION` remains `planned`; split/merge/evolution and causal-ablation deliverables are not claimed by the registry source implemented here.
+- `productionImplementation`, runtime activation, product execution, independent acceptance, promotion and release remain false/open until their separate gates are satisfied.
+
+Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. The current source tree contains a named source-level caller in `hepta-intelligence::compile_prompt_registry_v2`; it carries selected registry bytes through context compilation, serialization and attachment receipts, but it does not establish a running product host, model dispatch or terminal provider observation. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
 For `prompt.registry`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 
@@ -206,7 +247,7 @@ For `prompt.registry`, this document grants no runtime, production, model, provi
 
 #### `PIM-0-PROMPT-INTERVENTION-CONTRACTS`
 
-- State: `planned`; priority: `1`; parallel class: `contract_first_parallel`.
+- State: `source_implemented`; priority: `1`; parallel class: `contract_first_parallel`.
 - Owner/deputy: `intelligence-platform` / `cognitive-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-prompt-registry/**`
@@ -238,7 +279,7 @@ For `prompt.registry`, this document grants no runtime, production, model, provi
 
 #### `PIM-1-PROMPT-FACTOR-REGISTRY`
 
-- State: `planned`; priority: `1`; parallel class: `contract_coordinated`.
+- State: `source_implemented_execution_pending`; priority: `1`; parallel class: `contract_coordinated`.
 - Owner/deputy: `intelligence-platform` / `cognitive-platform`.
 - Allowed write paths:
 - `codex-rs/hepta-prompt-registry/**`
@@ -328,4 +369,4 @@ The bootstrap source-location obligation for `prompt.registry` is implemented by
 
 - `codex-rs/hepta-prompt-registry`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. The source now contains the durable owner, authenticated admission, payload-backed realization delivery, canonical contract codecs and a named source-level composition caller; these facts advance source implementation only. They grant no running-host, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
