@@ -161,6 +161,8 @@ mod tests {
     use crate::lease_ledger::Resources;
     use codex_hepta_contracts::AuthorityClock;
     use codex_hepta_contracts::AuthorityTrustError;
+    use codex_hepta_contracts::VerifiedUseAuthorityRefV1;
+    use codex_hepta_contracts::VerifiedUseBoundaryV1;
     use codex_hepta_contracts::authority_lease::AuthorityLease;
     use codex_hepta_contracts::authority_lease::AuthorityLeaseFrontier;
     use codex_hepta_contracts::authority_lease::AuthorityLeaseRegistry;
@@ -246,10 +248,21 @@ mod tests {
             .unwrap();
         let port = FleetAuthorityPort::new(registry.verifier());
         let mut ledger = ledger();
-        let receipt = port
-            .issue(&mut ledger, "fleet-issue-one", 1, 2_000, grant.clone())
+        let (receipt, witness) = port
+            .issue_with_witness(&mut ledger, "fleet-issue-one", 1, 2_000, grant.clone())
             .unwrap();
         assert_eq!(receipt.allocation_id, "allocation-one");
+        assert_eq!(witness.boundary, VerifiedUseBoundaryV1::DispatchEntry);
+        assert_eq!(witness.authority_epoch, 7);
+        match witness.authority_ref {
+            VerifiedUseAuthorityRefV1::AuthorityLease(reference) => {
+                assert_eq!(reference.owner_id, "security-authority");
+                assert_eq!(reference.lease_id, "fleet-issue-one");
+                assert_eq!(reference.lease_revision, 1);
+                assert_ne!(reference.binding_sha256, [0; 32]);
+            }
+            other => panic!("unexpected authority witness: {other:?}"),
+        }
 
         registry.revoke("fleet-issue-one", 1, [9; 32]).unwrap();
         assert_eq!(
