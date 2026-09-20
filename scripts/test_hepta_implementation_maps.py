@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 import importlib.util
 from pathlib import Path
+import sys
 import unittest
 from unittest import mock
 
 
 SCRIPT = Path(__file__).with_name("hepta-implementation-maps.py")
+sys.path.insert(0, str(SCRIPT.parent))
 SPEC = importlib.util.spec_from_file_location("hepta_implementation_maps", SCRIPT)
 assert SPEC is not None and SPEC.loader is not None
 MAPS = importlib.util.module_from_spec(SPEC)
