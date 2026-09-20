@@ -58,7 +58,8 @@
       "authority": "kernel.authority final-use token consumed at effect entry",
       "tests": [
         "codex-rs/hepta-operations/src/durable_store_tests.rs::crash_after_dispatch_admission_recovers_as_indeterminate_not_retryable",
-        "codex-rs/hepta-operations/src/durable_store_tests.rs::proven_not_dispatched_requeues_with_a_new_fence"
+        "codex-rs/hepta-operations/src/durable_store_tests.rs::proven_not_dispatched_requeues_with_a_new_fence",
+        "codex-rs/hepta-operations/src/fault_tests.rs::child_process_kill_matrix_preserves_durable_effect_semantics"
       ],
       "sourcePathExists": true,
       "designOperation": "authorized_dispatch",
@@ -209,7 +210,7 @@
     },
     {
       "path": "codex-rs/hepta-operations",
-      "object": "f7e4e664154b38ba5d818575752b86fa1826421a"
+      "object": "575a844af4372f421527f9eebdd61d10a103e9ec"
     },
     {
       "path": "codex-rs/hepta-operations/src/destination_dedupe.rs",
