@@ -11,16 +11,18 @@ The Python package persists work envelopes, fenced path leases and dependency-aw
 assignment generations; verifies exact local or signed canonical source identity;
 performs resource-aware engineering orchestration over worker skills/capacity,
 CI capacity, review topology, expected value, architecture debt and rollback cost;
-creates bounded atomic single- or multi-file code candidates including rename;
+persists a base-bound integration queue whose product path accepts only signed,
+role-bound candidate/review/CI stage observations; creates bounded atomic single-
+or multi-file code candidates including rename;
 runs admitted checks under a bounded sandbox controller; performs evaluator-owned
 mutation testing; verifies source/execution/evaluator evidence; records signed
 candidate-bound review eligibility; exposes distributed-fence, external-audit-anchor
 and external-key-custody admission contracts; and composes consent-bound dormant
 external-system proposals. The repository CI includes a named v4 product caller over the SQLite v9 owner.
 The caller executes registration → lease → claim → heartbeat → worker result → independently
-observed completion → integration-queue reconciliation, then reopens the same owner and
-idempotently replays the accepted registration/lease/claim/heartbeat/result/completion
-and integration observations. Replay must preserve the completed/ready states and the
+observed completion → signed candidate/review/CI integration-stage reconciliation, then
+reopens the same owner and idempotently replays the accepted
+registration/lease/claim/heartbeat/result/completion and integration observations. Replay must preserve the completed/ready states and the
 audit anchor; this is an acknowledgement-loss recovery fixture, not external independence.
 That caller fail-closed reads the canonical work-package registry from the exact
 `HEAD:docs/delivery/WORK_PACKAGES.json` Git blob (not checkout-filtered worktree
@@ -31,8 +33,9 @@ state, zero authority delta, write scope and unresolved
 and does not reinterpret that predecessor as satisfied.
 On pull requests the named product caller executes independently against source-head
 and the deterministic base-merge candidate. Each lane first runs the exact repository
-gap/document verifier plus the complete engineering-control Python suite; source-head
-also depends on the separate real Bubblewrap strong-sandbox job. Unrelated Rust/workspace
+gap/document verifier plus the complete engineering-control Python suite; both source-head and deterministic
+base-merge identities must also pass the separate real Bubblewrap strong-sandbox matrix.
+Unrelated Rust/workspace
 failures remain merge blockers in their own jobs but do not suppress this module's
 product-execution receipt. CI retains both lane receipts, then a
 separate aggregation job recomputes each receipt digest, checks common repository/run/source
@@ -54,7 +57,7 @@ must provide the separate owner authorization required by its own contract.
 | `control_plane.py` | SQLite schema, transactions, envelopes, leases, base scheduling and audit anchor head | Public facade, orchestrator and CLI |
 | `orchestration.py` | Exact source admission, signed completion receipts, skills/capacity scheduling, integration order and merge-queue proposals | Product caller and public package |
 | `worker_lifecycle.py` | Durable worker registration, fenced claims, signed heartbeats/results, bounded requeue and independently observed completion | Named product owner |
-| `integration_controller.py` | Durable integration-queue generations, candidate/review/CI reconciliation, base-drift invalidation and terminal observations | Named product owner / external merge observer |
+| `integration_controller.py` | Durable integration-queue generations, signed role-bound candidate/review/CI observations, base-drift invalidation and separately authenticated terminal observations | Named product owner / external merge observer |
 | `product_runtime.py` | Named `EngineeringControlProduct` composition over repository identity, SQLite owner, verifier port, planner and worker lifecycle | Repository product caller / production composition target |
 | `candidate.py` | Deterministic single/multi-file/rename grammar, exact Git materialization and immutable oracle paths | Public facade and CLI |
 | `sandbox_control.py` | <=8 host-wide POSIX sandbox admission (process-local fallback on non-POSIX fixtures) and <=2 infrastructure-only retries | Mutation testing and production qualification |
