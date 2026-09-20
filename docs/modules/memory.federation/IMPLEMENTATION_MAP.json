@@ -80,9 +80,9 @@
   "headAttestation": {
     "candidateBranch": "fix/memory-federation-v2-closure-20260920",
     "baseCommit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "candidateHead": "a0ed2abe79cbd27bf7c9e1e69231485d3a24f846",
-    "candidateTree": "b2f9b26daead8353ccd96bc8195d4f9a7d6d0c27",
-    "headMeaning": "frozen canonical_v2_integrity_live_authority_interruptible_transport_product_composition_exact_scope_owner_data_frontier_adversarial_tests_truth_surface_and_lockfile head immediately before this metadata-only attestation commit",
+    "candidateHead": "1e5d32e039adb5be2dbb994a7a528bdb56543be4",
+    "candidateTree": "cffa6cb4ca1176dd4602540e2192c2701ff022c3",
+    "headMeaning": "frozen canonical_v2_integrity_ordered_prefix_selection_partial_empty_live_authority_interruptible_transport_product_composition_exact_scope_owner_data_frontier_adversarial_tests_truth_surface_lockfile_and_projection_sync head immediately before this metadata-only attestation commit",
     "status": "pending_exact_current_head_and_merge_candidate_execution",
     "scope": [
       "remote_response_field_binding",
@@ -96,7 +96,9 @@
       "legacy_product_path_retirement_boundary",
       "bounded_final_model_input_revalidation",
       "adversarial_race_integrity_tests",
-      "exact_scope_same_snapshot_owner_data_frontier"
+      "exact_scope_same_snapshot_owner_data_frontier",
+      "prefix_sensitive_item_order_binding",
+      "partial_empty_preservation"
     ],
     "productCallsites": [
       "codex-rs/hepta-agentd/src/runtime.rs",
@@ -118,7 +120,7 @@
       "codex-rs/hepta-memory/src/cognitive_federation.rs",
       "codex-rs/hepta-memory/src/cognitive_federation_tests.rs"
     ],
-    "note": "sourceBase remains the repository-wide historical identity shared by all module maps. candidateHead/candidateTree attest the current-main forward-ported implementation immediately before this metadata-only map commit, including the exact-scope same-snapshot owner data frontier and synchronized Cargo.lock. productExecutionProved, activation and release remain false until exact-candidate and merge-candidate evidence pass.",
+    "note": "sourceBase remains the repository-wide historical identity shared by all module maps. candidateHead/candidateTree attest the current-main forward-ported implementation immediately before this metadata-only map commit, including exact-scope same-snapshot owner data frontier, ordered prefix-sensitive response integrity, Partial+[] preservation, synchronized Cargo.lock and dossier projections. productExecutionProved, activation and release remain false until exact-candidate and merge-candidate evidence pass.",
     "metadataOnlyPaths": [
       "docs/modules/memory.federation/IMPLEMENTATION_MAP.json"
     ]
