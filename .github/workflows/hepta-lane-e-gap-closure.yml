@@ -281,8 +281,12 @@ jobs:
           test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
           ! grep -Eq '^pub fn evaluate\\(' codex-rs/hepta-intelligence-eval/src/lib.rs
           ! grep -Eq '^pub use closure::decide_independently' codex-rs/hepta-intelligence-eval/src/lib.rs
+          ! grep -Eq '^pub use signed_evaluation::decide_with_signed_evidence_v2' codex-rs/hepta-intelligence-eval/src/lib.rs
+          ! grep -Eq '^pub use longitudinal_time::decide_with_signed_longitudinal_evidence_v3' codex-rs/hepta-intelligence-eval/src/lib.rs
+          grep -Fq 'pub use product_runner::ProductEvaluationRunnerV1' codex-rs/hepta-intelligence-eval/src/lib.rs
+          grep -Fq 'pub use signed_evaluation::evaluation_signing_payload_v2' codex-rs/hepta-intelligence-eval/src/lib.rs
           grep -Fq 'trusted-inprocess-eval = []' codex-rs/hepta-intelligence-eval/Cargo.toml
-          grep -Fq 'decide_with_signed_evidence_v2' codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md
+          grep -Fq 'ProductEvaluationRunnerV1' codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md
           grep -Fq 'FencedFinalHoldoutOwnerV1' codex-rs/hepta-intelligence-eval/PRODUCTION_CONTRACT.md
 
       - name: Product evaluation runner evidence-chain tests

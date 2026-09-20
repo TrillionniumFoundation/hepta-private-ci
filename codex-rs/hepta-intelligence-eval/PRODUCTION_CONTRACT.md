@@ -10,17 +10,16 @@ An evaluation can establish eligibility for a later independent selector. It
 never selects, activates, promotes or releases a candidate. Every evaluation
 decision remains `AuthorityPosture::DENY_ALL`.
 
-External or production callers must enter through signature-verified admission.
-Asserted `AuthenticatedPrincipalV1` values are not external authentication.
+External or production callers enter through `ProductEvaluationRunnerV1`; the runner invokes signature-verified V2/V3 admission internally. Asserted `AuthenticatedPrincipalV1` values are not external authentication, and direct signed-decision functions are intentionally not part of the default cross-crate surface.
 
 ## API status
 
 | Surface | Status | Permitted use |
 |---|---|---|
-| `decide_with_signed_evidence_v2` | **Production-required** | Ordinary qualification with preregistered V2 metric roles |
-| `decide_with_signed_longitudinal_evidence_v3` | **Production-required for SystemLongitudinal** | Longitudinal qualification with signed observed-time evidence |
-| `decide_with_signed_evidence_v1` | Compatibility signed admission | Existing non-longitudinal V1 all-superiority contracts only |
-| `freeze_cross_fold_plan_v2` | Production plan freeze | Freeze metric roles before final-holdout observation |
+| `ProductEvaluationRunnerV1::qualify_and_persist` | **Production ingress** | Builds the exact bound bundle internally, runs signed V2/V3 verification and requires durable evidence publication |
+| `evaluation_signing_payload_v2` / `longitudinal_evaluation_signing_payload_v3` | **Public signer contracts** | External signers attest exactly the runner-derived bundle/timing bytes |
+| `decide_with_signed_evidence_v2` / `decide_with_signed_longitudinal_evidence_v3` | **Crate-internal verification primitives** | Not default cross-crate APIs; only the product runner may turn them into product qualification |
+| `freeze_product_evaluation_plan_v1` | **Production plan freeze** | Freezes V2 metric roles, metric-to-estimator mapping and candidate/baseline temporal plan identities before holdout release |
 | `FencedFinalHoldoutOwnerV1` + `FinalHoldoutCasStoreV1` | **Production-required when multiple writers/hosts can contend** | Linearizable CAS, monotonic writer fencing and accepted-or-unknown reconciliation |
 | `DurableFinalHoldoutJournalV1` | Single-host/cooperative-owner only | Local file durability when the host can guarantee exclusive namespace ownership |
 | `trusted_inprocess::decide_independently{,_v2}` | **Trusted-only** | Explicit compatibility/test feature; never external qualification ingress |
