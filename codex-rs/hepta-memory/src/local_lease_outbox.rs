@@ -1455,19 +1455,9 @@ impl LocalLeaseOutbox {
             .map_err(crate::cognitive_store::unavailable)?;
         let lease = self.current_lease(&mut transaction).await?;
         ensure_current_active(&lease, self)?;
-        let events =
-            verify_event_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
-        let outbox_rows =
-            verify_outbox_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
-        verify_event_outbox_pairing(&events, &outbox_rows)?;
-        verify_operation_ledger(
-            &mut transaction,
-            &self.lease_id,
-            &self.owner_agent_id,
-            &events,
-            &outbox_rows,
-        )
-        .await?;
+        // CognitiveStore::open/reopen performs the complete append-only
+        // journal audit. Under this BEGIN IMMEDIATE owner transaction the hot
+        // path validates only the exact occurrence/operation rows it consumes.
 
         if let Some(existing) = find_admission(
             &mut transaction,
@@ -2069,11 +2059,6 @@ impl LocalLeaseOutbox {
             .map_err(crate::cognitive_store::unavailable)?;
         let lease = self.current_lease(&mut transaction).await?;
         ensure_current_active(&lease, self)?;
-        let events =
-            verify_event_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
-        let outbox_rows =
-            verify_outbox_chain(&mut transaction, &self.lease_id, &self.owner_agent_id).await?;
-        verify_event_outbox_pairing(&events, &outbox_rows)?;
         let admission = find_admission(
             &mut transaction,
             &self.lease_id,
