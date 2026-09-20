@@ -22,13 +22,15 @@ use serde::Serialize;
 use sha2::Digest;
 use sha2::Sha256;
 use thiserror::Error;
-use crate::signed_intent::SignedIntentStatus;
-use crate::signed_intent::SignedSupervisorIntent;
 
-pub const SIGNED_AUTHORITY_SCHEMA_VERSION: u32 = 1;
-pub const SIGNED_AUTHORITY_NAMESPACE: &str = "hepta:production:authority:v1";
+pub const SIGNED_AUTHORITY_SCHEMA_VERSION: u32 = 2;
+pub const SIGNED_AUTHORITY_NAMESPACE: &str = "hepta:production:authority:v2";
 pub const SIGNED_AUTHORITY_MAX_LIFETIME_SECONDS: u64 = 86_400;
-const SIGNING_DOMAIN: &[u8] = b"hepta-supervisor:production-authority:v1";
+const SIGNING_DOMAIN: &[u8] = b"hepta-supervisor:production-authority:v2";
+const COMPATIBILITY_DOMAIN: &[u8] = b"hepta-supervisor:release-compatibility:v1";
+pub const PRODUCTION_RECOVERY_SCHEMA_VERSION: u32 = 1;
+pub const PRODUCTION_RECOVERY_NAMESPACE: &str = "hepta:production:recovery:v1";
+const RECOVERY_SIGNING_DOMAIN: &[u8] = b"hepta-supervisor:production-recovery:v1";
 
 /// Derives the numeric CAS epoch that external grant issuers bind to the
 /// daemon's UUID epoch.  A fresh supervisord process gets a fresh UUID, so a
@@ -58,6 +60,229 @@ impl H7H89ProductionTransition {
     }
 }
 
+/// Exact immutable release bytes and compatibility/revocation admission that
+/// an external production grant approves.
+///
+/// Both the offline signer and the live supervisor construct this value from
+/// independently observed release provenance. The compatibility digest is
+/// recomputed from every byte identity plus the current revocation frontier;
+/// it is never accepted as an opaque caller-supplied label.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ReleaseSelectionBinding {
+    pub source_manifest_sha256: Sha256Digest,
+    pub source_agentd_sha256: Sha256Digest,
+    pub source_matrixd_sha256: Option<Sha256Digest>,
+    pub target_manifest_sha256: Sha256Digest,
+    pub target_agentd_sha256: Sha256Digest,
+    pub target_matrixd_sha256: Option<Sha256Digest>,
+    pub compatibility_receipt_sha256: Sha256Digest,
+    pub compatibility_sha256: Sha256Digest,
+    pub compatibility_accepted: bool,
+    pub revocation_frontier: u64,
+}
+
+impl ReleaseSelectionBinding {
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "release selection binds all executable identities explicitly"
+    )]
+    pub fn new(
+        source_manifest_sha256: Sha256Digest,
+        source_agentd_sha256: Sha256Digest,
+        source_matrixd_sha256: Option<Sha256Digest>,
+        target_manifest_sha256: Sha256Digest,
+        target_agentd_sha256: Sha256Digest,
+        target_matrixd_sha256: Option<Sha256Digest>,
+        compatibility_receipt_sha256: Sha256Digest,
+        revocation_frontier: u64,
+    ) -> Result<Self, ProductionAuthorityError> {
+        if revocation_frontier == 0 {
+            return Err(ProductionAuthorityError::Invalid(
+                "release selection revocation frontier must be non-zero".to_string(),
+            ));
+        }
+        let mut binding = Self {
+            source_manifest_sha256,
+            source_agentd_sha256,
+            source_matrixd_sha256,
+            target_manifest_sha256,
+            target_agentd_sha256,
+            target_matrixd_sha256,
+            compatibility_receipt_sha256,
+            compatibility_sha256: Sha256Digest::for_bytes(b"pending"),
+            compatibility_accepted: true,
+            revocation_frontier,
+        };
+        binding.compatibility_sha256 = binding.compute_compatibility_digest();
+        binding.validate()?;
+        Ok(binding)
+    }
+
+    pub fn validate(&self) -> Result<(), ProductionAuthorityError> {
+        for (digest, label) in [
+            (&self.source_manifest_sha256, "source release manifest"),
+            (&self.source_agentd_sha256, "source agentd"),
+            (&self.target_manifest_sha256, "target release manifest"),
+            (&self.target_agentd_sha256, "target agentd"),
+            (&self.compatibility_receipt_sha256, "compatibility receipt"),
+            (&self.compatibility_sha256, "release compatibility"),
+        ] {
+            parse_digest(digest, label)?;
+        }
+        for (digest, label) in [
+            (self.source_matrixd_sha256.as_ref(), "source matrixd"),
+            (self.target_matrixd_sha256.as_ref(), "target matrixd"),
+        ] {
+            if let Some(digest) = digest {
+                parse_digest(digest, label)?;
+            }
+        }
+        if !self.compatibility_accepted || self.revocation_frontier == 0 {
+            return Err(ProductionAuthorityError::Compatibility);
+        }
+        if self.compatibility_sha256 != self.compute_compatibility_digest() {
+            return Err(ProductionAuthorityError::Compatibility);
+        }
+        Ok(())
+    }
+
+    fn compute_compatibility_digest(&self) -> Sha256Digest {
+        let mut hasher = Sha256::new();
+        frame(&mut hasher, COMPATIBILITY_DOMAIN);
+        for digest in [
+            &self.source_manifest_sha256,
+            &self.source_agentd_sha256,
+            &self.target_manifest_sha256,
+            &self.target_agentd_sha256,
+        ] {
+            frame(&mut hasher, digest.as_str().as_bytes());
+        }
+        frame_optional_digest(&mut hasher, self.source_matrixd_sha256.as_ref());
+        frame_optional_digest(&mut hasher, self.target_matrixd_sha256.as_ref());
+        frame(
+            &mut hasher,
+            self.compatibility_receipt_sha256.as_str().as_bytes(),
+        );
+        frame(&mut hasher, &self.revocation_frontier.to_be_bytes());
+        frame(&mut hasher, &[u8::from(self.compatibility_accepted)]);
+        Sha256Digest::from_sha256_output(hasher.finalize())
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ProductionRecoveryOutcome {
+    Committed,
+    RolledBack,
+}
+
+impl ProductionRecoveryOutcome {
+    const fn as_str(self) -> &'static str {
+        match self {
+            Self::Committed => "committed",
+            Self::RolledBack => "rolled_back",
+        }
+    }
+}
+
+/// Independently signed operator decision that resolves one quarantined
+/// production mutation after external reconciliation.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ProductionRecoveryDecision {
+    pub schema_version: u32,
+    pub namespace: String,
+    pub agent_id: String,
+    pub grant_sha256: Sha256Digest,
+    pub intent_sha256: Sha256Digest,
+    pub observed_release: String,
+    pub observed_manifest_sha256: Sha256Digest,
+    pub observed_agentd_sha256: Sha256Digest,
+    pub observed_matrixd_sha256: Option<Sha256Digest>,
+    pub outcome: ProductionRecoveryOutcome,
+    pub expected_control_revision: u64,
+    pub expected_lifecycle_generation: u64,
+    pub authority_epoch: u64,
+    pub revocation_frontier: u64,
+    pub signer_id: String,
+    pub signer_epoch: u64,
+    pub issued_at_unix_seconds: u64,
+    pub expires_at_unix_seconds: u64,
+    pub signature_base64: String,
+    pub decision_sha256: Sha256Digest,
+}
+
+impl ProductionRecoveryDecision {
+    pub fn digest(&self) -> &Sha256Digest {
+        &self.decision_sha256
+    }
+
+    pub fn validate_shape(&self) -> Result<(), ProductionAuthorityError> {
+        if self.schema_version != PRODUCTION_RECOVERY_SCHEMA_VERSION
+            || self.namespace != PRODUCTION_RECOVERY_NAMESPACE
+            || self.expected_lifecycle_generation == 0
+            || self.authority_epoch == 0
+            || self.revocation_frontier == 0
+            || self.signer_epoch == 0
+        {
+            return Err(ProductionAuthorityError::RecoveryBinding);
+        }
+        AgentId::parse(self.agent_id.clone())
+            .map_err(|_| ProductionAuthorityError::RecoveryBinding)?;
+        validate_release(&self.observed_release)?;
+        parse_digest(&self.observed_manifest_sha256, "recovery observed manifest")?;
+        parse_digest(&self.observed_agentd_sha256, "recovery observed agentd")?;
+        if let Some(digest) = self.observed_matrixd_sha256.as_ref() {
+            parse_digest(digest, "recovery observed matrixd")?;
+        }
+        validate_identifier(&self.signer_id, "recovery signer id")?;
+        validate_window(self.issued_at_unix_seconds, self.expires_at_unix_seconds)?;
+        parse_digest(&self.grant_sha256, "recovery grant")?;
+        parse_digest(&self.intent_sha256, "recovery intent")?;
+        parse_digest(&self.decision_sha256, "recovery decision")?;
+        if self.decision_sha256 != self.payload_digest() || self.signature_base64.is_empty() {
+            return Err(ProductionAuthorityError::RecoveryBinding);
+        }
+        Ok(())
+    }
+
+    pub fn payload_digest(&self) -> Sha256Digest {
+        Sha256Digest::from_sha256_output(Sha256::digest(self.signing_bytes()))
+    }
+
+    fn signing_bytes(&self) -> Vec<u8> {
+        let mut hasher = Sha256::new();
+        for value in [
+            RECOVERY_SIGNING_DOMAIN,
+            self.namespace.as_bytes(),
+            self.agent_id.as_bytes(),
+            self.grant_sha256.as_str().as_bytes(),
+            self.intent_sha256.as_str().as_bytes(),
+            self.observed_release.as_bytes(),
+            self.observed_manifest_sha256.as_str().as_bytes(),
+            self.observed_agentd_sha256.as_str().as_bytes(),
+            self.outcome.as_str().as_bytes(),
+            self.signer_id.as_bytes(),
+        ] {
+            frame(&mut hasher, value);
+        }
+        frame_optional_digest(&mut hasher, self.observed_matrixd_sha256.as_ref());
+        for value in [
+            self.expected_control_revision,
+            self.expected_lifecycle_generation,
+            self.authority_epoch,
+            self.revocation_frontier,
+            self.signer_epoch,
+            self.issued_at_unix_seconds,
+            self.expires_at_unix_seconds,
+        ] {
+            frame(&mut hasher, &value.to_be_bytes());
+        }
+        hasher.finalize().to_vec()
+    }
+}
+
 /// A detached, externally issued production authority grant.
 ///
 /// `h7_envelope_sha256` binds this grant to the signed H7/OPE envelope while
@@ -76,12 +301,7 @@ pub struct H7H89ProductionGrant {
     pub transition: H7H89ProductionTransition,
     pub h7_envelope_sha256: Sha256Digest,
     pub artifact_sha256: Sha256Digest,
-    pub source_release_manifest_sha256: Sha256Digest,
-    pub target_release_manifest_sha256: Sha256Digest,
-    pub target_agentd_sha256: Sha256Digest,
-    pub target_matrixd_sha256: Option<Sha256Digest>,
-    pub compatibility_sha256: Sha256Digest,
-    pub revocation_frontier_sha256: Sha256Digest,
+    pub release_selection: ReleaseSelectionBinding,
     pub expected_control_revision: u64,
     pub expected_lifecycle_generation: u64,
     pub authority_epoch: u64,
@@ -155,12 +375,7 @@ impl H7H89ProductionGrantSigner {
         target_release: impl Into<String>,
         transition: H7H89ProductionTransition,
         h7_envelope: &H7SignedArtifactEnvelope,
-        source_release_manifest_sha256: Sha256Digest,
-        target_release_manifest_sha256: Sha256Digest,
-        target_agentd_sha256: Sha256Digest,
-        target_matrixd_sha256: Option<Sha256Digest>,
-        compatibility_sha256: Sha256Digest,
-        revocation_frontier_sha256: Sha256Digest,
+        release_selection: ReleaseSelectionBinding,
         expected_control_revision: u64,
         expected_lifecycle_generation: u64,
         authority_epoch: u64,
@@ -185,6 +400,7 @@ impl H7H89ProductionGrantSigner {
             ));
         }
         validate_window(issued_at_unix_seconds, expires_at_unix_seconds)?;
+        release_selection.validate()?;
         let mut grant = H7H89ProductionGrant {
             schema_version: SIGNED_AUTHORITY_SCHEMA_VERSION,
             namespace: SIGNED_AUTHORITY_NAMESPACE.to_string(),
@@ -194,12 +410,7 @@ impl H7H89ProductionGrantSigner {
             transition,
             h7_envelope_sha256: h7_envelope.digest().clone(),
             artifact_sha256: h7_envelope.artifact_digest().clone(),
-            source_release_manifest_sha256,
-            target_release_manifest_sha256,
-            target_agentd_sha256,
-            target_matrixd_sha256,
-            compatibility_sha256,
-            revocation_frontier_sha256,
+            release_selection,
             expected_control_revision,
             expected_lifecycle_generation,
             authority_epoch,
@@ -220,6 +431,69 @@ impl H7H89ProductionGrantSigner {
             STANDARD.encode(self.signing_key.sign(&grant.signing_bytes()).to_bytes());
         grant.validate_shape(h7_envelope)?;
         Ok(grant)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub fn sign_recovery(
+        &self,
+        agent_id: &AgentId,
+        grant_sha256: Sha256Digest,
+        intent_sha256: Sha256Digest,
+        observed_release: impl Into<String>,
+        observed_manifest_sha256: Sha256Digest,
+        observed_agentd_sha256: Sha256Digest,
+        observed_matrixd_sha256: Option<Sha256Digest>,
+        outcome: ProductionRecoveryOutcome,
+        expected_control_revision: u64,
+        expected_lifecycle_generation: u64,
+        authority_epoch: u64,
+        revocation_frontier: u64,
+        issued_at_unix_seconds: u64,
+        expires_at_unix_seconds: u64,
+    ) -> Result<ProductionRecoveryDecision, ProductionAuthorityError> {
+        let observed_release = observed_release.into();
+        validate_release(&observed_release)?;
+        parse_digest(&observed_manifest_sha256, "recovery observed manifest")?;
+        parse_digest(&observed_agentd_sha256, "recovery observed agentd")?;
+        if let Some(digest) = observed_matrixd_sha256.as_ref() {
+            parse_digest(digest, "recovery observed matrixd")?;
+        }
+        if expected_lifecycle_generation == 0
+            || authority_epoch == 0
+            || revocation_frontier == 0
+        {
+            return Err(ProductionAuthorityError::RecoveryBinding);
+        }
+        validate_window(issued_at_unix_seconds, expires_at_unix_seconds)?;
+        parse_digest(&grant_sha256, "recovery grant")?;
+        parse_digest(&intent_sha256, "recovery intent")?;
+        let mut decision = ProductionRecoveryDecision {
+            schema_version: PRODUCTION_RECOVERY_SCHEMA_VERSION,
+            namespace: PRODUCTION_RECOVERY_NAMESPACE.to_string(),
+            agent_id: agent_id.to_string(),
+            grant_sha256,
+            intent_sha256,
+            observed_release,
+            observed_manifest_sha256,
+            observed_agentd_sha256,
+            observed_matrixd_sha256,
+            outcome,
+            expected_control_revision,
+            expected_lifecycle_generation,
+            authority_epoch,
+            revocation_frontier,
+            signer_id: self.signer_id.clone(),
+            signer_epoch: self.signer_epoch,
+            issued_at_unix_seconds,
+            expires_at_unix_seconds,
+            signature_base64: String::new(),
+            decision_sha256: Sha256Digest::for_bytes(b"pending"),
+        };
+        decision.decision_sha256 = decision.payload_digest();
+        decision.signature_base64 =
+            STANDARD.encode(self.signing_key.sign(&decision.signing_bytes()).to_bytes());
+        decision.validate_shape()?;
+        Ok(decision)
     }
 }
 
@@ -309,13 +583,11 @@ impl H7H89ProductionGrantVerifier {
         agent_id: &AgentId,
         source_release: &str,
         target_release: &str,
-        source_release_manifest_sha256: &Sha256Digest,
-        target_release_manifest_sha256: &Sha256Digest,
-        target_agentd_sha256: &Sha256Digest,
-        target_matrixd_sha256: Option<&Sha256Digest>,
+        expected_release_selection: &ReleaseSelectionBinding,
         expected_control_revision: u64,
         expected_lifecycle_generation: u64,
         expected_authority_epoch: u64,
+        expected_revocation_frontier: u64,
         now_unix_seconds: u64,
     ) -> Result<(), ProductionAuthorityError> {
         grant.validate_shape(h7_envelope)?;
@@ -325,12 +597,12 @@ impl H7H89ProductionGrantVerifier {
         if grant.agent_id != agent_id.to_string()
             || grant.source_release != source_release
             || grant.target_release != target_release
-            || &grant.source_release_manifest_sha256 != source_release_manifest_sha256
-            || &grant.target_release_manifest_sha256 != target_release_manifest_sha256
-            || &grant.target_agentd_sha256 != target_agentd_sha256
-            || grant.target_matrixd_sha256.as_ref() != target_matrixd_sha256
         {
             return Err(ProductionAuthorityError::Binding);
+        }
+        expected_release_selection.validate()?;
+        if &grant.release_selection != expected_release_selection {
+            return Err(ProductionAuthorityError::Compatibility);
         }
         if grant.expected_control_revision != expected_control_revision {
             return Err(ProductionAuthorityError::ControlRevisionFence {
@@ -349,6 +621,9 @@ impl H7H89ProductionGrantVerifier {
                 expected: expected_authority_epoch,
                 actual: grant.authority_epoch,
             });
+        }
+        if grant.release_selection.revocation_frontier != expected_revocation_frontier {
+            return Err(ProductionAuthorityError::Compatibility);
         }
         if grant.signer_id != self.signer_id {
             return Err(ProductionAuthorityError::SignerMismatch);
@@ -374,6 +649,82 @@ impl H7H89ProductionGrantVerifier {
             .map_err(|_| ProductionAuthorityError::SignatureMalformed)?;
         self.verifying_key
             .verify(&grant.signing_bytes(), &signature)
+            .map_err(|_| ProductionAuthorityError::SignatureInvalid)
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    pub fn verify_recovery(
+        &self,
+        decision: &ProductionRecoveryDecision,
+        agent_id: &AgentId,
+        grant_sha256: &Sha256Digest,
+        intent_sha256: &Sha256Digest,
+        observed_release: &str,
+        observed_manifest_sha256: &Sha256Digest,
+        observed_agentd_sha256: &Sha256Digest,
+        observed_matrixd_sha256: Option<&Sha256Digest>,
+        expected_control_revision: u64,
+        expected_lifecycle_generation: u64,
+        expected_authority_epoch: u64,
+        expected_revocation_frontier: u64,
+        now_unix_seconds: u64,
+    ) -> Result<(), ProductionAuthorityError> {
+        decision.validate_shape()?;
+        if decision.agent_id != agent_id.to_string()
+            || &decision.grant_sha256 != grant_sha256
+            || &decision.intent_sha256 != intent_sha256
+            || decision.observed_release != observed_release
+            || &decision.observed_manifest_sha256 != observed_manifest_sha256
+            || &decision.observed_agentd_sha256 != observed_agentd_sha256
+            || decision.observed_matrixd_sha256.as_ref() != observed_matrixd_sha256
+        {
+            return Err(ProductionAuthorityError::RecoveryBinding);
+        }
+        if decision.expected_control_revision != expected_control_revision {
+            return Err(ProductionAuthorityError::ControlRevisionFence {
+                expected: expected_control_revision,
+                actual: decision.expected_control_revision,
+            });
+        }
+        if decision.expected_lifecycle_generation != expected_lifecycle_generation {
+            return Err(ProductionAuthorityError::LifecycleGenerationFence {
+                expected: expected_lifecycle_generation,
+                actual: decision.expected_lifecycle_generation,
+            });
+        }
+        if decision.authority_epoch != expected_authority_epoch {
+            return Err(ProductionAuthorityError::AuthorityEpochFence {
+                expected: expected_authority_epoch,
+                actual: decision.authority_epoch,
+            });
+        }
+        if decision.revocation_frontier != expected_revocation_frontier {
+            return Err(ProductionAuthorityError::Compatibility);
+        }
+        if decision.signer_id != self.signer_id {
+            return Err(ProductionAuthorityError::SignerMismatch);
+        }
+        if decision.signer_epoch != self.signer_epoch {
+            return Err(ProductionAuthorityError::SignerEpochMismatch);
+        }
+        if now_unix_seconds < decision.issued_at_unix_seconds {
+            return Err(ProductionAuthorityError::NotYetValid);
+        }
+        if now_unix_seconds >= decision.expires_at_unix_seconds {
+            return Err(ProductionAuthorityError::Expired);
+        }
+        let signature_bytes = STANDARD
+            .decode(&decision.signature_base64)
+            .map_err(|_| ProductionAuthorityError::SignatureMalformed)?;
+        if signature_bytes.len() != 64
+            || STANDARD.encode(&signature_bytes) != decision.signature_base64
+        {
+            return Err(ProductionAuthorityError::SignatureMalformed);
+        }
+        let signature = Signature::from_slice(&signature_bytes)
+            .map_err(|_| ProductionAuthorityError::SignatureMalformed)?;
+        self.verifying_key
+            .verify(&decision.signing_bytes(), &signature)
             .map_err(|_| ProductionAuthorityError::SignatureInvalid)
     }
 }
@@ -433,23 +784,7 @@ impl H7H89ProductionGrant {
         validate_window(self.issued_at_unix_seconds, self.expires_at_unix_seconds)?;
         parse_digest(&self.h7_envelope_sha256, "H7 envelope")?;
         parse_digest(&self.artifact_sha256, "H7 artifact")?;
-        parse_digest(
-            &self.source_release_manifest_sha256,
-            "source release manifest",
-        )?;
-        parse_digest(
-            &self.target_release_manifest_sha256,
-            "target release manifest",
-        )?;
-        parse_digest(&self.target_agentd_sha256, "target agentd")?;
-        if let Some(digest) = &self.target_matrixd_sha256 {
-            parse_digest(digest, "target matrixd")?;
-        }
-        parse_digest(&self.compatibility_sha256, "compatibility evidence")?;
-        parse_digest(
-            &self.revocation_frontier_sha256,
-            "revocation frontier",
-        )?;
+        self.release_selection.validate()?;
         parse_digest(&self.grant_sha256, "grant")?;
         if self.grant_sha256 != self.payload_digest() {
             return Err(ProductionAuthorityError::DigestMismatch);
@@ -475,27 +810,37 @@ impl H7H89ProductionGrant {
             self.transition.as_str().as_bytes(),
             self.h7_envelope_sha256.as_str().as_bytes(),
             self.artifact_sha256.as_str().as_bytes(),
-            self.source_release_manifest_sha256.as_str().as_bytes(),
-            self.target_release_manifest_sha256.as_str().as_bytes(),
-            self.target_agentd_sha256.as_str().as_bytes(),
-            self.compatibility_sha256.as_str().as_bytes(),
-            self.revocation_frontier_sha256.as_str().as_bytes(),
+            self.release_selection.source_manifest_sha256.as_str().as_bytes(),
+            self.release_selection.source_agentd_sha256.as_str().as_bytes(),
+            self.release_selection.target_manifest_sha256.as_str().as_bytes(),
+            self.release_selection.target_agentd_sha256.as_str().as_bytes(),
+            self.release_selection.compatibility_receipt_sha256.as_str().as_bytes(),
+            self.release_selection.compatibility_sha256.as_str().as_bytes(),
             self.signer_id.as_bytes(),
         ] {
             frame(&mut hasher, value);
-        }
-        frame(
-            &mut hasher,
-            &[u8::from(self.target_matrixd_sha256.is_some())],
-        );
-        if let Some(digest) = &self.target_matrixd_sha256 {
-            frame(&mut hasher, digest.as_str().as_bytes());
         }
         frame(&mut hasher, &self.schema_version.to_be_bytes());
         frame(&mut hasher, &self.expected_control_revision.to_be_bytes());
         frame(
             &mut hasher,
             &self.expected_lifecycle_generation.to_be_bytes(),
+        );
+        frame_optional_digest(
+            &mut hasher,
+            self.release_selection.source_matrixd_sha256.as_ref(),
+        );
+        frame_optional_digest(
+            &mut hasher,
+            self.release_selection.target_matrixd_sha256.as_ref(),
+        );
+        frame(
+            &mut hasher,
+            &self.release_selection.revocation_frontier.to_be_bytes(),
+        );
+        frame(
+            &mut hasher,
+            &[u8::from(self.release_selection.compatibility_accepted)],
         );
         frame(&mut hasher, &self.authority_epoch.to_be_bytes());
         frame(&mut hasher, &self.signer_epoch.to_be_bytes());
@@ -539,36 +884,10 @@ pub enum ProductionMutationStatus {
     Queued,
     Committed,
     RolledBack,
-    Failed,
     RecoveryRequired,
 }
 
 impl ProductionMutationReceipt {
-    pub(crate) fn from_intent(intent: &SignedSupervisorIntent) -> Self {
-        let status = match intent.status {
-            SignedIntentStatus::Prepared | SignedIntentStatus::Queued => {
-                ProductionMutationStatus::Queued
-            }
-            SignedIntentStatus::Committed => ProductionMutationStatus::Committed,
-            SignedIntentStatus::RolledBack => ProductionMutationStatus::RolledBack,
-            SignedIntentStatus::Failed => ProductionMutationStatus::Failed,
-            SignedIntentStatus::RecoveryRequired => ProductionMutationStatus::RecoveryRequired,
-        };
-        Self {
-            grant_sha256: intent.grant_sha256.clone(),
-            agent_id: intent.agent_id.clone(),
-            transition: intent.transition,
-            source_release: intent.source_release.clone(),
-            target_release: intent.target_release.clone(),
-            control_revision: intent.expected_control_revision.saturating_add(1),
-            status,
-            production_authority: true,
-            external_effects: true,
-            operator_acceptance: true,
-            promotion: true,
-        }
-    }
-
     pub(crate) fn queued(grant: &H7H89ProductionGrant, control_revision: u64) -> Self {
         Self {
             grant_sha256: grant.grant_sha256.clone(),
@@ -598,6 +917,10 @@ pub enum ProductionAuthorityError {
     TransitionBinding,
     #[error("production authority grant binding mismatch")]
     Binding,
+    #[error("production authority release compatibility or byte provenance mismatch")]
+    Compatibility,
+    #[error("production recovery decision binding mismatch")]
+    RecoveryBinding,
     #[error(
         "production authority grant control revision fence mismatch: expected {expected}, actual {actual}"
     )]
@@ -629,6 +952,16 @@ pub enum ProductionAuthorityError {
 fn frame(hasher: &mut Sha256, value: &[u8]) {
     hasher.update(u64::try_from(value.len()).unwrap_or(u64::MAX).to_be_bytes());
     hasher.update(value);
+}
+
+fn frame_optional_digest(hasher: &mut Sha256, digest: Option<&Sha256Digest>) {
+    match digest {
+        Some(digest) => {
+            frame(hasher, &[1]);
+            frame(hasher, digest.as_str().as_bytes());
+        }
+        None => frame(hasher, &[0]),
+    }
 }
 
 fn validate_identifier(value: &str, label: &str) -> Result<(), ProductionAuthorityError> {
@@ -730,6 +1063,20 @@ mod tests {
             .verifier()
     }
 
+    fn selection(frontier: u64) -> ReleaseSelectionBinding {
+        ReleaseSelectionBinding::new(
+            Sha256Digest::for_bytes(b"source-manifest"),
+            Sha256Digest::for_bytes(b"source-agentd"),
+            None,
+            Sha256Digest::for_bytes(b"target-manifest"),
+            Sha256Digest::for_bytes(b"target-agentd"),
+            None,
+            Sha256Digest::for_bytes(b"compatibility-receipt"),
+            frontier,
+        )
+        .expect("release selection")
+    }
+
     #[test]
     fn external_grant_binds_h7_and_all_cas_fences() {
         let envelope = h7();
@@ -743,12 +1090,7 @@ mod tests {
                 "release-v3",
                 H7H89ProductionTransition::Upgrade,
                 &envelope,
-                Sha256Digest::for_bytes(b"source-release-manifest"),
-                Sha256Digest::for_bytes(b"target-release-manifest"),
-                Sha256Digest::for_bytes(b"target-agentd"),
-                None,
-                Sha256Digest::for_bytes(b"compatibility"),
-                Sha256Digest::for_bytes(b"revocation-frontier"),
+                selection(3),
                 8,
                 11,
                 3,
@@ -770,12 +1112,10 @@ mod tests {
                 &agent,
                 "release-v2",
                 "release-v3",
-                &Sha256Digest::for_bytes(b"source-release-manifest"),
-                &Sha256Digest::for_bytes(b"target-release-manifest"),
-                &Sha256Digest::for_bytes(b"target-agentd"),
-                None,
+                &selection(3),
                 8,
                 11,
+                3,
                 3,
                 150,
             )
@@ -786,6 +1126,78 @@ mod tests {
         assert!(grant.operator_acceptance);
         assert!(grant.promotion);
         assert!(!grant.governance_bypass);
+    }
+
+    #[test]
+    fn recovery_decision_binds_current_release_bytes_and_fences() {
+        let agent =
+            AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent");
+        let signer =
+            H7H89ProductionGrantSigner::from_seed("operator", 4, [9; 32]).expect("signer");
+        let verifier = H7H89ProductionGrantVerifier::new_with_h7_verifier(
+            "operator",
+            4,
+            signer.verifying_key(),
+            h7_verifier(),
+        )
+        .expect("verifier");
+        let grant = Sha256Digest::for_bytes(b"grant");
+        let intent = Sha256Digest::for_bytes(b"intent");
+        let manifest = Sha256Digest::for_bytes(b"manifest");
+        let agentd = Sha256Digest::for_bytes(b"agentd");
+        let decision = signer
+            .sign_recovery(
+                &agent,
+                grant.clone(),
+                intent.clone(),
+                "release-v3",
+                manifest.clone(),
+                agentd.clone(),
+                None,
+                ProductionRecoveryOutcome::Committed,
+                5,
+                12,
+                3,
+                7,
+                100,
+                200,
+            )
+            .expect("recovery decision");
+        verifier
+            .verify_recovery(
+                &decision,
+                &agent,
+                &grant,
+                &intent,
+                "release-v3",
+                &manifest,
+                &agentd,
+                None,
+                5,
+                12,
+                3,
+                7,
+                150,
+            )
+            .expect("verify recovery");
+        assert_eq!(
+            verifier.verify_recovery(
+                &decision,
+                &agent,
+                &grant,
+                &intent,
+                "release-v3",
+                &manifest,
+                &Sha256Digest::for_bytes(b"different-agentd"),
+                None,
+                5,
+                12,
+                3,
+                7,
+                150,
+            ),
+            Err(ProductionAuthorityError::RecoveryBinding)
+        );
     }
 
     #[test]
@@ -801,12 +1213,7 @@ mod tests {
                 "release-v3",
                 H7H89ProductionTransition::Upgrade,
                 &envelope,
-                Sha256Digest::for_bytes(b"source-release-manifest"),
-                Sha256Digest::for_bytes(b"target-release-manifest"),
-                Sha256Digest::for_bytes(b"target-agentd"),
-                None,
-                Sha256Digest::for_bytes(b"compatibility"),
-                Sha256Digest::for_bytes(b"revocation-frontier"),
+                selection(3),
                 8,
                 11,
                 3,
@@ -828,12 +1235,10 @@ mod tests {
                 &agent,
                 "release-v2",
                 "release-v3",
-                &Sha256Digest::for_bytes(b"source-release-manifest"),
-                &Sha256Digest::for_bytes(b"target-release-manifest"),
-                &Sha256Digest::for_bytes(b"target-agentd"),
-                None,
+                &selection(3),
                 9,
                 11,
+                3,
                 3,
                 150
             ),
@@ -841,24 +1246,6 @@ mod tests {
                 expected: 9,
                 actual: 8,
             })
-        );
-        assert_eq!(
-            verifier.verify(
-                &grant,
-                &envelope,
-                &agent,
-                "release-v2",
-                "release-v3",
-                &Sha256Digest::for_bytes(b"source-release-manifest"),
-                &Sha256Digest::for_bytes(b"different-target-manifest"),
-                &Sha256Digest::for_bytes(b"target-agentd"),
-                None,
-                8,
-                11,
-                3,
-                150
-            ),
-            Err(ProductionAuthorityError::Binding)
         );
         let mut tampered = grant;
         tampered.target_release = "release-v4".to_string();
@@ -869,12 +1256,10 @@ mod tests {
                 &agent,
                 "release-v2",
                 "release-v4",
-                &Sha256Digest::for_bytes(b"source-release-manifest"),
-                &Sha256Digest::for_bytes(b"target-release-manifest"),
-                &Sha256Digest::for_bytes(b"target-agentd"),
-                None,
+                &selection(3),
                 8,
                 11,
+                3,
                 3,
                 150
             ),
