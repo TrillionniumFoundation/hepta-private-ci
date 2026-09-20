@@ -124,6 +124,21 @@ async fn saturated_channels_observe_limits_before_dedup_and_preserve_top_four() 
                 candidate_count: 32,
                 limit: RetrievalLimitObservation::LimitReached
             },
+            RetrievalChannelObservation {
+                channel: RetrievalChannel::Causal,
+                candidate_count: 0,
+                limit: RetrievalLimitObservation::Exhausted
+            },
+            RetrievalChannelObservation {
+                channel: RetrievalChannel::Procedural,
+                candidate_count: 0,
+                limit: RetrievalLimitObservation::Exhausted
+            },
+            RetrievalChannelObservation {
+                channel: RetrievalChannel::ContradictionSupport,
+                candidate_count: 0,
+                limit: RetrievalLimitObservation::Exhausted
+            },
         ]
     );
     assert_eq!(

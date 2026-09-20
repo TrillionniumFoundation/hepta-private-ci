@@ -17,7 +17,10 @@ use crate::CognitiveAccess;
 use crate::CognitiveScope;
 use crate::CognitiveStore;
 use crate::DurableCognitiveSnapshot;
+use crate::KgEntityFactDraft;
 use crate::KgFactSetDraft;
+use crate::KgRelationFactDraft;
+use crate::KgRelationSemanticV1;
 use crate::MemoryDraft;
 use crate::MemoryLifecycleState;
 use crate::MemoryRevisionDraft;
@@ -141,7 +144,7 @@ async fn owner_adapter_exposes_pre_top_four_bounded_candidates() {
     let generated =
         generated_input_from_owner_observation(&observation, &snapshot_key, cut.snapshot())
             .expect("generated input");
-    assert_eq!(generated.batches.len(), 4);
+    assert_eq!(generated.batches.len(), 7);
     assert!(
         generated
             .batches
@@ -169,6 +172,93 @@ async fn owner_adapter_exposes_pre_top_four_bounded_candidates() {
     let recalled = recall_generated(&cue, &policy, &generated).expect("recall");
     assert!(recalled.packet.selections.len() > 4);
     assert!(recalled.packet.selections.len() <= 16);
+}
+
+#[tokio::test]
+async fn typed_kg_relations_are_not_relabelled_generic_graph_evidence() {
+    let temp = TempDir::new().expect("temp");
+    let owner = agent_id(64);
+    let store = CognitiveStore::open(&layout(&temp, &owner))
+        .await
+        .expect("store");
+    let access = CognitiveAccess::agent_private(owner);
+    let draft = revision("Alpha causes Beta.");
+    store
+        .remember_with_kg(
+            &access,
+            &source(CognitiveScope::AgentPrivate, "typed-causal", &draft.content),
+            &MemoryDraft {
+                stable_key: "typed-causal".to_string(),
+                revision: draft,
+            },
+            &KgFactSetDraft {
+                entities: vec![
+                    KgEntityFactDraft {
+                        key: "alpha".to_string(),
+                        entity_type: "concept".to_string(),
+                        label: "Alpha".to_string(),
+                    },
+                    KgEntityFactDraft {
+                        key: "beta".to_string(),
+                        entity_type: "concept".to_string(),
+                        label: "Beta".to_string(),
+                    },
+                ],
+                relations: vec![KgRelationFactDraft {
+                    key: "alpha-causes-beta".to_string(),
+                    from_entity_key: "alpha".to_string(),
+                    to_entity_key: "beta".to_string(),
+                    relation: KgRelationSemanticV1::Causes.relation().to_string(),
+                }],
+            },
+        )
+        .await
+        .expect("typed causal seed");
+
+    let scope = CognitiveScope::AgentPrivate;
+    let cut = store
+        .lane_c_snapshot(&access, &scope, 200)
+        .await
+        .expect("cut");
+    let snapshot_key = CognitiveSnapshotKeyV1::new(vector(&cut)).expect("snapshot key");
+    let observation = store
+        .observe_memory_retrieval(&access, &RetrievalRequest::new("Alpha", 200))
+        .await
+        .expect("observation");
+
+    let causal = observation
+        .channels()
+        .iter()
+        .find(|channel| channel.channel == RetrievalChannel::Causal)
+        .expect("causal channel");
+    assert_eq!(causal.candidate_count, 1);
+    let generic = observation
+        .channels()
+        .iter()
+        .find(|channel| channel.channel == RetrievalChannel::GraphOneHop)
+        .expect("generic graph channel");
+    assert_eq!(generic.candidate_count, 0);
+
+    let generated =
+        generated_input_from_owner_observation(&observation, &snapshot_key, cut.snapshot())
+            .expect("generated input");
+    let causal_batch = generated
+        .batches
+        .iter()
+        .find(|batch| batch.receipt.generator == RetrievalGeneratorOwnerV1::KnowledgeGraphCausal)
+        .expect("typed causal generator");
+    assert_eq!(causal_batch.candidates.len(), 1);
+    assert!(
+        generated
+            .batches
+            .iter()
+            .find(|batch| {
+                batch.receipt.generator == RetrievalGeneratorOwnerV1::CognitiveAssociative
+            })
+            .expect("generic graph generator")
+            .candidates
+            .is_empty()
+    );
 }
 
 #[tokio::test]

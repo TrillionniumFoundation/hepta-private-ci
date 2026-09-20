@@ -83,6 +83,7 @@ pub use cognitive_model::KgEntityFactDraft;
 pub use cognitive_model::KgFactSetDraft;
 pub use cognitive_model::KgNode;
 pub use cognitive_model::KgRelationFactDraft;
+pub use cognitive_model::KgRelationSemanticV1;
 pub use cognitive_model::LedgerSourceKind;
 pub use cognitive_model::MemoryDraft;
 pub use cognitive_model::MemoryLifecycleState;

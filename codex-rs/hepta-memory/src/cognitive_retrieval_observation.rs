@@ -84,8 +84,8 @@ pub(super) struct GeneratedRetrieval {
 
 impl CognitiveStore {
     /// Observe all bounded generator outputs before final top-four truncation.
-    /// This optional slow read validates up to 4 * 32 candidate explanations in
-    /// one snapshot. It never expands channel limits or changes legacy ranking.
+    /// This optional slow read validates up to 7 * 32 candidate explanations in
+    /// one snapshot. It never expands per-channel limits or changes legacy top-four ranking.
     pub async fn observe_memory_retrieval(
         &self,
         access: &CognitiveAccess,
@@ -102,7 +102,7 @@ impl CognitiveStore {
                 access,
                 request,
                 generated.ranked,
-                4 * MAX_RETRIEVAL_CHANNEL_CANDIDATES,
+                MAX_RETRIEVAL_OWNER_CHANNELS * MAX_RETRIEVAL_CHANNEL_CANDIDATES,
             )
             .await?;
         let mut observed = candidates
@@ -193,6 +193,30 @@ impl CognitiveStore {
         let graph = self
             .graph_channel_tx(transaction, &seeds.values, now)
             .await?;
+        let causal = self
+            .typed_relation_channel_tx(
+                transaction,
+                &seeds.values,
+                now,
+                KgRelationSemanticV1::Causes,
+            )
+            .await?;
+        let procedural = self
+            .typed_relation_channel_tx(
+                transaction,
+                &seeds.values,
+                now,
+                KgRelationSemanticV1::ProcedureStep,
+            )
+            .await?;
+        let contradiction = self
+            .typed_relation_channel_tx(
+                transaction,
+                &seeds.values,
+                now,
+                KgRelationSemanticV1::Contradicts,
+            )
+            .await?;
         let recency = self
             .recency_channel_tx(
                 transaction,
@@ -207,6 +231,17 @@ impl CognitiveStore {
             (RetrievalChannel::EntityFts, &entity, seeds.limit),
             (RetrievalChannel::GraphOneHop, &graph.values, graph.limit),
             (RetrievalChannel::Recency, &recency.values, recency.limit),
+            (RetrievalChannel::Causal, &causal.values, causal.limit),
+            (
+                RetrievalChannel::Procedural,
+                &procedural.values,
+                procedural.limit,
+            ),
+            (
+                RetrievalChannel::ContradictionSupport,
+                &contradiction.values,
+                contradiction.limit,
+            ),
         ] {
             add_rrf_channel(&mut ranked, keys, channel);
             channels.push(RetrievalChannelObservation {
