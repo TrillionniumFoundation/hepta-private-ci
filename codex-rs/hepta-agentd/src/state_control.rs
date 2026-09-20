@@ -264,16 +264,6 @@ impl AgentdState {
                     .map(wire_run_receipt);
                 AgentdPayload::RunStatus { run }
             }
-            crate::AgentdMethod::RunRecoverIndeterminate { recovery } => {
-                require_run_reconciliation_ready(lifecycle, fenced)?;
-                let receipt = self
-                    .runs
-                    .lock()
-                    .map_err(poisoned_state)?
-                    .recover_indeterminate(internal_run_recovery(recovery))
-                    .map_err(run_error)?;
-                AgentdPayload::RunReceipt(wire_run_receipt(receipt))
-            }
             crate::AgentdMethod::RunReleaseClosed {
                 run_id,
                 expected_revision,
@@ -758,16 +748,6 @@ fn internal_context_attachment(value: crate::AgentContextAttachment) -> crate::C
         deadline_ms: value.deadline_ms,
         context_digest: value.context_digest,
         compilation_receipt_digest: value.compilation_receipt_digest,
-    }
-}
-
-fn internal_run_recovery(value: crate::AgentRunRecovery) -> crate::RunRecovery {
-    crate::RunRecovery {
-        snapshot: internal_run_snapshot(value.snapshot),
-        revision: value.revision,
-        context_digest: value.context_digest,
-        compilation_receipt_digest: value.compilation_receipt_digest,
-        cancel_reason: value.cancel_reason,
     }
 }
 
