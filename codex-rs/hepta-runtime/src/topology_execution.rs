@@ -160,7 +160,9 @@ pub(crate) fn validate_runtime_topology_transition_v1(
     let successor = request.successor.snapshot();
     if proposal.baseline_generation != current_generation
         || proposal.candidate_generation != successor.route.generation
-        || current_generation.next().map_err(|_| RuntimeTopologyExecutionError::Generation)?
+        || current_generation
+            .next()
+            .map_err(|_| RuntimeTopologyExecutionError::Generation)?
             != successor.route.generation
         || current_route.generation != current_generation
         || current_route.cns != successor.route.cns
@@ -247,12 +249,10 @@ pub fn runtime_topology_final_use_binding_v1(
     current: &RuntimeTopologySnapshotV1,
     request: &RuntimeTopologyApplyRequestV1,
 ) -> Result<FinalUseBinding, RuntimeTopologyExecutionError> {
-    Ok(validate_runtime_topology_transition_v1(
-        &current.route,
-        current.route.generation,
-        request,
-    )?
-    .binding)
+    Ok(
+        validate_runtime_topology_transition_v1(&current.route, current.route.generation, request)?
+            .binding,
+    )
 }
 
 fn topology_execution_request_digest_v1(
