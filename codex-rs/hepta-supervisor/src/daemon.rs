@@ -79,6 +79,8 @@ use crate::H7H89ProductionTransition;
 #[cfg(unix)]
 use crate::ProcessDriver;
 #[cfg(unix)]
+use crate::ProductionRecoveryDecision;
+#[cfg(unix)]
 use crate::Supervisor;
 #[cfg(unix)]
 use crate::SupervisorConfig;
@@ -404,8 +406,13 @@ async fn handle_request<D: ProcessDriver>(
                     );
                 }
             };
+            let recovery_required = state
+                .supervisor
+                .lock()
+                .await
+                .any_production_recovery_required();
             SupervisordPayload::Health(SupervisordHealth {
-                ready: true,
+                ready: !recovery_required,
                 supervisor_epoch: state.supervisor_epoch.clone(),
                 process_id: std::process::id(),
                 registered_agents,
@@ -458,6 +465,24 @@ async fn handle_request<D: ProcessDriver>(
                 safe_rejection(error, /*actual*/ None, /*mutation_started*/ false)
             }
         },
+        SupervisordMethod::ReleaseSelection { agent_id } => {
+            let supervisor = state.supervisor.lock().await;
+            match supervisor.release_selection_snapshot(&agent_id) {
+                Ok(selection) => SupervisordPayload::ReleaseSelection { selection },
+                Err(error) => {
+                    safe_rejection(error, /*actual*/ None, /*mutation_started*/ false)
+                }
+            }
+        }
+        SupervisordMethod::ProductionMutationStatus { agent_id } => {
+            let supervisor = state.supervisor.lock().await;
+            match supervisor.production_mutation_state(&agent_id) {
+                Ok(state) => SupervisordPayload::ProductionMutationStatus { state },
+                Err(error) => {
+                    safe_rejection(error, /*actual*/ None, /*mutation_started*/ false)
+                }
+            }
+        }
         SupervisordMethod::Start { fence, release_id } => {
             let target = match resolve_release_outside_lock(
                 Arc::clone(&state),
@@ -563,6 +588,65 @@ async fn handle_request<D: ProcessDriver>(
             )
             .await
         }
+        SupervisordMethod::ResolveProductionRecovery { fence, decision } => {
+            handle_recovery_resolution(state, fence, decision).await
+        }
+    }
+}
+
+#[cfg(unix)]
+async fn handle_recovery_resolution<D: ProcessDriver>(
+    state: Arc<DaemonState<D>>,
+    fence: SupervisordControlFence,
+    decision: ProductionRecoveryDecision,
+) -> SupervisordPayload {
+    if !PRODUCTION_AUTHORITY_FEATURE_ENABLED {
+        return error_payload(
+            "production_authority_unavailable",
+            "signed production recovery is disabled in this build",
+            /*actual*/ None,
+        );
+    }
+    let Some(verifier) = state.production_grant_verifier.clone() else {
+        return error_payload(
+            "production_authority_unavailable",
+            "signed production recovery requires an externally pinned verifier",
+            /*actual*/ None,
+        );
+    };
+    let agent_id = fence.agent_id.clone();
+    let mut supervisor = state.supervisor.lock().await;
+    let actual = match agent_status_locked(&state, &supervisor, &agent_id) {
+        Ok(actual) => actual,
+        Err(error) => {
+            return safe_rejection(error, /*actual*/ None, /*mutation_started*/ false);
+        }
+    };
+    if !control_fence_matches(&fence, &actual.control_fence) {
+        return error_payload(
+            "stale_control_fence",
+            "selected Agent changed; refresh before recovery",
+            Some(actual),
+        );
+    }
+    let authority_epoch = authority_epoch_for_supervisor_epoch(state.supervisor_epoch.as_str());
+    if let Err(error) = supervisor.resolve_production_recovery(
+        &agent_id,
+        &decision,
+        &verifier,
+        authority_epoch,
+        unix_seconds_now(),
+    ) {
+        let post = agent_status_locked(&state, &supervisor, &agent_id).ok();
+        return safe_rejection(
+            error,
+            post.or(Some(actual)),
+            /*mutation_started*/ false,
+        );
+    }
+    match supervisor.production_mutation_state(&agent_id) {
+        Ok(state) => SupervisordPayload::ProductionMutationStatus { state },
+        Err(error) => safe_rejection(error, Some(actual), /*mutation_started*/ true),
     }
 }
 
@@ -610,6 +694,19 @@ async fn handle_signed_mutation<D: ProcessDriver>(
             "selected Agent changed; refresh before retry",
             Some(actual),
         );
+    }
+    match supervisor.production_recovery_required(&agent_id) {
+        Ok(true) => {
+            return error_payload(
+                "signed_intent_recovery_required",
+                "resolve the quarantined production mutation before admitting another signed transition",
+                Some(actual),
+            );
+        }
+        Ok(false) => {}
+        Err(error) => {
+            return safe_rejection(error, Some(actual), /*mutation_started*/ false);
+        }
     }
     let authority_epoch = authority_epoch_for_supervisor_epoch(state.supervisor_epoch.as_str());
     let receipt = match supervisor.apply_production_grant(
@@ -680,6 +777,19 @@ async fn handle_mutation<D: ProcessDriver>(
             "selected Agent changed; refresh before retry",
             Some(actual),
         );
+    }
+    match supervisor.production_recovery_required(&agent_id) {
+        Ok(true) if operation != SupervisordMutation::Kill => {
+            return error_payload(
+                "signed_intent_recovery_required",
+                "this Agent has a quarantined production mutation; only status, recovery, or emergency kill is allowed",
+                Some(actual),
+            );
+        }
+        Ok(_) => {}
+        Err(error) => {
+            return safe_rejection(error, Some(actual), /*mutation_started*/ false);
+        }
     }
     if state.production_grant_verifier.is_some()
         && matches!(

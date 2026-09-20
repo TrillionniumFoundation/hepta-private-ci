@@ -5,6 +5,7 @@ use std::time::Duration;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::ReleaseId;
+use codex_hepta_memory::H7SignedArtifactEnvelope;
 use codex_uds::UnixStream;
 use tokio::io::AsyncBufReadExt;
 use tokio::io::AsyncReadExt;
@@ -12,6 +13,10 @@ use tokio::io::AsyncWriteExt;
 use tokio::io::BufReader;
 use tokio::time::timeout;
 
+use crate::DurableReleaseTransaction;
+use crate::H7H89ProductionGrant;
+use crate::ProductionMutationState;
+use crate::ProductionRecoveryDecision;
 use crate::SupervisorError;
 use crate::daemon_protocol::MAX_SUPERVISORD_CONTROL_FRAME_BYTES;
 use crate::daemon_protocol::SUPERVISORD_CONTROL_SCHEMA_VERSION;
@@ -65,6 +70,46 @@ impl SupervisordClient {
         self.agent(SupervisordMethod::Snapshot { agent_id }).await
     }
 
+    pub async fn release_selection(
+        &self,
+        agent_id: AgentId,
+    ) -> Result<Option<DurableReleaseTransaction>, SupervisorError> {
+        match self
+            .send(SupervisordMethod::ReleaseSelection { agent_id })
+            .await?
+        {
+            SupervisordPayload::ReleaseSelection { selection } => Ok(selection),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn production_mutation_status(
+        &self,
+        agent_id: AgentId,
+    ) -> Result<Option<ProductionMutationState>, SupervisorError> {
+        match self
+            .send(SupervisordMethod::ProductionMutationStatus { agent_id })
+            .await?
+        {
+            SupervisordPayload::ProductionMutationStatus { state } => Ok(state),
+            payload => unexpected(payload),
+        }
+    }
+
+    pub async fn resolve_production_recovery(
+        &self,
+        fence: SupervisordControlFence,
+        decision: ProductionRecoveryDecision,
+    ) -> Result<ProductionMutationState, SupervisorError> {
+        match self
+            .send(SupervisordMethod::ResolveProductionRecovery { fence, decision })
+            .await?
+        {
+            SupervisordPayload::ProductionMutationStatus { state: Some(state) } => Ok(state),
+            payload => unexpected(payload),
+        }
+    }
+
     pub async fn start(
         &self,
         fence: SupervisordControlFence,
@@ -116,6 +161,34 @@ impl SupervisordClient {
         fence: SupervisordControlFence,
     ) -> Result<SupervisordMutationAccepted, SupervisorError> {
         self.mutation(SupervisordMethod::Rollback { fence }).await
+    }
+
+    pub async fn signed_upgrade(
+        &self,
+        fence: SupervisordControlFence,
+        grant: H7H89ProductionGrant,
+        h7_envelope: H7SignedArtifactEnvelope,
+    ) -> Result<SupervisordMutationAccepted, SupervisorError> {
+        self.mutation(SupervisordMethod::SignedUpgrade {
+            fence,
+            grant,
+            h7_envelope,
+        })
+        .await
+    }
+
+    pub async fn signed_rollback(
+        &self,
+        fence: SupervisordControlFence,
+        grant: H7H89ProductionGrant,
+        h7_envelope: H7SignedArtifactEnvelope,
+    ) -> Result<SupervisordMutationAccepted, SupervisorError> {
+        self.mutation(SupervisordMethod::SignedRollback {
+            fence,
+            grant,
+            h7_envelope,
+        })
+        .await
     }
 
     async fn agent(
