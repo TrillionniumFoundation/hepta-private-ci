@@ -293,8 +293,7 @@ pub(crate) struct MessageProcessorArgs {
     pub(crate) hepta_qualification_turn_writer_enabled: bool,
     pub(crate) hepta_qualification_turn_writer:
         Option<codex_hepta_memory_extension::QualificationTurnWriterHost>,
-    pub(crate) hepta_prompt_runtime_host:
-        Option<codex_hepta_codex_adapter::PromptRuntimeHost>,
+    pub(crate) hepta_prompt_runtime_host: Option<codex_hepta_codex_adapter::PromptRuntimeHost>,
 }
 
 impl MessageProcessor {
