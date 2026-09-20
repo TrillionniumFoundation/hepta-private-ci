@@ -25,7 +25,7 @@ CREATE TABLE authbus_quota_reservation (
     policy_revision BLOB NOT NULL CHECK (length(policy_revision) = 8),
     policy_decision_digest BLOB NOT NULL CHECK (length(policy_decision_digest) = 32),
     state TEXT NOT NULL CHECK (state IN
-        ('held', 'dispatch_attempted', 'indeterminate', 'settled', 'released', 'expired')),
+        ('held', 'dispatch_attempted', 'indeterminate', 'settled', 'released', 'expired', 'cancelled')),
     revision BLOB NOT NULL CHECK (length(revision) = 8),
     expires_at_ms BLOB NOT NULL CHECK (length(expires_at_ms) = 8),
     created_at_ms BLOB NOT NULL CHECK (length(created_at_ms) = 8),
