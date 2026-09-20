@@ -249,20 +249,3 @@ impl LocalWorkerHost {
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn production_owner_requires_explicit_os_isolation_boundary() {
-        let config = LocalProcessDriverConfig::new(
-            "/not/used".into(),
-            std::collections::BTreeMap::new(),
-        );
-        let _ = config;
-        assert_eq!(
-            LocalWorkerHostError::IsolationRequired,
-            LocalWorkerHostError::IsolationRequired
-        );
-    }
-}
