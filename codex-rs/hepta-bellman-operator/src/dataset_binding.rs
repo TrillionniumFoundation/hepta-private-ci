@@ -14,12 +14,16 @@ use codex_hepta_learning_ledger::verify_dataset_snapshot_receipt_v3;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+use crate::BellmanOperatorArtifact;
+use crate::Error as TargetBuilderError;
 use crate::LearnedOperatorError;
 use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorPlanV1;
 use crate::TabularWorldModelV1;
 use crate::WorldModelError;
 use crate::WorldModelSampleV1;
+use crate::TrainingRequest;
+use crate::build_targets;
 use crate::fit_tabular_operator;
 use crate::fit_transition_model;
 
@@ -31,6 +35,7 @@ pub struct VerifiedOperatorDatasetV2 {
     snapshot_id: StableId,
     objective_digest: Digest32,
     dataset_digest: Digest32,
+    ledger_head_digest: Digest32,
     source_record_digests: Vec<Digest32>,
 }
 
@@ -46,6 +51,7 @@ impl VerifiedOperatorDatasetV2 {
             snapshot_id: receipt.snapshot.snapshot_id.clone(),
             objective_digest: receipt.snapshot.objective_digest,
             dataset_digest: receipt.snapshot.dataset_digest,
+            ledger_head_digest: receipt.snapshot.ledger_head_digest,
             source_record_digests: receipt.snapshot.source_record_digests.clone(),
         })
     }
@@ -65,6 +71,11 @@ impl VerifiedOperatorDatasetV2 {
         self.dataset_digest
     }
 
+    #[must_use]
+    pub fn ledger_head_digest(&self) -> Digest32 {
+        self.ledger_head_digest
+    }
+
     fn require_exact_evidence(
         &self,
         evidence: impl IntoIterator<Item = Digest32>,
@@ -82,6 +93,41 @@ impl VerifiedOperatorDatasetV2 {
         }
         Ok(())
     }
+}
+
+/// Canonical target construction from an independently verified frozen dataset.
+/// The legacy request fields must identify the exact frozen snapshot and every
+/// transition must correspond one-to-one with the receipt's source records.
+/// The returned artifact binds the V3 dataset digest, not a detached legacy hash.
+pub fn build_targets_bound_v2(
+    dataset: &VerifiedOperatorDatasetV2,
+    request: TrainingRequest,
+) -> Result<BellmanOperatorArtifact, OperatorDatasetBindingError> {
+    if request.dataset.snapshot_id != dataset.snapshot_id {
+        return Err(OperatorDatasetBindingError::SnapshotMismatch);
+    }
+    if request.dataset.objective_digest != dataset.objective_digest {
+        return Err(OperatorDatasetBindingError::ObjectiveMismatch);
+    }
+    if request.dataset.source_head_digest != dataset.ledger_head_digest {
+        return Err(OperatorDatasetBindingError::SourceHeadMismatch);
+    }
+    dataset.require_exact_evidence(
+        request
+            .dataset
+            .transitions
+            .iter()
+            .map(|transition| transition.support_digest),
+    )?;
+    let mut artifact = build_targets(request.clone())?;
+    artifact.dataset_digest = dataset.dataset_digest;
+    artifact.artifact_digest = crate::digest_artifact(
+        &request,
+        dataset.dataset_digest,
+        &artifact.targets,
+        &artifact.regularity,
+    );
+    Ok(artifact)
 }
 
 /// Canonical complete-grid fit from an independently verified frozen dataset.
@@ -122,8 +168,11 @@ pub enum OperatorDatasetBindingError {
     DatasetReceipt(DatasetReceiptError),
     ObjectiveMismatch,
     DatasetMismatch,
+    SnapshotMismatch,
+    SourceHeadMismatch,
     DuplicateEvidence,
     EvidenceSetMismatch,
+    TargetBuilder(TargetBuilderError),
     Learned(LearnedOperatorError),
     WorldModel(WorldModelError),
 }
@@ -138,10 +187,13 @@ impl StdError for OperatorDatasetBindingError {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self {
             Self::DatasetReceipt(error) => Some(error),
+            Self::TargetBuilder(error) => Some(error),
             Self::Learned(error) => Some(error),
             Self::WorldModel(error) => Some(error),
             Self::ObjectiveMismatch
             | Self::DatasetMismatch
+            | Self::SnapshotMismatch
+            | Self::SourceHeadMismatch
             | Self::DuplicateEvidence
             | Self::EvidenceSetMismatch => None,
         }
@@ -151,6 +203,12 @@ impl StdError for OperatorDatasetBindingError {
 impl From<DatasetReceiptError> for OperatorDatasetBindingError {
     fn from(value: DatasetReceiptError) -> Self {
         Self::DatasetReceipt(value)
+    }
+}
+
+impl From<TargetBuilderError> for OperatorDatasetBindingError {
+    fn from(value: TargetBuilderError) -> Self {
+        Self::TargetBuilder(value)
     }
 }
 
