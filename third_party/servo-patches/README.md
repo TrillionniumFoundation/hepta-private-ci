@@ -1,13 +1,15 @@
 # Servo source pin
 
 The Browser/Servo qualification candidate is evaluated against Servo commit
-`5cc5bd32d02619acdec5736055515e38c5840ce1`. Its predecessor was `84bcc9ac701874fa9819e5cdee06356b961d736c`.
+`b5a1f5e6ec6f8685d40cd389802ced7abe4980f6`. Its immediate predecessor candidate was `5cc5bd32d02619acdec5736055515e38c5840ce1`.
 
-The selected candidate includes upstream WebView/input-event deadlock fixes
-landed after the predecessor pin. The delta is broad (239 upstream commits), so
-selection is not qualification: the exact-head worker build, real Browser E2E,
-reproducibility/SBOM gate and reviewed committed Cargo.lock must all pass before
-deployment evidence may consume this pin.
+The 13-commit delta intentionally absorbs upstream `07777aaa...`, which fixes
+a general libservo double-borrow hazard and changes `WebView::load()`, a direct
+Hepta worker callsite. The delta also changes Servo's Cargo dependency graph, so
+selection is not qualification: the exact-head worker workflow must generate the
+new candidate Cargo.lock, that exact lock must be reviewed and committed, and
+then locked compile/tests, real Browser E2E, reproducibility and SBOM evidence
+must all pass before target deployment qualification may consume this pin.
 
 This directory intentionally grants no network, deployment, promotion or release
 authority. Any patch or future pin change must be digest-bound and pass the same
