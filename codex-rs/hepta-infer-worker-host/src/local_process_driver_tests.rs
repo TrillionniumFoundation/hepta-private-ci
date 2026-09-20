@@ -211,7 +211,7 @@ fn real_local_process_driver_loads_runs_and_unloads_digest_pinned_runtime() {
 
     assert!(
         worker
-            .unload_model(100, &fixture.manifest.model_id)
+            .unload_model(100, fixture.verified_grant(100), &fixture.manifest.model_id)
             .unwrap()
             .terminal_observed
     );

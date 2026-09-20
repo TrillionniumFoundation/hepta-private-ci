@@ -123,7 +123,7 @@ fn loads_runs_and_unloads_exact_model_tuple() {
     assert!(observed.terminal_observed);
     assert!(
         worker
-            .unload_model(100, "model.1")
+            .unload_model(100, verified_grant(100), "model.1")
             .expect("unload")
             .terminal_observed
     );
