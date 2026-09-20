@@ -26,6 +26,7 @@ pub struct OutcomeCreditClosureRequestV1 {
     pub run_id: StableId,
     pub episode_id: StableId,
     pub expected_ledger_head: Digest32,
+    pub expected_decision_event_digest: Digest32,
     pub outcome: OutcomeObservation,
     pub credit: CreditAssignment,
 }
@@ -43,6 +44,7 @@ pub struct OutcomeCreditClosureReceiptV1 {
 #[derive(Debug, Eq, PartialEq)]
 pub enum OutcomeCreditClosureErrorV1 {
     Binding(&'static str),
+    Decision(DurableLedgerError),
     Outcome(DurableLedgerError),
     Credit {
         outcome: AppendReceipt,
@@ -60,7 +62,7 @@ impl StdError for OutcomeCreditClosureErrorV1 {
     fn source(&self) -> Option<&(dyn StdError + 'static)> {
         match self {
             Self::Binding(_) => None,
-            Self::Outcome(error) => Some(error),
+            Self::Decision(error) | Self::Outcome(error) => Some(error),
             Self::Credit { error, .. } => Some(error),
         }
     }
@@ -71,10 +73,19 @@ pub fn append_outcome_credit_v1(
     ledger: &mut dyn DurableLearningJournal,
 ) -> Result<OutcomeCreditClosureReceiptV1, OutcomeCreditClosureErrorV1> {
     validate_request(&request)?;
+    ledger
+        .verify_decision_predecessor(
+            request.expected_ledger_head,
+            request.expected_decision_event_digest,
+            &request.run_id,
+            &request.episode_id,
+        )
+        .map_err(OutcomeCreditClosureErrorV1::Decision)?;
     let OutcomeCreditClosureRequestV1 {
         run_id,
         episode_id,
         expected_ledger_head,
+        expected_decision_event_digest,
         outcome,
         credit,
     } = request;
@@ -92,6 +103,8 @@ pub fn append_outcome_credit_v1(
     let mut bytes = b"hepta.intelligence.outcome-credit-closure.v1\0".to_vec();
     push_id(&mut bytes, &run_id)?;
     push_id(&mut bytes, &episode_id)?;
+    bytes.extend_from_slice(expected_decision_event_digest.as_array());
+    bytes.extend_from_slice(expected_ledger_head.as_array());
     bytes.extend_from_slice(outcome_receipt.event_digest.as_array());
     bytes.extend_from_slice(outcome_receipt.chain_digest.as_array());
     bytes.extend_from_slice(credit_receipt.event_digest.as_array());
@@ -110,7 +123,7 @@ pub fn append_outcome_credit_v1(
 fn validate_request(
     request: &OutcomeCreditClosureRequestV1,
 ) -> Result<(), OutcomeCreditClosureErrorV1> {
-    if request.expected_ledger_head.is_zero() {
+    if request.expected_ledger_head.is_zero() || request.expected_decision_event_digest.is_zero() {
         return Err(OutcomeCreditClosureErrorV1::Binding(
             "missing decision predecessor",
         ));
@@ -162,11 +175,12 @@ mod tests {
         Digest32::of_bytes(value.as_bytes())
     }
 
-    fn request(head: Digest32) -> OutcomeCreditClosureRequestV1 {
+    fn request(head: Digest32, event_digest: Digest32) -> OutcomeCreditClosureRequestV1 {
         OutcomeCreditClosureRequestV1 {
             run_id: id("run:v3"),
             episode_id: id("episode:v3"),
             expected_ledger_head: head,
+            expected_decision_event_digest: event_digest,
             outcome: OutcomeObservation {
                 record_id: id("outcome-record:v3"),
                 outcome_id: id("outcome:v3"),
@@ -216,7 +230,7 @@ mod tests {
         let binding = digest("ledger-binding");
         let mut ledger = DurableLedger::create(file, binding, 3).expect("ledger");
         let decision = ledger.append(Digest32::ZERO, decision()).expect("decision");
-        let request = request(decision.chain_digest);
+        let request = request(decision.chain_digest, decision.event_digest);
         let receipt = append_outcome_credit_v1(request.clone(), &mut ledger).expect("closure");
         assert_eq!(receipt.outcome.disposition, AppendDisposition::Appended);
         assert_eq!(receipt.credit.disposition, AppendDisposition::Appended);
@@ -253,6 +267,28 @@ mod tests {
     }
 
     #[test]
+    fn wrong_decision_event_digest_is_rejected_before_outcome_append() {
+        let temp = tempfile::tempdir().expect("tempdir");
+        let path = temp.path().join("ledger");
+        let file = OpenOptions::new()
+            .create_new(true)
+            .read(true)
+            .write(true)
+            .open(path)
+            .expect("file");
+        let mut ledger = DurableLedger::create(file, digest("binding"), 3).expect("ledger");
+        let decision = ledger.append(Digest32::ZERO, decision()).expect("decision");
+        let request = request(decision.chain_digest, digest("borrowed-decision-event"));
+        assert_eq!(
+            append_outcome_credit_v1(request, &mut ledger),
+            Err(OutcomeCreditClosureErrorV1::Decision(
+                DurableLedgerError::Conflict
+            ))
+        );
+        assert_eq!(ledger.records().expect("records").len(), 1);
+    }
+
+    #[test]
     fn invalid_credit_binding_is_rejected_before_outcome_append() {
         let temp = tempfile::tempdir().expect("tempdir");
         let path = temp.path().join("ledger");
@@ -264,7 +300,7 @@ mod tests {
             .expect("file");
         let mut ledger = DurableLedger::create(file, digest("binding"), 3).expect("ledger");
         let decision = ledger.append(Digest32::ZERO, decision()).expect("decision");
-        let mut request = request(decision.chain_digest);
+        let mut request = request(decision.chain_digest, decision.event_digest);
         request.credit.outcome_id = id("different-outcome");
         assert_eq!(
             append_outcome_credit_v1(request, &mut ledger),
