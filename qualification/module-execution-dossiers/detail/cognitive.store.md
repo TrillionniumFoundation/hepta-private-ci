@@ -16,11 +16,11 @@ Operation signatures below describe the target contract. Section 8 identifies th
 
 ## 3. State records and transaction design
 
-Logical owner records: memory event (scope,event ID,revision,source/span references,verification,retention), knowledge fact (fact ID,source support,revision,validity), correction (old/new IDs,reason), tombstone (source range,cutoff,revocation lineage), asset metadata (content digest,media/range,redaction/preprocessor,retention). Index keys include scope+ID+revision and source digest. Large assets use the existing owner asset store, not inline ledger payloads. Append and local publication intent share one durable boundary.
+Logical owner records: memory event (scope,event ID,revision,source/span references,verification,retention), memory-revision-bound knowledge fact set (the complete entities/relations/support committed for one `(memory_id, memory_revision)`), correction (old/new Memory revision IDs,reason), tombstone (source range,cutoff,revocation lineage), asset metadata (content digest,media/range,redaction/preprocessor,retention). Knowledge facts have no independent writable revision head: correction creates a successor Memory revision and complete successor fact set; forget creates a tombstoned Memory revision with an empty fact set. Index keys include scope+ID+revision and source digest. Large assets use the existing owner asset store, not inline ledger payloads. Append and local publication intent share one durable boundary.
 
 ## 4. Deterministic algorithm and scheduling
 
-Authenticate scope and writer; validate referenced assets and source frontiers; perform predecessor CAS; append/canonicalize the existing durable format; fsync before publication acknowledgement; emit outbox updates to projections. Corrections and logical exclusion append records. Physical erasure/asset removal and derived-artifact revocation are separate tracked work; a tombstone alone is not full unlearning.
+Authenticate scope and writer; validate referenced assets and source frontiers; perform the Memory predecessor CAS; append/canonicalize the Memory revision, source evidence and its complete knowledge-fact set in the same durable transaction; fsync before publication acknowledgement; emit outbox updates to projections. Corrections and logical exclusion append Memory revisions and therefore advance the fact-set subledger only through the same Memory lineage. Physical erasure/asset removal and derived-artifact revocation are separate tracked work; a tombstone alone is not full unlearning.
 
 ## 5. Capacity and performance profile
 

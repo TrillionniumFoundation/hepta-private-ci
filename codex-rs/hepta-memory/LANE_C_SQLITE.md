@@ -12,6 +12,15 @@ request does not implicitly include agent-private or other workspace memories.
 All heads, immutable revisions, citations, source counts, fact-set counts, and
 graph generation are read in one SQLite transaction.
 
+`knowledge_fact_ledger` is the authoritative fact-set subledger inside this same
+owner. Its physical rows are `kg_revision_fact_sets`, `kg_revision_entities`,
+and `kg_revision_relations`, all keyed by the owning `(memory_id,
+memory_revision)` and committed with that Memory revision. It has no independent
+fact head or writer. Corrections publish a complete fact set for the successor
+Memory revision; tombstones publish an empty fact set. `kg_projection` and the
+`knowledge.graph` generation are derived, rebuildable projections of these
+Memory-bound facts and are never the fact source of truth.
+
 | Existing owner value | Lane C representation |
 | --- | --- |
 | `memory:v2:<hash>` and revision | Unchanged record ID and revision |

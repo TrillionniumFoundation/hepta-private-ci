@@ -18,7 +18,7 @@ This stable document is the implementation guide for `cognitive.store`. Normativ
 
 ## 1. Identity, mission and ownership
 
-Own Memory and knowledge-fact ledgers with revision, citation, correction, deletion and lineage semantics.
+Own the Memory ledger and its memory-revision-bound authoritative knowledge-fact subledger with citation, correction, deletion and lineage semantics. Knowledge facts are committed with a specific Memory revision; they do not form a second independently writable fact-history authority.
 
 The primary owner `cognitive-platform` controls changes inside the declared target roots and is accountable for correctness, backward compatibility, test evidence and rollback. The deputy `durability-kernel` independently reviews public contracts, authority checks, persistence, migrations, concurrency, resource limits and activation behavior. A work package may narrow this scope but may not widen it. Cross-owner changes require an explicit co-owner or a separate integration package.
 
@@ -73,7 +73,7 @@ Direct dependencies:
 Authoritative write domains:
 
 - `memory_ledger`
-- `knowledge_fact_ledger`
+- `knowledge_fact_ledger` — a memory-revision-bound fact-set subledger stored atomically with the owning Memory revision, not an independently writable second ledger
 
 Explicitly denied capabilities:
 
@@ -137,6 +137,8 @@ Read-only data dependencies:
 - `operation_ledger`
 
 For every owned domain, this module is the only authoritative writer. Mutations are revision- or generation-bound, idempotent for identical semantics and conflicting for a reused identity with different content. Records bind source identity, schema revision, logical sequence and lineage sufficient for correction, deletion and revocation.
+
+`knowledge_fact_ledger` is physically the immutable `kg_revision_fact_sets` / `kg_revision_entities` / `kg_revision_relations` subledger keyed by the owning `(memory_id, memory_revision)`. A correction creates a successor Memory revision and its complete successor fact set; a forget creates the tombstoned Memory revision and an empty fact set. There is no independent fact revision head, CAS domain, or writer. `knowledge.graph` consumes this authoritative subledger and publishes `knowledge_graph_projection`, which is rebuildable and never becomes the fact source of truth.
 
 Migrations are deterministic and checksum-bound. Store open verifies required schema objects and integrity constraints before reads or writes. Migration failure leaves a recoverable predecessor. Rollback across a schema boundary restores compatible state with the binary.
 
