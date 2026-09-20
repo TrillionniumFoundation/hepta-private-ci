@@ -663,6 +663,16 @@ impl<D: ProcessDriver> Supervisor<D> {
                 ));
             }
             let next_control_revision = Self::next_control_revision_for_slot(slot)?;
+            // The release-selection journal is the authoritative transaction
+            // record and carries enough fields to reconstruct a missing
+            // execution intent. Persist it first so no crash cut can leave an
+            // intent that has no recoverable selection/binding record.
+            let selection = ReleaseSelectionRecord::prepared(
+                grant,
+                next_control_revision,
+                record.lifecycle.generation,
+            )?;
+            write_release_selection(record.layout.run_root(), &selection)?;
             let intent = SignedSupervisorIntent::new(
                 grant.digest().clone(),
                 agent_id.to_string(),
@@ -675,26 +685,14 @@ impl<D: ProcessDriver> Supervisor<D> {
                 SignedIntentStatus::Prepared,
             )
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            write_intent(record.layout.run_root(), &intent)
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-            let selection = ReleaseSelectionRecord::prepared(
-                grant,
-                next_control_revision,
-                record.lifecycle.generation,
-            )?;
-            if let Err(error) = write_release_selection(record.layout.run_root(), &selection) {
-                let recovery = intent
-                    .with_status(SignedIntentStatus::RecoveryRequired)
-                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                let _ = write_intent(record.layout.run_root(), &recovery);
+            if let Err(error) = write_intent(record.layout.run_root(), &intent) {
                 if let Ok(selection_recovery) =
                     selection.with_status(ReleaseSelectionStatus::RecoveryRequired)
                 {
                     let _ =
                         write_release_selection(record.layout.run_root(), &selection_recovery);
                 }
-                slot.signed_intent = Some(recovery);
-                return Err(error);
+                return Err(SupervisorError::Invalid(error.to_string()));
             }
             Self::set_control_revision_for_slot(slot, next_control_revision)?;
             slot.signed_intent = Some(intent.clone());
