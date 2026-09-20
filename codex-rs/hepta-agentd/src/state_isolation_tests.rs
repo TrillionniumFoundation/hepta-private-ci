@@ -1,6 +1,8 @@
 use std::fs;
 
 use super::*;
+use crate::AgentdPayload;
+use crate::LifecycleSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::ResourceBudget;
@@ -273,4 +275,35 @@ async fn daemon_control_owns_the_run_lifecycle_and_advertises_it() {
     assert_eq!(terminal.phase, crate::AgentRunPhase::Succeeded);
     assert!(terminal.terminal_observed);
     assert_eq!(state.active_run_count().expect("active runs"), 0);
+
+    let released = state
+        .response(
+            17,
+            1,
+            crate::AgentdMethod::RunReleaseClosed {
+                run_id: terminal.run_id.clone(),
+                expected_revision: terminal.revision,
+            },
+        )
+        .await
+        .expect("release closed run");
+    let AgentdPayload::RunReceipt(released) = released.payload else {
+        panic!("expected released run receipt");
+    };
+    assert_eq!(released.phase, crate::AgentRunPhase::Succeeded);
+
+    let status = state
+        .response(
+            18,
+            1,
+            crate::AgentdMethod::RunStatus {
+                run_id: released.run_id,
+            },
+        )
+        .await
+        .expect("status after release");
+    let AgentdPayload::RunStatus { run } = status.payload else {
+        panic!("expected run status");
+    };
+    assert!(run.is_none());
 }
