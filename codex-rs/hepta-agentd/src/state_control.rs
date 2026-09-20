@@ -60,6 +60,10 @@ impl AgentdState {
         };
         let automation = self.automation.lock().map_err(poisoned_state)?.clone();
         let cognitive = self.cognitive.lock().map_err(poisoned_state)?.clone();
+        // CognitiveStore is a required owner for production readiness. Automation
+        // remains an explicitly optional plane and therefore does not gate core
+        // Agent readiness.
+        let critical_owners_ready = cognitive.is_some();
         let payload = match method {
             crate::AgentdMethod::Capabilities => {
                 AgentdPayload::Capabilities(crate::AgentdCapabilitySet::empty())
@@ -69,8 +73,12 @@ impl AgentdState {
                     lifecycle,
                     AgentLifecycle::Starting | AgentLifecycle::Running
                 ) && app_server_ready
+                    && critical_owners_ready
                     && !fenced,
-                ready: lifecycle == AgentLifecycle::Running && app_server_ready && !fenced,
+                ready: lifecycle == AgentLifecycle::Running
+                    && app_server_ready
+                    && critical_owners_ready
+                    && !fenced,
                 fenced,
                 lifecycle,
                 process_id: std::process::id(),
@@ -83,6 +91,7 @@ impl AgentdState {
                 app_server_ready,
                 fenced,
             }),
+            crate::AgentdMethod::Drain => AgentdPayload::Drain(self.request_drain()?),
             crate::AgentdMethod::SessionIngress => {
                 if lifecycle != AgentLifecycle::Running || !app_server_ready || fenced {
                     AgentdPayload::Error {
