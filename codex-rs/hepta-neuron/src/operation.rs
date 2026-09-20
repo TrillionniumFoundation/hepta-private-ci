@@ -274,10 +274,6 @@ impl FileRuntimeOperationJournal {
         Ok(journal)
     }
 
-    pub(crate) fn context_digest(&self) -> Digest32 {
-        self.context_digest
-    }
-
     pub(crate) fn record(&self, operation_id: &str) -> Option<&RuntimeOperationRecordV1> {
         self.records.get(operation_id)
     }
