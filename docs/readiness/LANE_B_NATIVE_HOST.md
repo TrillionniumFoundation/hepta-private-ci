@@ -16,6 +16,16 @@ This page describes executable behavior in the source, including gaps that requi
 
 The standalone `hepta-taskflow-runtime`, `hepta-fleet-leased`, `hepta-infer-control`, and `hepta-matrix-send-observer` entry points exit 64 with the real owner or missing integration named. Their former empty mains returned success without doing work. Existing component tests now run as library tests, with sibling test sources.
 
+## Supervisor production lifecycle
+
+`hepta-supervisord` uses Agentd control protocol v3 for exact-generation health and drain. Drain first transitions Fleet lifecycle to `Draining`, then asks Agentd to stop new session admission; the Unix driver no longer implements drain by sending SIGTERM. A drain acknowledgement is not treated as completed user work. Until a trusted in-flight terminal/reconciliation observer is attached, the process observer leaves `drained=false` and the supervisor waits its bounded drain deadline before normal stop/kill escalation.
+
+Unexpected primary-Agent exit and startup-health timeout enter a durable fixed-window restart budget. The default host profile permits three attempts in five minutes with exponential backoff from one second. The budget and pending wall-clock deadline survive supervisord restart, and every registered-release retry re-resolves the current Fleet allowance before launch. A revoked release therefore cannot be revived by automatic restart or rollback.
+
+Production release transitions are distinct from owner-local lifecycle control. Once supervisord is configured with an externally pinned production grant verifier, unsigned `Upgrade` and `Rollback` are rejected. A signed transition binds the H7 artifact/envelope, source/target release identities, immutable release-manifest and target executable digests, compatibility evidence, revocation-frontier evidence, authority epoch, control/lifecycle fences and validity window. The supervisor persists both a signed-intent journal and a first-class release-selection record; one-sided or mismatched non-terminal recovery fails startup closed. Terminal status is queryable as committed, rolled back, failed or recovery-required.
+
+The remaining repository readiness gap is explicit: Agentd promotion currently proves exact generation/process/root identity plus App Server readiness, but there is no single current production owner observation that also proves all critical-store integrity and capability-revocation availability. The repository also lacks a trusted generic in-flight drain terminal observer. Neither condition is synthesized from liveness or a drain acknowledgement.
+
 ## Canonical memory to actual model execution
 
 `AgentdMethod::CognitiveContext { query, limit }` and `AgentdClient::cognitive_context` use the normal owner/generation-fenced local protocol. The host selects its own Agent identity and private scope; callers cannot supply another scope or a success receipt.
