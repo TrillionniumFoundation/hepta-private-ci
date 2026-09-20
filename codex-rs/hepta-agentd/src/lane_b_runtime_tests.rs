@@ -23,6 +23,8 @@ fn snapshot() -> RunSnapshot {
         body_digest: digest('5'),
         artifact_set_digest: digest('6'),
         authority_epoch: 7,
+        generation: 3,
+        fence_digest: digest('9'),
         deadline_ms: 10_000,
     }
 }
@@ -51,6 +53,8 @@ fn assert_receipt(
     assert_eq!(receipt.revision, revision);
     assert_eq!(receipt.phase, phase);
     assert_eq!(receipt.authority_epoch, 7);
+    assert_eq!(receipt.generation, 3);
+    assert_eq!(receipt.fence_digest, digest('9'));
     assert_eq!(receipt.deadline_ms, 10_000);
     assert_eq!(receipt.cancel_reason.as_deref(), cancel_reason);
 }
@@ -73,6 +77,20 @@ fn freezes_the_complete_run_tuple_before_context_attachment() {
     wrong_authority.authority_epoch = 8;
     assert_eq!(
         coordinator.attach_context(200, 1, wrong_authority),
+        Err(AgentRunError::MixedSnapshot)
+    );
+
+    let mut wrong_generation = attachment();
+    wrong_generation.generation += 1;
+    assert_eq!(
+        coordinator.attach_context(200, 1, wrong_generation),
+        Err(AgentRunError::MixedSnapshot)
+    );
+
+    let mut wrong_fence = attachment();
+    wrong_fence.fence_digest = digest('a');
+    assert_eq!(
+        coordinator.attach_context(200, 1, wrong_fence),
         Err(AgentRunError::MixedSnapshot)
     );
 
