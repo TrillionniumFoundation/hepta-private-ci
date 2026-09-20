@@ -29,8 +29,8 @@ fn unbound() -> CodexOperationIntent {
 }
 
 #[test]
-fn wire_v2_can_only_produce_indeterminate_authority_free_request(
-) -> Result<(), Box<dyn StdError>> {
+fn wire_v2_can_only_produce_indeterminate_authority_free_request() -> Result<(), Box<dyn StdError>>
+{
     let envelope = encode_codex_operation_intent_wire_v2(
         &unbound(),
         id("runtime.agentd"),
