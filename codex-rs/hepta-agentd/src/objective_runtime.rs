@@ -135,7 +135,7 @@ impl ObjectiveRuntimeHost {
     ) -> Result<ObjectiveStartResult, AgentdError> {
         authbus_ingress::require_ready(agentd)?;
         let now_ms = authbus_ingress::now_ms()?;
-        let payload = objective_payload(agentd.identity(), &request.body)?;
+        let payload = objective_payload(agentd.identity(), &request.body, current_generation)?;
         if request.expires_at_ms <= now_ms || request.expires_at_ms.saturating_sub(now_ms) > 300_000
         {
             return Err(invalid("objective expiry must be within five minutes"));
@@ -432,7 +432,7 @@ fn prepare_private_directory(path: &Path) -> Result<(), AgentdError> {
 fn replay_frontier(
     journal: &DurableRunStartJournal,
 ) -> Result<BTreeMap<(String, u64), u64>, AgentdError> {
-    let mut highest = BTreeMap::new();
+    let mut highest: BTreeMap<(String, u64), u64> = BTreeMap::new();
     for record in journal.records().map_err(store_error)? {
         let key = (
             record.authentication.issuer_id.to_string(),
