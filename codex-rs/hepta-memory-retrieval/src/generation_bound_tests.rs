@@ -359,14 +359,13 @@ fn canonical_shadow_receipt_cannot_undercount_legacy_selection() {
     assert_eq!(
         adapt_generation_bound_recall_to_canonical_shadow_v1(
             &legacy,
-            canonical_context(1),
+            canonical_context(&legacy, 1),
         ),
         Err(RecallErrorV1::CanonicalAdapter(
             "candidate receipt undercounts legacy selected plus omitted events"
         ))
     );
 }
-
 
 #[test]
 fn canonical_shadow_bridge_rejects_cross_packet_or_selection_drift() {
