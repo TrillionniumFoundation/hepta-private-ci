@@ -25,9 +25,11 @@ evidence-set digest before signing.
 
 - A repository source generator cannot satisfy the independent reviewer role
   merely by using another display name.
-- Each required decision role is bound to an authenticated principal and key
-  epoch. When multiple roles are required by a qualification profile, the
-  verifier requires distinct principals.
+- Each required decision role is bound to an authenticated principal, key
+  epoch and signing identity. When multiple roles are required by a
+  qualification profile, the verifier requires both distinct principals and
+  distinct signing identities; two principal labels sharing one Ed25519 key do
+  not establish independence.
 - The review signing key is not stored in the repository, CI secret set or
   local evidence database.
 - Repository CI may verify an externally supplied receipt, but it may not mint
@@ -65,7 +67,10 @@ A production/qualification Agentd with an owner-installed evidence trust
 registry admits the signed receipt through `KernelEvidenceAppend`.
 `kernel.evidence` verifies current issuer/key/role registration, signature,
 candidate/tree/role subject, replay sequence, expiry and decision identity in
-the same durable append transaction.
+the same durable append transaction. Positive later verification reloads current
+issuer/key/role trust again, so a removed, revoked, role-mismatched or
+key-rotated signer cannot continue satisfying a supported claim merely because
+its historical row remains immutable.
 
 An accepted storage append means only that the independent decision record is
 authentic and durably bound. The decision itself may be reject/abstain and does
