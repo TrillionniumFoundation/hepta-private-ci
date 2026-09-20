@@ -22,6 +22,14 @@ product_callers = ["codex-rs/hepta-agentd/src/production_writer_host.rs"]
 caller_markers = ["ProductionDurableWriter::open", "verifier"]
 
 [[boundary]]
+id = "intelligence_v3_composition"
+symbol = "run_composition_v3_with_control"
+definition_path = "codex-rs/hepta-intelligence/src/pipeline_v3.rs"
+definition_markers = ["pub fn run_composition_v3_with_control", "LaneFV3Ports", "CompositionControlV3"]
+product_callers = ["codex-rs/hepta-agentd/src/lane_b_runtime.rs"]
+caller_markers = ["run_composition_v3_with_control", "run_native_intelligence_v3", "AgentdIntelligenceHostV1"]
+
+[[boundary]]
 id = "agentd_production_writer_host"
 symbol = "AgentdProductionWriterHost::open_with_store"
 definition_path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
