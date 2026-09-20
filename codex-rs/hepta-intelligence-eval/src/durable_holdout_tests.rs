@@ -362,10 +362,11 @@ fn fenced_anchor_error_after_commit_poisoned_without_local_append() {
         Err(DurableHoldoutError::Indeterminate)
     );
     assert_eq!(authority.anchor.sequence, 1);
+    let advanced = authority.anchor;
     assert_eq!(store.anchor(), start);
     assert_eq!(fs::read(directory.path()).unwrap(), before);
     assert_eq!(
-        store.consume_fenced(&mut authority, authority.anchor, &plan("plan-1")),
+        store.consume_fenced(&mut authority, advanced, &plan("plan-1")),
         Err(DurableHoldoutError::Poisoned)
     );
 }
