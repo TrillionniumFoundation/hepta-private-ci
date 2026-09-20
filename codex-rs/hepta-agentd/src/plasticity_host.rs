@@ -1034,6 +1034,41 @@ mod tests {
         }
     }
 
+    struct SignalValueDriftResolver;
+    impl PlasticityOwnerEvidenceResolverV1 for SignalValueDriftResolver {
+        fn resolve(
+            &self,
+            query: &PlasticityOwnerEvidenceQueryV1,
+        ) -> Result<VerifiedPlasticityOwnerEvidenceV1, PlasticityOwnerEvidenceErrorV1> {
+            let mut receipt = EchoOwnerEvidenceResolver.resolve(query)?;
+            receipt.signal_modulator = Some(FixedQ32::ONE);
+            Ok(receipt)
+        }
+    }
+
+    #[test]
+    fn owner_evidence_rejects_parameter_signal_value_substitution() {
+        let mut query = owner_query();
+        query.kind = PlasticityOwnerEvidenceKindV1::ParameterSignal;
+        query.evidence_digest = digest(b"parameter-signal");
+        query.layer_id = Some(StableId::new("layer:signal").expect("id"));
+        query.parameter_id = Some(StableId::new("parameter:signal").expect("id"));
+        query.signal_eligibility = Some(FixedQ32::from_raw(11));
+        query.signal_modulator = Some(FixedQ32::from_raw(12));
+        query.signal_learning_rate = Some(FixedQ32::from_raw(13));
+        query.signal_lower_bound = Some(FixedQ32::from_raw(-100));
+        query.signal_upper_bound = Some(FixedQ32::from_raw(100));
+
+        assert_eq!(
+            verify_agentd_plasticity_owner_evidence_v1(
+                &SignalValueDriftResolver,
+                &owner_policy(),
+                &query,
+            ),
+            Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch)
+        );
+    }
+
     #[test]
     fn owner_evidence_policy_rejects_authenticated_wrong_owner() {
         assert_eq!(
