@@ -754,8 +754,6 @@ impl<D: ProcessDriver> Supervisor<D> {
             .with_status(SignedIntentStatus::Committed)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let record = self.record(agent_id)?;
-        write_intent(record.layout.run_root(), &committed)
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let selection = read_release_selection(record.layout.run_root())?
             .ok_or_else(|| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
         if selection.grant_sha256 != committed.grant_sha256 {
@@ -763,8 +761,15 @@ impl<D: ProcessDriver> Supervisor<D> {
                 agent_id.clone(),
             ));
         }
+        // Terminalize the authoritative release-selection record before the
+        // intent. If the second write is interrupted, startup still sees an
+        // unresolved intent and deterministically rewrites both records to
+        // RecoveryRequired. The reverse order can strand a terminal intent
+        // beside a queued selection with no admissible recovery ceremony.
         let selection = selection.with_status(ReleaseSelectionStatus::Committed)?;
         write_release_selection(record.layout.run_root(), &selection)?;
+        write_intent(record.layout.run_root(), &committed)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         slot.signed_intent = Some(committed);
         Ok(())
     }
@@ -787,8 +792,6 @@ impl<D: ProcessDriver> Supervisor<D> {
         let rolled_back = intent
             .with_status(SignedIntentStatus::RolledBack)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        write_intent(record.layout.run_root(), &rolled_back)
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         let selection = read_release_selection(record.layout.run_root())?
             .ok_or_else(|| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
         if selection.grant_sha256 != rolled_back.grant_sha256 {
@@ -796,8 +799,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                 agent_id.clone(),
             ));
         }
+        // Use the same recoverable terminalization order as the committed
+        // path and explicit recovery ceremony: selection first, intent last.
         let selection = selection.with_status(ReleaseSelectionStatus::RolledBack)?;
         write_release_selection(record.layout.run_root(), &selection)?;
+        write_intent(record.layout.run_root(), &rolled_back)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         slot.signed_intent = Some(rolled_back);
         Ok(())
     }
