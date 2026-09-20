@@ -18,6 +18,18 @@ from hepta_module_source_roots import resolve_source_roots
 
 ROOT = Path(__file__).resolve().parents[1]
 STRICT_SOURCE_BASE_MODULES = {"browser.servo"}
+STRICT_OPERATION_SETS = {
+    "browser.servo": {
+        "open_profile",
+        "admit_effect_grant",
+        "observe_page",
+        "navigate_or_act",
+        "reconcile_operation",
+        "reconcile_persisted_operation",
+        "close_profile",
+    },
+}
+STRICT_SOURCE_BASE_SEMANTICS = "exact_mapped_source_snapshot_map_only_successor"
 
 
 def current_source_base() -> dict[str, str]:
@@ -352,6 +364,17 @@ def verify():
         if not isinstance(ops, list) or not ops:
             failures.append(f"{mid}: operations")
             continue
+        if mid in STRICT_OPERATION_SETS:
+            operation_ids = [op.get("operation") for op in ops if isinstance(op, dict)]
+            if len(operation_ids) != len(set(operation_ids)):
+                failures.append(f"{mid}: duplicate operation mapping")
+            if set(operation_ids) != STRICT_OPERATION_SETS[mid]:
+                failures.append(
+                    f"{mid}: closed operation set drift "
+                    f"(expected={sorted(STRICT_OPERATION_SETS[mid])}, actual={sorted(x for x in operation_ids if x)})"
+                )
+            if row.get("sourceBaseSemantics") != STRICT_SOURCE_BASE_SEMANTICS:
+                failures.append(f"{mid}: strict source-base semantics")
         if "sourceRootPresent" not in row or "productionImplementation" not in row:
             failures.append(f"{mid}: status model")
         for op in ops:
