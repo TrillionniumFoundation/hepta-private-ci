@@ -201,6 +201,137 @@ class WorkerLifecycleTests(unittest.TestCase):
                 )
                 self.assertEqual(completed.state, "completed_observed")
 
+    def test_ack_loss_replays_are_idempotent_across_reopen(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "engineering.sqlite3"
+            with EngineeringStore(path) as store:
+                self.register(store)
+                self.plan_and_lease(store)
+                claim = claim_assignment(
+                    store,
+                    "generation-a",
+                    "package-a",
+                    "worker-a",
+                    "lease-a",
+                    heartbeat_ttl_ns=1_000_000_000,
+                    now_ns=self.now + 2,
+                )
+                claim_anchor = store.audit_anchor()
+                self.assertEqual(
+                    claim_assignment(
+                        store,
+                        "generation-a",
+                        "package-a",
+                        "worker-a",
+                        "lease-a",
+                        heartbeat_ttl_ns=1_000_000_000,
+                        now_ns=self.now + 2,
+                    ),
+                    claim,
+                )
+                self.assertEqual(store.audit_anchor(), claim_anchor)
+
+                heartbeat = self.heartbeat(claim, self.now + 3)
+                running = heartbeat_claim(
+                    store,
+                    heartbeat,
+                    self.trust,
+                    heartbeat_ttl_ns=1_000_000_000,
+                    now_ns=self.now + 3,
+                )
+                heartbeat_anchor = store.audit_anchor()
+                self.assertEqual(
+                    heartbeat_claim(
+                        store,
+                        heartbeat,
+                        self.trust,
+                        heartbeat_ttl_ns=1_000_000_000,
+                        now_ns=self.now + 3,
+                    ),
+                    running,
+                )
+                self.assertEqual(store.audit_anchor(), heartbeat_anchor)
+
+                result = self.result(running, self.now + 4, "success")
+                submitted = submit_worker_result(
+                    store,
+                    result,
+                    self.trust,
+                    now_ns=self.now + 4,
+                )
+                result_anchor = store.audit_anchor()
+                self.assertEqual(
+                    submit_worker_result(
+                        store,
+                        result,
+                        self.trust,
+                        now_ns=self.now + 4,
+                    ),
+                    submitted,
+                )
+                self.assertEqual(store.audit_anchor(), result_anchor)
+
+                completion = self.completion(store, submitted, self.now + 5)
+                completed = observe_claim_completion(
+                    store,
+                    submitted.claim_id,
+                    self.envelope,
+                    completion,
+                    self.trust,
+                    now_ns=self.now + 5,
+                )
+                completion_anchor = store.audit_anchor()
+                self.assertEqual(
+                    observe_claim_completion(
+                        store,
+                        submitted.claim_id,
+                        self.envelope,
+                        completion,
+                        self.trust,
+                        now_ns=self.now + 6,
+                    ),
+                    completed,
+                )
+                self.assertEqual(
+                    submit_worker_result(
+                        store,
+                        result,
+                        self.trust,
+                        now_ns=self.now + 6,
+                    ),
+                    completed,
+                )
+                self.assertEqual(store.audit_anchor(), completion_anchor)
+                self.assertEqual(
+                    store.connection.execute(
+                        "SELECT COUNT(*) FROM worker_completion_observations "
+                        "WHERE claim_id=?",
+                        (completed.claim_id,),
+                    ).fetchone()[0],
+                    1,
+                )
+
+            with EngineeringStore(path) as reopened:
+                reopen_anchor = reopened.audit_anchor()
+                replayed = observe_claim_completion(
+                    reopened,
+                    completed.claim_id,
+                    self.envelope,
+                    completion,
+                    self.trust,
+                    now_ns=self.now + 2_000_000_000,
+                )
+                self.assertEqual(replayed, completed)
+                self.assertEqual(reopened.audit_anchor(), reopen_anchor)
+                self.assertEqual(
+                    reopened.connection.execute(
+                        "SELECT COUNT(*) FROM worker_completion_observations "
+                        "WHERE claim_id=?",
+                        (completed.claim_id,),
+                    ).fetchone()[0],
+                    1,
+                )
+
     def test_result_after_heartbeat_deadline_is_rejected_before_reconcile(self):
         with tempfile.TemporaryDirectory() as temporary:
             with EngineeringStore(Path(temporary) / "engineering.sqlite3") as store:
