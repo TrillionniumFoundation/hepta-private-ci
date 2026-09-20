@@ -25,7 +25,16 @@ use serde::Serialize;
 use sha2::Digest;
 use sha2::Sha256;
 
+use crate::CognitiveAccess;
 use crate::CognitiveStore;
+use crate::CognitiveStoreError;
+use crate::CognitiveWriteReceipt;
+use crate::ForgetMemoryDraft;
+use crate::KgFactSetDraft;
+use crate::MemoryDraft;
+use crate::MemoryRevisionDraft;
+use crate::SourceDraft;
+use crate::StableMemoryId;
 use crate::LocalAdmission;
 use crate::LocalLease;
 use crate::LocalLeaseHeadDisposition;
@@ -249,6 +258,56 @@ where
     ) -> Result<(), String> {
         self(authority, expected_agent)
     }
+}
+
+#[derive(Debug, thiserror::Error)]
+pub enum ProductionCognitiveMutationError {
+    #[error(transparent)]
+    Authority(#[from] ProductionWriterError),
+    #[error(transparent)]
+    Store(#[from] CognitiveStoreError),
+}
+
+pub type ProductionCognitiveMutationFuture<'a> = Pin<
+    Box<
+        dyn Future<Output = Result<CognitiveWriteReceipt, ProductionCognitiveMutationError>>
+            + Send
+            + 'a,
+    >,
+>;
+
+/// Opaque production mutation capability. Consumers can request canonical
+/// semantic mutations, but cannot open the durable owner, mint authority, or
+/// manufacture a current-cut witness through this interface.
+pub trait ProductionCognitiveMutation: Send + Sync {
+    fn owner_agent_id(&self) -> &AgentId;
+
+    fn remember_with_kg<'a>(
+        &'a self,
+        access: &'a CognitiveAccess,
+        source: &'a SourceDraft,
+        draft: &'a MemoryDraft,
+        facts: &'a KgFactSetDraft,
+    ) -> ProductionCognitiveMutationFuture<'a>;
+
+    fn correct_with_kg<'a>(
+        &'a self,
+        access: &'a CognitiveAccess,
+        memory_id: &'a StableMemoryId,
+        expected_revision: u64,
+        source: &'a SourceDraft,
+        draft: &'a MemoryRevisionDraft,
+        facts: &'a KgFactSetDraft,
+    ) -> ProductionCognitiveMutationFuture<'a>;
+
+    fn forget_with_kg<'a>(
+        &'a self,
+        access: &'a CognitiveAccess,
+        memory_id: &'a StableMemoryId,
+        expected_revision: u64,
+        source: &'a SourceDraft,
+        draft: &'a ForgetMemoryDraft,
+    ) -> ProductionCognitiveMutationFuture<'a>;
 }
 
 /// Durable writer bound to one externally-authorized lease.
