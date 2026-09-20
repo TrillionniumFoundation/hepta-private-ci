@@ -291,10 +291,11 @@
       "tests": [
         "WorkerLifecycleTests.test_claim_heartbeat_worker_result_and_independent_completion",
         "WorkerLifecycleTests.test_timeout_requeues_but_semantic_failure_never_retries",
-        "WorkerLifecycleTests.test_claim_requires_registered_assigned_worker_and_fenced_lease"
+        "WorkerLifecycleTests.test_claim_requires_registered_assigned_worker_and_fenced_lease",
+        "WorkerLifecycleTests.test_ack_loss_replays_are_idempotent_across_reopen"
       ],
       "state": "source_implemented",
-      "capabilityCeiling": "durable worker claim lifecycle; worker success is not completion until independent CI observation"
+      "capabilityCeiling": "durable SQLite v9 worker registration/lease/claim/heartbeat/result/completion lifecycle with bounded retry, immutable accepted completion receipt digest, and revision/audit-stable acknowledgement-loss replay; no worker self-completion or merge authority"
     },
     {
       "designOperation": "named_product_owner_composition",
@@ -307,7 +308,7 @@
         "ProductGateTests.test_pull_request_source_head_product_caller_executes_same_full_path"
       ],
       "state": "source_implemented_product_execution_pending",
-      "capabilityCeiling": "named SQLite v8 durable product owner composing planning, fenced worker lifecycle and integration reconciliation; CI product execution is fixture-bound and grants no independent acceptance/merge/release/deployment authority"
+      "capabilityCeiling": "named SQLite v9 durable product owner composing planning, fenced worker lifecycle and integration reconciliation; CI product execution is fixture-bound and grants no independent acceptance/merge/release/deployment authority"
     },
     {
       "designOperation": "durable_integration_queue_reconciliation",
