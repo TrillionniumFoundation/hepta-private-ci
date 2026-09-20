@@ -11,6 +11,7 @@ fn composition() -> RuntimeComposition {
         agentd_generation: 3,
         configuration_digest: digest('1'),
         ports_digest: digest('2'),
+        max_active_runs: 2,
     }
 }
 
@@ -111,6 +112,7 @@ fn cancellation_preserves_the_dispatch_boundary_and_reason() {
         .expect("cancel");
     assert_eq!(late.0, CancellationDisposition::CancellingAfterDispatch);
     assert_receipt(&late.1, 4, RunPhase::Cancelling, Some("operator_request"));
+    assert_eq!(late.1.cancel_ack_deadline_ms, Some(3_400));
 
     let repeated = after
         .cancel_run(450, "run.1", 4, "operator_request")
@@ -161,6 +163,23 @@ fn operation_identity_is_idempotent_only_for_equal_semantics() {
 }
 
 #[test]
+fn active_run_capacity_is_bound_by_runtime_composition() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    coordinator.start_run(100, snapshot()).expect("first");
+
+    let mut second = snapshot();
+    second.run_id = "run.2".to_string();
+    coordinator.start_run(100, second).expect("second");
+
+    let mut third = snapshot();
+    third.run_id = "run.3".to_string();
+    assert_eq!(
+        coordinator.start_run(100, third),
+        Err(AgentRunError::CapacityExceeded)
+    );
+}
+
+#[test]
 fn lifecycle_deadline_is_enforced_after_admission() {
     let mut pre = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
     let mut pre_snapshot = snapshot();
@@ -200,7 +219,12 @@ fn lifecycle_deadline_is_enforced_after_admission() {
     let expired = post.run("run.1").expect("retained");
     assert_eq!(expired.phase, RunPhase::Cancelling);
     assert_eq!(expired.cancel_reason.as_deref(), Some("deadline_elapsed"));
+    assert_eq!(expired.cancel_ack_deadline_ms, Some(3_300));
     assert!(!expired.terminal_observed);
+    assert_eq!(post.expire_deadlines(3_300).expect("ack timeout"), 1);
+    let indeterminate = post.run("run.1").expect("retained");
+    assert_eq!(indeterminate.phase, RunPhase::Indeterminate);
+    assert_eq!(indeterminate.cancel_ack_deadline_ms, None);
 }
 
 #[test]
