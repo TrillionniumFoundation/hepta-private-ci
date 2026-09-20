@@ -27,7 +27,10 @@ exception is added for the specification's two-unit explanatory example.
 
 ## Snapshot and host boundary
 
-Configuration, model and normalization digests are fixed for a generation.
+Configuration, normalization and the complete selected-model manifest are fixed
+for a generation. The manifest binds encoder/head weights, tokenizer,
+preprocessor, quantization, backend, device, runtime binary, SBOM, license and OOD
+detector; the checkpoint configuration digest includes that complete tuple.
 Sequences increase within that generation; the generation is not increased on
 every tick. Scope and objective cannot change mid-checkpoint chain. Every state
 binds its predecessor, clock, complete config and actual supplied numerical
@@ -38,15 +41,29 @@ fields are private; the state is returned only after full validation/computation
 must authenticate input provenance, enforce expiry/revocation and CAS the exact
 predecessor while atomically persisting the checkpoint and receipt. Concurrent
 proposals may be computed; only the host's single writer may publish one.
-The composed owner path is `NeuronRuntimeHost`: it consumes canonical typed
-Neuron inputs, invokes a required `FrozenModelExecutor`, validates the exact
-weights/tokenizer/preprocessor/quantization/backend/device receipt plus native
-runtime-binary, SBOM and license attestation, commits the sparse state through
-`SparseJournal`, and advances a separately durable recovery witness before
-acknowledgement. Strict canonical-JSON adapters exist for the
-registered Neuron protocols. Segment rotation preserves the exact witnessed
-checkpoint as genesis, and deletion rebuild replays only through the live lineage
-policy; a failed rebuild is poisoned and cannot be reused.
+The canonical composed owner path is `owner_runtime::NeuronRuntimeHost`.
+`runtime::LegacyNeuronRuntimeHost` remains only as an explicit compatibility
+surface. The canonical host consumes typed Neuron input, revalidates all current
+model/input/NDU/modulator/calibration lineage, invokes a required
+`FrozenModelExecutor`, and rejects any execution tuple that differs from the
+selected manifest.
+
+Before the sparse state is mutated, the host computes calibration, OOD, resource
+and canonical receipt semantics and durably writes a `Prepared` record containing
+the exact terminal-result bytes to `FileRuntimeOperationJournal`. It then commits
+the exact precomputed sparse successor through `SparseJournal`, durably marks the
+operation `Committed`, revalidates the lineage bound to that operation, advances
+the separately durable recovery witness, and only then acknowledges externally.
+A crash after prepare but before state is classified `Aborted`; a crash after
+state but before the terminal marker is reconciled to `Committed` only when the
+exact checkpoint matches. Identical retry returns the exact stored result without
+re-executing the model; changed retry conflicts. Untracked sparse history is never
+silently promoted into a canonical owner result.
+
+Strict canonical-JSON adapters exist for the registered Neuron protocols. Segment
+rotation preserves the exact witnessed checkpoint as genesis, and deletion rebuild
+replays only through the live lineage policy; a failed partial rebuild is poisoned
+and cannot be reused.
 
 The executor is an integration boundary, not evidence of a concrete local model.
 The existing inference-worker model driver is still injected, so actual model
@@ -64,7 +81,9 @@ remains `AuthorityPosture::DENY_ALL`.
 
 Eligibility-to-parameter-group accumulation accepts samples derived from actual
 `SparseCheckpoint` state and binds an independent-modulator evidence digest before
-bounded low-dimensional modulation. It produces next-snapshot sufficient
+bounded low-dimensional modulation. Every sufficient-statistics result directly
+binds selected artifact, generation, parameter manifest, optimization window,
+update rule and predecessor ancestry. It produces next-snapshot sufficient
 statistics only; selected weights, topology and current-run artifacts are never
 mutated. Real-model execution and target-host resource measurements remain external evidence,
 not consequences of unit tests. The qualification surface can execute deterministic
@@ -80,5 +99,10 @@ actual-base synthetic merge. Tests cover canonical tie/order, inhibition,
 homeostasis, L1 projection, signed rounding, clock/sequence/scope/config drift,
 checkpoint corruption, extreme input and 2048-step bounded replay. Qualification
 tests additionally execute full/no-temporal/no-inhibition/no-homeostasis/no-eligibility
-lesions and reject incomplete longitudinal evidence bindings. Rollback
-removes the additive export; the old API and callers remain unchanged.
+lesions and reject incomplete longitudinal evidence bindings. The closure suite
+also exercises prepare-before-state, state-before-terminal, terminal-before-witness,
+ack-loss, model-tuple substitution, tick-time revocation and recovery-time
+revocation cuts. Agentd source composition holds the authority-free neuron owner
+port behind its running-generation fence; this is source composition, not a claim
+that a concrete encoder or deployed host has been qualified. Rollback can retire
+the canonical port while the explicit legacy API remains available for migration.
