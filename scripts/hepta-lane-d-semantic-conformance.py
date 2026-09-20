@@ -271,10 +271,22 @@ def verify() -> int:
         "maturity module closure",
     )
     for row in maturity["modules"]:
-        for key in ["productCaller", "independentAcceptance", "activation", "release"]:
+        module = row["module"]
+        product_caller = row["dimensions"]["productCaller"]["state"]
+        if module == "objective.compiler":
+            need(
+                product_caller == "source_composed_authenticated_agentd_not_activated",
+                f"truth boundary {module} productCaller",
+            )
+        else:
+            need(
+                product_caller == "not_established",
+                f"truth boundary {module} productCaller",
+            )
+        for key in ["independentAcceptance", "activation", "release"]:
             need(
                 row["dimensions"][key]["state"] == "not_established",
-                f"truth boundary {row['module']} {key}",
+                f"truth boundary {module} {key}",
             )
 
     print(
