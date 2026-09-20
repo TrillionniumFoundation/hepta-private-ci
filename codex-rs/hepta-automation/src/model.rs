@@ -72,7 +72,6 @@ impl AutomationSchedule {
             Self::FixedInterval { .. } => Err(AutomationError::Invalid),
         }
     }
-
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -85,7 +84,6 @@ pub enum AutomationTaskState {
 }
 
 impl AutomationTaskState {
-
     pub(crate) fn parse(value: &str) -> Result<Self, AutomationError> {
         match value {
             "enabled" => Ok(Self::Enabled),

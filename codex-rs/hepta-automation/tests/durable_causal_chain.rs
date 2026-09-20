@@ -383,7 +383,10 @@ async fn proven_absent_unknown_dispatch_reuses_same_occurrence_identity() {
         run_before_absence.owner_id.clone().expect("owner id"),
         run_before_absence.owner_epoch.expect("owner epoch"),
         run_before_absence.generation.expect("generation"),
-        run_before_absence.fencing_token.clone().expect("fencing token"),
+        run_before_absence
+            .fencing_token
+            .clone()
+            .expect("fencing token"),
     )
     .expect("historical fence");
     let proof_digest = Sha256Digest::for_bytes(b"provider proved stable id absent");
