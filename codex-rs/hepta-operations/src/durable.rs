@@ -29,6 +29,12 @@ use crate::OperationRecord;
 use crate::OperationState;
 use crate::ReconciliationOutcome;
 
+#[path = "durable_outbox.rs"]
+mod durable_outbox;
+
+pub use durable_outbox::DurableOutboxRecord;
+pub use durable_outbox::DurableOutboxState;
+
 const SCHEMA_VERSION: i64 = 1;
 const MAX_DURABLE_OPERATION_RECORDS: i64 = MAX_MODEL_OPERATION_RECORDS as i64;
 
@@ -152,6 +158,8 @@ impl DurableOperationLedger {
         .execute(&pool)
         .await
         .map_err(|_| OperationError::StorageUnavailable)?;
+
+        durable_outbox::initialize(&pool).await?;
 
         let journal_mode = sqlx::query_scalar::<_, String>("PRAGMA journal_mode")
             .fetch_one(&pool)
