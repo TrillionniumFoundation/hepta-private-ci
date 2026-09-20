@@ -207,7 +207,6 @@ enum ShutdownAction {
 #[derive(Clone, Copy)]
 enum ShutdownSignal {
     Forceable,
-    #[cfg(unix)]
     GracefulOnly,
 }
 
@@ -1152,6 +1151,7 @@ pub async fn run_main_with_transport_options(
             outgoing_tx,
             analytics_events_client.clone(),
         ));
+        let graceful_drain = runtime_options.graceful_drain.clone();
         let initialize_notification_sender = outgoing_message_sender.clone();
         let outbound_control_tx = outbound_control_tx;
         let processor = Arc::new(MessageProcessor::new(MessageProcessorArgs {
@@ -1190,7 +1190,6 @@ pub async fn run_main_with_transport_options(
         async move {
             let mut listen_for_threads = true;
             let mut shutdown_state = ShutdownState::default();
-            let graceful_drain = runtime_options.graceful_drain.clone();
             let exit_reason = loop {
                 let running_turn_count = {
                     let running_turn_count = running_turn_count_rx.borrow();
