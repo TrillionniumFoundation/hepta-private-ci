@@ -1154,6 +1154,65 @@ mod tests {
     }
 
     #[test]
+    fn signed_grant_rejects_stale_compatibility_receipt_even_when_signature_is_valid() {
+        let envelope = h7();
+        let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent");
+        let signer =
+            H7H89ProductionGrantSigner::from_seed("operator", 4, [9; 32]).expect("grant signer");
+        let signed_selection = selection(3);
+        let grant = signer
+            .sign(
+                &agent,
+                "release-v2",
+                "release-v3",
+                H7H89ProductionTransition::Upgrade,
+                &envelope,
+                signed_selection,
+                8,
+                11,
+                3,
+                100,
+                200,
+            )
+            .expect("grant");
+        let verifier = H7H89ProductionGrantVerifier::new_with_h7_verifier(
+            "operator",
+            4,
+            signer.verifying_key(),
+            h7_verifier(),
+        )
+        .expect("verifier");
+        let current_selection = ReleaseSelectionBinding::new(
+            Sha256Digest::for_bytes(b"source-manifest"),
+            Sha256Digest::for_bytes(b"source-agentd"),
+            None,
+            Sha256Digest::for_bytes(b"target-manifest"),
+            Sha256Digest::for_bytes(b"target-agentd"),
+            None,
+            Sha256Digest::for_bytes(b"new-current-compatibility-receipt"),
+            3,
+        )
+        .expect("current selection");
+
+        assert_eq!(
+            verifier.verify(
+                &grant,
+                &envelope,
+                &agent,
+                "release-v2",
+                "release-v3",
+                &current_selection,
+                8,
+                11,
+                3,
+                3,
+                150,
+            ),
+            Err(ProductionAuthorityError::Compatibility)
+        );
+    }
+
+    #[test]
     fn recovery_decision_binds_current_release_bytes_and_fences() {
         let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("agent");
         let signer = H7H89ProductionGrantSigner::from_seed("operator", 4, [9; 32]).expect("signer");
