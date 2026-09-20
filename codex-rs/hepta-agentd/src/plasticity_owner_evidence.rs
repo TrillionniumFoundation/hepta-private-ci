@@ -762,8 +762,11 @@ mod tests {
     use codex_hepta_learning_ledger::{
         AuthenticatedPrincipalV1, DatasetFreezeRequestV1, freeze_dataset_receipt_v3,
     };
+    use codex_hepta_ndu::NduProjectionKindV1;
+    use codex_hepta_neuron::{JournalScope, SparseConfig, SparseTick};
     use codex_hepta_plasticity::ProposalWindowV2;
     use codex_hepta_types::Generation;
+    use tempfile::tempfile;
 
     fn id(value: &str) -> StableId {
         StableId::new(value).expect("stable id")
@@ -961,6 +964,415 @@ mod tests {
             ))
             .expect("mutation owner");
         assert_eq!(mutation.owner_id, id("owner:mutation-policy"));
+    }
+
+
+    const Q24: i64 = 1_i64 << 24;
+
+    fn sparse_config() -> SparseConfig {
+        SparseConfig {
+            model_digest: digest("model"),
+            normalization_digest: digest("normalization"),
+            generation: Generation::new(1).expect("generation"),
+            width: 5,
+            top_k: 1,
+            temporal_decay_q24: Q24 / 2,
+            inhibition_gain_q24: 0,
+            inhibition: Vec::new(),
+            activity_decay_q24: Q24 / 2,
+            target_activity_q24: Q24 / 5,
+            threshold_rate_q24: Q24 / 10,
+            threshold_min_q24: -Q24,
+            threshold_max_q24: Q24,
+            eligibility_decay_q24: Q24 / 2,
+        }
+    }
+
+    fn sparse_scope() -> JournalScope {
+        JournalScope {
+            scope_digest: digest("neuron:scope"),
+            objective_digest: digest("objective"),
+        }
+    }
+
+    fn first_tick() -> SparseTick {
+        SparseTick {
+            scope_digest: sparse_scope().scope_digest,
+            objective_digest: digest("objective"),
+            ndu_digest: digest("ndu"),
+            body_digest: digest("body"),
+            input_digest: digest("input"),
+            sequence: 1,
+            monotonic_micros: 1,
+            drive_q24: vec![Q24, Q24 / 2, 0, 0, 0],
+            prediction_q24: vec![0; 5],
+        }
+    }
+
+    struct DynamicFixture {
+        resolver: PlasticityDynamicOwnerEvidenceResolverV1,
+        ndu: Arc<RwLock<NduProjectionJournalV1>>,
+        neuron: Arc<Mutex<SparseJournal>>,
+        artifact_head: Digest32,
+        ledger_head: Digest32,
+        dataset_digest: Digest32,
+        modulator_digest: Digest32,
+        broadcast_digest: Digest32,
+        eligibility_digest: Digest32,
+        signal_digest: Digest32,
+        eligibility: FixedQ32,
+        modulator: FixedQ32,
+        learning_rate: FixedQ32,
+        lower_bound: FixedQ32,
+        upper_bound: FixedQ32,
+    }
+
+    fn dynamic_fixture() -> DynamicFixture {
+        let objective = digest("objective");
+        let subject = digest("agent:subject");
+        let modulator_values = vec![FixedQ32::from_raw(FixedQ32::ONE.raw() / 2)];
+        let modulator_digest =
+            plasticity_modulator_digest_v1(objective, subject, &modulator_values)
+                .expect("modulator digest");
+
+        let mut ndu_journal = NduProjectionJournalV1::new();
+        ndu_journal
+            .append_projection(
+                NduProjectionKindV1::Utility,
+                digest("ndu:projection"),
+                objective,
+                subject,
+                modulator_digest,
+            )
+            .expect("append NDU projection");
+        ndu_journal
+            .select_projection(
+                digest("ndu:selection"),
+                objective,
+                subject,
+                modulator_digest,
+            )
+            .expect("select NDU projection");
+        let ndu = Arc::new(RwLock::new(ndu_journal));
+
+        let mut journal =
+            SparseJournal::open(tempfile().expect("neuron file"), sparse_config(), sparse_scope(), 8)
+                .expect("open neuron journal");
+        let receipt = journal
+            .commit(Digest32::ZERO, &first_tick())
+            .expect("commit neuron checkpoint");
+        let anchor = JournalAnchor {
+            sequence: 1,
+            checkpoint_digest: receipt.checkpoint_after,
+        };
+        let eligibility_digest = plasticity_eligibility_digest_v1(
+            journal
+                .current()
+                .expect("current checkpoint")
+                .expect("checkpoint"),
+        )
+        .expect("eligibility digest");
+        let eligibility = q24_to_q32(
+            journal
+                .current()
+                .expect("current checkpoint")
+                .expect("checkpoint")
+                .eligibility_q24()[0],
+        )
+        .expect("eligibility q32");
+        let neuron = Arc::new(Mutex::new(journal));
+
+        let binding = PlasticityDynamicSignalBindingV1 {
+            layer_id: id("layer:dynamic"),
+            parameter_id: id("parameter:dynamic"),
+            eligibility_index: 0,
+            modulator_weights: vec![FixedQ32::ONE],
+        };
+        let broadcast_digest =
+            plasticity_modulator_broadcast_digest_v1(std::iter::once(&binding))
+                .expect("broadcast digest");
+        let mut artifacts = ArtifactRegistry::new();
+        artifacts
+            .append(ArtifactEvent::Register {
+                event_id: id("event:broadcast"),
+                manifest: policy_manifest(
+                    "policy:broadcast",
+                    "owner:broadcast",
+                    broadcast_digest,
+                    objective,
+                ),
+            })
+            .expect("broadcast artifact");
+        let artifact_head = artifacts.snapshot().head_digest;
+
+        let modulator = modulator_values[0];
+        let learning_rate = FixedQ32::from_raw(1_i64 << 20);
+        let lower_bound = FixedQ32::from_raw(-FixedQ32::ONE.raw());
+        let upper_bound = FixedQ32::ONE;
+        let signal_digest = plasticity_parameter_signal_digest_v1(
+            &binding.layer_id,
+            &binding.parameter_id,
+            eligibility,
+            modulator,
+            learning_rate,
+            lower_bound,
+            upper_bound,
+            eligibility_digest,
+            modulator_digest,
+            broadcast_digest,
+        )
+        .expect("signal digest");
+
+        let resolver = PlasticityDynamicOwnerEvidenceResolverV1::new(
+            objective,
+            subject,
+            id("owner:utility.ndu"),
+            id("owner:neuron.runtime"),
+            Arc::clone(&ndu),
+            modulator_values,
+            Arc::clone(&neuron),
+            anchor,
+            artifacts,
+            id("policy:broadcast"),
+            vec![binding],
+            40,
+            60,
+        )
+        .expect("dynamic resolver");
+
+        DynamicFixture {
+            resolver,
+            ndu,
+            neuron,
+            artifact_head,
+            ledger_head: digest("ledger-head"),
+            dataset_digest: digest("dataset"),
+            modulator_digest,
+            broadcast_digest,
+            eligibility_digest,
+            signal_digest,
+            eligibility,
+            modulator,
+            learning_rate,
+            lower_bound,
+            upper_bound,
+        }
+    }
+
+    fn dynamic_query(
+        fixture: &DynamicFixture,
+        kind: PlasticityOwnerEvidenceKindV1,
+        evidence_digest: Digest32,
+    ) -> PlasticityOwnerEvidenceQueryV1 {
+        query(
+            kind,
+            evidence_digest,
+            fixture.artifact_head,
+            fixture.ledger_head,
+            fixture.dataset_digest,
+        )
+    }
+
+    fn dynamic_policy() -> PlasticityOwnerEvidencePolicyV1 {
+        PlasticityOwnerEvidencePolicyV1::from_rules(vec![
+            (PlasticityOwnerEvidenceKindV1::Dataset, id("owner:dataset")),
+            (
+                PlasticityOwnerEvidenceKindV1::UpdateRule,
+                id("owner:update-rule"),
+            ),
+            (
+                PlasticityOwnerEvidenceKindV1::MutationPolicy,
+                id("owner:mutation-policy"),
+            ),
+            (
+                PlasticityOwnerEvidenceKindV1::Modulator,
+                id("owner:utility.ndu"),
+            ),
+            (
+                PlasticityOwnerEvidenceKindV1::ModulatorBroadcast,
+                id("owner:broadcast"),
+            ),
+            (
+                PlasticityOwnerEvidenceKindV1::Eligibility,
+                id("owner:neuron.runtime"),
+            ),
+            (
+                PlasticityOwnerEvidenceKindV1::ParameterSignal,
+                id("owner:neuron.runtime"),
+            ),
+        ])
+        .expect("dynamic owner policy")
+    }
+
+    #[test]
+    fn dynamic_owner_adapters_bind_ndu_neuron_broadcast_and_exact_signal_values() {
+        let fixture = dynamic_fixture();
+
+        let modulator = verify_agentd_plasticity_owner_evidence_v1(
+            &fixture.resolver,
+            &dynamic_policy(),
+            &dynamic_query(
+                &fixture,
+                PlasticityOwnerEvidenceKindV1::Modulator,
+                fixture.modulator_digest,
+            ),
+        )
+        .expect("modulator owner evidence");
+        assert!(!modulator.is_zero());
+
+        let broadcast = verify_agentd_plasticity_owner_evidence_v1(
+            &fixture.resolver,
+            &dynamic_policy(),
+            &dynamic_query(
+                &fixture,
+                PlasticityOwnerEvidenceKindV1::ModulatorBroadcast,
+                fixture.broadcast_digest,
+            ),
+        )
+        .expect("broadcast owner evidence");
+        assert!(!broadcast.is_zero());
+
+        let eligibility = verify_agentd_plasticity_owner_evidence_v1(
+            &fixture.resolver,
+            &dynamic_policy(),
+            &dynamic_query(
+                &fixture,
+                PlasticityOwnerEvidenceKindV1::Eligibility,
+                fixture.eligibility_digest,
+            ),
+        )
+        .expect("eligibility owner evidence");
+        assert!(!eligibility.is_zero());
+
+        let mut signal = dynamic_query(
+            &fixture,
+            PlasticityOwnerEvidenceKindV1::ParameterSignal,
+            fixture.signal_digest,
+        );
+        signal.layer_id = Some(id("layer:dynamic"));
+        signal.parameter_id = Some(id("parameter:dynamic"));
+        signal.signal_eligibility = Some(fixture.eligibility);
+        signal.signal_modulator = Some(fixture.modulator);
+        signal.signal_learning_rate = Some(fixture.learning_rate);
+        signal.signal_lower_bound = Some(fixture.lower_bound);
+        signal.signal_upper_bound = Some(fixture.upper_bound);
+        let signal_receipt = verify_agentd_plasticity_owner_evidence_v1(
+            &fixture.resolver,
+            &dynamic_policy(),
+            &signal,
+        )
+        .expect("parameter signal owner evidence");
+        assert!(!signal_receipt.is_zero());
+    }
+
+    #[test]
+    fn dynamic_owner_adapters_reject_stale_wrong_owner_and_value_substitution() {
+        let fixture = dynamic_fixture();
+        let mut stale = dynamic_query(
+            &fixture,
+            PlasticityOwnerEvidenceKindV1::Modulator,
+            fixture.modulator_digest,
+        );
+        stale.now = 61;
+        assert_eq!(
+            verify_agentd_plasticity_owner_evidence_v1(
+                &fixture.resolver,
+                &dynamic_policy(),
+                &stale,
+            ),
+            Err(PlasticityOwnerEvidenceErrorV1::Stale)
+        );
+
+        let wrong_policy = PlasticityOwnerEvidencePolicyV1::from_rules(vec![
+            (PlasticityOwnerEvidenceKindV1::Dataset, id("owner:dataset")),
+            (
+                PlasticityOwnerEvidenceKindV1::UpdateRule,
+                id("owner:update-rule"),
+            ),
+            (
+                PlasticityOwnerEvidenceKindV1::MutationPolicy,
+                id("owner:mutation-policy"),
+            ),
+            (
+                PlasticityOwnerEvidenceKindV1::Modulator,
+                id("owner:wrong"),
+            ),
+            (
+                PlasticityOwnerEvidenceKindV1::ModulatorBroadcast,
+                id("owner:broadcast"),
+            ),
+            (
+                PlasticityOwnerEvidenceKindV1::Eligibility,
+                id("owner:neuron.runtime"),
+            ),
+            (
+                PlasticityOwnerEvidenceKindV1::ParameterSignal,
+                id("owner:neuron.runtime"),
+            ),
+        ])
+        .expect("wrong policy");
+        assert_eq!(
+            verify_agentd_plasticity_owner_evidence_v1(
+                &fixture.resolver,
+                &wrong_policy,
+                &dynamic_query(
+                    &fixture,
+                    PlasticityOwnerEvidenceKindV1::Modulator,
+                    fixture.modulator_digest,
+                ),
+            ),
+            Err(PlasticityOwnerEvidenceErrorV1::Unauthorized)
+        );
+
+        let mut signal = dynamic_query(
+            &fixture,
+            PlasticityOwnerEvidenceKindV1::ParameterSignal,
+            fixture.signal_digest,
+        );
+        signal.layer_id = Some(id("layer:dynamic"));
+        signal.parameter_id = Some(id("parameter:dynamic"));
+        signal.signal_eligibility = Some(fixture.eligibility);
+        signal.signal_modulator =
+            Some(FixedQ32::from_raw(fixture.modulator.raw() + 1));
+        signal.signal_learning_rate = Some(fixture.learning_rate);
+        signal.signal_lower_bound = Some(fixture.lower_bound);
+        signal.signal_upper_bound = Some(fixture.upper_bound);
+        assert_eq!(
+            fixture.resolver.resolve(&signal),
+            Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch)
+        );
+    }
+
+    #[test]
+    fn dynamic_owner_adapters_reject_ndu_rollback_and_unavailable_neuron_owner() {
+        let fixture = dynamic_fixture();
+        {
+            let mut ndu = fixture.ndu.write().expect("NDU writer");
+            *ndu = NduProjectionJournalV1::new();
+        }
+        assert_eq!(
+            fixture.resolver.resolve(&dynamic_query(
+                &fixture,
+                PlasticityOwnerEvidenceKindV1::Modulator,
+                fixture.modulator_digest,
+            )),
+            Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch)
+        );
+
+        let fixture = dynamic_fixture();
+        let neuron = Arc::clone(&fixture.neuron);
+        let _ = std::panic::catch_unwind(move || {
+            let _guard = neuron.lock().expect("neuron owner lock");
+            panic!("poison owner lock for unavailable-path regression");
+        });
+        assert_eq!(
+            fixture.resolver.resolve(&dynamic_query(
+                &fixture,
+                PlasticityOwnerEvidenceKindV1::Eligibility,
+                fixture.eligibility_digest,
+            )),
+            Err(PlasticityOwnerEvidenceErrorV1::Unavailable)
+        );
     }
 
     #[test]
