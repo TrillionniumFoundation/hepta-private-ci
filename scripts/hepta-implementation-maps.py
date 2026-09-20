@@ -43,6 +43,22 @@ def lane_by_module():
     }
 
 
+def parse_source_tests(module: str) -> list[str]:
+    path = ROOT / f"qualification/module-execution-dossiers/detail/{module}.md"
+    text = path.read_text(encoding="utf-8") if path.exists() else ""
+    match = re.search(r"\*\*Source tests:\*\*\s*(.*)", text)
+    if not match:
+        return []
+    tests = []
+    for source in re.findall(r"\[([^]]+)\]\(([^)]+)\)", match.group(1)):
+        target = source[1]
+        if target.startswith("../../../"):
+            target = target[9:]
+        if (ROOT / target).is_file():
+            tests.append(target)
+    return sorted(set(tests))
+
+
 def parse_entrypoints(module: str):
     path = ROOT / f"qualification/module-execution-dossiers/detail/{module}.md"
     text = path.read_text(encoding="utf-8") if path.exists() else ""
@@ -50,6 +66,7 @@ def parse_entrypoints(module: str):
     if not match:
         return []
     entries = []
+    tests = parse_source_tests(module)
     for name, source in re.findall(r"`([^`]+)`\s+in\s+\[([^]]+)\]", match.group(1)):
         source = source.split(")", 1)[0]
         if source.startswith("../../../"):
@@ -62,7 +79,7 @@ def parse_entrypoints(module: str):
                 "sourcePath": source,
                 "state": "source_implemented_not_product_composed",
                 "authority": "none",
-                "tests": [],
+                "tests": list(tests),
                 "sourcePathExists": source_path.is_file(),
             }
         )
@@ -142,6 +159,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     # an obsolete spelling; the module registry is authoritative.
     declared = roots
     operations = []
+    dossier_tests = parse_source_tests(module["id"])
     for original in row.get("operations", []):
         op = dict(original)
         name = (
@@ -157,7 +175,10 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         else:
             op.setdefault("mappingClass", "owner_native")
         op.setdefault("delegatedCallees", [])
-        op.setdefault("tests", [])
+        if dossier_tests:
+            op["tests"] = list(dossier_tests)
+        else:
+            op.setdefault("tests", [])
         source = op.get("sourcePath")
         op["sourcePathExists"] = bool(source and (ROOT / source).is_file())
         operations.append(op)
@@ -181,7 +202,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         {
             "schema": "hepta.module-implementation-map.v3",
             "schemaVersion": 3,
-            "sourceBase": row.get("sourceBase") or source_base,
+            "sourceBase": source_base,
             "laneId": row.get("laneId") or lanes[module["id"]],
             "module": module["id"],
             "owner": row.get("owner", module["owner"]),
@@ -283,6 +304,59 @@ def generate():
     print(json.dumps({"generated": len(written), "maps": written}, ensure_ascii=False))
 
 
+
+COMMON_SOURCE_BASE_PATHS = [
+    "docs/modules/MODULES.json",
+    "docs/modules/SOURCE_BINDINGS.json",
+    "docs/readiness/READINESS.json",
+    "scripts/hepta-implementation-maps.py",
+    "scripts/hepta_module_source_roots.py",
+]
+
+
+def source_base_relevant_paths(module: dict) -> list[str]:
+    paths = [x["path"] for x in module["rootBindings"]]
+    paths.extend(COMMON_SOURCE_BASE_PATHS)
+    paths.append(module["technicalDocument"])
+    paths.append(f"qualification/module-execution-dossiers/detail/{module['id']}.md")
+    return sorted(set(paths))
+
+
+def verify_source_base(module: dict, source_base: dict) -> list[str]:
+    mid = module["id"]
+    commit = source_base["commit"]
+    tree = source_base["tree"]
+    failures = []
+    try:
+        actual_tree = git("rev-parse", f"{commit}^{{tree}}")
+    except subprocess.CalledProcessError:
+        return [f"{mid}: source base commit is not a local Git object"]
+    if actual_tree != tree:
+        failures.append(f"{mid}: source base tree does not match commit")
+    try:
+        git("merge-base", "--is-ancestor", commit, "HEAD")
+    except subprocess.CalledProcessError:
+        failures.append(f"{mid}: source base is not an ancestor of HEAD")
+        return failures
+    relevant = source_base_relevant_paths(module)
+    try:
+        drift = git(
+            "diff",
+            "--name-only",
+            f"{commit}..HEAD",
+            "--",
+            *relevant,
+        ).splitlines()
+    except subprocess.CalledProcessError as exc:
+        failures.append(f"{mid}: cannot evaluate source drift: {exc}")
+        return failures
+    if drift:
+        failures.append(
+            f"{mid}: source base stale for relevant paths ({', '.join(drift[:8])})"
+        )
+    return failures
+
+
 def verify():
     modules = load("docs/modules/MODULES.json")["modules"]
     lanes = lane_by_module()
@@ -317,6 +391,7 @@ def verify():
             failures.append(f"{mid}: source base")
         else:
             source_bases.add((source_base["commit"], source_base["tree"]))
+            failures.extend(verify_source_base(module, source_base))
         roots = [x["path"] for x in module["rootBindings"]]
         declared = row.get("declaredRoots", row.get("sourceRoot", []))
         if isinstance(declared, str):
